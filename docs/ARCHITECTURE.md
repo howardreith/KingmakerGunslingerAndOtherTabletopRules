@@ -513,15 +513,23 @@ ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
 register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
-Expanded Summoning plus the Elven Branched Spear foundation freeze the
-append-only ledger at 1468 stable IDs: 1467 active and one reserved. All 1184
-Expanded Summoning feature identities and all ten spear foundation identities
-register in every module state while
+Expanded Summoning, the Elven Branched Spear, and the first Eastern Weapons
+generic catalog freeze the append-only ledger at 1483 stable IDs: 1482 active and one reserved. All 1184
+Expanded Summoning feature identities, all twenty-nine spear identities, and
+the first fifteen Eastern Weapons identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement
 will gate publication, never identity registration. A hidden, feature-local
 extraplanar marker avoids a bootstrap-time dependency on Call of the Wild's
 later-loaded subtype feature; optional compatibility may add the external
 marker only after an exact final-live match.
+
+Eastern Weapons uses one data-driven custom-category definition and collision
+registry for Wakizashi, Katana, and Nodachi. The live graph is checked before
+any category registration; values `0x004B4D48` through `0x004B4D4A` fail closed
+on a foreign owner. Generic items share one stable type per family and use
+native masterwork, +1 enhancement, and cold-iron material contracts. The sixth
+module gates only new selection, commerce, loot, and custom presentation, and
+expands the fresh-launch matrix to 64 exact states.
 
 Failed Acadamae saves add the canonical Fatigued blueprint through the native
 caster overload. That overload creates an independent `MechanicsContext`

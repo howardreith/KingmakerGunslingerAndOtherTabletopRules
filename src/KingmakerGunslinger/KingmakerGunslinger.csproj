@@ -51,6 +51,8 @@
     <Compile Include="CustomWeapons\CustomWeaponCategoryDefinition.cs" />
     <Compile Include="CustomWeapons\CustomWeaponCategoryRegistry.cs" />
     <Compile Include="EasternWeapons\EasternWeaponCatalog.cs" />
+    <Compile Include="EasternWeapons\EasternWeaponCategoryRuntime.cs" />
+    <Compile Include="Blueprints\EasternWeaponBlueprints.cs" />
     <Compile Include="Assets\ElvenBranchedSpearAssetRuntime.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearBlueprints.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearNamedBlueprints.cs" />

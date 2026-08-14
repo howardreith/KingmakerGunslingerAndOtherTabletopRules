@@ -49,6 +49,7 @@ using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Spells.ShieldOther;
 using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.ElvenBranchedSpear;
+using KingmakerGunslinger.EasternWeapons;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -8106,6 +8107,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value => value != null && ReferenceEquals(value.Item, item) &&
                         value.Count == 1);
             }
+            EasternWeaponBlueprintSet easternSet = BlueprintBootstrap.EasternWeapons;
+            BlueprintItemWeapon[] easternItems = easternSet.Entries.Select(value =>
+                value.Item).ToArray();
+            BlueprintWeaponType[] easternTypes = easternSet.Families.Select(value =>
+                value.WeaponType).ToArray();
+            int easternRegisteredItems = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintItemWeapon>().Count(value =>
+                    easternItems.Contains(value));
+            int easternRegisteredTypes = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintWeaponType>().Count(value =>
+                    easternTypes.Contains(value));
             ShieldOtherInventoryObservation shieldObservation =
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
@@ -8134,6 +8146,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spearFamiliarityCategories + ";spearVendors=" +
                 spearVendorRows + ";spearBtslTables=" +
                 installedSpearBtslTables + ";spearLoot=" + spearLootRows;
+            observed += ";easternRegistered=" + easternRegisteredTypes + "/" +
+                easternRegisteredItems + ";easternPresentation=" +
+                EasternWeaponCategoryRuntime.PresentationEnabled;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("feature-module-active-snapshot", "request-local expected states",
@@ -8201,10 +8216,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedElvenBranchedSpears ? 4 : 0),
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("feature-module-eastern-weapons-publication-gate",
-                    expectedEasternWeapons ? "enabled" : "disabled",
-                    activeEasternWeapons ? "enabled" : "disabled",
-                    activeEasternWeapons == expectedEasternWeapons,
-                    "immutable Eastern Weapons publication-plan input"),
+                    expectedEasternWeapons ?
+                        "3 category identities;12 generic item identities;presentation enabled" :
+                        "3 category identities;12 generic item identities;presentation disabled",
+                    observed,
+                    activeEasternWeapons == expectedEasternWeapons &&
+                    easternRegisteredTypes == 3 && easternRegisteredItems == 12 &&
+                    EasternWeaponCategoryRuntime.PresentationEnabled ==
+                        expectedEasternWeapons,
+                    "always-registered identities and module-gated custom presentation"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

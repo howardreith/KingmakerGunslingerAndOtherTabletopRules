@@ -129,3 +129,31 @@ values, or campaign targets.
 - Both runs loaded the exact local candidate with DLL SHA-256
   `5b74019e31f732eb08c56e5b615cbaf094c8fc120650b5eef78c32097cfe5048`
   and MVID `01a66571-5cbf-4c21-a386-74fda2042386`. No save was accessed.
+
+## 2026-08-14 - stable generic weapon catalog
+
+- Registered three production weapon types and all twelve generic items under
+  every module state. Each family shares one stable category and weapon type
+  across mundane, masterwork, cold-iron, and +1 forms.
+- Wakizashi uses the exact locked light 1d6, 18-20/x2,
+  piercing-or-slashing profile; Katana uses the locked versatile one-handed
+  1d8, 18-20/x2 slashing profile; Nodachi uses the locked two-handed 1d10,
+  18-20/x2 slashing-or-piercing profile. None has reach, thrown, or brace
+  behavior.
+- Masterwork and +1 reuse exact native enchantment blueprints. Cold iron uses
+  the native item-level physical material field. Prices follow the documented
+  base, 300 gp masterwork, doubled cold-iron, and +1 formula.
+- Repository validation passed; the complete suite passed `1038/1038`; clean
+  Release build, build-output validation, deterministic packaging, and strict
+  standalone validation passed.
+- All-ON run
+  `20260814T1155410119533Z-cf305c900e5344d686ed42d62969399a`
+  and Eastern-OFF run
+  `20260814T1158109553961Z-ab0aed33e9304c618125dc1cfd1230cf`
+  passed. The latter kept all 15 identities registered while suppressing
+  Eastern presentation, then restored settings bytes exactly.
+- The candidate DLL SHA-256 was
+  `3946018FA2E1FCD1F19B13595D309391973D9404AB34F6E9DE09C47E9490760F`,
+  MVID `6917d74c-2525-4677-b485-e5c36addf5e7`; package SHA-256 was
+  `DD4C3C72641EEE50F42CA21B7C4D225D026BD666309DE5D3B2F2F498FDD6160F`.
+  No save was accessed.

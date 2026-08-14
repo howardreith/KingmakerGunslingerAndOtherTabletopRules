@@ -86,6 +86,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("eastern-weapons.locked-category-profiles", EasternWeaponFoundationTests.LockedCategoryProfilesAreExact),
             Case("eastern-weapons.generic-catalog", EasternWeaponFoundationTests.GenericCatalogIsExact),
             Case("eastern-weapons.category-collision", EasternWeaponFoundationTests.RegistryFailsClosedOnCollisions),
+            Case("eastern-weapons.generic-blueprint-source", EasternWeaponFoundationTests.GenericBlueprintSourceContractsAreExact),
             Case("shield-other.damage-split", ShieldOtherPolicyTests.DamageSplitBoundariesAndConservation),
             Case("shield-other.damage-guards", ShieldOtherPolicyTests.DamageSplitGuards),
             Case("shield-other.link-validity", ShieldOtherPolicyTests.LinkValidityMatrix),

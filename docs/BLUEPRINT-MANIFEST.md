@@ -8,7 +8,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1468 stable identifiers: 1467 active and one reserved.
+Validator contract: 1483 stable identifiers: 1482 active and one reserved.
 The 1,155 Expanded Summoning identities freeze the feature foundation: 67 unit
 identities, 1,050 abilities, 17 buffs, three AI actions, three brains, nine
 weapon identities, two bounded resources, and one hidden KMG extraplanar marker.
@@ -22,6 +22,12 @@ weapon type, six base-family weapon items, and ordinary child features for
 Exotic Weapon Proficiency and Rogue Finesse Training, plus the zero-cost
 inherent movement-opportunity accuracy enchantment. These identities remain
 registered in every module state; module state gates only new publication.
+
+The Eastern Weapons generic foundation appends fifteen active identities: one
+stable weapon type and four generic items for each of Wakizashi, Katana, and
+Nodachi. The identities register in every module state. The assigned category
+values are independent of blueprint GUIDs and are collision-checked against
+every live weapon type before registration.
 
 Paper Cartridges Phase 1 identities are append-only:
 

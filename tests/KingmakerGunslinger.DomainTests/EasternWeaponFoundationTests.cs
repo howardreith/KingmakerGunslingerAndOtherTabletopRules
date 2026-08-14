@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using KingmakerGunslinger.CustomWeapons;
 using KingmakerGunslinger.EasternWeapons;
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -111,6 +113,61 @@ namespace KingmakerGunslinger.DomainTests
                 "Registry accepted a loaded category collision.");
             registry.ValidateLoadedValues(new[] {
                 new KeyValuePair<int, string>(74, "NativeCategory") });
+        }
+
+        internal static void GenericBlueprintSourceContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string source = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "EasternWeaponBlueprints.cs"));
+            foreach (string token in new[] {
+                "ValidateCategoryCollisions(library)",
+                "EasternWeaponCatalog.AllCategories",
+                "EasternWeaponCatalog.AllGenericItems",
+                "NativeMasterworkGuid",
+                "NativeEnhancementOneGuid",
+                "spec.Enhancement == 1 ? new[] { plusOne }",
+                "spec.Masterwork ? new[] { masterwork }",
+                "PhysicalDamageMaterial.ColdIron",
+                "item.Description.IndexOf(\"Brace\"",
+                "type.AttackRange.Value != 2",
+                "IsOneHandedWhichCanBeUsedWithTwoHands",
+                "Registered three stable categories and twelve generic weapon items" })
+                Assertions.True(source.Contains(token),
+                    "Eastern generic blueprint source contract is missing: " + token);
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "EasternWeapons",
+                "EasternWeaponCategoryRuntime.cs"));
+            foreach (string token in new[] {
+                "StatsStrings", "HasSubCategory", "GetSubCategories",
+                "get_IsOneHandedWhichCanBeUsedWithTwoHands",
+                "EasternWeaponFamily.Katana", "WeaponSubCategory.Finessable",
+                "WeaponSubCategory.Martial", "WeaponSubCategory.Exotic" })
+                Assertions.True(runtime.Contains(token),
+                    "Eastern category runtime contract is missing: " + token);
+
+            JObject manifest = JObject.Parse(File.ReadAllText(Path.Combine(root,
+                "blueprints", "blueprints.json")));
+            JArray entries = (JArray)manifest["entries"];
+            JObject[] eastern = entries.Cast<JObject>().Where(value =>
+                ((string)value["symbol"]).StartsWith("KMG.EasternWeapons.",
+                    StringComparison.Ordinal)).ToArray();
+            Assertions.Equal(15, eastern.Length,
+                "Generic Eastern identity ledger count changed.");
+            Assertions.Equal(15, eastern.Select(value =>
+                (string)value["guid"]).Distinct(StringComparer.Ordinal).Count(),
+                "Generic Eastern GUIDs are not unique.");
+            Assertions.Equal(3, eastern.Count(value =>
+                (string)value["plannedType"] == "BlueprintWeaponType"),
+                "Eastern weapon-type identity count changed.");
+            Assertions.Equal(12, eastern.Count(value =>
+                (string)value["plannedType"] == "BlueprintItemWeapon"),
+                "Eastern generic item identity count changed.");
+            Assertions.True(eastern.All(value =>
+                (string)value["status"] == "active" &&
+                (string)value["milestone"] == "Eastern Weapons"),
+                "Eastern generic identities must all be active and owned.");
         }
     }
 }

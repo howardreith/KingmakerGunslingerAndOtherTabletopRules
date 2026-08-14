@@ -18,6 +18,7 @@ using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.FeatureModules;
 using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.ElvenBranchedSpear;
+using KingmakerGunslinger.EasternWeapons;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -29,7 +30,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 283 +
+        internal const int ExpectedRegisteredBlueprintCount = 298 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount;
 
         private static readonly object Gate = new object();
@@ -62,6 +63,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static ShieldOtherBlueprintSet _shieldOther;
         private static ShieldOtherSpellListPublication _shieldOtherPublication;
         private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;
+        private static EasternWeaponBlueprintSet _easternWeapons;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
@@ -139,6 +141,11 @@ namespace KingmakerGunslinger.Bootstrap
         internal static ElvenBranchedSpearBlueprintSet ElvenBranchedSpears
         {
             get { lock (Gate) { return _elvenBranchedSpears; } }
+        }
+
+        internal static EasternWeaponBlueprintSet EasternWeapons
+        {
+            get { lock (Gate) { return _easternWeapons; } }
         }
 
         internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
@@ -544,6 +551,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _shieldOther = result.ShieldOther;
                     _shieldOtherPublication = result.ShieldOtherPublication;
                     _elvenBranchedSpears = result.ElvenBranchedSpears;
+                    _easternWeapons = result.EasternWeapons;
                     _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
@@ -643,6 +651,11 @@ namespace KingmakerGunslinger.Bootstrap
                     ElvenBranchedSpearNamedBlueprints.Register(library, registry,
                         elvenBranchedSpears.WeaponType, context.Logger));
                 spearSelectorPublication = elvenBranchedSpears.Publication;
+
+                EasternWeaponBlueprintSet easternWeapons =
+                    EasternWeaponBlueprints.Register(library, registry,
+                        publicationPlan.EasternWeaponPresentation,
+                        context.Logger);
 
                 ExpandedSummoningBlueprintSet expandedSummoning =
                     ExpandedSummoningBlueprints.Register(library, registry);
@@ -937,7 +950,8 @@ namespace KingmakerGunslinger.Bootstrap
                     cordOfStubbornResolve,
                     shieldOther,
                     shieldOtherPublication,
-                    elvenBranchedSpears);
+                    elvenBranchedSpears,
+                    easternWeapons);
             }
             catch (Exception initializationException)
             {
@@ -1139,7 +1153,8 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintItemEquipmentBelt cordOfStubbornResolve,
                 ShieldOtherBlueprintSet shieldOther,
                 ShieldOtherSpellListPublication shieldOtherPublication,
-                ElvenBranchedSpearBlueprintSet elvenBranchedSpears)
+                ElvenBranchedSpearBlueprintSet elvenBranchedSpears,
+                EasternWeaponBlueprintSet easternWeapons)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
                 FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
@@ -1174,6 +1189,8 @@ namespace KingmakerGunslinger.Bootstrap
                 ShieldOtherPublication = shieldOtherPublication;
                 ElvenBranchedSpears = elvenBranchedSpears ??
                     throw new ArgumentNullException("elvenBranchedSpears");
+                EasternWeapons = easternWeapons ??
+                    throw new ArgumentNullException("easternWeapons");
             }
 
             internal BlueprintFeature DiagnosticFeature { get; private set; }
@@ -1220,6 +1237,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal ShieldOtherSpellListPublication ShieldOtherPublication
             { get; private set; }
             internal ElvenBranchedSpearBlueprintSet ElvenBranchedSpears
+            { get; private set; }
+            internal EasternWeaponBlueprintSet EasternWeapons
             { get; private set; }
         }
     }

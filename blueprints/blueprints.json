@@ -11751,6 +11751,126 @@
       "status": "active",
       "milestone": "Elven Branched Spear",
       "notes": "One-round nonstacking First Branch successful-save speed penalty."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.WeaponType",
+      "guid": "86bd3d7faf1aec1c527fb9c0d87a395c",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Stable Wakizashi weapon type and category."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.WeaponType",
+      "guid": "85d96c1dd1eb02b381c2b3f8ad345952",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Stable versatile Katana weapon type and category."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.WeaponType",
+      "guid": "41c269cc820ee734f437ab3fa20de198",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Stable two-handed Nodachi weapon type and category."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.BaseItem",
+      "guid": "b61ee7e62bc9288004eb0121c8f5d37e",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Mundane Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.MasterworkItem",
+      "guid": "58fd0f272f4523458016dc3656b778c3",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Masterwork Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.ColdIronItem",
+      "guid": "1aa01a0528eb595b5cbf19ac7c71a64e",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Cold Iron Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.Plus1Item",
+      "guid": "83a507873a518b54793d0da632def246",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "+1 Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.BaseItem",
+      "guid": "aba40a9e8302b31e4daa2acf6ab48a46",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Mundane Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.MasterworkItem",
+      "guid": "37e8c76b2fc196e9f82e1196e918263c",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Masterwork Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.ColdIronItem",
+      "guid": "599f8f45f325911ffcbdbd6544ba114f",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Cold Iron Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.Plus1Item",
+      "guid": "87b3d851726a4a9abd0baec6beca957c",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "+1 Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.BaseItem",
+      "guid": "35b7082d98ff45ba51dce536a1bc68a1",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Mundane Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.MasterworkItem",
+      "guid": "df5a3b333eab59c04028d88084d7ada9",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Masterwork Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.ColdIronItem",
+      "guid": "0db026048052031be931b9701b3859ef",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Cold Iron Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.Plus1Item",
+      "guid": "38e31ba5cdbdc668f8dcd8985070c0b7",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "+1 Nodachi."
     }
   ]
 }

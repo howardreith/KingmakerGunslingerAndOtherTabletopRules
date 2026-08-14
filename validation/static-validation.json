@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.79-elven-branched-spear",
-  "version": "0.0.79",
+  "milestone": "0.0.80-eastern-weapons",
+  "version": "0.0.80",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1407,
-    "activeEntryCount": 1406,
+    "entryCount": 1483,
+    "activeEntryCount": 1482,
     "reservedEntryCount": 1,
-    "registrationCount": 1406
+    "registrationCount": 1482
   },
   "sprint29": {
     "completeMaintenanceLoop": true,

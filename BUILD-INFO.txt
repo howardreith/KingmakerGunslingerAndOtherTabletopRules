@@ -1,25 +1,25 @@
 Project: Kingmaker Gunslinger
-Release: 0.0.79-elven-branched-spear
+Release: 0.0.80-eastern-weapons
 Target game: Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b
 Target framework: .NET Framework 4.7
 C# language version: 7.3
 Platform/configuration: AnyCPU / Release
 Warnings as errors: true
 Deterministic compiler mode: true
-Feature modules: Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning, Elven Branched Spears
-Feature settings schema: 4
+Feature modules: Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning, Elven Branched Spears, Eastern Weapons
+Feature settings schema: 5
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
-Blueprint ledger: 1467 active; 1 reserved; 1468 total
-Runtime registration count: 1467 in all 32 feature-module states
-Dependency-free domain tests: 1033 after final EWP presentation coverage
+Blueprint ledger: 1482 active; 1 reserved; 1483 total
+Runtime registration count: 1482 in all 64 feature-module states
+Dependency-free domain tests: pending final Eastern Weapons qualification
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
 Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified
-Package: KingmakerGunslinger-0.0.79-elven-branched-spear.zip
-Artifact source: 9e710754e50c09e95c7790d70af8a334757b940e
-DLL SHA-256: 87D0417D9D575FE753B6403AB83D267E3C602F0B880E2FF1BD2B3063B8A56112
-Package SHA-256: 846582B8369B64B411C70E3B6F86DA79598D57B1E600426208F2FE5C8BE912ED
+Package: KingmakerGunslinger-0.0.80-eastern-weapons.zip
+Artifact source: pending final Eastern Weapons qualification
+DLL SHA-256: pending final Eastern Weapons qualification
+Package SHA-256: pending final Eastern Weapons qualification
 Source archive SHA-256: not produced by the standalone package workflow
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.
