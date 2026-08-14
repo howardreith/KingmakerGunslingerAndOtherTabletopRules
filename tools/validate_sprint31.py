@@ -115,7 +115,7 @@ def validate(
         ],
         "Sprint 31 production firearm blueprints",
     )
-    registration_token = (("ExpectedRegisteredBlueprintCount = 327 +"
+    registration_token = (("ExpectedRegisteredBlueprintCount = 329 +"
         if (root / "src/KingmakerGunslinger/EasternWeapons/EasternWeaponCatalog.cs").is_file()
         else "ExpectedRegisteredBlueprintCount = 283 +"
         if (root / "src/KingmakerGunslinger/ElvenBranchedSpear/ElvenBranchedSpearCatalog.cs").is_file()

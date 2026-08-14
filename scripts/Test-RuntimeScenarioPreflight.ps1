@@ -59,6 +59,11 @@ $expected = @(
     'observe-native-weapon-feat-contracts',
     'observe-elven-branched-spear-contracts',
     'observe-eastern-weapon-contracts',
+    'disposable-elven-branched-spear-combat',
+    'disposable-eastern-weapons-combat',
+    'working-save-elven-branched-spear-prepare',
+    'working-save-elven-branched-spear-verify-cleanup',
+    'working-save-elven-branched-spear-verify-absent',
     'observe-class-blueprint-contracts',
     'observe-gunslinger-presentation',
     'observe-vendor-table-contracts',
@@ -169,6 +174,12 @@ Assert-True (-not $easternContracts.RequiresManualInteraction) `
     'eastern-contracts-is-autonomous'
 Assert-True (-not $easternContracts.RequiresSaveName) `
     'eastern-contracts-is-save-free'
+$easternCombat = Get-KmgRuntimeScenarioMetadata `
+    'disposable-eastern-weapons-combat'
+Assert-True (-not $easternCombat.RequiresManualInteraction) `
+    'eastern-combat-is-autonomous'
+Assert-True (-not $easternCombat.RequiresSaveName) `
+    'eastern-combat-is-save-free'
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
     'vendor-contracts-is-autonomous'

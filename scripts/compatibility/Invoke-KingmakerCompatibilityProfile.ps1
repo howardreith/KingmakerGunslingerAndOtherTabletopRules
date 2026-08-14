@@ -37,6 +37,7 @@ param(
         'observe-elven-branched-spear-contracts',
         'observe-eastern-weapon-contracts',
         'disposable-elven-branched-spear-combat',
+        'disposable-eastern-weapons-combat',
         'observe-expanded-summoning-inventory',
         'disposable-shield-other',
         'disposable-acadamae-graduate',

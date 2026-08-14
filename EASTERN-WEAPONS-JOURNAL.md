@@ -334,3 +334,35 @@ values, or campaign targets.
   MVID `e91edbb1-2b73-4826-9fa2-63202cf44735` in both final asset runs.
   No save was accessed. Subjective rig/animation/clipping review is accurately
   left pending for a human.
+
+## 2026-08-14 - focused save-free combat qualification
+
+- Added the guarded save-free `disposable-eastern-weapons-combat` scenario.
+  It creates request-local live units and real item entities, equips exact
+  catalog weapons, uses native attack, critical-confirmation, weapon-stat,
+  equipment-fact, activatable, damage, and size-rule events, and restores the
+  global-unit snapshot during cleanup.
+- Live runtime identified that `AddFactToEquipmentWielder` requires a
+  `BlueprintFeature`, not a `BlueprintBuff`, for the persistent Wayfarer's Oath
+  and Moonlit Crossing equipment facts. Two append-only feature identities were
+  added while the original support identities remain registered and stable.
+- The passing standalone run is
+  `20260814T1513175535242Z-6d95393a15c44b96a168cb21132fee19`
+  in evidence directory
+  `20260814T1513175368815Z-disposable-eastern-weapons-combat`. It proves the
+  corrected `Weapon Proficiency (...)` labels; Wakizashi, grip-dependent
+  Katana, and Nodachi penalties; Wakizashi finesse; all five bespoke effects;
+  capstone effective-bonus/Speed identities; exact cleanup; and loaded version
+  `0.0.80`.
+- The accepted Elven Branched Spear combat regression also passed as run
+  `20260814T1515370965718Z-017e199cb77b4af891868cec2d3a840b`.
+  Both compatibility transactions restored the Mods tree exactly. Neither
+  scenario accessed a save.
+- Repository validation, all `1044/1044` tests, the clean exact-reference
+  Release build, build-output validation, and strict package validation passed.
+  The built, installed, and runtime-loaded DLL is SHA-256
+  `1EBA61259CB47F5D17F1AEB01026D26C1AD494A19D7ED05679478242C0A8EC00`,
+  MVID `e80d25d8-4215-4fd9-b4fb-db7fd2136637`; package SHA-256 is
+  `E74679549583863BBFC4C33439A51C9637F0BD8BF64DD8EC4CC16B4A99FBA79F`.
+  Expanded fighter-group, selector, named-property, capstone attack-count, and
+  transformation controls remain explicit pending work rather than claimed.

@@ -1003,7 +1003,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return string.Join(";", observed.ToArray());
         }
 
-        private static ItemEntityWeapon Equip(UnitEntityData unit,
+        internal static ItemEntityWeapon Equip(UnitEntityData unit,
             BlueprintItemWeapon blueprint)
         {
             var item = new ItemEntityWeapon(blueprint);
@@ -1014,7 +1014,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return item;
         }
 
-        private static RuleAttackWithWeapon AutoHitAttack(UnitEntityData unit,
+        internal static RuleAttackWithWeapon AutoHitAttack(UnitEntityData unit,
             UnitEntityData target, ItemEntityWeapon weapon)
         {
             int damage = target.Descriptor.Damage;
@@ -1030,7 +1030,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return attack;
         }
 
-        private static RuleAttackWithWeapon NativeHitAttack(UnitEntityData unit,
+        internal static RuleAttackWithWeapon NativeHitAttack(UnitEntityData unit,
             UnitEntityData target, ItemEntityWeapon weapon, int seed)
         {
             int damage = target.Descriptor.Damage;
@@ -1155,7 +1155,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static int FindNativeD20Seed(int expected)
+        internal static int FindNativeD20Seed(int expected)
         {
             for (int seed = 1; seed <= 100000; seed++)
             {
@@ -1219,7 +1219,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return MovementOpportunityAccuracyDiagnostics.LastAttackBonus;
         }
 
-        private static void RemoveEquipped(UnitEntityData unit,
+        internal static void RemoveEquipped(UnitEntityData unit,
             ref ItemEntityWeapon item)
         {
             if (unit != null && unit.Body != null &&
@@ -1230,14 +1230,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             item = null;
         }
 
-        private static RuleCalculateAttackBonusWithoutTarget AttackBonus(
+        internal static RuleCalculateAttackBonusWithoutTarget AttackBonus(
             UnitEntityData unit, ItemEntityWeapon weapon)
         {
             return Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(
                 unit, weapon, 0));
         }
 
-        private static RuleAttackWithWeapon WeaponAttack(UnitEntityData unit,
+        internal static RuleAttackWithWeapon WeaponAttack(UnitEntityData unit,
             UnitEntityData target, ItemEntityWeapon weapon)
         {
             int damage = target.Descriptor.Damage;
@@ -1269,7 +1269,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return planned.AttackBonusPenalty;
         }
 
-        private static UnitEntityData SpawnHostileTarget(UnitEntityData attacker,
+        internal static UnitEntityData SpawnHostileTarget(UnitEntityData attacker,
             BlueprintUnit source, Vector3 position, SceneEntitiesState scene,
             out BlueprintUnit hostileSource)
         {
@@ -1309,7 +1309,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "No loaded faction produced a hostile disposable target.");
         }
 
-        private static RuleCalculateWeaponStats WeaponStats(UnitEntityData unit,
+        internal static RuleCalculateWeaponStats WeaponStats(UnitEntityData unit,
             ItemEntityWeapon weapon)
         {
             return Rulebook.Trigger(new RuleCalculateWeaponStats(unit, weapon,
@@ -1333,7 +1333,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return stats.BonusDamage == expectedAttribute + stats.Enhancement;
         }
 
-        private static void AddFact(UnitEntityData unit,
+        internal static void AddFact(UnitEntityData unit,
             BlueprintUnitFact fact, IList<BlueprintUnitFact> facts)
         {
             if (unit.Descriptor.AddFact(fact) == null)
@@ -1342,14 +1342,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             facts.Add(fact);
         }
 
-        private static void RemoveFact(UnitEntityData unit,
+        internal static void RemoveFact(UnitEntityData unit,
             BlueprintUnitFact fact, IList<BlueprintUnitFact> facts)
         {
             if (unit.Descriptor.HasFact(fact)) unit.Descriptor.RemoveFact(fact);
             facts.Remove(fact);
         }
 
-        private static BlueprintFeature FindMartialProficiency()
+        internal static BlueprintFeature FindMartialProficiency()
         {
             BlueprintFeature[] candidates = BlueprintBootstrap.Library
                 .GetAllBlueprints().OfType<BlueprintFeature>().Where(value =>
@@ -1449,7 +1449,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             setter.Invoke(owner, new[] { value });
         }
 
-        private static object Read(object owner, string name)
+        internal static object Read(object owner, string name)
         {
             if (owner == null) return null;
             PropertyInfo property = owner.GetType().GetProperty(name, Members);
@@ -1458,7 +1458,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return field == null ? null : field.GetValue(owner);
         }
 
-        private static object[] Snapshot(object collection)
+        internal static object[] Snapshot(object collection)
         {
             var result = new List<object>();
             var values = collection as System.Collections.IEnumerable;
@@ -1467,13 +1467,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result.ToArray();
         }
 
-        private static bool SameReferences(object[] before, object[] after)
+        internal static bool SameReferences(object[] before, object[] after)
         {
             return before.Length == after.Length && before.All(value =>
                 after.Any(candidate => ReferenceEquals(candidate, value)));
         }
 
-        private static void Add(ICollection<RuntimeTestAssertion> assertions,
+        internal static void Add(ICollection<RuntimeTestAssertion> assertions,
             string name, string expected, string observed, bool passed,
             string evidence)
         {

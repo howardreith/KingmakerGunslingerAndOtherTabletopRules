@@ -238,3 +238,30 @@ observed `native-fallback:module-disabled`, zero custom instances, and three
 native donor icon families while retaining all persistent identities. Settings
 restored exactly; neither run accessed a save. Subjective visual acceptance is
 explicitly pending human review.
+
+## Focused live combat contracts
+
+The guarded save-free scenario `disposable-eastern-weapons-combat` passed as
+run `20260814T1513175535242Z-6d95393a15c44b96a168cb21132fee19` under the
+standalone compatibility transaction `compat-20260814T151226Z-02fa9debed07`.
+It used live item entities, equipment changes, facts, native attacks, critical
+confirmation, weapon-stat rules, Power Attack state, damage packets, and size
+state. The exact observed proficiency attack bonuses were Wakizashi
+`8/8/12`, Katana two-handed `8->12->12` and one-handed `8->12`, and Nodachi
+`8->12`. The runtime localized the static options as `Weapon Proficiency
+(Wakizashi)` and `Weapon Proficiency (Katana)`.
+
+Wayfarer's Oath changed Initiative `5->7->5`; Falling Petal changed AC
+`15->16->15` on a natively confirmed critical and did not add a second
+application; Moonlit Crossing produced mutually exclusive one-handed Dodge and
+two-handed damage applications; Mountain-Sunder produced `0->1->1->2` effect
+applications across inactive, first-hit, repeated-hit, and reset-marker
+controls; Unfixed Form produced exactly one native `Medium->Large` weapon-size
+step only after current size differed from original size. All capstones remained
+effective +10 or lower with exact Speed reference cardinality.
+
+The same DLL then passed the complete accepted Elven Branched Spear combat
+fixture as run `20260814T1515370965718Z-017e199cb77b4af891868cec2d3a840b`.
+Both transactions restored their exact pre-run Mods trees, and neither accessed
+a save. Expanded live controls required by the final mission remain tracked in
+`EASTERN-WEAPONS-QUALIFICATION.md`.

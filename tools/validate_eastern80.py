@@ -131,7 +131,7 @@ def validate(root: Path) -> None:
 
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs") \
         .read_text(encoding="utf-8")
-    for token in ("ExpectedRegisteredBlueprintCount = 327 +",
+    for token in ("ExpectedRegisteredBlueprintCount = 329 +",
             "EasternWeaponBlueprints.Register",
             "internal static EasternWeaponBlueprintSet EasternWeapons"):
         if token not in bootstrap:

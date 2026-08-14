@@ -63,6 +63,8 @@ that complete-graph collision check and fails closed on any foreign owner.
 | `KMG.EasternWeapons.Nodachi.MountainSunder.EffectEnchantment` | `3c62b9e8b6655a7abf76327f244c337a` | `BlueprintWeaponEnchantment` |
 | `KMG.EasternWeapons.Nodachi.MountainSunder.RoundMarker` | `4ca1d8e286dd5c82a2ee8ce369146d57` | `BlueprintBuff` |
 | `KMG.EasternWeapons.Nodachi.UnfixedForm.EffectEnchantment` | `f5051c4567ee595995cd67692672bc81` | `BlueprintWeaponEnchantment` |
+| `KMG.EasternWeapons.Katana.WayfarersOath.EquippedFeature` | `fcd5e72c766f5b399a691b4647e34825` | `BlueprintFeature` |
+| `KMG.EasternWeapons.Katana.MoonlitCrossing.EquippedFeature` | `94ab81b196e5533ea6764f61b2cc127d` | `BlueprintFeature` |
 
 The identities use the repository's deterministic SHA-256 symbol derivation
 and append-only manifest contract. Each family's four generic items share its

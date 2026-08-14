@@ -154,9 +154,9 @@ namespace KingmakerGunslinger.DomainTests
             JObject[] eastern = entries.Cast<JObject>().Where(value =>
                 ((string)value["symbol"]).StartsWith("KMG.EasternWeapons.",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(44, eastern.Length,
+            Assertions.Equal(46, eastern.Length,
                 "Eastern foundation identity ledger count changed.");
-            Assertions.Equal(44, eastern.Select(value =>
+            Assertions.Equal(46, eastern.Select(value =>
                 (string)value["guid"]).Distinct(StringComparer.Ordinal).Count(),
                 "Eastern foundation GUIDs are not unique.");
             Assertions.Equal(3, eastern.Count(value =>
@@ -354,7 +354,7 @@ namespace KingmakerGunslinger.DomainTests
                     !((string)value["symbol"]).EndsWith(
                         "ProficiencyPolicyEnchantment", StringComparison.Ordinal))
                 .ToArray();
-            Assertions.Equal(7, effectsEntries.Length,
+            Assertions.Equal(9, effectsEntries.Length,
                 "Eastern bespoke identity count changed.");
             Assertions.Equal(4, effectsEntries.Count(value =>
                 (string)value["plannedType"] == "BlueprintBuff"),
@@ -363,6 +363,9 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["plannedType"] ==
                     "BlueprintWeaponEnchantment"),
                 "Eastern bespoke enchantment identity count changed.");
+            Assertions.Equal(2, effectsEntries.Count(value =>
+                (string)value["plannedType"] == "BlueprintFeature"),
+                "Eastern equipment-feature identity count changed.");
         }
 
         internal static void CampaignPublicationIsExactAndTransactional()
@@ -506,6 +509,34 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in iconNames)
                 Assertions.True(icons.Contains("\"" + token + "\""),
                     "Eastern icon publication lacks: " + token);
+        }
+
+        internal static void CombatScenarioUsesLiveRulesAndCleansUp()
+        {
+            string root = Environment.CurrentDirectory;
+            string path = Path.Combine(root, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "EasternWeaponCombatScenario.cs");
+            string source = File.ReadAllText(path);
+            foreach (string token in new[] {
+                "disposable SceneEntitiesState", "SpawnHostileTarget",
+                "new ItemEntityWeapon", "WeaponAttack(attacker",
+                "RuleCalculateWeaponStats", "HoldInTwoHands",
+                "FindNativeD20Seed(19)", "IsCriticalConfirmed",
+                "powerAttack.IsOn = true", "LastMountainSunderDamage",
+                "ordinary.WeaponSize + 1", "SameReferences",
+                "eastern-combat-fixture-cleanup" })
+                Assertions.True(source.Contains(token),
+                    "Eastern live combat scenario lacks: " + token);
+            string catalog = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestScenarioCatalog.cs"));
+            string common = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            Assertions.True(catalog.Contains(
+                "disposable-eastern-weapons-combat") && common.Contains(
+                "'disposable-eastern-weapons-combat'") && common.Contains(
+                "RequiresSaveName = $false"),
+                "Eastern combat scenario is not in both guarded catalogs as save-free.");
         }
 
         private static void AssertRgbaPng128(string path)

@@ -57,12 +57,16 @@ namespace KingmakerGunslinger.Blueprints
 
         internal const string WayfarersOathFactSymbol =
             "KMG.EasternWeapons.Katana.WayfarersOath.EquippedFact";
+        internal const string WayfarersOathFeatureSymbol =
+            "KMG.EasternWeapons.Katana.WayfarersOath.EquippedFeature";
         internal const string FallingPetalEnchantmentSymbol =
             "KMG.EasternWeapons.Wakizashi.FallingPetal.EffectEnchantment";
         internal const string FallingPetalBuffSymbol =
             "KMG.EasternWeapons.Wakizashi.FallingPetal.ArmorClassBuff";
         internal const string MoonlitCrossingFactSymbol =
             "KMG.EasternWeapons.Katana.MoonlitCrossing.EquippedFact";
+        internal const string MoonlitCrossingFeatureSymbol =
+            "KMG.EasternWeapons.Katana.MoonlitCrossing.EquippedFeature";
         internal const string MountainSunderEnchantmentSymbol =
             "KMG.EasternWeapons.Nodachi.MountainSunder.EffectEnchantment";
         internal const string MountainSunderMarkerSymbol =
@@ -176,21 +180,31 @@ namespace KingmakerGunslinger.Blueprints
                 MoonlitCrossingDamageBonus>();
             moonlitDamage.name = "$KMG_MoonlitCrossing_Damage";
 
-            BlueprintBuff wayfarerFact = registry.Register<BlueprintBuff>(
+            registry.Register<BlueprintBuff>(
                 WayfarersOathFactSymbol, () => Buff(
                     "KMG_WayfarersOath_Equipped", "Wayfarer's Oath",
                     "+2 competence bonus to Initiative while Wayfarer's Oath is in the active equipment set.",
-                    true, wayfarer));
+                    true));
+            BlueprintFeature wayfarerFact = registry.Register<BlueprintFeature>(
+                WayfarersOathFeatureSymbol, () => Feature(
+                    "KMG_WayfarersOath_Equipped_Feature", "Wayfarer's Oath",
+                    "+2 competence bonus to Initiative while Wayfarer's Oath is in the active equipment set.",
+                    wayfarer));
             BlueprintBuff fallingBuff = registry.Register<BlueprintBuff>(
                 FallingPetalBuffSymbol, () => Buff(
                     "KMG_FallingPetal_AC_Buff", "Falling Petal",
                     "+1 dodge bonus to Armor Class for 1 round while Falling Petal remains the active weapon.",
                     false, falling));
-            BlueprintBuff moonlitFact = registry.Register<BlueprintBuff>(
+            registry.Register<BlueprintBuff>(
                 MoonlitCrossingFactSymbol, () => Buff(
                     "KMG_MoonlitCrossing_Equipped", "Moonlit Crossing",
                     "One-handed use grants +1 dodge AC; two-handed use grants +2 weapon damage.",
-                    true, moonlitArmor, moonlitDamage));
+                    true));
+            BlueprintFeature moonlitFact = registry.Register<BlueprintFeature>(
+                MoonlitCrossingFeatureSymbol, () => Feature(
+                    "KMG_MoonlitCrossing_Equipped_Feature", "Moonlit Crossing",
+                    "One-handed use grants +1 dodge AC; two-handed use grants +2 weapon damage.",
+                    moonlitArmor, moonlitDamage));
             BlueprintBuff mountainMarker = registry.Register<BlueprintBuff>(
                 MountainSunderMarkerSymbol, () => Buff(
                     "KMG_MountainSunder_Round_Marker",
@@ -392,6 +406,23 @@ namespace KingmakerGunslinger.Blueprints
             return result;
         }
 
+        private static BlueprintFeature Feature(string internalName,
+            string name, string description,
+            params BlueprintComponent[] components)
+        {
+            var result = ScriptableObject.CreateInstance<BlueprintFeature>();
+            result.name = internalName;
+            result.IsClassFeature = false;
+            result.Ranks = 1;
+            result.ComponentsArray = components ??
+                Array.Empty<BlueprintComponent>();
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create(internalName + ".Name", name),
+                LocalizationService.Create(internalName + ".Description",
+                    description), null);
+            return result;
+        }
+
         private static void ConfigureEnchantmentText(
             BlueprintWeaponEnchantment enchantment, string symbol,
             string name, string description)
@@ -453,8 +484,8 @@ namespace KingmakerGunslinger.Blueprints
 
     internal sealed class EasternWeaponNamedBuffSet
     {
-        internal EasternWeaponNamedBuffSet(BlueprintBuff wayfarersOath,
-            BlueprintBuff fallingPetal, BlueprintBuff moonlitCrossing,
+        internal EasternWeaponNamedBuffSet(BlueprintFeature wayfarersOath,
+            BlueprintBuff fallingPetal, BlueprintFeature moonlitCrossing,
             BlueprintBuff mountainSunderMarker)
         {
             WayfarersOath = wayfarersOath;
@@ -462,12 +493,12 @@ namespace KingmakerGunslinger.Blueprints
             MoonlitCrossing = moonlitCrossing;
             MountainSunderMarker = mountainSunderMarker;
         }
-        internal BlueprintBuff WayfarersOath { get; private set; }
+        internal BlueprintFeature WayfarersOath { get; private set; }
         internal BlueprintBuff FallingPetal { get; private set; }
-        internal BlueprintBuff MoonlitCrossing { get; private set; }
+        internal BlueprintFeature MoonlitCrossing { get; private set; }
         internal BlueprintBuff MountainSunderMarker { get; private set; }
-        internal BlueprintBuff[] All { get { return new[] { WayfarersOath,
-            FallingPetal, MoonlitCrossing, MountainSunderMarker }; } }
+        internal BlueprintBuff[] All { get { return new[] { FallingPetal,
+            MountainSunderMarker }; } }
         internal BlueprintUnitFact ForEquipped(EasternWeaponNamedKind kind)
         {
             return kind == EasternWeaponNamedKind.WayfarersOath

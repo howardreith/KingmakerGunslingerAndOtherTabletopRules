@@ -12078,6 +12078,20 @@
       "plannedType": "BlueprintWeaponEnchantment",
       "status": "active", "milestone": "Eastern Weapons",
       "notes": "Native one-step transformed weapon-size effect for Unfixed Form."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.WayfarersOath.EquippedFeature",
+      "guid": "fcd5e72c766f5b399a691b4647e34825",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Native equipment-owned active-set Initiative feature for Wayfarer's Oath."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.MoonlitCrossing.EquippedFeature",
+      "guid": "94ab81b196e5533ea6764f61b2cc127d",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Native equipment-owned exact grip-mode feature for Moonlit Crossing."
     }
   ]
 }
