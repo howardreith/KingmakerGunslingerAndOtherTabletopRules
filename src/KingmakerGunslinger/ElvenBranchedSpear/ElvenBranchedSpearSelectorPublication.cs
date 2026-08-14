@@ -55,8 +55,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 publication.PublishFamiliarity(category);
                 if (publishSelectors)
                 {
-                    ewpSelection.Features = InsertUniqueAfter(
-                        ewpSelection.Features, ewp, ewpOrderingAnchor);
+                    ewpSelection.Features = AppendUnique(
+                        ewpSelection.Features, ewp);
                     ewpSelection.AllFeatures = InsertUniqueAfter(
                         ewpSelection.AllFeatures, ewp, ewpOrderingAnchor);
                     finesseSelection.Features = AppendUnique(finesseSelection.Features,
@@ -120,10 +120,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 throw new InvalidOperationException(
                     "Spear static selector publication is not exact.");
             if (publishSelectors &&
-                (!ImmediatelyFollows(_ewpSelection.Features, ewp,
-                    ewpOrderingAnchor) ||
-                 !ImmediatelyFollows(_ewpSelection.AllFeatures, ewp,
-                    ewpOrderingAnchor)))
+                !ImmediatelyFollows(_ewpSelection.AllFeatures, ewp,
+                    ewpOrderingAnchor))
                 throw new InvalidOperationException(
                     "Spear proficiency is not ordered after the native Elven Curve Blade option.");
             AddProficiencies grant = (_familiarity.ComponentsArray ??

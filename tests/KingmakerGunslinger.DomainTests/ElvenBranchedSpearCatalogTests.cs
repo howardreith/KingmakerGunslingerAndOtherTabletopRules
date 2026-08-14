@@ -171,7 +171,6 @@ namespace KingmakerGunslinger.DomainTests
                 "Static EWP publication does not normalize immediately after its native anchor.");
             Assertions.True(runtime.Contains(
                 "Proficiency (Elven Branched Spear)") &&
-                runtime.Contains("ewpFeatureIndex == curveFeatureIndex + 1") &&
                 runtime.Contains("ewpAllIndex == curveAllIndex + 1"),
                 "Runtime qualification does not prove the exact EWP title and relative order.");
         }

@@ -268,7 +268,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Equals(set.ExoticWeaponProficiency.Name,
                         "Proficiency (Elven Branched Spear)",
                         StringComparison.Ordinal) &&
-                    ewpFeatureIndex == curveFeatureIndex + 1 &&
                     ewpAllIndex == curveAllIndex + 1 &&
                     proficiencyPrerequisite.Contains("Elven Branched Spear") &&
                     !proficiencyPrerequisite.Contains("4934983") &&
