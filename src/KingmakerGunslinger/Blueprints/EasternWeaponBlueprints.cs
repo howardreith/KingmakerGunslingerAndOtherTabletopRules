@@ -567,8 +567,6 @@ namespace KingmakerGunslinger.Blueprints
         private readonly FieldInfo _overrideDamageType =
             Require("m_OverrideDamageType");
         private readonly FieldInfo _damageType = Require("m_DamageType");
-        private readonly FieldInfo _visualParameters =
-            Require("m_VisualParameters");
 
         internal void Configure(BlueprintItemWeapon item,
             CustomWeaponCategoryDefinition definition,
@@ -593,7 +591,6 @@ namespace KingmakerGunslinger.Blueprints
             _overrideDamageType.SetValue(item, spec.ColdIron);
             _damageType.SetValue(item,
                 EasternWeaponTypeAccess.Physical(definition, spec.ColdIron));
-            _visualParameters.SetValue(item, null);
         }
 
         internal void Validate(BlueprintItemWeapon item,
@@ -616,7 +613,6 @@ namespace KingmakerGunslinger.Blueprints
                     ? PhysicalDamageMaterial.ColdIron : 0) ||
                 enchantments.Length != expectedEnchantments ||
                 enchantments.Any(value => value == null) ||
-                _visualParameters.GetValue(item) != null ||
                 !ReferenceEquals(item.VisualParameters,
                     item.Type.VisualParameters) ||
                 item.Description.IndexOf("Brace",
@@ -645,7 +641,6 @@ namespace KingmakerGunslinger.Blueprints
             _overrideDamageType.SetValue(item, spec.ColdIron);
             _damageType.SetValue(item,
                 EasternWeaponTypeAccess.Physical(definition, spec.ColdIron));
-            _visualParameters.SetValue(item, null);
         }
 
         internal void ValidateNamed(BlueprintItemWeapon item,
@@ -670,7 +665,6 @@ namespace KingmakerGunslinger.Blueprints
                 !enchantments.SequenceEqual(expectedEnchantments ??
                     Array.Empty<BlueprintWeaponEnchantment>()) ||
                 enchantments.Any(value => value == null) ||
-                _visualParameters.GetValue(item) != null ||
                 !ReferenceEquals(item.VisualParameters,
                     item.Type.VisualParameters) ||
                 item.Description.IndexOf("Brace",

@@ -609,9 +609,12 @@ values, or campaign targets.
   contracts with Scimitar and Greatsword contracts respectively; Katana keeps
   Bastard Sword handling. Added exact donor constants and non-model-field
   runtime comparison.
-- Diagnosed retained donor item visuals as a possible family inconsistency and
-  now clears every item-level `m_VisualParameters` override. The expanded live
-  fixture records one exact family type/prefab path for all 30 items, plus
+- The first committed observer exposed that this installed
+  `BlueprintItemWeapon` has no `m_VisualParameters` field; initialization
+  failed closed, the run timed out before observation, and compatibility
+  transaction `compat-20260814T230456Z-6d3c2ea32e78` restored exactly. The
+  corrected audit now proves field absence and public effective visual equality
+  with the family type for all 30 items, plus
   instantiated prefab, cutting-edge material, enchantment overlays, and
   cleanup.
 - Exact Unity 2018.4.10f1 rebuilt the dedicated three-prefab bundle twice to

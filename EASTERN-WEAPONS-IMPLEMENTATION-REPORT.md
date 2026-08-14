@@ -127,8 +127,9 @@ be performed.
 The accepted catalog, identities, mechanics, acquisition, saves, and version
 remain frozen. The repair adds exact Call of the Wild Focused Weapon children,
 measured diagonal icons, revised asymmetric single-edge family geometry,
-Scimitar/Bastard Sword/Greatsword presentation donors, explicit removal of
-item-level visual overrides, and an all-30 instantiated family-prefab audit.
+Scimitar/Bastard Sword/Greatsword presentation donors, exact proof that the
+installed item type has no item-level visual override field, and an all-30
+instantiated family-prefab audit.
 Source/package gates pass with 1,048 tests and Eastern bundle SHA-256
 `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.
 Runtime regression and final artifact identities will be sealed after the

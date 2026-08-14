@@ -249,7 +249,7 @@
     "easternBundleSha256": "F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43",
     "spearBundleSha256": "3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE",
     "icons": "seven measured 42-degree 128x128 transparent RGBA outputs",
-    "models": "three curved asymmetric single-edge family meshes; all-30 type-owned visual audit added",
+    "models": "three curved asymmetric single-edge family meshes; all-30 type-owned effective visual audit added",
     "visualDonors": "Scimitar/Bastard Sword/Greatsword",
     "humanVisualReview": "pending targeted second pass"
   },

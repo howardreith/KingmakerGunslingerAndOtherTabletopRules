@@ -384,8 +384,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BlueprintBootstrap.Library, donorGuid,
                         family + " visual/animation donor");
                 WeaponVisualParameters visual = item.VisualParameters;
-                object itemOverride = ReadFieldRecursive(item,
-                    "m_VisualParameters");
+                bool itemOverrideFieldExists;
+                object itemOverride = TryReadFieldRecursive(item,
+                    "m_VisualParameters", out itemOverrideFieldExists);
                 GameObject model = visual == null ? null : visual.Model;
                 GameObject instance = null;
                 bool instanceResolved = false;
@@ -421,7 +422,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 string[] overlays = item.Enchantments.Select(value =>
                     value == null ? "<null>" : value.AssetGuid).ToArray();
-                bool itemExact = itemOverride == null && visual != null &&
+                bool itemExact = !itemOverrideFieldExists &&
+                    itemOverride == null && visual != null &&
                     ReferenceEquals(visual, familySet.WeaponType
                         .VisualParameters) && model != null &&
                     ReferenceEquals(model, familySet.WeaponType
@@ -432,7 +434,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rows.Add(item.AssetGuid + ":" + item.Name +
                     ";family=" + family + ";type=" +
                     item.Type.AssetGuid + ";itemOverride=" +
-                    (itemOverride == null ? "none" : "present") +
+                    (!itemOverrideFieldExists ? "field-absent" :
+                        itemOverride == null ? "none" : "present") +
                     ";model=" + (model == null ? "<null>" : model.name) +
                     ";instantiated=" + instantiated + ";donor=" +
                     donorGuid + "/" + (visual == null ? "<null>" :
@@ -443,7 +446,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = string.Join("|", rows.ToArray());
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-all-30-visual-identities",
-                "30 exact items; 10 per family; no item visual override; one validated family prefab; exact native donor contract; CuttingEdge material; transient cleanup",
+                "30 exact items; 10 per family; installed item override field absent; effective family-type visual; one validated family prefab; exact native donor contract; CuttingEdge material; transient cleanup",
                 observed, exact && set.Families.All(family => items.Count(
                     item => ReferenceEquals(item.Type,
                         family.WeaponType)) == 10),
@@ -477,17 +480,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             return true;
         }
 
-        private static object ReadFieldRecursive(object owner, string name)
+        private static object TryReadFieldRecursive(object owner, string name,
+            out bool fieldExists)
         {
             for (Type type = owner == null ? null : owner.GetType();
                 type != null; type = type.BaseType)
             {
                 FieldInfo field = type.GetField(name, Members |
                     BindingFlags.DeclaredOnly);
-                if (field != null) return field.GetValue(owner);
+                if (field != null)
+                {
+                    fieldExists = true;
+                    return field.GetValue(owner);
+                }
             }
-            throw new MissingFieldException(owner == null ? "<null>" :
-                owner.GetType().FullName, name);
+            fieldExists = false;
+            return null;
         }
 
         private static void QualifyFocusedWeapon(EasternWeaponBlueprintSet set,

@@ -43,8 +43,10 @@ in `docs/EASTERN-WEAPONS-IMPLEMENTATION-EVIDENCE.md`.
   `d9fbec4637d71bd4ebc977628de3daf3`, Katana uses Bastard Sword
   `d2fe2c5516b56f04da1d5ea51ae3ddfe`, and Nodachi uses Greatsword
   `5f824fbb0766a3543bbd6ae50248688f`. Only presentation fields are inherited.
-- Family normalization: every item-level `m_VisualParameters` override is
-  cleared. The live scenario records effective type/prefab identity, donor
+- Family normalization: live reflection proves this installed
+  `BlueprintItemWeapon` has no item-level `m_VisualParameters` field. The
+  scenario records that each item's public effective visual equals its family
+  type, plus prefab identity, donor
   contract, materials, enchantment overlays, and cleanup for all 30 items.
 - Eastern bundle: 147,724 bytes,
   `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.

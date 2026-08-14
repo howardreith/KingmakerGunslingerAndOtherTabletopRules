@@ -2769,7 +2769,8 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   `1b5c808f69e59478a1fa7ccf4f0135af4a59ebd1`.
 - The asset/presentation repair is source-qualified: seven measured diagonal
   icons, three revised single-edge meshes, Scimitar/Bastard/Greatsword visual
-  donors, item visual override normalization, and all-30 live audit source.
+  donors, exact item-override-field absence handling, and all-30 live audit
+  source.
 - Repository validation, `1048/1048` tests, clean Release build, output
   validation, and strict package validation pass. Eastern bundle is
   `F58801B7...A15B43`; spear FBX and bundle are unchanged.

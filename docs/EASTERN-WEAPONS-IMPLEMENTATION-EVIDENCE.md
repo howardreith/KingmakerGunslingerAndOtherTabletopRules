@@ -6,12 +6,13 @@ The ignored screenshot manifest under `evidence/screenshots/` established the
 accepted selector controls and four presentation/compatibility repair targets.
 `EASTERN-WEAPONS-FIRST-PLAYTEST-REPAIR-REPORT.md` records their dispositions.
 
-Runtime construction now clears `BlueprintItemWeapon.m_VisualParameters` on all
-30 KMG items. The live combat observer audits effective visual reference,
-family type, instantiated AssetBundle prefab, exact donor contract, material
+Exact live reflection proved that this installed `BlueprintItemWeapon` has no
+`m_VisualParameters` field. Its public effective visual resolves through its
+weapon type. The combat observer audits that equality, family type,
+instantiated AssetBundle prefab, exact donor contract, material
 slots (including `CuttingEdge`), enchantment overlay GUIDs, and cleanup per
-item. This distinguishes an item-level visual override from legitimate native
-enchantment VFX without copying any named enchantment.
+item. This proves the prior apparent generic/named difference is legitimate
+native enchantment VFX rather than a separate item mesh or override.
 
 Exact visual donors are Scimitar `d9fbec4637d71bd4ebc977628de3daf3`,
 Bastard Sword `d2fe2c5516b56f04da1d5ea51ae3ddfe`, and Greatsword

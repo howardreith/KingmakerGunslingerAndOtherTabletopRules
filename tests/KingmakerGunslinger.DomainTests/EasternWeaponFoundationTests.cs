@@ -588,9 +588,9 @@ namespace KingmakerGunslinger.DomainTests
                 "WakizashiVisualDonorGuid", "d9fbec4637d71bd4ebc977628de3daf3",
                 "KatanaVisualDonorGuid", "d2fe2c5516b56f04da1d5ea51ae3ddfe",
                 "NodachiVisualDonorGuid", "5f824fbb0766a3543bbd6ae50248688f",
-                "_visualParameters.SetValue(item, null)",
                 "ReferenceEquals(item.VisualParameters,",
                 "eastern-all-30-visual-identities", "CuttingEdge",
+                "itemOverrideFieldExists", "field-absent",
                 "VisualContractMatches" })
                 Assertions.True(blueprints.Contains(token) ||
                     combat.Contains(token),
