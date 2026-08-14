@@ -53,6 +53,13 @@ namespace KingmakerGunslinger.Development
         internal static DevelopmentActionResult DescribeRareFirearmAcquisition()
         { return Execute("rare-firearm-acquisition-audit", bridge => bridge.DescribeRareFirearmAcquisition()); }
 
+        internal static DevelopmentActionResult DescribeElvenBranchedSpearCatalog()
+        { return Execute("elven-branched-spear-catalog", bridge => bridge.DescribeElvenBranchedSpearCatalog()); }
+        internal static DevelopmentActionResult AddElvenBranchedSpearSet()
+        { return Execute("elven-branched-spear-add-set", bridge => bridge.AddElvenBranchedSpearSet()); }
+        internal static DevelopmentActionResult AddElvenBranchedSpear(int index)
+        { return Execute("elven-branched-spear-add-" + index, bridge => bridge.AddElvenBranchedSpear(index)); }
+
         internal static DevelopmentActionResult DescribeReloadReadiness()
         {
             return Execute(

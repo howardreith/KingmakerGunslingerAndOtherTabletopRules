@@ -126,6 +126,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private UnitEntityData[] _expandedSummoningPersistencePreparedUnits;
         private bool _expandedSummoningPersistenceCleanupStarted;
         private int _expandedSummoningPersistenceCleanupSettleUpdates;
+        private bool _elvenBranchedSpearPersistenceSaveStarted;
+        private bool _elvenBranchedSpearPersistenceSaveCompleted;
+        private Stopwatch _elvenBranchedSpearPersistenceSaveElapsed;
+        private bool _elvenBranchedSpearPersistenceIdentityValid;
+        private bool _elvenBranchedSpearPersistenceCategoryValid;
+        private bool _elvenBranchedSpearPersistenceGrantValid;
+        private bool _elvenBranchedSpearPersistenceCleanupValid;
+        private string _elvenBranchedSpearPersistenceDetail = "";
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
         private static bool _expandedSummoningRuleCaptureActive;
@@ -494,6 +502,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     !IsExpandedSummoningPersistenceScenario() &&
+                    !IsElvenBranchedSpearPersistenceScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
@@ -1127,6 +1136,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     IsExpandedSummoningPersistenceScenario() ||
+                    IsElvenBranchedSpearPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1152,6 +1162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     IsExpandedSummoningPersistenceScenario() ||
+                    IsElvenBranchedSpearPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1213,6 +1224,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_elvenBranchedSpearPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteElvenBranchedSpearPersistence(
+                        RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_elvenBranchedSpearPersistenceSaveCompleted)
+                {
+                    CompleteElvenBranchedSpearPersistence(
+                        RuntimeTestStatuses.Pass, "");
+                    return;
+                }
+                if (_elvenBranchedSpearPersistenceSaveElapsed != null &&
+                    _elvenBranchedSpearPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteElvenBranchedSpearPersistence(
+                        RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
             if (_expandedSummoningPersistenceSaveStarted)
             {
                 if (_workingSaveSmoke.WriteObserved)
@@ -1407,6 +1441,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     StartExpandedSummoningPersistence();
                 }
+                else if (IsElvenBranchedSpearPersistenceScenario())
+                {
+                    StartElvenBranchedSpearPersistence();
+                }
                 else if (IsShieldOtherPersistenceScenario())
                 {
                     StartShieldOtherPersistenceSave();
@@ -1499,6 +1537,212 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .WorkingSaveExpandedSummoningVerifyCleanup ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .WorkingSaveExpandedSummoningVerifyAbsent;
+        }
+
+        private bool IsElvenBranchedSpearPersistenceScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveElvenBranchedSpearPrepare ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveElvenBranchedSpearVerifyCleanup ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveElvenBranchedSpearVerifyAbsent;
+        }
+
+        private void StartElvenBranchedSpearPersistence()
+        {
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.Descriptor != null).ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before Elven Branched Spear persistence qualification.");
+
+            ElvenBranchedSpearBlueprintSet set =
+                BlueprintBootstrap.ElvenBranchedSpears;
+            BlueprintItemWeapon[] items = set == null || set.Named == null
+                ? null : set.Entries.Select(value => value.Item).Concat(
+                    set.Named.Entries.Select(value => value.Item)).ToArray();
+            if (items == null || items.Length != 12 ||
+                items.Any(value => value == null) ||
+                items.Distinct().Count() != 12)
+                throw new InvalidOperationException(
+                    "The exact 12-item Elven Branched Spear registry is unavailable.");
+
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveElvenBranchedSpearPrepare;
+            bool verifyCleanup = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveElvenBranchedSpearVerifyCleanup;
+            bool active = _context.FeatureModules.Active.ElvenBranchedSpears;
+            int[] before = items.Select(value =>
+                Game.Instance.Player.Inventory.Count(value)).ToArray();
+
+            if (prepare)
+            {
+                if (!active) throw new InvalidOperationException(
+                    "Elven Branched Spear prepare requires the module to be active.");
+                if (before.Any(value => value != 0))
+                    throw new InvalidOperationException(
+                        "The disposable working save already contains an Elven Branched Spear; prepare refused to mutate it.");
+                DevelopmentActionResult grant =
+                    DevelopmentControls.AddElvenBranchedSpearSet();
+                _elvenBranchedSpearPersistenceGrantValid = grant.Succeeded;
+                if (!grant.Succeeded) throw new InvalidOperationException(
+                    "The development-only spear-set grant failed: " +
+                    grant.Message);
+            }
+            else
+                _elvenBranchedSpearPersistenceGrantValid = true;
+
+            int[] observed = items.Select(value =>
+                Game.Instance.Player.Inventory.Count(value)).ToArray();
+            int expectedCount = prepare || verifyCleanup ? 1 : 0;
+            _elvenBranchedSpearPersistenceIdentityValid =
+                observed.All(value => value == expectedCount) &&
+                items.All(value => BlueprintBootstrap.Library
+                    .GetAllBlueprints().Count(candidate =>
+                        ReferenceEquals(candidate, value)) == 1);
+            ItemEntityWeapon[] instances = EnumerateRuntimeInventory(
+                Game.Instance.Player.Inventory).OfType<ItemEntityWeapon>()
+                .Where(value => items.Contains(value.Blueprint)).ToArray();
+            _elvenBranchedSpearPersistenceCategoryValid =
+                items.All(value => ReferenceEquals(value.Type,
+                    set.WeaponType)) &&
+                (expectedCount == 0 ? instances.Length == 0 :
+                    instances.Length == 12 && items.All(item =>
+                        instances.Count(instance => ReferenceEquals(
+                            instance.Blueprint, item) && ReferenceEquals(
+                            instance.Blueprint.Type, set.WeaponType)) == 1));
+
+            if (verifyCleanup)
+            {
+                if (!_elvenBranchedSpearPersistenceIdentityValid ||
+                    !_elvenBranchedSpearPersistenceCategoryValid)
+                    throw new InvalidOperationException(
+                        "Fresh-load spear identities or category did not survive before cleanup.");
+                foreach (BlueprintItemWeapon item in items)
+                    Game.Instance.Player.Inventory.Remove(item, 1);
+                _elvenBranchedSpearPersistenceCleanupValid = items.All(value =>
+                    Game.Instance.Player.Inventory.Count(value) == 0);
+            }
+            else
+                _elvenBranchedSpearPersistenceCleanupValid = prepare
+                    ? observed.All(value => value == 1)
+                    : observed.All(value => value == 0);
+
+            _elvenBranchedSpearPersistenceDetail = "active=" + active +
+                ";phase=" + (prepare ? "prepare" : verifyCleanup
+                    ? "verify-cleanup" : "verify-absent") +
+                ";before=" + string.Join(",", before.Select(value =>
+                    value.ToString()).ToArray()) + ";observed=" +
+                string.Join(",", observed.Select(value => value.ToString())
+                    .ToArray()) + ";instances=" + instances.Length +
+                ";identity=" + _elvenBranchedSpearPersistenceIdentityValid +
+                ";category=" + _elvenBranchedSpearPersistenceCategoryValid +
+                ";grant=" + _elvenBranchedSpearPersistenceGrantValid +
+                ";cleanup=" + _elvenBranchedSpearPersistenceCleanupValid;
+            if (!_elvenBranchedSpearPersistenceIdentityValid ||
+                !_elvenBranchedSpearPersistenceCategoryValid ||
+                !_elvenBranchedSpearPersistenceGrantValid ||
+                !_elvenBranchedSpearPersistenceCleanupValid)
+                throw new InvalidOperationException(
+                    "Elven Branched Spear persistence phase assertions failed: " +
+                    _elvenBranchedSpearPersistenceDetail);
+
+            if (!prepare && !verifyCleanup)
+            {
+                CompleteElvenBranchedSpearPersistence(
+                    RuntimeTestStatuses.Pass, "");
+                return;
+            }
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Game).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" &&
+                    value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _elvenBranchedSpearPersistenceSaveStarted = true;
+            _elvenBranchedSpearPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() =>
+                    _elvenBranchedSpearPersistenceSaveCompleted = true)
+            });
+        }
+
+        private void CompleteElvenBranchedSpearPersistence(string status,
+            string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveElvenBranchedSpearPrepare;
+            bool verifyCleanup = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveElvenBranchedSpearVerifyCleanup;
+            bool writes = prepare || verifyCleanup;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load",
+                    "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("elven-branched-spear-persistent-identities",
+                    writes ? "one exact instance of each of 12 blueprints" :
+                        "zero instances after cleanup",
+                    _elvenBranchedSpearPersistenceDetail,
+                    _elvenBranchedSpearPersistenceIdentityValid,
+                    "fresh-load inventory blueprint reference equality and cardinality"),
+                Assertion("elven-branched-spear-persistent-category",
+                    "all registered and owned variants use category 0x004b4d47",
+                    _elvenBranchedSpearPersistenceDetail,
+                    _elvenBranchedSpearPersistenceCategoryValid,
+                    "BlueprintItemWeapon.Type and deserialized ItemEntityWeapon.Blueprint"),
+                Assertion("elven-branched-spear-development-grant",
+                    prepare ? "one exact copy of all 12 variants" :
+                        "not invoked outside prepare",
+                    _elvenBranchedSpearPersistenceDetail,
+                    _elvenBranchedSpearPersistenceGrantValid,
+                    "existing development bridge with inventory cardinality checks"),
+                Assertion(verifyCleanup || !writes ?
+                        "elven-branched-spear-cleaned" :
+                        "elven-branched-spear-prepared",
+                    verifyCleanup || !writes ? "all 12 absent" :
+                        "all 12 present exactly once",
+                    _elvenBranchedSpearPersistenceDetail,
+                    _elvenBranchedSpearPersistenceCleanupValid,
+                    "exact per-blueprint inventory counts"),
+                Assertion("exact-working-save-write",
+                    writes ? "one SaveRoutine on exact captured SaveInfo" :
+                        "none during final verification",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" +
+                        evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    writes ? evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                        !evidence.SaveWritingApiObserved :
+                        evidence.ExpectedWorkingSaveRoutineCount == 0 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version ==
+                        _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            if (!string.IsNullOrWhiteSpace(warning))
+                result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private void StartExpandedSummoningPersistence()

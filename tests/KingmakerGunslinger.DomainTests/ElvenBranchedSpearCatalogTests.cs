@@ -376,6 +376,93 @@ namespace KingmakerGunslinger.DomainTests
                 "Spear combat scenario is not allowlisted by both harness layers.");
         }
 
+        internal static void DevelopmentGrantContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string bridge = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Development",
+                "KingmakerDevelopmentBridge.ElvenBranchedSpears.cs"));
+            foreach (string token in new[] {
+                "BlueprintBootstrap.ElvenBranchedSpears",
+                "set.Entries.Select(value => value.Item).Concat(",
+                "set.Named.Entries.Select(value => value.Item)",
+                "items.Length != 12", "items.Distinct().Count() != 12",
+                "AddExact(inventory, item)",
+                "CountMatchingInventoryItems(inventory, item)",
+                "No proficiency, feat, class level, vendor, loot, or campaign state changed" })
+                Assertions.True(bridge.Contains(token),
+                    "Development spear grant lacks: " + token);
+            Assertions.False(bridge.Contains("Remove") ||
+                bridge.Contains("SaveManager") || bridge.Contains("SaveGame"),
+                "Development spear grants may not delete items or invoke save APIs.");
+
+            string controls = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Development",
+                "DevelopmentControls.cs"));
+            string ui = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Development", "DevelopmentUi.cs"));
+            string project = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
+            foreach (string token in new[] {
+                "DescribeElvenBranchedSpearCatalog",
+                "AddElvenBranchedSpearSet", "AddElvenBranchedSpear" })
+                Assertions.True(controls.Contains(token) && ui.Contains(token),
+                    "Development control/UI wiring lacks: " + token);
+            Assertions.True(controls.Contains(
+                    "AddElvenBranchedSpear(int index)") && ui.Contains(
+                    "Elven Branched Spear Acceptance (DEVELOPMENT ONLY)") &&
+                ui.Contains("KMG_AUTOMATION_WORKING") &&
+                project.Contains(
+                    "KingmakerDevelopmentBridge.ElvenBranchedSpears.cs"),
+                "Development-only safety label or project inclusion is absent.");
+        }
+
+        internal static void WorkingSavePersistenceContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string catalog = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestScenarioCatalog.cs"));
+            string request = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRequest.cs"));
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            string invocation = File.ReadAllText(Path.Combine(root, "scripts",
+                "Invoke-KingmakerRuntimeTest.ps1"));
+            foreach (string name in new[] {
+                "working-save-elven-branched-spear-prepare",
+                "working-save-elven-branched-spear-verify-cleanup",
+                "working-save-elven-branched-spear-verify-absent" })
+                Assertions.True(catalog.Contains(name) &&
+                    automation.Contains(name) && invocation.Contains(name),
+                    "Working-save spear phase is not allowlisted end to end: " +
+                    name);
+            foreach (string token in new[] {
+                "IsElvenBranchedSpearPersistenceScenario()",
+                "DevelopmentControls.AddElvenBranchedSpearSet()",
+                "before.Any(value => value != 0)",
+                "items.Length != 12", "instances.Length == 12",
+                "instance.Blueprint.Type, set.WeaponType",
+                "Game.Instance.Player.Inventory.Remove(item, 1)",
+                "_workingSaveSmoke.ArmExactWorkingSaveWrite()",
+                "ExpectedWorkingSaveRoutineCount == 1",
+                "ExpectedWorkingSaveRoutineCount == 0" })
+                Assertions.True(runner.Contains(token),
+                    "Working-save spear verifier lacks: " + token);
+            Assertions.True(request.Contains(
+                    "WorkingSaveElvenBranchedSpearPrepare") &&
+                request.Contains("save-name-required") &&
+                request.Contains("baseline-save-forbidden"),
+                "Spear persistence does not share the guarded working-save request gate.");
+            Assertions.False(runner.Contains(
+                "WorkingSaveElvenBranchedSpearPrepare)\n            {\n                foreach"),
+                "Spear prepare must inspect the clean inventory before mutation.");
+        }
+
         private static string Sha256(string path)
         {
             using (FileStream stream = File.OpenRead(path))

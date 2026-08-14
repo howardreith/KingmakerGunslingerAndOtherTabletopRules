@@ -137,6 +137,35 @@ namespace KingmakerGunslinger.Development
                 Run(DevelopmentControls.DescribeRareFirearmAcquisition);
 
             ImmediateModeGui.Space(8f);
+            ImmediateModeGui.Label(
+                "Elven Branched Spear Acceptance (DEVELOPMENT ONLY)");
+            ImmediateModeGui.Label(
+                "Use only KMG_AUTOMATION_WORKING or another disposable save. These grants prove inventory and save behavior, not campaign placement, and grant no proficiency or feats.");
+            if (ImmediateModeGui.Button(
+                    "Print complete Elven Branched Spear catalog audit"))
+                Run(DevelopmentControls.DescribeElvenBranchedSpearCatalog);
+            if (ImmediateModeGui.Button(
+                    "Add one copy of all 12 Elven Branched Spear variants"))
+                Run(DevelopmentControls.AddElvenBranchedSpearSet);
+            string[] spearNames = { "Elven Branched Spear",
+                "Masterwork Elven Branched Spear",
+                "Cold Iron Elven Branched Spear",
+                "Masterwork Cold Iron Elven Branched Spear",
+                "+1 Elven Branched Spear",
+                "+1 Cold Iron Elven Branched Spear", "Boughkeeper",
+                "Thornstep", "Moonlit Fork", "Viper's Reach",
+                "Briar-Crowned Spear", "Spear of the First Branch" };
+            for (int spearIndex = 0; spearIndex < spearNames.Length;
+                spearIndex++)
+            {
+                int selectedSpear = spearIndex;
+                if (ImmediateModeGui.Button("Add one " +
+                        spearNames[spearIndex]))
+                    Run(() => DevelopmentControls.AddElvenBranchedSpear(
+                        selectedSpear));
+            }
+
+            ImmediateModeGui.Space(8f);
             ImmediateModeGui.Label("Character and Test Musket controls");
 
             if (ImmediateModeGui.Button("Grant Firearm Proficiency to selected unit"))

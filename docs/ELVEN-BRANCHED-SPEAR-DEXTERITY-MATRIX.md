@@ -90,3 +90,9 @@ blanket-martial-only unit, and no penalty with the exact exotic proficiency or
 native Elven Weapon Familiarity. Save/load, respec, optional Call of the Wild
 class construction, and deliberately excluded Grace menu execution remain in
 the final compatibility workstream.
+
+The subsequent three-phase working-save sequence proved that all 12 item
+variants preserve their one category and exact registered blueprint identities
+through a fresh save/load, including a load with the spear module disabled.
+That closes variant ownership/category persistence; Finesse Training selection
+respec and save/load remain a distinct pending player-build qualification.

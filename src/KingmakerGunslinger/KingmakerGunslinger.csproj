@@ -671,6 +671,7 @@
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.RareFirearms.cs" />
+    <Compile Include="Development\KingmakerDevelopmentBridge.ElvenBranchedSpears.cs" />
     <Compile Include="Recovery\FirearmItemRepairStateStore.cs" />
     <Compile Include="Recovery\FirearmRepairAvailability.cs" />
     <Compile Include="Recovery\FirearmRepairResult.cs" />

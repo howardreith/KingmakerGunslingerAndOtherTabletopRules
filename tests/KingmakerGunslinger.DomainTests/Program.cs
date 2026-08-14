@@ -33,6 +33,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("elven-branched-spear.campaign-publication", ElvenBranchedSpearCatalogTests.CampaignPublicationContractsAreExact),
             Case("elven-branched-spear.original-asset-pipeline", ElvenBranchedSpearCatalogTests.OriginalAssetPipelineContractsAreExact),
             Case("elven-branched-spear.runtime-combat-scenario-contracts", ElvenBranchedSpearCatalogTests.RuntimeCombatScenarioContractsAreExact),
+            Case("elven-branched-spear.development-grant-contracts", ElvenBranchedSpearCatalogTests.DevelopmentGrantContractsAreExact),
+            Case("elven-branched-spear.working-save-persistence-contracts", ElvenBranchedSpearCatalogTests.WorkingSavePersistenceContractsAreExact),
             Case("expanded-summoning.roster-and-placements", ExpandedSummoningCatalogTests.FrozenRosterAndPlacementCounts),
             Case("expanded-summoning.quantity-same-kind", ExpandedSummoningCatalogTests.QuantityRulesAreExactAndSameKind),
             Case("expanded-summoning.alignment-policies", ExpandedSummoningCatalogTests.AlignmentPoliciesAreFamilyScoped),

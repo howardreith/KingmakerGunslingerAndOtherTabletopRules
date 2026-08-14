@@ -496,3 +496,33 @@ exact `AttackOfOpportunity` factory call, marks the constructed command in a
 `ConditionalWeakTable`, and exposes it only during that command's exact
 `OnAction`. This is the same fail-closed shape used for movement provenance and
 ties both the -5 modifier and recursion guard to one native generated command.
+
+## Guarded working-save persistence and module-off checkpoint
+
+Three unattended fresh Steam launches qualified all 12 spear item identities
+against the named disposable save `KMG_AUTOMATION_WORKING`. No protected save
+was selected or written.
+
+- `20260814T0108469481744Z-working-save-elven-branched-spear-prepare` passed
+  with the module active. The existing development bridge refused any nonzero
+  pre-count, then granted one exact instance of each of the six foundation and
+  six named variants. The live inventory contained 12 instances, every
+  blueprint reference was registered exactly once, every item used category
+  `0x004b4d47`, and the exact correlated working descriptor received one native
+  save write (`stashedAreas=2`).
+- `20260814T0112115170566Z-working-save-elven-branched-spear-verify-cleanup`
+  passed on a fresh process with `elven-branched-spears=false`. All 12 saved
+  items deserialized exactly once and retained the same registered blueprint
+  and category references while selector, commerce, and custom-presentation
+  publication were disabled. The scenario then removed only those 12 exact
+  item blueprints and issued one correlated working-save write. The external
+  `FeatureModules.json` transaction restored the original bytes exactly.
+- `20260814T0115198610997Z-working-save-elven-branched-spear-verify-absent`
+  passed on a third fresh process after the module setting was restored. Every
+  spear count was zero, no spear instance remained, and the sentinel observed
+  zero save routines and zero stashed-area writes.
+
+This establishes stable blueprint registration across module state, owned-item
+save/load safety, exact development-grant cardinality, request-local cleanup,
+and absence of cleanup residue. It does not substitute for a player-driven
+respec UI acceptance pass.
