@@ -57,3 +57,19 @@ The final 0.0.79 Call of the Wild presentation/combat rerun passed 18/18 at
 evidence therefore confirms metadata and mechanics in the final candidate;
 subjective appearance of the repaired tiles and headers remains the stated
 human recheck.
+
+## Final Exotic Weapon Proficiency repair
+
+The subsequent human report was verified against the live Unity Mod Manager
+files: the prior candidate really was installed, so the bare title and top-row
+placement were not stale deployment. The follow-up now names the child exactly
+**Proficiency (Elven Branched Spear)** and anchors the merged native selection
+immediately after Elven Curve Blade, which renders immediately above it.
+
+Guarded Call of the Wild run
+`20260814T1009047959759Z-disposable-elven-branched-spear-combat` passed 18/18
+on commit `9a24147b717b2502442d48d5f2026becdaba4e8d`. The structured observation was
+`ewpName=Proficiency (Elven Branched Spear)`, readable category/prerequisite,
+native `ExoticWeaponProficiency` icon, and merged indexes `5/6`. The exact
+runtime-qualified DLL is installed; the remaining step is the requested human
+visual confirmation in the level-up list.

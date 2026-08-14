@@ -38,3 +38,21 @@ identity evidence is recorded in the qualification report after sealing.
   and loaded version, then restored the original settings SHA-256 exactly.
 - Built and installed DLL hashes match. Package, DLL, MVID, and bundle identity
   are recorded in the qualification report and `BUILD-INFO.txt`.
+
+## 2026-08-14 - Final Exotic Weapon Proficiency presentation repair
+
+- The reported live installation was not stale: its DLL matched the sealed
+  candidate byte-for-byte. The remaining bare title and top-of-list placement
+  were therefore treated as a real defect.
+- Changed the static child title to exactly **Proficiency (Elven Branched
+  Spear)**. With Call of the Wild installed, the native Elven Curve Blade
+  anchor is contributed to the merged `AllFeatures` catalog rather than the
+  serialized `Features` catalog. Publication now appends singularly to the
+  latter and inserts immediately after Elven Curve Blade in the former. The
+  native reversed list presentation consequently places the spear immediately
+  above Elven Curve Blade without changing either blueprint identity.
+- Source commit `9a24147b717b2502442d48d5f2026becdaba4e8d` passed
+  repository validation, 1,033 tests, clean Release/package validation, and
+  guarded Call of the Wild runtime run
+  `20260814T1009047959759Z-disposable-elven-branched-spear-combat` (18/18).
+  The exact candidate remains installed in Unity Mod Manager.

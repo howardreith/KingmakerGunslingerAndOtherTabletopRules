@@ -2,6 +2,9 @@
 
 ## Unreleased - Elven Branched Spears
 
+- Names the Exotic Weapon Proficiency child **Proficiency (Elven Branched
+  Spear)** and places it immediately above Elven Curve Blade through the native
+  merged selector ordering path, including Call of the Wild compatibility.
 - Advances the release candidate to assembly version `0.0.79` and
   informational/package identity `0.0.79-elven-branched-spear`; package
   selection is explicit and can no longer validate the prior Expanded
@@ -35,7 +38,7 @@
   append-only, idempotent, module-gated publication.
 - Adds an original project-owned Blender/FBX/icon asset, dedicated Unity
   2018.4.10f1 bundle, transactional validation, and native Longspear fallback.
-- Qualifies at least 1,032 dependency-free tests, all 32 module combinations, isolated
+- Qualifies at least 1,033 dependency-free tests, all 32 module combinations, isolated
   Call of the Wild combat, module-OFF item/feature save persistence and cleanup,
   strict package validation, and the canonical working-save smoke. Brace and
   pseudo-Brace behavior are intentionally not implemented or advertised.

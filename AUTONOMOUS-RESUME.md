@@ -2,6 +2,14 @@
 
 ## Elven Branched Spear first-playtest repair (complete, 2026-08-14)
 
+- Final EWP follow-up source is
+  `9a24147b717b2502442d48d5f2026becdaba4e8d`. It changes the static child title
+  to **Proficiency (Elven Branched Spear)** and orders the merged catalog
+  immediately after Elven Curve Blade (native reversed UI: immediately above).
+  Call of the Wild run
+  `20260814T1009047959759Z-disposable-elven-branched-spear-combat` passed 18/18;
+  the exact DLL SHA-256 `70279B4C...FC46FC4` remains installed in UMM.
+
 - Branch `codex/elven-branched-spear`, draft PR #3; accepted base checkpoint
   `f5136b12ce91ec2f56d5c7bf8dcb52129418ec5d`. Do not recreate, rebase, merge,
   or open a replacement PR.
@@ -18,8 +26,8 @@
   differentiation is optional and deferred because the family shares one
   weapon type and prefab; splitting it would risk accepted fit and save
   behavior.
-- Final artifact source `224e536f24ed548a8df8746b8b3d8a9a6a38defe`
-  passed 1,032 tests, clean Release/package validation, final Call of the Wild
+- Final artifact source `9a24147b717b2502442d48d5f2026becdaba4e8d`
+  passed 1,033 tests, clean Release/package validation, final Call of the Wild
   18/18, canonical working-save smoke, and all 32 module masks with exact
   restoration. Exact hashes and MVID are in the spear qualification report.
 - Remaining action is human PR/UI visual review and merge decision. Do not
