@@ -48,6 +48,7 @@ using KingmakerGunslinger.Feats;
 using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Spells.ShieldOther;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.ElvenBranchedSpear;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -7932,6 +7933,89 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rareLootRows += (loot.Items ?? Array.Empty<LootEntry>()).Count(value =>
                     value != null && ReferenceEquals(value.Item, item) && value.Count == 1);
             }
+            ElvenBranchedSpearBlueprintSet spearSet =
+                BlueprintBootstrap.ElvenBranchedSpears;
+            BlueprintItem[] spearItems = spearSet.Entries.Select(value =>
+                (BlueprintItem)value.Item).Concat(spearSet.Named.Entries.Select(
+                    value => (BlueprintItem)value.Item)).ToArray();
+            int spearRegisteredItems = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintItemWeapon>().Count(value =>
+                    spearItems.Contains(value));
+            string[] spearSelectorGuids = {
+                "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+                "09c9e82965fb4334b984a1e9df3bd088",
+                "f4201c85a991369408740c6888362e20",
+                "31470b17e8446ae4ea0dacd6c5817d86",
+                "7cf5edc65e785a24f9cf93af987d66b3",
+                "c0b4ec0175e3ff940a45fc21f318a39a",
+                "38ae5ac04463a8947b7c06a6c72dd6bb"
+            };
+            int spearParameterizedOptions = spearSelectorGuids.Sum(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
+                    BlueprintBootstrap.Library, guid,
+                    "native spear parameter menu").GetFullSelectionItems()
+                    .Count(item => item != null && item.Param != null &&
+                        item.Param.WeaponCategory.HasValue &&
+                        item.Param.WeaponCategory.Value.Equals(
+                            ElvenBranchedSpearCategoryRuntime.Category)));
+            BlueprintFeatureSelection spearEwpSelection =
+                BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library,
+                    ElvenBranchedSpearBlueprints
+                        .NativeExoticWeaponProficiencySelectionGuid,
+                    "native Exotic Weapon Proficiency selection");
+            BlueprintFeatureSelection spearFinesseSelection =
+                BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library,
+                    ElvenBranchedSpearBlueprints
+                        .NativeFinesseTrainingSelectionGuid,
+                    "native Finesse Training selection");
+            int spearStaticOptions = CountExactFeatures(
+                    spearEwpSelection.Features,
+                    new[] { spearSet.ExoticWeaponProficiency }) +
+                CountExactFeatures(spearEwpSelection.AllFeatures,
+                    new[] { spearSet.ExoticWeaponProficiency }) +
+                CountExactFeatures(spearFinesseSelection.Features,
+                    new[] { spearSet.FinesseTraining }) +
+                CountExactFeatures(spearFinesseSelection.AllFeatures,
+                    new[] { spearSet.FinesseTraining });
+            BlueprintFeature spearFamiliarity =
+                BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                    BlueprintBootstrap.Library,
+                    ElvenBranchedSpearBlueprints.NativeElvenWeaponFamiliarityGuid,
+                    "native Elven Weapon Familiarity");
+            int spearFamiliarityCategories =
+                (spearFamiliarity.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AddProficiencies>()
+                    .SelectMany(value => value.WeaponProficiencies ??
+                        Array.Empty<WeaponCategory>()).Count(value => value.Equals(
+                            ElvenBranchedSpearCategoryRuntime.Category));
+            int spearVendorRows = 0;
+            foreach (ElvenBranchedSpearCampaignBlueprints.VendorSpec spec in
+                ElvenBranchedSpearCampaignBlueprints.VendorSpecs)
+            {
+                BlueprintSharedVendorTable table =
+                    BlueprintLibraryLookup.RequireExact<BlueprintSharedVendorTable>(
+                        BlueprintBootstrap.Library, spec.Guid,
+                        "Elven Branched Spear vendor table");
+                spearVendorRows += (table.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .Count(value => spearItems.Contains(
+                        CapitalVendorBlueprints.ReadItem(value)) &&
+                        CapitalVendorBlueprints.ReadCount(value) == 1);
+            }
+            int spearLootRows = 0;
+            foreach (ElvenBranchedSpearCampaignBlueprints.LootSpec spec in
+                ElvenBranchedSpearCampaignBlueprints.LootSpecs)
+            {
+                BlueprintLoot loot = BlueprintLibraryLookup.RequireExact<BlueprintLoot>(
+                    BlueprintBootstrap.Library, spec.Guid,
+                    "Elven Branched Spear fixed-loot table");
+                BlueprintItem item = spearSet.Named.Require(spec.NamedKind).Item;
+                spearLootRows += (loot.Items ?? Array.Empty<LootEntry>()).Count(
+                    value => value != null && ReferenceEquals(value.Item, item) &&
+                        value.Count == 1);
+            }
             ShieldOtherInventoryObservation shieldObservation =
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
@@ -7951,7 +8035,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
                 ";rareLoot=" + rareLootRows + ";shieldLists=" +
                 shieldObservation.PublishedLists + "/" +
-                shieldObservation.ExpectedPublishedLists;
+                shieldObservation.ExpectedPublishedLists + ";spearRegistered=" +
+                spearRegisteredItems + ";spearParameters=" +
+                spearParameterizedOptions + ";spearStatic=" +
+                spearStaticOptions + ";spearFamiliarity=" +
+                spearFamiliarityCategories + ";spearVendors=" +
+                spearVendorRows + ";spearLoot=" + spearLootRows;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("feature-module-active-snapshot", "request-local expected states",
@@ -7999,10 +8088,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeExpandedSummoning == expectedExpandedSummoning,
                     "immutable publication-plan input; parent surfaces are added after activation"),
                 Assertion("feature-module-elven-branched-spears-publication-gate",
-                    expectedElvenBranchedSpears ? "enabled" : "disabled",
-                    activeElvenBranchedSpears ? "enabled" : "disabled",
-                    activeElvenBranchedSpears == expectedElvenBranchedSpears,
-                    "immutable publication-plan input; spear surfaces are checked after registration"),
+                    expectedElvenBranchedSpears ?
+                        "12 identities;7 parameter options;4 static references;24 vendor rows;4 loot rows" :
+                        "12 identities;0 parameter options;0 static references;0 vendor rows;0 loot rows",
+                    observed,
+                    activeElvenBranchedSpears ==
+                        expectedElvenBranchedSpears &&
+                    spearRegisteredItems == 12 &&
+                    spearParameterizedOptions ==
+                        (expectedElvenBranchedSpears ? 7 : 0) &&
+                    spearStaticOptions ==
+                        (expectedElvenBranchedSpears ? 4 : 0) &&
+                    spearFamiliarityCategories == 1 &&
+                    spearVendorRows ==
+                        (expectedElvenBranchedSpears ? 24 : 0) &&
+                    spearLootRows ==
+                        (expectedElvenBranchedSpears ? 4 : 0),
+                    "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

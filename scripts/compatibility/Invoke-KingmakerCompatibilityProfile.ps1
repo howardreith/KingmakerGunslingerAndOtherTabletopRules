@@ -34,6 +34,8 @@ param(
         'blunderbuss-thundering-scatter',
         'disposable-paper-cartridge-comprehensive',
         'observe-feature-module-settings',
+        'observe-elven-branched-spear-contracts',
+        'disposable-elven-branched-spear-combat',
         'observe-expanded-summoning-inventory',
         'disposable-shield-other',
         'disposable-acadamae-graduate',
@@ -42,6 +44,7 @@ param(
     [hashtable]$Parameters = @{},
     [ValidateRange(120, 900)]
     [int]$RuntimeTimeoutSeconds = 300,
+    [switch]$AllowDirtyGit,
     [string]$KingmakerInstallDir =
         'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string]$StateRoot = 'C:\Dev\KingmakerGunslingerLab\compatibility-state'
@@ -105,6 +108,7 @@ try {
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
             Confirm = $false
+            AllowDirtyGit = [bool]$AllowDirtyGit
         }
         if ($name -ceq 'observe-optional-mod-compatibility') {
             $arguments.CompatibilityProfileId = $ProfileId

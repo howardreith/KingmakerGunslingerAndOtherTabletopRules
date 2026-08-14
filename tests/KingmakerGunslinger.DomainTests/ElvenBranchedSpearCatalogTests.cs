@@ -374,6 +374,15 @@ namespace KingmakerGunslinger.DomainTests
             const string name = "disposable-elven-branched-spear-combat";
             Assertions.True(catalog.Contains(name) && automation.Contains(name),
                 "Spear combat scenario is not allowlisted by both harness layers.");
+            string compatibility = File.ReadAllText(Path.Combine(root, "scripts",
+                "compatibility", "Invoke-KingmakerCompatibilityProfile.ps1"));
+            foreach (string token in new[] {
+                "'observe-elven-branched-spear-contracts'",
+                "'disposable-elven-branched-spear-combat'",
+                "[switch]$AllowDirtyGit",
+                "AllowDirtyGit = [bool]$AllowDirtyGit" })
+                Assertions.True(compatibility.Contains(token),
+                    "Compatibility profile spear wiring lacks: " + token);
         }
 
         internal static void DevelopmentGrantContractsAreExact()

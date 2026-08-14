@@ -169,6 +169,7 @@ namespace KingmakerGunslinger.DomainTests
                 "foreach ($mask in 31..0)", "schemaVersion = 4",
                 "expandedSummoning = [bool]$entry.Value.expandedSummoning",
                 "elvenBranchedSpears = [bool]$entry.Value.elvenBranchedSpears",
+                "[switch]$AllowDirtyGit", "-AllowDirtyGit:$AllowDirtyGit",
                 "Settings byte-for-byte restoration failed." })
                 Assertions.True(matrix.Contains(token),
                     "The 32-state runtime matrix contract is missing: " + token);
@@ -178,6 +179,30 @@ namespace KingmakerGunslinger.DomainTests
                 common.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning") &&
                 common.Contains("elvenBranchedSpears = [bool]$Parameters.elvenBranchedSpears"),
                 "The guarded request writer does not require all five module states.");
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            foreach (string token in new[] {
+                "spearRegisteredItems == 12",
+                "spearParameterizedOptions ==",
+                "(expectedElvenBranchedSpears ? 7 : 0)",
+                "spearStaticOptions ==",
+                "(expectedElvenBranchedSpears ? 4 : 0)",
+                "spearFamiliarityCategories == 1",
+                "(expectedElvenBranchedSpears ? 24 : 0)",
+                "(expectedElvenBranchedSpears ? 4 : 0)",
+                "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces" })
+                Assertions.True(runner.Contains(token),
+                    "The live five-module observer lacks the spear assertion: " +
+                    token);
+            string request = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRequest.cs"));
+            Assertions.True(request.Contains(
+                    "request.Parameters.Count != 5") && request.Contains(
+                    "Property(\"elvenBranchedSpears\")") && request.Contains(
+                    "request.Parameters[\"elvenBranchedSpears\"]"),
+                "The in-mod request validator does not require the fifth module state.");
         }
 
         private static void WithDirectory(Action<string> action)

@@ -4,7 +4,8 @@ param(
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,
-    [switch]$ConfirmEach
+    [switch]$ConfirmEach,
+    [switch]$AllowDirtyGit
 )
 
 Set-StrictMode -Version Latest
@@ -71,7 +72,8 @@ try {
                 shieldOther = [bool]$entry.Value.shieldOther;
                 expandedSummoning = [bool]$entry.Value.expandedSummoning;
                 elvenBranchedSpears = [bool]$entry.Value.elvenBranchedSpears } `
-            -ExitAfterCompletion:$ExitAfterCompletion -Confirm:$ConfirmEach
+            -ExitAfterCompletion:$ExitAfterCompletion -Confirm:$ConfirmEach `
+            -AllowDirtyGit:$AllowDirtyGit
         if ($LASTEXITCODE -ne 0) {
             throw "Feature-module runtime combination $($entry.Key) failed."
         }

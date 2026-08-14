@@ -260,10 +260,12 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRequest.cs"));
             string runner = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
-            foreach (string token in new[] { "request.Parameters.Count != 4",
+            foreach (string token in new[] { "request.Parameters.Count != 5",
                 "Property(\"shieldOther\")", "[\"shieldOther\"].Type != JTokenType.Boolean",
                 "Property(\"expandedSummoning\")",
-                "[\"expandedSummoning\"].Type != JTokenType.Boolean" })
+                "[\"expandedSummoning\"].Type != JTokenType.Boolean",
+                "Property(\"elvenBranchedSpears\")",
+                "[\"elvenBranchedSpears\"].Type" })
                 Assertions.True(request.Contains(token),
                     "Runtime module request contract is missing: " + token);
             foreach (string token in new[] { "Active.ShieldOther",
