@@ -362,6 +362,7 @@ namespace KingmakerGunslinger.DomainTests
                  "BriarPenaltyApplications", "GeneratedEvaluations",
                  "InstantiatePrefab", "SameReferences",
                  "spear-multiple-dexterity-and-switch",
+                 "spear-finesse-training-reselection",
                  "SecondFinesseTrainingTestGuid", "StandardLongspearGuid",
                  "spear-optional-dexterity-and-exclusions",
                  "FightersFinesseGuid", "TrainedGraceGuid",

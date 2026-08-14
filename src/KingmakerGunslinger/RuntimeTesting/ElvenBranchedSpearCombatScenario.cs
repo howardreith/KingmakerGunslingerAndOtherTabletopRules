@@ -250,6 +250,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     trainingDamage.DamageBonusStatMultiplier == 1.5f,
                     "live native attack-stat and weapon-stat rule events");
 
+                RemoveFact(attacker, set.FinesseTraining, facts);
+                RuleCalculateWeaponStats afterSelectionRemoval = WeaponStats(
+                    attacker, equipped);
+                AddFact(attacker, set.FinesseTraining, facts);
+                RuleCalculateWeaponStats afterSelectionReselection = WeaponStats(
+                    attacker, equipped);
+                string reselectionObserved = "removed=" +
+                    DescribeDamage(afterSelectionRemoval) + ";reselected=" +
+                    DescribeDamage(afterSelectionReselection);
+                Add(assertions, "spear-finesse-training-reselection",
+                    "removing the ordinary selection restores STR; reselecting it restores exactly one DEX x1.5 source",
+                    reselectionObserved,
+                    afterSelectionRemoval.DamageBonusStat == StatType.Strength &&
+                    UsesOneDexterityModifier(attacker,
+                        afterSelectionReselection) &&
+                    afterSelectionReselection.DamageBonusStatMultiplier == 1.5f,
+                    "live feature removal/reselection boundary used by native respec rebuilds");
+
                 stage = "agile-and-variant-family";
                 RemoveEquipped(attacker, ref equipped);
                 equipped = Equip(attacker, set.Named.Require(
