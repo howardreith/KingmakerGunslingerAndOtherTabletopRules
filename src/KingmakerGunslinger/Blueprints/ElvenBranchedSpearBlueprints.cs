@@ -290,7 +290,7 @@ namespace KingmakerGunslinger.Blueprints
             equipment.ParametrizedCategory = false;
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create("KMG.ElvenBranchedSpear.EWP.Name",
-                    "Proficiency (Elven Branched Spear)"),
+                    "Weapon Proficiency (Elven Branched Spear)"),
                 LocalizationService.Create("KMG.ElvenBranchedSpear.EWP.Description",
                     "You are proficient with the exotic Elven Branched Spear."),
                 nativeIcon);

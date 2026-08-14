@@ -261,13 +261,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .ToArray());
                 string loweredPresentation = selectorPresentation.ToLowerInvariant();
                 Add(assertions, "spear-selector-presentation",
-                    "native Proficiency title immediately above Elven Curve Blade; human-readable prerequisite; native static/category icons; seven EB glyph rows",
+                    "native Weapon Proficiency title immediately above Elven Curve Blade; human-readable prerequisite; native static/category icons; seven EB glyph rows",
                     selectorPresentation,
                     string.Equals(categoryText, "Elven Branched Spear",
                         StringComparison.Ordinal) &&
                     string.Equals(set.ExoticWeaponProficiency.Name,
-                        "Proficiency (Elven Branched Spear)",
+                        "Weapon Proficiency (Elven Branched Spear)",
                         StringComparison.Ordinal) &&
+                    ewpFeatureIndex == -1 &&
                     ewpAllIndex == curveAllIndex + 1 &&
                     proficiencyPrerequisite.Contains("Elven Branched Spear") &&
                     !proficiencyPrerequisite.Contains("4934983") &&

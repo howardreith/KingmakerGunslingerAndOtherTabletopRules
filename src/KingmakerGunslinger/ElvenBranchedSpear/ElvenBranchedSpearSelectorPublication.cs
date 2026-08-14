@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 publication.PublishFamiliarity(category);
                 if (publishSelectors)
                 {
-                    ewpSelection.Features = AppendUnique(
+                    ewpSelection.Features = Remove(
                         ewpSelection.Features, ewp);
                     ewpSelection.AllFeatures = InsertUniqueAfter(
                         ewpSelection.AllFeatures, ewp, ewpOrderingAnchor);
@@ -113,7 +113,7 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             WeaponCategory category, bool publishSelectors)
         {
             int expected = publishSelectors ? 1 : 0;
-            if (Count(_ewpSelection.Features, ewp) != expected ||
+            if (Count(_ewpSelection.Features, ewp) != 0 ||
                 Count(_ewpSelection.AllFeatures, ewp) != expected ||
                 Count(_finesseSelection.Features, finesse) != expected ||
                 Count(_finesseSelection.AllFeatures, finesse) != expected)
@@ -148,6 +148,13 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 string.Equals(value.AssetGuid, addition.AssetGuid,
                     StringComparison.Ordinal))) return source;
             return source.Concat(new[] { addition }).ToArray();
+        }
+
+        private static BlueprintFeature[] Remove(BlueprintFeature[] source,
+            BlueprintFeature removal)
+        {
+            return (source ?? Array.Empty<BlueprintFeature>()).Where(value =>
+                !SameFeature(value, removal)).ToArray();
         }
 
         private static BlueprintFeature[] InsertUniqueAfter(
