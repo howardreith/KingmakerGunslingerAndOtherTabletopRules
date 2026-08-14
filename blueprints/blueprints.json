@@ -12029,6 +12029,55 @@
       "plannedType": "BlueprintItemWeapon",
       "status": "active", "milestone": "Eastern Weapons",
       "notes": "World-Tree Severer named Nodachi capstone."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.WayfarersOath.EquippedFact",
+      "guid": "2fd1feb61e7b53af8c8aee70eb85d5b8",
+      "plannedType": "BlueprintBuff",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Equipment-owned active-set Initiative fact for Wayfarer's Oath."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.FallingPetal.EffectEnchantment",
+      "guid": "1008f83705ce543f99b361a288797769",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Exact confirmed-critical trigger for Falling Petal."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.FallingPetal.ArmorClassBuff",
+      "guid": "921d9f64271d507c9ae00c74a405b937",
+      "plannedType": "BlueprintBuff",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "One-round equipment-aware Falling Petal dodge bonus."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.MoonlitCrossing.EquippedFact",
+      "guid": "596a9b06c478572d8d82414ad8d78935",
+      "plannedType": "BlueprintBuff",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Equipment-owned exact grip-mode fact for Moonlit Crossing."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.MountainSunder.EffectEnchantment",
+      "guid": "3c62b9e8b6655a7abf76327f244c337a",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Power Attack force-damage trigger and Mighty Cleaving marker for Mountain-Sunder."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.MountainSunder.RoundMarker",
+      "guid": "4ca1d8e286dd5c82a2ee8ce369146d57",
+      "plannedType": "BlueprintBuff",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Save-stable once-per-round Mountain-Sunder marker."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.UnfixedForm.EffectEnchantment",
+      "guid": "f5051c4567ee595995cd67692672bc81",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Native one-step transformed weapon-size effect for Unfixed Form."
     }
   ]
 }

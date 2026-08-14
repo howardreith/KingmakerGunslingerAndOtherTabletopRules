@@ -53,6 +53,7 @@
     <Compile Include="CustomWeapons\CustomWeaponSelectorRuntime.cs" />
     <Compile Include="EasternWeapons\EasternWeaponCatalog.cs" />
     <Compile Include="EasternWeapons\EasternWeaponNamedCatalog.cs" />
+    <Compile Include="EasternWeapons\EasternWeaponNamedEffects.cs" />
     <Compile Include="EasternWeapons\EasternWeaponCategoryRuntime.cs" />
     <Compile Include="EasternWeapons\EasternWeaponProficiencyRuntime.cs" />
     <Compile Include="EasternWeapons\EasternWeaponSelectorPublication.cs" />

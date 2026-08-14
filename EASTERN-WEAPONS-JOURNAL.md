@@ -222,3 +222,46 @@ values, or campaign targets.
   MVID `198d704e-5c73-487b-ae7c-5c5110f58951`; package SHA-256 is
   `D052FF1125EB45E72ADF9144D26A0A4662F7BC93EA1FAF1CC319C36E2F7ED534`.
   No save was accessed.
+
+## 2026-08-14 - five bespoke named-weapon mechanics
+
+- Added exact active-equipment Initiative handling for Wayfarer's Oath,
+  confirmed-critical refresh-only Dodge AC for Falling Petal, and mutually
+  exclusive `ItemEntityWeapon.HoldInTwoHands` armor/damage modes for Moonlit
+  Crossing.
+- Mountain-Sunder now consumes the exact installed Power Attack toggle's live
+  `ActivatableAbility.IsRunning` state for one noncritical, nonrecursive 1d6
+  force packet per round. Its Mighty Cleaving wrapper preserves native Cleave
+  and Greater Cleave while allowing exactly one additional successful Cleave
+  target only when Mountain-Sunder is the threat weapon.
+- Unfixed Form adds exactly one native `RuleCalculateWeaponStats` size step
+  when either current size differs from original size or polymorph is active.
+  It does not alter unit size, reach, animation, model, or weapon identity.
+- Seven append-only persistent identities were added: four buffs/equipped
+  facts and three zero-cost custom enchantments. The exact runtime registry
+  cardinality advanced from 1,504 to 1,511.
+- The first guarded attempt failed closed because Harmony 1.2 rejects a direct
+  Boolean-return patch of the compiler-generated Cleave iterator `MoveNext`;
+  the implementation was narrowed to the public `AbilityCustomCleave.Deliver`
+  enumerator boundary. The second attempt failed closed after proving the
+  known Power Attack GUID identifies its feat rather than its toggle. Existing
+  observer evidence then resolved and the production code validates the exact
+  feat -> `AddFacts` -> toggle and `PowerAttackWatcher` -> same-toggle graph.
+  The third attempt exposed the stale 1,504 cardinality guard. All three
+  failures occurred before runtime request execution, rolled back owned
+  identities, and accessed no save.
+- Final all-ON save-free module run
+  `20260814T1330417078100Z-42e5aa3303704f81ad756819bddfd880`
+  passed from evidence directory
+  `20260814T1330416854732Z-observe-feature-module-settings`: 1,511 identities,
+  3 categories, 30 items, exact proficiency names, 21 parameterized entries,
+  and Eastern presentation all matched. Settings restored exactly to SHA-256
+  `2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`.
+- Repository validation, all `1041/1041` tests, clean Release build,
+  build-output validation, deterministic release packaging, and strict
+  standalone package validation passed. Clean DLL SHA-256 is
+  `0F09D2DDF86EE9177F36D5D6CC7F7FB6FC8F3051E058D1DACC6E1A6FDB2B59DE`,
+  MVID `b74a7744-8581-4510-a38e-9e525461cd92`; release package SHA-256 is
+  `25768C292EC69556856F9007C3E7473D1A6AEE56F161E7373CEFA8258A6D6643`.
+  Comprehensive live positive/negative combat assertions remain a later
+  qualification slice; this run proves registration and publication only.

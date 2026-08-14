@@ -153,9 +153,9 @@ namespace KingmakerGunslinger.DomainTests
             JObject[] eastern = entries.Cast<JObject>().Where(value =>
                 ((string)value["symbol"]).StartsWith("KMG.EasternWeapons.",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(37, eastern.Length,
+            Assertions.Equal(44, eastern.Length,
                 "Eastern foundation identity ledger count changed.");
-            Assertions.Equal(37, eastern.Select(value =>
+            Assertions.Equal(44, eastern.Select(value =>
                 (string)value["guid"]).Distinct(StringComparer.Ordinal).Count(),
                 "Eastern foundation GUIDs are not unique.");
             Assertions.Equal(3, eastern.Count(value =>
@@ -290,6 +290,78 @@ namespace KingmakerGunslinger.DomainTests
                 shared.Contains("GroupBy(value => value.Category)") &&
                 shared.Contains("OrderBy(value => value.Name"),
                 "Custom weapon categories are not merged and sorted once.");
+        }
+
+        internal static void NamedBespokeEffectContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string effects = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "EasternWeapons",
+                "EasternWeaponNamedEffects.cs"));
+            foreach (string token in new[] {
+                "evt.AttackRoll.IsCriticalConfirmed",
+                "active.HoldInTwoHands",
+                "evt.Weapon.HoldInTwoHands",
+                "evt.AddBonusDamage(2)",
+                "ability.IsRunning",
+                "new ForceDamage(",
+                "new DiceFormula(1, DiceType.D6)",
+                "HasBuff(evt.Initiator, RoundMarker)",
+                "descriptor.State.Size != descriptor.OriginalSize",
+                "descriptor.Body.IsPolymorphed",
+                "evt.IncreaseWeaponSize()",
+                "MightyCleavingEnumerator",
+                "_successfulTargets == 2",
+                "<isGreater>5__3",
+                "HarmonyPatch(typeof(AbilityCustomCleave), \"Deliver\"" })
+                Assertions.True(effects.Contains(token),
+                    "Eastern bespoke effect contract is missing: " + token);
+            Assertions.False(effects.Contains("DamageEnergyType") ||
+                effects.Contains("IncreaseWeaponSize();\n            evt.IncreaseWeaponSize"),
+                "Eastern bespoke mechanics use an approximate or compounded path.");
+
+            string blueprints = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "EasternWeaponNamedBlueprints.cs"));
+            foreach (string token in new[] {
+                "AddFactToEquipmentWielder",
+                "StatType.Initiative",
+                "ModifierDescriptor.Competence",
+                "ModifierDescriptor.Dodge",
+                "PowerAttackFeatureGuid",
+                "PowerAttackToggleGuid",
+                "ValidatePowerAttackAuthority",
+                "OfType<PowerAttackWatcher>()",
+                "MightyCleavingRuntime.Configure",
+                "RegisterBuffs(registry)",
+                "RegisterEnchantments(" })
+                Assertions.True(blueprints.Contains(token),
+                    "Eastern bespoke blueprint contract is missing: " + token);
+
+            JObject manifest = JObject.Parse(File.ReadAllText(Path.Combine(root,
+                "blueprints", "blueprints.json")));
+            JObject[] effectsEntries = ((JArray)manifest["entries"])
+                .Cast<JObject>().Where(value =>
+                    ((string)value["symbol"]).StartsWith(
+                        "KMG.EasternWeapons.", StringComparison.Ordinal) &&
+                    (string)value["plannedType"] != "BlueprintItemWeapon" &&
+                    (string)value["plannedType"] != "BlueprintWeaponType" &&
+                    !((string)value["symbol"]).EndsWith(
+                        "ExoticWeaponProficiency", StringComparison.Ordinal) &&
+                    !((string)value["symbol"]).EndsWith(
+                        "FinesseTraining", StringComparison.Ordinal) &&
+                    !((string)value["symbol"]).EndsWith(
+                        "ProficiencyPolicyEnchantment", StringComparison.Ordinal))
+                .ToArray();
+            Assertions.Equal(7, effectsEntries.Length,
+                "Eastern bespoke identity count changed.");
+            Assertions.Equal(4, effectsEntries.Count(value =>
+                (string)value["plannedType"] == "BlueprintBuff"),
+                "Eastern bespoke buff identity count changed.");
+            Assertions.Equal(3, effectsEntries.Count(value =>
+                (string)value["plannedType"] ==
+                    "BlueprintWeaponEnchantment"),
+                "Eastern bespoke enchantment identity count changed.");
         }
     }
 }

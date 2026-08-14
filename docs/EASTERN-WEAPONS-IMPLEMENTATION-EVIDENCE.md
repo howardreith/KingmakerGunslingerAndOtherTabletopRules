@@ -153,8 +153,12 @@ and `WeaponDamageDiceOverride`. Unfixed Form can consequently add one native
 size step at the weapon-stat boundary without changing unit size, reach,
 model, or animation.
 
-`PowerAttackWatcher` handles the attack-roll rule and references the exact
-Power Attack toggle blueprint. `RuleAttackRoll` exposes the originating
+`PowerAttackFeature:9972f33f977fc724c838e59641b2fca5` contains exactly one
+`AddFacts` grant of
+`PowerAttackToggleAbility:a7b339e4f6ff93a4697df5d7a87ff619` and exactly one
+`PowerAttackWatcher` referencing that same toggle. The production resolver
+validates both links before Mountain-Sunder consumes the toggle's live
+`ActivatableAbility.IsRunning` state. `RuleAttackRoll` exposes the originating
 weapon attack, hit result, critical-roll state, and confirmed-critical state.
 These are the exact boundaries required for Mountain-Sunder and Falling Petal.
 

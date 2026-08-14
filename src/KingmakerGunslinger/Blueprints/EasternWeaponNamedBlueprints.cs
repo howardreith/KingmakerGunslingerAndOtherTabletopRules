@@ -1,11 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.Items.Components;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Designers.Mechanics.Facts;
+using Kingmaker.Enums;
+using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.EasternWeapons;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
@@ -39,6 +50,25 @@ namespace KingmakerGunslinger.Blueprints
             "66e9e299c9002ea4bb65b6f300e43770";
         internal const string SpeedGuid =
             "f1c0c50108025d546b2554674ea1c006";
+        internal const string PowerAttackFeatureGuid =
+            "9972f33f977fc724c838e59641b2fca5";
+        internal const string PowerAttackToggleGuid =
+            "a7b339e4f6ff93a4697df5d7a87ff619";
+
+        internal const string WayfarersOathFactSymbol =
+            "KMG.EasternWeapons.Katana.WayfarersOath.EquippedFact";
+        internal const string FallingPetalEnchantmentSymbol =
+            "KMG.EasternWeapons.Wakizashi.FallingPetal.EffectEnchantment";
+        internal const string FallingPetalBuffSymbol =
+            "KMG.EasternWeapons.Wakizashi.FallingPetal.ArmorClassBuff";
+        internal const string MoonlitCrossingFactSymbol =
+            "KMG.EasternWeapons.Katana.MoonlitCrossing.EquippedFact";
+        internal const string MountainSunderEnchantmentSymbol =
+            "KMG.EasternWeapons.Nodachi.MountainSunder.EffectEnchantment";
+        internal const string MountainSunderMarkerSymbol =
+            "KMG.EasternWeapons.Nodachi.MountainSunder.RoundMarker";
+        internal const string UnfixedFormEnchantmentSymbol =
+            "KMG.EasternWeapons.Nodachi.UnfixedForm.EffectEnchantment";
 
         internal static EasternWeaponNamedBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry,
@@ -49,6 +79,18 @@ namespace KingmakerGunslinger.Blueprints
                     "Eastern named registration inputs are incomplete.");
             Dictionary<string, BlueprintWeaponEnchantment> native =
                 LoadNative(library);
+            BlueprintFeature powerAttackFeature =
+                BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                    library, PowerAttackFeatureGuid,
+                    "native Power Attack feat");
+            BlueprintActivatableAbility powerAttack =
+                BlueprintLibraryLookup.RequireExact<BlueprintActivatableAbility>(
+                    library, PowerAttackToggleGuid,
+                    "native Power Attack toggle");
+            ValidatePowerAttackAuthority(powerAttackFeature, powerAttack);
+            EasternWeaponNamedBuffSet buffs = RegisterBuffs(registry);
+            EasternWeaponNamedEnchantmentSet custom = RegisterEnchantments(
+                registry, buffs, powerAttack);
             var entries = new List<EasternWeaponNamedBlueprintEntry>();
             var typeAccess = WeaponBlueprintAccess.Resolve();
             var itemAccess = new EasternWeaponItemAccess();
@@ -56,7 +98,9 @@ namespace KingmakerGunslinger.Blueprints
             {
                 EasternWeaponFamilyBlueprintSet family = eastern.Require(spec.Family);
                 BlueprintItemWeapon donor = family.Entries[0].Item;
-                BlueprintWeaponEnchantment[] enchantments = Build(spec, native);
+                BlueprintWeaponEnchantment[] enchantments = Build(spec, native,
+                    custom);
+                BlueprintUnitFact equippedFact = buffs.ForEquipped(spec.Kind);
                 BlueprintItemWeapon item = registry.Register<BlueprintItemWeapon>(
                     spec.Symbol, delegate
                     {
@@ -65,6 +109,8 @@ namespace KingmakerGunslinger.Blueprints
                         typeAccess.Set(clone, family.WeaponType);
                         itemAccess.ConfigureNamed(clone, spec, enchantments,
                             Describe(spec));
+                        if (equippedFact != null)
+                            AddEquipmentFact(clone, equippedFact, spec.Kind);
                         return clone;
                     });
                 itemAccess.ValidateNamed(item, spec, enchantments);
@@ -77,9 +123,131 @@ namespace KingmakerGunslinger.Blueprints
                     eastern.Require(value.Spec.Family).WeaponType)))
                 throw new InvalidOperationException(
                     "Eastern named item registration is malformed.");
+            BindItemReferences(result, buffs);
+            MightyCleavingRuntime.Configure(result.Single(value =>
+                value.Spec.Kind == EasternWeaponNamedKind.MountainSunder).Item);
             logger.Info("eastern-weapons", "named-native.ready",
-                "Registered all eighteen save-stable named Eastern weapons with exact native enchantment references; bespoke-effect enchantments remain a separate qualified slice.");
-            return new EasternWeaponNamedBlueprintSet(result);
+                "Registered all eighteen save-stable named Eastern weapons with exact native enchantments and five exact bespoke-effect implementations.");
+            return new EasternWeaponNamedBlueprintSet(result, buffs, custom);
+        }
+
+        private static void ValidatePowerAttackAuthority(
+            BlueprintFeature feature, BlueprintActivatableAbility toggle)
+        {
+            AddFacts[] grants = feature.ComponentsArray.OfType<AddFacts>()
+                .Where(value => value.Facts != null && value.Facts.Any(fact =>
+                    ReferenceEquals(fact, toggle))).ToArray();
+            PowerAttackWatcher[] watchers = feature.ComponentsArray
+                .OfType<PowerAttackWatcher>().Where(value =>
+                    ReferenceEquals(value.PowerAttackBlueprint, toggle))
+                .ToArray();
+            if (grants.Length != 1 || watchers.Length != 1)
+                throw new InvalidOperationException(
+                    "Native Power Attack authority changed: expected one " +
+                    "AddFacts grant and one PowerAttackWatcher referencing " +
+                    "the exact installed toggle.");
+        }
+
+        private static EasternWeaponNamedBuffSet RegisterBuffs(
+            BlueprintRegistry registry)
+        {
+            var wayfarer = ScriptableObject.CreateInstance<
+                EasternEquipmentStatBonus>();
+            wayfarer.name = "$KMG_WayfarersOath_Initiative";
+            wayfarer.Stat = StatType.Initiative;
+            wayfarer.Value = 2;
+            wayfarer.Descriptor = ModifierDescriptor.Competence;
+
+            var falling = ScriptableObject.CreateInstance<
+                EasternEquipmentStatBonus>();
+            falling.name = "$KMG_FallingPetal_AC";
+            falling.Stat = StatType.AC;
+            falling.Value = 1;
+            falling.Descriptor = ModifierDescriptor.Dodge;
+
+            var moonlitArmor = ScriptableObject.CreateInstance<
+                EasternEquipmentStatBonus>();
+            moonlitArmor.name = "$KMG_MoonlitCrossing_AC";
+            moonlitArmor.Stat = StatType.AC;
+            moonlitArmor.Value = 1;
+            moonlitArmor.Descriptor = ModifierDescriptor.Dodge;
+            moonlitArmor.RequireOneHanded = true;
+            var moonlitDamage = ScriptableObject.CreateInstance<
+                MoonlitCrossingDamageBonus>();
+            moonlitDamage.name = "$KMG_MoonlitCrossing_Damage";
+
+            BlueprintBuff wayfarerFact = registry.Register<BlueprintBuff>(
+                WayfarersOathFactSymbol, () => Buff(
+                    "KMG_WayfarersOath_Equipped", "Wayfarer's Oath",
+                    "+2 competence bonus to Initiative while Wayfarer's Oath is in the active equipment set.",
+                    true, wayfarer));
+            BlueprintBuff fallingBuff = registry.Register<BlueprintBuff>(
+                FallingPetalBuffSymbol, () => Buff(
+                    "KMG_FallingPetal_AC_Buff", "Falling Petal",
+                    "+1 dodge bonus to Armor Class for 1 round while Falling Petal remains the active weapon.",
+                    false, falling));
+            BlueprintBuff moonlitFact = registry.Register<BlueprintBuff>(
+                MoonlitCrossingFactSymbol, () => Buff(
+                    "KMG_MoonlitCrossing_Equipped", "Moonlit Crossing",
+                    "One-handed use grants +1 dodge AC; two-handed use grants +2 weapon damage.",
+                    true, moonlitArmor, moonlitDamage));
+            BlueprintBuff mountainMarker = registry.Register<BlueprintBuff>(
+                MountainSunderMarkerSymbol, () => Buff(
+                    "KMG_MountainSunder_Round_Marker",
+                    "Mountain-Sunder Round Marker",
+                    "Internal marker enforcing Mountain-Sunder's once-per-round force damage.",
+                    true));
+            return new EasternWeaponNamedBuffSet(wayfarerFact, fallingBuff,
+                moonlitFact, mountainMarker);
+        }
+
+        private static EasternWeaponNamedEnchantmentSet RegisterEnchantments(
+            BlueprintRegistry registry, EasternWeaponNamedBuffSet buffs,
+            BlueprintActivatableAbility powerAttack)
+        {
+            return new EasternWeaponNamedEnchantmentSet(
+                EffectEnchantment(registry, FallingPetalEnchantmentSymbol,
+                    "Falling Petal's Poise",
+                    "A confirmed critical hit grants +1 dodge AC for 1 round while this exact weapon remains active.",
+                    EasternNamedWeaponEffectKind.FallingPetal,
+                    buffs.FallingPetal, null, null),
+                EffectEnchantment(registry, MountainSunderEnchantmentSymbol,
+                    "Mountain-Sunder",
+                    "Mighty Cleaving permits one additional Cleave attack. While Power Attack is active, the first hit each round deals 1d6 force damage.",
+                    EasternNamedWeaponEffectKind.MountainSunder, null,
+                    buffs.MountainSunderMarker, powerAttack),
+                EffectEnchantment(registry, UnfixedFormEnchantmentSymbol,
+                    "Unfixed Form",
+                    "While polymorphed or changed from natural size, this weapon's base damage advances one native weapon-size step.",
+                    EasternNamedWeaponEffectKind.UnfixedForm, null, null,
+                    null));
+        }
+
+        private static BlueprintWeaponEnchantment EffectEnchantment(
+            BlueprintRegistry registry, string symbol, string name,
+            string description, EasternNamedWeaponEffectKind kind,
+            BlueprintBuff effect, BlueprintBuff marker,
+            BlueprintActivatableAbility powerAttack)
+        {
+            return registry.Register<BlueprintWeaponEnchantment>(symbol,
+                delegate
+                {
+                    var enchantment = ScriptableObject.CreateInstance<
+                        BlueprintWeaponEnchantment>();
+                    enchantment.name = "KMG_" + kind + "_Enchantment";
+                    ConfigureEnchantmentText(enchantment, symbol, name,
+                        description);
+                    var component = ScriptableObject.CreateInstance<
+                        EasternNamedWeaponEffectComponent>();
+                    component.name = "$KMG_" + kind + "_Effect";
+                    component.Kind = kind;
+                    component.EffectBuff = effect;
+                    component.RoundMarker = marker;
+                    component.PowerAttack = powerAttack;
+                    enchantment.ComponentsArray = new BlueprintComponent[] {
+                        component };
+                    return enchantment;
+                });
         }
 
         private static Dictionary<string, BlueprintWeaponEnchantment> LoadNative(
@@ -98,7 +266,8 @@ namespace KingmakerGunslinger.Blueprints
 
         private static BlueprintWeaponEnchantment[] Build(
             EasternWeaponNamedSpec spec,
-            IDictionary<string, BlueprintWeaponEnchantment> native)
+            IDictionary<string, BlueprintWeaponEnchantment> native,
+            EasternWeaponNamedEnchantmentSet custom)
         {
             var result = new List<BlueprintWeaponEnchantment>
             {
@@ -130,6 +299,8 @@ namespace KingmakerGunslinger.Blueprints
                 BrilliantEnergyGuid);
             Add(result, native, spec, EasternWeaponNativeProperty.Speed,
                 SpeedGuid);
+            BlueprintWeaponEnchantment effect = custom.For(spec.Kind);
+            if (effect != null) result.Add(effect);
             return result.ToArray();
         }
 
@@ -149,8 +320,97 @@ namespace KingmakerGunslinger.Blueprints
                 if (property != EasternWeaponNativeProperty.None &&
                     spec.Has(property)) properties.Add(PropertyName(property));
             if (spec.ColdIron) properties.Add("Cold Iron");
+            string effect = spec.Kind == EasternWeaponNamedKind.WayfarersOath
+                ? " While active, it grants +2 competence to Initiative."
+                : spec.Kind == EasternWeaponNamedKind.FallingPetal
+                ? " A confirmed critical hit grants +1 dodge AC for 1 round while this weapon remains active."
+                : spec.Kind == EasternWeaponNamedKind.MoonlitCrossing
+                ? " One-handed use grants +1 dodge AC; two-handed use grants +2 weapon damage."
+                : spec.Kind == EasternWeaponNamedKind.MountainSunder
+                ? " Mighty Cleaving permits one additional Cleave attack. While Power Attack is active, its first hit each round deals 1d6 force damage."
+                : spec.Kind == EasternWeaponNamedKind.UnfixedForm
+                ? " While polymorphed or changed from natural size, its base damage advances one native weapon-size step."
+                : string.Empty;
             return string.Join(", ", properties.ToArray()) + " " +
-                spec.Family + ". It uses the family's single stable weapon type and category.";
+                spec.Family + "." + effect +
+                " It uses the family's single stable weapon type and category.";
+        }
+
+        private static void AddEquipmentFact(BlueprintItemWeapon item,
+            BlueprintUnitFact fact, EasternWeaponNamedKind kind)
+        {
+            var grant = ScriptableObject.CreateInstance<
+                AddFactToEquipmentWielder>();
+            grant.name = "$KMG_" + kind + "_EquippedFact";
+            grant.Fact = fact;
+            item.ComponentsArray = (item.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Concat(
+                    new BlueprintComponent[] { grant }).ToArray();
+        }
+
+        private static void BindItemReferences(
+            EasternWeaponNamedBlueprintEntry[] entries,
+            EasternWeaponNamedBuffSet buffs)
+        {
+            BlueprintItemWeapon wayfarer = entries.Single(value =>
+                value.Spec.Kind == EasternWeaponNamedKind.WayfarersOath).Item;
+            BlueprintItemWeapon falling = entries.Single(value =>
+                value.Spec.Kind == EasternWeaponNamedKind.FallingPetal).Item;
+            BlueprintItemWeapon moonlit = entries.Single(value =>
+                value.Spec.Kind == EasternWeaponNamedKind.MoonlitCrossing).Item;
+            buffs.WayfarersOath.ComponentsArray.OfType<
+                EasternEquipmentStatBonus>().Single().Weapon = wayfarer;
+            buffs.FallingPetal.ComponentsArray.OfType<
+                EasternEquipmentStatBonus>().Single().Weapon = falling;
+            EasternEquipmentStatBonus moonlitArmor = buffs.MoonlitCrossing
+                .ComponentsArray.OfType<EasternEquipmentStatBonus>().Single();
+            moonlitArmor.Weapon = moonlit;
+            buffs.MoonlitCrossing.ComponentsArray.OfType<
+                MoonlitCrossingDamageBonus>().Single().Weapon = moonlit;
+        }
+
+        private static BlueprintBuff Buff(string internalName, string name,
+            string description, bool hidden,
+            params BlueprintComponent[] components)
+        {
+            var result = ScriptableObject.CreateInstance<BlueprintBuff>();
+            result.name = internalName;
+            result.Stacking = StackingType.Replace;
+            result.IsClassFeature = false;
+            result.ComponentsArray = components ??
+                Array.Empty<BlueprintComponent>();
+            FieldInfo flags = typeof(BlueprintBuff).GetField("m_Flags",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            if (flags == null) throw new MissingFieldException(
+                typeof(BlueprintBuff).FullName, "m_Flags");
+            flags.SetValue(result, Enum.ToObject(flags.FieldType,
+                hidden ? 2 : 0));
+            BlueprintUnitFactAccess.Resolve().Configure(result,
+                LocalizationService.Create(internalName + ".Name", name),
+                LocalizationService.Create(internalName + ".Description",
+                    description), null);
+            return result;
+        }
+
+        private static void ConfigureEnchantmentText(
+            BlueprintWeaponEnchantment enchantment, string symbol,
+            string name, string description)
+        {
+            const BindingFlags fields = BindingFlags.Instance |
+                BindingFlags.NonPublic;
+            Type owner = typeof(BlueprintItemEnchantment);
+            FieldInfo nameField = owner.GetField("m_EnchantName", fields);
+            FieldInfo descriptionField = owner.GetField("m_Description", fields);
+            FieldInfo costField = owner.GetField("m_EnchantmentCost", fields);
+            if (nameField == null || descriptionField == null ||
+                costField == null) throw new MissingFieldException(
+                    owner.FullName,
+                    "m_EnchantName/m_Description/m_EnchantmentCost");
+            nameField.SetValue(enchantment, LocalizationService.Create(
+                symbol + ".Name", name));
+            descriptionField.SetValue(enchantment, LocalizationService.Create(
+                symbol + ".Description", description));
+            costField.SetValue(enchantment, 0);
         }
 
         private static string PropertyName(EasternWeaponNativeProperty property)
@@ -173,11 +433,70 @@ namespace KingmakerGunslinger.Blueprints
     internal sealed class EasternWeaponNamedBlueprintSet
     {
         internal EasternWeaponNamedBlueprintSet(
-            EasternWeaponNamedBlueprintEntry[] entries)
-        { Entries = entries ?? throw new ArgumentNullException("entries"); }
+            EasternWeaponNamedBlueprintEntry[] entries,
+            EasternWeaponNamedBuffSet buffs,
+            EasternWeaponNamedEnchantmentSet enchantments)
+        {
+            Entries = entries ?? throw new ArgumentNullException("entries");
+            Buffs = buffs ?? throw new ArgumentNullException("buffs");
+            Enchantments = enchantments ?? throw new ArgumentNullException(
+                "enchantments");
+        }
         internal EasternWeaponNamedBlueprintEntry[] Entries { get; private set; }
+        internal EasternWeaponNamedBuffSet Buffs { get; private set; }
+        internal EasternWeaponNamedEnchantmentSet Enchantments
+        { get; private set; }
         internal EasternWeaponNamedBlueprintEntry Require(
             EasternWeaponNamedKind kind)
         { return Entries.Single(value => value.Spec.Kind == kind); }
+    }
+
+    internal sealed class EasternWeaponNamedBuffSet
+    {
+        internal EasternWeaponNamedBuffSet(BlueprintBuff wayfarersOath,
+            BlueprintBuff fallingPetal, BlueprintBuff moonlitCrossing,
+            BlueprintBuff mountainSunderMarker)
+        {
+            WayfarersOath = wayfarersOath;
+            FallingPetal = fallingPetal;
+            MoonlitCrossing = moonlitCrossing;
+            MountainSunderMarker = mountainSunderMarker;
+        }
+        internal BlueprintBuff WayfarersOath { get; private set; }
+        internal BlueprintBuff FallingPetal { get; private set; }
+        internal BlueprintBuff MoonlitCrossing { get; private set; }
+        internal BlueprintBuff MountainSunderMarker { get; private set; }
+        internal BlueprintBuff[] All { get { return new[] { WayfarersOath,
+            FallingPetal, MoonlitCrossing, MountainSunderMarker }; } }
+        internal BlueprintUnitFact ForEquipped(EasternWeaponNamedKind kind)
+        {
+            return kind == EasternWeaponNamedKind.WayfarersOath
+                ? WayfarersOath : kind == EasternWeaponNamedKind.MoonlitCrossing
+                ? MoonlitCrossing : null;
+        }
+    }
+
+    internal sealed class EasternWeaponNamedEnchantmentSet
+    {
+        internal EasternWeaponNamedEnchantmentSet(
+            BlueprintWeaponEnchantment fallingPetal,
+            BlueprintWeaponEnchantment mountainSunder,
+            BlueprintWeaponEnchantment unfixedForm)
+        {
+            FallingPetal = fallingPetal;
+            MountainSunder = mountainSunder;
+            UnfixedForm = unfixedForm;
+        }
+        internal BlueprintWeaponEnchantment FallingPetal { get; private set; }
+        internal BlueprintWeaponEnchantment MountainSunder { get; private set; }
+        internal BlueprintWeaponEnchantment UnfixedForm { get; private set; }
+        internal BlueprintWeaponEnchantment[] All { get { return new[] {
+            FallingPetal, MountainSunder, UnfixedForm }; } }
+        internal BlueprintWeaponEnchantment For(EasternWeaponNamedKind kind)
+        {
+            return kind == EasternWeaponNamedKind.FallingPetal ? FallingPetal :
+                kind == EasternWeaponNamedKind.MountainSunder ? MountainSunder :
+                kind == EasternWeaponNamedKind.UnfixedForm ? UnfixedForm : null;
+        }
     }
 }

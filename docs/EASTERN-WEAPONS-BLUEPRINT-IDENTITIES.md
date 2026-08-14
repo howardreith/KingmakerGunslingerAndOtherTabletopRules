@@ -56,6 +56,13 @@ that complete-graph collision check and fails closed on any foreign owner.
 | `KMG.EasternWeapons.Nodachi.MountainSunder` | `5867c9be30e15d3a8a22e0f442959d03` | `BlueprintItemWeapon` |
 | `KMG.EasternWeapons.Nodachi.UnfixedForm` | `f4bed29f193e57f6826dc83a684e65db` | `BlueprintItemWeapon` |
 | `KMG.EasternWeapons.Nodachi.WorldTreeSeverer` | `e6e5cf56d3a259debd2f16a300bff115` | `BlueprintItemWeapon` |
+| `KMG.EasternWeapons.Katana.WayfarersOath.EquippedFact` | `2fd1feb61e7b53af8c8aee70eb85d5b8` | `BlueprintBuff` |
+| `KMG.EasternWeapons.Wakizashi.FallingPetal.EffectEnchantment` | `1008f83705ce543f99b361a288797769` | `BlueprintWeaponEnchantment` |
+| `KMG.EasternWeapons.Wakizashi.FallingPetal.ArmorClassBuff` | `921d9f64271d507c9ae00c74a405b937` | `BlueprintBuff` |
+| `KMG.EasternWeapons.Katana.MoonlitCrossing.EquippedFact` | `596a9b06c478572d8d82414ad8d78935` | `BlueprintBuff` |
+| `KMG.EasternWeapons.Nodachi.MountainSunder.EffectEnchantment` | `3c62b9e8b6655a7abf76327f244c337a` | `BlueprintWeaponEnchantment` |
+| `KMG.EasternWeapons.Nodachi.MountainSunder.RoundMarker` | `4ca1d8e286dd5c82a2ee8ce369146d57` | `BlueprintBuff` |
+| `KMG.EasternWeapons.Nodachi.UnfixedForm.EffectEnchantment` | `f5051c4567ee595995cd67692672bc81` | `BlueprintWeaponEnchantment` |
 
 The identities use the repository's deterministic SHA-256 symbol derivation
 and append-only manifest contract. Each family's four generic items share its
