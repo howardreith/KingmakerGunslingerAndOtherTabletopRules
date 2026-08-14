@@ -486,6 +486,11 @@ namespace KingmakerGunslinger.DomainTests
                 script.Contains("bpy.ops.export_scene.fbx") &&
                 script.Contains("bpy.ops.wm.save_as_mainfile") &&
                 script.Contains("scene.render.film_transparent = True") &&
+                script.Contains("ICON_RENDER_ANGLE_DEGREES = 42.0") &&
+                script.Contains("PYTHONHASHSEED") &&
+                report.Contains("\"tipDirection\": \"upper-right\"") &&
+                report.Contains("\"buttDirection\": \"lower-left\"") &&
+                report.Contains("\"targetAngleDegrees\": 42.0") &&
                 report.Contains("\"triangles\": 900") &&
                 report.Contains("Original project-owned asset"),
                 "Original Blender source is not deterministic and documented.");
@@ -496,7 +501,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.elvenbranchedspear")),
                 "Dedicated spear bundle hash changed.");
-            Assertions.Equal("2F3CF65793CCE8A1F79F6E907887FDC42698188150844B1A7D7B75C79C433186",
+            Assertions.Equal("FD3B3675E647681E1FCADD440DF8C22F8FE0F57442A249203C9ACD080EBA2EB8",
                 Sha256(Path.Combine(root, "assets", "game", "icons",
                     "elven-branched-spear.png")),
                 "Runtime spear icon hash changed.");

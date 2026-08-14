@@ -112,6 +112,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "catalog-and-presentation";
                 QualifyCatalog(set, assertions);
+                QualifyAllItemVisuals(set, assertions, diagnostics);
                 QualifySelectors(set, assertions, diagnostics);
 
                 stage = "proficiency";
@@ -359,6 +360,134 @@ namespace KingmakerGunslinger.RuntimeTesting
                     graceLeaks == 0,
                 "live GetFullSelectionItems, merged AllFeatures, and excluded native Grace selectors");
             diagnostics.Add("selectors{" + observed + "}");
+        }
+
+        private static void QualifyAllItemVisuals(
+            EasternWeaponBlueprintSet set,
+            ICollection<RuntimeTestAssertion> assertions,
+            ICollection<string> diagnostics)
+        {
+            BlueprintItemWeapon[] items = set.Entries.Select(value =>
+                value.Item).Concat(set.Named.Entries.Select(value =>
+                    value.Item)).ToArray();
+            var rows = new List<string>();
+            bool exact = items.Length == 30;
+            foreach (BlueprintItemWeapon item in items)
+            {
+                EasternWeaponFamilyBlueprintSet familySet = set.Families
+                    .Single(value => ReferenceEquals(value.WeaponType,
+                        item.Type));
+                EasternWeaponFamily family = familySet.Family;
+                string donorGuid = VisualDonorGuid(family);
+                BlueprintWeaponType donor = BlueprintLibraryLookup
+                    .RequireExact<BlueprintWeaponType>(
+                        BlueprintBootstrap.Library, donorGuid,
+                        family + " visual/animation donor");
+                WeaponVisualParameters visual = item.VisualParameters;
+                object itemOverride = ReadFieldRecursive(item,
+                    "m_VisualParameters");
+                GameObject model = visual == null ? null : visual.Model;
+                GameObject instance = null;
+                bool instanceResolved = false;
+                bool instanceCleaned = false;
+                string instantiated = "<null>";
+                string materialSummary = "<none>";
+                bool cuttingEdge = false;
+                try
+                {
+                    instance = Assets.EasternWeaponAssetRuntime
+                        .InstantiatePrefab(family);
+                    if (instance != null)
+                    {
+                        instanceResolved = true;
+                        instantiated = instance.name;
+                        Material[] materials = instance
+                            .GetComponentsInChildren<Renderer>(true)
+                            .SelectMany(value => value.sharedMaterials ??
+                                Array.Empty<Material>()).Where(value =>
+                                    value != null).ToArray();
+                        materialSummary = string.Join(",", materials.Select(
+                            value => value.name).Distinct().ToArray());
+                        cuttingEdge = materials.Any(value => value.name
+                            .IndexOf("CuttingEdge",
+                                StringComparison.OrdinalIgnoreCase) >= 0);
+                    }
+                }
+                finally
+                {
+                    if (instance != null)
+                        UnityEngine.Object.DestroyImmediate(instance);
+                    instanceCleaned = instance == null || instance.Equals(null);
+                }
+                string[] overlays = item.Enchantments.Select(value =>
+                    value == null ? "<null>" : value.AssetGuid).ToArray();
+                bool itemExact = itemOverride == null && visual != null &&
+                    ReferenceEquals(visual, familySet.WeaponType
+                        .VisualParameters) && model != null &&
+                    ReferenceEquals(model, familySet.WeaponType
+                        .VisualParameters.Model) &&
+                    VisualContractMatches(visual, donor.VisualParameters) &&
+                    instanceResolved && cuttingEdge && instanceCleaned;
+                exact &= itemExact;
+                rows.Add(item.AssetGuid + ":" + item.Name +
+                    ";family=" + family + ";type=" +
+                    item.Type.AssetGuid + ";itemOverride=" +
+                    (itemOverride == null ? "none" : "present") +
+                    ";model=" + (model == null ? "<null>" : model.name) +
+                    ";instantiated=" + instantiated + ";donor=" +
+                    donorGuid + "/" + (visual == null ? "<null>" :
+                        visual.AnimStyle.ToString()) + ";materials=" +
+                    materialSummary + ";overlays=" +
+                    string.Join(",", overlays));
+            }
+            string observed = string.Join("|", rows.ToArray());
+            ElvenBranchedSpearCombatScenario.Add(assertions,
+                "eastern-all-30-visual-identities",
+                "30 exact items; 10 per family; no item visual override; one validated family prefab; exact native donor contract; CuttingEdge material; transient cleanup",
+                observed, exact && set.Families.All(family => items.Count(
+                    item => ReferenceEquals(item.Type,
+                        family.WeaponType)) == 10),
+                "live blueprint visual resolution plus one actual AssetBundle prefab instantiation per exact item");
+            diagnostics.Add("all30Visuals{" + observed + "}");
+        }
+
+        private static string VisualDonorGuid(EasternWeaponFamily family)
+        {
+            if (family == EasternWeaponFamily.Wakizashi)
+                return EasternWeaponBlueprints.WakizashiVisualDonorGuid;
+            if (family == EasternWeaponFamily.Katana)
+                return EasternWeaponBlueprints.KatanaVisualDonorGuid;
+            return EasternWeaponBlueprints.NodachiVisualDonorGuid;
+        }
+
+        private static bool VisualContractMatches(WeaponVisualParameters value,
+            WeaponVisualParameters donor)
+        {
+            if (value == null || donor == null) return false;
+            foreach (FieldInfo field in typeof(WeaponVisualParameters)
+                .GetFields(Members))
+            {
+                if (field.IsStatic || string.Equals(field.Name,
+                    "m_WeaponModel", StringComparison.Ordinal)) continue;
+                object left = field.GetValue(value);
+                object right = field.GetValue(donor);
+                if (!ReferenceEquals(left, right) && !Equals(left, right))
+                    return false;
+            }
+            return true;
+        }
+
+        private static object ReadFieldRecursive(object owner, string name)
+        {
+            for (Type type = owner == null ? null : owner.GetType();
+                type != null; type = type.BaseType)
+            {
+                FieldInfo field = type.GetField(name, Members |
+                    BindingFlags.DeclaredOnly);
+                if (field != null) return field.GetValue(owner);
+            }
+            throw new MissingFieldException(owner == null ? "<null>" :
+                owner.GetType().FullName, name);
         }
 
         private static void QualifyFocusedWeapon(EasternWeaponBlueprintSet set,

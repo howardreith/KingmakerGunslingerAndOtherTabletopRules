@@ -29,7 +29,12 @@ SHA-256:
 - Blender source: `20CEEE2571D2515432E53AD3E6D9976C798C6AD53CEC5E220B5FFD4CA60A6D33`
 - FBX: `8A79B5FE83285BA8D95B4111008A9C2E330DC61BFE4BA7CC2212D0C7CB25474B`
 - 512px source icon: `7133B7536A78BD6A1712DBEA02FFAD49901957F2F73D05C083EE2F9F8FFA652A`
-- 128px runtime icon: `2F3CF65793CCE8A1F79F6E907887FDC42698188150844B1A7D7B75C79C433186`
+- 128px runtime icon: `FD3B3675E647681E1FCADD440DF8C22F8FE0F57442A249203C9ACD080EBA2EB8`
+
+The first Eastern Weapons human-playtest repair re-rendered only this icon at
+a measured 42 degrees above horizontal (tip upper-right, butt lower-left).
+The accepted FBX remains `8A79...474B` and the spear bundle remains
+`3AB5...0EBE`; equipped geometry, anchors, scale, and materials did not change.
 - Unity bundle: `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`
 
 No manual mesh modifications were made after generation. The only derivative

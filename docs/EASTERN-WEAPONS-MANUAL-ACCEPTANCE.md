@@ -1,5 +1,26 @@
 # Eastern Weapons manual visual acceptance
 
+## Focused first-playtest recheck
+
+The first playtest accepted category/proficiency/Improved Critical discovery,
+but rejected vertical icons, western-looking generic silhouettes, Wakizashi's
+obscured Kukri-like stance, and the apparent back-edge long-blade swing. The
+automated repair candidate is ready for a new human pass; no subjective item
+below is marked accepted by structural tests.
+
+- [ ] Generic and +1 Katana read as the same thin curved single-edged katana.
+- [ ] Generic and +1 Wakizashi read as the same compact curved sword.
+- [ ] Wakizashi is visibly forward-held in main hand and offhand.
+- [ ] Generic and +1 Nodachi read as the same long curved two-handed sword.
+- [ ] Representative named item in each family uses the same base silhouette.
+- [ ] Heaven's Measure differs only through legitimate enchantment VFX.
+- [ ] Katana one-hand and two-hand presentation both remain plausible.
+- [ ] Nodachi idle and combat no longer resembles the rejected Falchion sweep.
+- [ ] The cutting edge leads attacks and trails originate correctly.
+- [ ] All six Eastern icons and the spear icon read diagonally at inventory size.
+- [ ] Focused Weapon exposes each category only with matching Weapon Focus.
+- [ ] Improved Critical monogram presentation remains accepted.
+
 Status: **PENDING HUMAN REVIEW**. Structural automation and generated icon
 inspection do not constitute subjective in-game acceptance.
 

@@ -594,3 +594,31 @@ values, or campaign targets.
   real before/preview unit, passed four single positive controls, no-focus and
   combined controls, all four real weapon-stat effects, and complete cleanup.
   Transaction `compat-20260814T222532Z-a19799fea40a` restored exactly.
+
+## 2026-08-14 - first human playtest: asset and presentation repair
+
+- Regenerated all six Eastern icons and the Elven Branched Spear icon at a
+  measured 42-degree diagonal, tip upper-right and butt lower-left. Exact
+  128x128 RGBA dimensions, observed angles, and render-only camera state are
+  recorded in the Blender reports and locked by tests.
+- Rebuilt all three Eastern meshes as narrow curved asymmetric single-edge
+  blades with distinct cutting-edge material slots, restrained tips, oval
+  tsuba, and wrapped grips. Identity roots, metric scale, +Z tip direction,
+  anchors, categories, GUIDs, and mechanics remain unchanged.
+- Replaced the rejected Wakizashi Kukri and Nodachi Falchion presentation
+  contracts with Scimitar and Greatsword contracts respectively; Katana keeps
+  Bastard Sword handling. Added exact donor constants and non-model-field
+  runtime comparison.
+- Diagnosed retained donor item visuals as a possible family inconsistency and
+  now clears every item-level `m_VisualParameters` override. The expanded live
+  fixture records one exact family type/prefab path for all 30 items, plus
+  instantiated prefab, cutting-edge material, enchantment overlays, and
+  cleanup.
+- Exact Unity 2018.4.10f1 rebuilt the dedicated three-prefab bundle twice to
+  byte-identical SHA-256
+  `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.
+  The spear FBX and spear bundle remain byte-identical.
+- Repository validation, all 1,048 tests, clean Release build, build-output
+  validation, deterministic package creation, and strict standalone package
+  validation pass. Runtime/compatibility/persistence/matrix requalification is
+  the next repair slice; subjective visual acceptance remains pending.

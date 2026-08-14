@@ -2,6 +2,11 @@
 
 ## Unreleased - Eastern Weapons
 
+- Repairs the first human-playtest candidate with seven diagonal inventory
+  icons, narrower curved single-edged family meshes, normalized all-30 family
+  prefab resolution, forward/two-handed presentation donors, and exact Call of
+  the Wild Focused Weapon integration for all four KMG custom categories.
+
 - Adds the independent, default-enabled **Eastern Weapons** module with stable
   Wakizashi, Katana, and Nodachi categories; 12 generic items; and 18 named
   magical weapons forming three complete Act I-to-late-game progressions.

@@ -5,25 +5,46 @@
     "maximumWidth": 0.26,
     "tipZ": 2.01
   },
+  "equippedExportContract": "icon-only default preserves accepted FBX SHA-256; render-only camera roll",
   "generator": "generate_elven_branched_spear.py",
+  "iconRender": {
+    "background": "transparent RGBA",
+    "buttDirection": "lower-left",
+    "cameraRollDegrees": -63.140738,
+    "observedAngleDegrees": 41.997636,
+    "runtimeDimensions": [
+      128,
+      128
+    ],
+    "sourceDimensions": [
+      512,
+      512
+    ],
+    "targetAngleDegrees": 42.0,
+    "tipDirection": "upper-right"
+  },
   "license": "Original project-owned asset; repository license applies",
   "meshObjects": 15,
   "outputs": {
     "elven-branched-spear-icon.png": {
-      "bytes": 98224,
-      "sha256": "7133b7536a78bd6a1712dbea02ffad49901957f2f73d05c083ee2f9f8ffa652a"
+      "bytes": 79636,
+      "sha256": "34a09a044e1f14284dec55afdff4db7d58451d40a1949f84e0b1d327330dc09c"
     },
     "elven-branched-spear.blend": {
       "bytes": 584111,
-      "sha256": "20ceee2571d2515432e53ad3e6d9976c798c6ad53cec5e220b5ffd4ca60a6d33"
+      "sha256": "c9faa6691c9fcbe3253ca62a14075c76bb320bc3cf8259a73eec39168cadfb06"
     },
     "elven-branched-spear.fbx": {
       "bytes": 78012,
       "sha256": "8a79b5fe83285ba8d95b4111008a9c2e330dc61bfe4ba7cc2212d0c7cb25474b"
     },
+    "elven-branched-spear.png": {
+      "bytes": 7039,
+      "sha256": "fd3b3675e647681e1fcadd440df8c22f8fe0f57442a249203c9acd080eba2eb8"
+    },
     "generate_elven_branched_spear.py": {
-      "bytes": 7933,
-      "sha256": "47a4069b86799cbebc844909ff82cfe38d22e70b1993cbae686c19bf57f73b75"
+      "bytes": 11738,
+      "sha256": "7b5257f4d7d6c61a65d207c3470d97e06f1e8fb6b3ea716a8c9d905fa1ce71ce"
     }
   },
   "schemaVersion": 1,

@@ -36,6 +36,12 @@ namespace KingmakerGunslinger.Blueprints
             "04f3b956e5a5cf649bce83774e0bfe4a";
         internal const string NativeMartialWeaponProficiencyGuid =
             "203992ef5b35c864390b4e4a1e200629";
+        internal const string WakizashiVisualDonorGuid =
+            "d9fbec4637d71bd4ebc977628de3daf3";
+        internal const string KatanaVisualDonorGuid =
+            "d2fe2c5516b56f04da1d5ea51ae3ddfe";
+        internal const string NodachiVisualDonorGuid =
+            "5f824fbb0766a3543bbd6ae50248688f";
         internal const string ElvenBranchedSpearProficiencyGuid =
             "017d586ec4546feabf6eaaa67ce74a3f";
         internal const string ProficiencyPolicyEnchantmentSymbol =
@@ -62,13 +68,16 @@ namespace KingmakerGunslinger.Blueprints
         {
             new DonorSpec(EasternWeaponFamily.Wakizashi,
                 "a7da36e0e7bb60e42b9f23462ce2f4fc",
-                "57c8994d1f1becf49ac4f642e5d8ca9d"),
+                "57c8994d1f1becf49ac4f642e5d8ca9d",
+                WakizashiVisualDonorGuid),
             new DonorSpec(EasternWeaponFamily.Katana,
                 "d2fe2c5516b56f04da1d5ea51ae3ddfe",
-                "7b8a4a452f11022488b1c7bfb0ed7746"),
+                "7b8a4a452f11022488b1c7bfb0ed7746",
+                KatanaVisualDonorGuid),
             new DonorSpec(EasternWeaponFamily.Nodachi,
                 "6ddc9acbbb6e40746a6a1671df1f7b47",
-                "ef8a8cb62410b8641960e9bd8f24a13f")
+                "ef8a8cb62410b8641960e9bd8f24a13f",
+                NodachiVisualDonorGuid)
         };
 
         internal static EasternWeaponBlueprintSet Register(
@@ -122,6 +131,10 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintItemWeapon nativeItem = BlueprintLibraryLookup
                     .RequireExact<BlueprintItemWeapon>(library, donor.ItemGuid,
                         "native " + donor.Family + " item donor");
+                BlueprintWeaponType visualDonor = BlueprintLibraryLookup
+                    .RequireExact<BlueprintWeaponType>(library,
+                        donor.VisualTypeGuid, "native " + donor.Family +
+                        " visual/animation donor");
                 if (!ReferenceEquals(typeAccess.Get(nativeItem), nativeType))
                     throw new InvalidOperationException("Eastern donor item/type relation changed: " +
                         donor.Family + ".");
@@ -134,8 +147,16 @@ namespace KingmakerGunslinger.Blueprints
                                 definition.Presentation.DisplayName + "_WeaponType");
                         typeAdapter.Configure(clone, definition,
                             proficiencyPolicy);
+                        typeAdapter.UseVisualDonor(clone, visualDonor);
                         Assets.EasternWeaponAssetRuntime.ApplyTo(clone,
                             donor.Family);
+                        if (clone.VisualParameters == null ||
+                            visualDonor.VisualParameters == null ||
+                            clone.VisualParameters.AnimStyle !=
+                                visualDonor.VisualParameters.AnimStyle)
+                            throw new InvalidOperationException(
+                                "Eastern visual donor animation did not round-trip: " +
+                                donor.Family + ".");
                         return clone;
                     });
                 var entries = new List<EasternWeaponBlueprintEntry>();
@@ -363,11 +384,13 @@ namespace KingmakerGunslinger.Blueprints
         private sealed class DonorSpec
         {
             internal DonorSpec(EasternWeaponFamily family, string typeGuid,
-                string itemGuid)
-            { Family = family; TypeGuid = typeGuid; ItemGuid = itemGuid; }
+                string itemGuid, string visualTypeGuid)
+            { Family = family; TypeGuid = typeGuid; ItemGuid = itemGuid;
+              VisualTypeGuid = visualTypeGuid; }
             internal EasternWeaponFamily Family { get; private set; }
             internal string TypeGuid { get; private set; }
             internal string ItemGuid { get; private set; }
+            internal string VisualTypeGuid { get; private set; }
         }
     }
 
@@ -392,6 +415,22 @@ namespace KingmakerGunslinger.Blueprints
         private readonly FieldInfo _isTwoHanded = Require("m_IsTwoHanded");
         private readonly FieldInfo _isLight = Require("m_IsLight");
         private readonly FieldInfo _enchantments = Require("m_Enchantments");
+        private readonly FieldInfo _visualParameters =
+            Require("m_VisualParameters");
+
+        internal void UseVisualDonor(BlueprintWeaponType type,
+            BlueprintWeaponType visualDonor)
+        {
+            if (type == null || visualDonor == null ||
+                visualDonor.VisualParameters == null)
+                throw new ArgumentNullException(
+                    "Eastern visual donor inputs are incomplete.");
+            _visualParameters.SetValue(type, visualDonor.VisualParameters);
+            if (!ReferenceEquals(type.VisualParameters,
+                    visualDonor.VisualParameters))
+                throw new InvalidOperationException(
+                    "Eastern visual donor assignment did not round-trip.");
+        }
 
         internal void Configure(BlueprintWeaponType type,
             CustomWeaponCategoryDefinition definition,
@@ -528,6 +567,8 @@ namespace KingmakerGunslinger.Blueprints
         private readonly FieldInfo _overrideDamageType =
             Require("m_OverrideDamageType");
         private readonly FieldInfo _damageType = Require("m_DamageType");
+        private readonly FieldInfo _visualParameters =
+            Require("m_VisualParameters");
 
         internal void Configure(BlueprintItemWeapon item,
             CustomWeaponCategoryDefinition definition,
@@ -552,6 +593,7 @@ namespace KingmakerGunslinger.Blueprints
             _overrideDamageType.SetValue(item, spec.ColdIron);
             _damageType.SetValue(item,
                 EasternWeaponTypeAccess.Physical(definition, spec.ColdIron));
+            _visualParameters.SetValue(item, null);
         }
 
         internal void Validate(BlueprintItemWeapon item,
@@ -574,6 +616,9 @@ namespace KingmakerGunslinger.Blueprints
                     ? PhysicalDamageMaterial.ColdIron : 0) ||
                 enchantments.Length != expectedEnchantments ||
                 enchantments.Any(value => value == null) ||
+                _visualParameters.GetValue(item) != null ||
+                !ReferenceEquals(item.VisualParameters,
+                    item.Type.VisualParameters) ||
                 item.Description.IndexOf("Brace",
                     StringComparison.OrdinalIgnoreCase) >= 0)
                 throw new InvalidOperationException("Eastern generic item is invalid: " +
@@ -600,6 +645,7 @@ namespace KingmakerGunslinger.Blueprints
             _overrideDamageType.SetValue(item, spec.ColdIron);
             _damageType.SetValue(item,
                 EasternWeaponTypeAccess.Physical(definition, spec.ColdIron));
+            _visualParameters.SetValue(item, null);
         }
 
         internal void ValidateNamed(BlueprintItemWeapon item,
@@ -624,6 +670,9 @@ namespace KingmakerGunslinger.Blueprints
                 !enchantments.SequenceEqual(expectedEnchantments ??
                     Array.Empty<BlueprintWeaponEnchantment>()) ||
                 enchantments.Any(value => value == null) ||
+                _visualParameters.GetValue(item) != null ||
+                !ReferenceEquals(item.VisualParameters,
+                    item.Type.VisualParameters) ||
                 item.Description.IndexOf("Brace",
                     StringComparison.OrdinalIgnoreCase) >= 0)
                 throw new InvalidOperationException(

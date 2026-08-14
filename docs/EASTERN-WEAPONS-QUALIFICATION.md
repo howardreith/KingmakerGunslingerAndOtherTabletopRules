@@ -4,6 +4,24 @@ This is the cumulative qualification ledger for release `0.0.80-eastern-weapons`
 PASS is recorded only for an observed completed surface; pending work remains
 explicit.
 
+## First-playtest repair candidate
+
+- Focused Weapon source/runtime slice: PASS and pushed as
+  `1b5c808f69e59478a1fa7ccf4f0135af4a59ebd1`.
+- Repaired asset/source repository validation: PASS.
+- Complete domain/reflection suite: PASS, `1048/1048`.
+- Clean exact-reference Release build and build-output validation: PASS.
+- Deterministic package creation and strict validation: PASS.
+- Rebuilt Eastern bundle:
+  `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.
+- Preserved spear bundle:
+  `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`.
+- Expanded live all-30 visual identity scenario: implemented; runtime rerun
+  pending the committed repair artifact.
+- Focused compatibility, persistence, 64-state matrix, and final identity seal:
+  pending this repair's runtime qualification cycle.
+- Subjective visual acceptance: pending targeted second human review.
+
 ## Current qualified candidate
 
 - Repository validation: PASS.

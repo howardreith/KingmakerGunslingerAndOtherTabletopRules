@@ -60,7 +60,7 @@ namespace KingmakerGunslinger.Assets
             {
                 lock (Sync) _status = "native-fallback:module-disabled";
                 context.Logger.Info("eastern-weapons", "bundle.skipped",
-                    "Presentation module is disabled; native Kukri, Bastard Sword, and Falchion fallbacks remain active.");
+                    "Presentation module is disabled; native Scimitar, Bastard Sword, and Greatsword visual fallbacks remain active.");
                 return;
             }
             lock (Sync)

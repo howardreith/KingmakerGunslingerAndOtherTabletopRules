@@ -537,7 +537,13 @@ namespace KingmakerGunslinger.DomainTests
                 "eastern-weapons-build-report.json"));
             foreach (string token in new[] { "bpy.ops.export_scene.fbx",
                 "bpy.ops.wm.save_as_mainfile", "film_transparent = True",
-                "Original project-owned assets", "\"triangles\": 3522",
+                "Original project-owned assets", "\"triangles\": 2997",
+                "PYTHONHASHSEED", "ICON_RENDER_ANGLE_DEGREES = 42.0",
+                "\"targetAngleDegrees\": 42.0",
+                "\"tipDirection\": \"upper-right\"",
+                "\"buttDirection\": \"lower-left\"",
+                "\"runtimeDimensions\": [",
+                "curved asymmetric single edge at local -X; blunt spine at local +X",
                 "\"overallLengthMeters\": 0.76",
                 "\"overallLengthMeters\": 1.05",
                 "\"overallLengthMeters\": 1.5799999999999998" })
@@ -545,16 +551,16 @@ namespace KingmakerGunslinger.DomainTests
                     "Eastern Blender source/report lacks: " + token);
             var expectedFbx = new Dictionary<string, string>
             {
-                { "wakizashi.fbx", "C1FC338B67D9A3ABF6FD13507D3645C046EEE46F61F696F746890D3D858023BA" },
-                { "katana.fbx", "7C608292339B86DDAEDF0926E2701841282C72963E227442917FD303CDD064C6" },
-                { "nodachi.fbx", "0CA8CA8A71AB7893E0FEC3ECEB538A236F1C0D763F31BEB8E0230B436C8987FB" }
+                { "wakizashi.fbx", "73E1A225B833E835550DA50DB55CCBEB842C18E3A80E13BEEAC62FB80F248D08" },
+                { "katana.fbx", "E8116E82F279DB0DAEE4D4B6031BCEECC4685F5E1B4CC19AE319D269641536D6" },
+                { "nodachi.fbx", "FDB2D2C3101CCF0B2368320030D598D9E42A91D02C37D0EE568D5F3B95320FF2" }
             };
             foreach (KeyValuePair<string, string> pair in expectedFbx)
                 Assertions.Equal(pair.Value,
                     Sha256(Path.Combine(sourceRoot, pair.Key)),
                     "Generated Eastern FBX hash changed: " + pair.Key);
             Assertions.Equal(
-                "39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC",
+                "F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.easternweapons")),
                 "Dedicated Eastern Weapons bundle hash changed.");
@@ -571,6 +577,24 @@ namespace KingmakerGunslinger.DomainTests
             }).ToArray();
             Assertions.Equal(6, iconHashes.Distinct().Count(),
                 "Eastern category and capstone icons must all be distinct.");
+
+            string blueprints = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "EasternWeaponBlueprints.cs"));
+            string combat = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "EasternWeaponCombatScenario.cs"));
+            foreach (string token in new[] {
+                "WakizashiVisualDonorGuid", "d9fbec4637d71bd4ebc977628de3daf3",
+                "KatanaVisualDonorGuid", "d2fe2c5516b56f04da1d5ea51ae3ddfe",
+                "NodachiVisualDonorGuid", "5f824fbb0766a3543bbd6ae50248688f",
+                "_visualParameters.SetValue(item, null)",
+                "ReferenceEquals(item.VisualParameters,",
+                "eastern-all-30-visual-identities", "CuttingEdge",
+                "VisualContractMatches" })
+                Assertions.True(blueprints.Contains(token) ||
+                    combat.Contains(token),
+                    "Eastern family visual normalization lacks: " + token);
 
             string builder = File.ReadAllText(Path.Combine(root, "tools",
                 "unity", "BuildEasternWeaponsBundle.cs"));

@@ -1,5 +1,22 @@
 # Eastern Weapons implementation evidence
 
+## First human playtest repair evidence
+
+The ignored screenshot manifest under `evidence/screenshots/` established the
+accepted selector controls and four presentation/compatibility repair targets.
+`EASTERN-WEAPONS-FIRST-PLAYTEST-REPAIR-REPORT.md` records their dispositions.
+
+Runtime construction now clears `BlueprintItemWeapon.m_VisualParameters` on all
+30 KMG items. The live combat observer audits effective visual reference,
+family type, instantiated AssetBundle prefab, exact donor contract, material
+slots (including `CuttingEdge`), enchantment overlay GUIDs, and cleanup per
+item. This distinguishes an item-level visual override from legitimate native
+enchantment VFX without copying any named enchantment.
+
+Exact visual donors are Scimitar `d9fbec4637d71bd4ebc977628de3daf3`,
+Bastard Sword `d2fe2c5516b56f04da1d5ea51ae3ddfe`, and Greatsword
+`5f824fbb0766a3543bbd6ae50248688f`.
+
 ## Investigation authority
 
 - Verified base commit: `4ffd15b09992bd9cee9d330eee0a650ad2c94661`
@@ -242,7 +259,8 @@ Neither run accessed a save.
 
 Blender 4.5.10 LTS generated three original metric weapon sources with primary
 grip at origin and +Z toward the tip. The final lengths are 0.76 m Wakizashi,
-1.05 m Katana, and 1.58 m Nodachi across 39 mesh objects and 3,522 triangles.
+1.05 m Katana, and 1.58 m Nodachi across 39 mesh objects and 2,997 triangles
+after the first-playtest single-edge silhouette repair.
 Six exact 128x128 transparent RGBA runtime icons include three category icons
 and three distinct capstone icons. Full source/output hashes are in
 `EASTERN-WEAPONS-ASSET-PROVENANCE.md`.
@@ -254,7 +272,8 @@ Two consecutive force-rebuilds were byte-identical. Runtime candidate loading
 requires exact prefab cardinality and family names, identity roots, all five
 semantic children, finite plausible family bounds, enabled renderers, complete
 opaque materials, and no cameras/lights. Rejection preserves the original
-Kukri, Bastard Sword, or Falchion donor contract.
+Scimitar, Bastard Sword, or Greatsword visual/animation donor contract after
+the first-playtest stance repair.
 
 Enabled fresh-process run
 `20260814T1420325300375Z-43bcb3114abe402b81663d0dfde65c13`
