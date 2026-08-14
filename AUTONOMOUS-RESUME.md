@@ -1,6 +1,6 @@
 # Autonomous Gunslinger resume handoff
 
-## Elven Branched Spear first-playtest repair (active, 2026-08-14)
+## Elven Branched Spear first-playtest repair (complete, 2026-08-14)
 
 - Branch `codex/elven-branched-spear`, draft PR #3; accepted base checkpoint
   `f5136b12ce91ec2f56d5c7bf8dcb52129418ec5d`. Do not recreate, rebase, merge,
@@ -18,9 +18,12 @@
   differentiation is optional and deferred because the family shares one
   weapon type and prefab; splitting it would risk accepted fit and save
   behavior.
-- Remaining work at this checkpoint: final clean source/package gates,
-  Call of the Wild, canonical working-save smoke, artifact sealing, then update
-  the existing draft PR #3. Use only the guarded push helper after commits.
+- Final artifact source `224e536f24ed548a8df8746b8b3d8a9a6a38defe`
+  passed 1,032 tests, clean Release/package validation, final Call of the Wild
+  18/18, canonical working-save smoke, and all 32 module masks with exact
+  restoration. Exact hashes and MVID are in the spear qualification report.
+- Remaining action is human PR/UI visual review and merge decision. Do not
+  create a replacement PR or merge autonomously.
 
 ## Expanded Summoning final presentation (2026-08-13)
 

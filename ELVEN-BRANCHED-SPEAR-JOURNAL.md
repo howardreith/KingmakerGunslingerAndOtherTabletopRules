@@ -24,3 +24,17 @@
 
 Final source, compatibility, save-smoke, package, installed-binary, and artifact
 identity evidence is recorded in the qualification report after sealing.
+
+## 2026-08-14 - Final seal
+
+- Final artifact source `224e536f24ed548a8df8746b8b3d8a9a6a38defe`
+  passed repository validation, 1,032 tests, clean Release, build-output checks,
+  package creation, and strict standalone validation.
+- Final Call of the Wild combat/presentation passed 18/18 and restored the Mods
+  tree exactly. Canonical `KMG_AUTOMATION_WORKING` smoke passed without a save
+  write.
+- The uninterrupted five-module runtime matrix passed all 32 unique masks from
+  `20260814T0512562299220Z` through `20260814T0623367488297Z`, all on one commit
+  and loaded version, then restored the original settings SHA-256 exactly.
+- Built and installed DLL hashes match. Package, DLL, MVID, and bundle identity
+  are recorded in the qualification report and `BUILD-INFO.txt`.

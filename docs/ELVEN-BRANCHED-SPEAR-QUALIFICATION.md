@@ -8,7 +8,8 @@
 - Accepted pre-amendment checkpoint:
   `f5136b12ce91ec2f56d5c7bf8dcb52129418ec5d`
 - Feature branch and draft PR: `codex/elven-branched-spear`, PR #3
-- First-playtest repair revision: pending final artifact seal
+- Final artifact source:
+  `224e536f24ed548a8df8746b8b3d8a9a6a38defe`
 - Module: `elven-branched-spears`, label **Elven Branched Spears**, default ON
 - Category: `0x004b4d47`; one family for all 12 items
 
@@ -101,15 +102,12 @@ native-familiarity category. Focused ON/OFF runs
 settings restoration.
 
 All 32 five-module states passed guarded fresh-launch runtime qualification from
-commit `ce33383fc209c04aa1412410a2bacec2cc3d68dd`. Evidence begins at
-`20260814T0148218696367Z-observe-feature-module-settings` (all ON) and ends at
-`20260814T0300217767370Z-observe-feature-module-settings` (all OFF). A
-deterministic audit found 32 results, 32 unique masks, all PASS, no duplicates,
-and restored settings SHA-256
+the final artifact source. Evidence begins at
+`20260814T0512562299220Z-observe-feature-module-settings` (all ON) and ends at
+`20260814T0623367488297Z-observe-feature-module-settings` (all OFF). A
+deterministic audit found 32 results, 32 unique masks, one commit, one loaded
+version (`0.0.79`), all PASS, no duplicates, and restored settings SHA-256
 `dc76b429302838c52895d1901ac7488bc58e9d18a01b8e584968497cdb30c50c`.
-One intervening launch exited before scenario execution because Steam could not
-load `steam_api64`; its exact `off-off-on-on-off` mask passed on immediate
-guarded retry and the incomplete launch is not counted as qualification.
 
 ## Save safety
 
@@ -127,6 +125,10 @@ performed one correlated write to `KMG_AUTOMATION_WORKING`; the final load
 observed zero items, zero feature facts, and zero writes. The protected baseline
 was never selected or written. Final canonical general smoke
 `20260814T0334532807442Z-working-save-smoke` also passed from `f8dbcb9`.
+The final non-mutating 0.0.79 smoke passed at
+`20260814T0509599402694Z-working-save-smoke`; it positively correlated
+`KMG_AUTOMATION_WORKING`, loaded through Steam, requested no save write, and
+left the accepted three-phase spear persistence evidence intact.
 
 ## Assets and packaging
 
@@ -142,9 +144,36 @@ The stale Expanded Summoning package statement in the pre-amendment report was
 not a spear artifact: package entry points and active version pins still used
 the prior `0.0.78-expanded-summoning` identity. They now use assembly version
 `0.0.79`, informational version `0.0.79-elven-branched-spear`, and exact archive
-`KingmakerGunslinger-0.0.79-elven-branched-spear.zip`. The final source commit,
-1,032-or-greater test result, DLL hash/MVID, package hash, bundle hash, installed
-DLL hash, and exact loaded version are pending the final clean artifact seal.
+`KingmakerGunslinger-0.0.79-elven-branched-spear.zip`.
+
+Final artifact identity:
+
+- source commit: `224e536f24ed548a8df8746b8b3d8a9a6a38defe`, clean;
+- assembly version: `0.0.79.0`;
+- informational version: `0.0.79-elven-branched-spear`;
+- DLL MVID: `1c556ec3-0b72-45f3-962f-c53f388577ad`;
+- DLL SHA-256:
+  `275C46ADD088D06BCDA2913E94E88320FA9F3A613DB2AA424A113A75E0208FB3`;
+- package SHA-256:
+  `62C8859A1366F73F4F521C6F5A63B57207940C4946E162BD176FCC5F9536AB2C`;
+- bundle SHA-256:
+  `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`;
+- installed DLL SHA-256: identical to the built DLL; and
+- final exact runtime-loaded version: `0.0.79`.
+
+Repository validation, all 1,032 dependency-free tests, clean exact-reference
+Release build, build-output validation, package creation, and explicit strict
+standalone validation passed. The 125-file archive contains the exact DLL,
+dedicated spear bundle, 128px spear icon, `Info.json`, blueprint ledger/schema,
+README, changelog, and all other allowlisted assets. Player-facing localization
+and feature-module schema/defaults are compiled in the exact DLL. Mutable
+`FeatureModules.json` is intentionally not packaged, so deployment preserves
+the user's byte-exact settings; the final matrix restored hash
+`DC76B429302838C52895D1901AC7488BC58E9D18A01B8E584968497CDB30C50C`.
+
+The isolated Call of the Wild final run passed 18/18 at
+`20260814T0507290190244Z-disposable-elven-branched-spear-combat` and exact
+transaction `compat-20260814T050632Z-269bd676e058` restored the prior Mods tree.
 
 ## Remaining limitation
 

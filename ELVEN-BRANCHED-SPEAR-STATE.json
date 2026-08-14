@@ -17,5 +17,19 @@
     "btslDistribution": "implemented-runtime-pass",
     "namedVisualDifferentiation": "deferred-optional-to-preserve-accepted-rig"
   },
-  "finalQualification": "in-progress"
+  "artifactSource": "224e536f24ed548a8df8746b8b3d8a9a6a38defe",
+  "artifact": {
+    "package": "KingmakerGunslinger-0.0.79-elven-branched-spear.zip",
+    "packageSha256": "62C8859A1366F73F4F521C6F5A63B57207940C4946E162BD176FCC5F9536AB2C",
+    "dllSha256": "275C46ADD088D06BCDA2913E94E88320FA9F3A613DB2AA424A113A75E0208FB3",
+    "dllMvid": "1c556ec3-0b72-45f3-962f-c53f388577ad",
+    "bundleSha256": "3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE"
+  },
+  "runtime": {
+    "callOfTheWildCombatAssertions": "18/18 PASS",
+    "workingSaveSmoke": "PASS",
+    "featureModuleMatrix": "32/32 PASS",
+    "loadedVersion": "0.0.79"
+  },
+  "finalQualification": "complete"
 }

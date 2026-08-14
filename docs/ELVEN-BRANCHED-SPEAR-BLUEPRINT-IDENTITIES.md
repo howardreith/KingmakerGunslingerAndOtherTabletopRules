@@ -41,4 +41,4 @@ registered or saved and is intentionally absent from this manifest.
 The manifest therefore contains 29 persistent identities: one weapon type, 12
 items, two feature children, six enchantments, and eight buffs. Collision,
 registration-count, module-profile, and repeated-initialization tests are part
-of the 1,028-test dependency-free suite.
+of the 1,032-test dependency-free suite.

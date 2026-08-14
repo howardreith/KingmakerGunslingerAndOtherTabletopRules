@@ -38,3 +38,10 @@ BTSL run `20260814T0454174378820Z-observe-vendor-table-contracts` passed with
 four exact tables and 24 singular rows. Focused module ON/OFF runs passed.
 Final clean source, package, compatibility, smoke, hashes, MVID, and installed
 identity are sealed in `docs/ELVEN-BRANCHED-SPEAR-QUALIFICATION.md`.
+
+The final artifact source is `224e536f24ed548a8df8746b8b3d8a9a6a38defe`.
+Repository validation, 1,032/1,032 tests, clean Release, strict 125-file package,
+final Call of the Wild 18/18, canonical working-save smoke, and all 32
+feature-module masks passed. The package is
+`KingmakerGunslinger-0.0.79-elven-branched-spear.zip`, SHA-256
+`62C8859A1366F73F4F521C6F5A63B57207940C4946E162BD176FCC5F9536AB2C`.

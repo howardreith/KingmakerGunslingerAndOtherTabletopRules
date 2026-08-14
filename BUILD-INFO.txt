@@ -11,15 +11,15 @@ Feature settings schema: 4
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
-Blueprint ledger: 1438 active; 1 reserved; 1439 total
-Runtime registration count: 1438 in all 16 feature-module states
+Blueprint ledger: 1467 active; 1 reserved; 1468 total
+Runtime registration count: 1467 in all 32 feature-module states
 Dependency-free domain tests: 1032 after first-playtest repair coverage expansion
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
 Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified
 Package: KingmakerGunslinger-0.0.79-elven-branched-spear.zip
-Artifact source: pending final first-playtest-repair qualification
-DLL SHA-256: pending final first-playtest-repair qualification
-Package SHA-256: pending final first-playtest-repair qualification
+Artifact source: 224e536f24ed548a8df8746b8b3d8a9a6a38defe
+DLL SHA-256: 275C46ADD088D06BCDA2913E94E88320FA9F3A613DB2AA424A113A75E0208FB3
+Package SHA-256: 62C8859A1366F73F4F521C6F5A63B57207940C4946E162BD176FCC5F9536AB2C
 Source archive SHA-256: not produced by the standalone package workflow
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.

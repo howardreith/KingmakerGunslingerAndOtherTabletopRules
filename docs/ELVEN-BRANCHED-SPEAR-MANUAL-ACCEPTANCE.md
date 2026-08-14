@@ -51,3 +51,9 @@ still visually recheck the repaired list row, selected header, progression row,
 character sheet, and respec presentation in the final package. Named equipped
 materials remain intentionally shared to protect the accepted rig; broader
 body-type, armor, size-changing, and animation visual review remains optional.
+
+The final 0.0.79 Call of the Wild presentation/combat rerun passed 18/18 at
+`20260814T0507290190244Z-disposable-elven-branched-spear-combat`. Automated
+evidence therefore confirms metadata and mechanics in the final candidate;
+subjective appearance of the repaired tiles and headers remains the stated
+human recheck.
