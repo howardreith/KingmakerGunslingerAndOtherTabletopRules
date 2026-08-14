@@ -22,7 +22,7 @@
     "proficiency": "source_complete_live_publication_pass_combat_pending",
     "selectors": "source_complete_live_publication_pass",
     "fighterGroups": "source_complete_live_publication_pass_combat_pending",
-    "commerce": "pending",
+    "commerce": "source_complete_live_on_off_pass_lifecycle_observer_pending",
     "assets": "pending",
     "runtimeMechanics": "bespoke_source_complete_live_initialization_pass_combat_pending",
     "persistence": "pending",
@@ -105,12 +105,25 @@
     "bespokeCleanDllMvid": "b74a7744-8581-4510-a38e-9e525461cd92",
     "bespokePackageSha256": "25768C292EC69556856F9007C3E7473D1A6AEE56F161E7373CEFA8258A6D6643",
     "bespokeSettingsRestorationSha256": "2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655",
+    "commerceRepositoryValidation": "PASS",
+    "commerceDomainTests": "PASS 1042/1042",
+    "commerceCleanReleaseBuild": "PASS",
+    "commercePackageValidation": "PASS",
+    "commerceAllOnRunId": "20260814T1343180894067Z-9c6e5326e6fa4ee8a6f0761a7cd2af78",
+    "commerceAllOnEvidenceDirectory": "20260814T1343180737533Z-observe-feature-module-settings",
+    "commerceEasternOffRunId": "20260814T1349013224092Z-26cb873bd080433ebe1bd5f3658f3061",
+    "commerceEasternOffEvidenceDirectory": "20260814T1349012911501Z-observe-feature-module-settings",
+    "commerceRejectedExpectationOnlyRunId": "20260814T1346094774759Z-c26d0350d7104fa5b5c8ed2b77770470",
+    "commerceCleanDllSha256": "B1B3E41C38E84938BCD10C10A3D0AD7071428E682C12492787FC50B0DE9DC8F0",
+    "commerceCleanDllMvid": "b53a13e6-92fd-4a3b-8ea4-9d65ddd77280",
+    "commercePackageSha256": "B55452D9317E3C76918D99AFBCBD9B11F315C8B3B6DC60DB0ACEAC6D5BB2C2BB",
+    "commerceSettingsRestorationSha256": "2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655",
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 0,
-    "runtimeLaunches": 19,
+    "runtimeLaunches": 22,
     "autonomousMerge": false
   }
 }

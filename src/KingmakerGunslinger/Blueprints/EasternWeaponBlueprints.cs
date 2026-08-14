@@ -684,6 +684,7 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature WakizashiFinesseTraining { get; private set; }
         internal EasternWeaponSelectorPublication Publication { get; private set; }
         internal EasternWeaponNamedBlueprintSet Named { get; private set; }
+        internal EasternWeaponCampaignPublication Campaign { get; private set; }
         internal EasternWeaponBlueprintEntry[] Entries
         { get { return Families.SelectMany(value => value.Entries).ToArray(); } }
         internal EasternWeaponFamilyBlueprintSet Require(EasternWeaponFamily family)
@@ -697,6 +698,13 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException(
                     "Eastern named catalog attachment is invalid.");
             Named = named;
+        }
+        internal void AttachCampaign(EasternWeaponCampaignPublication campaign)
+        {
+            if (Campaign != null || campaign == null)
+                throw new InvalidOperationException(
+                    "Eastern campaign publication attachment is invalid.");
+            Campaign = campaign;
         }
     }
 }

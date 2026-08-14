@@ -179,3 +179,34 @@ therefore omitted for this release, with the required disposition:
 ```text
 DEFERRED  ENGINE HAS NO RELIABLE COUP-DE-GRACE DC HOOK
 ```
+
+## Selected campaign publication contracts
+
+The exact installed merchant identities are Oleg
+`f720440559fc00949900bfa1575196ac`, capital blacksmith
+`7de959347266092448d8a72089ef9778`, Dire Narlmarches village trader
+`f072a8f6889b5f345b7f4e7c74cb3e4c`, and Pitax town trader
+`e5ab1fccf37c55f41a20a80c6ba6a460`. The four optional BTSL weapon tables are
+`a6bae621a7bd96b4fb3c1511cd2f9fac`,
+`08e090bb2038e3d47be56d8752d5dcaf`,
+`45f027c06962df249b8c014a4b4e95e3`, and
+`420f1da6c2523f64eba810b9b484f60f`.
+
+The selected main-path fixed containers are the accepted Stag Lord Fort,
+Goblin King Fort, Vordakai Tomb level 2, and Final Dungeon targets at GUIDs
+`59cb0ac65b4093440ad341b9a2f372cf`,
+`70c4615a8d667dc4cb740c22ee7b5eed`,
+`193b1222846a0114197e716cb35d3ce8`, and
+`7e6448d1d8a7e4f4d9cc340b8f15e732`. Production selection and exact item rows
+are recorded in `EASTERN-WEAPONS-PLACEMENT-MANIFEST.md`.
+
+The production transaction was exercised in fresh guarded processes. Enabled
+run `20260814T1343180894067Z-9c6e5326e6fa4ee8a6f0761a7cd2af78`
+observed 49 base-campaign merchant rows plus 48 generic rows in the four
+installed BTSL tables, seven named merchant rows, and 11 named fixed-loot
+rows. Disabled run
+`20260814T1349013224092Z-26cb873bd080433ebe1bd5f3658f3061`
+observed zero Eastern acquisition rows while retaining every persistent
+identity. The settings transaction restored the original bytes exactly to
+SHA-256 `2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655`.
+Neither run accessed a save.

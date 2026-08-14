@@ -1,0 +1,408 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Loot;
+using KingmakerGunslinger.Acquisition;
+using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.EasternWeapons;
+
+namespace KingmakerGunslinger.Blueprints
+{
+    internal static class EasternWeaponCampaignBlueprints
+    {
+        private static readonly EasternVendorSpec[] Vendors =
+        {
+            new EasternVendorSpec("f720440559fc00949900bfa1575196ac",
+                "C11_OlegVendorTable", EarlyGenericKinds(), new[] {
+                    EasternWeaponNamedKind.BorderSentinel }, false,
+                "late-Act-I guaranteed specialist stock"),
+            new EasternVendorSpec(CapitalVendorBlueprints.TableGuid,
+                CapitalVendorBlueprints.ExpectedTableName, AllGenericKinds(),
+                new[] { EasternWeaponNamedKind.QuietCurrent,
+                    EasternWeaponNamedKind.WinterReed,
+                    EasternWeaponNamedKind.CloudCleaver }, false,
+                "capital recurring stock"),
+            new EasternVendorSpec("f072a8f6889b5f345b7f4e7c74cb3e4c",
+                "DireNarlmarchesVillageVendorTable", AllGenericKinds(),
+                new EasternWeaponNamedKind[0], false,
+                "later regional replacement stock"),
+            new EasternVendorSpec("e5ab1fccf37c55f41a20a80c6ba6a460",
+                "PitaxTownVendorTable", AllGenericKinds(), new[] {
+                    EasternWeaponNamedKind.EmptySleeve,
+                    EasternWeaponNamedKind.MoonlitCrossing,
+                    EasternWeaponNamedKind.UnfixedForm }, false,
+                "Pitax specialist stock"),
+            new EasternVendorSpec(
+                BeneathStolenLandsVendorBlueprints.StandaloneHonestGuyTableGuid,
+                BeneathStolenLandsVendorBlueprints.ExpectedNames[0],
+                AllGenericKinds(), new EasternWeaponNamedKind[0], true,
+                "standalone BTSL"),
+            new EasternVendorSpec(
+                BeneathStolenLandsVendorBlueprints.StandaloneXellirenTableGuid,
+                BeneathStolenLandsVendorBlueprints.ExpectedNames[1],
+                AllGenericKinds(), new EasternWeaponNamedKind[0], true,
+                "standalone BTSL"),
+            new EasternVendorSpec(
+                BeneathStolenLandsVendorBlueprints.CampaignHonestGuyTableGuid,
+                BeneathStolenLandsVendorBlueprints.ExpectedNames[2],
+                AllGenericKinds(), new EasternWeaponNamedKind[0], true,
+                "campaign Tenebrous Depths"),
+            new EasternVendorSpec(
+                BeneathStolenLandsVendorBlueprints.CampaignXellirenTableGuid,
+                BeneathStolenLandsVendorBlueprints.ExpectedNames[3],
+                AllGenericKinds(), new EasternWeaponNamedKind[0], true,
+                "campaign Tenebrous Depths")
+        };
+
+        private static readonly EasternLootSpec[] Loot =
+        {
+            new EasternLootSpec("59cb0ac65b4093440ad341b9a2f372cf",
+                "Forest_BarrikadedChest1", "StagLordFort", "late Act I",
+                new[] { EasternWeaponNamedKind.PaperLantern,
+                    EasternWeaponNamedKind.WayfarersOath }),
+            new EasternLootSpec("70c4615a8d667dc4cb740c22ee7b5eed",
+                "Forest_LootBoxGood2", "GoblinKingFort", "Act III",
+                new[] { EasternWeaponNamedKind.FallingPetal,
+                    EasternWeaponNamedKind.DrawnHorizon,
+                    EasternWeaponNamedKind.StormOverStone }),
+            new EasternLootSpec("193b1222846a0114197e716cb35d3ce8",
+                "Forest_cache", "VordakaiTombLevel2", "Act IV",
+                new[] { EasternWeaponNamedKind.FoxfireWhisper,
+                    EasternWeaponNamedKind.ThunderAtTheGate,
+                    EasternWeaponNamedKind.MountainSunder }),
+            new EasternLootSpec("7e6448d1d8a7e4f4d9cc340b8f15e732",
+                "RichHuman_Loot_1", "FinalDungeon", "late game",
+                new[] { EasternWeaponNamedKind.NightWithoutMoon,
+                    EasternWeaponNamedKind.HeavensMeasure,
+                    EasternWeaponNamedKind.WorldTreeSeverer })
+        };
+
+        internal static EasternVendorSpec[] VendorSpecs
+        { get { return Vendors.ToArray(); } }
+        internal static EasternLootSpec[] LootSpecs
+        { get { return Loot.ToArray(); } }
+
+        internal static EasternWeaponCampaignPublication Publish(
+            LibraryScriptableObject library, EasternWeaponBlueprintSet weapons,
+            ModLogger logger)
+        {
+            if (library == null || weapons == null || weapons.Named == null ||
+                logger == null) throw new ArgumentNullException(
+                    "Eastern campaign publication inputs are incomplete.");
+            BlueprintItem[] owned = weapons.Entries.Select(value =>
+                (BlueprintItem)value.Item).Concat(weapons.Named.Entries.Select(
+                    value => (BlueprintItem)value.Item)).ToArray();
+            var vendorMutations = new List<EasternVendorMutation>();
+            var lootMutations = new List<EasternLootMutation>();
+            try
+            {
+                foreach (EasternVendorSpec spec in Vendors)
+                {
+                    BlueprintSharedVendorTable table = library.GetAllBlueprints()
+                        .OfType<BlueprintSharedVendorTable>().SingleOrDefault(value =>
+                            string.Equals(value.AssetGuid, spec.Guid,
+                                StringComparison.Ordinal));
+                    if (table == null && spec.Optional)
+                    {
+                        logger.Info("eastern-weapons",
+                            "campaign.vendor-skipped-optional",
+                            "SKIPPED_OPTIONAL_TABLE_ABSENT;guid=" + spec.Guid +
+                            ";mode=" + spec.Mode);
+                        continue;
+                    }
+                    if (table == null || !string.Equals(table.name, spec.Name,
+                        StringComparison.Ordinal))
+                        throw new InvalidOperationException(
+                            "Eastern vendor identity mismatch: " + spec.Guid +
+                            ";expected=" + spec.Name + ";observed=" +
+                            (table == null ? "<absent>" : table.name));
+                    BlueprintItem[] desired = ResolveVendorItems(spec, weapons);
+                    BlueprintComponent[] before = table.ComponentsArray ??
+                        new BlueprintComponent[0];
+                    bool exact = IsExactVendor(before, desired, owned);
+                    if (exact)
+                    {
+                        vendorMutations.Add(EasternVendorMutation.Unchanged(
+                            table, before, desired, spec));
+                        continue;
+                    }
+                    BlueprintComponent[] retained = before.Where(value =>
+                    {
+                        LootItemsPackFixed fixedEntry = value as LootItemsPackFixed;
+                        return fixedEntry == null || !owned.Contains(
+                            CapitalVendorBlueprints.ReadItem(fixedEntry));
+                    }).ToArray();
+                    BlueprintComponent[] additions = desired.Select(item =>
+                        (BlueprintComponent)CapitalVendorBlueprints
+                            .CreateFixedEntry(item, 1)).ToArray();
+                    VendorCatalogPublication<BlueprintComponent> transaction =
+                        VendorCatalogPublication<BlueprintComponent>.Create(
+                            retained, additions);
+                    table.ComponentsArray = transaction.Published;
+                    var mutation = new EasternVendorMutation(table, before,
+                        transaction.Published, desired, spec, true);
+                    mutation.Validate();
+                    vendorMutations.Add(mutation);
+                }
+
+                foreach (EasternLootSpec spec in Loot)
+                {
+                    BlueprintLoot target = BlueprintLibraryLookup
+                        .RequireExact<BlueprintLoot>(library, spec.Guid,
+                            "Eastern fixed loot " + spec.Name);
+                    if (!string.Equals(target.name, spec.Name,
+                            StringComparison.Ordinal) || target.Area == null ||
+                        !string.Equals(target.Area.name, spec.AreaName,
+                            StringComparison.Ordinal))
+                        throw new InvalidOperationException(
+                            "Eastern loot identity/area mismatch: " + spec.Guid +
+                            ";name=" + target.name + ";area=" +
+                            (target.Area == null ? "<none>" : target.Area.name));
+                    BlueprintItem[] desired = spec.NamedKinds.Select(kind =>
+                        (BlueprintItem)weapons.Named.Require(kind).Item).ToArray();
+                    LootEntry[] before = target.Items ?? new LootEntry[0];
+                    bool exact = IsExactLoot(before, desired, owned);
+                    if (exact)
+                    {
+                        lootMutations.Add(EasternLootMutation.Unchanged(target,
+                            before, desired, spec));
+                        continue;
+                    }
+                    LootEntry[] retained = before.Where(value => value == null ||
+                        !owned.Contains(value.Item)).ToArray();
+                    LootEntry[] published = retained.Concat(desired.Select(item =>
+                        new LootEntry { Item = item, Count = 1 })).ToArray();
+                    target.Items = published;
+                    var mutation = new EasternLootMutation(target, before,
+                        published, desired, spec, true);
+                    mutation.Validate();
+                    lootMutations.Add(mutation);
+                }
+                var result = new EasternWeaponCampaignPublication(
+                    vendorMutations, lootMutations);
+                result.Validate();
+                weapons.AttachCampaign(result);
+                logger.Info("eastern-weapons", "campaign.published",
+                    "Published four required campaign merchants, every installed BTSL weapon table, eleven fixed-loot rows, and all eighteen singular named progression placements.");
+                return result;
+            }
+            catch
+            {
+                for (int index = lootMutations.Count - 1; index >= 0; index--)
+                    lootMutations[index].Rollback();
+                for (int index = vendorMutations.Count - 1; index >= 0; index--)
+                    vendorMutations[index].Rollback();
+                throw;
+            }
+        }
+
+        private static BlueprintItem[] ResolveVendorItems(EasternVendorSpec spec,
+            EasternWeaponBlueprintSet weapons)
+        {
+            return EasternWeaponCatalog.AllGenericItems.Where(value =>
+                    spec.GenericKinds.Contains(value.Kind)).Select(value =>
+                        (BlueprintItem)weapons.Require(value.Family,
+                            value.Kind).Item)
+                .Concat(spec.NamedKinds.Select(value =>
+                    (BlueprintItem)weapons.Named.Require(value).Item)).ToArray();
+        }
+
+        private static bool IsExactVendor(BlueprintComponent[] current,
+            BlueprintItem[] desired, BlueprintItem[] owned)
+        {
+            return desired.All(item => current.OfType<LootItemsPackFixed>()
+                    .Count(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), item) &&
+                        CapitalVendorBlueprints.ReadCount(value) == 1) == 1) &&
+                !current.OfType<LootItemsPackFixed>().Any(value =>
+                    owned.Contains(CapitalVendorBlueprints.ReadItem(value)) &&
+                    !desired.Contains(CapitalVendorBlueprints.ReadItem(value)));
+        }
+
+        private static bool IsExactLoot(LootEntry[] current,
+            BlueprintItem[] desired, BlueprintItem[] owned)
+        {
+            return desired.All(item => current.Count(value => value != null &&
+                    ReferenceEquals(value.Item, item) && value.Count == 1) == 1) &&
+                !current.Any(value => value != null && owned.Contains(value.Item) &&
+                    !desired.Contains(value.Item));
+        }
+
+        private static EasternWeaponGenericKind[] EarlyGenericKinds()
+        { return new[] { EasternWeaponGenericKind.Mundane,
+            EasternWeaponGenericKind.Masterwork }; }
+
+        private static EasternWeaponGenericKind[] AllGenericKinds()
+        { return (EasternWeaponGenericKind[])Enum.GetValues(
+            typeof(EasternWeaponGenericKind)); }
+    }
+
+    internal sealed class EasternVendorSpec
+    {
+        internal EasternVendorSpec(string guid, string name,
+            EasternWeaponGenericKind[] genericKinds,
+            EasternWeaponNamedKind[] namedKinds, bool optional, string mode)
+        { Guid = guid; Name = name; GenericKinds = genericKinds;
+            NamedKinds = namedKinds; Optional = optional; Mode = mode; }
+        internal string Guid { get; private set; }
+        internal string Name { get; private set; }
+        internal EasternWeaponGenericKind[] GenericKinds { get; private set; }
+        internal EasternWeaponNamedKind[] NamedKinds { get; private set; }
+        internal bool Optional { get; private set; }
+        internal string Mode { get; private set; }
+        internal bool IsBtsl { get { return Optional; } }
+    }
+
+    internal sealed class EasternLootSpec
+    {
+        internal EasternLootSpec(string guid, string name, string areaName,
+            string band, EasternWeaponNamedKind[] namedKinds)
+        { Guid = guid; Name = name; AreaName = areaName; Band = band;
+            NamedKinds = namedKinds; }
+        internal string Guid { get; private set; }
+        internal string Name { get; private set; }
+        internal string AreaName { get; private set; }
+        internal string Band { get; private set; }
+        internal EasternWeaponNamedKind[] NamedKinds { get; private set; }
+    }
+
+    internal sealed class EasternWeaponCampaignPublication
+    {
+        private readonly List<EasternVendorMutation> _vendors;
+        private readonly List<EasternLootMutation> _loot;
+        internal EasternWeaponCampaignPublication(
+            List<EasternVendorMutation> vendors,
+            List<EasternLootMutation> loot)
+        { _vendors = vendors; _loot = loot; }
+        internal int VendorCount { get { return _vendors.Count; } }
+        internal int LootTargetCount { get { return _loot.Count; } }
+        internal int VendorRowCount { get { return _vendors.Sum(value =>
+            value.ItemCount); } }
+        internal int LootRowCount { get { return _loot.Sum(value =>
+            value.ItemCount); } }
+        internal int BtslTableCount { get { return _vendors.Count(value =>
+            value.Spec.IsBtsl); } }
+        internal int BtslRowCount { get { return _vendors.Where(value =>
+            value.Spec.IsBtsl).Sum(value => value.ItemCount); } }
+
+        internal void Validate()
+        {
+            int required = EasternWeaponCampaignBlueprints.VendorSpecs.Count(
+                value => !value.Optional);
+            int maximum = EasternWeaponCampaignBlueprints.VendorSpecs.Length;
+            if (_vendors.Count < required || _vendors.Count > maximum ||
+                _loot.Count != 4 || LootRowCount != 11 ||
+                _vendors.Select(value => value.Table).Distinct().Count() !=
+                    _vendors.Count ||
+                _loot.Select(value => value.Target).Distinct().Count() != 4 ||
+                _vendors.Any(value => value.Spec.IsBtsl &&
+                    value.Spec.NamedKinds.Length != 0) ||
+                BtslRowCount != BtslTableCount * 12)
+                throw new InvalidOperationException(
+                    "Eastern campaign publication cardinality mismatch.");
+            foreach (EasternVendorMutation value in _vendors) value.Validate();
+            foreach (EasternLootMutation value in _loot) value.Validate();
+            EasternWeaponNamedKind[] placed = _vendors.SelectMany(value =>
+                    value.Spec.NamedKinds).Concat(_loot.SelectMany(value =>
+                    value.Spec.NamedKinds)).ToArray();
+            if (placed.Length != 18 || placed.Distinct().Count() != 18 ||
+                Enum.GetValues(typeof(EasternWeaponNamedKind))
+                    .Cast<EasternWeaponNamedKind>().Any(value =>
+                        placed.Count(kind => kind == value) != 1))
+                throw new InvalidOperationException(
+                    "Eastern named progression placement is not singular.");
+        }
+
+        internal void Rollback()
+        {
+            for (int index = _loot.Count - 1; index >= 0; index--)
+                _loot[index].Rollback();
+            for (int index = _vendors.Count - 1; index >= 0; index--)
+                _vendors[index].Rollback();
+        }
+    }
+
+    internal sealed class EasternVendorMutation
+    {
+        private readonly BlueprintComponent[] _before;
+        private readonly BlueprintComponent[] _published;
+        private readonly BlueprintItem[] _items;
+        private bool _changed;
+        internal EasternVendorMutation(BlueprintSharedVendorTable table,
+            BlueprintComponent[] before, BlueprintComponent[] published,
+            BlueprintItem[] items, EasternVendorSpec spec, bool changed)
+        { Table = table; _before = before; _published = published;
+            _items = items; Spec = spec; _changed = changed; }
+        internal BlueprintSharedVendorTable Table { get; private set; }
+        internal EasternVendorSpec Spec { get; private set; }
+        internal int ItemCount { get { return _items.Length; } }
+        internal static EasternVendorMutation Unchanged(
+            BlueprintSharedVendorTable table, BlueprintComponent[] before,
+            BlueprintItem[] items, EasternVendorSpec spec)
+        { return new EasternVendorMutation(table, before, before, items, spec,
+            false); }
+        internal void Validate()
+        {
+            BlueprintComponent[] current = Table.ComponentsArray ??
+                new BlueprintComponent[0];
+            if (_items.Any(item => current.OfType<LootItemsPackFixed>().Count(
+                value => ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                    item) && CapitalVendorBlueprints.ReadCount(value) == 1) != 1))
+                throw new InvalidOperationException(
+                    "Eastern vendor validation failed: " + Spec.Name);
+        }
+        internal void Rollback()
+        {
+            if (!_changed) return;
+            BlueprintComponent[] current = Table.ComponentsArray ??
+                new BlueprintComponent[0];
+            if (current.Length != _published.Length || current.Where(
+                (value, index) => !ReferenceEquals(value, _published[index])).Any())
+                throw new InvalidOperationException(
+                    "Eastern vendor rollback refused after foreign mutation.");
+            Table.ComponentsArray = _before;
+            _changed = false;
+        }
+    }
+
+    internal sealed class EasternLootMutation
+    {
+        private readonly LootEntry[] _before;
+        private readonly LootEntry[] _published;
+        private readonly BlueprintItem[] _items;
+        private bool _changed;
+        internal EasternLootMutation(BlueprintLoot target, LootEntry[] before,
+            LootEntry[] published, BlueprintItem[] items, EasternLootSpec spec,
+            bool changed)
+        { Target = target; _before = before; _published = published;
+            _items = items; Spec = spec; _changed = changed; }
+        internal BlueprintLoot Target { get; private set; }
+        internal EasternLootSpec Spec { get; private set; }
+        internal int ItemCount { get { return _items.Length; } }
+        internal static EasternLootMutation Unchanged(BlueprintLoot target,
+            LootEntry[] before, BlueprintItem[] items, EasternLootSpec spec)
+        { return new EasternLootMutation(target, before, before, items, spec,
+            false); }
+        internal void Validate()
+        {
+            LootEntry[] current = Target.Items ?? new LootEntry[0];
+            if (_items.Any(item => current.Count(value => value != null &&
+                ReferenceEquals(value.Item, item) && value.Count == 1) != 1))
+                throw new InvalidOperationException(
+                    "Eastern fixed-loot validation failed: " + Spec.Name);
+        }
+        internal void Rollback()
+        {
+            if (!_changed) return;
+            LootEntry[] current = Target.Items ?? new LootEntry[0];
+            if (current.Length != _published.Length || current.Where(
+                (value, index) => !ReferenceEquals(value, _published[index])).Any())
+                throw new InvalidOperationException(
+                    "Eastern fixed-loot rollback refused after foreign mutation.");
+            Target.Items = _before;
+            _changed = false;
+        }
+    }
+}

@@ -363,5 +363,63 @@ namespace KingmakerGunslinger.DomainTests
                     "BlueprintWeaponEnchantment"),
                 "Eastern bespoke enchantment identity count changed.");
         }
+
+        internal static void CampaignPublicationIsExactAndTransactional()
+        {
+            string root = Environment.CurrentDirectory;
+            string campaign = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "EasternWeaponCampaignBlueprints.cs"));
+            foreach (string token in new[] {
+                "C11_OlegVendorTable",
+                "CapitalVendorBlueprints.ExpectedTableName",
+                "DireNarlmarchesVillageVendorTable",
+                "PitaxTownVendorTable",
+                "StandaloneHonestGuyTableGuid",
+                "StandaloneXellirenTableGuid",
+                "CampaignHonestGuyTableGuid",
+                "CampaignXellirenTableGuid",
+                "BorderSentinel",
+                "QuietCurrent",
+                "WinterReed",
+                "CloudCleaver",
+                "EmptySleeve",
+                "MoonlitCrossing",
+                "UnfixedForm",
+                "Forest_BarrikadedChest1",
+                "Forest_LootBoxGood2",
+                "Forest_cache",
+                "RichHuman_Loot_1",
+                "BtslRowCount != BtslTableCount * 12",
+                "placed.Length != 18",
+                "placed.Distinct().Count() != 18",
+                "VendorCatalogPublication<BlueprintComponent>.Create",
+                "rollback refused after foreign mutation",
+                "weapons.AttachCampaign(result)" })
+                Assertions.True(campaign.Contains(token),
+                    "Eastern campaign publication contract is missing: " +
+                    token);
+            Assertions.False(campaign.Contains("NamedKinds = new[]") &&
+                campaign.Contains("ordinary BTSL"),
+                "Named Eastern weapons must not enter ordinary BTSL stock.");
+
+            string bootstrap = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            Assertions.True(bootstrap.Contains(
+                    "publicationPlan.EasternWeaponCommerce") &&
+                bootstrap.Contains("EasternWeaponCampaignBlueprints") &&
+                bootstrap.Contains("easternCampaignPublication.Rollback()"),
+                "Eastern commerce is not module-gated and rollback-owned.");
+
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            foreach (string token in new[] { "easternVendorRows",
+                "easternNamedVendorRows", "easternBtslRows",
+                "installedEasternBtslTables * 12", "easternLootRows",
+                "easternSet.Campaign != null" })
+                Assertions.True(runtime.Contains(token),
+                    "Eastern runtime commerce assertion is missing: " + token);
+        }
     }
 }

@@ -8167,6 +8167,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Array.Empty<WeaponCategory>()).Count(value => value.Equals(
                         EasternWeaponCategoryRuntime.Category(
                             EasternWeaponFamily.Nodachi)));
+            BlueprintItem[] easternOwnedItems = easternItems.Cast<BlueprintItem>()
+                .ToArray();
+            int easternVendorRows = 0;
+            int easternNamedVendorRows = 0;
+            int installedEasternBtslTables = 0;
+            int easternBtslRows = 0;
+            foreach (EasternVendorSpec spec in
+                EasternWeaponCampaignBlueprints.VendorSpecs)
+            {
+                BlueprintSharedVendorTable table = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintSharedVendorTable>()
+                    .SingleOrDefault(value => string.Equals(value.AssetGuid,
+                        spec.Guid, StringComparison.Ordinal));
+                if (table == null && spec.Optional) continue;
+                if (table == null)
+                    throw new InvalidOperationException(
+                        "Required Eastern vendor table is absent: " + spec.Guid);
+                int rows = (table.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .Count(value => easternOwnedItems.Contains(
+                        CapitalVendorBlueprints.ReadItem(value)) &&
+                        CapitalVendorBlueprints.ReadCount(value) == 1);
+                easternVendorRows += rows;
+                easternNamedVendorRows += (table.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .Count(value => easternSet.Named.Entries.Any(item =>
+                        ReferenceEquals(item.Item,
+                            CapitalVendorBlueprints.ReadItem(value))) &&
+                        CapitalVendorBlueprints.ReadCount(value) == 1);
+                if (spec.IsBtsl)
+                {
+                    installedEasternBtslTables++;
+                    easternBtslRows += rows;
+                }
+            }
+            int easternLootRows = 0;
+            foreach (EasternLootSpec spec in
+                EasternWeaponCampaignBlueprints.LootSpecs)
+            {
+                BlueprintLoot loot = BlueprintLibraryLookup
+                    .RequireExact<BlueprintLoot>(BlueprintBootstrap.Library,
+                        spec.Guid, "Eastern fixed-loot table");
+                BlueprintItem[] desired = spec.NamedKinds.Select(kind =>
+                    (BlueprintItem)easternSet.Named.Require(kind).Item).ToArray();
+                easternLootRows += (loot.Items ?? Array.Empty<LootEntry>())
+                    .Count(value => value != null && desired.Contains(value.Item) &&
+                        value.Count == 1);
+            }
             ShieldOtherInventoryObservation shieldObservation =
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
@@ -8205,7 +8253,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";easternNames=" + easternSet.KatanaProficiency.Name + "/" +
                 easternSet.WakizashiProficiency.Name +
                 ";easternPresentation=" +
-                EasternWeaponCategoryRuntime.PresentationEnabled;
+                EasternWeaponCategoryRuntime.PresentationEnabled +
+                ";easternVendors=" + easternVendorRows +
+                ";easternNamedVendors=" + easternNamedVendorRows +
+                ";easternBtsl=" + easternBtslRows + "/" +
+                installedEasternBtslTables + ";easternLoot=" +
+                easternLootRows;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("feature-module-active-snapshot", "request-local expected states",
@@ -8274,8 +8327,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("feature-module-eastern-weapons-publication-gate",
                     expectedEasternWeapons ?
-                        "37 identities;21 parameter options;4 static references;merged proficiency order;presentation enabled" :
-                        "37 identities;0 parameter options;0 static references;presentation disabled",
+                        "44 identities;21 parameter options;4 static references;merged proficiency order;49 campaign/BTSL-base vendor rows;11 fixed-loot rows;presentation enabled" :
+                        "44 identities;0 parameter options;0 static references;0 vendor rows;0 fixed-loot rows;presentation disabled",
                     observed,
                     activeEasternWeapons == expectedEasternWeapons &&
                     easternRegisteredTypes == 3 && easternRegisteredItems == 30 &&
@@ -8294,9 +8347,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Weapon Proficiency (Wakizashi)",
                         StringComparison.Ordinal) &&
                     nodachiMartialCategories == 1 &&
+                    easternVendorRows == (expectedEasternWeapons ?
+                        49 + installedEasternBtslTables * 12 : 0) &&
+                    easternNamedVendorRows == (expectedEasternWeapons ? 7 : 0) &&
+                    easternBtslRows == (expectedEasternWeapons ?
+                        installedEasternBtslTables * 12 : 0) &&
+                    easternLootRows == (expectedEasternWeapons ? 11 : 0) &&
+                    (easternSet.Campaign != null) == expectedEasternWeapons &&
                     EasternWeaponCategoryRuntime.PresentationEnabled ==
                         expectedEasternWeapons,
-                    "always-registered identities, exact merged selectors, broad martial integration, and module-gated presentation"),
+                    "always-registered identities, exact merged selectors, broad martial integration, campaign/BTSL publication, fixed loot, and module-gated presentation"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

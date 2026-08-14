@@ -639,6 +639,7 @@ namespace KingmakerGunslinger.Bootstrap
             ElvenBranchedSpearSelectorPublication spearSelectorPublication = null;
             ElvenBranchedSpearCampaignPublication spearCampaignPublication = null;
             EasternWeaponSelectorPublication easternSelectorPublication = null;
+            EasternWeaponCampaignPublication easternCampaignPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -905,6 +906,9 @@ namespace KingmakerGunslinger.Bootstrap
                 if (publicationPlan.ElvenBranchedSpearCommerce)
                     spearCampaignPublication = ElvenBranchedSpearCampaignBlueprints
                         .Publish(library, elvenBranchedSpears, context.Logger);
+                if (publicationPlan.EasternWeaponCommerce)
+                    easternCampaignPublication = EasternWeaponCampaignBlueprints
+                        .Publish(library, easternWeapons, context.Logger);
                 if (publicationPlan.CapitalGunslingerStock &&
                     publicationPlan.BeneathStolenLandsStock)
                     ProjectAssetIcons.ValidateSupplyPublication(registry,
@@ -966,6 +970,17 @@ namespace KingmakerGunslinger.Bootstrap
                     "initialize.root-cause",
                     "Blueprint initialization reached a failing owned operation before rollback.",
                     initializationException);
+                if (easternCampaignPublication != null)
+                {
+                    try { easternCampaignPublication.Rollback(); }
+                    catch (Exception campaignRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "eastern-weapons-campaign.rollback-failed",
+                            "Blueprint initialization failed and Eastern campaign publication rollback was refused.",
+                            campaignRollbackException);
+                    }
+                }
                 if (spearCampaignPublication != null)
                 {
                     try { spearCampaignPublication.Rollback(); }

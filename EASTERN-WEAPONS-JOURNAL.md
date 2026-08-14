@@ -265,3 +265,36 @@ values, or campaign targets.
   `25768C292EC69556856F9007C3E7473D1A6AEE56F161E7373CEFA8258A6D6643`.
   Comprehensive live positive/negative combat assertions remain a later
   qualification slice; this run proves registration and publication only.
+
+## 2026-08-14 - campaign commerce and fixed-loot publication
+
+- Added one data-driven, transactional campaign publisher for four required
+  base-game merchants, the four optional Beneath the Stolen Lands weapon
+  tables, and four main-path fixed-loot containers. Every feature-owned row is
+  count one, append-only, idempotent, module-gated, and exactly rollback-owned.
+- The enabled catalog contains 49 base merchant rows (42 generic and seven
+  dependable named upgrades), 48 generic BTSL rows when all four installed
+  tables resolve, and 11 named fixed-loot rows. All 18 named weapons have one
+  exact campaign acquisition; ordinary BTSL tables contain no named item.
+- Required GUID/name/area contracts fail closed. Optional DLC tables skip only
+  when absent; an installed malformed table is an error. Rollback refuses a
+  foreign post-publication mutation rather than removing another mod's work.
+- Repository validation, all `1042/1042` tests, clean Release build,
+  build-output validation, deterministic packaging, and strict standalone
+  package validation passed. Clean DLL SHA-256 is
+  `B1B3E41C38E84938BCD10C10A3D0AD7071428E682C12492787FC50B0DE9DC8F0`,
+  MVID `b53a13e6-92fd-4a3b-8ea4-9d65ddd77280`; package SHA-256 is
+  `B55452D9317E3C76918D99AFBCBD9B11F315C8B3B6DC60DB0ACEAC6D5BB2C2BB`.
+- Enabled save-free run
+  `20260814T1343180894067Z-9c6e5326e6fa4ee8a6f0761a7cd2af78`
+  passed with 97 Eastern merchant rows across the base and installed BTSL
+  tables, seven named merchant rows, and 11 fixed-loot rows.
+- A request that changed only expected parameters correctly failed because the
+  immutable installed settings snapshot remained ON; it was not accepted as
+  an OFF result. The repository's settings transaction then staged a real
+  schema-5 OFF snapshot. Fresh-process run
+  `20260814T1349013224092Z-26cb873bd080433ebe1bd5f3658f3061`
+  passed with zero Eastern commerce/loot rows and restored original settings
+  byte-for-byte to SHA-256
+  `2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655`.
+  No save was accessed or written.
