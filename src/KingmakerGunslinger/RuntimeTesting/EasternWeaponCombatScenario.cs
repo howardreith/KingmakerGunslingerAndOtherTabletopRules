@@ -422,8 +422,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 string[] overlays = item.Enchantments.Select(value =>
                     value == null ? "<null>" : value.AssetGuid).ToArray();
-                bool itemExact = !itemOverrideFieldExists &&
-                    itemOverride == null && visual != null &&
+                bool itemExact = itemOverrideFieldExists &&
+                    ReferenceEquals(itemOverride, visual) && visual != null &&
                     ReferenceEquals(visual, familySet.WeaponType
                         .VisualParameters) && model != null &&
                     ReferenceEquals(model, familySet.WeaponType
@@ -435,7 +435,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";family=" + family + ";type=" +
                     item.Type.AssetGuid + ";itemOverride=" +
                     (!itemOverrideFieldExists ? "field-absent" :
-                        itemOverride == null ? "none" : "present") +
+                        ReferenceEquals(itemOverride, visual) ?
+                            "exact-family-visual" : "different-visual") +
                     ";model=" + (model == null ? "<null>" : model.name) +
                     ";instantiated=" + instantiated + ";donor=" +
                     donorGuid + "/" + (visual == null ? "<null>" :
@@ -446,7 +447,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = string.Join("|", rows.ToArray());
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-all-30-visual-identities",
-                "30 exact items; 10 per family; installed item override field absent; effective family-type visual; one validated family prefab; exact native donor contract; CuttingEdge material; transient cleanup",
+                "30 exact items; 10 per family; inherited equipment-hand visual field equals effective family-type visual; one validated family prefab; exact native donor contract; CuttingEdge material; transient cleanup",
                 observed, exact && set.Families.All(family => items.Count(
                     item => ReferenceEquals(item.Type,
                         family.WeaponType)) == 10),

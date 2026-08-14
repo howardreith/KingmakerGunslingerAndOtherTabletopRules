@@ -590,7 +590,7 @@ namespace KingmakerGunslinger.DomainTests
                 "NodachiVisualDonorGuid", "5f824fbb0766a3543bbd6ae50248688f",
                 "ReferenceEquals(item.VisualParameters,",
                 "eastern-all-30-visual-identities", "CuttingEdge",
-                "itemOverrideFieldExists", "field-absent",
+                "itemOverrideFieldExists", "exact-family-visual",
                 "VisualContractMatches" })
                 Assertions.True(blueprints.Contains(token) ||
                     combat.Contains(token),

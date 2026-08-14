@@ -7,8 +7,13 @@ accepted selector controls and four presentation/compatibility repair targets.
 `EASTERN-WEAPONS-FIRST-PLAYTEST-REPAIR-REPORT.md` records their dispositions.
 
 Exact live reflection proved that this installed `BlueprintItemWeapon` has no
-`m_VisualParameters` field. Its public effective visual resolves through its
-weapon type. The combat observer audits that equality, family type,
+`m_VisualParameters` field on `BlueprintItemWeapon` itself. The installed field
+is inherited privately from `BlueprintItemEquipmentHand`; every Eastern item
+now stores the exact family weapon-type visual there so its public effective
+visual resolves through the same family prefab. The first repair attempted
+to resolve that private inherited field only on the concrete type and therefore
+failed closed; the corrected recursive reflection contract is now explicit.
+The combat observer audits that equality, family type,
 instantiated AssetBundle prefab, exact donor contract, material
 slots (including `CuttingEdge`), enchantment overlay GUIDs, and cleanup per
 item. This proves the prior apparent generic/named difference is legitimate
