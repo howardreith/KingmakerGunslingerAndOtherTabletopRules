@@ -41,6 +41,38 @@ namespace KingmakerGunslinger.DomainTests
                 "Foundation catalog claims Brace.");
         }
 
+        internal static void ReleaseIdentityIsSpearSpecific()
+        {
+            string root = Environment.CurrentDirectory;
+            string info = File.ReadAllText(Path.Combine(root, "Info.json"));
+            string props = File.ReadAllText(Path.Combine(root,
+                "Directory.Build.props"));
+            string assembly = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Properties", "AssemblyInfo.cs"));
+            string package = File.ReadAllText(Path.Combine(root, "scripts",
+                "package.ps1"));
+            string runtime = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
+                "Build-Local.ps1"));
+
+            Assertions.True(info.Contains("\"Version\": \"0.0.79\"") &&
+                props.Contains("<KmgVersion>0.0.79</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.79-elven-branched-spear</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.79\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.79\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.79-elven-branched-spear\")"),
+                "Release and assembly identity are not transactionally pinned to the spear candidate.");
+            Assertions.True(package.Contains(
+                "$($info.Id)-$($info.Version)-elven-branched-spear.zip") &&
+                !package.Contains("expanded-summoning.zip"),
+                "Package identity can still select the Expanded Summoning archive.");
+            Assertions.True(runtime.Contains("active version 0.0.79") &&
+                localBuild.Contains("active version 0.0.79") &&
+                localBuild.Contains("local-runtime\\0.0.79"),
+                "Build or guarded-runtime version enforcement is stale.");
+        }
+
         internal static void FoundationSourceContractsAreExact()
         {
             string root = Environment.CurrentDirectory;

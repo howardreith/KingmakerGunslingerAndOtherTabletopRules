@@ -85,7 +85,7 @@ The Cord is a belt-slot wondrous item costing 15,000 gp and weighing one pound. 
 Kingmaker 2.1.7b has no usable native nonlethal damage path. The adaptation is untyped self-damage capped so the Cord cannot reduce its wearer below 1 HP. The substitution still occurs at the floor. Exactly one Cord is stocked by the established capital blacksmith through `SmithVendorTable` after the capital is available.
 
 The sections below retain historical subsystem detail; where version-specific
-wording conflicts, the 0.0.78 text above and its implementation report are
+wording conflicts, the 0.0.79 text above and its implementation report are
 authoritative.
 
 ## Current vertical slice

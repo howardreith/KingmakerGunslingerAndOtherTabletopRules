@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.78-expanded-summoning",
-  "version": "0.0.78",
+  "milestone": "0.0.79-elven-branched-spear",
+  "version": "0.0.79",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

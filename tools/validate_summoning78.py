@@ -12,6 +12,7 @@ import expanded_summoning_manifest
 VERSION = "0.0.78"
 INFORMATIONAL_VERSION = "0.0.78-expanded-summoning"
 PACKAGE = "KingmakerGunslinger-0.0.78-local-runtime.zip"
+MILESTONE_LABEL = "EXPANDED-SUMMONING"
 
 
 def validate(root: Path) -> None:
@@ -29,8 +30,9 @@ def validate(root: Path) -> None:
     validate_feature75.validate(root)
 
     ui = (root / "src/KingmakerGunslinger/Development/DevelopmentUi.cs").read_text(encoding="utf-8")
-    if "Kingmaker Gunslinger - 0.0.78 EXPANDED-SUMMONING" not in ui:
-        raise AssertionError("0.0.78 Expanded Summoning build label missing")
+    expected_label = f"Kingmaker Gunslinger - {VERSION} {MILESTONE_LABEL}"
+    if expected_label not in ui:
+        raise AssertionError(f"{VERSION} {MILESTONE_LABEL} build label missing")
     required = (
         "planning/EXPANDED-SUMMONING-MISSION.md",
         "planning/EXPANDED-SUMMONING-ROSTER.md",

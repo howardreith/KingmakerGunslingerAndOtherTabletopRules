@@ -1,25 +1,25 @@
 Project: Kingmaker Gunslinger
-Release: 0.0.78-expanded-summoning
+Release: 0.0.79-elven-branched-spear
 Target game: Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b
 Target framework: .NET Framework 4.7
 C# language version: 7.3
 Platform/configuration: AnyCPU / Release
 Warnings as errors: true
 Deterministic compiler mode: true
-Feature modules: Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning
-Feature settings schema: 3
+Feature modules: Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning, Elven Branched Spears
+Feature settings schema: 4
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
 Blueprint ledger: 1438 active; 1 reserved; 1439 total
 Runtime registration count: 1438 in all 16 feature-module states
-Dependency-free domain tests: 1018
+Dependency-free domain tests: 1029 before first-playtest repair coverage expansion
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
 Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified
-Package: KingmakerGunslinger-0.0.78-expanded-summoning.zip
-Artifact source: fea6b60786aaabc41d1e276e524d8c14803a0e65
-DLL SHA-256: f56e285107b237569eba0a8aee44d0f8afeb0ee19791a131a86ba4c8625db6e9
-Package SHA-256: a0089e9e0ab54ec06baf85c0b4e8272d2524d0087e647d3e28d39f14622fd72c
-Source archive SHA-256: 9b912094c264c92f04e00d88cebad5b20050ff795853b37fa94f8bb019ce9bd1
+Package: KingmakerGunslinger-0.0.79-elven-branched-spear.zip
+Artifact source: pending final first-playtest-repair qualification
+DLL SHA-256: pending final first-playtest-repair qualification
+Package SHA-256: pending final first-playtest-repair qualification
+Source archive SHA-256: not produced by the standalone package workflow
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.
