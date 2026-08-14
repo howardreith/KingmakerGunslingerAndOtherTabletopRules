@@ -9,7 +9,7 @@
   `f5136b12ce91ec2f56d5c7bf8dcb52129418ec5d`
 - Feature branch and draft PR: `codex/elven-branched-spear`, PR #3
 - Final artifact source:
-  `9a24147b717b2502442d48d5f2026becdaba4e8d`
+  `9e710754e50c09e95c7790d70af8a334757b940e`
 - Module: `elven-branched-spears`, label **Elven Branched Spears**, default ON
 - Category: `0x004b4d47`; one family for all 12 items
 
@@ -35,14 +35,13 @@ spear Rogue icon, seven `EB` native-glyph selector rows, and no raw category or
 firearm icon leakage. The same run re-proved Dexterity and combat behavior.
 
 The final EWP follow-up was qualified with Call of the Wild active at
-`20260814T1009047959759Z-disposable-elven-branched-spear-combat`. It passed
-18/18 and observed the exact title **Proficiency (Elven Branched Spear)**, the
-human-readable prerequisite, one EWP option, and merged selector indexes
-`Elven Curve Blade=5` / `Elven Branched Spear=6`. Because Kingmaker renders
-this native list in reverse, the spear appears immediately above Elven Curve
-Blade. The serialized catalog legitimately has no Call of the Wild donor
-anchor and remains a singular append; the merged catalog owns the exact
-relative ordering.
+`20260814T1025471192636Z-disposable-elven-branched-spear-combat`. It passed
+18/18 and observed the exact title **Weapon Proficiency (Elven Branched
+Spear)**, the human-readable prerequisite, one EWP option, no custom spear in
+the prioritized `Features` array, and merged selector indexes `Elven Curve
+Blade=5` / `Elven Branched Spear=6`. Because Kingmaker renders this native list
+in reverse, the spear appears immediately above Elven Curve Blade. The merged
+catalog owns the exact relative ordering without a duplicate top-block entry.
 
 ## Delivered profile
 
@@ -158,14 +157,14 @@ the prior `0.0.78-expanded-summoning` identity. They now use assembly version
 
 Final artifact identity:
 
-- source commit: `9a24147b717b2502442d48d5f2026becdaba4e8d`, clean;
+- source commit: `9e710754e50c09e95c7790d70af8a334757b940e`, clean;
 - assembly version: `0.0.79.0`;
 - informational version: `0.0.79-elven-branched-spear`;
-- DLL MVID: `2be784db-21c8-4bba-9590-214583811eb5`;
+- DLL MVID: `8637ae8c-577d-4863-bf23-6e515c866a40`;
 - DLL SHA-256:
-  `70279B4C764E0E9FCCDF0CB56B886B5250421772EBFA6C46C79B90E41FC46FC4`;
+  `87D0417D9D575FE753B6403AB83D267E3C602F0B880E2FF1BD2B3063B8A56112`;
 - package SHA-256:
-  `ECD656AF16C507192D2638F374743B46BE606B349EE365C15B07E0EBFC2FB3CE`;
+  `846582B8369B64B411C70E3B6F86DA79598D57B1E600426208F2FE5C8BE912ED`;
 - bundle SHA-256:
   `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`;
 - installed DLL SHA-256: identical to the built DLL; and
@@ -182,8 +181,8 @@ the user's byte-exact settings; the final matrix restored hash
 `DC76B429302838C52895D1901AC7488BC58E9D18A01B8E584968497CDB30C50C`.
 
 The final installed Call of the Wild run passed 18/18 at
-`20260814T1009047959759Z-disposable-elven-branched-spear-combat`. Its loaded
-commit was `9a24147b717b2502442d48d5f2026becdaba4e8d`, and its cached, live, built, and
+`20260814T1025471192636Z-disposable-elven-branched-spear-combat`. Its loaded
+commit was `9e710754e50c09e95c7790d70af8a334757b940e`, and its cached, live, built, and
 packaged DLL hashes are identical.
 
 ## Remaining limitation

@@ -18,8 +18,8 @@ Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 R
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
 Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified
 Package: KingmakerGunslinger-0.0.79-elven-branched-spear.zip
-Artifact source: 9a24147b717b2502442d48d5f2026becdaba4e8d
-DLL SHA-256: 70279B4C764E0E9FCCDF0CB56B886B5250421772EBFA6C46C79B90E41FC46FC4
-Package SHA-256: ECD656AF16C507192D2638F374743B46BE606B349EE365C15B07E0EBFC2FB3CE
+Artifact source: 9e710754e50c09e95c7790d70af8a334757b940e
+DLL SHA-256: 87D0417D9D575FE753B6403AB83D267E3C602F0B880E2FF1BD2B3063B8A56112
+Package SHA-256: 846582B8369B64B411C70E3B6F86DA79598D57B1E600426208F2FE5C8BE912ED
 Source archive SHA-256: not produced by the standalone package workflow
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.

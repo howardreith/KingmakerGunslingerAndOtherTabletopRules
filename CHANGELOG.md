@@ -2,9 +2,10 @@
 
 ## Unreleased - Elven Branched Spears
 
-- Names the Exotic Weapon Proficiency child **Proficiency (Elven Branched
-  Spear)** and places it immediately above Elven Curve Blade through the native
-  merged selector ordering path, including Call of the Wild compatibility.
+- Names the Exotic Weapon Proficiency child **Weapon Proficiency (Elven
+  Branched Spear)**, excludes it from the prioritized top block, and places it
+  immediately above Elven Curve Blade through the native merged selector
+  ordering path, including Call of the Wild compatibility.
 - Advances the release candidate to assembly version `0.0.79` and
   informational/package identity `0.0.79-elven-branched-spear`; package
   selection is explicit and can no longer validate the prior Expanded

@@ -17,17 +17,17 @@
     "btslDistribution": "implemented-runtime-pass",
     "namedVisualDifferentiation": "deferred-optional-to-preserve-accepted-rig"
   },
-  "artifactSource": "9a24147b717b2502442d48d5f2026becdaba4e8d",
+  "artifactSource": "9e710754e50c09e95c7790d70af8a334757b940e",
   "artifact": {
     "package": "KingmakerGunslinger-0.0.79-elven-branched-spear.zip",
-    "packageSha256": "ECD656AF16C507192D2638F374743B46BE606B349EE365C15B07E0EBFC2FB3CE",
-    "dllSha256": "70279B4C764E0E9FCCDF0CB56B886B5250421772EBFA6C46C79B90E41FC46FC4",
-    "dllMvid": "2be784db-21c8-4bba-9590-214583811eb5",
+    "packageSha256": "846582B8369B64B411C70E3B6F86DA79598D57B1E600426208F2FE5C8BE912ED",
+    "dllSha256": "87D0417D9D575FE753B6403AB83D267E3C602F0B880E2FF1BD2B3063B8A56112",
+    "dllMvid": "8637ae8c-577d-4863-bf23-6e515c866a40",
     "bundleSha256": "3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE"
   },
   "runtime": {
-    "callOfTheWildCombatAssertions": "18/18 PASS at 20260814T1009047959759Z",
-    "exoticProficiencyPresentation": "PASS: exact title; merged indexes curve=5 spear=6",
+    "callOfTheWildCombatAssertions": "18/18 PASS at 20260814T1025471192636Z",
+    "exoticProficiencyPresentation": "PASS: exact Weapon Proficiency title; Features absent; AllFeatures curve=5 spear=6",
     "workingSaveSmoke": "PASS",
     "featureModuleMatrix": "32/32 PASS",
     "loadedVersion": "0.0.79"

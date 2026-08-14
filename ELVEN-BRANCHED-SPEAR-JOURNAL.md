@@ -56,3 +56,20 @@ identity evidence is recorded in the qualification report after sealing.
   guarded Call of the Wild runtime run
   `20260814T1009047959759Z-disposable-elven-branched-spear-combat` (18/18).
   The exact candidate remains installed in Unity Mod Manager.
+
+## 2026-08-14 - Native EWP wording and list-source correction
+
+- Human review established the exact native prefix as **Weapon Proficiency**
+  and confirmed that the spear still rendered at the top. The installed DLL
+  matched the qualified candidate, so both findings were genuine presentation
+  defects rather than stale deployment.
+- Renamed the child to **Weapon Proficiency (Elven Branched Spear)**. Removed
+  it from the EWP `Features` array, which the UI prioritizes as a separate top
+  block, and retained exactly one entry immediately after Elven Curve Blade in
+  `AllFeatures`; native reversed rendering places it immediately above the
+  curve blade entry.
+- Commit `9e710754e50c09e95c7790d70af8a334757b940e` passed 1,033
+  tests, clean Release/package validation, and guarded Call of the Wild run
+  `20260814T1025471192636Z-disposable-elven-branched-spear-combat` (18/18).
+  The runtime observed `Features=-1/-1`, `AllFeatures=5/6`, the exact title,
+  one option, and all prior mechanics. Its exact DLL remains installed.
