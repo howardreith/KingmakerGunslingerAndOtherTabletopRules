@@ -1,11 +1,30 @@
 # Kingmaker Gunslinger
 
-The current `codex/elven-branched-spear` release candidate adds Elven Branched
-Spears as a fifth independent, default-enabled feature module for Pathfinder:
-Kingmaker 2.1.7b while retaining the complete Gunslinger, Acadamae Graduate,
-Shield Other, and Expanded Summoning packages.
+The current `codex/eastern-weapons` release candidate adds Eastern Weapons as a
+sixth independent, default-enabled feature module for Pathfinder: Kingmaker
+2.1.7b while retaining the complete Gunslinger, Acadamae Graduate, Shield
+Other, Expanded Summoning, and Elven Branched Spears packages.
 
-The new family is one stable exotic two-handed reach category: mundane,
+Eastern Weapons adds one stable category each for Wakizashi, Katana, and
+Nodachi. Each family has mundane, masterwork, cold iron, and +1 generic forms
+plus six named magical weapons spanning late Act I through the late game.
+Katana uses exact current grip state: its exotic proficiency permits either
+grip, while broad martial proficiency permits two-handed use only. Nodachi is
+martial and receives Heavy Blades or Polearms training without becoming reach;
+Wakizashi is a native light/finessable weapon. Brace is absent.
+
+Three project-owned equipped models and six original icons are packaged behind
+validated native donor fallbacks. Exact merchant and fixed-loot publication
+provides complete family progression, and all 12 generic items appear once in
+each installed Beneath the Stolen Lands weapon table. The native Brilliant
+Energy capstone passed living/undead runtime qualification. Tabletop Deadly is
+deferred because Kingmaker 2.1.7b exposes no reliable coup-de-grace save-DC
+hook; it is not approximated as ordinary damage.
+
+The retained Elven Branched Spear module adds one stable exotic two-handed
+reach family. Its accepted mechanics and save identities remain unchanged:
+
+That family is one stable exotic two-handed reach category: mundane,
 masterwork, cold iron, +1, and six named magical weapons all share ordinary
 weapon-feat, Elven Weapon Familiarity, Weapon Finesse, Rogue Finesse Training,
 and native Agile behavior. Its inherent +2 attack modifier applies only to an
@@ -66,17 +85,17 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find five checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find six checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
-Summoning**, and **Elven Branched Spears**. All default enabled. Older settings
-migrate to schema 4 while preserving explicit existing values and enabling
-newly absent default-on modules.
+Summoning**, **Elven Branched Spears**, and **Eastern Weapons**. All default
+enabled. Older settings migrate to schema 5 while preserving explicit existing
+values and enabling newly absent default-on modules.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All five modules
+items, summons, ammunition state, or equipment from a save. All six modules
 publish independently. Keep the whole mod installed for any campaign that has
 used project content.
 
@@ -93,7 +112,7 @@ The Cord is a belt-slot wondrous item costing 15,000 gp and weighing one pound. 
 Kingmaker 2.1.7b has no usable native nonlethal damage path. The adaptation is untyped self-damage capped so the Cord cannot reduce its wearer below 1 HP. The substitution still occurs at the floor. Exactly one Cord is stocked by the established capital blacksmith through `SmithVendorTable` after the capital is available.
 
 The sections below retain historical subsystem detail; where version-specific
-wording conflicts, the 0.0.79 text above and its implementation report are
+wording conflicts, the 0.0.80 text above and its implementation report are
 authoritative.
 
 ## Current vertical slice

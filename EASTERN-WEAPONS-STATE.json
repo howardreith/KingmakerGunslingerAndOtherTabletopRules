@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "eastern-weapons",
-  "status": "active",
+  "status": "implementation_and_qualification_complete_publication_pending",
   "branch": "codex/eastern-weapons",
   "baseCommit": "4ffd15b09992bd9cee9d330eee0a650ad2c94661",
   "release": {
@@ -24,11 +24,11 @@
     "fighterGroups": "complete_live_native_training_and_no_double_bonus_pass",
     "commerce": "complete_live_exact_vendor_loot_observer_on_off_pass",
     "assets": "source_and_structural_runtime_complete_human_visual_review_pending",
-    "runtimeMechanics": "complete_expanded_save_free_combat_pass_final_profile_reruns_pending",
+    "runtimeMechanics": "complete_final_expanded_save_free_combat_pass",
     "persistence": "complete_three_phase_working_save_pass",
-    "compatibility": "required_profiles_initial_pass_final_candidate_rerun_pending",
-    "moduleMatrix": "pending",
-    "packaging": "pending",
+    "compatibility": "complete_final_standalone_call_of_the_wild_arms_armor_toggle_and_combined_pass",
+    "moduleMatrix": "complete_64_of_64_unique_states_pass",
+    "packaging": "complete_strict_package_and_four_way_identity_match",
     "humanVisualReview": "pending"
   },
   "evidence": {
@@ -54,7 +54,7 @@
     "targetedObserverCommit": "34f3093118ef028242f39e3f63e497a9c16a7580",
     "targetedObserverDllSha256": "57B42B4F18FC05614AC7078564CB2D0A83536480A1C97CF3BBA1DA771FD32A7E",
     "targetedObserverDllMvid": "5337c8ba-2d31-4c60-a39f-34017ce40339",
-    "deadly": "DEFERRED ENGINE HAS NO RELIABLE COUP-DE-GRACE DC HOOK",
+    "deadly": "DEFERRED  ENGINE HAS NO RELIABLE COUP-DE-GRACE DC HOOK",
     "foundationDomainTests": "PASS 1037/1037",
     "foundationCleanReleaseBuild": "PASS",
     "foundationPackageValidation": "PASS",
@@ -208,12 +208,32 @@
     "moduleMatrixRepairDllSha256": "35D768BA7EA82E524427C6B88EF83907FDC0C09DBDE8E9A6627C6CAD8912BBC0",
     "moduleMatrixRepairDllMvid": "54d71e83-3045-4a77-9174-597088131ed0",
     "moduleMatrixRepairPackageSha256": "AB6AE5A8203B9D9016E0166EBEC73CC1D1FBC6788E8F97E5F1E23805E29E2A49",
-    "guardedPush": "blocked_external_allowlist_singular_branch_only"
+    "finalFunctionalCommit": "9966edfa160ed4d898482f754a6b8abf1f9ebc11",
+    "finalRepositoryValidation": "PASS",
+    "finalDomainTests": "PASS 1047/1047",
+    "finalCleanReleaseBuild": "PASS",
+    "finalPackageValidation": "PASS",
+    "finalDllSha256": "B8586B620413F0C0442B60FC0911395550C6B049AD8FF01F78B93A10B962B37D",
+    "finalDllMvid": "13ba0899-9970-4403-ae00-e6ac32ffe473",
+    "finalPackageSha256": "0FEAE10BA8DC5941C2C536C2AA3AF7C2BFECA2C2B1B5EBFF1B0300A3DF0DEF0C",
+    "finalBundleSha256": "39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC",
+    "moduleMatrixStatus": "PASS 64/64 unique fresh-launch states",
+    "moduleMatrixFirstRunId": "20260814T1737485270891Z-dd22caf63606447f8368d22eacaa1b50",
+    "moduleMatrixLastRunId": "20260814T2009427225332Z-54c3d2eeec7143fabadd3e917f4787cd",
+    "finalCallOfTheWildTransaction": "compat-20260814T201218Z-6b342ec27bb6",
+    "finalArmsArmorTransaction": "compat-20260814T202007Z-01aa6b79327e",
+    "finalToggleCustomSoundpacksTransaction": "compat-20260814T202553Z-30cffa4906c4",
+    "finalCombinedTransaction": "compat-20260814T202953Z-d5d917889541",
+    "finalExpandedCombatRunId": "20260814T2047053937321Z-ed49c4c646a140609e6b84d52900adc9",
+    "finalWorkingSaveSmokeRunId": "20260814T2051106519178Z-a9571d847397477b893818601c4a00ab",
+    "finalSettingsRestorationSha256": "2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655",
+    "builtPackagedInstalledRuntimeIdentity": "PASS",
+    "guardedPush": "allowlist_updated_by_user_final_push_pending"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 2,
-    "runtimeLaunches": 62,
+    "runtimeLaunches": 140,
     "autonomousMerge": false
   }
 }

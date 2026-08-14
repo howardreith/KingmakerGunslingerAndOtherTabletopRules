@@ -516,7 +516,7 @@ resolvable when publication is disabled.
 Expanded Summoning, the Elven Branched Spear, and the Eastern Weapons named
 catalog and bespoke mechanics freeze the append-only ledger at 1514 stable IDs: 1513 active and one reserved. All 1184
 Expanded Summoning feature identities, all twenty-nine spear identities, and
-all forty-four Eastern Weapons identities register in every module state while
+all forty-six Eastern Weapons identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement
 will gate publication, never identity registration. A hidden, feature-local
 extraplanar marker avoids a bootstrap-time dependency on Call of the Wild's

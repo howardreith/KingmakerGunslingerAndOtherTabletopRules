@@ -1,6 +1,43 @@
 # Changelog
 
-## Unreleased - Elven Branched Spears
+## Unreleased - Eastern Weapons
+
+- Adds the independent, default-enabled **Eastern Weapons** module with stable
+  Wakizashi, Katana, and Nodachi categories; 12 generic items; and 18 named
+  magical weapons forming three complete Act I-to-late-game progressions.
+- Publishes **Weapon Proficiency (Katana)** and **Weapon Proficiency
+  (Wakizashi)** through the native merged Exotic Weapon Proficiency catalog.
+  Katana uses native grip state: exact exotic proficiency works in either grip,
+  while broad martial proficiency works only when it is wielded two-handed.
+- Makes Nodachi martial and integrates it with Heavy Blades and Polearms
+  training without reach, Brace, or duplicate training bonuses. Wakizashi uses
+  native light/finesse behavior and singular Dexterity-to-damage routes.
+- Adds Paper Lantern through Night Without Moon, Wayfarer's Oath through
+  Heaven's Measure, and Border Sentinel through World-Tree Severer. Native
+  enchantments are exact installed blueprint references; Heaven's Measure uses
+  the positively qualified native Brilliant Energy property.
+- Adds exact live-rule implementations for Falling Petal, Wayfarer's Oath,
+  Moonlit Crossing, Mountain-Sunder, and Unfixed Form, including critical,
+  grip, active Power Attack, once-per-round, polymorph, size, equipment-set,
+  and weapon-switch boundaries.
+- Adds verified Act I, capital, regional, Pitax, and fixed-loot progression.
+  All 12 generics appear exactly once in each of four installed Beneath the
+  Stolen Lands weapon tables (48 additive rows); named weapons are excluded
+  from ordinary BTSL stock.
+- Adds three project-owned Blender/FBX equipped models, six original 128x128
+  icons, a deterministic Unity 2018.4.10f1 bundle, structural runtime checks,
+  and native donor fallbacks.
+- Advances the release to assembly version `0.0.80` and informational/package
+  identity `0.0.80-eastern-weapons`.
+- Qualifies 1,047 dependency-free tests, all 64 module states, standalone,
+  Call of the Wild, Arms and Armor, Toggle Custom Soundpacks, maximum combined
+  profiles, three-phase module-disabled persistence, and canonical working-save
+  smoke. Subjective visual acceptance remains a human review item.
+- Defers tabletop Deadly because the installed engine exposes no reliable
+  coup-de-grace Fortitude-DC hook. No approximation or ordinary damage bonus is
+  added. Brace remains intentionally out of scope.
+
+## 0.0.79 - Elven Branched Spears
 
 - Names the Exotic Weapon Proficiency child **Weapon Proficiency (Elven
   Branched Spear)**, excludes it from the prioritized top block, and places it

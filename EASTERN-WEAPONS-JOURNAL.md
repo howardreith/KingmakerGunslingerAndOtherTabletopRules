@@ -528,3 +528,40 @@ values, or campaign targets.
   `35D768BA7EA82E524427C6B88EF83907FDC0C09DBDE8E9A6627C6CAD8912BBC0`,
   MVID `54d71e83-3045-4a77-9174-597088131ed0`; package SHA-256 was
   `AB6AE5A8203B9D9016E0166EBEC73CC1D1FBC6788E8F97E5F1E23805E29E2A49`.
+
+## 2026-08-14 - final qualification and release seal
+
+- The restarted six-module matrix passed all 64 unique fresh-launch states on
+  exact source `9966edfa160ed4d898482f754a6b8abf1f9ebc11`, DLL SHA-256
+  `B8586B620413F0C0442B60FC0911395550C6B049AD8FF01F78B93A10B962B37D`,
+  and MVID `13ba0899-9970-4403-ae00-e6ac32ffe473`. First/last runs were
+  `20260814T1737485270891Z-dd22caf63606447f8368d22eacaa1b50` and
+  `20260814T2009427225332Z-54c3d2eeec7143fabadd3e917f4787cd`.
+  Settings restored byte-for-byte to SHA-256
+  `2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`.
+- Final Call of the Wild, Arms and Armor, Toggle Custom Soundpacks, and maximum
+  combined transactions were `compat-20260814T201218Z-6b342ec27bb6`,
+  `compat-20260814T202007Z-01aa6b79327e`,
+  `compat-20260814T202553Z-30cffa4906c4`, and
+  `compat-20260814T202953Z-d5d917889541`. Every observer/module/combat run
+  passed and every complete Mods tree restored exactly.
+- Canonical non-mutating working-save smoke passed as
+  `20260814T2036393221667Z-b1b4f9cae47444118fc55739b0e828fa` before the
+  release-doc seal, with exact descriptor/fingerprint correlation and no save
+  write.
+- After the package-facing README, changelog, and installation guide were
+  sealed, repository validation, all `1047/1047` tests, clean Release build,
+  output validation, and strict package validation passed again. Final combat
+  run `20260814T2047053937321Z-ed49c4c646a140609e6b84d52900adc9`
+  passed all 18 assertions. Final working-save smoke
+  `20260814T2051106519178Z-a9571d847397477b893818601c4a00ab`
+  passed with no save-writing API observed.
+- Built, packaged, installed, and runtime-loaded DLL identities agree at
+  SHA-256 `B8586B620413F0C0442B60FC0911395550C6B049AD8FF01F78B93A10B962B37D`,
+  MVID `13ba0899-9970-4403-ae00-e6ac32ffe473`. Sealed package SHA-256 is
+  `0FEAE10BA8DC5941C2C536C2AA3AF7C2BFECA2C2B1B5EBFF1B0300A3DF0DEF0C`;
+  bundle SHA-256 remains
+  `39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC`.
+- Protected baseline access remained false. The complete mission made exactly
+  two authorized working-save writes during the three-phase persistence test;
+  both fixtures were removed. Subjective visual acceptance remains human-only.

@@ -93,7 +93,7 @@ exactly 49 base-campaign rows, 48 rows across the four installed BTSL tables,
 seven named merchant rows, and 11 fixed-loot rows. The transactional
 module-disabled observation
 `20260814T1349013224092Z-26cb873bd080433ebe1bd5f3658f3061`
-passed with all Eastern commerce and loot publication absent while all 44
+passed with all Eastern commerce and loot publication absent while all 46
 persistent identities remained registered. Original settings bytes restored
 exactly to SHA-256
 `2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655`.

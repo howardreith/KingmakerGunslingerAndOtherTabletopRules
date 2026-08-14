@@ -11,10 +11,11 @@ explicit.
 - Clean exact-reference Release build and build-output validation: PASS.
 - Strict standalone package validation: PASS.
 - Package: `KingmakerGunslinger-0.0.80-eastern-weapons.zip`.
-- Source commit: `3902fbd32030950c718c32174820bb0bcaba1112`.
-- DLL SHA-256: `14AF254B51979245B8046C57F770700E2ED7BED4DDBADFDB869D518CCDE7A59F`.
-- DLL MVID: `60409a50-c431-4150-ba55-da63727381bc`.
-- Package SHA-256: `F469C4D1C7289F2A86C2F1D70AEB6BD39CA99005098DA8FD8D1C52DB944A6445`.
+- Functional/artifact source commit:
+  `9966edfa160ed4d898482f754a6b8abf1f9ebc11`.
+- DLL SHA-256: `B8586B620413F0C0442B60FC0911395550C6B049AD8FF01F78B93A10B962B37D`.
+- DLL MVID: `13ba0899-9970-4403-ae00-e6ac32ffe473`.
+- Package SHA-256: `0FEAE10BA8DC5941C2C536C2AA3AF7C2BFECA2C2B1B5EBFF1B0300A3DF0DEF0C`.
 - Eastern bundle SHA-256:
   `39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC`.
 
@@ -68,14 +69,48 @@ and negative controls; main-hand, offhand, repeated, Haste, and switching Speed
 attack counts; native Brilliant Energy living/undead behavior; and exact
 fixture cleanup.
 
-## Pending final qualification
+## Final seal
 
-- Final-candidate reruns of compatibility profiles after expanded combat
-  instrumentation is sealed.
-- All 64 feature-module states.
-- Canonical non-mutating working-save smoke.
-- Final sealed package identity comparison.
-- Human subjective visual acceptance.
+- Complete 64-state fresh-launch module matrix: PASS. All 64 rows were unique,
+  used commit `9966edfa160ed4d898482f754a6b8abf1f9ebc11`, version
+  `0.0.80-eastern-weapons`, DLL SHA-256
+  `B8586B620413F0C0442B60FC0911395550C6B049AD8FF01F78B93A10B962B37D`,
+  MVID `13ba0899-9970-4403-ae00-e6ac32ffe473`, and restored settings to
+  SHA-256 `2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`.
+  First run: `20260814T1737485270891Z-dd22caf63606447f8368d22eacaa1b50`;
+  last run: `20260814T2009427225332Z-54c3d2eeec7143fabadd3e917f4787cd`.
+- Final Call of the Wild transaction
+  `compat-20260814T201218Z-6b342ec27bb6`: PASS, optional/module/combat runs
+  `20260814T2013232970413Z-f2324298cc5f4675959e08a43a751893`,
+  `20260814T2015470027632Z-71dbd6469cf641a98232374f0fb2af84`, and
+  `20260814T2018083297181Z-7ebbd6209e9d48288fef67ad8142baf9`.
+- Final Arms and Armor transaction
+  `compat-20260814T202007Z-01aa6b79327e`: PASS, optional/module/combat runs
+  `20260814T2020585890813Z-8dba02841c8641e1998f9a92bde38fc2`,
+  `20260814T2022466488993Z-770ce3ea86784697a0377f6ad486209b`, and
+  `20260814T2024324375423Z-ac9e6c263c134296916cdd2524ddc14b`.
+- Final Toggle Custom Soundpacks transaction
+  `compat-20260814T202553Z-30cffa4906c4`: PASS, optional/combat runs
+  `20260814T2026432084296Z-364cdc40e3a74c32963e738f5d91fb3d` and
+  `20260814T2028305992456Z-32cb19aab02e47f9aec921dcd63fd031`.
+- Final maximum-combined transaction
+  `compat-20260814T202953Z-d5d917889541`: PASS, optional/module/combat runs
+  `20260814T2030427202274Z-d1aa41d6a7364f01855dceac7c13daa2`,
+  `20260814T2032292632857Z-1ad250973e0944e097c5d6f09a07dc67`, and
+  `20260814T2034139757084Z-d6259b3e22e140968cd79144ca36358c`.
+  Every final transaction restored the complete Mods tree exactly.
+- Final expanded save-free combat: PASS, run
+  `20260814T2047053937321Z-ed49c4c646a140609e6b84d52900adc9`, all 18
+  assertions, exact artifact source and loaded DLL identity, no save access.
+- Canonical non-mutating working-save smoke: PASS, run
+  `20260814T2051106519178Z-a9571d847397477b893818601c4a00ab`.
+  The exact `KMG_AUTOMATION_WORKING` descriptor and fingerprint correlated;
+  no save-writing API was observed.
+- Built, packaged, installed, and runtime-loaded DLL identity comparison:
+  PASS, all SHA-256
+  `B8586B620413F0C0442B60FC0911395550C6B049AD8FF01F78B93A10B962B37D`.
+- Human subjective visual acceptance remains **PENDING HUMAN REVIEW** and is
+  not represented as an automated PASS.
 
 ## Expanded combat iteration
 

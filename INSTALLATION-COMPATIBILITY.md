@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.79-elven-branched-spear.zip` with Unity Mod
+2. Install the standalone `KingmakerGunslinger-0.0.80-eastern-weapons.zip` with Unity Mod
    Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.79 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.80 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -44,10 +44,11 @@ explicitly documented as qualified.
 ## Feature-module settings
 
 The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,
-Expanded Summoning, and Elven Branched Spears checkboxes. All default ON. A
-change is saved for the next complete game restart; the panel reports active
-and pending state separately. Older settings migrate to schema 4 while
-preserving explicit values and defaulting an absent spear key ON.
+Expanded Summoning, Elven Branched Spears, and Eastern Weapons checkboxes. All
+default ON. A change is saved for the next complete game restart; the panel
+reports active and pending state separately. Older settings migrate to schema
+5 while preserving explicit values and defaulting absent spear and Eastern
+Weapons keys ON.
 
 Turning a module OFF removes its content only from new public choices and
 acquisition paths. It does not unregister identities, strip an existing
@@ -62,7 +63,9 @@ There is no uninstall cleanup or general uninstall-safe-save claim. Saves may
 retain references to the Gunslinger class, progression features, abilities,
 resources, firearm/ammunition/repair-kit blueprints, item-owned firearm
 state-token enchantments, summon abilities, summon units, Elven Branched Spear
-items, the spear category, selected spear features, enchantments, and buffs.
+items, the spear category, selected spear features, Eastern Weapon items and
+categories, selected Eastern proficiency or chosen-weapon facts,
+enchantments, and buffs.
 Removing the mod while such references remain can
 make a save fail to load or leave missing/invalid content.
 
@@ -90,6 +93,19 @@ Finesse and Trained Grace behavior, deliberate Dervish Dance exclusion, all
 six named effects, and restoration of the prior Mods tree. The custom model is
 project-owned; missing or rejected spear bundle data retains the native
 Longspear presentation without changing mechanics or save identity.
+
+Eastern Weapons passed all 64 six-module states and exact standalone, Call of
+the Wild, Arms and Armor, Toggle Custom Soundpacks negative-control, and
+maximum combined profiles. Katana grip-dependent proficiency, native fighter
+training, Wakizashi finesse, all five bespoke effects, all eighteen native
+enchantment arrays, Speed attack planning, Brilliant Energy exclusions,
+commerce, fixed loot, and module-disabled persistence were exercised in live
+guarded scenarios. Arms and Armor required one narrow, reflection-only bridge
+for its hard-coded versatile-weapon classifier; the bridge recognizes only the
+exact KMG Katana type and changes no foreign identity or blueprint. The exact
+local Arms and Armor build contains no Katana, Wakizashi, or Nodachi provider,
+so no duplicate-name or cross-proficiency bridge is needed. Every compatibility
+transaction restored the complete Mods tree exactly.
 
 - This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
   and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.

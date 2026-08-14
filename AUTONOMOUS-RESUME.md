@@ -1,5 +1,32 @@
 # Autonomous Gunslinger resume handoff
 
+## Eastern Weapons release candidate (automated qualification complete, 2026-08-14)
+
+- Branch `codex/eastern-weapons` is based on
+  `4ffd15b09992bd9cee9d330eee0a650ad2c94661`. Final functional/artifact source
+  is `9966edfa160ed4d898482f754a6b8abf1f9ebc11`; release identity is
+  `0.0.80-eastern-weapons`.
+- The default-on sixth module supplies three stable categories, 12 generic and
+  18 named weapons, 46 persistent identities, three original equipped models,
+  six icons, 49 base-vendor rows, 11 fixed-loot rows, and 48 BTSL rows.
+- **Weapon Proficiency (Katana)** and **Weapon Proficiency (Wakizashi)** follow
+  the repaired **Weapon Proficiency (Elven Branched Spear)** structure. Katana
+  grip-dependent proficiency, native fighter groups, Wakizashi finesse, all
+  named arrays, five bespoke effects, Speed, and Brilliant Energy passed live
+  positive and negative controls.
+- Repository validation, 1,047/1,047 tests, clean Release build, strict package
+  validation, final combat, commerce, persistence, all compatibility profiles,
+  all 64 module states, and canonical non-mutating working-save smoke pass.
+  Final DLL/package/bundle SHA-256 values are `B8586B62...B37D`,
+  `0FEAE10B...DEF0C`, and `39884FF6...1EC` respectively; DLL MVID is
+  `13ba0899-9970-4403-ae00-e6ac32ffe473`.
+- Tabletop Deadly is deferred because the installed engine has no reliable
+  coup-de-grace DC hook. Subjective model appearance remains pending the exact
+  human checklist; no automated visual-acceptance claim was made.
+- The protected baseline was untouched; the working-save persistence sequence
+  made exactly two authorized writes and cleaned its fixtures; all settings and
+  compatibility transactions restored exactly. Never merge autonomously.
+
 ## Elven Branched Spear first-playtest repair (complete, 2026-08-14)
 
 - Final EWP follow-up source is

@@ -1,5 +1,20 @@
 # Known issues and conservative adaptations
 
+- Eastern Weapons' subjective equipped-model appearance remains pending human
+  review across the rigs, armor, animations, grips, and size-changing cases in
+  `docs/EASTERN-WEAPONS-MANUAL-ACCEPTANCE.md`. Automated checks prove bundle,
+  prefab, renderer, material, anchor, bounds, fallback, and cleanup structure;
+  they are not a claim of aesthetic acceptance.
+- `DEFERRED  ENGINE HAS NO RELIABLE COUP-DE-GRACE DC HOOK`. Tabletop Deadly is
+  therefore omitted from Wakizashi and Katana. It is not approximated with
+  ordinary damage and is not claimed in player-facing item text.
+- Nodachi intentionally has no Brace behavior because Kingmaker lacks the
+  relevant readied-action system. Its Polearms fighter-group membership does
+  not add reach or change its two-handed sword animation.
+- The exact qualified Arms and Armor build supplies no overlapping Katana,
+  Wakizashi, or Nodachi content, so Eastern Weapons has no known optional-mod
+  duplicate-name presentation limitation in the tested profiles.
+
 - Expanded Summoning uses only existing Kingmaker views. Proxy appearance is
   mechanically reconstructed but cannot perfectly match every tabletop body.
   The final manual checklist covers residual aesthetic judgment for scale,

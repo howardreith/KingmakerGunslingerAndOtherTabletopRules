@@ -11,15 +11,19 @@ Feature settings schema: 5
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
-Blueprint ledger: 1511 active; 1 reserved; 1512 total
-Runtime registration count: 1511 in all 64 feature-module states
-Dependency-free domain tests: pending final Eastern Weapons qualification
+Blueprint ledger: 1513 active; 1 reserved; 1514 total
+Runtime registration count: 1513 in all 64 feature-module states
+Eastern Weapons catalog: 3 categories; 12 generic items; 18 named items; 30 total
+Eastern Weapons assets: 3 original equipped models; 6 original production icons
+Dependency-free domain tests: PASS 1047/1047
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
 Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified
 Package: KingmakerGunslinger-0.0.80-eastern-weapons.zip
-Artifact source: pending final Eastern Weapons qualification
-DLL SHA-256: pending final Eastern Weapons qualification
-Package SHA-256: pending final Eastern Weapons qualification
+Artifact source: 9966edfa160ed4d898482f754a6b8abf1f9ebc11
+DLL SHA-256: B8586B620413F0C0442B60FC0911395550C6B049AD8FF01F78B93A10B962B37D
+DLL MVID: 13ba0899-9970-4403-ae00-e6ac32ffe473
+Package SHA-256: 0FEAE10BA8DC5941C2C536C2AA3AF7C2BFECA2C2B1B5EBFF1B0300A3DF0DEF0C
+Eastern Weapons bundle SHA-256: 39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC
 Source archive SHA-256: not produced by the standalone package workflow
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.
