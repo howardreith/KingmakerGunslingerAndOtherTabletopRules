@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -49,17 +48,23 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 BriarGeneratedOpportunityAttackTracker.IsRunning(evt.Initiator);
             bool used = HasBuff(evt.Initiator, RoundMarker);
             int sneakDamage = AppliedSneakDamage(evt);
+            NamedSpearEffectDiagnostics.RecordEvaluation(Kind, hit,
+                opportunity, movement, generated, sneakDamage);
 
             switch (Kind)
             {
                 case NamedSpearKind.Boughkeeper:
                     if (NamedSpearEffectPolicy.Boughkeeper(hit, opportunity))
+                    {
+                        NamedSpearEffectDiagnostics.RecordApplication(Kind);
                         Refresh(evt.Initiator, EffectBuff);
+                    }
                     break;
                 case NamedSpearKind.Thornstep:
                     if (NamedSpearEffectPolicy.Thornstep(hit, opportunity,
                             movement, used))
                     {
+                        NamedSpearEffectDiagnostics.RecordApplication(Kind);
                         Mark(evt.Initiator);
                         Refresh(evt.Target, EffectBuff);
                     }
@@ -68,6 +73,7 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                     if (NamedSpearEffectPolicy.VipersReach(
                             evt.AttackRoll.IsSneakAttackUsed, sneakDamage, used))
                     {
+                        NamedSpearEffectDiagnostics.RecordApplication(Kind);
                         Mark(evt.Initiator);
                         Refresh(evt.Target, EffectBuff);
                     }
@@ -77,6 +83,7 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                     if (NamedSpearEffectPolicy.BriarCrowned(hit, opportunity,
                             generated, used, remaining))
                     {
+                        NamedSpearEffectDiagnostics.RecordApplication(Kind);
                         Mark(evt.Initiator);
                         GenerateBriarAttack(evt.Initiator, evt.Target);
                     }
@@ -86,6 +93,7 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                             evt.AttackRoll.IsSneakAttackUsed, sneakDamage, used,
                             generated))
                     {
+                        NamedSpearEffectDiagnostics.RecordApplication(Kind);
                         Mark(evt.Initiator);
                         ResolveFirstBranch(evt.Initiator, evt.Target);
                     }
@@ -99,7 +107,10 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             if (Kind == NamedSpearKind.BriarCrownedSpear && evt != null &&
                 ReferenceEquals(evt.Weapon, Owner) && evt.Initiator != null &&
                 BriarGeneratedOpportunityAttackTracker.IsRunning(evt.Initiator))
+            {
                 evt.AddBonus(-5, Fact);
+                NamedSpearEffectDiagnostics.RecordBriarPenalty();
+            }
         }
 
         public void OnEventDidTrigger(
@@ -153,7 +164,15 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         {
             if (attacker == null || attacker.CombatState == null || target == null)
                 return;
-            attacker.CombatState.AttackOfOpportunity(target, false);
+            BriarGeneratedOpportunityAttackTracker.EnterGeneration();
+            try
+            {
+                attacker.CombatState.AttackOfOpportunity(target, false);
+            }
+            finally
+            {
+                BriarGeneratedOpportunityAttackTracker.ExitGeneration();
+            }
         }
 
         private void ResolveFirstBranch(UnitEntityData attacker,
@@ -174,6 +193,85 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                     TimeSpan.FromSeconds(6d));
             NamedSpearCombatLog.Publish(target.CharacterName, dc,
                 saving.RollResult, saving.IsPassed);
+            NamedSpearEffectDiagnostics.RecordFirstBranchSave(dc,
+                saving.RollResult, saving.IsPassed);
+        }
+    }
+
+    internal static class NamedSpearEffectDiagnostics
+    {
+        private static readonly object Gate = new object();
+        private static readonly int[] Evaluated = new int[6];
+        private static readonly int[] Applied = new int[6];
+
+        internal static int MovementEvaluations { get; private set; }
+        internal static int GeneratedEvaluations { get; private set; }
+        internal static int PositiveSneakDamage { get; private set; }
+        internal static int BriarPenaltyApplications { get; private set; }
+        internal static int FirstBranchSaves { get; private set; }
+        internal static int LastFirstBranchDc { get; private set; }
+        internal static int LastFirstBranchRoll { get; private set; }
+        internal static bool LastFirstBranchPassed { get; private set; }
+
+        internal static void Reset()
+        {
+            lock (Gate)
+            {
+                Array.Clear(Evaluated, 0, Evaluated.Length);
+                Array.Clear(Applied, 0, Applied.Length);
+                MovementEvaluations = 0;
+                GeneratedEvaluations = 0;
+                PositiveSneakDamage = 0;
+                BriarPenaltyApplications = 0;
+                FirstBranchSaves = 0;
+                LastFirstBranchDc = 0;
+                LastFirstBranchRoll = 0;
+                LastFirstBranchPassed = false;
+            }
+        }
+
+        internal static int EvaluationCount(NamedSpearKind kind)
+        {
+            lock (Gate) return Evaluated[(int)kind];
+        }
+
+        internal static int ApplicationCount(NamedSpearKind kind)
+        {
+            lock (Gate) return Applied[(int)kind];
+        }
+
+        internal static void RecordEvaluation(NamedSpearKind kind, bool hit,
+            bool opportunity, bool movement, bool generated, int sneakDamage)
+        {
+            lock (Gate)
+            {
+                Evaluated[(int)kind]++;
+                if (movement) MovementEvaluations++;
+                if (generated) GeneratedEvaluations++;
+                if (sneakDamage > 0) PositiveSneakDamage += sneakDamage;
+            }
+        }
+
+        internal static void RecordApplication(NamedSpearKind kind)
+        {
+            lock (Gate) Applied[(int)kind]++;
+        }
+
+        internal static void RecordBriarPenalty()
+        {
+            lock (Gate) BriarPenaltyApplications++;
+        }
+
+        internal static void RecordFirstBranchSave(int dc, int roll,
+            bool passed)
+        {
+            lock (Gate)
+            {
+                FirstBranchSaves++;
+                LastFirstBranchDc = dc;
+                LastFirstBranchRoll = roll;
+                LastFirstBranchPassed = passed;
+            }
         }
     }
 
@@ -225,49 +323,47 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         private static readonly ConditionalWeakTable<UnitAttackOfOpportunity, Marker>
             Commands = new ConditionalWeakTable<UnitAttackOfOpportunity, Marker>();
 
+        [ThreadStatic]
+        private static UnitAttackOfOpportunity ActiveGeneratedAttack;
+        [ThreadStatic]
+        private static int GenerationDepth;
+
         internal static bool IsRunning(UnitEntityData attacker)
         {
-            if (attacker == null || attacker.Commands == null) return false;
-            foreach (Kingmaker.UnitLogic.Commands.Base.UnitCommand command in
-                attacker.GetAllCommands())
-            {
-                UnitAttackOfOpportunity opportunity =
-                    command as UnitAttackOfOpportunity;
-                Marker marker;
-                if (opportunity != null && opportunity.IsRunning &&
-                    Commands.TryGetValue(opportunity, out marker)) return true;
-            }
-            return false;
+            return attacker != null && ActiveGeneratedAttack != null &&
+                ReferenceEquals(ActiveGeneratedAttack.Executor, attacker);
+        }
+
+        internal static bool EnterOpportunityAction(
+            UnitAttackOfOpportunity opportunity)
+        {
+            Marker marker;
+            bool generated = opportunity != null && Commands.TryGetValue(
+                opportunity, out marker);
+            if (generated) ActiveGeneratedAttack = opportunity;
+            return generated;
+        }
+
+        internal static void ExitOpportunityAction(bool entered)
+        {
+            if (entered) ActiveGeneratedAttack = null;
+        }
+
+        internal static void EnterGeneration()
+        {
+            GenerationDepth++;
+        }
+
+        internal static void ExitGeneration()
+        {
+            if (GenerationDepth > 0) GenerationDepth--;
         }
 
         internal static void Mark(UnitAttackOfOpportunity command)
         {
-            if (command == null || !IsGeneratedBoundary(new StackTrace(1, false)))
-                return;
+            if (command == null || GenerationDepth <= 0) return;
             Commands.Remove(command);
             Commands.Add(command, new Marker());
-        }
-
-        internal static bool IsGeneratedBoundary(StackTrace trace)
-        {
-            if (trace == null) return false;
-            bool sawFactory = false;
-            foreach (StackFrame frame in trace.GetFrames() ??
-                Array.Empty<StackFrame>())
-            {
-                MethodBase method = frame == null ? null : frame.GetMethod();
-                if (method == null) continue;
-                if (method.DeclaringType == typeof(Kingmaker.Controllers.Combat
-                        .UnitCombatState) && string.Equals(method.Name,
-                        "AttackOfOpportunity", StringComparison.Ordinal))
-                    sawFactory = true;
-                else if (sawFactory && method.DeclaringType ==
-                        typeof(NamedSpearEffectComponent) && string.Equals(
-                        method.Name, "GenerateBriarAttack",
-                        StringComparison.Ordinal))
-                    return true;
-            }
-            return false;
         }
     }
 
@@ -277,6 +373,23 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
     {
         private static void Postfix(UnitAttackOfOpportunity __instance)
         { BriarGeneratedOpportunityAttackTracker.Mark(__instance); }
+    }
+
+    [HarmonyPatch(typeof(UnitAttackOfOpportunity), "OnAction")]
+    internal static class BriarOpportunityActionBoundaryPatch
+    {
+        private static void Prefix(UnitAttackOfOpportunity __instance,
+            out bool __state)
+        {
+            __state = BriarGeneratedOpportunityAttackTracker
+                .EnterOpportunityAction(__instance);
+        }
+
+        private static void Postfix(bool __state)
+        {
+            BriarGeneratedOpportunityAttackTracker.ExitOpportunityAction(
+                __state);
+        }
     }
 
     internal static class NamedSpearCombatLog

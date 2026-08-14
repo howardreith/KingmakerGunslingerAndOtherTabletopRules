@@ -36,3 +36,17 @@ item blueprint owns the final price.
 
 These are catalog prices, not evidence of campaign availability. Placement and
 chapter timing are qualified separately in the placement manifest.
+
+## Runtime behavior qualification
+
+Guarded Steam run
+`20260814T0057261040998Z-disposable-elven-branched-spear-combat` passed the
+complete named-effect matrix on live request-local units. The observed values
+matched the power boundaries used above: Boughkeeper contributed exactly +1
+Dodge AC; Thornstep contributed exactly -10 Speed; Viper's Reach contributed
+exactly -2 Reflex after a 15-point native sneak packet; Briar-Crowned's single
+generated attack was exactly -5 and consumed the native AoO resource; First
+Branch used DC 15, applied native Entangled on failure and -10 Speed on success,
+and accepted a separate 13-point native sneak packet. Same-round repetitions
+were suppressed, refreshable effects remained count one, and generated attacks
+did not recurse.

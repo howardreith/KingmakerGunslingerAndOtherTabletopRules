@@ -448,3 +448,51 @@ baseline, Weapon Finesse, Finesse Training, native Agile, Agile plus Finesse
 Training, all 12 spear variants, selector cardinality, custom prefab choice,
 and complete request-local cleanup. Named-effect behavior and save-backed
 ownership remain separate qualification checkpoints.
+
+## Live named-item combat checkpoint
+
+Guarded fresh Steam run
+`20260814T0057261040998Z-disposable-elven-branched-spear-combat` passed with
+the same save-free fixture after extending it to the complete named-item
+matrix. The scenario used native `RuleAttackWithWeapon`, timed buffs, native
+stat modifiers, native `RuleSavingThrow`, the native AoO command economy, and
+real-time-mode flanking established by two allied engagement and targeting
+commands. It did not set sneak eligibility or manufacture a damage packet.
+
+Observed results were:
+
+- Boughkeeper rejected an ordinary hit, applied one +1 Dodge AC modifier on
+  each of two AoO hits, refreshed one six-second buff, rejected an AoO miss,
+  and lost its AC contribution after the exact weapon was swapped out.
+- Thornstep rejected a direct nonmovement AoO, applied speed 30 to 20 on a
+  Disengage-correlated movement AoO, suppressed a second same-round trigger,
+  refreshed after removal of the round marker, retained one penalty buff, and
+  restored speed to 30 after removal.
+- Viper's Reach rejected ordinary damage. A native flanking attack recorded
+  `IsSneakAttackUsed=True`, applied 15 positive damage from sources tagged
+  `Sneak`, changed Reflex 0 to -2, suppressed a repeated same-round trigger,
+  retained one penalty buff, and restored Reflex to 0.
+- Briar-Crowned generated exactly one native same-target opportunity command.
+  The source attack bonus was 109 and the generated result was 104; one -5
+  source was observed. Native remaining AoOs were two after the original and
+  generated commands consumed their resources. The generated command was
+  recognized once and produced no recursive application. With only one AoO
+  available, the source command did not generate another.
+- First Branch computed DC 15 exactly from the request unit's level and
+  Dexterity. The low-Fortitude branch failed and received the native Entangled
+  buff; the high-Fortitude branch succeeded and received the speed penalty.
+  A separate native flanking attack applied 13 positive sneak damage and
+  produced one save, while a repeated attack under the shared marker produced
+  none. An explicitly marked generated AoO produced neither an application nor
+  a saving throw.
+- Moonlit Fork and Spear of the First Branch both exposed native Cold Iron
+  damage material at runtime; their complete native enchantment arrays
+  resolved. All request-local units, commands, facts, items, and buffs cleaned
+  up and the global unit snapshot was restored.
+
+The Briar command marker no longer depends on stack-trace inference. The
+production boundary increments a thread-local generation depth only around the
+exact `AttackOfOpportunity` factory call, marks the constructed command in a
+`ConditionalWeakTable`, and exposes it only during that command's exact
+`OnAction`. This is the same fail-closed shape used for movement provenance and
+ties both the -5 modifier and recursion guard to one native generated command.

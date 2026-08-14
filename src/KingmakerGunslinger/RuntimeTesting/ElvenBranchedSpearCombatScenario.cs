@@ -14,11 +14,15 @@ using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
+using Kingmaker.Enums.Damage;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UI.LevelUp;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Assets;
@@ -330,9 +334,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     MovementOpportunityAccuracyDiagnostics.Applied == 2 &&
                     MovementOpportunityAccuracyDiagnostics.LastBonus == 2,
                     "live UnitCombatState.AttackOfOpportunity versus Engage/Disengage command construction and native attack-bonus rule");
+                stage = "named-effects";
+                string named = QualifyNamedEffects(set, attacker, target,
+                    ref equipped, assertions);
                 diagnostics.Add(movementObserved);
                 diagnostics.Add(baselineDex);
                 diagnostics.Add(agileObserved);
+                diagnostics.Add(named);
             }
             catch (Exception exception)
             {
@@ -411,6 +419,321 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
         }
 
+        private static string QualifyNamedEffects(
+            ElvenBranchedSpearBlueprintSet set, UnitEntityData attacker,
+            UnitEntityData target, ref ItemEntityWeapon equipped,
+            ICollection<RuntimeTestAssertion> assertions)
+        {
+            NamedSpearBuffSet buffs = set.Named.Buffs;
+            int originalBab = attacker.Descriptor.Stats.BaseAttackBonus.BaseValue;
+            int originalSneak = attacker.Descriptor.Stats.SneakAttack.BaseValue;
+            int originalFortitude = target.Descriptor.Stats.SaveFortitude.BaseValue;
+            int seed = FindNativeD20Seed(10);
+            var observed = new List<string>();
+            UnitEntityData flankingAlly = null;
+            try
+            {
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+
+                RemoveEquipped(attacker, ref equipped);
+                equipped = Equip(attacker, set.Named.Require(
+                    NamedSpearKind.Boughkeeper).Item);
+                ClearNamedBuffs(attacker, target, buffs);
+                NamedSpearEffectDiagnostics.Reset();
+                int armorBefore = attacker.Descriptor.Stats.AC.ModifiedValue;
+                AutoHitAttack(attacker, target, equipped);
+                bool ordinaryBough = HasBuff(attacker, buffs.Boughkeeper);
+                ExecuteFreshOpportunity(attacker, target, false, seed);
+                Buff bough = GetBuff(attacker, buffs.Boughkeeper);
+                int armorWithBough = attacker.Descriptor.Stats.AC.ModifiedValue;
+                ExecuteFreshOpportunity(attacker, target, false, seed);
+                int boughCount = CountBuff(attacker, buffs.Boughkeeper);
+                int boughApplications = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.Boughkeeper);
+                RemoveEquipped(attacker, ref equipped);
+                equipped = Equip(attacker, set.Require(
+                    ElvenBranchedSpearItemKind.Mundane).Item);
+                int armorAfterSwap = attacker.Descriptor.Stats.AC.ModifiedValue;
+                RemoveEquipped(attacker, ref equipped);
+                equipped = Equip(attacker, set.Named.Require(
+                    NamedSpearKind.Boughkeeper).Item);
+                RemoveBuff(attacker, buffs.Boughkeeper);
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+                ExecuteFreshOpportunity(attacker, target, false, seed);
+                int boughAfterMiss = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.Boughkeeper);
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                string boughObserved = "ordinary=" + ordinaryBough +
+                    ";ac=" + armorBefore + "->" + armorWithBough + "->" +
+                    armorAfterSwap + ";applications=" + boughApplications +
+                    "->" + boughAfterMiss + ";buffs=" + boughCount +
+                    ";duration=" + (bough == null ? -1d :
+                        bough.TimeLeft.TotalSeconds);
+                Add(assertions, "spear-named-boughkeeper",
+                    "ordinary hit and AoO miss rejected; AoO hits refresh one +1 dodge buff; swap invalidates AC",
+                    boughObserved, !ordinaryBough && bough != null &&
+                    armorWithBough == armorBefore + 1 && boughCount == 1 &&
+                    boughApplications == 2 && boughAfterMiss == 2 &&
+                    armorAfterSwap == armorBefore && bough.TimeLeft >
+                        TimeSpan.Zero && bough.TimeLeft <=
+                        TimeSpan.FromSeconds(6.1d),
+                    "live native attacks, timed buff, Dodge modifier, and equipment callbacks");
+                observed.Add("bough{" + boughObserved + "}");
+
+                RemoveEquipped(attacker, ref equipped);
+                equipped = Equip(attacker, set.Named.Require(
+                    NamedSpearKind.Thornstep).Item);
+                ClearNamedBuffs(attacker, target, buffs);
+                NamedSpearEffectDiagnostics.Reset();
+                int speedBefore = target.Descriptor.Stats.Speed.ModifiedValue;
+                ExecuteFreshOpportunity(attacker, target, false, seed);
+                int thornAfterDirect = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.Thornstep);
+                ExecuteFreshOpportunity(attacker, target, true, seed);
+                Buff thorn = GetBuff(target, buffs.ThornPenalty);
+                Buff thornMarker = GetBuff(attacker, buffs.ThornMarker);
+                int speedPenalized = target.Descriptor.Stats.Speed.ModifiedValue;
+                ExecuteFreshOpportunity(attacker, target, true, seed);
+                int thornAfterRepeat = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.Thornstep);
+                RemoveBuff(attacker, buffs.ThornMarker);
+                ExecuteFreshOpportunity(attacker, target, true, seed);
+                int thornAfterNextRound = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.Thornstep);
+                int thornCount = CountBuff(target, buffs.ThornPenalty);
+                RemoveBuff(target, buffs.ThornPenalty);
+                int speedRestored = target.Descriptor.Stats.Speed.ModifiedValue;
+                string thornObserved = "applications=" + thornAfterDirect +
+                    "->" + thornAfterRepeat + "->" + thornAfterNextRound +
+                    ";speed=" + speedBefore + "->" + speedPenalized + "->" +
+                    speedRestored + ";buffs=" + thornCount + ";movement=" +
+                    NamedSpearEffectDiagnostics.MovementEvaluations;
+                Add(assertions, "spear-named-thornstep",
+                    "nonmovement rejected; movement AoO applies one -10 speed effect per round; next round refreshes; removal restores",
+                    thornObserved, thornAfterDirect == 0 && thorn != null &&
+                    thornMarker != null && speedPenalized == speedBefore - 10 &&
+                    thornAfterRepeat == 1 && thornAfterNextRound == 2 &&
+                    thornCount == 1 && speedRestored == speedBefore,
+                    "live Disengage-correlated AoOs, one-round marker, and native Speed stat buff");
+                observed.Add("thorn{" + thornObserved + "}");
+
+                RemoveEquipped(attacker, ref equipped);
+                equipped = Equip(attacker, set.Named.Require(
+                    NamedSpearKind.VipersReach).Item);
+                ClearNamedBuffs(attacker, target, buffs);
+                NamedSpearEffectDiagnostics.Reset();
+                int reflexBefore = target.Descriptor.Stats.SaveReflex.ModifiedValue;
+                RuleAttackWithWeapon ordinaryViper = AutoHitAttack(attacker,
+                    target, equipped);
+                int viperAfterOrdinary = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.VipersReach);
+                attacker.Descriptor.Stats.SneakAttack.BaseValue = 3;
+                flankingAlly = CreateFlankingAlly(attacker, target);
+                RuleAttackWithWeapon sneakViper = NativeHitAttack(attacker,
+                    target, equipped, seed);
+                int appliedSneak = AppliedSneakDamage(sneakViper);
+                int reflexPenalized = target.Descriptor.Stats.SaveReflex.ModifiedValue;
+                int viperAfterSneak = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.VipersReach);
+                NativeHitAttack(attacker, target, equipped, seed);
+                int viperAfterRepeat = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.VipersReach);
+                int viperCount = CountBuff(target, buffs.ViperPenalty);
+                RemoveBuff(target, buffs.ViperPenalty);
+                int reflexRestored = target.Descriptor.Stats.SaveReflex.ModifiedValue;
+                string viperObserved = "ordinarySneak=" +
+                    ordinaryViper.AttackRoll.IsSneakAttackUsed +
+                    ";sneakUsed=" + sneakViper.AttackRoll.IsSneakAttackUsed +
+                    ";sneakDamage=" + appliedSneak + ";applications=" +
+                    viperAfterOrdinary + "->" + viperAfterSneak + "->" +
+                    viperAfterRepeat + ";reflex=" + reflexBefore + "->" +
+                    reflexPenalized + "->" + reflexRestored + ";buffs=" +
+                    viperCount;
+                Add(assertions, "spear-named-vipers-reach",
+                    "ordinary damage rejected; positive native sneak packet applies one -2 Reflex effect per round; removal restores",
+                    viperObserved, !ordinaryViper.AttackRoll.IsSneakAttackUsed &&
+                    sneakViper.AttackRoll.IsSneakAttackUsed && appliedSneak > 0 &&
+                    viperAfterOrdinary == 0 && viperAfterSneak == 1 &&
+                    viperAfterRepeat == 1 && viperCount == 1 &&
+                    reflexPenalized == reflexBefore - 2 &&
+                    reflexRestored == reflexBefore,
+                    "live flat-footed RuleAttackWithWeapon damage values whose source is Sneak");
+                observed.Add("viper{" + viperObserved + "}");
+
+                RemoveEquipped(attacker, ref equipped);
+                equipped = Equip(attacker, set.Named.Require(
+                    NamedSpearKind.BriarCrownedSpear).Item);
+                ClearNamedBuffs(attacker, target, buffs);
+                NamedSpearEffectDiagnostics.Reset();
+                attacker.Commands.InterruptAll(true);
+                PrepareOpportunity(attacker, target);
+                SetProperty(attacker.CombatState, "AttackOfOpportunityCount", 4);
+                attacker.CombatState.AttackOfOpportunity(target, false);
+                UnitAttackOfOpportunity sourceCommand = FindOpportunity(attacker,
+                    target, null);
+                UnityEngine.Random.InitState(seed);
+                int sourceBonus = ExecuteOpportunityCommand(sourceCommand);
+                UnitAttackOfOpportunity generatedCommand = FindOpportunity(
+                    attacker, target, sourceCommand);
+                int countAfterGeneration = attacker.CombatState
+                    .AttackOfOpportunityCount;
+                UnityEngine.Random.InitState(seed);
+                int generatedBonus = ExecuteOpportunityCommand(generatedCommand);
+                int commandCountAfterGenerated = attacker.Commands.Raw
+                    .OfType<UnitAttackOfOpportunity>().Count(value =>
+                        ReferenceEquals(value.Target, target));
+                int briarApplications = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.BriarCrownedSpear);
+                int briarGenerated = NamedSpearEffectDiagnostics
+                    .GeneratedEvaluations;
+                int briarPenalties = NamedSpearEffectDiagnostics
+                    .BriarPenaltyApplications;
+                attacker.Commands.InterruptAll(true);
+                RemoveBuff(attacker, buffs.BriarMarker);
+                NamedSpearEffectDiagnostics.Reset();
+                PrepareOpportunity(attacker, target);
+                SetProperty(attacker.CombatState, "AttackOfOpportunityCount", 1);
+                attacker.CombatState.AttackOfOpportunity(target, false);
+                UnitAttackOfOpportunity lastOpportunity = FindOpportunity(
+                    attacker, target, null);
+                UnityEngine.Random.InitState(seed);
+                ExecuteOpportunityCommand(lastOpportunity);
+                int noResourceCommands = attacker.Commands.Raw
+                    .OfType<UnitAttackOfOpportunity>().Count(value =>
+                        ReferenceEquals(value.Target, target));
+                string briarObserved = "bonus=" + sourceBonus + "->" +
+                    generatedBonus + ";remaining=" + countAfterGeneration +
+                    ";commands=" + commandCountAfterGenerated +
+                    ";applications=" + briarApplications + ";generated=" +
+                    briarGenerated + ";penalties=" + briarPenalties +
+                    ";noResourceCommands=" + noResourceCommands;
+                Add(assertions, "spear-named-briar-crowned",
+                    "one generated same-target AoO consumes native resource, applies -5 once, cannot recurse, and requires another AoO",
+                    briarObserved, generatedCommand != null &&
+                    countAfterGeneration == 2 && generatedBonus ==
+                    sourceBonus - 5 && commandCountAfterGenerated == 1 &&
+                    briarApplications == 1 && briarGenerated == 1 &&
+                    briarPenalties == 1 && noResourceCommands == 1,
+                    "explicit generated-command boundary, native AoO count, and live attack bonus calculation");
+                observed.Add("briar{" + briarObserved + "}");
+
+                attacker.Commands.InterruptAll(true);
+                RemoveEquipped(attacker, ref equipped);
+                equipped = Equip(attacker, set.Named.Require(
+                    NamedSpearKind.SpearOfTheFirstBranch).Item);
+                ClearNamedBuffs(attacker, target, buffs);
+                NamedSpearEffectDiagnostics.Reset();
+                attacker.Descriptor.Stats.SneakAttack.BaseValue = 0;
+                target.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                ExecuteFreshOpportunity(attacker, target, false, seed);
+                Buff entangled = target.Descriptor.Buffs.GetBuff(
+                    FindFirstBranchEntangled(set));
+                int expectedDc = NamedSpearEffectPolicy
+                    .FirstBranchDifficultyClass(Math.Max(1, attacker.Descriptor
+                        .Progression.CharacterLevel), attacker.Descriptor.Stats
+                        .Dexterity.Bonus);
+                int savesAfterFailure = NamedSpearEffectDiagnostics.FirstBranchSaves;
+                bool failedSave = !NamedSpearEffectDiagnostics.LastFirstBranchPassed;
+                RemoveBuff(attacker, buffs.FirstMarker);
+                if (entangled != null)
+                    target.Descriptor.Buffs.RemoveFact(entangled);
+                target.Descriptor.Stats.SaveFortitude.BaseValue = 100;
+                ExecuteFreshOpportunity(attacker, target, false, seed);
+                Buff firstPenalty = GetBuff(target, buffs.FirstPenalty);
+                int savesAfterSuccess = NamedSpearEffectDiagnostics.FirstBranchSaves;
+                bool passedSave = NamedSpearEffectDiagnostics.LastFirstBranchPassed;
+                RemoveBuff(attacker, buffs.FirstMarker);
+                RemoveBuff(target, buffs.FirstPenalty);
+                attacker.Descriptor.Stats.SneakAttack.BaseValue = 3;
+                EstablishFlanking(attacker, flankingAlly, target);
+                int savesBeforeSneak = NamedSpearEffectDiagnostics.FirstBranchSaves;
+                RuleAttackWithWeapon firstSneak = NativeHitAttack(attacker,
+                    target, equipped, seed);
+                int firstSneakDamage = AppliedSneakDamage(firstSneak);
+                int savesAfterSneak = NamedSpearEffectDiagnostics.FirstBranchSaves;
+                NativeHitAttack(attacker, target, equipped, seed);
+                int savesAfterRepeat = NamedSpearEffectDiagnostics.FirstBranchSaves;
+                int observedFirstDc = NamedSpearEffectDiagnostics
+                    .LastFirstBranchDc;
+                RemoveBuff(attacker, buffs.FirstMarker);
+                RemoveBuff(target, buffs.FirstPenalty);
+                NamedSpearEffectDiagnostics.Reset();
+                attacker.Commands.InterruptAll(true);
+                PrepareOpportunity(attacker, target);
+                BriarGeneratedOpportunityAttackTracker.EnterGeneration();
+                try
+                {
+                    attacker.CombatState.AttackOfOpportunity(target, false);
+                }
+                finally
+                {
+                    BriarGeneratedOpportunityAttackTracker.ExitGeneration();
+                }
+                UnitAttackOfOpportunity markedGenerated = FindOpportunity(
+                    attacker, target, null);
+                UnityEngine.Random.InitState(seed);
+                ExecuteOpportunityCommand(markedGenerated);
+                int generatedFirstApplications = NamedSpearEffectDiagnostics
+                    .ApplicationCount(NamedSpearKind.SpearOfTheFirstBranch);
+                int generatedFirstSaves = NamedSpearEffectDiagnostics.FirstBranchSaves;
+                string firstObserved = "dc=" + observedFirstDc + "/" +
+                    expectedDc + ";failure=" + failedSave + "/" +
+                    savesAfterFailure + ";success=" + passedSave + "/" +
+                    savesAfterSuccess + ";sneak=" + firstSneakDamage + "/" +
+                    savesBeforeSneak + "->" + savesAfterSneak + "->" +
+                    savesAfterRepeat + ";generated=" +
+                    generatedFirstApplications + "/" + generatedFirstSaves;
+                Add(assertions, "spear-named-first-branch",
+                    "AoO failure Entangles; success slows; genuine sneak triggers once; repeated and generated attacks cannot recurse; DC exact",
+                    firstObserved, entangled != null && failedSave &&
+                    savesAfterFailure == 1 && firstPenalty != null && passedSave &&
+                    savesAfterSuccess == 2 && firstSneakDamage > 0 &&
+                    savesAfterSneak == savesBeforeSneak + 1 &&
+                    savesAfterRepeat == savesAfterSneak &&
+                    generatedFirstApplications == 0 && generatedFirstSaves == 0 &&
+                    observedFirstDc == expectedDc,
+                    "native Fortitude save, native Entangled condition, timed speed buff, sneak damage, and generated-command guard");
+                observed.Add("first{" + firstObserved + "}");
+
+                BlueprintItemWeapon moonlit = set.Named.Require(
+                    NamedSpearKind.MoonlitFork).Item;
+                BlueprintItemWeapon firstBranch = set.Named.Require(
+                    NamedSpearKind.SpearOfTheFirstBranch).Item;
+                PhysicalDamageMaterial moonlitMaterial = GetWeaponMaterial(
+                    moonlit);
+                PhysicalDamageMaterial firstMaterial = GetWeaponMaterial(
+                    firstBranch);
+                string nativeObserved = "moonlitMaterial=" + moonlitMaterial +
+                    ";firstMaterial=" + firstMaterial +
+                    ";moonlitEnchantments=" + moonlit.Enchantments.Count +
+                    ";firstEnchantments=" + firstBranch.Enchantments.Count;
+                Add(assertions, "spear-named-native-properties",
+                    "Moonlit Fork and First Branch are native cold iron; all approved enhancement enchantments resolve",
+                    nativeObserved, moonlitMaterial == PhysicalDamageMaterial
+                        .ColdIron && firstMaterial == PhysicalDamageMaterial
+                        .ColdIron &&
+                    moonlit.Enchantments.All(value => value != null) &&
+                    firstBranch.Enchantments.All(value => value != null),
+                    "live BlueprintItemWeapon material and enchantment references");
+                observed.Add("native{" + nativeObserved + "}");
+            }
+            finally
+            {
+                attacker.Commands.InterruptAll(true);
+                ClearNamedBuffs(attacker, target, buffs);
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = originalBab;
+                attacker.Descriptor.Stats.SneakAttack.BaseValue = originalSneak;
+                target.Descriptor.Stats.SaveFortitude.BaseValue = originalFortitude;
+                if (flankingAlly != null)
+                {
+                    if (flankingAlly.CombatState.IsInCombat)
+                        flankingAlly.CombatState.LeaveCombat();
+                    flankingAlly.Dispose();
+                }
+            }
+            return string.Join(";", observed.ToArray());
+        }
+
         private static ItemEntityWeapon Equip(UnitEntityData unit,
             BlueprintItemWeapon blueprint)
         {
@@ -420,6 +743,211 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "The spear did not remain in the primary hand.");
             return item;
+        }
+
+        private static RuleAttackWithWeapon AutoHitAttack(UnitEntityData unit,
+            UnitEntityData target, ItemEntityWeapon weapon)
+        {
+            int damage = target.Descriptor.Damage;
+            var attack = new RuleAttackWithWeapon(unit, target, weapon, 0)
+            {
+                AutoHit = true
+            };
+            Rulebook.Trigger(attack);
+            target.Descriptor.Damage = damage;
+            if (attack.AttackRoll == null || !attack.AttackRoll.IsHit)
+                throw new InvalidOperationException(
+                    "Native AutoHit spear attack did not hit.");
+            return attack;
+        }
+
+        private static RuleAttackWithWeapon NativeHitAttack(UnitEntityData unit,
+            UnitEntityData target, ItemEntityWeapon weapon, int seed)
+        {
+            int damage = target.Descriptor.Damage;
+            UnityEngine.Random.InitState(seed);
+            var attack = Rulebook.Trigger(new RuleAttackWithWeapon(unit, target,
+                weapon, 0));
+            target.Descriptor.Damage = damage;
+            if (attack.AttackRoll == null || !attack.AttackRoll.IsHit)
+                throw new InvalidOperationException(
+                    "The deterministic native spear attack did not hit.");
+            return attack;
+        }
+
+        private static int AppliedSneakDamage(RuleAttackWithWeapon attack)
+        {
+            if (attack == null || attack.MeleeDamage == null ||
+                attack.MeleeDamage.ResultDamage == null) return 0;
+            return attack.MeleeDamage.ResultDamage.Where(value =>
+                value.Source != null && value.Source.Sneak &&
+                !value.Source.Immune && value.FinalValue > 0)
+                .Sum(value => value.FinalValue);
+        }
+
+        private static UnitEntityData CreateFlankingAlly(
+            UnitEntityData attacker, UnitEntityData target)
+        {
+            UnitEntityData ally = new ChargenUnit(
+                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            if (ally == null) throw new InvalidOperationException(
+                "The request-local flanking ally could not be created.");
+            ally.CombatState.JoinCombat();
+            attacker.CombatState.Engage(target);
+            ally.CombatState.Engage(target);
+            EstablishFlanking(attacker, ally, target);
+            if (!target.CombatState.IsFlanked)
+            {
+                ally.Dispose();
+                throw new InvalidOperationException(
+                    "Two native allied engagements did not flank the target.");
+            }
+            return ally;
+        }
+
+        private static void EstablishFlanking(UnitEntityData attacker,
+            UnitEntityData ally, UnitEntityData target)
+        {
+            if (attacker == null || ally == null || target == null)
+                throw new ArgumentNullException("flanking fixture");
+            attacker.Commands.InterruptAll(true);
+            ally.Commands.InterruptAll(true);
+            RunTargetingAttack(attacker, target);
+            RunTargetingAttack(ally, target);
+        }
+
+        private static void RunTargetingAttack(UnitEntityData attacker,
+            UnitEntityData target)
+        {
+            var command = new UnitAttack(attacker);
+            SetProperty(command, "Target", target);
+            attacker.Commands.Run(command);
+            if (!attacker.Commands.AnyCommandTargets(target))
+                throw new InvalidOperationException(
+                    "The native targeting command was not installed.");
+        }
+
+        private static BlueprintBuff FindFirstBranchEntangled(
+            ElvenBranchedSpearBlueprintSet set)
+        {
+            NamedSpearEffectComponent component = set.Named.Enchantments
+                .FirstBranch.ComponentsArray.OfType<NamedSpearEffectComponent>()
+                .Single();
+            return component.EntangledBuff;
+        }
+
+        private static PhysicalDamageMaterial GetWeaponMaterial(
+            BlueprintItemWeapon weapon)
+        {
+            FieldInfo field = typeof(BlueprintItemWeapon).GetField(
+                "m_DamageType", Members);
+            DamageTypeDescription damage = field == null ? null :
+                field.GetValue(weapon) as DamageTypeDescription;
+            if (damage == null || damage.Type != DamageType.Physical)
+                throw new InvalidOperationException(
+                    "The named spear lacks a physical damage profile.");
+            return damage.Physical.Material;
+        }
+
+        private static Buff GetBuff(UnitEntityData unit, BlueprintBuff blueprint)
+        {
+            return unit == null || unit.Descriptor == null || blueprint == null
+                ? null : unit.Descriptor.Buffs.GetBuff(blueprint);
+        }
+
+        private static bool HasBuff(UnitEntityData unit, BlueprintBuff blueprint)
+        {
+            return GetBuff(unit, blueprint) != null;
+        }
+
+        private static int CountBuff(UnitEntityData unit,
+            BlueprintBuff blueprint)
+        {
+            return unit == null || unit.Descriptor == null || blueprint == null
+                ? 0 : unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(value =>
+                    ReferenceEquals(value.Blueprint, blueprint));
+        }
+
+        private static void RemoveBuff(UnitEntityData unit,
+            BlueprintBuff blueprint)
+        {
+            Buff buff = GetBuff(unit, blueprint);
+            if (buff != null) unit.Descriptor.Buffs.RemoveFact(buff);
+        }
+
+        private static void ClearNamedBuffs(UnitEntityData attacker,
+            UnitEntityData target, NamedSpearBuffSet buffs)
+        {
+            if (buffs == null) return;
+            foreach (BlueprintBuff buff in buffs.All)
+            {
+                RemoveBuff(attacker, buff);
+                RemoveBuff(target, buff);
+            }
+        }
+
+        private static int FindNativeD20Seed(int expected)
+        {
+            for (int seed = 1; seed <= 100000; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                if (RulebookEvent.Dice.D20.Value == expected) return seed;
+            }
+            throw new InvalidOperationException(
+                "No deterministic native d20 seed produced " + expected + ".");
+        }
+
+        private static int ExecuteFreshOpportunity(UnitEntityData attacker,
+            UnitEntityData target, bool movement, int seed)
+        {
+            attacker.Commands.InterruptAll(true);
+            PrepareOpportunity(attacker, target);
+            bool queued;
+            if (movement)
+            {
+                attacker.CombatState.DisengageAttackTargets.Clear();
+                attacker.CombatState.Engage(target);
+                attacker.CombatState.Disengage(target);
+                queued = true;
+            }
+            else
+            {
+                queued = attacker.CombatState.AttackOfOpportunity(target, false);
+            }
+            if (!queued) throw new InvalidOperationException(
+                "The native opportunity attack was not queued.");
+            UnitAttackOfOpportunity command = FindOpportunity(attacker, target,
+                null);
+            UnityEngine.Random.InitState(seed);
+            int result = ExecuteOpportunityCommand(command);
+            attacker.Commands.InterruptAll(true);
+            return result;
+        }
+
+        private static UnitAttackOfOpportunity FindOpportunity(
+            UnitEntityData attacker, UnitEntityData target,
+            UnitAttackOfOpportunity excluded)
+        {
+            UnitAttackOfOpportunity[] commands = attacker.Commands.Raw
+                .OfType<UnitAttackOfOpportunity>().Where(value =>
+                    ReferenceEquals(value.Target, target) &&
+                    !ReferenceEquals(value, excluded)).ToArray();
+            if (commands.Length != 1) throw new InvalidOperationException(
+                "Expected one native opportunity command; observed " +
+                commands.Length + ".");
+            return commands[0];
+        }
+
+        private static int ExecuteOpportunityCommand(
+            UnitAttackOfOpportunity command)
+        {
+            if (command == null) throw new ArgumentNullException("command");
+            MethodInfo action = typeof(UnitAttackOfOpportunity).GetMethod(
+                "OnAction", Members, null, Type.EmptyTypes, null);
+            if (action == null) throw new MissingMethodException(
+                typeof(UnitAttackOfOpportunity).FullName, "OnAction");
+            action.Invoke(command, null);
+            return MovementOpportunityAccuracyDiagnostics.LastAttackBonus;
         }
 
         private static void RemoveEquipped(UnitEntityData unit,

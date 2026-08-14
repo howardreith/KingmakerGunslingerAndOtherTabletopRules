@@ -188,6 +188,10 @@ namespace KingmakerGunslinger.DomainTests
                 "value.FinalValue > 0",
                 "MovementOpportunityAttackTracker.IsRunning",
                 "BriarGeneratedOpportunityAttackTracker.IsRunning",
+                "BriarGeneratedOpportunityAttackTracker.EnterGeneration",
+                "ActiveGeneratedAttack",
+                "GenerationDepth",
+                "BriarOpportunityActionBoundaryPatch",
                 "AttackOfOpportunity(target, false)",
                 "evt.AddBonus(-5, Fact)",
                 "RuleSavingThrow(target, SavingThrowType.Fortitude, dc)",
@@ -351,6 +355,11 @@ namespace KingmakerGunslinger.DomainTests
                 "WeaponFinesseGuid", "AttackOfOpportunity(target, false)",
                 "CombatState.Engage(target)", "CombatState.Disengage(target)",
                 "MovementOpportunityAccuracyDiagnostics.Applied == 2",
+                "spear-named-boughkeeper", "spear-named-thornstep",
+                "spear-named-vipers-reach", "spear-named-briar-crowned",
+                "spear-named-first-branch", "AppliedSneakDamage",
+                "NativeHitAttack", "FirstBranchDifficultyClass",
+                "BriarPenaltyApplications", "GeneratedEvaluations",
                 "InstantiatePrefab", "SameReferences" })
                 Assertions.True(scenario.Contains(token),
                     "Spear combat scenario lacks: " + token);
