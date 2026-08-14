@@ -156,7 +156,7 @@ namespace KingmakerGunslinger.Blueprints
                             "native Elven Curve Blade proficiency option");
                     BlueprintFeature clone = CloneFeatureWithComponents(donor,
                         "KMG_ExoticWeaponProficiency_ElvenBranchedSpear");
-                    ConfigureProficiencyFeature(clone, category);
+                    ConfigureProficiencyFeature(clone, category, donor.Icon);
                     return clone;
                 });
             BlueprintFeature finesseTraining = registry.Register<BlueprintFeature>(
@@ -168,7 +168,7 @@ namespace KingmakerGunslinger.Blueprints
                             "native Elven Curve Blade Finesse Training option");
                     BlueprintFeature clone = CloneFeatureWithComponents(donor,
                         "KMG_FinesseTraining_ElvenBranchedSpear");
-                    ConfigureFinesseTrainingFeature(clone, category);
+                    ConfigureFinesseTrainingFeature(clone, category, donor.Icon);
                     return clone;
                 });
 
@@ -183,6 +183,10 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature familiarity = BlueprintLibraryLookup.RequireExact<
                 BlueprintFeature>(library, NativeElvenWeaponFamiliarityGuid,
                     "native Elven Weapon Familiarity feature");
+            bool ewpUsesCategoryIcon = NativeChildrenUseCategoryIcons(
+                ewpSelection, ewp);
+            bool finesseUsesCategoryIcon = NativeChildrenUseCategoryIcons(
+                finesseSelection, finesseTraining);
             BlueprintParametrizedFeature[] parameterSelectors = ParameterSelectorGuids
                 .Select(guid => BlueprintLibraryLookup.RequireExact<
                     BlueprintParametrizedFeature>(library, guid,
@@ -193,7 +197,9 @@ namespace KingmakerGunslinger.Blueprints
                     parameterSelectors, publishSelectors);
 
             var result = new ElvenBranchedSpearBlueprintSet(weaponType,
-                entries.ToArray(), ewp, finesseTraining, publication);
+                entries.ToArray(), ewp, finesseTraining, publication,
+                ewpUsesCategoryIcon, finesseUsesCategoryIcon,
+                ewp.Icon, finesseTraining.Icon);
             if (movementAccuracy.EnchantmentCost != 0 ||
                 movementAccuracy.ComponentsArray == null ||
                 movementAccuracy.ComponentsArray.Length != 2 ||
@@ -261,7 +267,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureProficiencyFeature(BlueprintFeature feature,
-            WeaponCategory category)
+            WeaponCategory category, Sprite nativeIcon)
         {
             AddProficiencies grant = feature.ComponentsArray.OfType<AddProficiencies>()
                 .Single();
@@ -284,24 +290,37 @@ namespace KingmakerGunslinger.Blueprints
                     "Elven Branched Spear"),
                 LocalizationService.Create("KMG.ElvenBranchedSpear.EWP.Description",
                     "You are proficient with the exotic Elven Branched Spear."),
-                null);
+                nativeIcon);
         }
 
         private static void ConfigureFinesseTrainingFeature(BlueprintFeature feature,
-            WeaponCategory category)
+            WeaponCategory category, Sprite nativeIcon)
         {
             WeaponTypeDamageStatReplacement replacement = feature.ComponentsArray
                 .OfType<WeaponTypeDamageStatReplacement>().Single();
             replacement.Category = category;
             replacement.OnlyOneHanded = false;
-            replacement.TwoHandedBonus = true;
+                replacement.TwoHandedBonus = true;
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create("KMG.ElvenBranchedSpear.FinesseTraining.Name",
-                    "Elven Branched Spear"),
+                    "Finesse Training (Elven Branched Spear)"),
                 LocalizationService.Create(
                     "KMG.ElvenBranchedSpear.FinesseTraining.Description",
                     "Apply the native Finesse Training damage-stat replacement to Elven Branched Spears."),
-                null);
+                nativeIcon);
+        }
+
+        private static bool NativeChildrenUseCategoryIcons(
+            BlueprintFeatureSelection selection, BlueprintFeature customFeature)
+        {
+            BlueprintFeature[] native = (selection.AllFeatures ??
+                Array.Empty<BlueprintFeature>()).Where(value => value != null &&
+                    !ReferenceEquals(value, customFeature)).ToArray();
+            Sprite[] icons = native.Select(value => value.Icon)
+                .Where(value => value != null).ToArray();
+            if (customFeature.Icon == null || icons.Length == 0)
+                return true;
+            return icons.Distinct().Count() > 1;
         }
     }
 
@@ -523,18 +542,31 @@ namespace KingmakerGunslinger.Blueprints
             ElvenBranchedSpearBlueprintEntry[] entries,
             BlueprintFeature exoticWeaponProficiency,
             BlueprintFeature finesseTraining,
-            ElvenBranchedSpearSelectorPublication publication)
+            ElvenBranchedSpearSelectorPublication publication,
+            bool exoticWeaponProficiencyUsesCategoryIcon,
+            bool finesseTrainingUsesCategoryIcon,
+            Sprite exoticWeaponProficiencyNativeIcon,
+            Sprite finesseTrainingNativeIcon)
         {
             WeaponType = weaponType;
             Entries = entries;
             ExoticWeaponProficiency = exoticWeaponProficiency;
             FinesseTraining = finesseTraining;
             Publication = publication;
+            ExoticWeaponProficiencyUsesCategoryIcon =
+                exoticWeaponProficiencyUsesCategoryIcon;
+            FinesseTrainingUsesCategoryIcon = finesseTrainingUsesCategoryIcon;
+            ExoticWeaponProficiencyNativeIcon = exoticWeaponProficiencyNativeIcon;
+            FinesseTrainingNativeIcon = finesseTrainingNativeIcon;
         }
         internal BlueprintWeaponType WeaponType { get; private set; }
         internal ElvenBranchedSpearBlueprintEntry[] Entries { get; private set; }
         internal BlueprintFeature ExoticWeaponProficiency { get; private set; }
         internal BlueprintFeature FinesseTraining { get; private set; }
+        internal bool ExoticWeaponProficiencyUsesCategoryIcon { get; private set; }
+        internal bool FinesseTrainingUsesCategoryIcon { get; private set; }
+        internal Sprite ExoticWeaponProficiencyNativeIcon { get; private set; }
+        internal Sprite FinesseTrainingNativeIcon { get; private set; }
         internal ElvenBranchedSpearSelectorPublication Publication { get; private set; }
         internal ElvenBranchedSpearNamedBlueprintSet Named { get; private set; }
         internal void AttachNamed(ElvenBranchedSpearNamedBlueprintSet named)

@@ -137,6 +137,21 @@ namespace KingmakerGunslinger.Blueprints
             if (elvenBranchedSpears == null || elvenBranchedSpears.Named == null)
                 throw new ArgumentNullException("elvenBranchedSpears");
             Sprite spearIcon = Require("elven-branched-spear");
+            BlueprintUnitFactAccess factAccess = BlueprintUnitFactAccess.Resolve();
+            Sprite ewpIcon = elvenBranchedSpears
+                .ExoticWeaponProficiencyUsesCategoryIcon ? spearIcon :
+                elvenBranchedSpears.ExoticWeaponProficiencyNativeIcon;
+            Sprite finesseIcon = elvenBranchedSpears
+                .FinesseTrainingUsesCategoryIcon ? spearIcon :
+                elvenBranchedSpears.FinesseTrainingNativeIcon;
+            factAccess.SetIcon(elvenBranchedSpears.ExoticWeaponProficiency,
+                ewpIcon ?? spearIcon);
+            factAccess.SetIcon(elvenBranchedSpears.FinesseTraining,
+                finesseIcon ?? spearIcon);
+            if (elvenBranchedSpears.ExoticWeaponProficiency.Icon == null ||
+                elvenBranchedSpears.FinesseTraining.Icon == null)
+                throw new InvalidOperationException(
+                    "Spear proficiency presentation did not resolve an icon.");
             foreach (ElvenBranchedSpearBlueprintEntry entry in
                 elvenBranchedSpears.Entries)
                 items.SetIcon(entry.Item, spearIcon);

@@ -73,6 +73,76 @@ namespace KingmakerGunslinger.DomainTests
                 "Build or guarded-runtime version enforcement is stale.");
         }
 
+        internal static void CategoryDisplayNeverLeaksRawIdentity()
+        {
+            string root = Environment.CurrentDirectory;
+            string category = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "ElvenBranchedSpear",
+                "ElvenBranchedSpearCategoryRuntime.cs"));
+            Assertions.True(category.Contains(
+                "HarmonyPatch(typeof(StatsStrings), \"GetText\"") &&
+                category.Contains("new[] { typeof(WeaponCategory) }") &&
+                category.Contains("ref string __result") &&
+                category.Contains("__result = ElvenBranchedSpearCategoryRuntime.DisplayName") &&
+                category.Contains("DisplayName = \"Elven Branched Spear\""),
+                "Custom category display is not repaired at the central native resolver.");
+
+            string[] playerFacingSources =
+            {
+                Path.Combine(root, "src", "KingmakerGunslinger", "Blueprints",
+                    "ElvenBranchedSpearBlueprints.cs"),
+                Path.Combine(root, "src", "KingmakerGunslinger", "ElvenBranchedSpear",
+                    "ElvenBranchedSpearSelectorRuntime.cs"),
+                Path.Combine(root, "src", "KingmakerGunslinger", "Blueprints",
+                    "ElvenBranchedSpearNamedBlueprints.cs")
+            };
+            foreach (string path in playerFacingSources)
+            {
+                string source = File.ReadAllText(path);
+                Assertions.False(source.Contains("4934983") ||
+                    source.Contains("0x004b4d47"),
+                    "A player-facing spear surface embeds the raw category identity: " + path);
+            }
+        }
+
+        internal static void SelectorPresentationMatchesNativePolicies()
+        {
+            string root = Environment.CurrentDirectory;
+            string selector = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "ElvenBranchedSpear",
+                "ElvenBranchedSpearSelectorRuntime.cs"));
+            Assertions.True(selector.Contains(
+                "ElvenBranchedSpearCategoryRuntime.DisplayName") &&
+                selector.Contains("string.Empty, null,") &&
+                selector.Contains("ElvenBranchedSpearCategoryRuntime.Monogram") &&
+                !selector.Contains("feature.Icon, name"),
+                "Parameterized rows do not use the native category-glyph contract.");
+
+            string blueprints = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "ElvenBranchedSpearBlueprints.cs"));
+            Assertions.True(blueprints.Contains(
+                "Finesse Training (Elven Branched Spear)") &&
+                blueprints.Contains("ConfigureProficiencyFeature(clone, category, donor.Icon)") &&
+                blueprints.Contains("ConfigureFinesseTrainingFeature(clone, category, donor.Icon)") &&
+                blueprints.Contains("NativeChildrenUseCategoryIcons"),
+                "Static spear selector name or native icon policy is incomplete.");
+
+            string icons = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints", "ProjectAssetIcons.cs"));
+            Assertions.True(icons.Contains(
+                "ExoticWeaponProficiencyUsesCategoryIcon ? spearIcon") &&
+                icons.Contains("FinesseTrainingUsesCategoryIcon ? spearIcon") &&
+                icons.Contains("ExoticWeaponProficiencyNativeIcon") &&
+                icons.Contains("FinesseTrainingNativeIcon"),
+                "Static spear features do not select native-shared or spear-category art deterministically.");
+            Assertions.False(icons.Contains(
+                "SetIcon(elvenBranchedSpears.ExoticWeaponProficiency, Require(\"firearm-proficiency\")") ||
+                icons.Contains(
+                    "SetIcon(elvenBranchedSpears.FinesseTraining, Require(\"firearm-proficiency\")"),
+                "A spear selector resolves directly to firearm artwork.");
+        }
+
         internal static void FoundationSourceContractsAreExact()
         {
             string root = Environment.CurrentDirectory;

@@ -194,6 +194,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Param != null && value.Param.WeaponCategory.HasValue &&
                         value.Param.WeaponCategory.Value.Equals(
                             ElvenBranchedSpearCategoryRuntime.Category))).ToArray();
+                FeatureUIData[] spearRows = selectorGuids.Select(guid =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
+                        BlueprintBootstrap.Library, guid,
+                        "native chosen-weapon selector")
+                    .GetFullSelectionItems().Single(value => value != null &&
+                        value.Param != null && value.Param.WeaponCategory.HasValue &&
+                        value.Param.WeaponCategory.Value.Equals(
+                            ElvenBranchedSpearCategoryRuntime.Category))).ToArray();
                 int ewpCount = CountFeature(
                     BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
                         BlueprintBootstrap.Library,
@@ -216,6 +224,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                     selectors, selectorCounts.All(value => value == 1) &&
                         ewpCount == 1 && finesseCount == 1,
                     "live GetFullSelectionItems and BlueprintFeatureSelection catalogs");
+                string categoryText = LocalizedTexts.Instance.Stats.GetText(
+                    ElvenBranchedSpearCategoryRuntime.Category);
+                string proficiencyPrerequisite = set.ExoticWeaponProficiency
+                    .ComponentsArray.OfType<Kingmaker.Blueprints.Classes.Prerequisites
+                        .PrerequisiteNotProficient>().Single().GetUIText();
+                string ewpIcon = set.ExoticWeaponProficiency.Icon == null ?
+                    "<null>" : set.ExoticWeaponProficiency.Icon.name;
+                string finesseIcon = set.FinesseTraining.Icon == null ?
+                    "<null>" : set.FinesseTraining.Icon.name;
+                string selectorPresentation = "category=" + categoryText +
+                    ";prerequisite=" + proficiencyPrerequisite +
+                    ";ewpName=" + set.ExoticWeaponProficiency.Name +
+                    ";ewpIcon=" + ewpIcon + ";finesseName=" +
+                    set.FinesseTraining.Name + ";finesseIcon=" + finesseIcon +
+                    ";parameterRows=" + string.Join(",", spearRows.Select(value =>
+                        value.Name + "/" + value.NameForAcronim + "/" +
+                        (value.Icon == null ? "native-glyph" : value.Icon.name))
+                        .ToArray());
+                string loweredPresentation = selectorPresentation.ToLowerInvariant();
+                Add(assertions, "spear-selector-presentation",
+                    "human-readable category and prerequisite; native static/category icons; seven EB glyph rows",
+                    selectorPresentation,
+                    string.Equals(categoryText, "Elven Branched Spear",
+                        StringComparison.Ordinal) &&
+                    proficiencyPrerequisite.Contains("Elven Branched Spear") &&
+                    !proficiencyPrerequisite.Contains("4934983") &&
+                    !proficiencyPrerequisite.Contains("0x004b4d47") &&
+                    string.Equals(set.FinesseTraining.Name,
+                        "Finesse Training (Elven Branched Spear)",
+                        StringComparison.Ordinal) &&
+                    set.ExoticWeaponProficiency.Icon != null &&
+                    set.FinesseTraining.Icon != null &&
+                    loweredPresentation.IndexOf("firearm", StringComparison.Ordinal) < 0 &&
+                    loweredPresentation.IndexOf("pistol", StringComparison.Ordinal) < 0 &&
+                    loweredPresentation.IndexOf("musket", StringComparison.Ordinal) < 0 &&
+                    spearRows.All(value => value.Icon == null &&
+                        string.Equals(value.Name, "Elven Branched Spear",
+                            StringComparison.Ordinal) &&
+                        string.Equals(value.NameForAcronim, "EB",
+                            StringComparison.Ordinal)),
+                    "live StatsStrings, prerequisite text, feature metadata, and FeatureUIData");
 
                 stage = "dexterity-routes";
                 AddFact(attacker, set.ExoticWeaponProficiency, facts);

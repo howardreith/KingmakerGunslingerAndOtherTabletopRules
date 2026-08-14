@@ -1,11 +1,15 @@
 using System;
 using Harmony12;
+using Kingmaker.Blueprints.Root.Strings;
 using Kingmaker.Enums;
 
 namespace KingmakerGunslinger.ElvenBranchedSpear
 {
     internal static class ElvenBranchedSpearCategoryRuntime
     {
+        internal const string DisplayName = "Elven Branched Spear";
+        internal const string Monogram = "EB";
+
         private static readonly WeaponSubCategory[] SubCategories =
         {
             WeaponSubCategory.Melee,
@@ -29,6 +33,17 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
 
         internal static WeaponSubCategory[] GetSubCategories()
         { return (WeaponSubCategory[])SubCategories.Clone(); }
+    }
+
+    [HarmonyPatch(typeof(StatsStrings), "GetText",
+        new[] { typeof(WeaponCategory) })]
+    internal static class ElvenBranchedSpearCategoryDisplayNamePatch
+    {
+        private static void Postfix(WeaponCategory stat, ref string __result)
+        {
+            if (ElvenBranchedSpearCategoryRuntime.Owns(stat))
+                __result = ElvenBranchedSpearCategoryRuntime.DisplayName;
+        }
     }
 
     [HarmonyPatch(typeof(WeaponCategoryExtension), "HasSubCategory")]

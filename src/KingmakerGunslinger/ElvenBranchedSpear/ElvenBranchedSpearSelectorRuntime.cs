@@ -54,12 +54,15 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 value.Param.WeaponCategory.HasValue &&
                 value.Param.WeaponCategory.Value.Equals(category)))
                 return existing;
-            const string name = "Elven Branched Spear";
-            const string description = "Apply this ordinary chosen-weapon feature to the Elven Branched Spear category.";
             var result = new List<FeatureUIData>(existing)
             {
-                new FeatureUIData(feature, new FeatureParam(category), name,
-                    description, feature.Icon, name)
+                // Match BlueprintParametrizedFeature.ExtractItemsWeaponCategory:
+                // category rows deliberately carry no sprite so the native UI
+                // renders its decorative short-name tile.
+                new FeatureUIData(feature, new FeatureParam(category),
+                    ElvenBranchedSpearCategoryRuntime.DisplayName,
+                    string.Empty, null,
+                    ElvenBranchedSpearCategoryRuntime.Monogram)
             };
             return result.OrderBy(value => value.Name,
                 StringComparer.CurrentCultureIgnoreCase).ToArray();
