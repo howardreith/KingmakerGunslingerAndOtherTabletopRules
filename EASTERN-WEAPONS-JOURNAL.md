@@ -80,3 +80,25 @@ values, or campaign targets.
   and loaded CLR types selected by declared member names. The follow-up source
   passed validation, `1034/1034` tests, clean build, deterministic packaging,
   and strict package validation.
+
+## 2026-08-14 - targeted mechanic observation PASS
+
+- Guarded save-free run
+  `20260814T1119161920060Z-d07fac81ae644db0ac092e1fa3cfa3fe`
+  passed on source commit `34f3093118ef028242f39e3f63e497a9c16a7580`.
+- Loaded version `0.0.79`, DLL SHA-256
+  `57B42B4F18FC05614AC7078564CB2D0A83536480A1C97CF3BBA1DA771FD32A7E`,
+  and MVID `5337c8ba-2d31-4c60-a39f-34017ce40339` were recorded. No save
+  interaction occurred.
+- Proved category values `0x004B4D48` through `0x004B4D4A` are unoccupied
+  across the live 136-weapon-type graph.
+- Selected `ItemEntityWeapon.HoldInTwoHands` as the shared exact authority for
+  katana proficiency and Moonlit Crossing. Selected
+  `RuleCalculateWeaponStats.IncreaseWeaponSize` for Unfixed Form and exact
+  `RuleAttackRoll` hit/confirmed-critical state for weapon-hit effects.
+- No native Mighty Cleaving or Impact/Lead Blades enchantment contract exists
+  in the installed graph. The native Cleave feats are not substitutes.
+- Deadly is deferred because the installed coup-de-grace action graph exposes
+  no reliable virtual-damage-only Fortitude DC rule hook.
+- The guarded push helper continues to reject the exact authorized branch
+  because its external allowlist contains only the singular branch spelling.

@@ -15,8 +15,8 @@
     "defaultEnabled": true
   },
   "phases": {
-    "investigation": "in_progress",
-    "foundation": "pending",
+    "investigation": "complete",
+    "foundation": "in_progress",
     "genericCatalog": "pending",
     "namedCatalog": "pending",
     "proficiency": "pending",
@@ -49,13 +49,18 @@
     "observerPassingDllSha256": "89C06B4F29190A919512FB0FF5D275C054FC04D940749ECB0828EE6C6499FF4E",
     "observerPassingDllMvid": "52f2dfea-aaf1-4cda-9c6e-c3f06270c3a7",
     "observerPassingSaveInteraction": false,
-    "targetedObserverRuntime": "pending",
+    "targetedObserverRuntime": "PASS",
+    "targetedObserverRunId": "20260814T1119161920060Z-d07fac81ae644db0ac092e1fa3cfa3fe",
+    "targetedObserverCommit": "34f3093118ef028242f39e3f63e497a9c16a7580",
+    "targetedObserverDllSha256": "57B42B4F18FC05614AC7078564CB2D0A83536480A1C97CF3BBA1DA771FD32A7E",
+    "targetedObserverDllMvid": "5337c8ba-2d31-4c60-a39f-34017ce40339",
+    "deadly": "DEFERRED ENGINE HAS NO RELIABLE COUP-DE-GRACE DC HOOK",
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 0,
-    "runtimeLaunches": 2,
+    "runtimeLaunches": 3,
     "autonomousMerge": false
   }
 }

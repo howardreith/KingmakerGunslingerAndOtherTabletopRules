@@ -106,8 +106,72 @@ The first-pass exact native enchantment identities are:
 | Brilliant Energy | `66e9e299c9002ea4bb65b6f300e43770` | 4 | `BrilliantEnergy`; misses Undead and Construct facts |
 | Speed | `f1c0c50108025d546b2554674ea1c006` | 3 | `WeaponExtraAttack(Number=1, Haste=true)` |
 
-The first pass did not positively identify a native enchantment named Mighty
-Cleaving or Impact. That is not treated as absence yet: a targeted follow-up
-will inventory alternate blueprint/component names, loaded member-level rule
-contracts, every weapon category/group value, and the exact bastard-sword grip
-surface before production implementation begins.
+## Targeted mechanic follow-up
+
+- Run ID: `20260814T1119161920060Z-d07fac81ae644db0ac092e1fa3cfa3fe`
+- Source commit: `34f3093118ef028242f39e3f63e497a9c16a7580`
+- Status: PASS
+- Loaded version: `0.0.79`
+- DLL SHA-256:
+  `57B42B4F18FC05614AC7078564CB2D0A83536480A1C97CF3BBA1DA771FD32A7E`
+- DLL MVID: `5337c8ba-2d31-4c60-a39f-34017ce40339`
+- Save interaction: none
+- Automatic exit: requested and completed
+
+The targeted pass examined all 136 loaded weapon types, 600 mechanic
+blueprints, and 191 relevant loaded CLR types. Existing categories occupy the
+native range `0..74` plus the accepted Elven Branched Spear value
+`0x004B4D47`. The next three deterministic values are unoccupied across every
+loaded weapon type:
+
+| Family | Stable category value |
+| --- | ---: |
+| Wakizashi | `0x004B4D48` (`4934984`) |
+| Katana | `0x004B4D49` (`4934985`) |
+| Nodachi | `0x004B4D4A` (`4934986`) |
+
+Production registration must still fail closed if any subsequently loaded
+weapon type owns one of these values.
+
+The authoritative installed hand contract is
+`ItemEntityWeapon.HoldInTwoHands`. `BlueprintWeaponType` exposes
+`IsOneHandedWhichCanBeUsedWithTwoHands`, while an equipped `HandSlot` exposes
+its paired slot, shield state, and current weapon. Katana proficiency and
+Moonlit Crossing will therefore consume the same live `HoldInTwoHands` result,
+not animation, transforms, or timing.
+
+Call of the Wild augments the native Bastard Sword proficiency child with
+`CanHoldIn1Hand`, `FullProficiency`, and
+`PrerequisiteFullExoticProficiency`. Those optional identities will not be
+copied or mutated. The KMG katana policy remains independent and uses the live
+grip result while preserving optional-mod behavior.
+
+Native weapon-size changes are rule-owned:
+`MeleeWeaponSizeChange` handles `RuleCalculateWeaponStats`, whose public
+contract supplies `IncreaseWeaponSize`, `DecreaseWeaponSize`, `WeaponSize`,
+and `WeaponDamageDiceOverride`. Unfixed Form can consequently add one native
+size step at the weapon-stat boundary without changing unit size, reach,
+model, or animation.
+
+`PowerAttackWatcher` handles the attack-roll rule and references the exact
+Power Attack toggle blueprint. `RuleAttackRoll` exposes the originating
+weapon attack, hit result, critical-roll state, and confirmed-critical state.
+These are the exact boundaries required for Mountain-Sunder and Falling Petal.
+
+No native enchantment or mechanic blueprint implementing Mighty Cleaving was
+present under either the property name or an alternate cleaving-enchantment
+component contract. The ordinary native Cleave and Cleaving Finish features
+are unrelated character facts and will not be substituted. No native Impact
+or Lead Blades enchantment was present; Unfixed Form will use the native
+weapon-size rule surface directly.
+
+The installed coup-de-grace implementation is an ability/action graph rather
+than a dedicated coup-de-grace rule. Its DC is assembled through contextual
+rank properties and `ContextSetAbilityParams(Add10ToDC=true)`; no weapon
+enchantment, weapon-stat, damage, saving-throw, or dedicated coup-de-grace
+event provides an exact virtual-damage-only DC interception point. Deadly is
+therefore omitted for this release, with the required disposition:
+
+```text
+DEFERRED  ENGINE HAS NO RELIABLE COUP-DE-GRACE DC HOOK
+```
