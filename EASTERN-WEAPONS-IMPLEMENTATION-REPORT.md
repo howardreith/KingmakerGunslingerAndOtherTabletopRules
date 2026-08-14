@@ -9,6 +9,11 @@ source is `9966edfa160ed4d898482f754a6b8abf1f9ebc11`. Release identity is assemb
 version `0.0.80`, informational version `0.0.80-eastern-weapons`, and package
 `KingmakerGunslinger-0.0.80-eastern-weapons.zip`.
 
+The branch is published through the required guarded non-force helper. Draft
+PR #4, **Add complete Eastern Weapons feature**, targets `master` and remains
+open, draft, and unmerged:
+https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/4
+
 Subjective visual acceptance remains deliberately pending human review. It is
 the only acceptance surface not represented as an automated PASS.
 

@@ -565,3 +565,7 @@ values, or campaign targets.
 - Protected baseline access remained false. The complete mission made exactly
   two authorized working-save writes during the three-phase persistence test;
   both fixtures were removed. Subjective visual acceptance remains human-only.
+- After the user corrected the external branch allowlist, the required guarded
+  helper published `codex/eastern-weapons` with an ordinary non-force push.
+  Draft PR #4, **Add complete Eastern Weapons feature**, was opened against
+  `master`; it remains draft and unmerged.

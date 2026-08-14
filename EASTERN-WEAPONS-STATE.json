@@ -1,13 +1,21 @@
 {
   "schemaVersion": 1,
   "mission": "eastern-weapons",
-  "status": "implementation_and_qualification_complete_publication_pending",
+  "status": "implementation_qualification_packaging_and_publication_complete_human_visual_pending",
   "branch": "codex/eastern-weapons",
   "baseCommit": "4ffd15b09992bd9cee9d330eee0a650ad2c94661",
   "release": {
     "assemblyVersion": "0.0.80",
     "informationalVersion": "0.0.80-eastern-weapons",
     "package": "KingmakerGunslinger-0.0.80-eastern-weapons.zip"
+  },
+  "publication": {
+    "guardedBranchPush": "PASS",
+    "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/4",
+    "pullRequestNumber": 4,
+    "baseBranch": "master",
+    "draft": true,
+    "merged": false
   },
   "module": {
     "key": "eastern-weapons",
@@ -228,7 +236,8 @@
     "finalWorkingSaveSmokeRunId": "20260814T2051106519178Z-a9571d847397477b893818601c4a00ab",
     "finalSettingsRestorationSha256": "2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655",
     "builtPackagedInstalledRuntimeIdentity": "PASS",
-    "guardedPush": "allowlist_updated_by_user_final_push_pending"
+    "guardedPush": "PASS ordinary non-force push through required helper",
+    "draftPullRequest": "PASS #4 open draft against master"
   },
   "safety": {
     "protectedBaselineAccessed": false,

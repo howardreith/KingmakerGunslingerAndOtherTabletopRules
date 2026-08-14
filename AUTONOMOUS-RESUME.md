@@ -6,6 +6,10 @@
   `4ffd15b09992bd9cee9d330eee0a650ad2c94661`. Final functional/artifact source
   is `9966edfa160ed4d898482f754a6b8abf1f9ebc11`; release identity is
   `0.0.80-eastern-weapons`.
+- The branch is published through the required guarded helper. Draft PR #4,
+  **Add complete Eastern Weapons feature**, targets `master` and is open,
+  draft, and unmerged. Update that PR; do not create a replacement or merge it
+  autonomously.
 - The default-on sixth module supplies three stable categories, 12 generic and
   18 named weapons, 46 persistent identities, three original equipped models,
   six icons, 49 base-vendor rows, 11 fixed-loot rows, and 48 BTSL rows.
