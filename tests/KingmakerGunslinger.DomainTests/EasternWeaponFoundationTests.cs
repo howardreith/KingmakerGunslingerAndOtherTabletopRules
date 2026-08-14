@@ -5,6 +5,7 @@ using KingmakerGunslinger.CustomWeapons;
 using KingmakerGunslinger.EasternWeapons;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -420,6 +421,113 @@ namespace KingmakerGunslinger.DomainTests
                 "easternSet.Campaign != null" })
                 Assertions.True(runtime.Contains(token),
                     "Eastern runtime commerce assertion is missing: " + token);
+        }
+
+        internal static void OriginalAssetPipelineIsExactAndFailSafe()
+        {
+            string root = Environment.CurrentDirectory;
+            string sourceRoot = Path.Combine(root, "assets-source",
+                "original-models", "eastern-weapons");
+            string generator = File.ReadAllText(Path.Combine(sourceRoot,
+                "generate_eastern_weapons.py"));
+            string report = File.ReadAllText(Path.Combine(sourceRoot,
+                "eastern-weapons-build-report.json"));
+            foreach (string token in new[] { "bpy.ops.export_scene.fbx",
+                "bpy.ops.wm.save_as_mainfile", "film_transparent = True",
+                "Original project-owned assets", "\"triangles\": 3522",
+                "\"overallLengthMeters\": 0.76",
+                "\"overallLengthMeters\": 1.05",
+                "\"overallLengthMeters\": 1.5799999999999998" })
+                Assertions.True(generator.Contains(token) || report.Contains(token),
+                    "Eastern Blender source/report lacks: " + token);
+            var expectedFbx = new Dictionary<string, string>
+            {
+                { "wakizashi.fbx", "C1FC338B67D9A3ABF6FD13507D3645C046EEE46F61F696F746890D3D858023BA" },
+                { "katana.fbx", "7C608292339B86DDAEDF0926E2701841282C72963E227442917FD303CDD064C6" },
+                { "nodachi.fbx", "0CA8CA8A71AB7893E0FEC3ECEB538A236F1C0D763F31BEB8E0230B436C8987FB" }
+            };
+            foreach (KeyValuePair<string, string> pair in expectedFbx)
+                Assertions.Equal(pair.Value,
+                    Sha256(Path.Combine(sourceRoot, pair.Key)),
+                    "Generated Eastern FBX hash changed: " + pair.Key);
+            Assertions.Equal(
+                "39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC",
+                Sha256(Path.Combine(root, "assets", "bundles",
+                    "kingmakergunslinger.easternweapons")),
+                "Dedicated Eastern Weapons bundle hash changed.");
+
+            string[] iconNames = { "wakizashi", "katana", "nodachi",
+                "night-without-moon", "heavens-measure",
+                "world-tree-severer" };
+            string[] iconHashes = iconNames.Select(name =>
+            {
+                string path = Path.Combine(root, "assets", "game", "icons",
+                    name + ".png");
+                AssertRgbaPng128(path);
+                return Sha256(path);
+            }).ToArray();
+            Assertions.Equal(6, iconHashes.Distinct().Count(),
+                "Eastern category and capstone icons must all be distinct.");
+
+            string builder = File.ReadAllText(Path.Combine(root, "tools",
+                "unity", "BuildEasternWeaponsBundle.cs"));
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Assets",
+                "EasternWeaponAssetRuntime.cs"));
+            foreach (string token in new[] { "2018.4.10f1",
+                "kingmakergunslinger.easternweapons", "\"Wakizashi\"",
+                "\"Katana\"", "\"Nodachi\"", "prefabPath", "Grip",
+                "SupportHandTarget", "Tip", "Butt", "Standard",
+                "DeterministicAssetBundle", "ForceRebuildAssetBundle" })
+                Assertions.True(builder.Contains(token) || runtime.Contains(token),
+                    "Eastern Unity pipeline lacks: " + token);
+            foreach (string token in new[] { "AssetBundle.LoadFromFile",
+                "prefabs.Length != Contracts.Length", "candidate.Unload(false)",
+                "native-fallback:bundle-missing",
+                "native-fallback:bundle-rejected", "ApplyTo",
+                "ReferenceEquals(weaponType.VisualParameters.Model, prefab)",
+                "native-fallback:model-assignment-rejected",
+                "GetComponentsInChildren<Camera>",
+                "GetComponentsInChildren<Light>", "InstantiatePrefab" })
+                Assertions.True(runtime.Contains(token),
+                    "Eastern fail-safe asset runtime lacks: " + token);
+
+            string observer = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            foreach (string token in new[] { "easternAssetInstances",
+                "InstantiatePrefab(family)", "DestroyImmediate(instance)",
+                "easternAssetCleanup" })
+                Assertions.True(observer.Contains(token),
+                    "Eastern runtime asset cleanup assertion lacks: " + token);
+
+            string icons = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints", "ProjectAssetIcons.cs"));
+            foreach (string token in iconNames)
+                Assertions.True(icons.Contains("\"" + token + "\""),
+                    "Eastern icon publication lacks: " + token);
+        }
+
+        private static void AssertRgbaPng128(string path)
+        {
+            byte[] bytes = File.ReadAllBytes(path);
+            Assertions.True(bytes.Length > 33 && bytes[0] == 0x89 &&
+                bytes[1] == 0x50 && bytes[2] == 0x4e && bytes[3] == 0x47,
+                "Eastern icon is not a PNG: " + path);
+            int width = (bytes[16] << 24) | (bytes[17] << 16) |
+                (bytes[18] << 8) | bytes[19];
+            int height = (bytes[20] << 24) | (bytes[21] << 16) |
+                (bytes[22] << 8) | bytes[23];
+            Assertions.True(width == 128 && height == 128 && bytes[25] == 6,
+                "Eastern icon is not exact 128x128 RGBA: " + path);
+        }
+
+        private static string Sha256(string path)
+        {
+            using (SHA256 value = SHA256.Create())
+            using (FileStream stream = File.OpenRead(path))
+                return BitConverter.ToString(value.ComputeHash(stream))
+                    .Replace("-", string.Empty);
         }
     }
 }

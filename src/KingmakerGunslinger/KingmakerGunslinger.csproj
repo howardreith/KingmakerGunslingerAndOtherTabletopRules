@@ -61,6 +61,7 @@
     <Compile Include="Blueprints\EasternWeaponCampaignBlueprints.cs" />
     <Compile Include="Blueprints\EasternWeaponNamedBlueprints.cs" />
     <Compile Include="Assets\ElvenBranchedSpearAssetRuntime.cs" />
+    <Compile Include="Assets\EasternWeaponAssetRuntime.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearBlueprints.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearNamedBlueprints.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearCampaignBlueprints.cs" />
@@ -764,6 +765,10 @@
     </Content>
     <Content Include="..\..\assets\bundles\kingmakergunslinger.elvenbranchedspear">
       <Link>assets\bundles\kingmakergunslinger.elvenbranchedspear</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\bundles\kingmakergunslinger.easternweapons">
+      <Link>assets\bundles\kingmakergunslinger.easternweapons</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\bundles\asset-bundle-manifest.json">

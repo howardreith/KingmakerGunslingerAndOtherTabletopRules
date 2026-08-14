@@ -38,6 +38,7 @@ try {
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
+        'assets\bundles\kingmakergunslinger.easternweapons',
         'assets\bundles\asset-bundle-manifest.json',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
@@ -48,7 +49,9 @@ try {
         'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
         'rifle','revolver','lead-ball','black-powder','repair-kit',
         'gunsmith-kit','overhaul-kit','paper-cartridge','focused-aim',
-        'cord-of-stubborn-resolve','shield-other','elven-branched-spear')
+        'cord-of-stubborn-resolve','shield-other','elven-branched-spear',
+        'wakizashi','katana','nodachi','night-without-moon',
+        'heavens-measure','world-tree-severer')
     $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'

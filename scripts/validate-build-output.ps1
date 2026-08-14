@@ -18,6 +18,7 @@ $requiredFiles = @(
     'blueprints\blueprints.schema.json',
     'assets\bundles\kingmakergunslinger.firearms',
     'assets\bundles\kingmakergunslinger.elvenbranchedspear',
+    'assets\bundles\kingmakergunslinger.easternweapons',
     'assets\bundles\asset-bundle-manifest.json'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
@@ -25,7 +26,8 @@ $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit'
     'weapon-focus-firearm','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
     'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
     'rifle','revolver','lead-ball','black-powder','repair-kit',
-    'gunsmith-kit','overhaul-kit')
+    'gunsmith-kit','overhaul-kit','wakizashi','katana','nodachi',
+    'night-without-moon','heavens-measure','world-tree-severer')
 foreach ($name in $requiredIcons) {
     $requiredFiles += "assets\icons\$name.png"
 }
@@ -53,6 +55,7 @@ $allowedRelativePaths = @{
     'blueprints\blueprints.schema.json' = $true
     'assets\bundles\kingmakergunslinger.firearms' = $true
     'assets\bundles\kingmakergunslinger.elvenbranchedspear' = $true
+    'assets\bundles\kingmakergunslinger.easternweapons' = $true
     'assets\bundles\asset-bundle-manifest.json' = $true
 }
 

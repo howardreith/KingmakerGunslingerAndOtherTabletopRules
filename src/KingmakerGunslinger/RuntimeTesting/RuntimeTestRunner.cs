@@ -8129,6 +8129,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetAllBlueprints().OfType<BlueprintWeaponEnchantment>().Count(
                     value => ReferenceEquals(value,
                         easternSet.ProficiencyPolicy));
+            bool easternCustomIcons = easternItems.All(value => value.Icon != null &&
+                value.Icon.name != null && value.Icon.name.StartsWith(
+                    "KMG_Icon_", StringComparison.Ordinal));
+            int easternDistinctIcons = easternItems.Select(value => value.Icon)
+                .Distinct().Count();
+            bool easternCustomAssets = EasternWeaponAssetRuntime
+                .HasValidatedPrefabs && EasternWeaponAssetRuntime.Status
+                .StartsWith("custom:validated:", StringComparison.Ordinal);
             WeaponCategory[] easternCategories = EasternWeaponCatalog
                 .AllCategories.Select(value =>
                     (WeaponCategory)value.CategoryValue).ToArray();
@@ -8215,6 +8223,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Count(value => value != null && desired.Contains(value.Item) &&
                         value.Count == 1);
             }
+            int easternAssetInstances = 0;
+            bool easternAssetCleanup = true;
+            if (expectedEasternWeapons)
+            {
+                foreach (EasternWeaponFamily family in Enum.GetValues(
+                    typeof(EasternWeaponFamily)))
+                {
+                    UnityEngine.GameObject instance = EasternWeaponAssetRuntime
+                        .InstantiatePrefab(family);
+                    if (instance == null) continue;
+                    easternAssetInstances++;
+                    UnityEngine.Object.DestroyImmediate(instance);
+                    easternAssetCleanup = easternAssetCleanup && instance == null;
+                }
+            }
             ShieldOtherInventoryObservation shieldObservation =
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
@@ -8254,6 +8277,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 easternSet.WakizashiProficiency.Name +
                 ";easternPresentation=" +
                 EasternWeaponCategoryRuntime.PresentationEnabled +
+                ";easternAssets=" + EasternWeaponAssetRuntime.Status +
+                "/" + easternAssetInstances + "/" + easternAssetCleanup +
+                ";easternIcons=" + easternCustomIcons + "/" +
+                easternDistinctIcons +
                 ";easternVendors=" + easternVendorRows +
                 ";easternNamedVendors=" + easternNamedVendorRows +
                 ";easternBtsl=" + easternBtslRows + "/" +
@@ -8355,7 +8382,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     easternLootRows == (expectedEasternWeapons ? 11 : 0) &&
                     (easternSet.Campaign != null) == expectedEasternWeapons &&
                     EasternWeaponCategoryRuntime.PresentationEnabled ==
-                        expectedEasternWeapons,
+                        expectedEasternWeapons &&
+                    easternCustomIcons == expectedEasternWeapons &&
+                    (!expectedEasternWeapons || easternDistinctIcons == 6) &&
+                    easternCustomAssets == expectedEasternWeapons &&
+                    easternAssetInstances == (expectedEasternWeapons ? 3 : 0) &&
+                    easternAssetCleanup &&
+                    (expectedEasternWeapons || string.Equals(
+                        EasternWeaponAssetRuntime.Status,
+                        "native-fallback:module-disabled",
+                        StringComparison.Ordinal)),
                     "always-registered identities, exact merged selectors, broad martial integration, campaign/BTSL publication, fixed loot, and module-gated presentation"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,

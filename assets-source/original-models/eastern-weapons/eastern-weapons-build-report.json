@@ -1,0 +1,99 @@
+{
+  "blenderVersion": "4.5.10 LTS",
+  "generator": "generate_eastern_weapons.py",
+  "license": "Original project-owned assets; repository license applies",
+  "meshObjects": 39,
+  "outputs": {
+    "eastern-weapons.blend": {
+      "bytes": 952565,
+      "sha256": "b0436ec6aa06f231c064dac0d09a338a0209a65d8a3a01cae260d92adfef08a9"
+    },
+    "generate_eastern_weapons.py": {
+      "bytes": 12905,
+      "sha256": "8c1723a70ecfbf628d16ec7aff824b6c9de1d91b686ac6fed3b51f553c062fd6"
+    },
+    "heavens-measure-icon-source.png": {
+      "bytes": 112032,
+      "sha256": "db65719ae4d353dc8f152eae0b494beef51fee1fa1798bc87ba8423a5add5615"
+    },
+    "heavens-measure.png": {
+      "bytes": 9561,
+      "sha256": "60126ea454f449df68f4a650d7af0275b08632edb416c8e560e20a9881f3eda2"
+    },
+    "katana-icon-source.png": {
+      "bytes": 111723,
+      "sha256": "300f8bfce41348ab5024ad162a62f4976a486aadf26018af7a5b23763c50fac6"
+    },
+    "katana.fbx": {
+      "bytes": 77244,
+      "sha256": "7c608292339b86ddaedf0926e2701841282c72963e227442917fd303cdd064c6"
+    },
+    "katana.png": {
+      "bytes": 9519,
+      "sha256": "00f09cf266b9d1bc6caae411fe6cb43e4e844cea469a3d0552d34c82ca86b65c"
+    },
+    "night-without-moon-icon-source.png": {
+      "bytes": 121572,
+      "sha256": "490dd9a35481fd66c3d7e6ba20f69fb2361d904104e85babbcef4bfe4b23d1b5"
+    },
+    "night-without-moon.png": {
+      "bytes": 10451,
+      "sha256": "a5d0d46e6130f70a9b5831ad704b9be0ff43fb3c7d81466d39f7343731c3a41a"
+    },
+    "nodachi-icon-source.png": {
+      "bytes": 92909,
+      "sha256": "413dcd92e3cfad2845b7e9eb6b9b044c4541399c837ac848ecfa38d100c1b71e"
+    },
+    "nodachi.fbx": {
+      "bytes": 77196,
+      "sha256": "0ca8ca8a71ab7893e0fec3eceb538a236f1c0d763f31beb8e0230b436c8987fb"
+    },
+    "nodachi.png": {
+      "bytes": 7732,
+      "sha256": "002b53fbb1c9f1678dc3dd7b3097ae913af17c6193c1395b6bb555d450ffd215"
+    },
+    "wakizashi-icon-source.png": {
+      "bytes": 121137,
+      "sha256": "796080b99da5357bac970f70afba6388248715bed32ab6aa0e93b5507b203631"
+    },
+    "wakizashi.fbx": {
+      "bytes": 67628,
+      "sha256": "c1fc338b67d9a3abf6fd13507d3645c046eee46f61f696f746890d3d858023ba"
+    },
+    "wakizashi.png": {
+      "bytes": 10416,
+      "sha256": "37b63e5558527abffc97fd8b9619b3643c3ceeeb4cb4a36d16097dcf6aadb8f2"
+    },
+    "world-tree-severer-icon-source.png": {
+      "bytes": 93447,
+      "sha256": "814f04a8c887bc8de01ff85fad5b312700944f0c79bfa902bb496c572724314b"
+    },
+    "world-tree-severer.png": {
+      "bytes": 7801,
+      "sha256": "a49f8c0a4c52e351a898834b861ab8138752193d85bcbacd0e232d6a54e2c4b5"
+    }
+  },
+  "schemaVersion": 1,
+  "sourceCoordinateContract": "+Z tip; grip origin; metric",
+  "triangles": 3522,
+  "weapons": {
+    "katana": {
+      "buttZ": -0.29,
+      "overallLengthMeters": 1.05,
+      "supportHandZ": 0.1,
+      "tipZ": 0.76
+    },
+    "nodachi": {
+      "buttZ": -0.42,
+      "overallLengthMeters": 1.5799999999999998,
+      "supportHandZ": 0.13,
+      "tipZ": 1.16
+    },
+    "wakizashi": {
+      "buttZ": -0.2,
+      "overallLengthMeters": 0.76,
+      "supportHandZ": 0.07,
+      "tipZ": 0.56
+    }
+  }
+}

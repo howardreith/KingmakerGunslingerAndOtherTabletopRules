@@ -210,3 +210,31 @@ observed zero Eastern acquisition rows while retaining every persistent
 identity. The settings transaction restored the original bytes exactly to
 SHA-256 `2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655`.
 Neither run accessed a save.
+
+## Original model, icon, and runtime fallback contracts
+
+Blender 4.5.10 LTS generated three original metric weapon sources with primary
+grip at origin and +Z toward the tip. The final lengths are 0.76 m Wakizashi,
+1.05 m Katana, and 1.58 m Nodachi across 39 mesh objects and 3,522 triangles.
+Six exact 128x128 transparent RGBA runtime icons include three category icons
+and three distinct capstone icons. Full source/output hashes are in
+`EASTERN-WEAPONS-ASSET-PROVENANCE.md`.
+
+The exact Unity 2018.4.10f1 builder emitted one dedicated three-prefab bundle,
+SHA-256
+`39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC`.
+Two consecutive force-rebuilds were byte-identical. Runtime candidate loading
+requires exact prefab cardinality and family names, identity roots, all five
+semantic children, finite plausible family bounds, enabled renderers, complete
+opaque materials, and no cameras/lights. Rejection preserves the original
+Kukri, Bastard Sword, or Falchion donor contract.
+
+Enabled fresh-process run
+`20260814T1420325300375Z-43bcb3114abe402b81663d0dfde65c13`
+observed `custom:validated:3`, six distinct item icons, created one live
+instance of each family, and destroyed all three before completion. Disabled
+run `20260814T1423059037866Z-ff46339be9fd435893d8a4dd8c0b7694`
+observed `native-fallback:module-disabled`, zero custom instances, and three
+native donor icon families while retaining all persistent identities. Settings
+restored exactly; neither run accessed a save. Subjective visual acceptance is
+explicitly pending human review.

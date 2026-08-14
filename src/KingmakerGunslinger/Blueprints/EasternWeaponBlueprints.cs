@@ -134,6 +134,8 @@ namespace KingmakerGunslinger.Blueprints
                                 definition.Presentation.DisplayName + "_WeaponType");
                         typeAdapter.Configure(clone, definition,
                             proficiencyPolicy);
+                        Assets.EasternWeaponAssetRuntime.ApplyTo(clone,
+                            donor.Family);
                         return clone;
                     });
                 var entries = new List<EasternWeaponBlueprintEntry>();

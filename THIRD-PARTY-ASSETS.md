@@ -122,3 +122,11 @@ The Elven Branched Spear mesh, Blender source, procedural generator, and icon
 are original project-owned assets created for this repository. They contain no
 third-party model or artwork. Full hashes and build provenance are recorded in
 `docs/ELVEN-BRANCHED-SPEAR-ASSET-PROVENANCE.md`.
+
+# Original Eastern Weapons
+
+The Wakizashi, Katana, and Nodachi meshes, Blender source, procedural
+generator, three FBXs, six inventory icons, three Unity prefabs, and dedicated
+AssetBundle are original project-owned assets created for this repository.
+They contain no third-party model, texture, or artwork. Full hashes and build
+provenance are recorded in `docs/EASTERN-WEAPONS-ASSET-PROVENANCE.md`.

@@ -877,6 +877,7 @@ namespace KingmakerGunslinger.Bootstrap
                     paperCartridgeMode, acadamaeGraduateMode,
                     cordOfStubbornResolve,
                     elvenBranchedSpears,
+                    easternWeapons,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
                 PlayerFacingPresentation.ApplyArchetypes(

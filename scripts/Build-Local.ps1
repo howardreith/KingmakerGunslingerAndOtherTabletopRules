@@ -79,6 +79,17 @@ $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunsli
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) { throw "Qualified firearm AssetBundle is missing: $bundleSource" }
 if ((Get-KmgSha256 -Path $bundleSource) -ne $bundleManifest.sha256) { throw 'Firearm AssetBundle hash does not match the qualified manifest.' }
 Copy-Item -LiteralPath $bundleSource -Destination (Join-Path $buildOutput 'assets\bundles\kingmakergunslinger.firearms') -Force
+$spearBundle = Join-Path $root 'assets\bundles\kingmakergunslinger.elvenbranchedspear'
+$easternBundle = Join-Path $root 'assets\bundles\kingmakergunslinger.easternweapons'
+$spearManifest = @($bundleManifest.bundles | Where-Object { $_.name -ceq 'kingmakergunslinger.elvenbranchedspear' })
+$easternManifest = @($bundleManifest.bundles | Where-Object { $_.name -ceq 'kingmakergunslinger.easternweapons' })
+if ($spearManifest.Count -ne 1 -or $easternManifest.Count -ne 1 -or
+    (Get-KmgSha256 -Path $spearBundle) -ne $spearManifest[0].sha256 -or
+    (Get-KmgSha256 -Path $easternBundle) -ne $easternManifest[0].sha256) {
+    throw 'Original custom-weapon bundle hash does not match the qualified manifest.'
+}
+Copy-Item -LiteralPath $spearBundle -Destination (Join-Path $buildOutput 'assets\bundles') -Force
+Copy-Item -LiteralPath $easternBundle -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 & (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration Release
 & (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -AllowMissingFirearmSoundBank
@@ -87,7 +98,7 @@ $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
 $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 125 } else { 123 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 132 } else { 130 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -AllowMissingFirearmSoundBank

@@ -12,6 +12,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Gunsmithing;
+using KingmakerGunslinger.EasternWeapons;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -36,7 +37,9 @@ namespace KingmakerGunslinger.Blueprints
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
                 "gunsmith-kit", "overhaul-kit", "paper-cartridge", "focused-aim",
                 "cord-of-stubborn-resolve", "shield-other" };
-            names = names.Concat(new[] { "elven-branched-spear" }).ToArray();
+            names = names.Concat(new[] { "elven-branched-spear",
+                "wakizashi", "katana", "nodachi", "night-without-moon",
+                "heavens-measure", "world-tree-severer" }).ToArray();
             foreach (string name in names)
             {
                 string path = Path.Combine(directory, name + ".png");
@@ -77,6 +80,7 @@ namespace KingmakerGunslinger.Blueprints
             AcadamaeGraduateModeBlueprintSet acadamaeGraduateMode,
             BlueprintItem cordOfStubbornResolve,
             ElvenBranchedSpearBlueprintSet elvenBranchedSpears,
+            EasternWeaponBlueprintSet easternWeapons,
             BlueprintAbility reload, BlueprintAbility repair, BlueprintAbility overhaul)
         {
             if (Icons.Count == 0) throw new InvalidOperationException("Project icons were not loaded.");
@@ -158,7 +162,53 @@ namespace KingmakerGunslinger.Blueprints
             foreach (NamedSpearBlueprintEntry entry in
                 elvenBranchedSpears.Named.Entries)
                 items.SetIcon(entry.Item, spearIcon);
+            ApplyEasternWeapons(easternWeapons, items, factAccess);
             ValidateDistinctSupplyIcons(ammunition, repairKit, supplies);
+        }
+
+        private static void ApplyEasternWeapons(EasternWeaponBlueprintSet weapons,
+            BlueprintItemAccess items, BlueprintUnitFactAccess facts)
+        {
+            if (weapons == null || weapons.Named == null)
+                throw new ArgumentNullException("weapons");
+            if (!EasternWeaponCategoryRuntime.PresentationEnabled)
+            {
+                if (weapons.Entries.Any(value => value.Item.Icon == null) ||
+                    weapons.Named.Entries.Any(value => value.Item.Icon == null))
+                    throw new InvalidOperationException(
+                        "Eastern native fallback item icon is missing.");
+                return;
+            }
+            var familyIcons = new Dictionary<EasternWeaponFamily, Sprite>
+            {
+                { EasternWeaponFamily.Wakizashi, Require("wakizashi") },
+                { EasternWeaponFamily.Katana, Require("katana") },
+                { EasternWeaponFamily.Nodachi, Require("nodachi") }
+            };
+            foreach (EasternWeaponFamilyBlueprintSet family in weapons.Families)
+                foreach (EasternWeaponBlueprintEntry entry in family.Entries)
+                    items.SetIcon(entry.Item, familyIcons[family.Family]);
+            foreach (EasternWeaponNamedBlueprintEntry entry in
+                weapons.Named.Entries)
+            {
+                Sprite icon = entry.Spec.Kind ==
+                    EasternWeaponNamedKind.NightWithoutMoon ?
+                    Require("night-without-moon") : entry.Spec.Kind ==
+                    EasternWeaponNamedKind.HeavensMeasure ?
+                    Require("heavens-measure") : entry.Spec.Kind ==
+                    EasternWeaponNamedKind.WorldTreeSeverer ?
+                    Require("world-tree-severer") :
+                    familyIcons[entry.Spec.Family];
+                items.SetIcon(entry.Item, icon);
+            }
+            facts.SetIcon(weapons.WakizashiFinesseTraining,
+                familyIcons[EasternWeaponFamily.Wakizashi]);
+            if (weapons.WakizashiProficiency.Icon == null ||
+                weapons.KatanaProficiency.Icon == null ||
+                !ReferenceEquals(weapons.WakizashiFinesseTraining.Icon,
+                    familyIcons[EasternWeaponFamily.Wakizashi]))
+                throw new InvalidOperationException(
+                    "Eastern Weapon static presentation did not resolve exact icons.");
         }
 
         internal static void ValidateSupplyPublication(

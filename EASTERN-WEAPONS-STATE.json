@@ -23,7 +23,7 @@
     "selectors": "source_complete_live_publication_pass",
     "fighterGroups": "source_complete_live_publication_pass_combat_pending",
     "commerce": "source_complete_live_on_off_pass_lifecycle_observer_pending",
-    "assets": "pending",
+    "assets": "source_and_structural_runtime_complete_human_visual_review_pending",
     "runtimeMechanics": "bespoke_source_complete_live_initialization_pass_combat_pending",
     "persistence": "pending",
     "compatibility": "pending",
@@ -118,12 +118,28 @@
     "commerceCleanDllMvid": "b53a13e6-92fd-4a3b-8ea4-9d65ddd77280",
     "commercePackageSha256": "B55452D9317E3C76918D99AFBCBD9B11F315C8B3B6DC60DB0ACEAC6D5BB2C2BB",
     "commerceSettingsRestorationSha256": "2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655",
+    "assetRepositoryValidation": "PASS",
+    "assetDomainTests": "PASS 1043/1043",
+    "assetCleanReleaseBuild": "PASS",
+    "assetPackageValidation": "PASS",
+    "assetBundleSha256": "39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC",
+    "assetDeterministicRepeat": "PASS byte-identical consecutive Unity builds",
+    "assetAllOnRunId": "20260814T1420325300375Z-43bcb3114abe402b81663d0dfde65c13",
+    "assetAllOnEvidenceDirectory": "20260814T1420325144046Z-observe-feature-module-settings",
+    "assetEasternOffRunId": "20260814T1423059037866Z-ff46339be9fd435893d8a4dd8c0b7694",
+    "assetEasternOffEvidenceDirectory": "20260814T1423058922729Z-observe-feature-module-settings",
+    "assetCleanDllSha256": "6C28CEF509A2D5C091886CB5D1EB0A7CAAA29338234E56D0BDB942E7ED847940",
+    "assetCleanDllMvid": "354112cd-abc7-4d28-bc8d-8d71a710d2c1",
+    "assetPackageSha256": "72F26E72968A95279ED43AE0AC67E8B046010A6A8410AF7A8B4E35C15BED9F08",
+    "assetRuntimeLoadedDllSha256": "2E4D988AD7BDCB027E2720CE8EA71A0D0218AE40C568A4C8F2C3FB46AB12C5A5",
+    "assetRuntimeLoadedDllMvid": "e91edbb1-2b73-4826-9fa2-63202cf44735",
+    "assetSettingsRestorationSha256": "2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655",
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 0,
-    "runtimeLaunches": 22,
+    "runtimeLaunches": 26,
     "autonomousMerge": false
   }
 }

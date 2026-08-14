@@ -70,6 +70,7 @@ namespace KingmakerGunslinger
                 ModContext.Publish(context);
                 Assets.FirearmAssetRuntime.Configure(context);
                 Assets.ElvenBranchedSpearAssetRuntime.Configure(context);
+                Assets.EasternWeaponAssetRuntime.Configure(context);
                 // Native firearm audio is an optional, fail-soft capability.
                 // A missing/invalid bank must never disable firearm mechanics.
                 Audio.FirearmSoundRuntime.Configure(context);

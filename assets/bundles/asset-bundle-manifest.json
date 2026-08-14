@@ -26,6 +26,17 @@
       "prefabs": ["ElvenBranchedSpear"],
       "sourceFbxSha256": "8A79B5FE83285BA8D95B4111008A9C2E330DC61BFE4BA7CC2212D0C7CB25474B",
       "originalAsset": true
+    },
+    {
+      "name": "kingmakergunslinger.easternweapons",
+      "sha256": "39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC",
+      "prefabs": ["Wakizashi", "Katana", "Nodachi"],
+      "sourceFbxSha256": {
+        "Wakizashi": "C1FC338B67D9A3ABF6FD13507D3645C046EEE46F61F696F746890D3D858023BA",
+        "Katana": "7C608292339B86DDAEDF0926E2701841282C72963E227442917FD303CDD064C6",
+        "Nodachi": "0CA8CA8A71AB7893E0FEC3ECEB538A236F1C0D763F31BEB8E0230B436C8987FB"
+      },
+      "originalAsset": true
     }
   ]
 }

@@ -298,3 +298,39 @@ values, or campaign targets.
   byte-for-byte to SHA-256
   `2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655`.
   No save was accessed or written.
+
+## 2026-08-14 - original models, icons, and fail-safe presentation
+
+- Added a procedural Blender 4.5 generator and reproducible source set for
+  original 0.76 m Wakizashi, 1.05 m Katana, and 1.58 m Nodachi meshes. The
+  source has 39 mesh objects and 3,522 triangles, uses metric +Z-tip/grip-origin
+  coordinates, and exports exactly three FBXs without cameras or lights.
+- Added three family icons and distinct Night Without Moon, Heaven's Measure,
+  and World-Tree Severer icons. All six production assets are exact 128x128
+  transparent RGBA PNGs with distinct hashes.
+- The exact Unity 2018.4.10f1 builder creates exactly three prefabs with
+  `Visual`, `Grip`, `SupportHandTarget`, `Tip`, and `Butt`, opaque Standard
+  materials, finite family-specific bounds, and one dedicated bundle. Two
+  consecutive builds were byte-identical at SHA-256
+  `39884FF681EE553DE957E36E01B350AB926A452F994C4E8D33015D57D4EAD1EC`.
+- Added a transactional runtime loader and per-family model assignment. Any
+  missing, corrupt, wrong-cardinality, incomplete, nonrenderable, or implausible
+  candidate keeps the exact Kukri, Bastard Sword, or Falchion donor model while
+  preserving all mechanics and identities. Module OFF also retains donors.
+- Enabled save-free run
+  `20260814T1420325300375Z-43bcb3114abe402b81663d0dfde65c13`
+  observed three validated prefabs, six exact item icons, three successful live
+  instantiations, and complete immediate cleanup. Disabled run
+  `20260814T1423059037866Z-ff46339be9fd435893d8a4dd8c0b7694`
+  observed no custom prefab/icon publication and restored settings exactly.
+- Repository validation, all `1043/1043` tests, clean Release build,
+  build-output validation, deterministic packaging, and strict package
+  validation passed. DLL SHA-256 is
+  `6C28CEF509A2D5C091886CB5D1EB0A7CAAA29338234E56D0BDB942E7ED847940`,
+  MVID `354112cd-abc7-4d28-bc8d-8d71a710d2c1`; package SHA-256 is
+  `72F26E72968A95279ED43AE0AC67E8B046010A6A8410AF7A8B4E35C15BED9F08`.
+  The guarded exact-reference/runtime candidate loaded SHA-256
+  `2E4D988AD7BDCB027E2720CE8EA71A0D0218AE40C568A4C8F2C3FB46AB12C5A5`,
+  MVID `e91edbb1-2b73-4826-9fa2-63202cf44735` in both final asset runs.
+  No save was accessed. Subjective rig/animation/clipping review is accurately
+  left pending for a human.
