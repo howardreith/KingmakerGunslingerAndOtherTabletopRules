@@ -29,6 +29,7 @@ param(
         'disposable-reload-autocast',
         'disposable-paper-cartridge-mode-view-lifecycle',
         'observe-rare-firearm-blueprint-contracts',
+        'observe-vendor-table-contracts',
         'magic-firearm-native-properties',
         'reliable-firearm-misfire-matrix',
         'blunderbuss-thundering-scatter',
@@ -61,7 +62,10 @@ $primaryError = $null
 $results = [Collections.Generic.List[object]]::new()
 
 $moduleScenario = @($Scenario | Where-Object { $_ -ceq
-    'observe-feature-module-settings' }).Count -gt 0
+    'observe-feature-module-settings' }).Count -gt 0 -or
+    (@($Scenario | Where-Object { $_ -ceq
+        'observe-vendor-table-contracts' }).Count -gt 0 -and
+        $Parameters.Count -gt 0)
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
     if ($keys.Count -ne 6 -or $keys[0] -cne 'acadamaeGraduate' -or
@@ -78,7 +82,7 @@ if ($moduleScenario) {
         throw 'Feature-module profile observation requires exactly six Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, and easternWeapons.'
     }
 } elseif ($Parameters.Count -ne 0) {
-    throw 'Compatibility profile parameters are supported only for observe-feature-module-settings.'
+    throw 'Compatibility profile parameters are supported only for observe-feature-module-settings or module-state vendor-table observation.'
 }
 
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),

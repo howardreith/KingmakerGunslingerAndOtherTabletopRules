@@ -421,7 +421,17 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "easternVendorRows",
                 "easternNamedVendorRows", "easternBtslRows",
                 "installedEasternBtslTables * 12", "easternLootRows",
-                "easternSet.Campaign != null" })
+                "easternSet.Campaign != null",
+                "eastern-vendor-publication",
+                "eastern-btsl-vendor-publication",
+                "eastern-named-campaign-publication",
+                "expectedEasternCommerce",
+                "49 + easternBtslTables * 12 : 0",
+                "expectedEasternCommerce ? 48 : 0",
+                "easternNamedBtslRows == 0",
+                "expectedEasternCommerce ? 11 : 0",
+                "easternPlacedKinds.Distinct().Count() ==",
+                "expectedEasternCommerce ? 18 : 0" })
                 Assertions.True(runtime.Contains(token),
                     "Eastern runtime commerce assertion is missing: " + token);
         }

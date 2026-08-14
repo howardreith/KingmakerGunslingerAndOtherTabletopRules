@@ -1,5 +1,22 @@
 # Eastern Weapons placement manifest
 
+## Live qualification
+
+Guarded read-only vendor/loot run
+`20260814T1531432806171Z-d6638ced8af7472fabeb9b65f2c233c7`
+resolved all eight installed vendor tables by exact GUID/name and observed 97
+singular Eastern rows: 49 base-campaign merchant rows plus 48 generic BTSL
+rows. The four BTSL tables contained no named Eastern item and retained all
+expected firearm and Elven Branched Spear rows. Four exact fixed-loot targets
+contained eleven count-one named rows; together with seven named merchant rows,
+all eighteen named weapons were placed exactly once.
+
+Fresh-process run
+`20260814T1534024888613Z-29a2ce31f1db4aa7bedec9c2c14e6047`
+with only Eastern Weapons disabled observed zero Eastern merchant, BTSL, and
+fixed-loot rows while preserving the other module rows. Both compatibility
+transactions restored their exact pre-run Mods trees; neither accessed a save.
+
 This manifest records the exact installed campaign contracts selected for the
 default-on `eastern-weapons` module. Every addition is count one, additive,
 idempotent, and rollback-owned. Publication removes only stale rows owned by

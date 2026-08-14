@@ -22,7 +22,7 @@
     "proficiency": "source_complete_live_publication_and_focused_combat_pass",
     "selectors": "source_complete_live_publication_pass",
     "fighterGroups": "source_complete_live_publication_pass_combat_pending",
-    "commerce": "source_complete_live_on_off_pass_lifecycle_observer_pending",
+    "commerce": "complete_live_exact_vendor_loot_observer_on_off_pass",
     "assets": "source_and_structural_runtime_complete_human_visual_review_pending",
     "runtimeMechanics": "focused_save_free_combat_pass_expanded_coverage_pending",
     "persistence": "pending",
@@ -146,12 +146,23 @@
     "combatPackageSha256": "E74679549583863BBFC4C33439A51C9637F0BD8BF64DD8EC4CC16B4A99FBA79F",
     "spearCombatRegressionRunId": "20260814T1515370965718Z-017e199cb77b4af891868cec2d3a840b",
     "spearCombatCompatibilityTransaction": "compat-20260814T151443Z-5c193676216e",
+    "vendorObserverRepositoryValidation": "PASS",
+    "vendorObserverDomainTests": "PASS 1044/1044",
+    "vendorObserverCleanReleaseBuild": "PASS",
+    "vendorObserverPackageValidation": "PASS",
+    "vendorObserverAllOnRunId": "20260814T1531432806171Z-d6638ced8af7472fabeb9b65f2c233c7",
+    "vendorObserverAllOnCompatibilityTransaction": "compat-20260814T153052Z-c877b05afc03",
+    "vendorObserverEasternOffRunId": "20260814T1534024888613Z-29a2ce31f1db4aa7bedec9c2c14e6047",
+    "vendorObserverEasternOffCompatibilityTransaction": "compat-20260814T153311Z-bc7a45b97205",
+    "vendorObserverDllSha256": "EC4AF090D0D262A8B7405B382A7F6508B24EAABBEF131CF6057DB2D5ADA19A02",
+    "vendorObserverDllMvid": "ecf0128e-eab6-4fc5-bd65-650d786edf76",
+    "vendorObserverPackageSha256": "E2F8576222D4351D0D37C79A5287FABFC035365A343E726D124BD352909DE097",
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 0,
-    "runtimeLaunches": 33,
+    "runtimeLaunches": 37,
     "autonomousMerge": false
   }
 }

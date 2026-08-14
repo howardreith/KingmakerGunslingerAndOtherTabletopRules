@@ -23,6 +23,10 @@ explicit.
   `20260814T1513175535242Z-6d95393a15c44b96a168cb21132fee19`.
 - Elven Branched Spear combat regression: PASS,
   `20260814T1515370965718Z-017e199cb77b4af891868cec2d3a840b`.
+- Vendor/loot observer, module ON: PASS,
+  `20260814T1531432806171Z-d6638ced8af7472fabeb9b65f2c233c7`.
+- Vendor/loot observer, Eastern module OFF: PASS,
+  `20260814T1534024888613Z-29a2ce31f1db4aa7bedec9c2c14e6047`.
 - Loaded identity matches the built and installed DLL: PASS.
 - Mods-tree restoration for both transactions: PASS.
 - Save interaction: none.
@@ -36,7 +40,6 @@ effective-bonus/Speed references, and complete fixture cleanup.
 
 - Expanded live fighter-group, generic-selector, all-named-property, capstone
   attack-count, and transformation controls.
-- Dedicated vendor/loot lifecycle observer.
 - Three-phase `KMG_AUTOMATION_WORKING` persistence sequence.
 - Call of the Wild, Arms and Armor, negative-control, and maximum combined
   compatibility profiles.

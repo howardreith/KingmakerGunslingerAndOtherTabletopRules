@@ -366,3 +366,30 @@ values, or campaign targets.
   `E74679549583863BBFC4C33439A51C9637F0BD8BF64DD8EC4CC16B4A99FBA79F`.
   Expanded fighter-group, selector, named-property, capstone attack-count, and
   transformation controls remain explicit pending work rather than claimed.
+
+## 2026-08-14 - exact vendor and fixed-loot observer
+
+- Extended the existing read-only `observe-vendor-table-contracts` scenario to
+  validate every Eastern vendor specification by exact table GUID and name,
+  every desired item reference and count, the absence of any extra KMG Eastern
+  row, every fixed-loot GUID/name/area, and the singular eighteen-item named
+  placement set.
+- Enabled run `20260814T1531432806171Z-d6638ced8af7472fabeb9b65f2c233c7`
+  passed with eight installed Eastern vendor tables, 97 exact rows total: 49
+  base-campaign merchant rows and 48 generic BTSL rows. All four BTSL tables
+  retained 48 firearm rows and 24 spear rows, contained zero named Eastern
+  rows, and each Eastern row had count one. Four exact fixed-loot targets held
+  eleven named rows; the seven merchant rows plus eleven loot rows covered all
+  eighteen named weapons exactly once.
+- A transaction with only Eastern Weapons disabled passed as run
+  `20260814T1534024888613Z-29a2ce31f1db4aa7bedec9c2c14e6047`.
+  It observed zero Eastern vendor, BTSL, and fixed-loot rows while the firearm
+  and spear rows remained exact. The transaction restored the original feature
+  settings and complete Mods tree exactly.
+- Repository validation, all `1044/1044` tests, clean exact-reference Release
+  build, build-output validation, and strict package validation passed. The
+  built/installed/runtime DLL was SHA-256
+  `EC4AF090D0D262A8B7405B382A7F6508B24EAABBEF131CF6057DB2D5ADA19A02`,
+  MVID `ecf0128e-eab6-4fc5-bd65-650d786edf76`; package SHA-256 was
+  `E2F8576222D4351D0D37C79A5287FABFC035365A343E726D124BD352909DE097`.
+  Neither observer accessed a save.

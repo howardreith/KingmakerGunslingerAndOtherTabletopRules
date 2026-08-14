@@ -5774,6 +5774,111 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";mode=" + (index < 2 ? "standalone" : "campaign") +
                     ";validRows=" + validRows + "/6");
             }
+            EasternWeaponBlueprintSet eastern = BlueprintBootstrap.EasternWeapons;
+            bool expectedEasternCommerce =
+                _context.FeatureModules.Active.EasternWeapons;
+            BlueprintItem[] easternOwned = eastern.Entries.Select(value =>
+                    (BlueprintItem)value.Item).Concat(eastern.Named.Entries.Select(
+                        value => (BlueprintItem)value.Item)).ToArray();
+            var easternVendorRecords = new List<string>();
+            var easternPlacedKinds = new List<EasternWeaponNamedKind>();
+            int easternVendorTargets = 0, easternVendorRows = 0,
+                invalidEasternVendorRows = 0, easternBtslTables = 0,
+                easternBtslRows = 0, easternNamedBtslRows = 0;
+            foreach (EasternVendorSpec spec in
+                EasternWeaponCampaignBlueprints.VendorSpecs)
+            {
+                BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
+                    string.Equals(value.AssetGuid, spec.Guid,
+                        StringComparison.Ordinal));
+                if (table == null && spec.Optional) continue;
+                easternVendorTargets++;
+                if (table == null || !string.Equals(table.name, spec.Name,
+                        StringComparison.Ordinal))
+                {
+                    invalidEasternVendorRows++;
+                    easternVendorRecords.Add(spec.Guid + ":identity-mismatch");
+                    continue;
+                }
+                BlueprintItem[] desired = expectedEasternCommerce ?
+                    EasternWeaponCatalog.AllGenericItems.Where(value =>
+                        spec.GenericKinds.Contains(value.Kind)).Select(value =>
+                            (BlueprintItem)eastern.Require(value.Family,
+                                value.Kind).Item).Concat(spec.NamedKinds.Select(
+                                    value => (BlueprintItem)eastern.Named.Require(
+                                        value).Item)).ToArray() :
+                    Array.Empty<BlueprintItem>();
+                LootItemsPackFixed[] fixedRows = (table.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<
+                        LootItemsPackFixed>().ToArray();
+                int valid = 0;
+                foreach (BlueprintItem item in desired)
+                {
+                    LootItemsPackFixed[] matches = fixedRows.Where(value =>
+                        ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                            item)).ToArray();
+                    if (matches.Length == 1 &&
+                        CapitalVendorBlueprints.ReadCount(matches[0]) == 1)
+                        valid++;
+                    else invalidEasternVendorRows++;
+                }
+                int unexpected = fixedRows.Count(value => easternOwned.Contains(
+                    CapitalVendorBlueprints.ReadItem(value)) && !desired.Contains(
+                        CapitalVendorBlueprints.ReadItem(value)));
+                invalidEasternVendorRows += unexpected;
+                easternVendorRows += valid;
+                if (expectedEasternCommerce)
+                    easternPlacedKinds.AddRange(spec.NamedKinds);
+                if (spec.IsBtsl)
+                {
+                    easternBtslTables++;
+                    easternBtslRows += valid;
+                    easternNamedBtslRows += fixedRows.Count(value =>
+                        eastern.Named.Entries.Any(named => ReferenceEquals(
+                            named.Item, CapitalVendorBlueprints.ReadItem(value))));
+                }
+                easternVendorRecords.Add(spec.Name + ":" + spec.Guid +
+                    ";mode=" + spec.Mode + ";valid=" + valid + "/" +
+                    desired.Length + ";unexpected=" + unexpected);
+            }
+            var easternLootRecords = new List<string>();
+            int easternLootTargets = 0, easternLootRows = 0,
+                invalidEasternLootRows = 0;
+            foreach (EasternLootSpec spec in EasternWeaponCampaignBlueprints.LootSpecs)
+            {
+                BlueprintLoot loot = allBlueprints.OfType<BlueprintLoot>()
+                    .SingleOrDefault(value => string.Equals(value.AssetGuid,
+                        spec.Guid, StringComparison.Ordinal));
+                BlueprintItem[] desired = expectedEasternCommerce ?
+                    spec.NamedKinds.Select(value => (BlueprintItem)eastern.Named
+                        .Require(value).Item).ToArray() :
+                    Array.Empty<BlueprintItem>();
+                LootEntry[] rows = loot == null ? Array.Empty<LootEntry>() :
+                    (loot.Items ?? Array.Empty<LootEntry>());
+                int valid = 0;
+                foreach (BlueprintItem item in desired)
+                {
+                    LootEntry[] matches = rows.Where(value => value != null &&
+                        ReferenceEquals(value.Item, item)).ToArray();
+                    if (matches.Length == 1 && matches[0].Count == 1) valid++;
+                    else invalidEasternLootRows++;
+                }
+                int unexpected = rows.Count(value => value != null &&
+                    easternOwned.Contains(value.Item) && !desired.Contains(value.Item));
+                bool identity = loot != null && string.Equals(loot.name, spec.Name,
+                    StringComparison.Ordinal) && loot.Area != null && string.Equals(
+                        loot.Area.name, spec.AreaName, StringComparison.Ordinal);
+                if (!identity) invalidEasternLootRows++;
+                invalidEasternLootRows += unexpected;
+                easternLootTargets++;
+                easternLootRows += valid;
+                if (expectedEasternCommerce)
+                    easternPlacedKinds.AddRange(spec.NamedKinds);
+                easternLootRecords.Add(spec.Name + ":" + spec.Guid + ":" +
+                    spec.AreaName + ";band=" + spec.Band + ";valid=" + valid +
+                    "/" + desired.Length + ";identity=" + identity +
+                    ";unexpected=" + unexpected);
+            }
             BlueprintItem[] namedItems = BlueprintBootstrap.MagicFirearms.Entries
                 .Where(value => value.Spec.Symbol != MagicFirearmBlueprints.PistolPlus1Symbol &&
                     value.Spec.Symbol != MagicFirearmBlueprints.MusketPlus1Symbol &&
@@ -5866,8 +5971,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";btslSpearTables=" + btslSpearTables +
                     ";btslSpearEntries=" + btslSpearEntries +
                     ";invalidBtslSpearCounts=" + invalidBtslSpearCounts +
-                    ";btslSpearRecords=" + string.Join(" | ",
+                ";btslSpearRecords=" + string.Join(" | ",
                         btslSpearRecords.ToArray()) +
+                ";expectedEasternCommerce=" + expectedEasternCommerce +
+                    ";easternVendors=" + easternVendorRows + "/" +
+                    easternVendorTargets + ";invalidEasternVendors=" +
+                    invalidEasternVendorRows + ";easternBtsl=" +
+                    easternBtslRows + "/" + easternBtslTables +
+                    ";easternNamedBtsl=" + easternNamedBtslRows +
+                    ";easternLoot=" + easternLootRows + "/" +
+                    easternLootTargets + ";invalidEasternLoot=" +
+                    invalidEasternLootRows + ";easternVendorRecords=" +
+                    string.Join(" | ", easternVendorRecords.ToArray()) +
+                    ";easternLootRecords=" + string.Join(" | ",
+                        easternLootRecords.ToArray()) +
                 ";bannedManagedEntries=" + bannedManagedEntries +
                 ";jhodProjectEntries=" + jhodProjectEntries +
                 ";validRareLoot=" + validRareLoot + ";rareLoot=" +
@@ -5913,7 +6030,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("capital-vendor-fixed-entry-contract",
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
-                        fixedCountField != null && capitalEntries.Count == 35 &&
+                        fixedCountField != null && capitalEntries.Count ==
+                            (expectedEasternCommerce ? 51 : 36) &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
@@ -5933,6 +6051,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                         invalidBtslSpearCounts == 0 && btslEntries == 48 &&
                         invalidBtslCounts == 0,
                     "exact installed shared-vendor table identities and additive fixed-item rows"),
+                Assertion("eastern-vendor-publication",
+                    expectedEasternCommerce ?
+                        "four required base merchants plus every installed BTSL table contain each exact desired Eastern item once at count one with no foreign Eastern row" :
+                        "module OFF publishes zero Eastern vendor rows while retaining table identities",
+                    observed, easternVendorTargets == 4 + easternBtslTables &&
+                        easternVendorRows == (expectedEasternCommerce ?
+                            49 + easternBtslTables * 12 : 0) &&
+                        invalidEasternVendorRows == 0,
+                    "exact Eastern vendor specs, names, item references, and fixed-entry counts"),
+                Assertion("eastern-btsl-vendor-publication",
+                    expectedEasternCommerce ?
+                        "all four installed BTSL tables retain firearms and spears and contain exactly 48 singular generic Eastern rows with no named Eastern row" :
+                        "module OFF publishes zero Eastern BTSL rows while retaining firearm and spear rows",
+                    observed, easternBtslTables == 4 && easternBtslRows ==
+                        (expectedEasternCommerce ? 48 : 0) &&
+                        easternNamedBtslRows == 0 && btslEntries == 48 &&
+                        invalidBtslCounts == 0 && btslSpearEntries == 24 &&
+                        invalidBtslSpearCounts == 0,
+                    "four exact DLC table identities and item-reference cardinality"),
+                Assertion("eastern-named-campaign-publication",
+                    expectedEasternCommerce ?
+                        "all eighteen named Eastern weapons have one exact count-one merchant or fixed-loot placement; four loot targets contribute eleven rows" :
+                        "module OFF publishes zero named Eastern merchant or fixed-loot rows",
+                    observed, easternLootTargets == 4 && easternLootRows ==
+                        (expectedEasternCommerce ? 11 : 0) &&
+                        invalidEasternLootRows == 0 &&
+                        easternPlacedKinds.Count == (expectedEasternCommerce ?
+                            18 : 0) && easternPlacedKinds.Distinct().Count() ==
+                            (expectedEasternCommerce ? 18 : 0),
+                    "exact merchant specs plus BlueprintLoot name, area, item, and quantity contracts"),
                 Assertion("rare-firearm-acquisition-exclusions",
                     "no named or modern firearms in managed vendors; no Jhod project firearms",
                     observed, bannedManagedEntries == 0 && jhodProjectEntries == 0,
