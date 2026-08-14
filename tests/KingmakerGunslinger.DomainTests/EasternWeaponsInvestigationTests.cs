@@ -36,6 +36,9 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string contract in new[] { "\"brilliantenergy\"",
                 "\"mightycleaving\"", "\"impact\"", "\"coupdegrace\"",
                 "\"originalsize\"", "\"criticalconfirm\"",
+                "eastern-targeted-mechanic-inventory",
+                "categoryValue=",
+                "IsTargetedMechanicType",
                 "eastern-campaign-contract-inventory",
                 "eastern-contract-observer-save-free" })
                 Assertions.True(observer.Contains(contract),

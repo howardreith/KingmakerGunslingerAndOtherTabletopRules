@@ -49,6 +49,7 @@
     "observerPassingDllSha256": "89C06B4F29190A919512FB0FF5D275C054FC04D940749ECB0828EE6C6499FF4E",
     "observerPassingDllMvid": "52f2dfea-aaf1-4cda-9c6e-c3f06270c3a7",
     "observerPassingSaveInteraction": false,
+    "targetedObserverRuntime": "pending",
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {

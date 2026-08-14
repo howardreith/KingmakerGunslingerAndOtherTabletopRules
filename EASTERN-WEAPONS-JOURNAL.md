@@ -75,3 +75,8 @@ values, or campaign targets.
 - Mighty Cleaving, Impact/size, member-level coup-de-grace, category collision,
   and bastard-sword grip authority require one narrower follow-up inventory;
   no production identity or donor has been chosen yet.
+- Extended the same save-free observer with numeric category occupancy, every
+  installed weapon-type group contract, alternate mechanic blueprint names,
+  and loaded CLR types selected by declared member names. The follow-up source
+  passed validation, `1034/1034` tests, clean build, deterministic packaging,
+  and strict package validation.

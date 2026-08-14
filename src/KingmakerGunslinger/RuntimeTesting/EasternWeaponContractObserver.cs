@@ -55,6 +55,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             "damagestatreplacement", "attackstatreplacement"
         };
 
+        private static readonly string[] TargetedMechanicTerms =
+        {
+            "cleav", "impact", "leadblade", "sizechange", "weaponsize",
+            "originalsize", "coupdegrace", "holdintwohands", "secondaryhand",
+            "handslot", "equipmentset", "powerattack", "criticalconfirm",
+            "savingthrow", "ruledealdamage", "damagebundle", "fightergroup",
+            "weapontraining", "proficiency"
+        };
+
         private static readonly string[] CampaignTerms =
         {
             "oaktree", "oldsycamore", "staglord", "tradingpost", "act1",
@@ -105,13 +114,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuleTerms))
                 .OrderBy(value => value.name, StringComparer.Ordinal)
                 .Select(DescribeBlueprint).Take(500).ToArray();
-            string[] ruleTypes = AppDomain.CurrentDomain.GetAssemblies()
+            Type[] loadedTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(SafeTypes).Where(value => value != null &&
                     value.FullName != null && value.FullName.StartsWith("Kingmaker",
-                        StringComparison.Ordinal) &&
+                        StringComparison.Ordinal)).ToArray();
+            string[] ruleTypes = loadedTypes.Where(value =>
                     ContainsAny(value.FullName, RuleTerms))
                 .OrderBy(value => value.FullName, StringComparer.Ordinal)
                 .Select(DescribeType).Take(500).ToArray();
+            string[] mechanicBlueprints = all.Where(value =>
+                    ContainsAny(value.name + ";" + SafeBlueprintName(value) +
+                        ";" + ComponentTypeNames(value), TargetedMechanicTerms))
+                .OrderBy(value => value.name, StringComparer.Ordinal)
+                .Select(DescribeBlueprint).Take(600).ToArray();
+            string[] mechanicTypes = loadedTypes.Where(IsTargetedMechanicType)
+                .OrderBy(value => value.FullName, StringComparer.Ordinal)
+                .Select(DescribeType).Take(600).ToArray();
+            string[] weaponTypes = all.OfType<BlueprintWeaponType>()
+                .OrderBy(value => Convert.ToInt64(value.Category))
+                .ThenBy(value => value.name, StringComparer.Ordinal)
+                .Select(DescribeWeaponType).Take(500).ToArray();
             Mark(context, timings, elapsed, "selectors-rules");
 
             BlueprintSharedVendorTable[] vendorTables = all
@@ -165,6 +187,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     HasCandidate(ruleTypes, "critical") &&
                     HasCandidate(ruleTypes, "polymorph", "size"),
                 "loaded CLR type identities plus installed blueprint component fields");
+            Add(assertions, "eastern-targeted-mechanic-inventory",
+                "all installed category values plus alternate cleaving, size, grip, proficiency, combat-event, and coup-de-grace member contracts",
+                "weaponTypes=" + string.Join(" | ", weaponTypes) +
+                    ";blueprints=" + string.Join(" | ", mechanicBlueprints) +
+                    ";types=" + string.Join(" | ", mechanicTypes),
+                weaponTypes.Length > 0 && mechanicBlueprints.Length > 0 &&
+                    mechanicTypes.Length > 0 &&
+                    HasCandidate(mechanicBlueprints, "coupdegrace") &&
+                    HasCandidate(mechanicTypes, "weaponsize", "sizechange"),
+                "installed BlueprintWeaponType numeric categories, component identities, and loaded declared member names");
             Add(assertions, "eastern-campaign-contract-inventory",
                 "nonempty exact vendor and early-through-final campaign loot candidates with direct owners",
                 "vendors=" + string.Join(" | ", vendors) +
@@ -209,6 +241,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "selections=" + selections.Length,
                     "ruleBlueprints=" + ruleBlueprints.Length,
                     "ruleTypes=" + ruleTypes.Length,
+                    "mechanicBlueprints=" + mechanicBlueprints.Length,
+                    "mechanicTypes=" + mechanicTypes.Length,
+                    "weaponTypes=" + weaponTypes.Length,
                     "vendorTables=" + vendors.Length,
                     "campaignLoot=" + loot.Length,
                     "referenceOwners=" + referenceOwners.Length,
@@ -273,6 +308,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "IsFinessable", "IsReach", "m_VisualParameters",
                         "m_EquipmentEntity", "m_AnimationStyle", "m_SoundType" }) +
                     ";components=" + DescribeComponents(type));
+        }
+
+        private static string DescribeWeaponType(BlueprintWeaponType value)
+        {
+            return value.name + ":" + value.AssetGuid + ";category=" +
+                value.Category + ";categoryValue=" +
+                Convert.ToInt64(value.Category) + ";fighterGroup=" +
+                value.FighterGroup + ";fields=" + DescribeMembers(value,
+                    new[] { "AttackType", "AttackRange", "BaseDamage",
+                        "DamageType", "CriticalRollEdge", "CriticalModifier",
+                        "Weight", "IsTwoHanded", "IsLight", "m_AttackStat",
+                        "m_VisualParameters" }) + ";components=" +
+                DescribeComponents(value);
         }
 
         private static string DescribeEnchantment(BlueprintWeaponEnchantment value,
@@ -398,6 +446,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Select(value => value.MemberType + ":" + value.Name)
                     .OrderBy(value => value, StringComparer.Ordinal).Take(80)
                     .ToArray()) + "]";
+        }
+
+        private static bool IsTargetedMechanicType(Type type)
+        {
+            if (ContainsAny(type.FullName, TargetedMechanicTerms)) return true;
+            try
+            {
+                return type.GetMembers(BindingFlags.Instance |
+                    BindingFlags.Static | BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                    .Any(value => ContainsAny(value.Name, TargetedMechanicTerms));
+            }
+            catch { return false; }
+        }
+
+        private static string SafeBlueprintName(BlueprintScriptableObject value)
+        {
+            var feature = value as BlueprintFeature;
+            if (feature != null) return Safe(() => feature.Name);
+            var item = value as BlueprintItem;
+            if (item != null) return Safe(() => item.Name);
+            return string.Empty;
         }
 
         private static IEnumerable<Type> SafeTypes(Assembly assembly)
