@@ -60,6 +60,19 @@ namespace KingmakerGunslinger.Development
         internal static DevelopmentActionResult AddElvenBranchedSpear(int index)
         { return Execute("elven-branched-spear-add-" + index, bridge => bridge.AddElvenBranchedSpear(index)); }
 
+        internal static DevelopmentActionResult DescribeEasternWeaponCatalog()
+        { return Execute("eastern-weapons-catalog", bridge => bridge.DescribeEasternWeaponCatalog()); }
+        internal static DevelopmentActionResult AddEasternWeaponSet()
+        { return Execute("eastern-weapons-add-all", bridge => bridge.AddEasternWeaponSet()); }
+        internal static DevelopmentActionResult AddWakizashiPath()
+        { return Execute("eastern-weapons-add-wakizashi-path", bridge => bridge.AddWakizashiPath()); }
+        internal static DevelopmentActionResult AddKatanaPath()
+        { return Execute("eastern-weapons-add-katana-path", bridge => bridge.AddKatanaPath()); }
+        internal static DevelopmentActionResult AddNodachiPath()
+        { return Execute("eastern-weapons-add-nodachi-path", bridge => bridge.AddNodachiPath()); }
+        internal static DevelopmentActionResult AddEasternWeapon(int index)
+        { return Execute("eastern-weapons-add-" + index, bridge => bridge.AddEasternWeapon(index)); }
+
         internal static DevelopmentActionResult DescribeReloadReadiness()
         {
             return Execute(

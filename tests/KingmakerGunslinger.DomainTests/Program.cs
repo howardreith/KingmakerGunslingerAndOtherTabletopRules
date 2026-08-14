@@ -91,6 +91,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("eastern-weapons.named-native-catalog", EasternWeaponFoundationTests.NamedNativeCatalogIsExact),
             Case("eastern-weapons.named-bespoke-effects", EasternWeaponFoundationTests.NamedBespokeEffectContractsAreExact),
             Case("eastern-weapons.campaign-publication", EasternWeaponFoundationTests.CampaignPublicationIsExactAndTransactional),
+            Case("eastern-weapons.development-controls", EasternWeaponFoundationTests.DevelopmentControlsAreExactAndInventoryOnly),
+            Case("eastern-weapons.working-save-persistence", EasternWeaponFoundationTests.WorkingSavePersistenceContractsAreExact),
             Case("eastern-weapons.original-asset-pipeline", EasternWeaponFoundationTests.OriginalAssetPipelineIsExactAndFailSafe),
             Case("eastern-weapons.combat-scenario-contract", EasternWeaponFoundationTests.CombatScenarioUsesLiveRulesAndCleansUp),
             Case("shield-other.damage-split", ShieldOtherPolicyTests.DamageSplitBoundariesAndConservation),

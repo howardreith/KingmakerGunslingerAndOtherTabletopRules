@@ -25,7 +25,7 @@
     "commerce": "complete_live_exact_vendor_loot_observer_on_off_pass",
     "assets": "source_and_structural_runtime_complete_human_visual_review_pending",
     "runtimeMechanics": "focused_save_free_combat_pass_expanded_coverage_pending",
-    "persistence": "pending",
+    "persistence": "complete_three_phase_working_save_pass",
     "compatibility": "pending",
     "moduleMatrix": "pending",
     "packaging": "pending",
@@ -157,12 +157,23 @@
     "vendorObserverDllSha256": "EC4AF090D0D262A8B7405B382A7F6508B24EAABBEF131CF6057DB2D5ADA19A02",
     "vendorObserverDllMvid": "ecf0128e-eab6-4fc5-bd65-650d786edf76",
     "vendorObserverPackageSha256": "E2F8576222D4351D0D37C79A5287FABFC035365A343E726D124BD352909DE097",
+    "persistenceRepositoryValidation": "PASS",
+    "persistenceDomainTests": "PASS 1046/1046",
+    "persistenceCleanReleaseBuild": "PASS",
+    "persistencePackageValidation": "PASS",
+    "persistencePrepareRunId": "20260814T1546412271086Z-ec58de23ddad45c4b9c57c2594065f28",
+    "persistenceCleanupRunId": "20260814T1551228284204Z-e4d26f6cabb740c2a9dbbacb4785055e",
+    "persistenceAbsentRunId": "20260814T1554167770731Z-9695a053916645e3b3cc4a44ceae8c29",
+    "persistenceDllSha256": "183DC903A64959C76A1A5063665E496A2E3FF2DF2BB575C99DA90092A3DEF8B4",
+    "persistenceDllMvid": "34061378-e413-4359-a96d-7952301e0efd",
+    "persistencePackageSha256": "7D89041D27EBCE75BD397769D2681D2F9C9513D3BC409213B4DC3BC648FA5D70",
+    "persistenceSettingsRestorationSha256": "2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655",
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {
     "protectedBaselineAccessed": false,
-    "workingSaveWrites": 0,
-    "runtimeLaunches": 37,
+    "workingSaveWrites": 2,
+    "runtimeLaunches": 40,
     "autonomousMerge": false
   }
 }

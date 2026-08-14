@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Diagnostics;
 using KingmakerGunslinger.Deeds;
@@ -163,6 +164,37 @@ namespace KingmakerGunslinger.Development
                         spearNames[spearIndex]))
                     Run(() => DevelopmentControls.AddElvenBranchedSpear(
                         selectedSpear));
+            }
+
+            ImmediateModeGui.Space(8f);
+            ImmediateModeGui.Label("Eastern Weapons Acceptance (DEVELOPMENT ONLY)");
+            ImmediateModeGui.Label(
+                "Disposable saves only. Inventory grants do not grant proficiency, feats, class levels, vendor state, loot state, campaign flags, or invoke save APIs.");
+            if (ImmediateModeGui.Button(
+                    "Print complete Eastern Weapons catalog audit"))
+                Run(DevelopmentControls.DescribeEasternWeaponCatalog);
+            if (ImmediateModeGui.Button("Add all 30 Eastern Weapon variants"))
+                Run(DevelopmentControls.AddEasternWeaponSet);
+            if (ImmediateModeGui.Button("Add complete Wakizashi path (10)"))
+                Run(DevelopmentControls.AddWakizashiPath);
+            if (ImmediateModeGui.Button("Add complete Katana path (10)"))
+                Run(DevelopmentControls.AddKatanaPath);
+            if (ImmediateModeGui.Button("Add complete Nodachi path (10)"))
+                Run(DevelopmentControls.AddNodachiPath);
+            string[] easternNames = BlueprintBootstrap.EasternWeapons == null ||
+                BlueprintBootstrap.EasternWeapons.Named == null ?
+                new string[0] : BlueprintBootstrap.EasternWeapons.Entries.Select(
+                    value => value.Item.Name).Concat(BlueprintBootstrap
+                        .EasternWeapons.Named.Entries.Select(value =>
+                            value.Item.Name)).ToArray();
+            for (int easternIndex = 0; easternIndex < easternNames.Length;
+                easternIndex++)
+            {
+                int selectedEastern = easternIndex;
+                if (ImmediateModeGui.Button("Add [" + easternIndex + "] " +
+                        easternNames[easternIndex]))
+                    Run(() => DevelopmentControls.AddEasternWeapon(
+                        selectedEastern));
             }
 
             ImmediateModeGui.Space(8f);

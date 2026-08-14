@@ -393,3 +393,36 @@ values, or campaign targets.
   MVID `ecf0128e-eab6-4fc5-bd65-650d786edf76`; package SHA-256 was
   `E2F8576222D4351D0D37C79A5287FABFC035365A343E726D124BD352909DE097`.
   Neither observer accessed a save.
+
+## 2026-08-14 - development controls and working-save persistence
+
+- Added development-only controls to audit the complete catalog, add all 30
+  exact items, add one complete six-item family path, or add one exact catalog
+  item by index. Controls report exact inventory deltas, warn about disposable
+  saves, grant no facts or campaign state, and never call a save API.
+- Added guarded prepare, module-disabled verify/cleanup, and final absence
+  scenarios plus a transactional orchestration script restricted to
+  `KMG_AUTOMATION_WORKING`. The script stages and restores feature settings
+  exactly and waits for every Steam-launched process to exit before advancing.
+- Prepare run `20260814T1546412271086Z-ec58de23ddad45c4b9c57c2594065f28`
+  started from zero fixtures, added exactly 30 item instances and one exact
+  Wakizashi/Katana proficiency fact on deterministic owners, proved their
+  blueprint/type/category identity, and made exactly one correlated save write.
+- Eastern-disabled cleanup run
+  `20260814T1551228284204Z-e4d26f6cabb740c2a9dbbacb4785055e`
+  deserialized all 30 items and both facts exactly once, observed zero Eastern
+  public publication, removed only the exact fixtures, and made exactly one
+  correlated save write.
+- Absence run `20260814T1554167770731Z-9695a053916645e3b3cc4a44ceae8c29`
+  observed zero exact items and facts and made no save write. The protected
+  baseline stayed distinct and untouched. Settings restored byte-for-byte.
+- No stable ordinary selected-weapon fact was added: these installed selectors
+  generate parameterized feature instances dynamically, so persistence would
+  require an unsafe invented identity. This is the mission's expressly allowed
+  safe-construction exception.
+- Repository validation, all `1046/1046` tests, clean exact-reference Release
+  build, build-output validation, and strict package validation passed. DLL
+  SHA-256 is
+  `183DC903A64959C76A1A5063665E496A2E3FF2DF2BB575C99DA90092A3DEF8B4`,
+  MVID `34061378-e413-4359-a96d-7952301e0efd`; package SHA-256 is
+  `7D89041D27EBCE75BD397769D2681D2F9C9513D3BC409213B4DC3BC648FA5D70`.

@@ -137,6 +137,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _elvenBranchedSpearPersistenceGrantValid;
         private bool _elvenBranchedSpearPersistenceCleanupValid;
         private string _elvenBranchedSpearPersistenceDetail = "";
+        private bool _easternWeaponsPersistenceSaveStarted;
+        private bool _easternWeaponsPersistenceSaveCompleted;
+        private Stopwatch _easternWeaponsPersistenceSaveElapsed;
+        private bool _easternWeaponsPersistenceIdentityValid;
+        private bool _easternWeaponsPersistenceCategoryValid;
+        private bool _easternWeaponsPersistenceProficiencyValid;
+        private bool _easternWeaponsPersistencePublicationValid;
+        private bool _easternWeaponsPersistenceGrantValid;
+        private bool _easternWeaponsPersistenceCleanupValid;
+        private string _easternWeaponsPersistenceDetail = "";
         private static string _earlyEvidenceDirectory;
         private static RuntimeBuildIdentity _loadedBuildIdentity;
         private static bool _expandedSummoningRuleCaptureActive;
@@ -506,6 +516,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     !IsExpandedSummoningPersistenceScenario() &&
                     !IsElvenBranchedSpearPersistenceScenario() &&
+                    !IsEasternWeaponsPersistenceScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
@@ -1155,6 +1166,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
+                    IsEasternWeaponsPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1181,6 +1193,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
+                    IsEasternWeaponsPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1242,6 +1255,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_easternWeaponsPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteEasternWeaponsPersistence(RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_easternWeaponsPersistenceSaveCompleted)
+                {
+                    CompleteEasternWeaponsPersistence(RuntimeTestStatuses.Pass,
+                        "");
+                    return;
+                }
+                if (_easternWeaponsPersistenceSaveElapsed != null &&
+                    _easternWeaponsPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteEasternWeaponsPersistence(
+                        RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
             if (_elvenBranchedSpearPersistenceSaveStarted)
             {
                 if (_workingSaveSmoke.WriteObserved)
@@ -1463,6 +1498,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     StartElvenBranchedSpearPersistence();
                 }
+                else if (IsEasternWeaponsPersistenceScenario())
+                {
+                    StartEasternWeaponsPersistence();
+                }
                 else if (IsShieldOtherPersistenceScenario())
                 {
                     StartShieldOtherPersistenceSave();
@@ -1565,6 +1604,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .WorkingSaveElvenBranchedSpearVerifyCleanup ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .WorkingSaveElvenBranchedSpearVerifyAbsent;
+        }
+
+        private bool IsEasternWeaponsPersistenceScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveEasternWeaponsPrepare ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveEasternWeaponsVerifyCleanup ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveEasternWeaponsVerifyAbsent;
         }
 
         private void StartElvenBranchedSpearPersistence()
@@ -1785,6 +1834,277 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Unity Mod Manager ModEntry.Info.Version")
             };
             RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            if (!string.IsNullOrWhiteSpace(warning))
+                result.Warnings.Add(warning);
+            Complete(result);
+        }
+
+        private void StartEasternWeaponsPersistence()
+        {
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.Descriptor != null).ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before Eastern Weapons persistence qualification.");
+
+            EasternWeaponBlueprintSet set = BlueprintBootstrap.EasternWeapons;
+            BlueprintItemWeapon[] items = set == null || set.Named == null ?
+                null : set.Entries.Select(value => value.Item).Concat(
+                    set.Named.Entries.Select(value => value.Item)).ToArray();
+            if (items == null || items.Length != 30 ||
+                items.Any(value => value == null) ||
+                items.Distinct().Count() != 30)
+                throw new InvalidOperationException(
+                    "The exact 30-item Eastern Weapons registry is unavailable.");
+
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveEasternWeaponsPrepare;
+            bool verifyCleanup = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveEasternWeaponsVerifyCleanup;
+            bool active = _context.FeatureModules.Active.EasternWeapons;
+            int[] before = items.Select(value =>
+                Game.Instance.Player.Inventory.Count(value)).ToArray();
+            int wakizashiBefore = party.Count(value => value.Descriptor.HasFact(
+                set.WakizashiProficiency));
+            int katanaBefore = party.Count(value => value.Descriptor.HasFact(
+                set.KatanaProficiency));
+
+            if (prepare)
+            {
+                if (!active) throw new InvalidOperationException(
+                    "Eastern Weapons prepare requires the module to be active.");
+                if (before.Any(value => value != 0))
+                    throw new InvalidOperationException(
+                        "The disposable working save already contains an Eastern Weapon; prepare refused to mutate it.");
+                if (wakizashiBefore != 0 || katanaBefore != 0)
+                    throw new InvalidOperationException(
+                        "The disposable working save already contains an exact Eastern Weapon proficiency fixture; prepare refused to mutate it.");
+                DevelopmentActionResult grant =
+                    DevelopmentControls.AddEasternWeaponSet();
+                _easternWeaponsPersistenceGrantValid = grant.Succeeded;
+                if (!grant.Succeeded) throw new InvalidOperationException(
+                    "The development-only Eastern set grant failed: " +
+                    grant.Message);
+                if (party[0].Descriptor.AddFact(set.WakizashiProficiency) == null ||
+                    party[1].Descriptor.AddFact(set.KatanaProficiency) == null)
+                    throw new InvalidOperationException(
+                        "The exact Eastern proficiency facts could not be added to their deterministic disposable owners.");
+            }
+            else
+                _easternWeaponsPersistenceGrantValid = true;
+
+            int expectedCount = prepare || verifyCleanup ? 1 : 0;
+            int[] observed = items.Select(value =>
+                Game.Instance.Player.Inventory.Count(value)).ToArray();
+            _easternWeaponsPersistenceIdentityValid =
+                observed.All(value => value == expectedCount) &&
+                items.All(value => BlueprintBootstrap.Library.GetAllBlueprints()
+                    .Count(candidate => ReferenceEquals(candidate, value)) == 1) &&
+                BlueprintBootstrap.Library.GetAllBlueprints().Count(value =>
+                    ReferenceEquals(value, set.WakizashiProficiency)) == 1 &&
+                BlueprintBootstrap.Library.GetAllBlueprints().Count(value =>
+                    ReferenceEquals(value, set.KatanaProficiency)) == 1;
+            ItemEntityWeapon[] instances = EnumerateRuntimeInventory(
+                Game.Instance.Player.Inventory).OfType<ItemEntityWeapon>()
+                .Where(value => items.Contains(value.Blueprint)).ToArray();
+            _easternWeaponsPersistenceCategoryValid = set.Families.Length == 3 &&
+                set.Families.All(family => family.Entries.All(entry =>
+                    ReferenceEquals(entry.Item.Type, family.WeaponType)) &&
+                    set.Named.Entries.Where(entry => entry.Spec.Family ==
+                        family.Family).All(entry => ReferenceEquals(
+                            entry.Item.Type, family.WeaponType))) &&
+                (expectedCount == 0 ? instances.Length == 0 :
+                    instances.Length == 30 && items.All(item =>
+                        instances.Count(instance => ReferenceEquals(
+                            instance.Blueprint, item) && ReferenceEquals(
+                            instance.Blueprint.Type, item.Type)) == 1));
+            int wakizashiObserved = party.Count(value =>
+                value.Descriptor.HasFact(set.WakizashiProficiency));
+            int katanaObserved = party.Count(value =>
+                value.Descriptor.HasFact(set.KatanaProficiency));
+            _easternWeaponsPersistenceProficiencyValid =
+                wakizashiObserved == expectedCount &&
+                katanaObserved == expectedCount &&
+                (expectedCount == 0 ||
+                    (party[0].Descriptor.HasFact(set.WakizashiProficiency) &&
+                     party[1].Descriptor.HasFact(set.KatanaProficiency)));
+
+            BlueprintFeatureSelection ewp = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeatureSelection>(BlueprintBootstrap.Library,
+                    EasternWeaponBlueprints
+                        .NativeExoticWeaponProficiencySelectionGuid,
+                    "native Exotic Weapon Proficiency selection");
+            BlueprintFeatureSelection finesse = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library, EasternWeaponBlueprints
+                        .NativeFinesseTrainingSelectionGuid,
+                    "native Rogue Finesse Training selection");
+            int publicCount = ewp.AllFeatures.Count(value => ReferenceEquals(
+                    value, set.WakizashiProficiency) || ReferenceEquals(value,
+                        set.KatanaProficiency)) + finesse.AllFeatures.Count(
+                    value => ReferenceEquals(value,
+                        set.WakizashiFinesseTraining));
+            _easternWeaponsPersistencePublicationValid = active ?
+                publicCount == 3 && set.Campaign != null &&
+                    EasternWeaponCategoryRuntime.PresentationEnabled :
+                publicCount == 0 && set.Campaign == null &&
+                    !EasternWeaponCategoryRuntime.PresentationEnabled;
+
+            if (verifyCleanup)
+            {
+                if (active) throw new InvalidOperationException(
+                    "Eastern verify/cleanup requires the module-disabled fresh process.");
+                if (!_easternWeaponsPersistenceIdentityValid ||
+                    !_easternWeaponsPersistenceCategoryValid ||
+                    !_easternWeaponsPersistenceProficiencyValid ||
+                    !_easternWeaponsPersistencePublicationValid)
+                    throw new InvalidOperationException(
+                        "Fresh-load Eastern identities, categories, proficiency facts, or module-disabled publication did not survive before cleanup.");
+                foreach (BlueprintItemWeapon item in items)
+                    Game.Instance.Player.Inventory.Remove(item, 1);
+                party[0].Descriptor.RemoveFact(set.WakizashiProficiency);
+                party[1].Descriptor.RemoveFact(set.KatanaProficiency);
+                _easternWeaponsPersistenceCleanupValid = items.All(value =>
+                    Game.Instance.Player.Inventory.Count(value) == 0) &&
+                    party.All(value => !value.Descriptor.HasFact(
+                        set.WakizashiProficiency) && !value.Descriptor.HasFact(
+                            set.KatanaProficiency));
+            }
+            else
+                _easternWeaponsPersistenceCleanupValid = prepare ?
+                    observed.All(value => value == 1) &&
+                        wakizashiObserved == 1 && katanaObserved == 1 :
+                    observed.All(value => value == 0) &&
+                        wakizashiObserved == 0 && katanaObserved == 0;
+
+            _easternWeaponsPersistenceDetail = "active=" + active +
+                ";phase=" + (prepare ? "prepare" : verifyCleanup ?
+                    "verify-cleanup" : "verify-absent") + ";before=" +
+                string.Join(",", before.Select(value => value.ToString())
+                    .ToArray()) + ";observed=" + string.Join(",", observed
+                    .Select(value => value.ToString()).ToArray()) +
+                ";instances=" + instances.Length + ";proficiencies=" +
+                wakizashiBefore + "/" + katanaBefore + "->" +
+                wakizashiObserved + "/" + katanaObserved +
+                ";publicCount=" + publicCount + ";identity=" +
+                _easternWeaponsPersistenceIdentityValid + ";category=" +
+                _easternWeaponsPersistenceCategoryValid + ";proficiency=" +
+                _easternWeaponsPersistenceProficiencyValid + ";publication=" +
+                _easternWeaponsPersistencePublicationValid + ";grant=" +
+                _easternWeaponsPersistenceGrantValid + ";cleanup=" +
+                _easternWeaponsPersistenceCleanupValid;
+            if (!_easternWeaponsPersistenceIdentityValid ||
+                !_easternWeaponsPersistenceCategoryValid ||
+                !_easternWeaponsPersistenceProficiencyValid ||
+                !_easternWeaponsPersistencePublicationValid ||
+                !_easternWeaponsPersistenceGrantValid ||
+                !_easternWeaponsPersistenceCleanupValid)
+                throw new InvalidOperationException(
+                    "Eastern Weapons persistence phase assertions failed: " +
+                    _easternWeaponsPersistenceDetail);
+
+            if (!prepare && !verifyCleanup)
+            {
+                CompleteEasternWeaponsPersistence(RuntimeTestStatuses.Pass, "");
+                return;
+            }
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Game).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" && value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _easternWeaponsPersistenceSaveStarted = true;
+            _easternWeaponsPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() => _easternWeaponsPersistenceSaveCompleted = true)
+            });
+        }
+
+        private void CompleteEasternWeaponsPersistence(string status,
+            string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveEasternWeaponsPrepare;
+            bool verifyCleanup = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveEasternWeaponsVerifyCleanup;
+            bool writes = prepare || verifyCleanup;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load",
+                    "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("eastern-weapons-persistent-identities",
+                    writes ? "one exact instance of each of 30 blueprints" :
+                        "zero instances after cleanup",
+                    _easternWeaponsPersistenceDetail,
+                    _easternWeaponsPersistenceIdentityValid,
+                    "fresh-load item and fact blueprint reference equality"),
+                Assertion("eastern-weapons-persistent-categories",
+                    "all saved items retain one of the three exact stable family weapon types",
+                    _easternWeaponsPersistenceDetail,
+                    _easternWeaponsPersistenceCategoryValid,
+                    "BlueprintItemWeapon.Type and deserialized ItemEntityWeapon.Blueprint"),
+                Assertion("eastern-weapons-persistent-proficiencies",
+                    writes ? "one exact Wakizashi and Katana proficiency fact on deterministic owners" :
+                        "zero exact test proficiency facts after cleanup",
+                    _easternWeaponsPersistenceDetail,
+                    _easternWeaponsPersistenceProficiencyValid,
+                    "fresh-load UnitDescriptor fact ownership"),
+                Assertion("eastern-weapons-module-publication",
+                    verifyCleanup ? "module OFF has zero new selector, commerce, loot, and custom presentation publication" :
+                        "module ON public surfaces are singular",
+                    _easternWeaponsPersistenceDetail,
+                    _easternWeaponsPersistencePublicationValid,
+                    "immutable feature snapshot, selector arrays, campaign attachment, and presentation gate"),
+                Assertion("eastern-weapons-development-grant",
+                    prepare ? "one exact copy of all 30 variants" :
+                        "not invoked outside prepare",
+                    _easternWeaponsPersistenceDetail,
+                    _easternWeaponsPersistenceGrantValid,
+                    "development inventory bridge with exact count changes"),
+                Assertion(verifyCleanup || !writes ?
+                        "eastern-weapons-cleaned" : "eastern-weapons-prepared",
+                    verifyCleanup || !writes ?
+                        "all 30 items and two facts absent" :
+                        "all 30 items and two facts present exactly once",
+                    _easternWeaponsPersistenceDetail,
+                    _easternWeaponsPersistenceCleanupValid,
+                    "exact feature-owned inventory and fact removal"),
+                Assertion("exact-working-save-write",
+                    writes ? "one SaveRoutine on exact captured SaveInfo" :
+                        "none during final verification",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" +
+                        evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    writes ? evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                        !evidence.SaveWritingApiObserved :
+                        evidence.ExpectedWorkingSaveRoutineCount == 0 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version ==
+                        _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status,
+                assertions, null);
             result.WorkingSaveSmoke = evidence;
             if (!string.IsNullOrWhiteSpace(warning))
                 result.Warnings.Add(warning);

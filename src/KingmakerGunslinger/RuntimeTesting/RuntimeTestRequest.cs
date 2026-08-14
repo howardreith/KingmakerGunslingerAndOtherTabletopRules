@@ -226,6 +226,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElvenBranchedSpearPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElvenBranchedSpearVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElvenBranchedSpearVerifyAbsent ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveEasternWeaponsPrepare ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveEasternWeaponsVerifyCleanup ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveEasternWeaponsVerifyAbsent ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||

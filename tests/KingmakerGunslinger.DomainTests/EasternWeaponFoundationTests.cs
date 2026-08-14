@@ -436,6 +436,94 @@ namespace KingmakerGunslinger.DomainTests
                     "Eastern runtime commerce assertion is missing: " + token);
         }
 
+        internal static void DevelopmentControlsAreExactAndInventoryOnly()
+        {
+            string root = Environment.CurrentDirectory;
+            string bridge = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Development",
+                "KingmakerDevelopmentBridge.EasternWeapons.cs"));
+            foreach (string token in new[] {
+                "DescribeEasternWeaponCatalog", "AddEasternWeaponSet",
+                "AddWakizashiPath", "AddKatanaPath", "AddNodachiPath",
+                "AddEasternWeapon(int index)", "items.Length != 30",
+                "path.Length != 10", "after != before + 1",
+                "No proficiency, feat, class level, vendor, loot, campaign flag, or save API changed" })
+                Assertions.True(bridge.Contains(token),
+                    "Eastern development bridge lacks: " + token);
+            foreach (string forbidden in new[] { "SaveGame", "AddFact(",
+                "RemoveFact(", "Publish(", "LootItemsPackFixed" })
+                Assertions.False(bridge.Contains(forbidden),
+                    "Eastern inventory-only development bridge contains forbidden mutation: " + forbidden);
+
+            string controls = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Development",
+                "DevelopmentControls.cs"));
+            string ui = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Development", "DevelopmentUi.cs"));
+            foreach (string token in new[] {
+                "Print complete Eastern Weapons catalog audit",
+                "Add all 30 Eastern Weapon variants",
+                "Add complete Wakizashi path (10)",
+                "Add complete Katana path (10)",
+                "Add complete Nodachi path (10)",
+                "DevelopmentControls.AddEasternWeapon" })
+                Assertions.True(ui.Contains(token),
+                    "Eastern development UI lacks: " + token);
+            Assertions.True(controls.Contains("eastern-weapons-add-all") &&
+                controls.Contains("eastern-weapons-add-wakizashi-path") &&
+                controls.Contains("eastern-weapons-add-katana-path") &&
+                controls.Contains("eastern-weapons-add-nodachi-path"),
+                "Eastern development controls are not routed through the exception-contained bridge.");
+        }
+
+        internal static void WorkingSavePersistenceContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            string catalog = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestScenarioCatalog.cs"));
+            string common = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            string sequence = File.ReadAllText(Path.Combine(root, "scripts",
+                "Test-EasternWeaponsWorkingSavePersistence.ps1"));
+            foreach (string scenario in new[] {
+                "working-save-eastern-weapons-prepare",
+                "working-save-eastern-weapons-verify-cleanup",
+                "working-save-eastern-weapons-verify-absent" })
+            {
+                Assertions.True(catalog.Contains(scenario) &&
+                    common.Contains("'" + scenario + "'") &&
+                    sequence.Contains("'" + scenario + "'"),
+                    "Eastern persistence scenario is not guarded everywhere: " +
+                    scenario);
+            }
+            foreach (string token in new[] {
+                "IsEasternWeaponsPersistenceScenario()",
+                "DevelopmentControls.AddEasternWeaponSet()",
+                "items.Length != 30", "before.Any(value => value != 0)",
+                "set.WakizashiProficiency", "set.KatanaProficiency",
+                "Eastern verify/cleanup requires the module-disabled fresh process",
+                "set.Campaign == null",
+                "!EasternWeaponCategoryRuntime.PresentationEnabled",
+                "Game.Instance.Player.Inventory.Remove(item, 1)",
+                "_workingSaveSmoke.ArmExactWorkingSaveWrite()",
+                "evidence.ExpectedWorkingSaveRoutineCount == 1",
+                "evidence.ExpectedWorkingSaveRoutineCount == 0" })
+                Assertions.True(runner.Contains(token),
+                    "Eastern persistence runner lacks: " + token);
+            Assertions.True(sequence.Contains(
+                    "$SaveName -cne 'KMG_AUTOMATION_WORKING'") &&
+                sequence.Contains("Restore-OriginalFeatureState") &&
+                sequence.Contains("Wait-ForGuardedKingmakerExit") &&
+                sequence.Contains("[Convert]::ToBase64String($restored)"),
+                "Eastern persistence transaction does not fail closed and restore settings exactly.");
+            Assertions.False(sequence.Contains("KMG_AUTOMATION_BASELINE"),
+                "Eastern persistence transaction may not name the protected baseline.");
+        }
+
         internal static void OriginalAssetPipelineIsExactAndFailSafe()
         {
             string root = Environment.CurrentDirectory;
