@@ -8109,7 +8109,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             EasternWeaponBlueprintSet easternSet = BlueprintBootstrap.EasternWeapons;
             BlueprintItemWeapon[] easternItems = easternSet.Entries.Select(value =>
-                value.Item).ToArray();
+                value.Item).Concat(easternSet.Named.Entries.Select(value =>
+                    value.Item)).ToArray();
             BlueprintWeaponType[] easternTypes = easternSet.Families.Select(value =>
                 value.WeaponType).ToArray();
             int easternRegisteredItems = BlueprintBootstrap.Library.GetAllBlueprints()
@@ -8273,11 +8274,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("feature-module-eastern-weapons-publication-gate",
                     expectedEasternWeapons ?
-                        "19 identities;21 parameter options;4 static references;merged proficiency order;presentation enabled" :
-                        "19 identities;0 parameter options;0 static references;presentation disabled",
+                        "37 identities;21 parameter options;4 static references;merged proficiency order;presentation enabled" :
+                        "37 identities;0 parameter options;0 static references;presentation disabled",
                     observed,
                     activeEasternWeapons == expectedEasternWeapons &&
-                    easternRegisteredTypes == 3 && easternRegisteredItems == 12 &&
+                    easternRegisteredTypes == 3 && easternRegisteredItems == 30 &&
                     easternRegisteredFeatures == 3 &&
                     easternRegisteredPolicies == 1 &&
                     easternParameterizedOptions ==

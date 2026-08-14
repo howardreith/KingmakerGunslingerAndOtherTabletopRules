@@ -158,6 +158,36 @@ values, or campaign targets.
   `DD4C3C72641EEE50F42CA21B7C4D225D026BD666309DE5D3B2F2F498FDD6160F`.
   No save was accessed.
 
+## 2026-08-14 - eighteen-item native named catalog
+
+- Added all six Wakizashi, six Katana, and six Nodachi named item identities.
+  Every item reuses its family's one stable weapon type and exact installed
+  native enhancement blueprints. Paper Lantern, Wayfarer's Oath, and Border
+  Sentinel use the native item-level cold-iron representation and surcharge.
+- Native property arrays cover Flaming, Frost, Agile, Keen, Ghost Touch, Shock,
+  Thundering, Holy, Brilliant Energy, and Speed by exact observed GUID. Heaven's
+  Measure uses the preferred native Brilliant Energy contract pending its later
+  realistic target-exclusion combat qualification.
+- Added explicit price decomposition for all 30 weapons. Bespoke effects retain
+  zero automatic enchantment cost and fixed premiums; every family is price
+  monotonic, early guaranteed upgrades remain attainable, and each capstone is
+  exactly effective +10.
+- This slice does not claim the five bespoke effects or Mighty Cleaving; those
+  remain the next dedicated rule-event implementation and qualification slice.
+- Repository validation, all `1040/1040` tests, clean Release build,
+  build-output validation, deterministic packaging, and strict package
+  validation passed.
+- Final priced-candidate all-ON run
+  `20260814T1251391041848Z-c77e2fb20680498eb435791ccc2a7eb4` and Eastern-OFF
+  run `20260814T1254138877422Z-a2e85e6529d84fbdbfc11ef3a1a9141e`
+  passed. All 30 items remained registered in both states; publication and
+  presentation were suppressed only while disabled. Settings restored exactly.
+- DLL SHA-256 is
+  `CD3F2346F896B8D53A1205CCF8ABFADE5434BD815FB14A7C9A77BECF84A2EF23`,
+  MVID `e73f5e38-9d3d-4cb7-8195-b154c75fadf8`; package SHA-256 is
+  `2227E202A0E942403E65DC30D69CD0F7007F9A24C7C7D85DA66345C9C16FE69B`.
+  No save was accessed.
+
 ## 2026-08-14 - proficiency, selectors, and fighter-group publication
 
 - Added the exact static children `Weapon Proficiency (Katana)` and

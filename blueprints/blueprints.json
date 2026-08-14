@@ -11903,6 +11903,132 @@
       "status": "active",
       "milestone": "Eastern Weapons",
       "notes": "Static Finesse Training (Wakizashi) child."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.PaperLantern",
+      "guid": "fbb319cb67ae5657820548791a7a3733",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Paper Lantern named Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.QuietCurrent",
+      "guid": "be05a24b1b145e1ea008a4bf42b04c32",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Quiet Current named Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.FallingPetal",
+      "guid": "c56dd11c12355a83b1cd9d833b2e5321",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Falling Petal named Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.FoxfireWhisper",
+      "guid": "c7fc72c801e9506bb0c87e84eee8d313",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Foxfire Whisper named Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.EmptySleeve",
+      "guid": "a576839afc71574eb77203bf390fdf30",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Empty Sleeve named Wakizashi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.NightWithoutMoon",
+      "guid": "dc660fcebcc855bfb046336fc78a93ae",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Night Without Moon named Wakizashi capstone."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.WayfarersOath",
+      "guid": "9ac64342cca85f72b0fe81cb6b9c53c0",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Wayfarer's Oath named Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.WinterReed",
+      "guid": "060f933d8912594cbc3da731c4dae7a3",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Winter Reed named Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.DrawnHorizon",
+      "guid": "d3f2a227bd335087805eb7225721dc83",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Drawn Horizon named Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.ThunderAtTheGate",
+      "guid": "d5c7922d57a95025a977dd1ee59cb098",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Thunder at the Gate named Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.MoonlitCrossing",
+      "guid": "457e6f3694405f27999cf46047fafa52",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Moonlit Crossing named Katana."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.HeavensMeasure",
+      "guid": "dc086bdf8af25bceb569c8f5c627f560",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Heaven's Measure named Katana capstone."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.BorderSentinel",
+      "guid": "c1c7a6746916504ebfdcb2b650a7145b",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Border Sentinel named Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.CloudCleaver",
+      "guid": "bb863dabbf655059af768723cf6226ba",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Cloud-Cleaver named Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.StormOverStone",
+      "guid": "a7559dde16945f90aada81ecf9adb97a",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Storm Over Stone named Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.MountainSunder",
+      "guid": "5867c9be30e15d3a8a22e0f442959d03",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Mountain-Sunder named Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.UnfixedForm",
+      "guid": "f4bed29f193e57f6826dc83a684e65db",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "Unfixed Form named Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.WorldTreeSeverer",
+      "guid": "e6e5cf56d3a259debd2f16a300bff115",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active", "milestone": "Eastern Weapons",
+      "notes": "World-Tree Severer named Nodachi capstone."
     }
   ]
 }

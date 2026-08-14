@@ -153,21 +153,82 @@ namespace KingmakerGunslinger.DomainTests
             JObject[] eastern = entries.Cast<JObject>().Where(value =>
                 ((string)value["symbol"]).StartsWith("KMG.EasternWeapons.",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(19, eastern.Length,
+            Assertions.Equal(37, eastern.Length,
                 "Eastern foundation identity ledger count changed.");
-            Assertions.Equal(19, eastern.Select(value =>
+            Assertions.Equal(37, eastern.Select(value =>
                 (string)value["guid"]).Distinct(StringComparer.Ordinal).Count(),
                 "Eastern foundation GUIDs are not unique.");
             Assertions.Equal(3, eastern.Count(value =>
                 (string)value["plannedType"] == "BlueprintWeaponType"),
                 "Eastern weapon-type identity count changed.");
-            Assertions.Equal(12, eastern.Count(value =>
+            Assertions.Equal(30, eastern.Count(value =>
                 (string)value["plannedType"] == "BlueprintItemWeapon"),
-                "Eastern generic item identity count changed.");
+                "Eastern total item identity count changed.");
             Assertions.True(eastern.All(value =>
                 (string)value["status"] == "active" &&
                 (string)value["milestone"] == "Eastern Weapons"),
-                "Eastern generic identities must all be active and owned.");
+                "Eastern identities must all be active and owned.");
+        }
+
+        internal static void NamedNativeCatalogIsExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string catalog = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "EasternWeapons",
+                "EasternWeaponNamedCatalog.cs"));
+            string[] names = {
+                "Paper Lantern", "Quiet Current", "Falling Petal",
+                "Foxfire Whisper", "Empty Sleeve", "Night Without Moon",
+                "Wayfarer's Oath", "Winter Reed", "Drawn Horizon",
+                "Thunder at the Gate", "Moonlit Crossing", "Heaven's Measure",
+                "Border Sentinel", "Cloud-Cleaver", "Storm Over Stone",
+                "Mountain-Sunder", "Unfixed Form", "World-Tree Severer" };
+            foreach (string name in names)
+                Assertions.True(catalog.Contains("\"" + name + "\""),
+                    "Eastern named catalog is missing: " + name);
+            foreach (string token in new[] {
+                "Items.Length != 18", "NativeEffectiveBonus > 10",
+                "EasternWeaponNativeProperty.BrilliantEnergy",
+                "EasternWeaponNativeProperty.Speed", "bespokePremium" })
+                Assertions.True(catalog.Contains(token),
+                    "Eastern named catalog guard is missing: " + token);
+
+            string blueprint = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "EasternWeaponNamedBlueprints.cs"));
+            foreach (string token in new[] {
+                "30f90becaaac51f41bf56641966c4121",
+                "421e54078b7719d40915ce0672511d0b",
+                "a36ad92c51789b44fa8a1c5c116a1328",
+                "102a9c8c9b7a75e4fb5844e79deaf4c0",
+                "47857e1a5a3ec1a46adf6491b1423b4f",
+                "7bda5277d36ad114f9f9fd21d0dab658",
+                "690e762f7704e1f4aa1ac69ef0ce6a96",
+                "28a9964d81fedae44bae3ca45710c140",
+                "66e9e299c9002ea4bb65b6f300e43770",
+                "f1c0c50108025d546b2554674ea1c006",
+                "result.Length != 18", "ConfigureNamed", "ValidateNamed" })
+                Assertions.True(blueprint.Contains(token),
+                    "Eastern named blueprint contract is missing: " + token);
+
+            JObject manifest = JObject.Parse(File.ReadAllText(Path.Combine(root,
+                "blueprints", "blueprints.json")));
+            Assertions.Equal(18, EasternNamedItemEntries(manifest).Length,
+                "Eastern named identity count changed.");
+        }
+
+        private static JObject[] EasternNamedItemEntries(JObject manifest)
+        {
+            string[] genericSuffixes = { ".BaseItem", ".MasterworkItem",
+                ".ColdIronItem", ".Plus1Item" };
+            return ((JArray)manifest["entries"]).Cast<JObject>().Where(value =>
+            {
+                string symbol = (string)value["symbol"];
+                return symbol.StartsWith("KMG.EasternWeapons.",
+                    StringComparison.Ordinal) &&
+                    (string)value["plannedType"] == "BlueprintItemWeapon" &&
+                    !genericSuffixes.Any(symbol.EndsWith);
+            }).ToArray();
         }
 
         internal static void ProficiencySelectorAndGroupContractsAreExact()

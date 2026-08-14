@@ -51,6 +51,42 @@ EXPECTED_GENERIC_IDENTITIES = {
         ("93ef81404f085e2a8b261bdab15d5a08", "BlueprintFeature"),
     "KMG.EasternWeapons.Wakizashi.FinesseTraining":
         ("dfdc2a631ebb5980934181c86e1c43fd", "BlueprintFeature"),
+    "KMG.EasternWeapons.Wakizashi.PaperLantern":
+        ("fbb319cb67ae5657820548791a7a3733", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Wakizashi.QuietCurrent":
+        ("be05a24b1b145e1ea008a4bf42b04c32", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Wakizashi.FallingPetal":
+        ("c56dd11c12355a83b1cd9d833b2e5321", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Wakizashi.FoxfireWhisper":
+        ("c7fc72c801e9506bb0c87e84eee8d313", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Wakizashi.EmptySleeve":
+        ("a576839afc71574eb77203bf390fdf30", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Wakizashi.NightWithoutMoon":
+        ("dc660fcebcc855bfb046336fc78a93ae", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Katana.WayfarersOath":
+        ("9ac64342cca85f72b0fe81cb6b9c53c0", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Katana.WinterReed":
+        ("060f933d8912594cbc3da731c4dae7a3", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Katana.DrawnHorizon":
+        ("d3f2a227bd335087805eb7225721dc83", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Katana.ThunderAtTheGate":
+        ("d5c7922d57a95025a977dd1ee59cb098", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Katana.MoonlitCrossing":
+        ("457e6f3694405f27999cf46047fafa52", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Katana.HeavensMeasure":
+        ("dc086bdf8af25bceb569c8f5c627f560", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Nodachi.BorderSentinel":
+        ("c1c7a6746916504ebfdcb2b650a7145b", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Nodachi.CloudCleaver":
+        ("bb863dabbf655059af768723cf6226ba", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Nodachi.StormOverStone":
+        ("a7559dde16945f90aada81ecf9adb97a", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Nodachi.MountainSunder":
+        ("5867c9be30e15d3a8a22e0f442959d03", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Nodachi.UnfixedForm":
+        ("f4bed29f193e57f6826dc83a684e65db", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.Nodachi.WorldTreeSeverer":
+        ("e6e5cf56d3a259debd2f16a300bff115", "BlueprintItemWeapon"),
 }
 
 
@@ -70,8 +106,10 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/CustomWeapons/CustomWeaponCategoryDefinition.cs",
         "src/KingmakerGunslinger/CustomWeapons/CustomWeaponCategoryRegistry.cs",
         "src/KingmakerGunslinger/EasternWeapons/EasternWeaponCatalog.cs",
+        "src/KingmakerGunslinger/EasternWeapons/EasternWeaponNamedCatalog.cs",
         "src/KingmakerGunslinger/EasternWeapons/EasternWeaponCategoryRuntime.cs",
         "src/KingmakerGunslinger/Blueprints/EasternWeaponBlueprints.cs",
+        "src/KingmakerGunslinger/Blueprints/EasternWeaponNamedBlueprints.cs",
     )
     for relative in required:
         if not (root / relative).is_file():
@@ -93,7 +131,7 @@ def validate(root: Path) -> None:
 
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs") \
         .read_text(encoding="utf-8")
-    for token in ("ExpectedRegisteredBlueprintCount = 302 +",
+    for token in ("ExpectedRegisteredBlueprintCount = 320 +",
             "EasternWeaponBlueprints.Register",
             "internal static EasternWeaponBlueprintSet EasternWeapons"):
         if token not in bootstrap:

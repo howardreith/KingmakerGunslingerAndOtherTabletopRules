@@ -513,10 +513,10 @@ ledger to 255 stable IDs: 254 active and one reserved. Shield Other identities
 register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
-Expanded Summoning, the Elven Branched Spear, and the first Eastern Weapons
-proficiency integration freeze the append-only ledger at 1487 stable IDs: 1486 active and one reserved. All 1184
+Expanded Summoning, the Elven Branched Spear, and the Eastern Weapons named
+native-property catalog freeze the append-only ledger at 1505 stable IDs: 1504 active and one reserved. All 1184
 Expanded Summoning feature identities, all twenty-nine spear identities, and
-the first fifteen Eastern Weapons identities register in every module state while
+all thirty-seven Eastern Weapons identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement
 will gate publication, never identity registration. A hidden, feature-local
 extraplanar marker avoids a bootstrap-time dependency on Call of the Wild's

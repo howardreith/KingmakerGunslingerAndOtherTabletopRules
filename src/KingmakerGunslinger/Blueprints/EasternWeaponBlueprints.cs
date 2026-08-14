@@ -479,7 +479,7 @@ namespace KingmakerGunslinger.Blueprints
             return new DiceFormula(definition.DamageDiceCount, die);
         }
 
-        private static PhysicalDamageForm Forms(
+        internal static PhysicalDamageForm Forms(
             CustomWeaponCategoryDefinition definition)
         {
             PhysicalDamageForm value = 0;
@@ -578,6 +578,56 @@ namespace KingmakerGunslinger.Blueprints
                     spec.DisplayName + ".");
         }
 
+        internal void ConfigureNamed(BlueprintItemWeapon item,
+            EasternWeaponNamedSpec spec,
+            BlueprintWeaponEnchantment[] enchantments, string description)
+        {
+            CustomWeaponCategoryDefinition definition =
+                EasternWeaponCatalog.RequireCategory(spec.Family);
+            BlueprintItemAccess.Resolve().ConfigureWeapon(item,
+                LocalizationService.Create(spec.Symbol + ".Name",
+                    spec.DisplayName),
+                LocalizationService.Create(spec.Symbol + ".Description",
+                    description),
+                LocalizationService.Create(spec.Symbol + ".Flavor",
+                    "A named curved blade carried along the specialist eastern trade routes."),
+                spec.FinalCost, definition.WeightPounds);
+            _enchantments.SetValue(item, enchantments == null
+                ? Array.Empty<BlueprintWeaponEnchantment>()
+                : enchantments.ToArray());
+            _overrideDamageType.SetValue(item, spec.ColdIron);
+            _damageType.SetValue(item,
+                EasternWeaponTypeAccess.Physical(definition, spec.ColdIron));
+        }
+
+        internal void ValidateNamed(BlueprintItemWeapon item,
+            EasternWeaponNamedSpec spec,
+            BlueprintWeaponEnchantment[] expectedEnchantments)
+        {
+            CustomWeaponCategoryDefinition definition =
+                EasternWeaponCatalog.RequireCategory(spec.Family);
+            BlueprintWeaponEnchantment[] enchantments =
+                (BlueprintWeaponEnchantment[])_enchantments.GetValue(item) ??
+                Array.Empty<BlueprintWeaponEnchantment>();
+            DamageTypeDescription damage =
+                (DamageTypeDescription)_damageType.GetValue(item);
+            if (item.Cost != spec.FinalCost ||
+                !item.Weight.Equals((float)definition.WeightPounds) ||
+                item.IsActuallyStackable ||
+                (bool)_overrideDamageType.GetValue(item) != spec.ColdIron ||
+                damage == null || damage.Type != DamageType.Physical ||
+                damage.Physical.Form != EasternWeaponTypeAccess.Forms(definition) ||
+                damage.Physical.Material != (spec.ColdIron
+                    ? PhysicalDamageMaterial.ColdIron : 0) ||
+                !enchantments.SequenceEqual(expectedEnchantments ??
+                    Array.Empty<BlueprintWeaponEnchantment>()) ||
+                enchantments.Any(value => value == null) ||
+                item.Description.IndexOf("Brace",
+                    StringComparison.OrdinalIgnoreCase) >= 0)
+                throw new InvalidOperationException(
+                    "Eastern named item is invalid: " + spec.DisplayName + ".");
+        }
+
         private static FieldInfo Require(string name)
         {
             FieldInfo field = typeof(BlueprintItemWeapon).GetField(name, Fields);
@@ -633,6 +683,7 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature KatanaProficiency { get; private set; }
         internal BlueprintFeature WakizashiFinesseTraining { get; private set; }
         internal EasternWeaponSelectorPublication Publication { get; private set; }
+        internal EasternWeaponNamedBlueprintSet Named { get; private set; }
         internal EasternWeaponBlueprintEntry[] Entries
         { get { return Families.SelectMany(value => value.Entries).ToArray(); } }
         internal EasternWeaponFamilyBlueprintSet Require(EasternWeaponFamily family)
@@ -640,5 +691,12 @@ namespace KingmakerGunslinger.Blueprints
         internal EasternWeaponBlueprintEntry Require(EasternWeaponFamily family,
             EasternWeaponGenericKind kind)
         { return Require(family).Entries.Single(value => value.Spec.Kind == kind); }
+        internal void AttachNamed(EasternWeaponNamedBlueprintSet named)
+        {
+            if (Named != null || named == null)
+                throw new InvalidOperationException(
+                    "Eastern named catalog attachment is invalid.");
+            Named = named;
+        }
     }
 }
