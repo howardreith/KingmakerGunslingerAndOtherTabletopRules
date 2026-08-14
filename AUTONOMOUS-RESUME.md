@@ -1,5 +1,27 @@
 # Autonomous Gunslinger resume handoff
 
+## Elven Branched Spear first-playtest repair (active, 2026-08-14)
+
+- Branch `codex/elven-branched-spear`, draft PR #3; accepted base checkpoint
+  `f5136b12ce91ec2f56d5c7bf8dcb52129418ec5d`. Do not recreate, rebase, merge,
+  or open a replacement PR.
+- Required repair is implemented: release identity is
+  `0.0.79-elven-branched-spear`; category text resolves centrally; EWP,
+  Finesse Training, and parameterized selector icons follow native paths; the
+  Rogue child has its exact parenthesized name; four exact BTSL merchant tables
+  receive six singular generic spear rows.
+- Guarded presentation/combat run
+  `20260814T0444110998835Z-disposable-elven-branched-spear-combat` passed 18/18.
+  BTSL run `20260814T0454174378820Z-observe-vendor-table-contracts` and focused
+  module ON/OFF runs passed.
+- The accepted custom mesh/rig remains unchanged. Named equipped-material
+  differentiation is optional and deferred because the family shares one
+  weapon type and prefab; splitting it would risk accepted fit and save
+  behavior.
+- Remaining work at this checkpoint: final clean source/package gates,
+  Call of the Wild, canonical working-save smoke, artifact sealing, then update
+  the existing draft PR #3. Use only the guarded push helper after commits.
+
 ## Expanded Summoning final presentation (2026-08-13)
 
 - Final immutable runtime/artifact source is

@@ -1,0 +1,21 @@
+{
+  "feature": "elven-branched-spear",
+  "branch": "codex/elven-branched-spear",
+  "draftPr": 3,
+  "acceptedCheckpoint": "f5136b12ce91ec2f56d5c7bf8dcb52129418ec5d",
+  "releaseVersion": "0.0.79",
+  "informationalVersion": "0.0.79-elven-branched-spear",
+  "moduleKey": "elven-branched-spears",
+  "moduleDefault": true,
+  "categoryValue": 4934983,
+  "categoryHex": "0x004b4d47",
+  "domainTests": 1032,
+  "repairs": {
+    "releaseIdentity": "implemented",
+    "categoryDisplay": "implemented-runtime-pass",
+    "selectorPresentation": "implemented-runtime-pass",
+    "btslDistribution": "implemented-runtime-pass",
+    "namedVisualDifferentiation": "deferred-optional-to-preserve-accepted-rig"
+  },
+  "finalQualification": "in-progress"
+}

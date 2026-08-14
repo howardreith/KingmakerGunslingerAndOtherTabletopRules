@@ -14,6 +14,14 @@ Brace and pseudo-Brace behavior are intentionally absent. A project-owned
 custom spear model is bundled behind a validated, fail-safe native Longspear
 fallback.
 
+The first-playtest repair gives the stable custom category a native-readable
+name everywhere, removes firearm artwork from spear selector entries, names the
+Rogue option **Finesse Training (Elven Branched Spear)**, and gives native
+parameterized weapon feats the decorative `EB` category tile. The six generic
+weapon tiers are also stocked by both campaign and standalone Beneath the
+Stolen Lands weapon merchants. The accepted weapon mechanics, reach, model
+fit, and save identities are unchanged.
+
 Expanded Summoning additively extends Summon Monster I-IX and Summon Nature's
 Ally I-IX with the approved tabletop rosters and higher-tier same-kind quantity
 choices. It never deletes native or third-party blueprint identities; exact

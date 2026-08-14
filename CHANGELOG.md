@@ -2,6 +2,19 @@
 
 ## Unreleased - Elven Branched Spears
 
+- Advances the release candidate to assembly version `0.0.79` and
+  informational/package identity `0.0.79-elven-branched-spear`; package
+  selection is explicit and can no longer validate the prior Expanded
+  Summoning archive by accident.
+- Resolves the stable custom weapon category through Kingmaker's central
+  category-name path, so prerequisite and feature surfaces display **Elven
+  Branched Spear** instead of decimal `4934983` or hexadecimal `0x004b4d47`.
+- Aligns selector presentation with native behavior: Exotic Weapon
+  Proficiency shares its native icon, Finesse Training is named **Finesse
+  Training (Elven Branched Spear)** and uses spear art, and parameterized
+  weapon feats use the native decorative `EB` category glyph.
+- Adds all six generic spear tiers to the two standalone and two campaign
+  Beneath the Stolen Lands weapon-vendor tables, additively and idempotently.
 - Adds an independent, default-enabled `elven-branched-spears` module and one
   stable exotic, two-handed, finesse-compatible reach-weapon category with
   native Elven Weapon Familiarity and Spears fighter-group integration.
@@ -22,7 +35,7 @@
   append-only, idempotent, module-gated publication.
 - Adds an original project-owned Blender/FBX/icon asset, dedicated Unity
   2018.4.10f1 bundle, transactional validation, and native Longspear fallback.
-- Qualifies 1,028 dependency-free tests, all 32 module combinations, isolated
+- Qualifies at least 1,032 dependency-free tests, all 32 module combinations, isolated
   Call of the Wild combat, module-OFF item/feature save persistence and cleanup,
   strict package validation, and the canonical working-save smoke. Brace and
   pseudo-Brace behavior are intentionally not implemented or advertised.

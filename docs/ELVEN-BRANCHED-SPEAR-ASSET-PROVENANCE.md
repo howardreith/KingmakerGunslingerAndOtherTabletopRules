@@ -35,3 +35,19 @@ SHA-256:
 No manual mesh modifications were made after generation. The only derivative
 operation outside Blender was deterministic high-quality downscaling of the
 transparent 512px render to the project's native 128px inventory-icon size.
+
+## First-playtest visual assessment
+
+The human playtest accepted the custom spear silhouette, equipped scale, grip,
+hand/body alignment, reach presentation, and the tested character's lack of
+material clipping. Those observations are regression contracts.
+
+Named variants currently share the same fit-proven weapon type, prefab, and
+material. Per-item equipped-material differentiation would require splitting
+the shared weapon type or introducing an item-level renderer mutation path.
+Either option would add save/presentation complexity and risk the accepted rig.
+Because differentiation is optional polish, this repair leaves the proven
+geometry and material unchanged. The named items remain mechanically and
+textually distinct and use the coherent spear icon family. A future visual-only
+pass may add validated serialized prefabs without changing blueprint or weapon
+category identities.

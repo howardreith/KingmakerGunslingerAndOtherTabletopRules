@@ -13,7 +13,7 @@ Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
 Blueprint ledger: 1438 active; 1 reserved; 1439 total
 Runtime registration count: 1438 in all 16 feature-module states
-Dependency-free domain tests: 1029 before first-playtest repair coverage expansion
+Dependency-free domain tests: 1032 after first-playtest repair coverage expansion
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
 Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified

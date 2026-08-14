@@ -15,11 +15,22 @@ pre-publication arrays if no foreign mutation intervened.
 | Act II onward | Capital blacksmith | `SmithVendorTable` / `7de959347266092448d8a72089ef9778` | all six generic versions; Thornstep | one each; native restock semantics | guarded observer found direct refs from `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith` |
 | later fallback | Dire Narlmarches village trader | `DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c` | all six generic versions | one each; native restock semantics | guarded observer found direct ref from `DireNarlmarchesVillageTrader` |
 | Act V | Pitax specialist trader | `PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460` | all six generic versions; Briar-Crowned Spear | one each; native restock semantics | guarded observer found direct ref from `PitaxTown_Trader` |
+| BTSL standalone | Honest Guy weapons merchant | `RogueLike_NPCVendorTable` / `a6bae621a7bd96b4fb3c1511cd2f9fac` | all six generic versions | one fixed catalog entry each; native standalone vendor refresh semantics | installed table and `DungeonVendorItemsComponent` verified; guarded observer found six singular spear rows |
+| BTSL standalone | Xelliren/Dragon weapons merchant | `RogueLike_DragonVendorTable` / `08e090bb2038e3d47be56d8752d5dcaf` | all six generic versions | one fixed catalog entry each; native standalone vendor refresh semantics | installed table and `DungeonVendorItemsComponent` verified; guarded observer found six singular spear rows |
+| BTSL campaign | Honest Guy weapons merchant | `DLC3_VendorFirstTable` / `45f027c06962df249b8c014a4b4e95e3` | all six generic versions | one fixed catalog entry each; native campaign vendor refresh semantics | exact installed campaign table verified; guarded observer found six singular spear rows |
+| BTSL campaign | Xelliren weapons merchant | `DLC3_VendorSecondTable` / `420f1da6c2523f64eba810b9b484f60f` | all six generic versions | one fixed catalog entry each; native campaign vendor refresh semantics | exact installed campaign table verified; guarded observer found six singular spear rows |
 
 The inexpensive weapon is therefore available in Act I, generic cold iron is
 available before the main fey escalation, masterwork cold iron is available no
 later than the capital, and the +1 cold-iron version has two continuing
 purchase paths. Vendor rows are append/normalize operations, not replacements.
+
+The BTSL tables expose fixed catalog rows rather than per-item depth fields, so
+publication follows the installed merchant architecture instead of inventing a
+custom tier system. The rows use each item blueprint's normal price. No generic
++2 spear exists, and no campaign-unique named spear is added to ordinary BTSL
+stock. If the DLC tables are absent, they are skipped without failing the base
+campaign; when installed, each table is validated by exact name and GUID.
 
 ## Fixed named loot
 
@@ -36,7 +47,8 @@ entirely missable or concentrated on one vendor.
 
 ## Module and save behavior
 
-With the module ON, the four vendor tables and four containers are normalized.
+With the module ON, the four campaign vendor tables, every installed BTSL table,
+and four containers are normalized.
 With the module OFF, no vendor or fixed-loot publication occurs. All item and
 effect blueprints remain registered under every module profile, so an existing
 owner, selected feat, or saved item identity remains valid. Module settings are
@@ -51,3 +63,13 @@ Vendor identities came from
 `runtime-evidence/20260808T1739377557378Z-observe-vendor-table-contracts`.
 These observations enumerate installed blueprint references and do not select,
 load, or mutate a save.
+
+The first-playtest BTSL publication passed guarded run
+`runtime-evidence/20260814T0454174378820Z-observe-vendor-table-contracts`:
+all four exact BTSL tables resolved, all 24 expected spear rows were singular,
+all native rows remained, and the existing 48 firearm rows remained. Focused
+module-ON and module-OFF runs
+`20260814T0457017452463Z-observe-feature-module-settings` and
+`20260814T0459247497589Z-observe-feature-module-settings` passed and restored
+the settings file byte-for-byte (SHA-256
+`dc76b429302838c52895d1901ac7488bc58e9d18a01b8e584968497cdb30c50c`).

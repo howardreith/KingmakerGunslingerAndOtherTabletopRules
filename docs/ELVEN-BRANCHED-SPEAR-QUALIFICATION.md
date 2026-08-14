@@ -5,10 +5,33 @@
 - Repository: `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger`
 - Upstream project: `KingmakerGunslingerAndOtherTabletopRules`
 - Base: `6357b8cb27b92f6974ff61409c7aaffb7f2c3cdc`
-- Feature branch: `codex/elven-branched-spear`
-- Final mechanics/runtime-test revision: `f8dbcb98485c385b7365e206ec150bb2ded9aa0a`
+- Accepted pre-amendment checkpoint:
+  `f5136b12ce91ec2f56d5c7bf8dcb52129418ec5d`
+- Feature branch and draft PR: `codex/elven-branched-spear`, PR #3
+- First-playtest repair revision: pending final artifact seal
 - Module: `elven-branched-spears`, label **Elven Branched Spears**, default ON
 - Category: `0x004b4d47`; one family for all 12 items
+
+## First-playtest repair
+
+The human playtest accepted feat availability, Weapon Finesse, native Rogue
+Finesse Training damage, Piranha Strike, reach, combat, custom-model shape,
+tested-character clipping, and hand/body alignment. The repair preserves those
+contracts.
+
+The raw category leak was repaired at the central
+`StatsStrings.GetText(WeaponCategory)` boundary for only the owned stable value.
+Parameterized children now publish native `FeatureUIData` with display name
+**Elven Branched Spear**, acronym `EB`, no bespoke icon, and the native glyph
+path. Exotic Weapon Proficiency shares the native parent/donor icon. Rogue
+Finesse Training is exactly **Finesse Training (Elven Branched Spear)** and uses
+the spear inventory icon. Native and optional categories are untouched.
+
+Guarded run
+`20260814T0444110998835Z-disposable-elven-branched-spear-combat` passed 18/18
+and observed a human-readable prerequisite, native EWP icon, exact Rogue name,
+spear Rogue icon, seven `EB` native-glyph selector rows, and no raw category or
+firearm icon leakage. The same run re-proved Dexterity and combat behavior.
 
 ## Delivered profile
 
@@ -31,7 +54,8 @@ remain unmodified. The combat log source is the inherent weapon enchantment.
 Exactly one spear option is published in Exotic Weapon Proficiency, Rogue
 Finesse Training, Weapon Focus, Greater Weapon Focus, Improved Critical,
 Weapon Specialization, Greater Weapon Specialization, Sword Saint Chosen
-Weapon, and Weapon Mastery. The weapon type is in the native Spears fighter
+Weapon, and Weapon Mastery. Their presentation follows each native selector's
+own icon architecture rather than one spear-specific policy. The weapon type is in the native Spears fighter
 group. Fencing Grace and Slashing Grace expose zero spear options.
 
 Final isolated Call of the Wild run
@@ -63,11 +87,18 @@ items, commands, memory, and presentation objects were cleaned up.
 
 ## Campaign and module publication
 
-The placement manifest records four verified vendor tables and four fixed-loot
-tables. Module-ON publication contains exactly 24 count-one vendor rows and four
-count-one fixed-loot rows. Module OFF contains zero new acquisition rows and
-zero new selector entries while retaining all 12 item identities and the native
-familiarity category.
+The placement manifest records four verified base-campaign vendor tables, four
+verified BTSL vendor tables, and four fixed-loot tables. The BTSL addition is
+the six generic tiers only: one count-one row on each installed table, 24 rows
+total. Guarded run
+`20260814T0454174378820Z-observe-vendor-table-contracts` resolved both
+standalone and both campaign tables, observed every row exactly once, preserved
+all native rows and the existing 48 firearm rows, and passed. Module OFF adds no
+acquisition or selector rows while retaining all 12 item identities and the
+native-familiarity category. Focused ON/OFF runs
+`20260814T0457017452463Z-observe-feature-module-settings` and
+`20260814T0459247497589Z-observe-feature-module-settings` passed with exact
+settings restoration.
 
 All 32 five-module states passed guarded fresh-launch runtime qualification from
 commit `ce33383fc209c04aa1412410a2bacec2cc3d68dd`. Evidence begins at
@@ -107,17 +138,21 @@ The final combat run selected the validated custom prefab. Missing, corrupt, or
 rejected bundle/prefab/material/transform data retains the native Longspear
 presentation without changing mechanics or saved blueprint identity.
 
-The final clean Release gate passed repository validation, all 1,028
-dependency-free tests, build-output validation, package generation, and strict
-standalone UMM package validation. The qualified package path is
-`artifacts/packages/KingmakerGunslinger-0.0.78-expanded-summoning.zip`; SHA-256
-after release-document reconciliation is
-`ECD7EF9D1F1434D0BB5A4D689D152BB3851C2157854229FF70A25AFF0F88DE45`.
+The stale Expanded Summoning package statement in the pre-amendment report was
+not a spear artifact: package entry points and active version pins still used
+the prior `0.0.78-expanded-summoning` identity. They now use assembly version
+`0.0.79`, informational version `0.0.79-elven-branched-spear`, and exact archive
+`KingmakerGunslinger-0.0.79-elven-branched-spear.zip`. The final source commit,
+1,032-or-greater test result, DLL hash/MVID, package hash, bundle hash, installed
+DLL hash, and exact loaded version are pending the final clean artifact seal.
 
 ## Remaining limitation
 
 Deterministic mesh, material, transform, anchor, prefab, icon, fallback, equip,
-attack, and cleanup checks pass. Human aesthetic acceptance across body types,
-armor silhouettes, size-changing effects, and every animation remains
-visual-only review; it does not block or disable mechanics. No Brace or
+attack, and cleanup checks pass. The first human playtest accepted the model,
+tested fit, and lack of observed clipping. All variants share one weapon type
+and fit-proven prefab, so optional per-item material differentiation is deferred
+rather than risking the accepted rig with a type split or renderer mutation.
+Broader body-type, armor, size-changing, animation, and repaired-UI visual
+acceptance remains human review. It does not block mechanics. No Brace or
 pseudo-Brace system exists.
