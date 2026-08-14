@@ -47,3 +47,9 @@ The observer source checkpoint passed repository validation, the complete
 build-output validation, deterministic package creation, and strict standalone
 package validation. Live observation remains pending until the coherent source
 checkpoint is committed and published.
+
+The first guarded attempt, run
+`20260814T1104529826303Z-b2fcb4605fd84bbabd97ad2bf6af9aa2`, timed out before a
+result after the active compatibility stack delayed the first runner update.
+It performed no save interaction. That ambiguous attempt is not qualification
+evidence. The observer was narrowed and instrumented for a fresh retry.

@@ -44,3 +44,20 @@ values, or campaign targets.
 - Repository validation passed; the complete suite passed `1034/1034`; the
   clean Release build, build-output validation, deterministic package creation,
   and strict standalone validation passed for the observer checkpoint.
+
+## 2026-08-14 - observer timeout refinement
+
+- The first guarded save-free run
+  `20260814T1104529826303Z-b2fcb4605fd84bbabd97ad2bf6af9aa2` did not produce a
+  result before the 120-second orchestration timeout. No save interaction
+  occurred. The request was accepted, but the first runner update arrived only
+  after the locally active compatibility stack completed its long blueprint
+  initialization window.
+- Narrowed the observer's expensive discovery predicates to component type
+  names, restricted direct-reference scans to plausible campaign owners, and
+  added phase timing events. No production choice or mutation was introduced.
+- The refinement passed repository validation, `1034/1034` tests, clean Release
+  build, deterministic packaging, and strict package validation.
+- The mandatory guarded push helper rejected the exact authorized branch
+  `codex/eastern-weapons` because its external allowlist contains only
+  `codex/eastern-weapon`. No direct push or branch rename was used.

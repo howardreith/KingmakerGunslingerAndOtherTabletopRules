@@ -70,8 +70,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (context == null) throw new ArgumentNullException("context");
             if (request == null) throw new ArgumentNullException("request");
 
+            var elapsed = Stopwatch.StartNew();
+            var timings = new List<string>();
             BlueprintScriptableObject[] all = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).Distinct().ToArray();
+            Mark(context, timings, elapsed, "library");
             BlueprintItemWeapon[] weaponBlueprints = all.OfType<BlueprintItemWeapon>()
                 .ToArray();
             string[] weapons = weaponBlueprints.Where(IsWeaponCandidate)
@@ -82,8 +85,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
             string[] enchantments = nativeEnchantments.Select(value =>
                 DescribeEnchantment(value, weaponBlueprints)).Take(320).ToArray();
+            Mark(context, timings, elapsed, "weapons-enchantments");
             string[] selectors = all.OfType<BlueprintParametrizedFeature>()
-                .Where(value => ContainsAny(DescribeBlueprint(value), RuleTerms))
+                .Where(value => ContainsAny(value.name + ";" +
+                    ReadMember(value, "ParameterType") + ";" +
+                    ReadMember(value, "WeaponSubCategory"), new[] {
+                        "weaponcategory", "weaponsubcategory" }))
                 .OrderBy(value => value.name, StringComparer.Ordinal)
                 .Select(DescribeBlueprint).Take(240).ToArray();
             string[] selections = all.OfType<BlueprintFeatureSelection>()
@@ -94,7 +101,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OrderBy(value => value.name, StringComparer.Ordinal)
                 .Select(DescribeSelection).Take(160).ToArray();
             string[] ruleBlueprints = all.Where(value =>
-                    ContainsAny(value.name + ";" + DescribeComponents(value), RuleTerms))
+                    ContainsAny(value.name + ";" + ComponentTypeNames(value),
+                        RuleTerms))
                 .OrderBy(value => value.name, StringComparer.Ordinal)
                 .Select(DescribeBlueprint).Take(500).ToArray();
             string[] ruleTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -104,6 +112,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ContainsAny(value.FullName, RuleTerms))
                 .OrderBy(value => value.FullName, StringComparer.Ordinal)
                 .Select(DescribeType).Take(500).ToArray();
+            Mark(context, timings, elapsed, "selectors-rules");
 
             BlueprintSharedVendorTable[] vendorTables = all
                 .OfType<BlueprintSharedVendorTable>()
@@ -115,12 +124,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OrderBy(value => value.name, StringComparer.Ordinal).Take(700).ToArray();
             var referenceTargets = vendorTables.Cast<BlueprintScriptableObject>()
                 .Concat(campaignLoot).Distinct().ToArray();
-            Dictionary<string, List<string>> references = BuildReferenceIndex(all,
-                referenceTargets);
+            BlueprintScriptableObject[] referenceOwners = all.Where(value =>
+                IsLikelyCampaignOwner(value)).ToArray();
+            Dictionary<string, List<string>> references = BuildReferenceIndex(
+                referenceOwners, referenceTargets);
             string[] vendors = vendorTables.Select(value => DescribeCampaignBlueprint(
                 value, references)).Take(320).ToArray();
             string[] loot = campaignLoot.Select(value => DescribeCampaignBlueprint(
                 value, references)).ToArray();
+            Mark(context, timings, elapsed, "campaign");
 
             var assertions = new List<RuntimeTestAssertion>();
             Add(assertions, "eastern-native-weapon-donors",
@@ -198,7 +210,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "ruleBlueprints=" + ruleBlueprints.Length,
                     "ruleTypes=" + ruleTypes.Length,
                     "vendorTables=" + vendors.Length,
-                    "campaignLoot=" + loot.Length
+                    "campaignLoot=" + loot.Length,
+                    "referenceOwners=" + referenceOwners.Length,
+                    "timings=" + string.Join(",", timings.ToArray())
                 },
                 Warnings = new List<string>(),
                 ExceptionSummary = string.Empty,
@@ -219,7 +233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool IsEnchantmentCandidate(BlueprintWeaponEnchantment value)
         {
             return ContainsAny(value.name + ";" + Safe(() => value.Name) + ";" +
-                DescribeComponents(value), EnchantmentTerms);
+                ComponentTypeNames(value), EnchantmentTerms);
         }
 
         private static bool IsCampaignCandidate(BlueprintScriptableObject value)
@@ -227,8 +241,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             var loot = value as BlueprintLoot;
             string area = loot == null || loot.Area == null ? string.Empty :
                 loot.Area.name;
-            return ContainsAny(value.name + ";" + area + ";" +
-                DescribeComponents(value), CampaignTerms);
+            return ContainsAny(value.name + ";" + area, CampaignTerms);
+        }
+
+        private static bool IsLikelyCampaignOwner(BlueprintScriptableObject value)
+        {
+            string type = value.GetType().Name;
+            string components = ComponentTypeNames(value);
+            return ContainsAny(value.name + ";" + type, CampaignTerms) ||
+                ContainsAny(type + ";" + components, new[] { "area", "vendor",
+                    "loot", "addsharedvendor", "addvendoritems" });
         }
 
         private static string DescribeWeapon(BlueprintItemWeapon item)
@@ -396,6 +418,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DescribeMembers(component, component.GetType().GetFields(Members)
                         .Where(field => !field.IsStatic).Select(field => field.Name)
                         .Take(30).ToArray()) + "}").ToArray());
+        }
+
+        private static string ComponentTypeNames(BlueprintScriptableObject value)
+        {
+            return string.Join(",", (value.ComponentsArray ??
+                new BlueprintComponent[0]).Where(component => component != null)
+                .Select(component => component.GetType().FullName).ToArray());
+        }
+
+        private static void Mark(ModContext context, List<string> timings,
+            Stopwatch elapsed, string phase)
+        {
+            string value = phase + "=" + elapsed.ElapsedMilliseconds + "ms";
+            timings.Add(value);
+            context.Logger.Info("runtime-test", "eastern-contracts." + phase,
+                value);
         }
 
         private static string DescribeMembers(object value, string[] names)
