@@ -102,6 +102,32 @@ ordinary, changed-size, polymorph-only, and simultaneous size-plus-polymorph
 states as `Medium -> Large/Large/Large`: either predicate applies one native
 weapon-size step and both together still apply only one.
 
+## Module-matrix defect and repair
+
+The first complete-matrix attempt passed its first three fresh states, then
+state `on-on-on-on-off-on` exposed a real cross-module defect. With Elven
+Branched Spear publication OFF and Eastern Weapons ON, Eastern proficiency
+publication required the registered-but-unpublished spear child to follow the
+Elven Curve Blade and rolled blueprint initialization back. The ambiguous
+timeout is retained as run
+`20260814T1724329157253Z-9494ad64eec84343a1345896c0d658e8`;
+settings restored exactly and no save was involved.
+
+The selector transaction now accepts exactly two native-consistent states:
+`Curve/Spear/Katana/Wakizashi` when spear publication is active, or
+`Curve/Katana/Wakizashi` when it is inactive. A spear present out of the
+accepted position, or more than one spear child, still fails closed. The
+observer independently validates the matching expected order. Targeted repaired
+run `20260814T1734002748638Z-ae0fc4a103514f6dbbf72c48fdb11bef`
+passed with indices `5/-1/6/7`, all 1,513 active identities, all Eastern
+selectors, commerce, assets, and presentation exact, and byte-for-byte settings
+restoration. The loaded DLL SHA-256 was
+`35D768BA7EA82E524427C6B88EF83907FDC0C09DBDE8E9A6627C6CAD8912BBC0`,
+MVID `54d71e83-3045-4a77-9174-597088131ed0`; package SHA-256 was
+`AB6AE5A8203B9D9016E0166EBEC73CC1D1FBC6788E8F97E5F1E23805E29E2A49`.
+The full 64-state matrix must restart after the repair commit so every accepted
+state shares one exact source identity.
+
 ## Working-save persistence
 
 The three guarded fresh-process phases passed with exact object-reference

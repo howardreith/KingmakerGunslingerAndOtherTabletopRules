@@ -222,10 +222,14 @@ namespace KingmakerGunslinger.EasternWeapons
                 throw new InvalidOperationException(
                     "Eastern static selector publication is not exact.");
             if (publishSelectors &&
-                (!ImmediatelyFollows(_ewpSelection.AllFeatures, spearAnchor,
-                    curveAnchor) ||
-                 !ImmediatelyFollows(_ewpSelection.AllFeatures, katanaEwp,
-                    spearAnchor) ||
+                ((Count(_ewpSelection.AllFeatures, spearAnchor) == 1 &&
+                  (!ImmediatelyFollows(_ewpSelection.AllFeatures, spearAnchor,
+                    curveAnchor) || !ImmediatelyFollows(
+                        _ewpSelection.AllFeatures, katanaEwp, spearAnchor))) ||
+                 (Count(_ewpSelection.AllFeatures, spearAnchor) == 0 &&
+                  !ImmediatelyFollows(_ewpSelection.AllFeatures, katanaEwp,
+                    curveAnchor)) ||
+                 Count(_ewpSelection.AllFeatures, spearAnchor) > 1 ||
                  !ImmediatelyFollows(_ewpSelection.AllFeatures, wakizashiEwp,
                     katanaEwp)))
                 throw new InvalidOperationException(
@@ -250,14 +254,17 @@ namespace KingmakerGunslinger.EasternWeapons
             BlueprintFeature[] normalized = Remove(source, additions);
             int curveIndex = Array.FindIndex(normalized, value =>
                 SameFeature(value, curveAnchor));
+            int spearCount = ordered.Length == 0 ? 0 : normalized.Count(value =>
+                SameFeature(value, ordered[0]));
             if (curveIndex < 0 || normalized.Count(value =>
                     SameFeature(value, curveAnchor)) != 1 || ordered.Length == 0 ||
+                spearCount > 1 || spearCount == 1 &&
                 !SameFeature(normalized.ElementAtOrDefault(curveIndex + 1),
                     ordered[0]))
                 throw new InvalidOperationException(
                     "Accepted Elven Branched Spear merged ordering changed.");
             var result = normalized.ToList();
-            int insertion = curveIndex + 2;
+            int insertion = curveIndex + (spearCount == 1 ? 2 : 1);
             for (int index = 1; index < ordered.Length; index++)
                 result.Insert(insertion++, ordered[index]);
             return result.ToArray();

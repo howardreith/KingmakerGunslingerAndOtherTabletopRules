@@ -8635,6 +8635,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     easternSet.WakizashiFinesseTraining }) +
                 CountExactFeatures(spearFinesseSelection.AllFeatures, new[] {
                     easternSet.WakizashiFinesseTraining });
+            BlueprintFeature curveEwp = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(BlueprintBootstrap.Library,
+                    EasternWeaponBlueprints
+                        .NativeElvenCurveBladeProficiencyGuid,
+                    "native Elven Curve Blade proficiency ordering anchor");
+            int curveEwpIndex = Array.IndexOf(spearEwpSelection.AllFeatures,
+                curveEwp);
             int spearEwpIndex = Array.IndexOf(spearEwpSelection.AllFeatures,
                 spearSet.ExoticWeaponProficiency);
             int katanaEwpIndex = Array.IndexOf(spearEwpSelection.AllFeatures,
@@ -8746,8 +8753,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 easternRegisteredItems + "/" + easternRegisteredFeatures + "/" +
                 easternRegisteredPolicies + ";easternParameters=" +
                 easternParameterizedOptions + ";easternStatic=" +
-                easternStaticOptions + ";easternOrder=" + spearEwpIndex + "/" +
-                katanaEwpIndex + "/" + wakizashiEwpIndex +
+                easternStaticOptions + ";easternOrder=" + curveEwpIndex + "/" +
+                spearEwpIndex + "/" + katanaEwpIndex + "/" +
+                wakizashiEwpIndex +
                 ";nodachiMartial=" + nodachiMartialCategories +
                 ";easternNames=" + easternSet.KatanaProficiency.Name + "/" +
                 easternSet.WakizashiProficiency.Name +
@@ -8841,7 +8849,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedEasternWeapons ? 21 : 0) &&
                     easternStaticOptions == (expectedEasternWeapons ? 4 : 0) &&
                     (!expectedEasternWeapons ||
-                        (katanaEwpIndex == spearEwpIndex + 1 &&
+                        ((expectedElvenBranchedSpears &&
+                          spearEwpIndex == curveEwpIndex + 1 &&
+                          katanaEwpIndex == spearEwpIndex + 1 ||
+                          !expectedElvenBranchedSpears &&
+                          spearEwpIndex == -1 &&
+                          katanaEwpIndex == curveEwpIndex + 1) &&
                          wakizashiEwpIndex == katanaEwpIndex + 1)) &&
                     string.Equals(easternSet.KatanaProficiency.Name,
                         "Weapon Proficiency (Katana)",

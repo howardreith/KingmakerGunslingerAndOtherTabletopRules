@@ -506,3 +506,25 @@ values, or campaign targets.
   `98EE14CC220722AC3DED6DF1BCF5E6DF1A60F072F064E4F5E504EE6DCE6BA78A`.
   Transaction `compat-20260814T171454Z-0dc865f34ad3` restored the Mods tree
   exactly. The scenario was save-free.
+
+## 2026-08-14 - module independence repair
+
+- Began the complete 64-state fresh-launch matrix. The first three states
+  passed; `on-on-on-on-off-on` then timed out after Eastern selector
+  initialization rejected the absent spear publication anchor. The matrix
+  restored settings exactly and touched no save.
+- Repaired the minimum selector surface: the accepted spear child remains a
+  mandatory immediate post-curve anchor when published, while a genuinely
+  absent spear child allows Katana and Wakizashi to follow the curve directly.
+  Duplicate or misplaced spear entries still fail closed.
+- Updated the live module observer to prove exact Curve/Spear/Katana/Wakizashi
+  or Curve/Katana/Wakizashi order according to the spear module state.
+- Targeted run
+  `20260814T1734002748638Z-ae0fc4a103514f6dbbf72c48fdb11bef`
+  passed the formerly failing state with indices `5/-1/6/7`. Repository
+  validation, all `1047/1047` tests, clean exact-reference Release build,
+  output validation, strict package validation, and byte-for-byte settings
+  restoration passed. DLL SHA-256 was
+  `35D768BA7EA82E524427C6B88EF83907FDC0C09DBDE8E9A6627C6CAD8912BBC0`,
+  MVID `54d71e83-3045-4a77-9174-597088131ed0`; package SHA-256 was
+  `AB6AE5A8203B9D9016E0166EBEC73CC1D1FBC6788E8F97E5F1E23805E29E2A49`.

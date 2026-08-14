@@ -277,7 +277,9 @@ namespace KingmakerGunslinger.DomainTests
                 "InsertOrderedAfter", "spearAnchor", "katanaEwp",
                 "wakizashiEwp", "PublishMartial", "Concat(new[] { nodachi })",
                 "EasternWeaponProficiencyRuntime.Configure",
-                "feature.ComponentsArray = next", "Rollback()" })
+                "feature.ComponentsArray = next", "Rollback()",
+                "spearCount == 1 ? 2 : 1",
+                "Count(_ewpSelection.AllFeatures, spearAnchor) == 0" })
                 Assertions.True(publication.Contains(token),
                     "Eastern selector transaction is missing: " + token);
 
@@ -636,6 +638,12 @@ namespace KingmakerGunslinger.DomainTests
                 "simultaneousApplications" })
                 Assertions.True(source.Contains(token),
                     "Eastern live negative-control coverage lacks: " + token);
+            string observer = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            Assertions.True(observer.Contains("curveEwpIndex") &&
+                observer.Contains("!expectedElvenBranchedSpears"),
+                "Eastern module observer lacks the spear-disabled ordering contract.");
             string catalog = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestScenarioCatalog.cs"));
