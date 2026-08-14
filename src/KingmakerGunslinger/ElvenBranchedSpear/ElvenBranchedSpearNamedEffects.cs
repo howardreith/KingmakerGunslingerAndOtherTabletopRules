@@ -145,8 +145,7 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         {
             if (unit == null || unit.CombatState == null ||
                 !unit.CombatState.CanAttackOfOpportunity) return 0;
-            return Math.Max(0, unit.CombatState.AttackOfOpportunityPerRound -
-                unit.CombatState.AttackOfOpportunityCount);
+            return Math.Max(0, unit.CombatState.AttackOfOpportunityCount);
         }
 
         private static void GenerateBriarAttack(UnitEntityData attacker,

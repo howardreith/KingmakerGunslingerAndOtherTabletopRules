@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.Controllers.Combat;
@@ -19,52 +17,62 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
 
         private static readonly ConditionalWeakTable<UnitAttackOfOpportunity, Marker>
             MovementCommands = new ConditionalWeakTable<UnitAttackOfOpportunity, Marker>();
+        [ThreadStatic]
+        private static UnitAttackOfOpportunity ActiveMovementAttack;
+        [ThreadStatic]
+        private static int DisengageDepth;
 
         internal static bool IsRunning(UnitEntityData attacker)
         {
-            if (attacker == null || attacker.Commands == null) return false;
-            foreach (Kingmaker.UnitLogic.Commands.Base.UnitCommand command in
-                attacker.GetAllCommands())
-            {
-                UnitAttackOfOpportunity opportunity =
-                    command as UnitAttackOfOpportunity;
-                Marker marker;
-                if (opportunity != null && opportunity.IsRunning &&
-                    MovementCommands.TryGetValue(opportunity, out marker))
-                    return true;
-            }
-            return false;
+            return attacker != null && ActiveMovementAttack != null &&
+                ReferenceEquals(ActiveMovementAttack.Executor, attacker);
         }
 
-        internal static bool IsMovementConstructionBoundary(StackTrace trace)
+        internal static bool EnterOpportunityAction(
+            UnitAttackOfOpportunity opportunity)
         {
-            if (trace == null) return false;
-            bool sawOpportunityFactory = false;
-            StackFrame[] frames = trace.GetFrames() ?? Array.Empty<StackFrame>();
-            foreach (StackFrame frame in frames)
-            {
-                MethodBase method = frame == null ? null : frame.GetMethod();
-                if (method == null || method.DeclaringType != typeof(UnitCombatState))
-                    continue;
-                if (string.Equals(method.Name, "AttackOfOpportunity",
-                    StringComparison.Ordinal))
-                {
-                    sawOpportunityFactory = true;
-                    continue;
-                }
-                if (sawOpportunityFactory && string.Equals(method.Name, "Disengage",
-                    StringComparison.Ordinal))
-                    return true;
-            }
-            return false;
+            Marker marker;
+            bool movement = opportunity != null && MovementCommands.TryGetValue(
+                opportunity, out marker);
+            if (movement) ActiveMovementAttack = opportunity;
+            return movement;
+        }
+
+        internal static void ExitOpportunityAction(bool entered)
+        {
+            if (entered) ActiveMovementAttack = null;
+        }
+
+        internal static void EnterDisengage()
+        {
+            DisengageDepth++;
+        }
+
+        internal static void ExitDisengage()
+        {
+            if (DisengageDepth > 0) DisengageDepth--;
         }
 
         internal static void Mark(UnitAttackOfOpportunity command)
         {
-            if (command == null || !IsMovementConstructionBoundary(
-                new StackTrace(1, false))) return;
+            if (command == null || DisengageDepth <= 0) return;
             MovementCommands.Remove(command);
             MovementCommands.Add(command, new Marker());
+        }
+    }
+
+    [HarmonyPatch(typeof(UnitCombatState), "Disengage",
+        new[] { typeof(UnitEntityData) })]
+    internal static class MovementOpportunityDisengageBoundaryPatch
+    {
+        private static void Prefix()
+        {
+            MovementOpportunityAttackTracker.EnterDisengage();
+        }
+
+        private static void Postfix()
+        {
+            MovementOpportunityAttackTracker.ExitDisengage();
         }
     }
 
@@ -77,4 +85,21 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             MovementOpportunityAttackTracker.Mark(__instance);
         }
     }
+
+    [HarmonyPatch(typeof(UnitAttackOfOpportunity), "OnAction")]
+    internal static class MovementOpportunityActionBoundaryPatch
+    {
+        private static void Prefix(UnitAttackOfOpportunity __instance,
+            out bool __state)
+        {
+            __state = MovementOpportunityAttackTracker.EnterOpportunityAction(
+                __instance);
+        }
+
+        private static void Postfix(bool __state)
+        {
+            MovementOpportunityAttackTracker.ExitOpportunityAction(__state);
+        }
+    }
+
 }

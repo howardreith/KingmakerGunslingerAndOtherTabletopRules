@@ -557,6 +557,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableElvenBranchedSpearCombat &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
                     _trace.Record("manual-interaction-timeout",
@@ -641,6 +642,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveElvenBranchedSpearContracts)
                 {
                     Complete(ElvenBranchedSpearContractObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableElvenBranchedSpearCombat)
+                {
+                    Complete(ElvenBranchedSpearCombatScenario.Run(
                         _context, _request));
                     return;
                 }

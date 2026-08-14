@@ -71,10 +71,11 @@ namespace KingmakerGunslinger.DomainTests
                 "MovementOpportunityAttackTracker.cs"));
             foreach (string token in new[] {
                 "ConditionalWeakTable<UnitAttackOfOpportunity, Marker>",
-                "method.DeclaringType != typeof(UnitCombatState)",
-                "\"AttackOfOpportunity\"",
-                "\"Disengage\"",
-                "opportunity.IsRunning",
+                "typeof(UnitCombatState), \"Disengage\"",
+                "EnterDisengage",
+                "DisengageDepth <= 0",
+                "EnterOpportunityAction",
+                "typeof(UnitAttackOfOpportunity), \"OnAction\"",
                 "MethodType.Constructor" })
                 Assertions.True(tracker.Contains(token),
                     "Movement-AoO correlation lacks: " + token);
@@ -90,6 +91,12 @@ namespace KingmakerGunslinger.DomainTests
                 component.Contains("MovementOpportunityAttackTracker.IsRunning") &&
                 component.Contains("evt.AddBonus(") && component.Contains("Fact);"),
                 "Movement-AoO bonus must apply before resolution with a fact source.");
+            Assertions.True(component.Contains(
+                "ElvenBranchedSpearProficiencyPenaltyComponent") &&
+                component.Contains("Descriptor.Proficiencies.Contains(") &&
+                component.Contains(
+                    "evt.SetAttackBonusPenalty(evt.AttackBonusPenalty + 4)"),
+                "The custom category lacks exact native-style nonproficiency enforcement.");
 
             string manifest = File.ReadAllText(Path.Combine(root,
                 "blueprints", "blueprints.json"));
@@ -330,6 +337,34 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(runtime.Contains("FirearmKind") ||
                 runtime.Contains("FirearmAssetRuntime"),
                 "Spear presentation was coupled to firearm identity/runtime.");
+        }
+
+        internal static void RuntimeCombatScenarioContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string scenario = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "ElvenBranchedSpearCombatScenario.cs"));
+            foreach (string token in new[] { "SceneEntitiesState",
+                "RuleCalculateAttackBonusWithoutTarget",
+                "RuleCalculateWeaponStats", "NativeElvenWeaponFamiliarityGuid",
+                "WeaponFinesseGuid", "AttackOfOpportunity(target, false)",
+                "CombatState.Engage(target)", "CombatState.Disengage(target)",
+                "MovementOpportunityAccuracyDiagnostics.Applied == 2",
+                "InstantiatePrefab", "SameReferences" })
+                Assertions.True(scenario.Contains(token),
+                    "Spear combat scenario lacks: " + token);
+            Assertions.False(scenario.Contains("SaveManager") ||
+                scenario.Contains("SaveGame") || scenario.Contains("Input."),
+                "Disposable spear combat scenario must remain save-free and input-free.");
+            string catalog = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestScenarioCatalog.cs"));
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            const string name = "disposable-elven-branched-spear-combat";
+            Assertions.True(catalog.Contains(name) && automation.Contains(name),
+                "Spear combat scenario is not allowlisted by both harness layers.");
         }
 
         private static string Sha256(string path)

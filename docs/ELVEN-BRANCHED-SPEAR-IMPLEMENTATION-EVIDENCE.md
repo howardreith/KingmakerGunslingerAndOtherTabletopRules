@@ -412,3 +412,39 @@ validated dedicated spear prefab transactionally`, proving that Unity 2018.4
 accepted the packaged bundle and the custom path—not the fallback—was selected.
 Equipped pose and animation aesthetics still require the documented human
 visual-calibration pass; that visual judgment does not gate mechanics.
+
+## Live proficiency, Dexterity, and movement-AoO checkpoint
+
+Guarded Steam run
+`20260814T0027460102758Z-disposable-elven-branched-spear-combat` passed on the
+installed game with a request-local three-unit fixture and no save mutation.
+It proved exact -4 nonproficiency for both an untrained unit and a unit with
+blanket Martial Weapon Proficiency (attack bonus 8), while the spear-specific
+Exotic Weapon Proficiency and native Elven Weapon Familiarity each removed the
+penalty (attack bonus 12). This adapter is required because Kingmaker's closed
+`WeaponCategory` switch does not supply the ordinary penalty for a runtime
+category; the adapter still defers proficiency authority to
+`UnitDescriptor.Proficiencies` and applies only to this one custom category.
+
+Local `Assembly-CSharp.dll` IL establishes the movement provenance contract:
+`UnitCombatState.Disengage(UnitEntityData)` is the actual movement-leaves-
+engagement boundary and calls `AttackOfOpportunity`; the resulting
+`UnitAttackOfOpportunity.OnAction` directly creates a
+`RuleAttackWithWeapon`, sets `IsAttackOfOpportunity = true`, and triggers the
+rule. The implementation therefore marks only AoO commands constructed while
+the exact `Disengage` method is active, stores the marker in a
+`ConditionalWeakTable`, and exposes it only while that marked command's exact
+`OnAction` is triggering the attack rule. It does not infer provenance from
+turn ownership, recent motion, distance, animation, target state, or generic
+AoO status.
+
+The passing live results were ordinary attack 17, direct nonmovement AoO 17,
+and two independently constructed Disengage movement AoOs 19 and 19. The
+diagnostic recorded four spear attack-bonus evaluations, exactly two +2
+applications, and one source per movement attack. Each native AoO action
+returned `Success`; the fixture had Combat Reflexes with six AoOs per round and
+retained four after constructing the tested commands. The same run proved the
+baseline, Weapon Finesse, Finesse Training, native Agile, Agile plus Finesse
+Training, all 12 spear variants, selector cardinality, custom prefab choice,
+and complete request-local cleanup. Named-effect behavior and save-backed
+ownership remain separate qualification checkpoints.

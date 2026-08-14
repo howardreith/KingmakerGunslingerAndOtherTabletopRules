@@ -105,12 +105,16 @@ namespace KingmakerGunslinger.Blueprints
                             .CreateInstance<BlueprintWeaponEnchantment>();
                         value.name = "KMG_ElvenBranchedSpear_MovementOpportunityAccuracy";
                         ConfigureEnchantmentText(value,
-                            "Elven Branched Spear: Movement Opportunity Accuracy",
+                            "Elven Branched Spear",
                             "This weapon grants a +2 bonus on attacks of opportunity provoked by movement.", 0);
                         MovementOpportunityAccuracyComponent component =
                             MovementOpportunityAccuracyComponent.Create();
                         component.name = "$KMG_ElvenBranchedSpear_MovementOpportunityAccuracy";
-                        value.ComponentsArray = new BlueprintComponent[] { component };
+                        ElvenBranchedSpearProficiencyPenaltyComponent penalty =
+                            ElvenBranchedSpearProficiencyPenaltyComponent.Create();
+                        penalty.name = "$KMG_ElvenBranchedSpear_ProficiencyPenalty";
+                        value.ComponentsArray = new BlueprintComponent[] {
+                            component, penalty };
                         return value;
                     });
             BlueprintWeaponType weaponType = registry.Register<BlueprintWeaponType>(
@@ -192,9 +196,11 @@ namespace KingmakerGunslinger.Blueprints
                 entries.ToArray(), ewp, finesseTraining, publication);
             if (movementAccuracy.EnchantmentCost != 0 ||
                 movementAccuracy.ComponentsArray == null ||
-                movementAccuracy.ComponentsArray.Length != 1 ||
-                !(movementAccuracy.ComponentsArray[0] is
-                    MovementOpportunityAccuracyComponent))
+                movementAccuracy.ComponentsArray.Length != 2 ||
+                movementAccuracy.ComponentsArray.OfType<
+                    MovementOpportunityAccuracyComponent>().Count() != 1 ||
+                movementAccuracy.ComponentsArray.OfType<
+                    ElvenBranchedSpearProficiencyPenaltyComponent>().Count() != 1)
                 throw new InvalidOperationException(
                     "Movement-opportunity accuracy enchantment is malformed.");
             Validate(result, typeAccess, typeAdapter, itemAdapter);
