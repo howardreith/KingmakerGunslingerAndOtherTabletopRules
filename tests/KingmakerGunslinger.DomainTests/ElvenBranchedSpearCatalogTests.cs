@@ -109,12 +109,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             string root = Environment.CurrentDirectory;
             string selector = File.ReadAllText(Path.Combine(root, "src",
-                "KingmakerGunslinger", "ElvenBranchedSpear",
-                "ElvenBranchedSpearSelectorRuntime.cs"));
+                "KingmakerGunslinger", "CustomWeapons",
+                "CustomWeaponSelectorRuntime.cs"));
             Assertions.True(selector.Contains(
-                "ElvenBranchedSpearCategoryRuntime.DisplayName") &&
+                "CustomWeaponSelectorOption") &&
                 selector.Contains("string.Empty, null,") &&
-                selector.Contains("ElvenBranchedSpearCategoryRuntime.Monogram") &&
+                selector.Contains("option.Monogram") &&
                 !selector.Contains("feature.Icon, name"),
                 "Parameterized rows do not use the native category-glyph contract.");
 

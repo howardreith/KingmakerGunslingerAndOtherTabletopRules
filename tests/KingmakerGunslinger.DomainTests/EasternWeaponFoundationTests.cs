@@ -133,7 +133,7 @@ namespace KingmakerGunslinger.DomainTests
                 "item.Description.IndexOf(\"Brace\"",
                 "type.AttackRange.Value != 2",
                 "IsOneHandedWhichCanBeUsedWithTwoHands",
-                "Registered three stable categories and twelve generic weapon items" })
+                "Registered three stable categories, twelve generic items" })
                 Assertions.True(source.Contains(token),
                     "Eastern generic blueprint source contract is missing: " + token);
             string runtime = File.ReadAllText(Path.Combine(root, "src",
@@ -153,11 +153,11 @@ namespace KingmakerGunslinger.DomainTests
             JObject[] eastern = entries.Cast<JObject>().Where(value =>
                 ((string)value["symbol"]).StartsWith("KMG.EasternWeapons.",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(15, eastern.Length,
-                "Generic Eastern identity ledger count changed.");
-            Assertions.Equal(15, eastern.Select(value =>
+            Assertions.Equal(19, eastern.Length,
+                "Eastern foundation identity ledger count changed.");
+            Assertions.Equal(19, eastern.Select(value =>
                 (string)value["guid"]).Distinct(StringComparer.Ordinal).Count(),
-                "Generic Eastern GUIDs are not unique.");
+                "Eastern foundation GUIDs are not unique.");
             Assertions.Equal(3, eastern.Count(value =>
                 (string)value["plannedType"] == "BlueprintWeaponType"),
                 "Eastern weapon-type identity count changed.");
@@ -168,6 +168,67 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["status"] == "active" &&
                 (string)value["milestone"] == "Eastern Weapons"),
                 "Eastern generic identities must all be active and owned.");
+        }
+
+        internal static void ProficiencySelectorAndGroupContractsAreExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string blueprint = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "EasternWeaponBlueprints.cs"));
+            foreach (string token in new[] {
+                "Weapon Proficiency (\" + display + \")",
+                "Finesse Training (Wakizashi)",
+                "0fca9259e370cd049a1dd50bede687f7",
+                "04f3b956e5a5cf649bce83774e0bfe4a",
+                "NativeMartialWeaponProficiencyGuid",
+                "PrerequisiteNotProficient",
+                "AddStartingEquipment",
+                "WeaponTypeDamageStatReplacement",
+                "EasternWeaponProficiencyPenaltyComponent",
+                "ParameterSelectorGuids" })
+                Assertions.True(blueprint.Contains(token),
+                    "Eastern proficiency blueprint contract is missing: " + token);
+
+            string policy = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "EasternWeapons",
+                "EasternWeaponProficiencyRuntime.cs"));
+            foreach (string token in new[] {
+                "weapon.HoldInTwoHands && HasBroadMartial(unit)",
+                "unit.Proficiencies.Contains(category)",
+                "evt.SetAttackBonusPenalty(evt.AttackBonusPenalty + 4)",
+                "UnitPartWeaponTraining", "WeaponFighterGroup.BladesHeavy",
+                "WeaponFighterGroup.Polearms",
+                "Math.Max(__result, fact.GetRank())" })
+                Assertions.True(policy.Contains(token),
+                    "Eastern proficiency/group runtime is missing: " + token);
+            Assertions.False(policy.Contains("GetType().Name") ||
+                policy.Contains("animation") || policy.Contains("race ==") ||
+                policy.Contains("class =="),
+                "Eastern proficiency uses a forbidden heuristic.");
+
+            string publication = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "EasternWeapons",
+                "EasternWeaponSelectorPublication.cs"));
+            foreach (string token in new[] {
+                "CustomWeaponSelectorRuntime.Configure",
+                "InsertOrderedAfter", "spearAnchor", "katanaEwp",
+                "wakizashiEwp", "PublishMartial", "Concat(new[] { nodachi })",
+                "EasternWeaponProficiencyRuntime.Configure",
+                "feature.ComponentsArray = next", "Rollback()" })
+                Assertions.True(publication.Contains(token),
+                    "Eastern selector transaction is missing: " + token);
+
+            string shared = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "CustomWeapons",
+                "CustomWeaponSelectorRuntime.cs"));
+            Assertions.Equal(1, shared.Split(new[] {
+                "\"GetFullSelectionItems\"" }, StringSplitOptions.None).Length - 1,
+                "Custom weapons must use one full-selector Harmony patch.");
+            Assertions.True(shared.Contains("SelectMany(value => value.Options)") &&
+                shared.Contains("GroupBy(value => value.Category)") &&
+                shared.Contains("OrderBy(value => value.Name"),
+                "Custom weapon categories are not merged and sorted once.");
         }
     }
 }

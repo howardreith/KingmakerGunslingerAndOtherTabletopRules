@@ -8118,6 +8118,54 @@ namespace KingmakerGunslinger.RuntimeTesting
             int easternRegisteredTypes = BlueprintBootstrap.Library.GetAllBlueprints()
                 .OfType<BlueprintWeaponType>().Count(value =>
                     easternTypes.Contains(value));
+            int easternRegisteredFeatures = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintFeature>().Count(value =>
+                    ReferenceEquals(value, easternSet.WakizashiProficiency) ||
+                    ReferenceEquals(value, easternSet.KatanaProficiency) ||
+                    ReferenceEquals(value,
+                        easternSet.WakizashiFinesseTraining));
+            int easternRegisteredPolicies = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintWeaponEnchantment>().Count(
+                    value => ReferenceEquals(value,
+                        easternSet.ProficiencyPolicy));
+            WeaponCategory[] easternCategories = EasternWeaponCatalog
+                .AllCategories.Select(value =>
+                    (WeaponCategory)value.CategoryValue).ToArray();
+            int easternParameterizedOptions = spearSelectorGuids.Sum(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(
+                    BlueprintBootstrap.Library, guid,
+                    "native Eastern parameter menu").GetFullSelectionItems()
+                    .Count(item => item != null && item.Param != null &&
+                        item.Param.WeaponCategory.HasValue &&
+                        easternCategories.Contains(
+                            item.Param.WeaponCategory.Value)));
+            int easternStaticOptions = CountExactFeatures(
+                    spearEwpSelection.Features, new[] {
+                        easternSet.WakizashiProficiency,
+                        easternSet.KatanaProficiency }) +
+                CountExactFeatures(spearEwpSelection.AllFeatures, new[] {
+                    easternSet.WakizashiProficiency,
+                    easternSet.KatanaProficiency }) +
+                CountExactFeatures(spearFinesseSelection.Features, new[] {
+                    easternSet.WakizashiFinesseTraining }) +
+                CountExactFeatures(spearFinesseSelection.AllFeatures, new[] {
+                    easternSet.WakizashiFinesseTraining });
+            int spearEwpIndex = Array.IndexOf(spearEwpSelection.AllFeatures,
+                spearSet.ExoticWeaponProficiency);
+            int katanaEwpIndex = Array.IndexOf(spearEwpSelection.AllFeatures,
+                easternSet.KatanaProficiency);
+            int wakizashiEwpIndex = Array.IndexOf(spearEwpSelection.AllFeatures,
+                easternSet.WakizashiProficiency);
+            BlueprintFeature nativeMartial = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
+                    EasternWeaponBlueprints.NativeMartialWeaponProficiencyGuid,
+                    "native Martial Weapon Proficiency feature");
+            int nodachiMartialCategories = (nativeMartial.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<AddProficiencies>()
+                .SelectMany(value => value.WeaponProficiencies ??
+                    Array.Empty<WeaponCategory>()).Count(value => value.Equals(
+                        EasternWeaponCategoryRuntime.Category(
+                            EasternWeaponFamily.Nodachi)));
             ShieldOtherInventoryObservation shieldObservation =
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
@@ -8147,7 +8195,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spearVendorRows + ";spearBtslTables=" +
                 installedSpearBtslTables + ";spearLoot=" + spearLootRows;
             observed += ";easternRegistered=" + easternRegisteredTypes + "/" +
-                easternRegisteredItems + ";easternPresentation=" +
+                easternRegisteredItems + "/" + easternRegisteredFeatures + "/" +
+                easternRegisteredPolicies + ";easternParameters=" +
+                easternParameterizedOptions + ";easternStatic=" +
+                easternStaticOptions + ";easternOrder=" + spearEwpIndex + "/" +
+                katanaEwpIndex + "/" + wakizashiEwpIndex +
+                ";nodachiMartial=" + nodachiMartialCategories +
+                ";easternNames=" + easternSet.KatanaProficiency.Name + "/" +
+                easternSet.WakizashiProficiency.Name +
+                ";easternPresentation=" +
                 EasternWeaponCategoryRuntime.PresentationEnabled;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -8217,14 +8273,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("feature-module-eastern-weapons-publication-gate",
                     expectedEasternWeapons ?
-                        "3 category identities;12 generic item identities;presentation enabled" :
-                        "3 category identities;12 generic item identities;presentation disabled",
+                        "19 identities;21 parameter options;4 static references;merged proficiency order;presentation enabled" :
+                        "19 identities;0 parameter options;0 static references;presentation disabled",
                     observed,
                     activeEasternWeapons == expectedEasternWeapons &&
                     easternRegisteredTypes == 3 && easternRegisteredItems == 12 &&
+                    easternRegisteredFeatures == 3 &&
+                    easternRegisteredPolicies == 1 &&
+                    easternParameterizedOptions ==
+                        (expectedEasternWeapons ? 21 : 0) &&
+                    easternStaticOptions == (expectedEasternWeapons ? 4 : 0) &&
+                    (!expectedEasternWeapons ||
+                        (katanaEwpIndex == spearEwpIndex + 1 &&
+                         wakizashiEwpIndex == katanaEwpIndex + 1)) &&
+                    string.Equals(easternSet.KatanaProficiency.Name,
+                        "Weapon Proficiency (Katana)",
+                        StringComparison.Ordinal) &&
+                    string.Equals(easternSet.WakizashiProficiency.Name,
+                        "Weapon Proficiency (Wakizashi)",
+                        StringComparison.Ordinal) &&
+                    nodachiMartialCategories == 1 &&
                     EasternWeaponCategoryRuntime.PresentationEnabled ==
                         expectedEasternWeapons,
-                    "always-registered identities and module-gated custom presentation"),
+                    "always-registered identities, exact merged selectors, broad martial integration, and module-gated presentation"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

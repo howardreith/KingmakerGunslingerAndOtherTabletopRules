@@ -514,7 +514,7 @@ register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
 Expanded Summoning, the Elven Branched Spear, and the first Eastern Weapons
-generic catalog freeze the append-only ledger at 1483 stable IDs: 1482 active and one reserved. All 1184
+proficiency integration freeze the append-only ledger at 1487 stable IDs: 1486 active and one reserved. All 1184
 Expanded Summoning feature identities, all twenty-nine spear identities, and
 the first fifteen Eastern Weapons identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement

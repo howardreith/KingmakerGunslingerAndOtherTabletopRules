@@ -30,7 +30,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 298 +
+        internal const int ExpectedRegisteredBlueprintCount = 302 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount;
 
         private static readonly object Gate = new object();
@@ -638,6 +638,7 @@ namespace KingmakerGunslinger.Bootstrap
             ExpandedSummoningPublication expandedSummoningPublication = null;
             ElvenBranchedSpearSelectorPublication spearSelectorPublication = null;
             ElvenBranchedSpearCampaignPublication spearCampaignPublication = null;
+            EasternWeaponSelectorPublication easternSelectorPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -654,8 +655,10 @@ namespace KingmakerGunslinger.Bootstrap
 
                 EasternWeaponBlueprintSet easternWeapons =
                     EasternWeaponBlueprints.Register(library, registry,
+                        publicationPlan.EasternWeaponSelectors,
                         publicationPlan.EasternWeaponPresentation,
                         context.Logger);
+                easternSelectorPublication = easternWeapons.Publication;
 
                 ExpandedSummoningBlueprintSet expandedSummoning =
                     ExpandedSummoningBlueprints.Register(library, registry);
@@ -976,6 +979,8 @@ namespace KingmakerGunslinger.Bootstrap
                     GunslingerStartingFirearmResolver.Rollback();
                     Reloading.FastMusketRuntime.Rollback();
                     Feats.NativeFirearmFeatIntegration.Rollback();
+                    if (easternSelectorPublication != null)
+                        easternSelectorPublication.Rollback();
                     if (spearSelectorPublication != null)
                         spearSelectorPublication.Rollback();
                 }

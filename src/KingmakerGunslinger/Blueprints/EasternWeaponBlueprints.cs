@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Prerequisites;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.CustomWeapons;
 using KingmakerGunslinger.EasternWeapons;
@@ -21,6 +26,37 @@ namespace KingmakerGunslinger.Blueprints
             "6b38844e2bffbac48b63036b66e735be";
         internal const string NativeEnhancementOneGuid =
             "d42fc23b92c640846ac137dc26e000d4";
+        internal const string NativeExoticWeaponProficiencySelectionGuid =
+            "9a01b6815d6c3684cb25f30b8bf20932";
+        internal const string NativeElvenCurveBladeProficiencyGuid =
+            "0fca9259e370cd049a1dd50bede687f7";
+        internal const string NativeFinesseTrainingSelectionGuid =
+            "b78d146cea711a84598f0acef69462ea";
+        internal const string NativeFinesseTrainingElvenCurveBladeGuid =
+            "04f3b956e5a5cf649bce83774e0bfe4a";
+        internal const string NativeMartialWeaponProficiencyGuid =
+            "203992ef5b35c864390b4e4a1e200629";
+        internal const string ElvenBranchedSpearProficiencyGuid =
+            "017d586ec4546feabf6eaaa67ce74a3f";
+        internal const string ProficiencyPolicyEnchantmentSymbol =
+            "KMG.EasternWeapons.ProficiencyPolicyEnchantment";
+        internal const string WakizashiProficiencySymbol =
+            "KMG.EasternWeapons.Wakizashi.ExoticWeaponProficiency";
+        internal const string KatanaProficiencySymbol =
+            "KMG.EasternWeapons.Katana.ExoticWeaponProficiency";
+        internal const string WakizashiFinesseTrainingSymbol =
+            "KMG.EasternWeapons.Wakizashi.FinesseTraining";
+
+        internal static readonly string[] ParameterSelectorGuids =
+        {
+            "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "09c9e82965fb4334b984a1e9df3bd088",
+            "f4201c85a991369408740c6888362e20",
+            "31470b17e8446ae4ea0dacd6c5817d86",
+            "7cf5edc65e785a24f9cf93af987d66b3",
+            "c0b4ec0175e3ff940a45fc21f318a39a",
+            "38ae5ac04463a8947b7c06a6c72dd6bb"
+        };
 
         private static readonly DonorSpec[] Donors =
         {
@@ -37,7 +73,7 @@ namespace KingmakerGunslinger.Blueprints
 
         internal static EasternWeaponBlueprintSet Register(
             LibraryScriptableObject library, BlueprintRegistry registry,
-            bool presentationEnabled, ModLogger logger)
+            bool publishSelectors, bool presentationEnabled, ModLogger logger)
         {
             if (library == null || registry == null || logger == null)
                 throw new ArgumentNullException(
@@ -50,6 +86,27 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintWeaponEnchantment plusOne = BlueprintLibraryLookup
                 .RequireExact<BlueprintWeaponEnchantment>(library,
                     NativeEnhancementOneGuid, "native +1 weapon enchantment");
+            BlueprintWeaponEnchantment proficiencyPolicy = registry.Register<
+                BlueprintWeaponEnchantment>(ProficiencyPolicyEnchantmentSymbol,
+                    delegate
+                    {
+                        BlueprintWeaponEnchantment value =
+                            UnityEngine.ScriptableObject.CreateInstance<
+                                BlueprintWeaponEnchantment>();
+                        value.name =
+                            "KMG_EasternWeapons_ProficiencyPolicyEnchantment";
+                        ConfigureEnchantmentText(value,
+                            "Eastern Weapon Proficiency Policy",
+                            "Applies native-style proficiency rules for Eastern weapon categories.",
+                            0);
+                        EasternWeaponProficiencyPenaltyComponent component =
+                            EasternWeaponProficiencyPenaltyComponent.Create();
+                        component.name =
+                            "$KMG_EasternWeapons_ProficiencyPenalty";
+                        value.ComponentsArray = new BlueprintComponent[]
+                            { component };
+                        return value;
+                    });
             WeaponBlueprintAccess typeAccess = WeaponBlueprintAccess.Resolve();
             var typeAdapter = new EasternWeaponTypeAccess();
             var itemAdapter = new EasternWeaponItemAccess();
@@ -75,7 +132,8 @@ namespace KingmakerGunslinger.Blueprints
                         BlueprintWeaponType clone = BlueprintCloneService.Clone(
                             nativeType, "KMG_EasternWeapons_" +
                                 definition.Presentation.DisplayName + "_WeaponType");
-                        typeAdapter.Configure(clone, definition);
+                        typeAdapter.Configure(clone, definition,
+                            proficiencyPolicy);
                         return clone;
                     });
                 var entries = new List<EasternWeaponBlueprintEntry>();
@@ -107,12 +165,148 @@ namespace KingmakerGunslinger.Blueprints
                     weaponType, entries.ToArray()));
             }
 
-            var result = new EasternWeaponBlueprintSet(families.ToArray());
+            BlueprintFeature nativeEwpDonor = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeature>(library,
+                    NativeElvenCurveBladeProficiencyGuid,
+                    "native Elven Curve Blade proficiency child");
+            BlueprintFeature wakizashiEwp = registry.Register<BlueprintFeature>(
+                WakizashiProficiencySymbol, delegate
+                {
+                    BlueprintFeature clone = CloneFeatureWithComponents(
+                        nativeEwpDonor,
+                        "KMG_WeaponProficiency_Wakizashi");
+                    ConfigureProficiencyFeature(clone,
+                        EasternWeaponFamily.Wakizashi, nativeEwpDonor.Icon);
+                    return clone;
+                });
+            BlueprintFeature katanaEwp = registry.Register<BlueprintFeature>(
+                KatanaProficiencySymbol, delegate
+                {
+                    BlueprintFeature clone = CloneFeatureWithComponents(
+                        nativeEwpDonor,
+                        "KMG_WeaponProficiency_Katana");
+                    ConfigureProficiencyFeature(clone,
+                        EasternWeaponFamily.Katana, nativeEwpDonor.Icon);
+                    return clone;
+                });
+            BlueprintFeature nativeFinesseDonor = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeature>(library,
+                    NativeFinesseTrainingElvenCurveBladeGuid,
+                    "native Finesse Training Elven Curve Blade child");
+            BlueprintFeature wakizashiFinesse = registry.Register<BlueprintFeature>(
+                WakizashiFinesseTrainingSymbol, delegate
+                {
+                    BlueprintFeature clone = CloneFeatureWithComponents(
+                        nativeFinesseDonor,
+                        "KMG_FinesseTraining_Wakizashi");
+                    ConfigureFinesseTrainingFeature(clone,
+                        EasternWeaponCategoryRuntime.Category(
+                            EasternWeaponFamily.Wakizashi),
+                        nativeFinesseDonor.Icon);
+                    return clone;
+                });
+            BlueprintParametrizedFeature[] parameterSelectors =
+                ParameterSelectorGuids.Select(guid => BlueprintLibraryLookup
+                    .RequireExact<BlueprintParametrizedFeature>(library, guid,
+                        "native generic chosen-weapon selector")).ToArray();
+            EasternWeaponSelectorPublication publication =
+                EasternWeaponSelectorPublication.Publish(library, wakizashiEwp,
+                    katanaEwp, wakizashiFinesse, parameterSelectors,
+                    publishSelectors);
+
+            var result = new EasternWeaponBlueprintSet(families.ToArray(),
+                proficiencyPolicy, wakizashiEwp, katanaEwp,
+                wakizashiFinesse, publication);
             Validate(result, typeAccess, typeAdapter, itemAdapter);
             logger.Info("eastern-weapons", "generic-catalog.ready",
-                "Registered three stable categories and twelve generic weapon items; presentation=" +
+                "Registered three stable categories, twelve generic items, exact proficiency children, and one merged selector publication; selectors=" +
+                    publishSelectors + ";presentation=" +
                     presentationEnabled + ".");
             return result;
+        }
+
+        private static BlueprintFeature CloneFeatureWithComponents(
+            BlueprintFeature donor, string internalName)
+        {
+            BlueprintFeature clone = BlueprintCloneService.Clone(donor,
+                internalName);
+            clone.ComponentsArray = (donor.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(value =>
+                    (BlueprintComponent)UnityEngine.Object.Instantiate(value))
+                .ToArray();
+            return clone;
+        }
+
+        private static void ConfigureProficiencyFeature(BlueprintFeature feature,
+            EasternWeaponFamily family, UnityEngine.Sprite nativeIcon)
+        {
+            WeaponCategory category = EasternWeaponCategoryRuntime.Category(family);
+            string display = EasternWeaponCatalog.RequireCategory(family)
+                .Presentation.DisplayName;
+            AddProficiencies grant = feature.ComponentsArray
+                .OfType<AddProficiencies>().Single();
+            grant.RaceRestriction = null;
+            grant.ArmorProficiencies = Array.Empty<
+                Kingmaker.Blueprints.Items.Armors.ArmorProficiencyGroup>();
+            grant.WeaponProficiencies = new[] { category };
+            PrerequisiteNotProficient absent = feature.ComponentsArray
+                .OfType<PrerequisiteNotProficient>().Single();
+            absent.ArmorProficiencies = Array.Empty<
+                Kingmaker.Blueprints.Items.Armors.ArmorProficiencyGroup>();
+            absent.WeaponProficiencies = new[] { category };
+            AddStartingEquipment equipment = feature.ComponentsArray
+                .OfType<AddStartingEquipment>().Single();
+            equipment.BasicItems = Array.Empty<
+                Kingmaker.Blueprints.Items.BlueprintItem>();
+            equipment.CategoryItems = new[] { category };
+            equipment.ParametrizedCategory = false;
+            string stem = "KMG.EasternWeapons." + display + ".EWP";
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(stem + ".Name",
+                    "Weapon Proficiency (" + display + ")"),
+                LocalizationService.Create(stem + ".Description",
+                    "You are proficient with the exotic " + display + "."),
+                nativeIcon);
+        }
+
+        private static void ConfigureFinesseTrainingFeature(
+            BlueprintFeature feature, WeaponCategory category,
+            UnityEngine.Sprite nativeIcon)
+        {
+            WeaponTypeDamageStatReplacement replacement = feature.ComponentsArray
+                .OfType<WeaponTypeDamageStatReplacement>().Single();
+            replacement.Category = category;
+            replacement.OnlyOneHanded = true;
+            replacement.TwoHandedBonus = false;
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.EasternWeapons.Wakizashi.FinesseTraining.Name",
+                    "Finesse Training (Wakizashi)"),
+                LocalizationService.Create(
+                    "KMG.EasternWeapons.Wakizashi.FinesseTraining.Description",
+                    "Apply the native Finesse Training damage-stat replacement to Wakizashi."),
+                nativeIcon);
+        }
+
+        private static void ConfigureEnchantmentText(
+            BlueprintWeaponEnchantment enchantment, string name,
+            string description, int cost)
+        {
+            const BindingFlags fields = BindingFlags.Instance |
+                BindingFlags.NonPublic;
+            Type owner = typeof(BlueprintItemEnchantment);
+            FieldInfo nameField = owner.GetField("m_EnchantName", fields);
+            FieldInfo descriptionField = owner.GetField("m_Description", fields);
+            FieldInfo costField = owner.GetField("m_EnchantmentCost", fields);
+            if (nameField == null || descriptionField == null || costField == null)
+                throw new MissingFieldException(owner.FullName,
+                    "m_EnchantName/m_Description/m_EnchantmentCost");
+            nameField.SetValue(enchantment, LocalizationService.Create(
+                ProficiencyPolicyEnchantmentSymbol + ".Name", name));
+            descriptionField.SetValue(enchantment, LocalizationService.Create(
+                ProficiencyPolicyEnchantmentSymbol + ".Description",
+                description));
+            costField.SetValue(enchantment, cost);
         }
 
         private static void ValidateCategoryCollisions(
@@ -150,6 +344,18 @@ namespace KingmakerGunslinger.Blueprints
                     itemAdapter.Validate(entry.Item, definition, entry.Spec);
                 }
             }
+            if (set.ProficiencyPolicy.EnchantmentCost != 0 ||
+                set.ProficiencyPolicy.ComponentsArray == null ||
+                set.ProficiencyPolicy.ComponentsArray.OfType<
+                    EasternWeaponProficiencyPenaltyComponent>().Count() != 1 ||
+                set.WakizashiProficiency.Name !=
+                    "Weapon Proficiency (Wakizashi)" ||
+                set.KatanaProficiency.Name !=
+                    "Weapon Proficiency (Katana)" ||
+                set.WakizashiFinesseTraining.Name !=
+                    "Finesse Training (Wakizashi)")
+                throw new InvalidOperationException(
+                    "Eastern proficiency blueprint contract is invalid.");
         }
 
         private sealed class DonorSpec
@@ -186,7 +392,8 @@ namespace KingmakerGunslinger.Blueprints
         private readonly FieldInfo _enchantments = Require("m_Enchantments");
 
         internal void Configure(BlueprintWeaponType type,
-            CustomWeaponCategoryDefinition definition)
+            CustomWeaponCategoryDefinition definition,
+            BlueprintWeaponEnchantment proficiencyPolicy)
         {
             string display = definition.Presentation.DisplayName;
             var name = LocalizationService.Create(definition.WeaponTypeSymbol +
@@ -211,7 +418,9 @@ namespace KingmakerGunslinger.Blueprints
                 definition.Handedness != CustomWeaponHandedness.OneHandedVersatile);
             _isLight.SetValue(type,
                 definition.Handedness == CustomWeaponHandedness.Light);
-            _enchantments.SetValue(type, Array.Empty<BlueprintWeaponEnchantment>());
+            _enchantments.SetValue(type,
+                new[] { proficiencyPolicy ?? throw new ArgumentNullException(
+                    "proficiencyPolicy") });
         }
 
         internal void Validate(BlueprintWeaponType type,
@@ -231,7 +440,11 @@ namespace KingmakerGunslinger.Blueprints
                     (definition.Handedness == CustomWeaponHandedness.Light) ||
                 type.IsNatural || type.AttackRange.Value != 2 ||
                 !type.Weight.Equals((float)definition.WeightPounds) ||
-                type.Enchantments == null || type.Enchantments.Any())
+                type.Enchantments == null || type.Enchantments.Count() != 1 ||
+                type.Enchantments.Single() == null || !string.Equals(
+                    type.Enchantments.Single().name,
+                    "KMG_EasternWeapons_ProficiencyPolicyEnchantment",
+                    StringComparison.Ordinal))
                 throw new InvalidOperationException("Eastern weapon-type profile is invalid: " +
                     definition.Key + ".");
             if (definition.Handedness ==
@@ -395,9 +608,31 @@ namespace KingmakerGunslinger.Blueprints
 
     internal sealed class EasternWeaponBlueprintSet
     {
-        internal EasternWeaponBlueprintSet(EasternWeaponFamilyBlueprintSet[] families)
-        { Families = families ?? throw new ArgumentNullException("families"); }
+        internal EasternWeaponBlueprintSet(EasternWeaponFamilyBlueprintSet[] families,
+            BlueprintWeaponEnchantment proficiencyPolicy,
+            BlueprintFeature wakizashiProficiency,
+            BlueprintFeature katanaProficiency,
+            BlueprintFeature wakizashiFinesseTraining,
+            EasternWeaponSelectorPublication publication)
+        {
+            Families = families ?? throw new ArgumentNullException("families");
+            ProficiencyPolicy = proficiencyPolicy ??
+                throw new ArgumentNullException("proficiencyPolicy");
+            WakizashiProficiency = wakizashiProficiency ??
+                throw new ArgumentNullException("wakizashiProficiency");
+            KatanaProficiency = katanaProficiency ??
+                throw new ArgumentNullException("katanaProficiency");
+            WakizashiFinesseTraining = wakizashiFinesseTraining ??
+                throw new ArgumentNullException("wakizashiFinesseTraining");
+            Publication = publication ?? throw new ArgumentNullException(
+                "publication");
+        }
         internal EasternWeaponFamilyBlueprintSet[] Families { get; private set; }
+        internal BlueprintWeaponEnchantment ProficiencyPolicy { get; private set; }
+        internal BlueprintFeature WakizashiProficiency { get; private set; }
+        internal BlueprintFeature KatanaProficiency { get; private set; }
+        internal BlueprintFeature WakizashiFinesseTraining { get; private set; }
+        internal EasternWeaponSelectorPublication Publication { get; private set; }
         internal EasternWeaponBlueprintEntry[] Entries
         { get { return Families.SelectMany(value => value.Entries).ToArray(); } }
         internal EasternWeaponFamilyBlueprintSet Require(EasternWeaponFamily family)

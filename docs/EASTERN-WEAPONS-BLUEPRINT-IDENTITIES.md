@@ -34,9 +34,16 @@ that complete-graph collision check and fails closed on any foreign owner.
 | `KMG.EasternWeapons.Nodachi.MasterworkItem` | `df5a3b333eab59c04028d88084d7ada9` | `BlueprintItemWeapon` |
 | `KMG.EasternWeapons.Nodachi.ColdIronItem` | `0db026048052031be931b9701b3859ef` | `BlueprintItemWeapon` |
 | `KMG.EasternWeapons.Nodachi.Plus1Item` | `38e31ba5cdbdc668f8dcd8985070c0b7` | `BlueprintItemWeapon` |
+| KMG.EasternWeapons.ProficiencyPolicyEnchantment | 1264cc0bf069541d8c2191d05fc40c5d | BlueprintWeaponEnchantment |
+| KMG.EasternWeapons.Wakizashi.ExoticWeaponProficiency | b14f7d9b2b665801a9d5b916c6be4ea9 | BlueprintFeature |
+| KMG.EasternWeapons.Katana.ExoticWeaponProficiency | 93ef81404f085e2a8b261bdab15d5a08 | BlueprintFeature |
+| KMG.EasternWeapons.Wakizashi.FinesseTraining | dfdc2a631ebb5980934181c86e1c43fd | BlueprintFeature |
 
 The identities use the repository's deterministic SHA-256 symbol derivation
 and append-only manifest contract. Each family's four generic items share its
 single weapon type and category; material and enhancement tiers never create
-new categories.
-
+new categories. The four proficiency identities use UUIDv5 with namespace
+497608d5-6817-5d68-8df4-b462cc3a6c13, itself derived from the upstream
+repository URL, and the exact manifest symbol as the name. This makes the
+allocation independently reproducible while the checked-in ledger remains the
+runtime authority.

@@ -11,8 +11,8 @@ Feature settings schema: 5
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
-Blueprint ledger: 1482 active; 1 reserved; 1483 total
-Runtime registration count: 1482 in all 64 feature-module states
+Blueprint ledger: 1486 active; 1 reserved; 1487 total
+Runtime registration count: 1486 in all 64 feature-module states
 Dependency-free domain tests: pending final Eastern Weapons qualification
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices

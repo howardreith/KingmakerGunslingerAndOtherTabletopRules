@@ -157,3 +157,38 @@ values, or campaign targets.
   MVID `6917d74c-2525-4677-b485-e5c36addf5e7`; package SHA-256 was
   `DD4C3C72641EEE50F42CA21B7C4D225D026BD666309DE5D3B2F2F498FDD6160F`.
   No save was accessed.
+
+## 2026-08-14 - proficiency, selectors, and fighter-group publication
+
+- Added the exact static children `Weapon Proficiency (Katana)` and
+  `Weapon Proficiency (Wakizashi)`, preserving the accepted
+  `Weapon Proficiency (Elven Branched Spear)` naming structure and merged
+  placement immediately after Elven Curve Blade.
+- Added one shared multi-category parameterized-selector runtime for the spear,
+  Wakizashi, Katana, and Nodachi. The seven approved generic selectors receive
+  singular WK, KA, NO entries through one merge and deterministic sort.
+- Katana proficiency uses `ItemEntityWeapon.HoldInTwoHands`: broad martial
+  proficiency is valid only in two-handed grip; the exact Katana fact is valid
+  in either grip. Wakizashi remains exotic and Nodachi is integrated into the
+  installed broad martial category grants without broadening partial grants.
+- Added Light Blades for Wakizashi, Heavy Blades for Katana, and maximum-rank
+  Heavy Blades-or-Polearms handling for Nodachi without duplicated training or
+  reach changes. Wakizashi alone receives `Finesse Training (Wakizashi)`.
+- Two guarded attempts failed closed and rolled back cleanly: the first exposed
+  mistyped native proficiency donor constants; the second proved that native
+  Martial Weapon Proficiency contains multiple `AddProficiencies` components.
+  The final implementation reuses the exact accepted spear constants and
+  selects the unique largest broad martial weapon grant.
+- Repository validation, all `1039/1039` tests, clean Release build,
+  build-output validation, deterministic packaging, and strict standalone
+  package validation passed.
+- All-ON run
+  `20260814T1230559883866Z-3026975996b14809aa03ee8bfe11558a` and Eastern-OFF
+  run `20260814T1233282614632Z-a9739de4c73c449e89a7a193f2f9b2f0`
+  passed. Settings restored exactly to SHA-256
+  `2e53fa0a09c56662434f6ea548ff5ebcf91f5aaf293d668248221239a1308655`.
+- Candidate DLL SHA-256 is
+  `4F8C951143D6466DBDF2561CB38F815DD57AA4DCD2F57E2336125CE9B83D390B`,
+  MVID `198d704e-5c73-487b-ae7c-5c5110f58951`; package SHA-256 is
+  `D052FF1125EB45E72ADF9144D26A0A4662F7BC93EA1FAF1CC319C36E2F7ED534`.
+  No save was accessed.

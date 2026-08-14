@@ -11871,6 +11871,38 @@
       "status": "active",
       "milestone": "Eastern Weapons",
       "notes": "+1 Nodachi."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.ProficiencyPolicyEnchantment",
+      "guid": "1264cc0bf069541d8c2191d05fc40c5d",
+      "plannedType": "BlueprintWeaponEnchantment",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Zero-cost inherent native-style proficiency policy shared by all three families."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.ExoticWeaponProficiency",
+      "guid": "b14f7d9b2b665801a9d5b916c6be4ea9",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Static Weapon Proficiency (Wakizashi) child."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.ExoticWeaponProficiency",
+      "guid": "93ef81404f085e2a8b261bdab15d5a08",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Static Weapon Proficiency (Katana) child."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.FinesseTraining",
+      "guid": "dfdc2a631ebb5980934181c86e1c43fd",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Eastern Weapons",
+      "notes": "Static Finesse Training (Wakizashi) child."
     }
   ]
 }

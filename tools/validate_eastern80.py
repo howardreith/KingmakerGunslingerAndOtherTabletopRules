@@ -43,6 +43,14 @@ EXPECTED_GENERIC_IDENTITIES = {
         ("0db026048052031be931b9701b3859ef", "BlueprintItemWeapon"),
     "KMG.EasternWeapons.Nodachi.Plus1Item":
         ("38e31ba5cdbdc668f8dcd8985070c0b7", "BlueprintItemWeapon"),
+    "KMG.EasternWeapons.ProficiencyPolicyEnchantment":
+        ("1264cc0bf069541d8c2191d05fc40c5d", "BlueprintWeaponEnchantment"),
+    "KMG.EasternWeapons.Wakizashi.ExoticWeaponProficiency":
+        ("b14f7d9b2b665801a9d5b916c6be4ea9", "BlueprintFeature"),
+    "KMG.EasternWeapons.Katana.ExoticWeaponProficiency":
+        ("93ef81404f085e2a8b261bdab15d5a08", "BlueprintFeature"),
+    "KMG.EasternWeapons.Wakizashi.FinesseTraining":
+        ("dfdc2a631ebb5980934181c86e1c43fd", "BlueprintFeature"),
 }
 
 
@@ -85,7 +93,7 @@ def validate(root: Path) -> None:
 
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs") \
         .read_text(encoding="utf-8")
-    for token in ("ExpectedRegisteredBlueprintCount = 298 +",
+    for token in ("ExpectedRegisteredBlueprintCount = 302 +",
             "EasternWeaponBlueprints.Register",
             "internal static EasternWeaponBlueprintSet EasternWeapons"):
         if token not in bootstrap:

@@ -50,8 +50,11 @@
     <Compile Include="ElvenBranchedSpear\MovementOpportunityAccuracyComponent.cs" />
     <Compile Include="CustomWeapons\CustomWeaponCategoryDefinition.cs" />
     <Compile Include="CustomWeapons\CustomWeaponCategoryRegistry.cs" />
+    <Compile Include="CustomWeapons\CustomWeaponSelectorRuntime.cs" />
     <Compile Include="EasternWeapons\EasternWeaponCatalog.cs" />
     <Compile Include="EasternWeapons\EasternWeaponCategoryRuntime.cs" />
+    <Compile Include="EasternWeapons\EasternWeaponProficiencyRuntime.cs" />
+    <Compile Include="EasternWeapons\EasternWeaponSelectorPublication.cs" />
     <Compile Include="Blueprints\EasternWeaponBlueprints.cs" />
     <Compile Include="Assets\ElvenBranchedSpearAssetRuntime.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearBlueprints.cs" />
