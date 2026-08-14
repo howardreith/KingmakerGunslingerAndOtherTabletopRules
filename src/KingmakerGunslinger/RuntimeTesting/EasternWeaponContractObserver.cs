@@ -14,6 +14,7 @@ using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Loot;
 using Kingmaker.Blueprints.Root;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Compatibility;
 using UnityEngine;
@@ -168,6 +169,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             Mark(context, timings, elapsed, "campaign");
 
             var assertions = new List<RuntimeTestAssertion>();
+            var visualDiagnostics = new List<string>();
+            EasternWeaponBlueprintSet eastern = BlueprintBootstrap.EasternWeapons;
+            if (eastern == null || eastern.Named == null)
+                throw new InvalidOperationException(
+                    "The Eastern Weapons blueprint catalog is unavailable.");
+            EasternWeaponCombatScenario.QualifyAllItemVisuals(eastern,
+                assertions, visualDiagnostics);
             Add(assertions, "eastern-native-weapon-donors",
                 "Kukri, Shortsword, Rapier, Scimitar, Longsword, Bastard Sword, Falchion, and Greatsword candidates",
                 string.Join(" | ", weapons), WeaponTerms.All(term =>
@@ -265,7 +273,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "campaignLoot=" + loot.Length,
                     "referenceOwners=" + referenceOwners.Length,
                     "timings=" + string.Join(",", timings.ToArray())
-                },
+                }.Concat(visualDiagnostics).ToList(),
                 Warnings = new List<string>(),
                 ExceptionSummary = string.Empty,
                 EvidenceFiles = new List<string>(),

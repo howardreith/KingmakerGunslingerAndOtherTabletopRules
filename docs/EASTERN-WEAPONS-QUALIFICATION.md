@@ -16,7 +16,8 @@ explicit.
   `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.
 - Preserved spear bundle:
   `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`.
-- Expanded live all-30 visual identity scenario: implemented; runtime rerun
+- Expanded live all-30 visual identity observer and combat scenario: implemented;
+  standalone combat/model run `20260814T2335184875188Z` PASS; observer rerun
   pending the committed repair artifact.
 - Focused compatibility, persistence, 64-state matrix, and final identity seal:
   pending this repair's runtime qualification cycle.

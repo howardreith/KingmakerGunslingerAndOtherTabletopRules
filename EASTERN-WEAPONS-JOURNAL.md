@@ -609,14 +609,19 @@ values, or campaign targets.
   contracts with Scimitar and Greatsword contracts respectively; Katana keeps
   Bastard Sword handling. Added exact donor constants and non-model-field
   runtime comparison.
-- The first committed observer exposed that this installed
-  `BlueprintItemWeapon` has no `m_VisualParameters` field; initialization
-  failed closed, the run timed out before observation, and compatibility
-  transaction `compat-20260814T230456Z-6d3c2ea32e78` restored exactly. The
-  corrected audit now proves field absence and public effective visual equality
-  with the family type for all 30 items, plus
-  instantiated prefab, cutting-edge material, enchantment overlays, and
-  cleanup.
+- The first committed observer exposed that the item visual field is a private
+  inherited member of `BlueprintItemEquipmentHand`, not a member declared on
+  `BlueprintItemWeapon`; initialization failed closed and compatibility
+  transactions `compat-20260814T230456Z-6d3c2ea32e78` and
+  `compat-20260814T231903Z-14a3564ffccd` restored exactly. The corrected
+  recursive contract binds all 30 items to the exact family visual. Standalone
+  observer `20260814T2331418502875Z` and all-30 combat/model run
+  `20260814T2335184875188Z` passed on `d22ed34339128a3ad9f8785c042b99ce0be43785`;
+  transaction `compat-20260814T233425Z-5d6d92c91af3` restored exactly.
+- The contract observer now invokes the same all-30 audit as the combat
+  scenario: inherited item visual identity, family type and prefab, exact
+  animation donor contract, CuttingEdge material, enchantment overlays,
+  transient instantiation, and cleanup are recorded per item.
 - Exact Unity 2018.4.10f1 rebuilt the dedicated three-prefab bundle twice to
   byte-identical SHA-256
   `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.

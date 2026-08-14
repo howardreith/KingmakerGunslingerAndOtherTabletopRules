@@ -362,7 +362,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             diagnostics.Add("selectors{" + observed + "}");
         }
 
-        private static void QualifyAllItemVisuals(
+        internal static void QualifyAllItemVisuals(
             EasternWeaponBlueprintSet set,
             ICollection<RuntimeTestAssertion> assertions,
             ICollection<string> diagnostics)

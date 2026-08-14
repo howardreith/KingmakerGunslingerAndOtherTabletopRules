@@ -584,6 +584,9 @@ namespace KingmakerGunslinger.DomainTests
             string combat = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "EasternWeaponCombatScenario.cs"));
+            string contractObserver = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "EasternWeaponContractObserver.cs"));
             foreach (string token in new[] {
                 "WakizashiVisualDonorGuid", "d9fbec4637d71bd4ebc977628de3daf3",
                 "KatanaVisualDonorGuid", "d2fe2c5516b56f04da1d5ea51ae3ddfe",
@@ -591,9 +594,9 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals(item.VisualParameters,",
                 "eastern-all-30-visual-identities", "CuttingEdge",
                 "itemOverrideFieldExists", "exact-family-visual",
-                "VisualContractMatches" })
+                "VisualContractMatches", "QualifyAllItemVisuals(eastern" })
                 Assertions.True(blueprints.Contains(token) ||
-                    combat.Contains(token),
+                    combat.Contains(token) || contractObserver.Contains(token),
                     "Eastern family visual normalization lacks: " + token);
 
             string builder = File.ReadAllText(Path.Combine(root, "tools",
@@ -619,13 +622,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(runtime.Contains(token),
                     "Eastern fail-safe asset runtime lacks: " + token);
 
-            string observer = File.ReadAllText(Path.Combine(root, "src",
+            string runtimeObserver = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.cs"));
             foreach (string token in new[] { "easternAssetInstances",
                 "InstantiatePrefab(family)", "DestroyImmediate(instance)",
                 "easternAssetCleanup" })
-                Assertions.True(observer.Contains(token),
+                Assertions.True(runtimeObserver.Contains(token),
                     "Eastern runtime asset cleanup assertion lacks: " + token);
 
             string icons = File.ReadAllText(Path.Combine(root, "src",
