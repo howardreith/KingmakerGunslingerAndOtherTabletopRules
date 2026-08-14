@@ -40,16 +40,21 @@
     "observerDomainTests": "PASS 1034/1034",
     "observerCleanReleaseBuild": "PASS",
     "observerPackageValidation": "PASS",
-    "observerRuntime": "retry_pending_after_timeout",
-    "observerRuntimeAttempts": 1,
+    "observerRuntime": "PASS",
+    "observerRuntimeAttempts": 2,
     "observerFirstRunId": "20260814T1104529826303Z-b2fcb4605fd84bbabd97ad2bf6af9aa2",
     "observerFirstRunSaveInteraction": false,
+    "observerPassingRunId": "20260814T1110588439047Z-7f131097a8ca48ac916f675e77b57c47",
+    "observerPassingCommit": "41b7687079f380a044ffed3a0bf0d3dac771228e",
+    "observerPassingDllSha256": "89C06B4F29190A919512FB0FF5D275C054FC04D940749ECB0828EE6C6499FF4E",
+    "observerPassingDllMvid": "52f2dfea-aaf1-4cda-9c6e-c3f06270c3a7",
+    "observerPassingSaveInteraction": false,
     "guardedPush": "blocked_external_allowlist_singular_branch_only"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 0,
-    "runtimeLaunches": 1,
+    "runtimeLaunches": 2,
     "autonomousMerge": false
   }
 }

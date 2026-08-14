@@ -61,3 +61,17 @@ values, or campaign targets.
 - The mandatory guarded push helper rejected the exact authorized branch
   `codex/eastern-weapons` because its external allowlist contains only
   `codex/eastern-weapon`. No direct push or branch rename was used.
+
+## 2026-08-14 - installed contract observation PASS
+
+- Guarded save-free run
+  `20260814T1110588439047Z-7f131097a8ca48ac916f675e77b57c47`
+  passed on exact source commit `41b7687079f380a044ffed3a0bf0d3dac771228e`.
+- Loaded version, DLL hash, and MVID matched the deployed candidate. No save
+  interaction occurred and the guarded process exited after completion.
+- Recorded exact identities for eight native weapon donors and sixteen approved
+  native enchantment contracts, including Brilliant Energy's native Undead and
+  Construct exclusions and Speed's native Haste-marked extra attack.
+- Mighty Cleaving, Impact/size, member-level coup-de-grace, category collision,
+  and bastard-sword grip authority require one narrower follow-up inventory;
+  no production identity or donor has been chosen yet.
