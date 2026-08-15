@@ -231,9 +231,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Has(evidence.NativeDeliveryBodies,
                         "AbilityData.GetApproachDistance") &&
                     Has(evidence.NativeDeliveryBodies,
-                        "UnitUseAbility.get_ShouldUnitApproach") &&
+                        "UnitCommand.get_ShouldUnitApproach") &&
                     Has(evidence.NativeDeliveryBodies,
-                        "UnitUseAbility.get_ApproachRadius"),
+                        "UnitCommand.get_ApproachRadius"),
                 "exact Kingmaker delivery IL resolved without mutating a spell or save");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
