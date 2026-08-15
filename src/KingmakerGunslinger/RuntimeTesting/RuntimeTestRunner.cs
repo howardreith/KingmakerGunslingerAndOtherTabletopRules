@@ -659,6 +659,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableBrownFurArcanistSlot)
+                {
+                    Complete(BrownFurArcanistSlotScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveShieldOtherInventory)
                 {
                     Complete(RunShieldOtherInventoryObservation());

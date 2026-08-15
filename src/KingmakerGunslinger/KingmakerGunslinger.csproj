@@ -800,6 +800,7 @@
     <Compile Include="RuntimeTesting\BrownFurSupremacyScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurReservoirScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurCastExecutionScenario.cs" />
+    <Compile Include="RuntimeTesting\BrownFurArcanistSlotScenario.cs" />
     <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogSelectionObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />

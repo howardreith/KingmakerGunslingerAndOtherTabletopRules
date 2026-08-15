@@ -42,6 +42,7 @@ $expected = @(
     'disposable-brown-fur-transmutation-supremacy',
     'disposable-brown-fur-reservoir-accounting',
     'disposable-brown-fur-cast-execution',
+    'disposable-brown-fur-arcanist-slot',
     'observe-shield-other-inventory',
     'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning',

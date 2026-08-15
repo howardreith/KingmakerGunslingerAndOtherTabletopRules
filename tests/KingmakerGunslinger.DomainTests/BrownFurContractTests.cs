@@ -183,6 +183,9 @@ namespace KingmakerGunslinger.DomainTests
             string castExecutionScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurCastExecutionScenario.cs"));
+            string arcanistSlotScenario = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurArcanistSlotScenario.cs"));
             string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurIlDisassembler.cs"));
@@ -205,6 +208,11 @@ namespace KingmakerGunslinger.DomainTests
                 "DisposableBrownFurCastExecution" },
                 StringSplitOptions.None).Length,
                 "The disposable cast execution constant must be declared and " +
+                "present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "DisposableBrownFurArcanistSlot" },
+                StringSplitOptions.None).Length,
+                "The disposable Arcanist slot constant must be declared and " +
                 "present exactly once in the in-process allowlist.");
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
@@ -399,6 +407,22 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(castExecutionScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded cast execution fixture lacks evidence token: " +
+                    token);
+            foreach (string token in new[] {
+                "disposable-brown-fur-arcanist-slot",
+                "brown-fur-arcanist-slot.json",
+                "arcanist-slot-spellbooks", "arcanist-slot-source",
+                "arcanist-slot-combined-commit",
+                "arcanist-slot-exception-rollback",
+                "arcanist-slot-rejected-no-spend",
+                "arcanist-slot-cleanup", "ApplyClassMechanics",
+                "ApplyLevelup", "contract.CastingSpellbook",
+                "contract.MemorizationSpellbook", "casting.Spend(data, false)",
+                "BrownFurCastExecutionRuntime.TryCommit",
+                "BrownFurCastExecutionRuntime.SuppressedSpendCount" })
+                Assertions.True(arcanistSlotScenario.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded Arcanist slot fixture lacks evidence token: " +
                     token);
             foreach (string token in new[] {
                 "disposable-brown-fur-bonus-carriers",
