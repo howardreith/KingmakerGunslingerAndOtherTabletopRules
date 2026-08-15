@@ -247,3 +247,19 @@ contract. Prepared-slot and actual Metamixing inputs, instantaneous and
 permanent spells, variant/converted spells, live concurrency, and real
 owner/transaction wiring remain pending; Brown-Fur remains reserved and
 unpublished.
+
+The installed spell inventory exposed two timed exceptions that do not support
+ordinary Extend: Resonating Word and Obsidian Flow. The initial exact fixture
+on `4df227c4eeeecd06f42d2000bf44962cc2a6bc38` failed closed at `3 -> 3`
+and `600 -> 600`, proving the generic scoped metamagic flag was insufficient.
+The named, execution-reference-scoped, post-CotW adapter on
+`f6048539d0e609ed4fd0787b3e18e73e478f5746` then passed all nine guarded
+assertions at `3 -> 6` and `600 -> 1200`. It left the shared blueprint range,
+metamagic mask, spell level, and action type unchanged and released every
+scope. Exact artifact identities are recorded in the CotW contract.
+
+This closes both exceptional timed duration carriers in the installed
+inventory without a generic fallback. Instantaneous/permanent no-op proof,
+deterministic classification of all 177 inventory rows, player intent, real
+feature ownership, interruption, dispel, and persistence remain publication
+gates. Brown-Fur remains reserved and unpublished.

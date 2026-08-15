@@ -673,6 +673,52 @@ carrier contract. Remaining Powerful Change gates are native dispel,
 save/reload persistence, full spell-slot/reservoir commit integration, and
 cancellation/interruption at the real cast boundary.
 
+The installed-inventory exceptional-duration investigation first failed closed
+on commit `4df227c4eeeecd06f42d2000bf44962cc2a6bc38`: native/CotW duration
+calculation left Resonating Word at `3` rounds and Obsidian Flow at `600`
+rounds even though their scoped contexts carried `Extend`. Both installed
+spells intentionally omit ordinary Extend from their metamagic masks. No
+exception occurred, the other seven assertions passed, and all scopes cleaned
+up; the failure established that the generic context flag alone was not a
+faithful implementation for these two spells.
+
+A post-CotW named adapter for only those two permanent spell GUIDs and their
+exact root duration rates then passed all nine assertions on commit
+`f6048539d0e609ed4fd0787b3e18e73e478f5746`. Resonating Word
+`df7d13c967bce6a40bec3ba7c9f0e64c` calculated `3 -> 6` rounds and
+Obsidian Flow `e48638596c955a74c8a32dbc90b518c1` calculated `600 -> 1200`
+rounds. The adapter required the exact modified execution-context reference;
+the installed Personal-spell blueprint still reported unchanged range,
+metamagic support, and spell level, and the tracker returned to zero scopes.
+The ordinary five-round, already-Extended, restored, and action-type assertions
+also remained `5 -> 10`, `10`, `5`, and `Standard`.
+
+Exact passing evidence identity:
+
+- run `20260815T1900551508660Z-47c66e45d9f047ffb22d05221a14278f`;
+- local-runtime package SHA-256
+  `4D4E5FCCCCD04F503694FECC3F5B6400D59D903EB7EAC0208F0FAF7302F90FA19`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `F4FFDDB7101542A98970276C4A4B2CCDF452B8994BB16EA43DCC5F752E8AA11A`;
+- DLL MVID `8def1fcf-2c20-44f8-b41f-57511b5cfc91`;
+- structured Supremacy artifact SHA-256
+  `F1EA4BCC3F3B20FAE0C49F4C64A64F563270FB81E3A308811A38CA139B8F5524`;
+- runtime-result SHA-256
+  `766E2FEB65631B1F4DAE4E01305FBB3E64231A7975C37757CD5ECE119A2D7119`;
+- runtime-evidence SHA-256
+  `D11F39871B940A510E9B025395AFB8BC06DDF7BCFA4CA924433BD5B21F838A6B`;
+- orchestration SHA-256
+  `52E94C550D699FF0177D750E701348FB0604B5C5484D92BAA6C996DFEF2381D0`;
+- deployment `20260815T1900550585177Z`, backup
+  `20260815T1900507270448Z`, preserved feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`,
+  and game build collection `2018.4.10.10503941`.
+
+The guarded Steam App ID 640820 launch was save-free and recorded no save
+interaction. This closes the two exceptional timed carriers in the installed
+inventory. Instantaneous/permanent no-op behavior and final inventory
+classification remain publication gates.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
