@@ -50,6 +50,7 @@ using KingmakerGunslinger.Spells.ShieldOther;
 using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
+using KingmakerGunslinger.BrownFur;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -112,6 +113,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _shieldOtherPersistenceContextValid;
         private bool _shieldOtherPersistenceLinkStateValid;
         private bool _shieldOtherPersistenceDamageValid;
+        private bool _brownFurPersistenceSaveStarted;
+        private bool _brownFurPersistenceSaveCompleted;
+        private Stopwatch _brownFurPersistenceSaveElapsed;
+        private bool _brownFurPersistenceFeaturesValid;
+        private bool _brownFurPersistencePresentationValid;
+        private bool _brownFurPersistenceBuffValid;
+        private bool _brownFurPersistenceContextValid;
+        private bool _brownFurPersistenceCleanupValid;
+        private string _brownFurPersistenceDetail = "";
         private bool _expandedSummoningPersistenceSaveStarted;
         private bool _expandedSummoningPersistenceSaveCompleted;
         private Stopwatch _expandedSummoningPersistenceSaveElapsed;
@@ -518,6 +528,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !IsExpandedSummoningPersistenceScenario() &&
                     !IsElvenBranchedSpearPersistenceScenario() &&
                     !IsEasternWeaponsPersistenceScenario() &&
+                    !IsBrownFurPersistenceScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
@@ -1238,6 +1249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
+                    IsBrownFurPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1266,6 +1278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
+                    IsBrownFurPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1389,6 +1402,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistenceSaveElapsed.Elapsed.TotalSeconds >=
                         _request.CompletionTimeoutSeconds)
                     CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
+            if (_brownFurPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteBrownFurPersistence(RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_brownFurPersistenceSaveCompleted)
+                {
+                    CompleteBrownFurPersistence(RuntimeTestStatuses.Pass, "");
+                    return;
+                }
+                if (_brownFurPersistenceSaveElapsed != null &&
+                    _brownFurPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteBrownFurPersistence(RuntimeTestStatuses.Timeout,
                         "The exact working-save completion callback did not arrive before timeout.");
                 return;
             }
@@ -1574,6 +1607,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     StartEasternWeaponsPersistence();
                 }
+                else if (IsBrownFurPersistenceScenario())
+                {
+                    StartBrownFurPersistence();
+                }
                 else if (IsShieldOtherPersistenceScenario())
                 {
                     StartShieldOtherPersistenceSave();
@@ -1662,6 +1699,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
                 _request.Scenario ==
                     RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup;
+        }
+
+        private bool IsBrownFurPersistenceScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveBrownFurPrepare ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveBrownFurVerifyCleanup;
         }
 
         private bool IsExpandedSummoningPersistenceScenario()
@@ -2627,6 +2672,270 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(status, assertions, null);
             result.WorkingSaveSmoke = evidence;
             if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
+            Complete(result);
+        }
+
+        private void StartBrownFurPersistence()
+        {
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.Descriptor != null).ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before Brown-Fur persistence qualification.");
+
+            CotwArcanistResolution resolution =
+                BrownFurOptionalExtensionCoordinator.Current;
+            BrownFurBlueprintSet blueprints =
+                BrownFurOptionalExtensionCoordinator.Blueprints;
+            if (resolution == null || !resolution.Decision.IsCompatible ||
+                resolution.Contract == null || blueprints == null ||
+                blueprints.Count != 19)
+                throw new InvalidOperationException(
+                    "Compatible registered Brown-Fur blueprints are unavailable for persistence qualification.");
+
+            UnitEntityData caster = party[0];
+            UnitEntityData subject = party[1];
+            BlueprintAbility spell = ResourcesLibrary.TryGetBlueprint<
+                BlueprintAbility>("4c3d08935262b6544ae97599b3a9556d");
+            BlueprintBuff buffBlueprint = ResourcesLibrary.TryGetBlueprint<
+                BlueprintBuff>("b175001b42b1a02479881b72fe132116");
+            if (spell == null || buffBlueprint == null)
+                throw new InvalidOperationException(
+                    "The installed Bull's Strength spell/buff fixture is unavailable.");
+
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveBrownFurPrepare;
+            Buff[] buffs = subject.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint,
+                    buffBlueprint)).ToArray();
+            if (prepare)
+            {
+                if (buffs.Length != 0 || BrownFurPersistenceFeatureCount(
+                    caster, blueprints) != 0)
+                    throw new InvalidOperationException(
+                        "The working save already contains the Brown-Fur persistence fixture; run verify/cleanup first.");
+                if (caster.Descriptor.AddFact(blueprints.PowerfulChange) == null ||
+                    caster.Descriptor.AddFact(blueprints.ShareTransmutation) == null ||
+                    caster.Descriptor.AddFact(
+                        blueprints.TransmutationSupremacy) == null)
+                    throw new InvalidOperationException(
+                        "The Brown-Fur persistence features could not be granted.");
+
+                var context = new MechanicsContext(caster, caster.Descriptor,
+                    spell, null, new TargetWrapper(subject));
+                context.Params.CasterLevel = 20;
+                const string transaction = "working-save-brown-fur-persistence";
+                try
+                {
+                    if (!BrownFurModifierAdjustmentRuntime.Begin(transaction,
+                        context, caster, spell,
+                        BrownFurAbilityScore.Strength, 2,
+                        new[] { "b175001b42b1a02479881b72fe132116" },
+                        new[] { "AddStatBonus" }))
+                        throw new InvalidOperationException(
+                            "The Brown-Fur persistence modifier scope was rejected.");
+                    if (subject.Descriptor.Buffs.AddBuff(buffBlueprint, context,
+                        TimeSpan.FromHours(5d)) == null)
+                        throw new InvalidOperationException(
+                            "The enhanced persistence buff could not be applied.");
+                }
+                finally
+                {
+                    BrownFurModifierAdjustmentRuntime.Release(transaction);
+                }
+                buffs = subject.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => ReferenceEquals(value.Blueprint,
+                        buffBlueprint)).ToArray();
+            }
+
+            BrownFurPlayerIntentDecision ownership =
+                BrownFurPlayerIntentRuntime.Observe(caster.Descriptor,
+                    blueprints);
+            _brownFurPersistenceFeaturesValid = ownership.Valid &&
+                ownership.HasPowerfulChange &&
+                ownership.HasShareTransmutation &&
+                ownership.HasTransmutationSupremacy &&
+                BrownFurPersistenceFeatureCount(caster, blueprints) == 3;
+            _brownFurPersistencePresentationValid =
+                caster.Descriptor.Abilities.GetAbility(
+                    blueprints.PowerfulChangeSelection) != null &&
+                caster.Descriptor.ActivatableAbilities.Enumerable.Count(value =>
+                    value != null && ReferenceEquals(value.Blueprint,
+                        blueprints.ShareTransmutationAbility)) == 1;
+
+            Buff buff = buffs.Length == 1 ? buffs[0] : null;
+            ModifiableValue.Modifier[] modifiers = buff == null
+                ? new ModifiableValue.Modifier[0]
+                : subject.Descriptor.Stats.Strength.Modifiers.Where(value =>
+                    ReferenceEquals(value.Source, buff)).ToArray();
+            ModifiableValue.Modifier modifier = modifiers.Length == 1
+                ? modifiers[0] : null;
+            _brownFurPersistenceBuffValid = buff != null &&
+                modifiers.Length == 1 && modifier.ModValue == 6 &&
+                modifier.ModDescriptor == ModifierDescriptor.Enhancement &&
+                buff.TimeLeft > TimeSpan.Zero;
+            _brownFurPersistenceContextValid = buff != null &&
+                buff.MaybeContext != null &&
+                buff.MaybeContext.MaybeCaster == caster &&
+                buff.MaybeContext.MainTarget.Unit == subject &&
+                ReferenceEquals(buff.MaybeContext.SourceAbility, spell) &&
+                buff.MaybeContext.Params.CasterLevel == 20;
+
+            if (!prepare)
+            {
+                if (buff != null) buff.Remove();
+                BrownFurPlayerIntentRuntime.Clear(caster.Descriptor,
+                    blueprints);
+                RemoveBrownFurPersistenceFeatures(caster, blueprints);
+                _brownFurPersistenceCleanupValid =
+                    !subject.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(
+                        value => ReferenceEquals(value.Blueprint,
+                            buffBlueprint)) &&
+                    BrownFurPersistenceFeatureCount(caster, blueprints) == 0 &&
+                    caster.Descriptor.Abilities.GetAbility(
+                        blueprints.PowerfulChangeSelection) == null &&
+                    !caster.Descriptor.ActivatableAbilities.Enumerable.Any(
+                        value => value != null && ReferenceEquals(
+                            value.Blueprint,
+                            blueprints.ShareTransmutationAbility));
+            }
+
+            _brownFurPersistenceDetail = "phase=" +
+                (prepare ? "prepare" : "verify-cleanup") + ";active=" +
+                _context.FeatureModules.Active.BrownFurTransmuter +
+                ";identities=" + blueprints.Count + ";features=" +
+                _brownFurPersistenceFeaturesValid + ";presentation=" +
+                _brownFurPersistencePresentationValid + ";buffs=" +
+                buffs.Length + ";modifier=" + (modifier == null ? "missing" :
+                    modifier.ModValue + "/" + modifier.ModDescriptor) +
+                ";timeLeftSeconds=" + (buff == null ? 0d :
+                    buff.TimeLeft.TotalSeconds) + ";context=" +
+                _brownFurPersistenceContextValid + ";cleanup=" +
+                _brownFurPersistenceCleanupValid + ";scopes=" +
+                BrownFurModifierAdjustmentRuntime.ActiveScopeCount;
+
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Game).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" &&
+                    value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _brownFurPersistenceSaveStarted = true;
+            _brownFurPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() => _brownFurPersistenceSaveCompleted = true)
+            });
+        }
+
+        private static int BrownFurPersistenceFeatureCount(
+            UnitEntityData caster, BrownFurBlueprintSet blueprints)
+        {
+            return new[] { blueprints.PowerfulChange,
+                blueprints.ShareTransmutation,
+                blueprints.TransmutationSupremacy }.Count(value =>
+                    caster.Descriptor.HasFact(value));
+        }
+
+        private static void RemoveBrownFurPersistenceFeatures(
+            UnitEntityData caster, BrownFurBlueprintSet blueprints)
+        {
+            if (caster.Descriptor.HasFact(blueprints.TransmutationSupremacy))
+                caster.Descriptor.RemoveFact(
+                    blueprints.TransmutationSupremacy);
+            if (caster.Descriptor.HasFact(blueprints.ShareTransmutation))
+                caster.Descriptor.RemoveFact(blueprints.ShareTransmutation);
+            if (caster.Descriptor.HasFact(blueprints.PowerfulChange))
+                caster.Descriptor.RemoveFact(blueprints.PowerfulChange);
+        }
+
+        private void CompleteBrownFurPersistence(string status,
+            string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool verify = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveBrownFurVerifyCleanup;
+            bool phaseValid = _context.FeatureModules.Active.BrownFurTransmuter &&
+                _brownFurPersistenceFeaturesValid &&
+                _brownFurPersistencePresentationValid &&
+                _brownFurPersistenceBuffValid &&
+                _brownFurPersistenceContextValid &&
+                (!verify || _brownFurPersistenceCleanupValid) &&
+                BrownFurModifierAdjustmentRuntime.ActiveScopeCount == 0;
+            if (status == RuntimeTestStatuses.Pass && !phaseValid)
+                status = RuntimeTestStatuses.Fail;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load",
+                    "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("brown-fur-persistence-features",
+                    "all three stable features owned",
+                    _brownFurPersistenceDetail,
+                    _brownFurPersistenceFeaturesValid,
+                    verify ? "freshly deserialized registered feature facts" :
+                        "pre-save registered feature facts"),
+                Assertion("brown-fur-persistence-presentation",
+                    "selection ability and one Share activatable",
+                    _brownFurPersistenceDetail,
+                    _brownFurPersistencePresentationValid,
+                    verify ? "freshly deserialized AddFacts grants" :
+                        "pre-save AddFacts grants"),
+                Assertion("brown-fur-persistence-enhanced-buff",
+                    "one +6 Enhancement Bull's Strength with positive duration",
+                    _brownFurPersistenceDetail,
+                    _brownFurPersistenceBuffValid,
+                    verify ? "freshly deserialized native stat modifier" :
+                        "pre-save native stat modifier"),
+                Assertion("brown-fur-persistence-context",
+                    "caster=party[0];target=party[1];spell exact;CL=20",
+                    _brownFurPersistenceDetail,
+                    _brownFurPersistenceContextValid,
+                    verify ? "freshly deserialized buff MechanicsContext" :
+                        "pre-save buff MechanicsContext"),
+                Assertion("brown-fur-persistence-cleanup",
+                    verify ? "features, grants, and buff absent before cleanup save" :
+                        "not-applicable",
+                    verify ? _brownFurPersistenceCleanupValid.ToString() :
+                        "not-applicable",
+                    !verify || _brownFurPersistenceCleanupValid,
+                    "exact working-save fixture cleanup"),
+                Assertion("brown-fur-persistence-scope-cleanup", "zero",
+                    BrownFurModifierAdjustmentRuntime.ActiveScopeCount.ToString(),
+                    BrownFurModifierAdjustmentRuntime.ActiveScopeCount == 0,
+                    "execution-local modifier scope tracker"),
+                Assertion("exact-working-save-write",
+                    "one SaveRoutine on exact captured SaveInfo",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" +
+                        evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version ==
+                        _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            result.Diagnostics.Add(_brownFurPersistenceDetail);
+            if (!string.IsNullOrWhiteSpace(warning))
+                result.Warnings.Add(warning);
             Complete(result);
         }
 

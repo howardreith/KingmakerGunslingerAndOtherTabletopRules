@@ -45,6 +45,8 @@ $expected = @(
     'disposable-brown-fur-cast-execution',
     'disposable-brown-fur-arcanist-slot',
     'disposable-brown-fur-native-cast',
+    'working-save-brown-fur-prepare',
+    'working-save-brown-fur-verify-cleanup',
     'observe-shield-other-inventory',
     'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning',
@@ -246,6 +248,15 @@ Assert-True $brownFurNativeCast.RequiresSaveName `
 Assert-True ($brownFurNativeCast.PermittedSaveName -ceq `
     'KMG_AUTOMATION_WORKING') `
     'brown-fur-native-cast-only-permits-working-save'
+$brownFurPersistence = Get-KmgRuntimeScenarioMetadata `
+    'working-save-brown-fur-prepare'
+Assert-True (-not $brownFurPersistence.RequiresManualInteraction) `
+    'brown-fur-persistence-is-autonomous'
+Assert-True $brownFurPersistence.RequiresSaveName `
+    'brown-fur-persistence-requires-save-name'
+Assert-True ($brownFurPersistence.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'brown-fur-persistence-only-permits-working-save'
 $expandedSummoningVisual = Get-KmgRuntimeScenarioMetadata `
     'disposable-expanded-summoning-visual-contracts'
 Assert-True (-not $expandedSummoningVisual.RequiresManualInteraction) `
@@ -454,6 +465,9 @@ Assert-True ($orchestrator.Contains('$scenarioMetadata = Get-KmgRuntimeScenarioM
     'orchestrator-consumes-authoritative-metadata'
 Assert-True ($orchestrator.Contains("'disposable-brown-fur-native-cast',")) `
     'brown-fur-native-cast-uses-working-save-result-deadline'
+Assert-True ($orchestrator.Contains("'working-save-brown-fur-prepare',") -and
+    $orchestrator.Contains("'working-save-brown-fur-verify-cleanup',")) `
+    'brown-fur-persistence-uses-working-save-result-deadline'
 
 $artifactRoot = Join-Path $root 'artifacts'
 $backupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod'

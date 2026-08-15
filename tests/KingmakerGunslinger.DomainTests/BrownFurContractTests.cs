@@ -217,6 +217,17 @@ namespace KingmakerGunslinger.DomainTests
             string nativeCastScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurNativeCastScenario.cs"));
+            string runtimeRunner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            string runtimeRequest = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRequest.cs"));
+            string runtimeOrchestrator = File.ReadAllText(Path.Combine(root,
+                "scripts", "Invoke-KingmakerRuntimeTest.ps1"));
+            string persistenceOrchestrator = File.ReadAllText(Path.Combine(
+                root, "scripts",
+                "Invoke-BrownFurWorkingSavePersistence.ps1"));
             string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurIlDisassembler.cs"));
@@ -255,6 +266,16 @@ namespace KingmakerGunslinger.DomainTests
                 StringSplitOptions.None).Length,
                 "The disposable native cast constant must be declared and " +
                 "present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "WorkingSaveBrownFurPrepare" },
+                StringSplitOptions.None).Length,
+                "The Brown-Fur persistence prepare constant must be declared " +
+                "and present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "WorkingSaveBrownFurVerifyCleanup" },
+                StringSplitOptions.None).Length,
+                "The Brown-Fur persistence cleanup constant must be declared " +
+                "and present exactly once in the in-process allowlist.");
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
                 "memorization_spellbook", "arcane_reservoir_resource",
@@ -542,6 +563,47 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(nativeCastScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded native cast fixture lacks evidence token: " +
+                    token);
+            foreach (string token in new[] {
+                "working-save-brown-fur-prepare",
+                "working-save-brown-fur-verify-cleanup",
+                "StartBrownFurPersistence",
+                "CompleteBrownFurPersistence",
+                "BrownFurModifierAdjustmentRuntime.Begin",
+                "modifier.ModValue == 6",
+                "ModifierDescriptor.Enhancement",
+                "buff.MaybeContext.MaybeCaster == caster",
+                "buff.MaybeContext.MainTarget.Unit == subject",
+                "ReferenceEquals(buff.MaybeContext.SourceAbility, spell)",
+                "BrownFurPlayerIntentRuntime.Observe",
+                "RemoveBrownFurPersistenceFeatures",
+                "ArmExactWorkingSaveWrite",
+                "ExpectedWorkingSaveRoutineCount == 1" })
+                Assertions.True(runtimeRunner.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Brown-Fur persistence runtime lacks exact guard: " +
+                    token);
+            foreach (string token in new[] {
+                "WorkingSaveBrownFurPrepare",
+                "WorkingSaveBrownFurVerifyCleanup" })
+                Assertions.True(runtimeRequest.Contains(token),
+                    "Brown-Fur persistence request policy lacks token: " +
+                    token);
+            foreach (string token in new[] {
+                "'working-save-brown-fur-prepare',",
+                "'working-save-brown-fur-verify-cleanup'," })
+                Assertions.True(runtimeOrchestrator.Contains(token),
+                    "Brown-Fur persistence deadline routing lacks token: " +
+                    token);
+            foreach (string token in new[] {
+                "KMG_AUTOMATION_WORKING", "Build-Local.ps1",
+                "Deploy-Local.ps1", "-ReuseInstalledArtifact",
+                "working-save-brown-fur-prepare",
+                "working-save-brown-fur-verify-cleanup",
+                "Restore-OriginalFeatureState",
+                "Feature settings bytes were not restored exactly" })
+                Assertions.True(persistenceOrchestrator.Contains(token),
+                    "Brown-Fur persistence orchestrator lacks token: " +
                     token);
             foreach (string token in new[] {
                 "disposable-brown-fur-bonus-carriers",
