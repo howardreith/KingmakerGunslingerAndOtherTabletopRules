@@ -241,6 +241,7 @@
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
     <Compile Include="Blueprints\BlueprintCloneService.cs" />
     <Compile Include="Blueprints\AcadamaeGraduateBlueprints.cs" />
+    <Compile Include="Blueprints\BrownFurBlueprints.cs" />
     <Compile Include="Blueprints\AcadamaeGraduateModeBlueprints.cs" />
     <Compile Include="Blueprints\AcadamaeFeatCatalogPublication.cs" />
     <Compile Include="Blueprints\ShieldOtherBlueprints.cs" />
@@ -312,6 +313,8 @@
     <Compile Include="BrownFur\BrownFurTransmutationInventory.cs" />
     <Compile Include="BrownFur\BrownFurAbilityScore.cs" />
     <Compile Include="BrownFur\BrownFurIdentityCatalog.cs" />
+    <Compile Include="BrownFur\BrownFurArchetypePlan.cs" />
+    <Compile Include="BrownFur\BrownFurPowerfulChangeSelectionLogic.cs" />
     <Compile Include="BrownFur\BrownFurPublicationTransaction.cs" />
     <Compile Include="BrownFur\BrownFurCastRequest.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetPolicy.cs" />

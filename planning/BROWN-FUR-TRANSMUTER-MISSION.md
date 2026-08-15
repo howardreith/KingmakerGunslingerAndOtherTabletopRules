@@ -41,3 +41,11 @@ acceptance.
 
 The inspected dependency structure and fail-closed progression authority are
 recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.
+
+Permanent identities and the archetype shell are now source-qualified. The
+shell has exact level 3/9/20 additions, dynamically planned 3/9 or 4/10 exploit
+removals, level-20 Magical Supremacy removal, one six-variant Powerful Change
+selector, and the Share Transmutation activatable. Its 19 manifest identities
+remain `reserved`, the builder is not invoked, and no archetype is published
+until the cast mechanics, complete spell classification, and isolated runtime
+registration path are qualified.
