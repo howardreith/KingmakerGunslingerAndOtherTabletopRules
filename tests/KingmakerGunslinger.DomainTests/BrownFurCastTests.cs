@@ -234,6 +234,108 @@ namespace KingmakerGunslinger.DomainTests
                 "Interruption after commitment must retain one, nonduplicated debit.");
         }
 
+        internal static void CastLifecycleIsExact()
+        {
+            var tracker = new BrownFurCastLifecycleTracker<object, object,
+                object, object, object>();
+            object command = new object();
+            object ability = new object();
+            object rule = new object();
+            object context = new object();
+            object process = new object();
+            BrownFurCastTransaction transaction = Transaction(2);
+            int points = 3;
+            int debitCalls = 0;
+            Assertions.True(tracker.Begin(command, ability, transaction) &&
+                tracker.AttachRule(ability, rule, context) &&
+                tracker.AttachProcess(rule, process) &&
+                tracker.Commit(ability, cost => {
+                    debitCalls++;
+                    if (points < cost) return false;
+                    points -= cost;
+                    return true;
+                }), "The exact command/rule/context/process chain must commit.");
+            BrownFurCastTransaction resolved;
+            Assertions.True(tracker.TryGetByContext(context, out resolved) &&
+                ReferenceEquals(resolved, transaction) &&
+                !tracker.Commit(ability, cost => { debitCalls++; return true; }),
+                "The exact context must resolve without a duplicate debit.");
+            Assertions.True(tracker.EndCommand(command, false) &&
+                tracker.ActiveTransactionCount == 1 &&
+                tracker.ProcessTerminal(process, false) &&
+                tracker.ActiveTransactionCount == 0 && points == 1 &&
+                debitCalls == 1 && transaction.State ==
+                    BrownFurCastTransactionState.Completed,
+                "Normal command end must retain effects until exact process completion.");
+        }
+
+        internal static void CastLifecycleCancellationIsAtomic()
+        {
+            var tracker = new BrownFurCastLifecycleTracker<object, object,
+                object, object, object>();
+            BrownFurCastTransaction cancelled = Transaction(1);
+            object cancelledCommand = new object();
+            Assertions.True(tracker.Begin(cancelledCommand, new object(),
+                cancelled) && tracker.EndCommand(cancelledCommand, true) &&
+                cancelled.State == BrownFurCastTransactionState.Cancelled &&
+                cancelled.DebitedReservoirPoints == 0 &&
+                tracker.ActiveTransactionCount == 0,
+                "A pre-commit command cancellation must release without debit.");
+
+            BrownFurCastTransaction interrupted = Transaction(1);
+            object command = new object();
+            object ability = new object();
+            object rule = new object();
+            object process = new object();
+            int calls = 0;
+            Assertions.True(tracker.Begin(command, ability, interrupted) &&
+                tracker.AttachRule(ability, rule, new object()) &&
+                tracker.AttachProcess(rule, process) &&
+                tracker.Commit(ability, cost => { calls++; return cost == 1; }) &&
+                tracker.EndCommand(command, true) &&
+                interrupted.State == BrownFurCastTransactionState.Interrupted &&
+                tracker.ActiveTransactionCount == 1 &&
+                tracker.ProcessTerminal(process, true) &&
+                tracker.ActiveTransactionCount == 0 && calls == 1 &&
+                interrupted.DebitedReservoirPoints == 1,
+                "A post-commit interruption must retain one debit and release at process end.");
+        }
+
+        internal static void CastLifecyclesAreIsolated()
+        {
+            var tracker = new BrownFurCastLifecycleTracker<object, object,
+                object, object, object>();
+            object commandA = new object();
+            object commandB = new object();
+            object abilityA = new object();
+            object abilityB = new object();
+            object ruleA = new object();
+            object ruleB = new object();
+            object processA = new object();
+            object processB = new object();
+            BrownFurCastTransaction first = Transaction(1);
+            BrownFurCastTransaction second = Transaction(1);
+            Assertions.True(tracker.Begin(commandA, abilityA, first) &&
+                tracker.Begin(commandB, abilityB, second) &&
+                !tracker.Begin(new object(), abilityA, Transaction(1)) &&
+                tracker.AttachRule(abilityA, ruleA, new object()) &&
+                tracker.AttachRule(abilityB, ruleB, new object()) &&
+                tracker.AttachProcess(ruleA, processA) &&
+                tracker.AttachProcess(ruleB, processB) &&
+                tracker.Commit(abilityA, cost => true) &&
+                tracker.Commit(abilityB, cost => true),
+                "Two distinct queued casts must retain isolated identities.");
+            tracker.ProcessTerminal(processA, false);
+            Assertions.True(tracker.ActiveTransactionCount == 1 &&
+                first.State == BrownFurCastTransactionState.Completed &&
+                second.State == BrownFurCastTransactionState.Committed,
+                "Completing one cast must not release the other.");
+            tracker.Clear();
+            Assertions.True(tracker.ActiveTransactionCount == 0 &&
+                second.State == BrownFurCastTransactionState.Interrupted,
+                "Bounded transition cleanup must interrupt and release remaining casts.");
+        }
+
         internal static void ModifierAdjustmentPreservesDescriptor()
         {
             BrownFurModifierAdjustmentRequest request = ModifierRequest();
@@ -547,6 +649,18 @@ namespace KingmakerGunslinger.DomainTests
                 "variant", "book", "target", cost > 0,
                 BrownFurAbilityScore.Strength, cost > 1, true, cost,
                 "target-adapter", "bonus-adapter", "duration-adapter");
+        }
+
+        private static BrownFurCastTransaction Transaction(int cost)
+        {
+            var transaction = new BrownFurCastTransaction(Intent(cost));
+            var decision = new BrownFurCastDecision(true, string.Empty, cost,
+                cost > 0, cost > 1, true, 2,
+                cost > 1 ? BrownFurShareDelivery.Touch :
+                    BrownFurShareDelivery.None);
+            Assertions.True(transaction.Validate(decision),
+                "The lifecycle fixture transaction must validate.");
+            return transaction;
         }
 
         private static BrownFurModifierAdjustmentRequest ModifierRequest()

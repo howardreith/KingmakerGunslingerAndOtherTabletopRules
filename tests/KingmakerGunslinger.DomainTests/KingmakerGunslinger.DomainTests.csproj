@@ -103,6 +103,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastPolicy.cs"><Link>BrownFur\BrownFurCastPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastIntent.cs"><Link>BrownFur\BrownFurCastIntent.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastTransaction.cs"><Link>BrownFur\BrownFurCastTransaction.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastLifecycleTracker.cs"><Link>BrownFur\BrownFurCastLifecycleTracker.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurModifierAdjustmentPolicy.cs"><Link>BrownFur\BrownFurModifierAdjustmentPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurModifierAdjustmentTracker.cs"><Link>BrownFur\BrownFurModifierAdjustmentTracker.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurBonusAdapterPlan.cs"><Link>BrownFur\BrownFurBonusAdapterPlan.cs</Link></Compile>
