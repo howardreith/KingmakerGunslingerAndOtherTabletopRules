@@ -233,6 +233,99 @@ namespace KingmakerGunslinger.DomainTests
                 "Interruption after commitment must retain one, nonduplicated debit.");
         }
 
+        internal static void ModifierAdjustmentPreservesDescriptor()
+        {
+            BrownFurModifierAdjustmentRequest request = ModifierRequest();
+            request.OriginalValue = 4;
+            request.Increase = 2;
+            request.OriginalDescriptor = "Enhancement";
+            BrownFurModifierAdjustmentDecision decision =
+                BrownFurModifierAdjustmentPolicy.Decide(request);
+            Assertions.True(decision.Eligible && decision.AdjustedValue == 6 &&
+                decision.RetainedDescriptor == "Enhancement",
+                "Powerful Change must enhance the original modifier value while retaining its descriptor.");
+            request.Increase = 4;
+            decision = BrownFurModifierAdjustmentPolicy.Decide(request);
+            Assertions.True(decision.Eligible && decision.AdjustedValue == 8 &&
+                decision.RetainedDescriptor == "Enhancement",
+                "The capstone must apply +4 to the same descriptor-bearing modifier.");
+        }
+
+        internal static void ModifierAdjustmentFailsClosed()
+        {
+            BrownFurModifierAdjustmentRequest request = ModifierRequest();
+            request.ModifierAbilityScore = BrownFurAbilityScore.Dexterity;
+            Assertions.Equal("modifier-stat-not-selected-stat",
+                BrownFurModifierAdjustmentPolicy.Decide(request).Failure,
+                "A different ability score must not be empowered.");
+            request = ModifierRequest();
+            request.OriginalValue = 0;
+            Assertions.Equal("modifier-not-positive-bonus",
+                BrownFurModifierAdjustmentPolicy.Decide(request).Failure,
+                "A penalty or zero modifier must remain unchanged.");
+            request = ModifierRequest();
+            request.CarrierFamily = "UnknownFutureCarrier";
+            Assertions.Equal("modifier-carrier-unsupported",
+                BrownFurModifierAdjustmentPolicy.Decide(request).Failure,
+                "An unknown carrier must fail closed.");
+            request = ModifierRequest();
+            request.SourceFact = new object();
+            Assertions.Equal("modifier-source-fact-mismatch",
+                BrownFurModifierAdjustmentPolicy.Decide(request).Failure,
+                "A foreign source fact must remain unchanged.");
+            request = ModifierRequest();
+            request.SourceContext = new object();
+            Assertions.Equal("modifier-source-context-mismatch",
+                BrownFurModifierAdjustmentPolicy.Decide(request).Failure,
+                "A foreign cast context must remain unchanged.");
+            request = ModifierRequest();
+            request.OriginalValue = int.MaxValue;
+            Assertions.Equal("modifier-value-overflow",
+                BrownFurModifierAdjustmentPolicy.Decide(request).Failure,
+                "Overflow must reject instead of wrapping the bonus.");
+        }
+
+        internal static void ModifierAdjustmentIsExactlyOnce()
+        {
+            var tracker = new BrownFurModifierAdjustmentTracker<object>();
+            object modifier = new object();
+            BrownFurModifierAdjustmentDecision decision;
+            Assertions.True(tracker.TryAdjust("tx-1", modifier,
+                ModifierRequest(), out decision) && decision.AdjustedValue == 6,
+                "The first matching modifier must adjust.");
+            Assertions.False(tracker.TryAdjust("tx-1", modifier,
+                ModifierRequest(), out decision),
+                "The same modifier must not adjust twice in one cast.");
+            Assertions.Equal("modifier-already-adjusted", decision.Failure,
+                "Duplicate adjustment must report its exact failure.");
+            Assertions.True(tracker.AdjustedModifierCount("tx-1") == 1 &&
+                tracker.Release("tx-1") && tracker.ActiveTransactionCount == 0,
+                "Execution cleanup must release the exact transaction state.");
+        }
+
+        internal static void ModifierTransactionsAreIsolated()
+        {
+            var tracker = new BrownFurModifierAdjustmentTracker<object>();
+            object first = new object();
+            object second = new object();
+            BrownFurModifierAdjustmentDecision decision;
+            Assertions.True(tracker.TryAdjust("tx-a", first, ModifierRequest(),
+                out decision), "The first queued cast must adjust its modifier.");
+            Assertions.True(tracker.TryAdjust("tx-b", second, ModifierRequest(),
+                out decision), "The second queued cast must adjust independently.");
+            Assertions.True(tracker.ActiveTransactionCount == 2 &&
+                tracker.AdjustedModifierCount("tx-a") == 1 &&
+                tracker.AdjustedModifierCount("tx-b") == 1,
+                "Concurrent cast state must remain transaction-local.");
+            tracker.Release("tx-a");
+            Assertions.True(tracker.ActiveTransactionCount == 1 &&
+                tracker.AdjustedModifierCount("tx-b") == 1,
+                "Cleaning one cast must not release another cast's modifier state.");
+            tracker.Clear();
+            Assertions.Equal(0, tracker.ActiveTransactionCount,
+                "Load or combat transition cleanup must clear all retained state.");
+        }
+
         private static BrownFurCastRequest Valid()
         {
             return new BrownFurCastRequest {
@@ -267,6 +360,25 @@ namespace KingmakerGunslinger.DomainTests
                 "variant", "book", "target", cost > 0,
                 BrownFurAbilityScore.Strength, cost > 1, true, cost,
                 "target-adapter", "bonus-adapter", "duration-adapter");
+        }
+
+        private static BrownFurModifierAdjustmentRequest ModifierRequest()
+        {
+            object fact = new object();
+            object context = new object();
+            return new BrownFurModifierAdjustmentRequest {
+                ExecutionCommitted = true,
+                SelectedAbilityScore = BrownFurAbilityScore.Strength,
+                ModifierAbilityScore = BrownFurAbilityScore.Strength,
+                OriginalValue = 4,
+                Increase = 2,
+                OriginalDescriptor = "Enhancement",
+                CarrierFamily = "AddStatBonus",
+                SourceFact = fact,
+                ExpectedSourceFact = fact,
+                SourceContext = context,
+                ExpectedSourceContext = context
+            };
         }
     }
 }
