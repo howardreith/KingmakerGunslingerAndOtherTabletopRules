@@ -269,6 +269,9 @@ namespace KingmakerGunslinger.DomainTests
                 "RelevantCotwTargetingBodies", "IsTargetingPatch",
                 "AbilityData__CanTarget__Patch.Prefix",
                 "AbilityData__TargetAnchor__Getter__Patch.Prefix",
+                "cast-engine-native-delivery-bodies", "NativeDeliveryBodies",
+                "DescribeNativeDeliveryBodies", "GetApproachDistance",
+                "ShouldUnitApproach", "ApproachRadius",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),

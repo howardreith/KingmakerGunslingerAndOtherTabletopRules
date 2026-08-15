@@ -61,6 +61,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> RelevantCotwHarmony { get; set; }
             [JsonProperty("relevantCotwTargetingBodies", Order = 17)]
             public List<string> RelevantCotwTargetingBodies { get; set; }
+            [JsonProperty("nativeDeliveryBodies", Order = 18)]
+            public List<string> NativeDeliveryBodies { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -103,7 +105,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SharedSpellsBodies = DescribeSharedSpellsBodies(contract),
                 SharedSpellsHarmony = new List<string>(),
                 RelevantCotwHarmony = new List<string>(),
-                RelevantCotwTargetingBodies = new List<string>()
+                RelevantCotwTargetingBodies = new List<string>(),
+                NativeDeliveryBodies = DescribeNativeDeliveryBodies()
             };
             ObserveHarmony(context, evidence);
 
@@ -221,6 +224,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Has(evidence.RelevantCotwTargetingBodies,
                         "AbilityData__TargetAnchor__Getter__Patch.Prefix"),
                 "installed CotW targeting IL and patch ordering resolved in-process");
+            Add(assertions, "cast-engine-native-delivery-bodies",
+                "native approach distance and command decision bodies decoded",
+                "instructions=" + evidence.NativeDeliveryBodies.Count,
+                evidence.NativeDeliveryBodies.Count > 3 &&
+                    Has(evidence.NativeDeliveryBodies,
+                        "AbilityData.GetApproachDistance") &&
+                    Has(evidence.NativeDeliveryBodies,
+                        "UnitUseAbility.get_ShouldUnitApproach") &&
+                    Has(evidence.NativeDeliveryBodies,
+                        "UnitUseAbility.get_ApproachRadius"),
+                "exact Kingmaker delivery IL resolved without mutating a spell or save");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
                 "observer does not select, load, mutate, or save a character");
@@ -406,6 +420,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (MethodInfo method in new[] {
                 contract.SharedSpells.CanShareSpell,
                 contract.SharedSpells.IsValidShareSpellTarget })
+            {
+                result.Add("method " + Signature(method));
+                result.AddRange(BrownFurIlDisassembler.Describe(method));
+            }
+            return result;
+        }
+
+        private static List<string> DescribeNativeDeliveryBodies()
+        {
+            var methods = new List<MethodInfo>();
+            methods.Add(typeof(AbilityData).GetMethod("GetApproachDistance", All,
+                null, new[] { typeof(Kingmaker.EntitySystem.Entities.UnitEntityData) },
+                null));
+            foreach (string name in new[] { "ShouldUnitApproach",
+                "ApproachRadius" })
+            {
+                PropertyInfo property = typeof(UnitUseAbility).GetProperty(name,
+                    All);
+                methods.Add(property == null ? null : property.GetGetMethod(true));
+            }
+            var result = new List<string>();
+            foreach (MethodInfo method in methods.Where(value => value != null))
             {
                 result.Add("method " + Signature(method));
                 result.AddRange(BrownFurIlDisassembler.Describe(method));
