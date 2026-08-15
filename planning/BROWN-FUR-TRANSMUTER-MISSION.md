@@ -38,3 +38,6 @@ acceptance.
 - Cleanup acceptance: still pending and outside the current work cycle.
 - Brown-Fur acceptance: not yet requested; implementation investigation is in
   progress.
+
+The inspected dependency structure and fail-closed progression authority are
+recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.

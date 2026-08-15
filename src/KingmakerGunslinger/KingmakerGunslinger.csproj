@@ -295,6 +295,12 @@
     <Compile Include="FeatureModules\FeatureModuleSettingsState.cs" />
     <Compile Include="FeatureModules\FeatureModuleSettingsStore.cs" />
     <Compile Include="FeatureModules\FeatureModuleUi.cs" />
+    <Compile Include="BrownFur\CotwProgressionShape.cs" />
+    <Compile Include="BrownFur\CotwProgressionDecision.cs" />
+    <Compile Include="BrownFur\CotwProgressionPolicy.cs" />
+    <Compile Include="BrownFur\CotwArcanistContractCandidate.cs" />
+    <Compile Include="BrownFur\CotwArcanistContractDecision.cs" />
+    <Compile Include="BrownFur\CotwArcanistContractPolicy.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />

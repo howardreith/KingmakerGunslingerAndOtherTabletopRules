@@ -25,6 +25,13 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("brown-fur.progression-normal", BrownFurContractTests.NormalProgressionIsExact),
+            Case("brown-fur.progression-balance", BrownFurContractTests.BalanceProgressionIsExact),
+            Case("brown-fur.progression-unknown", BrownFurContractTests.UnknownProgressionsFailClosed),
+            Case("brown-fur.contract-absent", BrownFurContractTests.AbsentCotwIsUnavailable),
+            Case("brown-fur.contract-compatible", BrownFurContractTests.CompleteContractIsCompatible),
+            Case("brown-fur.contract-required-surfaces", BrownFurContractTests.EveryRequiredSurfaceFailsClosed),
+            Case("brown-fur.contract-ambiguous-progression", BrownFurContractTests.AmbiguousProgressionBlocksContract),
             Case("eastern-weapons.investigation-guard", EasternWeaponsInvestigationTests.EvidenceAndObserverRemainInvestigationOnly),
             Case("elven-branched-spear.investigation-guard", ElvenBranchedSpearInvestigationTests.EvidenceReportAndObserverAreGuarded),
             Case("elven-branched-spear.foundation-catalog", ElvenBranchedSpearCatalogTests.LockedProfileAndFoundationCatalogAreExact),

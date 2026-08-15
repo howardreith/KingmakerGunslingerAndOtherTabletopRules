@@ -80,6 +80,13 @@
     <Compile Include="RepairRuntimePolicyTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />
+    <Compile Include="BrownFurContractTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwProgressionShape.cs"><Link>BrownFur\CotwProgressionShape.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwProgressionDecision.cs"><Link>BrownFur\CotwProgressionDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwProgressionPolicy.cs"><Link>BrownFur\CotwProgressionPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwArcanistContractCandidate.cs"><Link>BrownFur\CotwArcanistContractCandidate.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwArcanistContractDecision.cs"><Link>BrownFur\CotwArcanistContractDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwArcanistContractPolicy.cs"><Link>BrownFur\CotwArcanistContractPolicy.cs</Link></Compile>
     <Compile Include="ShieldOtherPolicyTests.cs" />
     <Compile Include="AcadamaeCordPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingTime.cs"><Link>Acadamae\AcadamaeCastingTime.cs</Link></Compile>
