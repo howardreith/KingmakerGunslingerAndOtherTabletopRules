@@ -286,6 +286,9 @@ namespace KingmakerGunslinger.DomainTests
                 "ShouldUnitApproach", "ApproachRadius",
                 "cast-engine-commit-bodies", "CastCommitBodies",
                 "DescribeCastCommitBodies", "SpendFromSpellbook",
+                "typeof(AbilityData).GetMethod(\"Cast\"",
+                "typeof(AbilityData).GetMethod(\"Spend\"",
+                "typeof(RuleCastSpell).GetConstructor",
                 "AbilityExecutionContext).GetConstructor",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||

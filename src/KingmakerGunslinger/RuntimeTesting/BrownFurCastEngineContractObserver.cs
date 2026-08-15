@@ -241,9 +241,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             Add(assertions, "cast-engine-commit-bodies",
                 "native command, rule, slot spend, and context construction bodies decoded",
                 "instructions=" + evidence.CastCommitBodies.Count,
-                evidence.CastCommitBodies.Count > 4 &&
+                evidence.CastCommitBodies.Count > 7 &&
                     Has(evidence.CastCommitBodies, "UnitUseAbility.OnAction") &&
+                    Has(evidence.CastCommitBodies, "RuleCastSpell..ctor") &&
                     Has(evidence.CastCommitBodies, "RuleCastSpell.OnTrigger") &&
+                    Has(evidence.CastCommitBodies, "AbilityData.Cast") &&
+                    Has(evidence.CastCommitBodies, "AbilityData.Spend()") &&
                     Has(evidence.CastCommitBodies,
                         "AbilityData.SpendFromSpellbook") &&
                     Has(evidence.CastCommitBodies,
@@ -468,9 +471,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             var methods = new List<MethodBase> {
                 typeof(UnitUseAbility).GetMethod("OnAction", All, null,
                     Type.EmptyTypes, null),
+                typeof(RuleCastSpell).GetConstructor(All, null,
+                    new[] { typeof(AbilityData),
+                        typeof(Kingmaker.Utility.TargetWrapper) }, null),
                 typeof(RuleCastSpell).GetMethod("OnTrigger", All, null,
                     new[] { typeof(Kingmaker.RuleSystem.RulebookEventContext) },
                     null),
+                typeof(AbilityData).GetMethod("Cast", All, null,
+                    new[] { typeof(AbilityExecutionContext) }, null),
+                typeof(AbilityData).GetMethod("Spend", All, null,
+                    Type.EmptyTypes, null),
                 typeof(AbilityData).GetMethod("SpendFromSpellbook", All, null,
                     Type.EmptyTypes, null),
                 typeof(AbilityExecutionContext).GetConstructor(All, null,
