@@ -380,6 +380,10 @@ namespace KingmakerGunslinger.DomainTests
                 "DescribeExecutionLifecycleBodies", "CreateExecutionContext",
                 "CalculateParams", "ProcessRoutine", "<Tick>b__12_0",
                 "InstantDeliver", "AbilityExecutionController",
+                "cast-engine-willing-relationship-surfaces",
+                "UnitRelationshipSurfaces", "UnitEntityData",
+                "UnitDescriptor", "UnitPartPet", "UnitPartSummonedMonster",
+                "BlueprintFaction",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),

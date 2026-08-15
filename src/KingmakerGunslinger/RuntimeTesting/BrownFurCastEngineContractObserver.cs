@@ -69,6 +69,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> AbilityExecutionProcess { get; set; }
             [JsonProperty("executionLifecycleBodies", Order = 21)]
             public List<string> ExecutionLifecycleBodies { get; set; }
+            [JsonProperty("unitRelationshipSurfaces", Order = 22)]
+            public List<string> UnitRelationshipSurfaces { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -116,7 +118,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CastCommitBodies = DescribeCastCommitBodies(),
                 AbilityExecutionProcess = Describe(typeof(
                     Kingmaker.Controllers.AbilityExecutionProcess)),
-                ExecutionLifecycleBodies = DescribeExecutionLifecycleBodies()
+                ExecutionLifecycleBodies = DescribeExecutionLifecycleBodies(),
+                UnitRelationshipSurfaces = DescribeTypes(new[] {
+                    "Kingmaker.EntitySystem.Entities.UnitEntityData",
+                    "Kingmaker.UnitLogic.UnitDescriptor",
+                    "Kingmaker.Player",
+                    "Kingmaker.UnitLogic.Parts.UnitPartPet",
+                    "Kingmaker.UnitLogic.Parts.UnitPartSummonedMonster",
+                    "Kingmaker.Blueprints.BlueprintFaction"
+                })
             };
             ObserveHarmony(context, evidence);
 
@@ -278,6 +288,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Has(evidence.ExecutionLifecycleBodies,
                         "AbilityExecutionProcess.Detach"),
                 "exact per-execution retention and cleanup seams resolved in-process");
+            Add(assertions, "cast-engine-willing-relationship-surfaces",
+                "installed unit/player/faction ownership and hostility surfaces enumerated",
+                "types=" + CountTypes(evidence.UnitRelationshipSurfaces) +
+                    ";" + JoinMatches(evidence.UnitRelationshipSurfaces,
+                        "Faction", "Master", "Pet", "Party", "Controll",
+                        "IsDead", "Enemy", "Attack", "Summon"),
+                CountTypes(evidence.UnitRelationshipSurfaces) >= 3 &&
+                    Has(evidence.UnitRelationshipSurfaces, "Faction") &&
+                    (Has(evidence.UnitRelationshipSurfaces, "Master") ||
+                     Has(evidence.UnitRelationshipSurfaces, "Pet")) &&
+                    (Has(evidence.UnitRelationshipSurfaces, "Party") ||
+                     Has(evidence.UnitRelationshipSurfaces, "Controll")) &&
+                    (Has(evidence.UnitRelationshipSurfaces, "Enemy") ||
+                     Has(evidence.UnitRelationshipSurfaces, "Attack")),
+                "read-only installed relationship contract for the authorized willing adaptation");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
                 "observer does not select, load, mutate, or save a character");
