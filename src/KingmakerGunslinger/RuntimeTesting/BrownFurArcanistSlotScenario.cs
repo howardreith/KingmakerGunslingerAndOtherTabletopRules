@@ -97,6 +97,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("automaticRootCanSpendBefore", Order = 51)] public bool AutomaticRootCanSpend { get; set; }
             [JsonProperty("automaticSelectedCanSpendBefore", Order = 52)] public bool AutomaticSelectedCanSpend { get; set; }
             [JsonProperty("automaticSuppressionBeforeAfter", Order = 53)] public string AutomaticSuppression { get; set; }
+            [JsonProperty("automaticCanSpendTimeline", Order = 54)] public string AutomaticCanSpendTimeline { get; set; }
+            [JsonProperty("automaticRootKnown", Order = 55)] public bool AutomaticRootKnown { get; set; }
+            [JsonProperty("automaticRootAvailableCastCount", Order = 56)] public int AutomaticRootAvailableCount { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -245,13 +248,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 caster.Descriptor.Resources.Restore(contract.Reservoir,
                     evidence.ReservoirBefore - evidence.RaceReservoirAfter);
                 casting.Rest();
-                if (caster.Descriptor.AddFact(blueprints.PowerfulChange) == null ||
-                    caster.Descriptor.AddFact(blueprints.ShareTransmutation) == null ||
-                    caster.Descriptor.AddFact(
-                        blueprints.TransmutationSupremacy) == null ||
-                    caster.Descriptor.AddFact(blueprints.ScoreBuffs[0]) == null)
+                string afterRest = ProbeCanSpend(casting, spell);
+                if (caster.Descriptor.AddFact(blueprints.PowerfulChange) == null)
                     throw new InvalidOperationException(
-                        "Real Brown-Fur command-intent facts could not be granted.");
+                        "Real Powerful Change fact could not be granted.");
+                string afterPowerful = ProbeCanSpend(casting, spell);
+                if (caster.Descriptor.AddFact(
+                        blueprints.ShareTransmutation) == null)
+                    throw new InvalidOperationException(
+                        "Real Share Transmutation fact could not be granted.");
+                string afterShareFeature = ProbeCanSpend(casting, spell);
+                if (caster.Descriptor.AddFact(
+                        blueprints.TransmutationSupremacy) == null)
+                    throw new InvalidOperationException(
+                        "Real Transmutation Supremacy fact could not be granted.");
+                string afterSupremacy = ProbeCanSpend(casting, spell);
+                if (caster.Descriptor.AddFact(blueprints.ScoreBuffs[0]) == null)
+                    throw new InvalidOperationException(
+                        "Real Strength intent fact could not be granted.");
+                string afterScore = ProbeCanSpend(casting, spell);
                 ActivatableAbility share = caster.Descriptor
                     .ActivatableAbilities.Enumerable.SingleOrDefault(value =>
                         value != null && ReferenceEquals(value.Blueprint,
@@ -259,6 +274,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (share == null) throw new InvalidOperationException(
                     "Real Share Transmutation activatable was not granted.");
                 share.IsOn = true;
+                string afterShareToggle = ProbeCanSpend(casting, spell);
                 int automaticReservoirBefore = caster.Descriptor.Resources
                     .GetResourceAmount(contract.Reservoir);
                 int automaticSlotsBefore = AvailableSlots(casting, SpellLevel);
@@ -273,8 +289,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     casting.CanSpend(automaticRoot, false);
                 evidence.AutomaticSelectedCanSpend =
                     casting.CanSpend(automaticData, false);
+                evidence.AutomaticRootKnown = casting.IsKnown(spell);
+                evidence.AutomaticRootAvailableCount = automaticRoot == null ?
+                    -1 : casting.GetAvailableForCastSpellCount(automaticRoot);
                 var automaticCommand = new UnitUseAbility(automaticData,
                     new TargetWrapper(caster));
+                evidence.AutomaticCanSpendTimeline = "rest=" + afterRest +
+                    ";powerful=" + afterPowerful + ";shareFeature=" +
+                    afterShareFeature + ";supremacy=" + afterSupremacy +
+                    ";score=" + afterScore + ";shareToggle=" +
+                    afterShareToggle + ";command=" +
+                    ProbeCanSpend(casting, spell);
                 evidence.AutomaticArmed =
                     BrownFurCastExecutionRuntime.ActiveTransactionCount == 1 &&
                     BrownFurCastExecutionRuntime.ReservationCount == 1;
@@ -472,7 +497,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.AutomaticRootBook + ";canSpend=" +
                     evidence.AutomaticSelectedCanSpend + "/" +
                     evidence.AutomaticRootCanSpend + ";suppression=" +
-                    evidence.AutomaticSuppression,
+                    evidence.AutomaticSuppression + ";known=" +
+                    evidence.AutomaticRootKnown + ";available=" +
+                    evidence.AutomaticRootAvailableCount + ";timeline=" +
+                    evidence.AutomaticCanSpendTimeline,
                 evidence.AutomaticTracked && evidence.AutomaticProceed &&
                     Delta(evidence.AutomaticReservoir) == -2 &&
                     Delta(evidence.AutomaticSlots) == -1,
@@ -591,6 +619,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             return ability == null || ability.Spellbook == null ||
                 ability.Spellbook.Blueprint == null ? string.Empty :
                 ability.Spellbook.Blueprint.AssetGuid;
+        }
+
+        private static string ProbeCanSpend(Spellbook book,
+            BlueprintAbility spell)
+        {
+            var probe = new AbilityData(spell, book);
+            return book.CanSpend(probe, false) + "/" +
+                book.GetAvailableForCastSpellCount(probe) + "/" +
+                book.IsKnown(spell);
         }
 
         private static int Delta(string transition)
