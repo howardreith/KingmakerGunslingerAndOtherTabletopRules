@@ -93,7 +93,10 @@ namespace KingmakerGunslinger.BrownFur
             MechanicsContext sourceContext = modifier.Source.MaybeContext;
             if (source == null || sourceContext == null) return false;
             Scope scope = FindScope(sourceContext);
-            if (scope == null ||
+            if (scope == null)
+                return TryRestorePersisted(destination, modifier, source,
+                    sourceContext);
+            if (
                 !ReferenceEquals(sourceContext.MaybeCaster, scope.Caster) ||
                 !ReferenceEquals(sourceContext.SourceAbility, scope.Spell) ||
                 !scope.BuffGuids.Contains(NormalizeGuid(
@@ -117,8 +120,87 @@ namespace KingmakerGunslinger.BrownFur
             BrownFurModifierAdjustmentDecision decision;
             if (!Tracker.TryAdjust(scope.TransactionIdentity, modifier, request,
                 out decision)) return false;
+            if (!Remember(destination, source, sourceContext, stat,
+                decision.AdjustedValue - modifier.ModValue,
+                modifier.ModValue, modifier.ModDescriptor.ToString(), family))
+                return false;
             modifier.ModValue = decision.AdjustedValue;
             return true;
+        }
+
+        internal static int Forget(Buff source)
+        {
+            if (source == null || source.Owner == null ||
+                source.Context == null || source.Context.MaybeCaster == null ||
+                source.Context.SourceAbility == null) return 0;
+            UnitPartBrownFurModifierPersistence part = source.Owner.Get<
+                UnitPartBrownFurModifierPersistence>();
+            return part == null ? 0 : part.Forget(NormalizeGuid(
+                source.Blueprint.AssetGuid.ToString()), NormalizeGuid(
+                source.Context.SourceAbility.AssetGuid.ToString()),
+                source.Context.MaybeCaster.UniqueId);
+        }
+
+        private static bool TryRestorePersisted(ModifiableValue destination,
+            ModifiableValue.Modifier modifier, Buff source,
+            MechanicsContext sourceContext)
+        {
+            if (destination.Owner == null || sourceContext.MaybeCaster == null ||
+                sourceContext.SourceAbility == null) return false;
+            UnitPartBrownFurModifierPersistence part = destination.Owner.Get<
+                UnitPartBrownFurModifierPersistence>();
+            if (part == null) return false;
+            BrownFurAbilityScore stat = AbilityScore(destination.Type);
+            string family = CarrierFamily(modifier.SourceComponent);
+            var probe = new BrownFurPersistedModifierProbe {
+                BuffGuid = NormalizeGuid(source.Blueprint.AssetGuid.ToString()),
+                SpellGuid = NormalizeGuid(
+                    sourceContext.SourceAbility.AssetGuid.ToString()),
+                CasterId = sourceContext.MaybeCaster.UniqueId,
+                AbilityScore = stat,
+                OriginalValue = modifier.ModValue,
+                OriginalDescriptor = modifier.ModDescriptor.ToString(),
+                CarrierFamily = family,
+                EndTimeTicks = source.EndTime.Ticks
+            };
+            int increase = part.ResolveIncrease(probe);
+            if (increase == 0) return false;
+            BrownFurModifierAdjustmentDecision decision =
+                BrownFurModifierAdjustmentPolicy.Decide(
+                    new BrownFurModifierAdjustmentRequest {
+                        ExecutionCommitted = true,
+                        SelectedAbilityScore = stat,
+                        ModifierAbilityScore = stat,
+                        OriginalValue = modifier.ModValue,
+                        Increase = increase,
+                        OriginalDescriptor = modifier.ModDescriptor.ToString(),
+                        CarrierFamily = family,
+                        SourceFact = source,
+                        ExpectedSourceFact = source,
+                        SourceContext = sourceContext,
+                        ExpectedSourceContext = sourceContext
+                    });
+            if (!decision.Eligible) return false;
+            modifier.ModValue = decision.AdjustedValue;
+            return true;
+        }
+
+        private static bool Remember(ModifiableValue destination, Buff source,
+            MechanicsContext sourceContext, BrownFurAbilityScore stat,
+            int increase, int originalValue, string originalDescriptor,
+            string family)
+        {
+            if (destination.Owner == null || sourceContext.MaybeCaster == null ||
+                sourceContext.SourceAbility == null) return false;
+            UnitPartBrownFurModifierPersistence part = destination.Owner.Ensure<
+                UnitPartBrownFurModifierPersistence>();
+            if (part == null) return false;
+            return part.Remember(new BrownFurPersistedModifierRecord(
+                NormalizeGuid(source.Blueprint.AssetGuid.ToString()),
+                NormalizeGuid(sourceContext.SourceAbility.AssetGuid.ToString()),
+                sourceContext.MaybeCaster.UniqueId, stat, increase,
+                originalValue, originalDescriptor, family,
+                source.EndTime.Ticks));
         }
 
         private static Scope FindScope(MechanicsContext sourceContext)

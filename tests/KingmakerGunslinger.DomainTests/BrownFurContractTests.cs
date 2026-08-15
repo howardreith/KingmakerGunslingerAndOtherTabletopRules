@@ -183,6 +183,10 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurModifierAdjustmentRuntime.cs"));
             string modifierPatch = File.ReadAllText(Path.Combine(brownFur,
                 "BrownFurModifierAdjustmentPatch.cs"));
+            string persistedModifier = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurPersistedModifierRecord.cs"));
+            string persistedModifierPart = File.ReadAllText(Path.Combine(
+                brownFur, "UnitPartBrownFurModifierPersistence.cs"));
             string shareTargetingRuntime = File.ReadAllText(Path.Combine(brownFur,
                 "BrownFurShareTargetingRuntime.cs"));
             string shareTargetingPatches = File.ReadAllText(Path.Combine(brownFur,
@@ -575,6 +579,9 @@ namespace KingmakerGunslinger.DomainTests
                 "buff.MaybeContext.MaybeCaster == caster",
                 "buff.MaybeContext.MainTarget.Unit == subject",
                 "ReferenceEquals(buff.MaybeContext.SourceAbility, spell)",
+                "UnitPartBrownFurModifierPersistence",
+                "persistedBeforeCleanup == 1",
+                "persistencePart.Count == 0",
                 "BrownFurPlayerIntentRuntime.Observe",
                 "RemoveBrownFurPersistenceFeatures",
                 "ArmExactWorkingSaveWrite",
@@ -664,6 +671,32 @@ namespace KingmakerGunslinger.DomainTests
                 "CallOfTheWild", "TryAdjust", "catch" })
                 Assertions.True(modifierPatch.Contains(token),
                     "Powerful Change modifier patch lacks guard: " + token);
+            foreach (string token in new[] {
+                "CurrentSchemaVersion", "BuffGuid", "SpellGuid", "CasterId",
+                "AbilityScore", "Increase", "OriginalValue",
+                "OriginalDescriptor", "CarrierFamily", "EndTimeTicks",
+                "ResolveIncrease", "matches.Length == 1",
+                "SameLogicalModifier" })
+                Assertions.True(persistedModifier.Contains(token),
+                    "Powerful Change persisted record lacks guard: " + token);
+            foreach (string token in new[] {
+                "UnitPart", "JsonProperty", "Remember", "ResolveIncrease",
+                "Forget", "PreSave", "PostLoad", "EnsureValid",
+                "duplicate logical modifiers" })
+                Assertions.True(persistedModifierPart.Contains(token),
+                    "Powerful Change target-owned persistence lacks guard: " +
+                    token);
+            foreach (string token in new[] {
+                "TryRestorePersisted", "destination.Owner.Get",
+                "destination.Owner.Ensure", "source.EndTime.Ticks",
+                "source.Context.SourceAbility", "MaybeCaster.UniqueId" })
+                Assertions.True(modifierRuntime.Contains(token),
+                    "Powerful Change persisted runtime lacks guard: " + token);
+            Assertions.True(modifierPatch.Contains(
+                "BrownFurPersistedModifierRemovalPatch") &&
+                modifierPatch.Contains("typeof(Buff), \"Remove\"") &&
+                modifierPatch.Contains("Forget(__instance)"),
+                "Powerful Change persisted adjustment must retire through native Buff.Remove.");
             Assertions.False(modifierRuntime.Contains(
                 "static MechanicsContext Current"),
                 "Powerful Change must not retain one global current cast.");

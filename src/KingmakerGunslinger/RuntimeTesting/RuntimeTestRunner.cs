@@ -120,6 +120,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _brownFurPersistencePresentationValid;
         private bool _brownFurPersistenceBuffValid;
         private bool _brownFurPersistenceContextValid;
+        private bool _brownFurPersistenceCarrierValid;
         private bool _brownFurPersistenceCleanupValid;
         private string _brownFurPersistenceDetail = "";
         private bool _expandedSummoningPersistenceSaveStarted;
@@ -2780,6 +2781,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 buff.MaybeContext.MainTarget.Unit == subject &&
                 ReferenceEquals(buff.MaybeContext.SourceAbility, spell) &&
                 buff.MaybeContext.Params.CasterLevel == 20;
+            UnitPartBrownFurModifierPersistence persistencePart =
+                subject.Descriptor.Get<
+                    UnitPartBrownFurModifierPersistence>();
+            int persistedBeforeCleanup = persistencePart == null ? 0 :
+                persistencePart.Count;
+            _brownFurPersistenceCarrierValid = persistedBeforeCleanup == 1;
 
             if (!prepare)
             {
@@ -2797,7 +2804,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !caster.Descriptor.ActivatableAbilities.Enumerable.Any(
                         value => value != null && ReferenceEquals(
                             value.Blueprint,
-                            blueprints.ShareTransmutationAbility));
+                            blueprints.ShareTransmutationAbility)) &&
+                    persistencePart != null && persistencePart.Count == 0;
             }
 
             _brownFurPersistenceDetail = "phase=" +
@@ -2811,7 +2819,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";timeLeftSeconds=" + (buff == null ? 0d :
                     buff.TimeLeft.TotalSeconds) + ";context=" +
                 _brownFurPersistenceContextValid + ";cleanup=" +
-                _brownFurPersistenceCleanupValid + ";scopes=" +
+                _brownFurPersistenceCleanupValid + ";persistedBefore=" +
+                persistedBeforeCleanup + ";persistedAfter=" +
+                (persistencePart == null ? 0 : persistencePart.Count) +
+                ";scopes=" +
                 BrownFurModifierAdjustmentRuntime.ActiveScopeCount;
 
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
@@ -2865,6 +2876,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _brownFurPersistencePresentationValid &&
                 _brownFurPersistenceBuffValid &&
                 _brownFurPersistenceContextValid &&
+                _brownFurPersistenceCarrierValid &&
                 (!verify || _brownFurPersistenceCleanupValid) &&
                 BrownFurModifierAdjustmentRuntime.ActiveScopeCount == 0;
             if (status == RuntimeTestStatuses.Pass && !phaseValid)
@@ -2904,6 +2916,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _brownFurPersistenceContextValid,
                     verify ? "freshly deserialized buff MechanicsContext" :
                         "pre-save buff MechanicsContext"),
+                Assertion("brown-fur-persistence-owner-record",
+                    "one exact target-owned adjustment record before cleanup",
+                    _brownFurPersistenceDetail,
+                    _brownFurPersistenceCarrierValid,
+                    verify ? "freshly deserialized UnitPart record" :
+                        "pre-save UnitPart record"),
                 Assertion("brown-fur-persistence-cleanup",
                     verify ? "features, grants, and buff absent before cleanup save" :
                         "not-applicable",

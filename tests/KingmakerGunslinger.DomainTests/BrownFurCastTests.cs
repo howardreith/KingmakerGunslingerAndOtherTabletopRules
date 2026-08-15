@@ -558,6 +558,66 @@ namespace KingmakerGunslinger.DomainTests
                 "Load or combat transition cleanup must clear all retained state.");
         }
 
+        internal static void ModifierPersistenceMatchesExactly()
+        {
+            BrownFurPersistedModifierRecord record = PersistenceRecord();
+            BrownFurPersistedModifierProbe probe = PersistenceProbe();
+            Assertions.Equal(2,
+                BrownFurPersistedModifierPolicy.ResolveIncrease(
+                    new[] { record }, probe),
+                "An exact persisted spell-buff context must restore its increase.");
+            BrownFurPersistedModifierRecord recast = PersistenceRecord();
+            recast.Increase = 4;
+            recast.EndTimeTicks++;
+            Assertions.True(BrownFurPersistedModifierPolicy.
+                SameLogicalModifier(record, recast),
+                "A recast must replace the same logical persisted modifier.");
+        }
+
+        internal static void ModifierPersistenceFailsClosed()
+        {
+            BrownFurPersistedModifierRecord record = PersistenceRecord();
+            BrownFurPersistedModifierProbe probe = PersistenceProbe();
+            probe.EndTimeTicks++;
+            Assertions.Equal(0,
+                BrownFurPersistedModifierPolicy.ResolveIncrease(
+                    new[] { record }, probe),
+                "A different buff lifetime must not inherit an enhancement.");
+            probe = PersistenceProbe();
+            BrownFurPersistedModifierRecord duplicate = PersistenceRecord();
+            Assertions.Equal(0,
+                BrownFurPersistedModifierPolicy.ResolveIncrease(
+                    new[] { record, duplicate }, probe),
+                "Ambiguous persisted records must fail closed.");
+            record.OriginalDescriptor = string.Empty;
+            Assertions.Throws<InvalidOperationException>(() =>
+                BrownFurPersistedModifierPolicy.Validate(record),
+                "Malformed persisted modifiers must be rejected.");
+        }
+
+        private static BrownFurPersistedModifierRecord PersistenceRecord()
+        {
+            return new BrownFurPersistedModifierRecord(
+                "11111111111111111111111111111111",
+                "22222222222222222222222222222222", "caster-1",
+                BrownFurAbilityScore.Strength, 2, 4, "Enhancement",
+                "AddStatBonus", 123456L);
+        }
+
+        private static BrownFurPersistedModifierProbe PersistenceProbe()
+        {
+            return new BrownFurPersistedModifierProbe {
+                BuffGuid = "11111111111111111111111111111111",
+                SpellGuid = "22222222222222222222222222222222",
+                CasterId = "caster-1",
+                AbilityScore = BrownFurAbilityScore.Strength,
+                OriginalValue = 4,
+                OriginalDescriptor = "Enhancement",
+                CarrierFamily = "AddStatBonus",
+                EndTimeTicks = 123456L
+            };
+        }
+
         internal static void ShareTargetingScopeIsExact()
         {
             var tracker = new BrownFurShareTargetingScopeTracker<object, object,

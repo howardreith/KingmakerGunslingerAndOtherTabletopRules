@@ -114,6 +114,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurExactDebitPolicy.cs"><Link>BrownFur\BrownFurExactDebitPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurModifierAdjustmentPolicy.cs"><Link>BrownFur\BrownFurModifierAdjustmentPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurModifierAdjustmentTracker.cs"><Link>BrownFur\BrownFurModifierAdjustmentTracker.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurPersistedModifierRecord.cs"><Link>BrownFur\BrownFurPersistedModifierRecord.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurBonusAdapterPlan.cs"><Link>BrownFur\BrownFurBonusAdapterPlan.cs</Link></Compile>
     <Compile Include="ShieldOtherPolicyTests.cs" />
     <Compile Include="AcadamaeCordPolicyTests.cs" />

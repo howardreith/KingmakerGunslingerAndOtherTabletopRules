@@ -343,6 +343,8 @@
     <Compile Include="BrownFur\BrownFurReservoirDebit.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentPolicy.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentTracker.cs" />
+    <Compile Include="BrownFur\BrownFurPersistedModifierRecord.cs" />
+    <Compile Include="BrownFur\UnitPartBrownFurModifierPersistence.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentRuntime.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentPatch.cs" />
     <Compile Include="BrownFur\BrownFurBonusAdapterPlan.cs" />
