@@ -157,11 +157,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.Spontaneous = casting.Blueprint.Spontaneous;
 
                 stage = "committed-slot";
-                var data = new AbilityData(new AbilityData(spell, casting),
-                    selected);
+                var rootData = new AbilityData(spell, casting);
+                var data = new AbilityData(rootData, selected);
                 evidence.SourceBook = data.Spellbook == null ? string.Empty :
                     data.Spellbook.Blueprint.AssetGuid;
-                evidence.CanSpendBefore = casting.CanSpend(data, false);
+                evidence.CanSpendBefore = casting.CanSpend(rootData, false);
                 evidence.SlotsBefore = AvailableSlots(casting, SpellLevel);
                 caster.Descriptor.Resources.Add(contract.Reservoir, true);
                 evidence.ReservoirBefore = caster.Descriptor.Resources
@@ -177,8 +177,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.CommitTracked = BrownFurCastExecutionRuntime.TryCommit(
                     rule, out proceed);
                 evidence.CommitProceed = proceed;
-                evidence.NativeSlotSpend = casting.Spend(data, false);
+                InvokeAbilitySpend(data);
                 evidence.SlotsAfter = AvailableSlots(casting, SpellLevel);
+                evidence.NativeSlotSpend = evidence.SlotsAfter ==
+                    evidence.SlotsBefore - 1;
                 evidence.ReservoirAfter = caster.Descriptor.Resources
                     .GetResourceAmount(contract.Reservoir);
                 BrownFurCastExecutionRuntime.RuleFailed(rule);
@@ -283,7 +285,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.CommitProceed && evidence.NativeSlotSpend &&
                     evidence.ReservoirAfter == evidence.ReservoirBefore - 2 &&
                     evidence.SlotsAfter == evidence.SlotsBefore - 1,
-                "production boundary plus native Spellbook.Spend");
+                "production boundary plus native AbilityData.Spend");
             Add(assertions, "arcanist-slot-exception-rollback",
                 "rule failure restores reservoir but not an already spent slot",
                 evidence.RollbackReservoir.ToString(),

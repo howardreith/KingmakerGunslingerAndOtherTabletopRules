@@ -417,7 +417,7 @@ namespace KingmakerGunslinger.DomainTests
                 "arcanist-slot-rejected-no-spend",
                 "arcanist-slot-cleanup", "ApplyClassMechanics",
                 "ApplyLevelup", "contract.CastingSpellbook",
-                "contract.MemorizationSpellbook", "casting.Spend(data, false)",
+                "contract.MemorizationSpellbook", "InvokeAbilitySpend(data)",
                 "BrownFurCastExecutionRuntime.TryCommit",
                 "BrownFurCastExecutionRuntime.SuppressedSpendCount" })
                 Assertions.True(arcanistSlotScenario.Contains(token) ||
