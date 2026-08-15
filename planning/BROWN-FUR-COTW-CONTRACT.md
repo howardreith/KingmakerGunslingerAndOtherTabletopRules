@@ -160,6 +160,43 @@ stat and source buff/context against the immutable cast intent. This structural
 result does not by itself qualify stacking, recast, dispel, persistence, or the
 polymorph/size adapter behavior; those remain mechanical runtime gates.
 
+The guarded `disposable-brown-fur-bonus-carriers` fixture then passed all seven
+assertions on commit
+`7008c0e1067f47c713612c3d751f7519a9a0c62d`. The loaded DLL SHA-256 was
+`846BAE2B12A6A536B55273BD2E7B1981993A0E5C4C009815804A9CC679F00925`
+and its MVID was `5e81a5db-70ae-4ed8-9436-5681772bd71d`. The structured
+carrier artifact SHA-256 was
+`C0CFF16F1E1C82857C28CA964F5F574B22B8ED8517A1A0660AE1923A3339D254`.
+
+The save-free fixture applied five real installed spell buffs to disposable
+engine units and covered all six carrier families (the Enlarge Person case
+combines `AddGenericStatBonus` and `ChangeUnitSize`). It observed:
+
+- `AddStatBonus`: Strength `+4 Enhancement`;
+- `AddContextStatBonus`: Constitution `+2 Enhancement`;
+- `AddStatBonusAbilityValue`: Dexterity `+6 Enhancement`;
+- `Polymorph`: Strength `+2 Polymorph`; and
+- `AddGenericStatBonus` with `ChangeUnitSize`: Strength `+2 Size`.
+
+Every case produced exactly one modifier owned by the applied buff, retained
+the expected destination stat and nonempty native source-component identity,
+and carried the exact caster, source spell, target, and caster level through
+the buff's child `MechanicsContext`. Removing each buff removed its modifier
+and restored the original stat value; both disposable units were removed from
+the live registry and disposed.
+
+Kingmaker does not retain the caller-created `MechanicsContext` by reference:
+the applied buff receives a child context whose `ParentContext` is the caller
+context. `Buff.IsFromSpell` was true for the three direct carriers but false for
+the polymorph and size cases even though their child contexts retained the
+exact source spell. Powerful Change eligibility must therefore be decided at
+the genuine cast boundary and correlated through context/caster/spell/source
+identity; `Buff.IsFromSpell` alone is not an authorized eligibility gate.
+
+This checkpoint proves native carrier registration, descriptor provenance,
+and cleanup. It still does not qualify the Brown-Fur value adjustment itself,
+descriptor competition, recast, dispel, or save/reload persistence.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings

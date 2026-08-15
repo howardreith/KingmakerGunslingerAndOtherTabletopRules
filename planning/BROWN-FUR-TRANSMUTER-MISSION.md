@@ -57,3 +57,15 @@ engine exposes enough source, descriptor, destination-stat, and execution
 context identity for a narrow cast-scoped Powerful Change adapter. Mechanical
 stacking, recast, persistence, polymorph, and size behavior remain unqualified;
 the archetype remains reserved and unpublished.
+
+The next carrier checkpoint passed on commit
+`7008c0e1067f47c713612c3d751f7519a9a0c62d`. Seven guarded assertions
+proved exact runtime value and descriptor registration for five real installed
+buffs covering `AddStatBonus`, `AddContextStatBonus`,
+`AddStatBonusAbilityValue`, `Polymorph`, `AddGenericStatBonus`, and
+`ChangeUnitSize`; exact caster/spell/target/caster-level provenance survived
+the engine's child-context clone; every modifier was removed cleanly; every
+stat returned to baseline; and the disposable units were removed. This narrows
+Powerful Change to an execution-scoped value adjustment, but does not yet
+qualify the adjustment, stacking/recast, dispel, or persistence. Brown-Fur
+therefore remains reserved and unpublished.
