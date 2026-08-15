@@ -242,6 +242,11 @@ namespace KingmakerGunslinger.DomainTests
                 "cast-engine-canonicalization", "cast-engine-rule-commit",
                 "cast-engine-slot-accounting",
                 "cast-engine-modifier-registration",
+                "cast-engine-modifier-source-provenance",
+                "cast-engine-ability-bonus-carriers", "ModValue",
+                "ModDescriptor", "SourceComponent", "MaybeContext",
+                "AddContextStatBonus", "AddGenericStatBonus",
+                "AddStatBonusAbilityValue", "ChangeUnitSize",
                 "cast-engine-duration-context",
                 "cast-engine-shared-spells-harmony", "GetPatchedMethods",
                 "priority=", "before=", "after=", "save-free-observer" })

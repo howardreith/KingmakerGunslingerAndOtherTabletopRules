@@ -43,11 +43,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> Spellbook { get; set; }
             [JsonProperty("modifiableValue", Order = 8)]
             public List<string> ModifiableValue { get; set; }
-            [JsonProperty("sharedSpells", Order = 9)]
+            [JsonProperty("modifier", Order = 9)]
+            public List<string> Modifier { get; set; }
+            [JsonProperty("modifierSourceFact", Order = 10)]
+            public List<string> ModifierSourceFact { get; set; }
+            [JsonProperty("modifierSourceBuff", Order = 11)]
+            public List<string> ModifierSourceBuff { get; set; }
+            [JsonProperty("abilityBonusCarriers", Order = 12)]
+            public List<string> AbilityBonusCarriers { get; set; }
+            [JsonProperty("sharedSpells", Order = 13)]
             public List<string> SharedSpells { get; set; }
-            [JsonProperty("directSharedSpellsHarmony", Order = 10)]
+            [JsonProperty("directSharedSpellsHarmony", Order = 14)]
             public List<string> SharedSpellsHarmony { get; set; }
-            [JsonProperty("relevantCotwHarmony", Order = 11)]
+            [JsonProperty("relevantCotwHarmony", Order = 15)]
             public List<string> RelevantCotwHarmony { get; set; }
         }
 
@@ -74,6 +82,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuleCastSpell = Describe(typeof(RuleCastSpell)),
                 Spellbook = Describe(typeof(Spellbook)),
                 ModifiableValue = Describe(typeof(ModifiableValue)),
+                Modifier = Describe(typeof(ModifiableValue.Modifier)),
+                ModifierSourceFact = Describe(EngineType(
+                    "Kingmaker.Blueprints.Facts.Fact")),
+                ModifierSourceBuff = Describe(EngineType(
+                    "Kingmaker.UnitLogic.Buffs.Buff")),
+                AbilityBonusCarriers = DescribeTypes(new[] {
+                    "Kingmaker.UnitLogic.FactLogic.AddStatBonus",
+                    "Kingmaker.UnitLogic.FactLogic.AddContextStatBonus",
+                    "Kingmaker.UnitLogic.Buffs.Components.AddGenericStatBonus",
+                    "Kingmaker.Designers.Mechanics.Buffs.AddStatBonusAbilityValue",
+                    "Kingmaker.UnitLogic.Buffs.Polymorph",
+                    "Kingmaker.Designers.Mechanics.Buffs.ChangeUnitSize"
+                }),
                 SharedSpells = Describe(shared),
                 SharedSpellsHarmony = new List<string>(),
                 RelevantCotwHarmony = new List<string>()
@@ -116,10 +137,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Has(evidence.Spellbook, "Spend"),
                 "native slot validation and expenditure methods");
             Add(assertions, "cast-engine-modifier-registration",
-                "ModifiableValue.AddModifier overloads",
-                JoinMatches(evidence.ModifiableValue, "AddModifier"),
-                Has(evidence.ModifiableValue, "AddModifier"),
-                "descriptor-preserving value interception seam");
+                "AddModifier plus mutable descriptor-preserving modifier provenance",
+                JoinMatches(evidence.ModifiableValue, "AddModifier", " Type",
+                    " Owner") + "|" + JoinMatches(evidence.Modifier,
+                    "ModValue", "ModDescriptor", "Source", "SourceComponent",
+                    "AppliedTo"),
+                Has(evidence.ModifiableValue, "AddModifier") &&
+                    Has(evidence.ModifiableValue, " Type") &&
+                    Has(evidence.ModifiableValue, " Owner") &&
+                    Has(evidence.Modifier, "ModValue") &&
+                    Has(evidence.Modifier, "ModDescriptor") &&
+                    Has(evidence.Modifier, "Source") &&
+                    Has(evidence.Modifier, "SourceComponent") &&
+                    Has(evidence.Modifier, "AppliedTo"),
+                "execution-scoped interception can alter only ModValue while " +
+                "retaining the original descriptor and exact source fact");
+            Add(assertions, "cast-engine-modifier-source-provenance",
+                "source Fact Blueprint/MaybeContext and Buff Blueprint/Context",
+                JoinMatches(evidence.ModifierSourceFact, "Blueprint",
+                    "MaybeContext") + "|" + JoinMatches(
+                    evidence.ModifierSourceBuff, "Blueprint", "Context",
+                    "IsFromSpell"),
+                Has(evidence.ModifierSourceFact, "Blueprint") &&
+                    Has(evidence.ModifierSourceFact, "MaybeContext") &&
+                    Has(evidence.ModifierSourceBuff, "Blueprint") &&
+                    Has(evidence.ModifierSourceBuff, "Context") &&
+                    Has(evidence.ModifierSourceBuff, "IsFromSpell"),
+                "modifier ownership can be cross-checked against the applied " +
+                "spell buff and its execution context");
+            Add(assertions, "cast-engine-ability-bonus-carriers",
+                "six installed carrier families with stat/value/activation surfaces",
+                "types=" + CountTypes(evidence.AbilityBonusCarriers) + ";" +
+                    JoinMatches(evidence.AbilityBonusCarriers, " Stat", " Value",
+                        "Bonus", "OnTurnOn", "OnFactActivate"),
+                CountTypes(evidence.AbilityBonusCarriers) == 6 &&
+                    Has(evidence.AbilityBonusCarriers, " Stat") &&
+                    Has(evidence.AbilityBonusCarriers, "OnTurnOn") &&
+                    Has(evidence.AbilityBonusCarriers, "OnFactActivate"),
+                "authoritative inventory carrier families are structurally " +
+                "available for generic or named adapter decisions");
             Add(assertions, "cast-engine-duration-context",
                 "AbilityExecutionContext plus AbilityParams metamagic surfaces",
                 JoinMatches(evidence.AbilityExecutionContext, "Ability",
@@ -242,6 +298,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result.Distinct(StringComparer.Ordinal)
                 .OrderBy(value => value, StringComparer.Ordinal).ToList();
         }
+
+        private static List<string> DescribeTypes(IEnumerable<string> names)
+        {
+            var result = new List<string>();
+            foreach (string name in names)
+            {
+                Type type = EngineType(name);
+                result.Add("type " + name + " resolved=" + (type != null));
+                result.AddRange(Describe(type).Select(value => name + " :: " +
+                    value));
+            }
+            return result;
+        }
+
+        private static Type EngineType(string fullName)
+        { return typeof(ModifiableValue).Assembly.GetType(fullName, false, false); }
+
+        private static int CountTypes(IEnumerable<string> values)
+        { return values.Count(value => value.StartsWith("type ",
+            StringComparison.Ordinal) && value.EndsWith("resolved=True",
+            StringComparison.OrdinalIgnoreCase)); }
 
         private static string Signature(MethodBase method)
         {
