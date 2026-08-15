@@ -22,6 +22,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-brown-fur-transmutation-supremacy";
         internal const string DisposableBrownFurReservoirAccounting =
             "disposable-brown-fur-reservoir-accounting";
+        internal const string DisposableBrownFurCastExecution =
+            "disposable-brown-fur-cast-execution";
         internal const string ObserveShieldOtherInventory =
             "observe-shield-other-inventory";
         internal const string ObserveExpandedSummoningInventory =
@@ -264,6 +266,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableBrownFurShareTargeting,
                 DisposableBrownFurTransmutationSupremacy,
                 DisposableBrownFurReservoirAccounting,
+                DisposableBrownFurCastExecution,
                 ObserveShieldOtherInventory,
                 ObserveExpandedSummoningInventory,
                 DisposableExpandedSummoning,

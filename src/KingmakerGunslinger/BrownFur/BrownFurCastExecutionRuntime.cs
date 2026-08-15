@@ -46,6 +46,8 @@ namespace KingmakerGunslinger.BrownFur
         { get { return Coordinator.ActiveTransactionCount; } }
         internal static int ReservationCount
         { get { return Coordinator.ReservationCount; } }
+        internal static int SuppressedSpendCount
+        { get { lock (Gate) return SuppressedSpends.Count; } }
         internal static string LastFailure
         { get { lock (Gate) return _lastFailure; } }
 

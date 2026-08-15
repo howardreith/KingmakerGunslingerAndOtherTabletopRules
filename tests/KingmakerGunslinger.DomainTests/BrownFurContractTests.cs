@@ -180,6 +180,9 @@ namespace KingmakerGunslinger.DomainTests
                 brownFur, "BrownFurCastExecutionRuntime.cs"));
             string castExecutionPatches = File.ReadAllText(Path.Combine(
                 brownFur, "BrownFurCastExecutionPatches.cs"));
+            string castExecutionScenario = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurCastExecutionScenario.cs"));
             string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurIlDisassembler.cs"));
@@ -197,6 +200,11 @@ namespace KingmakerGunslinger.DomainTests
                 "DisposableBrownFurTransmutationSupremacy" },
                 StringSplitOptions.None).Length,
                 "The disposable Supremacy constant must be declared and " +
+                "present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "DisposableBrownFurCastExecution" },
+                StringSplitOptions.None).Length,
+                "The disposable cast execution constant must be declared and " +
                 "present exactly once in the in-process allowlist.");
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
@@ -370,6 +378,28 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(reservoirScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded reservoir fixture lacks evidence token: " + token);
+            foreach (string token in new[] {
+                "disposable-brown-fur-cast-execution",
+                "brown-fur-cast-execution.json",
+                "cast-execution-patch-order",
+                "cast-execution-reservation-scopes",
+                "cast-execution-commit-debit",
+                "cast-execution-supremacy-context",
+                "cast-execution-rollback-exact",
+                "cast-execution-race-rejection",
+                "cast-execution-spend-suppression",
+                "cast-execution-insufficient-reservation",
+                "cast-execution-cleanup", "RuleCastSpell",
+                "BrownFurCastExecutionRuntime.Begin",
+                "BrownFurCastExecutionRuntime.TryCommit",
+                "BrownFurCastExecutionRuntime.RuleFailed",
+                "BrownFurCastExecutionRuntime.SuppressedSpendCount",
+                "AbilityData).GetMethod(\"Spend\"",
+                "Resources.Spend", "Resources.Restore" })
+                Assertions.True(castExecutionScenario.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded cast execution fixture lacks evidence token: " +
+                    token);
             foreach (string token in new[] {
                 "disposable-brown-fur-bonus-carriers",
                 "brown-fur-bonus-carriers.json", "AddStatBonus",
