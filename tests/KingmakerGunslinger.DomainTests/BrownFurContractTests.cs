@@ -149,6 +149,9 @@ namespace KingmakerGunslinger.DomainTests
             string inventoryObserver = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurTransmutationInventoryObserver.cs"));
+            string castEngineObserver = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurCastEngineContractObserver.cs"));
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
                 "memorization_spellbook", "arcane_reservoir_resource",
@@ -232,6 +235,19 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(inventoryObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded Transmutation inventory lacks evidence token: " + token);
+            foreach (string token in new[] {
+                "observe-brown-fur-cast-engine-contract",
+                "brown-fur-cast-engine-contract.json",
+                "cast-engine-command-lifecycle",
+                "cast-engine-canonicalization", "cast-engine-rule-commit",
+                "cast-engine-slot-accounting",
+                "cast-engine-modifier-registration",
+                "cast-engine-duration-context",
+                "cast-engine-shared-spells-harmony", "GetPatchedMethods",
+                "priority=", "before=", "after=", "save-free-observer" })
+                Assertions.True(castEngineObserver.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded cast engine contract lacks evidence token: " + token);
         }
 
         private static void AssertRejected(IEnumerable<int> levels, string label)
