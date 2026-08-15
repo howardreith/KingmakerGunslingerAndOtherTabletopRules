@@ -18,12 +18,14 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.BrownFur;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -77,6 +79,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("finalReservations", Order = 31)] public int FinalReservations { get; set; }
             [JsonProperty("finalScopes", Order = 32)] public string FinalScopes { get; set; }
             [JsonProperty("unitsRemoved", Order = 33)] public bool UnitsRemoved { get; set; }
+            [JsonProperty("interruptionIntentArmed", Order = 34)] public bool InterruptionArmed { get; set; }
+            [JsonProperty("interruptionIntentOutcome", Order = 35)] public string InterruptionOutcome { get; set; }
+            [JsonProperty("interruptionIntentCleared", Order = 36)] public bool InterruptionCleared { get; set; }
+            [JsonProperty("interruptionTargetable", Order = 37)] public bool InterruptionTargetable { get; set; }
+            [JsonProperty("interruptionCanStart", Order = 38)] public bool InterruptionCanStart { get; set; }
+            [JsonProperty("interruptionStarted", Order = 39)] public bool InterruptionStarted { get; set; }
+            [JsonProperty("interruptionResult", Order = 40)] public string InterruptionResult { get; set; }
+            [JsonProperty("interruptionFinished", Order = 41)] public bool InterruptionFinished { get; set; }
+            [JsonProperty("interruptionReservoirBeforeAfter", Order = 42)] public string InterruptionReservoir { get; set; }
+            [JsonProperty("interruptionSlotsBeforeAfter", Order = 43)] public string InterruptionSlots { get; set; }
+            [JsonProperty("interruptionFinalState", Order = 44)] public string InterruptionFinalState { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -93,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ModifierDescriptor = string.Empty
             };
             CotwArcanistContract contract = null;
+            BrownFurBlueprintSet blueprints = null;
             UnitEntityData caster = null;
             UnitEntityData ally = null;
             BlueprintUnit casterBlueprint = null;
@@ -113,6 +127,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Compatible CotW Arcanist contract is unavailable.");
                 contract = resolution.Contract;
+                blueprints = BrownFurOptionalExtensionCoordinator.Blueprints;
+                if (blueprints == null || blueprints.Count != 19)
+                    throw new InvalidOperationException(
+                        "Registered Brown-Fur blueprints are unavailable.");
                 BlueprintAbility root = ResourcesLibrary.TryGetBlueprint<
                     BlueprintAbility>(CanonicalSpellGuid);
                 BlueprintAbility selected = ResourcesLibrary.TryGetBlueprint<
@@ -280,6 +298,91 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(applied.Context.SourceAbility, selected);
                     evidence.BuffTimeSeconds = applied.TimeLeft.TotalSeconds;
                 }
+
+                stage = "native-interruption";
+                if (applied != null)
+                {
+                    applied.Remove();
+                    applied = null;
+                }
+                casting.Rest();
+                if (!casting.IsKnown(root))
+                    casting.AddKnown(SpellLevel, root, true);
+                int currentReservoir = caster.Descriptor.Resources
+                    .GetResourceAmount(contract.Reservoir);
+                if (currentReservoir < evidence.ReservoirBefore)
+                    caster.Descriptor.Resources.Restore(contract.Reservoir,
+                        evidence.ReservoirBefore - currentReservoir);
+                if (caster.Descriptor.AddFact(blueprints.PowerfulChange) == null ||
+                    caster.Descriptor.AddFact(blueprints.ShareTransmutation) == null ||
+                    caster.Descriptor.AddFact(
+                        blueprints.TransmutationSupremacy) == null ||
+                    caster.Descriptor.AddFact(blueprints.ScoreBuffs[0]) == null)
+                    throw new InvalidOperationException(
+                        "Real Brown-Fur interruption facts could not be granted.");
+                ActivatableAbility share = caster.Descriptor
+                    .ActivatableAbilities.Enumerable.SingleOrDefault(value =>
+                        value != null && ReferenceEquals(value.Blueprint,
+                            blueprints.ShareTransmutationAbility));
+                if (share == null) throw new InvalidOperationException(
+                    "Real Share Transmutation interruption toggle was unavailable.");
+                share.IsOn = true;
+                int interruptionReservoirBefore = caster.Descriptor.Resources
+                    .GetResourceAmount(contract.Reservoir);
+                int interruptionSlotsBefore = AvailableSlots(casting,
+                    SpellLevel);
+                var interruptionData = new AbilityData(
+                    new AbilityData(root, casting), selected);
+                UnitUseAbility interruptedCommand;
+                using (cutscene.Data)
+                    interruptedCommand = new UnitUseAbility(interruptionData,
+                        target);
+                evidence.InterruptionArmed =
+                    BrownFurCastExecutionRuntime.ActiveTransactionCount == 1 &&
+                    BrownFurCastExecutionRuntime.ReservationCount == 1 &&
+                    BrownFurShareTargetingRuntime.ActiveScopeCount == 1 &&
+                    BrownFurSupremacyRuntime.ActiveScopeCount == 1;
+                evidence.InterruptionOutcome =
+                    BrownFurCastIntentRuntime.LastOutcome;
+                evidence.InterruptionCleared =
+                    !blueprints.ScoreBuffs.Any(value =>
+                        caster.Descriptor.HasFact(value)) &&
+                    !caster.Descriptor.HasFact(
+                        blueprints.ShareTransmutationBuff) && !share.IsOn;
+                evidence.InterruptionTargetable =
+                    interruptionData.CanTarget(target);
+                evidence.InterruptionCanStart = interruptionData.IsAvailable &&
+                    interruptedCommand.CanStart;
+                if (!evidence.InterruptionTargetable ||
+                    !evidence.InterruptionCanStart)
+                    throw new InvalidOperationException(
+                        "Automatic Brown-Fur interruption command was unavailable.");
+                interruptedCommand.IgnoreCooldown(TimeSpan.Zero);
+                caster.Commands.Run(interruptedCommand);
+                interruptedCommand.Start();
+                evidence.InterruptionStarted = interruptedCommand.IsRunning;
+                caster.Commands.InterruptAll(true);
+                evidence.InterruptionResult =
+                    interruptedCommand.Result.ToString();
+                evidence.InterruptionFinished = interruptedCommand.IsFinished;
+                int interruptionReservoirAfter = caster.Descriptor.Resources
+                    .GetResourceAmount(contract.Reservoir);
+                int interruptionSlotsAfter = AvailableSlots(casting,
+                    SpellLevel);
+                evidence.InterruptionReservoir = interruptionReservoirBefore +
+                    "->" + interruptionReservoirAfter;
+                evidence.InterruptionSlots = interruptionSlotsBefore + "->" +
+                    interruptionSlotsAfter;
+                evidence.InterruptionFinalState = "active=" +
+                    BrownFurCastExecutionRuntime.ActiveTransactionCount +
+                    ";reservations=" +
+                    BrownFurCastExecutionRuntime.ReservationCount +
+                    ";share=" +
+                    BrownFurShareTargetingRuntime.ActiveScopeCount +
+                    ";supremacy=" +
+                    BrownFurSupremacyRuntime.ActiveScopeCount +
+                    ";modifier=" +
+                    BrownFurModifierAdjustmentRuntime.ActiveScopeCount;
             }
             catch (Exception exception)
             {
@@ -290,6 +393,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (levelController != null) TryCancel(levelController);
                 if (applied != null) applied.Remove();
+                if (caster != null) caster.Commands.InterruptAll(true);
+                if (caster != null && blueprints != null)
+                {
+                    BrownFurPlayerIntentRuntime.Clear(caster.Descriptor,
+                        blueprints);
+                    RemoveFeature(caster.Descriptor,
+                        blueprints.TransmutationSupremacy);
+                    RemoveFeature(caster.Descriptor,
+                        blueprints.ShareTransmutation);
+                    RemoveFeature(caster.Descriptor,
+                        blueprints.PowerfulChange);
+                }
                 BrownFurCastExecutionRuntime.Clear();
                 evidence.FinalActive =
                     BrownFurCastExecutionRuntime.ActiveTransactionCount;
@@ -386,6 +501,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.BuffSourceSpellExact &&
                     evidence.BuffTimeSeconds > 0d,
                 "real Personal spell effect redirected by exact cast scope");
+            Add(assertions, "native-cast-interruption-no-spend",
+                "submitted command interruption clears intent with no debit or slot spend",
+                "armed=" + evidence.InterruptionArmed + ";outcome=" +
+                    evidence.InterruptionOutcome + ";cleared=" +
+                    evidence.InterruptionCleared + ";targetable=" +
+                    evidence.InterruptionTargetable + ";canStart=" +
+                    evidence.InterruptionCanStart + ";started=" +
+                    evidence.InterruptionStarted + ";result=" +
+                    evidence.InterruptionResult + ";finished=" +
+                    evidence.InterruptionFinished + ";reservoir=" +
+                    evidence.InterruptionReservoir + ";slots=" +
+                    evidence.InterruptionSlots + ";state=" +
+                    evidence.InterruptionFinalState,
+                evidence.InterruptionArmed &&
+                    evidence.InterruptionOutcome != null &&
+                    evidence.InterruptionOutcome.StartsWith(
+                        "armed:brown-fur-") &&
+                    evidence.InterruptionOutcome.EndsWith(";cost=2") &&
+                    evidence.InterruptionCleared &&
+                    evidence.InterruptionTargetable &&
+                    evidence.InterruptionCanStart &&
+                    evidence.InterruptionStarted &&
+                    evidence.InterruptionResult !=
+                        UnitCommand.ResultType.Success.ToString() &&
+                    evidence.InterruptionFinished &&
+                    Delta(evidence.InterruptionReservoir) == 0 &&
+                    Delta(evidence.InterruptionSlots) == 0 &&
+                    evidence.InterruptionFinalState ==
+                        "active=0;reservations=0;share=0;supremacy=0;modifier=0",
+                "actual owner facts, native command queue/start/interrupt, and OnEnded cleanup");
             Add(assertions, "native-cast-cleanup",
                 "all scopes and disposable units removed",
                 "active=" + evidence.FinalActive + ";reservations=" +
@@ -470,7 +615,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             return book.Blueprint.Spontaneous ?
                 book.GetSpontaneousSlots(level) :
                 book.GetMemorizedSpellSlots(level).Count(value =>
-                    value != null && value.Available);
+                value != null && value.Available);
+        }
+
+        private static int Delta(string transition)
+        {
+            string[] values = (transition ?? string.Empty).Split(new[] { "->" },
+                StringSplitOptions.None);
+            int before;
+            int after;
+            return values.Length == 2 && int.TryParse(values[0], out before) &&
+                int.TryParse(values[1], out after) ? after - before : int.MaxValue;
+        }
+
+        private static void RemoveFeature(UnitDescriptor owner,
+            Kingmaker.Blueprints.Facts.BlueprintUnitFact feature)
+        {
+            if (owner != null && feature != null && owner.HasFact(feature))
+                owner.RemoveFact(feature);
         }
 
         private static BrownFurCastTransaction Transaction(string identity,

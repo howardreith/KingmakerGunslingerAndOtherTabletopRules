@@ -526,9 +526,12 @@ namespace KingmakerGunslinger.DomainTests
                 "brown-fur-native-cast.json", "native-cast-fixture",
                 "native-cast-source-target", "native-cast-command-process",
                 "native-cast-accounting", "native-cast-ally-effect",
+                "native-cast-interruption-no-spend",
                 "native-cast-cleanup", "EntityCreator.SpawnUnit",
                 "caster.Commands.Run(command)",
                 "command.ExecutionProcess.Tick()",
+                "caster.Commands.InterruptAll(true)",
+                "BrownFurCastIntentRuntime.LastOutcome",
                 "BrownFurCastExecutionRuntime.Begin",
                 "ModifierDescriptor.Polymorph", "ApplyClassMechanics",
                 "ApplyLevelup", "KMG_AUTOMATION_WORKING" })
