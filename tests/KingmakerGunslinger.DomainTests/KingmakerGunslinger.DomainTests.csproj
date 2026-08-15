@@ -97,6 +97,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurIdentityCatalog.cs"><Link>BrownFur\BrownFurIdentityCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastRequest.cs"><Link>BrownFur\BrownFurCastRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurShareTargetPolicy.cs"><Link>BrownFur\BrownFurShareTargetPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurShareTargetingScopeTracker.cs"><Link>BrownFur\BrownFurShareTargetingScopeTracker.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastDecision.cs"><Link>BrownFur\BrownFurCastDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastPolicy.cs"><Link>BrownFur\BrownFurCastPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastIntent.cs"><Link>BrownFur\BrownFurCastIntent.cs</Link></Compile>

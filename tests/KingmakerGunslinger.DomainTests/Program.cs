@@ -58,6 +58,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.modifier-fail-closed", BrownFurCastTests.ModifierAdjustmentFailsClosed),
             Case("brown-fur.modifier-exactly-once", BrownFurCastTests.ModifierAdjustmentIsExactlyOnce),
             Case("brown-fur.modifier-concurrent", BrownFurCastTests.ModifierTransactionsAreIsolated),
+            Case("brown-fur.share-scope-exact", BrownFurCastTests.ShareTargetingScopeIsExact),
+            Case("brown-fur.share-scope-concurrent", BrownFurCastTests.ShareTargetingScopesAreIsolated),
             Case("brown-fur.bonus-plan-static", BrownFurCastTests.StaticBonusAdapterPlanIsExact),
             Case("brown-fur.bonus-plan-polymorph", BrownFurCastTests.PolymorphBonusAdapterPlanIsExact),
             Case("brown-fur.bonus-plan-size", BrownFurCastTests.SizeBonusAdapterPlanIsExact),

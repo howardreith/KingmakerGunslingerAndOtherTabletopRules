@@ -327,6 +327,65 @@ namespace KingmakerGunslinger.DomainTests
                 "Load or combat transition cleanup must clear all retained state.");
         }
 
+        internal static void ShareTargetingScopeIsExact()
+        {
+            var tracker = new BrownFurShareTargetingScopeTracker<object, object,
+                object>();
+            object ability = new object();
+            object caster = new object();
+            object target = new object();
+            object otherTarget = new object();
+            bool allowed;
+            BrownFurShareDelivery delivery;
+            Assertions.True(tracker.Begin("share-1", ability, caster, target,
+                BrownFurShareDelivery.Touch) &&
+                tracker.TryResolveAnchor(ability) &&
+                tracker.TryResolveTarget(ability, caster, target, out allowed) &&
+                allowed && tracker.TryGetDelivery(ability, caster, target,
+                    out delivery) && delivery == BrownFurShareDelivery.Touch,
+                "A validated Share scope must resolve only its exact cast identity.");
+            Assertions.True(tracker.TryResolveTarget(ability, caster,
+                otherTarget, out allowed) && !allowed,
+                "The matching ability scope must explicitly reject a different target.");
+            Assertions.False(tracker.TryResolveTarget(new object(), caster,
+                target, out allowed),
+                "An unrelated ability must retain the native or CotW result.");
+            Assertions.False(tracker.Begin("share-2", ability, caster, target,
+                BrownFurShareDelivery.ThirtyFeet),
+                "One AbilityData identity must not own simultaneous scopes.");
+            Assertions.True(tracker.Release("share-1") &&
+                !tracker.TryResolveAnchor(ability) && tracker.ActiveScopeCount == 0,
+                "Releasing the transaction must remove its targeting override.");
+        }
+
+        internal static void ShareTargetingScopesAreIsolated()
+        {
+            var tracker = new BrownFurShareTargetingScopeTracker<object, object,
+                object>();
+            object firstAbility = new object();
+            object secondAbility = new object();
+            object firstCaster = new object();
+            object secondCaster = new object();
+            object firstTarget = new object();
+            object secondTarget = new object();
+            BrownFurShareDelivery delivery;
+            Assertions.True(tracker.Begin("share-a", firstAbility, firstCaster,
+                firstTarget, BrownFurShareDelivery.Touch) &&
+                tracker.Begin("share-b", secondAbility, secondCaster,
+                    secondTarget, BrownFurShareDelivery.ThirtyFeet) &&
+                tracker.ActiveScopeCount == 2,
+                "Queued Share casts must retain separate reference identities.");
+            tracker.Release("share-a");
+            Assertions.True(!tracker.TryResolveAnchor(firstAbility) &&
+                tracker.TryGetDelivery(secondAbility, secondCaster, secondTarget,
+                    out delivery) &&
+                delivery == BrownFurShareDelivery.ThirtyFeet,
+                "Cleaning one Share cast must not release another cast's delivery state.");
+            tracker.Clear();
+            Assertions.Equal(0, tracker.ActiveScopeCount,
+                "Load or combat cleanup must clear all Share targeting scopes.");
+        }
+
         internal static void StaticBonusAdapterPlanIsExact()
         {
             BrownFurBonusAdapterPlan plan = BrownFurBonusAdapterPlanPolicy.Create(

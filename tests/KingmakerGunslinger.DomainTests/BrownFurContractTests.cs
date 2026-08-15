@@ -159,6 +159,10 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurModifierAdjustmentRuntime.cs"));
             string modifierPatch = File.ReadAllText(Path.Combine(brownFur,
                 "BrownFurModifierAdjustmentPatch.cs"));
+            string shareTargetingRuntime = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurShareTargetingRuntime.cs"));
+            string shareTargetingPatches = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurShareTargetingPatches.cs"));
             string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurIlDisassembler.cs"));
@@ -322,6 +326,20 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(modifierRuntime.Contains(
                 "static MechanicsContext Current"),
                 "Powerful Change must not retain one global current cast.");
+            foreach (string token in new[] { "AbilityData", "UnitDescriptor",
+                "UnitEntityData", "ActiveScopeCount", "Scopes.Begin",
+                "TryOverrideAnchor", "TryOverrideTarget",
+                "TryOverrideApproachDistance", "ThirtyFeetMeters",
+                "nativeDistance + ThirtyFeetMeters", "Release", "Clear" })
+                Assertions.True(shareTargetingRuntime.Contains(token),
+                    "Share targeting runtime lacks exact scope guard: " + token);
+            foreach (string token in new[] { "get_TargetAnchor", "CanTarget",
+                "GetApproachDistance", "Postfix", "HarmonyAfter",
+                "CallOfTheWild", "ref AbilityTargetAnchor", "ref bool",
+                "ref float", "catch" })
+                Assertions.True(shareTargetingPatches.Contains(token),
+                    "Share targeting patch lacks exact interoperability guard: " +
+                    token);
         }
 
         private static void AssertRejected(IEnumerable<int> levels, string label)
