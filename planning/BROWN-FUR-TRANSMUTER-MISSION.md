@@ -362,3 +362,17 @@ This closes native command-derived intent and combined slot/reservoir
 accounting. Post-submission interruption, dispel/expiration, persistence,
 module-OFF existing-owner behavior, dependency profiles, boundary matrix, and
 selector publication remain gates. Brown-Fur is registered but unpublished.
+
+The native submitted-command interruption path then passed on
+`f39c2c0acff97d84b2e2dc7484782f870d90bd10`. A real automatically armed
+combined command entered the running state and was interrupted before cast
+commitment. It returned `Interrupt`, finished, retained reservoir `4 -> 4`
+and level-three slots `6 -> 6`, cleared both one-shot markers, and released
+every transaction, reservation, Share, Supremacy, and modifier scope. The
+same guarded run re-proved the successful combined cast and all disposable
+cleanup. Exact identities are in the CotW contract.
+
+This closes the pre-commit submitted-command cancellation/interruption gate.
+Dispel/expiration, persistence, module-OFF existing-owner behavior,
+dependency profiles, boundary matrix, and selector publication remain gates.
+Brown-Fur is registered but unpublished.

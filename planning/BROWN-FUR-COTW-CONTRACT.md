@@ -534,6 +534,51 @@ interruption after native submission, native dispel, and save/reload
 persistence remain publication gates. Brown-Fur remains reserved and
 unpublished.
 
+The same working-save fixture was extended with an automatically derived,
+pre-commit interruption and passed all seven assertions on commit
+`f39c2c0acff97d84b2e2dc7484782f870d90bd10`, run
+`20260815T2136354900692Z-4f61a30351c24faca4e7603f096453a3`. It used only
+the named `KMG_AUTOMATION_WORKING` save, spawned disposable units, and made no
+save write. Evidence-directory identity was
+`20260815T2136354654086Z-disposable-brown-fur-native-cast`; deployment
+identity was `20260815T2136353877384Z`; backup identity was
+`20260815T2136309061847Z`. Exact immutable identities were:
+
+- local-runtime package SHA-256
+  `C1C71B81734C2A19ADC36222D56272666231C3989E8F6A4EBA88F791262579EF`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `16645D25BCFD6AF9FF28624B029D04930BAFED23E035C1D69CAE46D63DAE1170`;
+- DLL MVID `06eba2d2-78cc-48d7-896f-eda65bedca7f`;
+- structured native-cast artifact SHA-256
+  `3D5AE994BAD79CE022FECE4CD85E761B5A2DB5EB2217A7E9033DD70424A0BCC0`;
+- runtime-result SHA-256
+  `5F0FEBC50EE72505B55387EFF88E2FDE46FFF5157ED639FE25E71A0A376CAC86`;
+- runtime-evidence SHA-256
+  `B9963CDF1ADD4E6D48BE628208D814D791F73F90F263CEFA6BB43A2EA1E0A2CC`;
+- orchestration SHA-256
+  `B0472832F5E94AEFF13404C7A96A1E11AA0EC3E3EC60EB4B572237F667A76D82`;
+- deployment-manifest SHA-256
+  `EC445016A998B378A95102902A0D3EE785B7DD4C30B399727748257E472ED0E7`;
+  and
+- preserved feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`.
+
+After re-establishing the request-local known spell and reservoir, the real
+three Brown-Fur owner facts plus Strength and Share one-shot markers armed one
+automatic combined command. It was targetable, available, entered the native
+running state, and cleared both markers. Native `InterruptAll(true)` then
+ended it with result `Interrupt` before rule commitment. Reservoir remained
+`4 -> 4`, level-three slots remained `6 -> 6`, and transaction, reservation,
+Share, Supremacy, and modifier counts all returned to zero. The successful
+cast portion of the same run continued to prove `4 -> 2`, `6 -> 5`, ally-only
+effect delivery, `+4 Polymorph` Strength, and terminal process cleanup.
+
+This closes cancellation after native command submission but before cast
+commitment: no partial or duplicate debit, no slot expenditure, one-shot
+cleanup, and bounded release are proven. Native dispel/expiration,
+save/reload persistence, module-OFF existing-owner behavior, and selector
+publication remain gates. Brown-Fur remains registered but unpublished.
+
 ## Scoped Transmutation Supremacy context
 
 The context-local Transmutation Supremacy fixture passed all five guarded
