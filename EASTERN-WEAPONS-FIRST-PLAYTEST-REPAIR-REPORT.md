@@ -1,7 +1,8 @@
 # Eastern Weapons First Human Playtest Repair Report
 
-Status: implementation and structural qualification in progress; corrected
-candidate assets are built, with the second subjective human review pending.
+Status: implementation and automated structural/runtime qualification complete;
+the corrected candidate is published, with the second subjective human review
+pending.
 
 ## Human findings
 
@@ -11,7 +12,7 @@ candidate assets are built, with the second subjective human review pending.
   mechanical damage-die behavior for all four KMG custom categories.
 - Repaired and automated: seven measured diagonal inventory icons; thinner
   curved asymmetric single-edged family meshes; Wakizashi forward visual donor;
-  Nodachi two-handed sword visual donor; family-level item override
+  Nodachi two-handed sword visual donor; exact inherited item-visual
   normalization; all-30 instantiated-prefab audit.
 - Pending human recheck: every subjective silhouette, stance, attack-edge, and
   icon-taste check. Structural automation will not be reported as subjective
@@ -43,10 +44,10 @@ in `docs/EASTERN-WEAPONS-IMPLEMENTATION-EVIDENCE.md`.
   `d9fbec4637d71bd4ebc977628de3daf3`, Katana uses Bastard Sword
   `d2fe2c5516b56f04da1d5ea51ae3ddfe`, and Nodachi uses Greatsword
   `5f824fbb0766a3543bbd6ae50248688f`. Only presentation fields are inherited.
-- Family normalization: live reflection proves this installed
-  `BlueprintItemWeapon` has no item-level `m_VisualParameters` field. The
-  scenario records that each item's public effective visual equals its family
-  type, plus prefab identity, donor
+- Family normalization: live reflection proves the item visual is the private
+  inherited `BlueprintItemEquipmentHand.m_VisualParameters` field. Every item
+  stores the exact family-type visual. The observer and combat scenario record
+  that identity, plus prefab identity, donor
   contract, materials, enchantment overlays, and cleanup for all 30 items.
 - Eastern bundle: 147,724 bytes,
   `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.
@@ -66,9 +67,24 @@ in `docs/EASTERN-WEAPONS-IMPLEMENTATION-EVIDENCE.md`.
 - Focused Weapon four matching Weapon Focus controls and no-focus control;
 - Improved Critical regression.
 
-## Remaining qualification
+## Automated qualification seal
 
-Full runtime regression, compatibility profiles, three-phase persistence,
-64-state matrix, working-save smoke, final artifact hash seal, PR update, and
-the targeted subjective human recheck remain open until their evidence is
-recorded below.
+- Repository validation, `1048/1048` tests, clean exact-reference Release
+  build, deterministic package creation, and strict package validation: PASS.
+- Final standalone observer/combat/spear/vendor/module ON and OFF: PASS.
+- Call of the Wild, Arms and Armor, and maximum combined profiles: PASS; all
+  compatibility transactions restored exactly.
+- Three-phase `KMG_AUTOMATION_WORKING` persistence: PASS with two correlated
+  writes and final zero-fixture/no-write verification.
+- Complete matrix: PASS, 64 unique states on one runtime identity. One Unity
+  configuration-window launch failed before request acceptance; exact masks
+  `000001` and `000000` were resumably completed after settings/artifact
+  identity verification. Settings restored to SHA-256 `2E53FA0A...8655`.
+- Canonical non-mutating working-save smoke: PASS,
+  `20260815T0327246002771Z-0aaa6190530e4c37bfa984cc453ddabd`.
+- Functional/artifact source: `5e99d4d7555d9d96efd7bd79714161003e314013`.
+  DLL `F4E3F926...9145B`, MVID `c0a7d9d2-5c94-45f3-9f6f-eefd7ac3dae3`,
+  package `03C38DD9...63CB`, Eastern bundle `F58801B7...5B43`.
+
+The targeted subjective human recheck remains open and is not replaced by
+these structural and mechanical results.

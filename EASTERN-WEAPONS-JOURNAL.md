@@ -630,3 +630,32 @@ values, or campaign targets.
   validation, deterministic package creation, and strict standalone package
   validation pass. Runtime/compatibility/persistence/matrix requalification is
   the next repair slice; subjective visual acceptance remains pending.
+
+## 2026-08-15 - first human playtest repair automated seal
+
+- Functional source `5e99d4d7555d9d96efd7bd79714161003e314013`
+  passed the expanded all-30 contract observer, complete Eastern combat,
+  Elven Branched Spear combat regression, vendor/loot, and module ON/OFF runs.
+- CotW transaction `compat-20260814T235030Z-ac064332c40b` passed exact
+  Focused Weapon eligibility and real `2d8` results for all four custom
+  categories. Arms and Armor transaction
+  `compat-20260814T235934Z-875bc9f866b9` and maximum combined transaction
+  `compat-20260815T000604Z-76fc1083922a` passed; all restored exactly.
+- Three-phase persistence passed with prepare
+  `20260815T0019545329847Z-b95d01116d58455b860f345ff56ee00b`, cleanup
+  `20260815T0022528460530Z-12b8b288c6a5444d89e4d8ba28097c4d`, and absence
+  `20260815T0025454458743Z-6ff9530fda344951a1926e6f9c4c2715`.
+- The complete matrix produced 64 PASS results, 64 unique states, and one
+  runtime identity. A Unity configuration window stalled once before request
+  acceptance at mask `000001`; it produced no feature result. The exact owned
+  process was terminated without UI interaction, immutable artifact and
+  original-settings identities were reverified, and masks `000001` and
+  `000000` passed resumably. Settings restored to
+  `2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`.
+- Canonical non-mutating working-save smoke
+  `20260815T0327246002771Z-0aaa6190530e4c37bfa984cc453ddabd`
+  passed. Protected baseline access remained false.
+- Final DLL/package/Eastern-bundle SHA-256 values are `F4E3F926...9145B`,
+  `03C38DD9...63CB`, and `F58801B7...5B43`; MVID is
+  `c0a7d9d2-5c94-45f3-9f6f-eefd7ac3dae3`. Installed/runtime-loaded identity
+  matched. Subjective visual acceptance remains pending a second human pass.

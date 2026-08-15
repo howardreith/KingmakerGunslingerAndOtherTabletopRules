@@ -127,10 +127,12 @@ be performed.
 The accepted catalog, identities, mechanics, acquisition, saves, and version
 remain frozen. The repair adds exact Call of the Wild Focused Weapon children,
 measured diagonal icons, revised asymmetric single-edge family geometry,
-Scimitar/Bastard Sword/Greatsword presentation donors, exact proof that the
-installed item type has no item-level visual override field, and an all-30
-instantiated family-prefab audit.
+Scimitar/Bastard Sword/Greatsword presentation donors, exact recursive binding
+of the inherited equipment-hand visual field, and an all-30 instantiated
+family-prefab audit.
 Source/package gates pass with 1,048 tests and Eastern bundle SHA-256
 `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.
-Runtime regression and final artifact identities will be sealed after the
-committed repair is installed. Subjective visual acceptance remains pending.
+Functional source `5e99d4d7555d9d96efd7bd79714161003e314013` passed final
+standalone, compatibility, persistence, 64-state, package,
+installed/runtime-identity, and working-save-smoke gates. Subjective visual
+acceptance remains pending.

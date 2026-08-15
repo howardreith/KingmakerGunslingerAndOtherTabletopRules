@@ -17,13 +17,33 @@ explicit.
 - Preserved spear bundle:
   `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`.
 - Expanded live all-30 visual identity observer and combat scenario: implemented;
-  standalone combat/model run `20260814T2335184875188Z` PASS; observer rerun
-  pending the committed repair artifact.
+  final observer `20260814T2341082174566Z` and combat/model run
+  `20260814T2343312137205Z` PASS.
 - Focused compatibility, persistence, 64-state matrix, and final identity seal:
-  pending this repair's runtime qualification cycle.
+  PASS on functional source `5e99d4d7555d9d96efd7bd79714161003e314013`.
 - Subjective visual acceptance: pending targeted second human review.
 
-## Current qualified candidate
+### First-playtest repair final identity
+
+- DLL SHA-256:
+  `F4E3F926215C0C3DA20F1D41513D8FCD1294281BEFE50F20D1BBFEFB0619145B`.
+- DLL MVID: `c0a7d9d2-5c94-45f3-9f6f-eefd7ac3dae3`.
+- Package SHA-256:
+  `03C38DD98AF2B007DA8721B34D5439AE05CB37CBA5662B98F77BF2481DD963CB`.
+- Eastern bundle SHA-256:
+  `F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43`.
+- Spear bundle preserved:
+  `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`.
+- Built, packaged, installed, and runtime-loaded identity: PASS.
+- Matrix: 64 PASS results, 64 unique states, one runtime identity; first
+  `20260815T0028526244596Z`, last `20260815T0324275337531Z`; restored settings
+  SHA-256 `2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`.
+- A Unity configuration-window launch stalled before request acceptance during
+  mask `000001`; it produced no feature result. The exact owned process was
+  terminated without UI interaction, immutable artifact/settings identities
+  were reverified, and masks `000001` and `000000` passed resumably.
+
+## Pre-repair qualified candidate (historical)
 
 - Repository validation: PASS.
 - Dependency-free domain/reflection suite: PASS, `1047/1047`.

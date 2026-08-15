@@ -34,7 +34,7 @@
   and native donor fallbacks.
 - Advances the release to assembly version `0.0.80` and informational/package
   identity `0.0.80-eastern-weapons`.
-- Qualifies 1,047 dependency-free tests, all 64 module states, standalone,
+- Qualifies 1,048 dependency-free tests, all 64 module states, standalone,
   Call of the Wild, Arms and Armor, Toggle Custom Soundpacks, maximum combined
   profiles, three-phase module-disabled persistence, and canonical working-save
   smoke. Subjective visual acceptance remains a human review item.

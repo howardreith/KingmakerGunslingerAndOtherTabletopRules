@@ -41,6 +41,12 @@ types are retained, but arbitrary downgrades are not qualified. Do not load a
 save written by a newer mod version after downgrading unless that exact path is
 explicitly documented as qualified.
 
+With Call of the Wild installed, Focused Weapon exposes each KMG custom weapon
+category only when the level-up unit owns exact Weapon Focus for that category.
+Elven Branched Spear, Wakizashi, Katana, and Nodachi each passed singular
+eligibility and actual native damage-die effect checks; absence of matching
+Weapon Focus remains an exact negative control.
+
 ## Feature-module settings
 
 The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,

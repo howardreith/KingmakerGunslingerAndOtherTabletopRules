@@ -1,5 +1,24 @@
 # Autonomous Gunslinger resume handoff
 
+## Eastern Weapons first-human-playtest repair (automated seal complete, human recheck pending)
+
+- Functional/artifact source is
+  `5e99d4d7555d9d96efd7bd79714161003e314013`; release remains
+  `0.0.80-eastern-weapons`. Seven icons are 42-degree diagonals, three family
+  meshes are curved asymmetric single-edge swords, and every one of 30 items
+  stores its exact family visual. Donors are Scimitar/Bastard Sword/Greatsword.
+- Call of the Wild Focused Weapon passes exact Weapon Focus eligibility and
+  actual `2d8` mechanics for spear, wakizashi, katana, and nodachi, including
+  no-focus and multi-focus controls.
+- Repository validation, 1,048 tests, package validation, final standalone,
+  CotW, Arms and Armor, maximum combined, persistence, module ON/OFF, 64 unique
+  module states, and canonical working-save smoke pass. DLL/package/bundle are
+  `F4E3F926...9145B`, `03C38DD9...63CB`, and `F58801B7...5B43`; MVID is
+  `c0a7d9d2-5c94-45f3-9f6f-eefd7ac3dae3`.
+- Draft PR #4 remains the only PR and must be updated, not replaced or merged.
+  Subjective silhouette, grip, attack-edge, and icon review remains pending the
+  targeted second human pass.
+
 ## Eastern Weapons release candidate (automated qualification complete, 2026-08-14)
 
 - Branch `codex/eastern-weapons` is based on
@@ -2769,12 +2788,12 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   `1b5c808f69e59478a1fa7ccf4f0135af4a59ebd1`.
 - The asset/presentation repair is source-qualified: seven measured diagonal
   icons, three revised single-edge meshes, Scimitar/Bastard/Greatsword visual
-  donors, exact item-override-field absence handling, and all-30 live audit
-  source.
+  donors, exact inherited item-visual binding, and all-30 live observer and
+  combat audits.
 - Repository validation, `1048/1048` tests, clean Release build, output
   validation, and strict package validation pass. Eastern bundle is
   `F58801B7...A15B43`; spear FBX and bundle are unchanged.
-- Exact next action: commit and guarded-push this coherent asset slice, rebuild
-  from that commit, then run focused runtime, compatibility, persistence,
-  64-state matrix, canonical smoke, identity seal, and PR #4 update. Human
-  subjective visual recheck remains pending.
+- Automated runtime, compatibility, persistence, 64-state matrix, canonical
+  smoke, and identity seals are complete on `5e99d4d7555d9d96efd7bd79714161003e314013`.
+  Exact next action is the documentation seal, guarded push, and PR #4 update.
+  Human subjective visual recheck remains pending.

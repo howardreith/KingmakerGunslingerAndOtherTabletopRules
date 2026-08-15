@@ -168,6 +168,32 @@ production adapter/service. Synthetic doubles may supply isolated state only
 when they do not duplicate the behavior under test. Log text, a screenshot,
 domain tests, or a successful build alone is not proof of gameplay behavior.
 
+## Runtime qualification scope policy
+
+Do not run the exhaustive `2^N` feature-module matrix during ordinary iterative
+repairs unless the change modifies feature-module configuration/settings/schema,
+publication plans, shared blueprint bootstrap/registration, shared module
+gating/rollback, module cardinality, or another cross-module authority whose
+correctness genuinely depends on every complete configuration.
+
+- Documentation-only changes require no game process.
+- Icon-only changes require package/icon validation and focused all-ON asset
+  loading.
+- Model, material, grip, donor, or bundle-only changes require focused family
+  visual contracts, Eastern Weapons ON/OFF, all modules ON, and the highest-risk
+  combined compatibility profile.
+- A single module's mechanics or selector publication requires its focused
+  mechanics, relevant optional profiles, persistence when affected, and the
+  14-state boundary matrix: all ON, all OFF, each module ON alone, and each
+  module OFF while every other module is ON.
+
+Build, test, package, validate, back up, and deploy once per immutable source
+commit. Reuse that exact installed artifact across matrix launches and verify
+commit, version, package/DLL SHA-256, DLL MVID, and installed DLL hash. Resume
+matrix evidence only when the immutable artifact and original-settings identity
+still match. During human visual iteration, perform the exhaustive release
+matrix, when required, once after the candidate receives human acceptance.
+
 ## Manual and visual gates
 
 The guarded runner can prove load identity, bootstrap state, protocol behavior,

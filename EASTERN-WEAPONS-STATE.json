@@ -240,8 +240,9 @@
     "draftPullRequest": "PASS #4 open draft against master"
   },
   "firstPlaytestRepair": {
-    "status": "focused_weapon_committed_assets_built_source_qualified_runtime_regression_pending",
+    "status": "automated_qualification_complete_second_human_visual_review_pending",
     "focusedWeaponCommit": "1b5c808f69e59478a1fa7ccf4f0135af4a59ebd1",
+    "functionalArtifactCommit": "5e99d4d7555d9d96efd7bd79714161003e314013",
     "domainTests": "PASS 1048/1048",
     "repositoryValidation": "PASS",
     "cleanReleaseBuild": "PASS",
@@ -251,12 +252,22 @@
     "icons": "seven measured 42-degree 128x128 transparent RGBA outputs",
     "models": "three curved asymmetric single-edge family meshes; all-30 type-owned effective visual audit added",
     "visualDonors": "Scimitar/Bastard Sword/Greatsword",
+    "standaloneRuntime": "PASS expanded observer, Eastern combat, spear combat, vendor/loot, module ON/OFF",
+    "focusedWeaponRuntime": "PASS four positive, no-focus, multi-focus, and actual 2d8 controls",
+    "compatibility": "PASS Call of the Wild, Arms and Armor, maximum combined; exact restoration",
+    "persistence": "PASS three phases; two correlated writes; final absence no write",
+    "moduleMatrix": "PASS 64 results; 64 unique states; one runtime identity; exact settings restoration",
+    "workingSaveSmoke": "PASS non-mutating",
+    "dllSha256": "F4E3F926215C0C3DA20F1D41513D8FCD1294281BEFE50F20D1BBFEFB0619145B",
+    "dllMvid": "c0a7d9d2-5c94-45f3-9f6f-eefd7ac3dae3",
+    "packageSha256": "03C38DD98AF2B007DA8721B34D5439AE05CB37CBA5662B98F77BF2481DD963CB",
+    "settingsRestorationSha256": "2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655",
     "humanVisualReview": "pending targeted second pass"
   },
   "safety": {
     "protectedBaselineAccessed": false,
     "workingSaveWrites": 2,
-    "runtimeLaunches": 140,
+    "runtimeLaunches": 236,
     "autonomousMerge": false
   }
 }
