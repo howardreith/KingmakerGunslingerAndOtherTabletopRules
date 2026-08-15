@@ -25,12 +25,13 @@ publication-gate row is passing.
 | Native combined spell cast | PASS | `442963a26108fa41a89accabcc7c3209373aceae` | Real Beast Shape variant, ally delivery, exact modifier, reservoir and slot deltas, process completion |
 | Real player intent facts | PASS | `37486e6bc100941f6c88fb28a0ad828a99b525c4` | Registered feature ownership, native grants, combined one-shot intent, clear, orphan rejection, zero publication |
 | Willing-target relationship surfaces | PASS | `efa7f578de31bf7d86bab17fac89296ced0e203e` | Native party, pet, summon, faction, control, enemy, and attackability APIs; fail-closed production policy |
+| Native command intent and accounting | PASS | `f596b374de8c0b813ae40a397c533b02384f3db3` | Real facts derive one immutable combined transaction; reservoir `4 -> 2`, native slots `6 -> 5`, invalid stat rejected pre-action, zero retained state |
 
 ## Publication gates
 
 | Gate | Status | Required evidence |
 | --- | --- | --- |
-| Native command derives immutable intent from actual owner facts | PENDING | Real command-constructor path validates and arms exactly one transaction |
+| Native command derives immutable intent from actual owner facts | PASS | Guarded command-constructor path validates and arms exactly one transaction; combined debit and native slot spend are exact |
 | Cancellation and post-submission interruption | PENDING | No partial debit or slot spend; all one-shot and retained state clears |
 | Dispel and expiration | PENDING | Enhanced effects preserve native removal and source behavior |
 | Save/reload persistence | PENDING | Stable identities and active enhanced state survive guarded working-save cycle |

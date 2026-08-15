@@ -346,3 +346,19 @@ This closes player intent derivation from actual registered feature and buff
 ownership. Native command-constructor attachment, post-submission
 interruption, dispel, persistence, and selector publication remain gates.
 Brown-Fur is registered but unpublished.
+
+The production command-constructor bridge and exact accounting path then
+passed all nine guarded assertions on
+`f596b374de8c0b813ae40a397c533b02384f3db3`. Actual registered owner facts
+and one-shot markers automatically produced one immutable combined
+transaction. Rule commitment changed the resolved CotW reservoir `4 -> 2`,
+native variant spending followed its canonical Arcanist source and changed
+level-three slots `6 -> 5`, and an invalid Charisma selection for the
+Strength-only spell returned native pre-action `Fail` with neither resource
+spent. All retained scopes and request-local state cleaned up. Exact artifact
+and run identities are recorded in the CotW contract.
+
+This closes native command-derived intent and combined slot/reservoir
+accounting. Post-submission interruption, dispel/expiration, persistence,
+module-OFF existing-owner behavior, dependency profiles, boundary matrix, and
+selector publication remain gates. Brown-Fur is registered but unpublished.

@@ -955,6 +955,66 @@ native command constructor, prove post-submission interruption, dispel, or
 persistence, or authorize selector publication. Brown-Fur remains registered
 but unpublished.
 
+The native command bridge subsequently passed all nine guarded
+`disposable-brown-fur-arcanist-slot` assertions on commit
+`f596b374de8c0b813ae40a397c533b02384f3db3`, run
+`20260815T2127190485065Z-01133dcaf3324968876f48017763459b`. The save-free
+Steam App ID 640820 fixture used evidence-directory identity
+`20260815T2127190292669Z-disposable-brown-fur-arcanist-slot`, deployment
+identity `20260815T2127189540525Z`, and backup identity
+`20260815T2127146060876Z`. Exact immutable identities were:
+
+- local-runtime package SHA-256
+  `F81E853D28A9A385C5295514608B5D652522AA04AE87B5D8B7DC76A12532C596`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `F0825D68A5FF40AF59EBE3398FAF15A3569251DF275765EF56BB86D08199FFC8`;
+- DLL MVID `e8d2a601-d7f5-4df6-86b8-5bd59f36db86`;
+- structured slot artifact SHA-256
+  `A3B39287E427EB58B79FCEF3AD33DA33206512853D4453BE442440DA88B7BD57`;
+- runtime-result SHA-256
+  `CD7E1A751F09CD27CD940E88BBA2655604CFF67D9675E37F0BE5A094858A45C5`;
+- runtime-evidence SHA-256
+  `C59E7DAC581A5A25CEF03F70E52947B95FE6F6C9AE61ACE28613E4DE4DF15512`;
+- orchestration SHA-256
+  `CA09098B0B51769E54F77C4464717F09EE392925366A9FB33F240B4B8FACB8E4`;
+- deployment-manifest SHA-256
+  `AD6B9B01FC1072743980F3A29C4B5F3689D193E55A9ACB0D565C1DD02ABAB633`;
+- preserved feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`;
+  and
+- game build collection `2018.4.10.10503941`.
+
+The actual Powerful Change, Share Transmutation, and Transmutation Supremacy
+facts plus Strength and Share one-shot markers caused the real
+`UnitUseAbility` constructor postfix to canonicalize the Beast Shape I wrapper
+and wolf variant, validate the installed inventory record, and retain exactly
+one combined transaction with cost two. The constructor cleared both one-shot
+markers while retaining feature ownership. Rule commitment changed the CotW
+reservoir `4 -> 2`; native `AbilityData.Spend()` followed the preserved
+`ConvertedFrom` root and changed level-three Arcanist slots `6 -> 5`.
+
+The same run proved command-scoped invalid-stat rejection: selecting Charisma
+for the Strength-only spell produced native `OnAction()` result `Fail` before
+reservoir or slot expenditure. The insufficient-reservoir race likewise left
+the one-point reservoir and six slots unchanged and consumed its spend
+suppression exactly once. Final transaction, reservation, targeting,
+Supremacy, modifier, suppression, resource, one-shot, and disposable-unit
+state were all zero or removed.
+
+Two prior diagnostic runs isolated a request-local fixture issue:
+`Spellbook.Rest()` removes a spell introduced through temporary
+`AddKnown(..., isCopy: true)`. The passing fixture records that false/zero
+precondition, restores the disposable known spell, then proves every real
+Brown-Fur fact, toggle, and command leaves `CanSpend=true`, available count
+six, and `IsKnown=true`. No production workaround or direct slot debit was
+added.
+
+This closes native command-constructor intent derivation, canonical source
+retention, combined exact accounting, pre-action invalid-intent rejection,
+and one-shot cleanup. Post-submission interruption, native dispel,
+save/reload persistence, module-OFF existing-owner behavior, and selector
+publication remain gates. Brown-Fur remains registered but unpublished.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
@@ -983,6 +1043,6 @@ The reflection-only runtime resolver and isolated lifecycle coordinator are now
 implemented and qualified against the installed fingerprint above. With a
 compatible CotW contract they register all 19 stable Brown-Fur identities in a
 separate rollback-capable transaction, but do not yet publish the archetype.
-Player intent, actual feature ownership, interruption, dispel, persistence, and
-selector publication remain pending; this document does not claim
+Interruption, dispel, persistence, module-OFF owner behavior, and selector
+publication remain pending; this document does not claim
 player-facing Brown-Fur compatibility.
