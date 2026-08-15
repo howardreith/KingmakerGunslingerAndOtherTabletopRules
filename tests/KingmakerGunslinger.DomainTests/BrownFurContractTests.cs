@@ -121,6 +121,25 @@ namespace KingmakerGunslinger.DomainTests
                 "Repeated contract resolution must produce the same decision.");
         }
 
+        internal static void PlayerIntentRuntimeUsesExactFacts()
+        {
+            string source = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "BrownFur", "BrownFurPlayerIntentRuntime.cs"));
+            foreach (string token in new[] {
+                "owner.HasFact(blueprints.PowerfulChange)",
+                "owner.HasFact(blueprints.ShareTransmutation)",
+                "owner.HasFact(blueprints.TransmutationSupremacy)",
+                "owner.HasFact(blueprints.ScoreBuffs[index])",
+                "owner.HasFact(blueprints.ShareTransmutationBuff)",
+                "owner.ActivatableAbilities.Enumerable", "share.IsOn = false",
+                "owner.RemoveFact(pending)",
+                "owner.RemoveFact(blueprints.ShareTransmutationBuff)" })
+                Assertions.True(source.Contains(token),
+                    "Player intent runtime lacks exact ownership or cleanup " +
+                    "contract token: " + token);
+        }
+
         internal static void RuntimeResolverUsesExactOptionalContract()
         {
             string root = Environment.CurrentDirectory;
