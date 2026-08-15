@@ -80,3 +80,12 @@ the baseline. Remaining Powerful Change work includes competition/recast,
 dispel, level-20 `+4`, actual spell and reservoir commit integration,
 cancellation/interruption, and persistence. Brown-Fur remains reserved and
 unpublished.
+
+The advanced carrier fixture passed on commit
+`bc8f30c439c53d0ff4e00ae5bb39c1fef7608c71`. Native Enhancement competition
+resolved weaker/equal/stronger cases correctly, ordinary-to-enhanced and
+enhanced-to-ordinary recasts each left one correct buff, the enhanced value
+survived transaction release, and the level-20 increase produced exactly
+`+8 Enhancement` from the ordinary `+4`. Remaining Powerful Change carrier
+gates are dispel and persistence; real cast/debit/cancellation integration is
+still outstanding. Brown-Fur remains reserved and unpublished.

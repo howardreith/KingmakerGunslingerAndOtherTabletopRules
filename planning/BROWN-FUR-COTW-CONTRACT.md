@@ -229,6 +229,32 @@ ordinary/enhanced recast in both directions, dispel, level-20 `+4`, full
 spell-slot/reservoir commit integration, cancellation/interruption, and
 save/reload persistence.
 
+The advanced stacking/recast/capstone extension passed all eight assertions on
+commit `bc8f30c439c53d0ff4e00ae5bb39c1fef7608c71`. The loaded DLL SHA-256 was
+`A7CCD03A852057CD91F943D5C90226880D742F9D8857CD1BEF53FCF3B62E8141`,
+its MVID was `80645298-bfcc-47f9-b7bc-8488df7b9bd0`, and the structured
+carrier artifact SHA-256 was
+`6E8FC8618D177BDDD4CC294F492BB1013B4F47446E3F17122B0AA912A6F3DBEA`.
+
+Against a baseline Strength of 10, weaker, equal, and stronger Enhancement
+competitors resolved to 16, 16, and 20 respectively while the Brown-Fur source
+modifier remained exactly `+6 Enhancement` in all three cases. Thus the
+engine's native descriptor suppression, rather than an extra untyped bonus,
+decided the effective stat.
+
+Ordinary-to-enhanced recast left exactly one Bull's Strength buff at Strength
+16. Releasing the transaction while that buff remained active retained the
+enhanced value. Enhanced-to-ordinary recast then left exactly one ordinary
+buff at Strength 14. The level-20 form registered exactly `+8 Enhancement`.
+All buffs, disposable competitor facts, scopes, and modifiers cleaned up and
+returned Strength to baseline.
+
+Descriptor competition, both recast directions, post-transaction enhanced-buff
+retention, and the `+4` capstone are therefore qualified for this installed
+carrier contract. Remaining Powerful Change gates are native dispel,
+save/reload persistence, full spell-slot/reservoir commit integration, and
+cancellation/interruption at the real cast boundary.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
