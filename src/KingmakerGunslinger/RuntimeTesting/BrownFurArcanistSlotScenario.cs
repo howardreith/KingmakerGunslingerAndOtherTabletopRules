@@ -15,6 +15,7 @@ using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
@@ -29,8 +30,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FileName = "brown-fur-arcanist-slot.json";
         // The spellbook contains the Beast Shape I variant wrapper; the wolf
         // leaf inherits level three but is not itself a spell-list entry.
-        private const string SpellGuid =
+        private const string CanonicalSpellGuid =
             "61a7ed778dd93f344a5dacdbad324cc9";
+        private const string SelectedSpellGuid =
+            "3481906baed9487e8403e91a2e9d010a";
         private const string BuffGuid =
             "00d8fbe9cf61dc24298be8d95500c84b";
         private const int SpellLevel = 3;
@@ -46,32 +49,33 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("castingCasterLevel", Order = 6)] public int CasterLevel { get; set; }
             [JsonProperty("castingSpontaneous", Order = 7)] public bool Spontaneous { get; set; }
             [JsonProperty("spellGuid", Order = 8)] public string Spell { get; set; }
-            [JsonProperty("spellLevel", Order = 9)] public int Level { get; set; }
-            [JsonProperty("sourceSpellbookGuid", Order = 10)] public string SourceBook { get; set; }
-            [JsonProperty("canSpendBefore", Order = 11)] public bool CanSpendBefore { get; set; }
-            [JsonProperty("slotsBefore", Order = 12)] public int SlotsBefore { get; set; }
-            [JsonProperty("reservoirBefore", Order = 13)] public int ReservoirBefore { get; set; }
-            [JsonProperty("boundaryBegan", Order = 14)] public bool BoundaryBegan { get; set; }
-            [JsonProperty("commitTracked", Order = 15)] public bool CommitTracked { get; set; }
-            [JsonProperty("commitProceed", Order = 16)] public bool CommitProceed { get; set; }
-            [JsonProperty("nativeSlotSpend", Order = 17)] public bool NativeSlotSpend { get; set; }
-            [JsonProperty("slotsAfter", Order = 18)] public int SlotsAfter { get; set; }
-            [JsonProperty("reservoirAfter", Order = 19)] public int ReservoirAfter { get; set; }
-            [JsonProperty("rollbackReservoir", Order = 20)] public int RollbackReservoir { get; set; }
-            [JsonProperty("raceBoundaryBegan", Order = 21)] public bool RaceBegan { get; set; }
-            [JsonProperty("raceCommitTracked", Order = 22)] public bool RaceTracked { get; set; }
-            [JsonProperty("raceCommitProceed", Order = 23)] public bool RaceProceed { get; set; }
-            [JsonProperty("raceSlotsBefore", Order = 24)] public int RaceSlotsBefore { get; set; }
-            [JsonProperty("raceSlotsAfter", Order = 25)] public int RaceSlotsAfter { get; set; }
-            [JsonProperty("raceReservoirBefore", Order = 26)] public int RaceReservoirBefore { get; set; }
-            [JsonProperty("raceReservoirAfter", Order = 27)] public int RaceReservoirAfter { get; set; }
-            [JsonProperty("suppressedBefore", Order = 28)] public int SuppressedBefore { get; set; }
-            [JsonProperty("suppressedAfter", Order = 29)] public int SuppressedAfter { get; set; }
-            [JsonProperty("finalActive", Order = 30)] public int FinalActive { get; set; }
-            [JsonProperty("finalReservations", Order = 31)] public int FinalReservations { get; set; }
-            [JsonProperty("finalScopes", Order = 32)] public string FinalScopes { get; set; }
-            [JsonProperty("resourceRemoved", Order = 33)] public bool ResourceRemoved { get; set; }
-            [JsonProperty("unitRemoved", Order = 34)] public bool UnitRemoved { get; set; }
+            [JsonProperty("selectedSpellGuid", Order = 9)] public string SelectedSpell { get; set; }
+            [JsonProperty("spellLevel", Order = 10)] public int Level { get; set; }
+            [JsonProperty("sourceSpellbookGuid", Order = 11)] public string SourceBook { get; set; }
+            [JsonProperty("canSpendBefore", Order = 12)] public bool CanSpendBefore { get; set; }
+            [JsonProperty("slotsBefore", Order = 13)] public int SlotsBefore { get; set; }
+            [JsonProperty("reservoirBefore", Order = 14)] public int ReservoirBefore { get; set; }
+            [JsonProperty("boundaryBegan", Order = 15)] public bool BoundaryBegan { get; set; }
+            [JsonProperty("commitTracked", Order = 16)] public bool CommitTracked { get; set; }
+            [JsonProperty("commitProceed", Order = 17)] public bool CommitProceed { get; set; }
+            [JsonProperty("nativeSlotSpend", Order = 18)] public bool NativeSlotSpend { get; set; }
+            [JsonProperty("slotsAfter", Order = 19)] public int SlotsAfter { get; set; }
+            [JsonProperty("reservoirAfter", Order = 20)] public int ReservoirAfter { get; set; }
+            [JsonProperty("rollbackReservoir", Order = 21)] public int RollbackReservoir { get; set; }
+            [JsonProperty("raceBoundaryBegan", Order = 22)] public bool RaceBegan { get; set; }
+            [JsonProperty("raceCommitTracked", Order = 23)] public bool RaceTracked { get; set; }
+            [JsonProperty("raceCommitProceed", Order = 24)] public bool RaceProceed { get; set; }
+            [JsonProperty("raceSlotsBefore", Order = 25)] public int RaceSlotsBefore { get; set; }
+            [JsonProperty("raceSlotsAfter", Order = 26)] public int RaceSlotsAfter { get; set; }
+            [JsonProperty("raceReservoirBefore", Order = 27)] public int RaceReservoirBefore { get; set; }
+            [JsonProperty("raceReservoirAfter", Order = 28)] public int RaceReservoirAfter { get; set; }
+            [JsonProperty("suppressedBefore", Order = 29)] public int SuppressedBefore { get; set; }
+            [JsonProperty("suppressedAfter", Order = 30)] public int SuppressedAfter { get; set; }
+            [JsonProperty("finalActive", Order = 31)] public int FinalActive { get; set; }
+            [JsonProperty("finalReservations", Order = 32)] public int FinalReservations { get; set; }
+            [JsonProperty("finalScopes", Order = 33)] public string FinalScopes { get; set; }
+            [JsonProperty("resourceRemoved", Order = 34)] public bool ResourceRemoved { get; set; }
+            [JsonProperty("unitRemoved", Order = 35)] public bool UnitRemoved { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -80,8 +84,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>();
             var diagnostics = new List<string>();
             var evidenceFiles = new List<string>();
-            var evidence = new Evidence { Spell = SpellGuid,
-                Level = SpellLevel };
+            var evidence = new Evidence { Spell = CanonicalSpellGuid,
+                SelectedSpell = SelectedSpellGuid, Level = SpellLevel };
             UnitEntityData caster = null;
             CotwArcanistContract contract = null;
             Spellbook casting = null;
@@ -100,12 +104,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 contract = resolution.Contract;
                 evidence.ClassGuid = contract.ArcanistClass.AssetGuid;
                 BlueprintAbility spell = ResourcesLibrary.TryGetBlueprint<
-                    BlueprintAbility>(SpellGuid);
+                    BlueprintAbility>(CanonicalSpellGuid);
+                BlueprintAbility selected = ResourcesLibrary.TryGetBlueprint<
+                    BlueprintAbility>(SelectedSpellGuid);
+                AbilityVariants variants = spell == null ? null :
+                    (spell.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .OfType<AbilityVariants>().SingleOrDefault();
                 if (spell == null || spell.School != SpellSchool.Transmutation ||
                     contract.CastingSpellbook.SpellList.GetLevel(spell) !=
-                        SpellLevel)
+                        SpellLevel || selected == null || variants == null ||
+                    !(variants.Variants ?? Array.Empty<BlueprintAbility>())
+                        .Any(value => ReferenceEquals(value, selected)))
                     throw new InvalidOperationException(
-                        "Exact level-three Arcanist Transmutation is unavailable.");
+                        "Exact level-three Arcanist Transmutation wrapper and " +
+                        "selected variant are unavailable.");
 
                 stage = "level-up";
                 caster = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -145,7 +157,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.Spontaneous = casting.Blueprint.Spontaneous;
 
                 stage = "committed-slot";
-                var data = new AbilityData(spell, casting);
+                var data = new AbilityData(new AbilityData(spell, casting),
+                    selected);
                 evidence.SourceBook = data.Spellbook == null ? string.Empty :
                     data.Spellbook.Blueprint.AssetGuid;
                 evidence.CanSpendBefore = casting.CanSpend(data, false);
@@ -174,7 +187,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "rejected-slot";
                 casting.Rest();
-                var raceData = new AbilityData(spell, casting);
+                var raceData = new AbilityData(
+                    new AbilityData(spell, casting), selected);
                 evidence.RaceSlotsBefore = AvailableSlots(casting, SpellLevel);
                 var raceCommand = new UnitUseAbility(raceData, target);
                 BrownFurCastTransaction race = Transaction(
@@ -248,8 +262,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "AbilityData source is exact CotW casting spellbook",
                 evidence.SourceBook + ";level=" + evidence.Level +
                     ";canSpend=" + evidence.CanSpendBefore +
-                    ";spontaneous=" + evidence.Spontaneous,
+                    ";spontaneous=" + evidence.Spontaneous +
+                    ";canonical=" + evidence.Spell + ";selected=" +
+                    evidence.SelectedSpell,
                 evidence.SourceBook == evidence.CastingGuid &&
+                    evidence.Spell == CanonicalSpellGuid &&
+                    evidence.SelectedSpell == SelectedSpellGuid &&
                     evidence.Level == SpellLevel && evidence.CanSpendBefore,
                 "real spellbook-backed AbilityData, not item or SLA");
             Add(assertions, "arcanist-slot-combined-commit",
@@ -387,7 +405,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static BrownFurCastTransaction Transaction(string identity)
         {
             var intent = new BrownFurCastIntent(identity, "cotw-arcanist",
-                SpellGuid, SpellGuid, "cotw-casting-spellbook", "self", true,
+                CanonicalSpellGuid, SelectedSpellGuid,
+                "cotw-casting-spellbook", "self", true,
                 BrownFurAbilityScore.Strength, true, true, 2,
                 "share-exact-target", "polymorph-modifier",
                 "native-extend");
