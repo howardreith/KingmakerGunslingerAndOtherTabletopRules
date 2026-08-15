@@ -400,6 +400,50 @@ spellbook cast and its real spell-slot delta, an applied shared effect on an
 ally, process-driven completion/interruption, a real Brown-Fur owner, or
 save/reload persistence. Those remain player-publication gates.
 
+## Native CotW Arcanist spell-slot boundary
+
+The guarded `disposable-brown-fur-arcanist-slot` fixture passed all six
+assertions on commit `0fa4e97f89eb16e594e1475caff8b517d6c187e0`. The exact
+local-runtime package SHA-256 was
+`D40AC5B20432FD40AAE04DFE812079F1151D066D72C12B7AF61921ABD7A36DA8`;
+the built, deployed, loaded, and installed DLL SHA-256 was
+`4BD0988DD191F77F6D0A4374C71DCD4EF0507C9FD356D263CDBA5E484EE947C4`;
+and the DLL MVID was `684c249a-02a8-4da0-afbc-9a4795848305`. The structured
+slot artifact SHA-256 was
+`E867EEAE96F3C6632C640910C2DB2A12C9D913B54894E7D137A569EACE9E3C3A`
+and the runtime-result SHA-256 was
+`478C1D94C6019000E95D60C173AF8734C62E97006500CBA8867CF5BC2D9D9A50`.
+The guarded Steam App ID 640820 run used deployment identity
+`20260815T1813160355952Z`, backup identity `20260815T1813116893707Z`, and
+preserved feature-module settings SHA-256
+`5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`.
+The harness recorded game build `2018.4.10.10503941` and performed no save
+interaction.
+
+A native disposable level-five CotW Arcanist acquired both structurally
+resolved spellbooks: casting `0c21cfcab6ce4395bd4df330ab3cf715` and
+preparation `ab76417567444a6cb87d9d53e9752955`. The cast used the exact
+level-three Beast Shape I spell-list wrapper
+`61a7ed778dd93f344a5dacdbad324cc9` and its wolf variant
+`3481906baed9487e8403e91a2e9d010a`; the resulting `AbilityData` retained the
+casting spellbook as its source and the canonical parent remained spendable.
+
+The combined transaction began and committed once. The real CotW reservoir
+changed `4 -> 2` and native `AbilityData.Spend` changed available level-three
+slots `6 -> 5`. The injected rule-failure path restored the reservoir exactly
+to `4`. In the post-reservation shortage case, the one-point balance remained
+`1`, commitment was rejected, the one-shot spend suppression changed `1 -> 0`,
+and the real level-three slots remained `6 -> 6`. All transaction,
+reservation, Share, Supremacy, modifier, suppression, resource, and disposable
+unit state cleaned up.
+
+This closes native CotW Arcanist source-spellbook qualification, canonical
+wrapper/selected-variant correlation, combined two-point debit with one real
+spell-slot spend, and pre-slot rejection against a real spellbook. It does not
+yet prove player intent discovery, ordinary process completion/interruption,
+ally effect delivery, a real Brown-Fur feature owner, or save/reload
+persistence. Brown-Fur remains reserved and unpublished.
+
 ## Scoped Transmutation Supremacy context
 
 The context-local Transmutation Supremacy fixture passed all five guarded

@@ -188,6 +188,24 @@ measure the real slot delta, deliver the shared effect to an ally, qualify
 process interruption, or prove save/reload persistence. Brown-Fur remains
 reserved and unpublished.
 
+The native CotW Arcanist slot fixture then passed all six guarded assertions
+on commit `0fa4e97f89eb16e594e1475caff8b517d6c187e0`. A disposable native
+level-five Arcanist owned both resolved CotW spellbooks. Its Beast Shape I
+wrapper/wolf-variant invocation retained the exact casting book as source.
+The combined boundary committed once, changed the real reservoir `4 -> 2`,
+and changed real level-three slots `6 -> 5` through native
+`AbilityData.Spend`. A rule-failure rollback restored the reservoir to `4`.
+The post-reservation one-point race rejected, left the reservoir `1 -> 1`,
+consumed the one-shot spend suppression, and preserved slots `6 -> 6`. Exact
+package, DLL, MVID, deployment, backup, structured-artifact, and runtime-result
+identities are recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.
+
+This closes the submitted native source-spellbook and spell-slot boundary for
+an already validated combined intent. Player intent discovery, real Brown-Fur
+feature ownership, applied ally delivery, process completion/interruption,
+and save/reload persistence remain publication gates. Brown-Fur remains
+reserved and unpublished.
+
 The first scoped Transmutation Supremacy fixture passed all five guarded
 assertions on commit `49d785c43b2c389d63e3a5abebd49c9288191943`. One exact
 execution scope added native `Extend` to one installed Personal Transmutation
