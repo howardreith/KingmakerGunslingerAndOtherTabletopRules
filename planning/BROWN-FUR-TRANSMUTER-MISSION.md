@@ -437,3 +437,20 @@ This closes the module-OFF existing-owner gate without exposing Brown-Fur to
 new character creation. CotW-absent isolation, normal progression, the
 16-state boundary matrix, selector publication, and Brown-Fur human
 acceptance remain gates. Brown-Fur is registered but unpublished.
+
+CotW-absent isolation then passed on immutable commit
+`4c8d9cb05c324127561b3dad65b2c66f1fb92dff`. The guarded `gunslinger-only`
+compatibility transaction ran core load, all-ON feature-module publication,
+and the dedicated Brown-Fur absence observer in three fresh Steam App ID
+640820 processes. It proved the six independent modules remained active and
+published with the exact 1,517 core identities while saved Brown-Fur intent
+remained ON. Brown-Fur reported `Unavailable  Call of the Wild not detected`,
+was not published, registered none of its 19 optional identities, resolved no
+CotW contract, and performed zero successful reconciliations. The profile
+wrapper observed a real staged mutation and restored the entire original Mods
+tree and feature settings exactly.
+
+This closes CotW-absent failure isolation. Normal progression, the 16-state
+boundary matrix, selector publication, and Brown-Fur human acceptance remain
+gates. Brown-Fur is registered only when compatible CotW is present and is
+still unpublished.

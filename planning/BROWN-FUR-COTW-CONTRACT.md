@@ -1223,6 +1223,52 @@ hidden. Brown-Fur remains registered but unpublished pending CotW-absent and
 normal-progression profiles, boundary qualification, selector publication,
 and human acceptance.
 
+## Guarded CotW-absent isolation qualification
+
+Immutable commit `4c8d9cb05c324127561b3dad65b2c66f1fb92dff` was built,
+packaged, deployed, and then reused for every launch in the isolated
+`gunslinger-only` compatibility transaction
+`compat-20260815T231452Z-f50c1e35017c`:
+
+- package SHA-256
+  `5CC2A012FE883E40CEB389860167EE9A41CC951D897096E31246D609A5B4C1B0`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `5EE565FC9F63CF615C89EC25E11FEA7BF2F3DD683C3D3958C614BDE2E16BB1E5`;
+- DLL MVID `7d37dee3-bdb3-4672-9340-3d50ca7422aa`;
+- deployment `20260815T2314091669189Z`, manifest SHA-256
+  `CDE276BC1F62B0DAC3484AF5DE85C19308C502ED3FD6D4C6076964F34A0FB4F2`;
+- deployment backup `20260815T2314049671079Z`;
+- compatibility transaction-manifest SHA-256
+  `CB5AF46EF7648772744CD1D4961C4F7A12B151DB566340B206AC3895827D4972`;
+- restored feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`;
+  and
+- game build collection `2018.4.10.10503941`.
+
+The three finalized PASS runs were:
+
+| Scenario | Run | Result / runtime-evidence / orchestration SHA-256 |
+| --- | --- | --- |
+| `mod-load-smoke` | `20260815T2315166510137Z-e601667ae566417f9ef8e1f5c3051bee` | `F5E01607CC37A2D524C1CCE2E813CE6893164731BDA83DE4DC865B67BBF1FB60` / `F292D5154BF7A93ED144F8279BEFF4EDDC88DADECB6E09ACC0445C62DB188FA8` / `BD97D39D1C4AE2DB5DA2B3B233693678CAFF42E0CC36832D27551AEA7F19B757` |
+| `observe-feature-module-settings` | `20260815T2316278367027Z-57ba72bb76fa4744ae6129fb6ed1c1ac` | `5BE21B9AB9EECCBC0FE59BEA7369587CF185A86E2A31955A4316B1E437A90CC1` / `C6BA55EA0474D666FBAF1A6E4CE01EA589BDC75F04A42553D71D861DFA9201BF` / `94FF57DB7A02BF527EABA450D99631D2DDA45C80F51D04DEE95A0762BBECD9AF` |
+| `observe-brown-fur-cotw-absent-isolation` | `20260815T2317394907547Z-34bff7a316c24ebf91c4df21d07affe0` | `428EE444E93500A471C33F89CEF84320836080D651D3C3860CE70E340771D8A7` / `C72047CFD2BEF1EAA302F794D56871BABF215BE8B06A8B264547410CEA3AC82E` / `DA697CF3F18BFA0C43CFD451358060F88A079B752188E296A31FBE2FBC4AC9E0` |
+
+The all-ON feature observation recorded all seven expected and active settings,
+the exact 1,517 unconditional core identities, and passing publication checks
+for Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning, Elven
+Branched Spears, and Eastern Weapons. The absence observer independently
+recorded a ready core, all six independent modules active, Brown-Fur saved
+intent ON, no loaded `CallOfTheWild` assembly, no resolved CotW contract, no
+Brown-Fur blueprint set or registered Brown-Fur GUID, zero successful
+reconciliations, and effective status `Unavailable  Call of the Wild not
+detected` / not published. The transaction recorded staged mutation and exact
+restoration of the original Mods tree.
+
+This closes CotW-absent isolation without making CotW a package-wide
+dependency. Brown-Fur remains registered but unpublished when CotW is present
+and compatible; normal-progression, boundary, selector-publication, and human
+acceptance gates remain.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
@@ -1252,7 +1298,7 @@ implemented and qualified against the installed fingerprint above. With a
 compatible CotW contract they register all 19 stable Brown-Fur identities in a
 separate rollback-capable transaction, but do not yet publish the archetype.
 Native interruption, dispel/expiration, and persistence are qualified.
-Module-OFF existing-owner behavior is also qualified. Dependency/progression
-profiles, boundary qualification, selector publication, and human acceptance
-remain pending;
+Module-OFF existing-owner behavior and CotW-absent isolation are also
+qualified. The normal-progression profile, boundary
+qualification, selector publication, and human acceptance remain pending;
 this document does not claim player-facing Brown-Fur compatibility.

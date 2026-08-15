@@ -30,6 +30,7 @@ publication-gate row is passing.
 | Native dispel and expiration | PASS | `334e526fec23c27e6c099fc44b1f797d4e99dece` | Successful `RuleDispelMagic` and native `BuffCollection` deadline tick each remove the enhanced real spell buff, restore the stat, and leave zero scope state |
 | Save/reload persistence | PASS | `805481e5834c045f26dc520f3046da71c25f5b6f` | Fresh-process working-save cycle preserves the real feature grants, +6 Enhancement modifier, native spell context, duration, and one exact target-owned adjustment record; verify removes all fixture state and saves clean |
 | Module OFF existing owner | PASS | `887a8514955b4071763d38b12d7862fbf5d5c52f` | ON process saves an existing owner; fresh OFF process retains all three features, native grants, +6 Enhancement persistence, context, and record while the Arcanist selector has zero Brown-Fur references; cleanup saves clean |
+| CotW absent isolation | PASS | `4c8d9cb05c324127561b3dad65b2c66f1fb92dff` | KMG-only profile keeps all seven saved intents ON, publishes all six independent modules, reports Brown-Fur Unavailable/not published, registers no Brown-Fur identity, and restores the complete original Mods tree |
 
 ## Publication gates
 
@@ -40,7 +41,7 @@ publication-gate row is passing.
 | Dispel and expiration | PASS | Enhanced effects preserve native rule-driven dispel, deadline expiration, descriptor, removal, stat restoration, and source behavior |
 | Save/reload persistence | PASS | Stable identities, the native buff, source context, duration, original descriptor, and enhanced value survive a guarded fresh-process working-save cycle; native removal retires the owner record |
 | Module OFF existing-owner behavior | PASS | Fresh OFF process proves immutable active setting false, compatible dependency, zero selector references, retained existing-owner features/grants and persisted enhanced spell behavior, then exact cleanup |
-| CotW absent isolation | PENDING | Package and six independent modules remain functional; Brown-Fur unavailable |
+| CotW absent isolation | PASS | Three fresh KMG-only launches prove core readiness, exact six-module publication, saved Brown-Fur intent ON, Unavailable/not-published status, no CotW assembly/contract/identity/reconciliation, and exact profile restoration |
 | CotW normal progression | PENDING | Runtime-resolved replacements 3 and 9 |
 | CotW balance progression | PASS (focused contract) | Runtime-resolved replacements 4 and 10 |
 | Seven-module boundary matrix | PENDING | All 16 formula-derived boundary states on one immutable candidate |
@@ -94,3 +95,14 @@ record count to zero and removed all fixture state. Each process made one
 exact working-save write with two stashed areas and no unexpected save API.
 Both finalized PASS; exact artifact and evidence identities are in the CotW
 contract.
+
+The CotW-absent profile on `4c8d9cb` ran three fresh processes in the
+transaction `compat-20260815T231452Z-f50c1e35017c`. Core load passed, the
+all-ON feature observation proved all seven immutable settings and exact
+publication of the six independent modules, and the dedicated absence
+observer proved no loaded CotW assembly, no contract resolution, no Brown-Fur
+blueprints or GUID registrations, zero successful reconciliations, saved
+Brown-Fur intent still ON, and effective status `Unavailable  Call of the
+Wild not detected` / not published. The complete original Mods tree and
+feature settings were restored exactly. Exact artifact, evidence, and
+transaction hashes are in the CotW contract.
