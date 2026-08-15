@@ -129,6 +129,37 @@ cannot assume that invoking a Shared Spells helper installs an isolated cast
 path; the two helper bodies and their blueprint fixups must be decoded before
 reuse is authorized.
 
+The modifier-provenance extension of this scenario passed all 11 assertions on
+commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
+package SHA-256 was
+`760920EA11FB67AA7BBCFF5215738D4C76042C3B590E669F0C9F4075A686E1AE`;
+the built and installed DLL SHA-256 was
+`E34230DC29C6C68E1A4268635D10CD5DBFEC930A012C9C3AE2121922C7282805`;
+the DLL MVID was `d4158a13-01bd-43ff-97c5-a14048eba42b`; and the extended
+contract artifact SHA-256 was
+`E7DFB8D1CD4078AD199BF4E64929DB6F990BADC5DD577552DD6328AFEB11DD7B`.
+
+That live extension proves `ModifiableValue.Modifier` exposes independent
+`ModValue`, `ModDescriptor`, `AppliedTo`, `Source`, and `SourceComponent`
+fields; the destination `ModifiableValue` exposes its `Type` and `Owner`; the
+source `Fact` exposes its blueprint and `MaybeContext`; and a source `Buff`
+exposes its blueprint, spell provenance, and mechanics context. It also resolves
+all six carrier families present in the installed inventory:
+
+- `AddStatBonus`;
+- `AddContextStatBonus`;
+- `AddGenericStatBonus`;
+- `AddStatBonusAbilityValue`;
+- `Polymorph`; and
+- `ChangeUnitSize`.
+
+The authorized generic Powerful Change strategy may therefore change only the
+positive `ModValue` during the matching execution while preserving its original
+descriptor and source identity. It must cross-check the destination ability
+stat and source buff/context against the immutable cast intent. This structural
+result does not by itself qualify stacking, recast, dispel, persistence, or the
+polymorph/size adapter behavior; those remain mechanical runtime gates.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings

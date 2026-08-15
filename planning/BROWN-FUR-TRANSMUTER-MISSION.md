@@ -49,3 +49,11 @@ selector, and the Share Transmutation activatable. Its 19 manifest identities
 remain `reserved`, the builder is not invoked, and no archetype is published
 until the cast mechanics, complete spell classification, and isolated runtime
 registration path are qualified.
+
+The live modifier-provenance contract is qualified on commit
+`2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`: all 11 guarded assertions
+passed, all six installed ability-bonus carrier families resolved, and the
+engine exposes enough source, descriptor, destination-stat, and execution
+context identity for a narrow cast-scoped Powerful Change adapter. Mechanical
+stacking, recast, persistence, polymorph, and size behavior remain unqualified;
+the archetype remains reserved and unpublished.
