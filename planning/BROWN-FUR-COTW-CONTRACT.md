@@ -719,6 +719,40 @@ interaction. This closes the two exceptional timed carriers in the installed
 inventory. Instantaneous/permanent no-op behavior and final inventory
 classification remain publication gates.
 
+The blank-duration Earth Tremor wrapper required a second inventory pass. Its
+three selected variants each contain an exact one-hour area duration despite
+the blank localized spell duration and lack of ordinary Extend support. The
+first guarded attempt on `d13099e128dad56c5fd575da54c8b1abb1dafbd5`
+failed closed because spread and cone already honored the scoped Extend through
+CotW (`600 -> 1200`) and the provisional family adapter doubled them again to
+`2400`; line remained `600 -> 1200`. The adapter was therefore narrowed to the
+line GUID only.
+
+The corrected fixture passed all ten assertions on
+`7f282f91b2fd8859274711e164b5de683ab261fd`. Spread
+`c7b52e9a09ef442f9308d9119f5877d2`, cone
+`3e4a0790fc2749bbacb1b3b1d2401148`, and line
+`91266b6d2a4c4fd6b8e1549bc2381d12` each calculated exactly
+`600 -> 1200`; only line used the named post-CotW adapter. Resonating Word,
+Obsidian Flow, ordinary timed Extend, already-Extended non-stacking, action
+type, blueprint isolation, and zero-scope cleanup remained passing.
+
+Exact corrected evidence identity: run
+`20260815T1915449792466Z-e12a8472d5b842df90510c0e6f8d8777`; package
+SHA-256 `65C172EF676248BAABEB30BC4686B5F9F9E6237E9D31D6B8972D60F17EA42057`;
+DLL SHA-256
+`A160E6EB36E5B4A2EE339C17BC4D25ECEA0CC55C7836A11B96D70244B94D4BBD`;
+MVID `cbcc46c0-3179-4b08-a4c1-f6c5fb0cf832`; structured artifact
+SHA-256 `31A5B4D75F7BF0AE37048EA981903AAFF4DA232AE13775196C891A2F3C7FD36E`;
+runtime-result SHA-256
+`9891F0E15180C55441195267DB51B6B09A7756F5E2E0E4A5A8F50DFDA262AF7C`;
+runtime-evidence SHA-256
+`BF751F10471627FDC453B2A192F0FACBFFA9404AB18D0BCFC082BEFB298969FA`;
+orchestration SHA-256
+`B89360C45EB6EDD9E9812509B89D6472C460EC6180A9D9377BC019199C14BD8C`;
+deployment `20260815T1915448909848Z`; backup
+`20260815T1915405293055Z`. The guarded launch was save-free.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings

@@ -263,3 +263,17 @@ inventory without a generic fallback. Instantaneous/permanent no-op proof,
 deterministic classification of all 177 inventory rows, player intent, real
 feature ownership, interruption, dispel, and persistence remain publication
 gates. Brown-Fur remains reserved and unpublished.
+
+The subsequent complete no-Extend scan found three hidden one-hour area
+durations under Earth Tremor's blank-duration wrapper. A broad provisional
+adapter correctly failed qualification when spread and cone doubled twice;
+structured evidence showed those two CotW paths already honor scoped Extend,
+while line needs the named adapter. The narrowed implementation on
+`7f282f91b2fd8859274711e164b5de683ab261fd` passed all ten assertions:
+spread, cone, and line each calculated exactly `600 -> 1200`, and no path
+reached `2400`. Exact immutable identities are recorded in the CotW contract.
+
+This closes every positive hidden-duration carrier discovered among installed
+Transmutations lacking ordinary Extend support. Zero-duration and permanent
+no-op proof still precedes final classification. Brown-Fur remains reserved
+and unpublished.
