@@ -277,3 +277,18 @@ This closes every positive hidden-duration carrier discovered among installed
 Transmutations lacking ordinary Extend support. Zero-duration and permanent
 no-op proof still precedes final classification. Brown-Fur remains reserved
 and unpublished.
+
+The corrected instantaneous/permanent/selector fixture on
+`92aa73a35f218ef6ae994b7015161cbc88c236e1` then passed all eleven guarded
+Supremacy assertions. Jolt's one zero-round carrier, Baleful Polymorph's one
+zero-round carrier and permanent application flag, Disintegrate's four
+zero-round carriers, Stone to Flesh's absent duration graph, and Earth
+Tremor's non-executable three-variant parent selector all remained unchanged.
+The earlier fixture failure is retained as evidence that a variational parent
+cannot be used as an executable spell context. Exact immutable identities are
+recorded in the CotW contract.
+
+This closes all identified non-Extend Supremacy duration structures in the
+installed inventory. Deterministic classification of all 177 inventory rows,
+player intent, real feature ownership, interruption, dispel, and persistence
+remain publication gates. Brown-Fur remains reserved and unpublished.

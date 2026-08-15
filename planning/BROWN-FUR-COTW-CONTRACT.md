@@ -753,6 +753,50 @@ orchestration SHA-256
 deployment `20260815T1915448909848Z`; backup
 `20260815T1915405293055Z`. The guarded launch was save-free.
 
+The final no-Extend scan first produced a useful failed fixture on
+`6151242b4dd684eb1ff04546629b9664bb1a37c6`: Jolt, Baleful Polymorph,
+Disintegrate, and Stone to Flesh all preserved their zero or absent duration
+carriers, but the fixture incorrectly attempted to execute Earth Tremor's
+variational parent and Kingmaker rejected it with `Can't cast variational
+ability`. The correction treats the parent as the three-variant selector it
+is and executes only selected variants (already qualified above).
+
+The corrected immutable candidate
+`92aa73a35f218ef6ae994b7015161cbc88c236e1` passed all eleven Supremacy
+assertions. Jolt preserved its single zero-round carrier, Baleful Polymorph
+preserved its single zero-round carrier and permanent application flag,
+Disintegrate preserved all four zero-round carriers, Stone to Flesh preserved
+its absence of duration carriers, and the Earth Tremor parent preserved its
+three selected variants and absence of a root duration. No spell supported
+ordinary Extend, no instantaneous/permanent/selector path acquired a duration,
+and all execution scopes returned to zero.
+
+Exact passing evidence identity:
+
+- run `20260815T1929074013106Z-63ebaadda1474cf582eec5c0f489b78e`;
+- local-runtime package SHA-256
+  `3E87DA19F357109100F236C492B9E556700F6A585E0BD1EDE6C292C7AC33F83E`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `99AEDDCE47720610D8897B8E449FE2B2DB4FB67C74D93D02F27F107FF2D83A6D`;
+- DLL MVID `d64deafc-05a7-47a0-85bd-6a24fbed7044`;
+- structured Supremacy artifact SHA-256
+  `4745290BF6D90D63376D16E34132AE05DC75C2178F595370B3667A3407F7692F`;
+- runtime-result SHA-256
+  `3A6002E0247D8BE8645D0F6EF2246482785FEE480BA631E7C5EE7BEF746C71AB`;
+- runtime-evidence SHA-256
+  `1D303D4034D4234C5E7909A90CBC7FF3C6AC73800F82D54F99BC22B1EEAA8238`;
+- orchestration SHA-256
+  `777FBEAB1883854F858F4B930CB1DD75E16FF721D658725198E42A4FE2DE2F63`;
+- deployment `20260815T1929073015390Z`, backup
+  `20260815T1929029719860Z`, preserved feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`,
+  and game build collection `2018.4.10.10503941`.
+
+The guarded Steam App ID 640820 launch was save-free and recorded no save
+interaction. This closes the instantaneous, permanent, and selector no-op
+Supremacy carrier gate. Deterministic classification of all installed
+inventory rows remains required before publication.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
