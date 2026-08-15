@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "generator": "generate_musket_fit_candidates.py",
+  "blenderVersion": "4.5.10 LTS",
+  "unitSystem": "METRIC",
+  "axis": "+Z muzzle; identity firing-hand grip",
+  "sourceFbx": "assets-source/third-party/models/mesh-masters-rifle-musket/source/Musket 01.fbx",
+  "sourceFbxSha256": "BD3AFC3372453FAFF4742220B5E49FC7E021F10D9596E5C7000D2555FE486E18",
+  "semanticLengthMeters": 1.349985,
+  "candidates": [
+    {
+      "name": "MusketPassThrough",
+      "fbx": "musket-pass-through.fbx",
+      "fbxSha256": "16E918E4E6F32CF053C9C875951496BA40DDDEAF51D63C6D6008C7D272B17755",
+      "render": "renders/musket-pass-through-source.png",
+      "renderSha256": "84F30F0C362B124815702F56A7A0B793539708C36AE46871FACF28BD91A83177",
+      "meshCount": 2,
+      "vertexCount": 24651,
+      "triangleCount": 49166,
+      "materialCount": 2,
+      "boundsMeters": {
+        "minimum": [
+          -0.08043,
+          -0.00783,
+          -0.031899
+        ],
+        "maximum": [
+          0.241891,
+          0.00503,
+          0.018329
+        ],
+        "size": [
+          0.322322,
+          0.01286,
+          0.050228
+        ]
+      },
+      "markersMeters": {
+        "KMG_Grip": [
+          -0.04,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          0.1,
+          -0.0122,
+          -0.0074
+        ],
+        "KMG_Butt": [
+          -0.0805,
+          0.0,
+          0.0
+        ],
+        "KMG_Muzzle": [
+          0.242,
+          0.0,
+          0.0
+        ]
+      },
+      "provenance": "Mesh Masters Flintlock Rifle derivative; CC-BY-4.0"
+    },
+    {
+      "name": "MusketMinimalControl",
+      "fbx": "musket-minimal-control.fbx",
+      "fbxSha256": "33C4D7F097F745F501F79F4DAED3E42E366E6D4F10974BB6A385F3F1E86E6B01",
+      "render": "renders/musket-minimal-control-source.png",
+      "renderSha256": "86F0604A8D0B2A095B6B9A81BE8BCA9EF2EF8FDA8F634D4C28C5017ECD6BF9E0",
+      "meshCount": 8,
+      "vertexCount": 144,
+      "triangleCount": 256,
+      "materialCount": 3,
+      "boundsMeters": {
+        "minimum": [
+          -0.0375,
+          -0.052,
+          -0.089
+        ],
+        "maximum": [
+          0.0375,
+          0.052,
+          1.18
+        ],
+        "size": [
+          0.075,
+          0.104,
+          1.269
+        ]
+      },
+      "markersMeters": {
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          0.030976,
+          -0.051069,
+          0.58604
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.169533
+        ],
+        "KMG_Muzzle": [
+          0.0,
+          0.0,
+          1.180452
+        ]
+      },
+      "provenance": "project-owned clean-room graybox"
+    },
+    {
+      "name": "MusketClearanceStock",
+      "fbx": "musket-clearance-stock.fbx",
+      "fbxSha256": "069B5D1DFC912D781065FFC3CF84A786B6C381C9CFEBD4779580BD89B6DBE006",
+      "render": "renders/musket-clearance-stock-source.png",
+      "renderSha256": "66646156B43FBF2AC5B58E667EC7DFDE63C9E4B454DF51B22D619B74A884DAF1",
+      "meshCount": 10,
+      "vertexCount": 160,
+      "triangleCount": 280,
+      "materialCount": 3,
+      "boundsMeters": {
+        "minimum": [
+          -0.039,
+          -0.052,
+          -0.179533
+        ],
+        "maximum": [
+          0.060868,
+          0.052,
+          1.18
+        ],
+        "size": [
+          0.099868,
+          0.104,
+          1.359533
+        ]
+      },
+      "markersMeters": {
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          0.030976,
+          -0.051069,
+          0.58604
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.169533
+        ],
+        "KMG_Muzzle": [
+          0.0,
+          0.0,
+          1.180452
+        ]
+      },
+      "provenance": "project-owned clean-room graybox"
+    }
+  ],
+  "blend": "musket-fit-candidates.blend",
+  "blendSha256": "A2747B29C62DDD34D2FA6AAC1445E16E54DD0C4A317B02DED9851E0F7BE3EC50",
+  "determinism": "FBX and normalized PNG must match across clean runs; .blend embeds session metadata and is semantic-only reproducible"
+}

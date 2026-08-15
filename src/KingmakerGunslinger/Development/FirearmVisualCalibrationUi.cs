@@ -44,6 +44,18 @@ namespace KingmakerGunslinger.Development
             FirearmVisualCalibration.Update(state);
             if (ImmediateModeGui.Button("Show custom candidate + native refresh")) FirearmVisualCalibration.ToggleSelectedCandidate(true);
             if (ImmediateModeGui.Button("Restore native fallback + native refresh")) FirearmVisualCalibration.ToggleSelectedCandidate(false);
+            if (kind == FirearmKind.Musket)
+            {
+                ImmediateModeGui.Label("Musket geometry proof (diagnostic-only; never a production item mapping)");
+                if (ImmediateModeGui.Button("Show pass-through Musket"))
+                    FirearmVisualCalibration.ShowSelectedMusketDiagnostic("MusketPassThrough");
+                if (ImmediateModeGui.Button("Show minimal-control Musket"))
+                    FirearmVisualCalibration.ShowSelectedMusketDiagnostic("MusketMinimalControl");
+                if (ImmediateModeGui.Button("Show clearance-stock Musket"))
+                    FirearmVisualCalibration.ShowSelectedMusketDiagnostic("MusketClearanceStock");
+                if (ImmediateModeGui.Button("Restore production Musket"))
+                    FirearmVisualCalibration.ToggleSelectedCandidate(true);
+            }
             if (ImmediateModeGui.Button("Apply to exact active custom instance")) FirearmVisualCalibration.ApplySelected();
             if (ImmediateModeGui.Button("Export calibration JSON")) FirearmVisualCalibration.ExportSelected();
             if (ImmediateModeGui.Button("Reset selected calibration")) FirearmVisualCalibration.Reset(kind);

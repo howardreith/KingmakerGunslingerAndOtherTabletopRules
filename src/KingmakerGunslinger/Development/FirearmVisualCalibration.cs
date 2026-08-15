@@ -194,6 +194,38 @@ namespace KingmakerGunslinger.Development
                 "; inventory doll refresh unavailable and was not reported as successful.");
         }
 
+        internal static string ShowSelectedMusketDiagnostic(string identity)
+        {
+            UnitEntityData unit; ExactEquippedFirearmContext firearm; string reason;
+            if (!TryResolveSelected(out unit, out firearm, out reason))
+                return SetResult("FAILED: " + reason);
+            if (firearm.Definition.Kind != FirearmKind.Musket)
+                return SetResult("FAILED: Musket diagnostic candidates require an exact equipped Musket.");
+            if (!FirearmAssetRuntime.HasValidatedDiagnosticPrefab(identity))
+                return SetResult("FAILED: diagnostic Musket rig is unavailable or rejected: " +
+                    (identity ?? "<null>"));
+            GameObject model = FirearmAssetRuntime.GetDiagnosticPrefab(identity);
+            object blueprint = firearm.Weapon.Blueprint;
+            FieldInfo visualField = FindField(blueprint.GetType(), "m_VisualParameters");
+            WeaponVisualParameters visual = visualField.GetValue(blueprint) as
+                WeaponVisualParameters;
+            if (visual == null)
+                return SetResult("FAILED: selected Musket has no materialized visual parameters.");
+            FieldInfo modelField = FindField(typeof(WeaponVisualParameters),
+                "m_WeaponModel");
+            lock (Gate)
+            {
+                if (!NativeModels.ContainsKey(FirearmKind.Musket))
+                    NativeModels[FirearmKind.Musket] = visual.Model;
+                modelField.SetValue(visual, model);
+            }
+            if (unit.View == null || unit.View.HandsEquipment == null)
+                return SetResult("FAILED: world HandsEquipment is unavailable; diagnostic visual was assigned but not refreshed.");
+            unit.View.HandsEquipment.UpdateAll();
+            return SetResult("PASS: selected diagnostic-only " + identity +
+                " and refreshed world HandsEquipment; close/reopen inventory for a clean doll rebuild; doll refresh is not automatically claimed.");
+        }
+
         internal static string ExportSelected()
         {
             UnitEntityData unit; ExactEquippedFirearmContext firearm; string reason;

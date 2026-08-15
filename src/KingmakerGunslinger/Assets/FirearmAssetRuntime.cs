@@ -17,6 +17,11 @@ namespace KingmakerGunslinger.Assets
         private static readonly Dictionary<FirearmKind, GameObject> BeltPrefabs = new Dictionary<FirearmKind, GameObject>();
         private static readonly Dictionary<FirearmKind, FirearmRigCapability>
             Capabilities = new Dictionary<FirearmKind, FirearmRigCapability>();
+        private static readonly Dictionary<string, GameObject> DiagnosticPrefabs =
+            new Dictionary<string, GameObject>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, FirearmRigCapability>
+            DiagnosticCapabilities = new Dictionary<string, FirearmRigCapability>(
+                StringComparer.Ordinal);
         internal static bool IsLoaded { get { lock (Sync) return _bundle != null; } }
 
         internal static void Configure(ModContext context)
@@ -42,6 +47,10 @@ namespace KingmakerGunslinger.Assets
                 var beltPrefabs = new Dictionary<FirearmKind, GameObject>();
                 var capabilities = new Dictionary<FirearmKind,
                     FirearmRigCapability>();
+                var diagnosticPrefabs = new Dictionary<string, GameObject>(
+                    StringComparer.Ordinal);
+                var diagnosticCapabilities = new Dictionary<string,
+                    FirearmRigCapability>(StringComparer.Ordinal);
 
                 TryLoadEquippedPrefab(candidate, names, prefabs, capabilities,
                     FirearmKind.Pistol, "pistol", false, context);
@@ -59,6 +68,15 @@ namespace KingmakerGunslinger.Assets
                     "musketbelt", context);
                 TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Blunderbuss,
                     "blunderbussbelt", context);
+                TryLoadDiagnosticPrefab(candidate, names, diagnosticPrefabs,
+                    diagnosticCapabilities, "MusketPassThrough",
+                    "musketpassthrough", context);
+                TryLoadDiagnosticPrefab(candidate, names, diagnosticPrefabs,
+                    diagnosticCapabilities, "MusketMinimalControl",
+                    "musketminimalcontrol", context);
+                TryLoadDiagnosticPrefab(candidate, names, diagnosticPrefabs,
+                    diagnosticCapabilities, "MusketClearanceStock",
+                    "musketclearancestock", context);
 
                 AssetBundle previous;
                 lock (Sync)
@@ -69,11 +87,14 @@ namespace KingmakerGunslinger.Assets
                     Replace(Prefabs, prefabs);
                     Replace(BeltPrefabs, beltPrefabs);
                     Replace(Capabilities, capabilities);
+                    Replace(DiagnosticPrefabs, diagnosticPrefabs);
+                    Replace(DiagnosticCapabilities, diagnosticCapabilities);
                 }
                 if (previous != null) previous.Unload(false);
                 context.Logger.Info("assets", "bundle.loaded",
                     "Published firearm bundle transactionally; equippedPrefabs=" +
                     prefabs.Count + ";beltPrefabs=" + beltPrefabs.Count +
+                    ";diagnosticPrefabs=" + diagnosticPrefabs.Count +
                     ". Missing or rejected capabilities retain native presentation fallbacks.");
             }
             catch (Exception exception)
@@ -107,6 +128,29 @@ namespace KingmakerGunslinger.Assets
             destination[kind] = prefab;
             capabilities[kind] = capability;
             context.Logger.Info("assets", "rig.validated", capability.Describe());
+        }
+
+        private static void TryLoadDiagnosticPrefab(AssetBundle bundle,
+            string[] names, IDictionary<string, GameObject> destination,
+            IDictionary<string, FirearmRigCapability> capabilities,
+            string identity, string assetName, ModContext context)
+        {
+            GameObject prefab = TryLoadPrefab(bundle, names, FirearmKind.Musket,
+                assetName, context);
+            if (prefab == null) return;
+            FirearmRigCapability capability;
+            if (!TryPrepareRig(prefab, FirearmKind.Musket, true, out capability))
+            {
+                capabilities[identity] = capability;
+                context.Logger.Warning("assets", "diagnostic-rig.rejected",
+                    "identity=" + identity + ";" + capability.Describe());
+                return;
+            }
+            destination[identity] = prefab;
+            capabilities[identity] = capability;
+            context.Logger.Info("assets", "diagnostic-rig.validated",
+                "identity=" + identity + ";productionBinding=false;" +
+                capability.Describe());
         }
 
         private static void TryLoadPrefab(AssetBundle bundle, string[] names,
@@ -277,6 +321,13 @@ namespace KingmakerGunslinger.Assets
             foreach (KeyValuePair<FirearmKind, T> entry in source)
                 destination[entry.Key] = entry.Value;
         }
+        private static void Replace<T>(IDictionary<string, T> destination,
+            IDictionary<string, T> source)
+        {
+            destination.Clear();
+            foreach (KeyValuePair<string, T> entry in source)
+                destination[entry.Key] = entry.Value;
+        }
         internal static GameObject InstantiatePrefab(FirearmKind kind)
         {
             lock (Sync) { GameObject prefab; return Prefabs.TryGetValue(kind, out prefab) && prefab != null ? UnityEngine.Object.Instantiate(prefab) : null; }
@@ -315,6 +366,47 @@ namespace KingmakerGunslinger.Assets
             {
                 GameObject prefab;
                 return BeltPrefabs.TryGetValue(kind, out prefab) ? prefab : null;
+            }
+        }
+        internal static GameObject InstantiateDiagnosticPrefab(string identity)
+        {
+            lock (Sync)
+            {
+                GameObject prefab;
+                return identity != null && DiagnosticPrefabs.TryGetValue(identity,
+                    out prefab) && prefab != null
+                    ? UnityEngine.Object.Instantiate(prefab) : null;
+            }
+        }
+        internal static GameObject GetDiagnosticPrefab(string identity)
+        {
+            lock (Sync)
+            {
+                GameObject prefab;
+                return identity != null && DiagnosticPrefabs.TryGetValue(identity,
+                    out prefab) ? prefab : null;
+            }
+        }
+        internal static FirearmRigCapability GetDiagnosticCapability(string identity)
+        {
+            lock (Sync)
+            {
+                FirearmRigCapability capability;
+                return identity != null && DiagnosticCapabilities.TryGetValue(
+                    identity, out capability)
+                    ? capability : FirearmRigCapability.Missing(FirearmKind.Musket);
+            }
+        }
+        internal static bool HasValidatedDiagnosticPrefab(string identity)
+        {
+            lock (Sync)
+            {
+                FirearmRigCapability capability;
+                GameObject prefab;
+                return identity != null && DiagnosticCapabilities.TryGetValue(
+                    identity, out capability) && capability.IsValidated &&
+                    DiagnosticPrefabs.TryGetValue(identity, out prefab) &&
+                    prefab != null;
             }
         }
     }

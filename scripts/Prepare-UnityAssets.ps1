@@ -6,6 +6,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $models = Join-Path $root 'assets-source\third-party\models'
+$fitExperiments = Join-Path $root 'assets-source\original-models\firearm-fit-experiments'
 $audio = Join-Path $root 'assets-source\third-party\audio\sse-library-guns\processed'
 $approvedModels = Join-Path $ProjectPath 'Assets\ApprovedModels'
 $approvedAudio = Join-Path $ProjectPath 'Assets\ApprovedAudio'
@@ -32,7 +33,20 @@ foreach ($item in $staging) {
         Copy-Item -LiteralPath (Join-Path $item.Source 'textures') -Destination $destination -Recurse
     }
 }
+$musketDestination = Join-Path $approvedModels 'Musket'
+$fitCandidates = @(
+    'musket-pass-through.fbx',
+    'musket-minimal-control.fbx',
+    'musket-clearance-stock.fbx'
+)
+foreach ($candidate in $fitCandidates) {
+    $source = Join-Path $fitExperiments $candidate
+    if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
+        throw "Missing generated Musket fit candidate: $source"
+    }
+    Copy-Item -LiteralPath $source -Destination $musketDestination -Force
+}
 Get-ChildItem -LiteralPath $approvedAudio -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Copy-Item -LiteralPath (Get-ChildItem -LiteralPath $audio -Filter '*.wav').FullName -Destination $approvedAudio
 
-Write-Host 'Prepared five approved model families and five approved audio clips.'
+Write-Host 'Prepared five approved model families, three Musket fit candidates, and five approved audio clips.'

@@ -23,6 +23,8 @@ public static class BuildFirearmBundles
         internal Vector3 SupportHandPosition;
         internal Vector3 SupportHandEuler;
         internal bool HasSemanticAnchors;
+        internal bool RequireSourceMarkers;
+        internal bool DiagnosticOnly;
         internal Vector3 SourceGripPoint;
         internal Vector3 SourceSupportPoint;
         internal Vector3 SourceButtPoint;
@@ -52,6 +54,33 @@ public static class BuildFirearmBundles
             new Vector3(-0.1000f, -0.0122f, -0.0074f),
             new Vector3(0.0805f, 0f, 0f),
             new Vector3(-0.2420f, 0f, 0f)),
+        MarkerAuthored(Anchored(Spec("MusketPassThrough", "Musket",
+            "musket-pass-through.fbx", false, true,
+            Vector3.zero, new Vector3(0f, 90f, 0f), 4.186f,
+            new Vector3(0f, 0f, 1.180452f), 1.349985f, 1.25f, 1.45f,
+            "Crossbow", "diagnostic-pass-through; not-production-bound"),
+            new Vector3(0.0400f, 0f, 0f),
+            new Vector3(-0.1000f, -0.0122f, -0.0074f),
+            new Vector3(0.0805f, 0f, 0f),
+            new Vector3(-0.2420f, 0f, 0f)), true),
+        MarkerAuthored(Anchored(Spec("MusketMinimalControl", "Musket",
+            "musket-minimal-control.fbx", false, true,
+            Vector3.zero, Vector3.zero, 1f,
+            new Vector3(0f, 0f, 1.180452f), 1.349985f, 1.25f, 1.45f,
+            "Crossbow", "diagnostic-minimal-control; not-production-bound"),
+            Vector3.zero,
+            new Vector3(-0.030976f, -0.051069f, 0.586040f),
+            new Vector3(0f, 0f, -0.169533f),
+            new Vector3(0f, 0f, 1.180452f)), true),
+        MarkerAuthored(Anchored(Spec("MusketClearanceStock", "Musket",
+            "musket-clearance-stock.fbx", false, true,
+            Vector3.zero, Vector3.zero, 1f,
+            new Vector3(0f, 0f, 1.180452f), 1.349985f, 1.25f, 1.45f,
+            "Crossbow", "diagnostic-clearance-stock; not-production-bound"),
+            Vector3.zero,
+            new Vector3(-0.030976f, -0.051069f, 0.586040f),
+            new Vector3(0f, 0f, -0.169533f),
+            new Vector3(0f, 0f, 1.180452f)), true),
         Spec("MusketBelt", "Musket", "Musket 01.fbx", true, false,
             Vector3.zero, Vector3.zero, 2.0f, Vector3.zero,
             0.8525f, 0.55f, 1.60f, "None",
@@ -92,6 +121,14 @@ public static class BuildFirearmBundles
         spec.SourceSupportPoint = support;
         spec.SourceButtPoint = butt;
         spec.SourceMuzzlePoint = muzzle;
+        return spec;
+    }
+
+    private static FirearmPrefabSpec MarkerAuthored(FirearmPrefabSpec spec,
+        bool diagnosticOnly)
+    {
+        spec.RequireSourceMarkers = true;
+        spec.DiagnosticOnly = diagnosticOnly;
         return spec;
     }
 
@@ -181,6 +218,7 @@ public static class BuildFirearmBundles
                 string.Join("|", modelPaths));
         GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(
             matches[0]);
+        ResolveSemanticMarkers(source, spec);
         Debug.Log("KMG_RIG_BINDING name=" + spec.Name + ";family=" +
             spec.Family + ";source=" + matches[0] + ";sourceGuid=" +
             AssetDatabase.AssetPathToGUID(matches[0]) +
@@ -259,6 +297,83 @@ public static class BuildFirearmBundles
     {
         return TransformSourcePoint(spec, point) -
             TransformSourcePoint(spec, spec.SourceGripPoint);
+    }
+
+    private static void ResolveSemanticMarkers(GameObject source,
+        FirearmPrefabSpec spec)
+    {
+        if (!spec.RequiresTwoHandRig) return;
+        string[] required = { "KMG_Grip", "KMG_Support", "KMG_Butt", "KMG_Muzzle" };
+        var matches = new Dictionary<string, List<Transform>>();
+        foreach (string marker in required)
+            matches[marker] = new List<Transform>();
+        foreach (Transform child in source.GetComponentsInChildren<Transform>(true))
+            if (matches.ContainsKey(child.name)) matches[child.name].Add(child);
+        int found = 0;
+        foreach (string marker in required) found += matches[marker].Count;
+        if (found == 0)
+        {
+            if (spec.RequireSourceMarkers)
+                throw new InvalidOperationException(spec.Name +
+                    " requires source-authored KMG_Grip/KMG_Support/KMG_Butt/KMG_Muzzle markers.");
+            Debug.Log("KMG_RIG_MARKERS name=" + spec.Name +
+                ";source=legacy-fallback;required=false");
+            ValidateResolvedSemanticPoints(spec);
+            return;
+        }
+        foreach (string marker in required)
+            if (matches[marker].Count != 1)
+                throw new InvalidOperationException(spec.Name +
+                    " marker contract requires exactly one " + marker +
+                    ";observed=" + matches[marker].Count +
+                    ";partial-or-duplicate-marker-set=true");
+        spec.SourceGripPoint = SourceLocalPoint(source, matches["KMG_Grip"][0]);
+        spec.SourceSupportPoint = SourceLocalPoint(source, matches["KMG_Support"][0]);
+        spec.SourceButtPoint = SourceLocalPoint(source, matches["KMG_Butt"][0]);
+        spec.SourceMuzzlePoint = SourceLocalPoint(source, matches["KMG_Muzzle"][0]);
+        if (!Finite(spec.SourceGripPoint) || !Finite(spec.SourceSupportPoint) ||
+            !Finite(spec.SourceButtPoint) || !Finite(spec.SourceMuzzlePoint))
+            throw new InvalidOperationException(spec.Name +
+                " contains a non-finite source-authored semantic marker.");
+        ValidateResolvedSemanticPoints(spec);
+        Debug.Log("KMG_RIG_MARKERS name=" + spec.Name +
+            ";source=authored;grip=" + spec.SourceGripPoint.ToString("R") +
+            ";support=" + spec.SourceSupportPoint.ToString("R") +
+            ";butt=" + spec.SourceButtPoint.ToString("R") +
+            ";muzzle=" + spec.SourceMuzzlePoint.ToString("R") +
+            ";diagnosticOnly=" + spec.DiagnosticOnly);
+    }
+
+    private static Vector3 SourceLocalPoint(GameObject source, Transform marker)
+    {
+        return source.transform.InverseTransformPoint(marker.position);
+    }
+
+    private static void ValidateResolvedSemanticPoints(FirearmPrefabSpec spec)
+    {
+        Vector3 grip = Vector3.zero;
+        Vector3 support = AnchorRelativeToGrip(spec, spec.SourceSupportPoint);
+        Vector3 butt = AnchorRelativeToGrip(spec, spec.SourceButtPoint);
+        Vector3 muzzle = AnchorRelativeToGrip(spec, spec.SourceMuzzlePoint);
+        float length = Vector3.Distance(butt, muzzle);
+        float maximumLateral = Mathf.Max(0.20f, length * 0.25f);
+        if (!Finite(support) || !Finite(butt) || !Finite(muzzle) ||
+            length < spec.MinimumLengthMeters || length > spec.MaximumLengthMeters)
+            throw new InvalidOperationException(spec.Name +
+                " marker-authored scale/length is implausible: length=" +
+                length.ToString("R"));
+        if (muzzle.z <= 0f || muzzle.z <= Mathf.Abs(muzzle.x) * 4f ||
+            muzzle.z <= Mathf.Abs(muzzle.y) * 4f)
+            throw new InvalidOperationException(spec.Name +
+                " marker-authored +Z muzzle axis is invalid: " + muzzle.ToString("R"));
+        if (butt.z >= grip.z || support.z <= grip.z || support.z >= muzzle.z)
+            throw new InvalidOperationException(spec.Name +
+                " marker-authored grip/support/butt/muzzle ordering is invalid.");
+        if (Mathf.Sqrt(support.x * support.x + support.y * support.y) >
+            maximumLateral)
+            throw new InvalidOperationException(spec.Name +
+                " marker-authored support point is outside the plausible weapon envelope: " +
+                support.ToString("R"));
     }
 
     private static void RemoveDuplicatePreviewGeometry(GameObject visual,
@@ -478,6 +593,9 @@ public static class BuildFirearmBundles
              spec.SourceButtPoint == spec.SourceMuzzlePoint))
             throw new InvalidOperationException(spec.Name +
                 " semantic source anchors are invalid or collapsed.");
+        if (spec.RequireSourceMarkers && !spec.HasSemanticAnchors)
+            throw new InvalidOperationException(spec.Name +
+                " cannot require source markers without semantic-anchor behavior.");
     }
 
     private static void ValidateHierarchy(GameObject root,

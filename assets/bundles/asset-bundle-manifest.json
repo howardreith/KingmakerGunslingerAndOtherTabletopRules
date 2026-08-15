@@ -3,8 +3,28 @@
   "unityVersion": "2018.4.10f1",
   "buildTarget": "StandaloneWindows64",
   "bundleName": "kingmakergunslinger.firearms",
-  "sha256": "F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0B",
-  "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle"],
+  "sha256": "BD78F647966271D826C16D5FD93BD481EA1953E48CE66D9E9313ABBFED15B152",
+  "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketPassThrough", "MusketMinimalControl", "MusketClearanceStock", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle"],
+  "diagnosticPrefabs": [
+    {
+      "name": "MusketPassThrough",
+      "productionBinding": false,
+      "sourceFbx": "assets-source/original-models/firearm-fit-experiments/musket-pass-through.fbx",
+      "sourceFbxSha256": "16E918E4E6F32CF053C9C875951496BA40DDDEAF51D63C6D6008C7D272B17755"
+    },
+    {
+      "name": "MusketMinimalControl",
+      "productionBinding": false,
+      "sourceFbx": "assets-source/original-models/firearm-fit-experiments/musket-minimal-control.fbx",
+      "sourceFbxSha256": "33C4D7F097F745F501F79F4DAED3E42E366E6D4F10974BB6A385F3F1E86E6B01"
+    },
+    {
+      "name": "MusketClearanceStock",
+      "productionBinding": false,
+      "sourceFbx": "assets-source/original-models/firearm-fit-experiments/musket-clearance-stock.fbx",
+      "sourceFbxSha256": "069B5D1DFC912D781065FFC3CF84A786B6C381C9CFEBD4779580BD89B6DBE006"
+    }
+  ],
   "rigs": [
     {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"autonomous-candidate-roll-corrected"},
     {"name":"Musket","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"autonomous-candidate-semantic-anchors"},
@@ -18,7 +38,7 @@
   "bundles": [
     {
       "name": "kingmakergunslinger.firearms",
-      "sha256": "F52CBC5B2937EE2400D882A7E02CD45272E6A6EB244A7324E78920F265971A0"
+      "sha256": "BD78F647966271D826C16D5FD93BD481EA1953E48CE66D9E9313ABBFED15B152"
     },
     {
       "name": "kingmakergunslinger.elvenbranchedspear",

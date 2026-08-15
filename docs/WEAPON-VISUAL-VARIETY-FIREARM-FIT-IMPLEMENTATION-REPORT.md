@@ -224,3 +224,76 @@ The coherent candidate package and strict standalone validation also pass:
 Runtime Eastern ON/OFF, all-ON, highest-risk optional-mod profile, all-30 visual
 observer, combat regression, save/load consistency, and human visual acceptance
 remain pending the final immutable mission candidate.
+
+## Workstream E - Musket geometry proof and semantic markers
+
+The production Musket remains deliberately unchanged and continues to use
+`Musket 01.fbx`, prefab `Musket`, inherited native attachment slots, Crossbow
+animation, and the already-qualified identity grip frame. Three additional
+bundle prefabs are diagnostic-only and are held in a separate runtime cache;
+none can be selected by a firearm item or `FirearmPresentationProfile`:
+
+- `MusketPassThrough`: licensed current geometry imported and re-exported
+  through the deterministic Blender workflow;
+- `MusketMinimalControl`: project-owned 256-triangle control with a real
+  fore-end and almost no rear stock;
+- `MusketClearanceStock`: project-owned 280-triangle complete graybox with a
+  narrow, dropped, segmented rear stock.
+
+Source paths, FBX hashes, mesh/material counts, metric bounds, and source-space
+renders are exact in
+`assets-source/original-models/firearm-fit-experiments/musket-fit-candidates-build-report.json`.
+The generator is
+`assets-source/original-models/firearm-fit-experiments/generate_musket_fit_candidates.py`;
+the Blender source is `musket-fit-candidates.blend`. The pass-through retains
+Mesh Masters attribution and CC-BY-4.0; the two grayboxes are clean-room project
+work. No original licensed source was overwritten.
+
+All three candidates author exactly one each of `KMG_Grip`, `KMG_Support`,
+`KMG_Butt`, and `KMG_Muzzle`. The Unity importer reads these recursively and
+fails closed on partial/duplicate markers, missing markers for an authored
+asset, non-finite values, wrong muzzle axis, implausible length/scale, support
+outside the weapon envelope, or an empty visible hierarchy. Markerless legacy
+sources retain the existing hardcoded fallback. The runtime result for every
+candidate is the exact fixed Musket frame: grip `(0,0,0)`, support
+`(-0.030976,-0.051069,0.586040)`, butt `(0,0,-0.169533)`, muzzle
+`(0,0,1.180452)`, length `1.349985 m`. Runtime preparation retains the native
+left-hand IK binding to `SupportHandTarget`.
+
+Two clean Blender runs matched across all three FBXs and three normalized PNGs.
+Blender `.blend` session metadata is explicitly not claimed byte-stable. Two
+unchanged-input exact Unity 2018.4.10f1 builds matched:
+
+- bundle SHA-256:
+  `BD78F647966271D826C16D5FD93BD481EA1953E48CE66D9E9313ABBFED15B152`;
+- bundle size: 17,960,137 bytes;
+- baseline size: 16,184,635 bytes;
+- growth: 1,775,502 bytes;
+- prefab count: 8 to 11;
+- candidate source mesh counts: 2 pass-through, 8 minimal, 10 clearance;
+- candidate source material counts: 2, 3, and 3;
+- textures added: zero.
+
+Growth is principally the pass-through candidate's 24,651-vertex licensed mesh
+plus Unity-generated reverse-wound two-sided meshes for all 20 candidate mesh
+renderers. The two project grayboxes themselves are intentionally small.
+
+The development calibration lab can select each diagnostic on an exact equipped
+Musket through the native world equipment refresh and can restore the production
+Musket. It states, rather than conceals, that inventory-doll acceptance requires
+closing and reopening inventory for a clean rebuild. The standardized manual
+matrix, source-render paths, screenshot naming, decision rules, and provisional
+clearance envelope are in `docs/FIREARM-FIT-GRAYBOX-QUALIFICATION.md`.
+
+Automated source/reflection evidence currently passes 1,059/1,059 tests. The
+Unity build itself is the integration test for authored marker transforms and
+its log proves all three resolve to the exact fixed frame. Final repository,
+build, package, and guarded runtime results will be recorded after the coherent
+immutable commit.
+
+Human Musket geometry verdict: **PENDING**. Automation does not claim reduced
+clipping. The source renders are design aids, not Kingmaker screenshots.
+
+Blunderbuss E5: **NOT STARTED BY DESIGN**. The mission explicitly gates it on
+the Musket experiment's live conclusion, so building a speculative Blunderbuss
+before that result would violate the evidence rule.

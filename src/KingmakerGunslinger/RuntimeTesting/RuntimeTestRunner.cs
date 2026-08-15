@@ -7782,6 +7782,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintBootstrap.ProductionFirearms.Pistol.Item);
             AppendShortGunRigAssertions(assertions, FirearmKind.Revolver,
                 BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item);
+            AppendDiagnosticMusketRigAssertions(assertions, "MusketPassThrough");
+            AppendDiagnosticMusketRigAssertions(assertions, "MusketMinimalControl");
+            AppendDiagnosticMusketRigAssertions(assertions, "MusketClearanceStock");
             FirearmRigCapability musketCapability = FirearmAssetRuntime.GetCapability(
                 FirearmKind.Musket);
             FirearmRigCapability blunderbussCapability = FirearmAssetRuntime.GetCapability(
@@ -7812,6 +7815,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                 capability.MuzzlePosition.HasValue
                 ? Vector3.Distance(capability.ButtPosition.Value,
                     capability.MuzzlePosition.Value) : -1f;
+        }
+
+        private static void AppendDiagnosticMusketRigAssertions(
+            List<RuntimeTestAssertion> assertions, string identity)
+        {
+            GameObject instance = null;
+            bool cleaned = false;
+            string id = "musket-diagnostic-" + identity.ToLowerInvariant();
+            try
+            {
+                FirearmRigCapability capability =
+                    FirearmAssetRuntime.GetDiagnosticCapability(identity);
+                instance = FirearmAssetRuntime.InstantiateDiagnosticPrefab(identity);
+                Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
+                Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
+                Transform butt = instance == null ? null : instance.transform.Find("Butt");
+                Transform visual = instance == null ? null : instance.transform.Find("Visual");
+                EquipmentOffsets offsets = instance == null ? null :
+                    instance.GetComponent<EquipmentOffsets>();
+                Transform[] hierarchy = visual == null ? Array.Empty<Transform>() :
+                    visual.GetComponentsInChildren<Transform>(true);
+                bool exactMarkerSet = new[] { "KMG_Grip", "KMG_Support",
+                    "KMG_Butt", "KMG_Muzzle" }.All(marker =>
+                        hierarchy.Count(value => value.name == marker) == 1);
+                Renderer[] renderers = instance == null ? Array.Empty<Renderer>() :
+                    instance.GetComponentsInChildren<Renderer>(true);
+                bool visiblyRenderable;
+                string rendererSummary = DescribeFirearmRenderers(renderers,
+                    out visiblyRenderable);
+                bool exactFrame = muzzle != null && support != null && butt != null &&
+                    Vector3.Distance(muzzle.localPosition,
+                        new Vector3(0f, 0f, 1.180452f)) < 0.0001f &&
+                    Vector3.Distance(support.localPosition,
+                        new Vector3(-0.030976f, -0.051069f, 0.586040f)) < 0.0001f &&
+                    Vector3.Distance(butt.localPosition,
+                        new Vector3(0f, 0f, -0.169533f)) < 0.0001f;
+                assertions.Add(Assertion(id + "-contract",
+                    "validated diagnostic-only rig; exact fixed Musket semantic frame",
+                    capability.Describe() + ";" + rendererSummary,
+                    FirearmAssetRuntime.HasValidatedDiagnosticPrefab(identity) &&
+                    instance != null && exactFrame && visiblyRenderable &&
+                    offsets != null && ReferenceEquals(offsets.IkTargetLeftHand,
+                        support),
+                    "runtime-loaded diagnostic prefab excluded from production binding"));
+                assertions.Add(Assertion(id + "-authored-markers",
+                    "exactly one of every KMG semantic marker under Visual",
+                    "exactMarkerSet=" + exactMarkerSet,
+                    exactMarkerSet,
+                    "source-authored marker hierarchy retained through FBX and bundle"));
+            }
+            finally
+            {
+                if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
+                cleaned = instance == null || instance.Equals(null);
+            }
+            assertions.Add(Assertion(id + "-cleanup", "destroyed",
+                cleaned.ToString(), cleaned,
+                "finally-owned transient diagnostic GameObject"));
         }
 
         private void AppendLongGunRigAssertions(List<RuntimeTestAssertion> assertions,
