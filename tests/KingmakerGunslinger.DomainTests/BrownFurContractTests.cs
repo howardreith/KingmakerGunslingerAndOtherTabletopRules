@@ -357,6 +357,7 @@ namespace KingmakerGunslinger.DomainTests
                     token);
             foreach (string token in new[] {
                 "CotwProgressionMode", "'normal', 'balance-fixes'",
+                "observe-brown-fur-cotw-contract",
                 "balance_fixes", "balanceMatches.Count -ne 1",
                 "cotw-settings-profile.json", "exactBytesRestored",
                 "CotW settings bytes were not restored exactly",

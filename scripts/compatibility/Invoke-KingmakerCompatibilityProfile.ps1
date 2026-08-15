@@ -35,6 +35,7 @@ param(
         'blunderbuss-thundering-scatter',
         'disposable-paper-cartridge-comprehensive',
         'observe-feature-module-settings',
+        'observe-brown-fur-cotw-contract',
         'observe-brown-fur-cotw-absent-isolation',
         'observe-elven-branched-spear-contracts',
         'observe-eastern-weapon-contracts',
