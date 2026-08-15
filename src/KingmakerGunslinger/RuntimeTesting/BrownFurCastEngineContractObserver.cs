@@ -10,6 +10,7 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.BrownFur;
@@ -71,6 +72,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> ExecutionLifecycleBodies { get; set; }
             [JsonProperty("unitRelationshipSurfaces", Order = 22)]
             public List<string> UnitRelationshipSurfaces { get; set; }
+            [JsonProperty("buffLifecycle", Order = 23)]
+            public List<string> BuffLifecycle { get; set; }
+            [JsonProperty("ruleDispelMagic", Order = 24)]
+            public List<string> RuleDispelMagic { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -86,6 +91,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             Type shared = contract == null || contract.Assembly == null ? null :
                 contract.Assembly.GetType("CallOfTheWild.SharedSpells", false,
                     false);
+            Type ruleDispelMagic = typeof(RuleCastSpell).Assembly.GetTypes()
+                .SingleOrDefault(value => value.Name == "RuleDispelMagic");
             var evidence = new Evidence {
                 CotwAssembly = contract == null || contract.Assembly == null ?
                     string.Empty : contract.Assembly.FullName,
@@ -126,7 +133,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Kingmaker.UnitLogic.Parts.UnitPartPet",
                     "Kingmaker.UnitLogic.Parts.UnitPartSummonedMonster",
                     "Kingmaker.Blueprints.BlueprintFaction"
-                })
+                }),
+                BuffLifecycle = Describe(typeof(Buff)),
+                RuleDispelMagic = Describe(ruleDispelMagic)
             };
             ObserveHarmony(context, evidence);
 
@@ -303,6 +312,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (Has(evidence.UnitRelationshipSurfaces, "Enemy") ||
                      Has(evidence.UnitRelationshipSurfaces, "Attack")),
                 "read-only installed relationship contract for the authorized willing adaptation");
+            Add(assertions, "cast-engine-buff-lifecycle",
+                "native removal, timing, permanence, and dispel flags",
+                JoinMatches(evidence.BuffLifecycle, "Remove", "TimeLeft",
+                    "EndTime", "Permanent", "Dispel"),
+                Has(evidence.BuffLifecycle, "Remove") &&
+                    Has(evidence.BuffLifecycle, "TimeLeft") &&
+                    Has(evidence.BuffLifecycle, "Permanent") &&
+                    Has(evidence.BuffLifecycle, "Dispel"),
+                "read-only installed buff expiration and removal surfaces");
+            Add(assertions, "cast-engine-dispel-rule",
+                "one native RuleDispelMagic type with constructors and trigger",
+                JoinMatches(evidence.RuleDispelMagic, ".ctor", "OnTrigger",
+                    "Buff", "Check"),
+                ruleDispelMagic != null &&
+                    Has(evidence.RuleDispelMagic, ".ctor") &&
+                    Has(evidence.RuleDispelMagic, "OnTrigger"),
+                "read-only installed dispel rule contract");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
                 "observer does not select, load, mutate, or save a character");

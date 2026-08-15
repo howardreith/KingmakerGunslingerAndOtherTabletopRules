@@ -388,6 +388,10 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitRelationshipSurfaces", "UnitEntityData",
                 "UnitDescriptor", "UnitPartPet", "UnitPartSummonedMonster",
                 "BlueprintFaction",
+                "cast-engine-buff-lifecycle", "BuffLifecycle",
+                "typeof(Buff)", "TimeLeft", "Permanent", "Dispel",
+                "cast-engine-dispel-rule", "RuleDispelMagic",
+                "ruleDispelMagic", "OnTrigger",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
