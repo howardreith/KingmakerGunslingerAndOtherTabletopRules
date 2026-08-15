@@ -10,6 +10,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-feature-module-settings";
         internal const string ObserveBrownFurCotwContract =
             "observe-brown-fur-cotw-contract";
+        internal const string ObserveBrownFurCotwAbsentIsolation =
+            "observe-brown-fur-cotw-absent-isolation";
         internal const string ObserveBrownFurTransmutationInventory =
             "observe-brown-fur-transmutation-inventory";
         internal const string ObserveBrownFurCastEngineContract =
@@ -272,6 +274,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ModLoadSmoke,
                 ObserveFeatureModuleSettings,
                 ObserveBrownFurCotwContract,
+                ObserveBrownFurCotwAbsentIsolation,
                 ObserveBrownFurTransmutationInventory,
                 ObserveBrownFurCastEngineContract,
                 DisposableBrownFurBonusCarriers,

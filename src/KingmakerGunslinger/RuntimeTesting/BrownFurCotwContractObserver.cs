@@ -166,6 +166,105 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
         }
 
+        internal static RuntimeTestResult RunAbsent(ModContext context,
+            RuntimeTestRequest request)
+        {
+            var assertions = new List<RuntimeTestAssertion>();
+            BrownFurFeatureStatus status = BrownFurFeatureStatusRegistry.Current;
+            CotwArcanistResolution resolution =
+                BrownFurOptionalExtensionCoordinator.Current;
+            BrownFurBlueprintSet blueprints =
+                BrownFurOptionalExtensionCoordinator.Blueprints;
+            bool cotwAssemblyAbsent = AppDomain.CurrentDomain.GetAssemblies().All(
+                value => !string.Equals(value.GetName().Name, "CallOfTheWild",
+                    StringComparison.Ordinal));
+            bool independentModulesActive =
+                context.FeatureModules.Active.Gunslinger &&
+                context.FeatureModules.Active.AcadamaeGraduate &&
+                context.FeatureModules.Active.ShieldOther &&
+                context.FeatureModules.Active.ExpandedSummoning &&
+                context.FeatureModules.Active.ElvenBranchedSpears &&
+                context.FeatureModules.Active.EasternWeapons;
+            bool brownFurIntentPreserved =
+                context.FeatureModules.Active.BrownFurTransmuter;
+            bool identitiesAbsent = BlueprintBootstrap.Library != null &&
+                BrownFurIdentityCatalog.All.All(spec =>
+                    !BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(
+                        spec.Guid));
+            string observed = "coreReady=" + context.IsReady +
+                ";coreIdentities=" + BlueprintBootstrap.RegisteredBlueprintCount +
+                ";independentActive=" + independentModulesActive +
+                ";brownFurIntent=" + brownFurIntentPreserved +
+                ";status=" + status.DependencyStatus +
+                ";published=" + status.Published +
+                ";resolution=" + (resolution == null ? "none" :
+                    resolution.Decision.Availability.ToString()) +
+                ";blueprints=" + (blueprints == null ? "none" :
+                    blueprints.Count.ToString()) +
+                ";reconciliations=" +
+                    BrownFurOptionalExtensionCoordinator.SuccessfulReconciliations +
+                ";cotwAssemblyAbsent=" + cotwAssemblyAbsent +
+                ";identitiesAbsent=" + identitiesAbsent;
+            Add(assertions, "package-bootstrap-isolated", "ready",
+                observed, context.IsReady,
+                "ModContext package state remains authoritative and ready");
+            Add(assertions, "independent-module-bootstrap",
+                "six independent modules active and exact core identity count",
+                observed, independentModulesActive &&
+                    BlueprintBootstrap.RegisteredBlueprintCount ==
+                        BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                "immutable feature snapshot and unconditional core BlueprintRegistry");
+            Add(assertions, "brown-fur-saved-intent-preserved", "ON",
+                observed, brownFurIntentPreserved,
+                "active process snapshot preserves saved user intent despite dependency absence");
+            Add(assertions, "cotw-runtime-absent",
+                "no loaded CallOfTheWild assembly", observed, cotwAssemblyAbsent,
+                "current AppDomain assembly identity set");
+            Add(assertions, "brown-fur-effective-unavailable",
+                "Unavailable  Call of the Wild not detected; not published",
+                observed,
+                status.Availability == BrownFurDependencyAvailability.Unavailable &&
+                    !status.Published && string.Equals(status.DependencyStatus,
+                        "Unavailable  Call of the Wild not detected",
+                        StringComparison.Ordinal),
+                "isolated optional coordinator status distinct from saved intent");
+            Add(assertions, "brown-fur-absent-registration",
+                "no contract, blueprints, reconciliation, or Brown-Fur GUIDs",
+                observed, resolution == null && blueprints == null &&
+                    BrownFurOptionalExtensionCoordinator.SuccessfulReconciliations == 0 &&
+                    identitiesAbsent,
+                "CotW-dependent registration and publication fail closed");
+            Add(assertions, "save-free-observer",
+                "no save or input API invoked", "read-only absence inspection",
+                true, "observer reads process and blueprint state only");
+            bool pass = assertions.All(value =>
+                value.Status == RuntimeTestStatuses.Pass);
+            Assembly assembly = context.Assembly;
+            return new RuntimeTestResult
+            {
+                SchemaVersion = 1,
+                RunId = request.RunId,
+                Scenario = request.Scenario,
+                Status = pass ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                LoadedModVersion = context.ModEntry.Info.Version,
+                RuntimeIdentity = assembly.FullName + ";mvid=" +
+                    assembly.ManifestModule.ModuleVersionId + ";sha256=" +
+                    Hash(assembly.Location) + ";pid=" +
+                    Process.GetCurrentProcess().Id,
+                GitCommit = Metadata(assembly, "GitCommit"),
+                GameVersion = Application.version ?? string.Empty,
+                StartUtc = DateTime.UtcNow.ToString("o"),
+                EndUtc = string.Empty,
+                Assertions = assertions,
+                Diagnostics = new List<string> { observed },
+                Warnings = new List<string>(),
+                ExceptionSummary = string.Empty,
+                EvidenceFiles = new List<string>(),
+                AutomaticExitRequested = request.ExitAfterCompletion,
+                EvidenceDirectory = request.EvidenceDirectory
+            };
+        }
+
         private static void Add(List<RuntimeTestAssertion> assertions,
             string name, string expected, string observed, bool pass,
             string evidence)

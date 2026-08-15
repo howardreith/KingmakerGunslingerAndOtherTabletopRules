@@ -324,6 +324,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Package bootstrap does not invoke isolated Brown-Fur coordination.");
             foreach (string token in new[] {
                 "observe-brown-fur-cotw-contract", "cotw-contract-resolution",
+                "observe-brown-fur-cotw-absent-isolation",
                 "cotw-progression-shape", "cotw-required-identities",
                 "cotw-balance-setting-agrees-with-progression",
                 "cotw-shared-spells-signatures",
@@ -340,6 +341,16 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals(value, blueprints.Archetype)" })
                 Assertions.True(observer.Contains(token),
                     "Guarded CotW observer lacks optional-registration evidence token: " +
+                    token);
+            foreach (string token in new[] {
+                "RunAbsent", "independent-module-bootstrap",
+                "brown-fur-saved-intent-preserved", "cotw-runtime-absent",
+                "brown-fur-effective-unavailable",
+                "brown-fur-absent-registration",
+                "BlueprintBootstrap.ExpectedRegisteredBlueprintCount",
+                "BrownFurOptionalExtensionCoordinator.SuccessfulReconciliations" })
+                Assertions.True(observer.Contains(token),
+                    "Guarded CotW-absent observer lacks isolation evidence token: " +
                     token);
             Assertions.False(Directory.GetFiles(brownFur, "*.cs")
                 .Select(File.ReadAllText).Any(value =>
