@@ -30,6 +30,13 @@ namespace KingmakerGunslinger.BrownFur
             new Dictionary<TContext, Entry>(ReferenceComparer<TContext>.Instance);
         private readonly Dictionary<TProcess, Entry> _processes =
             new Dictionary<TProcess, Entry>(ReferenceComparer<TProcess>.Instance);
+        private readonly Action<BrownFurCastTransaction> _onRelease;
+
+        internal BrownFurCastLifecycleTracker() : this(null) { }
+
+        internal BrownFurCastLifecycleTracker(
+            Action<BrownFurCastTransaction> onRelease)
+        { _onRelease = onRelease; }
 
         internal int ActiveTransactionCount
         { get { lock (_gate) return _commands.Count; } }
@@ -156,6 +163,7 @@ namespace KingmakerGunslinger.BrownFur
         {
             lock (_gate)
             {
+                var failures = new List<Exception>();
                 foreach (Entry entry in new List<Entry>(_commands.Values))
                 {
                     if (entry.Transaction.State ==
@@ -166,12 +174,12 @@ namespace KingmakerGunslinger.BrownFur
                         entry.Transaction.State ==
                             BrownFurCastTransactionState.Validated)
                         entry.Transaction.Cancel();
+                    try { Release(entry); }
+                    catch (Exception exception) { failures.Add(exception); }
                 }
-                _commands.Clear();
-                _abilities.Clear();
-                _rules.Clear();
-                _contexts.Clear();
-                _processes.Clear();
+                if (failures.Count != 0) throw new AggregateException(
+                    "One or more Brown-Fur lifecycle release callbacks failed.",
+                    failures);
             }
         }
 
@@ -182,6 +190,7 @@ namespace KingmakerGunslinger.BrownFur
             if (entry.Rule != null) _rules.Remove(entry.Rule);
             if (entry.Context != null) _contexts.Remove(entry.Context);
             if (entry.Process != null) _processes.Remove(entry.Process);
+            if (_onRelease != null) _onRelease(entry.Transaction);
         }
 
         private sealed class ReferenceComparer<T> : IEqualityComparer<T>

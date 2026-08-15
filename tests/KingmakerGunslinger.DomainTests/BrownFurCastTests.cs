@@ -530,6 +530,104 @@ namespace KingmakerGunslinger.DomainTests
                 "Releasing the transaction must remove its targeting override.");
         }
 
+        internal static void CastLifecycleReleasesExactlyOnce()
+        {
+            var released = new List<BrownFurCastTransaction>();
+            var tracker = new BrownFurCastLifecycleTracker<object, object,
+                object, object, object>(released.Add);
+            object command = new object();
+            object ability = new object();
+            object rule = new object();
+            object context = new object();
+            object process = new object();
+            BrownFurCastTransaction transaction = Transaction(1);
+            Assertions.True(tracker.Begin(command, ability, transaction) &&
+                tracker.AttachRule(ability, rule, context) &&
+                tracker.AttachProcess(rule, process) &&
+                tracker.Commit(ability, value => value == 1) &&
+                tracker.ProcessTerminal(process, false),
+                "A committed lifecycle must reach one exact terminal release.");
+            tracker.EndCommand(command, false);
+            Assertions.True(released.Count == 1 &&
+                ReferenceEquals(released[0], transaction),
+                "Later duplicate terminal signals must not release scopes twice.");
+
+            object cancelledCommand = new object();
+            BrownFurCastTransaction cancelled = Transaction(1);
+            Assertions.True(tracker.Begin(cancelledCommand, new object(),
+                cancelled) && tracker.EndCommand(cancelledCommand, true),
+                "An uncommitted cancellation must release its lifecycle.");
+            Assertions.True(released.Count == 2 &&
+                ReferenceEquals(released[1], cancelled),
+                "Cancellation must invoke the same exact release callback once.");
+
+            BrownFurCastTransaction cleared = Transaction(1);
+            Assertions.True(tracker.Begin(new object(), new object(), cleared),
+                "The clear fixture must retain one validated transaction.");
+            tracker.Clear();
+            Assertions.True(released.Count == 3 &&
+                ReferenceEquals(released[2], cleared) &&
+                tracker.ActiveTransactionCount == 0,
+                "Bounded transition cleanup must release every retained scope.");
+        }
+
+        internal static void ReservoirReservationsAreAtomic()
+        {
+            var ledger = new BrownFurReservoirReservationLedger<object>();
+            object owner = new object();
+            object otherOwner = new object();
+            Assertions.True(ledger.TryReserve(owner, "queued-a", 1, 2) &&
+                ledger.TryReserve(owner, "queued-b", 1, 2),
+                "Two queued one-point casts may reserve a two-point reservoir.");
+            Assertions.False(ledger.TryReserve(owner, "queued-c", 1, 2),
+                "A third queued cast must reject before execution submission.");
+            Assertions.False(ledger.TryReserve(owner, "queued-a", 0, 2),
+                "Transaction identities must remain globally unique.");
+            Assertions.True(ledger.TryReserve(otherOwner, "other", 2, 2),
+                "A distinct owner must retain an independent reservation total.");
+            int debited = 0;
+            Assertions.True(ledger.TryCommit(owner, "queued-a", cost => {
+                debited += cost; return true; }) && debited == 1 &&
+                ledger.ReservedPoints(owner) == 1 &&
+                ledger.ReservedPoints(otherOwner) == 2,
+                "Commit must debit one exact reservation and preserve all others.");
+            Assertions.True(ledger.Release(owner, "queued-b") &&
+                ledger.ReservedPoints(owner) == 0 &&
+                ledger.ReservationCount == 1,
+                "Cancellation must release only its exact queued reservation.");
+            ledger.Clear();
+            Assertions.True(ledger.ReservationCount == 0 &&
+                ledger.ReservedPoints(otherOwner) == 0,
+                "Load or combat cleanup must clear every remaining reservation.");
+        }
+
+        internal static void ReservoirReservationsReleaseOnEveryTerminalCommit()
+        {
+            var ledger = new BrownFurReservoirReservationLedger<object>();
+            object owner = new object();
+            Assertions.True(ledger.TryReserve(owner, "rejected", 2, 2),
+                "The rejected-commit fixture must reserve its combined cost.");
+            Assertions.False(ledger.TryCommit(owner, "rejected", cost => false),
+                "A failed exact debit must reject commit.");
+            Assertions.True(ledger.ReservationCount == 0 &&
+                ledger.ReservedPoints(owner) == 0,
+                "A failed debit must never strand a queued reservation.");
+
+            Assertions.True(ledger.TryReserve(owner, "exception", 1, 1),
+                "The exceptional-commit fixture must reserve one point.");
+            bool threw = false;
+            try
+            {
+                ledger.TryCommit(owner, "exception", cost => {
+                    throw new InvalidOperationException("synthetic debit failure");
+                });
+            }
+            catch (InvalidOperationException) { threw = true; }
+            Assertions.True(threw && ledger.ReservationCount == 0 &&
+                ledger.ReservedPoints(owner) == 0,
+                "An exceptional debit must release its reservation in finally.");
+        }
+
         internal static void ShareTargetingScopesAreIsolated()
         {
             var tracker = new BrownFurShareTargetingScopeTracker<object, object,
