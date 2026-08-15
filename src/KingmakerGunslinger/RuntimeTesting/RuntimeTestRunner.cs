@@ -17424,6 +17424,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             bool subscribed = false, callback = false, facts = false,
                 descriptorsAlias = false, cleaned = false;
+            bool expectedVisible = false, gritPresent = false,
+                archetypeReconciledObserved = false, exactScopeObserved = false,
+                exactActionsObserved = false, hasFull = false,
+                hasOneHanded = false, hasTwoHanded = false;
+            int expectedActionCount = -1, presentActionCount = -1;
+            string replacementArchetypeNames = "<unavailable>";
             int sourceFighter = -1, sourceGunslinger = -1,
                 replacementFighter = -1, replacementGunslinger = -1;
             try
@@ -17523,6 +17529,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(sourceArchetype, targetArchetype) ||
                         !replacementArchetypes.Any(value =>
                             ReferenceEquals(value, sourceArchetype)));
+                replacementArchetypeNames = replacementClassData == null
+                    ? "<missing-class-data>" : string.Join(",",
+                        replacementArchetypes.Select(value => value == null
+                            ? "<null>" : value.name).ToArray());
+                archetypeReconciledObserved = archetypeReconciled;
+                expectedVisible = handler.Replacement != null &&
+                    handler.Replacement.HasFact(expectedProficiency);
+                gritPresent = handler.Replacement != null &&
+                    handler.Replacement.HasFact(
+                        BlueprintBootstrap.GunslingerClass.Grit.Feature);
+                hasFull = handler.Replacement != null &&
+                    handler.Replacement.HasFact(fullProficiency);
+                hasOneHanded = handler.Replacement != null &&
+                    handler.Replacement.HasFact(oneHandedProficiency);
+                hasTwoHanded = handler.Replacement != null &&
+                    handler.Replacement.HasFact(twoHandedProficiency);
                 bool exactScope = handler.Replacement != null &&
                     handler.Replacement.HasFact(targetPistolero
                         ? oneHandedProficiency : targetMusketMaster
@@ -17533,6 +17555,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         targetPistolero &&
                     handler.Replacement.HasFact(twoHandedProficiency) ==
                         targetMusketMaster;
+                exactScopeObserved = exactScope;
                 BlueprintFeature actionSource = targetPistolero
                     ? oneHandedProficiency : targetMusketMaster
                         ? twoHandedProficiency : fullProficiency;
@@ -17545,10 +17568,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     expectedActions.Distinct().Count() == expectedActions.Length &&
                     handler.Replacement != null && expectedActions.All(value =>
                         handler.Replacement.HasFact(value));
+                expectedActionCount = expectedActions.Length;
+                presentActionCount = handler.Replacement == null ? -1 :
+                    expectedActions.Count(value => handler.Replacement.HasFact(value));
+                exactActionsObserved = exactActions;
                 facts = handler.Replacement != null &&
-                    handler.Replacement.HasFact(expectedProficiency) &&
-                    handler.Replacement.HasFact(
-                        BlueprintBootstrap.GunslingerClass.Grit.Feature) &&
+                    expectedVisible && gritPresent &&
                     archetypeReconciled && exactScope && exactActions;
             }
             finally
@@ -17596,7 +17621,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 handler.Selected + ";callback=" + callback + ";source=" +
                 sourceFighter + "/" + sourceGunslinger + ";replacement=" +
                 replacementFighter + "/" + replacementGunslinger +
-                ";alias=" + descriptorsAlias + ";facts=" + facts;
+                ";alias=" + descriptorsAlias + ";facts=" + facts +
+                ";expectedVisible=" + expectedVisible + ";grit=" +
+                gritPresent + ";archetypeReconciled=" +
+                archetypeReconciledObserved + ";archetypes=" +
+                replacementArchetypeNames + ";scope=" + exactScopeObserved +
+                ";full/one/two=" + hasFull + "/" + hasOneHanded + "/" +
+                hasTwoHanded + ";actions=" + exactActionsObserved + "/" +
+                presentActionCount + "/" + expectedActionCount;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion(transition + "-native-replacement",
