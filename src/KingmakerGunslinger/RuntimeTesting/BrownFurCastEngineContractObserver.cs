@@ -266,11 +266,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Has(evidence.AbilityExecutionProcess, "IsEnded") &&
                     Has(evidence.AbilityExecutionProcess, "Tick") &&
                     Has(evidence.ExecutionLifecycleBodies,
+                        "AbilityData.CalculateParams") &&
+                    Has(evidence.ExecutionLifecycleBodies,
                         "AbilityData.CreateExecutionContext") &&
                     Has(evidence.ExecutionLifecycleBodies,
                         "UnitUseAbility.OnEnded") &&
                     Has(evidence.ExecutionLifecycleBodies,
                         "AbilityExecutionProcess.Tick") &&
+                    Has(evidence.ExecutionLifecycleBodies,
+                        "AbilityExecutionProcess.ProcessRoutine") &&
                     Has(evidence.ExecutionLifecycleBodies,
                         "AbilityExecutionProcess.Detach"),
                 "exact per-execution retention and cleanup seams resolved in-process");
@@ -522,16 +526,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static List<string> DescribeExecutionLifecycleBodies()
         {
             var methods = new List<MethodBase> {
+                typeof(AbilityData).GetMethod("CalculateParams", All, null,
+                    Type.EmptyTypes, null),
                 typeof(AbilityData).GetMethod("CreateExecutionContext", All,
                     null, new[] { typeof(Kingmaker.Utility.TargetWrapper) },
                     null),
                 typeof(UnitUseAbility).GetMethod("OnEnded", All, null,
-                    new[] { typeof(bool) }, null)
+                    new[] { typeof(bool) }, null),
+                typeof(UnitUseAbility).GetProperty("IsFinished", All)
+                    .GetGetMethod(true)
             };
             Type process = typeof(Kingmaker.Controllers.AbilityExecutionProcess);
+            methods.Add(process.GetConstructor(All, null,
+                new[] { typeof(AbilityExecutionContext) }, null));
             methods.AddRange(process.GetMethods(All).Where(value =>
                 value.Name == "Tick" || value.Name == "Detach" ||
-                value.Name == "InstantDeliver"));
+                value.Name == "InstantDeliver" ||
+                value.Name == "ProcessRoutine" ||
+                value.Name == "<Tick>b__12_0"));
             Type controller = typeof(Kingmaker.Controllers.AbilityExecutionController);
             methods.AddRange(controller.GetMethods(All).Where(value =>
                 value.Name == "Execute" && value.GetParameters().Length == 1 &&

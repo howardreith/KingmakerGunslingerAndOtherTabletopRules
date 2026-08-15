@@ -293,6 +293,7 @@ namespace KingmakerGunslinger.DomainTests
                 "cast-engine-execution-lifecycle",
                 "AbilityExecutionProcess", "ExecutionLifecycleBodies",
                 "DescribeExecutionLifecycleBodies", "CreateExecutionContext",
+                "CalculateParams", "ProcessRoutine", "<Tick>b__12_0",
                 "InstantDeliver", "AbilityExecutionController",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||
