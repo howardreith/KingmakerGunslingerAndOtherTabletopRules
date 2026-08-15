@@ -284,6 +284,9 @@ namespace KingmakerGunslinger.DomainTests
                 "cast-engine-native-delivery-bodies", "NativeDeliveryBodies",
                 "DescribeNativeDeliveryBodies", "GetApproachDistance",
                 "ShouldUnitApproach", "ApproachRadius",
+                "cast-engine-commit-bodies", "CastCommitBodies",
+                "DescribeCastCommitBodies", "SpendFromSpellbook",
+                "AbilityExecutionContext).GetConstructor",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
@@ -291,7 +294,8 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "GetILAsByteArray",
                 "OpCodes", "OperandType", "ResolveMember", "ResolveString",
                 "InlineMethod", "InlineField", "InlineSwitch",
-                "info.IsGenericMethod", "info.GetGenericArguments()" })
+                "MethodBase", "info.IsGenericMethod",
+                "info.GetGenericArguments()" })
                 Assertions.True(ilDisassembler.Contains(token),
                     "CotW helper IL decoder lacks exact guard: " + token);
             foreach (string token in new[] {

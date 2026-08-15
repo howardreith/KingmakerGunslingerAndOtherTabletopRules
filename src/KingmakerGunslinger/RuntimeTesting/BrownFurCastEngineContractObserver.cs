@@ -63,6 +63,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> RelevantCotwTargetingBodies { get; set; }
             [JsonProperty("nativeDeliveryBodies", Order = 18)]
             public List<string> NativeDeliveryBodies { get; set; }
+            [JsonProperty("castCommitBodies", Order = 19)]
+            public List<string> CastCommitBodies { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -106,7 +108,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SharedSpellsHarmony = new List<string>(),
                 RelevantCotwHarmony = new List<string>(),
                 RelevantCotwTargetingBodies = new List<string>(),
-                NativeDeliveryBodies = DescribeNativeDeliveryBodies()
+                NativeDeliveryBodies = DescribeNativeDeliveryBodies(),
+                CastCommitBodies = DescribeCastCommitBodies()
             };
             ObserveHarmony(context, evidence);
 
@@ -235,6 +238,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Has(evidence.NativeDeliveryBodies,
                         "UnitCommand.get_ApproachRadius"),
                 "exact Kingmaker delivery IL resolved without mutating a spell or save");
+            Add(assertions, "cast-engine-commit-bodies",
+                "native command, rule, slot spend, and context construction bodies decoded",
+                "instructions=" + evidence.CastCommitBodies.Count,
+                evidence.CastCommitBodies.Count > 4 &&
+                    Has(evidence.CastCommitBodies, "UnitUseAbility.OnAction") &&
+                    Has(evidence.CastCommitBodies, "RuleCastSpell.OnTrigger") &&
+                    Has(evidence.CastCommitBodies,
+                        "AbilityData.SpendFromSpellbook") &&
+                    Has(evidence.CastCommitBodies,
+                        "AbilityExecutionContext..ctor"),
+                "exact Kingmaker cast commitment IL resolved in-process");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
                 "observer does not select, load, mutate, or save a character");
@@ -442,6 +456,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             var result = new List<string>();
             foreach (MethodInfo method in methods.Where(value => value != null))
+            {
+                result.Add("method " + Signature(method));
+                result.AddRange(BrownFurIlDisassembler.Describe(method));
+            }
+            return result;
+        }
+
+        private static List<string> DescribeCastCommitBodies()
+        {
+            var methods = new List<MethodBase> {
+                typeof(UnitUseAbility).GetMethod("OnAction", All, null,
+                    Type.EmptyTypes, null),
+                typeof(RuleCastSpell).GetMethod("OnTrigger", All, null,
+                    new[] { typeof(Kingmaker.RuleSystem.RulebookEventContext) },
+                    null),
+                typeof(AbilityData).GetMethod("SpendFromSpellbook", All, null,
+                    Type.EmptyTypes, null),
+                typeof(AbilityExecutionContext).GetConstructor(All, null,
+                    new[] { typeof(AbilityData), typeof(AbilityParams),
+                        typeof(Kingmaker.Utility.TargetWrapper),
+                        typeof(Kingmaker.RuleSystem.RulebookEventContext) }, null)
+            };
+            var result = new List<string>();
+            foreach (MethodBase method in methods.Where(value => value != null))
             {
                 result.Add("method " + Signature(method));
                 result.AddRange(BrownFurIlDisassembler.Describe(method));

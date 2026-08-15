@@ -12,7 +12,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly Dictionary<byte, OpCode> OneByte = Build(false);
         private static readonly Dictionary<byte, OpCode> TwoByte = Build(true);
 
-        internal static List<string> Describe(MethodInfo method)
+        internal static List<string> Describe(MethodBase method)
         {
             var result = new List<string>();
             MethodBody body = method == null ? null : method.GetMethodBody();
@@ -57,7 +57,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private static string ReadOperand(MethodInfo method, byte[] bytes,
+        private static string ReadOperand(MethodBase method, byte[] bytes,
             ref int offset, OperandType type)
         {
             switch (type)
@@ -139,7 +139,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static Type[] GenericTypes(MemberInfo value)
         {
             Type type = value as Type;
-            MethodInfo method = value as MethodInfo;
+            MethodBase method = value as MethodBase;
             return type != null && type.IsGenericType ?
                 type.GetGenericArguments() : method != null &&
                 method.IsGenericMethod ? method.GetGenericArguments() : null;
