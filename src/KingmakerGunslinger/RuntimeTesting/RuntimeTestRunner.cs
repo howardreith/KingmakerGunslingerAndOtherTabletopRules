@@ -9101,6 +9101,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.EasternWeapons;
             bool activeBrownFurTransmuter =
                 _context.FeatureModules.Active.BrownFurTransmuter;
+            CotwArcanistResolution brownFurResolution =
+                BrownFurOptionalExtensionCoordinator.Current;
+            BrownFurBlueprintSet brownFurBlueprints =
+                BrownFurOptionalExtensionCoordinator.Blueprints;
+            BrownFurFeatureStatus brownFurStatus =
+                BrownFurFeatureStatusRegistry.Current;
+            bool brownFurContractCompatible = brownFurResolution != null &&
+                brownFurResolution.Decision.IsCompatible &&
+                brownFurResolution.Contract != null &&
+                brownFurBlueprints != null &&
+                brownFurBlueprints.Count == BrownFurIdentityCatalog.IdentityCount;
+            BlueprintArchetype[] cotwArchetypes = !brownFurContractCompatible ?
+                new BlueprintArchetype[0] :
+                brownFurResolution.Contract.ArcanistClass.Archetypes ??
+                    new BlueprintArchetype[0];
+            int brownFurSelectorReferences = !brownFurContractCompatible ? 0 :
+                cotwArchetypes.Count(value => ReferenceEquals(value,
+                    brownFurBlueprints.Archetype));
+            int brownFurGuidReferences = !brownFurContractCompatible ? 0 :
+                cotwArchetypes.Count(value => value != null && string.Equals(
+                    value.AssetGuid, brownFurBlueprints.Archetype.AssetGuid,
+                    StringComparison.Ordinal));
+            int foreignCotwArchetypes = !brownFurContractCompatible ? 0 :
+                cotwArchetypes.Count(value => value != null && !string.Equals(
+                    value.AssetGuid, brownFurBlueprints.Archetype.AssetGuid,
+                    StringComparison.Ordinal));
+            bool cotwArchetypesUnique = brownFurContractCompatible &&
+                cotwArchetypes.All(value => value != null) &&
+                cotwArchetypes.Select(value => value.AssetGuid).Distinct(
+                    StringComparer.Ordinal).Count() == cotwArchetypes.Length &&
+                cotwArchetypes.Distinct().Count() == cotwArchetypes.Length;
+            IReadOnlyList<string> brownFurPublicationEvidence =
+                BrownFurOptionalExtensionCoordinator.PublicationEvidence;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -9437,6 +9470,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 activeShieldOther + "/" + activeExpandedSummoning + "/" +
                 activeElvenBranchedSpears + "/" + activeEasternWeapons + "/" +
                 activeBrownFurTransmuter +
+                ";brownFur=contract:" + brownFurContractCompatible +
+                "/identities:" + (brownFurBlueprints == null ? 0 :
+                    brownFurBlueprints.Count) + "/published:" +
+                brownFurStatus.Published + "/selectorRef:" +
+                brownFurSelectorReferences + "/selectorGuid:" +
+                brownFurGuidReferences + "/foreign:" +
+                foreignCotwArchetypes + "/unique:" +
+                cotwArchetypesUnique + "/transaction:" +
+                string.Join("|", brownFurPublicationEvidence.ToArray()) +
                 ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
@@ -9596,6 +9638,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "native-fallback:module-disabled",
                         StringComparison.Ordinal)),
                     "always-registered identities, exact merged selectors, broad martial integration, campaign/BTSL publication, fixed loot, and module-gated presentation"),
+                Assertion("feature-module-brown-fur-publication-gate",
+                    expectedBrownFurTransmuter ?
+                        "19 identities; available and published; exactly one CotW selector reference; foreign archetypes preserved" :
+                        "19 identities; available and not published; zero CotW selector references; foreign archetypes preserved",
+                    observed,
+                    brownFurContractCompatible &&
+                    brownFurStatus.Availability ==
+                        BrownFurDependencyAvailability.Available &&
+                    brownFurStatus.Published == expectedBrownFurTransmuter &&
+                    brownFurSelectorReferences ==
+                        (expectedBrownFurTransmuter ? 1 : 0) &&
+                    brownFurGuidReferences ==
+                        (expectedBrownFurTransmuter ? 1 : 0) &&
+                    foreignCotwArchetypes == 6 && cotwArchetypesUnique &&
+                    (expectedBrownFurTransmuter ?
+                        brownFurPublicationEvidence.Any(value => value.Contains(
+                            "transaction;action=committed")) &&
+                        brownFurPublicationEvidence.Any(value => value.Contains(
+                            "surface=cotw-arcanist-archetypes;action=published;before=6;after=7")) :
+                        brownFurPublicationEvidence.Count == 0),
+                    "structural CotW contract, stable identity set, exact Arcanist archetype array, and Brown-Fur transaction evidence"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

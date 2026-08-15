@@ -347,6 +347,15 @@ namespace KingmakerGunslinger.DomainTests
                     "Guarded CotW observer lacks optional-registration evidence token: " +
                     token);
             foreach (string token in new[] {
+                "feature-module-brown-fur-publication-gate",
+                "foreignCotwArchetypes == 6", "cotwArchetypesUnique",
+                "brownFurSelectorReferences", "brownFurGuidReferences",
+                "BrownFurOptionalExtensionCoordinator.PublicationEvidence",
+                "surface=cotw-arcanist-archetypes;action=published;before=6;after=7" })
+                Assertions.True(runtimeRunner.Contains(token),
+                    "Feature-module matrix observer lacks Brown-Fur publication token: " +
+                    token);
+            foreach (string token in new[] {
                 "RunAbsent", "independent-module-bootstrap",
                 "brown-fur-saved-intent-preserved", "cotw-runtime-absent",
                 "brown-fur-effective-unavailable",
