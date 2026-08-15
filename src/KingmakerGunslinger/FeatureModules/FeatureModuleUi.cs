@@ -32,8 +32,17 @@ namespace KingmakerGunslinger.FeatureModules
                 _state.Pending.ElvenBranchedSpears, "Elven Branched Spears");
             bool easternWeapons = ImmediateModeGui.Toggle(
                 _state.Pending.EasternWeapons, "Eastern Weapons");
+            bool brownFurTransmuter = ImmediateModeGui.Toggle(
+                _state.Pending.BrownFurTransmuter,
+                "Brown-Fur Transmuter  requires Call of the Wild");
             _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
-                elvenBranchedSpears, easternWeapons);
+                elvenBranchedSpears, easternWeapons, brownFurTransmuter);
+            BrownFurFeatureStatus brownFurStatus =
+                BrownFurFeatureStatusRegistry.Current;
+            ImmediateModeGui.Label("Brown-Fur dependency: " +
+                brownFurStatus.DependencyStatus);
+            ImmediateModeGui.Label("Brown-Fur effective current-process state: " +
+                brownFurStatus.PublicationStatus);
             ImmediateModeGui.Label("Active this process: " + _state.Active);
             ImmediateModeGui.Label("Saved for next restart: " + _state.Pending);
             if (_state.RestartRequired)

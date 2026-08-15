@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.FeatureModules
             Pending = new FeatureModuleConfiguration(active.Gunslinger,
                 active.AcadamaeGraduate, active.ShieldOther,
                 active.ExpandedSummoning, active.ElvenBranchedSpears,
-                active.EasternWeapons);
+                active.EasternWeapons, active.BrownFurTransmuter);
             Path = path ?? string.Empty;
             Source = source ?? string.Empty;
             Recovered = recovered;
@@ -26,8 +26,9 @@ namespace KingmakerGunslinger.FeatureModules
 
         internal void SetPending(bool gunslinger, bool acadamaeGraduate,
             bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears,
-            bool easternWeapons)
+            bool easternWeapons, bool brownFurTransmuter)
         { Pending = new FeatureModuleConfiguration(gunslinger, acadamaeGraduate,
-            shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons); }
+            shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons,
+            brownFurTransmuter); }
     }
 }

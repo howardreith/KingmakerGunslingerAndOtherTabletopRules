@@ -8645,6 +8645,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (bool)_request.Parameters["elvenBranchedSpears"];
             bool expectedEasternWeapons =
                 (bool)_request.Parameters["easternWeapons"];
+            bool expectedBrownFurTransmuter =
+                (bool)_request.Parameters["brownFurTransmuter"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
@@ -8654,6 +8656,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.ElvenBranchedSpears;
             bool activeEasternWeapons =
                 _context.FeatureModules.Active.EasternWeapons;
+            bool activeBrownFurTransmuter =
+                _context.FeatureModules.Active.BrownFurTransmuter;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -8984,11 +8988,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = "expected=" + expectedGunslinger + "/" +
                 expectedAcadamae + "/" + expectedShieldOther + "/" +
                 expectedExpandedSummoning + "/" + expectedElvenBranchedSpears +
-                "/" + expectedEasternWeapons +
+                "/" + expectedEasternWeapons + "/" + expectedBrownFurTransmuter +
                 ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
                 activeShieldOther + "/" + activeExpandedSummoning + "/" +
-                activeElvenBranchedSpears + "/" + activeEasternWeapons +
+                activeElvenBranchedSpears + "/" + activeEasternWeapons + "/" +
+                activeBrownFurTransmuter +
                 ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
@@ -9036,7 +9041,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeShieldOther == expectedShieldOther &&
                     activeExpandedSummoning == expectedExpandedSummoning &&
                     activeElvenBranchedSpears == expectedElvenBranchedSpears &&
-                    activeEasternWeapons == expectedEasternWeapons,
+                    activeEasternWeapons == expectedEasternWeapons &&
+                    activeBrownFurTransmuter == expectedBrownFurTransmuter,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCount + " identities in every state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,

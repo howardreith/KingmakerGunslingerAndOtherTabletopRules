@@ -289,6 +289,8 @@
     <Compile Include="Classes\GunslingerInitiativeService.cs" />
     <Compile Include="Compatibility\ClassCatalogDiagnostics.cs" />
     <Compile Include="FeatureModules\FeatureModuleConfiguration.cs" />
+    <Compile Include="FeatureModules\BrownFurFeatureStatus.cs" />
+    <Compile Include="FeatureModules\FeatureModuleMatrixPolicy.cs" />
     <Compile Include="FeatureModules\FeatureModulePublicationPlan.cs" />
     <Compile Include="FeatureModules\FeatureModuleSettingsState.cs" />
     <Compile Include="FeatureModules\FeatureModuleSettingsStore.cs" />

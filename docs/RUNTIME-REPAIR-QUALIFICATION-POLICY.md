@@ -1,5 +1,10 @@
 # Runtime repair qualification policy
 
+The authoritative package-wide policy is now
+`docs/RUNTIME-QUALIFICATION-POLICY.md`. This historical repair-policy document
+retains the six-module context under which it was written; current controllers
+must use the generic active-module catalog and current boundary count.
+
 Ordinary repair iterations use risk-shaped runtime coverage. They do not run
 the exhaustive 64-state feature-module matrix unless shared module authority,
 schema, bootstrap, registration, gating, rollback, or module membership changed.
@@ -14,7 +19,8 @@ schema, bootstrap, registration, gating, rollback, or module membership changed.
   all ON, all OFF, each of six modules ON alone, and each OFF with the other five
   ON.
 
-`Invoke-FeatureModuleRuntimeMatrix.ps1 -Boundary14` constructs exactly those 14
+Historically, `Invoke-FeatureModuleRuntimeMatrix.ps1 -Boundary14` constructed
+exactly those 14
 states. `Invoke-KingmakerRuntimeTest.ps1 -ReuseInstalledArtifact` skips build
 and deployment only after `Assert-KmgReusableDeployment` verifies the clean Git
 commit, version, package SHA-256, DLL SHA-256, DLL MVID, installed DLL hash,

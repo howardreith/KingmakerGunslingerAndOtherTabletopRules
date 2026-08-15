@@ -33,17 +33,17 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime launcher lacks an explicit verified reuse/build boundary.");
         }
 
-        internal static void BoundaryMatrixIsExactlyFourteenStates()
+        internal static void BoundaryMatrixIsGeneric()
         {
             string matrix = Read("scripts", "Invoke-FeatureModuleRuntimeMatrix.ps1");
-            Assertions.True(matrix.Contains("[switch]$Boundary14") &&
-                matrix.Contains("$enabled -eq 0 -or $enabled -eq 1 -or $enabled -eq 5 -or") &&
-                matrix.Contains("$enabled -eq 6") &&
-                matrix.Contains("$boundary.Count -ne 14") &&
+            Assertions.True(matrix.Contains("[switch]$Boundary") &&
+                matrix.Contains("[switch]$Boundary14") &&
+                matrix.Contains("FeatureModuleCatalog.ps1") &&
+                matrix.Contains("Get-KmgFeatureModuleConfigurations") &&
                 matrix.Contains("$invokeArguments.ReuseInstalledArtifact = $true") &&
                 matrix.Contains("$invokeArguments.DeploymentManifestPath") &&
                 matrix.Contains("$invokeArguments.PackagePath"),
-                "The repair matrix is not the exact all-on/all-off/one-on/one-off 14-state boundary with artifact reuse.");
+                "The repair matrix is not the generic all-on/all-off/one-on/one-off boundary with artifact reuse.");
             string compatibility = Read("scripts", "compatibility",
                 "Invoke-KingmakerCompatibilityProfile.ps1");
             Assertions.True(compatibility.Contains("ReuseInstalledArtifact") &&

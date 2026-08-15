@@ -20,6 +20,7 @@ namespace KingmakerGunslinger.FeatureModules
             EasternWeaponSelectors = active.EasternWeapons;
             EasternWeaponCommerce = active.EasternWeapons;
             EasternWeaponPresentation = active.EasternWeapons;
+            BrownFurPublicationRequested = active.BrownFurTransmuter;
         }
         internal bool GunslingerClass { get; private set; }
         internal bool GunslingerFeats { get; private set; }
@@ -37,5 +38,6 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool EasternWeaponSelectors { get; private set; }
         internal bool EasternWeaponCommerce { get; private set; }
         internal bool EasternWeaponPresentation { get; private set; }
+        internal bool BrownFurPublicationRequested { get; private set; }
     }
 }
