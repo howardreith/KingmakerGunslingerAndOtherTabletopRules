@@ -60,6 +60,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.modifier-concurrent", BrownFurCastTests.ModifierTransactionsAreIsolated),
             Case("brown-fur.share-scope-exact", BrownFurCastTests.ShareTargetingScopeIsExact),
             Case("brown-fur.share-scope-concurrent", BrownFurCastTests.ShareTargetingScopesAreIsolated),
+            Case("brown-fur.supremacy-scope-exact", BrownFurCastTests.SupremacyScopeIsExactAndNonStacking),
+            Case("brown-fur.supremacy-scope-concurrent", BrownFurCastTests.SupremacyScopesAreIsolated),
             Case("brown-fur.bonus-plan-static", BrownFurCastTests.StaticBonusAdapterPlanIsExact),
             Case("brown-fur.bonus-plan-polymorph", BrownFurCastTests.PolymorphBonusAdapterPlanIsExact),
             Case("brown-fur.bonus-plan-size", BrownFurCastTests.SizeBonusAdapterPlanIsExact),

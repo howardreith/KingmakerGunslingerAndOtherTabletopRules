@@ -386,6 +386,55 @@ namespace KingmakerGunslinger.DomainTests
                 "Load or combat cleanup must clear all Share targeting scopes.");
         }
 
+        internal static void SupremacyScopeIsExactAndNonStacking()
+        {
+            var tracker = new BrownFurSupremacyScopeTracker<object, object>();
+            object ability = new object();
+            object context = new object();
+            bool addExtend;
+            Assertions.True(tracker.Begin("supremacy-1", ability) &&
+                tracker.TryResolve(ability, context, false, out addExtend) &&
+                addExtend && tracker.ModifiedContextCount("supremacy-1") == 1,
+                "An exact ordinary cast context must receive Extend once.");
+            Assertions.False(tracker.TryResolve(ability, context, false,
+                out addExtend),
+                "The same execution context must not receive Extend twice.");
+            object preparedExtended = new object();
+            Assertions.True(tracker.TryResolve(ability, preparedExtended, true,
+                out addExtend) && !addExtend &&
+                tracker.ModifiedContextCount("supremacy-1") == 1,
+                "An already Extended context must be observed without modification.");
+            Assertions.False(tracker.TryResolve(new object(), new object(),
+                false, out addExtend),
+                "An unrelated AbilityData identity must remain unchanged.");
+            Assertions.True(tracker.Release("supremacy-1") &&
+                tracker.ActiveScopeCount == 0,
+                "Releasing the exact transaction must clear its duration scope.");
+        }
+
+        internal static void SupremacyScopesAreIsolated()
+        {
+            var tracker = new BrownFurSupremacyScopeTracker<object, object>();
+            object firstAbility = new object();
+            object secondAbility = new object();
+            bool addExtend;
+            Assertions.True(tracker.Begin("supremacy-a", firstAbility) &&
+                tracker.Begin("supremacy-b", secondAbility) &&
+                !tracker.Begin("supremacy-c", firstAbility) &&
+                tracker.TryResolve(firstAbility, new object(), false,
+                    out addExtend) && addExtend &&
+                tracker.TryResolve(secondAbility, new object(), false,
+                    out addExtend) && addExtend,
+                "Queued casts must retain distinct AbilityData identities.");
+            tracker.Release("supremacy-a");
+            Assertions.True(tracker.ActiveScopeCount == 1 &&
+                tracker.ModifiedContextCount("supremacy-b") == 1,
+                "Cleaning one cast must not release another cast's duration state.");
+            tracker.Clear();
+            Assertions.Equal(0, tracker.ActiveScopeCount,
+                "Load or combat cleanup must clear all duration scopes.");
+        }
+
         internal static void StaticBonusAdapterPlanIsExact()
         {
             BrownFurBonusAdapterPlan plan = BrownFurBonusAdapterPlanPolicy.Create(
