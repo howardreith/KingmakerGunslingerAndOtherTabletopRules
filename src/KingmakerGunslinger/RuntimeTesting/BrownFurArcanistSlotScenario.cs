@@ -90,6 +90,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("invalidCommandMarked", Order = 44)] public bool InvalidMarked { get; set; }
             [JsonProperty("invalidCommandResult", Order = 45)] public string InvalidResult { get; set; }
             [JsonProperty("invalidCommandNoSpend", Order = 46)] public bool InvalidNoSpend { get; set; }
+            [JsonProperty("automaticSelectedAbilityGuid", Order = 47)] public string AutomaticSelectedGuid { get; set; }
+            [JsonProperty("automaticSelectedSpellbookGuid", Order = 48)] public string AutomaticSelectedBook { get; set; }
+            [JsonProperty("automaticRootAbilityGuid", Order = 49)] public string AutomaticRootGuid { get; set; }
+            [JsonProperty("automaticRootSpellbookGuid", Order = 50)] public string AutomaticRootBook { get; set; }
+            [JsonProperty("automaticRootCanSpendBefore", Order = 51)] public bool AutomaticRootCanSpend { get; set; }
+            [JsonProperty("automaticSelectedCanSpendBefore", Order = 52)] public bool AutomaticSelectedCanSpend { get; set; }
+            [JsonProperty("automaticSuppressionBeforeAfter", Order = 53)] public string AutomaticSuppression { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -257,6 +264,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int automaticSlotsBefore = AvailableSlots(casting, SpellLevel);
                 var automaticData = new AbilityData(
                     new AbilityData(spell, casting), selected);
+                AbilityData automaticRoot = automaticData.ConvertedFrom;
+                evidence.AutomaticSelectedGuid = AbilityGuid(automaticData);
+                evidence.AutomaticSelectedBook = SpellbookGuid(automaticData);
+                evidence.AutomaticRootGuid = AbilityGuid(automaticRoot);
+                evidence.AutomaticRootBook = SpellbookGuid(automaticRoot);
+                evidence.AutomaticRootCanSpend = automaticRoot != null &&
+                    casting.CanSpend(automaticRoot, false);
+                evidence.AutomaticSelectedCanSpend =
+                    casting.CanSpend(automaticData, false);
                 var automaticCommand = new UnitUseAbility(automaticData,
                     new TargetWrapper(caster));
                 evidence.AutomaticArmed =
@@ -279,7 +295,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BrownFurCastExecutionRuntime.TryCommit(automaticRule,
                         out proceed);
                 evidence.AutomaticProceed = proceed;
+                int automaticSuppressionBefore =
+                    BrownFurCastExecutionRuntime.SuppressedSpendCount;
                 InvokeAbilitySpend(automaticData);
+                int automaticSuppressionAfter =
+                    BrownFurCastExecutionRuntime.SuppressedSpendCount;
                 int automaticReservoirAfter = caster.Descriptor.Resources
                     .GetResourceAmount(contract.Reservoir);
                 int automaticSlotsAfter = AvailableSlots(casting, SpellLevel);
@@ -287,6 +307,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     automaticReservoirAfter;
                 evidence.AutomaticSlots = automaticSlotsBefore + "->" +
                     automaticSlotsAfter;
+                evidence.AutomaticSuppression = automaticSuppressionBefore +
+                    "->" + automaticSuppressionAfter;
                 BrownFurCastExecutionRuntime.RuleFailed(automaticRule);
 
                 stage = "invalid-intent";
@@ -443,7 +465,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "tracked=" + evidence.AutomaticTracked + ";proceed=" +
                     evidence.AutomaticProceed + ";reservoir=" +
                     evidence.AutomaticReservoir + ";slots=" +
-                    evidence.AutomaticSlots,
+                    evidence.AutomaticSlots + ";selected=" +
+                    evidence.AutomaticSelectedGuid + "@" +
+                    evidence.AutomaticSelectedBook + ";root=" +
+                    evidence.AutomaticRootGuid + "@" +
+                    evidence.AutomaticRootBook + ";canSpend=" +
+                    evidence.AutomaticSelectedCanSpend + "/" +
+                    evidence.AutomaticRootCanSpend + ";suppression=" +
+                    evidence.AutomaticSuppression,
                 evidence.AutomaticTracked && evidence.AutomaticProceed &&
                     Delta(evidence.AutomaticReservoir) == -2 &&
                     Delta(evidence.AutomaticSlots) == -1,
@@ -549,6 +578,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (spend == null) throw new MissingMethodException(
                 typeof(AbilityData).FullName, "Spend");
             spend.Invoke(ability, new object[0]);
+        }
+
+        private static string AbilityGuid(AbilityData ability)
+        {
+            return ability == null || ability.Blueprint == null ? string.Empty :
+                ability.Blueprint.AssetGuid;
+        }
+
+        private static string SpellbookGuid(AbilityData ability)
+        {
+            return ability == null || ability.Spellbook == null ||
+                ability.Spellbook.Blueprint == null ? string.Empty :
+                ability.Spellbook.Blueprint.AssetGuid;
         }
 
         private static int Delta(string transition)
