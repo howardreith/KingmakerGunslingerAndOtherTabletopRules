@@ -308,6 +308,8 @@
     <Compile Include="BrownFur\CotwArcanistResolver.cs" />
     <Compile Include="BrownFur\BrownFurDiagnostics.cs" />
     <Compile Include="BrownFur\BrownFurOptionalExtensionCoordinator.cs" />
+    <Compile Include="BrownFur\BrownFurSpellInventoryRecord.cs" />
+    <Compile Include="BrownFur\BrownFurTransmutationInventory.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />
@@ -760,6 +762,7 @@
     <Compile Include="RuntimeTesting\RuntimeBuildIdentity.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
     <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
+    <Compile Include="RuntimeTesting\BrownFurTransmutationInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogSelectionObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />

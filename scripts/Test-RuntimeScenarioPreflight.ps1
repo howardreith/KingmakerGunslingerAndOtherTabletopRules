@@ -35,6 +35,7 @@ $expected = @(
     'mod-load-smoke',
     'observe-feature-module-settings',
     'observe-brown-fur-cotw-contract',
+    'observe-brown-fur-transmutation-inventory',
     'observe-shield-other-inventory',
     'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning',

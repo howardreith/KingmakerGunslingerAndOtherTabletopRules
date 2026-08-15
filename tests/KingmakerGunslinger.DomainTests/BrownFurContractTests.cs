@@ -142,6 +142,13 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTestScenarioCatalog.cs"));
             string runtimeCommon = File.ReadAllText(Path.Combine(root,
                 "scripts", "RuntimeAutomation.Common.ps1"));
+            string inventory = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurTransmutationInventory.cs"));
+            string inventoryRecord = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurSpellInventoryRecord.cs"));
+            string inventoryObserver = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurTransmutationInventoryObserver.cs"));
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
                 "memorization_spellbook", "arcane_reservoir_resource",
@@ -195,6 +202,30 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(project.Contains("CallOfTheWild.dll") ||
                 project.Contains("Reference Include=\"CallOfTheWild"),
                 "The package project acquired a compile-time CotW assembly reference.");
+            foreach (string token in new[] { "CanonicalSpellGuid", "ParentGuid",
+                "VariantGuids", "ConvertedFrom", "SpellLevels",
+                "SpellbookSourceGuid", "TargetAnchor", "TargetRestrictions",
+                "MetamagicSupport", "AppliedBuffs", "NestedActionGraph",
+                "AbilityScoreBonuses", "ModifierDescriptors", "ValuePatterns",
+                "PolymorphAndSizeComponents", "HardCodedToCaster",
+                "SaveAndDispel", "ShareTransmutationCompatibility",
+                "PowerfulChangeCompatibility",
+                "TransmutationSupremacyCompatibility", "RequiredAdapter",
+                "QualificationStatus", "Unexplained", "ExpandVariants",
+                "ambiguous parents" })
+                Assertions.True(inventory.Contains(token) ||
+                    inventoryRecord.Contains(token),
+                    "Transmutation inventory lacks required field/guard: " + token);
+            foreach (string token in new[] {
+                "observe-brown-fur-transmutation-inventory",
+                "brown-fur-transmutation-spell-inventory.json",
+                "inventory-complete-root-set",
+                "inventory-variant-identities-singular",
+                "inventory-required-fields", "inventory-publication-gate",
+                "save-free-observer" })
+                Assertions.True(inventoryObserver.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded Transmutation inventory lacks evidence token: " + token);
         }
 
         private static void AssertRejected(IEnumerable<int> levels, string label)
