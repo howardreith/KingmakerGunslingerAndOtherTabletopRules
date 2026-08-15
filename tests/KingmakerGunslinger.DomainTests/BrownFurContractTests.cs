@@ -338,6 +338,7 @@ namespace KingmakerGunslinger.DomainTests
                 "supremacy-context-release",
                 "supremacy-context-duration",
                 "ContextDurationValue", "DurationRate.Rounds",
+                "DiceType.Zero", "DiceCountValue = 0",
                 "timedDuration.Calculate", "ScopedDurationRounds == 10",
                 "PreparedDurationRounds == 10",
                 "supremacy-context-casting-time", "data.ActionType",

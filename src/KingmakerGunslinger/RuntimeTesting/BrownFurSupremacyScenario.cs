@@ -100,6 +100,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.ActionTypeBefore = data.ActionType.ToString();
                 var timedDuration = new ContextDurationValue {
                     Rate = DurationRate.Rounds,
+                    DiceType = Kingmaker.RuleSystem.DiceType.Zero,
+                    DiceCountValue = 0,
                     BonusValue = 5
                 };
 
@@ -161,7 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 diagnostics.Add("stage=" + stage + ";exception=" +
-                    exception.GetType().FullName + ":" + exception.Message);
+                    exception);
             }
             finally
             {
