@@ -579,6 +579,51 @@ cleanup, and bounded release are proven. Native dispel/expiration,
 save/reload persistence, module-OFF existing-owner behavior, and selector
 publication remain gates. Brown-Fur remains registered but unpublished.
 
+The native lifecycle fixture then passed all nine guarded assertions on exact
+commit `334e526fec23c27e6c099fc44b1f797d4e99dece`, run
+`20260815T2202189689958Z-d92ec9a042cc477aacd22cf4e4c20b25`.
+It was a save-free Steam App ID 640820 launch with evidence-directory identity
+`20260815T2202189516902Z-disposable-brown-fur-bonus-carriers`, deployment
+identity `20260815T2202188770345Z`, and backup identity
+`20260815T2202145823035Z`. Exact immutable identities were:
+
+- local-runtime package SHA-256
+  `1F395F19E4C2EDA73087605258BE3935B52EFD945889DAFCF98E829B4724D9B0`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `FEBBC311E50235E7677E8BABA062DFBE50198304EC86F6918DE98B5DCD9B99EA`;
+- DLL MVID `51d34187-ecc7-4ccc-b5c9-7fab29775eca`;
+- structured bonus-carrier artifact SHA-256
+  `082088E3D518ADB023795A4BE9B93D977F813CD9BF8A19D98386070AE73262F6`;
+- runtime-result SHA-256
+  `0A0B48C165877203122484589AD6C5857CE70EB5C7C06185EA1FBA3066BA3700`;
+- runtime-evidence SHA-256
+  `E65F40943E24991C8EECE85F350EB41C18C927697DB1F12CAFEA4CB0B2F157A8`;
+- orchestration SHA-256
+  `FEEDBE593AB4E5B08902A78F433A209D02D69E0E5FB4BCAE57972E2D6B225471`;
+- deployment-manifest SHA-256
+  `187EF7D36B3AA61704EFEB3AEC6944B2922F436EF55F804B451D1F895429FE6C`;
+- preserved feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`;
+  and
+- game build collection `2018.4.10.10503941`.
+
+After the execution-local modifier scope had been released, the fixture
+triggered a real targeted `RuleDispelMagic`. Its deterministic caster-level
+check recorded roll `17`, caster level `0`, DC `31`, and explicit test bonus
+`1000`; the rule returned success, removed the enhanced installed Bull's
+Strength buff, and restored the target's Strength to baseline. A separately
+enhanced buff was assigned an elapsed absolute `m_EndTime`; the native
+`BuffCollection.UpdateNextEvent()` and `Tick()` path observed nonpositive
+time remaining, removed the buff, and restored Strength. This proves the
+execution-scoped value adjustment does not replace the buff or damage native
+dispel and expiration semantics. Final carrier buff count and all modifier
+scope state were zero.
+
+This closes the native dispel/expiration gate. Save/reload persistence,
+module-OFF existing-owner behavior, dependency profiles, boundary matrix, and
+selector publication remain gates. Brown-Fur remains registered but
+unpublished.
+
 ## Scoped Transmutation Supremacy context
 
 The context-local Transmutation Supremacy fixture passed all five guarded

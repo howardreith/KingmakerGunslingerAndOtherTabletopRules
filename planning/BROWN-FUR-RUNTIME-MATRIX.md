@@ -27,6 +27,7 @@ publication-gate row is passing.
 | Willing-target relationship surfaces | PASS | `efa7f578de31bf7d86bab17fac89296ced0e203e` | Native party, pet, summon, faction, control, enemy, and attackability APIs; fail-closed production policy |
 | Native command intent and accounting | PASS | `f596b374de8c0b813ae40a397c533b02384f3db3` | Real facts derive one immutable combined transaction; reservoir `4 -> 2`, native slots `6 -> 5`, invalid stat rejected pre-action, zero retained state |
 | Native submitted-command interruption | PASS | `f39c2c0acff97d84b2e2dc7484782f870d90bd10` | Automatically armed command enters running state, interrupts before commitment, reservoir `4 -> 4`, slots `6 -> 6`, zero retained state |
+| Native dispel and expiration | PASS | `334e526fec23c27e6c099fc44b1f797d4e99dece` | Successful `RuleDispelMagic` and native `BuffCollection` deadline tick each remove the enhanced real spell buff, restore the stat, and leave zero scope state |
 
 ## Publication gates
 
@@ -34,7 +35,7 @@ publication-gate row is passing.
 | --- | --- | --- |
 | Native command derives immutable intent from actual owner facts | PASS | Guarded command-constructor path validates and arms exactly one transaction; combined debit and native slot spend are exact |
 | Cancellation and post-submission interruption | PASS | Native submitted command returns `Interrupt`; no reservoir or slot spend; all one-shot and retained state clears |
-| Dispel and expiration | PENDING | Enhanced effects preserve native removal and source behavior |
+| Dispel and expiration | PASS | Enhanced effects preserve native rule-driven dispel, deadline expiration, descriptor, removal, stat restoration, and source behavior |
 | Save/reload persistence | PENDING | Stable identities and active enhanced state survive guarded working-save cycle |
 | Module OFF existing-owner behavior | PENDING | Selector hidden while existing owner mechanics remain functional |
 | CotW absent isolation | PENDING | Package and six independent modules remain functional; Brown-Fur unavailable |
@@ -49,3 +50,14 @@ The current focused player-intent run is
 directory identity
 `20260815T2030084582275Z-disposable-brown-fur-player-intent`. It was a
 save-free guarded Steam App ID 640820 launch and recorded no save interaction.
+
+The focused `disposable-brown-fur-bonus-carriers` run on `334e526` closed
+native dispel and expiration. A deterministic `RuleDispelMagic`
+caster-level check recorded roll `17`, caster level `0`, DC `31`, and rule
+bonus `1000`; the rule succeeded, removed the enhanced Bull's Strength buff,
+and restored Strength to baseline. A second enhanced buff received an elapsed
+absolute native deadline, after which `BuffCollection.UpdateNextEvent()` and
+`Tick()` removed it and restored the stat. Both cases ran after the modifier
+scope was released, and final buff and scope counts were zero. The same run
+re-proved all five carrier families, descriptor competition, both recast
+directions, retained enhanced behavior, and the level-20 `+4` form.

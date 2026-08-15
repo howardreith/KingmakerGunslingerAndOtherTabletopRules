@@ -376,3 +376,19 @@ This closes the pre-commit submitted-command cancellation/interruption gate.
 Dispel/expiration, persistence, module-OFF existing-owner behavior,
 dependency profiles, boundary matrix, and selector publication remain gates.
 Brown-Fur is registered but unpublished.
+
+The native dispel/expiration gate then passed on
+`334e526fec23c27e6c099fc44b1f797d4e99dece`. After each enhanced real spell
+buff's execution scope was released, a successful targeted
+`RuleDispelMagic` removed one buff and the native `BuffCollection` scheduler
+and tick removed a second buff whose absolute deadline had elapsed. Each path
+restored Strength to baseline, retained the original Enhancement descriptor
+and buff identity up to removal, and left zero buff or modifier-scope state.
+The same save-free guarded run re-proved the complete five-family carrier,
+stacking, recast, and level-20 `+4` matrix. Exact artifact identities are in
+the CotW contract.
+
+This closes native dispel and expiration. Persistence, module-OFF
+existing-owner behavior, dependency profiles, the 16-state boundary matrix,
+and selector publication remain gates. Brown-Fur is registered but
+unpublished.
