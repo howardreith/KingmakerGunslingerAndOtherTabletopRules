@@ -321,6 +321,8 @@
     <Compile Include="BrownFur\BrownFurPublicationTransaction.cs" />
     <Compile Include="BrownFur\BrownFurCastRequest.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetPolicy.cs" />
+    <Compile Include="BrownFur\BrownFurShareRelationshipPolicy.cs" />
+    <Compile Include="BrownFur\BrownFurShareRelationshipRuntime.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetingScopeTracker.cs" />
     <Compile Include="BrownFur\BrownFurSupremacyScopeTracker.cs" />
     <Compile Include="BrownFur\BrownFurSupremacyRuntime.cs" />

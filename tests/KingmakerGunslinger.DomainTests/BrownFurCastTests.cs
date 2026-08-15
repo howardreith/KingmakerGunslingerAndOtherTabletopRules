@@ -132,6 +132,65 @@ namespace KingmakerGunslinger.DomainTests
                 "The capstone must reject targets beyond exactly 30 feet.");
         }
 
+        internal static void ShareRelationshipFactsFailClosed()
+        {
+            Assertions.Equal(BrownFurShareTargetRelationship.Unknown,
+                BrownFurShareRelationshipPolicy.Decide(null),
+                "Missing relationship facts must fail closed.");
+
+            var facts = new BrownFurShareRelationshipFacts { IsSelf = true };
+            Assertions.Equal(BrownFurShareTargetRelationship.Self,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "The caster must be willing.");
+            facts = new BrownFurShareRelationshipFacts {
+                IsAnimalCompanion = true, IsPartyMember = true
+            };
+            Assertions.Equal(BrownFurShareTargetRelationship.AnimalCompanion,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "A party pet must retain the more specific animal-companion relationship.");
+            facts = new BrownFurShareRelationshipFacts {
+                IsControlledSummon = true, IsControlledCompanion = true
+            };
+            Assertions.Equal(BrownFurShareTargetRelationship.ControlledSummon,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "A controlled summon must retain the summon relationship.");
+            facts = new BrownFurShareRelationshipFacts {
+                IsPartyMember = true, CasterSeesEnemy = true
+            };
+            Assertions.Equal(BrownFurShareTargetRelationship.Ambiguous,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "Contradictory controlled and hostile facts must reject as ambiguous.");
+            facts = new BrownFurShareRelationshipFacts {
+                CasterSeesEnemy = true
+            };
+            Assertions.Equal(BrownFurShareTargetRelationship.Enemy,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "A native enemy fact must reject as an enemy.");
+            facts = new BrownFurShareRelationshipFacts {
+                CasterFactionKnown = true, TargetFactionKnown = true,
+                SameFaction = true
+            };
+            Assertions.Equal(
+                BrownFurShareTargetRelationship.FriendlyUnattackable,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "A same-faction creature that neither side can attack is a proven friendly ally.");
+            facts.CasterCanAttackTarget = true;
+            Assertions.Equal(BrownFurShareTargetRelationship.FriendlyAttackable,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "An attackable same-faction creature must reject.");
+            facts = new BrownFurShareRelationshipFacts {
+                CasterFactionKnown = true, TargetFactionKnown = true,
+                CasterCanAttackTarget = true
+            };
+            Assertions.Equal(BrownFurShareTargetRelationship.HostileNeutral,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "An attackable non-allied neutral must reject.");
+            facts.CasterCanAttackTarget = false;
+            Assertions.Equal(BrownFurShareTargetRelationship.Ambiguous,
+                BrownFurShareRelationshipPolicy.Decide(facts),
+                "A non-attackable creature without positive allied proof is ambiguous.");
+        }
+
         internal static void PowerfulChangeIncreaseUsesCapstoneValue()
         {
             BrownFurCastRequest request = Valid();

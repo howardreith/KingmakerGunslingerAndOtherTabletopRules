@@ -232,6 +232,46 @@ completed spell effect on the selected ally, real unwilling/faction
 classification, command movement at the boundary, reservoir/slot commitment,
 or interruption cleanup.
 
+The relationship-contract extension of the same guarded observer passed on
+commit `efa7f578de31bf7d86bab17fac89296ced0e203e`, run
+`20260815T2040197380348Z-9ce88ca5e9fd4abfbcacb64c31fd18c7`. It resolved
+native `Player.Party`, `UnitDescriptor.Pet`, `UnitEntityData.Faction`,
+`IsDirectlyControllable`, bilateral `IsEnemy` and `CanAttack`, and
+`UnitPartSummonedMonster.Summoner` / `IsDirectlyControllable` surfaces. The
+installed game did not resolve the probed
+`Kingmaker.UnitLogic.Parts.UnitPartPet` name, so the production contract uses
+the native owner-side `UnitDescriptor.Pet` reference and never guesses a pet
+part type.
+
+Exact immutable evidence identity:
+
+- local-runtime package SHA-256
+  `BE86D45FAE6112A2FA1A94E9FC3E7A954597AC03F139783702F4594F3F573A52`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `D180CCD664ACE4C4DC17066B6A64F1129E5F70CF2829991E9CBA9998BA0BB0F2`;
+- DLL MVID `e9462b70-53e6-424a-9bab-686c225af985`;
+- structured contract SHA-256
+  `497DB90BF6F3E13205679E6D4309E3BF45B0ADC2E8FD2A904A2D1919E619CCEE`;
+- runtime-result SHA-256
+  `BDDEDF1B93CE0D076CEE5B352F6C3AE1C9BC07A0C1D3566B7C8101889034BED0`;
+- runtime-evidence SHA-256
+  `529063D01591A05CCCBC161DB6B0B7A605A3140812777A6786C277D8AA8D8E96`;
+- orchestration SHA-256
+  `39530D44994E49D7C151D12E6F57008D2DBA8F0D463D52BCCEF20605010716BD`;
+- deployment `20260815T2040196438588Z`, deployment-manifest SHA-256
+  `D00E5366FF3D239D794B2B26FE3870287964F335C9607CCA66A84A074381C092`;
+  and
+- backup `20260815T2040150546866Z`.
+
+The production relationship policy now grants willingness from positive
+self, party, controlled-companion, owner-side animal-companion, or controlled
+summon facts. A non-controlled creature qualifies as a friendly ally only
+when both faction identities are known and identical and neither side can
+attack the other. Enemy contradictions, attackable friends, hostile neutrals,
+unknown factions, and non-attackable creatures without positive allied proof
+all reject. Runtime fixture coverage of each native relationship category is
+still required before selector publication.
+
 ## Native cast commitment order
 
 The refined save-free cast observer passed all 15 assertions on commit

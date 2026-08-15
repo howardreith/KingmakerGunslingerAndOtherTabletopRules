@@ -59,6 +59,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.cast-powerful-arcanist-slot", BrownFurCastTests.PowerfulChangeRequiresArcanistSpellSlot),
             Case("brown-fur.cast-share-willing-creature", BrownFurCastTests.ShareTransmutationUsesWillingCreatureContract),
             Case("brown-fur.cast-share-willingness-delivery", BrownFurCastTests.ShareWillingnessAndDeliveryAreExact),
+            Case("brown-fur.cast-share-relationship-policy", BrownFurCastTests.ShareRelationshipFactsFailClosed),
             Case("brown-fur.cast-powerful-capstone", BrownFurCastTests.PowerfulChangeIncreaseUsesCapstoneValue),
             Case("brown-fur.cast-combined-cost", BrownFurCastTests.CombinedUseCostsExactlyTwo),
             Case("brown-fur.cast-supremacy-duration", BrownFurCastTests.SupremacyExtendsOnlyEligibleDuration),

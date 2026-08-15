@@ -24,6 +24,7 @@ publication-gate row is passing.
 | Native Arcanist slot boundary | PASS | `0fa4e97f89eb16e594e1475caff8b517d6c187e0` | Actual CotW spellbook source, reservoir `4 -> 2`, slots `6 -> 5`, rejection before slot spend |
 | Native combined spell cast | PASS | `442963a26108fa41a89accabcc7c3209373aceae` | Real Beast Shape variant, ally delivery, exact modifier, reservoir and slot deltas, process completion |
 | Real player intent facts | PASS | `37486e6bc100941f6c88fb28a0ad828a99b525c4` | Registered feature ownership, native grants, combined one-shot intent, clear, orphan rejection, zero publication |
+| Willing-target relationship surfaces | PASS | `efa7f578de31bf7d86bab17fac89296ced0e203e` | Native party, pet, summon, faction, control, enemy, and attackability APIs; fail-closed production policy |
 
 ## Publication gates
 
