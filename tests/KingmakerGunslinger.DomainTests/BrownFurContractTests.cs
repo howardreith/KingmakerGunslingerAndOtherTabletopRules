@@ -271,7 +271,8 @@ namespace KingmakerGunslinger.DomainTests
                     "Guarded cast engine contract lacks evidence token: " + token);
             foreach (string token in new[] { "GetILAsByteArray",
                 "OpCodes", "OperandType", "ResolveMember", "ResolveString",
-                "InlineMethod", "InlineField", "InlineSwitch" })
+                "InlineMethod", "InlineField", "InlineSwitch",
+                "info.IsGenericMethod", "info.GetGenericArguments()" })
                 Assertions.True(ilDisassembler.Contains(token),
                     "CotW helper IL decoder lacks exact guard: " + token);
             foreach (string token in new[] {

@@ -152,10 +152,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (member.DeclaringType.FullName ?? member.DeclaringType.Name) + ".";
             MethodBase method = member as MethodBase;
             if (method != null)
-                return declaring + method.Name + "(" + string.Join(",",
+            {
+                MethodInfo info = method as MethodInfo;
+                string generic = info != null && info.IsGenericMethod ? "<" +
+                    string.Join(",", info.GetGenericArguments().Select(value =>
+                        value.FullName ?? value.Name).ToArray()) + ">" :
+                    string.Empty;
+                return declaring + method.Name + generic + "(" + string.Join(",",
                     method.GetParameters().Select(value =>
                         value.ParameterType.FullName ??
                         value.ParameterType.Name).ToArray()) + ")";
+            }
             return declaring + member.Name;
         }
     }
