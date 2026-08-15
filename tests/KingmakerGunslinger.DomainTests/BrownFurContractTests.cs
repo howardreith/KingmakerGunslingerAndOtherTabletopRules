@@ -373,6 +373,11 @@ namespace KingmakerGunslinger.DomainTests
                 "timedDuration.Calculate", "ScopedDurationRounds == 10",
                 "PreparedDurationRounds == 10",
                 "supremacy-context-casting-time", "data.ActionType",
+                "supremacy-resonating-word-duration",
+                "supremacy-obsidian-flow-duration",
+                "df7d13c967bce6a40bec3ba7c9f0e64c",
+                "e48638596c955a74c8a32dbc90b518c1",
+                "RootDurations", "DurationRate.Hours",
                 "supremacy-context-isolation-cleanup",
                 "data.CreateExecutionContext", "Metamagic.Extend",
                 "ModifiedContextCount" })

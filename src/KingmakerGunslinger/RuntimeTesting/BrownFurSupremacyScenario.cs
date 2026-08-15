@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -26,6 +27,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FileName = "brown-fur-transmutation-supremacy.json";
         private const string TransmutationSpellGuid =
             "3481906baed9487e8403e91a2e9d010a";
+        private const string ResonatingWordGuid =
+            "df7d13c967bce6a40bec3ba7c9f0e64c";
+        private const string ObsidianFlowGuid =
+            "e48638596c955a74c8a32dbc90b518c1";
 
         [JsonObject(MemberSerialization.OptIn)]
         private sealed class Evidence
@@ -60,6 +65,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("preparedDurationRounds", Order = 28)] public int PreparedDurationRounds { get; set; }
             [JsonProperty("actionTypeBefore", Order = 29)] public string ActionTypeBefore { get; set; }
             [JsonProperty("actionTypeAfter", Order = 30)] public string ActionTypeAfter { get; set; }
+            [JsonProperty("resonatingSupportsExtend", Order = 31)] public bool ResonatingSupportsExtend { get; set; }
+            [JsonProperty("resonatingBaselineRounds", Order = 32)] public int ResonatingBaselineRounds { get; set; }
+            [JsonProperty("resonatingScopedRounds", Order = 33)] public int ResonatingScopedRounds { get; set; }
+            [JsonProperty("obsidianSupportsExtend", Order = 34)] public bool ObsidianSupportsExtend { get; set; }
+            [JsonProperty("obsidianBaselineRounds", Order = 35)] public int ObsidianBaselineRounds { get; set; }
+            [JsonProperty("obsidianScopedRounds", Order = 36)] public int ObsidianScopedRounds { get; set; }
+            [JsonProperty("specialScopesReleased", Order = 37)] public bool SpecialScopesReleased { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -159,6 +171,56 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spell.AvailableMetamagic.ToString();
                 evidence.SpellLevelAfter = data.SpellLevel;
                 evidence.ActionTypeAfter = data.ActionType.ToString();
+
+                stage = "nonstandard-timed-spells";
+                BlueprintAbility resonating = ResourcesLibrary.TryGetBlueprint<
+                    BlueprintAbility>(ResonatingWordGuid);
+                BlueprintAbility obsidian = ResourcesLibrary.TryGetBlueprint<
+                    BlueprintAbility>(ObsidianFlowGuid);
+                if (resonating == null || obsidian == null ||
+                    resonating.School != SpellSchool.Transmutation ||
+                    obsidian.School != SpellSchool.Transmutation)
+                    throw new InvalidOperationException(
+                        "The exact installed nonstandard timed Transmutations were unavailable.");
+                evidence.ResonatingSupportsExtend =
+                    (resonating.AvailableMetamagic & Metamagic.Extend) != 0;
+                evidence.ObsidianSupportsExtend =
+                    (obsidian.AvailableMetamagic & Metamagic.Extend) != 0;
+                ContextDurationValue resonatingDuration = RootDurations(
+                    resonating).Single(value => value.Rate ==
+                        DurationRate.Rounds);
+                ContextDurationValue obsidianDuration = RootDurations(
+                    obsidian).Single(value => value.Rate ==
+                        DurationRate.Hours);
+                var resonatingData = new AbilityData(resonating,
+                    caster.Descriptor);
+                var obsidianData = new AbilityData(obsidian,
+                    caster.Descriptor);
+                AbilityExecutionContext resonatingBaseline = resonatingData
+                    .CreateExecutionContext(target);
+                AbilityExecutionContext obsidianBaseline = obsidianData
+                    .CreateExecutionContext(target);
+                evidence.ResonatingBaselineRounds = resonatingDuration
+                    .Calculate(resonatingBaseline).Value;
+                evidence.ObsidianBaselineRounds = obsidianDuration
+                    .Calculate(obsidianBaseline).Value;
+                bool resonatingScope = BrownFurSupremacyRuntime.Begin(
+                    "supremacy-resonating-word", resonatingData);
+                bool obsidianScope = BrownFurSupremacyRuntime.Begin(
+                    "supremacy-obsidian-flow", obsidianData);
+                AbilityExecutionContext resonatingScoped = resonatingData
+                    .CreateExecutionContext(target);
+                AbilityExecutionContext obsidianScoped = obsidianData
+                    .CreateExecutionContext(target);
+                evidence.ResonatingScopedRounds = resonatingDuration
+                    .Calculate(resonatingScoped).Value;
+                evidence.ObsidianScopedRounds = obsidianDuration
+                    .Calculate(obsidianScoped).Value;
+                evidence.SpecialScopesReleased = resonatingScope &&
+                    obsidianScope && BrownFurSupremacyRuntime.Release(
+                        "supremacy-resonating-word") &&
+                    BrownFurSupremacyRuntime.Release(
+                        "supremacy-obsidian-flow");
             }
             catch (Exception exception)
             {
@@ -223,6 +285,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !string.IsNullOrEmpty(evidence.ActionTypeBefore) &&
                     evidence.ActionTypeBefore == evidence.ActionTypeAfter,
                 "context-local metamagic enters after native action-cost selection");
+            Add(assertions, "supremacy-resonating-word-duration",
+                "fixed three-round Transmutation doubles despite unavailable ordinary Extend",
+                "supports=" + evidence.ResonatingSupportsExtend +
+                    ";rounds=" + evidence.ResonatingBaselineRounds + "->" +
+                    evidence.ResonatingScopedRounds,
+                !evidence.ResonatingSupportsExtend &&
+                    evidence.ResonatingBaselineRounds == 3 &&
+                    evidence.ResonatingScopedRounds == 6,
+                "installed Resonating Word root ContextDurationValue");
+            Add(assertions, "supremacy-obsidian-flow-duration",
+                "fixed one-hour Transmutation doubles despite unavailable ordinary Extend",
+                "supports=" + evidence.ObsidianSupportsExtend +
+                    ";rounds=" + evidence.ObsidianBaselineRounds + "->" +
+                    evidence.ObsidianScopedRounds,
+                !evidence.ObsidianSupportsExtend &&
+                    evidence.ObsidianBaselineRounds > 0 &&
+                    evidence.ObsidianScopedRounds ==
+                        evidence.ObsidianBaselineRounds * 2 &&
+                    evidence.SpecialScopesReleased,
+                "installed Obsidian Flow root area-duration ContextDurationValue");
             Add(assertions, "supremacy-context-isolation-cleanup",
                 "blueprint and slot identity unchanged; scopes zero; unit removed",
                 "range=" + evidence.RangeBefore + "/" + evidence.RangeAfter +
@@ -265,6 +347,68 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AutomaticExitRequested = request.ExitAfterCompletion,
                 EvidenceDirectory = request.EvidenceDirectory
             };
+        }
+
+        private static ContextDurationValue[] RootDurations(
+            BlueprintAbility ability)
+        {
+            var values = new List<ContextDurationValue>();
+            var visited = new HashSet<object>(ReferenceComparer.Instance);
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                WalkDurations(component, values, visited, 0);
+            return values.Distinct().ToArray();
+        }
+
+        private static void WalkDurations(object value,
+            ICollection<ContextDurationValue> values, ISet<object> visited,
+            int depth)
+        {
+            if (value == null || depth > 16 || value is string) return;
+            Type type = value.GetType();
+            if (type.IsPrimitive || type.IsEnum || type == typeof(decimal) ||
+                type == typeof(Type)) return;
+            ContextDurationValue duration = value as ContextDurationValue;
+            if (duration != null)
+            {
+                values.Add(duration);
+                return;
+            }
+            if (value is BlueprintAbility || value is
+                Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff ||
+                value is BlueprintAbilityAreaEffect) return;
+            if (!visited.Add(value)) return;
+            IEnumerable enumerable = value as IEnumerable;
+            if (enumerable != null)
+            {
+                foreach (object item in enumerable)
+                    WalkDurations(item, values, visited, depth + 1);
+                return;
+            }
+            for (Type cursor = type; cursor != null && cursor != typeof(object);
+                cursor = cursor.BaseType)
+                foreach (FieldInfo field in cursor.GetFields(
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    object member;
+                    try { member = field.GetValue(value); }
+                    catch { continue; }
+                    WalkDurations(member, values, visited, depth + 1);
+                }
+        }
+
+        private sealed class ReferenceComparer : IEqualityComparer<object>
+        {
+            internal static readonly ReferenceComparer Instance =
+                new ReferenceComparer();
+            public new bool Equals(object left, object right)
+            { return ReferenceEquals(left, right); }
+            public int GetHashCode(object value)
+            {
+                return System.Runtime.CompilerServices.RuntimeHelpers
+                    .GetHashCode(value);
+            }
         }
 
         private static void Add(List<RuntimeTestAssertion> assertions,
