@@ -216,7 +216,9 @@ namespace KingmakerGunslinger.DomainTests
                 "action > traversedBuff", "BlueprintAbilityAreaEffect",
                 "value is BlueprintScriptableObject",
                 "DescribeAbilityBonusCarrier", "IsAbilityStat",
-                "value == \"Strength\"", "value == \"Charisma\"" })
+                "value == \"Strength\"", "value == \"Charisma\"",
+                "depth > 24", ".Conditions", "positiveBonus",
+                "IsPositive" })
                 Assertions.True(inventory.Contains(token) ||
                     inventoryRecord.Contains(token),
                     "Transmutation inventory lacks required field/guard: " + token);

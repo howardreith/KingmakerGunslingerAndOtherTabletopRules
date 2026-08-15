@@ -183,7 +183,7 @@ namespace KingmakerGunslinger.BrownFur
 
             private void Walk(object value, string path, int depth)
             {
-                if (value == null || depth > 10 || value is string) return;
+                if (value == null || depth > 24 || value is string) return;
                 Type type = value.GetType();
                 if (Scalar(type)) return;
                 if (!_visited.Add(value)) return;
@@ -304,6 +304,9 @@ namespace KingmakerGunslinger.BrownFur
 
             private static bool IsAppliedBuffPath(string path)
             {
+                if (path.IndexOf(".Conditions", StringComparison.Ordinal) >= 0 ||
+                    path.IndexOf(".m_Condition", StringComparison.Ordinal) >= 0)
+                    return false;
                 int action = path.LastIndexOf(".Actions[",
                     StringComparison.Ordinal);
                 int traversedBuff = path.LastIndexOf(".buff",
@@ -324,7 +327,9 @@ namespace KingmakerGunslinger.BrownFur
                 if (!polymorph && !size && !statCarrier) return string.Empty;
 
                 var details = new List<string>();
-                bool abilityStat = polymorph || size;
+                bool abilityStat = size;
+                bool positiveBonus = size;
+                bool valueFieldSeen = false;
                 foreach (FieldInfo field in Fields(type))
                 {
                     object member;
@@ -335,12 +340,25 @@ namespace KingmakerGunslinger.BrownFur
                         System.Globalization.CultureInfo.InvariantCulture);
                     if (IsAbilityStat(text)) abilityStat = true;
                     string name = field.Name.ToLowerInvariant();
+                    if (polymorph && (name == "strengthbonus" ||
+                        name == "dexteritybonus" || name == "constitutionbonus"))
+                    {
+                        abilityStat = true;
+                        valueFieldSeen = true;
+                        if (IsPositive(text)) positiveBonus = true;
+                    }
+                    if (statCarrier && name == "value")
+                    {
+                        valueFieldSeen = true;
+                        if (IsPositive(text)) positiveBonus = true;
+                    }
                     if (name.Contains("stat") || name.Contains("bonus") ||
                         name.Contains("value") || name.Contains("descriptor") ||
                         name.Contains("size"))
                         details.Add(field.Name + "=" + text);
                 }
-                if (!abilityStat) return string.Empty;
+                if (!abilityStat || !positiveBonus || (!valueFieldSeen && !size))
+                    return string.Empty;
                 return path + "=" + fullName + "{" +
                     string.Join(",", details.OrderBy(item => item,
                         StringComparer.Ordinal).ToArray()) + "}";
@@ -351,6 +369,15 @@ namespace KingmakerGunslinger.BrownFur
                 return value == "Strength" || value == "Dexterity" ||
                     value == "Constitution" || value == "Intelligence" ||
                     value == "Wisdom" || value == "Charisma";
+            }
+
+            private static bool IsPositive(string value)
+            {
+                double number;
+                return double.TryParse(value,
+                    System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out number) && number > 0;
             }
 
             private void SortDistinct()
