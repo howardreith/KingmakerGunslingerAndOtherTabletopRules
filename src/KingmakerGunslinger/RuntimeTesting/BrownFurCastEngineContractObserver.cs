@@ -138,13 +138,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "native slot validation and expenditure methods");
             Add(assertions, "cast-engine-modifier-registration",
                 "AddModifier plus mutable descriptor-preserving modifier provenance",
-                JoinMatches(evidence.ModifiableValue, "AddModifier", " Type",
-                    " Owner") + "|" + JoinMatches(evidence.Modifier,
+                JoinMatches(evidence.ModifiableValue, "AddModifier", ".Type",
+                    ".Owner") + "|" + JoinMatches(evidence.Modifier,
                     "ModValue", "ModDescriptor", "Source", "SourceComponent",
                     "AppliedTo"),
                 Has(evidence.ModifiableValue, "AddModifier") &&
-                    Has(evidence.ModifiableValue, " Type") &&
-                    Has(evidence.ModifiableValue, " Owner") &&
+                    Has(evidence.ModifiableValue, ".Type") &&
+                    Has(evidence.ModifiableValue, ".Owner") &&
                     Has(evidence.Modifier, "ModValue") &&
                     Has(evidence.Modifier, "ModDescriptor") &&
                     Has(evidence.Modifier, "Source") &&
@@ -168,10 +168,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             Add(assertions, "cast-engine-ability-bonus-carriers",
                 "six installed carrier families with stat/value/activation surfaces",
                 "types=" + CountTypes(evidence.AbilityBonusCarriers) + ";" +
-                    JoinMatches(evidence.AbilityBonusCarriers, " Stat", " Value",
+                    JoinMatches(evidence.AbilityBonusCarriers, ".Stat", ".Value",
                         "Bonus", "OnTurnOn", "OnFactActivate"),
                 CountTypes(evidence.AbilityBonusCarriers) == 6 &&
-                    Has(evidence.AbilityBonusCarriers, " Stat") &&
+                    Has(evidence.AbilityBonusCarriers, ".Stat") &&
                     Has(evidence.AbilityBonusCarriers, "OnTurnOn") &&
                     Has(evidence.AbilityBonusCarriers, "OnFactActivate"),
                 "authoritative inventory carrier families are structurally " +
