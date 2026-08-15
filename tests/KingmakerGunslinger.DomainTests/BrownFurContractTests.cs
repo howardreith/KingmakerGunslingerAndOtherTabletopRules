@@ -173,6 +173,9 @@ namespace KingmakerGunslinger.DomainTests
             string supremacyScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurSupremacyScenario.cs"));
+            string reservoirScenario = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurReservoirScenario.cs"));
             string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurIlDisassembler.cs"));
@@ -348,6 +351,21 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(supremacyScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded Supremacy fixture lacks evidence token: " + token);
+            foreach (string token in new[] {
+                "disposable-brown-fur-reservoir-accounting",
+                "brown-fur-reservoir-accounting.json",
+                "reservoir-contract-exact",
+                "reservoir-disposable-owner",
+                "reservoir-combined-debit-exact",
+                "reservoir-restore-exact",
+                "reservoir-insufficient-no-debit",
+                "reservoir-missing-owner-no-debit",
+                "reservoir-cleanup",
+                "BrownFurReservoirDebit.TryDebitExact",
+                "Resources.Add", "Resources.Remove" })
+                Assertions.True(reservoirScenario.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded reservoir fixture lacks evidence token: " + token);
             foreach (string token in new[] {
                 "disposable-brown-fur-bonus-carriers",
                 "brown-fur-bonus-carriers.json", "AddStatBonus",

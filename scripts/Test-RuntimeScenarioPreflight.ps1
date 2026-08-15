@@ -40,6 +40,7 @@ $expected = @(
     'disposable-brown-fur-bonus-carriers',
     'disposable-brown-fur-share-targeting',
     'disposable-brown-fur-transmutation-supremacy',
+    'disposable-brown-fur-reservoir-accounting',
     'observe-shield-other-inventory',
     'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning',
