@@ -50,15 +50,28 @@ namespace KingmakerGunslinger.DomainTests
         internal static void NamedAndNoOpDurationsAreExact()
         {
             foreach (string guid in new[] {
-                "3e4a0790fc2749bbacb1b3b1d2401148",
                 "91266b6d2a4c4fd6b8e1549bc2381d12",
-                "c7b52e9a09ef442f9308d9119f5877d2",
                 "df7d13c967bce6a40bec3ba7c9f0e64c",
                 "e48638596c955a74c8a32dbc90b518c1" })
                 Assertions.Equal(BrownFurInventoryQualifications.Named,
                     Decide(guid, "Close", false, false, "1 hour", 0,
                         new string[0], 0).QualificationStatus,
                     "Each exact exceptional duration path must use a named adapter.");
+
+            foreach (string guid in new[] {
+                "3e4a0790fc2749bbacb1b3b1d2401148",
+                "c7b52e9a09ef442f9308d9119f5877d2" })
+            {
+                BrownFurInventoryClassificationDecision decision = Decide(
+                    guid, "Personal", false, false, string.Empty, 0,
+                    new string[0], 0);
+                Assertions.Equal(BrownFurInventoryQualifications.Generic,
+                    decision.QualificationStatus,
+                    "CotW-native Earth Tremor paths are generic, not owned named adapters.");
+                Assertions.True(decision.TransmutationSupremacy.Contains(
+                    "CotW hidden-duration path"),
+                    "CotW-native hidden duration qualification must be explicit.");
+            }
 
             foreach (string guid in new[] {
                 "16e23c7a8ae53cc42a93066d19766404",
