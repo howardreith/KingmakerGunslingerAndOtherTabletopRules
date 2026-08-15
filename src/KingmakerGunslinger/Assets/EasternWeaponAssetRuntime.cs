@@ -236,6 +236,19 @@ namespace KingmakerGunslinger.Assets
                 ReferenceEquals(item.VisualParameters.Model, prefab);
         }
 
+        internal static bool HasApprovedVisualOrNativeFallback(
+            BlueprintItemWeapon item, string blueprintSymbol)
+        {
+            if (item == null) return false;
+            GameObject prefab = GetPrefab(WeaponVisualVariantCatalog.Require(
+                blueprintSymbol));
+            if (prefab != null)
+                return item.VisualParameters != null &&
+                    ReferenceEquals(item.VisualParameters.Model, prefab);
+            return item.Type != null && ReferenceEquals(item.VisualParameters,
+                item.Type.VisualParameters);
+        }
+
         internal static GameObject InstantiatePrefab(EasternWeaponFamily family)
         { return InstantiatePrefab(Classic(family)); }
 

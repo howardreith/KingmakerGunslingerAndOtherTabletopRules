@@ -600,7 +600,7 @@ namespace KingmakerGunslinger.DomainTests
                 "WakizashiVisualDonorGuid", "d9fbec4637d71bd4ebc977628de3daf3",
                 "KatanaVisualDonorGuid", "d2fe2c5516b56f04da1d5ea51ae3ddfe",
                 "NodachiVisualDonorGuid", "5f824fbb0766a3543bbd6ae50248688f",
-                "ReferenceEquals(item.VisualParameters,",
+                "HasApprovedVisualOrNativeFallback(item, spec.Symbol)",
                 "eastern-all-30-visual-identities", "CuttingEdge",
                 "itemOverrideFieldExists", "exact-item-visual",
                 "VisualContractMatches", "QualifyAllItemVisuals(eastern" })
@@ -626,6 +626,7 @@ namespace KingmakerGunslinger.DomainTests
                 "native-fallback:bundle-rejected", "ApplyTo",
                 "ReferenceEquals(weaponType.VisualParameters.Model, prefab)",
                 "native-fallback:model-assignment-rejected",
+                "HasApprovedVisualOrNativeFallback",
                 "GetComponentsInChildren<Camera>",
                 "GetComponentsInChildren<Light>", "InstantiatePrefab" })
                 Assertions.True(runtime.Contains(token),

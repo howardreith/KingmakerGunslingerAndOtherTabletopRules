@@ -619,9 +619,9 @@ namespace KingmakerGunslinger.Blueprints
                 enchantments.Length != expectedEnchantments ||
                 enchantments.Any(value => value == null) ||
                 !ReferenceEquals(_visualParameters.GetValue(item),
-                    item.Type.VisualParameters) ||
-                !ReferenceEquals(item.VisualParameters,
-                    item.Type.VisualParameters) ||
+                    item.VisualParameters) ||
+                !Assets.EasternWeaponAssetRuntime
+                    .HasApprovedVisualOrNativeFallback(item, spec.Symbol) ||
                 item.Description.IndexOf("Brace",
                     StringComparison.OrdinalIgnoreCase) >= 0)
                 throw new InvalidOperationException("Eastern generic item is invalid: " +
@@ -674,9 +674,9 @@ namespace KingmakerGunslinger.Blueprints
                     Array.Empty<BlueprintWeaponEnchantment>()) ||
                 enchantments.Any(value => value == null) ||
                 !ReferenceEquals(_visualParameters.GetValue(item),
-                    item.Type.VisualParameters) ||
-                !ReferenceEquals(item.VisualParameters,
-                    item.Type.VisualParameters) ||
+                    item.VisualParameters) ||
+                !Assets.EasternWeaponAssetRuntime
+                    .HasApprovedVisualOrNativeFallback(item, spec.Symbol) ||
                 item.Description.IndexOf("Brace",
                     StringComparison.OrdinalIgnoreCase) >= 0)
                 throw new InvalidOperationException(
