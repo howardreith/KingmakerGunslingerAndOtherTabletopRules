@@ -373,7 +373,7 @@ Guarded Steam App ID 640820 runtime PASS evidence:
 | Eastern disposable combat/cleanup | `20260815T0537205906818Z-8a9bf8e85e924ebcb45a3c74531ab93b` | `20260815T0537205608781Z-disposable-eastern-weapons-combat` |
 | exact all-12 branched-spear observer | `20260815T0539303961608Z-78c31f3df4dd431899c2d36d0a3d7c8b` | `20260815T0539303715105Z-observe-elven-branched-spear-contracts` |
 | branched-spear disposable combat/cleanup | `20260815T0541426733415Z-f0ff47492bb14b5c87386f57c9ebded6` | `20260815T0541426471390Z-disposable-elven-branched-spear-combat` |
-| canonical `KMG_AUTOMATION_WORKING` smoke/save/load/fingerprint | `20260815T0543492604693Z-6ab479731480431a8e7ec3fb060f8030` | `20260815T0543491837527Z-working-save-smoke` |
+| canonical `KMG_AUTOMATION_WORKING` catalog/load/fingerprint, with no save-writing API | `20260815T0543492604693Z-6ab479731480431a8e7ec3fb060f8030` | `20260815T0543491837527Z-working-save-smoke` |
 | isolated highest-risk optional-mod profile | `20260815T0549310463372Z-aeea181ff79e4cfe968dd10c3d1263bb` | `20260815T0549310271669Z-observe-optional-mod-compatibility` |
 | Eastern OFF, every other module ON, highest-risk profile | `20260815T0552181340583Z-1e7629dac21e4d238c3b78498b1898f3` | `20260815T0552181084011Z-observe-feature-module-settings` |
 
