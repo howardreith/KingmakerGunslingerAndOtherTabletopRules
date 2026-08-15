@@ -137,12 +137,10 @@ namespace KingmakerGunslinger.BrownFur
         {
             family = string.Empty;
             fields = new Dictionary<string, string>(StringComparer.Ordinal);
-            if (!value.StartsWith("path=", StringComparison.Ordinal))
-                return false;
             int equals = value.IndexOf('=');
             int open = value.IndexOf('{', equals + 1);
             int close = value.LastIndexOf('}');
-            if (equals < 0 || open <= equals + 1 || close <= open ||
+            if (equals <= 0 || open <= equals + 1 || close <= open ||
                 close != value.Length - 1) return false;
             string type = value.Substring(equals + 1, open - equals - 1);
             int dot = type.LastIndexOf('.');
@@ -165,12 +163,11 @@ namespace KingmakerGunslinger.BrownFur
         private static bool TryAppliedBuffGuid(string value, out string guid)
         {
             guid = string.Empty;
-            if (string.IsNullOrWhiteSpace(value) ||
-                !value.StartsWith("path=", StringComparison.Ordinal))
+            if (string.IsNullOrWhiteSpace(value))
                 return false;
             int equals = value.IndexOf('=');
             int slash = value.IndexOf('/', equals + 1);
-            if (equals < 0 || slash - equals != 33) return false;
+            if (equals <= 0 || slash - equals != 33) return false;
             string candidate = value.Substring(equals + 1, 32);
             Guid parsed;
             if (!Guid.TryParseExact(candidate, "N", out parsed) ||

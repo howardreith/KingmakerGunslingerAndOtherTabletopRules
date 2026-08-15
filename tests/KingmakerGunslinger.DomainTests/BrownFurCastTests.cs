@@ -872,6 +872,20 @@ namespace KingmakerGunslinger.DomainTests
                     BrownFurAbilityScore.Constitution }) &&
                 plan.Supports(BrownFurAbilityScore.Dexterity),
                 "A multi-stat polymorph must expose every and only positive selectable stat.");
+            plan = BrownFurBonusAdapterPlanPolicy.Create(
+                new[] {
+                    "ability.components.Actions.Actions[0].Buff.buff=Kingmaker.UnitLogic.Buffs.Polymorph{ConstitutionBonus=0,DexterityBonus=0,Size=Medium,StrengthBonus=2}"
+                },
+                new[] {
+                    "ability.components.Actions.Actions[0].Buff=00d8fbe9cf61dc24298be8d95500c84b/BeastShapeIBuff"
+                });
+            Assertions.True(plan.Status ==
+                BrownFurBonusAdapterPlanStatus.Supported &&
+                plan.AbilityScores.SequenceEqual(new[] {
+                    BrownFurAbilityScore.Strength }) &&
+                plan.AppliedBuffGuids.SequenceEqual(new[] {
+                    "00d8fbe9cf61dc24298be8d95500c84b" }),
+                "The exact installed inventory graph-path form must produce the same adapter plan.");
         }
 
         internal static void SizeBonusAdapterPlanIsExact()
