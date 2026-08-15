@@ -624,6 +624,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableBrownFurBonusCarriers)
+                {
+                    Complete(BrownFurBonusCarrierScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveShieldOtherInventory)
                 {
                     Complete(RunShieldOtherInventoryObservation());

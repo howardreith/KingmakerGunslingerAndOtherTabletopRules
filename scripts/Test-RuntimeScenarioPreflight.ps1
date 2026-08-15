@@ -37,6 +37,7 @@ $expected = @(
     'observe-brown-fur-cotw-contract',
     'observe-brown-fur-transmutation-inventory',
     'observe-brown-fur-cast-engine-contract',
+    'disposable-brown-fur-bonus-carriers',
     'observe-shield-other-inventory',
     'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning',

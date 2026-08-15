@@ -152,6 +152,9 @@ namespace KingmakerGunslinger.DomainTests
             string castEngineObserver = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurCastEngineContractObserver.cs"));
+            string bonusCarrierScenario = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurBonusCarrierScenario.cs"));
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
                 "memorization_spellbook", "arcane_reservoir_resource",
@@ -253,6 +256,19 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(castEngineObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded cast engine contract lacks evidence token: " + token);
+            foreach (string token in new[] {
+                "disposable-brown-fur-bonus-carriers",
+                "brown-fur-bonus-carriers.json", "AddStatBonus",
+                "AddContextStatBonus", "AddStatBonusAbilityValue",
+                "Polymorph", "AddGenericStatBonus+ChangeUnitSize",
+                "modifier.Source", "modifier.ModValue",
+                "modifier.ModDescriptor", "modifier.SourceComponent",
+                "modifier.Source.MaybeContext", "applied.Context",
+                "applied.IsFromSpell", "applied.Remove()",
+                "external-isolation" })
+                Assertions.True(bonusCarrierScenario.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded bonus carrier fixture lacks evidence token: " + token);
         }
 
         private static void AssertRejected(IEnumerable<int> levels, string label)
