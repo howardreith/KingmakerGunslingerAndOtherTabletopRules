@@ -320,6 +320,8 @@
     <Compile Include="BrownFur\BrownFurShareTargetPolicy.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetingScopeTracker.cs" />
     <Compile Include="BrownFur\BrownFurSupremacyScopeTracker.cs" />
+    <Compile Include="BrownFur\BrownFurSupremacyRuntime.cs" />
+    <Compile Include="BrownFur\BrownFurSupremacyPatch.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetingRuntime.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetingPatches.cs" />
     <Compile Include="BrownFur\BrownFurCastDecision.cs" />
@@ -788,6 +790,7 @@
     <Compile Include="RuntimeTesting\BrownFurIlDisassembler.cs" />
     <Compile Include="RuntimeTesting\BrownFurBonusCarrierScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurShareTargetingScenario.cs" />
+    <Compile Include="RuntimeTesting\BrownFurSupremacyScenario.cs" />
     <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogSelectionObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />

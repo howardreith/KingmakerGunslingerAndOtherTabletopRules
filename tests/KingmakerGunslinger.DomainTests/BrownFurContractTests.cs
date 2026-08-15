@@ -166,6 +166,13 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurShareTargetingRuntime.cs"));
             string shareTargetingPatches = File.ReadAllText(Path.Combine(brownFur,
                 "BrownFurShareTargetingPatches.cs"));
+            string supremacyRuntime = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurSupremacyRuntime.cs"));
+            string supremacyPatch = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurSupremacyPatch.cs"));
+            string supremacyScenario = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurSupremacyScenario.cs"));
             string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurIlDisassembler.cs"));
@@ -178,6 +185,11 @@ namespace KingmakerGunslinger.DomainTests
                 "DisposableBrownFurShareTargeting" },
                 StringSplitOptions.None).Length,
                 "The disposable Share targeting constant must be declared and " +
+                "present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "DisposableBrownFurTransmutationSupremacy" },
+                StringSplitOptions.None).Length,
+                "The disposable Supremacy constant must be declared and " +
                 "present exactly once in the in-process allowlist.");
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
@@ -306,6 +318,30 @@ namespace KingmakerGunslinger.DomainTests
                 "info.GetGenericArguments()" })
                 Assertions.True(ilDisassembler.Contains(token),
                     "CotW helper IL decoder lacks exact guard: " + token);
+            foreach (string token in new[] { "AbilityExecutionContext",
+                "context.Params.HasMetamagic(Metamagic.Extend)",
+                "context.Params.Metamagic |= Metamagic.Extend",
+                "ModifiedContextCount", "Scopes.Release", "Scopes.Clear" })
+                Assertions.True(supremacyRuntime.Contains(token),
+                    "Supremacy runtime lacks exact scope guard: " + token);
+            foreach (string token in new[] { "CreateExecutionContext",
+                "typeof(TargetWrapper)", "HarmonyAfter(\"CallOfTheWild\")",
+                "BrownFurSupremacyRuntime.TryApply" })
+                Assertions.True(supremacyPatch.Contains(token),
+                    "Supremacy patch lacks exact execution ordering: " + token);
+            foreach (string token in new[] {
+                "disposable-brown-fur-transmutation-supremacy",
+                "brown-fur-transmutation-supremacy.json",
+                "supremacy-context-baseline",
+                "supremacy-context-adds-extend-once",
+                "supremacy-context-already-extended",
+                "supremacy-context-release",
+                "supremacy-context-isolation-cleanup",
+                "data.CreateExecutionContext", "Metamagic.Extend",
+                "ModifiedContextCount" })
+                Assertions.True(supremacyScenario.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded Supremacy fixture lacks evidence token: " + token);
             foreach (string token in new[] {
                 "disposable-brown-fur-bonus-carriers",
                 "brown-fur-bonus-carriers.json", "AddStatBonus",
