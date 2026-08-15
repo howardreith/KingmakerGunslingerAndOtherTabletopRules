@@ -43,6 +43,7 @@ $expected = @(
     'disposable-brown-fur-reservoir-accounting',
     'disposable-brown-fur-cast-execution',
     'disposable-brown-fur-arcanist-slot',
+    'disposable-brown-fur-native-cast',
     'observe-shield-other-inventory',
     'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning',
@@ -235,6 +236,15 @@ Assert-True $expandedSummoningPlayerPath.RequiresSaveName `
 Assert-True ($expandedSummoningPlayerPath.PermittedSaveName -ceq `
     'KMG_AUTOMATION_WORKING') `
     'expanded-summoning-player-path-only-permits-working-save'
+$brownFurNativeCast = Get-KmgRuntimeScenarioMetadata `
+    'disposable-brown-fur-native-cast'
+Assert-True (-not $brownFurNativeCast.RequiresManualInteraction) `
+    'brown-fur-native-cast-is-autonomous'
+Assert-True $brownFurNativeCast.RequiresSaveName `
+    'brown-fur-native-cast-requires-save-name'
+Assert-True ($brownFurNativeCast.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'brown-fur-native-cast-only-permits-working-save'
 $expandedSummoningVisual = Get-KmgRuntimeScenarioMetadata `
     'disposable-expanded-summoning-visual-contracts'
 Assert-True (-not $expandedSummoningVisual.RequiresManualInteraction) `

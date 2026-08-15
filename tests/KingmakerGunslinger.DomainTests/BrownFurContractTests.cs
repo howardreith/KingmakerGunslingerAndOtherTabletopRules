@@ -186,6 +186,9 @@ namespace KingmakerGunslinger.DomainTests
             string arcanistSlotScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurArcanistSlotScenario.cs"));
+            string nativeCastScenario = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurNativeCastScenario.cs"));
             string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurIlDisassembler.cs"));
@@ -213,6 +216,11 @@ namespace KingmakerGunslinger.DomainTests
                 "DisposableBrownFurArcanistSlot" },
                 StringSplitOptions.None).Length,
                 "The disposable Arcanist slot constant must be declared and " +
+                "present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "DisposableBrownFurNativeCast" },
+                StringSplitOptions.None).Length,
+                "The disposable native cast constant must be declared and " +
                 "present exactly once in the in-process allowlist.");
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
@@ -423,6 +431,21 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(arcanistSlotScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded Arcanist slot fixture lacks evidence token: " +
+                    token);
+            foreach (string token in new[] {
+                "disposable-brown-fur-native-cast",
+                "brown-fur-native-cast.json", "native-cast-fixture",
+                "native-cast-source-target", "native-cast-command-process",
+                "native-cast-accounting", "native-cast-ally-effect",
+                "native-cast-cleanup", "EntityCreator.SpawnUnit",
+                "caster.Commands.Run(command)",
+                "command.ExecutionProcess.Tick()",
+                "BrownFurCastExecutionRuntime.Begin",
+                "ModifierDescriptor.Polymorph", "ApplyClassMechanics",
+                "ApplyLevelup", "KMG_AUTOMATION_WORKING" })
+                Assertions.True(nativeCastScenario.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded native cast fixture lacks evidence token: " +
                     token);
             foreach (string token in new[] {
                 "disposable-brown-fur-bonus-carriers",
