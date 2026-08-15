@@ -28,6 +28,7 @@ publication-gate row is passing.
 | Native command intent and accounting | PASS | `f596b374de8c0b813ae40a397c533b02384f3db3` | Real facts derive one immutable combined transaction; reservoir `4 -> 2`, native slots `6 -> 5`, invalid stat rejected pre-action, zero retained state |
 | Native submitted-command interruption | PASS | `f39c2c0acff97d84b2e2dc7484782f870d90bd10` | Automatically armed command enters running state, interrupts before commitment, reservoir `4 -> 4`, slots `6 -> 6`, zero retained state |
 | Native dispel and expiration | PASS | `334e526fec23c27e6c099fc44b1f797d4e99dece` | Successful `RuleDispelMagic` and native `BuffCollection` deadline tick each remove the enhanced real spell buff, restore the stat, and leave zero scope state |
+| Save/reload persistence | PASS | `805481e5834c045f26dc520f3046da71c25f5b6f` | Fresh-process working-save cycle preserves the real feature grants, +6 Enhancement modifier, native spell context, duration, and one exact target-owned adjustment record; verify removes all fixture state and saves clean |
 
 ## Publication gates
 
@@ -36,7 +37,7 @@ publication-gate row is passing.
 | Native command derives immutable intent from actual owner facts | PASS | Guarded command-constructor path validates and arms exactly one transaction; combined debit and native slot spend are exact |
 | Cancellation and post-submission interruption | PASS | Native submitted command returns `Interrupt`; no reservoir or slot spend; all one-shot and retained state clears |
 | Dispel and expiration | PASS | Enhanced effects preserve native rule-driven dispel, deadline expiration, descriptor, removal, stat restoration, and source behavior |
-| Save/reload persistence | PENDING | Stable identities and active enhanced state survive guarded working-save cycle |
+| Save/reload persistence | PASS | Stable identities, the native buff, source context, duration, original descriptor, and enhanced value survive a guarded fresh-process working-save cycle; native removal retires the owner record |
 | Module OFF existing-owner behavior | PENDING | Selector hidden while existing owner mechanics remain functional |
 | CotW absent isolation | PENDING | Package and six independent modules remain functional; Brown-Fur unavailable |
 | CotW normal progression | PENDING | Runtime-resolved replacements 3 and 9 |
@@ -61,3 +62,18 @@ absolute native deadline, after which `BuffCollection.UpdateNextEvent()` and
 scope was released, and final buff and scope counts were zero. The same run
 re-proved all five carrier families, descriptor competition, both recast
 directions, retained enhanced behavior, and the level-20 `+4` form.
+
+The canonical guarded persistence pair on `805481e` used the exact same
+installed artifact for both Steam App ID 640820 launches. Prepare run
+`20260815T2241442111976Z-8da916c8dcd048828893f94bf5af3f50` saved the
+three real Brown-Fur features, their native grants, and one real Bull's
+Strength buff as `+6 Enhancement` with five hours remaining, exact
+caster/target/spell/CL context, and one serialized target-owned adjustment
+record. Verify/cleanup run
+`20260815T2244107047074Z-e79763ef6fbd4a93865893465084a596`
+freshly deserialized the same state as `+6 Enhancement`, then native buff
+removal reduced the persistence-record count from one to zero. Both phases
+observed exactly one correlated working-save write, two stashed areas, no
+unexpected save API, zero execution scopes, and PASS. The verify phase saved
+the working fixture clean. Exact hashes and deployment identities are in the
+CotW contract.

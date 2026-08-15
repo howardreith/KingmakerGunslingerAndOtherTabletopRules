@@ -1105,6 +1105,68 @@ and one-shot cleanup. Post-submission interruption, native dispel,
 save/reload persistence, module-OFF existing-owner behavior, and selector
 publication remain gates. Brown-Fur remains registered but unpublished.
 
+## Guarded Powerful Change persistence qualification
+
+The exact immutable persistence candidate was commit
+`805481e5834c045f26dc520f3046da71c25f5b6f`. It adds a versioned,
+target-owned `UnitPart` record for the execution-scoped Powerful Change
+modifier. Resolution requires one exact record matching buff GUID, source
+spell GUID, caster identity, selected stat, original value, original
+descriptor, supported carrier family, increase, and absolute end time.
+Ambiguous or malformed state does not adjust a modifier. Native `Buff.Remove`
+retires the record without changing the native buff identity, duration,
+context, descriptor, dispel, expiration, or removal path.
+
+The canonical guarded Steam App ID 640820 persistence pair reused one exact
+installed artifact without rebuilding, repackaging, or redeploying:
+
+- prepare run
+  `20260815T2241442111976Z-8da916c8dcd048828893f94bf5af3f50`,
+  evidence directory
+  `20260815T2241441907225Z-working-save-brown-fur-prepare`;
+- verify/cleanup run
+  `20260815T2244107047074Z-e79763ef6fbd4a93865893465084a596`,
+  evidence directory
+  `20260815T2244107047074Z-working-save-brown-fur-verify-cleanup`;
+- local-runtime package SHA-256
+  `83D6E5EE20B4D2908503550589364B34EE34D74121429968BD00BACD6625CC14`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `0F53145DF5B0FFD74C1E1A52F3BC1AD6D1A66D917591731899C5E37AA543AEDA`;
+- DLL MVID `8f35b53b-d83c-4e4a-b9f8-2a8c45ab817b`;
+- prepare runtime-result SHA-256
+  `218B1D304BD4840429792174646FDEDC3ED461C7B47D43C8C5555D8D8998D8BE`;
+- prepare runtime-evidence SHA-256
+  `E1079EEC5C8FA85A32B520A086571AB6DC57A3424F704E4434E3FB9E3D1D25C4`;
+- prepare orchestration SHA-256
+  `486B09257DE64D1AD2921702FB6FCA5EAA93A3C24B7E1F571AFFCACC327F1A36`;
+- verify/cleanup runtime-result SHA-256
+  `A557AB888B36668BE377971B688E374304A4506CECE4BE842843379771513BFA`;
+- verify/cleanup runtime-evidence SHA-256
+  `3F1CDD2F9D31F781E607BACD9011B6713543A4689C33775CB751157A15593BFB`;
+- verify/cleanup orchestration SHA-256
+  `5B83020A7277358FE5E5944ECD70DC75808EA71845F4A2339A972EE5B5A7591E`;
+- deployment `20260815T2235200621068Z`, deployment-manifest SHA-256
+  `BF6E0A8D576342ECEDA139EB7411A4D8B3997818FDF124B16A233E817318E2BE`;
+- backup `20260815T2235153559456Z`;
+- restored feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`;
+  and
+- game build collection `2018.4.10.10503941`.
+
+Prepare recorded one native Bull's Strength buff at `+6 Enhancement`, five
+hours remaining, exact party-0 caster, party-1 target, source spell, caster
+level 20, one owner record, all three stable features, native selection and
+Share grants, zero execution scopes, and one exact save write. The fresh
+verify process observed the same `+6 Enhancement` value, descriptor,
+duration, context, grants, and one owner record. It then removed the buff,
+features, grants, and record before one exact cleanup save. Both phases
+reported two stashed areas, no unexpected save API, and PASS. The working save
+is clean after the verify phase.
+
+This closes the save/reload persistence gate. Brown-Fur remains registered
+but unpublished pending module-OFF owner behavior, dependency and progression
+profiles, boundary qualification, selector publication, and human acceptance.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
@@ -1133,6 +1195,7 @@ The reflection-only runtime resolver and isolated lifecycle coordinator are now
 implemented and qualified against the installed fingerprint above. With a
 compatible CotW contract they register all 19 stable Brown-Fur identities in a
 separate rollback-capable transaction, but do not yet publish the archetype.
-Interruption, dispel, persistence, module-OFF owner behavior, and selector
-publication remain pending; this document does not claim
-player-facing Brown-Fur compatibility.
+Native interruption, dispel/expiration, and persistence are qualified.
+Module-OFF owner behavior, dependency/progression profiles, boundary
+qualification, selector publication, and human acceptance remain pending;
+this document does not claim player-facing Brown-Fur compatibility.

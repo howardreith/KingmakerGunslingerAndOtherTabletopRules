@@ -392,3 +392,30 @@ This closes native dispel and expiration. Persistence, module-OFF
 existing-owner behavior, dependency profiles, the 16-state boundary matrix,
 and selector publication remain gates. Brown-Fur is registered but
 unpublished.
+
+Powerful Change persistence was then implemented and qualified on immutable
+commit `805481e5834c045f26dc520f3046da71c25f5b6f`. The execution-time
+adjustment now writes a versioned record to the target's serialized
+`UnitPart`. Its exact match includes the buff and source-spell GUIDs, caster
+identity, selected ability score, original value and descriptor, supported
+carrier family, increase, and absolute end time. Fresh modifier registration
+restores only one exact record; malformed, changed, missing, or ambiguous
+records fail closed. Native `Buff.Remove` retires the corresponding record,
+so dispel, expiration, and ordinary cleanup retain native ownership.
+
+The canonical guarded two-launch working-save sequence passed on that commit.
+Prepare saved the three registered Brown-Fur features, native selection and
+Share grants, and a real Bull's Strength effect at `+6 Enhancement` with its
+five-hour duration and exact caster/target/spell/CL context. A fresh process
+loaded the same modifier as `+6 Enhancement`, proved one deserialized
+target-owned record, removed the buff and every fixture feature/grant, proved
+the record count reached zero, and saved `KMG_AUTOMATION_WORKING` clean.
+Each phase performed exactly one correlated save write, reported two stashed
+areas, and observed no unexpected save API. Both finalized manifests are
+PASS; exact artifact and evidence hashes are recorded in the CotW contract.
+
+This closes save/reload persistence without enhanced-buff substitution,
+untyped stacking, or shared-blueprint mutation. Module-OFF existing-owner
+behavior, dependency profiles, normal progression, the 16-state boundary
+matrix, selector publication, and Brown-Fur human acceptance remain gates.
+Brown-Fur is registered but unpublished.
