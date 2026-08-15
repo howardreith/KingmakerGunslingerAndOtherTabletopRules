@@ -6,6 +6,7 @@ using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 
 namespace KingmakerGunslinger.BrownFur
@@ -217,7 +218,9 @@ namespace KingmakerGunslinger.BrownFur
                         SuppressedSpends.Remove(ability);
                     }
                 }
-                Coordinator.EndCommand(command, false);
+                bool interrupted = command != null &&
+                    command.Result != UnitCommand.ResultType.Success;
+                Coordinator.EndCommand(command, interrupted);
             }
             catch (Exception exception)
             { RecordFailure("end-command", exception); }

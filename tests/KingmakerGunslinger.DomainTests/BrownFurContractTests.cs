@@ -476,7 +476,8 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurModifierAdjustmentRuntime.Begin", "RestoreExact",
                 "SuppressedSpends", "SuppressedSpendCommands",
                 "Coordinator.FailRule", "Coordinator.ProcessTerminal",
-                "Coordinator.Clear", "RecordPatchFailure", "LastFailure" })
+                "Coordinator.Clear", "RecordPatchFailure", "LastFailure",
+                "command.Result != UnitCommand.ResultType.Success" })
                 Assertions.True(castExecutionRuntime.Contains(token),
                     "Cast execution boundary lacks exact guard: " + token);
             foreach (string token in new[] { "RuleCastSpell",
