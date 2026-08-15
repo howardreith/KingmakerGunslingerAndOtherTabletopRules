@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
@@ -16,6 +17,7 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
@@ -88,6 +90,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<Observation> Cases { get; set; }
             [JsonProperty("unitsRemoved", Order = 2)]
             public bool UnitsRemoved { get; set; }
+            [JsonProperty("advanced", Order = 3)]
+            public AdvancedObservation Advanced { get; set; }
+        }
+
+        [JsonObject(MemberSerialization.OptIn)]
+        private sealed class AdvancedObservation
+        {
+            [JsonProperty("weakerCompetition", Order = 1)] public int WeakerCompetition { get; set; }
+            [JsonProperty("equalCompetition", Order = 2)] public int EqualCompetition { get; set; }
+            [JsonProperty("strongerCompetition", Order = 3)] public int StrongerCompetition { get; set; }
+            [JsonProperty("competitionModifierValues", Order = 4)] public List<int> CompetitionModifierValues { get; set; }
+            [JsonProperty("ordinaryToEnhancedValue", Order = 5)] public int OrdinaryToEnhancedValue { get; set; }
+            [JsonProperty("ordinaryToEnhancedCount", Order = 6)] public int OrdinaryToEnhancedCount { get; set; }
+            [JsonProperty("enhancedRetainedAfterRelease", Order = 7)] public int EnhancedRetainedAfterRelease { get; set; }
+            [JsonProperty("enhancedToOrdinaryValue", Order = 8)] public int EnhancedToOrdinaryValue { get; set; }
+            [JsonProperty("enhancedToOrdinaryCount", Order = 9)] public int EnhancedToOrdinaryCount { get; set; }
+            [JsonProperty("capstoneModifierValue", Order = 10)] public int CapstoneModifierValue { get; set; }
+            [JsonProperty("capstoneDescriptor", Order = 11)] public string CapstoneDescriptor { get; set; }
+            [JsonProperty("cleanup", Order = 12)] public bool Cleanup { get; set; }
+            [JsonProperty("pass", Order = 13)] public bool Pass { get; set; }
         }
 
         private static readonly Case[] Cases = {
@@ -157,6 +179,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     stage = item.Family;
                     evidence.Cases.Add(Observe(item, caster, target));
                 }
+                stage = "advanced-stacking-recast-capstone";
+                evidence.Advanced = ObserveAdvanced(caster, target);
             }
             catch (Exception exception)
             {
@@ -190,6 +214,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             Add(assertions, "bonus-carrier-external-isolation",
                 "disposable units removed", evidence.UnitsRemoved.ToString(),
                 evidence.UnitsRemoved, "live unit registry cleanup");
+            Add(assertions, "bonus-carrier-stacking-recast-capstone",
+                "descriptor competition 6/6/10; recast 6 then 4; capstone 8 Enhancement",
+                Describe(evidence.Advanced), evidence.Advanced != null &&
+                    evidence.Advanced.Pass,
+                "real Bull's Strength buff plus disposable descriptor competitors");
 
             string path = Path.Combine(request.EvidenceDirectory, FileName);
             File.WriteAllText(path, JsonConvert.SerializeObject(evidence,
@@ -443,6 +472,197 @@ namespace KingmakerGunslinger.RuntimeTesting
                 case StatType.Charisma: return BrownFurAbilityScore.Charisma;
                 default: return BrownFurAbilityScore.None;
             }
+        }
+
+        private static AdvancedObservation ObserveAdvanced(UnitEntityData caster,
+            UnitEntityData target)
+        {
+            var result = new AdvancedObservation {
+                CompetitionModifierValues = new List<int>(),
+                CapstoneDescriptor = string.Empty };
+            BlueprintAbility spell = ResourcesLibrary.TryGetBlueprint<
+                BlueprintAbility>("4c3d08935262b6544ae97599b3a9556d");
+            BlueprintBuff blueprint = ResourcesLibrary.TryGetBlueprint<
+                BlueprintBuff>("b175001b42b1a02479881b72fe132116");
+            if (spell == null || blueprint == null) return result;
+            ModifiableValue stat = target.Descriptor.Stats.Strength;
+            int baseline = stat.ModifiedValue;
+            foreach (int competitor in new[] { 2, 6, 10 })
+            {
+                BlueprintFeature feature = CompetitionFeature(competitor);
+                target.Descriptor.AddFact(feature);
+                var context = CarrierContext(caster, target, spell);
+                string transaction = "competition-" + competitor;
+                Buff buff = null;
+                try
+                {
+                    if (!BrownFurModifierAdjustmentRuntime.Begin(transaction,
+                        context, caster, spell, BrownFurAbilityScore.Strength, 2,
+                        new[] { "b175001b42b1a02479881b72fe132116" },
+                        new[] { "AddStatBonus" })) return result;
+                    buff = target.Descriptor.Buffs.AddBuff(blueprint, context,
+                        TimeSpan.FromMinutes(20d));
+                    ModifiableValue.Modifier modifier = buff == null ? null :
+                        stat.Modifiers.SingleOrDefault(value => ReferenceEquals(
+                            value.Source, buff));
+                    result.CompetitionModifierValues.Add(modifier == null ? 0 :
+                        modifier.ModValue);
+                    int currentValue = stat.ModifiedValue;
+                    if (competitor == 2)
+                        result.WeakerCompetition = currentValue;
+                    else if (competitor == 6)
+                        result.EqualCompetition = currentValue;
+                    else result.StrongerCompetition = currentValue;
+                }
+                finally
+                {
+                    if (buff != null) buff.Remove();
+                    BrownFurModifierAdjustmentRuntime.Release(transaction);
+                    target.Descriptor.RemoveFact(feature);
+                    UnityEngine.Object.Destroy(feature);
+                }
+            }
+
+            var recastContext = CarrierContext(caster, target, spell);
+            Buff ordinary = target.Descriptor.Buffs.AddBuff(blueprint,
+                recastContext, TimeSpan.FromMinutes(20d));
+            const string ordinaryToEnhanced = "recast-ordinary-enhanced";
+            Buff enhanced = null;
+            try
+            {
+                if (!BrownFurModifierAdjustmentRuntime.Begin(ordinaryToEnhanced,
+                    recastContext, caster, spell, BrownFurAbilityScore.Strength,
+                    2, new[] { "b175001b42b1a02479881b72fe132116" },
+                    new[] { "AddStatBonus" })) return result;
+                enhanced = target.Descriptor.Buffs.AddBuff(blueprint,
+                    recastContext, TimeSpan.FromMinutes(20d));
+                result.OrdinaryToEnhancedValue = stat.ModifiedValue;
+                result.OrdinaryToEnhancedCount = ExactBuffCount(target,
+                    blueprint);
+            }
+            finally
+            {
+                BrownFurModifierAdjustmentRuntime.Release(ordinaryToEnhanced);
+            }
+            result.EnhancedRetainedAfterRelease = stat.ModifiedValue;
+            RemoveExactBuffs(target, blueprint);
+
+            var reverseContext = CarrierContext(caster, target, spell);
+            const string enhancedToOrdinary = "recast-enhanced-ordinary";
+            Buff firstEnhanced = null;
+            try
+            {
+                if (!BrownFurModifierAdjustmentRuntime.Begin(enhancedToOrdinary,
+                    reverseContext, caster, spell, BrownFurAbilityScore.Strength,
+                    2, new[] { "b175001b42b1a02479881b72fe132116" },
+                    new[] { "AddStatBonus" })) return result;
+                firstEnhanced = target.Descriptor.Buffs.AddBuff(blueprint,
+                    reverseContext, TimeSpan.FromMinutes(20d));
+            }
+            finally
+            {
+                BrownFurModifierAdjustmentRuntime.Release(enhancedToOrdinary);
+            }
+            Buff finalOrdinary = target.Descriptor.Buffs.AddBuff(blueprint,
+                reverseContext, TimeSpan.FromMinutes(20d));
+            result.EnhancedToOrdinaryValue = stat.ModifiedValue;
+            result.EnhancedToOrdinaryCount = ExactBuffCount(target, blueprint);
+            RemoveExactBuffs(target, blueprint);
+
+            var capstoneContext = CarrierContext(caster, target, spell);
+            const string capstone = "capstone-four";
+            Buff capstoneBuff = null;
+            try
+            {
+                if (!BrownFurModifierAdjustmentRuntime.Begin(capstone,
+                    capstoneContext, caster, spell,
+                    BrownFurAbilityScore.Strength, 4,
+                    new[] { "b175001b42b1a02479881b72fe132116" },
+                    new[] { "AddStatBonus" })) return result;
+                capstoneBuff = target.Descriptor.Buffs.AddBuff(blueprint,
+                    capstoneContext, TimeSpan.FromMinutes(20d));
+                ModifiableValue.Modifier modifier = capstoneBuff == null ? null :
+                    stat.Modifiers.SingleOrDefault(value => ReferenceEquals(
+                        value.Source, capstoneBuff));
+                result.CapstoneModifierValue = modifier == null ? 0 :
+                    modifier.ModValue;
+                result.CapstoneDescriptor = modifier == null ? string.Empty :
+                    modifier.ModDescriptor.ToString();
+            }
+            finally
+            {
+                if (capstoneBuff != null) capstoneBuff.Remove();
+                BrownFurModifierAdjustmentRuntime.Release(capstone);
+            }
+            result.Cleanup = stat.ModifiedValue == baseline &&
+                ExactBuffCount(target, blueprint) == 0 &&
+                BrownFurModifierAdjustmentRuntime.ActiveScopeCount == 0;
+            result.Pass = result.WeakerCompetition == baseline + 6 &&
+                result.EqualCompetition == baseline + 6 &&
+                result.StrongerCompetition == baseline + 10 &&
+                result.CompetitionModifierValues.SequenceEqual(
+                    new[] { 6, 6, 6 }) &&
+                result.OrdinaryToEnhancedValue == baseline + 6 &&
+                result.OrdinaryToEnhancedCount == 1 &&
+                result.EnhancedRetainedAfterRelease == baseline + 6 &&
+                result.EnhancedToOrdinaryValue == baseline + 4 &&
+                result.EnhancedToOrdinaryCount == 1 &&
+                result.CapstoneModifierValue == 8 &&
+                result.CapstoneDescriptor == "Enhancement" && result.Cleanup;
+            return result;
+        }
+
+        private static MechanicsContext CarrierContext(UnitEntityData caster,
+            UnitEntityData target, BlueprintAbility spell)
+        {
+            var context = new MechanicsContext(caster, caster.Descriptor, spell,
+                null, new TargetWrapper(target));
+            context.Params.CasterLevel = 20;
+            return context;
+        }
+
+        private static BlueprintFeature CompetitionFeature(int value)
+        {
+            var component = ScriptableObject.CreateInstance<AddStatBonus>();
+            component.Stat = StatType.Strength;
+            component.Value = value;
+            component.Descriptor = ModifierDescriptor.Enhancement;
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = "KMG_Runtime_BrownFur_Competition_" + value;
+            feature.Ranks = 1;
+            feature.ComponentsArray = new BlueprintComponent[] { component };
+            return feature;
+        }
+
+        private static int ExactBuffCount(UnitEntityData target,
+            BlueprintBuff blueprint)
+        {
+            return target.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(value =>
+                ReferenceEquals(value.Blueprint, blueprint));
+        }
+
+        private static void RemoveExactBuffs(UnitEntityData target,
+            BlueprintBuff blueprint)
+        {
+            foreach (Buff buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint, blueprint))
+                .ToArray()) buff.Remove();
+        }
+
+        private static string Describe(AdvancedObservation value)
+        {
+            if (value == null) return "missing";
+            return "competition=" + value.WeakerCompetition + "/" +
+                value.EqualCompetition + "/" + value.StrongerCompetition +
+                ";modifiers=" + string.Join("/", value.CompetitionModifierValues
+                    .Select(item => item.ToString()).ToArray()) +
+                ";ordinaryEnhanced=" + value.OrdinaryToEnhancedValue + "/" +
+                value.OrdinaryToEnhancedCount + ";retained=" +
+                value.EnhancedRetainedAfterRelease + ";enhancedOrdinary=" +
+                value.EnhancedToOrdinaryValue + "/" +
+                value.EnhancedToOrdinaryCount + ";capstone=" +
+                value.CapstoneModifierValue + "/" + value.CapstoneDescriptor +
+                ";cleanup=" + value.Cleanup;
         }
 
         private static void Add(List<RuntimeTestAssertion> assertions,

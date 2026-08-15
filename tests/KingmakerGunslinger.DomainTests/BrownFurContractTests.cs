@@ -279,7 +279,12 @@ namespace KingmakerGunslinger.DomainTests
                 "applied.Context.MainTarget.Unit",
                 "applied.Context.Params.CasterLevel",
                 "applied.IsFromSpell", "applied.Remove()",
-                "external-isolation" })
+                "external-isolation", "WeakerCompetition",
+                "EqualCompetition", "StrongerCompetition",
+                "OrdinaryToEnhancedValue",
+                "EnhancedRetainedAfterRelease",
+                "EnhancedToOrdinaryValue", "CapstoneModifierValue",
+                "CompetitionFeature", "RemoveExactBuffs" })
                 Assertions.True(bonusCarrierScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded bonus carrier fixture lacks evidence token: " + token);
