@@ -1,6 +1,7 @@
 # Brown-Fur / Call of the Wild Contract
 
-Status: implementation investigation; runtime reconciliation not yet qualified.
+Status: structural contract reconciliation qualified for the installed CotW
+subject; archetype publication and mechanical adapters remain disabled.
 
 ## Engineering authority
 
@@ -28,6 +29,13 @@ or package dependency.
 
 These binary hashes are evidence, not the sole compatibility gate. Runtime
 publication requires every structural check below to agree.
+
+The guarded, save-free `observe-brown-fur-cotw-contract` scenario passed on
+source commit `e1424cf139214e71c740b69049097f031e9571fd`. That result proves the
+installed dependency identity, reflected public/static surfaces, blueprint
+cross-validation, active balance progression, Shared Spells signatures, and
+isolated coordinator outcome. It does not claim that player-facing Brown-Fur
+mechanics are implemented.
 
 ## Required blueprint identities
 
@@ -94,7 +102,7 @@ Transmutation spell set.
 CotW absence produces `Unavailable` rather than a package bootstrap failure.
 Any installed-but-failed check produces `Blocked` with the exact failed check.
 The reflection-only runtime resolver and isolated lifecycle coordinator are now
-implemented. They do not register or publish Brown-Fur blueprints yet, and their
-live contract result remains unqualified until the guarded contract observer is
-run. The publication transaction remains pending; this document does not claim
-in-game compatibility yet.
+implemented and qualified against the installed fingerprint above. They do not
+register or publish Brown-Fur blueprints yet. The publication transaction and
+spell mechanics remain pending; this document does not claim player-facing
+Brown-Fur compatibility.
