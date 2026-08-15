@@ -24,17 +24,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const BindingFlags All = BindingFlags.Public |
             BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
+        [JsonObject(MemberSerialization.OptIn)]
         private sealed class Evidence
         {
+            [JsonProperty("cotwAssembly", Order = 1)]
             public string CotwAssembly { get; set; }
+            [JsonProperty("unitUseAbility", Order = 2)]
             public List<string> UnitUseAbility { get; set; }
+            [JsonProperty("abilityData", Order = 3)]
             public List<string> AbilityData { get; set; }
+            [JsonProperty("abilityParams", Order = 4)]
+            public List<string> AbilityParams { get; set; }
+            [JsonProperty("abilityExecutionContext", Order = 5)]
             public List<string> AbilityExecutionContext { get; set; }
+            [JsonProperty("ruleCastSpell", Order = 6)]
             public List<string> RuleCastSpell { get; set; }
+            [JsonProperty("spellbook", Order = 7)]
             public List<string> Spellbook { get; set; }
+            [JsonProperty("modifiableValue", Order = 8)]
             public List<string> ModifiableValue { get; set; }
+            [JsonProperty("sharedSpells", Order = 9)]
             public List<string> SharedSpells { get; set; }
+            [JsonProperty("directSharedSpellsHarmony", Order = 10)]
             public List<string> SharedSpellsHarmony { get; set; }
+            [JsonProperty("relevantCotwHarmony", Order = 11)]
             public List<string> RelevantCotwHarmony { get; set; }
         }
 
@@ -56,6 +69,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Empty : contract.Assembly.FullName,
                 UnitUseAbility = Describe(typeof(UnitUseAbility)),
                 AbilityData = Describe(typeof(AbilityData)),
+                AbilityParams = Describe(typeof(AbilityParams)),
                 AbilityExecutionContext = Describe(typeof(AbilityExecutionContext)),
                 RuleCastSpell = Describe(typeof(RuleCastSpell)),
                 Spellbook = Describe(typeof(Spellbook)),
@@ -107,19 +121,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Has(evidence.ModifiableValue, "AddModifier"),
                 "descriptor-preserving value interception seam");
             Add(assertions, "cast-engine-duration-context",
-                "AbilityExecutionContext ability/context/metamagic surfaces",
+                "AbilityExecutionContext plus AbilityParams metamagic surfaces",
                 JoinMatches(evidence.AbilityExecutionContext, "Ability",
-                    "Context", "Params", "Metamagic"),
+                    "Context", "Params") + "|" +
+                    JoinMatches(evidence.AbilityParams, "Metamagic", "CasterLevel",
+                        "SpellLevel"),
                 Has(evidence.AbilityExecutionContext, "Ability") &&
                     (Has(evidence.AbilityExecutionContext, "Context") ||
-                     Has(evidence.AbilityExecutionContext, "Params")),
-                "per-execution duration context; exact metamagic path remains evidence");
+                     Has(evidence.AbilityExecutionContext, "Params")) &&
+                    Has(evidence.AbilityParams, "Metamagic"),
+                "per-execution duration and native metamagic state");
             Add(assertions, "cast-engine-shared-spells-harmony",
-                "at least one installed SharedSpells patch with ordering metadata",
-                evidence.SharedSpellsHarmony.Count == 0 ? "none" :
-                    string.Join("|", evidence.SharedSpellsHarmony.ToArray()),
-                evidence.SharedSpellsHarmony.Count > 0,
-                "Harmony12 live registry target, role, owner, priority, before, and after");
+                "SharedSpells helpers plus relevant CotW patch ordering metadata",
+                "directSharedSpellsPatches=" +
+                    evidence.SharedSpellsHarmony.Count + ";relevantCotwPatches=" +
+                    evidence.RelevantCotwHarmony.Count,
+                Has(evidence.SharedSpells, "canShareSpell") &&
+                    Has(evidence.SharedSpells, "isValidShareSpellTarget") &&
+                    evidence.RelevantCotwHarmony.Count > 0,
+                "live registry proves whether SharedSpells owns patches and records " +
+                "target, role, owner, priority, before, and after for adjacent CotW patches");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
                 "observer does not select, load, mutate, or save a character");
