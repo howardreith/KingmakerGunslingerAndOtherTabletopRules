@@ -39,7 +39,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.inventory-classification-durations", BrownFurInventoryClassificationTests.NamedAndNoOpDurationsAreExact),
             Case("brown-fur.inventory-classification-fail-closed", BrownFurInventoryClassificationTests.UnknownStructuresFailClosed),
             Case("brown-fur.identities-permanent", BrownFurIdentityTests.PermanentLedgerIsExact),
-            Case("brown-fur.identities-manifest", BrownFurIdentityTests.ManifestReservationsMatchLedger),
+            Case("brown-fur.identities-manifest", BrownFurIdentityTests.ManifestActiveEntriesMatchLedger),
             Case("brown-fur.archetype-normal", BrownFurArchetypePlanTests.NormalProgressionIsExact),
             Case("brown-fur.archetype-balance", BrownFurArchetypePlanTests.BalanceProgressionIsExact),
             Case("brown-fur.archetype-unknown", BrownFurArchetypePlanTests.UnknownProgressionCannotBuildShell),

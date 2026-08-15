@@ -52,7 +52,7 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        internal static void ManifestReservationsMatchLedger()
+        internal static void ManifestActiveEntriesMatchLedger()
         {
             JObject manifest = JObject.Parse(File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "blueprints", "blueprints.json")));
@@ -60,15 +60,15 @@ namespace KingmakerGunslinger.DomainTests
                 .Where(value => ((string)value["symbol"]).StartsWith(
                     "KMG.BrownFur.", StringComparison.Ordinal)).ToArray();
             Assertions.Equal(BrownFurIdentityCatalog.IdentityCount, rows.Length,
-                "Manifest Brown-Fur reservation count changed.");
+                "Manifest Brown-Fur active identity count changed.");
             foreach (BrownFurIdentitySpec identity in BrownFurIdentityCatalog.All)
             {
                 JObject row = rows.Single(value =>
                     (string)value["symbol"] == identity.Symbol);
                 Assertions.True((string)row["guid"] == identity.Guid &&
                     (string)row["plannedType"] == identity.PlannedType &&
-                    (string)row["status"] == "reserved",
-                    "Manifest reservation differs from the frozen ledger: " +
+                    (string)row["status"] == "active",
+                    "Manifest active entry differs from the frozen ledger: " +
                     identity.Symbol);
             }
         }

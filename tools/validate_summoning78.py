@@ -59,11 +59,16 @@ def validate(root: Path) -> None:
         if entry["symbol"].startswith("KMG.CustomWeapons.FocusedWeapon.")]
     brown_fur_entries = [entry for entry in manifest["entries"]
         if entry["symbol"].startswith("KMG.BrownFur.")]
+    brown_fur_active = [entry for entry in brown_fur_entries
+        if entry["status"] == "active"]
+    brown_fur_reserved = [entry for entry in brown_fur_entries
+        if entry["status"] == "reserved"]
     if (len(manifest["entries"]) != 1439 + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) + len(brown_fur_entries)
             or len(active) != 1438 + len(spear_entries) +
-            len(eastern_entries) + len(focused_entries)
-            or len(reserved) != 1 + len(brown_fur_entries)):
+            len(eastern_entries) + len(focused_entries) +
+            len(brown_fur_active)
+            or len(reserved) != 1 + len(brown_fur_reserved)):
         raise AssertionError("Expanded Summoning blueprint ledger count mismatch")
     expected_spear_entries = {
         "KMG.ElvenBranchedSpear.WeaponType": ("77f72b0febaf212a5650e7193c00361f", "BlueprintWeaponType"),

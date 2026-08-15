@@ -12123,82 +12123,82 @@
     },
     {
       "symbol": "KMG.BrownFur.Archetype", "guid": "aafa6e62241bb14582de5f587c179329",
-      "plannedType": "BlueprintArchetype", "status": "reserved", "milestone": "Brown-Fur Transmuter",
-      "notes": "Permanent Brown-Fur Transmuter archetype identity; reserved until the isolated publication transaction is qualified."
+      "plannedType": "BlueprintArchetype", "status": "active", "milestone": "Brown-Fur Transmuter",
+      "notes": "Permanent Brown-Fur Transmuter archetype identity; registered by the isolated optional extension while selector publication remains qualification-gated."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Feature", "guid": "b3bbed7e12463e4c434cd81eda7ab2dd",
-      "plannedType": "BlueprintFeature", "status": "reserved", "milestone": "Brown-Fur Transmuter",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Brown-Fur Transmuter",
       "notes": "Level-3 Powerful Change feature."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.SelectionAbility", "guid": "48e76b097fc71f586d442a308eb11f87",
-      "plannedType": "BlueprintAbility", "status": "reserved", "milestone": "Brown-Fur Transmuter",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter",
       "notes": "One player-facing Powerful Change ability containing the six mutually exclusive stat choices."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Strength.Ability", "guid": "d2cb2236a6dc31b7ed70e27dc12d5a8a",
-      "plannedType": "BlueprintAbility", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Strength choice."
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Strength choice."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Dexterity.Ability", "guid": "d16c77bcbff53fd3c1555869017bab3e",
-      "plannedType": "BlueprintAbility", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Dexterity choice."
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Dexterity choice."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Constitution.Ability", "guid": "54a2f74043e000047041f273d1e559ad",
-      "plannedType": "BlueprintAbility", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Constitution choice."
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Constitution choice."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Intelligence.Ability", "guid": "a6d77c07804e16d41a3c172c7f09f4ca",
-      "plannedType": "BlueprintAbility", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Intelligence choice."
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Intelligence choice."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Wisdom.Ability", "guid": "84faeefe28992744fbf19b62e2eccb08",
-      "plannedType": "BlueprintAbility", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Wisdom choice."
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Wisdom choice."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Charisma.Ability", "guid": "649b8ea4f5a155141bef5f9827675739",
-      "plannedType": "BlueprintAbility", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Charisma choice."
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Charisma choice."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Strength.Buff", "guid": "958e93bc70e6ae048e2e96193423915a",
-      "plannedType": "BlueprintBuff", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Strength cast intent."
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Strength cast intent."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Dexterity.Buff", "guid": "aba507d99e1b4d6c6bda9233f708eb64",
-      "plannedType": "BlueprintBuff", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Dexterity cast intent."
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Dexterity cast intent."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Constitution.Buff", "guid": "cea64eb942b294360344824a3795a351",
-      "plannedType": "BlueprintBuff", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Constitution cast intent."
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Constitution cast intent."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Intelligence.Buff", "guid": "5bb5dd956df4d7bc2cf03e02bbd28d5f",
-      "plannedType": "BlueprintBuff", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Intelligence cast intent."
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Intelligence cast intent."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Wisdom.Buff", "guid": "81ce31c8f868e0db5c4aa8a8e9cf1656",
-      "plannedType": "BlueprintBuff", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Wisdom cast intent."
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Wisdom cast intent."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Charisma.Buff", "guid": "9fe5998e93963fec5ae91aed6a060ef0",
-      "plannedType": "BlueprintBuff", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Charisma cast intent."
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Charisma cast intent."
     },
     {
       "symbol": "KMG.BrownFur.ShareTransmutation.Feature", "guid": "b7e929dac874cd22d173ee8f4fe0bfa4",
-      "plannedType": "BlueprintFeature", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Level-9 Share Transmutation feature."
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Level-9 Share Transmutation feature."
     },
     {
       "symbol": "KMG.BrownFur.ShareTransmutation.Activatable", "guid": "8641e6c39ff133ad71f669e35e1ee688",
-      "plannedType": "BlueprintActivatableAbility", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Share Transmutation cast selection."
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Share Transmutation cast selection."
     },
     {
       "symbol": "KMG.BrownFur.ShareTransmutation.Buff", "guid": "215a03a25c8ff8b76114bf7513869d6c",
-      "plannedType": "BlueprintBuff", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Share Transmutation cast intent."
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Save-stable pending Share Transmutation cast intent."
     },
     {
       "symbol": "KMG.BrownFur.TransmutationSupremacy.Feature", "guid": "c69cd7091219708f981272f2ac057135",
-      "plannedType": "BlueprintFeature", "status": "reserved", "milestone": "Brown-Fur Transmuter", "notes": "Level-20 Transmutation Supremacy feature and capstone marker."
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Level-20 Transmutation Supremacy feature and capstone marker."
     }
   ]
 }
