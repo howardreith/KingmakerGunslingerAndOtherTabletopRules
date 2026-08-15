@@ -132,3 +132,16 @@ exactly 9.144 meters. The blueprint remained unchanged, scopes returned to
 zero, and all disposable units were removed. Real ally effect delivery,
 relationship classification, cast/debit integration, and interruption remain
 pending; Brown-Fur remains reserved and unpublished.
+
+The native cast-commit ordering checkpoint passed all 15 guarded assertions on
+commit `38779fb6c5671d5bac7af5536b6f3a80c9d8a2a7`. Exact IL now proves that the
+engine constructs and clones the execution context in the `RuleCastSpell`
+constructor, performs spell-failure checks and submits successful execution in
+`RuleCastSpell.OnTrigger`, and only then calls `AbilityData.Spend` from
+`UnitUseAbility.OnAction`. Native spend is skipped for UMD failure but occurs
+for ordinary and arcane spell failure. The exact package/DLL/MVID and contract
+artifact identities are recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.
+This establishes the pre-slot rejection and post-rule/pre-slot commit window;
+the next gate is the exact `CreateExecutionContext` parameter path and
+execution-process completion/interruption lifecycle. Brown-Fur remains
+reserved and unpublished.

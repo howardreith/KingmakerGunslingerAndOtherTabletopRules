@@ -232,6 +232,57 @@ completed spell effect on the selected ally, real unwilling/faction
 classification, command movement at the boundary, reservoir/slot commitment,
 or interruption cleanup.
 
+## Native cast commitment order
+
+The refined save-free cast observer passed all 15 assertions on commit
+`38779fb6c5671d5bac7af5536b6f3a80c9d8a2a7`. The exact local-runtime package
+SHA-256 was
+`223412C6BEA4827B66F11E29B7D5DAFDA8A09E2E949FA1F892C6FF1239CEE150`;
+the built, deployed, and loaded DLL SHA-256 was
+`3888DF6D125F3E5407F974630C78A8BEA850A9AE37DD1E06E702BCB3346D26B2`;
+the DLL MVID was `2278bf2f-1a86-4201-a2af-33f66b820fce`; and the structured
+contract artifact SHA-256 was
+`12BA587CB4CF514E737FAA1B3BE39DD3E5BD2E9718121E059D5FEAA3D1341F06`.
+
+The decoded native order is exact:
+
+1. `UnitUseAbility.OnAction()` rejects unavailable, dead, out-of-contract,
+   failed-concentration, and empty charged-item cases before constructing the
+   cast rule.
+2. `RuleCastSpell(AbilityData, TargetWrapper)` stores the exact spell and
+   target and immediately calls `AbilityData.CreateExecutionContext(target)`.
+3. `RuleCastSpell.OnTrigger(...)` performs UMD, ordinary spell-failure, and
+   arcane-spell-failure checks. Only its successful branch sets `Success=true`,
+   calls `AbilityData.Cast(Context)`, and retains the returned execution
+   process.
+4. After the rule returns, `UnitUseAbility.OnAction()` retains that process and
+   calls `AbilityData.Spend()` unless UMD failed. This native spend therefore
+   also occurs for ordinary spell failure and arcane spell failure.
+5. `AbilityData.Spend()` consumes the material component, item charge,
+   spellbook slot, and any ability resource in that order.
+6. Only after `Spend()` returns does the command inspect `RuleCastSpell.Success`
+   and return failure or continue the cast presentation.
+
+`AbilityData.Cast(Context)` only rejects a variant-wrapper blueprint and then
+submits the already-created exact context to the native ability execution
+controller. `AbilityExecutionContext` clones the supplied `AbilityParams`, so
+Transmutation Supremacy must enter the exact execution-context construction
+path before that clone; mutating a later shared `AbilityData` or blueprint is
+neither necessary nor safe.
+
+These bodies rule out debiting the reservoir when a toggle is merely armed and
+rule out treating the `AbilityData.Spend()` prefix as a sufficient rejection
+point: successful execution has already been submitted by then. The authorized
+transaction design must validate and reserve the complete requested cost at
+the concrete `RuleCastSpell`/execution-context boundary, suppress both rule
+execution and the immediately following native spend for a rejected
+transaction, and commit the reservation exactly once in the post-rule,
+pre-`AbilityData.Spend()` window that the native command exposes. A retained
+scope must then follow the exact execution process through completion or
+interruption. The remaining investigation is the exact
+`CreateExecutionContext` parameter path and execution-process cleanup
+callbacks; player-facing wiring remains disabled until those are qualified.
+
 The modifier-provenance extension of this scenario passed all 11 assertions on
 commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
 package SHA-256 was
