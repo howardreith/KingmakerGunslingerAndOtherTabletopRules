@@ -350,6 +350,31 @@ preservation, instantaneous or permanent duration handling, or integration
 with a real Brown-Fur owner and reservoir transaction. Those remain
 player-publication gates.
 
+The timed-duration extension passed all seven guarded assertions on corrected
+commit `2d91e4898761feaf46731a15c92900c84f40aef6`. Its exact local-runtime
+package SHA-256 was
+`5594682655E6C24BA076FD5961DDA534930EE98D8B6ED480550FE16BBA15DFF7`;
+the built, deployed, and loaded DLL SHA-256 was
+`6180E8852FA8684C181D197A433E5D4519A60FB7EB53FF80CFE674EE113086DA`;
+the DLL MVID was `7af4aca2-69fe-41b3-a5a0-829aec81c5a8`; and the
+structured Supremacy artifact SHA-256 was
+`A3FFE59459A8F2A42CD96A48CD88C822224705857F279CD95019C2751AB15D25`.
+
+Against an explicitly initialized native five-round extendable duration, the
+ordinary, scoped, already-Extended, and post-release contexts calculated
+exactly `5`, `10`, `10`, and `5` rounds. The installed spell's action type
+remained `Standard`, so the context-local addition did not alter casting time.
+The first version of this fixture failed closed before scope retention because
+its synthetic `ContextDurationValue` omitted the required zero dice carrier;
+the corrected fixture supplies the complete native duration structure rather
+than weakening the assertion.
+
+This closes native timed-duration doubling and action-type preservation for
+the installed context contract. Prepared-spell slot preservation, actual
+Metamixing input, instantaneous and permanent spells, variants and converted
+spells, concurrency at the live context boundary, and real Brown-Fur owner and
+transaction integration remain pending.
+
 The modifier-provenance extension of this scenario passed all 11 assertions on
 commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
 package SHA-256 was

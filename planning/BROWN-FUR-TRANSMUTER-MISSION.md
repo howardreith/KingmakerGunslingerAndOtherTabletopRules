@@ -169,3 +169,15 @@ DLL, MVID, and structured-result identities are recorded in the CotW contract.
 Timed-duration behavior, slot and casting-time preservation, special duration
 structures, and real owner/transaction wiring remain pending; Brown-Fur stays
 reserved and unpublished.
+
+The corrected timed-duration fixture passed all seven guarded assertions on
+commit `2d91e4898761feaf46731a15c92900c84f40aef6`. A complete native
+five-round duration calculated as `5` ordinarily, `10` in the exact Supremacy
+scope, `10` when already Extended, and `5` after release. The installed
+spell's action type remained `Standard`, blueprint range and metamagic support
+were unchanged, and all runtime scope and disposable-unit state cleaned up.
+The exact package, DLL, MVID, and result hashes are recorded in the CotW
+contract. Prepared-slot and actual Metamixing inputs, instantaneous and
+permanent spells, variant/converted spells, live concurrency, and real
+owner/transaction wiring remain pending; Brown-Fur remains reserved and
+unpublished.
