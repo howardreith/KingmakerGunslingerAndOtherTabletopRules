@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Mechanics;
@@ -13,10 +12,8 @@ namespace KingmakerGunslinger.BrownFur
             "df7d13c967bce6a40bec3ba7c9f0e64c";
         private const string ObsidianFlowGuid =
             "e48638596c955a74c8a32dbc90b518c1";
-        private static readonly string[] EarthTremorVariantGuids = {
-            "3e4a0790fc2749bbacb1b3b1d2401148",
+        private static readonly string[] EarthTremorManualAdapterGuids = {
             "91266b6d2a4cfd6b8e1549bc2381d12",
-            "c7b52e9a09ef442f9308d9119f5877d2"
         };
 
         private static readonly BrownFurSupremacyScopeTracker<AbilityData,
@@ -63,8 +60,8 @@ namespace KingmakerGunslinger.BrownFur
                 string.Equals(guid, ObsidianFlowGuid,
                     StringComparison.Ordinal) && duration.Rate ==
                     DurationRate.Hours ||
-                EarthTremorVariantGuids.Contains(guid,
-                    StringComparer.Ordinal) && duration.Rate ==
+                string.Equals(guid, EarthTremorManualAdapterGuids[0],
+                    StringComparison.Ordinal) && duration.Rate ==
                     DurationRate.Hours;
             if (!supported) return false;
             result = result * 2;
