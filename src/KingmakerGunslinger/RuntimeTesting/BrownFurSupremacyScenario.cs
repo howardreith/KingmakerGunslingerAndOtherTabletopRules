@@ -31,6 +31,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             "df7d13c967bce6a40bec3ba7c9f0e64c";
         private const string ObsidianFlowGuid =
             "e48638596c955a74c8a32dbc90b518c1";
+        private static readonly string[] EarthTremorVariantGuids = {
+            "3e4a0790fc2749bbacb1b3b1d2401148",
+            "91266b6d2a4c4fd6b8e1549bc2381d12",
+            "c7b52e9a09ef442f9308d9119f5877d2"
+        };
 
         [JsonObject(MemberSerialization.OptIn)]
         private sealed class Evidence
@@ -72,6 +77,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("obsidianBaselineRounds", Order = 35)] public int ObsidianBaselineRounds { get; set; }
             [JsonProperty("obsidianScopedRounds", Order = 36)] public int ObsidianScopedRounds { get; set; }
             [JsonProperty("specialScopesReleased", Order = 37)] public bool SpecialScopesReleased { get; set; }
+            [JsonProperty("earthTremorSupportsExtend", Order = 38)] public bool EarthTremorSupportsExtend { get; set; }
+            [JsonProperty("earthTremorVariantDurations", Order = 39)] public List<string> EarthTremorVariantDurations { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -221,6 +228,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "supremacy-resonating-word") &&
                     BrownFurSupremacyRuntime.Release(
                         "supremacy-obsidian-flow");
+
+                stage = "earth-tremor-variants";
+                evidence.EarthTremorSupportsExtend = false;
+                evidence.EarthTremorVariantDurations = new List<string>();
+                foreach (string guid in EarthTremorVariantGuids)
+                {
+                    BlueprintAbility earth = ResourcesLibrary.TryGetBlueprint<
+                        BlueprintAbility>(guid);
+                    if (earth == null || earth.School !=
+                        SpellSchool.Transmutation)
+                        throw new InvalidOperationException(
+                            "An exact Earth Tremor variant was unavailable: " +
+                            guid);
+                    evidence.EarthTremorSupportsExtend |=
+                        (earth.AvailableMetamagic & Metamagic.Extend) != 0;
+                    ContextDurationValue earthDuration = RootDurations(earth)
+                        .Single(value => value.Rate == DurationRate.Hours);
+                    var earthData = new AbilityData(earth, caster.Descriptor);
+                    int earthBaseline = earthDuration.Calculate(earthData
+                        .CreateExecutionContext(target)).Value;
+                    string identity = "supremacy-earth-tremor-" + guid;
+                    if (!BrownFurSupremacyRuntime.Begin(identity, earthData))
+                        throw new InvalidOperationException(
+                            "Earth Tremor scope could not begin: " + guid);
+                    int earthScoped = earthDuration.Calculate(earthData
+                        .CreateExecutionContext(target)).Value;
+                    if (!BrownFurSupremacyRuntime.Release(identity))
+                        throw new InvalidOperationException(
+                            "Earth Tremor scope could not release: " + guid);
+                    evidence.EarthTremorVariantDurations.Add(guid + ":" +
+                        earthBaseline + "->" + earthScoped);
+                }
             }
             catch (Exception exception)
             {
@@ -305,6 +344,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         evidence.ObsidianBaselineRounds * 2 &&
                     evidence.SpecialScopesReleased,
                 "installed Obsidian Flow root area-duration ContextDurationValue");
+            Add(assertions, "supremacy-earth-tremor-variant-durations",
+                "all three hidden one-hour area durations double without ordinary Extend",
+                "supports=" + evidence.EarthTremorSupportsExtend + ";" +
+                    string.Join("|", (evidence.EarthTremorVariantDurations ??
+                        new List<string>()).ToArray()),
+                !evidence.EarthTremorSupportsExtend &&
+                    evidence.EarthTremorVariantDurations != null &&
+                    evidence.EarthTremorVariantDurations.Count == 3 &&
+                    evidence.EarthTremorVariantDurations.All(value =>
+                        value.EndsWith(":600->1200",
+                            StringComparison.Ordinal)),
+                "installed Earth Tremor spread, cone, and line root area durations");
             Add(assertions, "supremacy-context-isolation-cleanup",
                 "blueprint and slot identity unchanged; scopes zero; unit removed",
                 "range=" + evidence.RangeBefore + "/" + evidence.RangeAfter +
