@@ -207,6 +207,31 @@ corporeal radii, while the independent target policy enforces the exact
 30-foot willingness boundary before commitment. Runtime qualification must
 still prove boundary/over-boundary command behavior and effect delivery.
 
+The first scoped targeting fixture passed all five guarded assertions on
+commit `8f649db44b6a4c4e5cc980df08375f19085a2f0b`. The built and installed DLL
+SHA-256 was
+`5FD961F69B6BBC71EBB12DE3CC5A3B5198A417F287341C8F16C9A08DAC9D7396`, its
+MVID was `bdb039a8-9898-4f66-85c0-34bbc150f446`, and the structured Share
+artifact SHA-256 was
+`AC729B058D363381F83495A2824AB0C5D913C6D7E2E4C8B521F21417D0AA23CB`.
+
+With installed Personal Transmutation
+`3481906baed9487e8403e91a2e9d010a`, CotW's unmatched baseline was
+`Owner`, `CanTarget=false`, and a 1.0-meter native contact radius. An exact
+Touch scope changed only the computed anchor/result to `Unit/true`, explicitly
+rejected a different target, and retained the 1.0-meter native radius. Release
+restored `Owner/false`. An exact capstone scope retained `Unit/true` and
+increased the approach distance from 1.0 to 10.144 meters, an exact 9.144-meter
+(30-foot) delta.
+
+The spell remained `Personal` with the same self/friend/enemy/point flags,
+active scopes returned to zero, and all three disposable units were removed.
+This qualifies CotW patch composition, exact identity isolation, Touch range,
+the capstone approach-distance delta, and cleanup. It does not yet prove a
+completed spell effect on the selected ally, real unwilling/faction
+classification, command movement at the boundary, reservoir/slot commitment,
+or interruption cleanup.
+
 The modifier-provenance extension of this scenario passed all 11 assertions on
 commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
 package SHA-256 was

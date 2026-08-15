@@ -121,3 +121,14 @@ level-20 adapter can add 30 feet only to the matching cast's approach-distance
 result while the policy rejects an over-30-foot target before commitment.
 Targeting-scope implementation and live boundary qualification remain pending;
 Brown-Fur is still reserved and unpublished.
+
+The exact Share targeting scope and its after-CotW postfixes are implemented
+but not yet wired to player intent. The disposable runtime fixture passed all
+five assertions on commit `8f649db44b6a4c4e5cc980df08375f19085a2f0b`:
+the installed Personal spell moved from CotW baseline `Owner/false` to scoped
+`Unit/true`, a different target was rejected, Touch retained the native
+1.0-meter contact radius, release restored baseline, and the capstone added
+exactly 9.144 meters. The blueprint remained unchanged, scopes returned to
+zero, and all disposable units were removed. Real ally effect delivery,
+relationship classification, cast/debit integration, and interruption remain
+pending; Brown-Fur remains reserved and unpublished.
