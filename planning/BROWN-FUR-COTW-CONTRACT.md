@@ -77,6 +77,58 @@ Changed, missing, overloaded, or otherwise ambiguous signatures block Brown-Fur
 publication. Any reuse remains cast-scoped and Brown-Fur-owner-scoped; it does
 not install a global replacement for Kingmaker targeting.
 
+## Cast-engine and Harmony contract
+
+The guarded, save-free `observe-brown-fur-cast-engine-contract` scenario passed
+on commit `91bcdb07d611419d3e1cc93fb5769782340c4ec4`. Its structured contract
+artifact has SHA-256
+`846C8E9A4C953D75E0F391B54E6272E427A5B44AD5D85F6CD40C29003B28498D`.
+The package SHA-256 was
+`A97B8BFCACB3F5E279E999D4B06E8BFB43A28107EE74667165F817E975CAEBC6`;
+the DLL SHA-256 was
+`A7DC5BB37E6ED335AFF53EDDD4A35B1DCF23E6C433004457AAB9181A927D40C3`;
+the DLL MVID was `5318a1c4-83a7-4a9e-a801-4970fe505392`, and the installed
+DLL hash matched.
+
+The exact native surfaces include:
+
+- `UnitUseAbility(AbilityData, TargetWrapper)` and the command-type overload,
+  followed by `OnAction()` and `OnEnded(bool)`;
+- `RuleCastSpell.OnTrigger(RulebookEventContext)`, with exact `Spell`,
+  `SpellTarget`, `Context`, `ExecutionProcess`, and `Success` state;
+- `AbilityData.Blueprint`, `Spellbook`, `ConvertedFrom`, `SpellLevel`,
+  item-source properties, and `SpendFromSpellbook()`;
+- `Spellbook.CanSpend(AbilityData, bool)`, `Spend(AbilityData, bool)`, and
+  `SpendInternal(BlueprintAbility, AbilityData, bool, bool)`;
+- `AbilityExecutionContext.Ability`, `Params`, and `ParentContext`; and
+- mutable per-execution `AbilityParams.Metamagic`, `CasterLevel`, and
+  `SpellLevel` state.
+
+Descriptor-preserving Powerful Change can compose at the exact
+`ModifiableValue.AddModifier(Modifier)` surface. CotW already owns a priority
+400 prefix there through
+`SpellManipulationMechanics.ModifiableValue_AddModifier_Patch`. Brown-Fur must
+declare deterministic ordering relative to CotW and modify the existing
+`Modifier` value without replacing its source fact or descriptor.
+
+CotW also owns priority 400 patches at these relevant seams:
+
+- `AbilityData.CanTarget(TargetWrapper)` prefix;
+- `AbilityData.TargetAnchor` prefix;
+- `AbilityData.ActionType` postfix;
+- `ContextDurationValue.Calculate(MechanicsContext)` postfix;
+- `AbilityEffectRunAction.Apply(AbilityExecutionContext, TargetWrapper)`
+  prefix and postfix; and
+- `RuleCastSpell.OnTrigger(RulebookEventContext)` postfix.
+
+No installed Harmony patch has a declaring type named `SharedSpells`.
+`SharedSpells` exposes ordinary static helpers and blueprint construction/fixup
+methods instead. The live registry contained 41 relevant CotW cast,
+metamagic, modifier, targeting, and duration patches. Consequently Brown-Fur
+cannot assume that invoking a Shared Spells helper installs an isolated cast
+path; the two helper bodies and their blueprint fixups must be decoded before
+reuse is authorized.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
