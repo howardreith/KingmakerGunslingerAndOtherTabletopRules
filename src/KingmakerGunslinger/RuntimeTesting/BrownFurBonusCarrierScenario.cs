@@ -57,10 +57,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("sourceContextIsCastContext", Order = 13)] public bool SourceContextIsCastContext { get; set; }
             [JsonProperty("buffContextIsCastContext", Order = 14)] public bool BuffContextIsCastContext { get; set; }
             [JsonProperty("isFromSpell", Order = 15)] public bool IsFromSpell { get; set; }
-            [JsonProperty("removed", Order = 16)] public bool Removed { get; set; }
-            [JsonProperty("valueRestored", Order = 17)] public bool ValueRestored { get; set; }
-            [JsonProperty("pass", Order = 18)] public bool Pass { get; set; }
-            [JsonProperty("failure", Order = 19)] public string Failure { get; set; }
+            [JsonProperty("sourceContextIsBuffContext", Order = 16)] public bool SourceContextIsBuffContext { get; set; }
+            [JsonProperty("buffParentIsCastContext", Order = 17)] public bool BuffParentIsCastContext { get; set; }
+            [JsonProperty("contextCasterExact", Order = 18)] public bool ContextCasterExact { get; set; }
+            [JsonProperty("contextAbilityExact", Order = 19)] public bool ContextAbilityExact { get; set; }
+            [JsonProperty("contextTargetExact", Order = 20)] public bool ContextTargetExact { get; set; }
+            [JsonProperty("contextCasterLevel", Order = 21)] public int ContextCasterLevel { get; set; }
+            [JsonProperty("removed", Order = 22)] public bool Removed { get; set; }
+            [JsonProperty("valueRestored", Order = 23)] public bool ValueRestored { get; set; }
+            [JsonProperty("pass", Order = 24)] public bool Pass { get; set; }
+            [JsonProperty("failure", Order = 25)] public string Failure { get; set; }
         }
 
         [JsonObject(MemberSerialization.OptIn)]
@@ -163,7 +169,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.Family == item.Family);
                 Add(assertions, "bonus-carrier-" + item.Family.ToLowerInvariant(),
                     "value=" + item.Value + ";descriptor=" + item.Descriptor +
-                        ";source/context exact;removed/restored",
+                        ";source provenance exact;removed/restored",
                     observed == null ? "missing" : Describe(observed),
                     observed != null && observed.Pass,
                     "real installed spell buff on disposable engine units");
@@ -250,6 +256,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.BuffContextIsCastContext = ReferenceEquals(applied.Context,
                     castContext);
                 result.IsFromSpell = applied.IsFromSpell;
+                result.SourceContextIsBuffContext = modifier != null &&
+                    ReferenceEquals(modifier.Source.MaybeContext,
+                        applied.Context);
+                result.BuffParentIsCastContext = applied.Context != null &&
+                    ReferenceEquals(applied.Context.ParentContext, castContext);
+                result.ContextCasterExact = applied.Context != null &&
+                    ReferenceEquals(applied.Context.MaybeCaster, caster);
+                result.ContextAbilityExact = applied.Context != null &&
+                    ReferenceEquals(applied.Context.SourceAbility, spell);
+                result.ContextTargetExact = applied.Context != null &&
+                    applied.Context.MainTarget.Unit == target;
+                result.ContextCasterLevel = applied.Context == null ||
+                    applied.Context.Params == null ? -1 :
+                    applied.Context.Params.CasterLevel;
             }
             finally
             {
@@ -264,8 +284,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.SourceIsAppliedBuff &&
                 !string.IsNullOrWhiteSpace(result.SourceComponent) &&
                 result.AppliedToStat == item.Stat.ToString() &&
-                result.SourceContextIsCastContext &&
-                result.BuffContextIsCastContext && result.IsFromSpell &&
+                result.SourceContextIsBuffContext &&
+                result.BuffParentIsCastContext &&
+                result.ContextCasterExact && result.ContextAbilityExact &&
+                result.ContextTargetExact && result.ContextCasterLevel == 20 &&
                 result.Removed && result.ValueRestored;
             if (!result.Pass) result.Failure = "carrier-contract-mismatch";
             return result;
@@ -281,7 +303,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.SourceIsAppliedBuff + ";sourceContext=" +
                 value.SourceContextIsCastContext + ";buffContext=" +
                 value.BuffContextIsCastContext + ";spell=" +
-                value.IsFromSpell + ";removed=" + value.Removed +
+                value.IsFromSpell + ";sourceBuffContext=" +
+                value.SourceContextIsBuffContext + ";parent=" +
+                value.BuffParentIsCastContext + ";caster=" +
+                value.ContextCasterExact + ";ability=" +
+                value.ContextAbilityExact + ";target=" +
+                value.ContextTargetExact + ";casterLevel=" +
+                value.ContextCasterLevel + ";removed=" + value.Removed +
                 ";restored=" + value.ValueRestored + ";failure=" +
                 value.Failure;
         }

@@ -269,6 +269,11 @@ namespace KingmakerGunslinger.DomainTests
                 "modifier.Source", "modifier.ModValue",
                 "modifier.ModDescriptor", "modifier.SourceComponent",
                 "modifier.Source.MaybeContext", "applied.Context",
+                "applied.Context.ParentContext",
+                "applied.Context.MaybeCaster",
+                "applied.Context.SourceAbility",
+                "applied.Context.MainTarget.Unit",
+                "applied.Context.Params.CasterLevel",
                 "applied.IsFromSpell", "applied.Remove()",
                 "external-isolation" })
                 Assertions.True(bonusCarrierScenario.Contains(token) ||
