@@ -75,3 +75,35 @@ Runtime evidence is pending an immutable commit and exact-artifact deployment.
 The visual mapping, asset variants, semantic markers, fit experiments, bundle
 measurements, screenshots, residual clipping table, final commit list, and human
 acceptance status will be appended in their respective coherent workstreams.
+
+## Workstream B — complete pre-authoring visual audit
+
+The deterministic generator `scripts/generate_weapon_visual_audit.py` produces:
+
+- `docs/WEAPON-VISUAL-MAPPING-AUDIT.md`;
+- `docs/weapon-visual-mapping-audit.json`.
+
+Coverage is the complete active manifest set: 68/68 `BlueprintItemWeapon`
+identities and GUIDs. This consists of 56 equipped player/development weapons,
+two unowned Pistol-Whip rule-event items, and ten Expanded Summoning
+creature-weapon identities. The latter twelve are explicit preserve-only
+exclusions rather than silently omitted cosmetic targets.
+
+The audit records every required identity, family/type, inherited item and type
+visual, effective prefab, source FBX/archive, Blender source and generator,
+animation donor/style, grip contract, material, bundle, provenance/license,
+many-to-one group, proposed variant, clipping concern, and tier. Weapon-type
+symbols and GUIDs are exact for project types; runtime native donor types are
+identified explicitly where the project intentionally owns no replacement type.
+
+The proposed vocabulary is exact by blueprint identity and bounded to five or
+fewer variants per family. Enhancement increments alone do not force a distinct
+mesh. Two consecutive clean generations matched:
+
+- JSON SHA-256:
+  `F05A8F1BDB7CC4CD6884EFB769F458A187D63533C3C52306FA882E09DE0AA669`;
+- Markdown SHA-256:
+  `F03C94922ECA750A179B6731D6FF541F2A11CF47D56CBE6CBED9D8537E57B8D7`.
+
+Focused audit tests and the complete dependency-free suite pass 1,053/1,053.
+No game process was launched for this documentation/audit-only workstream.

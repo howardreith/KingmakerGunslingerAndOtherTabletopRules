@@ -1,0 +1,129 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json.Linq;
+
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class WeaponVisualMappingAuditTests
+    {
+        internal static void CoversEveryActiveCustomWeaponIdentity()
+        {
+            JObject manifest = Parse("blueprints", "blueprints.json");
+            JObject audit = Parse("docs", "weapon-visual-mapping-audit.json");
+            JToken[] expected = manifest["entries"].Where(value =>
+                (string)value["plannedType"] == "BlueprintItemWeapon" &&
+                (string)value["status"] == "active").ToArray();
+            JToken[] actual = audit["items"].ToArray();
+            Assertions.Equal(68, expected.Length,
+                "The active custom-weapon baseline changed without an audit update.");
+            Assertions.Equal(expected.Length, actual.Length,
+                "The visual audit does not cover every active custom weapon.");
+            string[] expectedIdentities = expected.Select(value =>
+                    (string)value["symbol"] + "|" + (string)value["guid"])
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            string[] actualIdentities = actual.Select(value =>
+                    (string)value["symbolicIdentity"] + "|" +
+                    (string)value["assetGuid"])
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            Assertions.True(expectedIdentities.SequenceEqual(actualIdentities),
+                "The machine-readable audit changed or omitted a saved blueprint identity.");
+
+            string markdown = Read("docs", "WEAPON-VISUAL-MAPPING-AUDIT.md");
+            foreach (string symbol in expected.Select(value =>
+                (string)value["symbol"]))
+                Assertions.True(markdown.Contains(symbol),
+                    "The narrative audit omitted " + symbol + ".");
+        }
+
+        internal static void RecordsEveryRequiredVisualContract()
+        {
+            JObject audit = Parse("docs", "weapon-visual-mapping-audit.json");
+            string[] required = {
+                "symbolicIdentity", "assetGuid", "displayedName",
+                "familyOrFirearmKind", "weaponType", "weaponTypeAssetGuid",
+                "currentItemLevelVisual", "currentTypeLevelVisual",
+                "effectiveEquippedPrefab", "sourceFbx", "sourceBlend",
+                "deterministicGenerator", "animationDonorStyle",
+                "gripHandednessContract", "currentMaterial", "currentBundle",
+                "sourceLicenseProvenance", "currentManyToOneVisualGroup",
+                "proposedVisualVariant", "clippingOrientationConcerns", "tier",
+                "mappingScope"
+            };
+            foreach (JToken item in audit["items"])
+                foreach (string field in required)
+                    Assertions.True(item[field] != null &&
+                        !string.IsNullOrWhiteSpace((string)item[field]),
+                        (string)item["symbolicIdentity"] +
+                        " lacks required audit field " + field + ".");
+
+            Assertions.Equal(56, audit["items"].Count(value =>
+                (string)value["mappingScope"] == "equipped project weapon"),
+                "Equipped custom-weapon audit scope changed.");
+            Assertions.Equal(2, audit["items"].Count(value =>
+                (string)value["mappingScope"] == "mechanics-only exclusion"),
+                "Pistol-Whip preserve-only scope changed.");
+            Assertions.Equal(10, audit["items"].Count(value =>
+                (string)value["mappingScope"] == "summoning-only exclusion"),
+                "Expanded Summoning weapon scope changed.");
+            Assertions.True(audit["items"].Where(value =>
+                    (string)value["mappingScope"] == "equipped project weapon")
+                .All(value => (string)value["proposedVisualVariant"] !=
+                    "not applicable"),
+                "An equipped project weapon lacks an explicit proposed variant.");
+        }
+
+        internal static void VariantVocabularyIsBoundedAndFamilySafe()
+        {
+            JObject audit = Parse("docs", "weapon-visual-mapping-audit.json");
+            JToken[] equipped = audit["items"].Where(value =>
+                (string)value["mappingScope"] == "equipped project weapon").ToArray();
+            var expectedCounts = new Dictionary<string, int>(StringComparer.Ordinal)
+            {
+                { "Pistol", 4 }, { "Musket", 5 }, { "Blunderbuss", 3 },
+                { "Rifle", 1 }, { "Revolver", 1 },
+                { "Elven Branched Spear", 12 }, { "Wakizashi", 10 },
+                { "Katana", 10 }, { "Nodachi", 10 }
+            };
+            foreach (KeyValuePair<string, int> pair in expectedCounts)
+                Assertions.Equal(pair.Value, equipped.Count(value =>
+                    (string)value["familyOrFirearmKind"] == pair.Key),
+                    "Visual audit family count changed for " + pair.Key + ".");
+
+            foreach (IGrouping<string, JToken> family in equipped.GroupBy(value =>
+                (string)value["familyOrFirearmKind"]))
+            {
+                int variants = family.Select(value =>
+                    (string)value["proposedVisualVariant"]).Distinct().Count();
+                Assertions.True(variants <= 5,
+                    family.Key + " exceeds the bounded five-variant vocabulary.");
+                if (family.Count() >= 3)
+                    Assertions.True(variants >= 2,
+                        family.Key + " lacks meaningful proposed variety.");
+                Assertions.True(family.All(value =>
+                    ((string)value["proposedVisualVariant"]).StartsWith(
+                        family.Key.Replace(" ", string.Empty),
+                        StringComparison.Ordinal) ||
+                    family.Key == "Elven Branched Spear" &&
+                    ((string)value["proposedVisualVariant"]).StartsWith(
+                        "ElvenBranchedSpear", StringComparison.Ordinal)),
+                    family.Key + " contains a cross-family proposed variant.");
+            }
+            Assertions.Equal("exact deterministic blueprint identity; no runtime randomness or transient state",
+                (string)audit["mappingPolicy"],
+                "Deterministic variant authority changed.");
+        }
+
+        private static JObject Parse(params string[] parts)
+        { return JObject.Parse(Read(parts)); }
+
+        private static string Read(params string[] parts)
+        {
+            string path = Environment.CurrentDirectory;
+            for (int index = 0; index < parts.Length; index++)
+                path = Path.Combine(path, parts[index]);
+            return File.ReadAllText(path);
+        }
+    }
+}
