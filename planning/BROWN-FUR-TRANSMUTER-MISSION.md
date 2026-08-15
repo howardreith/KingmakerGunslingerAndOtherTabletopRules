@@ -100,3 +100,12 @@ not sufficient for Brown-Fur's authorized party, controlled-creature, summon,
 and friendly-ally contract. Share Transmutation will use a separate
 owner-scoped execution adapter with deterministic CotW patch ordering. No
 player-facing archetype or targeting change is active yet.
+
+The follow-up targeting-body probe passed all 13 guarded assertions on commit
+`3f85642168d47998186860e36ac9ccff8d8de0fe`. CotW priority-400 prefixes fully
+replace `AbilityData.TargetAnchor` and `AbilityData.CanTarget`, and their
+Personal-spell branches call the same narrow Shared Spells helpers. Brown-Fur
+will therefore compose through exact after-CotW postfix result overrides for
+a validated per-cast identity, leaving every unmatched query unchanged. The
+native approach-distance and delivery bodies remain the next investigation
+gate; the archetype remains reserved and unpublished.

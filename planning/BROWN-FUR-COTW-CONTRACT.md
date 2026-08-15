@@ -155,6 +155,29 @@ execution-scoped target/range adapter ordered deterministically after CotW;
 it must reuse native cast delivery without granting or consulting CotW's
 animal-companion or Bonded Mind features.
 
+The targeting-prefix extension passed all 13 guarded assertions on commit
+`3f85642168d47998186860e36ac9ccff8d8de0fe`. The built and installed DLL
+SHA-256 was
+`868326E4CF6812BD982D4FC4CB45AC8D589B2A86A9120F1BB03DEB0FC44F9C86`, its
+MVID was `4facb5c3-ec6c-49e2-bef8-5fcead591f65`, and the structured contract
+artifact SHA-256 was
+`563B00E7AD007CA9A7ED6E0672C4BA6F99C19F15DBC899827947945F6C2D4352`.
+
+CotW's priority-400 `AbilityData.TargetAnchor` prefix always skips the native
+getter. For a Personal-range spell it returns a unit anchor only when
+`AlchemistInfusion` or CotW's `canShareSpell` succeeds. CotW's priority-400
+`AbilityData.CanTarget` prefix likewise always skips the native method; after
+ordinary target checkers and self-only/metamagic gates, a Personal spell with
+a unit anchor delegates the final result to CotW's
+`isValidShareSpellTarget` helper.
+
+An after-CotW prefix is not a safe composition point because CotW has already
+requested the original method be skipped. Brown-Fur must use exact postfixes
+that replace only the result for an already validated, exact `AbilityData`,
+caster, and target scope. An unmatched query must retain CotW's result. The
+native approach-distance and command-delivery bodies still require inspection
+before Touch and exact-30-foot behavior can be authorized.
+
 The modifier-provenance extension of this scenario passed all 11 assertions on
 commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
 package SHA-256 was
