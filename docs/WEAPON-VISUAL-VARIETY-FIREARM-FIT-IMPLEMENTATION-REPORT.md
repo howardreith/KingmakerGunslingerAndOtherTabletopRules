@@ -101,9 +101,69 @@ fewer variants per family. Enhancement increments alone do not force a distinct
 mesh. Two consecutive clean generations matched:
 
 - JSON SHA-256:
-  `F05A8F1BDB7CC4CD6884EFB769F458A187D63533C3C52306FA882E09DE0AA669`;
+  `7969E03980FEE42CA000AA561F07C72401AD24AC786C1134C7FF86EB6FF51AA4`;
 - Markdown SHA-256:
-  `F03C94922ECA750A179B6731D6FF541F2A11CF47D56CBE6CBED9D8537E57B8D7`.
+  `6D7FD2CAA36E672BDD4514928C46475D43F1CD5E54E434412CCE453CC53390F2`.
 
 Focused audit tests and the complete dependency-free suite pass 1,053/1,053.
 No game process was launched for this documentation/audit-only workstream.
+
+## Workstream D — unmistakable Elven Branched Spear geometry
+
+The project-owned Blender generator now produces a bounded three-variant visual
+vocabulary without changing any item, type, category, proficiency, effect, or
+save identity:
+
+- `ElvenBranchedSpear.ClassicBranch`: two separated backward-swept prongs;
+- `ElvenBranchedSpear.ThornBranch`: three staggered prongs;
+- `ElvenBranchedSpear.CrownBranch`: four balanced prongs.
+
+All branches have physical thickness, their tips are laterally separated from
+the central blade, and every branch begins above the 1.47 m shaft-grip exclusion
+boundary. The grip remains at the origin, support target at +0.48 m, butt at
+-0.915 m, and central tip at +2.01 m on the preserved +Z weapon axis.
+
+Exact deterministic FBX identities:
+
+- classic: `80773756F2C403D8569FE811B049FC3B53AE1399FA83446A70710AF1F69833E5`;
+- thorn: `2BE981892A5C08E96A018FC5CC9188311128725B5BB0FC545DA12E298205734F`;
+- crown: `0FAF504CFDD5290E71993A484A77874AEEB2CB01B38174CC7635F716C345D99B`.
+
+Two independent Blender 4.5.10 LTS runs produced byte-identical FBXs and
+normalized source/runtime PNGs. Stable exporter UUIDs are SHA-256-derived; the
+unused nondeterministic UV pack was removed. Blender's `.blend` container is
+semantically regenerated but not falsely claimed byte-stable because Blender
+embeds session metadata.
+
+The exact Unity 2018.4.10f1 builder produced three prefabs:
+`ElvenBranchedSpear`, `ElvenBranchedSpearThorn`, and
+`ElvenBranchedSpearCrown`. Two unchanged-input builds matched exactly at 111,659
+bytes and SHA-256
+`6E9FE86E43072361EEC3357D9C73E17ADD71D22BAF257FB8C7ED6F52931CE777`.
+The baseline was 87,627 bytes, so the bounded variants add 24,032 bytes. The
+source set contains 45 mesh objects, 2,700 triangles, 15 material definitions,
+and no texture asset.
+
+`WeaponVisualVariantCatalog` is the centralized exact-symbol authority. All 12
+spear item blueprints receive an inherited private `m_VisualParameters`
+override through recursive field access; the weapon type retains the classic
+custom/native Longspear fallback. The runtime loader rejects a missing,
+duplicate, partial, nonrenderable, or implausible three-prefab set
+transactionally. The combat observer now requires all 12 exact item mappings,
+instantiates all three prefabs, validates anchors, and cleans every instance.
+
+Automated evidence:
+
+- repository/source validation: PASS;
+- complete dependency-free suite: PASS, 1,054/1,054;
+- clean exact-reference Release build and output validation: PASS;
+- deterministic package creation and strict standalone validation: PASS;
+- package SHA-256:
+  `0856BFFE80EC513C1B69059BD4D9584E490E606F8951BB18E62CE1EFDB1DC13D`;
+- DLL SHA-256:
+  `DD2FF53B35F52C81CA84C8E5779419F52072D35914E669C257EBA39605300483`;
+- DLL MVID: `cc6b28dc-492d-46c6-a464-85dd90e0342b`.
+
+Runtime combat/idle/switch/save-load regression and human visual acceptance are
+pending the mission's final immutable candidate. No in-game screenshot or
+subjective clipping/readability PASS is asserted by automation.

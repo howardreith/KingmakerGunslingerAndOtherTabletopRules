@@ -840,7 +840,7 @@
       "currentBundle": "kingmakergunslinger.elvenbranchedspear",
       "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
       "currentManyToOneVisualGroup": "ElvenBranchedSpear.SingleBaseline",
-      "proposedVisualVariant": "ElvenBranchedSpear.MoonFork",
+      "proposedVisualVariant": "ElvenBranchedSpear.ThornBranch",
       "clippingOrientationConcerns": "branches must be unmistakable and remain outside both hands, forearms, torso, and shaft grip region",
       "mappingScope": "equipped project weapon",
       "weaponTypeAssetGuid": "77f72b0febaf212a5650e7193c00361f"
@@ -864,7 +864,7 @@
       "currentBundle": "kingmakergunslinger.elvenbranchedspear",
       "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
       "currentManyToOneVisualGroup": "ElvenBranchedSpear.SingleBaseline",
-      "proposedVisualVariant": "ElvenBranchedSpear.MoonFork",
+      "proposedVisualVariant": "ElvenBranchedSpear.CrownBranch",
       "clippingOrientationConcerns": "branches must be unmistakable and remain outside both hands, forearms, torso, and shaft grip region",
       "mappingScope": "equipped project weapon",
       "weaponTypeAssetGuid": "77f72b0febaf212a5650e7193c00361f"
@@ -888,7 +888,7 @@
       "currentBundle": "kingmakergunslinger.elvenbranchedspear",
       "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
       "currentManyToOneVisualGroup": "ElvenBranchedSpear.SingleBaseline",
-      "proposedVisualVariant": "ElvenBranchedSpear.BriarCrown",
+      "proposedVisualVariant": "ElvenBranchedSpear.CrownBranch",
       "clippingOrientationConcerns": "branches must be unmistakable and remain outside both hands, forearms, torso, and shaft grip region",
       "mappingScope": "equipped project weapon",
       "weaponTypeAssetGuid": "77f72b0febaf212a5650e7193c00361f"
@@ -912,7 +912,7 @@
       "currentBundle": "kingmakergunslinger.elvenbranchedspear",
       "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
       "currentManyToOneVisualGroup": "ElvenBranchedSpear.SingleBaseline",
-      "proposedVisualVariant": "ElvenBranchedSpear.FirstBranch",
+      "proposedVisualVariant": "ElvenBranchedSpear.CrownBranch",
       "clippingOrientationConcerns": "branches must be unmistakable and remain outside both hands, forearms, torso, and shaft grip region",
       "mappingScope": "equipped project weapon",
       "weaponTypeAssetGuid": "77f72b0febaf212a5650e7193c00361f"

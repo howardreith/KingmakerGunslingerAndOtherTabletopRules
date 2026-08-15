@@ -84,7 +84,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintUnit hostileSource = null;
             ItemEntityWeapon equipped = null;
             var facts = new List<BlueprintUnitFact>();
-            GameObject presentation = null;
+            var presentations = new List<GameObject>();
             BlueprintFeature secondFinesseTraining = null;
             bool cleaned = false;
             string stage = "create-live-fixture";
@@ -111,19 +111,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 12;
 
                 stage = "custom-presentation";
-                presentation = ElvenBranchedSpearAssetRuntime.InstantiatePrefab();
-                bool presentationExact = presentation != null &&
-                    presentation.transform.Find("Visual") != null &&
-                    presentation.transform.Find("Grip") != null &&
-                    presentation.transform.Find("SupportHandTarget") != null &&
-                    presentation.transform.Find("Tip") != null &&
-                    presentation.transform.Find("Butt") != null;
+                foreach (string variant in new[] {
+                    WeaponVisualVariantCatalog.SpearClassic,
+                    WeaponVisualVariantCatalog.SpearThorn,
+                    WeaponVisualVariantCatalog.SpearCrown })
+                    presentations.Add(ElvenBranchedSpearAssetRuntime
+                        .InstantiatePrefab(variant));
+                bool presentationExact = presentations.Count == 3 &&
+                    presentations.All(value => value != null &&
+                        value.transform.Find("Visual") != null &&
+                        value.transform.Find("Grip") != null &&
+                        value.transform.Find("SupportHandTarget") != null &&
+                        value.transform.Find("Tip") != null &&
+                        value.transform.Find("Butt") != null);
                 Add(assertions, "spear-custom-presentation",
-                    "one validated custom prefab with all semantic anchors",
+                    "three validated custom prefabs with all semantic anchors",
                     ElvenBranchedSpearAssetRuntime.Status,
                     ElvenBranchedSpearAssetRuntime.HasValidatedPrefab &&
                         presentationExact,
                     "dedicated AssetBundle runtime and instantiated GameObject");
+                var mappedItems = new List<KeyValuePair<string,
+                    BlueprintItemWeapon>>();
+                mappedItems.AddRange(set.Entries.Select(value =>
+                    new KeyValuePair<string, BlueprintItemWeapon>(
+                        value.Spec.Symbol, value.Item)));
+                mappedItems.AddRange(set.Named.Entries.Select(value =>
+                    new KeyValuePair<string, BlueprintItemWeapon>(
+                        value.Spec.Symbol, value.Item)));
+                bool itemVisualsExact = mappedItems.Count == 12 &&
+                    mappedItems.All(value => ElvenBranchedSpearAssetRuntime
+                        .HasExactVisual(value.Value, value.Key));
+                Add(assertions, "spear-exact-item-visual-mapping",
+                    "all 12 saved item blueprints use their exact approved deterministic variant",
+                    string.Join(";", mappedItems.Select(value => value.Key +
+                        "=" + WeaponVisualVariantCatalog.Require(value.Key))
+                        .ToArray()), itemVisualsExact,
+                    "recursive inherited BlueprintItemWeapon.m_VisualParameters and exact prefab references");
 
                 stage = "proficiency";
                 equipped = Equip(attacker, set.Require(
@@ -498,8 +521,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (presentation != null)
-                    UnityEngine.Object.DestroyImmediate(presentation);
+                foreach (GameObject presentation in presentations)
+                    if (presentation != null)
+                        UnityEngine.Object.DestroyImmediate(presentation);
                 if (attacker != null)
                 {
                     attacker.Commands.InterruptAll(true);

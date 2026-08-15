@@ -1,58 +1,54 @@
 # Elven Branched Spear asset provenance
 
-The Elven Branched Spear mesh and icon are original project-owned works created
-for this repository on 2026-08-13. They do not use Paizo, Owlcat, marketplace,
-or other third-party artwork. No donor archive was present under the optional
-`asset-sources/elven-branched-spear` path, so no third-party license or
-attribution applies. The repository license governs these files.
+The Elven Branched Spear meshes and icon are original project-owned works
+created for this repository. They do not use Paizo, Owlcat, marketplace,
+downloaded, traced, or generative artwork. The repository license governs every
+file in `assets-source/original-models/elven-branched-spear`.
 
-The design comes only from the mission's textual silhouette: a slender
-two-handed shaft, long central leaf point, three staggered forward-raked leaf
-branches, restrained blue-metal inlay, and proportions suitable for an
-isometric game. It does not claim to be an official Pathfinder or Owlcat asset.
+The 2026-08-15 cleanup creates three reusable silhouettes from the mission's
+textual design authority: a slender two-handed shaft and central leaf blade with
+two, three, or four physically separated backward-swept prongs. The prongs have
+real thickness and lateral separation, remain above the 1.47 m shaft-grip
+exclusion boundary, and are intentionally readable at isometric scale.
 
 ## Reproducible source
 
 - Generator: `assets-source/original-models/elven-branched-spear/generate_elven_branched_spear.py`
 - Blender source: `elven-branched-spear.blend`
-- Export: `elven-branched-spear.fbx`
+- FBXs: `elven-branched-spear.fbx`, `elven-branched-spear-thorn.fbx`, and
+  `elven-branched-spear-crown.fbx`
 - Source render: `elven-branched-spear-icon.png`
 - Machine-readable report: `elven-branched-spear-build-report.json`
 - Blender version: 4.5.10 LTS
-- Geometry: 15 mesh objects, 900 triangles
+- Geometry: 45 mesh objects and 2,700 triangles across three variants
 - Coordinate contract: metric; grip at origin; point along +Z
-- Bounds contract: butt -0.915 m, point +2.01 m, maximum width 0.26 m
+- Bounds contract: butt -0.915 m, point +2.01 m
+- Unity prefabs: `ElvenBranchedSpear`, `ElvenBranchedSpearThorn`, and
+  `ElvenBranchedSpearCrown`
 
 SHA-256:
 
-- generator: `47A4069B86799CBEBC844909FF82CFE38D22E70B1993CBAE686C19BF57F73B75`
-- Blender source: `20CEEE2571D2515432E53AD3E6D9976C798C6AD53CEC5E220B5FFD4CA60A6D33`
-- FBX: `8A79B5FE83285BA8D95B4111008A9C2E330DC61BFE4BA7CC2212D0C7CB25474B`
-- 512px source icon: `7133B7536A78BD6A1712DBEA02FFAD49901957F2F73D05C083EE2F9F8FFA652A`
-- 128px runtime icon: `FD3B3675E647681E1FCADD440DF8C22F8FE0F57442A249203C9ACD080EBA2EB8`
+- generator: `301EEA4C1C91D561CC0E77177713DECF3865B0DF3BB0D984DD73E1CF25A5386A`
+- classic FBX: `80773756F2C403D8569FE811B049FC3B53AE1399FA83446A70710AF1F69833E5`
+- thorn FBX: `2BE981892A5C08E96A018FC5CC9188311128725B5BB0FC545DA12E298205734F`
+- crown FBX: `0FAF504CFDD5290E71993A484A77874AEEB2CB01B38174CC7635F716C345D99B`
+- 512px source icon: `3F0EC4182B48F6CF8A4C19D70101B84E6B9AAB5FAA4556CD6D8B043897F142F7`
+- 128px runtime icon: `9E959D51A39C3F171403975913CD049C2CB2DE2D7D394F8CC53E71717AF2F8BB`
+- Unity bundle: `6E9FE86E43072361EEC3357D9C73E17ADD71D22BAF257FB8C7ED6F52931CE777`
 
-The first Eastern Weapons human-playtest repair re-rendered only this icon at
-a measured 42 degrees above horizontal (tip upper-right, butt lower-left).
-The accepted FBX remains `8A79...474B` and the spear bundle remains
-`3AB5...0EBE`; equipped geometry, anchors, scale, and materials did not change.
-- Unity bundle: `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`
+Two clean Blender runs produced byte-identical FBXs and normalized PNGs. Two
+unchanged-input Unity 2018.4.10f1 builds produced the same 111,659-byte bundle.
+The `.blend` binary is deliberately not claimed byte-stable because Blender
+embeds session metadata; regenerating it produces the same authored object and
+geometry contract. The generator's build report records the current container
+hash and this limitation.
 
-No manual mesh modifications were made after generation. The only derivative
-operation outside Blender was deterministic high-quality downscaling of the
-transparent 512px render to the project's native 128px inventory-icon size.
+The previous single-prefab bundle was 87,627 bytes; the three-prefab bundle is
+111,659 bytes, an increase of 24,032 bytes. It contains three prefabs, 45 source
+mesh objects, 15 material definitions, and no texture asset. Growth is explained
+by the two additional geometry/material variants.
 
-## First-playtest visual assessment
-
-The human playtest accepted the custom spear silhouette, equipped scale, grip,
-hand/body alignment, reach presentation, and the tested character's lack of
-material clipping. Those observations are regression contracts.
-
-Named variants currently share the same fit-proven weapon type, prefab, and
-material. Per-item equipped-material differentiation would require splitting
-the shared weapon type or introducing an item-level renderer mutation path.
-Either option would add save/presentation complexity and risk the accepted rig.
-Because differentiation is optional polish, this repair leaves the proven
-geometry and material unchanged. The named items remain mechanically and
-textually distinct and use the coherent spear icon family. A future visual-only
-pass may add validated serialized prefabs without changing blueprint or weapon
-category identities.
+Existing item, weapon-type, proficiency, effect, category, placement, and save
+identities are unchanged. Runtime maps exact item symbols to approved variants
+and retains the classic type-level/native Longspear fallback. Human in-game
+acceptance of branch readability and clipping remains a separate gate.

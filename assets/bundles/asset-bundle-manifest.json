@@ -22,9 +22,13 @@
     },
     {
       "name": "kingmakergunslinger.elvenbranchedspear",
-      "sha256": "3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE",
-      "prefabs": ["ElvenBranchedSpear"],
-      "sourceFbxSha256": "8A79B5FE83285BA8D95B4111008A9C2E330DC61BFE4BA7CC2212D0C7CB25474B",
+      "sha256": "6E9FE86E43072361EEC3357D9C73E17ADD71D22BAF257FB8C7ED6F52931CE777",
+      "prefabs": ["ElvenBranchedSpear", "ElvenBranchedSpearThorn", "ElvenBranchedSpearCrown"],
+      "sourceFbxSha256": {
+        "ElvenBranchedSpear": "80773756F2C403D8569FE811B049FC3B53AE1399FA83446A70710AF1F69833E5",
+        "ElvenBranchedSpearThorn": "2BE981892A5C08E96A018FC5CC9188311128725B5BB0FC545DA12E298205734F",
+        "ElvenBranchedSpearCrown": "0FAF504CFDD5290E71993A484A77874AEEB2CB01B38174CC7635F716C345D99B"
+      },
       "originalAsset": true
     },
     {

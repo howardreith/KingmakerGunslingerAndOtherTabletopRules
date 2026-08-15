@@ -1,11 +1,25 @@
 {
   "blenderVersion": "4.5.10 LTS",
+  "branchContract": "physical backward-swept prongs with separated lateral tips outside the shaft grip region",
+  "determinism": {
+    "blendContainer": "Semantically regenerated; Blender session metadata prevents byte-identical .blend containers.",
+    "byteStableOutputs": [
+      "elven-branched-spear.fbx",
+      "elven-branched-spear-thorn.fbx",
+      "elven-branched-spear-crown.fbx",
+      "elven-branched-spear-icon.png",
+      "assets/game/icons/elven-branched-spear.png"
+    ],
+    "fbxStabilization": "SHA-256-derived exporter UUIDs; unused nondeterministic UV packing omitted.",
+    "pngStabilization": "Rendered pixels preserved; Blender session metadata chunks removed.",
+    "verifiedCleanRuns": 2
+  },
   "dimensionsMeters": {
     "buttZ": -0.915,
-    "maximumWidth": 0.26,
+    "shaftGripExclusionMaxZ": 1.47,
     "tipZ": 2.01
   },
-  "equippedExportContract": "icon-only default preserves accepted FBX SHA-256; render-only camera roll",
+  "equippedExportContract": "three identity roots exported before render-only camera/light creation",
   "generator": "generate_elven_branched_spear.py",
   "iconRender": {
     "background": "transparent RGBA",
@@ -24,30 +38,196 @@
     "tipDirection": "upper-right"
   },
   "license": "Original project-owned asset; repository license applies",
-  "meshObjects": 15,
+  "meshObjects": 45,
   "outputs": {
+    "elven-branched-spear-crown.fbx": {
+      "bytes": 79836,
+      "sha256": "0faf504cfdd5290e71993a484a77874aeeb2cb01b38174cc7635f716c345d99b"
+    },
     "elven-branched-spear-icon.png": {
-      "bytes": 79636,
-      "sha256": "34a09a044e1f14284dec55afdff4db7d58451d40a1949f84e0b1d327330dc09c"
+      "bytes": 78935,
+      "sha256": "3f0ec4182b48f6cf8a4c19d70101b84e6b9aab5faa4556cd6d8b043897f142f7"
+    },
+    "elven-branched-spear-thorn.fbx": {
+      "bytes": 71900,
+      "sha256": "2be981892a5c08e96a018fc5cc9188311128725b5bb0fc545da12e298205734f"
     },
     "elven-branched-spear.blend": {
-      "bytes": 584111,
-      "sha256": "c9faa6691c9fcbe3253ca62a14075c76bb320bc3cf8259a73eec39168cadfb06"
+      "bytes": 934433,
+      "sha256": "9e0d27d68ef5aa8a90a2a8b4660f4e0bdcdc7693c5aca21bd62fbd6f7cb3144b"
     },
     "elven-branched-spear.fbx": {
-      "bytes": 78012,
-      "sha256": "8a79b5fe83285ba8d95b4111008a9c2e330dc61bfe4ba7cc2212d0c7cb25474b"
+      "bytes": 62844,
+      "sha256": "80773756f2c403d8569fe811b049fc3b53ae1399fa83446a70710af1f69833e5"
     },
     "elven-branched-spear.png": {
-      "bytes": 7039,
-      "sha256": "fd3b3675e647681e1fcadd440df8c22f8fe0f57442a249203c9acd080eba2eb8"
+      "bytes": 5938,
+      "sha256": "9e959d51a39c3f171403975913cd049c2cb2de2d7d394f8cc53e71717af2f8bb"
     },
     "generate_elven_branched_spear.py": {
-      "bytes": 11738,
-      "sha256": "7b5257f4d7d6c61a65d207c3470d97e06f1e8fb6b3ea716a8c9d905fa1ce71ce"
+      "bytes": 16519,
+      "sha256": "301eea4c1c91d561cc0e77177713decf3865b0df3bb0d984dd73e1cf25a5386a"
     }
   },
-  "schemaVersion": 1,
-  "sourceCoordinateContract": "+Z tip; grip origin; metric",
-  "triangles": 900
+  "schemaVersion": 2,
+  "sourceCoordinateContract": "+Z central tip; primary grip origin; metric",
+  "triangles": 2700,
+  "variants": {
+    "classic": {
+      "branchCount": 2,
+      "branches": [
+        {
+          "base": [
+            -0.03,
+            0.0,
+            1.62
+          ],
+          "length": 0.35,
+          "name": "LeftLow",
+          "tip": [
+            -0.327374,
+            0.0,
+            1.435423
+          ],
+          "width": 0.06
+        },
+        {
+          "base": [
+            0.03,
+            0.0,
+            1.7
+          ],
+          "length": 0.32,
+          "name": "RightHigh",
+          "tip": [
+            0.310927,
+            0.0,
+            1.546767
+          ],
+          "width": 0.057
+        }
+      ],
+      "fbx": "elven-branched-spear.fbx",
+      "prefab": "ElvenBranchedSpear"
+    },
+    "crown": {
+      "branchCount": 4,
+      "branches": [
+        {
+          "base": [
+            -0.032,
+            0.0,
+            1.56
+          ],
+          "length": 0.39,
+          "name": "LeftLow",
+          "tip": [
+            -0.365797,
+            0.023843,
+            1.359722
+          ],
+          "width": 0.063
+        },
+        {
+          "base": [
+            0.032,
+            0.0,
+            1.6
+          ],
+          "length": 0.39,
+          "name": "RightLow",
+          "tip": [
+            0.365797,
+            -0.023843,
+            1.399722
+          ],
+          "width": 0.063
+        },
+        {
+          "base": [
+            -0.025,
+            0.008,
+            1.75
+          ],
+          "length": 0.29,
+          "name": "LeftHigh",
+          "tip": [
+            -0.292937,
+            -0.041618,
+            1.650764
+          ],
+          "width": 0.05
+        },
+        {
+          "base": [
+            0.025,
+            -0.008,
+            1.79
+          ],
+          "length": 0.29,
+          "name": "RightHigh",
+          "tip": [
+            0.292937,
+            0.041618,
+            1.690764
+          ],
+          "width": 0.05
+        }
+      ],
+      "fbx": "elven-branched-spear-crown.fbx",
+      "prefab": "ElvenBranchedSpearCrown"
+    },
+    "thorn": {
+      "branchCount": 3,
+      "branches": [
+        {
+          "base": [
+            -0.028,
+            0.0,
+            1.58
+          ],
+          "length": 0.37,
+          "name": "LeftLow",
+          "tip": [
+            -0.347961,
+            0.02424,
+            1.39578
+          ],
+          "width": 0.056
+        },
+        {
+          "base": [
+            0.028,
+            0.0,
+            1.67
+          ],
+          "length": 0.34,
+          "name": "RightMid",
+          "tip": [
+            0.329636,
+            -0.01946,
+            1.514317
+          ],
+          "width": 0.054
+        },
+        {
+          "base": [
+            -0.022,
+            0.004,
+            1.76
+          ],
+          "length": 0.25,
+          "name": "LeftHigh",
+          "tip": [
+            -0.246702,
+            -0.03345,
+            1.657012
+          ],
+          "width": 0.046
+        }
+      ],
+      "fbx": "elven-branched-spear-thorn.fbx",
+      "prefab": "ElvenBranchedSpearThorn"
+    }
+  }
 }

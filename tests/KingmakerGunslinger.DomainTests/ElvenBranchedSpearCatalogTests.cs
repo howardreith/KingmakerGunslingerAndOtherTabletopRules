@@ -482,26 +482,39 @@ namespace KingmakerGunslinger.DomainTests
                 "generate_elven_branched_spear.py"));
             string report = File.ReadAllText(Path.Combine(sourceRoot,
                 "elven-branched-spear-build-report.json"));
-            Assertions.True(script.Contains("branches = [") &&
+            Assertions.True(script.Contains("VARIANTS = {") &&
                 script.Contains("bpy.ops.export_scene.fbx") &&
                 script.Contains("bpy.ops.wm.save_as_mainfile") &&
                 script.Contains("scene.render.film_transparent = True") &&
                 script.Contains("ICON_RENDER_ANGLE_DEGREES = 42.0") &&
                 script.Contains("PYTHONHASHSEED") &&
+                script.Contains("stable_uuid") &&
+                script.Contains("normalize_png") &&
                 report.Contains("\"tipDirection\": \"upper-right\"") &&
                 report.Contains("\"buttDirection\": \"lower-left\"") &&
                 report.Contains("\"targetAngleDegrees\": 42.0") &&
-                report.Contains("\"triangles\": 900") &&
+                report.Contains("\"triangles\": 2700") &&
+                report.Contains("\"branchCount\": 2") &&
+                report.Contains("\"branchCount\": 3") &&
+                report.Contains("\"branchCount\": 4") &&
                 report.Contains("Original project-owned asset"),
                 "Original Blender source is not deterministic and documented.");
-            Assertions.Equal("8A79B5FE83285BA8D95B4111008A9C2E330DC61BFE4BA7CC2212D0C7CB25474B",
+            Assertions.Equal("80773756F2C403D8569FE811B049FC3B53AE1399FA83446A70710AF1F69833E5",
                 Sha256(Path.Combine(sourceRoot, "elven-branched-spear.fbx")),
-                "Generated spear FBX hash changed.");
-            Assertions.Equal("3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE",
+                "Generated classic spear FBX hash changed.");
+            Assertions.Equal("2BE981892A5C08E96A018FC5CC9188311128725B5BB0FC545DA12E298205734F",
+                Sha256(Path.Combine(sourceRoot,
+                    "elven-branched-spear-thorn.fbx")),
+                "Generated thorn spear FBX hash changed.");
+            Assertions.Equal("0FAF504CFDD5290E71993A484A77874AEEB2CB01B38174CC7635F716C345D99B",
+                Sha256(Path.Combine(sourceRoot,
+                    "elven-branched-spear-crown.fbx")),
+                "Generated crown spear FBX hash changed.");
+            Assertions.Equal("6E9FE86E43072361EEC3357D9C73E17ADD71D22BAF257FB8C7ED6F52931CE777",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.elvenbranchedspear")),
                 "Dedicated spear bundle hash changed.");
-            Assertions.Equal("FD3B3675E647681E1FCADD440DF8C22F8FE0F57442A249203C9ACD080EBA2EB8",
+            Assertions.Equal("9E959D51A39C3F171403975913CD049C2CB2DE2D7D394F8CC53E71717AF2F8BB",
                 Sha256(Path.Combine(root, "assets", "game", "icons",
                     "elven-branched-spear.png")),
                 "Runtime spear icon hash changed.");
@@ -521,7 +534,7 @@ namespace KingmakerGunslinger.DomainTests
                 "native-fallback:bundle-rejected", "ApplyTo",
                 "ReferenceEquals(weaponType.VisualParameters.Model, prefab)",
                 "bundle.reused", "native-fallback:model-assignment-rejected",
-                "RejectAssignment" })
+                "RejectItemAssignment", "HasExactVisual" })
                 Assertions.True(runtime.Contains(token),
                     "Fail-safe runtime lacks: " + token);
             Assertions.False(runtime.Contains("FirearmKind") ||

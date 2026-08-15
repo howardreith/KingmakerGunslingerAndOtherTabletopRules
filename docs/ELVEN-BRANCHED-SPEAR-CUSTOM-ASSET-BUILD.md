@@ -14,16 +14,17 @@
 
 4. Verify the emitted
    `Builds/Windows/kingmakergunslinger.elvenbranchedspear` SHA-256 is
-   `3AB56092F363AA96C627287095E2CA549EEA7ED50D39C73BCD943646BFBE0EBE`,
+   `6E9FE86E43072361EEC3357D9C73E17ADD71D22BAF257FB8C7ED6F52931CE777`,
    then stage it as `assets/bundles/kingmakergunslinger.elvenbranchedspear`.
 
 The dedicated builder rejects every Unity version except 2018.4.10f1, creates
-one uniquely named prefab, uses opaque Standard materials, removes cameras and
+three uniquely named prefabs, uses opaque Standard materials, removes cameras and
 lights, validates finite plausible bounds, and emits Grip, SupportHandTarget,
 Tip, and Butt anchors. It does not touch the firearm bundle.
 
 At game startup, the dedicated runtime loads into a candidate cache, requires
-one exact prefab and validates its complete render/anchor contract. Only then
-does it atomically publish the prefab. Missing, corrupt, partial, nonrenderable,
+the exact classic, thorn, and crown prefabs and validates every complete
+render/anchor contract. Only then does it atomically publish the set. Missing,
+corrupt, partial, nonrenderable,
 or implausible bundles leave the native Longspear model active. Saves contain
 blueprint identities, never prefab state.

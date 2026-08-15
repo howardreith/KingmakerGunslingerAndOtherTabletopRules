@@ -142,6 +142,8 @@ namespace KingmakerGunslinger.Blueprints
                             : spec.Masterwork ? new[] { masterwork }
                             : Array.Empty<BlueprintWeaponEnchantment>();
                         itemAdapter.Configure(clone, spec, enchantments);
+                        Assets.ElvenBranchedSpearAssetRuntime.ApplyTo(clone,
+                            spec.Symbol);
                         return clone;
                     });
                 entries.Add(new ElvenBranchedSpearBlueprintEntry(spec, item));

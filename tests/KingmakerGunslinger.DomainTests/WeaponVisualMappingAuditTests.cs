@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using KingmakerGunslinger.Assets;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
@@ -113,6 +114,28 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("exact deterministic blueprint identity; no runtime randomness or transient state",
                 (string)audit["mappingPolicy"],
                 "Deterministic variant authority changed.");
+        }
+
+        internal static void RuntimeCatalogMatchesApprovedSpearVariants()
+        {
+            JObject audit = Parse("docs", "weapon-visual-mapping-audit.json");
+            JToken[] spears = audit["items"].Where(value =>
+                (string)value["familyOrFirearmKind"] ==
+                    "Elven Branched Spear").ToArray();
+            Assertions.Equal(12, spears.Length,
+                "The approved spear item mapping count changed.");
+            foreach (JToken spear in spears)
+            {
+                string symbol = (string)spear["symbolicIdentity"];
+                string variant;
+                Assertions.True(WeaponVisualVariantCatalog.TryGet(symbol,
+                    out variant), symbol + " lacks a runtime visual mapping.");
+                Assertions.Equal((string)spear["proposedVisualVariant"],
+                    variant, symbol + " audit/runtime visual mapping diverged.");
+            }
+            Assertions.Equal(3, spears.Select(value =>
+                (string)value["proposedVisualVariant"]).Distinct().Count(),
+                "The spear vocabulary must remain bounded to three variants.");
         }
 
         private static JObject Parse(params string[] parts)

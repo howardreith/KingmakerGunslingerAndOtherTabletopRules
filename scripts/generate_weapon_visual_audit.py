@@ -200,13 +200,9 @@ def spear_variant(symbol: str) -> str:
                         "MasterworkColdIronItem", "Plus1Item",
                         "Plus1ColdIronItem")):
         return "ElvenBranchedSpear.ClassicBranch"
-    if symbol.endswith(("Boughkeeper", "Thornstep")):
+    if symbol.endswith(("Boughkeeper", "Thornstep", "MoonlitFork")):
         return "ElvenBranchedSpear.ThornBranch"
-    if symbol.endswith(("MoonlitFork", "VipersReach")):
-        return "ElvenBranchedSpear.MoonFork"
-    if symbol.endswith("BriarCrownedSpear"):
-        return "ElvenBranchedSpear.BriarCrown"
-    return "ElvenBranchedSpear.FirstBranch"
+    return "ElvenBranchedSpear.CrownBranch"
 
 
 def make_record(entry: dict) -> dict:

@@ -40,6 +40,7 @@
     <Compile Include="ElvenBranchedSpearInvestigationTests.cs" />
     <Compile Include="EasternWeaponsInvestigationTests.cs" />
     <Compile Include="ElvenBranchedSpearCatalogTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Assets\WeaponVisualVariantCatalog.cs"><Link>Assets\WeaponVisualVariantCatalog.cs</Link></Compile>
     <Compile Include="EasternWeaponFoundationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\CustomWeapons\CustomWeaponCategoryDefinition.cs"><Link>CustomWeapons\CustomWeaponCategoryDefinition.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\CustomWeapons\CustomWeaponCategoryRegistry.cs"><Link>CustomWeapons\CustomWeaponCategoryRegistry.cs</Link></Compile>

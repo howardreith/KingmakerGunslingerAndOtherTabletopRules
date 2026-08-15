@@ -95,6 +95,8 @@ namespace KingmakerGunslinger.Blueprints
                         typeAccess.Set(clone, weaponType);
                         itemAccess.ConfigureNamed(clone, spec, itemEnchantments,
                             Describe(spec));
+                        Assets.ElvenBranchedSpearAssetRuntime.ApplyTo(clone,
+                            spec.Symbol);
                         return clone;
                     });
                 itemAccess.ValidateNamed(item, spec, itemEnchantments.Length);

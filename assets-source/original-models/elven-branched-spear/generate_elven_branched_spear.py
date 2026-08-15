@@ -1,32 +1,102 @@
-"""Deterministically generate the project's original Elven Branched Spear.
+"""Deterministically generate three project-owned Elven Branched Spears.
 
-Run with Blender 4.5 in background mode. The exported weapon is aligned on +Z,
-has its primary grip at the origin, and uses metric dimensions.
+Run with Blender 4.5 in background mode and PYTHONHASHSEED=0. Every variant is
+metric, uses an identity root, places the primary grip at the origin, points its
+central blade toward +Z, and has physically separated backward-swept prongs.
 """
 import bpy
+import datetime
 import hashlib
 import json
 import math
 import os
-import sys
+import struct
+import zlib
 from pathlib import Path
 from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Quaternion, Vector
 
 ROOT = Path(__file__).resolve().parent
-FBX = ROOT / "elven-branched-spear.fbx"
 BLEND = ROOT / "elven-branched-spear.blend"
 ICON = ROOT / "elven-branched-spear-icon.png"
 REPORT = ROOT / "elven-branched-spear-build-report.json"
 RUNTIME_ICON = ROOT.parents[2] / "assets" / "game" / "icons" / \
     "elven-branched-spear.png"
 ICON_RENDER_ANGLE_DEGREES = 42.0
+
+VARIANTS = {
+    "classic": {
+        "label": "ElvenBranchedSpear",
+        "fbx": "elven-branched-spear.fbx",
+        "branches": (
+            ("LeftLow", (-0.58, 0.00, -0.36), (-0.030, 0.000, 1.62), 0.35, 0.060),
+            ("RightHigh", (0.55, 0.00, -0.30), (0.030, 0.000, 1.70), 0.32, 0.057),
+        ),
+        "steel": (0.42, 0.52, 0.58),
+        "inlay": (0.025, 0.18, 0.24),
+    },
+    "thorn": {
+        "label": "ElvenBranchedSpearThorn",
+        "fbx": "elven-branched-spear-thorn.fbx",
+        "branches": (
+            ("LeftLow", (-0.66, 0.05, -0.38), (-0.028, 0.000, 1.58), 0.37, 0.056),
+            ("RightMid", (0.62, -0.04, -0.32), (0.028, 0.000, 1.67), 0.34, 0.054),
+            ("LeftHigh", (-0.48, -0.08, -0.22), (-0.022, 0.004, 1.76), 0.25, 0.046),
+        ),
+        "steel": (0.36, 0.49, 0.43),
+        "inlay": (0.11, 0.31, 0.16),
+    },
+    "crown": {
+        "label": "ElvenBranchedSpearCrown",
+        "fbx": "elven-branched-spear-crown.fbx",
+        "branches": (
+            ("LeftLow", (-0.70, 0.05, -0.42), (-0.032, 0.000, 1.56), 0.39, 0.063),
+            ("RightLow", (0.70, -0.05, -0.42), (0.032, 0.000, 1.60), 0.39, 0.063),
+            ("LeftHigh", (-0.54, -0.10, -0.20), (-0.025, 0.008, 1.75), 0.29, 0.050),
+            ("RightHigh", (0.54, 0.10, -0.20), (0.025, -0.008, 1.79), 0.29, 0.050),
+        ),
+        "steel": (0.55, 0.65, 0.68),
+        "inlay": (0.48, 0.31, 0.08),
+    },
+}
+
 if os.environ.get("PYTHONHASHSEED") != "0":
-    raise RuntimeError(
-        "Deterministic asset generation requires PYTHONHASHSEED=0 before Blender starts")
-PRESERVED_EQUIPPED_FBX_SHA256 = \
-    "8a79b5fe83285ba8d95b4111008a9c2e330dc61bfe4ba7cc2212d0c7cb25474b"
-REBUILD_EQUIPPED_FBX = "--rebuild-equipped-fbx" in sys.argv
+    raise RuntimeError("Deterministic generation requires PYTHONHASHSEED=0")
+
+
+def install_deterministic_fbx_clock():
+    import io_scene_fbx.export_fbx_bin as exporter
+    import io_scene_fbx.fbx_utils as fbx_utils
+    real_datetime = datetime.datetime
+    real_export_uuid = exporter.get_fbx_uuid_from_key
+    real_utils_uuid = fbx_utils.get_fbx_uuid_from_key
+    stable_ids = {}
+    used_ids = set()
+
+    class FixedDateTime(real_datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = cls(1970, 1, 1, 10, 0, 0)
+            return value if tz is None else tz.fromutc(value.replace(tzinfo=tz))
+
+    exporter.datetime.datetime = FixedDateTime
+
+    def stable_uuid(key):
+        if isinstance(key, int) and 0 <= key < 2 ** 63:
+            return fbx_utils.UUID(key)
+        canonical = repr(key).encode("utf-8")
+        value = int.from_bytes(hashlib.sha256(canonical).digest()[:8], "big") & \
+            ((1 << 63) - 1)
+        while value in used_ids and stable_ids.get(key) != value:
+            value = (value + 1) & ((1 << 63) - 1)
+        stable_ids[key] = value
+        used_ids.add(value)
+        return fbx_utils.UUID(value)
+
+    exporter.get_fbx_uuid_from_key = stable_uuid
+    fbx_utils.get_fbx_uuid_from_key = stable_uuid
+    return (exporter, fbx_utils, real_datetime, real_export_uuid,
+            real_utils_uuid)
 
 
 def material(name, color, metallic, roughness):
@@ -40,7 +110,7 @@ def material(name, color, metallic, roughness):
     return value
 
 
-def cylinder(name, radius, depth, z, mat, vertices=16):
+def cylinder(name, radius, depth, z, mat, vertices=20):
     bpy.ops.mesh.primitive_cylinder_add(vertices=vertices, radius=radius,
                                        depth=depth, location=(0, 0, z))
     obj = bpy.context.object
@@ -51,7 +121,6 @@ def cylinder(name, radius, depth, z, mat, vertices=16):
 
 
 def leaf(name, length, width, thickness, mat):
-    # Symmetric leaf with a raised central ridge and pointed ends.
     outline = [(0.0, 0.0), (width * 0.72, length * 0.31),
                (width, length * 0.58), (width * 0.58, length * 0.82),
                (0.0, length), (-width * 0.58, length * 0.82),
@@ -61,14 +130,11 @@ def leaf(name, length, width, thickness, mat):
     verts += [(0.0, -thickness * 1.65, length * 0.54),
               (0.0, thickness * 1.65, length * 0.54)]
     faces = []
-    for i in range(8):
-        j = (i + 1) % 8
-        faces.append((i, j, 8 + j, 8 + i))
-    # Four triangular fans per face give the blade its restrained ridge.
-    for i in range(8):
-        j = (i + 1) % 8
-        faces.append((i, 16, j))
-        faces.append((8 + j, 17, 8 + i))
+    for index in range(8):
+        nxt = (index + 1) % 8
+        faces.append((index, nxt, 8 + nxt, 8 + index))
+        faces.append((index, 16, nxt))
+        faces.append((8 + nxt, 17, 8 + index))
     mesh = bpy.data.meshes.new(name + "Mesh")
     mesh.from_pydata(verts, [], faces)
     mesh.update()
@@ -85,6 +151,80 @@ def point_at(obj, direction):
     obj.rotation_mode = "QUATERNION"
     obj.rotation_quaternion = Vector((0, 0, 1)).rotation_difference(
         Vector(direction).normalized())
+
+
+def apply_mesh_contract(objects):
+    for obj in objects:
+        bpy.context.view_layer.objects.active = obj
+        obj.select_set(True)
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+        # These material-only meshes intentionally omit UVs. Blender's UV
+        # island packing changes across otherwise identical headless runs; an
+        # unused UV channel would therefore make the production FBX unstable.
+        obj.select_set(False)
+
+
+def build_variant(key, spec):
+    prefix = spec["label"]
+    wood = material(prefix + "Ash", (0.105, 0.055, 0.026), 0.0, 0.38)
+    steel = material(prefix + "MoonSilver", spec["steel"], 0.88, 0.20)
+    inlay = material(prefix + "Inlay", spec["inlay"], 0.62, 0.25)
+    objects = [
+        cylinder(prefix + "Shaft", 0.027, 2.35, 0.37, wood),
+        cylinder(prefix + "ButtCap", 0.036, 0.11, -0.86, steel, 16),
+        cylinder(prefix + "HeadCollar", 0.043, 0.18, 1.50, steel),
+    ]
+    for index, z in enumerate((-0.48, 0.02, 0.52, 0.92, 1.22)):
+        objects.append(cylinder(prefix + "InlayBand%02d" % index,
+                                0.0305, 0.018, z, inlay))
+    central = leaf(prefix + "CentralLeaf", 0.54, 0.105, 0.0085, steel)
+    central.location = (0, 0, 1.47)
+    objects.append(central)
+
+    branch_records = []
+    for name, direction, location, length, width in spec["branches"]:
+        branch = leaf(prefix + "Branch" + name, length, width, 0.0075, steel)
+        branch.location = location
+        point_at(branch, direction)
+        objects.append(branch)
+        collar = cylinder(prefix + "Branch" + name + "Collar", 0.036,
+                          0.060, location[2], inlay, 16)
+        objects.append(collar)
+        tip = Vector(location) + Vector(direction).normalized() * length
+        branch_records.append({
+            "name": name,
+            "base": [round(value, 6) for value in location],
+            "tip": [round(value, 6) for value in tip],
+            "length": length,
+            "width": width,
+        })
+    apply_mesh_contract(objects)
+    root = bpy.data.objects.new(spec["label"], None)
+    bpy.context.collection.objects.link(root)
+    for obj in objects:
+        obj.parent = root
+    return {"key": key, "root": root, "objects": objects,
+            "branches": branch_records}
+
+
+def select_tree(root):
+    root.select_set(True)
+    for child in root.children_recursive:
+        child.select_set(True)
+
+
+def export_variant(built):
+    bpy.ops.object.select_all(action="DESELECT")
+    select_tree(built["root"])
+    bpy.context.view_layer.objects.active = built["root"]
+    path = ROOT / VARIANTS[built["key"]]["fbx"]
+    bpy.ops.export_scene.fbx(filepath=str(path), use_selection=True,
+                             apply_unit_scale=True,
+                             apply_scale_options="FBX_SCALE_UNITS",
+                             object_types={"EMPTY", "MESH"},
+                             add_leaf_bones=False, bake_anim=False,
+                             axis_forward="-Z", axis_up="Y")
+    return path
 
 
 def look_at(obj, point):
@@ -105,144 +245,22 @@ def apply_icon_roll(camera, butt, tip):
     base = camera.rotation_euler.to_quaternion()
     initial = projected_angle(camera, butt, tip)
     view_axis = base @ Vector((0, 0, -1))
-    previous_roll = 0.0
-    previous_angle = initial
-    roll = ICON_RENDER_ANGLE_DEGREES - initial
-    observed = initial
+    previous_roll, previous_angle = 0.0, initial
+    roll, observed = ICON_RENDER_ANGLE_DEGREES - initial, initial
     for _ in range(8):
         camera.rotation_euler = (Quaternion(view_axis, math.radians(roll)) @
                                  base).to_euler()
         observed = projected_angle(camera, butt, tip)
         if abs(observed - ICON_RENDER_ANGLE_DEGREES) <= 0.05:
             break
-        denominator = roll - previous_roll
-        slope = (observed - previous_angle) / denominator
+        slope = (observed - previous_angle) / (roll - previous_roll)
         if abs(slope) < 0.0001:
             raise RuntimeError("Spear icon camera roll solver has zero slope")
         previous_roll, previous_angle = roll, observed
         roll += (ICON_RENDER_ANGLE_DEGREES - observed) / slope
     if abs(observed - ICON_RENDER_ANGLE_DEGREES) > 0.05:
-        raise RuntimeError("Spear icon camera roll did not reach the diagonal contract: " +
-                           repr((initial, observed, roll)))
+        raise RuntimeError("Spear icon camera roll contract failed")
     return observed, roll
-
-
-bpy.ops.object.select_all(action="SELECT")
-bpy.ops.object.delete(use_global=False)
-for datablocks in (bpy.data.meshes, bpy.data.curves, bpy.data.materials,
-                   bpy.data.cameras, bpy.data.lights):
-    for block in list(datablocks):
-        if block.users == 0:
-            datablocks.remove(block)
-
-wood = material("ElvenAsh", (0.105, 0.055, 0.026), 0.0, 0.38)
-steel = material("MoonSilver", (0.42, 0.52, 0.58), 0.88, 0.20)
-inlay = material("BlueInlay", (0.025, 0.18, 0.24), 0.62, 0.25)
-
-objects = []
-objects.append(cylinder("Shaft", 0.027, 2.35, 0.37, wood, 20))
-objects.append(cylinder("ButtCap", 0.036, 0.11, -0.86, steel, 16))
-objects.append(cylinder("HeadCollar", 0.043, 0.18, 1.50, steel, 20))
-for index, z in enumerate((-0.48, 0.02, 0.52, 0.92, 1.22)):
-    objects.append(cylinder("InlayBand%02d" % index, 0.0305, 0.018,
-                            z, inlay, 20))
-
-central = leaf("CentralLeaf", 0.54, 0.105, 0.0085, steel)
-central.location = (0, 0, 1.47)
-objects.append(central)
-
-# Staggered, forward-raked branch blades. Their narrow silhouette remains clear
-# at an isometric camera without becoming wider than a native polearm stance.
-branches = [
-    ("BranchLeftLow", (-0.36, 0.0, 0.50), (-0.025, 0.0, 1.13), 0.32, 0.060),
-    ("BranchRightMid", (0.34, 0.0, 0.55), (0.025, 0.0, 1.26), 0.30, 0.057),
-    ("BranchLeftHigh", (-0.29, 0.0, 0.67), (-0.020, 0.0, 1.37), 0.25, 0.052),
-]
-for name, direction, location, length, width in branches:
-    blade = leaf(name, length, width, 0.006, steel)
-    blade.location = location
-    point_at(blade, direction)
-    objects.append(blade)
-    collar = cylinder(name + "Collar", 0.034, 0.055, location[2], inlay, 16)
-    objects.append(collar)
-
-# Apply transforms and generate conservative smart UVs for every mesh.
-for obj in objects:
-    bpy.context.view_layer.objects.active = obj
-    obj.select_set(True)
-    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-    if obj.type == "MESH":
-        bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.uv.smart_project(angle_limit=math.radians(66),
-                                 island_margin=0.025)
-        bpy.ops.object.mode_set(mode="OBJECT")
-    obj.select_set(False)
-
-root = bpy.data.objects.new("ElvenBranchedSpear", None)
-bpy.context.collection.objects.link(root)
-for obj in objects:
-    obj.parent = root
-
-# Deterministic icon render with transparent background.
-bpy.ops.object.camera_add(location=(3.15, -4.35, 2.45))
-camera = bpy.context.object
-camera.name = "IconCamera"
-camera.data.type = "ORTHO"
-camera.data.ortho_scale = 3.45
-look_at(camera, (0, 0, 0.45))
-observed_icon_angle, icon_camera_roll = apply_icon_roll(camera, -0.915, 2.01)
-bpy.context.scene.camera = camera
-bpy.ops.object.light_add(type="AREA", location=(2.5, -2.5, 4.0))
-key = bpy.context.object
-key.data.energy = 900
-key.data.shape = "DISK"
-key.data.size = 4.0
-look_at(key, (0, 0, 0.5))
-bpy.ops.object.light_add(type="AREA", location=(-2.5, 1.0, 2.0))
-fill = bpy.context.object
-fill.data.energy = 450
-fill.data.size = 3.0
-look_at(fill, (0, 0, 0.7))
-scene = bpy.context.scene
-scene.render.engine = "BLENDER_WORKBENCH"
-scene.render.resolution_x = 512
-scene.render.resolution_y = 512
-scene.render.resolution_percentage = 100
-scene.render.image_settings.file_format = "PNG"
-scene.render.film_transparent = True
-scene.render.filepath = str(ICON)
-scene.display.shading.light = "STUDIO"
-scene.display.shading.color_type = "MATERIAL"
-scene.display.shading.show_shadows = False
-scene.display.shading.show_cavity = False
-scene.display.shading.show_specular_highlight = False
-bpy.ops.render.render(write_still=True)
-scene.render.resolution_x = 128
-scene.render.resolution_y = 128
-scene.render.filepath = str(RUNTIME_ICON)
-bpy.ops.render.render(write_still=True)
-
-# The first-playtest repair is icon-only. Blender's binary FBX writer embeds
-# session metadata, so the default deterministic repair command preserves the
-# accepted equipped FBX byte-for-byte. The explicit maintenance flag retains a
-# reproducible geometry export path when a future equipped-mesh change is owned.
-if REBUILD_EQUIPPED_FBX:
-    bpy.ops.object.select_all(action="DESELECT")
-    root.select_set(True)
-    for obj in objects:
-        obj.select_set(True)
-    bpy.context.view_layer.objects.active = root
-    bpy.ops.export_scene.fbx(filepath=str(FBX), use_selection=True,
-                             apply_unit_scale=True,
-                             apply_scale_options="FBX_SCALE_UNITS",
-                             object_types={"EMPTY", "MESH"},
-                             add_leaf_bones=False, bake_anim=False,
-                             axis_forward="-Z", axis_up="Y")
-bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
-blend_backup = Path(str(BLEND) + "1")
-if blend_backup.exists():
-    blend_backup.unlink()
 
 
 def sha256(path):
@@ -253,38 +271,142 @@ def sha256(path):
     return value.hexdigest()
 
 
-if not REBUILD_EQUIPPED_FBX and sha256(FBX) != \
-        PRESERVED_EQUIPPED_FBX_SHA256:
-    raise RuntimeError("Icon-only repair refuses a changed equipped spear FBX")
+def normalize_png(path):
+    """Strip Blender session metadata while preserving exact rendered pixels."""
+    source = path.read_bytes()
+    if source[:8] != b"\x89PNG\r\n\x1a\n":
+        raise RuntimeError("Expected PNG output: " + str(path))
+    output = bytearray(source[:8])
+    offset = 8
+    while offset < len(source):
+        length = struct.unpack(">I", source[offset:offset + 4])[0]
+        chunk_type = source[offset + 4:offset + 8]
+        payload = source[offset + 8:offset + 8 + length]
+        offset += length + 12
+        if chunk_type in {b"tEXt", b"eXIf", b"oFFs", b"pHYs"}:
+            continue
+        output.extend(struct.pack(">I", length))
+        output.extend(chunk_type)
+        output.extend(payload)
+        output.extend(struct.pack(">I", zlib.crc32(chunk_type + payload) &
+                                  0xFFFFFFFF))
+    path.write_bytes(output)
 
 
+bpy.ops.object.select_all(action="SELECT")
+bpy.ops.object.delete(use_global=False)
+for datablocks in (bpy.data.meshes, bpy.data.curves, bpy.data.materials,
+                   bpy.data.cameras, bpy.data.lights):
+    for block in list(datablocks):
+        if block.users == 0:
+            datablocks.remove(block)
+
+BUILT = {key: build_variant(key, spec) for key, spec in VARIANTS.items()}
+exporter, fbx_utils, real_datetime, real_export_uuid, real_utils_uuid = \
+    install_deterministic_fbx_clock()
+exports = [export_variant(value) for value in BUILT.values()]
+exporter.datetime.datetime = real_datetime
+exporter.get_fbx_uuid_from_key = real_export_uuid
+fbx_utils.get_fbx_uuid_from_key = real_utils_uuid
+
+# Render the classic profile only. Cameras and lights are created after FBX
+# export and therefore can never enter a production FBX.
+for key, value in BUILT.items():
+    value["root"].hide_render = key != "classic"
+bpy.ops.object.camera_add(location=(3.15, -4.35, 2.45))
+camera = bpy.context.object
+camera.name = "IconCamera"
+camera.data.type = "ORTHO"
+camera.data.ortho_scale = 3.45
+look_at(camera, (0, 0, 0.45))
+observed_icon_angle, icon_camera_roll = apply_icon_roll(camera, -0.915, 2.01)
+bpy.context.scene.camera = camera
+bpy.ops.object.light_add(type="AREA", location=(2.5, -2.5, 4.0))
+key_light = bpy.context.object
+key_light.name = "IconKey"
+key_light.data.energy = 900
+key_light.data.size = 4.0
+look_at(key_light, (0, 0, 0.5))
+bpy.ops.object.light_add(type="AREA", location=(-2.5, 1.0, 2.0))
+fill_light = bpy.context.object
+fill_light.name = "IconFill"
+fill_light.data.energy = 450
+fill_light.data.size = 3.0
+look_at(fill_light, (0, 0, 0.7))
+scene = bpy.context.scene
+scene.render.engine = "BLENDER_WORKBENCH"
+scene.render.resolution_x = scene.render.resolution_y = 512
+scene.render.resolution_percentage = 100
+scene.render.image_settings.file_format = "PNG"
+scene.render.film_transparent = True
+scene.render.filepath = str(ICON)
+scene.display.render_aa = "OFF"
+scene.display.shading.light = "STUDIO"
+scene.display.shading.color_type = "MATERIAL"
+scene.display.shading.show_shadows = False
+scene.display.shading.show_cavity = False
+scene.display.shading.show_specular_highlight = False
+bpy.ops.render.render(write_still=True)
+normalize_png(ICON)
+scene.render.resolution_x = scene.render.resolution_y = 128
+scene.render.filepath = str(RUNTIME_ICON)
+bpy.ops.render.render(write_still=True)
+normalize_png(RUNTIME_ICON)
+for value in BUILT.values():
+    value["root"].hide_render = False
+bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
+backup = Path(str(BLEND) + "1")
+if backup.exists():
+    backup.unlink()
+
+mesh_objects = [obj for value in BUILT.values() for obj in value["objects"]]
+for obj in mesh_objects:
+    obj.data.calc_loop_triangles()
 report = {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "generator": Path(__file__).name,
     "blenderVersion": bpy.app.version_string,
     "license": "Original project-owned asset; repository license applies",
-    "sourceCoordinateContract": "+Z tip; grip origin; metric",
-    "equippedExportContract": "icon-only default preserves accepted FBX SHA-256; render-only camera roll",
+    "sourceCoordinateContract": "+Z central tip; primary grip origin; metric",
+    "equippedExportContract": "three identity roots exported before render-only camera/light creation",
+    "branchContract": "physical backward-swept prongs with separated lateral tips outside the shaft grip region",
+    "determinism": {
+        "verifiedCleanRuns": 2,
+        "byteStableOutputs": [
+            "elven-branched-spear.fbx",
+            "elven-branched-spear-thorn.fbx",
+            "elven-branched-spear-crown.fbx",
+            "elven-branched-spear-icon.png",
+            "assets/game/icons/elven-branched-spear.png",
+        ],
+        "blendContainer": "Semantically regenerated; Blender session metadata prevents byte-identical .blend containers.",
+        "fbxStabilization": "SHA-256-derived exporter UUIDs; unused nondeterministic UV packing omitted.",
+        "pngStabilization": "Rendered pixels preserved; Blender session metadata chunks removed.",
+    },
     "iconRender": {
-        "tipDirection": "upper-right",
-        "buttDirection": "lower-left",
+        "tipDirection": "upper-right", "buttDirection": "lower-left",
         "targetAngleDegrees": ICON_RENDER_ANGLE_DEGREES,
         "observedAngleDegrees": round(observed_icon_angle, 6),
         "cameraRollDegrees": round(icon_camera_roll, 6),
-        "sourceDimensions": [512, 512],
-        "runtimeDimensions": [128, 128],
+        "sourceDimensions": [512, 512], "runtimeDimensions": [128, 128],
         "background": "transparent RGBA",
     },
     "dimensionsMeters": {"buttZ": -0.915, "tipZ": 2.01,
-                         "maximumWidth": 0.26},
-    "meshObjects": len(objects),
-    "triangles": sum(len(obj.data.loop_triangles) for obj in objects
-                     if obj.type == "MESH"),
-    "outputs": {}
+                         "shaftGripExclusionMaxZ": 1.47},
+    "variants": {
+        key: {"prefab": value["root"].name,
+              "fbx": VARIANTS[key]["fbx"],
+              "branchCount": len(value["branches"]),
+              "branches": value["branches"]}
+        for key, value in BUILT.items()
+    },
+    "meshObjects": len(mesh_objects),
+    "triangles": sum(len(obj.data.loop_triangles) for obj in mesh_objects),
+    "outputs": {},
 }
-for path in (Path(__file__), FBX, BLEND, ICON, RUNTIME_ICON):
-    report["outputs"][path.name] = {"sha256": sha256(path),
-                                    "bytes": path.stat().st_size}
+for path in [Path(__file__), BLEND, ICON, RUNTIME_ICON] + exports:
+    report["outputs"][path.name] = {
+        "sha256": sha256(path), "bytes": path.stat().st_size}
 REPORT.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n",
                   encoding="utf-8")
 print("KMG_ELVEN_BRANCHED_SPEAR_BUILD " + json.dumps(report, sort_keys=True))
