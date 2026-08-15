@@ -157,3 +157,15 @@ addition without shared blueprint or `AbilityData` mutation. Artifact
 identities and the exact order are recorded in the CotW contract. Actual
 resource-backed transaction wiring is now the next implementation checkpoint;
 Brown-Fur remains reserved and unpublished.
+
+The first scoped Transmutation Supremacy fixture passed all five guarded
+assertions on commit `49d785c43b2c389d63e3a5abebd49c9288191943`. One exact
+execution scope added native `Extend` to one installed Personal Transmutation
+spell context, duplicate retention was rejected, an already-Extended context
+was not modified again, and scope release restored ordinary subsequent
+context construction. No shared spell range, metamagic support, or spell level
+changed, and all scopes and disposable runtime state cleaned up. The package,
+DLL, MVID, and structured-result identities are recorded in the CotW contract.
+Timed-duration behavior, slot and casting-time preservation, special duration
+structures, and real owner/transaction wiring remain pending; Brown-Fur stays
+reserved and unpublished.

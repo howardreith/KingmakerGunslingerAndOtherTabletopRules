@@ -322,6 +322,34 @@ independent bounded safety net. This evidence closes the event-order
 investigation; actual resource-backed transaction wiring and mechanical
 qualification remain pending, so Brown-Fur stays unpublished.
 
+## Scoped Transmutation Supremacy context
+
+The context-local Transmutation Supremacy fixture passed all five guarded
+assertions on commit `49d785c43b2c389d63e3a5abebd49c9288191943`.
+The exact local-runtime package SHA-256 was
+`E091734419E34B761312BACF076A04D1264639DBF6F4E7D11EE77DC2CA7504DD`;
+the built, deployed, and loaded DLL SHA-256 was
+`2A5DE4EFA1661156B89C98B030E9F7BC5C73B1D00E68F8D553AE8070A041ABAF`;
+the DLL MVID was `beb5921b-84f9-4d60-a787-ce93a80f2a36`; and the
+structured result SHA-256 was
+`E4DC08A771B656DEB1A805AFD1684282421D8C9F9BC9AC4A101A19BD61FEEE0A`.
+
+The fixture used the installed Personal-range Transmutation spell
+`3481906baed9487e8403e91a2e9d010a`. Its ordinary execution context contained
+no metamagic. One exact retained scope added native `Extend` to one newly
+created context, rejected duplicate retention, and left a different subsequent
+context ordinary after release. An already-Extended context remained Extended
+without recording another modification. The shared blueprint range,
+metamagic-support mask, and fixture spell level were unchanged; the tracker
+returned to zero active scopes and the disposable caster was removed.
+
+This qualifies reference-isolated, non-stacking context mutation and proves
+that the runtime patch does not mutate shared spell data. It does not yet prove
+timed-duration doubling, prepared-spell slot preservation, casting-time
+preservation, instantaneous or permanent duration handling, or integration
+with a real Brown-Fur owner and reservoir transaction. Those remain
+player-publication gates.
+
 The modifier-provenance extension of this scenario passed all 11 assertions on
 commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
 package SHA-256 was
