@@ -54,7 +54,7 @@
       "plannedType": "BlueprintFeature",
       "status": "active",
       "milestone": "Pistolero and Musket Master",
-      "notes": "Player-facing combat feat granting the preserved full firearm-proficiency fact."
+      "notes": "Registered compatibility-only wrapper for legacy owners. It remains readable and grants the preserved full firearm-proficiency fact, but is unpublished from all new feat-selection surfaces."
     },
     {
       "symbol": "KMG.Archetypes.PistolTraining",

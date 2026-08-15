@@ -169,17 +169,17 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeatureSelection fighter = BlueprintLibraryLookup.RequireExact<
                 BlueprintFeatureSelection>(library, FighterFeatSelectionGuid,
                     "native Fighter combat feat selection");
-            var publication = new FirearmFeatCatalogPublication(basic, fighter);
-            BlueprintParametrizedFeature nativeWeaponFocus = BlueprintLibraryLookup.RequireExact<
-                BlueprintParametrizedFeature>(library, NativeWeaponFocusGuid, "native Weapon Focus");
-            // Rapid Reload and Exotic Weapon Proficiency (Firearms) are the
-            // only project-owned top-level feats. Firearm parameters are
-            // appended inside the five native parametrized feat menus by the
-            // native integration adapter. The retained wrappers are hidden
-            // compatibility blueprints for existing 0.0.61/0.0.62 saves.
-            var additions = new BlueprintFeature[] {
-                set.RapidReload, set.ExoticWeaponProficiency };
-            publication.Publish(nativeWeaponFocus, additions);
+            BlueprintFeatureSelection[] selections = library.GetAllBlueprints()
+                .OfType<BlueprintFeatureSelection>().ToArray();
+            var publication = new FirearmFeatCatalogPublication(basic, fighter,
+                selections);
+            // Rapid Reload is the only project-owned top-level firearm feat.
+            // The legacy Exotic Weapon Proficiency (Firearms) blueprint stays
+            // registered for existing owners, but is removed from every live
+            // selection catalog. Firearm parameters remain inside the five
+            // native parametrized feat menus.
+            publication.Publish(set.RapidReload,
+                set.ExoticWeaponProficiency);
             return publication;
         }
 
@@ -286,7 +286,10 @@ namespace KingmakerGunslinger.Blueprints
             feature.name = "KMG_ExoticWeaponProficiency_Firearms";
             feature.Ranks = 1;
             feature.HideInUI = false;
-            feature.Groups = new[] { FeatureGroup.Feat, FeatureGroup.CombatFeat };
+            // Compatibility-only: retain a readable character-sheet fact and
+            // its historical AddFacts grant, but do not advertise it through
+            // FeatureGroup scans used by compatibility feat catalogs.
+            feature.Groups = Array.Empty<FeatureGroup>();
             var bab = ScriptableObject.CreateInstance<PrerequisiteStatValue>();
             bab.Stat = StatType.BaseAttackBonus;
             bab.Value = 1;
@@ -338,52 +341,133 @@ namespace KingmakerGunslinger.Blueprints
 
     internal sealed class FirearmFeatCatalogPublication
     {
+        private sealed class SelectionSnapshot
+        {
+            internal SelectionSnapshot(BlueprintFeatureSelection selection)
+            {
+                Selection = selection;
+                Features = selection.Features;
+                AllFeatures = selection.AllFeatures;
+            }
+
+            internal BlueprintFeatureSelection Selection { get; private set; }
+            internal BlueprintFeature[] Features { get; private set; }
+            internal BlueprintFeature[] AllFeatures { get; private set; }
+        }
+
         private readonly BlueprintFeatureSelection _basic;
         private readonly BlueprintFeatureSelection _fighter;
-        private BlueprintFeature[] _basicBefore;
-        private BlueprintFeature[] _basicAllBefore;
-        private BlueprintFeature[] _fighterBefore;
-        private BlueprintFeature[] _fighterAllBefore;
+        private readonly BlueprintFeatureSelection[] _selections;
+        private SelectionSnapshot[] _snapshots;
 
         internal FirearmFeatCatalogPublication(BlueprintFeatureSelection basic,
-            BlueprintFeatureSelection fighter)
-        { _basic = basic; _fighter = fighter; }
-
-        internal void Publish(BlueprintFeature nativeWeaponFocus,
-            BlueprintFeature[] additions)
+            BlueprintFeatureSelection fighter,
+            BlueprintFeatureSelection[] selections)
         {
-            if (nativeWeaponFocus == null) throw new ArgumentNullException("nativeWeaponFocus");
-            if (additions == null || additions.Any(value => value == null))
-                throw new ArgumentNullException("additions");
-            _basicBefore = _basic.Features;
-            _basicAllBefore = _basic.AllFeatures;
-            _fighterBefore = _fighter.Features;
-            _fighterAllBefore = _fighter.AllFeatures;
-            _basic.Features = AppendUnique(_basicBefore, additions);
-            _basic.AllFeatures = AppendUnique(_basicAllBefore, additions);
-            _fighter.Features = AppendUnique(_fighterBefore, additions);
-            _fighter.AllFeatures = AppendUnique(_fighterAllBefore, additions);
+            _basic = basic ?? throw new ArgumentNullException("basic");
+            _fighter = fighter ?? throw new ArgumentNullException("fighter");
+            _selections = selections ?? throw new ArgumentNullException("selections");
+            if (_selections.Any(value => value == null))
+                throw new ArgumentException("Feat selections cannot contain null.",
+                    "selections");
+        }
+
+        internal void Publish(BlueprintFeature rapidReload,
+            BlueprintFeature legacyProficiency)
+        {
+            if (rapidReload == null) throw new ArgumentNullException("rapidReload");
+            if (legacyProficiency == null)
+                throw new ArgumentNullException("legacyProficiency");
+            if (_snapshots != null)
+                throw new InvalidOperationException(
+                    "Firearm feat catalogs were already published.");
+
+            BlueprintFeatureSelection[] touched = _selections.Where(selection =>
+                ReferenceEquals(selection, _basic) ||
+                ReferenceEquals(selection, _fighter) ||
+                Contains(selection.Features, legacyProficiency) ||
+                Contains(selection.AllFeatures, legacyProficiency)).ToArray();
+            _snapshots = touched.Select(selection =>
+                new SelectionSnapshot(selection)).ToArray();
+
+            for (int index = 0; index < touched.Length; index++)
+            {
+                BlueprintFeatureSelection selection = touched[index];
+                selection.Features = RemoveAll(selection.Features,
+                    legacyProficiency);
+                selection.AllFeatures = RemoveAll(selection.AllFeatures,
+                    legacyProficiency);
+            }
+            _basic.Features = AppendUnique(_basic.Features, rapidReload);
+            _basic.AllFeatures = AppendUnique(_basic.AllFeatures, rapidReload);
+            _fighter.Features = AppendUnique(_fighter.Features, rapidReload);
+            _fighter.AllFeatures = AppendUnique(_fighter.AllFeatures, rapidReload);
+
+            if (_selections.Any(selection =>
+                    Contains(selection.Features, legacyProficiency) ||
+                    Contains(selection.AllFeatures, legacyProficiency)))
+                throw new InvalidOperationException(
+                    "Exotic Weapon Proficiency (Firearms) remained in a feat selection.");
+            if (Count(_basic.Features, rapidReload) != 1 ||
+                Count(_basic.AllFeatures, rapidReload) != 1 ||
+                Count(_fighter.Features, rapidReload) != 1 ||
+                Count(_fighter.AllFeatures, rapidReload) != 1)
+                throw new InvalidOperationException(
+                    "Rapid Reload was not published exactly once in the native feat catalogs.");
         }
 
         internal void Rollback()
         {
-            _basic.Features = _basicBefore;
-            _basic.AllFeatures = _basicAllBefore;
-            _fighter.Features = _fighterBefore;
-            _fighter.AllFeatures = _fighterAllBefore;
+            if (_snapshots == null) return;
+            for (int index = _snapshots.Length - 1; index >= 0; index--)
+            {
+                SelectionSnapshot snapshot = _snapshots[index];
+                snapshot.Selection.Features = snapshot.Features;
+                snapshot.Selection.AllFeatures = snapshot.AllFeatures;
+            }
+            _snapshots = null;
         }
 
         private static BlueprintFeature[] AppendUnique(BlueprintFeature[] source,
-            BlueprintFeature[] additions)
+            BlueprintFeature addition)
         {
             source = source ?? Array.Empty<BlueprintFeature>();
-            BlueprintFeature[] missing = additions.Where(value =>
-                Array.IndexOf(source, value) < 0).ToArray();
-            var result = new BlueprintFeature[source.Length + missing.Length];
+            if (Contains(source, addition)) return source;
+            var result = new BlueprintFeature[source.Length + 1];
             for (int index = 0; index < source.Length; index++)
                 result[index] = source[index];
-            Array.Copy(missing, 0, result, source.Length, missing.Length);
+            result[source.Length] = addition;
             return result;
+        }
+
+        private static BlueprintFeature[] RemoveAll(BlueprintFeature[] source,
+            BlueprintFeature feature)
+        {
+            source = source ?? Array.Empty<BlueprintFeature>();
+            BlueprintFeature[] result = source.Where(value =>
+                !Same(value, feature)).ToArray();
+            return result.Length == source.Length ? source : result;
+        }
+
+        private static bool Contains(BlueprintFeature[] source,
+            BlueprintFeature feature)
+        {
+            return (source ?? Array.Empty<BlueprintFeature>()).Any(value =>
+                Same(value, feature));
+        }
+
+        private static int Count(BlueprintFeature[] source,
+            BlueprintFeature feature)
+        {
+            return (source ?? Array.Empty<BlueprintFeature>()).Count(value =>
+                Same(value, feature));
+        }
+
+        private static bool Same(BlueprintFeature left, BlueprintFeature right)
+        {
+            return ReferenceEquals(left, right) || left != null && right != null &&
+                string.Equals(left.AssetGuid, right.AssetGuid,
+                    StringComparison.Ordinal);
         }
     }
 }

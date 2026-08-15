@@ -25,12 +25,5 @@ namespace KingmakerGunslinger.Firearms
             throw new ArgumentOutOfRangeException("scope");
         }
 
-        internal static bool CanSelectExoticWeaponProficiency(
-            int baseAttackBonus, bool hasFullProficiency)
-        {
-            if (baseAttackBonus < 0) throw new ArgumentOutOfRangeException(
-                "baseAttackBonus");
-            return baseAttackBonus >= 1 && !hasFullProficiency;
-        }
     }
 }

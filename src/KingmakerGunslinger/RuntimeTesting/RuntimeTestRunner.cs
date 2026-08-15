@@ -4648,6 +4648,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintFeature legacy = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
                 BlueprintBootstrap.Library, "0061053ca1104e19b7aa77e34c3a442c",
                 "legacy firearm Weapon Focus");
+            BlueprintFeature legacyProficiency = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(BlueprintBootstrap.Library,
+                "b1a58cfdbf004f04ade7765373484c29",
+                "legacy Exotic Weapon Proficiency (Firearms)");
             BlueprintFeatureSelection basic = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
                 BlueprintBootstrap.Library, "247a4068296e8be42890143f451b4b45",
                 "basic feat selection");
@@ -4667,9 +4671,51 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool catalog = selections.All(selection => selection.HideInUI &&
                 !basic.AllFeatures.Contains(selection) &&
                 !fighter.AllFeatures.Contains(selection));
+            BlueprintFeatureSelection[] allSelections = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintFeatureSelection>().ToArray();
+            bool proficiencyCatalog = allSelections.All(selection =>
+                    !(selection.Features ?? Array.Empty<BlueprintFeature>()).Any(value =>
+                        ReferenceEquals(value, legacyProficiency) || value != null &&
+                        value.AssetGuid == legacyProficiency.AssetGuid) &&
+                    !(selection.AllFeatures ?? Array.Empty<BlueprintFeature>()).Any(value =>
+                        ReferenceEquals(value, legacyProficiency) || value != null &&
+                        value.AssetGuid == legacyProficiency.AssetGuid)) &&
+                (legacyProficiency.Groups ?? Array.Empty<FeatureGroup>()).Length == 0 &&
+                !legacyProficiency.HideInUI;
+            AddFacts[] compatibilityGrants =
+                (legacyProficiency.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AddFacts>().ToArray();
+            bool compatibilityBlueprint = compatibilityGrants.Length == 1 &&
+                compatibilityGrants[0].Facts != null &&
+                compatibilityGrants[0].Facts.Length == 1 &&
+                ReferenceEquals(compatibilityGrants[0].Facts[0],
+                    BlueprintBootstrap.FirearmProficiency);
             string[] expectedFirearmNames = { "Blunderbuss", "Musket", "Pistol",
                 "Revolver", "Rifle" };
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            var legacyUnit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+            bool ordinaryCannotAcquire = false, legacyOwnerRetained = false,
+                legacyActionsExact = false;
+            try
+            {
+                UnitDescriptor descriptor = legacyUnit.Descriptor;
+                ordinaryCannotAcquire = !descriptor.HasFact(legacyProficiency) &&
+                    !descriptor.HasFact(BlueprintBootstrap.FirearmProficiency) &&
+                    proficiencyCatalog;
+                if (descriptor.AddFact(legacyProficiency) == null)
+                    throw new InvalidOperationException(
+                        "Detached legacy owner could not receive its preserved wrapper.");
+                AddFacts actionGrant = (BlueprintBootstrap.FirearmProficiency
+                    .ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<AddFacts>().Single();
+                legacyOwnerRetained = descriptor.HasFact(legacyProficiency) &&
+                    descriptor.HasFact(BlueprintBootstrap.FirearmProficiency);
+                legacyActionsExact = actionGrant.Facts != null &&
+                    actionGrant.Facts.Length == 3 &&
+                    actionGrant.Facts.Distinct().Count() == 3 &&
+                    actionGrant.Facts.All(fact => descriptor.HasFact(fact));
+            }
+            finally { legacyUnit.Dispose(); }
             var menuUnit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
             bool levelUpMenus;
             bool levelUpCommit;
@@ -4788,7 +4834,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";effects=" + effects + ";isolation=" + isolation +
                 ";nativeMenus=" + nativeMenus + ";levelUpMenus=" + levelUpMenus +
                 ";levelUpCommit=" + levelUpCommit +
-                ";legacyHidden=" + legacy.HideInUI;
+                ";legacyHidden=" + legacy.HideInUI +
+                ";proficiencyCatalog=" + proficiencyCatalog +
+                ";compatibilityBlueprint=" + compatibilityBlueprint +
+                ";ordinaryCannotAcquire=" + ordinaryCannotAcquire +
+                ";legacyOwnerRetained=" + legacyOwnerRetained +
+                ";legacyActionsExact=" + legacyActionsExact;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("dependent-feat-catalog", "obsolete wrappers hidden and absent from native catalogs", observed,
@@ -4813,6 +4864,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     isolation, "exact FirearmDefinition.Kind matching"),
                 Assertion("legacy-weapon-focus-compatibility", "legacy selection retained and hidden", observed,
                     legacy.HideInUI, "preserved 0.0.61 GUID and facts"),
+                Assertion("firearm-proficiency-acquisition-policy",
+                    "no selection or FeatureGroup route for a new ordinary character",
+                    observed, ordinaryCannotAcquire && proficiencyCatalog,
+                    "all live selection Features/AllFeatures and detached ordinary descriptor"),
+                Assertion("legacy-firearm-proficiency-compatibility",
+                    "stable wrapper grants the stable full proficiency and three distinct action facts",
+                    observed, compatibilityBlueprint && legacyOwnerRetained &&
+                        legacyActionsExact,
+                    "real AddFact propagation on a detached legacy owner"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -8446,8 +8506,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintFeatureSelection>(BlueprintBootstrap.Library,
                     "41c8486641f7d6d4283ca9dae4147a9f",
                     "native Fighter combat feat selection");
-            BlueprintFeature[] publicFirearmFeats = { firearmFeats.RapidReload,
-                firearmFeats.ExoticWeaponProficiency };
+            BlueprintFeature[] publicFirearmFeats = { firearmFeats.RapidReload };
             int basicFirearmFeatures = CountExactFeatures(basic.Features,
                 publicFirearmFeats);
             int basicFirearmAll = CountExactFeatures(basic.AllFeatures,
@@ -8456,6 +8515,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 publicFirearmFeats);
             int fighterFirearmAll = CountExactFeatures(fighter.AllFeatures,
                 publicFirearmFeats);
+            BlueprintFeature legacyFirearmProficiency =
+                firearmFeats.ExoticWeaponProficiency;
+            int legacyFirearmCatalogReferences = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintFeatureSelection>().Sum(selection =>
+                    CountExactFeatures(selection.Features,
+                        new[] { legacyFirearmProficiency }) +
+                    CountExactFeatures(selection.AllFeatures,
+                        new[] { legacyFirearmProficiency }));
+            AddFacts[] legacyFirearmGrants =
+                (legacyFirearmProficiency.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AddFacts>().ToArray();
+            bool legacyFirearmCompatibility = !legacyFirearmProficiency.HideInUI &&
+                (legacyFirearmProficiency.Groups ?? Array.Empty<FeatureGroup>()).Length == 0 &&
+                legacyFirearmGrants.Length == 1 &&
+                legacyFirearmGrants[0].Facts != null &&
+                legacyFirearmGrants[0].Facts.Length == 1 &&
+                ReferenceEquals(legacyFirearmGrants[0].Facts[0],
+                    BlueprintBootstrap.FirearmProficiency);
             string[] nativeParameterGuids = { "1e1f627d26ad36f43bbd26cc2bf8ac7e",
                 "09c9e82965fb4334b984a1e9df3bd088",
                 "31470b17e8446ae4ea0dacd6c5817d86",
@@ -8788,16 +8865,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "class and Paper stock absent",
                     observed, classCount == (expectedGunslinger ? 1 : 0) &&
                         paperRows == (expectedGunslinger ? 1 : 0) &&
-                        basicFirearmFeatures == (expectedGunslinger ? 2 : 0) &&
-                        basicFirearmAll == (expectedGunslinger ? 2 : 0) &&
-                        fighterFirearmFeatures == (expectedGunslinger ? 2 : 0) &&
-                        fighterFirearmAll == (expectedGunslinger ? 2 : 0) &&
+                        basicFirearmFeatures == (expectedGunslinger ? 1 : 0) &&
+                        basicFirearmAll == (expectedGunslinger ? 1 : 0) &&
+                        fighterFirearmFeatures == (expectedGunslinger ? 1 : 0) &&
+                        fighterFirearmAll == (expectedGunslinger ? 1 : 0) &&
                         firearmParameterCount == (expectedGunslinger ? 25 : 0) &&
                         capitalGunslingerRows == (expectedGunslinger ? 12 : 0) &&
                         btslGunslingerRows == (expectedGunslinger ?
                             installedBtslTables * 12 : 0) &&
                         rareLootRows == (expectedGunslinger ? 5 : 0),
                     "class, feat catalogs, native parameter menus, vendors, and fixed loot"),
+                Assertion("feature-module-legacy-firearm-proficiency",
+                    "registered compatibility fact with one full-proficiency grant and zero acquisition catalogs",
+                    "catalogReferences=" + legacyFirearmCatalogReferences +
+                        ";compatibility=" + legacyFirearmCompatibility,
+                    legacyFirearmCatalogReferences == 0 &&
+                        legacyFirearmCompatibility,
+                    "all live feature selections plus exact legacy AddFacts contract"),
                 Assertion("feature-module-acadamae-publication",
                     expectedAcadamae ? "feat arrays and Cord stock singular" :
                         "feat arrays and Cord stock absent",
@@ -16755,7 +16839,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             long moneyBefore = 0;
             int previewLevel = -1, committedLevel = -1;
             bool selected = false, callback = false, proficiencies = false,
-                grit = false, cleaned = false;
+                fullProficiency = false, actionFactsExact = false,
+                proficiencyGrantExact = false, grit = false, cleaned = false;
             var addedInventory = new List<object>();
             try
             {
@@ -16815,6 +16900,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 committedLevel = descriptor.Progression.GetClassLevel(gunslinger);
                 proficiencies = descriptor.HasFact(
                     BlueprintBootstrap.GunslingerClass.Proficiencies);
+                BlueprintFeature full = BlueprintBootstrap.FirearmProficiency;
+                fullProficiency = descriptor.HasFact(full);
+                BlueprintUnitFact[] classGrants = (BlueprintBootstrap.GunslingerClass
+                    .Proficiencies.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<AddFacts>().SelectMany(value => value.Facts ??
+                        Array.Empty<BlueprintUnitFact>()).ToArray();
+                proficiencyGrantExact = classGrants.Count(value =>
+                    ReferenceEquals(value, full) || value != null &&
+                    value.AssetGuid == full.AssetGuid) == 1;
+                BlueprintUnitFact[] actions = (full.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AddFacts>()
+                    .SelectMany(value => value.Facts ??
+                        Array.Empty<BlueprintUnitFact>()).ToArray();
+                actionFactsExact = actions.Length == 3 &&
+                    actions.Distinct().Count() == 3 &&
+                    actions.All(fact => descriptor.HasFact(fact));
                 grit = descriptor.HasFact(BlueprintBootstrap.GunslingerClass.Grit.Feature);
             }
             finally
@@ -16855,7 +16956,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string observed = "selected=" + selected + ";preview=" + previewLevel +
                 ";committed=" + committedLevel + ";callback=" + callback +
-                ";proficiencies=" + proficiencies + ";grit=" + grit;
+                ";proficiencies=" + proficiencies +
+                ";fullProficiency=" + fullProficiency +
+                ";proficiencyGrantExact=" + proficiencyGrantExact +
+                ";actionFactsExact=" + actionFactsExact + ";grit=" + grit;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("native-character-creation-commit",
@@ -16863,9 +16967,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, selected && previewLevel == 1 && committedLevel == 1 &&
                         callback, "CharGen-mode native Commit on detached player unit"),
                 Assertion("creation-level-one-facts",
-                    "Gunslinger proficiencies and grit installed", observed,
-                    proficiencies && grit,
-                    "exact committed descriptor HasFact after native Commit"),
+                    "Gunslinger proficiencies grant full proficiency exactly once, three distinct action facts, and grit",
+                    observed, proficiencies && fullProficiency &&
+                        proficiencyGrantExact && actionFactsExact && grit,
+                    "exact committed descriptor facts and AddFacts identities after native Commit"),
                 Assertion("external-isolation",
                     "unchanged party, units, cross-scene, companions, inventory, and money",
                     "cleaned=" + cleaned, cleaned,
@@ -17076,6 +17181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             GunslingerClassBlueprintSet set = BlueprintBootstrap.GunslingerClass;
             BlueprintArchetype pistolero = set.Pistolero.Archetype;
             BlueprintArchetype musketMaster = set.MusketMaster.Archetype;
+            BlueprintArchetype mysteriousStranger =
+                set.MysteriousStranger.Archetype;
             var assertions = new List<RuntimeTestAssertion>();
             foreach (RuntimeTestResult result in new[]
             {
@@ -17083,10 +17190,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "base-to-pistolero"),
                 RunDisposableGunslingerBroadRespecTransition(null, musketMaster,
                     "base-to-musket-master"),
+                RunDisposableGunslingerBroadRespecTransition(null,
+                    mysteriousStranger, "base-to-mysterious-stranger"),
                 RunDisposableGunslingerBroadRespecTransition(pistolero, null,
                     "pistolero-to-base"),
                 RunDisposableGunslingerBroadRespecTransition(musketMaster, null,
                     "musket-master-to-base"),
+                RunDisposableGunslingerBroadRespecTransition(mysteriousStranger,
+                    null, "mysterious-stranger-to-base"),
                 RunDisposableGunslingerBroadRespecTransition(pistolero, musketMaster,
                     "pistolero-to-musket-master")
             })
@@ -17202,12 +17313,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     handler.Replacement.Progression.GetClassLevel(gunslinger);
                 descriptorsAlias = handler.Replacement != null &&
                     ReferenceEquals(source.Descriptor, handler.Replacement);
-                BlueprintFeature expectedProficiency = targetArchetype == null
-                    ? BlueprintBootstrap.GunslingerClass.Proficiencies
-                    : ReferenceEquals(targetArchetype,
-                        BlueprintBootstrap.GunslingerClass.Pistolero.Archetype)
-                        ? BlueprintBootstrap.GunslingerClass.ArchetypeProficiencies.Pistolero
-                        : BlueprintBootstrap.GunslingerClass.ArchetypeProficiencies.MusketMaster;
+                bool targetPistolero = ReferenceEquals(targetArchetype,
+                    BlueprintBootstrap.GunslingerClass.Pistolero.Archetype);
+                bool targetMusketMaster = ReferenceEquals(targetArchetype,
+                    BlueprintBootstrap.GunslingerClass.MusketMaster.Archetype);
+                BlueprintFeature expectedProficiency = targetPistolero
+                    ? BlueprintBootstrap.GunslingerClass.ArchetypeProficiencies.Pistolero
+                    : targetMusketMaster
+                        ? BlueprintBootstrap.GunslingerClass.ArchetypeProficiencies.MusketMaster
+                        : BlueprintBootstrap.GunslingerClass.Proficiencies;
+                BlueprintFeature fullProficiency =
+                    BlueprintBootstrap.FirearmProficiency;
+                BlueprintFeature oneHandedProficiency = BlueprintBootstrap
+                    .ScopedFirearmProficiencies.OneHanded;
+                BlueprintFeature twoHandedProficiency = BlueprintBootstrap
+                    .ScopedFirearmProficiencies.TwoHanded;
                 Kingmaker.UnitLogic.ClassData replacementClassData =
                     handler.Replacement == null ? null :
                     handler.Replacement.Progression.GetClassData(gunslinger);
@@ -17222,11 +17342,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(sourceArchetype, targetArchetype) ||
                         !replacementArchetypes.Any(value =>
                             ReferenceEquals(value, sourceArchetype)));
+                bool exactScope = handler.Replacement != null &&
+                    handler.Replacement.HasFact(targetPistolero
+                        ? oneHandedProficiency : targetMusketMaster
+                            ? twoHandedProficiency : fullProficiency) &&
+                    handler.Replacement.HasFact(fullProficiency) ==
+                        (!targetPistolero && !targetMusketMaster) &&
+                    handler.Replacement.HasFact(oneHandedProficiency) ==
+                        targetPistolero &&
+                    handler.Replacement.HasFact(twoHandedProficiency) ==
+                        targetMusketMaster;
+                BlueprintFeature actionSource = targetPistolero
+                    ? oneHandedProficiency : targetMusketMaster
+                        ? twoHandedProficiency : fullProficiency;
+                BlueprintUnitFact[] expectedActions = (actionSource.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AddFacts>()
+                    .SelectMany(value => value.Facts ??
+                        Array.Empty<BlueprintUnitFact>()).ToArray();
+                bool exactActions = expectedActions.Length ==
+                        (targetPistolero ? 2 : 3) &&
+                    expectedActions.Distinct().Count() == expectedActions.Length &&
+                    handler.Replacement != null && expectedActions.All(value =>
+                        handler.Replacement.HasFact(value));
                 facts = handler.Replacement != null &&
                     handler.Replacement.HasFact(expectedProficiency) &&
                     handler.Replacement.HasFact(
                         BlueprintBootstrap.GunslingerClass.Grit.Feature) &&
-                    archetypeReconciled;
+                    archetypeReconciled && exactScope && exactActions;
             }
             finally
             {
@@ -17282,8 +17424,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         replacementFighter == 0 && replacementGunslinger == 1,
                     "Player.RespecCompanion plus exact initiation handler and Commit"),
                 Assertion(transition + "-replacement-facts",
-                    "target-family proficiency and grit installed", observed, facts,
-                    "replacement descriptor exact facts"),
+                    "only the intended full or scoped proficiency, its distinct action facts, and grit installed",
+                    observed, facts,
+                    "replacement descriptor exact visible/internal proficiency and action facts"),
                 Assertion(transition + "-external-isolation",
                     "party, units, companions, cross-scene, inventory, and money restored",
                     "cleaned=" + cleaned, cleaned,

@@ -10,6 +10,27 @@ The design has three independent pieces:
 2. An item-level equipment restriction on the Test Musket.
 3. Manual UMM controls for disposable-save testing.
 
+## Current acquisition policy
+
+The stable hidden full-proficiency fact is now a Gunslinger class entitlement,
+not a generally selectable feat. A normal level-one Gunslinger receives it
+exactly once through the visible **Gunslinger Proficiencies** class feature.
+Pistolero receives only the stable one-handed scoped fact; Musket Master receives
+only the stable two-handed scoped fact; Mysterious Stranger retains the base
+class's full proficiency.
+
+`KMG.Feats.ExoticWeaponProficiencyFirearms` remains registered under GUID
+`b1a58cfdbf004f04ade7765373484c29`. It keeps its localized character-sheet
+presentation and its historical one-fact grant so old saves continue to work.
+It has no feat groups and is removed from every live selection's `Features` and
+`AllFeatures` arrays, including compatibility-added selectors. A legacy owner
+may keep or remove it, but cannot select it as a new or replacement feat.
+
+Rapid Reload remains the only project-owned top-level firearm feat. The native
+Weapon Focus, Greater Weapon Focus, Weapon Specialization, Greater Weapon
+Specialization, and Improved Critical menus continue to receive exact firearm
+parameters and accept the appropriate full or scoped proficiency.
+
 ## Firearm Proficiency blueprint
 
 ```text
@@ -19,12 +40,12 @@ Runtime type:  BlueprintFeature
 Internal name: KMG_FirearmProficiency_Feature
 Ranks:         1
 HideInUI:      true
-Components:    none
+Components:    one AddFacts grant (Reload, Scatter Shot, Paper Cartridge Mode)
 ```
 
-The feature is intentionally component-free. It is a permission fact, not a bundle of attack bonuses or rule handlers.
-
-It remains hidden because Sprint 7 has no localized name, icon, class progression, feat selection, or release-facing grant path. Later content must reference this same stable blueprint rather than create alternate firearm-proficiency flags.
+The fact remains hidden and is the single full-proficiency authority. Existing
+and future code must reference this stable blueprint rather than create alternate
+full-proficiency flags.
 
 ## Item-level gate
 

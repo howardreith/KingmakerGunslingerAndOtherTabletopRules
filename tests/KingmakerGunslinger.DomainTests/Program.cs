@@ -151,7 +151,9 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-proficiency.two-handed-exact", ArchetypeFoundationTests.TwoHandedProficiencyExact),
             Case("archetype-proficiency.absent-and-marker-fail-closed", ArchetypeFoundationTests.ProficiencyFailsClosed),
             Case("archetype-proficiency.action-access", ArchetypeFoundationTests.ScopedActionAccess),
-            Case("archetype-proficiency.ewp-selection", ArchetypeFoundationTests.ExoticWeaponProficiencySelection),
+            Case("firearm-proficiency.publication-policy", FirearmProficiencyPublicationTests.PublicationPolicyIsCompatibilityOnly),
+            Case("firearm-proficiency.stable-identities", FirearmProficiencyPublicationTests.StableIdentitiesRemainExact),
+            Case("firearm-proficiency.runtime-contract", FirearmProficiencyPublicationTests.RuntimeScenariosExerciseRealOwnersAndArchetypes),
             Case("archetype-starter.precedence", ArchetypeFoundationTests.StartingFirearmPrecedence),
             Case("archetype-starter.exact-kind", ArchetypeFoundationTests.StartingFirearmExactKind),
             Case("archetype-training.thresholds-and-families", ArchetypeFoundationTests.TrainingThresholdsAndFamilies),
@@ -1192,8 +1194,9 @@ namespace KingmakerGunslinger.DomainTests
             string source = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs");
             Assertions.True(source.Contains(
-                "set.RapidReload, set.ExoticWeaponProficiency"),
-                "The authorized standalone firearm feats are not published together.");
+                "publication.Publish(set.RapidReload") &&
+                !source.Contains("set.RapidReload, set.ExoticWeaponProficiency"),
+                "Rapid Reload is not the sole authorized standalone firearm feat.");
             Assertions.False(source.Contains(
                 "set.WeaponFocus, set.NativeWeaponFocusWithFirearms"),
                 "A hidden Weapon Focus compatibility wrapper is still published at top level.");
