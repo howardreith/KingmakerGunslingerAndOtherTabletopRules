@@ -60,22 +60,22 @@ Implemented source behavior:
   detached legacy owner with `AddFact` propagation, normal level-one Gunslinger
   class grants, and exact Pistolero, Musket Master, and Mysterious Stranger
   proficiency scopes.
+- Respec/replacement reconciliation is explicit and legacy-safe. The visible
+  base proficiency removes stale one- and two-handed scope facts; Pistolero
+  removes full and two-handed facts; Musket Master removes full and one-handed
+  facts. A character that actually owns the legacy wrapper is exempt from full
+  fact removal, so compatibility proficiency is never stripped.
+- The first narrowed runtime respec audit correctly failed on commit `6fe8f18`
+  because base-to-scoped and scoped-to-base transitions retained facts. That
+  evidence is retained at
+  `20260815T0637145567759Z-disposable-archetype-reconciliation`. Commit
+  `3483b30` implements the narrow reconciliation; the same seven-transition
+  observer then passed with exact full/one/two scope and action-fact counts.
 
-Automated evidence at the uncommitted workstream candidate:
-
-- `scripts/test-domain.ps1 -Configuration Release -Clean`: PASS, 1,050/1,050.
-- `scripts/build.ps1 -Configuration Release -Clean -Package`: PASS.
-- Strict standalone package validation: PASS.
-- Candidate package SHA-256:
-  `E07F60313C48CAC907441D761DE14F664F562BC76CCD9C840FF389779B739B1A`.
-- Candidate DLL SHA-256:
-  `B0EEF900F85C193B70A03AE1CF2F3730DE4CD1366F19AFE0025B284F2DF8257E`.
-- Candidate DLL MVID: `c31d53fa-a337-44b9-9374-5e2035bbb84a`.
-
-Runtime evidence is pending an immutable commit and exact-artifact deployment.
-The visual mapping, asset variants, semantic markers, fit experiments, bundle
-measurements, screenshots, residual clipping table, final commit list, and human
-acceptance status will be appended in their respective coherent workstreams.
+Final automated evidence is recorded below against the immutable `3483b30`
+artifact. The complete suite passes 1,065/1,065, the proficiency and level-one
+observers pass, and the legacy wrapper is absent from acquisition catalogs while
+remaining registered and functional for an existing owner.
 
 ## Workstream B — complete pre-authoring visual audit
 
@@ -228,9 +228,11 @@ Automated evidence:
   `DD2FF53B35F52C81CA84C8E5779419F52072D35914E669C257EBA39605300483`;
 - DLL MVID: `cc6b28dc-492d-46c6-a464-85dd90e0342b`.
 
-Runtime combat/idle/switch/save-load regression and human visual acceptance are
-pending the mission's final immutable candidate. No in-game screenshot or
-subjective clipping/readability PASS is asserted by automation.
+The exact spear observer and disposable combat/cleanup scenario passed on the
+same unchanged spear source and bundle at immutable commit `041e934`; no spear
+source, mapping, bundle, or GUID changed afterward. The final `3483b30`
+save-backed smoke also passed. No in-game screenshot or subjective
+clipping/readability PASS is asserted by automation.
 
 ## Workstream C — bounded Eastern blade variety
 
@@ -285,9 +287,12 @@ The coherent candidate package and strict standalone validation also pass:
   `36CDACFF566491BF9C293A532BECD44D5212C3A67285DB9E395861ADEC73CEFF`;
 - DLL MVID: `6729b750-ea59-4679-b7bd-a66dc7d83e1a`.
 
-Runtime Eastern ON/OFF, all-ON, highest-risk optional-mod profile, all-30 visual
-observer, combat regression, save/load consistency, and human visual acceptance
-remain pending the final immutable mission candidate.
+On final immutable commit `3483b30`, all-ON item observation, Eastern OFF with
+every other module ON, the highest-risk optional-mod profile, the exact all-30
+visual observer, and save/load consistency all pass. Eastern disposable
+combat/cleanup also passed on immutable commit `041e934`; no Eastern source,
+mapping, bundle, or GUID changed afterward. Human visual acceptance remains
+pending.
 
 ## Workstream E - Musket geometry proof and semantic markers
 
@@ -349,11 +354,10 @@ closing and reopening inventory for a clean rebuild. The standardized manual
 matrix, source-render paths, screenshot naming, decision rules, and provisional
 clearance envelope are in `docs/FIREARM-FIT-GRAYBOX-QUALIFICATION.md`.
 
-Automated source/reflection evidence currently passes 1,059/1,059 tests. The
-Unity build itself is the integration test for authored marker transforms and
-its log proves all three resolve to the exact fixed frame. Final repository,
-build, package, and guarded runtime results will be recorded after the coherent
-immutable commit.
+Automated source/reflection evidence is included in the final 1,065/1,065
+suite. The Unity build itself is the integration test for authored marker
+transforms and its log proves all three resolve to the exact fixed frame. Final
+repository, build, package, and guarded runtime identities are recorded below.
 
 Human Musket geometry verdict: **PENDING**. Automation does not claim reduced
 clipping. The source renders are design aids, not Kingmaker screenshots.
@@ -365,7 +369,7 @@ before that result would violate the evidence rule.
 ## Immutable pre-review candidate and coherent commits
 
 The current technical candidate is source commit
-`041e934dc85d14512d9353f479d006a39065bd42` on
+`3483b3071ba4a8b2a8081b53c5796b058a584546` on
 `codex/weapon-visual-variety-firearm-fit-cleanup`. The coherent commit sequence
 from base `d846d8abed5281d1979cf33900ebef77e72e0a8b` is:
 
@@ -376,6 +380,11 @@ from base `d846d8abed5281d1979cf33900ebef77e72e0a8b` is:
 5. `37a937b` - Add Musket fit graybox experiment.
 6. `5b8d18f` - Add immutable artifact repair qualification.
 7. `041e934` - Validate exact Eastern item variants at runtime.
+8. `ce9bb8f` - Record pre-review weapon cleanup qualification.
+9. `efc2afc` - Clarify working-save evidence is read only.
+10. `a2ab463` - Add exact named pistol visual variants.
+11. `6fe8f18` - Narrow archetype proficiency runtime evidence.
+12. `3483b30` - Reconcile firearm proficiency scope after respec.
 
 The final commit remains intentionally unset until the human gate and any
 evidence-directed Musket/Blunderbuss iteration are complete. No merge occurred.
@@ -387,19 +396,19 @@ has these exact identities:
 - package:
   `artifacts/local-runtime/0.0.80/KingmakerGunslinger-0.0.80-local-runtime.zip`;
 - package SHA-256:
-  `847604574E84BA98BF55E77489FD8CF9276AFE07473B676AF31B72B2AC1D8797`;
+  `19276E756CEC872E077422C3E778DBE0712DE266BCDA451C291E827B61AAF165`;
 - DLL SHA-256:
-  `27BCD2F725B369DB4C46F0227AE03D91E4DEC92B941CE5B351EC01E4C2FC0A9D`;
-- DLL MVID: `24a38b51-b2f8-4a2e-b42b-edff7e32b1a8`;
+  `C204CA6C99B86F329E15721F5E0EC67CF7FAF2014DABC3BE16385C8D38934093`;
+- DLL MVID: `60fff2bb-2678-4af8-b6ca-4a8dedbb091e`;
 - installed DLL SHA-256: identical to the packaged DLL;
 - firearm bundle SHA-256:
-  `BD78F647966271D826C16D5FD93BD481EA1953E48CE66D9E9313ABBFED15B152`;
+  `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`;
 - all-ON settings SHA-256:
   `2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`;
 - deployment manifest:
-  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260815T0529185947906Z/deployment.json`;
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260815T0643471471573Z/deployment.json`;
 - pre-deployment backup:
-  `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260815T0529146394604Z`.
+  `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260815T0643429981043Z`.
 
 `scripts/Build-Local.ps1` built, tested, packaged, and strictly validated this
 source commit once. `scripts/Deploy-Local.ps1` backed up and deployed it once.
@@ -409,9 +418,9 @@ and the request-local/original settings identity before Steam launch.
 
 ## Final-candidate automated qualification to the human gate
 
-The following commands and results are accepted for commit `041e934`:
+The following commands and results are accepted for commit `3483b30`:
 
-- `scripts/test-domain.ps1 -Configuration Release`: PASS, 1,061/1,061.
+- `scripts/test-domain.ps1 -Configuration Release`: PASS, 1,065/1,065.
 - `scripts/build.ps1 -Configuration Release -Clean -Package`: PASS, including
   repository validation, complete domain/reflection suite, clean Release build,
   build-output validation, deterministic packaging, and strict package
@@ -426,28 +435,36 @@ The following commands and results are accepted for commit `041e934`:
 - exact Unity 2018.4.10f1 bundle builds were run twice from unchanged inputs:
   firearm, Eastern, and spear bundle hashes matched their manifests.
 
-Guarded Steam App ID 640820 runtime PASS evidence:
+Guarded Steam App ID 640820 runtime PASS evidence for the exact `3483b30`
+artifact:
 
 | Scenario | Run ID | Evidence directory |
 |---|---|---|
-| all-ON module load | `20260815T0529384705552Z-3b8227ba790a4abdbbac402136238a7e` | `20260815T0529384337593Z-mod-load-smoke` |
-| firearm production/diagnostic visual rigs, markers, IK, cleanup | `20260815T0531581755461Z-db3d4b910d2b46c6a5ed3c921bef23ef` | `20260815T0531581440963Z-disposable-firearm-visual-rigs` |
-| exact all-30 Eastern item observer | `20260815T0534097873347Z-91c2116f10124d97a30d6c737147cbd3` | `20260815T0534097525070Z-observe-eastern-weapon-contracts` |
-| Eastern disposable combat/cleanup | `20260815T0537205906818Z-8a9bf8e85e924ebcb45a3c74531ab93b` | `20260815T0537205608781Z-disposable-eastern-weapons-combat` |
-| exact all-12 branched-spear observer | `20260815T0539303961608Z-78c31f3df4dd431899c2d36d0a3d7c8b` | `20260815T0539303715105Z-observe-elven-branched-spear-contracts` |
-| branched-spear disposable combat/cleanup | `20260815T0541426733415Z-f0ff47492bb14b5c87386f57c9ebded6` | `20260815T0541426471390Z-disposable-elven-branched-spear-combat` |
-| canonical `KMG_AUTOMATION_WORKING` catalog/load/fingerprint, with no save-writing API | `20260815T0543492604693Z-6ab479731480431a8e7ec3fb060f8030` | `20260815T0543491837527Z-working-save-smoke` |
-| isolated highest-risk optional-mod profile | `20260815T0549310463372Z-aeea181ff79e4cfe968dd10c3d1263bb` | `20260815T0549310271669Z-observe-optional-mod-compatibility` |
-| Eastern OFF, every other module ON, highest-risk profile | `20260815T0552181340583Z-1e7629dac21e4d238c3b78498b1898f3` | `20260815T0552181084011Z-observe-feature-module-settings` |
+| archetype replacement/respec scope reconciliation | `20260815T0644021288402Z-70c9adf68a824a65b5b516c90c38c5fb` | `20260815T0644020980076Z-disposable-archetype-reconciliation` |
+| ordinary owner, legacy owner, Rapid Reload, and dependent feat acquisition | `20260815T0646160392727Z-bf273493209746138cf35350a39ebb7e` | `20260815T0646160079665Z-disposable-firearm-dependent-feats` |
+| level-one Gunslinger full proficiency, actions, and grit | `20260815T0648265374874Z-57a73ab196094aefb5cde1395f56cad7` | `20260815T0648265122979Z-disposable-gunslinger-creation-commit` |
+| all-ON firearm item variants, diagnostic rigs, markers, IK, and cleanup | `20260815T0650329834070Z-7a01f446b5344df2a9e052446e82a706` | `20260815T0650329521394Z-disposable-firearm-visual-rigs` |
+| exact all-30 Eastern item observer | `20260815T0652400356966Z-b95bfb3b5c334731bdf81bbaa9720f0f` | `20260815T0652400095728Z-observe-eastern-weapon-contracts` |
+| Eastern OFF, every other module ON | `20260815T0656467636952Z-3d70699f20ea42b7bf2cc793f788fdf1` | `20260815T0656467408190Z-observe-feature-module-settings` |
+| isolated highest-risk optional-mod profile | `20260815T0659351547036Z-7d10ff3ddebc48a6abb61a36530685ea` | `20260815T0659351431610Z-observe-optional-mod-compatibility` |
+| canonical read-only `KMG_AUTOMATION_WORKING` catalog/load/fingerprint smoke | `20260815T0702085096161Z-98b1186df50042fab7f12818a51188e3` | `20260815T0702084863799Z-working-save-smoke` |
 
 All evidence directories are beneath
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. The isolated compatibility
 profile was exactly Gunslinger + Call of the Wild + Arms & Armor + Toggle
-Custom Soundpacks. Both compatibility transactions restored the original mod
-set; the Eastern-OFF transaction also restored the exact original all-ON
-settings hash. A preceding direct observer request correctly failed because the
-ambient local set was Gunslinger + Call of the Wild + Bag of Tricks rather than
-the requested profile; it is retained as negative setup evidence at
+Custom Soundpacks. Its transaction ID is
+`compat-20260815T065914Z-88804ac37ba4`; staged mutation was observed and exact
+restoration verified. During the Eastern-OFF run, the outer tool wrapper timed
+out after Steam launch while the guarded game process continued. The structured
+scenario passed, after which the exact original settings bytes were restored
+from the immutable deployment backup and verified byte-for-byte at SHA-256
+`2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`.
+No ambiguity is hidden: the runtime assertion and restoration are independently
+recorded rather than falsely attributing restoration to the terminated wrapper.
+
+A preceding direct observer request correctly failed because the ambient local
+set was Gunslinger + Call of the Wild + Bag of Tricks rather than the requested
+profile; it is retained as negative setup evidence at
 `20260815T0546260048618Z-observe-optional-mod-compatibility` and is not counted
 as product qualification.
 
@@ -458,6 +475,13 @@ exact symbol-approved variant contract while preserving the native fallback
 when the bundle is unavailable. The full suite and the exact all-30 runtime
 observer independently prove the correction. Negative evidence remains at
 `20260815T0521306651467Z-mod-load-smoke`.
+
+The first exact respec audit likewise failed closed at commit `6fe8f18`, proving
+that native replacement retained stale full/scoped facts in six transitions.
+Commit `3483b30` added feature-owned, legacy-aware fact reconciliation and the
+same observer passed all seven transitions. The failed evidence remains at
+`20260815T0637145567759Z-disposable-archetype-reconciliation`; it is not counted
+as qualification.
 
 No runtime test selected or wrote `KMG_AUTOMATION_BASELINE`. Only the explicitly
 authorized `KMG_AUTOMATION_WORKING` save entered the save-backed run. Disposable
