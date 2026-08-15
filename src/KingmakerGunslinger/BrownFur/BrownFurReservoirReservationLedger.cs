@@ -82,6 +82,19 @@ namespace KingmakerGunslinger.BrownFur
             }
         }
 
+        internal bool Release(string transactionIdentity)
+        {
+            if (string.IsNullOrWhiteSpace(transactionIdentity)) return false;
+            lock (_gate)
+            {
+                Reservation reservation;
+                if (!_reservations.TryGetValue(transactionIdentity,
+                        out reservation)) return false;
+                RemoveLocked(transactionIdentity, reservation);
+                return true;
+            }
+        }
+
         private void RemoveLocked(string transactionIdentity,
             Reservation reservation)
         {

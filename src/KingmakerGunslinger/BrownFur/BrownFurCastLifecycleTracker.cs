@@ -98,8 +98,14 @@ namespace KingmakerGunslinger.BrownFur
             lock (_gate)
             {
                 Entry entry;
-                return _abilities.TryGetValue(ability, out entry) &&
-                    entry.Transaction.Commit(tryDebitExactly);
+                if (!_abilities.TryGetValue(ability, out entry)) return false;
+                BrownFurCastTransactionState before = entry.Transaction.State;
+                if (entry.Transaction.Commit(tryDebitExactly)) return true;
+                if (before == BrownFurCastTransactionState.Validated &&
+                    entry.Transaction.State ==
+                        BrownFurCastTransactionState.Rejected)
+                    Release(entry);
+                return false;
             }
         }
 
@@ -123,6 +129,12 @@ namespace KingmakerGunslinger.BrownFur
                     entry.Transaction.Interrupt();
                     if (entry.Process == null) Release(entry);
                 }
+                else if (state == BrownFurCastTransactionState.Rejected ||
+                    state == BrownFurCastTransactionState.Failed ||
+                    state == BrownFurCastTransactionState.Cancelled ||
+                    state == BrownFurCastTransactionState.Interrupted ||
+                    state == BrownFurCastTransactionState.Completed)
+                    Release(entry);
                 return true;
             }
         }
@@ -154,6 +166,20 @@ namespace KingmakerGunslinger.BrownFur
             {
                 Entry entry;
                 if (!_contexts.TryGetValue(context, out entry)) return false;
+                transaction = entry.Transaction;
+                return true;
+            }
+        }
+
+        internal bool TryGetByAbility(TAbility ability,
+            out BrownFurCastTransaction transaction)
+        {
+            transaction = null;
+            if (ability == null) return false;
+            lock (_gate)
+            {
+                Entry entry;
+                if (!_abilities.TryGetValue(ability, out entry)) return false;
                 transaction = entry.Transaction;
                 return true;
             }

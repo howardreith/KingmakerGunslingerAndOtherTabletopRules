@@ -628,6 +628,65 @@ namespace KingmakerGunslinger.DomainTests
                 "An exceptional debit must release its reservation in finally.");
         }
 
+        internal static void CommitCoordinatorIsAtomic()
+        {
+            var released = new List<BrownFurCastTransaction>();
+            var coordinator = new BrownFurCastCommitCoordinator<object, object,
+                object, object, object, object>(released.Add);
+            object owner = new object();
+            object command = new object();
+            object ability = new object();
+            object rule = new object();
+            object context = new object();
+            object process = new object();
+            BrownFurCastTransaction transaction = Transaction(2);
+            Assertions.True(coordinator.Begin(owner, command, ability,
+                transaction, 2) && coordinator.ReservedPoints(owner) == 2 &&
+                coordinator.AttachRule(ability, rule, context),
+                "A validated combined cast must reserve before its rule runs.");
+            Assertions.False(coordinator.Begin(owner, new object(), new object(),
+                Transaction(1), 2),
+                "A queued cast must reject when earlier reservations consume availability.");
+            int debited = 0;
+            Assertions.True(coordinator.Commit(owner, ability,
+                cost => { debited += cost; return true; }) && debited == 2 &&
+                coordinator.ReservationCount == 0 &&
+                coordinator.AttachProcess(rule, process) &&
+                coordinator.ProcessTerminal(process, false),
+                "Commit must debit the full combined cost once and retain the process until completion.");
+            Assertions.True(transaction.State ==
+                BrownFurCastTransactionState.Completed && released.Count == 1 &&
+                ReferenceEquals(released[0], transaction) &&
+                coordinator.ActiveTransactionCount == 0,
+                "Process completion must release every coupled surface once.");
+        }
+
+        internal static void CommitCoordinatorRejectionCleansUp()
+        {
+            var released = new List<BrownFurCastTransaction>();
+            var coordinator = new BrownFurCastCommitCoordinator<object, object,
+                object, object, object, object>(released.Add);
+            object owner = new object();
+            object command = new object();
+            object ability = new object();
+            BrownFurCastTransaction transaction = Transaction(1);
+            Assertions.True(coordinator.Begin(owner, command, ability,
+                transaction, 1),
+                "The rejected-commit fixture must reserve before commitment.");
+            Assertions.False(coordinator.Commit(owner, ability,
+                cost => false),
+                "A failed exact debit must reject the coupled commit.");
+            Assertions.True(transaction.State ==
+                BrownFurCastTransactionState.Rejected &&
+                coordinator.ReservationCount == 0 &&
+                coordinator.ActiveTransactionCount == 0 &&
+                released.Count == 1 &&
+                ReferenceEquals(released[0], transaction),
+                "Commit rejection must release tracker, reservation, and scopes immediately.");
+            Assertions.False(coordinator.EndCommand(command, true),
+                "A later command-end signal must find no leaked rejected entry.");
+        }
+
         internal static void ShareTargetingScopesAreIsolated()
         {
             var tracker = new BrownFurShareTargetingScopeTracker<object, object,

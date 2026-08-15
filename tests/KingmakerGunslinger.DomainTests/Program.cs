@@ -60,6 +60,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.cast-lifecycle-release", BrownFurCastTests.CastLifecycleReleasesExactlyOnce),
             Case("brown-fur.cast-reservation-concurrent", BrownFurCastTests.ReservoirReservationsAreAtomic),
             Case("brown-fur.cast-reservation-terminal", BrownFurCastTests.ReservoirReservationsReleaseOnEveryTerminalCommit),
+            Case("brown-fur.cast-commit-coordinator", BrownFurCastTests.CommitCoordinatorIsAtomic),
+            Case("brown-fur.cast-commit-rejection", BrownFurCastTests.CommitCoordinatorRejectionCleansUp),
             Case("brown-fur.cast-reservoir-exact", BrownFurCastTests.ReservoirDebitIsExact),
             Case("brown-fur.cast-reservoir-reject", BrownFurCastTests.ReservoirDebitRejectsBeforeSpend),
             Case("brown-fur.cast-reservoir-rollback", BrownFurCastTests.ReservoirDebitRollsBackAnomaly),
