@@ -6,6 +6,7 @@ param(
     [ValidateRange(120, 900)][int]$TimeoutSeconds = 300,
     [ValidateSet('prepare', 'cleanup')]
     [string]$StartPhase = 'prepare',
+    [switch]$VerifyBrownFurOff,
     [switch]$AllowDirtyGit,
     [switch]$ConfirmEach,
     [switch]$ReuseInstalledArtifact,
@@ -48,7 +49,7 @@ $originalBytes = if ($originalExists) {
 } else { $null }
 $failure = $null
 
-function Set-BrownFurEnabled {
+function Set-BrownFurEnabled([bool]$enabled) {
     $configuration = [ordered]@{
         schemaVersion = 6
         gunslinger = $true
@@ -57,7 +58,7 @@ function Set-BrownFurEnabled {
         'expanded-summoning' = $true
         'elven-branched-spears' = $true
         'eastern-weapons' = $true
-        'brown-fur-transmuter' = $true
+        'brown-fur-transmuter' = $enabled
     }
     $temporary = $settings + '.kmg-brown-fur-persistence.tmp'
     [IO.File]::WriteAllText($temporary,
@@ -89,7 +90,7 @@ function Wait-ForGuardedKingmakerExit([string]$phase) {
 }
 
 try {
-    Set-BrownFurEnabled
+    Set-BrownFurEnabled $true
     if (-not $ReuseInstalledArtifact) {
         & $build
         $PackagePath = Join-Path $root (
@@ -116,7 +117,11 @@ try {
         Wait-ForGuardedKingmakerExit 'prepare'
     }
 
-    & $invoke -Scenario 'working-save-brown-fur-verify-cleanup' `
+    if ($VerifyBrownFurOff) { Set-BrownFurEnabled $false }
+    $verifyScenario = if ($VerifyBrownFurOff) {
+        'working-save-brown-fur-off-verify-cleanup'
+    } else { 'working-save-brown-fur-verify-cleanup' }
+    & $invoke -Scenario $verifyScenario `
         -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
         -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `

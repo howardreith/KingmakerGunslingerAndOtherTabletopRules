@@ -280,6 +280,11 @@ namespace KingmakerGunslinger.DomainTests
                 StringSplitOptions.None).Length,
                 "The Brown-Fur persistence cleanup constant must be declared " +
                 "and present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "WorkingSaveBrownFurOffVerifyCleanup" },
+                StringSplitOptions.None).Length,
+                "The Brown-Fur OFF-owner cleanup constant must be declared " +
+                "and present exactly once in the in-process allowlist.");
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
                 "memorization_spellbook", "arcane_reservoir_resource",
@@ -571,6 +576,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "working-save-brown-fur-prepare",
                 "working-save-brown-fur-verify-cleanup",
+                "working-save-brown-fur-off-verify-cleanup",
                 "StartBrownFurPersistence",
                 "CompleteBrownFurPersistence",
                 "BrownFurModifierAdjustmentRuntime.Begin",
@@ -596,17 +602,25 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(runtimeRequest.Contains(token),
                     "Brown-Fur persistence request policy lacks token: " +
                     token);
+            Assertions.True(runtimeRequest.Contains(
+                "WorkingSaveBrownFurOffVerifyCleanup"),
+                "Brown-Fur OFF-owner request policy lacks its exact scenario.");
             foreach (string token in new[] {
                 "'working-save-brown-fur-prepare',",
                 "'working-save-brown-fur-verify-cleanup'," })
                 Assertions.True(runtimeOrchestrator.Contains(token),
                     "Brown-Fur persistence deadline routing lacks token: " +
                     token);
+            Assertions.True(runtimeOrchestrator.Contains(
+                "'working-save-brown-fur-off-verify-cleanup',"),
+                "Brown-Fur OFF-owner deadline routing lacks its exact scenario.");
             foreach (string token in new[] {
                 "KMG_AUTOMATION_WORKING", "Build-Local.ps1",
                 "Deploy-Local.ps1", "-ReuseInstalledArtifact",
                 "working-save-brown-fur-prepare",
                 "working-save-brown-fur-verify-cleanup",
+                "working-save-brown-fur-off-verify-cleanup",
+                "VerifyBrownFurOff", "Set-BrownFurEnabled $false",
                 "Restore-OriginalFeatureState",
                 "Feature settings bytes were not restored exactly" })
                 Assertions.True(persistenceOrchestrator.Contains(token),

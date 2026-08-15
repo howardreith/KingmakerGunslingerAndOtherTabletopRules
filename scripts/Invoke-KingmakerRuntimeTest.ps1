@@ -469,6 +469,7 @@ try {
         'disposable-brown-fur-native-cast',
         'working-save-brown-fur-prepare',
         'working-save-brown-fur-verify-cleanup',
+        'working-save-brown-fur-off-verify-cleanup',
         'working-save-expanded-summoning-prepare',
         'working-save-expanded-summoning-verify-cleanup',
         'working-save-expanded-summoning-verify-absent',

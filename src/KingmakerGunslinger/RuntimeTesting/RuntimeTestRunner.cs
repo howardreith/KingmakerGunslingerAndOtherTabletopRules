@@ -51,6 +51,7 @@ using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
 using KingmakerGunslinger.BrownFur;
+using KingmakerGunslinger.FeatureModules;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -121,6 +122,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _brownFurPersistenceBuffValid;
         private bool _brownFurPersistenceContextValid;
         private bool _brownFurPersistenceCarrierValid;
+        private bool _brownFurPersistenceModuleStateValid;
         private bool _brownFurPersistenceCleanupValid;
         private string _brownFurPersistenceDetail = "";
         private bool _expandedSummoningPersistenceSaveStarted;
@@ -1707,7 +1709,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             return _request.Scenario == RuntimeTestScenarioCatalog
                     .WorkingSaveBrownFurPrepare ||
                 _request.Scenario == RuntimeTestScenarioCatalog
-                    .WorkingSaveBrownFurVerifyCleanup;
+                    .WorkingSaveBrownFurVerifyCleanup ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveBrownFurOffVerifyCleanup;
         }
 
         private bool IsExpandedSummoningPersistenceScenario()
@@ -2787,6 +2791,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             int persistedBeforeCleanup = persistencePart == null ? 0 :
                 persistencePart.Count;
             _brownFurPersistenceCarrierValid = persistedBeforeCleanup == 1;
+            bool expectedActive = _request.Scenario != RuntimeTestScenarioCatalog
+                .WorkingSaveBrownFurOffVerifyCleanup;
+            CotwArcanistContract contract = resolution.Contract;
+            int selectorReferences = contract.ArcanistClass.Archetypes == null ? 0 :
+                contract.ArcanistClass.Archetypes.Count(value =>
+                    ReferenceEquals(value, blueprints.Archetype));
+            _brownFurPersistenceModuleStateValid =
+                _context.FeatureModules.Active.BrownFurTransmuter ==
+                    expectedActive &&
+                BrownFurFeatureStatusRegistry.Current.Availability ==
+                    BrownFurDependencyAvailability.Available &&
+                !BrownFurFeatureStatusRegistry.Current.Published &&
+                selectorReferences == 0;
 
             if (!prepare)
             {
@@ -2822,7 +2839,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _brownFurPersistenceCleanupValid + ";persistedBefore=" +
                 persistedBeforeCleanup + ";persistedAfter=" +
                 (persistencePart == null ? 0 : persistencePart.Count) +
-                ";scopes=" +
+                ";expectedActive=" + expectedActive + ";selectorRefs=" +
+                selectorReferences + ";moduleState=" +
+                _brownFurPersistenceModuleStateValid + ";scopes=" +
                 BrownFurModifierAdjustmentRuntime.ActiveScopeCount;
 
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
@@ -2870,8 +2889,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
             bool verify = _request.Scenario == RuntimeTestScenarioCatalog
-                .WorkingSaveBrownFurVerifyCleanup;
-            bool phaseValid = _context.FeatureModules.Active.BrownFurTransmuter &&
+                .WorkingSaveBrownFurVerifyCleanup ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveBrownFurOffVerifyCleanup;
+            bool phaseValid = _brownFurPersistenceModuleStateValid &&
                 _brownFurPersistenceFeaturesValid &&
                 _brownFurPersistencePresentationValid &&
                 _brownFurPersistenceBuffValid &&
@@ -2922,6 +2943,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _brownFurPersistenceCarrierValid,
                     verify ? "freshly deserialized UnitPart record" :
                         "pre-save UnitPart record"),
+                Assertion("brown-fur-persistence-module-state",
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .WorkingSaveBrownFurOffVerifyCleanup ?
+                        "saved OFF; dependency available; selector hidden" :
+                        "saved ON; dependency available; selector gated",
+                    _brownFurPersistenceDetail,
+                    _brownFurPersistenceModuleStateValid,
+                    "immutable active settings, effective dependency status, and exact Arcanist archetype array"),
                 Assertion("brown-fur-persistence-cleanup",
                     verify ? "features, grants, and buff absent before cleanup save" :
                         "not-applicable",
