@@ -109,3 +109,15 @@ will therefore compose through exact after-CotW postfix result overrides for
 a validated per-cast identity, leaving every unmatched query unchanged. The
 native approach-distance and delivery bodies remain the next investigation
 gate; the archetype remains reserved and unpublished.
+
+The delivery observer on `f12c33c9e5a13fb57f5505f27dfe6755b8104203`
+captured the requested native bodies but failed one evidence assertion because
+the inspected getters are inherited from `UnitCommand`, not declared on
+`UnitUseAbility`. The corrected exact checkpoint
+`29071bdbd059d09455b8d507eb8edf06d9ee6019` passed all 14 assertions. Native
+Personal delivery is zero spell range plus caster/target corporeal radii and
+uses ordinary command approach, establishing the Touch path. The exact
+level-20 adapter can add 30 feet only to the matching cast's approach-distance
+result while the policy rejects an over-30-foot target before commitment.
+Targeting-scope implementation and live boundary qualification remain pending;
+Brown-Fur is still reserved and unpublished.

@@ -178,6 +178,35 @@ caster, and target scope. An unmatched query must retain CotW's result. The
 native approach-distance and command-delivery bodies still require inspection
 before Touch and exact-30-foot behavior can be authorized.
 
+That native-delivery inspection first ran on commit
+`f12c33c9e5a13fb57f5505f27dfe6755b8104203`. It captured all 166 requested IL
+instructions but correctly reported FAIL because the assertion expected two
+inherited getters to be declared on `UnitUseAbility`; the engine declares them
+on `UnitCommand`. No mechanical ambiguity or mutation occurred. After fixing
+only that evidence expectation, commit
+`29071bdbd059d09455b8d507eb8edf06d9ee6019` passed all 14 guarded assertions.
+The built and installed DLL SHA-256 was
+`3D22B020BE43A1A85998BC8468DD2B5B177BA39BDC5E87C88E1C4C7CAF5A3B92`, its
+MVID was `73887b8d-4ec4-48ba-bde1-5035d5992049`, and the structured contract
+artifact SHA-256 was
+`B9310BC962EF8255A335D41F4A654E8F47E2E896C207E9250868508E116B7B41`.
+
+`AbilityData.GetApproachDistance(UnitEntityData)` calculates the target and
+caster corporeal radii first. A Personal spell without the native Alchemist
+Infusion exception then falls through to `BlueprintAbility.GetRange(false)`
+and adds those radii. Personal range therefore supplies zero spell range plus
+the native contact radii: the correct Touch approach boundary. The inherited
+`UnitCommand.ShouldUnitApproach` decision remains true until
+`IsUnitEnoughClose`, and `ApproachRadius` returns the radius captured by the
+command.
+
+The authorized Share adapter can preserve the native Touch result unchanged.
+For the level-20 form it may replace only the exact scoped
+`GetApproachDistance` result with 30 feet in meters plus the same native
+corporeal radii, while the independent target policy enforces the exact
+30-foot willingness boundary before commitment. Runtime qualification must
+still prove boundary/over-boundary command behavior and effect delivery.
+
 The modifier-provenance extension of this scenario passed all 11 assertions on
 commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
 package SHA-256 was
