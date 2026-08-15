@@ -27,6 +27,7 @@ using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
+using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Compatibility;
@@ -367,13 +368,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             ICollection<RuntimeTestAssertion> assertions,
             ICollection<string> diagnostics)
         {
-            BlueprintItemWeapon[] items = set.Entries.Select(value =>
-                value.Item).Concat(set.Named.Entries.Select(value =>
-                    value.Item)).ToArray();
+            KeyValuePair<string, BlueprintItemWeapon>[] mappedItems = set.Entries
+                .Select(value => new KeyValuePair<string, BlueprintItemWeapon>(
+                    value.Spec.Symbol, value.Item)).Concat(set.Named.Entries
+                .Select(value => new KeyValuePair<string, BlueprintItemWeapon>(
+                    value.Spec.Symbol, value.Item))).ToArray();
+            BlueprintItemWeapon[] items = mappedItems.Select(value =>
+                value.Value).ToArray();
             var rows = new List<string>();
             bool exact = items.Length == 30;
-            foreach (BlueprintItemWeapon item in items)
+            foreach (KeyValuePair<string, BlueprintItemWeapon> mapped in
+                mappedItems)
             {
+                string symbol = mapped.Key;
+                BlueprintItemWeapon item = mapped.Value;
                 EasternWeaponFamilyBlueprintSet familySet = set.Families
                     .Single(value => ReferenceEquals(value.WeaponType,
                         item.Type));
@@ -397,7 +405,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     instance = Assets.EasternWeaponAssetRuntime
-                        .InstantiatePrefab(family);
+                        .InstantiatePrefab(WeaponVisualVariantCatalog.Require(
+                            symbol));
                     if (instance != null)
                     {
                         instanceResolved = true;
@@ -424,19 +433,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value == null ? "<null>" : value.AssetGuid).ToArray();
                 bool itemExact = itemOverrideFieldExists &&
                     ReferenceEquals(itemOverride, visual) && visual != null &&
-                    ReferenceEquals(visual, familySet.WeaponType
+                    !ReferenceEquals(visual, familySet.WeaponType
                         .VisualParameters) && model != null &&
-                    ReferenceEquals(model, familySet.WeaponType
-                        .VisualParameters.Model) &&
+                    Assets.EasternWeaponAssetRuntime.HasExactVisual(item,
+                        symbol) &&
                     VisualContractMatches(visual, donor.VisualParameters) &&
                     instanceResolved && cuttingEdge && instanceCleaned;
                 exact &= itemExact;
                 rows.Add(item.AssetGuid + ":" + item.Name +
+                    ";symbol=" + symbol + ";variant=" +
+                    WeaponVisualVariantCatalog.Require(symbol) +
                     ";family=" + family + ";type=" +
                     item.Type.AssetGuid + ";itemOverride=" +
                     (!itemOverrideFieldExists ? "field-absent" :
                         ReferenceEquals(itemOverride, visual) ?
-                            "exact-family-visual" : "different-visual") +
+                            "exact-item-visual" : "different-visual") +
                     ";model=" + (model == null ? "<null>" : model.name) +
                     ";instantiated=" + instantiated + ";donor=" +
                     donorGuid + "/" + (visual == null ? "<null>" :
@@ -447,11 +458,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = string.Join("|", rows.ToArray());
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-all-30-visual-identities",
-                "30 exact items; 10 per family; inherited equipment-hand visual field equals effective family-type visual; one validated family prefab; exact native donor contract; CuttingEdge material; transient cleanup",
+                "30 exact items; 10 per family; inherited equipment-hand field equals the approved blueprint-specific variant; exact family and native donor contract; CuttingEdge material; transient cleanup",
                 observed, exact && set.Families.All(family => items.Count(
                     item => ReferenceEquals(item.Type,
                         family.WeaponType)) == 10),
-                "live blueprint visual resolution plus one actual AssetBundle prefab instantiation per exact item");
+                "live recursive inherited item visual resolution plus one exact AssetBundle prefab instantiation per item");
             diagnostics.Add("all30Visuals{" + observed + "}");
         }
 

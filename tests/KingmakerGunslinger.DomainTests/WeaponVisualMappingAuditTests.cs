@@ -138,6 +138,35 @@ namespace KingmakerGunslinger.DomainTests
                 "The spear vocabulary must remain bounded to three variants.");
         }
 
+        internal static void RuntimeCatalogMatchesApprovedEasternVariants()
+        {
+            JObject audit = Parse("docs", "weapon-visual-mapping-audit.json");
+            string[] families = { "Wakizashi", "Katana", "Nodachi" };
+            JToken[] items = audit["items"].Where(value => families.Contains(
+                (string)value["familyOrFirearmKind"])).ToArray();
+            Assertions.Equal(30, items.Length,
+                "The approved Eastern item mapping count changed.");
+            foreach (JToken item in items)
+            {
+                string symbol = (string)item["symbolicIdentity"];
+                string variant;
+                Assertions.True(WeaponVisualVariantCatalog.TryGet(symbol,
+                    out variant), symbol + " lacks a runtime visual mapping.");
+                Assertions.Equal((string)item["proposedVisualVariant"],
+                    variant, symbol + " audit/runtime visual mapping diverged.");
+                Assertions.True(variant.StartsWith(
+                    (string)item["familyOrFirearmKind"] + ".",
+                    StringComparison.Ordinal),
+                    symbol + " crosses its qualified family boundary.");
+            }
+            foreach (string family in families)
+                Assertions.Equal(4, items.Where(value =>
+                    (string)value["familyOrFirearmKind"] == family).Select(
+                    value => (string)value["proposedVisualVariant"])
+                    .Distinct().Count(), family +
+                    " must use exactly four reusable variants.");
+        }
+
         private static JObject Parse(params string[] parts)
         { return JObject.Parse(Read(parts)); }
 

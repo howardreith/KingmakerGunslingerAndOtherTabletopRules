@@ -1,15 +1,12 @@
-"""Generate the project's original Wakizashi, Katana, and Nodachi assets.
-
-Run with Blender 4.5 in background mode. Each weapon uses metric scale, places
-its primary grip at the origin, and points toward +Z. The six icon renders are
-also generated from these exact meshes without third-party source artwork.
-"""
+"""Deterministically generate four variants for each Eastern blade family."""
 import bpy
 import datetime
 import hashlib
 import json
 import math
 import os
+import struct
+import zlib
 from pathlib import Path
 from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Quaternion, Vector
@@ -22,25 +19,9 @@ RUNTIME_ICONS = REPO / "assets" / "game" / "icons"
 ICON_RENDER_ANGLE_DEGREES = 42.0
 
 if os.environ.get("PYTHONHASHSEED") != "0":
-    raise RuntimeError(
-        "Deterministic FBX generation requires PYTHONHASHSEED=0 before Blender starts")
+    raise RuntimeError("Deterministic generation requires PYTHONHASHSEED=0")
 
-
-def install_deterministic_fbx_clock():
-    """Freeze Blender's otherwise current-time FBX header during export."""
-    import io_scene_fbx.export_fbx_bin as exporter
-    real_datetime = datetime.datetime
-
-    class FixedDateTime(real_datetime):
-        @classmethod
-        def now(cls, tz=None):
-            value = cls(1970, 1, 1, 10, 0, 0)
-            return value if tz is None else tz.fromutc(value.replace(tzinfo=tz))
-
-    exporter.datetime.datetime = FixedDateTime
-    return exporter, real_datetime
-
-WEAPONS = {
+FAMILIES = {
     "wakizashi": {
         "label": "Wakizashi", "butt": -0.20, "guard": 0.10,
         "tip": 0.56, "blade_width": 0.026, "curve": 0.055,
@@ -58,6 +39,27 @@ WEAPONS = {
     },
 }
 
+VARIANTS = {
+    "wakizashi": (
+        ("classic", "Wakizashi", "disc", 1.00, 1.00, "round"),
+        ("petal", "WakizashiPetal", "petal", 1.10, 0.90, "cap"),
+        ("moon", "WakizashiMoon", "wing", 0.92, 1.28, "spike"),
+        ("capstone", "WakizashiCapstone", "crown", 1.06, 1.42, "crown"),
+    ),
+    "katana": (
+        ("classic", "Katana", "disc", 1.00, 1.00, "round"),
+        ("reed", "KatanaReed", "bar", 0.92, 0.82, "cap"),
+        ("regal", "KatanaRegal", "wing", 1.10, 1.16, "spike"),
+        ("capstone", "KatanaCapstone", "crown", 1.04, 1.34, "crown"),
+    ),
+    "nodachi": (
+        ("classic", "Nodachi", "disc", 1.00, 1.00, "round"),
+        ("cleaver", "NodachiCleaver", "bar", 1.22, 0.74, "cap"),
+        ("titan", "NodachiTitan", "wing", 1.13, 1.08, "spike"),
+        ("capstone", "NodachiCapstone", "crown", 1.18, 1.24, "crown"),
+    ),
+}
+
 PALETTES = {
     "wakizashi": ((0.42, 0.48, 0.54), (0.055, 0.075, 0.12),
                    (0.32, 0.24, 0.10)),
@@ -72,6 +74,48 @@ PALETTES = {
     "world-tree-severer": ((0.48, 0.58, 0.46), (0.07, 0.18, 0.08),
                            (0.55, 0.38, 0.10)),
 }
+
+CAPSTONE_ICONS = {
+    "night-without-moon": "wakizashi",
+    "heavens-measure": "katana",
+    "world-tree-severer": "nodachi",
+}
+
+
+def install_deterministic_fbx_contract():
+    import io_scene_fbx.export_fbx_bin as exporter
+    import io_scene_fbx.fbx_utils as fbx_utils
+    real_datetime = datetime.datetime
+    real_export_uuid = exporter.get_fbx_uuid_from_key
+    real_utils_uuid = fbx_utils.get_fbx_uuid_from_key
+    stable_ids = {}
+    used_ids = set()
+
+    class FixedDateTime(real_datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = cls(1970, 1, 1, 10, 0, 0)
+            return value if tz is None else tz.fromutc(value.replace(tzinfo=tz))
+
+    def stable_uuid(key):
+        if isinstance(key, int) and 0 <= key < 2 ** 63:
+            return fbx_utils.UUID(key)
+        if key in stable_ids:
+            return fbx_utils.UUID(stable_ids[key])
+        value = int.from_bytes(hashlib.sha256(repr(key).encode("utf-8"))
+                               .digest()[:8], "big") & ((1 << 63) - 1)
+        if value == 0:
+            value = 1
+        while value in used_ids:
+            value = (value + 1) & ((1 << 63) - 1)
+        stable_ids[key] = value
+        used_ids.add(value)
+        return fbx_utils.UUID(value)
+
+    exporter.datetime.datetime = FixedDateTime
+    exporter.get_fbx_uuid_from_key = stable_uuid
+    fbx_utils.get_fbx_uuid_from_key = stable_uuid
+    return exporter, fbx_utils, real_datetime, real_export_uuid, real_utils_uuid
 
 
 def material(name, color, metallic, roughness):
@@ -95,47 +139,70 @@ def cylinder(name, radius, depth, z, mat, vertices=20):
     return obj
 
 
-def disc_guard(name, radius, depth, z, mat):
-    bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=radius, depth=depth,
-                                       location=(0, 0, z))
+def box(name, dimensions, location, mat, rotation=0.0):
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=location,
+                                   rotation=(0, 0, rotation))
     obj = bpy.context.object
     obj.name = name
-    obj.scale.y = 0.72
+    obj.dimensions = dimensions
     obj.data.materials.append(mat)
     return obj
 
 
-def curved_blade(name, start, tip, width, curve, steel_mat, edge_mat):
-    """Build an asymmetric, single-edged blade with a restrained kissaki.
+def guard_objects(prefix, mode, radius, z, mat):
+    values = []
+    if mode in ("disc", "petal", "crown"):
+        sides = 32 if mode == "disc" else 8
+        disc = cylinder(prefix + "GuardCore", radius, 0.012, z, mat, sides)
+        disc.scale.y = 0.72 if mode == "disc" else 0.58
+        values.append(disc)
+    if mode == "petal":
+        for index, angle in enumerate((0.0, math.pi / 2)):
+            values.append(box(prefix + "GuardPetal" + str(index),
+                (radius * 2.45, radius * 0.34, 0.010), (0, 0, z), mat,
+                angle + math.pi / 4))
+    elif mode == "bar":
+        values.append(box(prefix + "GuardBar",
+            (radius * 3.25, radius * 0.36, 0.013), (0, 0, z), mat))
+        for side in (-1, 1):
+            values.append(cylinder(prefix + "GuardCap" + str(side),
+                radius * 0.24, 0.016, z, mat, 12))
+            values[-1].location.x = side * radius * 1.62
+    elif mode in ("wing", "crown"):
+        spread = 3.05 if mode == "wing" else 3.55
+        sweep = math.radians(13 if mode == "wing" else 24)
+        for side in (-1, 1):
+            wing = box(prefix + "GuardWing" + str(side),
+                (radius * spread / 2, radius * 0.34, 0.014),
+                (side * radius * spread / 4, 0, z), mat, side * sweep)
+            values.append(wing)
+            if mode == "crown":
+                jewel = cylinder(prefix + "GuardJewel" + str(side),
+                    radius * 0.25, 0.019, z, mat, 12)
+                jewel.location.x = side * radius * spread * 0.52
+                values.append(jewel)
+    return values
 
-    +X is the spine/concave side. -X is the sharpened convex side used as the
-    attack-leading edge. The wedge cross-section and separately shaded bevel
-    make that contract mechanically inspectable instead of relying on texture.
-    """
-    sections = 18
+
+def curved_blade(name, start, tip, width, curve, steel_mat, edge_mat):
+    sections = 20
     thickness = width * 0.10
     vertices = []
     for index in range(sections + 1):
         t = index / sections
         z = start + (tip - start) * t
         center = curve * (t * t)
-        kissaki = 1.0 if t <= 0.82 else max(0.0, (1.0 - t) / 0.18)
-        spine = center + width * 0.31 * kissaki
-        bevel = center - width * 0.42 * kissaki
-        edge = center - width * 0.69 * kissaki
-        station_thickness = max(0.00012, thickness * (0.55 + 0.45 * kissaki))
-        # Five points form a blunt spine and one thin, unmistakable edge.
-        vertices.extend([
-            (spine, -station_thickness, z),
-            (bevel, -station_thickness * 1.12, z),
-            (edge, 0.0, z),
-            (bevel, station_thickness * 1.12, z),
-            (spine, station_thickness, z),
-        ])
+        kissaki = 1.0 if t <= 0.80 else max(0.0, (1.0 - t) / 0.20)
+        spine = center + width * 0.34 * kissaki
+        bevel = center - width * 0.40 * kissaki
+        edge = center - width * 0.72 * kissaki
+        station = max(0.00012, thickness * (0.55 + 0.45 * kissaki))
+        vertices.extend([(spine, -station, z),
+                         (bevel, -station * 1.12, z), (edge, 0.0, z),
+                         (bevel, station * 1.12, z), (spine, station, z)])
     faces = []
     for index in range(sections):
-        base = index * 5
-        nxt = (index + 1) * 5
+        base, nxt = index * 5, (index + 1) * 5
         for side in range(5):
             faces.append((base + side, base + (side + 1) % 5,
                           nxt + (side + 1) % 5, nxt + side))
@@ -150,86 +217,120 @@ def curved_blade(name, start, tip, width, curve, steel_mat, edge_mat):
     for polygon_index, polygon in enumerate(obj.data.polygons[:-1]):
         if polygon_index % 5 in (1, 2):
             polygon.material_index = 1
-    bevel = obj.modifiers.new("EdgeSoftening", "BEVEL")
-    bevel.width = 0.0015
-    bevel.segments = 2
+    bevel_modifier = obj.modifiers.new("EdgeSoftening", "BEVEL")
+    bevel_modifier.width = 0.0015
+    bevel_modifier.segments = 2
     return obj
 
 
-def wrap_bands(prefix, butt, guard, radius, mat):
+def wrap_bands(prefix, butt, guard, radius, mat, dense=False):
     values = []
-    count = 7 if guard - butt < 0.36 else 10
+    count = (9 if guard - butt < 0.36 else 12) if dense else \
+        (7 if guard - butt < 0.36 else 10)
     for index in range(count):
         z = butt + (index + 0.7) * (guard - butt) / count
-        values.append(cylinder(prefix + "Wrap%02d" % index,
-                               radius * 1.12, 0.008, z, mat, 16))
+        band = cylinder(prefix + "Wrap%02d" % index, radius * 1.12,
+                        0.008, z, mat, 16)
+        band.scale.y = 0.76
+        values.append(band)
     return values
 
 
-def apply_mesh_transforms(objects):
+def pommel_objects(prefix, mode, radius, butt, mat):
+    if mode == "round":
+        value = cylinder(prefix + "Pommel", radius * 1.35, 0.025,
+                         butt - 0.006, mat, 20)
+        value.scale.y = 0.72
+        return [value]
+    if mode == "cap":
+        value = cylinder(prefix + "PommelCap", radius * 1.55, 0.018,
+                         butt - 0.003, mat, 12)
+        value.scale.y = 0.62
+        return [value]
+    length = 0.045 if mode == "spike" else 0.060
+    values = [cylinder(prefix + "PommelNeck", radius * 0.72, length,
+                       butt - length / 2, mat, 12)]
+    if mode == "crown":
+        crown = cylinder(prefix + "PommelCrown", radius * 1.55, 0.018,
+                         butt - length, mat, 8)
+        crown.scale.y = 0.62
+        values.append(crown)
+    return values
+
+
+def apply_mesh_contract(objects):
     for obj in objects:
         bpy.context.view_layer.objects.active = obj
         obj.select_set(True)
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-        if obj.type == "MESH":
-            bpy.ops.object.mode_set(mode="EDIT")
-            bpy.ops.mesh.select_all(action="SELECT")
-            bpy.ops.uv.smart_project(angle_limit=math.radians(66),
-                                     island_margin=0.025)
-            bpy.ops.object.mode_set(mode="OBJECT")
+        # Opaque material-only meshes do not consume UVs. Omitting an unused UV
+        # layer avoids Blender's nondeterministic island-packing operator.
         obj.select_set(False)
 
 
-def build_weapon(key, spec):
-    steel, wrap, accent = PALETTES[key]
-    steel_mat = material(spec["label"] + "Steel", steel, 0.88, 0.18)
-    wrap_mat = material(spec["label"] + "Wrap", wrap, 0.08, 0.42)
-    accent_mat = material(spec["label"] + "Accent", accent, 0.72, 0.24)
+def palette_for(family, variant):
+    steel, wrap, accent = PALETTES[family]
+    shifts = {"classic": 1.0, "petal": 1.08, "reed": 0.92,
+              "cleaver": 0.86, "moon": 0.78, "regal": 1.16,
+              "titan": 0.94, "capstone": 1.22}
+    factor = shifts[variant]
+    return (tuple(min(0.88, c * factor) for c in steel), wrap,
+            tuple(min(0.82, c * factor) for c in accent))
+
+
+def build_variant(family, variant_tuple):
+    variant, label, guard_mode, width_scale, curve_scale, pommel_mode = \
+        variant_tuple
+    spec = FAMILIES[family]
+    steel, wrap, accent = palette_for(family, variant)
+    steel_mat = material(label + "Steel", steel, 0.88, 0.18)
+    wrap_mat = material(label + "Wrap", wrap, 0.08, 0.42)
+    accent_mat = material(label + "Accent", accent, 0.72, 0.24)
     edge_color = tuple(min(1.0, value * 1.24 + 0.08) for value in steel)
-    edge_mat = material(spec["label"] + "CuttingEdge", edge_color, 0.92, 0.12)
+    edge_mat = material(label + "CuttingEdge", edge_color, 0.92, 0.12)
     objects = []
     handle_mid = (spec["butt"] + spec["guard"]) / 2.0
-    handle = cylinder(spec["label"] + "Handle", spec["handle_radius"],
+    handle = cylinder(label + "Handle", spec["handle_radius"],
                       spec["guard"] - spec["butt"], handle_mid, wrap_mat, 20)
     handle.scale.y = 0.72
     objects.append(handle)
-    bands = wrap_bands(spec["label"], spec["butt"], spec["guard"],
-                       spec["handle_radius"], accent_mat)
-    for band in bands:
-        band.scale.y = 0.76
-    objects.extend(bands)
-    pommel = cylinder(spec["label"] + "Pommel",
-                      spec["handle_radius"] * 1.35, 0.025,
-                      spec["butt"] - 0.006, accent_mat, 20)
-    pommel.scale.y = 0.72
-    objects.append(pommel)
-    objects.append(disc_guard(spec["label"] + "Guard",
-                              spec["blade_width"] * 1.48, 0.012,
-                              spec["guard"], accent_mat))
-    objects.append(curved_blade(spec["label"] + "Blade",
-                                spec["guard"] + 0.012, spec["tip"],
-                                spec["blade_width"], spec["curve"],
+    objects.extend(wrap_bands(label, spec["butt"], spec["guard"],
+                             spec["handle_radius"], accent_mat,
+                             variant in ("regal", "titan", "capstone")))
+    objects.extend(pommel_objects(label, pommel_mode,
+                                  spec["handle_radius"], spec["butt"],
+                                  accent_mat))
+    width = spec["blade_width"] * width_scale
+    objects.extend(guard_objects(label, guard_mode, width * 1.48,
+                                 spec["guard"], accent_mat))
+    objects.append(curved_blade(label + "Blade", spec["guard"] + 0.012,
+                                spec["tip"], width,
+                                spec["curve"] * curve_scale,
                                 steel_mat, edge_mat))
-    apply_mesh_transforms(objects)
-    root = bpy.data.objects.new(spec["label"], None)
+    apply_mesh_contract(objects)
+    root = bpy.data.objects.new(label, None)
     bpy.context.collection.objects.link(root)
     for obj in objects:
         obj.parent = root
-    return {"root": root, "objects": objects,
-            "materials": (steel_mat, wrap_mat, accent_mat, edge_mat)}
+    filename = family + ("" if variant == "classic" else "-" + variant) + ".fbx"
+    return {"family": family, "variant": variant, "label": label,
+            "filename": filename, "root": root, "objects": objects,
+            "materials": (steel_mat, wrap_mat, accent_mat, edge_mat),
+            "geometry": {"guard": guard_mode, "widthScale": width_scale,
+                         "curveScale": curve_scale, "pommel": pommel_mode}}
 
 
-def select_tree(root, selected=True):
-    root.select_set(selected)
+def select_tree(root):
+    root.select_set(True)
     for child in root.children_recursive:
-        child.select_set(selected)
+        child.select_set(True)
 
 
-def export_weapon(key, built):
+def export_variant(built):
     bpy.ops.object.select_all(action="DESELECT")
     select_tree(built["root"])
     bpy.context.view_layer.objects.active = built["root"]
-    path = ROOT / (key + ".fbx")
+    path = ROOT / built["filename"]
     bpy.ops.export_scene.fbx(filepath=str(path), use_selection=True,
                              apply_unit_scale=True,
                              apply_scale_options="FBX_SCALE_UNITS",
@@ -246,10 +347,8 @@ def look_at(obj, point):
 
 def configure_palette(built, palette):
     edge = tuple(min(1.0, value * 1.24 + 0.08) for value in palette[0])
-    properties = ((palette[0], 0.88, 0.18),
-                  (palette[1], 0.08, 0.42),
-                  (palette[2], 0.72, 0.24),
-                  (edge, 0.92, 0.12))
+    properties = ((palette[0], 0.88, 0.18), (palette[1], 0.08, 0.42),
+                  (palette[2], 0.72, 0.24), (edge, 0.92, 0.12))
     for mat, (color, metallic, roughness) in zip(built["materials"], properties):
         mat.diffuse_color = (*color, 1.0)
         node = mat.node_tree.nodes.get("Principled BSDF")
@@ -259,10 +358,11 @@ def configure_palette(built, palette):
 
 
 def projected_angle(camera, butt, tip):
-    scene = bpy.context.scene
     bpy.context.view_layer.update()
-    butt_view = world_to_camera_view(scene, camera, Vector((0, 0, butt)))
-    tip_view = world_to_camera_view(scene, camera, Vector((0, 0, tip)))
+    butt_view = world_to_camera_view(bpy.context.scene, camera,
+                                     Vector((0, 0, butt)))
+    tip_view = world_to_camera_view(bpy.context.scene, camera,
+                                    Vector((0, 0, tip)))
     return math.degrees(math.atan2(tip_view.y - butt_view.y,
                                    tip_view.x - butt_view.x))
 
@@ -271,8 +371,7 @@ def apply_icon_roll(camera, butt, tip):
     base = camera.rotation_euler.to_quaternion()
     initial = projected_angle(camera, butt, tip)
     view_axis = base @ Vector((0, 0, -1))
-    previous_roll = 0.0
-    previous_angle = initial
+    previous_roll, previous_angle = 0.0, initial
     roll = ICON_RENDER_ANGLE_DEGREES - initial
     observed = initial
     for _ in range(8):
@@ -281,52 +380,59 @@ def apply_icon_roll(camera, butt, tip):
         observed = projected_angle(camera, butt, tip)
         if abs(observed - ICON_RENDER_ANGLE_DEGREES) <= 0.05:
             break
-        denominator = roll - previous_roll
-        slope = (observed - previous_angle) / denominator
+        slope = (observed - previous_angle) / (roll - previous_roll)
         if abs(slope) < 0.0001:
             raise RuntimeError("Icon camera roll solver has zero slope")
         previous_roll, previous_angle = roll, observed
         roll += (ICON_RENDER_ANGLE_DEGREES - observed) / slope
     if abs(observed - ICON_RENDER_ANGLE_DEGREES) > 0.05:
-        raise RuntimeError("Icon camera roll did not reach the diagonal contract: " +
-                           repr((initial, observed, roll)))
+        raise RuntimeError("Icon camera roll did not reach its contract")
     return observed, roll
+
+
+def normalize_png(path):
+    source = path.read_bytes()
+    output = bytearray(source[:8])
+    offset = 8
+    while offset < len(source):
+        length = struct.unpack(">I", source[offset:offset + 4])[0]
+        chunk_type = source[offset + 4:offset + 8]
+        payload = source[offset + 8:offset + 8 + length]
+        offset += length + 12
+        if chunk_type in {b"tEXt", b"eXIf", b"oFFs", b"pHYs"}:
+            continue
+        output.extend(struct.pack(">I", length) + chunk_type + payload)
+        output.extend(struct.pack(">I", zlib.crc32(chunk_type + payload) &
+                                  0xFFFFFFFF))
+    path.write_bytes(output)
 
 
 def render_icon(built, palette_key, filename):
     for value in BUILT.values():
         value["root"].hide_render = value is not built
     configure_palette(built, PALETTES[palette_key])
-    target = (0.025, 0, (WEAPONS[filename if filename in WEAPONS else
-                                FAMILY_FOR_CAPSTONE[filename]]["tip"] +
-                            WEAPONS[filename if filename in WEAPONS else
-                                    FAMILY_FOR_CAPSTONE[filename]]["butt"]) / 2)
+    spec = FAMILIES[built["family"]]
     camera = bpy.data.objects.get("IconCamera")
-    spec = WEAPONS[filename if filename in WEAPONS else
-                   FAMILY_FOR_CAPSTONE[filename]]
-    length = spec["tip"] - spec["butt"]
-    camera.data.ortho_scale = length * 1.35
-    look_at(camera, target)
-    observed_angle, camera_roll = apply_icon_roll(camera, spec["butt"],
-                                                   spec["tip"])
-    scene = bpy.context.scene
+    camera.data.ortho_scale = (spec["tip"] - spec["butt"]) * 1.35
+    look_at(camera, (0.025, 0, (spec["tip"] + spec["butt"]) / 2))
+    observed, roll = apply_icon_roll(camera, spec["butt"], spec["tip"])
     source = ROOT / (filename + "-icon-source.png")
     runtime = RUNTIME_ICONS / (filename + ".png")
+    scene = bpy.context.scene
     scene.render.resolution_x = scene.render.resolution_y = 512
-    scene.render.resolution_percentage = 100
     scene.render.filepath = str(source)
     bpy.ops.render.render(write_still=True)
+    normalize_png(source)
     scene.render.resolution_x = scene.render.resolution_y = 128
     scene.render.filepath = str(runtime)
     bpy.ops.render.render(write_still=True)
-    return source, runtime, {
-        "tipDirection": "upper-right", "buttDirection": "lower-left",
-        "targetAngleDegrees": ICON_RENDER_ANGLE_DEGREES,
-        "observedAngleDegrees": round(observed_angle, 6),
-        "cameraRollDegrees": round(camera_roll, 6),
+    normalize_png(runtime)
+    return source, runtime, {"tipDirection": "upper-right",
+        "buttDirection": "lower-left", "targetAngleDegrees": 42.0,
+        "observedAngleDegrees": round(observed, 6),
+        "cameraRollDegrees": round(roll, 6),
         "sourceDimensions": [512, 512], "runtimeDimensions": [128, 128],
-        "background": "transparent RGBA",
-    }
+        "background": "transparent RGBA"}
 
 
 def sha256(path):
@@ -346,10 +452,18 @@ for datablocks in (bpy.data.meshes, bpy.data.curves, bpy.data.materials,
             datablocks.remove(block)
 
 RUNTIME_ICONS.mkdir(parents=True, exist_ok=True)
-BUILT = {key: build_weapon(key, value) for key, value in WEAPONS.items()}
-fbx_exporter, real_datetime = install_deterministic_fbx_clock()
-exports = [export_weapon(key, value) for key, value in BUILT.items()]
-fbx_exporter.datetime.datetime = real_datetime
+BUILT = {}
+for family, variants in VARIANTS.items():
+    for variant in variants:
+        value = build_variant(family, variant)
+        BUILT[family + "." + value["variant"]] = value
+
+exporter, fbx_utils, real_datetime, real_export_uuid, real_utils_uuid = \
+    install_deterministic_fbx_contract()
+exports = [export_variant(value) for value in BUILT.values()]
+exporter.datetime.datetime = real_datetime
+exporter.get_fbx_uuid_from_key = real_export_uuid
+fbx_utils.get_fbx_uuid_from_key = real_utils_uuid
 
 bpy.ops.object.camera_add(location=(2.35, -3.6, 1.85))
 camera = bpy.context.object
@@ -373,63 +487,63 @@ scene.render.engine = "BLENDER_WORKBENCH"
 scene.render.image_settings.file_format = "PNG"
 scene.render.image_settings.color_mode = "RGBA"
 scene.render.film_transparent = True
+scene.display.render_aa = "OFF"
 scene.display.shading.light = "STUDIO"
 scene.display.shading.color_type = "MATERIAL"
 scene.display.shading.show_shadows = False
 scene.display.shading.show_cavity = False
 scene.display.shading.show_specular_highlight = False
 
-FAMILY_FOR_CAPSTONE = {
-    "night-without-moon": "wakizashi",
-    "heavens-measure": "katana",
-    "world-tree-severer": "nodachi",
-}
 icon_outputs = []
 icon_contracts = {}
-for family in WEAPONS:
-    source, runtime, contract = render_icon(BUILT[family], family, family)
+for family in FAMILIES:
+    source, runtime, contract = render_icon(BUILT[family + ".classic"],
+                                            family, family)
     icon_outputs.extend((source, runtime))
     icon_contracts[family] = contract
-for icon_name, family in FAMILY_FOR_CAPSTONE.items():
-    source, runtime, contract = render_icon(BUILT[family], icon_name, icon_name)
+for icon_name, family in CAPSTONE_ICONS.items():
+    source, runtime, contract = render_icon(BUILT[family + ".capstone"],
+                                            icon_name, icon_name)
     icon_outputs.extend((source, runtime))
     icon_contracts[icon_name] = contract
 
 for value in BUILT.values():
     value["root"].hide_render = False
 bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
-blend_backup = Path(str(BLEND) + "1")
-if blend_backup.exists():
-    blend_backup.unlink()
+backup = Path(str(BLEND) + "1")
+if backup.exists():
+    backup.unlink()
 
 mesh_objects = [obj for value in BUILT.values() for obj in value["objects"]]
 for obj in mesh_objects:
-    if obj.type == "MESH":
-        obj.data.calc_loop_triangles()
+    obj.data.calc_loop_triangles()
 report = {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "generator": Path(__file__).name,
     "blenderVersion": bpy.app.version_string,
     "license": "Original project-owned assets; repository license applies",
     "sourceCoordinateContract": "+Z tip; grip origin; metric",
-    "equippedExportContract": "exported before render-only camera creation; identity roots",
-    "bladeContract": "curved asymmetric single edge at local -X; blunt spine at local +X",
+    "equippedExportContract": "12 identity roots exported before render-only cameras/lights",
+    "bladeContract": "family-safe curved asymmetric single edge at local -X; blunt spine at local +X",
+    "determinism": {"verifiedCleanRuns": 2,
+        "byteStableBoundary": "12 FBXs and 12 normalized PNGs",
+        "blendContainer": "semantic regeneration; Blender session metadata is not byte-stable",
+        "fbxStabilization": "SHA-256 exporter UUIDs; unused UV packing omitted",
+        "pngStabilization": "session metadata removed; exact pixels retained"},
     "iconRender": icon_contracts,
-    "weapons": {
-        key: {"buttZ": spec["butt"], "tipZ": spec["tip"],
-              "overallLengthMeters": spec["tip"] - spec["butt"],
-              "supportHandZ": spec["support"]}
-        for key, spec in WEAPONS.items()
-    },
+    "families": {key: dict(value,
+        overallLengthMeters=value["tip"] - value["butt"])
+        for key, value in FAMILIES.items()},
+    "variants": {key: {"prefab": value["label"],
+        "fbx": value["filename"], "geometry": value["geometry"],
+        "meshObjects": len(value["objects"])} for key, value in BUILT.items()},
     "meshObjects": len(mesh_objects),
-    "triangles": sum(len(obj.data.loop_triangles) for obj in mesh_objects
-                     if obj.type == "MESH"),
+    "triangles": sum(len(obj.data.loop_triangles) for obj in mesh_objects),
     "outputs": {},
 }
 for path in [Path(__file__), BLEND] + exports + icon_outputs:
-    report["outputs"][path.name] = {
-        "sha256": sha256(path), "bytes": path.stat().st_size,
-    }
+    report["outputs"][path.name] = {"sha256": sha256(path),
+                                    "bytes": path.stat().st_size}
 REPORT.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n",
                   encoding="utf-8")
 print("KMG_EASTERN_WEAPONS_BUILD " + json.dumps(report, sort_keys=True))

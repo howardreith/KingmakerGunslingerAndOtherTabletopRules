@@ -1,19 +1,17 @@
 # Eastern Weapons original asset source
 
-All meshes and icon renders in this directory are original project-owned work
-created procedurally for this repository. No official game assets, marketplace
-assets, downloaded models, traced artwork, or third-party textures are inputs.
+All 12 meshes and six icon renders in this directory are original,
+project-owned clean-room works. No official game asset, marketplace asset,
+downloaded model, traced artwork, third-party texture, or generative model is
+an input. The repository license applies.
 
 Set `PYTHONHASHSEED=0`, then run `generate_eastern_weapons.py` with Blender
-4.5 in background mode. The generator fails closed if that process-level
-determinism contract is absent. The
-script deterministically creates one `.blend`, three FBX exports, six 512px
-transparent icon sources, six 128px production icons under `assets/game/icons`, and
-the hash-bearing machine-readable build report. Repository licensing applies.
+4.5.10 LTS. It creates four bounded variants each for Wakizashi, Katana, and
+Nodachi, plus the existing six family/capstone icons. Every source is metric,
+has an identity root and primary grip at the origin, and points its blade along
++Z. Render-only cameras and lights are added after every production FBX export.
 
-The 2026-08-14 first-playtest repair uses a measured 42-degree render angle
-(tip upper-right, butt lower-left), with render-only camera state created only
-after FBX export. The designs are conservative curved, single-edged sword silhouettes derived
-only from the mission's text. They use metric scale, primary grip at the
-origin, and +Z toward the tip. Source-only cameras and lights never enter FBX
-exports or Unity prefabs.
+Two clean runs on 2026-08-15 produced byte-identical 12 FBXs and 12 normalized
+PNGs. Blender's `.blend` container embeds session metadata and is semantically,
+not byte-for-byte, reproducible. Exact hashes and geometry parameters are in
+`eastern-weapons-build-report.json`.

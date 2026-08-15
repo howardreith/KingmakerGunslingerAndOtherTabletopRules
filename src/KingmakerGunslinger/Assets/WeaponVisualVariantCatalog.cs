@@ -8,6 +8,18 @@ namespace KingmakerGunslinger.Assets
         internal const string SpearClassic = "ElvenBranchedSpear.ClassicBranch";
         internal const string SpearThorn = "ElvenBranchedSpear.ThornBranch";
         internal const string SpearCrown = "ElvenBranchedSpear.CrownBranch";
+        internal const string WakizashiClassic = "Wakizashi.Classic";
+        internal const string WakizashiPetal = "Wakizashi.Petal";
+        internal const string WakizashiMoon = "Wakizashi.Moon";
+        internal const string WakizashiCapstone = "Wakizashi.Capstone";
+        internal const string KatanaClassic = "Katana.Classic";
+        internal const string KatanaReed = "Katana.Reed";
+        internal const string KatanaRegal = "Katana.Regal";
+        internal const string KatanaCapstone = "Katana.Capstone";
+        internal const string NodachiClassic = "Nodachi.Classic";
+        internal const string NodachiCleaver = "Nodachi.Cleaver";
+        internal const string NodachiTitan = "Nodachi.Titan";
+        internal const string NodachiCapstone = "Nodachi.Capstone";
 
         private static readonly Dictionary<string, string> Variants =
             new Dictionary<string, string>(StringComparer.Ordinal)
@@ -23,7 +35,37 @@ namespace KingmakerGunslinger.Assets
                 { "KMG.ElvenBranchedSpear.MoonlitFork", SpearThorn },
                 { "KMG.ElvenBranchedSpear.VipersReach", SpearCrown },
                 { "KMG.ElvenBranchedSpear.BriarCrownedSpear", SpearCrown },
-                { "KMG.ElvenBranchedSpear.SpearOfTheFirstBranch", SpearCrown }
+                { "KMG.ElvenBranchedSpear.SpearOfTheFirstBranch", SpearCrown },
+                { "KMG.EasternWeapons.Wakizashi.BaseItem", WakizashiClassic },
+                { "KMG.EasternWeapons.Wakizashi.MasterworkItem", WakizashiClassic },
+                { "KMG.EasternWeapons.Wakizashi.ColdIronItem", WakizashiPetal },
+                { "KMG.EasternWeapons.Wakizashi.Plus1Item", WakizashiClassic },
+                { "KMG.EasternWeapons.Wakizashi.PaperLantern", WakizashiPetal },
+                { "KMG.EasternWeapons.Wakizashi.QuietCurrent", WakizashiPetal },
+                { "KMG.EasternWeapons.Wakizashi.FallingPetal", WakizashiPetal },
+                { "KMG.EasternWeapons.Wakizashi.FoxfireWhisper", WakizashiMoon },
+                { "KMG.EasternWeapons.Wakizashi.EmptySleeve", WakizashiMoon },
+                { "KMG.EasternWeapons.Wakizashi.NightWithoutMoon", WakizashiCapstone },
+                { "KMG.EasternWeapons.Katana.BaseItem", KatanaClassic },
+                { "KMG.EasternWeapons.Katana.MasterworkItem", KatanaClassic },
+                { "KMG.EasternWeapons.Katana.ColdIronItem", KatanaReed },
+                { "KMG.EasternWeapons.Katana.Plus1Item", KatanaClassic },
+                { "KMG.EasternWeapons.Katana.WayfarersOath", KatanaReed },
+                { "KMG.EasternWeapons.Katana.WinterReed", KatanaReed },
+                { "KMG.EasternWeapons.Katana.DrawnHorizon", KatanaReed },
+                { "KMG.EasternWeapons.Katana.ThunderAtTheGate", KatanaRegal },
+                { "KMG.EasternWeapons.Katana.MoonlitCrossing", KatanaRegal },
+                { "KMG.EasternWeapons.Katana.HeavensMeasure", KatanaCapstone },
+                { "KMG.EasternWeapons.Nodachi.BaseItem", NodachiClassic },
+                { "KMG.EasternWeapons.Nodachi.MasterworkItem", NodachiClassic },
+                { "KMG.EasternWeapons.Nodachi.ColdIronItem", NodachiCleaver },
+                { "KMG.EasternWeapons.Nodachi.Plus1Item", NodachiClassic },
+                { "KMG.EasternWeapons.Nodachi.BorderSentinel", NodachiCleaver },
+                { "KMG.EasternWeapons.Nodachi.CloudCleaver", NodachiCleaver },
+                { "KMG.EasternWeapons.Nodachi.StormOverStone", NodachiCleaver },
+                { "KMG.EasternWeapons.Nodachi.MountainSunder", NodachiTitan },
+                { "KMG.EasternWeapons.Nodachi.UnfixedForm", NodachiTitan },
+                { "KMG.EasternWeapons.Nodachi.WorldTreeSeverer", NodachiCapstone }
             };
 
         internal static string Require(string blueprintSymbol)

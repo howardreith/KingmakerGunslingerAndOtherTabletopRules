@@ -101,9 +101,9 @@ fewer variants per family. Enhancement increments alone do not force a distinct
 mesh. Two consecutive clean generations matched:
 
 - JSON SHA-256:
-  `7969E03980FEE42CA000AA561F07C72401AD24AC786C1134C7FF86EB6FF51AA4`;
+  `494E345981E5056B36ACAFDB38BFAE974E63D45F03DD71DC6958332A858059CF`;
 - Markdown SHA-256:
-  `6D7FD2CAA36E672BDD4514928C46475D43F1CD5E54E434412CCE453CC53390F2`.
+  `79AD63DAE60B49C6B0D27DCF60EDD8B29DA336044CFB3821ADE2954D6DF11997`.
 
 Focused audit tests and the complete dependency-free suite pass 1,053/1,053.
 No game process was launched for this documentation/audit-only workstream.
@@ -167,3 +167,60 @@ Automated evidence:
 Runtime combat/idle/switch/save-load regression and human visual acceptance are
 pending the mission's final immutable candidate. No in-game screenshot or
 subjective clipping/readability PASS is asserted by automation.
+
+## Workstream C — bounded Eastern blade variety
+
+The project-owned generator now emits four reusable variants for each qualified
+family:
+
+- Wakizashi: `Classic`, `Petal`, `Moon`, `Capstone`;
+- Katana: `Classic`, `Reed`, `Regal`, `Capstone`;
+- Nodachi: `Classic`, `Cleaver`, `Titan`, `Capstone`.
+
+Disc, petal, bar, wing, and crown guards; round, cap, spike, and crown pommels;
+and bounded blade-width/curvature differences provide silhouette changes beyond
+tint. The 30-item assignment is exact by blueprint symbol in
+`WeaponVisualVariantCatalog` and duplicated verbatim in the machine-readable
+audit. Cold-iron items share the first craftsmanship variant rather than
+manufacturing a fifth mesh solely for material tier. Enhancement increments may
+share `Classic`; each capstone uses its family's bespoke `Capstone` geometry.
+
+All qualified family contracts remain fixed: Wakizashi 0.76 m, Katana 1.05 m,
+Nodachi 1.58 m; grip origin; +Z blade axis; support target; handedness; category;
+native animation donor; enchantment overlay behavior; and every item/type GUID.
+Each item receives a recursive inherited private `m_VisualParameters` override,
+while each weapon type retains its classic prefab and native donor fallback.
+
+Source/build identities:
+
+- generator: `assets-source/original-models/eastern-weapons/generate_eastern_weapons.py`;
+- Blender source: `assets-source/original-models/eastern-weapons/eastern-weapons.blend`;
+- 12 FBXs and hashes: `assets/bundles/asset-bundle-manifest.json`;
+- 12 Unity prefab names: the same bundle manifest;
+- bundle: `kingmakergunslinger.easternweapons`, 310,375 bytes, SHA-256
+  `079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041`.
+
+The baseline three-prefab bundle was 147,724 bytes; nine additional
+geometry/material prefabs add 162,651 bytes. The source contains 190 mesh
+objects, 12,252 triangles, four material definitions per prefab, and no texture
+asset. Two clean Blender runs matched across all 12 FBXs and 12 normalized PNGs;
+two unchanged-input Unity 2018.4.10f1 builds produced the same bundle hash.
+
+The existing all-30 observer is stricter: it resolves the inherited item field,
+requires the exact symbol-approved prefab, proves the family/type relation and
+all non-model native donor fields, verifies CuttingEdge material and enchantment
+overlays, instantiates every exact prefab, and checks cleanup. Automated source
+validation and the complete dependency-free suite pass 1,055/1,055; the clean
+exact-reference Release build and output validation pass.
+
+The coherent candidate package and strict standalone validation also pass:
+
+- package SHA-256:
+  `9C3E331F39BBF50AB35055C636B2C681228A6B19A3DD334DE0BD55386F8D102F`;
+- DLL SHA-256:
+  `36CDACFF566491BF9C293A532BECD44D5212C3A67285DB9E395861ADEC73CEFF`;
+- DLL MVID: `6729b750-ea59-4679-b7bd-a66dc7d83e1a`.
+
+Runtime Eastern ON/OFF, all-ON, highest-risk optional-mod profile, all-30 visual
+observer, combat regression, save/load consistency, and human visual acceptance
+remain pending the final immutable mission candidate.

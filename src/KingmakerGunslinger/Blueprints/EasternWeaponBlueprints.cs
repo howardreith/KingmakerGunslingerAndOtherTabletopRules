@@ -176,6 +176,8 @@ namespace KingmakerGunslinger.Blueprints
                                 Array.Empty<BlueprintWeaponEnchantment>();
                             itemAdapter.Configure(clone, definition, spec,
                                 enchantments);
+                            Assets.EasternWeaponAssetRuntime.ApplyTo(clone,
+                                spec.Symbol, spec.Family);
                             return clone;
                         });
                     entries.Add(new EasternWeaponBlueprintEntry(spec, item));

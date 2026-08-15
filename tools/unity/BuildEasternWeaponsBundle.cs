@@ -22,8 +22,17 @@ public static class BuildEasternWeaponsBundle
     private static readonly Weapon[] Weapons =
     {
         new Weapon("wakizashi", "Wakizashi", 0.07f, 0.56f, -0.20f, 0.55f, 0.95f),
+        new Weapon("wakizashi-petal", "WakizashiPetal", 0.07f, 0.56f, -0.20f, 0.55f, 0.95f),
+        new Weapon("wakizashi-moon", "WakizashiMoon", 0.07f, 0.56f, -0.20f, 0.55f, 0.95f),
+        new Weapon("wakizashi-capstone", "WakizashiCapstone", 0.07f, 0.56f, -0.20f, 0.55f, 0.95f),
         new Weapon("katana", "Katana", 0.10f, 0.76f, -0.29f, 0.85f, 1.25f),
+        new Weapon("katana-reed", "KatanaReed", 0.10f, 0.76f, -0.29f, 0.85f, 1.25f),
+        new Weapon("katana-regal", "KatanaRegal", 0.10f, 0.76f, -0.29f, 0.85f, 1.25f),
+        new Weapon("katana-capstone", "KatanaCapstone", 0.10f, 0.76f, -0.29f, 0.85f, 1.25f),
         new Weapon("nodachi", "Nodachi", 0.13f, 1.16f, -0.42f, 1.30f, 1.90f),
+        new Weapon("nodachi-cleaver", "NodachiCleaver", 0.13f, 1.16f, -0.42f, 1.30f, 1.90f),
+        new Weapon("nodachi-titan", "NodachiTitan", 0.13f, 1.16f, -0.42f, 1.30f, 1.90f),
+        new Weapon("nodachi-capstone", "NodachiCapstone", 0.13f, 1.16f, -0.42f, 1.30f, 1.90f),
     };
 
     public static void BuildBatch()
@@ -35,7 +44,7 @@ public static class BuildEasternWeaponsBundle
                 Application.unityVersion);
         var prefabPaths = new List<string>();
         foreach (Weapon weapon in Weapons) prefabPaths.Add(BuildPrefab(weapon));
-        if (prefabPaths.Distinct(StringComparer.Ordinal).Count() != 3)
+        if (prefabPaths.Distinct(StringComparer.Ordinal).Count() != 12)
             throw new InvalidOperationException("Eastern prefab identities collided.");
         foreach (string path in prefabPaths)
         {

@@ -113,6 +113,8 @@ namespace KingmakerGunslinger.Blueprints
                         typeAccess.Set(clone, family.WeaponType);
                         itemAccess.ConfigureNamed(clone, spec, enchantments,
                             Describe(spec));
+                        Assets.EasternWeaponAssetRuntime.ApplyTo(clone,
+                            spec.Symbol, spec.Family);
                         if (equippedFact != null)
                             AddEquipmentFact(clone, equippedFact, spec.Kind);
                         return clone;

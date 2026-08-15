@@ -537,7 +537,7 @@ namespace KingmakerGunslinger.DomainTests
                 "eastern-weapons-build-report.json"));
             foreach (string token in new[] { "bpy.ops.export_scene.fbx",
                 "bpy.ops.wm.save_as_mainfile", "film_transparent = True",
-                "Original project-owned assets", "\"triangles\": 2997",
+                "Original project-owned assets", "\"triangles\": 12252",
                 "PYTHONHASHSEED", "ICON_RENDER_ANGLE_DEGREES = 42.0",
                 "\"targetAngleDegrees\": 42.0",
                 "\"tipDirection\": \"upper-right\"",
@@ -551,16 +551,25 @@ namespace KingmakerGunslinger.DomainTests
                     "Eastern Blender source/report lacks: " + token);
             var expectedFbx = new Dictionary<string, string>
             {
-                { "wakizashi.fbx", "73E1A225B833E835550DA50DB55CCBEB842C18E3A80E13BEEAC62FB80F248D08" },
-                { "katana.fbx", "E8116E82F279DB0DAEE4D4B6031BCEECC4685F5E1B4CC19AE319D269641536D6" },
-                { "nodachi.fbx", "FDB2D2C3101CCF0B2368320030D598D9E42A91D02C37D0EE568D5F3B95320FF2" }
+                { "wakizashi.fbx", "ECFA64D35017EE44D184A43E6F4F5A1A1409F9909F5F153B494613E19772DC73" },
+                { "wakizashi-petal.fbx", "CB52CCB5B73AC49926EE483548AC2ED37F68D4D24DFF6D748D27729189930CAA" },
+                { "wakizashi-moon.fbx", "B42F6D4C8D198DDA2023EC27FE50A9BFD6366FACDE8926AE529AF6A4D88C27BA" },
+                { "wakizashi-capstone.fbx", "A1375C8D17B5A849F8D0E804E4D1C63F9A7FDB88BA41E914774638A724AC3114" },
+                { "katana.fbx", "1701A0341573D8EDE67F245D621F9E8CBECD44259EA61BFB1832C6329D212083" },
+                { "katana-reed.fbx", "23ECF496991CF05CF11C723916AF801FC1AD4BCFDDE37FEF040CB9DA3C5E4C0D" },
+                { "katana-regal.fbx", "9BC238C2638F7A6B3FEBCC1568D25DC188648CFD23E8F8064D59654FD2915CB9" },
+                { "katana-capstone.fbx", "C614A4CE220F9DA847EFDE652553FA4A039A34D91AC729647038730020C86E72" },
+                { "nodachi.fbx", "EDC0D93ECB61E18BFD6DA660DCB7B4968721AB3D86E413A07467FA3E839ADDE8" },
+                { "nodachi-cleaver.fbx", "112C16702787D53B6769E0DD69210AE8E321572501C8AC5C98056D70301D7742" },
+                { "nodachi-titan.fbx", "87FA6F3048F654B897679A1C7368B842FEC097A80B8624CB6DBFFC7828813A34" },
+                { "nodachi-capstone.fbx", "E4D2F94A79CFBB3F94AF7D246C7C95801C455BFF164D68EA957B11446995510E" }
             };
             foreach (KeyValuePair<string, string> pair in expectedFbx)
                 Assertions.Equal(pair.Value,
                     Sha256(Path.Combine(sourceRoot, pair.Key)),
                     "Generated Eastern FBX hash changed: " + pair.Key);
             Assertions.Equal(
-                "F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43",
+                "079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.easternweapons")),
                 "Dedicated Eastern Weapons bundle hash changed.");
@@ -593,7 +602,7 @@ namespace KingmakerGunslinger.DomainTests
                 "NodachiVisualDonorGuid", "5f824fbb0766a3543bbd6ae50248688f",
                 "ReferenceEquals(item.VisualParameters,",
                 "eastern-all-30-visual-identities", "CuttingEdge",
-                "itemOverrideFieldExists", "exact-family-visual",
+                "itemOverrideFieldExists", "exact-item-visual",
                 "VisualContractMatches", "QualifyAllItemVisuals(eastern" })
                 Assertions.True(blueprints.Contains(token) ||
                     combat.Contains(token) || contractObserver.Contains(token),

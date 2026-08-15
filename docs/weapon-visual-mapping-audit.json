@@ -984,7 +984,7 @@
       "currentBundle": "kingmakergunslinger.easternweapons",
       "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
       "currentManyToOneVisualGroup": "EasternWeaponFamily.Wakizashi",
-      "proposedVisualVariant": "Wakizashi.ColdIron",
+      "proposedVisualVariant": "Wakizashi.Petal",
       "clippingOrientationConcerns": "preserve family length ordering, blade edge orientation, hand contact, and no cross-family substitution",
       "mappingScope": "equipped project weapon",
       "weaponTypeAssetGuid": "86bd3d7faf1aec1c527fb9c0d87a395c"
@@ -1080,7 +1080,7 @@
       "currentBundle": "kingmakergunslinger.easternweapons",
       "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
       "currentManyToOneVisualGroup": "EasternWeaponFamily.Katana",
-      "proposedVisualVariant": "Katana.ColdIron",
+      "proposedVisualVariant": "Katana.Reed",
       "clippingOrientationConcerns": "preserve family length ordering, blade edge orientation, hand contact, and no cross-family substitution",
       "mappingScope": "equipped project weapon",
       "weaponTypeAssetGuid": "85d96c1dd1eb02b381c2b3f8ad345952"
@@ -1176,7 +1176,7 @@
       "currentBundle": "kingmakergunslinger.easternweapons",
       "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
       "currentManyToOneVisualGroup": "EasternWeaponFamily.Nodachi",
-      "proposedVisualVariant": "Nodachi.ColdIron",
+      "proposedVisualVariant": "Nodachi.Cleaver",
       "clippingOrientationConcerns": "preserve family length ordering, blade edge orientation, hand contact, and no cross-family substitution",
       "mappingScope": "equipped project weapon",
       "weaponTypeAssetGuid": "41c269cc820ee734f437ab3fa20de198"

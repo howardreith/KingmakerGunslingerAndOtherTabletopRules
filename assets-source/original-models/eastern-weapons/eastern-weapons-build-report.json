@@ -1,7 +1,49 @@
 {
-  "bladeContract": "curved asymmetric single edge at local -X; blunt spine at local +X",
+  "bladeContract": "family-safe curved asymmetric single edge at local -X; blunt spine at local +X",
   "blenderVersion": "4.5.10 LTS",
-  "equippedExportContract": "exported before render-only camera creation; identity roots",
+  "determinism": {
+    "blendContainer": "semantic regeneration; Blender session metadata is not byte-stable",
+    "byteStableBoundary": "12 FBXs and 12 normalized PNGs",
+    "fbxStabilization": "SHA-256 exporter UUIDs; unused UV packing omitted",
+    "pngStabilization": "session metadata removed; exact pixels retained",
+    "verifiedCleanRuns": 2
+  },
+  "equippedExportContract": "12 identity roots exported before render-only cameras/lights",
+  "families": {
+    "katana": {
+      "blade_width": 0.03,
+      "butt": -0.29,
+      "curve": 0.085,
+      "guard": 0.12,
+      "handle_radius": 0.019,
+      "label": "Katana",
+      "overallLengthMeters": 1.05,
+      "support": 0.1,
+      "tip": 0.76
+    },
+    "nodachi": {
+      "blade_width": 0.036,
+      "butt": -0.42,
+      "curve": 0.14,
+      "guard": 0.15,
+      "handle_radius": 0.022,
+      "label": "Nodachi",
+      "overallLengthMeters": 1.5799999999999998,
+      "support": 0.13,
+      "tip": 1.16
+    },
+    "wakizashi": {
+      "blade_width": 0.026,
+      "butt": -0.2,
+      "curve": 0.055,
+      "guard": 0.1,
+      "handle_radius": 0.017,
+      "label": "Wakizashi",
+      "overallLengthMeters": 0.76,
+      "support": 0.07,
+      "tip": 0.56
+    }
+  },
   "generator": "generate_eastern_weapons.py",
   "iconRender": {
     "heavens-measure": {
@@ -102,98 +144,248 @@
     }
   },
   "license": "Original project-owned assets; repository license applies",
-  "meshObjects": 39,
+  "meshObjects": 190,
   "outputs": {
     "eastern-weapons.blend": {
-      "bytes": 994478,
-      "sha256": "653cf762ec15aac848d15a307400bccffe6bf42db249cd122a71fb592b9dfc60"
+      "bytes": 2891996,
+      "sha256": "db55034477b0a04d688af8244377023e7bad2eec2382bafc516898550b7b330c"
     },
     "generate_eastern_weapons.py": {
-      "bytes": 17318,
-      "sha256": "a0d3aeec0bf85edb458835b99958d6cac9d9f96567cc41a6ed49eaa40cd2c44d"
+      "bytes": 22363,
+      "sha256": "9a55b6d41fddabeb6a9d08005e3c93064840b9e02cb57273e50ab71f2d5ef283"
     },
     "heavens-measure-icon-source.png": {
-      "bytes": 90408,
-      "sha256": "1e4e2e511438a456f68447881de21562e3474d2b904889a8fc26bce40cbff3cf"
+      "bytes": 94376,
+      "sha256": "13f4057891eea961295d337fa96a8e75304f8a2b4c422aebb7e5fe77c9bdc8b7"
     },
     "heavens-measure.png": {
-      "bytes": 8468,
-      "sha256": "248b0b65de9fbb95c9b1577d468ca83d2f6f3ee696a24b6465e8658b27dc72e5"
+      "bytes": 7440,
+      "sha256": "7182671c1000a589f960e928a1e74ab95f4c778082d73b1e795938430223a86c"
+    },
+    "katana-capstone.fbx": {
+      "bytes": 88940,
+      "sha256": "c614a4ce220f9da847efde652553fa4a039a34d91ac729647038730020c86e72"
     },
     "katana-icon-source.png": {
-      "bytes": 90215,
-      "sha256": "40ca2ba5cd54e4897174ebce70728da0a5469354989149c0aea95c119e4ca9f3"
+      "bytes": 94038,
+      "sha256": "77972a7380bf36d371d1b0d1dba5e977801d024677c01e649276c8e833f52e2f"
+    },
+    "katana-reed.fbx": {
+      "bytes": 74140,
+      "sha256": "23ecf496991cf05cf11c723916af801fc1ad4bcfdde37fef040cb9da3c5e4c0d"
+    },
+    "katana-regal.fbx": {
+      "bytes": 77324,
+      "sha256": "9bc238c2638f7a6b3febcc1568d25dc188648cfd23e8f8064d59654fd2915cb9"
     },
     "katana.fbx": {
-      "bytes": 75740,
-      "sha256": "e8116e82f279db0daee4d4b6031bceecc4685f5e1b4cc19ae319d269641536d6"
+      "bytes": 70316,
+      "sha256": "1701a0341573d8ede67f245d621f9e8cbecd44259ea61bfb1832c6329d212083"
     },
     "katana.png": {
-      "bytes": 8281,
-      "sha256": "6dd9d308f3edec57084d1bcb06bd4deb037e8de311ee77a5ad125a666d3fcf99"
+      "bytes": 7390,
+      "sha256": "11b03444f3a9fdbea31454ceef3a9334eecfab6a4fba96fe42ca82d3067b1c3f"
     },
     "night-without-moon-icon-source.png": {
-      "bytes": 103512,
-      "sha256": "cdfb0e344ed27d8e7b510c23eb929d51fcc7099d6f70281510c6e0d88d96d6c5"
+      "bytes": 110850,
+      "sha256": "4dfa56892715c20968d5e20a33cc5baba0bdc7e9ee21712b0d47fcbd752cfc97"
     },
     "night-without-moon.png": {
-      "bytes": 9927,
-      "sha256": "c066eb7bffcaeeb96ec386c2cd58892b864d2ce579b5db2fef28084b869e0618"
+      "bytes": 8998,
+      "sha256": "20c7917024462d8c3ab8c076e98eec6701b114b01781ef58b29aa533ff7e54df"
+    },
+    "nodachi-capstone.fbx": {
+      "bytes": 89180,
+      "sha256": "e4d2f94a79cfbb3f94af7d246c7c95801c455bff164d68ea957b11446995510e"
+    },
+    "nodachi-cleaver.fbx": {
+      "bytes": 74316,
+      "sha256": "112c16702787d53b6769e0dd69210ae8e321572501c8ac5c98056d70301d7742"
     },
     "nodachi-icon-source.png": {
-      "bytes": 76514,
-      "sha256": "ea1e79875de01013fa31bbfae45da136d2f25e7ec6f44b86c47d7ba8656fd848"
+      "bytes": 78659,
+      "sha256": "73b3dfcb8cdae753eb38c2460709349e781fc2130e97dd84af6792ff6afd5a0f"
+    },
+    "nodachi-titan.fbx": {
+      "bytes": 77484,
+      "sha256": "87fa6f3048f654b897679a1c7368b842fec097a80b8624cb6dbffc7828813a34"
     },
     "nodachi.fbx": {
-      "bytes": 76060,
-      "sha256": "fdb2d2c3101ccf0b2368320030d598d9e42a91d02c37d0ee568d5f3b95320ff2"
+      "bytes": 70444,
+      "sha256": "edc0d93ecb61e18bfd6da660dcb7b4968721ab3d86e413a07467fa3e839adde8"
     },
     "nodachi.png": {
-      "bytes": 6819,
-      "sha256": "cccbc496712b918620945d078913fa7da1d939cc0425d3c490fe85bc2f78ed6e"
+      "bytes": 5887,
+      "sha256": "9e9e6045f19085e4a6dc67144800ae02f0ad2a3c2c7e4c2c1dfef95f99389373"
+    },
+    "wakizashi-capstone.fbx": {
+      "bytes": 79308,
+      "sha256": "a1375c8d17b5a849f8d0e804e4d1c63f9a7fdb88ba41e914774638a724ac3114"
     },
     "wakizashi-icon-source.png": {
-      "bytes": 97976,
-      "sha256": "d3fc5ea6c4142417fdb25c030146580718b314cd3db0e29b211c4ae2a6e8d9bb"
+      "bytes": 100453,
+      "sha256": "f37ece9894613b5e37c55bf80ecc1a351fc42ed8971bdac1bb07d6715e859dd3"
+    },
+    "wakizashi-moon.fbx": {
+      "bytes": 61084,
+      "sha256": "b42f6d4c8d198dda2023ec27fe50a9bfd6366facde8926ae529af6a4d88c27ba"
+    },
+    "wakizashi-petal.fbx": {
+      "bytes": 63852,
+      "sha256": "cb52ccb5b73ac49926ee483548ac2ed37f68d4d24dff6d748d27729189930caa"
     },
     "wakizashi.fbx": {
-      "bytes": 65772,
-      "sha256": "73e1a225b833e835550da50db55ccbeb842c18e3a80e13beeac62fb80f248d08"
+      "bytes": 60620,
+      "sha256": "ecfa64d35017ee44d184a43e6f4f5a1a1409f9909f5f153b494613e19772dc73"
     },
     "wakizashi.png": {
-      "bytes": 8924,
-      "sha256": "06734fa45659ad542da075b03b6a6ad01a763d4943bd96956f394e50295f1cbd"
+      "bytes": 7918,
+      "sha256": "4f254c08e5650b623de26270a7f2264d8b773a3c53c362bfdd97981ef2bcaf1c"
     },
     "world-tree-severer-icon-source.png": {
-      "bytes": 76943,
-      "sha256": "c6aaf6a9ac291bfc3ec2dc930cdec281c695a662a5e867b168e063ac27781762"
+      "bytes": 78802,
+      "sha256": "a2730fd53454f24d70114e12ab3a7fe75d6fd49a6d475bcdd7186db8204e0a34"
     },
     "world-tree-severer.png": {
-      "bytes": 6836,
-      "sha256": "658061646032a6e48addc6183cb99d5613e6e3eb2185c093aee6da0ed488fcc9"
+      "bytes": 5918,
+      "sha256": "27f9fef0131f5267c64806359e8976dd27f05fba6bdd08627b8106f151e8282c"
     }
   },
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "sourceCoordinateContract": "+Z tip; grip origin; metric",
-  "triangles": 2997,
-  "weapons": {
-    "katana": {
-      "buttZ": -0.29,
-      "overallLengthMeters": 1.05,
-      "supportHandZ": 0.1,
-      "tipZ": 0.76
+  "triangles": 12252,
+  "variants": {
+    "katana.capstone": {
+      "fbx": "katana-capstone.fbx",
+      "geometry": {
+        "curveScale": 1.34,
+        "guard": "crown",
+        "pommel": "crown",
+        "widthScale": 1.04
+      },
+      "meshObjects": 21,
+      "prefab": "KatanaCapstone"
     },
-    "nodachi": {
-      "buttZ": -0.42,
-      "overallLengthMeters": 1.5799999999999998,
-      "supportHandZ": 0.13,
-      "tipZ": 1.16
+    "katana.classic": {
+      "fbx": "katana.fbx",
+      "geometry": {
+        "curveScale": 1.0,
+        "guard": "disc",
+        "pommel": "round",
+        "widthScale": 1.0
+      },
+      "meshObjects": 14,
+      "prefab": "Katana"
     },
-    "wakizashi": {
-      "buttZ": -0.2,
-      "overallLengthMeters": 0.76,
-      "supportHandZ": 0.07,
-      "tipZ": 0.56
+    "katana.reed": {
+      "fbx": "katana-reed.fbx",
+      "geometry": {
+        "curveScale": 0.82,
+        "guard": "bar",
+        "pommel": "cap",
+        "widthScale": 0.92
+      },
+      "meshObjects": 16,
+      "prefab": "KatanaReed"
+    },
+    "katana.regal": {
+      "fbx": "katana-regal.fbx",
+      "geometry": {
+        "curveScale": 1.16,
+        "guard": "wing",
+        "pommel": "spike",
+        "widthScale": 1.1
+      },
+      "meshObjects": 17,
+      "prefab": "KatanaRegal"
+    },
+    "nodachi.capstone": {
+      "fbx": "nodachi-capstone.fbx",
+      "geometry": {
+        "curveScale": 1.24,
+        "guard": "crown",
+        "pommel": "crown",
+        "widthScale": 1.18
+      },
+      "meshObjects": 21,
+      "prefab": "NodachiCapstone"
+    },
+    "nodachi.classic": {
+      "fbx": "nodachi.fbx",
+      "geometry": {
+        "curveScale": 1.0,
+        "guard": "disc",
+        "pommel": "round",
+        "widthScale": 1.0
+      },
+      "meshObjects": 14,
+      "prefab": "Nodachi"
+    },
+    "nodachi.cleaver": {
+      "fbx": "nodachi-cleaver.fbx",
+      "geometry": {
+        "curveScale": 0.74,
+        "guard": "bar",
+        "pommel": "cap",
+        "widthScale": 1.22
+      },
+      "meshObjects": 16,
+      "prefab": "NodachiCleaver"
+    },
+    "nodachi.titan": {
+      "fbx": "nodachi-titan.fbx",
+      "geometry": {
+        "curveScale": 1.08,
+        "guard": "wing",
+        "pommel": "spike",
+        "widthScale": 1.13
+      },
+      "meshObjects": 17,
+      "prefab": "NodachiTitan"
+    },
+    "wakizashi.capstone": {
+      "fbx": "wakizashi-capstone.fbx",
+      "geometry": {
+        "curveScale": 1.42,
+        "guard": "crown",
+        "pommel": "crown",
+        "widthScale": 1.06
+      },
+      "meshObjects": 18,
+      "prefab": "WakizashiCapstone"
+    },
+    "wakizashi.classic": {
+      "fbx": "wakizashi.fbx",
+      "geometry": {
+        "curveScale": 1.0,
+        "guard": "disc",
+        "pommel": "round",
+        "widthScale": 1.0
+      },
+      "meshObjects": 11,
+      "prefab": "Wakizashi"
+    },
+    "wakizashi.moon": {
+      "fbx": "wakizashi-moon.fbx",
+      "geometry": {
+        "curveScale": 1.28,
+        "guard": "wing",
+        "pommel": "spike",
+        "widthScale": 0.92
+      },
+      "meshObjects": 12,
+      "prefab": "WakizashiMoon"
+    },
+    "wakizashi.petal": {
+      "fbx": "wakizashi-petal.fbx",
+      "geometry": {
+        "curveScale": 0.9,
+        "guard": "petal",
+        "pommel": "cap",
+        "widthScale": 1.1
+      },
+      "meshObjects": 13,
+      "prefab": "WakizashiPetal"
     }
   }
 }

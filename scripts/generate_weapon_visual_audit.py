@@ -164,7 +164,9 @@ def firearm_variant(symbol: str, kind: str) -> str:
 
 def eastern_variant(symbol: str, family: str) -> str:
     if symbol.endswith(".ColdIronItem"):
-        return f"{family}.ColdIron"
+        return {"Wakizashi": "Wakizashi.Petal",
+                "Katana": "Katana.Reed",
+                "Nodachi": "Nodachi.Cleaver"}[family]
     if symbol.endswith((".BaseItem", ".MasterworkItem", ".Plus1Item")):
         return f"{family}.Classic"
     capstones = {
