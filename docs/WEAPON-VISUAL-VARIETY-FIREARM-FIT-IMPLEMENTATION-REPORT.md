@@ -1,6 +1,7 @@
 # Weapon Visual Variety, Firearm Fit, and Proficiency Implementation Report
 
-Status: in progress; this is the durable mission record, not a completion claim.
+Status: automated pre-review qualification passed; human Musket/spear/blade
+visual comparison is the active gate. This is not a completion claim.
 
 ## Baseline
 
@@ -297,3 +298,141 @@ clipping. The source renders are design aids, not Kingmaker screenshots.
 Blunderbuss E5: **NOT STARTED BY DESIGN**. The mission explicitly gates it on
 the Musket experiment's live conclusion, so building a speculative Blunderbuss
 before that result would violate the evidence rule.
+
+## Immutable pre-review candidate and coherent commits
+
+The current technical candidate is source commit
+`041e934dc85d14512d9353f479d006a39065bd42` on
+`codex/weapon-visual-variety-firearm-fit-cleanup`. The coherent commit sequence
+from base `d846d8abed5281d1979cf33900ebef77e72e0a8b` is:
+
+1. `3540ebd` - Make firearm proficiency Gunslinger-only.
+2. `0c3d42b` - Audit every custom weapon visual mapping.
+3. `1d08cbf` - Add deterministic branched spear variants.
+4. `07c2a27` - Add deterministic Eastern weapon variants.
+5. `37a937b` - Add Musket fit graybox experiment.
+6. `5b8d18f` - Add immutable artifact repair qualification.
+7. `041e934` - Validate exact Eastern item variants at runtime.
+
+The final commit remains intentionally unset until the human gate and any
+evidence-directed Musket/Blunderbuss iteration are complete. No merge occurred.
+
+The immutable installed artifact used for every accepted pre-review runtime run
+has these exact identities:
+
+- version: `0.0.80`;
+- package:
+  `artifacts/local-runtime/0.0.80/KingmakerGunslinger-0.0.80-local-runtime.zip`;
+- package SHA-256:
+  `847604574E84BA98BF55E77489FD8CF9276AFE07473B676AF31B72B2AC1D8797`;
+- DLL SHA-256:
+  `27BCD2F725B369DB4C46F0227AE03D91E4DEC92B941CE5B351EC01E4C2FC0A9D`;
+- DLL MVID: `24a38b51-b2f8-4a2e-b42b-edff7e32b1a8`;
+- installed DLL SHA-256: identical to the packaged DLL;
+- firearm bundle SHA-256:
+  `BD78F647966271D826C16D5FD93BD481EA1953E48CE66D9E9313ABBFED15B152`;
+- all-ON settings SHA-256:
+  `2E53FA0A09C56662434F6EA548FF5EBCF91F5AAF293D668248221239A1308655`;
+- deployment manifest:
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260815T0529185947906Z/deployment.json`;
+- pre-deployment backup:
+  `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260815T0529146394604Z`.
+
+`scripts/Build-Local.ps1` built, tested, packaged, and strictly validated this
+source commit once. `scripts/Deploy-Local.ps1` backed up and deployed it once.
+Every later launch used `-ReuseInstalledArtifact`, which reverified commit,
+version, package hash, DLL hash, MVID, installed DLL hash, firearm bundle hash,
+and the request-local/original settings identity before Steam launch.
+
+## Final-candidate automated qualification to the human gate
+
+The following commands and results are accepted for commit `041e934`:
+
+- `scripts/test-domain.ps1 -Configuration Release`: PASS, 1,061/1,061.
+- `scripts/build.ps1 -Configuration Release -Clean -Package`: PASS, including
+  repository validation, complete domain/reflection suite, clean Release build,
+  build-output validation, deterministic packaging, and strict package
+  validation.
+- `scripts/Build-Local.ps1`: PASS once for the immutable commit, including the
+  exact private-reference Release build and focused supply-icon test.
+- `scripts/Test-RuntimeDeployment.ps1`: PASS, 19/19, for immutable reuse and
+  deployment-manifest behavior.
+- Blender generators were run twice from clean inputs: all production FBXs and
+  normalized renders matched; `.blend` session metadata remains the documented
+  non-byte-stable exception.
+- exact Unity 2018.4.10f1 bundle builds were run twice from unchanged inputs:
+  firearm, Eastern, and spear bundle hashes matched their manifests.
+
+Guarded Steam App ID 640820 runtime PASS evidence:
+
+| Scenario | Run ID | Evidence directory |
+|---|---|---|
+| all-ON module load | `20260815T0529384705552Z-3b8227ba790a4abdbbac402136238a7e` | `20260815T0529384337593Z-mod-load-smoke` |
+| firearm production/diagnostic visual rigs, markers, IK, cleanup | `20260815T0531581755461Z-db3d4b910d2b46c6a5ed3c921bef23ef` | `20260815T0531581440963Z-disposable-firearm-visual-rigs` |
+| exact all-30 Eastern item observer | `20260815T0534097873347Z-91c2116f10124d97a30d6c737147cbd3` | `20260815T0534097525070Z-observe-eastern-weapon-contracts` |
+| Eastern disposable combat/cleanup | `20260815T0537205906818Z-8a9bf8e85e924ebcb45a3c74531ab93b` | `20260815T0537205608781Z-disposable-eastern-weapons-combat` |
+| exact all-12 branched-spear observer | `20260815T0539303961608Z-78c31f3df4dd431899c2d36d0a3d7c8b` | `20260815T0539303715105Z-observe-elven-branched-spear-contracts` |
+| branched-spear disposable combat/cleanup | `20260815T0541426733415Z-f0ff47492bb14b5c87386f57c9ebded6` | `20260815T0541426471390Z-disposable-elven-branched-spear-combat` |
+| canonical `KMG_AUTOMATION_WORKING` smoke/save/load/fingerprint | `20260815T0543492604693Z-6ab479731480431a8e7ec3fb060f8030` | `20260815T0543491837527Z-working-save-smoke` |
+| isolated highest-risk optional-mod profile | `20260815T0549310463372Z-aeea181ff79e4cfe968dd10c3d1263bb` | `20260815T0549310271669Z-observe-optional-mod-compatibility` |
+| Eastern OFF, every other module ON, highest-risk profile | `20260815T0552181340583Z-1e7629dac21e4d238c3b78498b1898f3` | `20260815T0552181084011Z-observe-feature-module-settings` |
+
+All evidence directories are beneath
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. The isolated compatibility
+profile was exactly Gunslinger + Call of the Wild + Arms & Armor + Toggle
+Custom Soundpacks. Both compatibility transactions restored the original mod
+set; the Eastern-OFF transaction also restored the exact original all-ON
+settings hash. A preceding direct observer request correctly failed because the
+ambient local set was Gunslinger + Call of the Wild + Bag of Tricks rather than
+the requested profile; it is retained as negative setup evidence at
+`20260815T0546260048618Z-observe-optional-mod-compatibility` and is not counted
+as product qualification.
+
+The first pre-fix immutable launch also failed closed because the new exact item
+visual had exposed a stale validator which still required family-level visual
+reference equality. Commit `041e934` replaced that obsolete condition with the
+exact symbol-approved variant contract while preserving the native fallback
+when the bundle is unavailable. The full suite and the exact all-30 runtime
+observer independently prove the correction. Negative evidence remains at
+`20260815T0521306651467Z-mod-load-smoke`.
+
+No runtime test selected or wrote `KMG_AUTOMATION_BASELINE`. Only the explicitly
+authorized `KMG_AUTOMATION_WORKING` save entered the save-backed run. Disposable
+fixtures reported exact cleanup. Existing firearm, Eastern, and spear item and
+weapon-type identities were not replaced; the mapping audit is the complete
+symbol/GUID-to-visual appendix:
+`docs/weapon-visual-mapping-audit.json` and
+`docs/WEAPON-VISUAL-MAPPING-AUDIT.md`.
+
+## Remaining human gate and deferred final seal
+
+Automated structural, mechanical, identity, persistence, asset-loading, and
+compatibility qualification is green. Human visual acceptance is **PENDING**
+for these subjective facts:
+
+- whether Minimal Control clears the torso when Pass-Through clips;
+- whether Clearance Stock materially improves torso/upper-arm clearance while
+  retaining physical primary/support-hand contact through idle, attack,
+  recovery, switching, inventory-doll refresh, save/load, and restart;
+- whether the Classic/Thorn/Crown spear branches remain unmistakable and
+  elegant at ordinary gameplay zoom without hand/arm intersection;
+- whether the bounded Eastern blade variants read as distinct within their
+  preserved Wakizashi/Katana/Nodachi silhouettes.
+
+The exact comparison procedure and acceptance matrix are in
+`docs/FIREARM-FIT-GRAYBOX-QUALIFICATION.md`. Source-space aids are committed at
+`assets-source/original-models/firearm-fit-experiments/renders/`; required
+matching in-game screenshots are still absent from the local ignored path
+`evidence/screenshots/weapon-fit/0.0.80/` and are not fabricated here. Residual
+clipping by pose/body type and the final long-gun clearance envelope cannot be
+truthfully completed before that comparison.
+
+Blunderbuss E5 remains gated on the Musket result. If Minimal clears, the
+clearance-stock method proceeds to a distinct Blunderbuss graybox and envelope;
+if Minimal clips substantially like Pass-Through, the frozen pose/animation is
+the dominant limitation and animation escalation requires explicit approval.
+
+Per the repair policy, the 14-state boundary matrix for the single-module feat
+publication change and any final release seal are deferred until the visual
+candidate receives human acceptance. This prevents paying the final matrix cost
+for a candidate that human review may send back for geometry iteration.

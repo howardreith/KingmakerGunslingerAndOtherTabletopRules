@@ -10,6 +10,12 @@ weapon statistic, GUID, ammunition state, or save identity changed.
 ## Immutable candidate identity
 
 - version: `0.0.80`;
+- source commit: `041e934dc85d14512d9353f479d006a39065bd42`;
+- package SHA-256:
+  `847604574E84BA98BF55E77489FD8CF9276AFE07473B676AF31B72B2AC1D8797`;
+- DLL SHA-256:
+  `27BCD2F725B369DB4C46F0227AE03D91E4DEC92B941CE5B351EC01E4C2FC0A9D`;
+- DLL MVID: `24a38b51-b2f8-4a2e-b42b-edff7e32b1a8`;
 - firearm bundle: `kingmakergunslinger.firearms`;
 - bundle size: 17,960,137 bytes;
 - bundle SHA-256:
@@ -18,8 +24,8 @@ weapon statistic, GUID, ammunition state, or save identity changed.
 - source report:
   `assets-source/original-models/firearm-fit-experiments/musket-fit-candidates-build-report.json`.
 
-The commit, package, DLL, DLL MVID, installed hash, and runtime evidence IDs are
-filled in the final implementation report after the coherent candidate commit.
+The installed hash matched the packaged DLL. Exact runtime evidence IDs are in
+`docs/WEAPON-VISUAL-VARIETY-FIREARM-FIT-IMPLEMENTATION-REPORT.md`.
 
 ## Candidate set
 
