@@ -161,6 +161,9 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTestScenarioCatalog.cs"));
             string runtimeCommon = File.ReadAllText(Path.Combine(root,
                 "scripts", "RuntimeAutomation.Common.ps1"));
+            string compatibilityProfile = File.ReadAllText(Path.Combine(root,
+                "scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1"));
             string inventory = File.ReadAllText(Path.Combine(brownFur,
                 "BrownFurTransmutationInventory.cs"));
             string inventoryRecord = File.ReadAllText(Path.Combine(brownFur,
@@ -351,6 +354,16 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurOptionalExtensionCoordinator.SuccessfulReconciliations" })
                 Assertions.True(observer.Contains(token),
                     "Guarded CotW-absent observer lacks isolation evidence token: " +
+                    token);
+            foreach (string token in new[] {
+                "CotwProgressionMode", "'normal', 'balance-fixes'",
+                "balance_fixes", "balanceMatches.Count -ne 1",
+                "cotw-settings-profile.json", "exactBytesRestored",
+                "CotW settings bytes were not restored exactly",
+                "cotwSettingsStagedSha256",
+                "cotwSettingsBytesRestored" })
+                Assertions.True(compatibilityProfile.Contains(token),
+                    "CotW progression profile lacks guarded settings token: " +
                     token);
             Assertions.False(Directory.GetFiles(brownFur, "*.cs")
                 .Select(File.ReadAllText).Any(value =>

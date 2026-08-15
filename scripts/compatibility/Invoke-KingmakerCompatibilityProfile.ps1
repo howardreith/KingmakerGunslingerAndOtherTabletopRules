@@ -51,6 +51,8 @@ param(
     [hashtable]$Parameters = @{},
     [ValidateRange(120, 900)]
     [int]$RuntimeTimeoutSeconds = 300,
+    [ValidateSet('unchanged', 'normal', 'balance-fixes')]
+    [string]$CotwProgressionMode = 'unchanged',
     [switch]$AllowDirtyGit,
     [switch]$ReuseInstalledArtifact,
     [string]$DeploymentManifestPath,
@@ -67,6 +69,29 @@ $runId = 'compat-' + [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ') + '-' +
 $entered = $false
 $primaryError = $null
 $results = [Collections.Generic.List[object]]::new()
+$cotwSettingsPath = Join-Path $KingmakerInstallDir `
+    'Mods\CallOfTheWild\settings.json'
+$cotwSettingsOriginalExists = Test-Path -LiteralPath $cotwSettingsPath `
+    -PathType Leaf
+$cotwSettingsOriginalBytes = if ($cotwSettingsOriginalExists) {
+    [IO.File]::ReadAllBytes($cotwSettingsPath)
+} else { $null }
+$cotwSettingsOriginalSha = if ($cotwSettingsOriginalExists) {
+    (Get-FileHash -LiteralPath $cotwSettingsPath -Algorithm SHA256).Hash
+} else { $null }
+$cotwSettingsStagedBeforeSha = $null
+$cotwSettingsStagedAfterSha = $null
+
+$cotwProfileIds = @('gunslinger-call-of-the-wild',
+    'gunslinger-high-risk-combined', 'gunslinger-all-loadable-local')
+if ($CotwProgressionMode -cne 'unchanged' -and
+    $ProfileId -notin $cotwProfileIds) {
+    throw "CotW progression mode requires a profile containing Call of the Wild."
+}
+if ($CotwProgressionMode -cne 'unchanged' -and
+    -not $cotwSettingsOriginalExists) {
+    throw "CotW progression mode requires an existing original settings file: $cotwSettingsPath"
+}
 
 $moduleScenario = @($Scenario | Where-Object { $_ -ceq
     'observe-feature-module-settings' }).Count -gt 0 -or
@@ -101,6 +126,40 @@ try {
         -ProfileId $ProfileId -RunId $runId -KingmakerInstallDir $KingmakerInstallDir `
         -StateRoot $StateRoot -Confirm:$false | Out-Host
     $entered = $true
+    if ($CotwProgressionMode -cne 'unchanged') {
+        if (-not (Test-Path -LiteralPath $cotwSettingsPath -PathType Leaf)) {
+            throw "Staged CotW settings file is missing: $cotwSettingsPath"
+        }
+        $cotwSettingsStagedBeforeSha = (Get-FileHash -LiteralPath `
+            $cotwSettingsPath -Algorithm SHA256).Hash
+        $settingsText = [IO.File]::ReadAllText($cotwSettingsPath)
+        $balancePattern = '("balance_fixes"\s*:\s*)(true|false)'
+        $balanceMatches = [regex]::Matches($settingsText, $balancePattern,
+            [Text.RegularExpressions.RegexOptions]::IgnoreCase)
+        if ($balanceMatches.Count -ne 1) {
+            throw "Staged CotW settings must contain exactly one balance_fixes Boolean."
+        }
+        $desiredBalance = if ($CotwProgressionMode -ceq 'balance-fixes') {
+            'true'
+        } else { 'false' }
+        $match = $balanceMatches[0]
+        $replacement = $match.Groups[1].Value + $desiredBalance
+        $updated = $settingsText.Substring(0, $match.Index) + $replacement +
+            $settingsText.Substring($match.Index + $match.Length)
+        $temporaryCotw = $cotwSettingsPath + '.kmg-progression.tmp'
+        [IO.File]::WriteAllText($temporaryCotw, $updated,
+            (New-Object Text.UTF8Encoding($false)))
+        Move-Item -LiteralPath $temporaryCotw -Destination $cotwSettingsPath -Force
+        $resolvedSettings = Get-Content -Raw -LiteralPath $cotwSettingsPath |
+            ConvertFrom-Json
+        $expectedBalance = $CotwProgressionMode -ceq 'balance-fixes'
+        if ($resolvedSettings.balance_fixes -isnot [bool] -or
+            [bool]$resolvedSettings.balance_fixes -ne $expectedBalance) {
+            throw "Staged CotW balance_fixes did not resolve to the requested mode."
+        }
+        $cotwSettingsStagedAfterSha = (Get-FileHash -LiteralPath `
+            $cotwSettingsPath -Algorithm SHA256).Hash
+    }
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
@@ -196,10 +255,52 @@ $state = Get-Content -LiteralPath (Join-Path $StateRoot "$runId\transaction.json
 if (-not $state.restorationVerified -or $state.status -cne 'Restored') {
     throw "Profile completed but exact restoration was not verified: $runId"
 }
+$cotwSettingsRestoredExists = Test-Path -LiteralPath $cotwSettingsPath `
+    -PathType Leaf
+$cotwSettingsRestoredSha = if ($cotwSettingsRestoredExists) {
+    (Get-FileHash -LiteralPath $cotwSettingsPath -Algorithm SHA256).Hash
+} else { $null }
+$cotwSettingsBytesRestored =
+    $cotwSettingsOriginalExists -eq $cotwSettingsRestoredExists
+if ($cotwSettingsBytesRestored -and $cotwSettingsOriginalExists) {
+    $restoredBytes = [IO.File]::ReadAllBytes($cotwSettingsPath)
+    $cotwSettingsBytesRestored =
+        $restoredBytes.Length -eq $cotwSettingsOriginalBytes.Length
+    if ($cotwSettingsBytesRestored) {
+        for ($index = 0; $index -lt $restoredBytes.Length; $index++) {
+            if ($restoredBytes[$index] -ne $cotwSettingsOriginalBytes[$index]) {
+                $cotwSettingsBytesRestored = $false
+                break
+            }
+        }
+    }
+}
+$cotwSettingsEvidencePath = Join-Path $StateRoot `
+    "$runId\cotw-settings-profile.json"
+[ordered]@{
+    schemaVersion = 1
+    progressionMode = $CotwProgressionMode
+    originalExisted = $cotwSettingsOriginalExists
+    originalSha256 = $cotwSettingsOriginalSha
+    stagedBeforeSha256 = $cotwSettingsStagedBeforeSha
+    stagedAfterSha256 = $cotwSettingsStagedAfterSha
+    restoredExisted = $cotwSettingsRestoredExists
+    restoredSha256 = $cotwSettingsRestoredSha
+    exactBytesRestored = $cotwSettingsBytesRestored
+} | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath `
+    $cotwSettingsEvidencePath -Encoding UTF8
+if (-not $cotwSettingsBytesRestored) {
+    throw "CotW settings bytes were not restored exactly: $runId"
+}
 [pscustomobject][ordered]@{
     profileId = $ProfileId
     transactionRunId = $runId
     restorationVerified = $true
     stagedMutationObserved = [bool]$state.stagedMutationObserved
+    cotwProgressionMode = $CotwProgressionMode
+    cotwSettingsStagedSha256 = $cotwSettingsStagedAfterSha
+    cotwSettingsRestoredSha256 = $cotwSettingsRestoredSha
+    cotwSettingsBytesRestored = $cotwSettingsBytesRestored
+    cotwSettingsEvidencePath = $cotwSettingsEvidencePath
     runtimeResults = @($results)
 }
