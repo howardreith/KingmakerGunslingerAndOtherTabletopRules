@@ -36,6 +36,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "91266b6d2a4c4fd6b8e1549bc2381d12",
             "c7b52e9a09ef442f9308d9119f5877d2"
         };
+        private static readonly string[] NoOpSpellGuids = {
+            "16e23c7a8ae53cc42a93066d19766404",
+            "3105d6e9febdc3f41a08d2b7dda1fe74",
+            "4aa7942c3e62a164387a73184bca3fc1",
+            "e243740dfdb17a246b116b334ed0b165",
+            "d752e84d9708495a93ab1237bd9c1dff"
+        };
+        private static readonly int[] NoOpDurationCounts = { 1, 1, 4, 0, 0 };
 
         [JsonObject(MemberSerialization.OptIn)]
         private sealed class Evidence
@@ -79,6 +87,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("specialScopesReleased", Order = 37)] public bool SpecialScopesReleased { get; set; }
             [JsonProperty("earthTremorSupportsExtend", Order = 38)] public bool EarthTremorSupportsExtend { get; set; }
             [JsonProperty("earthTremorVariantDurations", Order = 39)] public List<string> EarthTremorVariantDurations { get; set; }
+            [JsonProperty("noOpSupportsExtend", Order = 40)] public bool NoOpSupportsExtend { get; set; }
+            [JsonProperty("noOpDurationResults", Order = 41)] public List<string> NoOpDurationResults { get; set; }
+            [JsonProperty("noOpAllPreserved", Order = 42)] public bool NoOpAllPreserved { get; set; }
+            [JsonProperty("balefulPermanentPreserved", Order = 43)] public bool BalefulPermanentPreserved { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -260,6 +272,61 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.EarthTremorVariantDurations.Add(guid + ":" +
                         earthBaseline + "->" + earthScoped);
                 }
+
+                stage = "instant-permanent-selector-noops";
+                evidence.NoOpSupportsExtend = false;
+                evidence.NoOpAllPreserved = true;
+                evidence.BalefulPermanentPreserved = false;
+                evidence.NoOpDurationResults = new List<string>();
+                for (int index = 0; index < NoOpSpellGuids.Length; index++)
+                {
+                    string guid = NoOpSpellGuids[index];
+                    BlueprintAbility noOp = ResourcesLibrary.TryGetBlueprint<
+                        BlueprintAbility>(guid);
+                    if (noOp == null || noOp.School !=
+                        SpellSchool.Transmutation)
+                        throw new InvalidOperationException(
+                            "An exact no-op Transmutation was unavailable: " +
+                            guid);
+                    evidence.NoOpSupportsExtend |=
+                        (noOp.AvailableMetamagic & Metamagic.Extend) != 0;
+                    ContextDurationValue[] durations = RootDurations(noOp);
+                    var noOpData = new AbilityData(noOp, caster.Descriptor);
+                    AbilityExecutionContext noOpBaseline = noOpData
+                        .CreateExecutionContext(target);
+                    int[] baselineValues = durations.Select(value => value
+                        .Calculate(noOpBaseline).Value).ToArray();
+                    string[] permanentBefore = NamedBooleanFields(noOp,
+                        "Permanent");
+                    string identity = "supremacy-noop-" + guid;
+                    if (!BrownFurSupremacyRuntime.Begin(identity, noOpData))
+                        throw new InvalidOperationException(
+                            "No-op scope could not begin: " + guid);
+                    AbilityExecutionContext noOpScoped = noOpData
+                        .CreateExecutionContext(target);
+                    int[] scopedValues = durations.Select(value => value
+                        .Calculate(noOpScoped).Value).ToArray();
+                    string[] permanentAfter = NamedBooleanFields(noOp,
+                        "Permanent");
+                    bool released = BrownFurSupremacyRuntime.Release(identity);
+                    bool preserved = durations.Length ==
+                            NoOpDurationCounts[index] &&
+                        baselineValues.SequenceEqual(scopedValues) &&
+                        baselineValues.All(value => value == 0) &&
+                        permanentBefore.SequenceEqual(permanentAfter) && released;
+                    evidence.NoOpAllPreserved &= preserved;
+                    if (guid == NoOpSpellGuids[1])
+                        evidence.BalefulPermanentPreserved =
+                            permanentBefore.Any(value => value.EndsWith(
+                                "=True", StringComparison.Ordinal)) &&
+                            permanentBefore.SequenceEqual(permanentAfter);
+                    evidence.NoOpDurationResults.Add(guid + ":count=" +
+                        durations.Length + ":" + string.Join(",",
+                            baselineValues.Select(value => value.ToString())
+                                .ToArray()) + "->" + string.Join(",",
+                            scopedValues.Select(value => value.ToString())
+                                .ToArray()));
+                }
             }
             catch (Exception exception)
             {
@@ -356,6 +423,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.EndsWith(":600->1200",
                             StringComparison.Ordinal)),
                 "installed Earth Tremor spread, cone, and line root area durations");
+            Add(assertions, "supremacy-instant-permanent-selector-noops",
+                "five non-Extend roots preserve zero/absent durations and permanent state",
+                "supports=" + evidence.NoOpSupportsExtend + ";preserved=" +
+                    evidence.NoOpAllPreserved + ";balefulPermanent=" +
+                    evidence.BalefulPermanentPreserved + ";" + string.Join(
+                        "|", (evidence.NoOpDurationResults ??
+                            new List<string>()).ToArray()),
+                !evidence.NoOpSupportsExtend && evidence.NoOpAllPreserved &&
+                    evidence.BalefulPermanentPreserved &&
+                    evidence.NoOpDurationResults != null &&
+                    evidence.NoOpDurationResults.Count == 5,
+                "installed Jolt, Baleful Polymorph, Disintegrate, Stone to Flesh, and Earth Tremor wrapper");
             Add(assertions, "supremacy-context-isolation-cleanup",
                 "blueprint and slot identity unchanged; scopes zero; unit removed",
                 "range=" + evidence.RangeBefore + "/" + evidence.RangeAfter +
@@ -409,6 +488,59 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Array.Empty<BlueprintComponent>())
                 WalkDurations(component, values, visited, 0);
             return values.Distinct().ToArray();
+        }
+
+        private static string[] NamedBooleanFields(BlueprintAbility ability,
+            string nameToken)
+        {
+            var values = new List<string>();
+            var visited = new HashSet<object>(ReferenceComparer.Instance);
+            foreach (BlueprintComponent component in ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                WalkBooleanFields(component, nameToken, values, visited, 0,
+                    "ability.components");
+            return values.Distinct().OrderBy(value => value,
+                StringComparer.Ordinal).ToArray();
+        }
+
+        private static void WalkBooleanFields(object value, string nameToken,
+            ICollection<string> values, ISet<object> visited, int depth,
+            string path)
+        {
+            if (value == null || depth > 16 || value is string) return;
+            Type type = value.GetType();
+            if (type.IsPrimitive || type.IsEnum || type == typeof(decimal) ||
+                type == typeof(Type)) return;
+            if (value is BlueprintAbility || value is
+                Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff ||
+                value is BlueprintAbilityAreaEffect) return;
+            if (!visited.Add(value)) return;
+            IEnumerable enumerable = value as IEnumerable;
+            if (enumerable != null)
+            {
+                int index = 0;
+                foreach (object item in enumerable)
+                    WalkBooleanFields(item, nameToken, values, visited,
+                        depth + 1, path + "[" + index++ + "]");
+                return;
+            }
+            for (Type cursor = type; cursor != null && cursor != typeof(object);
+                cursor = cursor.BaseType)
+                foreach (FieldInfo field in cursor.GetFields(
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    object member;
+                    try { member = field.GetValue(value); }
+                    catch { continue; }
+                    string memberPath = path + "." + field.Name;
+                    if (field.FieldType == typeof(bool) && field.Name.IndexOf(
+                            nameToken, StringComparison.OrdinalIgnoreCase) >= 0)
+                        values.Add(memberPath + "=" + member);
+                    else
+                        WalkBooleanFields(member, nameToken, values, visited,
+                            depth + 1, memberPath);
+                }
         }
 
         private static void WalkDurations(object value,
