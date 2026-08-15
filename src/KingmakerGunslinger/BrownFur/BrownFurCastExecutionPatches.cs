@@ -5,9 +5,40 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.Utility;
 
 namespace KingmakerGunslinger.BrownFur
 {
+    [HarmonyPatch(typeof(UnitUseAbility), MethodType.Constructor,
+        typeof(UnitCommand.CommandType), typeof(AbilityData),
+        typeof(TargetWrapper))]
+    internal static class BrownFurCommandConstructorPatch
+    {
+        private static void Postfix(UnitUseAbility __instance,
+            AbilityData __1, TargetWrapper __2)
+        {
+            try { BrownFurCastIntentRuntime.Arm(__instance, __1, __2); }
+            catch (Exception exception)
+            { BrownFurCastExecutionRuntime.RecordPatchFailure(
+                "command-constructor", exception); }
+        }
+    }
+
+    [HarmonyPatch(typeof(UnitUseAbility), "OnAction", new Type[0])]
+    internal static class BrownFurRejectedCommandPatch
+    {
+        private static bool Prefix(UnitUseAbility __instance,
+            ref UnitCommand.ResultType __result)
+        {
+            string failure;
+            if (!BrownFurCastExecutionRuntime.ConsumeCommandRejection(
+                    __instance, out failure)) return true;
+            __result = UnitCommand.ResultType.Fail;
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(RuleCastSpell), MethodType.Constructor,
         typeof(AbilityData), typeof(Kingmaker.Utility.TargetWrapper))]
     internal static class BrownFurRuleConstructorPatch

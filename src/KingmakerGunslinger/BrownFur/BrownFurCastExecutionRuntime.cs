@@ -35,6 +35,9 @@ namespace KingmakerGunslinger.BrownFur
             SuppressedSpendCommands =
                 new Dictionary<UnitUseAbility, AbilityData>(
                     CommandReferenceComparer.Instance);
+        private static readonly Dictionary<UnitUseAbility, string>
+            RejectedCommands = new Dictionary<UnitUseAbility, string>(
+                CommandReferenceComparer.Instance);
         private static string _lastFailure;
         private static readonly BrownFurCastCommitCoordinator<UnitDescriptor,
             UnitUseAbility, AbilityData, RuleCastSpell,
@@ -49,6 +52,8 @@ namespace KingmakerGunslinger.BrownFur
         { get { return Coordinator.ReservationCount; } }
         internal static int SuppressedSpendCount
         { get { lock (Gate) return SuppressedSpends.Count; } }
+        internal static int RejectedCommandCount
+        { get { lock (Gate) return RejectedCommands.Count; } }
         internal static string LastFailure
         { get { lock (Gate) return _lastFailure; } }
 
@@ -204,12 +209,34 @@ namespace KingmakerGunslinger.BrownFur
             }
         }
 
+        internal static void RejectCommand(UnitUseAbility command,
+            string failure)
+        {
+            if (command == null) return;
+            lock (Gate) RejectedCommands[command] = failure ?? string.Empty;
+        }
+
+        internal static bool ConsumeCommandRejection(UnitUseAbility command,
+            out string failure)
+        {
+            failure = string.Empty;
+            if (command == null) return false;
+            lock (Gate)
+            {
+                if (!RejectedCommands.TryGetValue(command, out failure))
+                    return false;
+                RejectedCommands.Remove(command);
+                return true;
+            }
+        }
+
         internal static void EndCommand(UnitUseAbility command)
         {
             try
             {
                 lock (Gate)
                 {
+                    if (command != null) RejectedCommands.Remove(command);
                     AbilityData ability;
                     if (command != null && SuppressedSpendCommands.TryGetValue(
                             command, out ability))
@@ -250,7 +277,9 @@ namespace KingmakerGunslinger.BrownFur
                     Bindings.Clear();
                     SuppressedSpends.Clear();
                     SuppressedSpendCommands.Clear();
+                    RejectedCommands.Clear();
                 }
+                SafeCleanup("clear-intent", BrownFurCastIntentRuntime.Clear);
                 SafeCleanup("clear-share",
                     BrownFurShareTargetingRuntime.Clear);
                 SafeCleanup("clear-supremacy",

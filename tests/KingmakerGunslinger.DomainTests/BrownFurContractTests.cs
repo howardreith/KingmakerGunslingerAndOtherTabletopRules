@@ -202,6 +202,10 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurPlayerIntentScenario.cs"));
             string castExecutionRuntime = File.ReadAllText(Path.Combine(
                 brownFur, "BrownFurCastExecutionRuntime.cs"));
+            string castIntentRuntime = File.ReadAllText(Path.Combine(
+                brownFur, "BrownFurCastIntentRuntime.cs"));
+            string relationshipRuntime = File.ReadAllText(Path.Combine(
+                brownFur, "BrownFurShareRelationshipRuntime.cs"));
             string castExecutionPatches = File.ReadAllText(Path.Combine(
                 brownFur, "BrownFurCastExecutionPatches.cs"));
             string castExecutionScenario = File.ReadAllText(Path.Combine(root,
@@ -502,11 +506,17 @@ namespace KingmakerGunslinger.DomainTests
                 "arcanist-slot-combined-commit",
                 "arcanist-slot-exception-rollback",
                 "arcanist-slot-rejected-no-spend",
+                "arcanist-slot-automatic-intent",
+                "arcanist-slot-automatic-commit",
+                "arcanist-slot-invalid-intent-pre-action",
                 "arcanist-slot-cleanup", "ApplyClassMechanics",
                 "ApplyLevelup", "contract.CastingSpellbook",
                 "contract.MemorizationSpellbook", "InvokeAbilitySpend(data)",
                 "BrownFurCastExecutionRuntime.TryCommit",
-                "BrownFurCastExecutionRuntime.SuppressedSpendCount" })
+                "BrownFurCastExecutionRuntime.SuppressedSpendCount",
+                "BrownFurCastIntentRuntime.LastOutcome",
+                "BrownFurCastExecutionRuntime.RejectedCommandCount",
+                "UnitCommand.ResultType.Fail" })
                 Assertions.True(arcanistSlotScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded Arcanist slot fixture lacks evidence token: " +
@@ -606,10 +616,43 @@ namespace KingmakerGunslinger.DomainTests
                 "command.Result != UnitCommand.ResultType.Success" })
                 Assertions.True(castExecutionRuntime.Contains(token),
                     "Cast execution boundary lacks exact guard: " + token);
+            foreach (string token in new[] {
+                "BrownFurPlayerIntentRuntime.Observe",
+                "BrownFurPlayerIntentRuntime.Clear",
+                "BrownFurTransmutationInventory.Observe",
+                "current.ConvertedFrom", "ability.Spellbook.Blueprint",
+                "ReferenceEquals(sourceBook, contract.CastingSpellbook)",
+                "ability.SourceItem == null", "AbilityType.Spell",
+                "SpellSchool.Transmutation", "ability.HasMetamagic",
+                "Metamagic.Extend", "BrownFurShareRelationshipRuntime.Classify",
+                "targetUnit.Descriptor.State.IsDead", "DistanceFeet",
+                "BrownFurCastPolicy.Decide", "BrownFurCastTransaction",
+                "BrownFurCastExecutionRuntime.Begin",
+                "spell-inventory-unqualified", "cast-reservation-rejected",
+                "Interlocked.Increment", "RuntimeHelpers.GetHashCode" })
+                Assertions.True(castIntentRuntime.Contains(token),
+                    "Native cast intent bridge lacks exact guard: " + token);
+            Assertions.False(castIntentRuntime.Contains(
+                "static UnitUseAbility Current"),
+                "Brown-Fur must not retain one global current command.");
+            foreach (string token in new[] { "Game.Instance.Player.Party",
+                "caster.Pet", "Get<UnitPartSummonedMonster>",
+                "summoned.Summoner", "summoned.IsDirectlyControllable",
+                "target.IsDirectlyControllable", "casterUnit.IsEnemy(target)",
+                "target.IsEnemy(casterUnit)", "casterUnit.CanAttack(target)",
+                "target.CanAttack(casterUnit)",
+                "BrownFurShareTargetRelationship.Ambiguous" })
+                Assertions.True(relationshipRuntime.Contains(token),
+                    "Native willing relationship bridge lacks exact guard: " +
+                    token);
             foreach (string token in new[] { "RuleCastSpell",
                 "MethodType.Constructor", "HarmonyAfter(\"CallOfTheWild\")",
                 "TryCommit", "AttachProcess", "Finalizer", "AbilityData",
                 "\"Spend\"", "UnitUseAbility", "\"OnEnded\"",
+                "BrownFurCommandConstructorPatch",
+                "BrownFurCastIntentRuntime.Arm",
+                "BrownFurRejectedCommandPatch",
+                "ConsumeCommandRejection", "UnitCommand.ResultType.Fail",
                 "AbilityExecutionProcess", "\"Tick\"",
                 "RecordPatchFailure" })
                 Assertions.True(castExecutionPatches.Contains(token),
