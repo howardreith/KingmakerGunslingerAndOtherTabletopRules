@@ -824,6 +824,52 @@ deployment `20260815T1951516057686Z`; backup
 save interaction. This closes the installed static inventory classification
 gate; it does not publish Brown-Fur.
 
+The first isolated-registration attempt on
+`c0fbe1893115fc4fada88f6a14ac07990f1aab43`, run
+`20260815T2002264792969Z-a68800ceb56949cf821cbfd3c330ab9d`, failed
+closed because `BlueprintManifest.ResolveActive` correctly rejected the first
+Brown-Fur identity while its ledger status was still `reserved`. No Brown-Fur
+identity was registered, the Arcanist archetype array retained zero Brown-Fur
+references, and the ordinary package bootstrap remained ready. This was an
+identity-ledger state error, not a CotW structural-contract failure.
+
+After activating the same 19 permanent GUIDs and generalizing the inherited
+manifest validators, the exact commit
+`dd35e276cac658f3976aaddbcf4f6f61cd7eae26` passed all 13 guarded,
+save-free assertions. Run
+`20260815T2011411795095Z-fe885f683f564c58994018418f89a2fa` proved:
+
+- the package bootstrap remained ready;
+- the installed CotW balance-fixes structure remained compatible at exploit
+  levels `1,4,7,10,13,16,19` and replacements `4,10`;
+- all 19 Brown-Fur identities were registered by exact permanent GUID;
+- Brown-Fur still had zero references in the CotW Arcanist archetype array;
+- effective status was Available / Not published; and
+- the coordinator reconciled exactly once without save or input access.
+
+Exact passing evidence identity:
+
+- local-runtime package SHA-256
+  `675B478D969FE68581EAF6E4EFB50CAE4FF8C2856FD84A5F2BBF72211D8B0F22`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `CD526A7CEE0D47E6DF999A1FF534AAF1BF114D3D4E9B65FA1261CEBEA0795762`;
+- DLL MVID `89f0a045-f1bb-4117-b040-5f4442875119`;
+- runtime-result SHA-256
+  `AC7EFDB394C2CC8A49C1E1790ED0B2C38AE1450F98706C912D9DF976F78F08D7`;
+- runtime-evidence SHA-256
+  `8BBD695526245562E6035EFA2A1332C47225AB40659B647641A495BF338494D0`;
+- orchestration SHA-256
+  `58A1EE922B17B7A855156F361C69134EAAC9D9292B6005950348D16A8CD3BF77`;
+- deployment `20260815T2011410833543Z`, deployment-manifest SHA-256
+  `EDDA489238581A23D5C5B1EFFF1AF6AA1218D080430FEDFC4C13155623786BD0`;
+- backup `20260815T2011363819079Z`, preserved feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`;
+  and
+- game build collection `2018.4.10.10503941`.
+
+This closes optional identity registration while deliberately retaining the
+mechanics qualification gate before selector publication.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
@@ -849,7 +895,9 @@ Transmutation spell set.
 CotW absence produces `Unavailable` rather than a package bootstrap failure.
 Any installed-but-failed check produces `Blocked` with the exact failed check.
 The reflection-only runtime resolver and isolated lifecycle coordinator are now
-implemented and qualified against the installed fingerprint above. They do not
-register or publish Brown-Fur blueprints yet. The publication transaction and
-spell mechanics remain pending; this document does not claim player-facing
-Brown-Fur compatibility.
+implemented and qualified against the installed fingerprint above. With a
+compatible CotW contract they register all 19 stable Brown-Fur identities in a
+separate rollback-capable transaction, but do not yet publish the archetype.
+Player intent, actual feature ownership, interruption, dispel, persistence, and
+selector publication remain pending; this document does not claim
+player-facing Brown-Fur compatibility.

@@ -308,3 +308,25 @@ Runtime `ConvertedFrom` canonicalization, player intent, real feature
 ownership, restricted Personal-spell delivery, interruption, dispel, and
 persistence remain publication gates. Brown-Fur remains reserved and
 unpublished.
+
+The isolated optional-registration checkpoint first failed closed on commit
+`c0fbe1893115fc4fada88f6a14ac07990f1aab43` because all 19 permanent
+Brown-Fur manifest entries were still marked `reserved`. Run
+`20260815T2002264792969Z-a68800ceb56949cf821cbfd3c330ab9d` proved the
+registry rejected the first entry before creating any Brown-Fur asset, the
+archetype selector remained unchanged, and the package stayed ready. The
+manifest and inherited validators were then generalized without changing any
+GUID, making the optional identities active while retaining the core package's
+independent 1,517-registration authority.
+
+The corrected save-free contract observer passed all 13 assertions on commit
+`dd35e276cac658f3976aaddbcf4f6f61cd7eae26`. It resolved the exact
+balance-fixes CotW contract, registered all 19 manifest-backed Brown-Fur
+identities, retained zero Brown-Fur references in CotW's Arcanist archetype
+array, and left effective status Available / Not published. Exact immutable
+artifact identities are recorded in the CotW contract.
+
+This closes stable optional identity registration and proves that active
+identity status is distinct from selector publication. Player intent, actual
+feature ownership, interruption, dispel, persistence, and final publication
+remain gates. Brown-Fur is registered but unpublished.
