@@ -87,6 +87,13 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwArcanistContractCandidate.cs"><Link>BrownFur\CotwArcanistContractCandidate.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwArcanistContractDecision.cs"><Link>BrownFur\CotwArcanistContractDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwArcanistContractPolicy.cs"><Link>BrownFur\CotwArcanistContractPolicy.cs</Link></Compile>
+    <Compile Include="BrownFurCastTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurAbilityScore.cs"><Link>BrownFur\BrownFurAbilityScore.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastRequest.cs"><Link>BrownFur\BrownFurCastRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastDecision.cs"><Link>BrownFur\BrownFurCastDecision.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastPolicy.cs"><Link>BrownFur\BrownFurCastPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastIntent.cs"><Link>BrownFur\BrownFurCastIntent.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastTransaction.cs"><Link>BrownFur\BrownFurCastTransaction.cs</Link></Compile>
     <Compile Include="ShieldOtherPolicyTests.cs" />
     <Compile Include="AcadamaeCordPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingTime.cs"><Link>Acadamae\AcadamaeCastingTime.cs</Link></Compile>
