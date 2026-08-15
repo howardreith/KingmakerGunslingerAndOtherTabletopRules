@@ -12,6 +12,7 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.BrownFur;
@@ -53,6 +54,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("spellLevelAfter", Order = 22)] public int SpellLevelAfter { get; set; }
             [JsonProperty("activeScopesAfter", Order = 23)] public int ActiveScopesAfter { get; set; }
             [JsonProperty("unitRemoved", Order = 24)] public bool UnitRemoved { get; set; }
+            [JsonProperty("baselineDurationRounds", Order = 25)] public int BaselineDurationRounds { get; set; }
+            [JsonProperty("scopedDurationRounds", Order = 26)] public int ScopedDurationRounds { get; set; }
+            [JsonProperty("restoredDurationRounds", Order = 27)] public int RestoredDurationRounds { get; set; }
+            [JsonProperty("preparedDurationRounds", Order = 28)] public int PreparedDurationRounds { get; set; }
+            [JsonProperty("actionTypeBefore", Order = 29)] public string ActionTypeBefore { get; set; }
+            [JsonProperty("actionTypeAfter", Order = 30)] public string ActionTypeAfter { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -90,6 +97,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.MetamagicSupportBefore =
                     spell.AvailableMetamagic.ToString();
                 evidence.SpellLevelBefore = data.SpellLevel;
+                evidence.ActionTypeBefore = data.ActionType.ToString();
+                var timedDuration = new ContextDurationValue {
+                    Rate = DurationRate.Rounds,
+                    BonusValue = 5
+                };
 
                 stage = "baseline";
                 AbilityExecutionContext baseline =
@@ -97,6 +109,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.BaselineMetamagic = baseline.Params.Metamagic.ToString();
                 evidence.BaselineExtended = baseline.Params.HasMetamagic(
                     Metamagic.Extend);
+                evidence.BaselineDurationRounds =
+                    timedDuration.Calculate(baseline).Value;
 
                 stage = "scoped";
                 evidence.ScopeBegan = BrownFurSupremacyRuntime.Begin(
@@ -105,6 +119,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.ScopedMetamagic = scoped.Params.Metamagic.ToString();
                 evidence.ScopedExtended = scoped.Params.HasMetamagic(
                     Metamagic.Extend);
+                evidence.ScopedDurationRounds =
+                    timedDuration.Calculate(scoped).Value;
                 evidence.ModifiedContexts =
                     BrownFurSupremacyRuntime.ModifiedContextCount(
                         "supremacy-runtime-ordinary");
@@ -116,6 +132,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data.CreateExecutionContext(target);
                 evidence.RestoredExtended = restored.Params.HasMetamagic(
                     Metamagic.Extend);
+                evidence.RestoredDurationRounds =
+                    timedDuration.Calculate(restored).Value;
 
                 stage = "prepared";
                 AbilityExecutionContext prepared =
@@ -127,6 +145,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data, prepared);
                 evidence.PreparedStillExtended = prepared.Params.HasMetamagic(
                     Metamagic.Extend);
+                evidence.PreparedDurationRounds =
+                    timedDuration.Calculate(prepared).Value;
                 evidence.PreparedModifiedContexts =
                     BrownFurSupremacyRuntime.ModifiedContextCount(
                         "supremacy-runtime-prepared");
@@ -136,6 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.MetamagicSupportAfter =
                     spell.AvailableMetamagic.ToString();
                 evidence.SpellLevelAfter = data.SpellLevel;
+                evidence.ActionTypeAfter = data.ActionType.ToString();
             }
             catch (Exception exception)
             {
@@ -183,6 +204,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "restoredExtended=" + evidence.RestoredExtended,
                 !evidence.RestoredExtended,
                 "transaction-local duration state does not leak");
+            Add(assertions, "supremacy-context-duration",
+                "native extendable five-round duration becomes ten once",
+                "baseline=" + evidence.BaselineDurationRounds +
+                    ";scoped=" + evidence.ScopedDurationRounds +
+                    ";prepared=" + evidence.PreparedDurationRounds +
+                    ";restored=" + evidence.RestoredDurationRounds,
+                evidence.BaselineDurationRounds == 5 &&
+                    evidence.ScopedDurationRounds == 10 &&
+                    evidence.PreparedDurationRounds == 10 &&
+                    evidence.RestoredDurationRounds == 5,
+                "real ContextDurationValue.Calculate with installed CotW postfix");
+            Add(assertions, "supremacy-context-casting-time",
+                "ability action type is unchanged by scoped Extend",
+                evidence.ActionTypeBefore + "/" + evidence.ActionTypeAfter,
+                !string.IsNullOrEmpty(evidence.ActionTypeBefore) &&
+                    evidence.ActionTypeBefore == evidence.ActionTypeAfter,
+                "context-local metamagic enters after native action-cost selection");
             Add(assertions, "supremacy-context-isolation-cleanup",
                 "blueprint and slot identity unchanged; scopes zero; unit removed",
                 "range=" + evidence.RangeBefore + "/" + evidence.RangeAfter +

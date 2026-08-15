@@ -336,6 +336,11 @@ namespace KingmakerGunslinger.DomainTests
                 "supremacy-context-adds-extend-once",
                 "supremacy-context-already-extended",
                 "supremacy-context-release",
+                "supremacy-context-duration",
+                "ContextDurationValue", "DurationRate.Rounds",
+                "timedDuration.Calculate", "ScopedDurationRounds == 10",
+                "PreparedDurationRounds == 10",
+                "supremacy-context-casting-time", "data.ActionType",
                 "supremacy-context-isolation-cleanup",
                 "data.CreateExecutionContext", "Metamagic.Extend",
                 "ModifiedContextCount" })
