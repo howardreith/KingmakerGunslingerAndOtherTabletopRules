@@ -466,6 +466,7 @@ try {
         'disposable-expanded-summoning',
         'disposable-expanded-summoning-player-path',
         'disposable-expanded-summoning-visual-contracts',
+        'disposable-brown-fur-native-cast',
         'working-save-expanded-summoning-prepare',
         'working-save-expanded-summoning-verify-cleanup',
         'working-save-expanded-summoning-verify-absent',

@@ -451,6 +451,8 @@ Assert-True ($common.Contains("'observe-working-save-entry-action' = [pscustomob
     'entry-present-in-authoritative-metadata'
 Assert-True ($orchestrator.Contains('$scenarioMetadata = Get-KmgRuntimeScenarioMetadata')) `
     'orchestrator-consumes-authoritative-metadata'
+Assert-True ($orchestrator.Contains("'disposable-brown-fur-native-cast',")) `
+    'brown-fur-native-cast-uses-working-save-result-deadline'
 
 $artifactRoot = Join-Path $root 'artifacts'
 $backupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod'

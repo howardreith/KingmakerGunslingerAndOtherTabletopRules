@@ -501,9 +501,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void FinishAnimation(UnitUseAbility command)
         {
             if (command == null || command.Animation == null) return;
-            PropertyInfo property = command.Animation.GetType().GetProperty(
-                "IsFinished", BindingFlags.Public | BindingFlags.NonPublic |
-                BindingFlags.Instance);
+            PropertyInfo property = null;
+            for (Type type = command.Animation.GetType();
+                type != null && property == null; type = type.BaseType)
+                property = type.GetProperty("IsFinished",
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.Instance | BindingFlags.DeclaredOnly);
             MethodInfo setter = property == null ? null :
                 property.GetSetMethod(true);
             if (setter == null) throw new MissingMethodException(
