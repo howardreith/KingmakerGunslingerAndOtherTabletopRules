@@ -252,7 +252,10 @@ namespace KingmakerGunslinger.DomainTests
                 "AfterCotwArcanistCreation", "HarmonyMethod(postfix)",
                 "FirstUpdate", "OnUpdate -= FirstUpdate", "_reconciling",
                 "contract.blocked", "Independent modules remain active",
-                "DescribePatchOrder" })
+                "DescribePatchOrder", "EnsureBlueprintsRegistered",
+                "BlueprintBootstrap.Library", "registration.deferred",
+                "registry.RollbackAll()", "BrownFurIdentityCatalog.IdentityCount",
+                "archetype publication remains gated" })
                 Assertions.True(coordinator.Contains(token),
                     "Optional coordinator lacks lifecycle/isolation guard: " + token);
             Assertions.True(main.Contains(
@@ -268,6 +271,15 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(observer.Contains(token) || scenarios.Contains(token) ||
                     runtimeCommon.Contains(token),
                     "Guarded CotW observer lacks structured evidence token: " + token);
+            foreach (string token in new[] {
+                "brown-fur-stable-identities",
+                "brown-fur-publication-gate",
+                "BrownFurOptionalExtensionCoordinator.Blueprints",
+                "BrownFurIdentityCatalog.All.All",
+                "ReferenceEquals(value, blueprints.Archetype)" })
+                Assertions.True(observer.Contains(token),
+                    "Guarded CotW observer lacks optional-registration evidence token: " +
+                    token);
             Assertions.False(Directory.GetFiles(brownFur, "*.cs")
                 .Select(File.ReadAllText).Any(value =>
                     value.Contains("using CallOfTheWild")),

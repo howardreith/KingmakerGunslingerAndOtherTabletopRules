@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.BrownFur;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.FeatureModules;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var diagnostics = new List<string>();
             CotwArcanistResolution resolution =
                 BrownFurOptionalExtensionCoordinator.Current;
+            BrownFurBlueprintSet blueprints =
+                BrownFurOptionalExtensionCoordinator.Blueprints;
             BrownFurFeatureStatus status = BrownFurFeatureStatusRegistry.Current;
             Add(assertions, "package-bootstrap-isolated", "ready",
                 context.IsReady ? "ready" : "not-ready", context.IsReady,
@@ -102,12 +105,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !string.IsNullOrWhiteSpace(fingerprint.ModVersion),
                 "live loaded CotW assembly and exact settings bytes");
             Add(assertions, "brown-fur-effective-status",
-                "available, not published at contract-only checkpoint",
+                "available, stable identities registered, not published",
                 status.DependencyStatus + ";" + status.PublicationStatus +
                     ";detail=" + status.Detail,
                 status.Availability == BrownFurDependencyAvailability.Available &&
                     !status.Published,
                 "dependency state is distinct from saved intent and publication");
+            bool identitiesExact = blueprints != null &&
+                BlueprintBootstrap.Library != null &&
+                blueprints.Count == BrownFurIdentityCatalog.IdentityCount &&
+                BrownFurIdentityCatalog.All.All(spec =>
+                    BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(
+                        spec.Guid));
+            Add(assertions, "brown-fur-stable-identities",
+                "19 manifest-backed identities registered",
+                blueprints == null ? "missing" : blueprints.Count.ToString(),
+                identitiesExact,
+                "optional BlueprintRegistry and permanent BrownFurIdentityCatalog GUID ledger");
+            int archetypeReferences = contract == null ||
+                contract.ArcanistClass == null ||
+                contract.ArcanistClass.Archetypes == null ||
+                blueprints == null ? 0 : contract.ArcanistClass.Archetypes.Count(
+                    value => ReferenceEquals(value, blueprints.Archetype));
+            Add(assertions, "brown-fur-publication-gate", "0 selector references",
+                archetypeReferences.ToString(), archetypeReferences == 0,
+                "stable assets exist for save identity while player-facing publication remains mechanically gated");
             Add(assertions, "brown-fur-reconciliation", ">=1", BrownFurOptionalExtensionCoordinator
                 .SuccessfulReconciliations.ToString(),
                 BrownFurOptionalExtensionCoordinator.SuccessfulReconciliations >= 1,

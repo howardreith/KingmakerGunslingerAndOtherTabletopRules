@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Harmony12;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.FeatureModules;
 using UnityModManagerNet;
 
@@ -18,6 +20,8 @@ namespace KingmakerGunslinger.BrownFur
         private static ModContext _context;
         private static UnityModManager.ModEntry _cotwEntry;
         private static CotwArcanistResolution _current;
+        private static BlueprintRegistry _registry;
+        private static BrownFurBlueprintSet _blueprints;
         private static bool _installed;
         private static bool _firstUpdateAttached;
         private static bool _reconciling;
@@ -25,6 +29,9 @@ namespace KingmakerGunslinger.BrownFur
 
         internal static CotwArcanistResolution Current
         { get { lock (Gate) return _current; } }
+
+        internal static BrownFurBlueprintSet Blueprints
+        { get { lock (Gate) return _blueprints; } }
 
         internal static int SuccessfulReconciliations
         { get { lock (Gate) return _successfulReconciliations; } }
@@ -162,10 +169,13 @@ namespace KingmakerGunslinger.BrownFur
                     return;
                 }
 
+                if (!EnsureBlueprintsRegistered(context, resolution.Contract,
+                    checkpoint)) return;
+
                 lock (Gate) _successfulReconciliations++;
                 BrownFurFeatureStatusRegistry.Update(new BrownFurFeatureStatus(
                     BrownFurDependencyAvailability.Available, false,
-                    "Compatible CotW contract resolved; Brown-Fur blueprint publication is not implemented at this checkpoint."));
+                    "Compatible CotW contract resolved and 19 stable Brown-Fur identities registered; archetype publication remains gated pending focused mechanics qualification."));
                 BrownFurDiagnostics.Info(context, "contract.compatible",
                     "checkpoint=" + checkpoint + ";activeSetting=" +
                     context.FeatureModules.Active.BrownFurTransmuter + ";" +
@@ -180,6 +190,74 @@ namespace KingmakerGunslinger.BrownFur
             finally
             {
                 lock (Gate) _reconciling = false;
+            }
+        }
+
+        private static bool EnsureBlueprintsRegistered(ModContext context,
+            CotwArcanistContract contract, string checkpoint)
+        {
+            BrownFurBlueprintSet existing;
+            lock (Gate) existing = _blueprints;
+            if (existing != null)
+            {
+                BrownFurBlueprints.Validate(existing, contract);
+                BrownFurDiagnostics.Info(context, "registration.idempotent",
+                    "checkpoint=" + checkpoint + ";count=" + existing.Count);
+                return true;
+            }
+
+            var library = BlueprintBootstrap.Library;
+            if (library == null)
+            {
+                BrownFurFeatureStatusRegistry.Update(new BrownFurFeatureStatus(
+                    BrownFurDependencyAvailability.Available, false,
+                    "Compatible CotW contract resolved; awaiting the package blueprint lifecycle before optional Brown-Fur identity registration."));
+                BrownFurDiagnostics.Info(context, "registration.deferred",
+                    "checkpoint=" + checkpoint +
+                    ";reason=package-blueprint-library-not-ready");
+                return false;
+            }
+
+            string assemblyLocation = context == null || context.Assembly == null ?
+                string.Empty : context.Assembly.Location;
+            string modDirectory = string.IsNullOrWhiteSpace(assemblyLocation) ?
+                string.Empty : Path.GetDirectoryName(assemblyLocation);
+            if (string.IsNullOrWhiteSpace(modDirectory))
+                throw new InvalidOperationException(
+                    "The installed package directory was unavailable for Brown-Fur manifest registration.");
+
+            var registry = new BlueprintRegistry(library,
+                BlueprintManifest.Load(modDirectory), context.Logger);
+            try
+            {
+                BrownFurBlueprintSet registered = BrownFurBlueprints.Register(
+                    registry, contract);
+                if (registered.Count != BrownFurIdentityCatalog.IdentityCount ||
+                    registry.RegisteredCount != BrownFurIdentityCatalog.IdentityCount)
+                    throw new InvalidOperationException(
+                        "Brown-Fur optional registration did not create exactly " +
+                        BrownFurIdentityCatalog.IdentityCount + " identities.");
+                lock (Gate)
+                {
+                    _registry = registry;
+                    _blueprints = registered;
+                }
+                BrownFurDiagnostics.Info(context, "registration.complete",
+                    "checkpoint=" + checkpoint + ";count=" +
+                    registry.RegisteredCount + ";published=false");
+                return true;
+            }
+            catch
+            {
+                try { registry.RollbackAll(); }
+                catch (Exception rollbackFailure)
+                {
+                    BrownFurDiagnostics.Failure(context,
+                        "registration.rollback-failed",
+                        "Brown-Fur identity registration failed and its owned blueprint rollback was incomplete.",
+                        rollbackFailure);
+                }
+                throw;
             }
         }
 
