@@ -331,6 +331,8 @@
     <Compile Include="BrownFur\BrownFurCastLifecycleTracker.cs" />
     <Compile Include="BrownFur\BrownFurReservoirReservationLedger.cs" />
     <Compile Include="BrownFur\BrownFurCastCommitCoordinator.cs" />
+    <Compile Include="BrownFur\BrownFurCastExecutionRuntime.cs" />
+    <Compile Include="BrownFur\BrownFurCastExecutionPatches.cs" />
     <Compile Include="BrownFur\BrownFurExactDebitPolicy.cs" />
     <Compile Include="BrownFur\BrownFurReservoirDebit.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentPolicy.cs" />

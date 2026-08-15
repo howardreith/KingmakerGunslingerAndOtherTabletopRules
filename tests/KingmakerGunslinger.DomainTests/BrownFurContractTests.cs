@@ -176,6 +176,10 @@ namespace KingmakerGunslinger.DomainTests
             string reservoirScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurReservoirScenario.cs"));
+            string castExecutionRuntime = File.ReadAllText(Path.Combine(
+                brownFur, "BrownFurCastExecutionRuntime.cs"));
+            string castExecutionPatches = File.ReadAllText(Path.Combine(
+                brownFur, "BrownFurCastExecutionPatches.cs"));
             string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurIlDisassembler.cs"));
@@ -433,6 +437,26 @@ namespace KingmakerGunslinger.DomainTests
                 "ref float", "catch" })
                 Assertions.True(shareTargetingPatches.Contains(token),
                     "Share targeting patch lacks exact interoperability guard: " +
+                    token);
+            foreach (string token in new[] {
+                "BrownFurCastCommitCoordinator<UnitDescriptor",
+                "BrownFurReservoirDebit.TryDebitExact",
+                "BrownFurShareTargetingRuntime.Begin",
+                "BrownFurSupremacyRuntime.Begin",
+                "BrownFurModifierAdjustmentRuntime.Begin", "RestoreExact",
+                "SuppressedSpends", "SuppressedSpendCommands",
+                "Coordinator.FailRule", "Coordinator.ProcessTerminal",
+                "Coordinator.Clear", "RecordPatchFailure", "LastFailure" })
+                Assertions.True(castExecutionRuntime.Contains(token),
+                    "Cast execution boundary lacks exact guard: " + token);
+            foreach (string token in new[] { "RuleCastSpell",
+                "MethodType.Constructor", "HarmonyAfter(\"CallOfTheWild\")",
+                "TryCommit", "AttachProcess", "Finalizer", "AbilityData",
+                "\"Spend\"", "UnitUseAbility", "\"OnEnded\"",
+                "AbilityExecutionProcess", "\"Tick\"",
+                "RecordPatchFailure" })
+                Assertions.True(castExecutionPatches.Contains(token),
+                    "Cast execution patch lacks exact lifecycle guard: " +
                     token);
         }
 

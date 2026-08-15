@@ -84,6 +84,13 @@ namespace KingmakerGunslinger.BrownFur
             out BrownFurCastTransaction transaction)
         { return _lifecycle.TryGetByAbility(ability, out transaction); }
 
+        internal bool TryGetByRule(TRule rule,
+            out BrownFurCastTransaction transaction)
+        { return _lifecycle.TryGetByRule(rule, out transaction); }
+
+        internal bool FailRule(TRule rule)
+        { return _lifecycle.FailRule(rule); }
+
         internal void Clear()
         {
             try { _lifecycle.Clear(); }

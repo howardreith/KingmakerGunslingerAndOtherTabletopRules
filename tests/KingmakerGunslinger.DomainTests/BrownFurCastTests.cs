@@ -687,6 +687,27 @@ namespace KingmakerGunslinger.DomainTests
                 "A later command-end signal must find no leaked rejected entry.");
         }
 
+        internal static void CommitCoordinatorCompletesWithoutProcess()
+        {
+            var released = new List<BrownFurCastTransaction>();
+            var coordinator = new BrownFurCastCommitCoordinator<object, object,
+                object, object, object, object>(released.Add);
+            object owner = new object();
+            object command = new object();
+            object ability = new object();
+            BrownFurCastTransaction transaction = Transaction(1);
+            Assertions.True(coordinator.Begin(owner, command, ability,
+                transaction, 1) && coordinator.Commit(owner, ability,
+                    cost => cost == 1) &&
+                coordinator.EndCommand(command, false),
+                "A completed failed-spell or no-process cast must close at command end.");
+            Assertions.True(transaction.State ==
+                BrownFurCastTransactionState.Completed && released.Count == 1 &&
+                coordinator.ActiveTransactionCount == 0 &&
+                coordinator.ReservationCount == 0,
+                "A committed no-process cast must release every retained surface.");
+        }
+
         internal static void ShareTargetingScopesAreIsolated()
         {
             var tracker = new BrownFurShareTargetingScopeTracker<object, object,

@@ -129,6 +129,12 @@ namespace KingmakerGunslinger.BrownFur
                     entry.Transaction.Interrupt();
                     if (entry.Process == null) Release(entry);
                 }
+                else if (state == BrownFurCastTransactionState.Committed &&
+                    entry.Process == null)
+                {
+                    entry.Transaction.Complete();
+                    Release(entry);
+                }
                 else if (state == BrownFurCastTransactionState.Rejected ||
                     state == BrownFurCastTransactionState.Failed ||
                     state == BrownFurCastTransactionState.Cancelled ||
@@ -181,6 +187,33 @@ namespace KingmakerGunslinger.BrownFur
                 Entry entry;
                 if (!_abilities.TryGetValue(ability, out entry)) return false;
                 transaction = entry.Transaction;
+                return true;
+            }
+        }
+
+        internal bool TryGetByRule(TRule rule,
+            out BrownFurCastTransaction transaction)
+        {
+            transaction = null;
+            if (rule == null) return false;
+            lock (_gate)
+            {
+                Entry entry;
+                if (!_rules.TryGetValue(rule, out entry)) return false;
+                transaction = entry.Transaction;
+                return true;
+            }
+        }
+
+        internal bool FailRule(TRule rule)
+        {
+            if (rule == null) return false;
+            lock (_gate)
+            {
+                Entry entry;
+                if (!_rules.TryGetValue(rule, out entry)) return false;
+                entry.Transaction.Fail();
+                Release(entry);
                 return true;
             }
         }
