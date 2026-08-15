@@ -620,6 +620,7 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurPlayerIntentRuntime.Observe",
                 "BrownFurPlayerIntentRuntime.Clear",
                 "BrownFurTransmutationInventory.Observe",
+                "record.AbilityScoreBonuses", "record.AppliedBuffs",
                 "current.ConvertedFrom", "ability.Spellbook.Blueprint",
                 "ReferenceEquals(sourceBook, contract.CastingSpellbook)",
                 "ability.SourceItem == null", "AbilityType.Spell",

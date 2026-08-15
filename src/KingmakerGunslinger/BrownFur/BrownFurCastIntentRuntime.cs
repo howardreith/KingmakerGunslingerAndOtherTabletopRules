@@ -76,7 +76,7 @@ namespace KingmakerGunslinger.BrownFur
 
                 BrownFurBonusAdapterPlan bonusPlan = record == null ? null :
                     BrownFurBonusAdapterPlanPolicy.Create(
-                        record.AbilityBonusCarrierFamilies,
+                        record.AbilityScoreBonuses,
                         record.AppliedBuffs);
                 BrownFurCastRequest request = BuildRequest(
                     resolution.Contract, playerIntent, ability, target,
