@@ -165,6 +165,7 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library, BlueprintRegistry registry,
             BlueprintFeature firearmProficiency,
             FirearmScopedProficiencyBlueprintSet scopedProficiencies,
+            BlueprintFeature legacyFirearmProficiency,
             BlueprintFeature gunsmithing,
             BlueprintItemWeapon startingPistol,
             BlueprintItem blackPowder, BlueprintItem leadBall,
@@ -175,6 +176,8 @@ namespace KingmakerGunslinger.Blueprints
             if (firearmProficiency == null) throw new ArgumentNullException("firearmProficiency");
             if (scopedProficiencies == null)
                 throw new ArgumentNullException("scopedProficiencies");
+            if (legacyFirearmProficiency == null)
+                throw new ArgumentNullException("legacyFirearmProficiency");
             if (gunsmithing == null) throw new ArgumentNullException("gunsmithing");
             if (startingPistol == null) throw new ArgumentNullException("startingPistol");
             if (blackPowder == null) throw new ArgumentNullException("blackPowder");
@@ -206,6 +209,9 @@ namespace KingmakerGunslinger.Blueprints
             ArchetypeProficiencyBlueprintSet archetypeProficiencies =
                 ArchetypeProficiencyBlueprints.Register(registry, simple,
                     martial, lightArmor, scopedProficiencies);
+            FirearmScopedProficiencyBlueprints.AttachScopeReconciliation(
+                proficiencies, archetypeProficiencies, firearmProficiency,
+                scopedProficiencies, legacyFirearmProficiency);
             BlueprintCharacterClass characterClass = registry.Register<BlueprintCharacterClass>(
                 ClassSymbol, () => CreateClass(fighter, fullBab, goodSave, poorSave,
                     startingPistol, blackPowder, leadBall, gunsmithKit));

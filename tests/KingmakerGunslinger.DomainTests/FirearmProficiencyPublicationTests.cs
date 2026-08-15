@@ -81,6 +81,36 @@ namespace KingmakerGunslinger.DomainTests
                     "The guarded runtime proficiency contract lacks: " + token);
         }
 
+        internal static void ScopedRespecReconciliationIsLegacySafe()
+        {
+            string scoped = Read("src", "KingmakerGunslinger", "Blueprints",
+                "FirearmScopedProficiencyBlueprints.cs");
+            string gunslinger = Read("src", "KingmakerGunslinger", "Blueprints",
+                "GunslingerClassBlueprints.cs");
+            string bootstrap = Read("src", "KingmakerGunslinger", "Bootstrap",
+                "BlueprintBootstrap.cs");
+            string runtime = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            foreach (string token in new[]
+            {
+                "class FirearmProficiencyScopeReconciler",
+                "Owner.HasFact(LegacyCompatibilityWrapper)",
+                "Owner.RemoveFact(incompatible)",
+                "AppendReconciler(basePresentation",
+                "AppendReconciler(archetypePresentations.Pistolero",
+                "AppendReconciler(archetypePresentations.MusketMaster"
+            })
+                Assertions.True(scoped.Contains(token),
+                    "Scoped respec reconciliation lacks: " + token);
+            Assertions.True(gunslinger.Contains(
+                    "AttachScopeReconciliation(") &&
+                bootstrap.Contains(
+                    "firearmFeats.ExoticWeaponProficiency, gunsmithing") &&
+                runtime.Contains("targetMysteriousStranger") &&
+                runtime.Contains("MysteriousStranger.Grit"),
+                "Class wiring, legacy preservation, or Mysterious Stranger grit observation is incomplete.");
+        }
+
         private static string Read(params string[] parts)
         {
             string path = Environment.CurrentDirectory;

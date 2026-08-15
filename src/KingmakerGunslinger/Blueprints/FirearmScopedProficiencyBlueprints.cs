@@ -6,10 +6,39 @@ using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
+    public sealed class FirearmProficiencyScopeReconciler :
+        OwnedGameLogicComponent<UnitDescriptor>
+    {
+        public BlueprintFeature ExpectedProficiency;
+        public BlueprintFeature FullProficiency;
+        public BlueprintFeature LegacyCompatibilityWrapper;
+        public BlueprintFeature[] IncompatibleProficiencies;
+
+        public override void OnTurnOn()
+        {
+            if (Owner == null || ExpectedProficiency == null ||
+                FullProficiency == null || LegacyCompatibilityWrapper == null ||
+                IncompatibleProficiencies == null ||
+                IncompatibleProficiencies.Any(value => value == null))
+                throw new InvalidOperationException(
+                    "Firearm proficiency scope reconciliation is incomplete.");
+            foreach (BlueprintFeature incompatible in IncompatibleProficiencies)
+            {
+                if (ReferenceEquals(incompatible, FullProficiency) &&
+                    Owner.HasFact(LegacyCompatibilityWrapper))
+                    continue;
+                if (Owner.HasFact(incompatible)) Owner.RemoveFact(incompatible);
+            }
+        }
+
+        public override void OnTurnOff() { }
+    }
+
     internal sealed class FirearmScopedProficiencyBlueprintSet
     {
         internal FirearmScopedProficiencyBlueprintSet(BlueprintFeature oneHanded,
@@ -54,6 +83,44 @@ namespace KingmakerGunslinger.Blueprints
             Attach(set.OneHanded, reload, paperCartridgeMode);
             Attach(set.TwoHanded, reload, scatter, paperCartridgeMode);
             Validate(set, reload, scatter, paperCartridgeMode);
+        }
+
+        internal static void AttachScopeReconciliation(
+            BlueprintFeature basePresentation,
+            ArchetypeProficiencyBlueprintSet archetypePresentations,
+            BlueprintFeature full,
+            FirearmScopedProficiencyBlueprintSet scoped,
+            BlueprintFeature legacyCompatibilityWrapper)
+        {
+            if (basePresentation == null || archetypePresentations == null ||
+                full == null || scoped == null ||
+                legacyCompatibilityWrapper == null)
+                throw new ArgumentNullException("scope reconciliation blueprint");
+            AppendReconciler(basePresentation, full, full,
+                legacyCompatibilityWrapper, scoped.OneHanded, scoped.TwoHanded);
+            AppendReconciler(archetypePresentations.Pistolero,
+                scoped.OneHanded, full, legacyCompatibilityWrapper,
+                full, scoped.TwoHanded);
+            AppendReconciler(archetypePresentations.MusketMaster,
+                scoped.TwoHanded, full, legacyCompatibilityWrapper,
+                full, scoped.OneHanded);
+        }
+
+        private static void AppendReconciler(BlueprintFeature presentation,
+            BlueprintFeature expected, BlueprintFeature full,
+            BlueprintFeature legacyCompatibilityWrapper,
+            params BlueprintFeature[] incompatible)
+        {
+            var component = ScriptableObject.CreateInstance<
+                FirearmProficiencyScopeReconciler>();
+            component.name = "$KMG_ReconcileFirearmProficiencyScope";
+            component.ExpectedProficiency = expected;
+            component.FullProficiency = full;
+            component.LegacyCompatibilityWrapper = legacyCompatibilityWrapper;
+            component.IncompatibleProficiencies = incompatible.ToArray();
+            presentation.ComponentsArray = (presentation.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Concat(new BlueprintComponent[]
+                { component }).ToArray();
         }
 
         internal static void Validate(FirearmScopedProficiencyBlueprintSet set,

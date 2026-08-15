@@ -17504,6 +17504,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.GunslingerClass.Pistolero.Archetype);
                 bool targetMusketMaster = ReferenceEquals(targetArchetype,
                     BlueprintBootstrap.GunslingerClass.MusketMaster.Archetype);
+                bool targetMysteriousStranger = ReferenceEquals(targetArchetype,
+                    BlueprintBootstrap.GunslingerClass.MysteriousStranger.Archetype);
                 BlueprintFeature expectedProficiency = targetPistolero
                     ? BlueprintBootstrap.GunslingerClass.ArchetypeProficiencies.Pistolero
                     : targetMusketMaster
@@ -17536,9 +17538,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 archetypeReconciledObserved = archetypeReconciled;
                 expectedVisible = handler.Replacement != null &&
                     handler.Replacement.HasFact(expectedProficiency);
+                BlueprintFeature expectedGrit = targetMysteriousStranger
+                    ? BlueprintBootstrap.GunslingerClass.MysteriousStranger.Grit
+                    : BlueprintBootstrap.GunslingerClass.Grit.Feature;
                 gritPresent = handler.Replacement != null &&
-                    handler.Replacement.HasFact(
-                        BlueprintBootstrap.GunslingerClass.Grit.Feature);
+                    handler.Replacement.HasFact(expectedGrit);
                 hasFull = handler.Replacement != null &&
                     handler.Replacement.HasFact(fullProficiency);
                 hasOneHanded = handler.Replacement != null &&

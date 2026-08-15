@@ -815,7 +815,8 @@ namespace KingmakerGunslinger.Bootstrap
                 GunslingerClassBlueprintSet gunslingerClassBlueprints =
                     GunslingerClassBlueprints.Register(
                         library, registry, firearmProficiency,
-                        scopedFirearmProficiencies, gunsmithing,
+                        scopedFirearmProficiencies,
+                        firearmFeats.ExoticWeaponProficiency, gunsmithing,
                         productionFirearms.Pistol.Item,
                         basicAmmunition.BlackPowder,
                         basicAmmunition.LeadBall,

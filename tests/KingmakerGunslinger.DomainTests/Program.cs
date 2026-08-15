@@ -165,6 +165,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("firearm-proficiency.publication-policy", FirearmProficiencyPublicationTests.PublicationPolicyIsCompatibilityOnly),
             Case("firearm-proficiency.stable-identities", FirearmProficiencyPublicationTests.StableIdentitiesRemainExact),
             Case("firearm-proficiency.runtime-contract", FirearmProficiencyPublicationTests.RuntimeScenariosExerciseRealOwnersAndArchetypes),
+            Case("firearm-proficiency.respec-reconciliation", FirearmProficiencyPublicationTests.ScopedRespecReconciliationIsLegacySafe),
             Case("weapon-visual-audit.complete-identities", WeaponVisualMappingAuditTests.CoversEveryActiveCustomWeaponIdentity),
             Case("weapon-visual-audit.required-contracts", WeaponVisualMappingAuditTests.RecordsEveryRequiredVisualContract),
             Case("weapon-visual-audit.variant-vocabulary", WeaponVisualMappingAuditTests.VariantVocabularyIsBoundedAndFamilySafe),
