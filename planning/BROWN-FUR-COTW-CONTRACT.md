@@ -797,6 +797,33 @@ interaction. This closes the instantaneous, permanent, and selector no-op
 Supremacy carrier gate. Deterministic classification of all installed
 inventory rows remains required before publication.
 
+The subsequent pure fail-closed classifier passed the complete installed
+inventory on `b707fd5c3aa8773fb16ae3a3f968de1ab529b766`: `86` roots, `177`
+root/variant records, `100` Personal records, `112` positive bonus candidates,
+and zero hard-coded `ToCaster` records. Final qualification counts are `174`
+supported by generic contract, `3` supported by a true Brown-Fur named
+adapter, and `0` unexplained. The named adapters are Resonating Word, Obsidian
+Flow, and Earth Tremor line. Earth Tremor cone and spread are explicitly
+classified as installed CotW-native hidden-duration paths.
+
+Exact classified evidence identity: run
+`20260815T1951517164731Z-f2988c8a3fac4d60bcbabe3e3432bc0c`; package
+SHA-256 `60505729A0846A9641FDC1A5D25FA4E4C93B57814223C8AECB546CB3350BA638`;
+DLL and installed DLL SHA-256
+`B4B48DAA9C7AE6BD9A963C142D6435DAA3B1B388F0DA0D0B0E34CF0F9694CF91`;
+MVID `f041926b-a2c6-4db5-aeae-95ca51ced190`; classified inventory SHA-256
+`82AE0FFA8313DA14B173A61430F47308320849436AC51CB001EFBF5CB3238A7D`;
+runtime-result SHA-256
+`0C2C095001150D6218FB7C8839F59D11D7B2F82F41E3B05041552AD50F0BAAD7`;
+runtime-evidence SHA-256
+`560DE55E6C7D99C6A7228DBF1C616A02E5D3AB92030D9B354CD6CF514792EC9C`;
+orchestration SHA-256
+`16098FF1DB97499DB12EB1D9616D588B7B2FB293E23C48111392D4F95D2A2C2C`;
+deployment `20260815T1951516057686Z`; backup
+`20260815T1951471610464Z`. The guarded launch was save-free and recorded no
+save interaction. This closes the installed static inventory classification
+gate; it does not publish Brown-Fur.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings

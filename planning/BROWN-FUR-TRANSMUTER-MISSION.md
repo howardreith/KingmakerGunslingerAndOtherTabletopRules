@@ -292,3 +292,19 @@ This closes all identified non-Extend Supremacy duration structures in the
 installed inventory. Deterministic classification of all 177 inventory rows,
 player intent, real feature ownership, interruption, dispel, and persistence
 remain publication gates. Brown-Fur remains reserved and unpublished.
+
+The pure fail-closed inventory classifier then passed all six guarded
+assertions on `b707fd5c3aa8773fb16ae3a3f968de1ab529b766`. All `86` installed
+Arcanist Transmutation roots and `177` root/variant records were present with
+complete required fields; `174` use generic contracts, the exact three true
+Brown-Fur duration adapters are named, and `Unexplained = 0`. The classifier
+rejects unfamiliar carrier families, hard-coded caster routing, and unknown
+non-Extend duration structures. Earth Tremor cone and spread are recorded as
+proven CotW-native hidden-duration paths, not mislabeled as Brown-Fur adapters.
+Exact immutable identities are recorded in the inventory report.
+
+This closes the installed static blueprint inventory classification gate.
+Runtime `ConvertedFrom` canonicalization, player intent, real feature
+ownership, restricted Personal-spell delivery, interruption, dispel, and
+persistence remain publication gates. Brown-Fur remains reserved and
+unpublished.

@@ -1,7 +1,8 @@
 # Brown-Fur Transmutation Spell Inventory
 
-Status: authoritative investigation capture complete; mechanical classification
-and adapter qualification remain in progress.
+Status: authoritative installed inventory captured and deterministically
+classified; `Unexplained = 0`. Brown-Fur remains unpublished pending the
+separate ownership, interruption, dispel, persistence, and publication gates.
 
 ## Authoritative capture
 
@@ -27,6 +28,42 @@ The inventory artifact is intentionally retained as runtime evidence rather
 than committed as a raw, machine-local dump. The hashes above bind this report
 to the exact immutable source and installed DLL used for the capture.
 
+## Classified capture
+
+The fail-closed classifier and complete installed graph passed all six guarded
+assertions on source commit
+`b707fd5c3aa8773fb16ae3a3f968de1ab529b766`. The result contains the same
+`86` roots and `177` recursively expanded records as the investigation capture,
+with `174` supported by generic contract, `3` supported by a true Brown-Fur
+named adapter, and no `Unexplained`, engine-blocked, or wholly ineligible row.
+Dimension-level ineligibility remains explicit: `77` non-Personal records are
+ineligible for Share Transmutation and `65` records without a positive
+ability-score carrier are ineligible for Powerful Change. All genuine
+Transmutations still have an explicit Transmutation Supremacy decision.
+
+| Evidence | Value |
+| --- | --- |
+| Scenario | `observe-brown-fur-transmutation-inventory` |
+| Result | `PASS` |
+| Run | `20260815T1951517164731Z-f2988c8a3fac4d60bcbabe3e3432bc0c` |
+| Package SHA-256 | `60505729A0846A9641FDC1A5D25FA4E4C93B57814223C8AECB546CB3350BA638` |
+| DLL / installed DLL SHA-256 | `B4B48DAA9C7AE6BD9A963C142D6435DAA3B1B388F0DA0D0B0E34CF0F9694CF91` |
+| DLL MVID | `f041926b-a2c6-4db5-aeae-95ca51ced190` |
+| Classified inventory SHA-256 | `82AE0FFA8313DA14B173A61430F47308320849436AC51CB001EFBF5CB3238A7D` |
+| Runtime result SHA-256 | `0C2C095001150D6218FB7C8839F59D11D7B2F82F41E3B05041552AD50F0BAAD7` |
+| Runtime evidence SHA-256 | `560DE55E6C7D99C6A7228DBF1C616A02E5D3AB92030D9B354CD6CF514792EC9C` |
+| Orchestration SHA-256 | `16098FF1DB97499DB12EB1D9616D588B7B2FB293E23C48111392D4F95D2A2C2C` |
+| Deployment | `20260815T1951516057686Z` |
+| Backup | `20260815T1951471610464Z` |
+| Feature settings SHA-256 | `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E` |
+| Game build collection | `2018.4.10.10503941` |
+
+The guarded Steam App ID 640820 launch was save-free and recorded no save
+interaction. A prior run of the immediately preceding classifier commit
+finished PASS three seconds after the default orchestration deadline; because
+orchestration recorded ERROR, it was not counted. The final run used an
+explicit 180-second guarded timeout and completed normally.
+
 The authoritative source is the resolved CotW Arcanist casting spell list in the
 installed Kingmaker process. The guarded, save-free scenario
 `observe-brown-fur-transmutation-inventory` enumerates every genuine
@@ -36,10 +73,9 @@ metamagic, component/action graphs, applied buffs, bonus carriers, modifier
 descriptors, context/static values, polymorph and size components, hard-coded
 caster routing, and save/dispel presentation.
 
-The authoritative capture deliberately labels every record `Unexplained`. That
-is an investigation state, not a release classification. Brown-Fur blueprint
-publication remains absent while any entry is `Unexplained`. Each entry will be
-curated into exactly one of:
+The original authoritative capture deliberately labeled every record
+`Unexplained`. The pure classification policy now places each installed entry
+into exactly one of:
 
 - Supported by generic contract
 - Supported by named adapter
@@ -85,21 +121,35 @@ one known static hazard but does not prove Share Transmutation: actual target
 redirection, willingness, delivery, and effect ownership remain subject to
 per-cast qualification.
 
-## Remaining classification gate
+## Classification policy and remaining gates
 
-Before publication, the curated inventory must include one row for every one of
-the `177` records, including parents, variants, and runtime `ConvertedFrom`
-fixtures. Each positive carrier family needs descriptor-preserving stacking,
-recast, dispel, expiration, and save/reload proof. Each Personal spell needs a
-generic or named Share adapter decision. Numeric metamagic flags captured by the
-engine must also be converted into an explicit Extend-eligibility decision.
+The structured artifact contains one complete record for every one of the
+`177` roots and recursively expanded variants. Each row records its canonical
+GUID, parent and variants, spell levels and spellbook, targeting, duration and
+explicit Extend support, action/buff graph, bonus carriers and descriptors,
+polymorph/size and caster-routing hazards, compatibility decisions, required
+adapter, and final qualification. The artifact is hash-bound above rather than
+committed as a raw runtime dump.
 
-Current classification totals are therefore:
+Current classification totals are:
 
 | Classification | Count |
 | --- | ---: |
-| Supported by generic contract | 0 |
-| Supported by named adapter | 0 |
-| Intentionally ineligible | 0 |
+| Supported by generic contract | 174 |
+| Supported by named adapter | 3 |
+| Intentionally ineligible | 0 overall; 77 Share and 65 Powerful dimension decisions |
 | Blocked by an understood engine limitation | 0 |
-| Unexplained | 177 |
+| Unexplained | 0 |
+
+The three named Supremacy adapters are Resonating Word
+`df7d13c967bce6a40bec3ba7c9f0e64c`, Obsidian Flow
+`e48638596c955a74c8a32dbc90b518c1`, and Earth Tremor line
+`91266b6d2a4c4fd6b8e1549bc2381d12`. Earth Tremor cone and spread are
+separately recognized exact installed CotW-native paths; they honor the scoped
+Extend context without a Brown-Fur duration adapter and therefore remain
+generic classifications.
+
+The inventory classification gate is closed. Runtime `ConvertedFrom`
+canonicalization, actual player ownership/intent, representative restricted
+Personal-spell delivery, post-submission interruption, dispel, and persistence
+remain separate player-facing publication gates.
