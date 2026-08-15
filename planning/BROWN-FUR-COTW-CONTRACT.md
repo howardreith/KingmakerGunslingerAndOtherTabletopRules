@@ -283,6 +283,45 @@ interruption. The remaining investigation is the exact
 `CreateExecutionContext` parameter path and execution-process cleanup
 callbacks; player-facing wiring remains disabled until those are qualified.
 
+That remaining lifecycle inspection passed all 16 guarded assertions on the
+refined commit `475394e2216af64b547ebe1f79ed75e40abb61b4`. The local-runtime
+package SHA-256 was
+`227E8A7D63166D2DD2572BB36D0369520B70F40C656C0E236E087C0CA5E39749`;
+the built, deployed, and loaded DLL SHA-256 was
+`2855B8C7DC498993F5A4D2796B77F1D17EF60EC417FB809447F550CFCFE8394C`;
+the MVID was `7d03eee7-c922-43e3-8d47-0a7219f3b1a9`; and the structured
+contract artifact SHA-256 was
+`E0567C932A582220905C0C043D49213B469D76F2C4C879F9C133B330AEA12813`.
+
+`AbilityData.CalculateParams()` first handles item and fact overrides, then
+otherwise triggers the native `RuleCalculateAbilityParams` and returns its
+result. `CreateExecutionContext(target)` passes that result directly to the
+context constructor, which clones it. An exact postfix on context creation can
+therefore add Extend to only the new context's cloned `AbilityParams`, after
+native prepared/metamixing calculation and command action-cost selection but
+before any duration calculation or effect execution. It need not and must not
+alter the shared `AbilityData` or `BlueprintAbility`.
+
+`AbilityExecutionController.Execute(context)` creates one
+`AbilityExecutionProcess` holding that exact context and adds it to the
+controller. Each process owns its own iterator. `Tick()` sets `IsEnded=true`
+when the iterator completes and also sets it on a caught execution exception;
+on either terminal path it invokes `AbilityCustomLogic.Cleanup(context)` for
+the ability components. `Detach()` removes only that exact process through the
+controller. Separately, `UnitUseAbility.OnEnded(bool)` always reaches the
+command-end postfix and exposes interruption/cancellation even when no process
+was created.
+
+The runtime transaction may consequently use reference-identity maps rather
+than a global current-cast variable: command/rule/context while validation and
+commit are pending, then the exact execution process while effects run. It can
+release uncommitted reservations from command end, retain committed effect
+scopes until the process becomes terminal, and run one idempotent release from
+the `Tick` terminal postfix. Load/combat-transition clearing remains an
+independent bounded safety net. This evidence closes the event-order
+investigation; actual resource-backed transaction wiring and mechanical
+qualification remain pending, so Brown-Fur stays unpublished.
+
 The modifier-provenance extension of this scenario passed all 11 assertions on
 commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
 package SHA-256 was

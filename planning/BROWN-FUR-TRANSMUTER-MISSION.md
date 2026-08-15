@@ -145,3 +145,15 @@ This establishes the pre-slot rejection and post-rule/pre-slot commit window;
 the next gate is the exact `CreateExecutionContext` parameter path and
 execution-process completion/interruption lifecycle. Brown-Fur remains
 reserved and unpublished.
+
+The refined lifecycle checkpoint then passed all 16 guarded assertions on
+commit `475394e2216af64b547ebe1f79ed75e40abb61b4`. It proves that native
+`CalculateParams` completes before the new execution context clones the
+parameters; process `Tick` marks both ordinary completion and caught exceptions
+terminal and invokes custom-logic cleanup; and command `OnEnded` remains the
+separate no-process cancellation signal. This authorizes exact reference-keyed
+command/rule/context/process retention and a context-local, non-stacking Extend
+addition without shared blueprint or `AbilityData` mutation. Artifact
+identities and the exact order are recorded in the CotW contract. Actual
+resource-backed transaction wiring is now the next implementation checkpoint;
+Brown-Fur remains reserved and unpublished.
