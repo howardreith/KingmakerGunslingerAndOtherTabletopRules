@@ -67,6 +67,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("valueRestored", Order = 23)] public bool ValueRestored { get; set; }
             [JsonProperty("pass", Order = 24)] public bool Pass { get; set; }
             [JsonProperty("failure", Order = 25)] public string Failure { get; set; }
+            [JsonProperty("adjustedAfter", Order = 26)] public int AdjustedAfter { get; set; }
+            [JsonProperty("adjustedModifierValue", Order = 27)] public int AdjustedModifierValue { get; set; }
+            [JsonProperty("adjustedDescriptor", Order = 28)] public string AdjustedDescriptor { get; set; }
+            [JsonProperty("adjustedCount", Order = 29)] public int AdjustedCount { get; set; }
+            [JsonProperty("adjustedRemoved", Order = 30)] public bool AdjustedRemoved { get; set; }
+            [JsonProperty("scopeReleased", Order = 31)] public bool ScopeReleased { get; set; }
+            [JsonProperty("postReleaseModifierValue", Order = 32)] public int PostReleaseModifierValue { get; set; }
+            [JsonProperty("postReleaseRemoved", Order = 33)] public bool PostReleaseRemoved { get; set; }
+            [JsonProperty("noScopeLeak", Order = 34)] public bool NoScopeLeak { get; set; }
+            [JsonProperty("mismatchModifierValue", Order = 35)] public int MismatchModifierValue { get; set; }
+            [JsonProperty("mismatchAdjustedCount", Order = 36)] public int MismatchAdjustedCount { get; set; }
+            [JsonProperty("mismatchRejected", Order = 37)] public bool MismatchRejected { get; set; }
         }
 
         [JsonObject(MemberSerialization.OptIn)]
@@ -168,8 +180,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Observation observed = evidence.Cases.FirstOrDefault(value =>
                     value.Family == item.Family);
                 Add(assertions, "bonus-carrier-" + item.Family.ToLowerInvariant(),
-                    "value=" + item.Value + ";descriptor=" + item.Descriptor +
-                        ";source provenance exact;removed/restored",
+                    "ordinary=" + item.Value + ";adjusted=" +
+                        (item.Value + 2) + ";descriptor=" + item.Descriptor +
+                        ";source provenance exact;removed/restored;no leak",
                     observed == null ? "missing" : Describe(observed),
                     observed != null && observed.Pass,
                     "real installed spell buff on disposable engine units");
@@ -289,6 +302,98 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.ContextCasterExact && result.ContextAbilityExact &&
                 result.ContextTargetExact && result.ContextCasterLevel == 20 &&
                 result.Removed && result.ValueRestored;
+            string transaction = "carrier-" + item.Family;
+            bool began = BrownFurModifierAdjustmentRuntime.Begin(transaction,
+                castContext, caster, spell, Score(item.Stat), 2,
+                new[] { item.BuffGuid }, item.Family.Split('+'));
+            Buff adjusted = null;
+            try
+            {
+                if (began) adjusted = target.Descriptor.Buffs.AddBuff(blueprint,
+                    castContext, TimeSpan.FromMinutes(20d));
+                if (adjusted != null)
+                {
+                    result.AdjustedAfter = stat.ModifiedValue;
+                    ModifiableValue.Modifier modifier = stat.Modifiers.SingleOrDefault(
+                        value => ReferenceEquals(value.Source, adjusted));
+                    if (modifier != null)
+                    {
+                        result.AdjustedModifierValue = modifier.ModValue;
+                        result.AdjustedDescriptor =
+                            modifier.ModDescriptor.ToString();
+                    }
+                    result.AdjustedCount =
+                        BrownFurModifierAdjustmentRuntime.AdjustedModifierCount(
+                            transaction);
+                }
+            }
+            finally
+            {
+                if (adjusted != null)
+                {
+                    adjusted.Remove();
+                    result.AdjustedRemoved = !stat.Modifiers.Any(value =>
+                        ReferenceEquals(value.Source, adjusted));
+                }
+                result.ScopeReleased = began &&
+                    BrownFurModifierAdjustmentRuntime.Release(transaction);
+            }
+            Buff postRelease = target.Descriptor.Buffs.AddBuff(blueprint,
+                castContext, TimeSpan.FromMinutes(20d));
+            if (postRelease != null)
+            {
+                ModifiableValue.Modifier modifier = stat.Modifiers.SingleOrDefault(
+                    value => ReferenceEquals(value.Source, postRelease));
+                result.PostReleaseModifierValue = modifier == null ? 0 :
+                    modifier.ModValue;
+                postRelease.Remove();
+                result.PostReleaseRemoved = !stat.Modifiers.Any(value =>
+                    ReferenceEquals(value.Source, postRelease));
+            }
+            string mismatchTransaction = transaction + "-mismatch";
+            bool mismatchBegan = BrownFurModifierAdjustmentRuntime.Begin(
+                mismatchTransaction, castContext, caster, spell,
+                BrownFurAbilityScore.Charisma, 2,
+                new[] { item.BuffGuid }, item.Family.Split('+'));
+            Buff mismatch = null;
+            bool mismatchReleased = false;
+            try
+            {
+                if (mismatchBegan) mismatch = target.Descriptor.Buffs.AddBuff(
+                    blueprint, castContext, TimeSpan.FromMinutes(20d));
+                if (mismatch != null)
+                {
+                    ModifiableValue.Modifier modifier = stat.Modifiers.
+                        SingleOrDefault(value => ReferenceEquals(value.Source,
+                            mismatch));
+                    result.MismatchModifierValue = modifier == null ? 0 :
+                        modifier.ModValue;
+                    result.MismatchAdjustedCount =
+                        BrownFurModifierAdjustmentRuntime.AdjustedModifierCount(
+                            mismatchTransaction);
+                }
+            }
+            finally
+            {
+                if (mismatch != null) mismatch.Remove();
+                mismatchReleased = mismatchBegan &&
+                    BrownFurModifierAdjustmentRuntime.Release(
+                        mismatchTransaction);
+            }
+            result.MismatchRejected = mismatchBegan && mismatch != null &&
+                result.MismatchModifierValue == item.Value &&
+                result.MismatchAdjustedCount == 0 && mismatchReleased &&
+                stat.ModifiedValue == result.Before;
+            result.NoScopeLeak = BrownFurModifierAdjustmentRuntime.ActiveScopeCount ==
+                0 && result.PostReleaseModifierValue == item.Value &&
+                result.PostReleaseRemoved && stat.ModifiedValue == result.Before;
+            result.Pass = result.Pass && began && adjusted != null &&
+                result.AdjustedAfter == result.Before + item.Value + 2 &&
+                result.AdjustedModifierValue == item.Value + 2 &&
+                result.AdjustedDescriptor == item.Descriptor.ToString() &&
+                result.AdjustedCount == 1 && result.AdjustedRemoved &&
+                result.ScopeReleased && result.MismatchRejected &&
+                result.NoScopeLeak;
             if (!result.Pass) result.Failure = "carrier-contract-mismatch";
             return result;
         }
@@ -310,8 +415,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.ContextAbilityExact + ";target=" +
                 value.ContextTargetExact + ";casterLevel=" +
                 value.ContextCasterLevel + ";removed=" + value.Removed +
-                ";restored=" + value.ValueRestored + ";failure=" +
-                value.Failure;
+                ";restored=" + value.ValueRestored + ";adjustedAfter=" +
+                value.AdjustedAfter + ";adjustedValue=" +
+                value.AdjustedModifierValue + ";adjustedDescriptor=" +
+                value.AdjustedDescriptor + ";adjustedCount=" +
+                value.AdjustedCount + ";adjustedRemoved=" +
+                value.AdjustedRemoved + ";scopeReleased=" +
+                value.ScopeReleased + ";postReleaseValue=" +
+                value.PostReleaseModifierValue + ";noLeak=" +
+                value.NoScopeLeak + ";mismatchValue=" +
+                value.MismatchModifierValue + ";mismatchCount=" +
+                value.MismatchAdjustedCount + ";mismatchRejected=" +
+                value.MismatchRejected + ";failure=" + value.Failure;
+        }
+
+        private static BrownFurAbilityScore Score(StatType stat)
+        {
+            switch (stat)
+            {
+                case StatType.Strength: return BrownFurAbilityScore.Strength;
+                case StatType.Dexterity: return BrownFurAbilityScore.Dexterity;
+                case StatType.Constitution:
+                    return BrownFurAbilityScore.Constitution;
+                case StatType.Intelligence:
+                    return BrownFurAbilityScore.Intelligence;
+                case StatType.Wisdom: return BrownFurAbilityScore.Wisdom;
+                case StatType.Charisma: return BrownFurAbilityScore.Charisma;
+                default: return BrownFurAbilityScore.None;
+            }
         }
 
         private static void Add(List<RuntimeTestAssertion> assertions,

@@ -155,6 +155,10 @@ namespace KingmakerGunslinger.DomainTests
             string bonusCarrierScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurBonusCarrierScenario.cs"));
+            string modifierRuntime = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurModifierAdjustmentRuntime.cs"));
+            string modifierPatch = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurModifierAdjustmentPatch.cs"));
             Assertions.Equal(3, scenarios.Split(new[] {
                 "DisposableBrownFurBonusCarriers" },
                 StringSplitOptions.None).Length,
@@ -279,6 +283,23 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(bonusCarrierScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded bonus carrier fixture lacks evidence token: " + token);
+            foreach (string token in new[] {
+                "Dictionary<string, Scope>", "TransactionIdentity",
+                "RootContext", "ParentContext", "MaybeCaster",
+                "SourceAbility", "BuffGuids", "CarrierFamilies",
+                "SelectedStat", "Tracker.TryAdjust", "modifier.ModValue =",
+                "NormalizeGuid", "depth < 24", "ActiveScopeCount",
+                "AdjustedModifierCount", "Release", "Clear" })
+                Assertions.True(modifierRuntime.Contains(token),
+                    "Powerful Change runtime scope lacks guard: " + token);
+            foreach (string token in new[] {
+                "ModifiableValue", "AddModifier", "HarmonyAfter",
+                "CallOfTheWild", "TryAdjust", "catch" })
+                Assertions.True(modifierPatch.Contains(token),
+                    "Powerful Change modifier patch lacks guard: " + token);
+            Assertions.False(modifierRuntime.Contains(
+                "static MechanicsContext Current"),
+                "Powerful Change must not retain one global current cast.");
         }
 
         private static void AssertRejected(IEnumerable<int> levels, string label)
