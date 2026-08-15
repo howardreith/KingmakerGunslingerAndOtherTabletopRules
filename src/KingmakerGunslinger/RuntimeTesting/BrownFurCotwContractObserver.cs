@@ -52,6 +52,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     progression.PowerfulChangeReplacementLevel + "/" +
                     progression.ShareTransmutationReplacementLevel,
                 recognized, "resolved exploit-bearing LevelEntry references");
+            bool balanceSettingMatches = fingerprint != null && progression != null &&
+                ((progression.Shape == CotwProgressionShape.BalanceFixes &&
+                    fingerprint.BalanceFixesSetting == bool.TrueString) ||
+                 (progression.Shape == CotwProgressionShape.Normal &&
+                    fingerprint.BalanceFixesSetting == bool.FalseString));
+            Add(assertions, "cotw-balance-setting-agrees-with-progression",
+                "live setting and resolved LevelEntries agree",
+                fingerprint == null || progression == null ? "missing" :
+                    fingerprint.BalanceFixesSetting + "/" + progression.Shape,
+                balanceSettingMatches,
+                "exact CotW settings.balance_fixes property and resolved progression graph");
             Add(assertions, "cotw-required-identities",
                 "exact class/progression/spellbooks/reservoir/Magical Supremacy GUIDs",
                 fingerprint == null ? "missing" : fingerprint.ToString(),

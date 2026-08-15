@@ -156,6 +156,10 @@ namespace KingmakerGunslinger.DomainTests
                 "ResolveTransmutations" })
                 Assertions.True(resolver.Contains(token),
                     "CotW resolver lacks exact structural contract token: " + token);
+            Assertions.True(resolver.Contains(
+                "GetProperty(\"balance_fixes\"") && resolver.Contains(
+                "property.GetIndexParameters().Length != 0"),
+                "CotW resolver does not read the exact immutable balance setting property.");
             foreach (string token in new[] { "CallOfTheWild.SharedSpells",
                 "canShareSpell", "isValidShareSpellTarget",
                 "typeof(AbilityData)", "typeof(UnitEntityData)",
@@ -175,6 +179,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "observe-brown-fur-cotw-contract", "cotw-contract-resolution",
                 "cotw-progression-shape", "cotw-required-identities",
+                "cotw-balance-setting-agrees-with-progression",
                 "cotw-shared-spells-signatures",
                 "cotw-transmutation-inventory-presence",
                 "cotw-fingerprint-binary", "save-free-observer" })

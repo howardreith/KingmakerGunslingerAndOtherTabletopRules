@@ -244,8 +244,13 @@ namespace KingmakerGunslinger.BrownFur
             if (settings == null) return "<unavailable>";
             FieldInfo field = settings.GetType().GetField("balance_fixes",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            return field == null || field.FieldType != typeof(bool) ?
-                "<unavailable>" : ((bool)field.GetValue(settings)).ToString();
+            if (field != null && field.FieldType == typeof(bool))
+                return ((bool)field.GetValue(settings)).ToString();
+            PropertyInfo property = settings.GetType().GetProperty("balance_fixes",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            return property == null || property.PropertyType != typeof(bool) ||
+                property.GetIndexParameters().Length != 0 ? "<unavailable>" :
+                ((bool)property.GetValue(settings, null)).ToString();
         }
 
         private static string Guid(Kingmaker.Blueprints.BlueprintScriptableObject value)
