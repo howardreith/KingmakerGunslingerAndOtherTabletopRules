@@ -99,6 +99,8 @@ namespace KingmakerGunslinger.Blueprints
                         nativeItem,
                         ItemInternalName);
                     itemTypeAccess.Set(clone, testWeaponType);
+                    FirearmWeaponPresentation.ApplyItemVariant(clone,
+                        ItemSymbol, FirearmKind.Musket);
                     AppendProficiencyRestriction(clone, firearmProficiency);
                     return clone;
                 });

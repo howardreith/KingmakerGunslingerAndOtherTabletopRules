@@ -99,9 +99,14 @@ namespace KingmakerGunslinger.DomainTests
                     (string)value["proposedVisualVariant"]).Distinct().Count();
                 Assertions.True(variants <= 5,
                     family.Key + " exceeds the bounded five-variant vocabulary.");
-                if (family.Count() >= 3)
+                bool isHumanGatedLongGun = family.Key == "Musket" ||
+                    family.Key == "Blunderbuss";
+                if (family.Count() >= 3 && !isHumanGatedLongGun)
                     Assertions.True(variants >= 2,
                         family.Key + " lacks meaningful proposed variety.");
+                if (isHumanGatedLongGun)
+                    Assertions.Equal(1, variants, family.Key +
+                        " variants must remain on the accepted Service model until the fit candidate passes human review.");
                 Assertions.True(family.All(value =>
                     ((string)value["proposedVisualVariant"]).StartsWith(
                         family.Key.Replace(" ", string.Empty),
@@ -165,6 +170,41 @@ namespace KingmakerGunslinger.DomainTests
                     value => (string)value["proposedVisualVariant"])
                     .Distinct().Count(), family +
                     " must use exactly four reusable variants.");
+        }
+
+        internal static void RuntimeCatalogMatchesApprovedFirearmVariants()
+        {
+            JObject audit = Parse("docs", "weapon-visual-mapping-audit.json");
+            string[] families = { "Pistol", "Musket", "Blunderbuss", "Rifle",
+                "Revolver" };
+            JToken[] items = audit["items"].Where(value => families.Contains(
+                (string)value["familyOrFirearmKind"])).ToArray();
+            Assertions.Equal(14, items.Length,
+                "The approved equipped firearm item count changed.");
+            foreach (JToken item in items)
+            {
+                string symbol = (string)item["symbolicIdentity"];
+                string variant;
+                Assertions.True(WeaponVisualVariantCatalog.TryGet(symbol,
+                    out variant), symbol + " lacks a runtime firearm mapping.");
+                Assertions.Equal((string)item["proposedVisualVariant"], variant,
+                    symbol + " audit/runtime firearm mapping diverged.");
+                Assertions.True(variant.StartsWith(
+                    (string)item["familyOrFirearmKind"] + ".",
+                    StringComparison.Ordinal),
+                    symbol + " crosses its firearm family boundary.");
+            }
+            Assertions.Equal(3, items.Where(value =>
+                    (string)value["familyOrFirearmKind"] == "Pistol")
+                .Select(value => (string)value["proposedVisualVariant"])
+                .Distinct().Count(),
+                "Pistol must use exactly three approved reusable variants.");
+            Assertions.True(items.Where(value =>
+                    (string)value["familyOrFirearmKind"] == "Musket" ||
+                    (string)value["familyOrFirearmKind"] == "Blunderbuss")
+                .All(value => ((string)value["proposedVisualVariant"])
+                    .EndsWith(".Service", StringComparison.Ordinal)),
+                "Long-gun named variants must remain gated on fit acceptance.");
         }
 
         private static JObject Parse(params string[] parts)

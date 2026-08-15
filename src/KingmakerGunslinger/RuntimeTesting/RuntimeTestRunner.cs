@@ -7785,6 +7785,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             AppendDiagnosticMusketRigAssertions(assertions, "MusketPassThrough");
             AppendDiagnosticMusketRigAssertions(assertions, "MusketMinimalControl");
             AppendDiagnosticMusketRigAssertions(assertions, "MusketClearanceStock");
+            AppendFirearmItemVariantAssertions(assertions);
             FirearmRigCapability musketCapability = FirearmAssetRuntime.GetCapability(
                 FirearmKind.Musket);
             FirearmRigCapability blunderbussCapability = FirearmAssetRuntime.GetCapability(
@@ -7815,6 +7816,125 @@ namespace KingmakerGunslinger.RuntimeTesting
                 capability.MuzzlePosition.HasValue
                 ? Vector3.Distance(capability.ButtPosition.Value,
                     capability.MuzzlePosition.Value) : -1f;
+        }
+
+        private static void AppendFirearmItemVariantAssertions(
+            List<RuntimeTestAssertion> assertions)
+        {
+            var items = new List<Tuple<string, FirearmKind,
+                BlueprintItemWeapon>>
+            {
+                Tuple.Create(TestMusketBlueprints.ItemSymbol,
+                    FirearmKind.Musket, BlueprintBootstrap.TestMusketItem),
+                Tuple.Create(ProductionFirearmBlueprints.PistolItemSymbol,
+                    FirearmKind.Pistol,
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item),
+                Tuple.Create(ProductionFirearmBlueprints.MusketItemSymbol,
+                    FirearmKind.Musket,
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item),
+                Tuple.Create(ProductionFirearmBlueprints.BlunderbussItemSymbol,
+                    FirearmKind.Blunderbuss,
+                    BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item),
+                Tuple.Create(ProductionFirearmBlueprints.AdvancedRifleItemSymbol,
+                    FirearmKind.Rifle,
+                    BlueprintBootstrap.ProductionFirearms.AdvancedRifle.Item),
+                Tuple.Create(ProductionFirearmBlueprints.AdvancedRevolverItemSymbol,
+                    FirearmKind.Revolver,
+                    BlueprintBootstrap.ProductionFirearms.AdvancedRevolver.Item)
+            };
+            items.AddRange(BlueprintBootstrap.MagicFirearms.Entries.Select(entry =>
+                Tuple.Create(entry.Spec.Symbol, entry.Spec.Kind, entry.Item)));
+            string[] variants = items.Select(value =>
+                    WeaponVisualVariantCatalog.Require(value.Item1))
+                .Distinct(StringComparer.Ordinal).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray();
+            bool exactItems = items.Count == 14 && items.All(value =>
+                FirearmWeaponPresentation.HasExactItemVariant(value.Item3,
+                    value.Item1, value.Item2));
+            bool pistolSeparation = !ReferenceEquals(
+                    BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.DuelistsRebuttalSymbol).Item
+                        .VisualParameters.Model,
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item
+                        .VisualParameters.Model) &&
+                !ReferenceEquals(BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.TheLastWordSymbol).Item
+                        .VisualParameters.Model,
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item
+                        .VisualParameters.Model) &&
+                !ReferenceEquals(BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.DuelistsRebuttalSymbol).Item
+                        .VisualParameters.Model,
+                    BlueprintBootstrap.MagicFirearms.Require(
+                        MagicFirearmBlueprints.TheLastWordSymbol).Item
+                        .VisualParameters.Model);
+            assertions.Add(Assertion("firearm-all-14-item-visual-identities",
+                "14 exact symbol-approved variants; no FirearmKind-only selection",
+                string.Join("|", items.Select(value => value.Item1 + "=" +
+                    WeaponVisualVariantCatalog.Require(value.Item1)).ToArray()),
+                exactItems, "exact inherited item visual/model reference"));
+            assertions.Add(Assertion("pistol-three-variant-separation",
+                "Service, Duelist, and LastWord are three distinct prefab references",
+                "distinct=" + pistolSeparation, pistolSeparation,
+                "exact item-level visual model reference identity"));
+
+            var instances = new List<GameObject>();
+            bool renderable = true;
+            bool exactPistolMarkers = true;
+            bool cleaned = false;
+            try
+            {
+                foreach (string variant in variants)
+                {
+                    GameObject instance = FirearmAssetRuntime
+                        .InstantiateItemVariantPrefab(variant);
+                    instances.Add(instance);
+                    Renderer[] renderers = instance == null
+                        ? Array.Empty<Renderer>()
+                        : instance.GetComponentsInChildren<Renderer>(true);
+                    bool visible;
+                    DescribeFirearmRenderers(renderers, out visible);
+                    renderable &= instance != null && visible &&
+                        FirearmAssetRuntime.HasValidatedItemVariant(variant);
+                    if (variant == WeaponVisualVariantCatalog.PistolDuelist ||
+                        variant == WeaponVisualVariantCatalog.PistolLastWord)
+                    {
+                        Transform visual = instance == null ? null :
+                            instance.transform.Find("Visual");
+                        Transform[] hierarchy = visual == null
+                            ? Array.Empty<Transform>()
+                            : visual.GetComponentsInChildren<Transform>(true);
+                        exactPistolMarkers &= new[] { "KMG_Grip", "KMG_Support",
+                            "KMG_Butt", "KMG_Muzzle" }.All(marker =>
+                                hierarchy.Count(value => value.name == marker) == 1);
+                        exactPistolMarkers &= instance != null &&
+                            instance.transform.Find("SupportHandTarget") == null &&
+                            instance.transform.Find("Muzzle") != null &&
+                            Vector3.Distance(instance.transform.Find("Muzzle")
+                                .localPosition, new Vector3(0f, 0f, 0.264f)) <
+                                0.0001f;
+                    }
+                }
+                assertions.Add(Assertion("firearm-seven-approved-variant-prefabs",
+                    "seven exact reusable variants instantiate visibly",
+                    "variants=" + string.Join("|", variants),
+                    variants.Length == 7 && renderable,
+                    "runtime-loaded exact variant prefab set"));
+                assertions.Add(Assertion("pistol-authored-marker-contract",
+                    "Duelist and LastWord retain exactly four authored markers, +Z muzzle, and no support IK",
+                    "exact=" + exactPistolMarkers, exactPistolMarkers,
+                    "runtime-loaded source marker hierarchy"));
+            }
+            finally
+            {
+                foreach (GameObject instance in instances)
+                    if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
+                cleaned = instances.All(value => value == null ||
+                    value.Equals(null));
+            }
+            assertions.Add(Assertion("firearm-item-variant-cleanup", "destroyed",
+                cleaned.ToString(), cleaned,
+                "finally-owned transient exact variant instances"));
         }
 
         private static void AppendDiagnosticMusketRigAssertions(

@@ -3,8 +3,24 @@
   "unityVersion": "2018.4.10f1",
   "buildTarget": "StandaloneWindows64",
   "bundleName": "kingmakergunslinger.firearms",
-  "sha256": "BD78F647966271D826C16D5FD93BD481EA1953E48CE66D9E9313ABBFED15B152",
-  "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketPassThrough", "MusketMinimalControl", "MusketClearanceStock", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle"],
+  "sha256": "CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20",
+  "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketPassThrough", "MusketMinimalControl", "MusketClearanceStock", "PistolDuelist", "PistolLastWord", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle"],
+  "itemVariantPrefabs": [
+    {
+      "name": "PistolDuelist",
+      "variant": "Pistol.Duelist",
+      "productionBinding": true,
+      "sourceFbx": "assets-source/original-models/firearm-pistol-variants/pistol-duelist.fbx",
+      "sourceFbxSha256": "D39F645A949CC8F42386FE852C632A360B50F7E19C13BEDDEDA9714F01B8BBE3"
+    },
+    {
+      "name": "PistolLastWord",
+      "variant": "Pistol.LastWord",
+      "productionBinding": true,
+      "sourceFbx": "assets-source/original-models/firearm-pistol-variants/pistol-last-word.fbx",
+      "sourceFbxSha256": "BB8CCB51034D2EE66C293E7E5D7BEEC3F0F17340CF7660DD21CB220091AFFDEB"
+    }
+  ],
   "diagnosticPrefabs": [
     {
       "name": "MusketPassThrough",
@@ -27,6 +43,8 @@
   ],
   "rigs": [
     {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"autonomous-candidate-roll-corrected"},
+    {"name":"PistolDuelist","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"production-item-variant-exact-symbol-bound"},
+    {"name":"PistolLastWord","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"production-item-variant-exact-symbol-bound"},
     {"name":"Musket","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"autonomous-candidate-semantic-anchors"},
     {"name":"Blunderbuss","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"autonomous-candidate-semantic-anchors"},
     {"name":"Rifle","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"autonomous-candidate-semantic-anchors"},
@@ -38,7 +56,7 @@
   "bundles": [
     {
       "name": "kingmakergunslinger.firearms",
-      "sha256": "BD78F647966271D826C16D5FD93BD481EA1953E48CE66D9E9313ABBFED15B152"
+      "sha256": "CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20"
     },
     {
       "name": "kingmakergunslinger.elvenbranchedspear",

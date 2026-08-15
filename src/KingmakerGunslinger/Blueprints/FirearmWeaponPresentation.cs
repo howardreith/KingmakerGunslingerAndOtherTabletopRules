@@ -27,6 +27,61 @@ namespace KingmakerGunslinger.Blueprints
             ApplyCore(weapon, definition, projectile);
         }
 
+        internal static bool ApplyItemVariant(BlueprintItemWeapon weapon,
+            string blueprintSymbol, FirearmKind kind)
+        {
+            if (weapon == null) throw new ArgumentNullException("weapon");
+            string variant = WeaponVisualVariantCatalog.Require(blueprintSymbol);
+            if (!variant.StartsWith(kind.ToString() + ".",
+                StringComparison.Ordinal))
+                throw new InvalidOperationException(blueprintSymbol +
+                    " maps across its qualified firearm family boundary.");
+            GameObject prefab = FirearmAssetRuntime.GetItemVariantPrefab(variant);
+            if (prefab == null) return false;
+            WeaponVisualParameters source = Read(weapon, "m_VisualParameters")
+                as WeaponVisualParameters;
+            if (source == null || source.Model == null)
+                throw new InvalidOperationException(
+                    "The firearm item has no visible family fallback.");
+            WeaponVisualParameters visual = Clone(source);
+            Set(visual, "m_WeaponModel", prefab);
+            Set(weapon, "m_VisualParameters", visual);
+            if (weapon.VisualParameters == null ||
+                !ReferenceEquals(weapon.VisualParameters.Model, prefab))
+                throw new InvalidOperationException(
+                    "The exact firearm item variant did not round-trip.");
+            return true;
+        }
+
+        internal static bool HasExactItemVariant(BlueprintItemWeapon weapon,
+            string blueprintSymbol, FirearmKind kind)
+        {
+            if (weapon == null) return false;
+            string variant = WeaponVisualVariantCatalog.Require(blueprintSymbol);
+            if (!variant.StartsWith(kind.ToString() + ".",
+                StringComparison.Ordinal)) return false;
+            GameObject prefab = FirearmAssetRuntime.GetItemVariantPrefab(variant);
+            return prefab != null && weapon.VisualParameters != null &&
+                ReferenceEquals(weapon.VisualParameters.Model, prefab);
+        }
+
+        internal static bool HasApprovedItemVariantOrFamilyFallback(
+            BlueprintItemWeapon weapon, string blueprintSymbol, FirearmKind kind)
+        {
+            if (weapon == null) return false;
+            string variant = WeaponVisualVariantCatalog.Require(blueprintSymbol);
+            if (!variant.StartsWith(kind.ToString() + ".",
+                StringComparison.Ordinal)) return false;
+            GameObject prefab = FirearmAssetRuntime.GetItemVariantPrefab(variant);
+            if (prefab != null)
+                return weapon.VisualParameters != null &&
+                    ReferenceEquals(weapon.VisualParameters.Model, prefab);
+            return weapon.Type != null && weapon.VisualParameters != null &&
+                weapon.Type.VisualParameters != null && ReferenceEquals(
+                    weapon.VisualParameters.Model,
+                    weapon.Type.VisualParameters.Model);
+        }
+
         private static void ApplyCore(object owner, FirearmDefinition definition,
             BlueprintProjectile projectile)
         {
@@ -46,12 +101,7 @@ namespace KingmakerGunslinger.Blueprints
             // replaced inherited models with null, which made long guns vanish.
             // Only the firearm projectile and individually approved custom art
             // are allowed to override that visible native fallback.
-            var visual = new WeaponVisualParameters();
-            foreach (FieldInfo field in typeof(WeaponVisualParameters).GetFields(Fields))
-            {
-                if (!field.IsStatic && !field.IsInitOnly)
-                    field.SetValue(visual, field.GetValue(source));
-            }
+            WeaponVisualParameters visual = Clone(source);
 
             // Resolve every prototype-backed presentation value that the runtime
             // scenarios protect before removing the crossbow Prototype. This
@@ -95,6 +145,16 @@ namespace KingmakerGunslinger.Blueprints
                 Set(visual, "m_WeaponAnimationStyle", profile.Animation.Value);
 
             Set(owner, "m_VisualParameters", visual);
+        }
+
+        private static WeaponVisualParameters Clone(WeaponVisualParameters source)
+        {
+            var visual = new WeaponVisualParameters();
+            foreach (FieldInfo field in typeof(WeaponVisualParameters).GetFields(
+                Fields))
+                if (!field.IsStatic && !field.IsInitOnly)
+                    field.SetValue(visual, field.GetValue(source));
+            return visual;
         }
 
         private static void Materialize(object instance, string name, object value)

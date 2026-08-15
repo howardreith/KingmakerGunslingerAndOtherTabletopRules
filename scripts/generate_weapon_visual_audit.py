@@ -154,12 +154,20 @@ def firearm_variant(symbol: str, kind: str) -> str:
     named = {
         "KMG.Firearms.DuelistsRebuttalItem": "Pistol.Duelist",
         "KMG.Firearms.TheLastWordItem": "Pistol.LastWord",
-        "KMG.Firearms.RiverKingsMeasureItem": "Musket.RiverKing",
-        "KMG.Firearms.WatchAtTheWorldsEndItem": "Musket.WorldsEnd",
-        "KMG.Firearms.IrovettisOvationItem": "Blunderbuss.Ovation",
-        "KMG.Test.TestMusketItem": "Musket.PassThroughDevelopment",
     }
     return named.get(symbol, f"{kind}.Service")
+
+
+def firearm_prefab(variant: str) -> str:
+    return {
+        "Pistol.Service": "Pistol",
+        "Pistol.Duelist": "PistolDuelist",
+        "Pistol.LastWord": "PistolLastWord",
+        "Musket.Service": "Musket",
+        "Blunderbuss.Service": "Blunderbuss",
+        "Rifle.Service": "Rifle",
+        "Revolver.Service": "Revolver",
+    }[variant]
 
 
 def eastern_variant(symbol: str, family: str) -> str:
@@ -218,10 +226,16 @@ def make_record(entry: dict) -> dict:
     if symbol.startswith("KMG.Firearms.") or symbol.startswith("KMG.Test."):
         kind = firearm_kind(symbol)
         data = FIREARM_DATA[kind]
-        prefab = f"KMG_Firearms_{kind}"
+        variant = firearm_variant(symbol, kind)
+        prefab = firearm_prefab(variant)
+        project_variant = variant in ("Pistol.Duelist", "Pistol.LastWord")
+        source_fbx = data["source"] if not project_variant else \
+            "assets-source/original-models/firearm-pistol-variants/" + \
+            ("pistol-duelist.fbx" if variant == "Pistol.Duelist" else
+             "pistol-last-word.fbx")
         weapon_type = "KMG.Test.TestMusketWeaponType" if symbol.startswith(
             "KMG.Test.") else data["type"]
-        concern = "none accepted for regular Pistol" if kind == "Pistol" else \
+        concern = "human inventory/world readability and hand fit remain required" if kind == "Pistol" else \
             "residual torso/upper-arm clipping; human matrix required" if kind in \
             ("Musket", "Blunderbuss") else \
             "qualified structurally; lower-priority human visual review remains"
@@ -229,18 +243,18 @@ def make_record(entry: dict) -> dict:
             "familyOrFirearmKind": kind,
             "weaponType": weapon_type,
             "currentItemLevelVisual": prefab,
-            "currentTypeLevelVisual": prefab,
+            "currentTypeLevelVisual": kind,
             "effectiveEquippedPrefab": prefab,
-            "sourceFbx": data["source"],
-            "sourceBlend": "none at baseline",
-            "deterministicGenerator": "none at baseline; tools/unity/BuildFirearmBundles.cs imports the licensed source",
+            "sourceFbx": source_fbx,
+            "sourceBlend": "assets-source/original-models/firearm-pistol-variants/firearm-pistol-variants.blend" if project_variant else "none; preserved licensed source imported directly",
+            "deterministicGenerator": "assets-source/original-models/firearm-pistol-variants/generate_firearm_pistol_variants.py" if project_variant else "tools/unity/BuildFirearmBundles.cs imports the preserved licensed source",
             "animationDonorStyle": data["animation"],
             "gripHandednessContract": data["grip"],
-            "currentMaterial": f"opaque Unity Standard; generated {kind}_* material assets",
+            "currentMaterial": "project-owned three-material source forced to opaque Unity Standard" if project_variant else f"opaque Unity Standard; generated {kind}_* material assets",
             "currentBundle": "kingmakergunslinger.firearms",
-            "sourceLicenseProvenance": data["provenance"],
-            "currentManyToOneVisualGroup": f"FirearmKind.{kind}",
-            "proposedVisualVariant": firearm_variant(symbol, kind),
+            "sourceLicenseProvenance": "project-owned clean-room deterministic Blender geometry; repository LICENSE" if project_variant else data["provenance"],
+            "currentManyToOneVisualGroup": variant,
+            "proposedVisualVariant": variant,
             "clippingOrientationConcerns": concern,
             "mappingScope": "equipped project weapon",
         })
@@ -250,14 +264,18 @@ def make_record(entry: dict) -> dict:
         family = symbol.split(".")[2]
         common["displayedName"] = DISPLAY_NAMES[symbol] if symbol in \
             DISPLAY_NAMES else generic_eastern_name(symbol, family)
-        prefab = f"KMG_EasternWeapons_{family}"
+        variant = eastern_variant(symbol, family)
+        suffix = variant.split(".", 1)[1]
+        prefab = family if suffix == "Classic" else family + suffix
+        source_stem = family.lower() if suffix == "Classic" else \
+            family.lower() + "-" + suffix.lower()
         common.update({
             "familyOrFirearmKind": family,
             "weaponType": f"KMG.EasternWeapons.{family}.WeaponType",
             "currentItemLevelVisual": prefab,
-            "currentTypeLevelVisual": prefab,
+            "currentTypeLevelVisual": family,
             "effectiveEquippedPrefab": prefab,
-            "sourceFbx": f"assets-source/original-models/eastern-weapons/{family.lower()}.fbx",
+            "sourceFbx": f"assets-source/original-models/eastern-weapons/{source_stem}.fbx",
             "sourceBlend": "assets-source/original-models/eastern-weapons/eastern-weapons.blend",
             "deterministicGenerator": "assets-source/original-models/eastern-weapons/generate_eastern_weapons.py",
             "animationDonorStyle": "exact native donor GUID from EasternWeaponBlueprints; AnimStyle preserved",
@@ -265,21 +283,29 @@ def make_record(entry: dict) -> dict:
             "currentMaterial": "project-owned Blender materials forced to opaque Unity Standard",
             "currentBundle": "kingmakergunslinger.easternweapons",
             "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
-            "currentManyToOneVisualGroup": f"EasternWeaponFamily.{family}",
-            "proposedVisualVariant": eastern_variant(symbol, family),
+            "currentManyToOneVisualGroup": variant,
+            "proposedVisualVariant": variant,
             "clippingOrientationConcerns": "preserve family length ordering, blade edge orientation, hand contact, and no cross-family substitution",
             "mappingScope": "equipped project weapon",
         })
         return common
 
     if symbol.startswith("KMG.ElvenBranchedSpear."):
+        variant = spear_variant(symbol)
+        suffix = variant.split(".", 1)[1]
+        prefab = {"ClassicBranch": "ElvenBranchedSpear",
+                  "ThornBranch": "ElvenBranchedSpearThorn",
+                  "CrownBranch": "ElvenBranchedSpearCrown"}[suffix]
+        source = {"ClassicBranch": "elven-branched-spear.fbx",
+                  "ThornBranch": "elven-branched-spear-thorn.fbx",
+                  "CrownBranch": "elven-branched-spear-crown.fbx"}[suffix]
         common.update({
             "familyOrFirearmKind": "Elven Branched Spear",
             "weaponType": "KMG.ElvenBranchedSpear.WeaponType",
-            "currentItemLevelVisual": "KMG_ElvenBranchedSpear",
-            "currentTypeLevelVisual": "KMG_ElvenBranchedSpear",
-            "effectiveEquippedPrefab": "KMG_ElvenBranchedSpear",
-            "sourceFbx": "assets-source/original-models/elven-branched-spear/elven-branched-spear.fbx",
+            "currentItemLevelVisual": prefab,
+            "currentTypeLevelVisual": "ElvenBranchedSpear",
+            "effectiveEquippedPrefab": prefab,
+            "sourceFbx": "assets-source/original-models/elven-branched-spear/" + source,
             "sourceBlend": "assets-source/original-models/elven-branched-spear/elven-branched-spear.blend",
             "deterministicGenerator": "assets-source/original-models/elven-branched-spear/generate_elven_branched_spear.py",
             "animationDonorStyle": "native Longspear VisualParameters and animation style",
@@ -287,8 +313,8 @@ def make_record(entry: dict) -> dict:
             "currentMaterial": "project-owned Blender materials forced to opaque Unity Standard",
             "currentBundle": "kingmakergunslinger.elvenbranchedspear",
             "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
-            "currentManyToOneVisualGroup": "ElvenBranchedSpear.SingleBaseline",
-            "proposedVisualVariant": spear_variant(symbol),
+            "currentManyToOneVisualGroup": variant,
+            "proposedVisualVariant": variant,
             "clippingOrientationConcerns": "branches must be unmistakable and remain outside both hands, forearms, torso, and shaft grip region",
             "mappingScope": "equipped project weapon",
         })

@@ -22,6 +22,11 @@ namespace KingmakerGunslinger.Assets
         private static readonly Dictionary<string, FirearmRigCapability>
             DiagnosticCapabilities = new Dictionary<string, FirearmRigCapability>(
                 StringComparer.Ordinal);
+        private static readonly Dictionary<string, GameObject> ItemVariantPrefabs =
+            new Dictionary<string, GameObject>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, FirearmRigCapability>
+            ItemVariantCapabilities = new Dictionary<string, FirearmRigCapability>(
+                StringComparer.Ordinal);
         internal static bool IsLoaded { get { lock (Sync) return _bundle != null; } }
 
         internal static void Configure(ModContext context)
@@ -51,6 +56,10 @@ namespace KingmakerGunslinger.Assets
                     StringComparer.Ordinal);
                 var diagnosticCapabilities = new Dictionary<string,
                     FirearmRigCapability>(StringComparer.Ordinal);
+                var itemVariantPrefabs = new Dictionary<string, GameObject>(
+                    StringComparer.Ordinal);
+                var itemVariantCapabilities = new Dictionary<string,
+                    FirearmRigCapability>(StringComparer.Ordinal);
 
                 TryLoadEquippedPrefab(candidate, names, prefabs, capabilities,
                     FirearmKind.Pistol, "pistol", false, context);
@@ -77,6 +86,14 @@ namespace KingmakerGunslinger.Assets
                 TryLoadDiagnosticPrefab(candidate, names, diagnosticPrefabs,
                     diagnosticCapabilities, "MusketClearanceStock",
                     "musketclearancestock", context);
+                TryLoadItemVariantPrefab(candidate, names, itemVariantPrefabs,
+                    itemVariantCapabilities, WeaponVisualVariantCatalog.PistolDuelist,
+                    FirearmKind.Pistol, "pistolduelist", false, context);
+                TryLoadItemVariantPrefab(candidate, names, itemVariantPrefabs,
+                    itemVariantCapabilities, WeaponVisualVariantCatalog.PistolLastWord,
+                    FirearmKind.Pistol, "pistollastword", false, context);
+                PublishServiceVariants(prefabs, capabilities, itemVariantPrefabs,
+                    itemVariantCapabilities);
 
                 AssetBundle previous;
                 lock (Sync)
@@ -89,12 +106,15 @@ namespace KingmakerGunslinger.Assets
                     Replace(Capabilities, capabilities);
                     Replace(DiagnosticPrefabs, diagnosticPrefabs);
                     Replace(DiagnosticCapabilities, diagnosticCapabilities);
+                    Replace(ItemVariantPrefabs, itemVariantPrefabs);
+                    Replace(ItemVariantCapabilities, itemVariantCapabilities);
                 }
                 if (previous != null) previous.Unload(false);
                 context.Logger.Info("assets", "bundle.loaded",
                     "Published firearm bundle transactionally; equippedPrefabs=" +
                     prefabs.Count + ";beltPrefabs=" + beltPrefabs.Count +
                     ";diagnosticPrefabs=" + diagnosticPrefabs.Count +
+                    ";itemVariantPrefabs=" + itemVariantPrefabs.Count +
                     ". Missing or rejected capabilities retain native presentation fallbacks.");
             }
             catch (Exception exception)
@@ -151,6 +171,69 @@ namespace KingmakerGunslinger.Assets
             context.Logger.Info("assets", "diagnostic-rig.validated",
                 "identity=" + identity + ";productionBinding=false;" +
                 capability.Describe());
+        }
+
+        private static void TryLoadItemVariantPrefab(AssetBundle bundle,
+            string[] names, IDictionary<string, GameObject> destination,
+            IDictionary<string, FirearmRigCapability> capabilities,
+            string variant, FirearmKind kind, string assetName,
+            bool requiresTwoHandRig, ModContext context)
+        {
+            GameObject prefab = TryLoadPrefab(bundle, names, kind, assetName,
+                context);
+            if (prefab == null) return;
+            FirearmRigCapability capability;
+            if (!TryPrepareRig(prefab, kind, requiresTwoHandRig, out capability))
+            {
+                capabilities[variant] = capability;
+                context.Logger.Warning("assets", "item-variant-rig.rejected",
+                    "variant=" + variant + ";" + capability.Describe());
+                return;
+            }
+            destination[variant] = prefab;
+            capabilities[variant] = capability;
+            context.Logger.Info("assets", "item-variant-rig.validated",
+                "variant=" + variant + ";" + capability.Describe());
+        }
+
+        private static void PublishServiceVariants(
+            IDictionary<FirearmKind, GameObject> prefabs,
+            IDictionary<FirearmKind, FirearmRigCapability> capabilities,
+            IDictionary<string, GameObject> destination,
+            IDictionary<string, FirearmRigCapability> variantCapabilities)
+        {
+            PublishServiceVariant(WeaponVisualVariantCatalog.PistolService,
+                FirearmKind.Pistol, prefabs, capabilities, destination,
+                variantCapabilities);
+            PublishServiceVariant(WeaponVisualVariantCatalog.MusketService,
+                FirearmKind.Musket, prefabs, capabilities, destination,
+                variantCapabilities);
+            PublishServiceVariant(WeaponVisualVariantCatalog.BlunderbussService,
+                FirearmKind.Blunderbuss, prefabs, capabilities, destination,
+                variantCapabilities);
+            PublishServiceVariant(WeaponVisualVariantCatalog.RifleService,
+                FirearmKind.Rifle, prefabs, capabilities, destination,
+                variantCapabilities);
+            PublishServiceVariant(WeaponVisualVariantCatalog.RevolverService,
+                FirearmKind.Revolver, prefabs, capabilities, destination,
+                variantCapabilities);
+        }
+
+        private static void PublishServiceVariant(string variant,
+            FirearmKind kind, IDictionary<FirearmKind, GameObject> prefabs,
+            IDictionary<FirearmKind, FirearmRigCapability> capabilities,
+            IDictionary<string, GameObject> destination,
+            IDictionary<string, FirearmRigCapability> variantCapabilities)
+        {
+            GameObject prefab;
+            FirearmRigCapability capability;
+            if (prefabs.TryGetValue(kind, out prefab) && prefab != null &&
+                capabilities.TryGetValue(kind, out capability) &&
+                capability.IsValidated)
+            {
+                destination[variant] = prefab;
+                variantCapabilities[variant] = capability;
+            }
         }
 
         private static void TryLoadPrefab(AssetBundle bundle, string[] names,
@@ -406,6 +489,43 @@ namespace KingmakerGunslinger.Assets
                 return identity != null && DiagnosticCapabilities.TryGetValue(
                     identity, out capability) && capability.IsValidated &&
                     DiagnosticPrefabs.TryGetValue(identity, out prefab) &&
+                    prefab != null;
+            }
+        }
+        internal static GameObject GetItemVariantPrefab(string variant)
+        {
+            lock (Sync)
+            {
+                GameObject prefab;
+                return variant != null && ItemVariantPrefabs.TryGetValue(variant,
+                    out prefab) ? prefab : null;
+            }
+        }
+        internal static GameObject InstantiateItemVariantPrefab(string variant)
+        {
+            GameObject prefab = GetItemVariantPrefab(variant);
+            return prefab == null ? null : UnityEngine.Object.Instantiate(prefab);
+        }
+        internal static FirearmRigCapability GetItemVariantCapability(
+            string variant)
+        {
+            lock (Sync)
+            {
+                FirearmRigCapability capability;
+                return variant != null && ItemVariantCapabilities.TryGetValue(
+                    variant, out capability) ? capability :
+                    FirearmRigCapability.Missing(FirearmKind.Pistol);
+            }
+        }
+        internal static bool HasValidatedItemVariant(string variant)
+        {
+            lock (Sync)
+            {
+                FirearmRigCapability capability;
+                GameObject prefab;
+                return variant != null && ItemVariantCapabilities.TryGetValue(
+                    variant, out capability) && capability.IsValidated &&
+                    ItemVariantPrefabs.TryGetValue(variant, out prefab) &&
                     prefab != null;
             }
         }

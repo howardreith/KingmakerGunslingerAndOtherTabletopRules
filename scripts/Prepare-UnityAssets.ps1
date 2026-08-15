@@ -7,6 +7,7 @@ $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $models = Join-Path $root 'assets-source\third-party\models'
 $fitExperiments = Join-Path $root 'assets-source\original-models\firearm-fit-experiments'
+$pistolVariants = Join-Path $root 'assets-source\original-models\firearm-pistol-variants'
 $audio = Join-Path $root 'assets-source\third-party\audio\sse-library-guns\processed'
 $approvedModels = Join-Path $ProjectPath 'Assets\ApprovedModels'
 $approvedAudio = Join-Path $ProjectPath 'Assets\ApprovedAudio'
@@ -46,7 +47,16 @@ foreach ($candidate in $fitCandidates) {
     }
     Copy-Item -LiteralPath $source -Destination $musketDestination -Force
 }
+$pistolDestination = Join-Path $approvedModels 'Pistol'
+$generatedPistols = @('pistol-duelist.fbx','pistol-last-word.fbx')
+foreach ($candidate in $generatedPistols) {
+    $source = Join-Path $pistolVariants $candidate
+    if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
+        throw "Missing generated Pistol variant: $source"
+    }
+    Copy-Item -LiteralPath $source -Destination $pistolDestination -Force
+}
 Get-ChildItem -LiteralPath $approvedAudio -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Copy-Item -LiteralPath (Get-ChildItem -LiteralPath $audio -Filter '*.wav').FullName -Destination $approvedAudio
 
-Write-Host 'Prepared five approved model families, three Musket fit candidates, and five approved audio clips.'
+Write-Host 'Prepared five approved model families, three Musket fit candidates, two Pistol item variants, and five approved audio clips.'

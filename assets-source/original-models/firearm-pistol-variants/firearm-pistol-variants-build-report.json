@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "generator": "generate_firearm_pistol_variants.py",
+  "blenderVersion": "4.5.10 LTS",
+  "unitSystem": "METRIC",
+  "axis": "+Z muzzle; identity firing-hand grip",
+  "semanticLengthMeters": 0.339,
+  "variants": [
+    {
+      "name": "PistolDuelist",
+      "variant": "Pistol.Duelist",
+      "fbx": "pistol-duelist.fbx",
+      "fbxSha256": "D39F645A949CC8F42386FE852C632A360B50F7E19C13BEDDEDA9714F01B8BBE3",
+      "render": "renders/pistol-duelist-source.png",
+      "renderSha256": "C9D6D5E30B3A59430F6641B611CB1C1A4B6B941C84679CED630E270E82EC68B1",
+      "meshCount": 8,
+      "vertexCount": 144,
+      "triangleCount": 256,
+      "materialCount": 3,
+      "boundsMeters": {
+        "minimum": [
+          -0.03,
+          -0.0245,
+          -0.076
+        ],
+        "maximum": [
+          0.055,
+          0.023,
+          0.264
+        ],
+        "size": [
+          0.085,
+          0.0475,
+          0.34
+        ]
+      },
+      "markersMeters": {
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          0.0,
+          -0.02,
+          0.145
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.075
+        ],
+        "KMG_Muzzle": [
+          0.0,
+          0.0,
+          0.264
+        ]
+      },
+      "provenance": "project-owned clean-room deterministic Blender source"
+    },
+    {
+      "name": "PistolLastWord",
+      "variant": "Pistol.LastWord",
+      "fbx": "pistol-last-word.fbx",
+      "fbxSha256": "BB8CCB51034D2EE66C293E7E5D7BEEC3F0F17340CF7660DD21CB220091AFFDEB",
+      "render": "renders/pistol-last-word-source.png",
+      "renderSha256": "5E4AB76DDD49B00FE4E3C0AE49AAD2FDE720834CA2F40CC0836CA40EBBB29A20",
+      "meshCount": 9,
+      "vertexCount": 120,
+      "triangleCount": 204,
+      "materialCount": 3,
+      "boundsMeters": {
+        "minimum": [
+          -0.0575,
+          -0.0285,
+          -0.0815
+        ],
+        "maximum": [
+          0.0335,
+          0.0225,
+          0.264
+        ],
+        "size": [
+          0.091,
+          0.051,
+          0.3455
+        ]
+      },
+      "markersMeters": {
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          0.0,
+          -0.02,
+          0.145
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.075
+        ],
+        "KMG_Muzzle": [
+          0.0,
+          0.0,
+          0.264
+        ]
+      },
+      "provenance": "project-owned clean-room deterministic Blender source"
+    }
+  ],
+  "blend": "firearm-pistol-variants.blend",
+  "blendSha256": "B6095084DCD5A9574ADC0561713CE114A17FD7E235F1FF59B0A78FAC7664F6A9",
+  "determinism": "FBX and normalized PNG must match across clean runs; .blend embeds session metadata and is semantic-only reproducible"
+}

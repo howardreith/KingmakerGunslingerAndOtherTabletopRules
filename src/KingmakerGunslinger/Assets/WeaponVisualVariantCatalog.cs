@@ -20,6 +20,13 @@ namespace KingmakerGunslinger.Assets
         internal const string NodachiCleaver = "Nodachi.Cleaver";
         internal const string NodachiTitan = "Nodachi.Titan";
         internal const string NodachiCapstone = "Nodachi.Capstone";
+        internal const string PistolService = "Pistol.Service";
+        internal const string PistolDuelist = "Pistol.Duelist";
+        internal const string PistolLastWord = "Pistol.LastWord";
+        internal const string MusketService = "Musket.Service";
+        internal const string BlunderbussService = "Blunderbuss.Service";
+        internal const string RifleService = "Rifle.Service";
+        internal const string RevolverService = "Revolver.Service";
 
         private static readonly Dictionary<string, string> Variants =
             new Dictionary<string, string>(StringComparer.Ordinal)
@@ -65,7 +72,21 @@ namespace KingmakerGunslinger.Assets
                 { "KMG.EasternWeapons.Nodachi.StormOverStone", NodachiCleaver },
                 { "KMG.EasternWeapons.Nodachi.MountainSunder", NodachiTitan },
                 { "KMG.EasternWeapons.Nodachi.UnfixedForm", NodachiTitan },
-                { "KMG.EasternWeapons.Nodachi.WorldTreeSeverer", NodachiCapstone }
+                { "KMG.EasternWeapons.Nodachi.WorldTreeSeverer", NodachiCapstone },
+                { "KMG.Test.TestMusketItem", MusketService },
+                { "KMG.Firearms.EarlyPistolItem", PistolService },
+                { "KMG.Firearms.EarlyMusketItem", MusketService },
+                { "KMG.Firearms.EarlyBlunderbussItem", BlunderbussService },
+                { "KMG.Firearms.AdvancedRifleItem", RifleService },
+                { "KMG.Firearms.AdvancedRevolverItem", RevolverService },
+                { "KMG.Firearms.PistolPlus1Item", PistolService },
+                { "KMG.Firearms.MusketPlus1Item", MusketService },
+                { "KMG.Firearms.BlunderbussPlus1Item", BlunderbussService },
+                { "KMG.Firearms.DuelistsRebuttalItem", PistolDuelist },
+                { "KMG.Firearms.RiverKingsMeasureItem", MusketService },
+                { "KMG.Firearms.IrovettisOvationItem", BlunderbussService },
+                { "KMG.Firearms.TheLastWordItem", PistolLastWord },
+                { "KMG.Firearms.WatchAtTheWorldsEndItem", MusketService }
             };
 
         internal static string Require(string blueprintSymbol)

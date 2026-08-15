@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using KingmakerGunslinger.Assets;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
@@ -59,6 +61,113 @@ namespace KingmakerGunslinger.DomainTests
                 generator.IndexOf("export(root", StringComparison.Ordinal) <
                 generator.IndexOf("render(root", StringComparison.Ordinal),
                 "The generator must use stable FBX identities and export production trees before adding render-only objects.");
+        }
+
+        internal static void GeneratedPistolVariantsAreExactAndReproducible()
+        {
+            JObject report = JObject.Parse(Read("assets-source",
+                "original-models", "firearm-pistol-variants",
+                "firearm-pistol-variants-build-report.json"));
+            JToken[] variants = report["variants"].ToArray();
+            Assertions.Equal(2, variants.Length,
+                "The project-owned Pistol vocabulary must add exactly two named variants.");
+            Assertions.True(new[] { "PistolDuelist", "PistolLastWord" }
+                .SequenceEqual(variants.Select(value => (string)value["name"])),
+                "Pistol source variant ordering changed.");
+            Assertions.Equal("0.339", report["semanticLengthMeters"].ToString(),
+                "The fixed Pistol semantic length changed.");
+            var expected = new System.Collections.Generic.Dictionary<string,
+                string>(StringComparer.Ordinal)
+            {
+                { "PistolDuelist", "D39F645A949CC8F42386FE852C632A360B50F7E19C13BEDDEDA9714F01B8BBE3" },
+                { "PistolLastWord", "BB8CCB51034D2EE66C293E7E5D7BEEC3F0F17340CF7660DD21CB220091AFFDEB" }
+            };
+            foreach (JToken variant in variants)
+            {
+                string name = (string)variant["name"];
+                string root = Path.Combine(Environment.CurrentDirectory,
+                    "assets-source", "original-models", "firearm-pistol-variants");
+                string fbx = Path.Combine(root, (string)variant["fbx"]);
+                string render = Path.Combine(root, ((string)variant["render"])
+                    .Replace('/', Path.DirectorySeparatorChar));
+                Assertions.Equal(expected[name], Hash(fbx),
+                    name + " FBX identity changed.");
+                Assertions.Equal((string)variant["fbxSha256"], Hash(fbx),
+                    name + " build report does not match its FBX.");
+                Assertions.Equal((string)variant["renderSha256"], Hash(render),
+                    name + " build report does not match its render.");
+                Assertions.Equal(4, variant["markersMeters"].Count(),
+                    name + " does not author exactly four semantic markers.");
+                Assertions.True((int)variant["meshCount"] >= 8 &&
+                    (int)variant["triangleCount"] >= 200 &&
+                    (int)variant["materialCount"] == 3,
+                    name + " lacks deliberate low-poly silhouette geometry.");
+            }
+            string generator = Read("assets-source", "original-models",
+                "firearm-pistol-variants",
+                "generate_firearm_pistol_variants.py");
+            Assertions.True(generator.Contains("PYTHONHASHSEED") &&
+                generator.Contains("install_deterministic_fbx_contract") &&
+                generator.Contains("object_types={\"EMPTY\", \"MESH\"}") &&
+                generator.Contains("Pistol.Duelist") &&
+                generator.Contains("Pistol.LastWord"),
+                "The Pistol source is not a deterministic exact-variant generator.");
+        }
+
+        internal static void PistolItemVariantRuntimeContractIsExact()
+        {
+            KeyValuePair<string, string>[] firearms =
+                WeaponVisualVariantCatalog.Snapshot().Where(value =>
+                    value.Key.StartsWith("KMG.Firearms.",
+                        StringComparison.Ordinal) ||
+                    value.Key == "KMG.Test.TestMusketItem").ToArray();
+            Assertions.Equal(14, firearms.Length,
+                "Every equipped firearm item must have one exact runtime mapping.");
+            Assertions.Equal(7, firearms.Select(value => value.Value)
+                .Distinct(StringComparer.Ordinal).Count(),
+                "The pre-review firearm vocabulary must be seven bounded variants.");
+            Assertions.Equal(3, firearms.Where(value => value.Value.StartsWith(
+                    "Pistol.", StringComparison.Ordinal)).Select(value => value.Value)
+                .Distinct(StringComparer.Ordinal).Count(),
+                "Pistol must expose Service, Duelist, and LastWord variants.");
+            Assertions.Equal(WeaponVisualVariantCatalog.PistolDuelist,
+                WeaponVisualVariantCatalog.Require(
+                    "KMG.Firearms.DuelistsRebuttalItem"),
+                "Duelist's Rebuttal mapping changed.");
+            Assertions.Equal(WeaponVisualVariantCatalog.PistolLastWord,
+                WeaponVisualVariantCatalog.Require(
+                    "KMG.Firearms.TheLastWordItem"),
+                "The Last Word mapping changed.");
+
+            string builder = Read("tools", "unity",
+                "BuildFirearmBundles.cs");
+            string runtime = Read("src", "KingmakerGunslinger", "Assets",
+                "FirearmAssetRuntime.cs");
+            string presentation = Read("src", "KingmakerGunslinger",
+                "Blueprints", "FirearmWeaponPresentation.cs");
+            string magic = Read("src", "KingmakerGunslinger", "Blueprints",
+                "MagicFirearmBlueprints.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string staging = Read("scripts", "Prepare-UnityAssets.ps1");
+            foreach (string token in new[] { "PistolDuelist",
+                "PistolLastWord", "pistol-duelist.fbx",
+                "pistol-last-word.fbx" })
+                Assertions.True(builder.Contains(token) || staging.Contains(token),
+                    "Pistol Unity pipeline omitted " + token + ".");
+            foreach (string token in new[] { "ItemVariantPrefabs",
+                "TryLoadItemVariantPrefab", "PublishServiceVariants",
+                "HasValidatedItemVariant", "InstantiateItemVariantPrefab" })
+                Assertions.True(runtime.Contains(token),
+                    "Firearm variant runtime omitted " + token + ".");
+            Assertions.True(presentation.Contains("ApplyItemVariant") &&
+                presentation.Contains("HasExactItemVariant") &&
+                presentation.Contains("maps across its qualified firearm family boundary") &&
+                magic.Contains("ApplyItemVariant(clone") &&
+                runner.Contains("firearm-all-14-item-visual-identities") &&
+                runner.Contains("pistol-three-variant-separation") &&
+                runner.Contains("firearm-item-variant-cleanup"),
+                "Exact item binding or fail-closed runtime observation is incomplete.");
         }
 
         internal static void MarkerImporterFailsClosed()

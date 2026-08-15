@@ -237,6 +237,8 @@ namespace KingmakerGunslinger.Blueprints
                         spec.WeightPounds);
                     FirearmWeaponPresentation.Apply(clone, spec.Definition,
                         firearmProjectile);
+                    FirearmWeaponPresentation.ApplyItemVariant(clone, itemSymbol,
+                        spec.Definition.Kind);
                     AppendProficiencyRestriction(clone, firearmProficiency,
                         scopedProficiencies, spec.Definition.Kind);
                     if (!spec.IsPlayerFireable)

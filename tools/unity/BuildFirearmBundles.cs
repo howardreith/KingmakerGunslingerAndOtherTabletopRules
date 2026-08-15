@@ -81,6 +81,24 @@ public static class BuildFirearmBundles
             new Vector3(-0.030976f, -0.051069f, 0.586040f),
             new Vector3(0f, 0f, -0.169533f),
             new Vector3(0f, 0f, 1.180452f)), true),
+        MarkerAuthored(Anchored(Spec("PistolDuelist", "Pistol",
+            "pistol-duelist.fbx", false, false,
+            Vector3.zero, Vector3.zero, 1f,
+            new Vector3(0f, 0f, 0.264f), 0.339f, 0.30f, 0.40f,
+            "PiercingOneHanded", "production-item-variant; exact-symbol-bound"),
+            Vector3.zero,
+            new Vector3(0f, -0.020f, 0.145f),
+            new Vector3(0f, 0f, -0.075f),
+            new Vector3(0f, 0f, 0.264f)), false),
+        MarkerAuthored(Anchored(Spec("PistolLastWord", "Pistol",
+            "pistol-last-word.fbx", false, false,
+            Vector3.zero, Vector3.zero, 1f,
+            new Vector3(0f, 0f, 0.264f), 0.339f, 0.30f, 0.40f,
+            "PiercingOneHanded", "production-item-variant; exact-symbol-bound"),
+            Vector3.zero,
+            new Vector3(0f, -0.020f, 0.145f),
+            new Vector3(0f, 0f, -0.075f),
+            new Vector3(0f, 0f, 0.264f)), false),
         Spec("MusketBelt", "Musket", "Musket 01.fbx", true, false,
             Vector3.zero, Vector3.zero, 2.0f, Vector3.zero,
             0.8525f, 0.55f, 1.60f, "None",
@@ -302,7 +320,7 @@ public static class BuildFirearmBundles
     private static void ResolveSemanticMarkers(GameObject source,
         FirearmPrefabSpec spec)
     {
-        if (!spec.RequiresTwoHandRig) return;
+        if (!spec.RequiresTwoHandRig && !spec.RequireSourceMarkers) return;
         string[] required = { "KMG_Grip", "KMG_Support", "KMG_Butt", "KMG_Muzzle" };
         var matches = new Dictionary<string, List<Transform>>();
         foreach (string marker in required)

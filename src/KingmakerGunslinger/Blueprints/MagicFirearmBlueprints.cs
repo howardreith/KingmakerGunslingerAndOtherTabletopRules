@@ -94,6 +94,8 @@ namespace KingmakerGunslinger.Blueprints
                             LocalizationService.Create(spec.Symbol + ".Flavor", spec.Flavor),
                             spec.Cost, source.Weight);
                         SetEnchantments(clone, spec.Enchantments.ToArray());
+                        FirearmWeaponPresentation.ApplyItemVariant(clone,
+                            spec.Symbol, spec.Kind);
                         return clone;
                     });
                 if (!ReferenceEquals(GetWeaponType(item), family.WeaponType))
@@ -125,7 +127,10 @@ namespace KingmakerGunslinger.Blueprints
                     !entry.Item.Weight.Equals(entry.Family.Item.Weight) ||
                     BlueprintItemAccess.Resolve().Capture(entry.Item).IsStackable ||
                     entry.Spec.Kind == FirearmKind.Rifle ||
-                    entry.Spec.Kind == FirearmKind.Revolver)
+                    entry.Spec.Kind == FirearmKind.Revolver ||
+                    !FirearmWeaponPresentation
+                        .HasApprovedItemVariantOrFamilyFallback(entry.Item,
+                            entry.Spec.Symbol, entry.Spec.Kind))
                     throw new InvalidOperationException("Magic firearm contract mismatch: " + entry.Spec.DisplayName);
             }
         }
