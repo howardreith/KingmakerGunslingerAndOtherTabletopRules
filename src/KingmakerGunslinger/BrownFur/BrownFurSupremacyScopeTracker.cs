@@ -68,6 +68,13 @@ namespace KingmakerGunslinger.BrownFur
             }
         }
 
+        internal bool WasModified(TContext context)
+        {
+            if (context == null) return false;
+            lock (_gate) return _scopes.Values.Any(value =>
+                value.Modified.Contains(context));
+        }
+
         internal bool Release(string transactionIdentity)
         {
             if (string.IsNullOrWhiteSpace(transactionIdentity)) return false;

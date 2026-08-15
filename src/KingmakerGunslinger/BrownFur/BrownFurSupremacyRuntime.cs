@@ -1,9 +1,18 @@
+using System;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.Utility;
 
 namespace KingmakerGunslinger.BrownFur
 {
     internal static class BrownFurSupremacyRuntime
     {
+        private const string ResonatingWordGuid =
+            "df7d13c967bce6a40bec3ba7c9f0e64c";
+        private const string ObsidianFlowGuid =
+            "e48638596c955a74c8a32dbc90b518c1";
+
         private static readonly BrownFurSupremacyScopeTracker<AbilityData,
             AbilityExecutionContext> Scopes =
                 new BrownFurSupremacyScopeTracker<AbilityData,
@@ -31,6 +40,27 @@ namespace KingmakerGunslinger.BrownFur
 
         internal static int ModifiedContextCount(string transactionIdentity)
         { return Scopes.ModifiedContextCount(transactionIdentity); }
+
+        internal static bool TryDoubleNonstandardDuration(
+            ContextDurationValue duration, MechanicsContext context,
+            ref Rounds result)
+        {
+            if (duration == null || context == null ||
+                context.SourceAbilityContext == null ||
+                !Scopes.WasModified(context.SourceAbilityContext) ||
+                context.SourceAbility == null || context.SpellSchool !=
+                    SpellSchool.Transmutation) return false;
+            string guid = context.SourceAbility.AssetGuid;
+            bool supported = string.Equals(guid, ResonatingWordGuid,
+                    StringComparison.Ordinal) && duration.Rate ==
+                    DurationRate.Rounds ||
+                string.Equals(guid, ObsidianFlowGuid,
+                    StringComparison.Ordinal) && duration.Rate ==
+                    DurationRate.Hours;
+            if (!supported) return false;
+            result = result * 2;
+            return true;
+        }
 
         internal static bool Release(string transactionIdentity)
         { return Scopes.Release(transactionIdentity); }

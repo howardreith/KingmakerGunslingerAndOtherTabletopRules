@@ -352,12 +352,15 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "AbilityExecutionContext",
                 "context.Params.HasMetamagic(Metamagic.Extend)",
                 "context.Params.Metamagic |= Metamagic.Extend",
-                "ModifiedContextCount", "Scopes.Release", "Scopes.Clear" })
+                "ModifiedContextCount", "TryDoubleNonstandardDuration",
+                "Scopes.WasModified", "Scopes.Release", "Scopes.Clear" })
                 Assertions.True(supremacyRuntime.Contains(token),
                     "Supremacy runtime lacks exact scope guard: " + token);
             foreach (string token in new[] { "CreateExecutionContext",
                 "typeof(TargetWrapper)", "HarmonyAfter(\"CallOfTheWild\")",
-                "BrownFurSupremacyRuntime.TryApply" })
+                "BrownFurSupremacyRuntime.TryApply",
+                "BrownFurSupremacyNonstandardDurationPatch",
+                "typeof(ContextDurationValue)", "typeof(MechanicsContext)" })
                 Assertions.True(supremacyPatch.Contains(token),
                     "Supremacy patch lacks exact execution ordering: " + token);
             foreach (string token in new[] {
