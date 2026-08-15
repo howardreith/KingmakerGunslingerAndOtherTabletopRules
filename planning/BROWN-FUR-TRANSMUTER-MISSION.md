@@ -206,6 +206,24 @@ feature ownership, applied ally delivery, process completion/interruption,
 and save/reload persistence remain publication gates. Brown-Fur remains
 reserved and unpublished.
 
+The guarded native combined-cast fixture then passed all six assertions on
+commit `442963a26108fa41a89accabcc7c3209373aceae`. A real spellbook-backed
+Beast Shape I wolf cast ran through native `UnitUseAbility`, completed its
+execution process, and completed the production Brown-Fur transaction. The
+real CotW reservoir changed exactly `4 -> 2`, available level-three Arcanist
+slots changed exactly `6 -> 5`, and the installed wolf buff appeared once on
+the disposable ally and not on the caster. Its Strength modifier was exactly
+`+4 Polymorph`, with exact caster, target, and selected-spell provenance and a
+positive duration. Every retained scope, reservation, buff, and disposable
+unit cleaned up. Exact package, DLL, MVID, deployment, backup, and structured
+evidence identities are recorded in
+`planning/BROWN-FUR-COTW-CONTRACT.md`.
+
+This closes native combined-cast completion and ally-effect delivery for an
+already validated intent. Player intent discovery, real Brown-Fur feature
+ownership, native post-submission interruption, dispel, and persistence remain
+publication gates. Brown-Fur remains reserved and unpublished.
+
 The first scoped Transmutation Supremacy fixture passed all five guarded
 assertions on commit `49d785c43b2c389d63e3a5abebd49c9288191943`. One exact
 execution scope added native `Extend` to one installed Personal Transmutation

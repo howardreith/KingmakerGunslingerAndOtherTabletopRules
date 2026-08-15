@@ -444,6 +444,56 @@ yet prove player intent discovery, ordinary process completion/interruption,
 ally effect delivery, a real Brown-Fur feature owner, or save/reload
 persistence. Brown-Fur remains reserved and unpublished.
 
+## Native combined cast and ally-effect boundary
+
+The guarded `disposable-brown-fur-native-cast` working-save fixture passed all
+six assertions on commit `442963a26108fa41a89accabcc7c3209373aceae`.
+The exact local-runtime package SHA-256 was
+`101AED6D623283B3706738CF1B06B1D8ABE40A1E368E19C7952A4214BDBA3168`;
+the built, deployed, loaded, and installed DLL SHA-256 was
+`D43DB5DEA7612D6E840694B100730D2181CABBE68EEBE90A6EC1853C4F1A7FD0`;
+and the DLL MVID was `c2463116-f5ef-4ed0-836c-977ac1e81b20`. The structured
+native-cast artifact SHA-256 was
+`DFC3A0BA42B7323D976743A813A2E0FECD27D7E2AFB5F234943432495D3A4516`,
+the runtime-result SHA-256 was
+`0374EC89FF3BEA2A2770C083B34C755152AC9EF867D3AF9B1E3CB70FB5469AE3`,
+and the curated runtime-evidence SHA-256 was
+`315D0B6F71D3C0FD3BFEEF270233F673DD188401699C878015067222A05FD7CA`.
+The guarded Steam App ID 640820 run used deployment identity
+`20260815T1838157414656Z`, backup identity `20260815T1838112725502Z`, and
+preserved feature-module settings SHA-256
+`5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`.
+The harness recorded game build `2018.4.10.10503941`, loaded only the named
+`KMG_AUTOMATION_WORKING` save, and observed no save-writing API.
+
+A disposable native level-five CotW Arcanist and disposable ally were spawned
+in that exact loaded area. The caster owned the resolved casting and
+preparation spellbooks, and the real spellbook-backed `AbilityData` retained
+casting book `0c21cfcab6ce4395bd4df330ab3cf715`, Beast Shape I wrapper
+`61a7ed778dd93f344a5dacdbad324cc9`, and wolf variant
+`3481906baed9487e8403e91a2e9d010a`. The production Brown-Fur transaction
+retained combined Powerful Change and Share Transmutation scopes, native
+`UnitUseAbility` entered its running state, returned `Success`, constructed an
+execution process, reached terminal completion, and marked the transaction
+`Completed`.
+
+The real CotW reservoir changed exactly `4 -> 2`, while native spell spending
+changed available level-three Arcanist slots exactly `6 -> 5`. The installed
+wolf polymorph buff appeared exactly once on the ally and zero times on the
+caster. Its one Strength modifier was `+4 Polymorph`, preserving the original
+descriptor while applying Powerful Change exactly once. The buff mechanics
+context retained the exact caster, ally target, and selected source spell and
+had a positive 1,200-second duration. All transaction, reservation, Share,
+Supremacy, modifier, suppression, buff, and disposable-unit state cleaned up.
+
+This closes real combined-cast completion, exact two-point/one-slot accounting,
+execution-scoped Personal-to-ally delivery, original-descriptor enhancement,
+effect provenance, and terminal cleanup for an already validated intent.
+Player intent discovery, real Brown-Fur feature ownership, process
+interruption after native submission, native dispel, and save/reload
+persistence remain publication gates. Brown-Fur remains reserved and
+unpublished.
+
 ## Scoped Transmutation Supremacy context
 
 The context-local Transmutation Supremacy fixture passed all five guarded
