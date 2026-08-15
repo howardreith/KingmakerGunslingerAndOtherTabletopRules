@@ -42,13 +42,13 @@ acceptance.
 The inspected dependency structure and fail-closed progression authority are
 recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.
 
-Permanent identities and the archetype shell are now source-qualified. The
-shell has exact level 3/9/20 additions, dynamically planned 3/9 or 4/10 exploit
+Permanent identities and the archetype shell are source-qualified. The shell
+has exact level 3/9/20 additions, dynamically planned 3/9 or 4/10 exploit
 removals, level-20 Magical Supremacy removal, one six-variant Powerful Change
-selector, and the Share Transmutation activatable. Its 19 manifest identities
-remain `reserved`, the builder is not invoked, and no archetype is published
-until the cast mechanics, complete spell classification, and isolated runtime
-registration path are qualified.
+selector, and the Share Transmutation activatable. All 19 manifest identities
+are now active and runtime-registered through the isolated optional extension.
+The archetype is deliberately absent from the CotW selector until the
+remaining mechanics and persistence publication gates are qualified.
 
 The live modifier-provenance contract is qualified on commit
 `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`: all 11 guarded assertions
@@ -330,3 +330,19 @@ This closes stable optional identity registration and proves that active
 identity status is distinct from selector publication. Player intent, actual
 feature ownership, interruption, dispel, persistence, and final publication
 remain gates. Brown-Fur is registered but unpublished.
+
+The player-intent policy and engine bridge were source-qualified on
+`9d9b80c479c956c34d033a228a21a2cab821f990`, then the focused guarded
+fixture passed all seven assertions on
+`37486e6bc100941f6c88fb28a0ad828a99b525c4`. It granted the three real
+registered features to a disposable unit, observed the native selection
+ability and Share activatable, combined the real Wisdom and Share markers
+with Transmutation Supremacy ownership, cleared both one-shot requests while
+retaining the features, rejected an orphan marker without arming, retained
+zero selector references, and removed every request-local fact and unit. The
+exact artifact identities are recorded in the CotW contract.
+
+This closes player intent derivation from actual registered feature and buff
+ownership. Native command-constructor attachment, post-submission
+interruption, dispel, persistence, and selector publication remain gates.
+Brown-Fur is registered but unpublished.

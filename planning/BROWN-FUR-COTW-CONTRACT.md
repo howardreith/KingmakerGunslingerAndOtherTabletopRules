@@ -870,6 +870,51 @@ Exact passing evidence identity:
 This closes optional identity registration while deliberately retaining the
 mechanics qualification gate before selector publication.
 
+The real player-intent bridge then passed all seven guarded assertions on
+commit `37486e6bc100941f6c88fb28a0ad828a99b525c4`. The save-free fixture
+granted the three actual registered Brown-Fur features to a disposable unit.
+Native `AddFacts` supplied the Powerful Change selection ability and the
+off-by-default Share Transmutation activatable. With the real Wisdom marker
+and Share activatable enabled, the runtime decision observed Powerful Change,
+Wisdom, Share Transmutation, and Transmutation Supremacy together. Clearing
+the one-shot intent removed both transient markers and switched Share off
+while retaining all three features. A score marker without Powerful Change
+ownership failed closed as `powerful-feature-missing` without arming a cast.
+All facts and the disposable unit were removed, the Arcanist selector remained
+at zero Brown-Fur references, and no save interaction occurred.
+
+Exact passing evidence identity:
+
+- run `20260815T2030084869082Z-f2bbc2103df344479f67ea782e23eff4`;
+- evidence directory identity
+  `20260815T2030084582275Z-disposable-brown-fur-player-intent`;
+- local-runtime package SHA-256
+  `397DBF721A897B0D1C592C8CA3083B9147BCA9C7702801A8C7A4FEA53E19230E`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `6A5FA749BAEE4C09F2032B0F8D506F3655793BA80CE09C4CFB66EC1AEB228CEC`;
+- DLL MVID `94665938-eb3b-4e96-8a29-f69689be548e`;
+- structured player-intent artifact SHA-256
+  `5CD3BE57240C3531031C8E5951E540C1DAB229564BB04C6C50F1299A99871F3C`;
+- runtime-result SHA-256
+  `D933BC092E2CF02C715332E076B74B374036B8A6DFAE3857F911364B9CBA3699`;
+- runtime-evidence SHA-256
+  `CD1153231D3B616D301C8A66820F2C894DFCC408B6C9830D48D6F1960660EEE8`;
+- orchestration SHA-256
+  `62A1EF18311F0FB5343AF601EC415DA623E837F74648B4ADE60C8B5C89E353CA`;
+- deployment `20260815T2030083854394Z`, deployment-manifest SHA-256
+  `443CB60B73AFC6593126BDE021CEE449B51538C0A57B48D447CF99BB70F045DE`;
+- backup `20260815T2030039393280Z`, preserved feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`;
+  and
+- game build collection `2018.4.10.10503941`.
+
+This closes real registered feature ownership, native grant presentation at
+the fact layer, combined one-shot intent observation, owner-scoped cleanup,
+and orphan-marker rejection. It does not yet attach intent derivation to the
+native command constructor, prove post-submission interruption, dispel, or
+persistence, or authorize selector publication. Brown-Fur remains registered
+but unpublished.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
