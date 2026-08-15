@@ -41,6 +41,7 @@ $expected = @(
     'disposable-brown-fur-share-targeting',
     'disposable-brown-fur-transmutation-supremacy',
     'disposable-brown-fur-reservoir-accounting',
+    'disposable-brown-fur-player-intent',
     'disposable-brown-fur-cast-execution',
     'disposable-brown-fur-arcanist-slot',
     'disposable-brown-fur-native-cast',

@@ -653,6 +653,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableBrownFurPlayerIntent)
+                {
+                    Complete(BrownFurPlayerIntentScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableBrownFurCastExecution)
                 {
                     Complete(BrownFurCastExecutionScenario.Run(

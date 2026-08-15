@@ -802,6 +802,7 @@
     <Compile Include="RuntimeTesting\BrownFurShareTargetingScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurSupremacyScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurReservoirScenario.cs" />
+    <Compile Include="RuntimeTesting\BrownFurPlayerIntentScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurCastExecutionScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurArcanistSlotScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurNativeCastScenario.cs" />

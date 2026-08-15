@@ -197,6 +197,9 @@ namespace KingmakerGunslinger.DomainTests
             string reservoirScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurReservoirScenario.cs"));
+            string playerIntentScenario = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurPlayerIntentScenario.cs"));
             string castExecutionRuntime = File.ReadAllText(Path.Combine(
                 brownFur, "BrownFurCastExecutionRuntime.cs"));
             string castExecutionPatches = File.ReadAllText(Path.Combine(
@@ -227,6 +230,11 @@ namespace KingmakerGunslinger.DomainTests
                 "DisposableBrownFurTransmutationSupremacy" },
                 StringSplitOptions.None).Length,
                 "The disposable Supremacy constant must be declared and " +
+                "present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "DisposableBrownFurPlayerIntent" },
+                StringSplitOptions.None).Length,
+                "The disposable player intent constant must be declared and " +
                 "present exactly once in the in-process allowlist.");
             Assertions.Equal(3, scenarios.Split(new[] {
                 "DisposableBrownFurCastExecution" },
@@ -447,6 +455,20 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(reservoirScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded reservoir fixture lacks evidence token: " + token);
+            foreach (string token in new[] {
+                "disposable-brown-fur-player-intent",
+                "brown-fur-player-intent.json", "intent-stable-blueprints",
+                "intent-feature-grants", "intent-feature-ownership",
+                "intent-combined-request", "intent-clear-transients",
+                "intent-orphan-marker-rejected",
+                "intent-disposable-cleanup",
+                "BrownFurPlayerIntentRuntime.Observe",
+                "BrownFurPlayerIntentRuntime.Clear", "AddFact",
+                "share.IsOn = true", "RemoveFeatures" })
+                Assertions.True(playerIntentScenario.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded player intent fixture lacks evidence token: " +
+                    token);
             foreach (string token in new[] {
                 "disposable-brown-fur-cast-execution",
                 "brown-fur-cast-execution.json",
