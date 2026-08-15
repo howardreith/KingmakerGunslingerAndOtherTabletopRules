@@ -1167,6 +1167,62 @@ This closes the save/reload persistence gate. Brown-Fur remains registered
 but unpublished pending module-OFF owner behavior, dependency and progression
 profiles, boundary qualification, selector publication, and human acceptance.
 
+## Guarded module-OFF existing-owner qualification
+
+The exact immutable candidate was commit
+`887a8514955b4071763d38b12d7862fbf5d5c52f`. The two guarded Steam App ID
+640820 launches reused one exact built, packaged, deployed, installed, and
+loaded artifact:
+
+- prepare run `20260815T2257288607100Z-ce97ba78eba34a9fa8f5c67446c91708`,
+  evidence directory
+  `20260815T2257288404331Z-working-save-brown-fur-prepare`;
+- OFF verify/cleanup run
+  `20260815T2300193027211Z-c869c047f46c412ab58799f7c77c8312`,
+  evidence directory
+  `20260815T2300193006768Z-working-save-brown-fur-off-verify-cleanup`;
+- local-runtime package SHA-256
+  `4212DE4BDE58A6B69D19CC25DBCF2D0A09691ECEC96E108472E4C90275F5BA77`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `FFA60323431C18A96F8855FD558DADFA2D7179C68988A36B7177162E788C4554`;
+- DLL MVID `c0dbe5db-03df-4d84-9449-7192ee957eaa`;
+- prepare runtime-result SHA-256
+  `AD3FE79F1031A8D5BBA7C1080C3B18C141F5C2594887425ED6BDBEEF0FA41D7E`;
+- prepare runtime-evidence SHA-256
+  `F7972FC4AE1CDDFED99095D34FC0AA81AA782026028E9CA22E68BCB749A19984`;
+- prepare orchestration SHA-256
+  `CAA1432F2D1644020A5333B55CA9DFED919EBDBCAF981058D3368BD736585EED`;
+- OFF verify/cleanup runtime-result SHA-256
+  `7E1F09E54DAA5BB787C6E73F38A9796ACC35CCE330AD59FA417B0FE2D003565F`;
+- OFF verify/cleanup runtime-evidence SHA-256
+  `DE4701A85F405EFE37118983965DB9E9EC569B32C08B04B3473F376BBB749D40`;
+- OFF verify/cleanup orchestration SHA-256
+  `9978A802B3DADAE1FBE141A83107719EB2764873FE63DFCA3F12154F1AEA9D4C`;
+- deployment `20260815T2257280442259Z`, deployment-manifest SHA-256
+  `7F158DE3377A28C4C1C42052083AE4087E497C7A744E7622CB334D1570AEEE8A`;
+- backup `20260815T2257234255900Z`;
+- restored feature-settings SHA-256
+  `5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`;
+  and
+- game build collection `2018.4.10.10503941`.
+
+The prepare process ran with Brown-Fur ON. The fresh verify process ran with
+the immutable active Brown-Fur setting OFF and recorded compatible dependency
+availability, publication false, and zero selector references in CotW's
+Arcanist archetype array. The saved owner retained all three stable Brown-Fur
+features, the native selection and Share grants, one real Bull's Strength
+buff at `+6 Enhancement`, its five-hour duration, exact caster/target/spell/CL
+context, and one serialized target-owned adjustment record. Native cleanup
+removed the buff, features, grants, and record before one exact cleanup save.
+Each phase recorded one correlated working-save write, two stashed areas, no
+unexpected save API, zero execution scopes, and PASS. The working save is
+clean, and the original feature settings were restored exactly.
+
+This closes module-OFF existing-owner behavior while keeping new selection
+hidden. Brown-Fur remains registered but unpublished pending CotW-absent and
+normal-progression profiles, boundary qualification, selector publication,
+and human acceptance.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
@@ -1196,6 +1252,7 @@ implemented and qualified against the installed fingerprint above. With a
 compatible CotW contract they register all 19 stable Brown-Fur identities in a
 separate rollback-capable transaction, but do not yet publish the archetype.
 Native interruption, dispel/expiration, and persistence are qualified.
-Module-OFF owner behavior, dependency/progression profiles, boundary
-qualification, selector publication, and human acceptance remain pending;
+Module-OFF existing-owner behavior is also qualified. Dependency/progression
+profiles, boundary qualification, selector publication, and human acceptance
+remain pending;
 this document does not claim player-facing Brown-Fur compatibility.

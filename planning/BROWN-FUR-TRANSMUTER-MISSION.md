@@ -419,3 +419,21 @@ untyped stacking, or shared-blueprint mutation. Module-OFF existing-owner
 behavior, dependency profiles, normal progression, the 16-state boundary
 matrix, selector publication, and Brown-Fur human acceptance remain gates.
 Brown-Fur is registered but unpublished.
+
+Module-OFF existing-owner behavior then passed on immutable commit
+`887a8514955b4071763d38b12d7862fbf5d5c52f`. A guarded ON prepare process
+saved the real three-feature Brown-Fur owner, its native grants, and the
+persisted `+6 Enhancement` Bull's Strength state. A fresh process started
+with the Brown-Fur module setting OFF and proved that the active setting was
+false, the compatible CotW dependency remained available, publication was
+false, and CotW's Arcanist archetype array contained zero Brown-Fur selector
+references. The existing owner nevertheless retained every feature and
+grant, exact native spell context, duration, enhanced modifier, and one exact
+target-owned persistence record. Native cleanup removed the fixture and
+record, then saved `KMG_AUTOMATION_WORKING` clean. Both launches reused one
+exact installed artifact; settings were restored byte-for-byte afterward.
+
+This closes the module-OFF existing-owner gate without exposing Brown-Fur to
+new character creation. CotW-absent isolation, normal progression, the
+16-state boundary matrix, selector publication, and Brown-Fur human
+acceptance remain gates. Brown-Fur is registered but unpublished.

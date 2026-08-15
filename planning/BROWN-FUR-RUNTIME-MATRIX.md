@@ -29,6 +29,7 @@ publication-gate row is passing.
 | Native submitted-command interruption | PASS | `f39c2c0acff97d84b2e2dc7484782f870d90bd10` | Automatically armed command enters running state, interrupts before commitment, reservoir `4 -> 4`, slots `6 -> 6`, zero retained state |
 | Native dispel and expiration | PASS | `334e526fec23c27e6c099fc44b1f797d4e99dece` | Successful `RuleDispelMagic` and native `BuffCollection` deadline tick each remove the enhanced real spell buff, restore the stat, and leave zero scope state |
 | Save/reload persistence | PASS | `805481e5834c045f26dc520f3046da71c25f5b6f` | Fresh-process working-save cycle preserves the real feature grants, +6 Enhancement modifier, native spell context, duration, and one exact target-owned adjustment record; verify removes all fixture state and saves clean |
+| Module OFF existing owner | PASS | `887a8514955b4071763d38b12d7862fbf5d5c52f` | ON process saves an existing owner; fresh OFF process retains all three features, native grants, +6 Enhancement persistence, context, and record while the Arcanist selector has zero Brown-Fur references; cleanup saves clean |
 
 ## Publication gates
 
@@ -38,7 +39,7 @@ publication-gate row is passing.
 | Cancellation and post-submission interruption | PASS | Native submitted command returns `Interrupt`; no reservoir or slot spend; all one-shot and retained state clears |
 | Dispel and expiration | PASS | Enhanced effects preserve native rule-driven dispel, deadline expiration, descriptor, removal, stat restoration, and source behavior |
 | Save/reload persistence | PASS | Stable identities, the native buff, source context, duration, original descriptor, and enhanced value survive a guarded fresh-process working-save cycle; native removal retires the owner record |
-| Module OFF existing-owner behavior | PENDING | Selector hidden while existing owner mechanics remain functional |
+| Module OFF existing-owner behavior | PASS | Fresh OFF process proves immutable active setting false, compatible dependency, zero selector references, retained existing-owner features/grants and persisted enhanced spell behavior, then exact cleanup |
 | CotW absent isolation | PENDING | Package and six independent modules remain functional; Brown-Fur unavailable |
 | CotW normal progression | PENDING | Runtime-resolved replacements 3 and 9 |
 | CotW balance progression | PASS (focused contract) | Runtime-resolved replacements 4 and 10 |
@@ -77,3 +78,19 @@ observed exactly one correlated working-save write, two stashed areas, no
 unexpected save API, zero execution scopes, and PASS. The verify phase saved
 the working fixture clean. Exact hashes and deployment identities are in the
 CotW contract.
+
+The module-OFF owner pair on `887a851` used a single package and deployment
+for an ON prepare process followed by a fresh OFF verify/cleanup process.
+Prepare run `20260815T2257288607100Z-ce97ba78eba34a9fa8f5c67446c91708`
+saved the same real three-feature owner, native grants, and `+6 Enhancement`
+Bull's Strength record. Verify run
+`20260815T2300193027211Z-c869c047f46c412ab58799f7c77c8312`
+loaded with the immutable active Brown-Fur setting false, dependency status
+available, publication false, and zero Brown-Fur references in CotW's
+Arcanist archetype array. The existing owner still had all three features,
+its selection and Share grants, the exact native spell context, five-hour
+duration, enhanced modifier, and one target-owned record. Cleanup reduced the
+record count to zero and removed all fixture state. Each process made one
+exact working-save write with two stashed areas and no unexpected save API.
+Both finalized PASS; exact artifact and evidence identities are in the CotW
+contract.
