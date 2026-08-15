@@ -159,6 +159,9 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurModifierAdjustmentRuntime.cs"));
             string modifierPatch = File.ReadAllText(Path.Combine(brownFur,
                 "BrownFurModifierAdjustmentPatch.cs"));
+            string ilDisassembler = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurIlDisassembler.cs"));
             Assertions.Equal(3, scenarios.Split(new[] {
                 "DisposableBrownFurBonusCarriers" },
                 StringSplitOptions.None).Length,
@@ -261,10 +264,16 @@ namespace KingmakerGunslinger.DomainTests
                 "AddStatBonusAbilityValue", "ChangeUnitSize",
                 "cast-engine-duration-context",
                 "cast-engine-shared-spells-harmony", "GetPatchedMethods",
+                "cast-engine-shared-spells-bodies", "SharedSpellsBodies",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded cast engine contract lacks evidence token: " + token);
+            foreach (string token in new[] { "GetILAsByteArray",
+                "OpCodes", "OperandType", "ResolveMember", "ResolveString",
+                "InlineMethod", "InlineField", "InlineSwitch" })
+                Assertions.True(ilDisassembler.Contains(token),
+                    "CotW helper IL decoder lacks exact guard: " + token);
             foreach (string token in new[] {
                 "disposable-brown-fur-bonus-carriers",
                 "brown-fur-bonus-carriers.json", "AddStatBonus",

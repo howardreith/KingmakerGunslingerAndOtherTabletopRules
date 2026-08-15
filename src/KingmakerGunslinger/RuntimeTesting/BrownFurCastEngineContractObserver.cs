@@ -53,9 +53,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> AbilityBonusCarriers { get; set; }
             [JsonProperty("sharedSpells", Order = 13)]
             public List<string> SharedSpells { get; set; }
-            [JsonProperty("directSharedSpellsHarmony", Order = 14)]
+            [JsonProperty("sharedSpellsBodies", Order = 14)]
+            public List<string> SharedSpellsBodies { get; set; }
+            [JsonProperty("directSharedSpellsHarmony", Order = 15)]
             public List<string> SharedSpellsHarmony { get; set; }
-            [JsonProperty("relevantCotwHarmony", Order = 15)]
+            [JsonProperty("relevantCotwHarmony", Order = 16)]
             public List<string> RelevantCotwHarmony { get; set; }
         }
 
@@ -96,6 +98,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Kingmaker.Designers.Mechanics.Buffs.ChangeUnitSize"
                 }),
                 SharedSpells = Describe(shared),
+                SharedSpellsBodies = DescribeSharedSpellsBodies(contract),
                 SharedSpellsHarmony = new List<string>(),
                 RelevantCotwHarmony = new List<string>()
             };
@@ -197,6 +200,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.RelevantCotwHarmony.Count > 0,
                 "live registry proves whether SharedSpells owns patches and records " +
                 "target, role, owner, priority, before, and after for adjacent CotW patches");
+            Add(assertions, "cast-engine-shared-spells-bodies",
+                "both exact helper bodies decoded",
+                "instructions=" + evidence.SharedSpellsBodies.Count,
+                contract != null && contract.SharedSpells != null &&
+                    evidence.SharedSpellsBodies.Count > 2 &&
+                    Has(evidence.SharedSpellsBodies, "canShareSpell") &&
+                    Has(evidence.SharedSpellsBodies,
+                        "isValidShareSpellTarget"),
+                "installed CotW IL with metadata tokens resolved in-process");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
                 "observer does not select, load, mutate, or save a character");
@@ -355,6 +367,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Expected = expected, Observed = observed,
                 Status = pass ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 Evidence = evidence });
+        }
+
+        private static List<string> DescribeSharedSpellsBodies(
+            CotwArcanistContract contract)
+        {
+            var result = new List<string>();
+            if (contract == null || contract.SharedSpells == null) return result;
+            foreach (MethodInfo method in new[] {
+                contract.SharedSpells.CanShareSpell,
+                contract.SharedSpells.IsValidShareSpellTarget })
+            {
+                result.Add("method " + Signature(method));
+                result.AddRange(BrownFurIlDisassembler.Describe(method));
+            }
+            return result;
         }
 
         private static string Hash(string path)
