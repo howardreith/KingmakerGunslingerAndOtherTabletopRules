@@ -118,6 +118,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("expirationTimeElapsed", Order = 17)] public bool ExpirationTimeElapsed { get; set; }
             [JsonProperty("expirationBuffRemoved", Order = 18)] public bool ExpirationBuffRemoved { get; set; }
             [JsonProperty("expirationValueRestored", Order = 19)] public bool ExpirationValueRestored { get; set; }
+            [JsonProperty("dispelCheckRoll", Order = 20)] public int DispelCheckRoll { get; set; }
+            [JsonProperty("dispelCasterLevel", Order = 21)] public int DispelCasterLevel { get; set; }
+            [JsonProperty("dispelDc", Order = 22)] public int DispelDc { get; set; }
+            [JsonProperty("dispelBonus", Order = 23)] public int DispelBonus { get; set; }
         }
 
         private static readonly Case[] Cases = {
@@ -626,10 +630,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var dispelRule = new RuleDispelMagic(caster, target,
                     dispelBuff, RuleDispelMagic.CheckType.CasterLevel,
                     StatType.SkillKnowledgeArcana);
-                SetPrivateInt(dispelRule, "<CheckRoll>k__BackingField", 20);
-                SetPrivateInt(dispelRule, "<CasterLevel>k__BackingField", 20);
-                SetPrivateInt(dispelRule, "<DC>k__BackingField", 1);
+                dispelRule.Bonus = 1000;
                 Rulebook.Trigger(dispelRule);
+                result.DispelCheckRoll = dispelRule.CheckRoll;
+                result.DispelCasterLevel = dispelRule.CasterLevel;
+                result.DispelDc = dispelRule.DC;
+                result.DispelBonus = dispelRule.Bonus;
                 result.DispelRuleSuccess = dispelRule.Success;
                 result.DispelBuffRemoved = ExactBuffCount(target,
                     blueprint) == 0;
@@ -721,17 +727,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(value.Blueprint, blueprint));
         }
 
-        private static void SetPrivateInt(object owner, string fieldName,
-            int value)
-        {
-            FieldInfo field = owner == null ? null : owner.GetType().GetField(
-                fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-            if (field == null || field.FieldType != typeof(int))
-                throw new MissingFieldException(owner == null ? string.Empty :
-                    owner.GetType().FullName, fieldName);
-            field.SetValue(owner, value);
-        }
-
         private static void SetPrivateNullableTimeSpan(object owner,
             string fieldName, TimeSpan value)
         {
@@ -766,7 +761,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.CapstoneModifierValue + "/" + value.CapstoneDescriptor +
                 ";dispel=" + value.DispelRuleSuccess + "/" +
                 value.DispelBuffRemoved + "/" +
-                value.DispelValueRestored + ";expiration=" +
+                value.DispelValueRestored + "/roll=" +
+                value.DispelCheckRoll + "/level=" +
+                value.DispelCasterLevel + "/dc=" + value.DispelDc +
+                "/bonus=" + value.DispelBonus + ";expiration=" +
                 value.ExpirationTimeElapsed + "/" +
                 value.ExpirationBuffRemoved + "/" +
                 value.ExpirationValueRestored +
