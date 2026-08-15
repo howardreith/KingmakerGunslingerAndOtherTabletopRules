@@ -311,6 +311,7 @@
     <Compile Include="BrownFur\BrownFurSpellInventoryRecord.cs" />
     <Compile Include="BrownFur\BrownFurTransmutationInventory.cs" />
     <Compile Include="BrownFur\BrownFurAbilityScore.cs" />
+    <Compile Include="BrownFur\BrownFurIdentityCatalog.cs" />
     <Compile Include="BrownFur\BrownFurCastRequest.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetPolicy.cs" />
     <Compile Include="BrownFur\BrownFurCastDecision.cs" />

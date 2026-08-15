@@ -514,7 +514,7 @@ register in every module configuration so saved spell and buff references remain
 resolvable when publication is disabled.
 
 Expanded Summoning, the Elven Branched Spear, and the Eastern Weapons named
-catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility freeze the append-only ledger at 1518 stable IDs: 1517 active and one reserved. All 1184
+catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility, plus the Brown-Fur identity reservation, freeze the append-only ledger at 1537 stable IDs: 1517 active and 20 reserved. Nineteen reserved identities belong to the isolated Brown-Fur extension and do not change the unconditional core registration count. All 1184
 Expanded Summoning feature identities, all twenty-nine spear identities, and
 all forty-six Eastern Weapons identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement

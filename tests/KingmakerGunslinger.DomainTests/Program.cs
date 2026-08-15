@@ -34,6 +34,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.contract-ambiguous-progression", BrownFurContractTests.AmbiguousProgressionBlocksContract),
             Case("brown-fur.contract-idempotent", BrownFurContractTests.ContractPolicyIsIdempotent),
             Case("brown-fur.runtime-resolver-contract", BrownFurContractTests.RuntimeResolverUsesExactOptionalContract),
+            Case("brown-fur.identities-permanent", BrownFurIdentityTests.PermanentLedgerIsExact),
+            Case("brown-fur.identities-manifest", BrownFurIdentityTests.ManifestReservationsMatchLedger),
             Case("brown-fur.cast-powerful-six-stats", BrownFurCastTests.PowerfulChangeSupportsEachAbilityScore),
             Case("brown-fur.cast-powerful-invalid-stat", BrownFurCastTests.PowerfulChangeRejectsInvalidStatWithoutCost),
             Case("brown-fur.cast-powerful-arcanist-slot", BrownFurCastTests.PowerfulChangeRequiresArcanistSpellSlot),
