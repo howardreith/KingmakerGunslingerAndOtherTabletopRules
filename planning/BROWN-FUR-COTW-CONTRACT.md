@@ -322,6 +322,39 @@ independent bounded safety net. This evidence closes the event-order
 investigation; actual resource-backed transaction wiring and mechanical
 qualification remain pending, so Brown-Fur stays unpublished.
 
+## Exact reservoir accounting adapter
+
+The real CotW reservoir fixture passed all seven guarded assertions on commit
+`1c1fb1e3d4bf45d22437ab0547128c10f73edcf5`. The exact local-runtime package
+SHA-256 was
+`D03C4358944271EFA83E1C56D7AA291C5992FC8B448A12587BA2B3538994CECD`;
+the built, deployed, and loaded DLL SHA-256 was
+`D444505407AFF46FB2BAAFECBF6BAAEADCC4FF98477AA880C333F0042243B953`;
+the DLL MVID was `be9b3975-347f-464c-91fc-a0fc9dce65b0`; the structured
+reservoir artifact SHA-256 was
+`ED49E073E31CFE83651B621F5CFBABF6CDC87842DD04E18830468934AF713110`;
+and the runtime-result SHA-256 was
+`6127CAD544D1B9DFA6654CF30C35D521CBC24D53D635310CF925834BB7EDEF2A`.
+The guarded Steam App ID 640820 run used deployment identity
+`20260815T1707489383628Z`, backup identity `20260815T1707446061304Z`, and
+preserved the feature-module settings whose SHA-256 was
+`5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`.
+
+The disposable owner began without the resolved CotW resource
+`3b775ee982444493b3de8f7bc31bd872`. Native resource registration initialized
+three points. One call to the exact adapter for the combined cost changed the
+amount from `3` to `1`; exact restoration returned it to `3`. Reducing the
+balance to one caused a two-point request to reject with
+`reservoir-insufficient` and leave the balance at one. Removing ownership
+caused a one-point request to reject with `reservoir-not-owned`. The fixture
+removed both the resource and disposable unit in its bounded cleanup.
+
+This qualifies exact native debit, pre-debit insufficiency and ownership
+rejection, restoration, and cleanup against the installed CotW resource. It
+does not yet qualify attachment of that adapter to a genuine spell cast,
+native spell-slot ordering, cancellation or interruption at the live boundary,
+or a real Brown-Fur owner. Those remain player-publication gates.
+
 ## Scoped Transmutation Supremacy context
 
 The context-local Transmutation Supremacy fixture passed all five guarded

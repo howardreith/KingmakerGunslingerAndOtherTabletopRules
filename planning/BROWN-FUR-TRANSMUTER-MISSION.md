@@ -158,6 +158,17 @@ identities and the exact order are recorded in the CotW contract. Actual
 resource-backed transaction wiring is now the next implementation checkpoint;
 Brown-Fur remains reserved and unpublished.
 
+The real CotW reservoir accounting fixture passed all seven guarded assertions
+on commit `1c1fb1e3d4bf45d22437ab0547128c10f73edcf5`. A disposable owner acquired
+the structurally resolved reservoir with three points; the combined two-point
+cost changed it exactly from `3` to `1` once, exact restoration returned it to
+`3`, a one-point balance rejected a two-point request without mutation, and a
+removed resource rejected with `reservoir-not-owned`. The resource and unit
+were removed on cleanup. This qualifies the narrow native resource adapter,
+not its pending attachment to the live command/rule/process cast lifecycle.
+Cancellation, interruption, native spell-slot interaction, and real
+Brown-Fur-owner integration therefore remain publication gates.
+
 The first scoped Transmutation Supremacy fixture passed all five guarded
 assertions on commit `49d785c43b2c389d63e3a5abebd49c9288191943`. One exact
 execution scope added native `Extend` to one installed Personal Transmutation
