@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using KingmakerGunslinger.BrownFur;
 
 namespace KingmakerGunslinger.DomainTests
@@ -324,6 +325,84 @@ namespace KingmakerGunslinger.DomainTests
             tracker.Clear();
             Assertions.Equal(0, tracker.ActiveTransactionCount,
                 "Load or combat transition cleanup must clear all retained state.");
+        }
+
+        internal static void StaticBonusAdapterPlanIsExact()
+        {
+            BrownFurBonusAdapterPlan plan = BrownFurBonusAdapterPlanPolicy.Create(
+                new[] { "path=Kingmaker.UnitLogic.FactLogic.AddStatBonus{Descriptor=Enhancement,ScaleByBasicAttackBonus=False,Stat=Strength,Value=4}" },
+                new[] { "path=b175001b42b1a02479881b72fe132116/BullsStrengthBuff" });
+            Assertions.True(plan.Status ==
+                BrownFurBonusAdapterPlanStatus.Supported &&
+                plan.Supports(BrownFurAbilityScore.Strength) &&
+                !plan.Supports(BrownFurAbilityScore.Dexterity) &&
+                plan.AppliedBuffGuids.SequenceEqual(new[] {
+                    "b175001b42b1a02479881b72fe132116" }) &&
+                plan.CarrierFamilies.SequenceEqual(new[] { "AddStatBonus" }),
+                "A static descriptor-bearing bonus must produce one exact stat and buff plan.");
+        }
+
+        internal static void PolymorphBonusAdapterPlanIsExact()
+        {
+            BrownFurBonusAdapterPlan plan = BrownFurBonusAdapterPlanPolicy.Create(
+                new[] { "path=Kingmaker.UnitLogic.Buffs.Polymorph{ConstitutionBonus=2,DexterityBonus=4,Size=Large,StrengthBonus=6}" },
+                new[] { "path=00d8fbe9cf61dc24298be8d95500c84b/BeastShapeIBuff" });
+            Assertions.True(plan.Status ==
+                BrownFurBonusAdapterPlanStatus.Supported &&
+                plan.AbilityScores.SequenceEqual(new[] {
+                    BrownFurAbilityScore.Strength,
+                    BrownFurAbilityScore.Dexterity,
+                    BrownFurAbilityScore.Constitution }) &&
+                plan.Supports(BrownFurAbilityScore.Dexterity),
+                "A multi-stat polymorph must expose every and only positive selectable stat.");
+        }
+
+        internal static void SizeBonusAdapterPlanIsExact()
+        {
+            BrownFurBonusAdapterPlan plan = BrownFurBonusAdapterPlanPolicy.Create(
+                new[] {
+                    "path=Kingmaker.Designers.Mechanics.Buffs.ChangeUnitSize{Size=Fine,SizeDelta=1}",
+                    "path=Kingmaker.UnitLogic.Buffs.Components.AddGenericStatBonus{Descriptor=Size,Stat=Strength,Value=2}"
+                },
+                new[] { "path=4f139d125bb602f48bfaec3d3e1937cb/EnlargePersonBuff" });
+            Assertions.True(plan.Status ==
+                BrownFurBonusAdapterPlanStatus.Supported &&
+                plan.AbilityScores.SequenceEqual(new[] {
+                    BrownFurAbilityScore.Strength }) &&
+                plan.CarrierFamilies.SequenceEqual(new[] {
+                    "AddGenericStatBonus", "ChangeUnitSize" }),
+                "Size change must be auxiliary while the original Size descriptor stat modifier is empowered.");
+        }
+
+        internal static void BonusAdapterPlanFailsClosed()
+        {
+            BrownFurBonusAdapterPlan plan = BrownFurBonusAdapterPlanPolicy.Create(
+                new string[0], new string[0]);
+            Assertions.True(plan.Status ==
+                BrownFurBonusAdapterPlanStatus.Ineligible &&
+                plan.Failure == "no-positive-ability-bonus-carrier",
+                "A spell without a positive carrier must be intentionally ineligible.");
+            plan = BrownFurBonusAdapterPlanPolicy.Create(new[] {
+                "path=Future.UnknownCarrier{Stat=Strength,Value=4}" },
+                new[] { "path=b175001b42b1a02479881b72fe132116/Buff" });
+            Assertions.True(plan.Status == BrownFurBonusAdapterPlanStatus.Blocked &&
+                plan.Failure == "bonus-carrier-unsupported",
+                "An unknown future carrier must block instead of guessing.");
+            plan = BrownFurBonusAdapterPlanPolicy.Create(new[] {
+                "malformed" }, new[] {
+                "path=b175001b42b1a02479881b72fe132116/Buff" });
+            Assertions.Equal("bonus-carrier-malformed", plan.Failure,
+                "Malformed inventory carrier evidence must block.");
+            plan = BrownFurBonusAdapterPlanPolicy.Create(new[] {
+                "path=Kingmaker.UnitLogic.Buffs.Polymorph{StrengthBonus=not-a-number}" },
+                new[] { "path=b175001b42b1a02479881b72fe132116/Buff" });
+            Assertions.Equal("bonus-carrier-fields-invalid", plan.Failure,
+                "Malformed recognized-carrier fields must block.");
+            plan = BrownFurBonusAdapterPlanPolicy.Create(new[] {
+                "path=Kingmaker.UnitLogic.FactLogic.AddStatBonus{Stat=Strength,Value=4}" },
+                new[] { "path=NOT-A-GUID/Buff" });
+            Assertions.Equal("bonus-applied-buff-malformed", plan.Failure,
+                "Malformed source-buff identity must block before casting.");
         }
 
         private static BrownFurCastRequest Valid()

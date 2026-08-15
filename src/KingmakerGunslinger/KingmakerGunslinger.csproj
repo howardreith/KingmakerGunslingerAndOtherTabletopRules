@@ -324,6 +324,7 @@
     <Compile Include="BrownFur\BrownFurCastTransaction.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentPolicy.cs" />
     <Compile Include="BrownFur\BrownFurModifierAdjustmentTracker.cs" />
+    <Compile Include="BrownFur\BrownFurBonusAdapterPlan.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />
