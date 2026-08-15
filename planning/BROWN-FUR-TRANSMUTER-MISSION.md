@@ -454,3 +454,19 @@ This closes CotW-absent failure isolation. Normal progression, the 16-state
 boundary matrix, selector publication, and Brown-Fur human acceptance remain
 gates. Brown-Fur is registered only when compatible CotW is present and is
 still unpublished.
+
+CotW normal progression then passed on immutable commit
+`849f116e2a9b88f6e76963d4de43347b53690e21`. The compatibility transaction
+staged only the CotW `balance_fixes=false` setting and ran an all-ON module
+observation plus the structural Brown-Fur contract observer. The live resolved
+Arcanist graph—not the JSON alone—contained exploit opportunities at
+`1,3,5,7,9,11,13,15,17,19`, classified as Normal, and deterministically
+selected levels 3 and 9 for replacement. CotW binary identity, required class,
+progression, spellbooks, reservoir, exploit selection, Magical Supremacy,
+Shared Spells signatures, Transmutation inventory, 19 stable Brown-Fur
+identities, and zero selector publication all passed. The transaction restored
+the original CotW settings bytes exactly.
+
+This closes both known CotW progression shapes. The 16-state boundary matrix,
+selector publication, and Brown-Fur human acceptance remain gates. Brown-Fur
+is registered but unpublished.

@@ -31,6 +31,7 @@ publication-gate row is passing.
 | Save/reload persistence | PASS | `805481e5834c045f26dc520f3046da71c25f5b6f` | Fresh-process working-save cycle preserves the real feature grants, +6 Enhancement modifier, native spell context, duration, and one exact target-owned adjustment record; verify removes all fixture state and saves clean |
 | Module OFF existing owner | PASS | `887a8514955b4071763d38b12d7862fbf5d5c52f` | ON process saves an existing owner; fresh OFF process retains all three features, native grants, +6 Enhancement persistence, context, and record while the Arcanist selector has zero Brown-Fur references; cleanup saves clean |
 | CotW absent isolation | PASS | `4c8d9cb05c324127561b3dad65b2c66f1fb92dff` | KMG-only profile keeps all seven saved intents ON, publishes all six independent modules, reports Brown-Fur Unavailable/not published, registers no Brown-Fur identity, and restores the complete original Mods tree |
+| CotW normal progression | PASS | `849f116e2a9b88f6e76963d4de43347b53690e21` | Guarded `balance_fixes=false` profile resolves actual exploit-bearing levels `1,3,5,7,9,11,13,15,17,19`, replaces 3/9, registers 19 identities, keeps selector at zero, and restores CotW settings byte-for-byte |
 
 ## Publication gates
 
@@ -42,7 +43,7 @@ publication-gate row is passing.
 | Save/reload persistence | PASS | Stable identities, the native buff, source context, duration, original descriptor, and enhanced value survive a guarded fresh-process working-save cycle; native removal retires the owner record |
 | Module OFF existing-owner behavior | PASS | Fresh OFF process proves immutable active setting false, compatible dependency, zero selector references, retained existing-owner features/grants and persisted enhanced spell behavior, then exact cleanup |
 | CotW absent isolation | PASS | Three fresh KMG-only launches prove core readiness, exact six-module publication, saved Brown-Fur intent ON, Unavailable/not-published status, no CotW assembly/contract/identity/reconciliation, and exact profile restoration |
-| CotW normal progression | PENDING | Runtime-resolved replacements 3 and 9 |
+| CotW normal progression | PASS | Runtime graph is Normal with resolved exploit levels `1,3,5,7,9,11,13,15,17,19`, replacements 3/9, setting agreement, compatible contract, and exact settings restoration |
 | CotW balance progression | PASS (focused contract) | Runtime-resolved replacements 4 and 10 |
 | Seven-module boundary matrix | PENDING | All 16 formula-derived boundary states on one immutable candidate |
 | Human presentation acceptance | BLOCKED BY POLICY | Required before final exhaustive matrix |
@@ -106,3 +107,15 @@ Brown-Fur intent still ON, and effective status `Unavailable  Call of the
 Wild not detected` / not published. The complete original Mods tree and
 feature settings were restored exactly. Exact artifact, evidence, and
 transaction hashes are in the CotW contract.
+
+The normal CotW profile on `849f116` ran all-ON module observation and the
+structural Brown-Fur contract observer in transaction
+`compat-20260815T232922Z-0755d532cc1c`. The staged setting was
+`balance_fixes=false`, but qualification came from the resolved live graph:
+exploit-bearing levels `1,3,5,7,9,11,13,15,17,19`, shape Normal, and
+replacement opportunities 3/9. The same process proved all required CotW
+identities and Shared Spells signatures, 86 Transmutation roots, 19 stable
+Brown-Fur identities, effective Available/not-published state, one successful
+reconciliation, and zero selector references. The original CotW settings SHA
+`24CC3F...F6E8` was restored by exact byte comparison. Exact artifact,
+evidence, and transaction hashes are in the CotW contract.

@@ -1269,6 +1269,54 @@ dependency. Brown-Fur remains registered but unpublished when CotW is present
 and compatible; normal-progression, boundary, selector-publication, and human
 acceptance gates remain.
 
+## Guarded CotW normal-progression qualification
+
+The alternate normal-progression profile used immutable commit
+`849f116e2a9b88f6e76963d4de43347b53690e21` and compatibility transaction
+`compat-20260815T232922Z-0755d532cc1c`. One exact artifact was built,
+packaged, deployed, installed, loaded, and reused across both launches:
+
+- package SHA-256
+  `76CDCD9D23E590F26198921C3075F449A6B64F111A73F42D9F97D5C302984FA8`;
+- built, deployed, installed, and loaded DLL SHA-256
+  `9EC1AC135261FCA4AB030E24FE2CB2A40669EE554FC041D559B5F1280B52F34E`;
+- DLL MVID `e2e67464-2723-49e4-8892-28e0cc49645f`;
+- deployment `20260815T2328575607383Z`, manifest SHA-256
+  `E8F62E96A09FA817679032E8106E1757ED3324A560C7C4FF2A6296CF6F1B0400`;
+- deployment backup `20260815T2328533605609Z`;
+- compatibility transaction-manifest SHA-256
+  `69083DC7B9535E1F07F9373CF4873B5D18D3771DE28FC54F6CB04C5EF6DE76F3`;
+- CotW settings-profile evidence SHA-256
+  `2CAA61C62D70781462D09459DE1EDEAEA8BD0582037D3C4F2DCAE857C242E5A4`;
+- original and restored CotW settings SHA-256
+  `24CC3F80269992A53EBBFD1F5986E5AAB056841D6B2F43D8E22E764CDB73F6E8`;
+- staged normal-mode CotW settings SHA-256
+  `E99445DA6D9E0A73F0D9F3770D6ED5974E0167F0AB8441E969C5EE46E4184885`;
+  and
+- exact CotW settings byte restoration `true`.
+
+The finalized PASS runs were:
+
+| Scenario | Run | Result / runtime-evidence / orchestration SHA-256 |
+| --- | --- | --- |
+| `observe-feature-module-settings` | `20260815T2329464797439Z-63a67441350b4a06af635472bfb80038` | `7C6F2CE3479EE87FF80D73DD6826D78A0BA29B57556030717A054FA57E6349B2` / `8D8967692DC2DE96EB3D8748E991A7C85412063DEB79115BA6F62E24D075F536` / `1C004E302691467EF14944E7F1EBA93E1B4F76980AA1D17E5A22DC3227BBAB34` |
+| `observe-brown-fur-cotw-contract` | `20260815T2331474020556Z-d6976bc3b89d4bba8bb8ece8e59e8e49` | `D7826ED2E46461B5E46026F4DA4E1565A9D5FBB6E9725D3645285F0F0ABBD981` / `C5B09695931B07A3C60AF5B94ACF345DEE0787C6A6CDAEF6E1E36FDDA069A39D` / `B11796AD4B7FD085B3A245EA1D1319FCE8F3C5EB6737F75EA59A2329BCAB4871` |
+
+The staged setting recorded `balance_fixes=false`, and the independent live
+graph resolution agreed: shape Normal, exploit-bearing levels
+`1,3,5,7,9,11,13,15,17,19`, Powerful Change replacement 3, and Share
+Transmutation replacement 9. All required class, progression, spellbook,
+reservoir, exploit-selection, Magical Supremacy, Shared Spells, binary,
+settings, and inventory checks passed. The observer registered exactly 19
+stable Brown-Fur identities, reported Available/not published, recorded one
+successful reconciliation, and found zero Brown-Fur selector references. The
+all-ON module observer also passed. Finally, the complete original Mods tree
+and every original CotW settings byte were restored.
+
+This closes the known normal and balance-fixes progression profiles. Brown-Fur
+remains registered but unpublished pending boundary qualification,
+selector publication, and human acceptance.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings
@@ -1298,7 +1346,7 @@ implemented and qualified against the installed fingerprint above. With a
 compatible CotW contract they register all 19 stable Brown-Fur identities in a
 separate rollback-capable transaction, but do not yet publish the archetype.
 Native interruption, dispel/expiration, and persistence are qualified.
-Module-OFF existing-owner behavior and CotW-absent isolation are also
-qualified. The normal-progression profile, boundary
-qualification, selector publication, and human acceptance remain pending;
+Module-OFF existing-owner behavior, CotW-absent isolation, and both known
+progression profiles are also qualified. Boundary qualification, selector
+publication, and human acceptance remain pending;
 this document does not claim player-facing Brown-Fur compatibility.
