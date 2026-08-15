@@ -604,6 +604,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveBrownFurCotwContract)
+                {
+                    Complete(BrownFurCotwContractObserver.Run(_context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveShieldOtherInventory)
                 {
                     Complete(RunShieldOtherInventoryObservation());

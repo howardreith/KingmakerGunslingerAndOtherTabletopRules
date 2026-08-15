@@ -759,6 +759,7 @@
     <Compile Include="RuntimeTesting\EasternWeaponCombatScenario.cs" />
     <Compile Include="RuntimeTesting\RuntimeBuildIdentity.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
+    <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
     <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogSelectionObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />

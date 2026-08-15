@@ -1,13 +1,13 @@
 Project: Kingmaker Gunslinger
-Release: 0.0.80-eastern-weapons
+Release: 0.0.81-brown-fur-transmuter
 Target game: Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b
 Target framework: .NET Framework 4.7
 C# language version: 7.3
 Platform/configuration: AnyCPU / Release
 Warnings as errors: true
 Deterministic compiler mode: true
-Feature modules: Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning, Elven Branched Spears, Eastern Weapons
-Feature settings schema: 5
+Feature modules: Gunslinger, Acadamae Graduate, Shield Other, Expanded Summoning, Elven Branched Spears, Eastern Weapons, Brown-Fur Transmuter
+Feature settings schema: 6
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
@@ -15,15 +15,15 @@ Blueprint ledger: 1517 active; 1 reserved; 1518 total
 Runtime registration count: 1517 in all 64 feature-module states
 Eastern Weapons catalog: 3 categories; 12 generic items; 18 named items; 30 total
 Eastern Weapons assets: 3 original equipped models; 6 original production icons
-Dependency-free domain tests: PASS 1048/1048
+Dependency-free domain tests: development checkpoint; see current test output
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
-Native runtime: 667 visible generated roots plus 26 creature-named native/preservation wrappers, combat, Eagle scale, enabled persistence, 16-state module matrix, and all required compatibility profiles qualified
-Package: KingmakerGunslinger-0.0.80-eastern-weapons.zip
-Artifact source: 5e99d4d7555d9d96efd7bd79714161003e314013
-DLL SHA-256: F4E3F926215C0C3DA20F1D41513D8FCD1294281BEFE50F20D1BBFEFB0619145B
-DLL MVID: c0a7d9d2-5c94-45f3-9f6f-eefd7ac3dae3
-Package SHA-256: 03C38DD98AF2B007DA8721B34D5439AE05CB37CBA5662B98F77BF2481DD963CB
+Native runtime: Brown-Fur contract observer and seven-module matrix qualification pending
+Package: KingmakerGunslinger-0.0.81-brown-fur-transmuter.zip
+Artifact source: pending immutable pre-human candidate
+DLL SHA-256: pending immutable pre-human candidate
+DLL MVID: pending immutable pre-human candidate
+Package SHA-256: pending immutable pre-human candidate
 Eastern Weapons bundle SHA-256: F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43
 Source archive SHA-256: not produced by the standalone package workflow
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.

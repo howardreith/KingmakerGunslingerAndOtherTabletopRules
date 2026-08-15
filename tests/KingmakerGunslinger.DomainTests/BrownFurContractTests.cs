@@ -134,6 +134,14 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurOptionalExtensionCoordinator.cs"));
             string main = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Main.cs"));
+            string observer = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurCotwContractObserver.cs"));
+            string scenarios = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestScenarioCatalog.cs"));
+            string runtimeCommon = File.ReadAllText(Path.Combine(root,
+                "scripts", "RuntimeAutomation.Common.ps1"));
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
                 "memorization_spellbook", "arcane_reservoir_resource",
@@ -164,6 +172,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(main.Contains(
                 "BrownFurOptionalExtensionCoordinator.Install(context)"),
                 "Package bootstrap does not invoke isolated Brown-Fur coordination.");
+            foreach (string token in new[] {
+                "observe-brown-fur-cotw-contract", "cotw-contract-resolution",
+                "cotw-progression-shape", "cotw-required-identities",
+                "cotw-shared-spells-signatures",
+                "cotw-transmutation-inventory-presence",
+                "cotw-fingerprint-binary", "save-free-observer" })
+                Assertions.True(observer.Contains(token) || scenarios.Contains(token) ||
+                    runtimeCommon.Contains(token),
+                    "Guarded CotW observer lacks structured evidence token: " + token);
             Assertions.False(Directory.GetFiles(brownFur, "*.cs")
                 .Select(File.ReadAllText).Any(value =>
                     value.Contains("using CallOfTheWild")),

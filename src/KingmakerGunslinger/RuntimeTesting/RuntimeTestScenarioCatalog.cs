@@ -8,6 +8,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string ObserveFeatureModuleSettings =
             "observe-feature-module-settings";
+        internal const string ObserveBrownFurCotwContract =
+            "observe-brown-fur-cotw-contract";
         internal const string ObserveShieldOtherInventory =
             "observe-shield-other-inventory";
         internal const string ObserveExpandedSummoningInventory =
@@ -243,6 +245,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ModLoadSmoke,
                 ObserveFeatureModuleSettings,
+                ObserveBrownFurCotwContract,
                 ObserveShieldOtherInventory,
                 ObserveExpandedSummoningInventory,
                 DisposableExpandedSummoning,

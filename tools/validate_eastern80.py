@@ -11,6 +11,8 @@ import validate_spear79
 VERSION = "0.0.80"
 INFORMATIONAL_VERSION = "0.0.80-eastern-weapons"
 PACKAGE = "KingmakerGunslinger-0.0.80-local-runtime.zip"
+MILESTONE_LABEL = "EASTERN-WEAPONS"
+PACKAGE_SUFFIX = "eastern-weapons"
 
 EXPECTED_GENERIC_IDENTITIES = {
     "KMG.EasternWeapons.Wakizashi.WeaponType":
@@ -94,8 +96,8 @@ def validate(root: Path) -> None:
     validate_spear79.VERSION = VERSION
     validate_spear79.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     validate_spear79.PACKAGE = PACKAGE
-    validate_spear79.MILESTONE_LABEL = "EASTERN-WEAPONS"
-    validate_spear79.PACKAGE_SUFFIX = "eastern-weapons"
+    validate_spear79.MILESTONE_LABEL = MILESTONE_LABEL
+    validate_spear79.PACKAGE_SUFFIX = PACKAGE_SUFFIX
     validate_spear79.validate(root)
 
     required = (

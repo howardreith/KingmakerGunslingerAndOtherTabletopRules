@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.81-brown-fur-transmuter (development)
+
+- Adds the independent, default-ON `brown-fur-transmuter` feature-module
+  setting while keeping Call of the Wild optional for the overall package.
+- Adds fail-closed reflection-only CotW Arcanist, progression, reservoir,
+  spellbook, Magical Supremacy, and Shared Spells contract resolution.
+- Supports the known CotW normal and balance-fixes exploit schedules through a
+  deterministic policy, rejecting unknown or ambiguous schedules.
+- Adds a guarded, save-free CotW contract observer. Brown-Fur blueprint and
+  mechanical publication remain under development and are not claimed complete.
+
 ## Unreleased - Eastern Weapons
 
 - Repairs the first human-playtest candidate with seven diagonal inventory

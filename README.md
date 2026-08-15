@@ -1,9 +1,12 @@
 # Kingmaker Gunslinger
 
-The current `codex/eastern-weapons` release candidate adds Eastern Weapons as a
-sixth independent, default-enabled feature module for Pathfinder: Kingmaker
-2.1.7b while retaining the complete Gunslinger, Acadamae Graduate, Shield
-Other, Expanded Summoning, and Elven Branched Spears packages.
+The current `codex/brown-fur-transmuter-cotw-extension` development candidate
+adds Brown-Fur Transmuter as a seventh independent, default-enabled feature
+module for Pathfinder: Kingmaker 2.1.7b while retaining Gunslinger, Acadamae
+Graduate, Shield Other, Expanded Summoning, Elven Branched Spears, and Eastern
+Weapons. Brown-Fur alone requires a compatible Call of the Wild installation;
+the combined package and every unrelated module continue loading without CotW.
+Brown-Fur mechanics and human acceptance are still in progress.
 
 Eastern Weapons adds one stable category each for Wakizashi, Katana, and
 Nodachi. Each family has mundane, masterwork, cold iron, and +1 generic forms
@@ -112,7 +115,7 @@ The Cord is a belt-slot wondrous item costing 15,000 gp and weighing one pound. 
 Kingmaker 2.1.7b has no usable native nonlethal damage path. The adaptation is untyped self-damage capped so the Cord cannot reduce its wearer below 1 HP. The substitution still occurs at the floor. Exactly one Cord is stocked by the established capital blacksmith through `SmithVendorTable` after the capital is available.
 
 The sections below retain historical subsystem detail; where version-specific
-wording conflicts, the 0.0.80 text above and its implementation report are
+wording conflicts, the 0.0.81 text above and its implementation report are
 authoritative.
 
 ## Current vertical slice
