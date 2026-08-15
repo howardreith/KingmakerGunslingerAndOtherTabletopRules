@@ -155,6 +155,11 @@ namespace KingmakerGunslinger.DomainTests
             string bonusCarrierScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurBonusCarrierScenario.cs"));
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "DisposableBrownFurBonusCarriers" },
+                StringSplitOptions.None).Length,
+                "The disposable bonus carrier constant must be declared and " +
+                "present exactly once in the in-process allowlist.");
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
                 "memorization_spellbook", "arcane_reservoir_resource",

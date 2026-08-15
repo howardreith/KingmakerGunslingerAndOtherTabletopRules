@@ -254,6 +254,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveBrownFurCotwContract,
                 ObserveBrownFurTransmutationInventory,
                 ObserveBrownFurCastEngineContract,
+                DisposableBrownFurBonusCarriers,
                 ObserveShieldOtherInventory,
                 ObserveExpandedSummoningInventory,
                 DisposableExpandedSummoning,
