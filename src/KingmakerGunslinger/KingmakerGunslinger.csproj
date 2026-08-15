@@ -301,6 +301,13 @@
     <Compile Include="BrownFur\CotwArcanistContractCandidate.cs" />
     <Compile Include="BrownFur\CotwArcanistContractDecision.cs" />
     <Compile Include="BrownFur\CotwArcanistContractPolicy.cs" />
+    <Compile Include="BrownFur\CotwCompatibilityFingerprint.cs" />
+    <Compile Include="BrownFur\CotwSharedSpellsBridge.cs" />
+    <Compile Include="BrownFur\CotwArcanistContract.cs" />
+    <Compile Include="BrownFur\CotwArcanistResolution.cs" />
+    <Compile Include="BrownFur\CotwArcanistResolver.cs" />
+    <Compile Include="BrownFur\BrownFurDiagnostics.cs" />
+    <Compile Include="BrownFur\BrownFurOptionalExtensionCoordinator.cs" />
     <Compile Include="Bootstrap\BlueprintBootstrap.cs" />
     <Compile Include="Bootstrap\BlueprintLifecyclePatch.cs" />
     <Compile Include="Bootstrap\ModContext.cs" />

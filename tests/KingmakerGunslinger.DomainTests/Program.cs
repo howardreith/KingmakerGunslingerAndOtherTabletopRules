@@ -32,6 +32,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.contract-compatible", BrownFurContractTests.CompleteContractIsCompatible),
             Case("brown-fur.contract-required-surfaces", BrownFurContractTests.EveryRequiredSurfaceFailsClosed),
             Case("brown-fur.contract-ambiguous-progression", BrownFurContractTests.AmbiguousProgressionBlocksContract),
+            Case("brown-fur.contract-idempotent", BrownFurContractTests.ContractPolicyIsIdempotent),
+            Case("brown-fur.runtime-resolver-contract", BrownFurContractTests.RuntimeResolverUsesExactOptionalContract),
             Case("eastern-weapons.investigation-guard", EasternWeaponsInvestigationTests.EvidenceAndObserverRemainInvestigationOnly),
             Case("elven-branched-spear.investigation-guard", ElvenBranchedSpearInvestigationTests.EvidenceReportAndObserverAreGuarded),
             Case("elven-branched-spear.foundation-catalog", ElvenBranchedSpearCatalogTests.LockedProfileAndFoundationCatalogAreExact),

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using KingmakerGunslinger.BrownFur;
 
 namespace KingmakerGunslinger.DomainTests
@@ -101,6 +103,76 @@ namespace KingmakerGunslinger.DomainTests
                 decision.FailedCheck.StartsWith("exploit-progression:",
                     StringComparison.Ordinal),
                 "An ambiguous exploit schedule must block Brown-Fur publication.");
+        }
+
+        internal static void ContractPolicyIsIdempotent()
+        {
+            CotwArcanistContractCandidate candidate = Valid(true);
+            CotwArcanistContractDecision first =
+                CotwArcanistContractPolicy.Evaluate(candidate);
+            CotwArcanistContractDecision second =
+                CotwArcanistContractPolicy.Evaluate(candidate);
+            Assertions.True(first.IsCompatible && second.IsCompatible &&
+                first.Progression.Shape == second.Progression.Shape &&
+                first.Progression.PowerfulChangeReplacementLevel ==
+                    second.Progression.PowerfulChangeReplacementLevel &&
+                first.Progression.ShareTransmutationReplacementLevel ==
+                    second.Progression.ShareTransmutationReplacementLevel,
+                "Repeated contract resolution must produce the same decision.");
+        }
+
+        internal static void RuntimeResolverUsesExactOptionalContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string brownFur = Path.Combine(root, "src", "KingmakerGunslinger",
+                "BrownFur");
+            string resolver = File.ReadAllText(Path.Combine(brownFur,
+                "CotwArcanistResolver.cs"));
+            string bridge = File.ReadAllText(Path.Combine(brownFur,
+                "CotwSharedSpellsBridge.cs"));
+            string coordinator = File.ReadAllText(Path.Combine(brownFur,
+                "BrownFurOptionalExtensionCoordinator.cs"));
+            string main = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Main.cs"));
+            foreach (string token in new[] { "arcanist_class",
+                "arcanist_progression", "arcanist_spellbook",
+                "memorization_spellbook", "arcane_reservoir_resource",
+                "arcane_exploits", "magical_supremacy",
+                "19c3cf3d51cf4cbf9a136a600c26585a",
+                "2d28526efc2e4a9cb6a84c85267fb344",
+                "0c21cfcab6ce4395bd4df330ab3cf715",
+                "ab76417567444a6cb87d9d53e9752955",
+                "3b775ee982444493b3de8f7bc31bd872",
+                "2d86a417ab1542f98a8444b2b97d4951",
+                "ContainsAtLevel", "ResolveExploitLevels",
+                "ResolveTransmutations" })
+                Assertions.True(resolver.Contains(token),
+                    "CotW resolver lacks exact structural contract token: " + token);
+            foreach (string token in new[] { "CallOfTheWild.SharedSpells",
+                "canShareSpell", "isValidShareSpellTarget",
+                "typeof(AbilityData)", "typeof(UnitEntityData)",
+                "typeof(UnitDescriptor)", "matches.Length == 1" })
+                Assertions.True(bridge.Contains(token),
+                    "Shared Spells bridge lacks exact signature guard: " + token);
+            foreach (string token in new[] { "createArcanistClass",
+                "AfterCotwArcanistCreation", "HarmonyMethod(postfix)",
+                "FirstUpdate", "OnUpdate -= FirstUpdate", "_reconciling",
+                "contract.blocked", "Independent modules remain active",
+                "DescribePatchOrder" })
+                Assertions.True(coordinator.Contains(token),
+                    "Optional coordinator lacks lifecycle/isolation guard: " + token);
+            Assertions.True(main.Contains(
+                "BrownFurOptionalExtensionCoordinator.Install(context)"),
+                "Package bootstrap does not invoke isolated Brown-Fur coordination.");
+            Assertions.False(Directory.GetFiles(brownFur, "*.cs")
+                .Select(File.ReadAllText).Any(value =>
+                    value.Contains("using CallOfTheWild")),
+                "Brown-Fur acquired a compile-time CotW namespace dependency.");
+            string project = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
+            Assertions.False(project.Contains("CallOfTheWild.dll") ||
+                project.Contains("Reference Include=\"CallOfTheWild"),
+                "The package project acquired a compile-time CotW assembly reference.");
         }
 
         private static void AssertRejected(IEnumerable<int> levels, string label)
