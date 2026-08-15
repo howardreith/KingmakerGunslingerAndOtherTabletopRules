@@ -27,8 +27,10 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class BrownFurArcanistSlotScenario
     {
         private const string FileName = "brown-fur-arcanist-slot.json";
+        // The spellbook contains the Beast Shape I variant wrapper; the wolf
+        // leaf inherits level three but is not itself a spell-list entry.
         private const string SpellGuid =
-            "3481906baed9487e8403e91a2e9d010a";
+            "61a7ed778dd93f344a5dacdbad324cc9";
         private const string BuffGuid =
             "00d8fbe9cf61dc24298be8d95500c84b";
         private const int SpellLevel = 3;
