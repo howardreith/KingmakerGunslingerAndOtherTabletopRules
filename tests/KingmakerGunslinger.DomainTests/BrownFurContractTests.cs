@@ -212,7 +212,11 @@ namespace KingmakerGunslinger.DomainTests
                 "PowerfulChangeCompatibility",
                 "TransmutationSupremacyCompatibility", "RequiredAdapter",
                 "QualificationStatus", "Unexplained", "ExpandVariants",
-                "ambiguous parents" })
+                "ambiguous parents", "IsAppliedBuffPath",
+                "action > traversedBuff", "BlueprintAbilityAreaEffect",
+                "value is BlueprintScriptableObject",
+                "DescribeAbilityBonusCarrier", "IsAbilityStat",
+                "value == \"Strength\"", "value == \"Charisma\"" })
                 Assertions.True(inventory.Contains(token) ||
                     inventoryRecord.Contains(token),
                     "Transmutation inventory lacks required field/guard: " + token);

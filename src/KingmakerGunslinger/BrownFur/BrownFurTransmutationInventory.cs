@@ -190,6 +190,12 @@ namespace KingmakerGunslinger.BrownFur
                 if (value is BlueprintBuff)
                 {
                     BlueprintBuff buff = (BlueprintBuff)value;
+                    if (!IsAppliedBuffPath(path))
+                    {
+                        Nodes.Add(path + "=BlueprintBuffReference:" + buff.AssetGuid +
+                            "/" + buff.name);
+                        return;
+                    }
                     AppliedBuffs.Add(path + "=" + buff.AssetGuid + "/" + buff.name);
                     BuffSemantics.Add(buff.AssetGuid + ":components=" +
                         (buff.ComponentsArray == null ? 0 : buff.ComponentsArray.Length));
@@ -202,6 +208,23 @@ namespace KingmakerGunslinger.BrownFur
                     BlueprintAbility ability = (BlueprintAbility)value;
                     Nodes.Add(path + "=BlueprintAbility:" + ability.AssetGuid + "/" +
                         ability.name);
+                    return;
+                }
+                if (value is BlueprintAbilityAreaEffect)
+                {
+                    BlueprintAbilityAreaEffect area = (BlueprintAbilityAreaEffect)value;
+                    Nodes.Add(path + "=BlueprintAbilityAreaEffect:" + area.AssetGuid +
+                        "/" + area.name);
+                    foreach (BlueprintComponent component in area.ComponentsArray ??
+                        new BlueprintComponent[0]) Walk(component, path + ".area", depth + 1);
+                    return;
+                }
+                if (value is BlueprintScriptableObject)
+                {
+                    BlueprintScriptableObject blueprint =
+                        (BlueprintScriptableObject)value;
+                    Nodes.Add(path + "=BlueprintReference:" + blueprint.AssetGuid +
+                        "/" + blueprint.name);
                     return;
                 }
                 if (value is IEnumerable)
@@ -218,10 +241,10 @@ namespace KingmakerGunslinger.BrownFur
 
                 string fullName = type.FullName ?? type.Name;
                 Nodes.Add(path + "=" + fullName);
-                if (Contains(fullName, "StatBonus") || Contains(fullName, "Polymorph") ||
-                    Contains(fullName, "ChangeUnitSize") || Contains(fullName, "SizeChange"))
-                    AbilityBonuses.Add(path + "=" + fullName);
-                if (Contains(fullName, "Polymorph") || Contains(fullName, "Size"))
+                string carrier = DescribeAbilityBonusCarrier(value, type, path);
+                if (!string.IsNullOrEmpty(carrier)) AbilityBonuses.Add(carrier);
+                if (Contains(fullName, "Polymorph") ||
+                    Contains(fullName, "ChangeUnitSize"))
                     PolymorphAndSize.Add(path + "=" + fullName);
                 if (Contains(fullName, "Target") || Contains(fullName, "Condition"))
                     TargetRestrictions.Add(path + "=" + fullName);
@@ -278,6 +301,57 @@ namespace KingmakerGunslinger.BrownFur
 
             private static bool Contains(string value, string token)
             { return value.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0; }
+
+            private static bool IsAppliedBuffPath(string path)
+            {
+                int action = path.LastIndexOf(".Actions[",
+                    StringComparison.Ordinal);
+                int traversedBuff = path.LastIndexOf(".buff",
+                    StringComparison.Ordinal);
+                return action >= 0 && action > traversedBuff;
+            }
+
+            private static string DescribeAbilityBonusCarrier(object value,
+                Type type, string path)
+            {
+                string fullName = type.FullName ?? type.Name;
+                bool polymorph = fullName == "Kingmaker.UnitLogic.Buffs.Polymorph";
+                bool size = fullName ==
+                    "Kingmaker.Designers.Mechanics.Buffs.ChangeUnitSize";
+                bool statCarrier = Contains(fullName, "AddStatBonus") ||
+                    Contains(fullName, "AddContextStatBonus") ||
+                    Contains(fullName, "AddGenericStatBonus");
+                if (!polymorph && !size && !statCarrier) return string.Empty;
+
+                var details = new List<string>();
+                bool abilityStat = polymorph || size;
+                foreach (FieldInfo field in Fields(type))
+                {
+                    object member;
+                    try { member = field.GetValue(value); }
+                    catch { continue; }
+                    if (member == null) continue;
+                    string text = Convert.ToString(member,
+                        System.Globalization.CultureInfo.InvariantCulture);
+                    if (IsAbilityStat(text)) abilityStat = true;
+                    string name = field.Name.ToLowerInvariant();
+                    if (name.Contains("stat") || name.Contains("bonus") ||
+                        name.Contains("value") || name.Contains("descriptor") ||
+                        name.Contains("size"))
+                        details.Add(field.Name + "=" + text);
+                }
+                if (!abilityStat) return string.Empty;
+                return path + "=" + fullName + "{" +
+                    string.Join(",", details.OrderBy(item => item,
+                        StringComparer.Ordinal).ToArray()) + "}";
+            }
+
+            private static bool IsAbilityStat(string value)
+            {
+                return value == "Strength" || value == "Dexterity" ||
+                    value == "Constitution" || value == "Intelligence" ||
+                    value == "Wisdom" || value == "Charisma";
+            }
 
             private void SortDistinct()
             {
