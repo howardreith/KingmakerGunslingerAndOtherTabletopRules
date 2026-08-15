@@ -65,6 +65,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> NativeDeliveryBodies { get; set; }
             [JsonProperty("castCommitBodies", Order = 19)]
             public List<string> CastCommitBodies { get; set; }
+            [JsonProperty("abilityExecutionProcess", Order = 20)]
+            public List<string> AbilityExecutionProcess { get; set; }
+            [JsonProperty("executionLifecycleBodies", Order = 21)]
+            public List<string> ExecutionLifecycleBodies { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -109,7 +113,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RelevantCotwHarmony = new List<string>(),
                 RelevantCotwTargetingBodies = new List<string>(),
                 NativeDeliveryBodies = DescribeNativeDeliveryBodies(),
-                CastCommitBodies = DescribeCastCommitBodies()
+                CastCommitBodies = DescribeCastCommitBodies(),
+                AbilityExecutionProcess = Describe(typeof(
+                    Kingmaker.Controllers.AbilityExecutionProcess)),
+                ExecutionLifecycleBodies = DescribeExecutionLifecycleBodies()
             };
             ObserveHarmony(context, evidence);
 
@@ -252,6 +259,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Has(evidence.CastCommitBodies,
                         "AbilityExecutionContext..ctor"),
                 "exact Kingmaker cast commitment IL resolved in-process");
+            Add(assertions, "cast-engine-execution-lifecycle",
+                "context creation, command end, process tick, and detach bodies decoded",
+                "members=" + evidence.AbilityExecutionProcess.Count +
+                    ";instructions=" + evidence.ExecutionLifecycleBodies.Count,
+                Has(evidence.AbilityExecutionProcess, "IsEnded") &&
+                    Has(evidence.AbilityExecutionProcess, "Tick") &&
+                    Has(evidence.ExecutionLifecycleBodies,
+                        "AbilityData.CreateExecutionContext") &&
+                    Has(evidence.ExecutionLifecycleBodies,
+                        "UnitUseAbility.OnEnded") &&
+                    Has(evidence.ExecutionLifecycleBodies,
+                        "AbilityExecutionProcess.Tick") &&
+                    Has(evidence.ExecutionLifecycleBodies,
+                        "AbilityExecutionProcess.Detach"),
+                "exact per-execution retention and cleanup seams resolved in-process");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
                 "observer does not select, load, mutate, or save a character");
@@ -490,6 +512,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             var result = new List<string>();
             foreach (MethodBase method in methods.Where(value => value != null))
+            {
+                result.Add("method " + Signature(method));
+                result.AddRange(BrownFurIlDisassembler.Describe(method));
+            }
+            return result;
+        }
+
+        private static List<string> DescribeExecutionLifecycleBodies()
+        {
+            var methods = new List<MethodBase> {
+                typeof(AbilityData).GetMethod("CreateExecutionContext", All,
+                    null, new[] { typeof(Kingmaker.Utility.TargetWrapper) },
+                    null),
+                typeof(UnitUseAbility).GetMethod("OnEnded", All, null,
+                    new[] { typeof(bool) }, null)
+            };
+            Type process = typeof(Kingmaker.Controllers.AbilityExecutionProcess);
+            methods.AddRange(process.GetMethods(All).Where(value =>
+                value.Name == "Tick" || value.Name == "Detach" ||
+                value.Name == "InstantDeliver"));
+            Type controller = typeof(Kingmaker.Controllers.AbilityExecutionController);
+            methods.AddRange(controller.GetMethods(All).Where(value =>
+                value.Name == "Execute" && value.GetParameters().Length == 1 &&
+                value.GetParameters()[0].ParameterType ==
+                    typeof(AbilityExecutionContext)));
+            var result = new List<string>();
+            foreach (MethodBase method in methods.Where(value => value != null)
+                .Distinct())
             {
                 result.Add("method " + Signature(method));
                 result.AddRange(BrownFurIlDisassembler.Describe(method));

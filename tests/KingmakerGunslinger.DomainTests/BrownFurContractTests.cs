@@ -290,6 +290,10 @@ namespace KingmakerGunslinger.DomainTests
                 "typeof(AbilityData).GetMethod(\"Spend\"",
                 "typeof(RuleCastSpell).GetConstructor",
                 "AbilityExecutionContext).GetConstructor",
+                "cast-engine-execution-lifecycle",
+                "AbilityExecutionProcess", "ExecutionLifecycleBodies",
+                "DescribeExecutionLifecycleBodies", "CreateExecutionContext",
+                "InstantDeliver", "AbilityExecutionController",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
