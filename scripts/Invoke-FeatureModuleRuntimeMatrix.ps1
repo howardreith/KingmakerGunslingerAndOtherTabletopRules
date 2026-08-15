@@ -5,7 +5,11 @@ param(
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,
     [switch]$ConfirmEach,
-    [switch]$AllowDirtyGit
+    [switch]$AllowDirtyGit,
+    [switch]$Boundary14,
+    [switch]$ReuseInstalledArtifact,
+    [string]$DeploymentManifestPath,
+    [string]$PackagePath
 )
 
 Set-StrictMode -Version Latest
@@ -49,6 +53,28 @@ if ($Combination -ne 'all') {
     $selected[$Combination] = $combinations[$Combination]
     $combinations = $selected
 }
+elseif ($Boundary14) {
+    $boundary = [ordered]@{}
+    foreach ($entry in $combinations.GetEnumerator()) {
+        $enabled = @($entry.Value.Values | Where-Object { $_ }).Count
+        if ($enabled -eq 0 -or $enabled -eq 1 -or $enabled -eq 5 -or
+            $enabled -eq 6) {
+            $boundary[$entry.Key] = $entry.Value
+        }
+    }
+    if ($boundary.Count -ne 14) {
+        throw "The six-module boundary matrix must contain exactly 14 states; observed $($boundary.Count)."
+    }
+    $combinations = $boundary
+}
+if ($Boundary14 -and $Combination -ne 'all') {
+    throw '-Boundary14 cannot be combined with a single -Combination.'
+}
+if ($ReuseInstalledArtifact -and
+    ([string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
+     [string]::IsNullOrWhiteSpace($PackagePath))) {
+    throw '-ReuseInstalledArtifact requires deployment and package paths.'
+}
 
 $failure = $null
 try {
@@ -66,16 +92,26 @@ try {
         $temporary = $settings + '.kmg-module-matrix.tmp'
         [IO.File]::WriteAllText($temporary, $json, (New-Object Text.UTF8Encoding($false)))
         Move-Item -LiteralPath $temporary -Destination $settings -Force
-        & $invoke -Scenario observe-feature-module-settings `
-            -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
-            -Parameters @{ gunslinger = [bool]$entry.Value.gunslinger;
+        $invokeArguments = @{
+            Scenario = 'observe-feature-module-settings'
+            ExpectedVersion = $ExpectedVersion
+            TimeoutSeconds = $TimeoutSeconds
+            Parameters = @{ gunslinger = [bool]$entry.Value.gunslinger;
                 acadamaeGraduate = [bool]$entry.Value.acadamaeGraduate;
                 shieldOther = [bool]$entry.Value.shieldOther;
                 expandedSummoning = [bool]$entry.Value.expandedSummoning;
                 elvenBranchedSpears = [bool]$entry.Value.elvenBranchedSpears;
-                easternWeapons = [bool]$entry.Value.easternWeapons } `
-            -ExitAfterCompletion:$ExitAfterCompletion -Confirm:$ConfirmEach `
-            -AllowDirtyGit:$AllowDirtyGit
+                easternWeapons = [bool]$entry.Value.easternWeapons }
+            ExitAfterCompletion = $ExitAfterCompletion
+            Confirm = [bool]$ConfirmEach
+            AllowDirtyGit = [bool]$AllowDirtyGit
+        }
+        if ($ReuseInstalledArtifact) {
+            $invokeArguments.ReuseInstalledArtifact = $true
+            $invokeArguments.DeploymentManifestPath = $DeploymentManifestPath
+            $invokeArguments.PackagePath = $PackagePath
+        }
+        & $invoke @invokeArguments
         if ($LASTEXITCODE -ne 0) {
             throw "Feature-module runtime combination $($entry.Key) failed."
         }

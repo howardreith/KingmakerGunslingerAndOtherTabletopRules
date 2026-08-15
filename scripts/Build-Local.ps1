@@ -115,6 +115,7 @@ $manifest = [ordered]@{
     packagePath = $packagePath
     packageSha256 = Get-KmgSha256 -Path $packagePath
     dllSha256 = Get-KmgSha256 -Path $dllPath
+    dllMvid = Get-KmgDllMvid -Path $dllPath
     validated = $true
 }
 $manifestPath = Get-KmgPackageManifestPath -PackagePath $packagePath

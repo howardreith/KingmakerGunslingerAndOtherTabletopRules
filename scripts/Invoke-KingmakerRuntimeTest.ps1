@@ -36,6 +36,9 @@ param(
     [switch]$AllowDirtyGit,
     [switch]$AllowForceTerminate,
     [switch]$ManualInteractionRequired,
+    [switch]$ReuseInstalledArtifact,
+    [string]$DeploymentManifestPath,
+    [string]$PackagePath,
     [string]$SteamPath = 'C:\Program Files (x86)\Steam\steam.exe',
     [ValidateRange(1, 300)]
     [int]$SteamStartupTimeoutSeconds = 60,
@@ -128,9 +131,24 @@ Assert-KmgSteamAppId -AppId $SteamAppId
 Assert-KmgUnelevated
 $SteamPath = Assert-KmgSteamExecutable -SteamPath $SteamPath
 
+if ($ReuseInstalledArtifact -and
+    ([string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
+     [string]::IsNullOrWhiteSpace($PackagePath))) {
+    throw '-ReuseInstalledArtifact requires exact -DeploymentManifestPath and -PackagePath.'
+}
+if (-not $ReuseInstalledArtifact -and
+    (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
+     -not [string]::IsNullOrWhiteSpace($PackagePath))) {
+    throw 'Deployment/package paths are valid only with -ReuseInstalledArtifact.'
+}
+
 if (-not $PSCmdlet.ShouldProcess(
     "Steam App ID $SteamAppId",
-    "build, validate, deploy, and launch guarded scenario '$Scenario'")) {
+    $(if ($ReuseInstalledArtifact) {
+        "verify and reuse immutable installed artifact, then launch guarded scenario '$Scenario'"
+      } else {
+        "build, validate, deploy, and launch guarded scenario '$Scenario'"
+      }))) {
     Write-Host 'Source-only/WhatIf validation passed. No deployment or process launch occurred.'
     return
 }
@@ -141,16 +159,24 @@ if (-not $PSCmdlet.ShouldProcess(
 # their own ShouldProcess behavior.
 $ConfirmPreference = 'None'
 $WhatIfPreference = $false
-& (Join-Path $PSScriptRoot 'Build-Local.ps1')
-$package = Join-Path $root "artifacts\local-runtime\$ExpectedVersion\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip"
-if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
-    throw "Build-Local did not produce the expected package: $package"
+if ($ReuseInstalledArtifact) {
+    $reuse = Assert-KmgReusableDeployment `
+        -DeploymentManifestPath $DeploymentManifestPath `
+        -PackagePath $PackagePath -RepositoryRoot $root `
+        -ExpectedVersion $ExpectedVersion
+    $package = $reuse.PackagePath
+    $deploymentManifestPath = $reuse.DeploymentManifestPath
+} else {
+    & (Join-Path $PSScriptRoot 'Build-Local.ps1')
+    $package = Join-Path $root "artifacts\local-runtime\$ExpectedVersion\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip"
+    if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
+        throw "Build-Local did not produce the expected package: $package"
+    }
+    & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package `
+        -WhatIf -Confirm:$false
+    $deploymentManifestPath = & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') `
+        -PackagePath $package -Confirm:$false -PassThru
 }
-& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package `
-    -WhatIf -Confirm:$false
-
-$deploymentManifestPath = & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') `
-    -PackagePath $package -Confirm:$false -PassThru
 
 $evidence = Join-Path $script:KmgRuntimeEvidenceRoot (
     [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' + $Scenario)

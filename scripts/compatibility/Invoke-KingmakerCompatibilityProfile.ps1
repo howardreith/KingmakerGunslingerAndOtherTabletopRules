@@ -51,6 +51,9 @@ param(
     [ValidateRange(120, 900)]
     [int]$RuntimeTimeoutSeconds = 300,
     [switch]$AllowDirtyGit,
+    [switch]$ReuseInstalledArtifact,
+    [string]$DeploymentManifestPath,
+    [string]$PackagePath,
     [string]$KingmakerInstallDir =
         'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string]$StateRoot = 'C:\Dev\KingmakerGunslingerLab\compatibility-state'
@@ -127,6 +130,15 @@ try {
         }
         if ($name -ceq 'observe-feature-module-settings') {
             $arguments.Parameters = $Parameters
+        }
+        if ($ReuseInstalledArtifact) {
+            if ([string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
+                [string]::IsNullOrWhiteSpace($PackagePath)) {
+                throw '-ReuseInstalledArtifact requires deployment and package paths.'
+            }
+            $arguments.ReuseInstalledArtifact = $true
+            $arguments.DeploymentManifestPath = $DeploymentManifestPath
+            $arguments.PackagePath = $PackagePath
         }
         if ($name -ceq 'musket-master-mechanics-and-starter') {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'

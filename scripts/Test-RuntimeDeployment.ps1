@@ -71,8 +71,23 @@ Assert-True ($deployment.Contains("Join-Path `$live 'FeatureModules.json'") -and
     $deployment.Contains('[IO.File]::WriteAllBytes($featureSettingsTemporary, $featureSettingsBytes)') -and
     $deployment.Contains('featureModuleSettingsPreserved = $featureSettingsExisted')) `
     'deployment-preserves-feature-settings-bytes-outside-package'
+$reuseBranch = $orchestrator.IndexOf('if ($ReuseInstalledArtifact) {',
+    [StringComparison]::Ordinal)
+$reuseVerify = $orchestrator.IndexOf('Assert-KmgReusableDeployment',
+    $reuseBranch, [StringComparison]::Ordinal)
+$buildBranch = $orchestrator.IndexOf("& (Join-Path `$PSScriptRoot 'Build-Local.ps1')",
+    $reuseVerify, [StringComparison]::Ordinal)
+Assert-True ($orchestrator.Contains('[switch]$ReuseInstalledArtifact') -and
+    $reuseBranch -ge 0 -and $reuseVerify -gt $reuseBranch -and
+    $buildBranch -gt $reuseVerify) `
+    'reuse-mode-verifies-and-skips-build-deploy'
+Assert-True ($deployment.Contains('schemaVersion = 2') -and
+    $deployment.Contains('commit = $manifest.commit') -and
+    $deployment.Contains('dllMvid = $manifest.dllMvid') -and
+    $deployment.Contains('firearmBundleSha256 = Get-KmgSha256')) `
+    'deployment-manifest-captures-immutable-artifact-identity'
 
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 17'
+Write-Host 'Runtime deployment safety tests passed: 19'

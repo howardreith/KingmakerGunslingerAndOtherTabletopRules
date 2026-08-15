@@ -47,6 +47,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("firearm-fit.marker-import-fails-closed", FirearmFitAssetTests.MarkerImporterFailsClosed),
             Case("firearm-fit.diagnostic-runtime-boundary", FirearmFitAssetTests.DiagnosticRuntimeBoundaryIsExact),
             Case("firearm-fit.production-binding-frozen", FirearmFitAssetTests.ProductionBindingRemainsFrozen),
+            Case("repair-runtime.immutable-reuse", RepairRuntimePolicyTests.ImmutableArtifactReuseIsFailClosed),
+            Case("repair-runtime.boundary-fourteen", RepairRuntimePolicyTests.BoundaryMatrixIsExactlyFourteenStates),
             Case("expanded-summoning.roster-and-placements", ExpandedSummoningCatalogTests.FrozenRosterAndPlacementCounts),
             Case("expanded-summoning.quantity-same-kind", ExpandedSummoningCatalogTests.QuantityRulesAreExactAndSameKind),
             Case("expanded-summoning.alignment-policies", ExpandedSummoningCatalogTests.AlignmentPoliciesAreFamilyScoped),

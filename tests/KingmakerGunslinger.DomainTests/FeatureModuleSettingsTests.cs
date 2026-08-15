@@ -186,7 +186,7 @@ namespace KingmakerGunslinger.DomainTests
                 "expandedSummoning = [bool]$entry.Value.expandedSummoning",
                 "elvenBranchedSpears = [bool]$entry.Value.elvenBranchedSpears",
                 "easternWeapons = [bool]$entry.Value.easternWeapons",
-                "[switch]$AllowDirtyGit", "-AllowDirtyGit:$AllowDirtyGit",
+                "[switch]$AllowDirtyGit", "AllowDirtyGit = [bool]$AllowDirtyGit",
                 "Settings byte-for-byte restoration failed." })
                 Assertions.True(matrix.Contains(token),
                     "The 64-state runtime matrix contract is missing: " + token);

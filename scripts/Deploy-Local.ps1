@@ -53,6 +53,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $source 'Info.json') -PathType Leaf)
 }
 
 $deployedDll = Join-Path $live 'KingmakerGunslinger.dll'
+$deployedFirearmBundle = Join-Path $live 'assets\bundles\kingmakergunslinger.firearms'
 try {
     foreach ($child in Get-ChildItem -LiteralPath $live -Force) {
         $target = Assert-KmgPathWithin -Path $child.FullName -Root $live
@@ -84,13 +85,21 @@ finally {
 $deploymentDirectory = Join-Path $EvidenceRoot ('deployments\' + [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ'))
 New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
 [ordered]@{
-    schemaVersion = 1
+    schemaVersion = 2
     deployedAtUtc = [DateTime]::UtcNow.ToString('o')
     packagePath = $manifest.packagePath
     packageSha256 = $manifest.packageSha256
+    commit = $manifest.commit
+    branch = $manifest.branch
     version = $manifest.version
+    dllSha256 = $manifest.dllSha256
+    dllMvid = $manifest.dllMvid
     deployedDllSha256 = Get-KmgSha256 -Path $deployedDll
+    firearmBundleSha256 = Get-KmgSha256 -Path $deployedFirearmBundle
     featureModuleSettingsPreserved = $featureSettingsExisted
+    featureModuleSettingsSha256 = if ($featureSettingsExisted) {
+        Get-KmgSha256 -Path $featureSettingsPath
+    } else { '<absent>' }
     liveModDirectory = $live
     backupDirectory = $backup.Destination
     files = $actualFiles
