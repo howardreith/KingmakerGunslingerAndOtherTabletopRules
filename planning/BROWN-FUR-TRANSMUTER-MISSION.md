@@ -89,3 +89,14 @@ survived transaction release, and the level-20 increase produced exactly
 `+8 Enhancement` from the ordinary `+4`. Remaining Powerful Change carrier
 gates are dispel and persistence; real cast/debit/cancellation integration is
 still outstanding. Brown-Fur remains reserved and unpublished.
+
+The CotW Shared Spells helper-body checkpoint passed on commit
+`53306fb3367a94fdf2d60b535c7bb5fd72a678ea` with 12 guarded assertions. Exact
+IL proves CotW's eligibility helper rejects `CannotBeShared`, non-spells,
+casters without its two sharing facts, and null spellbooks. Its target helper
+then supports only self, the `ac_share_spell` owner's pet, or a target carrying
+`bonded_mind_feat` when the caster has `share_spells_feat`. These helpers are
+not sufficient for Brown-Fur's authorized party, controlled-creature, summon,
+and friendly-ally contract. Share Transmutation will use a separate
+owner-scoped execution adapter with deterministic CotW patch ordering. No
+player-facing archetype or targeting change is active yet.

@@ -129,6 +129,32 @@ cannot assume that invoking a Shared Spells helper installs an isolated cast
 path; the two helper bodies and their blueprint fixups must be decoded before
 reuse is authorized.
 
+That body-level investigation completed on commit
+`53306fb3367a94fdf2d60b535c7bb5fd72a678ea`. The guarded observer passed all
+12 assertions. The built and installed DLL SHA-256 was
+`C5D1304E5ACC30B1084F1F1475EABE86866C0D41E11EA32BADF59C7E8BB03A4C`, its
+MVID was `63f88725-e29e-47eb-a8c5-32f8f4ae93ab`, and the structured contract
+artifact SHA-256 was
+`52A37B0A67E4B3DB22AA04F58804535B38BD65ED22964783BC002B1A689E49B0`.
+
+The exact installed `canShareSpell` body first rejects abilities bearing
+`CallOfTheWild.SharedSpells+CannotBeShared`, then requires a genuine spell,
+then requires either CotW's `ac_share_spell` or `share_spells_feat`, and
+finally requires a non-null spellbook. The exact installed
+`isValidShareSpellTarget` body accepts self, accepts only the caster's pet for
+`ac_share_spell`, or requires both the caster's `share_spells_feat` and the
+target's `bonded_mind_feat`.
+
+Those semantics are intentionally narrower than Brown-Fur's authorized
+willing-creature set and are coupled to unrelated CotW facts. Invoking them
+would reject party allies, controlled creatures, summons, and friendly allies
+that Brown-Fur must support. The helper type and signatures remain required
+compatibility evidence, but the helpers are not an authorized implementation
+of Share Transmutation. Brown-Fur therefore requires its own owner-scoped,
+execution-scoped target/range adapter ordered deterministically after CotW;
+it must reuse native cast delivery without granting or consulting CotW's
+animal-companion or Bonded Mind features.
+
 The modifier-provenance extension of this scenario passed all 11 assertions on
 commit `2c18c84d44be6907d3d30dbdd5a42f7d8a1bcef1`. The exact local-runtime
 package SHA-256 was
