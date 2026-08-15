@@ -81,6 +81,8 @@
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />
     <Compile Include="BrownFurContractTests.cs" />
+    <Compile Include="BrownFurInventoryClassificationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurInventoryClassification.cs"><Link>BrownFur\BrownFurInventoryClassification.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwProgressionShape.cs"><Link>BrownFur\CotwProgressionShape.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwProgressionDecision.cs"><Link>BrownFur\CotwProgressionDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwProgressionPolicy.cs"><Link>BrownFur\CotwProgressionPolicy.cs</Link></Compile>

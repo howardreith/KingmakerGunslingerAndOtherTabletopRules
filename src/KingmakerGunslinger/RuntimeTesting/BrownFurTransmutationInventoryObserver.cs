@@ -57,21 +57,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !string.IsNullOrWhiteSpace(value.Range) &&
                 value.NestedActionGraph != null && value.AppliedBuffs != null &&
                 value.AbilityScoreBonuses != null && value.ModifierDescriptors != null &&
+                value.AbilityBonusCarrierFamilies != null &&
                 value.ValuePatterns != null && value.PolymorphAndSizeComponents != null &&
                 value.HardCodedToCaster != null &&
-                value.QualificationStatus == "Unexplained");
+                !string.IsNullOrWhiteSpace(value.ShareTransmutationCompatibility) &&
+                !string.IsNullOrWhiteSpace(value.PowerfulChangeCompatibility) &&
+                !string.IsNullOrWhiteSpace(
+                    value.TransmutationSupremacyCompatibility) &&
+                !string.IsNullOrWhiteSpace(value.RequiredAdapter) &&
+                !string.IsNullOrWhiteSpace(value.QualificationStatus));
             Add(assertions, "inventory-required-fields", "complete investigation fields",
-                fields ? "complete" : "missing-or-preclassified", fields,
+                fields ? "complete" : "missing", fields,
                 "runtime blueprint/component/action/buff graph reflection");
-            Add(assertions, "inventory-publication-gate", "all entries remain Unexplained",
+            int unexplained = inventory == null || inventory.Records == null ? -1 :
+                inventory.Records.Count(value => value.QualificationStatus ==
+                    BrownFurInventoryQualifications.Unexplained);
+            int classified = inventory == null || inventory.QualificationCounts == null ?
+                -1 : inventory.QualificationCounts.Sum(value => value.Value);
+            Add(assertions, "inventory-publication-gate",
+                "all entries deterministically classified; Unexplained=0",
                 inventory == null || inventory.QualificationCounts == null ? "missing" :
                     string.Join(",", inventory.QualificationCounts.Select(value =>
                         value.Key + "=" + value.Value).ToArray()),
-                inventory != null && inventory.QualificationCounts.Count == 1 &&
-                    inventory.QualificationCounts.ContainsKey("Unexplained") &&
-                    inventory.QualificationCounts["Unexplained"] ==
-                        inventory.RecordCountIncludingVariants,
-                "investigation observer cannot authorize player-facing publication");
+                inventory != null && unexplained == 0 && classified ==
+                    inventory.RecordCountIncludingVariants,
+                "pure fail-closed classifier over exact runtime graph and qualified adapters");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only blueprint graph inventory", true,
                 "observer does not select, load, mutate, or save a character");

@@ -310,6 +310,7 @@
     <Compile Include="BrownFur\BrownFurDiagnostics.cs" />
     <Compile Include="BrownFur\BrownFurOptionalExtensionCoordinator.cs" />
     <Compile Include="BrownFur\BrownFurSpellInventoryRecord.cs" />
+    <Compile Include="BrownFur\BrownFurInventoryClassification.cs" />
     <Compile Include="BrownFur\BrownFurTransmutationInventory.cs" />
     <Compile Include="BrownFur\BrownFurAbilityScore.cs" />
     <Compile Include="BrownFur\BrownFurIdentityCatalog.cs" />

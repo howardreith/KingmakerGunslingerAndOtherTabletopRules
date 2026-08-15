@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -64,7 +65,7 @@ namespace KingmakerGunslinger.BrownFur
                 string[] variants = Variants(ability).Where(value => value != null)
                     .Select(value => value.AssetGuid).Distinct().OrderBy(value => value,
                         StringComparer.Ordinal).ToArray();
-                records.Add(new BrownFurSpellInventoryRecord
+                var record = new BrownFurSpellInventoryRecord
                 {
                     CanonicalSpellGuid = ability.AssetGuid,
                     BlueprintName = ability.name ?? string.Empty,
@@ -84,34 +85,44 @@ namespace KingmakerGunslinger.BrownFur
                     Duration = Convert.ToString(ability.LocalizedDuration,
                         System.Globalization.CultureInfo.InvariantCulture),
                     MetamagicSupport = ability.AvailableMetamagic.ToString(),
+                    SupportsExtend = (ability.AvailableMetamagic &
+                        Metamagic.Extend) != 0,
                     AppliedBuffs = graph.AppliedBuffs,
                     NestedActionGraph = graph.Nodes,
                     AbilityScoreBonuses = graph.AbilityBonuses,
+                    AbilityBonusCarrierFamilies = graph.AbilityBonusCarrierFamilies,
                     ModifierDescriptors = graph.Descriptors,
                     ValuePatterns = graph.Values,
                     PolymorphAndSizeComponents = graph.PolymorphAndSize,
                     HardCodedToCaster = graph.ToCaster,
                     SaveAndDispel = "savingThrow=" + ability.LocalizedSavingThrow +
                         ";spellResistance=" + ability.SpellResistance +
-                        ";buffSemantics=" + string.Join("|", graph.BuffSemantics.ToArray()),
-                    ShareTransmutationCompatibility = ability.Range ==
-                        AbilityRange.Personal ? "Pending Personal-spell adapter classification" :
-                        "Intentionally ineligible: original range is not Personal",
-                    PowerfulChangeCompatibility = graph.AbilityBonuses.Count == 0 ?
-                        "Intentionally ineligible: no detected ability-bonus carrier" :
-                        "Pending bonus-carrier classification",
-                    TransmutationSupremacyCompatibility =
-                        "Pending duration/metamagic classification",
-                    RequiredAdapter = graph.ToCaster.Count > 0 ?
-                        "Pending named target adapter" : graph.AbilityBonuses.Count > 0 ?
-                        "Pending bonus-carrier adapter" : "Pending generic-contract review",
-                    QualificationStatus = "Unexplained"
-                });
+                        ";buffSemantics=" + string.Join("|", graph.BuffSemantics.ToArray())
+                };
+                BrownFurInventoryClassificationDecision classification =
+                    BrownFurInventoryClassificationPolicy.Decide(
+                        new BrownFurInventoryClassificationInput(
+                            record.CanonicalSpellGuid, record.Range,
+                            record.VariantGuids.Count > 0,
+                            record.SupportsExtend, record.Duration,
+                            record.AbilityScoreBonuses.Count,
+                            record.AbilityBonusCarrierFamilies,
+                            record.HardCodedToCaster.Count));
+                record.ShareTransmutationCompatibility =
+                    classification.ShareTransmutation;
+                record.PowerfulChangeCompatibility =
+                    classification.PowerfulChange;
+                record.TransmutationSupremacyCompatibility =
+                    classification.TransmutationSupremacy;
+                record.RequiredAdapter = classification.RequiredAdapter;
+                record.QualificationStatus =
+                    classification.QualificationStatus;
+                records.Add(record);
             }
 
             return new BrownFurSpellInventoryEvidence
             {
-                SchemaVersion = 1,
+                SchemaVersion = 2,
                 GeneratedAtUtc = DateTime.UtcNow.ToString("o"),
                 CotwFingerprint = contract.Fingerprint == null ? string.Empty :
                     contract.Fingerprint.ToString(),
@@ -164,6 +175,8 @@ namespace KingmakerGunslinger.BrownFur
             internal List<string> Nodes = new List<string>();
             internal List<string> AppliedBuffs = new List<string>();
             internal List<string> AbilityBonuses = new List<string>();
+            internal List<string> AbilityBonusCarrierFamilies =
+                new List<string>();
             internal List<string> Descriptors = new List<string>();
             internal List<string> Values = new List<string>();
             internal List<string> PolymorphAndSize = new List<string>();
@@ -242,7 +255,11 @@ namespace KingmakerGunslinger.BrownFur
                 string fullName = type.FullName ?? type.Name;
                 Nodes.Add(path + "=" + fullName);
                 string carrier = DescribeAbilityBonusCarrier(value, type, path);
-                if (!string.IsNullOrEmpty(carrier)) AbilityBonuses.Add(carrier);
+                if (!string.IsNullOrEmpty(carrier))
+                {
+                    AbilityBonuses.Add(carrier);
+                    AbilityBonusCarrierFamilies.Add(fullName);
+                }
                 if (Contains(fullName, "Polymorph") ||
                     Contains(fullName, "ChangeUnitSize"))
                     PolymorphAndSize.Add(path + "=" + fullName);
@@ -383,7 +400,10 @@ namespace KingmakerGunslinger.BrownFur
             private void SortDistinct()
             {
                 Nodes = Distinct(Nodes); AppliedBuffs = Distinct(AppliedBuffs);
-                AbilityBonuses = Distinct(AbilityBonuses); Descriptors = Distinct(Descriptors);
+                AbilityBonuses = Distinct(AbilityBonuses);
+                AbilityBonusCarrierFamilies = Distinct(
+                    AbilityBonusCarrierFamilies);
+                Descriptors = Distinct(Descriptors);
                 Values = Distinct(Values); PolymorphAndSize = Distinct(PolymorphAndSize);
                 ToCaster = Distinct(ToCaster); TargetRestrictions = Distinct(TargetRestrictions);
                 BuffSemantics = Distinct(BuffSemantics);

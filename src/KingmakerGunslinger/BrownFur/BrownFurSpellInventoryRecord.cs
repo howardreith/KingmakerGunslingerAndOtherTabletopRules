@@ -18,19 +18,21 @@ namespace KingmakerGunslinger.BrownFur
         [JsonProperty("targetRestrictions", Order = 11)] public List<string> TargetRestrictions { get; set; }
         [JsonProperty("duration", Order = 12)] public string Duration { get; set; }
         [JsonProperty("metamagicSupport", Order = 13)] public string MetamagicSupport { get; set; }
-        [JsonProperty("appliedBuffs", Order = 14)] public List<string> AppliedBuffs { get; set; }
-        [JsonProperty("nestedActionGraph", Order = 15)] public List<string> NestedActionGraph { get; set; }
-        [JsonProperty("abilityScoreBonuses", Order = 16)] public List<string> AbilityScoreBonuses { get; set; }
-        [JsonProperty("modifierDescriptors", Order = 17)] public List<string> ModifierDescriptors { get; set; }
-        [JsonProperty("valuePatterns", Order = 18)] public List<string> ValuePatterns { get; set; }
-        [JsonProperty("polymorphAndSizeComponents", Order = 19)] public List<string> PolymorphAndSizeComponents { get; set; }
-        [JsonProperty("hardCodedToCaster", Order = 20)] public List<string> HardCodedToCaster { get; set; }
-        [JsonProperty("saveAndDispel", Order = 21)] public string SaveAndDispel { get; set; }
-        [JsonProperty("shareTransmutationCompatibility", Order = 22)] public string ShareTransmutationCompatibility { get; set; }
-        [JsonProperty("powerfulChangeCompatibility", Order = 23)] public string PowerfulChangeCompatibility { get; set; }
-        [JsonProperty("transmutationSupremacyCompatibility", Order = 24)] public string TransmutationSupremacyCompatibility { get; set; }
-        [JsonProperty("requiredAdapter", Order = 25)] public string RequiredAdapter { get; set; }
-        [JsonProperty("qualificationStatus", Order = 26)] public string QualificationStatus { get; set; }
+        [JsonProperty("supportsExtend", Order = 14)] public bool SupportsExtend { get; set; }
+        [JsonProperty("appliedBuffs", Order = 15)] public List<string> AppliedBuffs { get; set; }
+        [JsonProperty("nestedActionGraph", Order = 16)] public List<string> NestedActionGraph { get; set; }
+        [JsonProperty("abilityScoreBonuses", Order = 17)] public List<string> AbilityScoreBonuses { get; set; }
+        [JsonProperty("abilityBonusCarrierFamilies", Order = 18)] public List<string> AbilityBonusCarrierFamilies { get; set; }
+        [JsonProperty("modifierDescriptors", Order = 19)] public List<string> ModifierDescriptors { get; set; }
+        [JsonProperty("valuePatterns", Order = 20)] public List<string> ValuePatterns { get; set; }
+        [JsonProperty("polymorphAndSizeComponents", Order = 21)] public List<string> PolymorphAndSizeComponents { get; set; }
+        [JsonProperty("hardCodedToCaster", Order = 22)] public List<string> HardCodedToCaster { get; set; }
+        [JsonProperty("saveAndDispel", Order = 23)] public string SaveAndDispel { get; set; }
+        [JsonProperty("shareTransmutationCompatibility", Order = 24)] public string ShareTransmutationCompatibility { get; set; }
+        [JsonProperty("powerfulChangeCompatibility", Order = 25)] public string PowerfulChangeCompatibility { get; set; }
+        [JsonProperty("transmutationSupremacyCompatibility", Order = 26)] public string TransmutationSupremacyCompatibility { get; set; }
+        [JsonProperty("requiredAdapter", Order = 27)] public string RequiredAdapter { get; set; }
+        [JsonProperty("qualificationStatus", Order = 28)] public string QualificationStatus { get; set; }
     }
 
     internal sealed class BrownFurSpellInventoryEvidence

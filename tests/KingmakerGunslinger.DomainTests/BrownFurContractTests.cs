@@ -146,6 +146,8 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurTransmutationInventory.cs"));
             string inventoryRecord = File.ReadAllText(Path.Combine(brownFur,
                 "BrownFurSpellInventoryRecord.cs"));
+            string inventoryClassification = File.ReadAllText(Path.Combine(
+                brownFur, "BrownFurInventoryClassification.cs"));
             string inventoryObserver = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurTransmutationInventoryObserver.cs"));
@@ -293,7 +295,8 @@ namespace KingmakerGunslinger.DomainTests
                 "depth > 24", ".Conditions", "positiveBonus",
                 "IsPositive" })
                 Assertions.True(inventory.Contains(token) ||
-                    inventoryRecord.Contains(token),
+                    inventoryRecord.Contains(token) ||
+                    inventoryClassification.Contains(token),
                     "Transmutation inventory lacks required field/guard: " + token);
             foreach (string token in new[] {
                 "observe-brown-fur-transmutation-inventory",
