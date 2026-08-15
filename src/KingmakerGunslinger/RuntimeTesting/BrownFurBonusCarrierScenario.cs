@@ -657,11 +657,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (expirationBuff != null)
             {
-                expirationBuff.EndTime = Game.Instance.TimeController.GameTime -
-                    TimeSpan.FromSeconds(1d);
+                SetPrivateNullableTimeSpan(expirationBuff, "m_EndTime",
+                    Game.Instance.TimeController.GameTime -
+                    TimeSpan.FromSeconds(1d));
                 result.ExpirationTimeElapsed =
                     expirationBuff.TimeLeft <= TimeSpan.Zero;
-                expirationBuff.TickMechanics();
+                target.Descriptor.Buffs.UpdateNextEvent();
+                target.Descriptor.Buffs.Tick();
                 result.ExpirationBuffRemoved = ExactBuffCount(target,
                     blueprint) == 0;
                 result.ExpirationValueRestored =
@@ -728,6 +730,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new MissingFieldException(owner == null ? string.Empty :
                     owner.GetType().FullName, fieldName);
             field.SetValue(owner, value);
+        }
+
+        private static void SetPrivateNullableTimeSpan(object owner,
+            string fieldName, TimeSpan value)
+        {
+            FieldInfo field = owner == null ? null : owner.GetType().GetField(
+                fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field == null || field.FieldType != typeof(TimeSpan?))
+                throw new MissingFieldException(owner == null ? string.Empty :
+                    owner.GetType().FullName, fieldName);
+            field.SetValue(owner, (TimeSpan?)value);
         }
 
         private static void RemoveExactBuffs(UnitEntityData target,

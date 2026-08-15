@@ -565,7 +565,9 @@ namespace KingmakerGunslinger.DomainTests
                 "RuleDispelMagic", "CheckType.CasterLevel",
                 "Rulebook.Trigger(dispelRule)",
                 "SetPrivateInt(dispelRule",
-                "expirationBuff.EndTime", "expirationBuff.TickMechanics()",
+                "SetPrivateNullableTimeSpan(expirationBuff, \"m_EndTime\"",
+                "target.Descriptor.Buffs.UpdateNextEvent()",
+                "target.Descriptor.Buffs.Tick()",
                 "ExpirationBuffRemoved", "DispelBuffRemoved",
                 "CompetitionFeature", "RemoveExactBuffs" })
                 Assertions.True(bonusCarrierScenario.Contains(token) ||
