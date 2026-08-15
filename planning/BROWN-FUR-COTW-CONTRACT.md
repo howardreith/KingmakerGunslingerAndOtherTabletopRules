@@ -197,6 +197,38 @@ This checkpoint proves native carrier registration, descriptor provenance,
 and cleanup. It still does not qualify the Brown-Fur value adjustment itself,
 descriptor competition, recast, dispel, or save/reload persistence.
 
+The execution-scoped adjustment checkpoint passed all seven guarded assertions
+on commit `2a44f651d1fe6ca94bcae9cb7a9b945598bdbe04`. The loaded DLL SHA-256 was
+`C151FB1B7D91DAE611A3DB8A898AAC40D62B5E1CAC850C8695212C26C0BA108B`,
+its MVID was `c86e3514-d70f-42cd-bd79-59644251e727`, and the structured carrier
+artifact SHA-256 was
+`FE4CC3DC499BAC2942B91442A34A68330E553CD24A22C2B24F1CB68861227165`.
+
+The exact native modifier transitions were:
+
+- static Strength `4 -> 6 Enhancement`;
+- context Constitution `2 -> 4 Enhancement`;
+- ability-value Dexterity `6 -> 8 Enhancement`;
+- polymorph Strength `2 -> 4 Polymorph`; and
+- size Strength `2 -> 4 Size`.
+
+Each immutable transaction scope was correlated through the root/child
+mechanics-context chain, exact caster, exact source spell, exact applied-buff
+GUID, selected stat, and carrier family. Each case adjusted exactly one
+modifier. A second scope deliberately selected Charisma for the non-Charisma
+carrier and made zero adjustments. After release, the same buff registered its
+ordinary value again, proving no scope leakage. Descriptor, source fact,
+source component, destination stat, removal, and baseline restoration remained
+native throughout.
+
+The patch is inert when no committed scope exists and is ordered after CotW at
+`ModifiableValue.AddModifier(Modifier)`. It catches its own exceptions so the
+optional extension cannot prevent native modifier registration. Remaining
+Powerful Change runtime gates include descriptor competition and suppression,
+ordinary/enhanced recast in both directions, dispel, level-20 `+4`, full
+spell-slot/reservoir commit integration, cancellation/interruption, and
+save/reload persistence.
+
 ## Progression contract
 
 The actual exploit-bearing `LevelEntry` objects are authoritative. The settings

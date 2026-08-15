@@ -69,3 +69,14 @@ stat returned to baseline; and the disposable units were removed. This narrows
 Powerful Change to an execution-scoped value adjustment, but does not yet
 qualify the adjustment, stacking/recast, dispel, or persistence. Brown-Fur
 therefore remains reserved and unpublished.
+
+The descriptor-preserving adjustment itself then passed on commit
+`2a44f651d1fe6ca94bcae9cb7a9b945598bdbe04`. Five real installed carrier
+cases changed `4 -> 6 Enhancement`, `2 -> 4 Enhancement`,
+`6 -> 8 Enhancement`, `2 -> 4 Polymorph`, and `2 -> 4 Size` respectively.
+Each transaction adjusted exactly once; wrong-stat scopes adjusted zero times;
+scope release restored ordinary subsequent application; and removal restored
+the baseline. Remaining Powerful Change work includes competition/recast,
+dispel, level-20 `+4`, actual spell and reservoir commit integration,
+cancellation/interruption, and persistence. Brown-Fur remains reserved and
+unpublished.
