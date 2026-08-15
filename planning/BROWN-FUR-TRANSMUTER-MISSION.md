@@ -166,8 +166,27 @@ cost changed it exactly from `3` to `1` once, exact restoration returned it to
 removed resource rejected with `reservoir-not-owned`. The resource and unit
 were removed on cleanup. This qualifies the narrow native resource adapter,
 not its pending attachment to the live command/rule/process cast lifecycle.
-Cancellation, interruption, native spell-slot interaction, and real
-Brown-Fur-owner integration therefore remain publication gates.
+That adapter is now attached to the inert production cast boundary described
+below; native submitted-spell and player-owner proof remains pending.
+
+The production cast transaction fixture passed all eight guarded assertions
+on commit `4d5f599457a1b5eb3d012dbbcfc1fc89344585f0`. The live Harmony registry
+proved the rule-commit prefix is ordered after CotW. A combined intent retained
+one transaction/reservation plus Share and Supremacy scopes, added Extend to
+the exact installed spell context, and debited the real reservoir exactly
+`3 -> 1`. The exception path restored exactly to `3` and released all scopes.
+A post-reservation shortage rejected at one point without mutation, suppressed
+exactly one native `AbilityData.Spend`, and cleaned the suppression. A request
+starting with one point failed before retaining any cast state. Exact package,
+DLL, MVID, deployment, backup, structured-artifact, and runtime-result
+identities are recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.
+
+This closes production-boundary reservation, combined debit, rollback,
+pre-slot suppression, and scope cleanup for an already validated intent. It
+does not yet publish or discover player intent, submit a real spellbook cast,
+measure the real slot delta, deliver the shared effect to an ally, qualify
+process interruption, or prove save/reload persistence. Brown-Fur remains
+reserved and unpublished.
 
 The first scoped Transmutation Supremacy fixture passed all five guarded
 assertions on commit `49d785c43b2c389d63e3a5abebd49c9288191943`. One exact

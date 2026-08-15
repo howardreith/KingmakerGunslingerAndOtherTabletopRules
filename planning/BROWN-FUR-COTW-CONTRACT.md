@@ -351,9 +351,54 @@ removed both the resource and disposable unit in its bounded cleanup.
 
 This qualifies exact native debit, pre-debit insufficiency and ownership
 rejection, restoration, and cleanup against the installed CotW resource. It
-does not yet qualify attachment of that adapter to a genuine spell cast,
-native spell-slot ordering, cancellation or interruption at the live boundary,
-or a real Brown-Fur owner. Those remain player-publication gates.
+did not by itself qualify attachment of that adapter to the cast lifecycle;
+the production-boundary checkpoint below supplies that narrower evidence.
+
+## Production cast transaction boundary
+
+The guarded `disposable-brown-fur-cast-execution` fixture passed all eight
+assertions on commit `4d5f599457a1b5eb3d012dbbcfc1fc89344585f0`.
+The exact local-runtime package SHA-256 was
+`53CFD9B94040036F0566DFFCC87C646F7D41C1E0C5654F9607CB40F2815ACB81`;
+the built, deployed, and loaded DLL SHA-256 was
+`6A82FDE7718F1C168A85197AFAB5DEE13C59A5F07789CD6FFA26CBEE10C0A39A`;
+the DLL MVID was `520c8253-5184-4511-9263-82759db39167`; the structured
+cast artifact SHA-256 was
+`2C14A55B7A33AEC5CBD2972F79DF37F397E611E6AABF4A59AC60FC94F0D07882`;
+and the runtime-result SHA-256 was
+`45A3532B1285F886B6511DBEA65A86C3CB10D96150C477CDF43C07288BF8DA29`.
+The guarded Steam App ID 640820 run used deployment identity
+`20260815T1738358154697Z`, backup identity `20260815T1738316601697Z`, and
+preserved feature-module settings SHA-256
+`5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`.
+The harness recorded game build `2018.4.10.10503941`.
+
+The live Harmony registry placed the Brown-Fur `RuleCastSpell.OnTrigger`
+prefix at priority 400 with `after=CallOfTheWild`. An already validated
+combined intent retained one transaction, one two-point reservation, and one
+Share and Supremacy scope before construction of the exact rule context. The
+installed Personal Transmutation context gained native Extend. Commitment
+then changed the real CotW reservoir from `3` to `1` exactly once and retained
+one modifier-adjustment scope. The simulated rule-exception path marked the
+transaction `Failed`, restored the reservoir exactly to `3`, and released all
+owned state.
+
+A second transaction reserved successfully and then encountered a balance
+reduced to one before commitment. It rejected with no partial debit, prevented
+native rule execution, and armed one exact `AbilityData.Spend` suppression;
+the live Harmony prefix consumed that suppression once (`1 -> 0`). A third
+combined request at one point was rejected before retaining a cast surface.
+Final transaction, reservation, Share, Supremacy, modifier, resource, and unit
+cleanup all passed with no internal failure diagnostic.
+
+This qualifies the production command/ability/rule/context boundary, combined
+two-point reservation and debit, after-CotW ordering, exception restoration,
+post-reservation insufficiency, one-shot pre-slot suppression, and bounded
+cleanup. The seam remains deliberately inert until player intent discovery
+supplies a validated transaction. It does not yet prove a submitted native
+spellbook cast and its real spell-slot delta, an applied shared effect on an
+ally, process-driven completion/interruption, a real Brown-Fur owner, or
+save/reload persistence. Those remain player-publication gates.
 
 ## Scoped Transmutation Supremacy context
 
