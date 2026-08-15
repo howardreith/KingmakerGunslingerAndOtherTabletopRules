@@ -59,6 +59,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> SharedSpellsHarmony { get; set; }
             [JsonProperty("relevantCotwHarmony", Order = 16)]
             public List<string> RelevantCotwHarmony { get; set; }
+            [JsonProperty("relevantCotwTargetingBodies", Order = 17)]
+            public List<string> RelevantCotwTargetingBodies { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -100,7 +102,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SharedSpells = Describe(shared),
                 SharedSpellsBodies = DescribeSharedSpellsBodies(contract),
                 SharedSpellsHarmony = new List<string>(),
-                RelevantCotwHarmony = new List<string>()
+                RelevantCotwHarmony = new List<string>(),
+                RelevantCotwTargetingBodies = new List<string>()
             };
             ObserveHarmony(context, evidence);
 
@@ -209,6 +212,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Has(evidence.SharedSpellsBodies,
                         "isValidShareSpellTarget"),
                 "installed CotW IL with metadata tokens resolved in-process");
+            Add(assertions, "cast-engine-cotw-targeting-bodies",
+                "exact CotW CanTarget and TargetAnchor patch bodies decoded",
+                "instructions=" + evidence.RelevantCotwTargetingBodies.Count,
+                evidence.RelevantCotwTargetingBodies.Count > 2 &&
+                    Has(evidence.RelevantCotwTargetingBodies,
+                        "AbilityData__CanTarget__Patch.Prefix") &&
+                    Has(evidence.RelevantCotwTargetingBodies,
+                        "AbilityData__TargetAnchor__Getter__Patch.Prefix"),
+                "installed CotW targeting IL and patch ordering resolved in-process");
             Add(assertions, "save-free-observer", "no save or input API invoked",
                 "read-only engine and live Harmony registry inspection", true,
                 "observer does not select, load, mutate, or save a character");
@@ -276,9 +288,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.SharedSpellsHarmony.Add(record);
                 if (string.Equals(patch.owner, "CallOfTheWild",
                         StringComparison.Ordinal) && IsRelevant(target, patchType))
+                {
                     evidence.RelevantCotwHarmony.Add(record);
+                    if (patch.patch != null && IsTargetingPatch(target))
+                    {
+                        evidence.RelevantCotwTargetingBodies.Add("method " +
+                            Signature(patch.patch));
+                        evidence.RelevantCotwTargetingBodies.AddRange(
+                            BrownFurIlDisassembler.Describe(patch.patch));
+                    }
+                }
                 order++;
             }
+        }
+
+        private static bool IsTargetingPatch(MethodBase target)
+        {
+            return target != null && target.DeclaringType == typeof(AbilityData) &&
+                (string.Equals(target.Name, "CanTarget",
+                    StringComparison.Ordinal) || string.Equals(target.Name,
+                    "get_TargetAnchor", StringComparison.Ordinal));
         }
 
         private static bool IsRelevant(MethodBase target, string patchType)

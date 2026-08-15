@@ -265,6 +265,10 @@ namespace KingmakerGunslinger.DomainTests
                 "cast-engine-duration-context",
                 "cast-engine-shared-spells-harmony", "GetPatchedMethods",
                 "cast-engine-shared-spells-bodies", "SharedSpellsBodies",
+                "cast-engine-cotw-targeting-bodies",
+                "RelevantCotwTargetingBodies", "IsTargetingPatch",
+                "AbilityData__CanTarget__Patch.Prefix",
+                "AbilityData__TargetAnchor__Getter__Patch.Prefix",
                 "priority=", "before=", "after=", "save-free-observer" })
                 Assertions.True(castEngineObserver.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
