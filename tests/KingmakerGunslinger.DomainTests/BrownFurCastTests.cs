@@ -63,22 +63,88 @@ namespace KingmakerGunslinger.DomainTests
             request.UsesArcanistSpellSlot = false;
             BrownFurCastDecision decision = BrownFurCastPolicy.Decide(request);
             Assertions.True(decision.Eligible && decision.ShareTransmutation &&
-                decision.ReservoirCost == 1,
+                decision.ReservoirCost == 1 &&
+                decision.ShareDelivery == BrownFurShareDelivery.Touch,
                 "A genuine non-Arcanist spellbook must qualify for Share Transmutation.");
-            request.TargetIsWilling = false;
+            request.ShareTarget.Relationship =
+                BrownFurShareTargetRelationship.Enemy;
             Assertions.Equal("share-target-unwilling",
                 BrownFurCastPolicy.Decide(request).Failure,
                 "An unwilling target must be rejected.");
-            request.TargetIsWilling = true;
-            request.TargetIsCreature = false;
+            request.ShareTarget.Relationship =
+                BrownFurShareTargetRelationship.PartyMember;
+            request.ShareTarget.IsCreature = false;
             Assertions.Equal("share-target-not-creature",
                 BrownFurCastPolicy.Decide(request).Failure,
                 "An object target must be rejected.");
-            request.TargetIsCreature = true;
-            request.TargetWithinShareRange = false;
+            request.ShareTarget.IsCreature = true;
+            request.HasShareThirtyFootCapstone = true;
+            request.ShareTarget.DistanceFeet = 30.01d;
             Assertions.Equal("share-target-out-of-range",
                 BrownFurCastPolicy.Decide(request).Failure,
                 "A target beyond Touch delivery or the exact 30-foot cap must reject.");
+        }
+
+        internal static void ShareWillingnessAndDeliveryAreExact()
+        {
+            foreach (BrownFurShareTargetRelationship relationship in new[] {
+                BrownFurShareTargetRelationship.Self,
+                BrownFurShareTargetRelationship.PartyMember,
+                BrownFurShareTargetRelationship.ControlledCompanion,
+                BrownFurShareTargetRelationship.AnimalCompanion,
+                BrownFurShareTargetRelationship.ControlledSummon,
+                BrownFurShareTargetRelationship.FriendlyUnattackable })
+            {
+                BrownFurCastRequest request = Valid();
+                request.ShareTransmutationRequested = true;
+                request.ShareTarget.Relationship = relationship;
+                Assertions.True(BrownFurCastPolicy.Decide(request).Eligible,
+                    "Authorized willing relationship rejected: " + relationship);
+            }
+            foreach (BrownFurShareTargetRelationship relationship in new[] {
+                BrownFurShareTargetRelationship.Unknown,
+                BrownFurShareTargetRelationship.Enemy,
+                BrownFurShareTargetRelationship.HostileNeutral,
+                BrownFurShareTargetRelationship.FriendlyAttackable,
+                BrownFurShareTargetRelationship.Ambiguous })
+            {
+                BrownFurCastRequest request = Valid();
+                request.ShareTransmutationRequested = true;
+                request.ShareTarget.Relationship = relationship;
+                Assertions.Equal("share-target-unwilling",
+                    BrownFurCastPolicy.Decide(request).Failure,
+                    "Ambiguous or attackable relationship must reject: " +
+                    relationship);
+            }
+
+            BrownFurCastRequest boundary = Valid();
+            boundary.ShareTransmutationRequested = true;
+            boundary.HasShareThirtyFootCapstone = true;
+            boundary.ShareTarget.DistanceFeet = 30d;
+            BrownFurCastDecision decision = BrownFurCastPolicy.Decide(boundary);
+            Assertions.True(decision.Eligible && decision.ShareDelivery ==
+                BrownFurShareDelivery.ThirtyFeet,
+                "The capstone must accept exactly 30 feet as a fixed range.");
+            boundary.ShareTarget.DistanceFeet = 30.001d;
+            Assertions.Equal("share-target-out-of-range",
+                BrownFurCastPolicy.Decide(boundary).Failure,
+                "The capstone must reject targets beyond exactly 30 feet.");
+        }
+
+        internal static void PowerfulChangeIncreaseUsesCapstoneValue()
+        {
+            BrownFurCastRequest request = Valid();
+            request.PowerfulChangeRequested = true;
+            request.SelectedAbilityScore = BrownFurAbilityScore.Charisma;
+            request.PositiveAbilityBonuses = new HashSet<BrownFurAbilityScore>
+                { BrownFurAbilityScore.Charisma };
+            Assertions.Equal(2, BrownFurCastPolicy.Decide(request)
+                .PowerfulChangeIncrease,
+                "Powerful Change must add two before the capstone.");
+            request.HasPowerfulChangeCapstone = true;
+            Assertions.Equal(4, BrownFurCastPolicy.Decide(request)
+                .PowerfulChangeIncrease,
+                "Powerful Change must add four at the capstone.");
         }
 
         internal static void CombinedUseCostsExactlyTwo()
@@ -124,7 +190,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void TransactionDebitsExactlyOnce()
         {
             BrownFurCastDecision decision = new BrownFurCastDecision(true,
-                string.Empty, 2, true, true, true);
+                string.Empty, 2, true, true, true, 2,
+                BrownFurShareDelivery.Touch);
             BrownFurCastTransaction transaction = new BrownFurCastTransaction(
                 Intent(2));
             int calls = 0;
@@ -147,7 +214,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void CancellationAndInterruptionAreAtomic()
         {
             BrownFurCastDecision decision = new BrownFurCastDecision(true,
-                string.Empty, 1, true, false, false);
+                string.Empty, 1, true, false, false, 2,
+                BrownFurShareDelivery.None);
             BrownFurCastTransaction cancelled = new BrownFurCastTransaction(Intent(1));
             cancelled.Validate(decision);
             Assertions.True(cancelled.Cancel() &&
@@ -179,9 +247,13 @@ namespace KingmakerGunslinger.DomainTests
                 PositiveAbilityBonuses = new HashSet<BrownFurAbilityScore>(),
                 BonusAdapterAvailable = true,
                 OriginalRange = BrownFurOriginalRange.Personal,
-                TargetIsCreature = true,
-                TargetIsWilling = true,
-                TargetWithinShareRange = true,
+                ShareTarget = new BrownFurShareTargetRequest {
+                    IsValid = true,
+                    IsCreature = true,
+                    IsAlive = true,
+                    Relationship = BrownFurShareTargetRelationship.PartyMember,
+                    DistanceFeet = 5d
+                },
                 TargetAdapterAvailable = true,
                 DurationKind = BrownFurDurationKind.Timed,
                 DurationAdapterAvailable = true,

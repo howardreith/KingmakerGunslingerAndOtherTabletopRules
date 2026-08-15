@@ -90,6 +90,7 @@
     <Compile Include="BrownFurCastTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurAbilityScore.cs"><Link>BrownFur\BrownFurAbilityScore.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastRequest.cs"><Link>BrownFur\BrownFurCastRequest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurShareTargetPolicy.cs"><Link>BrownFur\BrownFurShareTargetPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastDecision.cs"><Link>BrownFur\BrownFurCastDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastPolicy.cs"><Link>BrownFur\BrownFurCastPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastIntent.cs"><Link>BrownFur\BrownFurCastIntent.cs</Link></Compile>

@@ -38,10 +38,10 @@ namespace KingmakerGunslinger.BrownFur
                 if (!request.HasShareTransmutation) return Reject("share-not-owned");
                 if (request.OriginalRange != BrownFurOriginalRange.Personal)
                     return Reject("share-not-personal");
-                if (!request.TargetIsCreature) return Reject("share-target-not-creature");
-                if (!request.TargetIsWilling) return Reject("share-target-unwilling");
-                if (!request.TargetWithinShareRange)
-                    return Reject("share-target-out-of-range");
+                BrownFurShareTargetDecision target =
+                    BrownFurShareTargetPolicy.Decide(request.ShareTarget,
+                        request.HasShareThirtyFootCapstone);
+                if (!target.Eligible) return Reject(target.Failure);
                 if (!request.TargetAdapterAvailable)
                     return Reject("share-adapter-unavailable");
             }
@@ -53,15 +53,25 @@ namespace KingmakerGunslinger.BrownFur
             bool supremacy = request.HasTransmutationSupremacy &&
                 request.DurationKind == BrownFurDurationKind.Timed &&
                 !request.AlreadyExtended && request.DurationAdapterAvailable;
+            BrownFurShareDelivery delivery = BrownFurShareDelivery.None;
+            if (request.ShareTransmutationRequested)
+                delivery = BrownFurShareTargetPolicy.Decide(
+                    request.ShareTarget,
+                    request.HasShareThirtyFootCapstone).Delivery;
             return new BrownFurCastDecision(true, string.Empty, cost,
                 request.PowerfulChangeRequested,
-                request.ShareTransmutationRequested, supremacy);
+                request.ShareTransmutationRequested, supremacy,
+                request.PowerfulChangeRequested ?
+                    (request.HasPowerfulChangeCapstone ? 4 : 2) : 0,
+                delivery);
         }
 
         private static BrownFurCastDecision Reject(string failure)
-        { return new BrownFurCastDecision(false, failure, 0, false, false, false); }
+        { return new BrownFurCastDecision(false, failure, 0, false, false, false,
+            0, BrownFurShareDelivery.None); }
 
         private static BrownFurCastDecision Unmodified()
-        { return new BrownFurCastDecision(true, string.Empty, 0, false, false, false); }
+        { return new BrownFurCastDecision(true, string.Empty, 0, false, false, false,
+            0, BrownFurShareDelivery.None); }
     }
 }

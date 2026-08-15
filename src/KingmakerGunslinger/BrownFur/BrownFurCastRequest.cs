@@ -35,7 +35,9 @@ namespace KingmakerGunslinger.BrownFur
         internal BrownFurCastSourceKind SourceKind { get; set; }
         internal bool UsesArcanistSpellSlot { get; set; }
         internal bool HasPowerfulChange { get; set; }
+        internal bool HasPowerfulChangeCapstone { get; set; }
         internal bool HasShareTransmutation { get; set; }
+        internal bool HasShareThirtyFootCapstone { get; set; }
         internal bool HasTransmutationSupremacy { get; set; }
         internal bool PowerfulChangeRequested { get; set; }
         internal BrownFurAbilityScore SelectedAbilityScore { get; set; }
@@ -43,9 +45,7 @@ namespace KingmakerGunslinger.BrownFur
         internal bool BonusAdapterAvailable { get; set; }
         internal bool ShareTransmutationRequested { get; set; }
         internal BrownFurOriginalRange OriginalRange { get; set; }
-        internal bool TargetIsCreature { get; set; }
-        internal bool TargetIsWilling { get; set; }
-        internal bool TargetWithinShareRange { get; set; }
+        internal BrownFurShareTargetRequest ShareTarget { get; set; }
         internal bool TargetAdapterAvailable { get; set; }
         internal BrownFurDurationKind DurationKind { get; set; }
         internal bool AlreadyExtended { get; set; }

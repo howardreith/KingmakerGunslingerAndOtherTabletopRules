@@ -312,6 +312,7 @@
     <Compile Include="BrownFur\BrownFurTransmutationInventory.cs" />
     <Compile Include="BrownFur\BrownFurAbilityScore.cs" />
     <Compile Include="BrownFur\BrownFurCastRequest.cs" />
+    <Compile Include="BrownFur\BrownFurShareTargetPolicy.cs" />
     <Compile Include="BrownFur\BrownFurCastDecision.cs" />
     <Compile Include="BrownFur\BrownFurCastPolicy.cs" />
     <Compile Include="BrownFur\BrownFurCastIntent.cs" />
