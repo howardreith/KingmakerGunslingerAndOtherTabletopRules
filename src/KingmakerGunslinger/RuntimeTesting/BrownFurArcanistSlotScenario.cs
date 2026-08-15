@@ -248,6 +248,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 caster.Descriptor.Resources.Restore(contract.Reservoir,
                     evidence.ReservoirBefore - evidence.RaceReservoirAfter);
                 casting.Rest();
+                string afterRestBeforeKnown = ProbeCanSpend(casting, spell);
+                if (!casting.IsKnown(spell))
+                    casting.AddKnown(SpellLevel, spell, true);
                 string afterRest = ProbeCanSpend(casting, spell);
                 if (caster.Descriptor.AddFact(blueprints.PowerfulChange) == null)
                     throw new InvalidOperationException(
@@ -294,7 +297,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     -1 : casting.GetAvailableForCastSpellCount(automaticRoot);
                 var automaticCommand = new UnitUseAbility(automaticData,
                     new TargetWrapper(caster));
-                evidence.AutomaticCanSpendTimeline = "rest=" + afterRest +
+                evidence.AutomaticCanSpendTimeline = "restBeforeKnown=" +
+                    afterRestBeforeKnown + ";knownRestored=" + afterRest +
                     ";powerful=" + afterPowerful + ";shareFeature=" +
                     afterShareFeature + ";supremacy=" + afterSupremacy +
                     ";score=" + afterScore + ";shareToggle=" +
