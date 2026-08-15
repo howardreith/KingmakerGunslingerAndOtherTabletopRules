@@ -54,6 +54,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.publication-failure-rollback", BrownFurPublicationTransactionTests.FailureRollsBackEveryOwnedSurface),
             Case("brown-fur.publication-preserve-later", BrownFurPublicationTransactionTests.RollbackPreservesProvenLaterAppend),
             Case("brown-fur.publication-ambiguous-rollback", BrownFurPublicationTransactionTests.RollbackRefusesAmbiguousMutation),
+            Case("brown-fur.publication-guid-conflict", BrownFurPublicationTransactionTests.ConflictingGuidRollsBackRegisteredIdentities),
             Case("brown-fur.cast-powerful-six-stats", BrownFurCastTests.PowerfulChangeSupportsEachAbilityScore),
             Case("brown-fur.cast-powerful-invalid-stat", BrownFurCastTests.PowerfulChangeRejectsInvalidStatWithoutCost),
             Case("brown-fur.cast-powerful-arcanist-slot", BrownFurCastTests.PowerfulChangeRequiresArcanistSpellSlot),

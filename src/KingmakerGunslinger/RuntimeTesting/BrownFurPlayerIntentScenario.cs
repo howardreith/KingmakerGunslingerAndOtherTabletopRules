@@ -187,13 +187,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             Add(assertions, "intent-stable-blueprints",
-                "all 19 registered identities and no selector publication",
+                "all 19 registered identities and exactly one selector publication",
                 "identities=" + evidence.IdentityCount + ";selectorBefore=" +
                     evidence.SelectorReferencesBefore + ";selectorAfter=" +
                     evidence.SelectorReferencesAfter,
                 evidence.IdentityCount == 19 &&
-                    evidence.SelectorReferencesBefore == 0 &&
-                    evidence.SelectorReferencesAfter == 0,
+                    evidence.SelectorReferencesBefore == 1 &&
+                    evidence.SelectorReferencesAfter == 1,
                 "registered optional-extension blueprint set");
             Add(assertions, "intent-feature-grants",
                 "real features grant selection ability and off-by-default Share activatable",

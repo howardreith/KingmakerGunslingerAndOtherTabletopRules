@@ -2809,8 +2809,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     expectedActive &&
                 BrownFurFeatureStatusRegistry.Current.Availability ==
                     BrownFurDependencyAvailability.Available &&
-                !BrownFurFeatureStatusRegistry.Current.Published &&
-                selectorReferences == 0;
+                BrownFurFeatureStatusRegistry.Current.Published ==
+                    expectedActive &&
+                selectorReferences == (expectedActive ? 1 : 0);
 
             if (!prepare)
             {
@@ -2954,7 +2955,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .WorkingSaveBrownFurOffVerifyCleanup ?
                         "saved OFF; dependency available; selector hidden" :
-                        "saved ON; dependency available; selector gated",
+                        "saved ON; dependency available; selector published",
                     _brownFurPersistenceDetail,
                     _brownFurPersistenceModuleStateValid,
                     "immutable active settings, effective dependency status, and exact Arcanist archetype array"),

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -22,6 +23,7 @@ namespace KingmakerGunslinger.BrownFur
         private static CotwArcanistResolution _current;
         private static BlueprintRegistry _registry;
         private static BrownFurBlueprintSet _blueprints;
+        private static BrownFurPublicationTransaction _publication;
         private static bool _installed;
         private static bool _firstUpdateAttached;
         private static bool _reconciling;
@@ -35,6 +37,16 @@ namespace KingmakerGunslinger.BrownFur
 
         internal static int SuccessfulReconciliations
         { get { lock (Gate) return _successfulReconciliations; } }
+
+        internal static IReadOnlyList<string> PublicationEvidence
+        {
+            get
+            {
+                lock (Gate)
+                    return _publication == null ? new string[0] :
+                        _publication.Evidence.ToArray();
+            }
+        }
 
         internal static void Install(ModContext context)
         {
@@ -172,10 +184,21 @@ namespace KingmakerGunslinger.BrownFur
                 if (!EnsureBlueprintsRegistered(context, resolution.Contract,
                     checkpoint)) return;
 
+                bool published = context.FeatureModules.Active
+                    .BrownFurTransmuter && EnsurePublished(context,
+                        resolution.Contract, checkpoint);
+                if (!context.FeatureModules.Active.BrownFurTransmuter)
+                    ValidateNotPublished(resolution.Contract);
+
+                resolution.Contract.Fingerprint.PublicationStatus = published ?
+                    "published" : "compatible-not-published-module-off";
+
                 lock (Gate) _successfulReconciliations++;
                 BrownFurFeatureStatusRegistry.Update(new BrownFurFeatureStatus(
-                    BrownFurDependencyAvailability.Available, false,
-                    "Compatible CotW contract resolved and 19 stable Brown-Fur identities registered; archetype publication remains gated pending focused mechanics qualification."));
+                    BrownFurDependencyAvailability.Available, published,
+                    published ?
+                        "Compatible CotW contract resolved; 19 stable Brown-Fur identities registered and the archetype is published exactly once." :
+                        "Compatible CotW contract resolved; 19 stable Brown-Fur identities remain registered for existing owners, while the saved OFF setting hides the archetype from new selection."));
                 BrownFurDiagnostics.Info(context, "contract.compatible",
                     "checkpoint=" + checkpoint + ";activeSetting=" +
                     context.FeatureModules.Active.BrownFurTransmuter + ";" +
@@ -190,6 +213,108 @@ namespace KingmakerGunslinger.BrownFur
             finally
             {
                 lock (Gate) _reconciling = false;
+            }
+        }
+
+        private static bool EnsurePublished(ModContext context,
+            CotwArcanistContract contract, string checkpoint)
+        {
+            BrownFurPublicationTransaction existing;
+            BrownFurBlueprintSet blueprints;
+            lock (Gate)
+            {
+                existing = _publication;
+                blueprints = _blueprints;
+            }
+            if (blueprints == null) throw new InvalidOperationException(
+                "Brown-Fur identities must be registered before publication.");
+            if (existing != null)
+            {
+                existing.Commit();
+                ValidatePublished(contract, blueprints);
+                BrownFurDiagnostics.Info(context, "publication.idempotent",
+                    "checkpoint=" + checkpoint + ";" +
+                    string.Join("|", existing.Evidence.ToArray()));
+                return true;
+            }
+
+            var transaction = new BrownFurPublicationTransaction()
+                .Step("brown-fur-registered-identities", () => { },
+                    RollbackRegisteredIdentities)
+                .Append("cotw-arcanist-archetypes",
+                    () => (IList<Kingmaker.Blueprints.Classes.BlueprintArchetype>)
+                        (contract.ArcanistClass.Archetypes ??
+                            new Kingmaker.Blueprints.Classes.BlueprintArchetype[0])
+                        .ToList(),
+                    values => contract.ArcanistClass.Archetypes =
+                        values.ToArray(),
+                    new[] { blueprints.Archetype }, value => value.AssetGuid);
+            lock (Gate) _publication = transaction;
+            try
+            {
+                transaction.Commit();
+                ValidatePublished(contract, blueprints);
+                BrownFurDiagnostics.Info(context, "publication.complete",
+                    "checkpoint=" + checkpoint + ";" +
+                    string.Join("|", transaction.Evidence.ToArray()));
+                return true;
+            }
+            catch (Exception publicationFailure)
+            {
+                lock (Gate) _publication = null;
+                try { transaction.Rollback(); }
+                catch (Exception rollbackFailure)
+                {
+                    throw new InvalidOperationException(
+                        "Brown-Fur publication validation failed and rollback was incomplete.",
+                        new AggregateException(publicationFailure,
+                            rollbackFailure));
+                }
+                throw;
+            }
+        }
+
+        private static void ValidatePublished(CotwArcanistContract contract,
+            BrownFurBlueprintSet blueprints)
+        {
+            Kingmaker.Blueprints.Classes.BlueprintArchetype[] archetypes =
+                contract.ArcanistClass.Archetypes ??
+                    new Kingmaker.Blueprints.Classes.BlueprintArchetype[0];
+            if (archetypes.Count(value => ReferenceEquals(value,
+                    blueprints.Archetype)) != 1 ||
+                archetypes.Count(value => string.Equals(value.AssetGuid,
+                    blueprints.Archetype.AssetGuid,
+                    StringComparison.Ordinal)) != 1)
+                throw new InvalidOperationException(
+                    "Brown-Fur archetype publication was not retained exactly once by reference and GUID.");
+        }
+
+        private static void ValidateNotPublished(CotwArcanistContract contract)
+        {
+            BrownFurBlueprintSet blueprints;
+            lock (Gate) blueprints = _blueprints;
+            if (blueprints == null) throw new InvalidOperationException(
+                "Brown-Fur identities must remain registered while the module is OFF.");
+            Kingmaker.Blueprints.Classes.BlueprintArchetype[] archetypes =
+                contract.ArcanistClass.Archetypes ??
+                    new Kingmaker.Blueprints.Classes.BlueprintArchetype[0];
+            if (archetypes.Any(value => ReferenceEquals(value,
+                    blueprints.Archetype) || string.Equals(value.AssetGuid,
+                    blueprints.Archetype.AssetGuid,
+                    StringComparison.Ordinal)))
+                throw new InvalidOperationException(
+                    "Brown-Fur is present in the CotW Arcanist selector while its active setting is OFF.");
+        }
+
+        private static void RollbackRegisteredIdentities()
+        {
+            BlueprintRegistry registry;
+            lock (Gate) registry = _registry;
+            if (registry != null) registry.RollbackAll();
+            lock (Gate)
+            {
+                _registry = null;
+                _blueprints = null;
             }
         }
 

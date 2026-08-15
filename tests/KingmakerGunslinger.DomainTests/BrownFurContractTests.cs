@@ -319,7 +319,8 @@ namespace KingmakerGunslinger.DomainTests
                 "DescribePatchOrder", "EnsureBlueprintsRegistered",
                 "BlueprintBootstrap.Library", "registration.deferred",
                 "registry.RollbackAll()", "BrownFurIdentityCatalog.IdentityCount",
-                "archetype publication remains gated" })
+                "EnsurePublished", "cotw-arcanist-archetypes",
+                "RollbackRegisteredIdentities" })
                 Assertions.True(coordinator.Contains(token),
                     "Optional coordinator lacks lifecycle/isolation guard: " + token);
             Assertions.True(main.Contains(

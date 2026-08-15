@@ -108,6 +108,32 @@ namespace KingmakerGunslinger.DomainTests
                 "Unsafe rollback altered an unrelated publication.");
         }
 
+        internal static void ConflictingGuidRollsBackRegisteredIdentities()
+        {
+            var native = new Fake("native");
+            var conflicting = new Fake("brown-fur");
+            var brownFur = new Fake("brown-fur");
+            IList<Fake> archetypes = new List<Fake> { native, conflicting };
+            bool identitiesRegistered = true;
+            var transaction = new BrownFurPublicationTransaction()
+                .Step("brown-fur-registered-identities", () => { },
+                    () => identitiesRegistered = false)
+                .Append("cotw-arcanist-archetypes", () => archetypes,
+                    value => archetypes = value, new[] { brownFur },
+                    value => value.Id);
+
+            Assertions.Throws<InvalidOperationException>(() =>
+                transaction.Commit(),
+                "A foreign archetype with the Brown-Fur GUID must fail closed.");
+            Assertions.True(!identitiesRegistered && archetypes.Count == 2 &&
+                ReferenceEquals(archetypes[0], native) &&
+                ReferenceEquals(archetypes[1], conflicting),
+                "GUID conflict did not preserve the foreign selector and roll back owned identities.");
+            Assertions.True(transaction.Evidence.Any(value => value.Contains(
+                "surface=brown-fur-registered-identities;action=rolled-back")),
+                "GUID-conflict rollback omitted identity-registration evidence.");
+        }
+
         private sealed class Fake
         {
             internal Fake(string id) { Id = id; }

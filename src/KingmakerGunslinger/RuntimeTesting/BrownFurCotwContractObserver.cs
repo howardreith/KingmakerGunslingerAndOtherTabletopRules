@@ -104,12 +104,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !string.IsNullOrWhiteSpace(fingerprint.DllMvid) &&
                     !string.IsNullOrWhiteSpace(fingerprint.ModVersion),
                 "live loaded CotW assembly and exact settings bytes");
+            bool publicationExpected = context.FeatureModules.Active
+                .BrownFurTransmuter;
             Add(assertions, "brown-fur-effective-status",
-                "available, stable identities registered, not published",
+                publicationExpected ?
+                    "available, stable identities registered, published" :
+                    "available, stable identities registered, not published",
                 status.DependencyStatus + ";" + status.PublicationStatus +
                     ";detail=" + status.Detail,
                 status.Availability == BrownFurDependencyAvailability.Available &&
-                    !status.Published,
+                    status.Published == publicationExpected,
                 "dependency state is distinct from saved intent and publication");
             bool identitiesExact = blueprints != null &&
                 BlueprintBootstrap.Library != null &&
@@ -127,9 +131,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 contract.ArcanistClass.Archetypes == null ||
                 blueprints == null ? 0 : contract.ArcanistClass.Archetypes.Count(
                     value => ReferenceEquals(value, blueprints.Archetype));
-            Add(assertions, "brown-fur-publication-gate", "0 selector references",
-                archetypeReferences.ToString(), archetypeReferences == 0,
-                "stable assets exist for save identity while player-facing publication remains mechanically gated");
+            int expectedReferences = publicationExpected ? 1 : 0;
+            Add(assertions, "brown-fur-publication-gate",
+                expectedReferences + " selector references",
+                archetypeReferences.ToString(),
+                archetypeReferences == expectedReferences,
+                "module-ON publication or module-OFF hiding in the exact CotW Arcanist archetype array");
+            IReadOnlyList<string> publicationEvidence =
+                BrownFurOptionalExtensionCoordinator.PublicationEvidence;
+            Add(assertions, "brown-fur-publication-transaction",
+                publicationExpected ? "committed additive transaction" :
+                    "no publication transaction",
+                string.Join("|", publicationEvidence.ToArray()),
+                publicationExpected ? publicationEvidence.Any(value =>
+                    value.Contains("transaction;action=committed")) &&
+                    publicationEvidence.Any(value => value.Contains(
+                        "surface=cotw-arcanist-archetypes;action=published")) :
+                    publicationEvidence.Count == 0,
+                "Brown-Fur-owned idempotent publication evidence");
             Add(assertions, "brown-fur-reconciliation", ">=1", BrownFurOptionalExtensionCoordinator
                 .SuccessfulReconciliations.ToString(),
                 BrownFurOptionalExtensionCoordinator.SuccessfulReconciliations >= 1,
