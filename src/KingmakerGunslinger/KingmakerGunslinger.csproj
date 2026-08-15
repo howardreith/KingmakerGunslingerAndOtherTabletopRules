@@ -786,6 +786,7 @@
     <Compile Include="RuntimeTesting\BrownFurCastEngineContractObserver.cs" />
     <Compile Include="RuntimeTesting\BrownFurIlDisassembler.cs" />
     <Compile Include="RuntimeTesting\BrownFurBonusCarrierScenario.cs" />
+    <Compile Include="RuntimeTesting\BrownFurShareTargetingScenario.cs" />
     <Compile Include="RuntimeTesting\ManualSaveLoadObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogSelectionObservation.cs" />
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />

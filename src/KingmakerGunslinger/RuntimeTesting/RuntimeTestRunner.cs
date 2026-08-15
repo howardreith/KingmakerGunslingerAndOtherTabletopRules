@@ -631,6 +631,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableBrownFurShareTargeting)
+                {
+                    Complete(BrownFurShareTargetingScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveShieldOtherInventory)
                 {
                     Complete(RunShieldOtherInventoryObservation());

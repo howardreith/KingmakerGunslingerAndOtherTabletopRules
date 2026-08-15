@@ -155,6 +155,9 @@ namespace KingmakerGunslinger.DomainTests
             string bonusCarrierScenario = File.ReadAllText(Path.Combine(root,
                 "src", "KingmakerGunslinger", "RuntimeTesting",
                 "BrownFurBonusCarrierScenario.cs"));
+            string shareTargetingScenario = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "RuntimeTesting",
+                "BrownFurShareTargetingScenario.cs"));
             string modifierRuntime = File.ReadAllText(Path.Combine(brownFur,
                 "BrownFurModifierAdjustmentRuntime.cs"));
             string modifierPatch = File.ReadAllText(Path.Combine(brownFur,
@@ -170,6 +173,11 @@ namespace KingmakerGunslinger.DomainTests
                 "DisposableBrownFurBonusCarriers" },
                 StringSplitOptions.None).Length,
                 "The disposable bonus carrier constant must be declared and " +
+                "present exactly once in the in-process allowlist.");
+            Assertions.Equal(3, scenarios.Split(new[] {
+                "DisposableBrownFurShareTargeting" },
+                StringSplitOptions.None).Length,
+                "The disposable Share targeting constant must be declared and " +
                 "present exactly once in the in-process allowlist.");
             foreach (string token in new[] { "arcanist_class",
                 "arcanist_progression", "arcanist_spellbook",
@@ -309,6 +317,20 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(bonusCarrierScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded bonus carrier fixture lacks evidence token: " + token);
+            foreach (string token in new[] {
+                "disposable-brown-fur-share-targeting",
+                "brown-fur-share-targeting.json", "PersonalSpellGuid",
+                "AbilityRange.Personal", "BaselineAnchor",
+                "BaselineCanTarget", "TouchRejectsDifferentTarget",
+                "TouchApproachMeters", "CapstoneDeltaMeters",
+                "ThirtyFeetMeters", "BrownFurShareTargetingRuntime.Begin",
+                "BrownFurShareTargetingRuntime.Release",
+                "BrownFurShareTargetingRuntime.Clear", "RangeBefore",
+                "RangeAfter", "ActiveScopesAfter", "UnitsRemoved" })
+                Assertions.True(shareTargetingScenario.Contains(token) ||
+                    scenarios.Contains(token) || runtimeCommon.Contains(token),
+                    "Guarded Share targeting fixture lacks evidence token: " +
+                    token);
             foreach (string token in new[] {
                 "Dictionary<string, Scope>", "TransactionIdentity",
                 "RootContext", "ParentContext", "MaybeCaster",
