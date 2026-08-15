@@ -562,6 +562,11 @@ namespace KingmakerGunslinger.DomainTests
                 "OrdinaryToEnhancedValue",
                 "EnhancedRetainedAfterRelease",
                 "EnhancedToOrdinaryValue", "CapstoneModifierValue",
+                "RuleDispelMagic", "CheckType.CasterLevel",
+                "Rulebook.Trigger(dispelRule)",
+                "SetPrivateInt(dispelRule",
+                "expirationBuff.EndTime", "expirationBuff.TickMechanics()",
+                "ExpirationBuffRemoved", "DispelBuffRemoved",
                 "CompetitionFeature", "RemoveExactBuffs" })
                 Assertions.True(bonusCarrierScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),

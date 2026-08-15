@@ -12,6 +12,8 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -110,6 +112,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("capstoneDescriptor", Order = 11)] public string CapstoneDescriptor { get; set; }
             [JsonProperty("cleanup", Order = 12)] public bool Cleanup { get; set; }
             [JsonProperty("pass", Order = 13)] public bool Pass { get; set; }
+            [JsonProperty("dispelRuleSuccess", Order = 14)] public bool DispelRuleSuccess { get; set; }
+            [JsonProperty("dispelBuffRemoved", Order = 15)] public bool DispelBuffRemoved { get; set; }
+            [JsonProperty("dispelValueRestored", Order = 16)] public bool DispelValueRestored { get; set; }
+            [JsonProperty("expirationTimeElapsed", Order = 17)] public bool ExpirationTimeElapsed { get; set; }
+            [JsonProperty("expirationBuffRemoved", Order = 18)] public bool ExpirationBuffRemoved { get; set; }
+            [JsonProperty("expirationValueRestored", Order = 19)] public bool ExpirationValueRestored { get; set; }
         }
 
         private static readonly Case[] Cases = {
@@ -594,6 +602,72 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (capstoneBuff != null) capstoneBuff.Remove();
                 BrownFurModifierAdjustmentRuntime.Release(capstone);
             }
+
+            const string dispel = "native-dispel";
+            Buff dispelBuff = null;
+            try
+            {
+                MechanicsContext dispelContext = CarrierContext(caster,
+                    target, spell);
+                if (!BrownFurModifierAdjustmentRuntime.Begin(dispel,
+                    dispelContext, caster, spell,
+                    BrownFurAbilityScore.Strength, 2,
+                    new[] { "b175001b42b1a02479881b72fe132116" },
+                    new[] { "AddStatBonus" })) return result;
+                dispelBuff = target.Descriptor.Buffs.AddBuff(blueprint,
+                    dispelContext, TimeSpan.FromMinutes(20d));
+            }
+            finally
+            {
+                BrownFurModifierAdjustmentRuntime.Release(dispel);
+            }
+            if (dispelBuff != null)
+            {
+                var dispelRule = new RuleDispelMagic(caster, target,
+                    dispelBuff, RuleDispelMagic.CheckType.CasterLevel,
+                    StatType.SkillKnowledgeArcana);
+                SetPrivateInt(dispelRule, "<CheckRoll>k__BackingField", 20);
+                SetPrivateInt(dispelRule, "<CasterLevel>k__BackingField", 20);
+                SetPrivateInt(dispelRule, "<DC>k__BackingField", 1);
+                Rulebook.Trigger(dispelRule);
+                result.DispelRuleSuccess = dispelRule.Success;
+                result.DispelBuffRemoved = ExactBuffCount(target,
+                    blueprint) == 0;
+                result.DispelValueRestored = stat.ModifiedValue == baseline;
+                if (!result.DispelBuffRemoved) dispelBuff.Remove();
+            }
+
+            const string expiration = "native-expiration";
+            Buff expirationBuff = null;
+            try
+            {
+                MechanicsContext expirationContext = CarrierContext(caster,
+                    target, spell);
+                if (!BrownFurModifierAdjustmentRuntime.Begin(expiration,
+                    expirationContext, caster, spell,
+                    BrownFurAbilityScore.Strength, 2,
+                    new[] { "b175001b42b1a02479881b72fe132116" },
+                    new[] { "AddStatBonus" })) return result;
+                expirationBuff = target.Descriptor.Buffs.AddBuff(blueprint,
+                    expirationContext, TimeSpan.FromSeconds(1d));
+            }
+            finally
+            {
+                BrownFurModifierAdjustmentRuntime.Release(expiration);
+            }
+            if (expirationBuff != null)
+            {
+                expirationBuff.EndTime = Game.Instance.TimeController.GameTime -
+                    TimeSpan.FromSeconds(1d);
+                result.ExpirationTimeElapsed =
+                    expirationBuff.TimeLeft <= TimeSpan.Zero;
+                expirationBuff.TickMechanics();
+                result.ExpirationBuffRemoved = ExactBuffCount(target,
+                    blueprint) == 0;
+                result.ExpirationValueRestored =
+                    stat.ModifiedValue == baseline;
+                if (!result.ExpirationBuffRemoved) expirationBuff.Remove();
+            }
             result.Cleanup = stat.ModifiedValue == baseline &&
                 ExactBuffCount(target, blueprint) == 0 &&
                 BrownFurModifierAdjustmentRuntime.ActiveScopeCount == 0;
@@ -608,7 +682,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.EnhancedToOrdinaryValue == baseline + 4 &&
                 result.EnhancedToOrdinaryCount == 1 &&
                 result.CapstoneModifierValue == 8 &&
-                result.CapstoneDescriptor == "Enhancement" && result.Cleanup;
+                result.CapstoneDescriptor == "Enhancement" &&
+                result.DispelRuleSuccess && result.DispelBuffRemoved &&
+                result.DispelValueRestored && result.ExpirationTimeElapsed &&
+                result.ExpirationBuffRemoved &&
+                result.ExpirationValueRestored && result.Cleanup;
             return result;
         }
 
@@ -641,6 +719,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(value.Blueprint, blueprint));
         }
 
+        private static void SetPrivateInt(object owner, string fieldName,
+            int value)
+        {
+            FieldInfo field = owner == null ? null : owner.GetType().GetField(
+                fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field == null || field.FieldType != typeof(int))
+                throw new MissingFieldException(owner == null ? string.Empty :
+                    owner.GetType().FullName, fieldName);
+            field.SetValue(owner, value);
+        }
+
         private static void RemoveExactBuffs(UnitEntityData target,
             BlueprintBuff blueprint)
         {
@@ -662,6 +751,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.EnhancedToOrdinaryValue + "/" +
                 value.EnhancedToOrdinaryCount + ";capstone=" +
                 value.CapstoneModifierValue + "/" + value.CapstoneDescriptor +
+                ";dispel=" + value.DispelRuleSuccess + "/" +
+                value.DispelBuffRemoved + "/" +
+                value.DispelValueRestored + ";expiration=" +
+                value.ExpirationTimeElapsed + "/" +
+                value.ExpirationBuffRemoved + "/" +
+                value.ExpirationValueRestored +
                 ";cleanup=" + value.Cleanup;
         }
 
