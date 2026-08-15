@@ -336,6 +336,76 @@ namespace KingmakerGunslinger.DomainTests
                 "Bounded transition cleanup must interrupt and release remaining casts.");
         }
 
+        internal static void ReservoirDebitIsExact()
+        {
+            int points = 3;
+            int spendCalls = 0;
+            BrownFurReservoirDebitResult result =
+                BrownFurExactDebitPolicy.TryDebitExact(2, () => true,
+                    () => points, cost => points >= cost, cost => {
+                        spendCalls++;
+                        points -= cost;
+                    }, amount => points += amount);
+            Assertions.True(result.Success && result.Before == 3 &&
+                result.ObservedAfterSpend == 1 && result.FinalAmount == 1 &&
+                !result.RollbackAttempted && spendCalls == 1 && points == 1,
+                "A successful reservoir transaction must debit the total exactly once.");
+            result = BrownFurExactDebitPolicy.TryDebitExact(0, null, null,
+                null, null, null);
+            Assertions.True(result.Success && !result.RollbackAttempted,
+                "A zero-cost unmodified cast must not require or touch a resource.");
+        }
+
+        internal static void ReservoirDebitRejectsBeforeSpend()
+        {
+            int points = 1;
+            int spendCalls = 0;
+            BrownFurReservoirDebitResult result =
+                BrownFurExactDebitPolicy.TryDebitExact(2, () => true,
+                    () => points, cost => points >= cost,
+                    cost => { spendCalls++; points -= cost; },
+                    amount => points += amount);
+            Assertions.True(!result.Success &&
+                result.Failure == "reservoir-insufficient" &&
+                spendCalls == 0 && points == 1 && !result.RollbackAttempted,
+                "Insufficient reservoir must reject before any partial debit.");
+            result = BrownFurExactDebitPolicy.TryDebitExact(1, () => false,
+                () => points, cost => true, cost => spendCalls++,
+                amount => points += amount);
+            Assertions.True(!result.Success &&
+                result.Failure == "reservoir-not-owned" && spendCalls == 0,
+                "A caster without the exact CotW reservoir must not be debited.");
+        }
+
+        internal static void ReservoirDebitRollsBackAnomaly()
+        {
+            int points = 5;
+            BrownFurReservoirDebitResult mismatch =
+                BrownFurExactDebitPolicy.TryDebitExact(2, () => true,
+                    () => points, cost => true, cost => points -= 1,
+                    amount => points += amount);
+            Assertions.True(!mismatch.Success &&
+                mismatch.Failure == "reservoir-debit-mismatch" &&
+                mismatch.ObservedAfterSpend == 4 &&
+                mismatch.RollbackAttempted && mismatch.RollbackSucceeded &&
+                mismatch.FinalAmount == 5 && points == 5,
+                "A non-exact native debit must fail and restore the original amount.");
+
+            points = 5;
+            BrownFurReservoirDebitResult exception =
+                BrownFurExactDebitPolicy.TryDebitExact(2, () => true,
+                    () => points, cost => true, cost => {
+                        points -= cost;
+                        throw new InvalidOperationException("fixture");
+                    }, amount => points += amount);
+            Assertions.True(!exception.Success &&
+                exception.Failure ==
+                    "reservoir-debit-exception:System.InvalidOperationException" &&
+                exception.RollbackAttempted && exception.RollbackSucceeded &&
+                exception.FinalAmount == 5 && points == 5,
+                "An exception after mutation must restore the original amount.");
+        }
+
         internal static void ModifierAdjustmentPreservesDescriptor()
         {
             BrownFurModifierAdjustmentRequest request = ModifierRequest();
