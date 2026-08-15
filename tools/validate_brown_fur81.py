@@ -29,6 +29,7 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/BrownFur/CotwArcanistResolver.cs",
         "src/KingmakerGunslinger/BrownFur/CotwSharedSpellsBridge.cs",
         "src/KingmakerGunslinger/BrownFur/BrownFurOptionalExtensionCoordinator.cs",
+        "src/KingmakerGunslinger/BrownFur/BrownFurPublicationTransaction.cs",
         "src/KingmakerGunslinger/RuntimeTesting/BrownFurCotwContractObserver.cs",
     )
     for relative in required:

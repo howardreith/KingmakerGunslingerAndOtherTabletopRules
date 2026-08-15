@@ -1,0 +1,117 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using KingmakerGunslinger.BrownFur;
+
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class BrownFurPublicationTransactionTests
+    {
+        internal static void PublishesAdditivelyAndIdempotently()
+        {
+            var native = new Fake("native");
+            var foreign = new Fake("foreign");
+            var brownFur = new Fake("brown-fur");
+            IList<Fake> archetypes = new List<Fake> { native, foreign };
+            bool bridge = false;
+            int applyCount = 0;
+            int rollbackCount = 0;
+            var transaction = new BrownFurPublicationTransaction()
+                .Append("arcanist-archetypes", () => archetypes,
+                    value => archetypes = value, new[] { brownFur },
+                    value => value.Id)
+                .Configure("temporary-bridge", () => bridge,
+                    value => bridge = value, true, EqualityComparer<bool>.Default)
+                .Step("registered-identities", () => applyCount++,
+                    () => rollbackCount++);
+
+            transaction.Commit();
+            transaction.Commit();
+
+            Assertions.True(transaction.IsCommitted && archetypes.Count == 3 &&
+                ReferenceEquals(archetypes[0], native) &&
+                ReferenceEquals(archetypes[1], foreign) &&
+                ReferenceEquals(archetypes[2], brownFur),
+                "Brown-Fur publication did not preserve existing archetype order.");
+            Assertions.True(bridge && applyCount == 1 && rollbackCount == 0,
+                "Repeated commit was not idempotent across owned surfaces.");
+            Assertions.True(transaction.Evidence.Any(value => value.Contains(
+                "surface=arcanist-archetypes;action=published")),
+                "Publication evidence omitted the archetype surface.");
+        }
+
+        internal static void FailureRollsBackEveryOwnedSurface()
+        {
+            var native = new Fake("native");
+            var brownFur = new Fake("brown-fur");
+            IList<Fake> archetypes = new List<Fake> { native };
+            IList<Fake> original = archetypes;
+            bool bridge = false;
+            bool registrationsRolledBack = false;
+            var transaction = new BrownFurPublicationTransaction()
+                .Step("registered-identities", () => { },
+                    () => registrationsRolledBack = true)
+                .Append("arcanist-archetypes", () => archetypes,
+                    value => archetypes = value, new[] { brownFur },
+                    value => value.Id)
+                .Configure("temporary-bridge", () => bridge,
+                    value => bridge = value, true, EqualityComparer<bool>.Default)
+                .Step("failing-selector", () => { throw new
+                    InvalidOperationException("fixture"); }, () => { });
+
+            Assertions.Throws<InvalidOperationException>(() => transaction.Commit(),
+                "Publication failure was not surfaced.");
+            Assertions.True(ReferenceEquals(archetypes, original) && !bridge &&
+                registrationsRolledBack,
+                "Failed publication did not restore every earlier owned surface.");
+        }
+
+        internal static void RollbackPreservesProvenLaterAppend()
+        {
+            var native = new Fake("native");
+            var brownFur = new Fake("brown-fur");
+            var later = new Fake("later");
+            IList<Fake> archetypes = new List<Fake> { native };
+            var transaction = new BrownFurPublicationTransaction().Append(
+                "arcanist-archetypes", () => archetypes,
+                value => archetypes = value, new[] { brownFur }, value => value.Id);
+            transaction.Commit();
+            archetypes = archetypes.Concat(new[] { later }).ToList();
+
+            transaction.Rollback();
+            transaction.Rollback();
+
+            Assertions.True(!transaction.IsCommitted && archetypes.Count == 2 &&
+                ReferenceEquals(archetypes[0], native) &&
+                ReferenceEquals(archetypes[1], later),
+                "Rollback did not remove only Brown-Fur's append.");
+            Assertions.True(transaction.Evidence.Any(value => value.Contains(
+                "preserved-later=1")),
+                "Rollback evidence omitted the preserved foreign append.");
+        }
+
+        internal static void RollbackRefusesAmbiguousMutation()
+        {
+            var native = new Fake("native");
+            var brownFur = new Fake("brown-fur");
+            IList<Fake> archetypes = new List<Fake> { native };
+            var transaction = new BrownFurPublicationTransaction().Append(
+                "arcanist-archetypes", () => archetypes,
+                value => archetypes = value, new[] { brownFur }, value => value.Id);
+            transaction.Commit();
+            archetypes = new List<Fake> { native, new Fake("interposed"), brownFur };
+
+            Assertions.Throws<InvalidOperationException>(() => transaction.Rollback(),
+                "Ambiguous external mutation must fail closed during rollback.");
+            Assertions.True(archetypes.Count == 3 &&
+                archetypes[1].Id == "interposed",
+                "Unsafe rollback altered an unrelated publication.");
+        }
+
+        private sealed class Fake
+        {
+            internal Fake(string id) { Id = id; }
+            internal string Id { get; private set; }
+        }
+    }
+}

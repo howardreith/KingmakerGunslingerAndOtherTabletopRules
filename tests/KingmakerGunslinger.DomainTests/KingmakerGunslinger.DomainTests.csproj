@@ -89,6 +89,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\CotwArcanistContractPolicy.cs"><Link>BrownFur\CotwArcanistContractPolicy.cs</Link></Compile>
     <Compile Include="BrownFurCastTests.cs" />
     <Compile Include="BrownFurIdentityTests.cs" />
+    <Compile Include="BrownFurPublicationTransactionTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurPublicationTransaction.cs"><Link>BrownFur\BrownFurPublicationTransaction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurAbilityScore.cs"><Link>BrownFur\BrownFurAbilityScore.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurIdentityCatalog.cs"><Link>BrownFur\BrownFurIdentityCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastRequest.cs"><Link>BrownFur\BrownFurCastRequest.cs</Link></Compile>
