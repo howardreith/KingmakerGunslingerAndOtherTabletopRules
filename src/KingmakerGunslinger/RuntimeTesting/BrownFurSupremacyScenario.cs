@@ -13,6 +13,7 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
@@ -291,6 +292,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.NoOpSupportsExtend |=
                         (noOp.AvailableMetamagic & Metamagic.Extend) != 0;
                     ContextDurationValue[] durations = RootDurations(noOp);
+                    AbilityVariants variants = (noOp.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).OfType<
+                            AbilityVariants>().SingleOrDefault();
+                    if (variants != null)
+                    {
+                        bool selectorPreserved = durations.Length ==
+                                NoOpDurationCounts[index] &&
+                            variants.Variants != null &&
+                            variants.Variants.Length == 3 &&
+                            variants.Variants.All(value => value != null);
+                        evidence.NoOpAllPreserved &= selectorPreserved;
+                        evidence.NoOpDurationResults.Add(guid + ":count=" +
+                            durations.Length + ":selectorVariants=" +
+                            (variants.Variants == null ? 0 :
+                                variants.Variants.Length));
+                        continue;
+                    }
                     var noOpData = new AbilityData(noOp, caster.Descriptor);
                     AbilityExecutionContext noOpBaseline = noOpData
                         .CreateExecutionContext(target);
