@@ -620,9 +620,21 @@ namespace KingmakerGunslinger.DomainTests
             int interruptionCooldown = nativeCastScenario.IndexOf(
                 "interruptedCommand.IgnoreCooldown(TimeSpan.Zero)",
                 StringComparison.Ordinal);
+            int interruptionStage = nativeCastScenario.IndexOf(
+                "stage = \"native-interruption\"", StringComparison.Ordinal);
+            int interruptionQueueReset = nativeCastScenario.IndexOf(
+                "caster.Commands.InterruptAll(true)", interruptionStage,
+                StringComparison.Ordinal);
+            int interruptionToggle = nativeCastScenario.IndexOf(
+                "powerful.IsOn = true", interruptionStage,
+                StringComparison.Ordinal);
             int interruptionAvailability = nativeCastScenario.IndexOf(
                 "evidence.InterruptionCanStart = interruptionData.IsAvailable",
                 StringComparison.Ordinal);
+            Assertions.True(interruptionQueueReset > interruptionStage &&
+                interruptionToggle > interruptionQueueReset,
+                "The native interruption fixture must clear prior synthetic " +
+                "commands before arming its Brown-Fur intent.");
             Assertions.True(interruptionCooldown >= 0 &&
                 interruptionAvailability > interruptionCooldown,
                 "The interruption fixture must neutralize its synthetic " +

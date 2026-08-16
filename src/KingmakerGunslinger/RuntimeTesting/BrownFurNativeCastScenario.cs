@@ -449,6 +449,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "native-interruption";
                 casting.Rest();
+                caster.Commands.InterruptAll(true);
                 currentReservoir = caster.Descriptor.Resources
                     .GetResourceAmount(contract.Reservoir);
                 if (currentReservoir < evidence.ReservoirBefore)
