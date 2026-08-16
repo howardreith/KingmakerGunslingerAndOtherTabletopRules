@@ -229,6 +229,7 @@ namespace KingmakerGunslinger.BrownFur
                 .Take(2).ToArray();
             if (modifiers.Length != 1) return false;
             modifiers[0].ModValue = state.OriginalValue;
+            stat.UpdateValue();
             UnitPartBrownFurModifierPersistence part = source.Owner.Get<
                 UnitPartBrownFurModifierPersistence>();
             return part != null && part.Forget(state.BuffGuid,

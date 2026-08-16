@@ -789,6 +789,7 @@ namespace KingmakerGunslinger.DomainTests
                 "FindScope(applyingContext) != null",
                 "modifiers.Length != 1",
                 "modifiers[0].ModValue = state.OriginalValue",
+                "stat.UpdateValue()",
                 "part.Forget(state.BuffGuid" })
                 Assertions.True(modifierRuntime.Contains(token),
                     "Powerful Change ordinary recast lacks guard: " + token);
