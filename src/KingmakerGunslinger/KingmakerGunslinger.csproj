@@ -814,6 +814,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
     <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianRageInventoryObserver.cs" />
+    <Compile Include="RuntimeTesting\UrbanBarbarianFocusedScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurTransmutationInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\BrownFurCastEngineContractObserver.cs" />
     <Compile Include="RuntimeTesting\BrownFurIlDisassembler.cs" />

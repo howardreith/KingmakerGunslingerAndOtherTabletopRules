@@ -17,6 +17,9 @@ namespace KingmakerGunslinger.DomainTests
             string runner = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.cs"));
+            string focused = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "UrbanBarbarianFocusedScenario.cs"));
             string automation = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
             Assertions.True(observer.Contains(
@@ -41,6 +44,26 @@ namespace KingmakerGunslinger.DomainTests
                 automation.Contains("RequiresManualInteraction = $false") &&
                 automation.Contains("ReadinessBehavior = 'mod-load'"),
                 "Guarded Urban Rage inventory is not consistently allowlisted and dispatched.");
+            foreach (string token in new[] {
+                "disposable-urban-barbarian-focused",
+                "UrbanBarbarianFocusedScenario.Run",
+                "urban-ordinary-rage",
+                "urban-constitution-hp-cycle",
+                "urban-greater-mighty-tiers",
+                "urban-native-rage-lifecycle",
+                "urban-crowd-control-rule-events",
+                "RuleCalculateAttackBonusWithoutTarget",
+                "RuleCalculateAC",
+                "SpawnHostileTarget",
+                "ApplyLevel(urban.Descriptor" })
+                Assertions.True(catalog.Contains(token) || runner.Contains(token) ||
+                    focused.Contains(token) || automation.Contains(token),
+                    "Focused Urban scenario contract is missing: " + token);
+            Assertions.True(automation.Contains(
+                    "'disposable-urban-barbarian-focused' = [pscustomobject]@{") &&
+                focused.Contains("Same(unitsBefore, Snapshot(allUnits))") &&
+                !focused.Contains("SaveGame") && !focused.Contains("LoadGame"),
+                "Focused Urban scenario is not a save-free guarded fixture.");
         }
     }
 }

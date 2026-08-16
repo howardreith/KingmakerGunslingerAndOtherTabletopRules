@@ -10,6 +10,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-feature-module-settings";
         internal const string ObserveUrbanBarbarianRageInventory =
             "observe-urban-barbarian-rage-inventory";
+        internal const string DisposableUrbanBarbarianFocused =
+            "disposable-urban-barbarian-focused";
         internal const string ObserveBrownFurCotwContract =
             "observe-brown-fur-cotw-contract";
         internal const string ObserveBrownFurCotwAbsentIsolation =
@@ -276,6 +278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ModLoadSmoke,
                 ObserveFeatureModuleSettings,
                 ObserveUrbanBarbarianRageInventory,
+                DisposableUrbanBarbarianFocused,
                 ObserveBrownFurCotwContract,
                 ObserveBrownFurCotwAbsentIsolation,
                 ObserveBrownFurTransmutationInventory,

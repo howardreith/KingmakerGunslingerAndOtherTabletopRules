@@ -10,6 +10,8 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.BrownFur;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.UrbanBarbarian;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -56,6 +58,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (CanContainRageContract(blueprint) &&
                     (NameLooksRelevant(blueprint) ||
                      ComponentsLookRelevant(blueprint))) Add(selected, blueprint);
+            var urbanGuids = new HashSet<string>(
+                UrbanBarbarianIdentityCatalog.All.Select(value => value.Guid),
+                StringComparer.Ordinal);
+            foreach (BlueprintScriptableObject blueprint in all)
+                if (urbanGuids.Contains(blueprint.AssetGuid)) Add(selected, blueprint);
 
             List<UrbanRageBlueprintRecord> records = selected.Values
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
@@ -135,6 +142,103 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "no save, load, input, or blueprint mutation",
                 "read-only final BlueprintLibrary and assembly inspection", true,
                 "observer performs no publication, registration, selection, or save action");
+
+            UrbanBarbarianBlueprintSet urban = BlueprintBootstrap.UrbanBarbarian;
+            BlueprintScriptableObject[] urbanRegistered = all.Where(value =>
+                urbanGuids.Contains(value.AssetGuid)).ToArray();
+            BlueprintArchetype[] archetypes = urban.BarbarianClass.Archetypes ??
+                Array.Empty<BlueprintArchetype>();
+            int publishedReference = archetypes.Count(value =>
+                ReferenceEquals(value, urban.Archetype));
+            int publishedGuid = archetypes.Count(value => value != null &&
+                string.Equals(value.AssetGuid, urban.Archetype.AssetGuid,
+                    StringComparison.Ordinal));
+            string[] retainedTypes = (urban.RageBuff.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(value => value == null ?
+                    "<null>" : value.GetType().FullName).ToArray();
+            string[] expectedRetainedTypes = {
+                "Kingmaker.Designers.Mechanics.Buffs.BuffParticleEffectPlay",
+                "Kingmaker.UnitLogic.Mechanics.Components.AddFactContextActions",
+                "Kingmaker.UnitLogic.Mechanics.Components.ContextRankConfig",
+                "Kingmaker.UnitLogic.Mechanics.Components.ContextCalculateSharedValue",
+                "Kingmaker.UnitLogic.FactLogic.ForbidSpellCasting",
+                "Kingmaker.Blueprints.Classes.Spells.SpellDescriptorComponent",
+                typeof(ControlledRageAbilityScoreBonus).FullName };
+            string[] sourceTypes = (urban.NativeRageBuff.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(value => value == null ?
+                    "<null>" : value.GetType().FullName).ToArray();
+            string[] expectedNativePrefix = {
+                "Kingmaker.UnitLogic.FactLogic.TemporaryHitPointsPerLevel",
+                "Kingmaker.Designers.Mechanics.Buffs.BuffParticleEffectPlay",
+                "Kingmaker.UnitLogic.Mechanics.Components.AddFactContextActions",
+                "Kingmaker.UnitLogic.Mechanics.Components.ContextRankConfig",
+                "Kingmaker.UnitLogic.Mechanics.Components.AddContextStatBonus",
+                "Kingmaker.UnitLogic.Mechanics.Components.AddContextStatBonus",
+                "Kingmaker.UnitLogic.Mechanics.Components.ContextCalculateSharedValue",
+                "Kingmaker.UnitLogic.FactLogic.WeaponAttackTypeDamageBonus",
+                "Kingmaker.UnitLogic.FactLogic.ForbidSpellCasting",
+                "Kingmaker.Blueprints.Classes.Spells.SpellDescriptorComponent",
+                "Kingmaker.UnitLogic.FactLogic.WeaponGroupDamageBonus",
+                "Kingmaker.UnitLogic.FactLogic.AttackTypeAttackBonus" };
+            bool cotwTailQualified = cotw == null ? sourceTypes.Length == 12 :
+                sourceTypes.Length == 16 && sourceTypes.Skip(12).All(value =>
+                    string.Equals(value,
+                        "CallOfTheWild.NewMechanics.FeatureReplacement",
+                        StringComparison.Ordinal));
+            AddAssertion(assertions, "urban-identities-always-registered",
+                "70 unique exact identities", "count=" + urbanRegistered.Length +
+                    ";unique=" + urbanRegistered.Select(value => value.AssetGuid)
+                        .Distinct(StringComparer.Ordinal).Count(),
+                urbanRegistered.Length == 70 &&
+                    urbanRegistered.Select(value => value.AssetGuid).Distinct(
+                        StringComparer.Ordinal).Count() == 70,
+                "final live BlueprintLibrary exact GUID inventory");
+            AddAssertion(assertions, "urban-native-publication",
+                "one Urban archetype reference and GUID appended to native Barbarian",
+                "references=" + publishedReference + ";guids=" + publishedGuid +
+                    ";index=" + Array.IndexOf(archetypes, urban.Archetype) +
+                    ";total=" + archetypes.Length,
+                publishedReference == 1 && publishedGuid == 1 &&
+                    archetypes.Length > 0 && ReferenceEquals(
+                        archetypes[archetypes.Length - 1], urban.Archetype),
+                "native Barbarian.Archetypes final graph");
+            AddAssertion(assertions, "urban-controlled-rage-graph",
+                "31 allocation facts, 31 allocation abilities, one 31-variant selector",
+                "facts=" + urban.SelectionFacts.Length + ";abilities=" +
+                    urban.AllocationAbilities.Length + ";variants=" +
+                    urban.Selector.ComponentsArray
+                        .OfType<Kingmaker.UnitLogic.Abilities.Components.AbilityVariants>()
+                        .Single().Variants.Length,
+                urban.SelectionFacts.Length == 31 &&
+                    urban.AllocationAbilities.Length == 31 &&
+                    urban.Selector.ComponentsArray
+                        .OfType<Kingmaker.UnitLogic.Abilities.Components.AbilityVariants>()
+                        .Single().Variants.Length == 31 &&
+                    urban.AllocationAbilities.Count(value =>
+                        value.name.Contains("_T4_")) == 6 &&
+                    urban.AllocationAbilities.Count(value =>
+                        value.name.Contains("_T6_")) == 10 &&
+                    urban.AllocationAbilities.Count(value =>
+                        value.name.Contains("_T8_")) == 15,
+                "final Urban allocation blueprint graph");
+            AddAssertion(assertions, "urban-rage-component-contract",
+                "exact six lifecycle/restriction/marker components plus morale score component",
+                "source=" + string.Join(",", sourceTypes) + ";urban=" +
+                    string.Join(",", retainedTypes),
+                sourceTypes.Take(12).SequenceEqual(expectedNativePrefix) &&
+                    cotwTailQualified && retainedTypes.SequenceEqual(
+                        expectedRetainedTypes),
+                "final native Rage source and owner-scoped Urban clone");
+            AddAssertion(assertions, "urban-cotw-optional-contract",
+                cotw == null ? "core available; interoperability not applicable" :
+                    "core available; finalized CotW routing tail structurally qualified and not copied",
+                "profile=" + evidence.Profile + ";tailQualified=" +
+                    cotwTailQualified + ";urbanHasCotwComponent=" +
+                    retainedTypes.Any(value => value.StartsWith(
+                        "CallOfTheWild.", StringComparison.Ordinal)),
+                cotwTailQualified && !retainedTypes.Any(value => value.StartsWith(
+                    "CallOfTheWild.", StringComparison.Ordinal)),
+                "assembly presence plus exact finalized Rage component graph");
 
             bool pass = assertions.All(value =>
                 value.Status == RuntimeTestStatuses.Pass);

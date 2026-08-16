@@ -35,6 +35,7 @@ $expected = @(
     'mod-load-smoke',
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
+    'disposable-urban-barbarian-focused',
     'observe-brown-fur-cotw-contract',
     'observe-brown-fur-cotw-absent-isolation',
     'observe-brown-fur-transmutation-inventory',

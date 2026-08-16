@@ -52,6 +52,7 @@ using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
 using KingmakerGunslinger.BrownFur;
 using KingmakerGunslinger.FeatureModules;
+using KingmakerGunslinger.UrbanBarbarian;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -623,6 +624,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveUrbanBarbarianRageInventory)
                 {
                     Complete(UrbanBarbarianRageInventoryObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableUrbanBarbarianFocused)
+                {
+                    Complete(UrbanBarbarianFocusedScenario.Run(
                         _context, _request));
                     return;
                 }
@@ -9180,6 +9188,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.BrownFurTransmuter;
             bool activeUrbanBarbarian =
                 _context.FeatureModules.Active.UrbanBarbarian;
+            UrbanBarbarianBlueprintSet urbanSet = BlueprintBootstrap.UrbanBarbarian;
+            BlueprintArchetype[] barbarianArchetypes = urbanSet.BarbarianClass
+                .Archetypes ?? Array.Empty<BlueprintArchetype>();
+            int urbanArchetypeReferences = barbarianArchetypes.Count(value =>
+                ReferenceEquals(value, urbanSet.Archetype));
+            int urbanArchetypeGuids = barbarianArchetypes.Count(value =>
+                value != null && string.Equals(value.AssetGuid,
+                    urbanSet.Archetype.AssetGuid, StringComparison.Ordinal));
+            int foreignBarbarianArchetypes = barbarianArchetypes.Length -
+                urbanArchetypeGuids;
+            bool barbarianArchetypesUnique = barbarianArchetypes.All(value =>
+                    value != null && !string.IsNullOrWhiteSpace(value.AssetGuid)) &&
+                barbarianArchetypes.Distinct().Count() == barbarianArchetypes.Length &&
+                barbarianArchetypes.Select(value => value.AssetGuid).Distinct(
+                    StringComparer.Ordinal).Count() == barbarianArchetypes.Length;
+            bool urbanLast = !expectedUrbanBarbarian ||
+                barbarianArchetypes.Length > 0 && ReferenceEquals(
+                    barbarianArchetypes[barbarianArchetypes.Length - 1],
+                    urbanSet.Archetype);
+            string[] urbanSkills = (urbanSet.Archetype.ClassSkills ??
+                Array.Empty<StatType>()).Select(value => value.ToString()).ToArray();
+            string[] expectedUrbanSkills = { "SkillAthletics", "SkillMobility",
+                "SkillKnowledgeWorld", "SkillPerception", "SkillPersuasion" };
+            AddFacts urbanProficiencies = (urbanSet.Proficiency.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<AddFacts>().Single();
+            int urbanSelectorVariants = (urbanSet.Selector.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
+                .Single().Variants.Length;
+            string[] urbanRageComponents = (urbanSet.RageBuff.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(value => value == null ?
+                    "<null>" : value.GetType().FullName).ToArray();
+            string urbanObserved = "identities=" + urbanSet.Count +
+                ";archetypes=" + barbarianArchetypes.Length +
+                ";urbanRef=" + urbanArchetypeReferences +
+                ";urbanGuid=" + urbanArchetypeGuids +
+                ";foreign=" + foreignBarbarianArchetypes +
+                ";unique=" + barbarianArchetypesUnique + ";last=" + urbanLast +
+                ";skills=" + string.Join(",", urbanSkills) +
+                ";proficiencies=" + (urbanProficiencies.Facts == null ? 0 :
+                    urbanProficiencies.Facts.Length) +
+                ";selectionFacts=" + urbanSet.SelectionFacts.Length +
+                ";allocationAbilities=" + urbanSet.AllocationAbilities.Length +
+                ";selectorVariants=" + urbanSelectorVariants +
+                ";rageComponents=" + string.Join(",", urbanRageComponents);
             CotwArcanistResolution brownFurResolution =
                 BrownFurOptionalExtensionCoordinator.Current;
             BrownFurBlueprintSet brownFurBlueprints =
@@ -9577,6 +9629,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spearFamiliarityCategories + ";spearVendors=" +
                 spearVendorRows + ";spearBtslTables=" +
                 installedSpearBtslTables + ";spearLoot=" + spearLootRows;
+            observed += ";urban=" + urbanObserved;
             observed += ";easternRegistered=" + easternRegisteredTypes + "/" +
                 easternRegisteredItems + "/" + easternRegisteredFeatures + "/" +
                 easternRegisteredPolicies + ";easternParameters=" +
@@ -9740,6 +9793,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "surface=cotw-arcanist-archetypes;action=published;before=6;after=7")) :
                         brownFurPublicationEvidence.Count == 0),
                     "structural CotW contract, stable identity set, exact Arcanist archetype array, and Brown-Fur transaction evidence"),
+                Assertion("feature-module-urban-barbarian-publication-gate",
+                    expectedUrbanBarbarian ?
+                        "70 identities; exactly one appended native Barbarian archetype" :
+                        "70 identities; no native Barbarian archetype publication",
+                    urbanObserved,
+                    urbanSet.Count == UrbanBarbarianIdentityCatalog.IdentityCount &&
+                    urbanArchetypeReferences == (expectedUrbanBarbarian ? 1 : 0) &&
+                    urbanArchetypeGuids == (expectedUrbanBarbarian ? 1 : 0) &&
+                    barbarianArchetypesUnique && urbanLast &&
+                    urbanSkills.SequenceEqual(expectedUrbanSkills) &&
+                    urbanProficiencies.Facts != null &&
+                    urbanProficiencies.Facts.Length == 4 &&
+                    urbanSet.SelectionFacts.Length == 31 &&
+                    urbanSet.AllocationAbilities.Length == 31 &&
+                    urbanSelectorVariants == 31 &&
+                    urbanRageComponents.Length == 7 &&
+                    urbanRageComponents.Contains(typeof(
+                        ControlledRageAbilityScoreBonus).FullName) &&
+                    !urbanRageComponents.Any(value =>
+                        value.Contains("TemporaryHitPointsPerLevel") ||
+                        value.Contains("AttackTypeAttackBonus") ||
+                        value.Contains("WeaponAttackTypeDamageBonus") ||
+                        value.Contains("WeaponGroupDamageBonus") ||
+                        value.Contains("AddContextStatBonus")),
+                    "always-registered Urban graph and exact native Barbarian archetype array"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
