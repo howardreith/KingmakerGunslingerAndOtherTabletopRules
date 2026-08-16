@@ -3,9 +3,10 @@
 The exact immutable `0.0.83` candidate documented below was **REJECTED** in
 human review and is preserved only as superseded evidence. Do not describe it
 as accepted or release complete. This checklist will be finalized for the
-exact `0.0.85` repaired candidate after its new mechanical qualification
-passes. Immutable `0.0.84` also failed focused runtime qualification and is
-preserved below as superseded evidence.
+exact `0.0.86` repaired candidate after its new mechanical qualification
+passes. Immutable `0.0.84` failed focused runtime qualification; immutable
+`0.0.85` passed focused gameplay and persistence but failed its packaged CotW
+observer. Both are preserved below as superseded evidence.
 
 Human-review rejection findings:
 
@@ -58,6 +59,27 @@ two-enemy threshold, along with the repaired selector, icon, selected-state,
 Trickery, spell-lock, Rage, and HP assertions. It failed because the AC rule's
 combat-log `BonusSources` inventory omitted Crowd Control. It is not human
 accepted or release complete.
+
+## Superseded 0.0.85 candidate identity
+
+- Artifact/source commit: `b80e63a0af1fe07d761362ce6de846b838507657`
+- Package SHA-256: `4cd2d1516441fbe4e96b975ebd7ad8180ed8d21d656858713737e4281919ad53`
+- DLL SHA-256: `b7ad444ef8230636e7db84384faaf8f969762776626ceb3a5bdb6fe0562f35bf`
+- DLL MVID: `96d3412b-d115-4bd9-b94a-03f94770c502`
+- Package-manifest SHA-256: `5793be17480f6fea16472fa5a5bf431e29b926b841a0d8a5f60b3d77fa77fd8a`
+- Deployment-manifest SHA-256: `6eba6583380bac661ab078c8fd1be21bcb13401effc75b01e74b8192f5ad2012`
+- Focused PASS:
+  `20260816T2101481246450Z-disposable-urban-barbarian-focused`
+- Persistence PASS pair:
+  `20260816T2104057985757Z-working-save-urban-barbarian-prepare` and
+  `20260816T2106360356218Z-working-save-urban-barbarian-off-verify-cleanup`
+- CotW-normal ERROR:
+  `20260816T2110444459225Z-observe-urban-barbarian-rage-inventory`
+
+The CotW run failed before assertions because the packaged inventory observer
+still called `.Single()` on the deliberately inert legacy selector. Its
+compatibility transaction restored the original Mods tree exactly. The
+artifact is superseded and is not human accepted or release complete.
 
 ## Character creation and presentation
 

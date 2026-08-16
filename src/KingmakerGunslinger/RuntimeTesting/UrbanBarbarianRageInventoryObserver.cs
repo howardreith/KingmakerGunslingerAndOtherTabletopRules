@@ -190,12 +190,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "CallOfTheWild.NewMechanics.FeatureReplacement",
                         StringComparison.Ordinal));
             AddAssertion(assertions, "urban-identities-always-registered",
-                "70 unique exact identities", "count=" + urbanRegistered.Length +
+                "73 unique exact identities", "count=" + urbanRegistered.Length +
                     ";unique=" + urbanRegistered.Select(value => value.AssetGuid)
                         .Distinct(StringComparer.Ordinal).Count(),
-                urbanRegistered.Length == 70 &&
+                urbanRegistered.Length == 73 &&
                     urbanRegistered.Select(value => value.AssetGuid).Distinct(
-                        StringComparer.Ordinal).Count() == 70,
+                        StringComparer.Ordinal).Count() == 73,
                 "final live BlueprintLibrary exact GUID inventory");
             AddAssertion(assertions, "urban-native-publication",
                 "one Urban archetype reference and GUID appended to native Barbarian",
@@ -206,25 +206,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     archetypes.Length > 0 && ReferenceEquals(
                         archetypes[archetypes.Length - 1], urban.Archetype),
                 "native Barbarian.Archetypes final graph");
+            int[] tierVariantCounts = urban.TierSelectors.Select(value =>
+                value.ComponentsArray
+                    .OfType<Kingmaker.UnitLogic.Abilities.Components.AbilityVariants>()
+                    .Single().Variants.Length).ToArray();
+            bool legacyInert = urban.LegacySelector.Hidden &&
+                urban.LegacySelector.ActionBarAutoFillIgnored &&
+                !urban.LegacySelector.ComponentsArray
+                    .OfType<Kingmaker.UnitLogic.Abilities.Components.AbilityVariants>()
+                    .Any();
             AddAssertion(assertions, "urban-controlled-rage-graph",
-                "31 allocation facts, 31 allocation abilities, one 31-variant selector",
+                "31 stable children; hidden inert legacy identity; tier parents expose exactly 6/10/15",
                 "facts=" + urban.SelectionFacts.Length + ";abilities=" +
-                    urban.AllocationAbilities.Length + ";variants=" +
-                    urban.Selector.ComponentsArray
-                        .OfType<Kingmaker.UnitLogic.Abilities.Components.AbilityVariants>()
-                        .Single().Variants.Length,
+                    urban.AllocationAbilities.Length + ";legacyInert=" +
+                    legacyInert + ";tierVariants=" +
+                    string.Join("/", tierVariantCounts),
                 urban.SelectionFacts.Length == 31 &&
-                    urban.AllocationAbilities.Length == 31 &&
-                    urban.Selector.ComponentsArray
-                        .OfType<Kingmaker.UnitLogic.Abilities.Components.AbilityVariants>()
-                        .Single().Variants.Length == 31 &&
+                    urban.AllocationAbilities.Length == 31 && legacyInert &&
+                    tierVariantCounts.SequenceEqual(new[] { 6, 10, 15 }) &&
                     urban.AllocationAbilities.Count(value =>
                         value.name.Contains("_T4_")) == 6 &&
                     urban.AllocationAbilities.Count(value =>
                         value.name.Contains("_T6_")) == 10 &&
                     urban.AllocationAbilities.Count(value =>
                         value.name.Contains("_T8_")) == 15,
-                "final Urban allocation blueprint graph");
+                "final player-facing tier selector blueprint graph");
             AddAssertion(assertions, "urban-rage-component-contract",
                 "exact six lifecycle/restriction/marker components plus morale score component",
                 "source=" + string.Join(",", sourceTypes) + ";urban=" +

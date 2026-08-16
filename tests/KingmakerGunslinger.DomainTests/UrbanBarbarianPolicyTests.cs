@@ -308,6 +308,9 @@ namespace KingmakerGunslinger.DomainTests
             string cotw = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "UrbanBarbarian",
                 "UrbanCotwCompatibilityRuntime.cs"));
+            string inventoryObserver = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "UrbanBarbarianRageInventoryObserver.cs"));
             string project = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
             foreach (string token in new[] {
@@ -389,6 +392,17 @@ namespace KingmakerGunslinger.DomainTests
                 "UrbanCotwSurface.Unknown" })
                 Assertions.True(cotw.Contains(token),
                     "Urban optional CotW runtime contract is missing: " + token);
+            foreach (string token in new[] {
+                "73 unique exact identities", "urban.TierSelectors",
+                "tierVariantCounts.SequenceEqual(new[] { 6, 10, 15 })",
+                "urban.LegacySelector.Hidden",
+                "!urban.LegacySelector.ComponentsArray",
+                "final player-facing tier selector blueprint graph" })
+                Assertions.True(inventoryObserver.Contains(token),
+                    "Urban runtime inventory contract is missing: " + token);
+            Assertions.False(inventoryObserver.Contains(
+                    "urban.Selector.ComponentsArray"),
+                "Urban runtime inventory still treats the hidden legacy selector as a live parent.");
             Assertions.True(project.Contains(
                     "UrbanBarbarian\\UrbanCotwCompatibilityRuntime.cs") &&
                 !project.Contains("CallOfTheWild.dll"),

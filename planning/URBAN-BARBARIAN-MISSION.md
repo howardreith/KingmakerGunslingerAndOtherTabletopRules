@@ -10,8 +10,10 @@
 - Version authority before the mission: `Info.json` and
   `Directory.Build.props` both identify package version `0.0.82`.
 - Superseded human-review candidate: `0.0.83`.
-- Active repair candidate version: `0.0.85`; immutable `0.0.84` failed focused
-  runtime source-attribution qualification and is superseded.
+- Active repair candidate version: `0.0.86`; immutable `0.0.84` failed focused
+  runtime source-attribution qualification, while immutable `0.0.85` passed
+  focused gameplay and persistence but failed its stale CotW inventory
+  observer. Both are superseded.
 
 The on-disk checkout is named `KingmakerGunslinger`, but its configured origin
 is the requested combined-package repository. The requested sibling directory
@@ -35,13 +37,25 @@ CotW absent/normal/balance profiles, existing-owner OFF persistence, the exact
 human presentation/play-acceptance checklist.
 
 Mission status: **human review rejected the mechanically qualified `0.0.83`
-candidate; `0.0.85` repair work is active**. The superseded artifacts remain
+candidate; `0.0.86` repair work is active**. The superseded artifacts remain
 identified by source commit `06cad804651faaace17bdf8432bcd071d50ce9e7`,
 documentation commit `636e4928502cb6a07374279a3a8b35f79f66f4e3`, package
 SHA-256 `b2b4fdd899a1e00955e972d94b45f5624f4d663e88581043cbf969c3d6e3d193`,
 DLL SHA-256 `c72eb71bc57b6be79b5cd49c58b262bf0897960eac2c118538d7e6e43cfccaae`,
 and MVID `1f53a664-2557-4866-b690-a720cbff840f`. Its mechanical evidence is
 preserved but is not human acceptance or a release seal.
+
+Immutable `0.0.85` source commit
+`b80e63a0af1fe07d761362ce6de846b838507657` produced package SHA-256
+`4cd2d1516441fbe4e96b975ebd7ad8180ed8d21d656858713737e4281919ad53`,
+DLL SHA-256
+`b7ad444ef8230636e7db84384faaf8f969762776626ceb3a5bdb6fe0562f35bf`,
+and MVID `96d3412b-d115-4bd9-b94a-03f94770c502`. Its focused run and guarded
+two-launch persistence pair passed, but CotW-normal run
+`20260816T2110444459225Z-observe-urban-barbarian-rage-inventory` errored in
+the packaged observer because it called `.Single()` on the intentionally inert
+legacy selector. The compatibility transaction restored exactly. This is an
+instrumentation qualification failure and makes 0.0.85 superseded.
 
 Stop only at that human boundary or at a documented hard stop after safe,
 reversible, evidence-supported alternatives and narrower instrumentation have

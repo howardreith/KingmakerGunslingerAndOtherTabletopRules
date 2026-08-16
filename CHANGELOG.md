@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.86-urban-barbarian-human-review-repair-3 (development candidate)
+
+- Supersedes immutable 0.0.85 after focused gameplay and module-OFF
+  persistence passed but its packaged CotW inventory observer crashed on the
+  now-inert legacy selector before producing compatibility assertions.
+- Updates the packaged observer to validate all 73 Urban identities, the
+  hidden/inert legacy save identity, and the three actual player-facing
+  selector parents with exactly 6, 10, and 15 variants.
+- Adds source regression coverage that rejects any observer which again treats
+  the legacy selector as the live allocation parent.
+
 ## 0.0.85-urban-barbarian-human-review-repair-2 (development candidate)
 
 - Preserves 0.0.84 as a failed immutable runtime candidate after its focused
@@ -11,6 +22,10 @@
 - Keeps the repaired 6/10/15 tier selectors, distinct allocation icons,
   selected-state presentation, Controlled Rage Trickery permission, and native
   spellcasting prohibition unchanged.
+- Runtime result: focused mechanics and two-launch module-OFF persistence
+  passed, but the CotW-normal inventory observer threw `Sequence contains no
+  elements` because it still expected the rejected 31-variant root. The exact
+  artifact is superseded and is not human accepted or release complete.
 
 ## 0.0.84-urban-barbarian-human-review-repair (development candidate)
 

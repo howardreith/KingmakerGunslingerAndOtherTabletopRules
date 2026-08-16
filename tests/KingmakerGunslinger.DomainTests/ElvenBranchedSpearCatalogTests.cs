@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.85\"") &&
-                props.Contains("<KmgVersion>0.0.85</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.85-urban-barbarian-human-review-repair-2</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.85\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.85\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.85-urban-barbarian-human-review-repair-2\")"),
+            Assertions.True(info.Contains("\"Version\": \"0.0.86\"") &&
+                props.Contains("<KmgVersion>0.0.86</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.86-urban-barbarian-human-review-repair-3</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.86\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.86\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.86-urban-barbarian-human-review-repair-3\")"),
                 "Release and assembly identity are not transactionally pinned to the Urban Barbarian candidate.");
             Assertions.True(package.Contains(
                 "$($info.Id)-$($info.Version)-urban-barbarian.zip") &&
                 !package.Contains("expanded-summoning.zip"),
                 "Package identity is not pinned to the Urban Barbarian archive.");
-            Assertions.True(runtime.Contains("active version 0.0.85") &&
-                localBuild.Contains("active version 0.0.85") &&
-                localBuild.Contains("local-runtime\\0.0.85"),
+            Assertions.True(runtime.Contains("active version 0.0.86") &&
+                localBuild.Contains("active version 0.0.86") &&
+                localBuild.Contains("local-runtime\\0.0.86"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

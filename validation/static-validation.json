@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.85-urban-barbarian-human-review-repair-2",
-  "version": "0.0.85",
+  "milestone": "0.0.86-urban-barbarian-human-review-repair-3",
+  "version": "0.0.86",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
