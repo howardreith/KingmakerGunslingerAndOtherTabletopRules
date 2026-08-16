@@ -18,11 +18,23 @@ namespace KingmakerGunslinger.UrbanBarbarian
     {
         private const float FiveFeetMeters = 1.524f;
         private const float ToleranceMeters = 0.00031f;
+        internal static string LastAttackObservation { get; private set; }
+        internal static string LastArmorClassObservation { get; private set; }
 
         public void OnEventAboutToTrigger(
             RuleCalculateAttackBonusWithoutTarget evt)
         {
-            if (evt != null && HasCrowd()) evt.AddBonus(1, Fact);
+            int count = CountAdjacentActiveEnemies(Owner == null ? null :
+                Owner.Unit);
+            bool applies = evt != null && count >= 2;
+            LastAttackObservation = "rule=" + (evt == null ? "<null>" :
+                evt.GetType().FullName) + ";owner=" + Identity(Owner == null ?
+                    null : Owner.Unit) + ";adjacent=" + count +
+                ";applies=" + applies + ";value=" + (applies ? 1 : 0) +
+                ";descriptor=Untyped;source=" +
+                (Fact == null || Fact.Blueprint == null ? "<null>" :
+                    Fact.Blueprint.AssetGuid);
+            if (applies) evt.AddBonus(1, Fact);
         }
 
         public void OnEventDidTrigger(
@@ -30,7 +42,18 @@ namespace KingmakerGunslinger.UrbanBarbarian
 
         public void OnEventAboutToTrigger(RuleCalculateAC evt)
         {
-            if (evt == null || !HasCrowd() || Owner == null ||
+            int count = CountAdjacentActiveEnemies(Owner == null ? null :
+                Owner.Unit);
+            bool applies = evt != null && count >= 2 && Owner != null &&
+                Owner.Stats != null;
+            LastArmorClassObservation = "rule=" + (evt == null ? "<null>" :
+                evt.GetType().FullName) + ";owner=" + Identity(Owner == null ?
+                    null : Owner.Unit) + ";adjacent=" + count +
+                ";applies=" + applies + ";value=" + (applies ? 1 : 0) +
+                ";descriptor=" + ModifierDescriptor.Dodge + ";source=" +
+                (Fact == null || Fact.Blueprint == null ? "<null>" :
+                    Fact.Blueprint.AssetGuid);
+            if (!applies ||
                 Owner.Stats == null) return;
             ModifiableValue.Modifier modifier = Owner.Stats.AC.AddModifier(1,
                 Fact, GetType().FullName, ModifierDescriptor.Dodge);
@@ -73,6 +96,34 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 candidate.Descriptor.State.IsConscious && owner.IsEnemy(candidate) &&
                 EdgeDistance(owner, candidate) <=
                     FiveFeetMeters + ToleranceMeters;
+        }
+
+        internal static string DescribeCandidate(UnitEntityData owner,
+            UnitEntityData candidate)
+        {
+            if (candidate == null) return "candidate=<null>";
+            float center = owner == null ? float.PositiveInfinity :
+                owner.DistanceTo(candidate);
+            float edge = EdgeDistance(owner, candidate);
+            return "owner=" + Identity(owner) + ";candidate=" +
+                Identity(candidate) + ";center=" + center +
+                ";ownerCorpulence=" + (owner == null ? float.NaN :
+                    owner.Corpulence) + ";candidateCorpulence=" +
+                candidate.Corpulence + ";edge=" + edge + ";isInGame=" +
+                candidate.IsInGame + ";destroyed=" + candidate.Destroyed +
+                ";detached=" + candidate.IsDetached + ";turnedOn=" +
+                candidate.IsTurnedOn + ";conscious=" +
+                (candidate.Descriptor != null && candidate.Descriptor.State !=
+                    null && candidate.Descriptor.State.IsConscious) +
+                ";enemy=" + (owner != null && owner.IsEnemy(candidate)) +
+                ";adjacentActiveEnemy=" + IsAdjacentActiveEnemy(owner,
+                    candidate);
+        }
+
+        private static string Identity(UnitEntityData unit)
+        {
+            return unit == null ? "<null>" : unit.UniqueId + "/" +
+                (unit.Blueprint == null ? "<null>" : unit.Blueprint.AssetGuid);
         }
 
         internal static float EdgeDistance(UnitEntityData owner,

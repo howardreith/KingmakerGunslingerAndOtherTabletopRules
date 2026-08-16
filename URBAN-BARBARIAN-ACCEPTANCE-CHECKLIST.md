@@ -92,7 +92,15 @@ candidate's preserved evidence only.
 - [ ] Controlled Rage grants no ordinary Rage attack bonus, weapon damage
   bonus, temporary HP, Will bonus, or AC penalty.
 - [ ] Intelligence-, Dexterity-, and Charisma-based skills remain usable.
-- [ ] Spellcasting/concentration remains restricted as under ordinary Rage.
+- [ ] Save before a locked chest or detected trap. A suitable ordinary-Rage
+  control character is prohibited from performing the Dexterity-based
+  Trickery action while raging, while the Urban Barbarian can perform the
+  same Trickery check during Controlled Rage.
+- [ ] With Controlled Rage still active after the Trickery comparison,
+  spellcasting/concentration remains prohibited as under ordinary Rage.
+- [ ] Stealth may be checked secondarily; Use Magic Device is not used as the
+  primary skill test because Rage can independently restrict concentration-
+  dependent magic-item activation.
 - [ ] The native Rage resource and live counter remain visible; activation,
   per-round spending, cancellation, fatigue, and Tireless Rage behave normally.
 

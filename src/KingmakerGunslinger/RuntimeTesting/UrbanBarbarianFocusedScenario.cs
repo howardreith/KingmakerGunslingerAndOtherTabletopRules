@@ -60,6 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData enemyThree = null;
             BlueprintUnit hostileSource = null;
             ItemEntityWeapon weapon = null;
+            ItemEntityWeapon enemyWeapon = null;
             ItemEntityWeapon rangedWeapon = null;
             bool urbanRegistered = false;
             bool enemyOneRegistered = false;
@@ -577,6 +578,74 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .CountAdjacentActiveEnemies(urban);
                 int attackTwo = Attack(urban, weapon);
                 int acTwo = ArmorClass(urban, enemyOne);
+                enemyWeapon = ElvenBranchedSpearCombatScenario.Equip(enemyOne,
+                    BlueprintBootstrap.ElvenBranchedSpears.Entries[0].Item);
+                RuleAttackWithWeapon playerIssuedTwo = PlayerIssuedAttack(
+                    urban, enemyOne);
+                RuleAttackWithWeapon incomingTwo = PlayerIssuedAttack(enemyOne,
+                    urban);
+                string twoCandidates = CrowdControlComponent.DescribeCandidate(
+                    urban, enemyOne) + "|" +
+                    CrowdControlComponent.DescribeCandidate(urban, enemyTwo);
+                string twoAttackObservation =
+                    CrowdControlComponent.LastAttackObservation;
+                string twoAcObservation =
+                    CrowdControlComponent.LastArmorClassObservation;
+                SetPosition(enemyTwo, new Vector3(-9f, 0f, 0f));
+                RuleAttackWithWeapon playerIssuedOne = PlayerIssuedAttack(
+                    urban, enemyOne);
+                RuleAttackWithWeapon incomingOne = PlayerIssuedAttack(enemyOne,
+                    urban);
+                string oneCandidates = CrowdControlComponent.DescribeCandidate(
+                    urban, enemyOne) + "|" +
+                    CrowdControlComponent.DescribeCandidate(urban, enemyTwo);
+                string oneAttackObservation =
+                    CrowdControlComponent.LastAttackObservation;
+                string oneAcObservation =
+                    CrowdControlComponent.LastArmorClassObservation;
+                bool actualAttackSource = HasBonusSource(playerIssuedTwo
+                    .AttackRoll.AttackBonusRule.BonusSources,
+                    set.CrowdControl, 1) && !HasBonusSource(playerIssuedOne
+                        .AttackRoll.AttackBonusRule.BonusSources,
+                        set.CrowdControl, 1);
+                bool actualAcSource = HasBonusSource(incomingTwo.AttackRoll
+                    .ACRule.BonusSources, set.CrowdControl, 1) &&
+                    !HasBonusSource(incomingOne.AttackRoll.ACRule.BonusSources,
+                        set.CrowdControl, 1);
+                bool actualCombatLog = playerIssuedTwo.AttackRoll
+                    .AddedToCombatLog && playerIssuedTwo.AttackRoll
+                    .AttackLogEntry != null && incomingTwo.AttackRoll
+                    .AddedToCombatLog && incomingTwo.AttackRoll.AttackLogEntry !=
+                    null;
+                Add(assertions, "urban-crowd-control-player-attack-pipeline",
+                    "a native player-issued UnitAttack supplies Crowd Control +1 to the outgoing attack and +1 dodge AC to the incoming attack only at the two-enemy threshold, with exact combat-log sources",
+                    "outgoing=" + playerIssuedOne.AttackRoll.AttackBonus +
+                        "->" + playerIssuedTwo.AttackRoll.AttackBonus +
+                        ";incomingAc=" + incomingOne.AttackRoll.TargetAC +
+                        "->" + incomingTwo.AttackRoll.TargetAC +
+                        ";attackRules=" + playerIssuedTwo.AttackRoll
+                            .AttackBonusRule.GetType().FullName + "/" +
+                        typeof(RuleCalculateAttackBonusWithoutTarget).FullName +
+                        ";acRule=" + incomingTwo.AttackRoll.ACRule.GetType()
+                            .FullName + ";attackSource=" + actualAttackSource +
+                        ";acSource=" + actualAcSource + ";combatLog=" +
+                        actualCombatLog + ";twoAttack={" +
+                        twoAttackObservation + "};twoAc={" + twoAcObservation +
+                        "};oneAttack={" + oneAttackObservation +
+                        "};oneAc={" + oneAcObservation + "};twoCandidates={" +
+                        twoCandidates + "};oneCandidates={" + oneCandidates +
+                        "}",
+                    playerIssuedTwo.AttackRoll.AttackBonus ==
+                        playerIssuedOne.AttackRoll.AttackBonus + 1 &&
+                        incomingTwo.AttackRoll.TargetAC ==
+                            incomingOne.AttackRoll.TargetAC + 1 &&
+                        actualAttackSource && actualAcSource && actualCombatLog &&
+                        twoAttackObservation.Contains("adjacent=2;applies=True;value=1;descriptor=Untyped") &&
+                        twoAcObservation.Contains("adjacent=2;applies=True;value=1;descriptor=Dodge") &&
+                        oneAttackObservation.Contains("adjacent=1;applies=False;value=0;descriptor=Untyped") &&
+                        oneAcObservation.Contains("adjacent=1;applies=False;value=0;descriptor=Dodge"),
+                    "UnitAttack.CreateAttackCommand -> UnitAttack.TriggerAttackRule -> RuleAttackWithWeapon -> RuleAttackRoll outer/inner attack and AC rules");
+                SetPosition(enemyTwo, new Vector3(-1.5f, 0f, 0f));
                 var rangedBlueprint = BlueprintLibraryLookup.RequireExact<
                     Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon>(
                         BlueprintBootstrap.Library,
@@ -698,6 +767,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (rangedWeapon != null) rangedWeapon.Dispose();
+                ElvenBranchedSpearCombatScenario.RemoveEquipped(enemyOne,
+                    ref enemyWeapon);
                 ElvenBranchedSpearCombatScenario.RemoveEquipped(urban, ref weapon);
                 if (enemyThreeRegistered)
                     Game.Instance.State.Units.All.Remove(enemyThree);
@@ -871,6 +942,67 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(
                 unit, weapon, 0)).Result;
+        }
+
+        private static RuleAttackWithWeapon PlayerIssuedAttack(
+            UnitEntityData attacker, UnitEntityData target)
+        {
+            if (attacker == null || target == null)
+                throw new ArgumentNullException("player-issued attack");
+            attacker.Commands.InterruptAll(true);
+            UnitCommand issued = UnitAttack.CreateAttackCommand(attacker,
+                target);
+            UnitAttack command = issued as UnitAttack;
+            if (command == null) throw new InvalidOperationException(
+                "Native UnitAttack.CreateAttackCommand did not produce an adjacent UnitAttack command: " +
+                    (issued == null ? "<null>" : issued.GetType().FullName));
+            attacker.Commands.Run(command);
+            FieldInfo attacksField = typeof(UnitAttack).GetField("m_AllAttacks",
+                Members);
+            FieldInfo indexField = typeof(UnitAttack).GetField("m_AttackIndex",
+                Members);
+            MethodInfo create = typeof(UnitAttack).GetMethod(
+                "CreateSingleAttack", Members, null, Type.EmptyTypes, null);
+            MethodInfo trigger = typeof(UnitAttack).GetMethod(
+                "TriggerAttackRule", Members, null,
+                new[] { typeof(AttackHandInfo) }, null);
+            if (attacksField == null || indexField == null || create == null ||
+                trigger == null) throw new MissingMethodException(
+                    typeof(UnitAttack).FullName,
+                    "CreateSingleAttack/TriggerAttackRule contract");
+            var attacks = attacksField.GetValue(command) as
+                List<AttackHandInfo>;
+            if (attacks == null || attacks.Count == 0)
+            {
+                attacks = create.Invoke(command, null) as List<AttackHandInfo>;
+                attacksField.SetValue(command, attacks);
+                indexField.SetValue(command, 0);
+            }
+            if (attacks == null || attacks.Count != 1 || attacks[0] == null)
+                throw new InvalidOperationException(
+                    "The native player-issued single attack plan was ambiguous.");
+            int damage = target.Descriptor.Damage;
+            try { trigger.Invoke(command, new object[] { attacks[0] }); }
+            finally
+            {
+                target.Descriptor.Damage = damage;
+                attacker.Commands.InterruptAll(true);
+            }
+            if (command.LastAttackRule == null ||
+                command.LastAttackRule.AttackRoll == null ||
+                command.LastAttackRule.AttackRoll.AttackBonusRule == null ||
+                command.LastAttackRule.AttackRoll.ACRule == null)
+                throw new InvalidOperationException(
+                    "The player-issued UnitAttack did not expose its native attack and AC rules.");
+            return command.LastAttackRule;
+        }
+
+        private static bool HasBonusSource(IEnumerable<BonusSource> sources,
+            BlueprintFeature source, int value)
+        {
+            return sources != null && source != null && sources.Count(item =>
+                item.Bonus == value && item.Source != null &&
+                ReferenceEquals(item.Source.Blueprint, source)) == 1;
         }
 
         private static int ArmorClass(UnitEntityData defender,

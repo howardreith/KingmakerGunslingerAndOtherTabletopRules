@@ -371,7 +371,10 @@ namespace KingmakerGunslinger.DomainTests
                 "owner.Corpulence", "candidate.Corpulence",
                 "Game.Instance.State.Units.All",
                 "ModifierDescriptor.Dodge", "Owner.Stats.AC.UpdateValue()",
-                "evt.AddBonus(1, Fact)" })
+                "evt.AddBonus(1, Fact)", "DescribeCandidate",
+                "LastAttackObservation", "LastArmorClassObservation",
+                "adjacentActiveEnemy=", "descriptor=Untyped",
+                "descriptor=\" + ModifierDescriptor.Dodge" })
                 Assertions.True(crowd.Contains(token),
                     "Crowd Control runtime contract is missing: " + token);
             Assertions.False(crowd.Contains("GetWeaponRange") ||
