@@ -1,5 +1,5 @@
 Project: Kingmaker Gunslinger
-Release: 0.0.81-brown-fur-transmuter
+Release: 0.0.82-brown-fur-human-review-repair
 Target game: Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b
 Target framework: .NET Framework 4.7
 C# language version: 7.3
@@ -11,24 +11,24 @@ Feature settings schema: 6
 Expanded Summoning roster: 66 SM entries; 57 SNA entries; 67 unique creatures
 Expanded Summoning placements: 361 SM; 320 SNA; 681 total
 Expanded Summoning identities: 1184
-Blueprint ledger: 1536 active; 1 reserved; 1537 total
-Runtime registration count: 1517 unconditional core identities plus 19 isolated Brown-Fur identities only with structurally compatible CotW
+Blueprint ledger: 1542 active; 1 reserved; 1543 total
+Runtime registration count: 1517 unconditional core identities plus 25 isolated Brown-Fur identities only with structurally compatible CotW
 Eastern Weapons catalog: 3 categories; 12 generic items; 18 named items; 30 total
 Eastern Weapons assets: 3 original equipped models; 6 original production icons
-Dependency-free domain tests: 1135 passed; 0 failed
+Dependency-free domain tests: 1138 passed; 0 failed
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
-Native runtime: Brown-Fur focused mechanics, CotW normal/balance/absent profiles, persistence, highest-risk combined profile, and 16/16 boundary PASS; human acceptance pending; 128-state seal not run
-Artifact source commit: 2ef6e933ff521dff2330a948336a38083e741082
-Package: KingmakerGunslinger-0.0.81-local-runtime.zip
-Package SHA-256: 883751EDD4AF3427CCE712C2C875EEA0E4B6CCB955E9A2778176E5CE1C2BA7BE
-DLL SHA-256: 9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF
-Installed DLL SHA-256: 9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF
-DLL MVID: 30b587a9-39f6-42c5-a5df-1ce32d73974f
-Build-local manifest SHA-256: 0398BCFE546D9FCD03366F26BA9AEBBB64E188CD99DDC33CA9DBB4D2A12054E0
-Deployment manifest identity: 20260815T2354477268935Z
-Deployment manifest SHA-256: 8ACF004E570BC3319F5A10C8E076DFB473268C3772782E2DC5467CA7908B85B6
-Deployment backup identity: 20260815T2354434393118Z
+Native runtime: 40 Brown-Fur focused launches and 435 assertions PASS; CotW normal/balance/absent profiles, ON/OFF-owner persistence, highest-risk combined profile, and 16/16 boundary PASS; human acceptance pending; 128-state seal not run
+Artifact source commit: 0940c282237826adfd6ef44f5bf864c2fdf0c588
+Package: KingmakerGunslinger-0.0.82-brown-fur-human-review-repair.zip
+Package SHA-256: 969F89E8744592FFB2D7009F881781498AA14C36932C2920A0ACD608D191B48D
+DLL SHA-256: 0D13E393FCD2E3F90D8882583C87915C0DA09EC5778867B5E69B53ABFA6BB265
+Installed DLL SHA-256: 0D13E393FCD2E3F90D8882583C87915C0DA09EC5778867B5E69B53ABFA6BB265
+DLL MVID: 754d4c45-dbf6-41b9-a5de-67b6e279c8ea
+Build-local manifest SHA-256: 2BF9B8B474053897509B9D6B2F7125D3BA3F12E8F33D174D33A4A409FE8003FC
+Deployment manifest identity: 20260816T0435061213533Z
+Deployment manifest SHA-256: 06028B8A74685A0FBF294E1CEC651C0733A8E70B63C3B492F3189973836338BC
+Deployment backup identity: 20260816T0435018654582Z
 Eastern Weapons bundle SHA-256: F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43
 Source archive SHA-256: not produced by the standalone package workflow
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.

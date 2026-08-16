@@ -32,14 +32,17 @@ or package dependency.
 These binary hashes are evidence, not the sole compatibility gate. Runtime
 publication requires every structural check below to agree.
 
-## Pre-human publication fingerprint
+## Repaired pre-human publication fingerprint
 
-The installed candidate is source commit
-`2ef6e933ff521dff2330a948336a38083e741082`, package SHA-256
-`883751EDD4AF3427CCE712C2C875EEA0E4B6CCB955E9A2778176E5CE1C2BA7BE`,
+The installed repaired candidate is source commit
+`0940c282237826adfd6ef44f5bf864c2fdf0c588`, package SHA-256
+`969F89E8744592FFB2D7009F881781498AA14C36932C2920A0ACD608D191B48D`,
 DLL and installed-DLL SHA-256
-`9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF`,
-and DLL MVID `30b587a9-39f6-42c5-a5df-1ce32d73974f`.
+`0D13E393FCD2E3F90D8882583C87915C0DA09EC5778867B5E69B53ABFA6BB265`,
+and DLL MVID `754d4c45-dbf6-41b9-a5de-67b6e279c8ea`. Deployment
+`20260816T0435061213533Z` has manifest SHA-256
+`06028B8A74685A0FBF294E1CEC651C0733A8E70B63C3B492F3189973836338BC`
+and backup `20260816T0435018654582Z`.
 
 The canonical balance observer resolved exploit levels
 `1,4,7,10,13,16,19`, replacements 4/10, every required identity, both exact
@@ -51,14 +54,16 @@ exactly one publication. CotW settings were restored byte-for-byte to SHA-256
 `24CC3F80269992A53EBBFD1F5986E5AAB056841D6B2F43D8E22E764CDB73F6E8`.
 
 The 16-state boundary, CotW-absent profile, ON and OFF-owner persistence, and
-the high-risk combined profile all reused this exact artifact. Exact run and
-result identities are recorded in `planning/BROWN-FUR-RUNTIME-MATRIX.md`.
+the high-risk combined profile all reused this exact artifact. Forty focused
+launches produced 435 passing assertions. Exact run and result identities are
+recorded in `planning/BROWN-FUR-RUNTIME-MATRIX.md`. Human acceptance remains
+pending, so the final 128-state matrix has not run.
 
 ## Chronological contract evidence
 
 The evidence below records successive immutable checkpoints. Any statement
 that mechanics or publication were still pending applies only to its named
-checkpoint. The pre-human publication fingerprint above is the current
+checkpoint. The repaired pre-human publication fingerprint above is the current
 authority.
 
 The guarded, save-free `observe-brown-fur-cotw-contract` scenario passed on

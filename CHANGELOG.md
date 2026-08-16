@@ -18,9 +18,11 @@
 - Expands guarded evidence for Beast Shape II, Undead Anatomy I, Resinous Skin,
   Bull's Strength, Cat's Grace, cancellation, combined use, typed modifier
   preservation, resource counters, and activatable save/load synchronization.
-- Advances assembly/package identity to `0.0.82`; focused runtime profiles,
-  the 16-state boundary, and renewed human acceptance remain required. The
-  128-state final seal remains prohibited before acceptance.
+- Advances assembly/package identity to `0.0.82`. The complete 1,138-test
+  domain suite, 40 focused runtime launches with 435 passing assertions,
+  persistence, normal/balance/absent/high-risk profiles, and all 16 boundary
+  states pass on one immutable installed artifact. Renewed human acceptance
+  remains required, and the 128-state final seal remains prohibited before it.
 
 ## 0.0.81-brown-fur-transmuter (development)
 

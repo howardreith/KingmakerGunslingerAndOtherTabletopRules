@@ -7,9 +7,10 @@ Graduate, Shield Other, Expanded Summoning, Elven Branched Spears, and Eastern
 Weapons. Brown-Fur alone requires a compatible Call of the Wild installation;
 the combined package and every unrelated module continue loading without CotW.
 The first `0.0.81` Brown-Fur candidate failed human review and is superseded.
-The `0.0.82` source repairs native toggle legibility, live reservoir counters,
-distinct icons, and pre-command Personal-spell target acquisition. Its focused
-runtime qualification and 16-state boundary rerun must pass before renewed
+The installed `0.0.82` candidate repairs native toggle legibility, live
+reservoir counters, distinct icons, and pre-command Personal-spell target
+acquisition. Its focused mechanics, persistence, optional-mod profiles, and
+all 16 boundary states pass on one immutable artifact. It now awaits renewed
 human review; the final 128-state release seal has intentionally not run.
 
 Eastern Weapons adds one stable category each for Wakizashi, Katana, and

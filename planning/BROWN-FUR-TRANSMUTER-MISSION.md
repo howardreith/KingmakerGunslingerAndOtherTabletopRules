@@ -40,8 +40,11 @@ acceptance.
 - Brown-Fur acceptance: **HUMAN REVIEW FAILED / SUPERSEDED** for candidate
   source `2ef6e933ff521dff2330a948336a38083e741082` and documentation handoff
   `768877bcf2b6d4d785cbb5f518fb49d66c6a7b25`.
-- Repair status: implementation and qualification pending from branch HEAD
-  `768877bcf2b6d4d785cbb5f518fb49d66c6a7b25`.
+- Repair source: `0940c282237826adfd6ef44f5bf864c2fdf0c588`.
+- Repair status: implementation, 1,138-test domain suite, focused runtime,
+  persistence, optional-mod profiles, packaging, guarded deployment, and the
+  complete boundary matrix pass on one immutable artifact. The candidate is
+  installed and awaiting renewed human acceptance.
 - Pre-human boundary: **PASS 16/16**.
 - Final exhaustive matrix: **NOT RUN / prohibited until human acceptance**.
 
@@ -63,9 +66,17 @@ Transmutation spells self-cast instead of entering Share Transmutation target
 selection. These findings supersede the prior readiness claim while preserving
 the successful mechanical evidence that the repair does not invalidate.
 
-The next mission boundary is a newly qualified `0.0.82` repair candidate and a
-new human checklist. The 128-state matrix remains prohibited until that exact
-candidate receives explicit acceptance.
+The repaired candidate is version `0.0.82-brown-fur-human-review-repair`,
+package SHA-256
+`969F89E8744592FFB2D7009F881781498AA14C36932C2920A0ACD608D191B48D`,
+DLL and installed-DLL SHA-256
+`0D13E393FCD2E3F90D8882583C87915C0DA09EC5778867B5E69B53ABFA6BB265`,
+and MVID `754d4c45-dbf6-41b9-a5de-67b6e279c8ea`. Its 1,138 domain tests,
+40 focused runtime launches, 435 runtime assertions, normal/balance/absent and
+highest-risk profiles, ON/OFF-owner persistence, and all 16 boundary states
+pass. The next mission boundary is renewed human acceptance using the updated
+checklist. The 128-state matrix remains prohibited until this exact candidate
+receives explicit acceptance.
 
 The inspected dependency structure and fail-closed progression authority are
 recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.

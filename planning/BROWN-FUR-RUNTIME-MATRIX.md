@@ -2,50 +2,34 @@
 
 This is the durable scenario-level qualification authority for Brown-Fur.
 
-The `0.0.82-brown-fur-human-review-repair` source adds native score toggles,
-live reservoir counters, distinct donor icons, and early Share target-anchor
-resolution. Its new focused runtime rows, persistence rerun, optional-mod
-profiles, and 16-state boundary are pending. The evidence below remains the
-historical `0.0.81` record and must not be treated as qualification of changed
-source.
+The immutable `0.0.82-brown-fur-human-review-repair` candidate at
+`0940c282237826adfd6ef44f5bf864c2fdf0c588` adds native score toggles, live
+reservoir counters, distinct donor icons, early Share target-anchor resolution,
+and ordinary-recast typed-bonus restoration. Its focused runtime, persistence,
+optional-mod profiles, and complete 16-state boundary all pass. Human
+acceptance remains pending.
 Exact package, DLL, MVID, deployment, backup, CotW, and structured-evidence
 identities are recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`. A passing
-row proves only its stated scope. The `0.0.81` artifact was published when its
-module was ON and compatible CotW was present, but human review rejected its
-toggle presentation and pre-command Share targeting. It is superseded, not
-accepted. The final 128-state seal remains prohibited until a repaired exact
-artifact receives explicit human acceptance.
+row proves only its stated scope. The rejected `0.0.81` artifact remains
+superseded and unaccepted. The final 128-state seal remains prohibited until
+the exact `0.0.82` artifact receives explicit human acceptance.
 
 ## Current focused evidence
 
 | Contract | Result | Immutable source | Qualified scope |
 | --- | --- | --- | --- |
-| Transactional archetype publication | PASS | `2ef6e933ff521dff2330a948336a38083e741082` | 19 identities; six CotW archetypes preserved; Brown-Fur appended once as entry 7 when ON and absent when OFF |
-| Seven-module boundary matrix | PASS 16/16 | `2ef6e933ff521dff2330a948336a38083e741082` | Formula-derived all ON, all OFF, seven ON-alone, and seven OFF-with-others-ON states; every Brown-Fur publication assertion passed |
-| Exact-candidate persistence | PASS 4/4 | `2ef6e933ff521dff2330a948336a38083e741082` | ON reload/cleanup and OFF-owner reload/cleanup; exact feature settings restored |
-| Exact-candidate compatibility profiles | PASS | `2ef6e933ff521dff2330a948336a38083e741082` | CotW normal, CotW balance, CotW absent, and highest-risk CotW + Arms & Armor + Toggle Custom Soundpacks |
-| CotW structural resolution | PASS | `dd35e276cac658f3976aaddbcf4f6f61cd7eae26` | Installed CotW balance progression, all required Arcanist surfaces, 19 stable identities, zero selector references |
-| Installed Transmutation inventory | PASS | `b707fd5c3aa8773fb16ae3a3f968de1ab529b766` | 86 roots, 177 rows, 174 generic, 3 named adapters, zero unexplained |
-| Modifier carrier provenance | PASS | `7008c0e1067f47c713612c3d751f7519a9a0c62d` | Six installed ability-bonus component families and exact source context |
-| Descriptor-preserving adjustment | PASS | `2a44f651d1fe6ca94bcae9cb7a9b945598bdbe04` | Enhancement, polymorph, and size descriptors; exactly-once scoped adjustment |
-| Competition, recast, capstone | PASS | `bc8f30c439c53d0ff4e00ae5bb39c1fef7608c71` | Descriptor competition, both recast directions, retained buff, +4 capstone form |
-| Share targeting scope | PASS | `8f649db44b6a4c4e5cc980df08375f19085a2f0b` | Personal-to-Touch and exact 30-foot owner/execution scope without blueprint mutation |
-| Supremacy ordinary duration | PASS | `2d91e4898761feaf46731a15c92900c84f40aef6` | Ordinary native timed duration, non-stacking Extend, restoration, action type |
-| Supremacy named duration adapters | PASS | `f6048539d0e609ed4fd0787b3e18e73e478f5746`, `7f282f91b2fd8859274711e164b5de683ab261fd` | Resonating Word, Obsidian Flow, Earth Tremor line; no double Extend |
-| Supremacy no-op structures | PASS | `92aa73a35f218ef6ae994b7015161cbc88c236e1` | Instantaneous, permanent, absent-duration, and selector structures unchanged |
-| Exact reservoir accounting | PASS | `1c1fb1e3d4bf45d22437ab0547128c10f73edcf5` | Real CotW resource exact two-point debit, insufficient rejection, restoration |
-| Production cast transaction | PASS | `4d5f599457a1b5eb3d012dbbcfc1fc89344585f0` | Reservation, commit, rollback, spend suppression, scoped cleanup |
-| Native Arcanist slot boundary | PASS | `0fa4e97f89eb16e594e1475caff8b517d6c187e0` | Actual CotW spellbook source, reservoir `4 -> 2`, slots `6 -> 5`, rejection before slot spend |
-| Native combined spell cast | PASS | `442963a26108fa41a89accabcc7c3209373aceae` | Real Beast Shape variant, ally delivery, exact modifier, reservoir and slot deltas, process completion |
-| Real player intent facts | PASS | `37486e6bc100941f6c88fb28a0ad828a99b525c4` | Registered feature ownership, native grants, combined one-shot intent, clear, orphan rejection, zero publication |
-| Willing-target relationship surfaces | PASS | `efa7f578de31bf7d86bab17fac89296ced0e203e` | Native party, pet, summon, faction, control, enemy, and attackability APIs; fail-closed production policy |
-| Native command intent and accounting | PASS | `f596b374de8c0b813ae40a397c533b02384f3db3` | Real facts derive one immutable combined transaction; reservoir `4 -> 2`, native slots `6 -> 5`, invalid stat rejected pre-action, zero retained state |
-| Native submitted-command interruption | PASS | `f39c2c0acff97d84b2e2dc7484782f870d90bd10` | Automatically armed command enters running state, interrupts before commitment, reservoir `4 -> 4`, slots `6 -> 6`, zero retained state |
-| Native dispel and expiration | PASS | `334e526fec23c27e6c099fc44b1f797d4e99dece` | Successful `RuleDispelMagic` and native `BuffCollection` deadline tick each remove the enhanced real spell buff, restore the stat, and leave zero scope state |
-| Save/reload persistence | PASS | `805481e5834c045f26dc520f3046da71c25f5b6f` | Fresh-process working-save cycle preserves the real feature grants, +6 Enhancement modifier, native spell context, duration, and one exact target-owned adjustment record; verify removes all fixture state and saves clean |
-| Module OFF existing owner | PASS | `887a8514955b4071763d38b12d7862fbf5d5c52f` | ON process saves an existing owner; fresh OFF process retains all three features, native grants, +6 Enhancement persistence, context, and record while the Arcanist selector has zero Brown-Fur references; cleanup saves clean |
-| CotW absent isolation | PASS | `4c8d9cb05c324127561b3dad65b2c66f1fb92dff` | KMG-only profile keeps all seven saved intents ON, publishes all six independent modules, reports Brown-Fur Unavailable/not published, registers no Brown-Fur identity, and restores the complete original Mods tree |
-| CotW normal progression | PASS | `849f116e2a9b88f6e76963d4de43347b53690e21` | Guarded `balance_fixes=false` profile resolves actual exploit-bearing levels `1,3,5,7,9,11,13,15,17,19`, replaces 3/9, registers 19 identities, keeps selector at zero, and restores CotW settings byte-for-byte |
+| Native activatable presentation | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Six distinct exclusive score toggles plus Share use native `IsOn`, marker synchronization, and seven live shared reservoir counters |
+| Pre-command Share targeting | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Beast Shape II, Undead Anatomy I, and Resinous Skin resolve Unit before command construction and affect the selected ally |
+| Real spell mechanics | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Bull's Strength +4 OFF/+6 Enhancement ON; Cat's Grace +6; combined cost 2; Share OFF preserves native self-cast; interruption spends nothing |
+| Modifier carriers and recast | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Enhancement, Polymorph, and Size descriptors; competition; ordinary/enhanced recast both directions; +4 capstone; dispel and expiration |
+| Exact accounting and source boundaries | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Reservation/commit/rollback, real CotW reservoir, Arcanist spellbook provenance, one slot, and no partial combined debit |
+| Transmutation Supremacy | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Free non-stacking Extend, named adapters, no-op structures, variants, converted spells, and cleanup |
+| Installed Transmutation inventory | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | 86 roots, 177 rows, 174 generic, 3 named adapters, zero unexplained |
+| Exact-candidate persistence | PASS 4/4 | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | ON prepare/reload/cleanup and OFF-owner prepare/reload/cleanup preserve native toggles, reservoir, +6 typed buff, context, and record; settings restored |
+| CotW normal and balance progression | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Live resolved replacements 3/9 and 4/10; staged settings restored byte-for-byte |
+| CotW absent isolation | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Six independent modules active, saved Brown-Fur intent ON, zero dependent identities, Unavailable/not published, complete Mods restoration |
+| Highest-risk combined profile | PASS | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | CotW + Arms & Armor + Toggle Custom Soundpacks; all modules ON; exact restoration |
+| Seven-module boundary matrix | PASS 16/16 | `0940c282237826adfd6ef44f5bf864c2fdf0c588` | Formula-derived all ON, all OFF, seven ON-alone, and seven OFF-with-others-ON states; original settings SHA restored |
 
 ## Publication gates
 
@@ -59,10 +43,30 @@ artifact receives explicit human acceptance.
 | CotW absent isolation | PASS | Three fresh KMG-only launches prove core readiness, exact six-module publication, saved Brown-Fur intent ON, Unavailable/not-published status, no CotW assembly/contract/identity/reconciliation, and exact profile restoration |
 | CotW normal progression | PASS | Runtime graph is Normal with resolved exploit levels `1,3,5,7,9,11,13,15,17,19`, replacements 3/9, setting agreement, compatible contract, and exact settings restoration |
 | CotW balance progression | PASS (focused contract) | Runtime-resolved replacements 4 and 10 |
-| Seven-module boundary matrix | PASS | All 16 formula-derived states passed on commit `2ef6e933`; original settings restored to SHA `5B6030AE...665E` |
+| Seven-module boundary matrix | PASS | All 16 formula-derived states passed on commit `0940c282`; original settings restored to SHA `5B6030AE...665E` |
 | Human presentation acceptance | FAILED / SUPERSEDED | `0.0.81` had unclear Powerful Change state/resource presentation and Personal Share spells self-cast without target acquisition |
-| Human-review repair qualification | PENDING | Native mutually exclusive toggles, live reservoir counters, distinct icons, early Share targeting, focused runtime, persistence, optional profiles, and 16-state boundary |
+| Human-review repair qualification | PASS / AWAITING HUMAN | `0.0.82` native toggles, counters, icons, early Share targeting, 40 focused launches, persistence, optional profiles, and 16-state boundary pass on one artifact |
 | Seven-module exhaustive matrix | PROHIBITED PRE-ACCEPTANCE | Exactly 128 states on the accepted immutable artifact |
+
+## Immutable repaired candidate evidence
+
+- Source: `0940c282237826adfd6ef44f5bf864c2fdf0c588`
+- Package: `969F89E8744592FFB2D7009F881781498AA14C36932C2920A0ACD608D191B48D`
+- DLL / installed DLL: `0D13E393FCD2E3F90D8882583C87915C0DA09EC5778867B5E69B53ABFA6BB265`
+- MVID: `754d4c45-dbf6-41b9-a5de-67b6e279c8ea`
+- Deployment: `20260816T0435061213533Z`; backup `20260816T0435018654582Z`
+- Focused result set: 40 PASS launches and 435 PASS assertions.
+- Native cast: `20260816T0505529474842Z-disposable-brown-fur-native-cast`.
+- ON persistence: `20260816T0435201011706Z` and `20260816T0437481705319Z`.
+- OFF-owner persistence: `20260816T0440285219328Z` and `20260816T0442547083222Z`.
+- Normal CotW transaction: `compat-20260816T050845Z-a6dea2e10af8`.
+- Balance CotW transaction: `compat-20260816T051327Z-8796287e93f2`.
+- CotW-absent transaction: `compat-20260816T052142Z-aea12327ca3d`.
+- Highest-risk transaction: `compat-20260816T052439Z-affcc1be72fb`.
+- Boundary evidence: 16 PASS results from
+  `20260816T0531162280854Z-observe-feature-module-settings` through
+  `20260816T0601030701355Z-observe-feature-module-settings`.
+- Human acceptance: pending. Final 128-state matrix: not run.
 
 ## Superseded pre-human candidate
 

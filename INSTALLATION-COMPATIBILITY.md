@@ -140,9 +140,11 @@ CotW plus Arms and Armor plus Toggle Custom Soundpacks profile, and all 16
 seven-module boundary states. Unknown or ambiguous future CotW structures are
 reported as Blocked and leave Brown-Fur unpublished. Human review rejected that
 candidate for unclear toggle/resource presentation and immediate Personal-spell
-self-casting. Version `0.0.82` repairs those paths and requires a fresh focused
-runtime/profile/boundary qualification plus renewed human acceptance. The
-128-state final release seal has not run.
+self-casting. Version `0.0.82` repairs those paths. Its 1,138 domain tests,
+40 focused runtime launches with 435 passing assertions, normal and balance
+progressions, CotW absence, module-OFF persistence, highest-risk profile, and
+all 16 boundary states pass on one immutable installed artifact. Renewed human
+acceptance remains pending. The 128-state final release seal has not run.
 
 - This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
   and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.

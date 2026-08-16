@@ -3,13 +3,30 @@
 The installed-spell classification remains authoritative for the `0.0.82`
 repair. The repair changes pre-command targeting and player intent presentation,
 not spell classification. Beast Shape II, Undead Anatomy I, and Resinous Skin
-remain supported inventory rows whose repaired ally-target execution requires
-fresh guarded runtime qualification.
+remain supported inventory rows, and their repaired ally-target execution
+passes guarded runtime qualification on the immutable repaired candidate.
 
 Status: authoritative installed inventory captured and deterministically
 classified; `Unexplained = 0`. Every separate ownership, interruption, dispel,
 persistence, and publication gate now passes on the immutable pre-human
 candidate. Human acceptance remains pending.
+
+## Repaired-candidate authority
+
+The final save-free inventory observer passed on source
+`0940c282237826adfd6ef44f5bf864c2fdf0c588` in run
+`20260816T0501426986735Z-observe-brown-fur-transmutation-inventory`. It used
+package SHA-256
+`969F89E8744592FFB2D7009F881781498AA14C36932C2920A0ACD608D191B48D`,
+DLL and installed-DLL SHA-256
+`0D13E393FCD2E3F90D8882583C87915C0DA09EC5778867B5E69B53ABFA6BB265`,
+and MVID `754d4c45-dbf6-41b9-a5de-67b6e279c8ea`.
+
+The resolved inventory contains `86` Transmutation roots and `177` complete
+parent, variant, and `ConvertedFrom` records. Of those, `174` use the generic
+contract and `3` use named adapters. `Unexplained = 0`; no row is blocked by an
+unknown engine limitation. The earlier captures below are retained as
+chronological investigation evidence, not as the current artifact authority.
 
 ## Authoritative capture
 
