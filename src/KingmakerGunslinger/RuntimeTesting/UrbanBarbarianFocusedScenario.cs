@@ -418,7 +418,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         greaterSplit && greaterThreeWay && mighty.Length == 15 &&
                         mightyDefault && mightyFull && mightySixTwo &&
                         mightyFourFour && mightyThreeWay &&
-                        set.SelectionFacts.Count(urban.Descriptor.HasFact) == 1,
+                        set.SelectionFacts.Count(urban.Descriptor.HasFact) == 3 &&
+                        urban.Descriptor.Get<
+                            UnitPartControlledRageSelection>() != null,
                     "actual Barbarian progression facts, filtered AbilityData variants, and live score modifiers");
 
                 stage = "native-rage-toggle";
@@ -728,21 +730,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             UrbanBarbarianBlueprintSet set, ControlledRageTier tier,
             int strength, int dexterity, int constitution)
         {
-            foreach (BlueprintFeature feature in set.SelectionFacts)
-                if (owner.HasFact(feature)) owner.RemoveFact(feature);
             ControlledRageAllocation allocation =
                 ControlledRageAllocationPolicy.Generate(tier).Single(value =>
                     value.Strength == strength && value.Dexterity == dexterity &&
                     value.Constitution == constitution);
-            string symbol = UrbanBarbarianIdentityCatalog.SelectionFeature(
-                allocation);
-            string guid = UrbanBarbarianIdentityCatalog.All.Single(value =>
-                value.Symbol == symbol).Guid;
-            BlueprintFeature selected = set.SelectionFacts.Single(value =>
-                value.AssetGuid == guid);
-            if (owner.AddFact(selected) == null)
+            if (!ControlledRageRuntime.TrySelect(owner, allocation))
                 throw new InvalidOperationException(
-                    "Controlled Rage selection fact was rejected.");
+                    "Controlled Rage persisted selection was rejected.");
         }
 
         private static bool Selected(UrbanBarbarianBlueprintSet set,
@@ -753,12 +747,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ControlledRageAllocationPolicy.Generate(tier).Single(value =>
                     value.Strength == strength && value.Dexterity == dexterity &&
                     value.Constitution == constitution);
-            string symbol = UrbanBarbarianIdentityCatalog.SelectionFeature(
+            return Equals(ControlledRageRuntime.ResolveSelection(owner, false),
                 allocation);
-            string guid = UrbanBarbarianIdentityCatalog.All.Single(value =>
-                value.Symbol == symbol).Guid;
-            return set.SelectionFacts.Any(value => value.AssetGuid == guid &&
-                owner.HasFact(value));
         }
 
         private static int AbilityDeltaTotal(UnitDescriptor owner,

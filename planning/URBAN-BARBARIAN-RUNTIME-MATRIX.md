@@ -112,6 +112,15 @@ reconciles the carrier on load before applying its one exact set of morale
 modifiers. This strategy is not qualified until the same two-launch scenario
 passes; no unchanged retry is permitted.
 
+The first save-free run of that carrier candidate
+(`20260816T1816563859126Z-disposable-urban-barbarian-focused`) correctly
+retained its authoritative full-STR defaults but exposed stale fixture setup:
+`SelectDirect` still edited child facts instead of calling the persisted
+selection transaction, so every requested DEX/CON/split measurement remained
+STR. No production assertion was accepted from that run. The fixture now uses
+`ControlledRageRuntime.TrySelect` and checks one synchronized fact for each of
+the three unlocked tier states; the exact candidate must be rebuilt and rerun.
+
 ## Authoritative eight-module boundary
 
 The generic catalog derives exactly `2N + 2 = 18` states for `N = 8`:

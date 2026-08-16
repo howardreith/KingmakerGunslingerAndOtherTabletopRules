@@ -73,6 +73,8 @@ namespace KingmakerGunslinger.DomainTests
                 "State.Units.All.Add(urban)",
                 "ordinaryToggle.OnNewRound()",
                 "ordinaryToggle.Stop(true)",
+                "ControlledRageRuntime.TrySelect(owner, allocation)",
+                "UnitPartControlledRageSelection>() != null",
                 "!ordinaryFatiguedBefore" })
                 Assertions.True(catalog.Contains(token) || runner.Contains(token) ||
                     focused.Contains(token) || automation.Contains(token),
