@@ -34,6 +34,7 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
 $expected = @(
     'mod-load-smoke',
     'observe-feature-module-settings',
+    'observe-urban-barbarian-rage-inventory',
     'observe-brown-fur-cotw-contract',
     'observe-brown-fur-cotw-absent-isolation',
     'observe-brown-fur-transmutation-inventory',
