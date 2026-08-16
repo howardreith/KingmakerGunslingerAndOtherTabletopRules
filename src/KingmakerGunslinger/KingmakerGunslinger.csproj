@@ -40,6 +40,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="UrbanBarbarian\ControlledRageAllocation.cs" />
+    <Compile Include="UrbanBarbarian\ControlledRageAllocationPolicy.cs" />
+    <Compile Include="UrbanBarbarian\ControlledRageSelectionState.cs" />
+    <Compile Include="UrbanBarbarian\ControlledRageHitPointPolicy.cs" />
+    <Compile Include="UrbanBarbarian\CrowdControlPolicy.cs" />
+    <Compile Include="UrbanBarbarian\UrbanCotwCompatibilityPolicy.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearNamedEffects.cs" />
