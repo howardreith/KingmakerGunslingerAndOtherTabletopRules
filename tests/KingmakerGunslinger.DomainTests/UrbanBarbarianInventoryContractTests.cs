@@ -24,6 +24,7 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeAutomation.Common.ps1"));
             Assertions.True(observer.Contains(
                     "f7d7eb166b3dd594fb330d085df41853") &&
+                observer.Contains("4b1f3dd0f61946249a654941fc417a89") &&
                 observer.Contains("CanContainRageContract(blueprint)") &&
                 observer.Contains("records.Count <= 3000") &&
                 !observer.Contains("ExpandReverse(") &&

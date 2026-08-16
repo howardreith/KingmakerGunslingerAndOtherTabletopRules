@@ -23,6 +23,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "urban-barbarian-rage-inventory.json";
         private const string BarbarianClassGuid =
             "f7d7eb166b3dd594fb330d085df41853";
+        private const string RageFactGuid =
+            "4b1f3dd0f61946249a654941fc417a89";
 
         internal static RuntimeTestResult Run(ModContext context,
             RuntimeTestRequest request)
@@ -58,6 +60,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (CanContainRageContract(blueprint) &&
                     (NameLooksRelevant(blueprint) ||
                      ComponentsLookRelevant(blueprint))) Add(selected, blueprint);
+            Add(selected, all.SingleOrDefault(value => string.Equals(
+                value.AssetGuid, RageFactGuid, StringComparison.Ordinal)));
             var urbanGuids = new HashSet<string>(
                 UrbanBarbarianIdentityCatalog.All.Select(value => value.Guid),
                 StringComparer.Ordinal);
