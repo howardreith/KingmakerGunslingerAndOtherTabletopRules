@@ -14,6 +14,7 @@ using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
@@ -473,7 +474,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .CountAdjacentActiveEnemies(urban);
                 int attackTwo = Attack(urban, weapon);
                 int acTwo = ArmorClass(urban, enemyOne);
-                enemyTwo.Descriptor.State.ForceKill = true;
+                enemyTwo.Descriptor.State.Immortality.ReleaseAll();
+                Rulebook.Trigger(new RuleDealDamage(urban, enemyTwo,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), enemyTwo.MaxHP + 10)))
+                    {
+                        DisablePrecisionDamage = true,
+                        IgnoreDamageReduction = true
+                    });
                 int adjacentAfterDeath = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackAfterDeath = Attack(urban, weapon);
@@ -500,6 +508,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attackMovedOut == attackZero && acOne == acZero &&
                         acTwo == acZero + 1 && acThree == acZero + 1 &&
                         adjacentTwo == 2 && adjacentAfterDeath == 1 &&
+                        !enemyTwo.Descriptor.State.IsConscious &&
                         attackAfterDeath == attackZero &&
                         acAfterDeath == acZero,
                     "live attack/AC Rulebook events and native edge-to-edge DistanceTo");
