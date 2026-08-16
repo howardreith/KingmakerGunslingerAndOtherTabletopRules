@@ -41,6 +41,38 @@ namespace KingmakerGunslinger.DomainTests
                 "An allocation description does not name its exact bonuses.");
         }
 
+        internal static void AllocationIconVocabularyIsExactAndLegible()
+        {
+            var all = new List<ControlledRageIconSpec>();
+            foreach (ControlledRageTier tier in new[] {
+                ControlledRageTier.Ordinary, ControlledRageTier.Greater,
+                ControlledRageTier.Mighty })
+            {
+                ControlledRageIconSpec[] specs =
+                    ControlledRageAllocationPolicy.Generate(tier).Select(
+                        ControlledRageIconPolicy.Describe).ToArray();
+                Assertions.Equal((int)tier / 2, specs[0].TileCount,
+                    "Icon tile count no longer represents every +2 increment.");
+                Assertions.Equal(specs.Length, specs.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count(),
+                    "Visible allocation icon keys collide within a tier.");
+                Assertions.True(specs.Take(3).All(value => value.UsesNativeDonor),
+                    "Pure allocations no longer use native stat donors.");
+                Assertions.True(specs.Skip(3).All(value =>
+                    !value.UsesNativeDonor),
+                    "A mixed allocation incorrectly maps to one native donor.");
+                all.AddRange(specs);
+            }
+            Assertions.Equal(31, all.Select(value => value.Key)
+                .Distinct(StringComparer.Ordinal).Count(),
+                "Allocation icon identities are not globally unique.");
+            AssertGlyphs(4, 2, 2, 0, "Strength,Dexterity");
+            AssertGlyphs(6, 4, 2, 0, "Strength,Strength,Dexterity");
+            AssertGlyphs(6, 2, 4, 0, "Strength,Dexterity,Dexterity");
+            AssertGlyphs(8, 4, 2, 2,
+                "Strength,Strength,Dexterity,Constitution");
+        }
+
         internal static void TierSelectionDefaultsVisibilityAndGuardsAreExact()
         {
             Assertions.Equal(ControlledRageTier.Ordinary,
@@ -225,12 +257,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             IReadOnlyList<UrbanBarbarianIdentitySpec> identities =
                 UrbanBarbarianIdentityCatalog.All;
-            Assertions.Equal(70, identities.Count,
+            Assertions.Equal(73, identities.Count,
                 "Urban Barbarian identity count changed.");
-            Assertions.Equal(70, identities.Select(value => value.Symbol)
+            Assertions.Equal(73, identities.Select(value => value.Symbol)
                 .Distinct(StringComparer.Ordinal).Count(),
                 "Urban Barbarian identity symbols collide.");
-            Assertions.Equal(70, identities.Select(value => value.Guid)
+            Assertions.Equal(73, identities.Select(value => value.Guid)
                 .Distinct(StringComparer.Ordinal).Count(),
                 "Urban Barbarian identity GUIDs collide.");
             Assertions.True(identities.All(value => value.Guid.Length == 32 &&
@@ -267,6 +299,9 @@ namespace KingmakerGunslinger.DomainTests
             string rage = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "UrbanBarbarian",
                 "ControlledRageRuntime.cs"));
+            string icons = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "UrbanBarbarianAllocationIcons.cs"));
             string crowd = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "UrbanBarbarian",
                 "CrowdControlComponent.cs"));
@@ -290,7 +325,11 @@ namespace KingmakerGunslinger.DomainTests
                 "Entry(1, fastMovement",
                 "nativeProficiency)",
                 "Entry(11, greaterDefault)",
-                "Entry(20, mightyDefault)",
+                "Entry(20, mightyDefault)", "CreateLegacySelector",
+                "ControlledRageTier.Ordinary",
+                "ControlledRageTier.Greater",
+                "ControlledRageTier.Mighty",
+                "SequenceEqual(new[] { 6, 10, 15 })",
                 "ControlledRageAbilityScoreBonus",
                 "ForbidSpellCasting",
                 "SpellDescriptorComponent" })
@@ -302,13 +341,28 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "ReferenceEquals(attempted, _nativeRage)",
                 "collection.Owner.HasFact(_ownerFeature)",
-                "BuffCollection), \"AddBuff\"", "new AbilityData(parent,",
+                "BuffCollection), \"AddBuff\"",
                 "ModifierDescriptor.Morale",
                 "HarmonyAfter(\"CallOfTheWild\")",
-                "get_Variants", "get_Name", "Selected -- ",
+                "MechanicActionBarSlotAbility), \"GetIcon\"",
+                "MechanicActionBarSlotAbility), \"GetTitle\"",
+                "Selected \\u2713 ",
                 "ResolveSelection(Owner, true)" })
                 Assertions.True(rage.Contains(token),
                     "Controlled Rage runtime contract is missing: " + token);
+            Assertions.False(rage.Contains(
+                    "HarmonyPatch(typeof(AbilityData), \"get_Variants\")") ||
+                rage.Contains("FilterVariants("),
+                "Controlled Rage still relies on the bypassed AbilityData variant visibility patch.");
+            foreach (string token in new[] {
+                "4c3d08935262b6544ae97599b3a9556d",
+                "de7a025d48ad5da4991e7d3c682cf69d",
+                "a900628aea19aa74aad0ece0e65d091a",
+                "ControlledRageIconPolicy.Describe", "RenderTexture.GetTemporary",
+                "new Rect(88f, 95f", "new Color(0.18f, 1f, 0.28f",
+                "Size = 128", "Distinct().Count()" })
+                Assertions.True(icons.Contains(token),
+                    "Controlled Rage icon contract is missing: " + token);
             foreach (string token in new[] {
                 "IInitiatorRulebookHandler<RuleCalculateAttackBonusWithoutTarget>",
                 "ITargetRulebookHandler<RuleCalculateAC>",
@@ -361,6 +415,20 @@ namespace KingmakerGunslinger.DomainTests
         {
             return value.Strength + "," + value.Dexterity + "," +
                 value.Constitution;
+        }
+
+        private static void AssertGlyphs(int total, int strength, int dexterity,
+            int constitution, string expected)
+        {
+            ControlledRageAllocation allocation =
+                ControlledRageAllocationPolicy.Generate(
+                    (ControlledRageTier)total).Single(value =>
+                        value.Strength == strength && value.Dexterity == dexterity &&
+                        value.Constitution == constitution);
+            Assertions.Equal(expected, string.Join(",",
+                ControlledRageIconPolicy.Describe(allocation).Glyphs),
+                "Repeated +2 stat glyph direction changed for " +
+                    allocation.Name + ".");
         }
 
         private static CrowdControlCandidate Candidate(double distance)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.84-urban-barbarian-human-review-repair (development candidate)
+
+- Replaces the rejected single 31-entry Controlled Rage allocation surface with three owner-granted tier selectors containing exactly 6, 10, and 15 variants.
+- Preserves the 0.0.83 selector identity as hidden save compatibility while adding stable ordinary, Greater, and Mighty selector identities.
+- Adds distinct native-donor and repeated-glyph composite allocation icons plus a selected green-border/check presentation.
+- Reopens focused Crowd Control, skill-use, persistence, CotW-profile, and 18-state runtime qualification; this candidate is not human accepted.
+
 ## 0.0.83-urban-barbarian (development candidate)
 
 - Adds Urban Barbarian as an eighth independent, default-enabled native

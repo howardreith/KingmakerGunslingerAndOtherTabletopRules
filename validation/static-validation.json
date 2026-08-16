@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.83-urban-barbarian",
-  "version": "0.0.83",
+  "milestone": "0.0.84-urban-barbarian-human-review-repair",
+  "version": "0.0.84",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1505,
-    "activeEntryCount": 1504,
+    "entryCount": 1616,
+    "activeEntryCount": 1615,
     "reservedEntryCount": 1,
-    "registrationCount": 1504
+    "registrationCount": 1615
   },
   "sprint29": {
     "completeMaintenanceLoop": true,

@@ -83,6 +83,7 @@
     <Compile Include="UrbanBarbarianPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageAllocation.cs"><Link>UrbanBarbarian\ControlledRageAllocation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageAllocationPolicy.cs"><Link>UrbanBarbarian\ControlledRageAllocationPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageIconPolicy.cs"><Link>UrbanBarbarian\ControlledRageIconPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageSelectionState.cs"><Link>UrbanBarbarian\ControlledRageSelectionState.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageHitPointPolicy.cs"><Link>UrbanBarbarian\ControlledRageHitPointPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\CrowdControlPolicy.cs"><Link>UrbanBarbarian\CrowdControlPolicy.cs</Link></Compile>

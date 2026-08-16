@@ -12,6 +12,8 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UI.UnitSettings;
+using UnityEngine;
 
 namespace KingmakerGunslinger.UrbanBarbarian
 {
@@ -22,7 +24,11 @@ namespace KingmakerGunslinger.UrbanBarbarian
         private static BlueprintFeature _ownerFeature;
         private static BlueprintFeature _greaterRage;
         private static BlueprintFeature _mightyRage;
-        private static BlueprintAbility _selector;
+        private static BlueprintAbility _legacySelector;
+        private static IDictionary<ControlledRageTier, BlueprintAbility>
+            _selectorsByTier;
+        private static IDictionary<BlueprintAbility, ControlledRageTier>
+            _tiersBySelector;
         private static IDictionary<BlueprintAbility, ControlledRageAllocation>
             _allocationsByAbility;
         private static IDictionary<ControlledRageAllocation, BlueprintAbility>
@@ -31,23 +37,35 @@ namespace KingmakerGunslinger.UrbanBarbarian
             _factsByAllocation;
         private static IDictionary<BlueprintFeature, ControlledRageAllocation>
             _allocationsByFact;
+        private static IDictionary<ControlledRageAllocation, Sprite>
+            _selectedIcons;
 
         internal static void Configure(BlueprintBuff nativeRage,
             BlueprintBuff urbanRage, BlueprintFeature ownerFeature,
             BlueprintFeature greaterRage, BlueprintFeature mightyRage,
-            BlueprintAbility selector,
+            BlueprintAbility legacySelector,
+            IDictionary<ControlledRageTier, BlueprintAbility> selectors,
             IDictionary<BlueprintAbility, ControlledRageAllocation> abilities,
-            IDictionary<ControlledRageAllocation, BlueprintFeature> facts)
+            IDictionary<ControlledRageAllocation, BlueprintFeature> facts,
+            IDictionary<ControlledRageAllocation, Sprite> selectedIcons)
         {
             if (nativeRage == null || urbanRage == null || ownerFeature == null ||
-                greaterRage == null || mightyRage == null || selector == null ||
+                greaterRage == null || mightyRage == null ||
+                legacySelector == null || selectors == null ||
+                selectors.Count != 3 || selectors.Any(value =>
+                    value.Value == null) ||
                 abilities == null || facts == null || abilities.Count != 31 ||
-                facts.Count != 31)
+                facts.Count != 31 || selectedIcons == null ||
+                selectedIcons.Count != 31)
                 throw new ArgumentException(
                     "The complete Controlled Rage runtime graph is required.");
             _nativeRage = nativeRage; _urbanRage = urbanRage;
             _ownerFeature = ownerFeature; _greaterRage = greaterRage;
-            _mightyRage = mightyRage; _selector = selector;
+            _mightyRage = mightyRage; _legacySelector = legacySelector;
+            _selectorsByTier = new Dictionary<ControlledRageTier,
+                BlueprintAbility>(selectors);
+            _tiersBySelector = selectors.ToDictionary(value => value.Value,
+                value => value.Key);
             _allocationsByAbility = new Dictionary<BlueprintAbility,
                 ControlledRageAllocation>(abilities);
             _abilitiesByAllocation = abilities.ToDictionary(value => value.Value,
@@ -56,6 +74,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 BlueprintFeature>(facts);
             _allocationsByFact = facts.ToDictionary(value => value.Value,
                 value => value.Key);
+            _selectedIcons = new Dictionary<ControlledRageAllocation, Sprite>(
+                selectedIcons);
         }
 
         internal static BlueprintBuff Substitute(BuffCollection collection,
@@ -113,8 +133,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
             else part.Unlock(tier);
             ControlledRageAllocation result = part.SelectionFor(tier);
             if (result == null) return null;
-            return !reconcileDefault || SynchronizeSelectionFacts(owner, part)
-                ? result : null;
+            return !reconcileDefault || (SynchronizeSelectionFacts(owner, part) &&
+                SynchronizeSelector(owner, tier)) ? result : null;
         }
 
         internal static void UnlockTier(UnitDescriptor owner,
@@ -126,6 +146,7 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 UnitPartControlledRageSelection>();
             part.Unlock(tier);
             SynchronizeSelectionFacts(owner, part);
+            SynchronizeSelector(owner, tier);
         }
 
         internal static bool TrySelect(UnitDescriptor owner,
@@ -164,6 +185,26 @@ namespace KingmakerGunslinger.UrbanBarbarian
                     owner.RemoveFact(_factsByAllocation[allocation]);
         }
 
+        internal static void RemoveTier(UnitDescriptor owner,
+            ControlledRageTier tier)
+        {
+            ClearTierFacts(owner, tier);
+            if (owner == null || _selectorsByTier == null) return;
+            RemoveSelector(owner, _selectorsByTier[tier]);
+            if (tier == ControlledRageTier.Ordinary)
+            {
+                RemoveSelector(owner, _legacySelector);
+                foreach (BlueprintAbility selector in _selectorsByTier.Values)
+                    RemoveSelector(owner, selector);
+                return;
+            }
+            if (_ownerFeature == null || !owner.HasFact(_ownerFeature)) return;
+            ControlledRageTier fallback = tier == ControlledRageTier.Mighty &&
+                _greaterRage != null && owner.HasFact(_greaterRage) ?
+                ControlledRageTier.Greater : ControlledRageTier.Ordinary;
+            SynchronizeSelector(owner, fallback);
+        }
+
         private static bool SynchronizeSelectionFacts(UnitDescriptor owner,
             UnitPartControlledRageSelection part)
         {
@@ -185,19 +226,25 @@ namespace KingmakerGunslinger.UrbanBarbarian
             return true;
         }
 
-        internal static IList<AbilityData> FilterVariants(AbilityData parent,
-            IList<AbilityData> variants)
+        private static bool SynchronizeSelector(UnitDescriptor owner,
+            ControlledRageTier tier)
         {
-            if (parent == null || !ReferenceEquals(parent.Blueprint, _selector))
-                return variants;
-            if (parent.Caster == null) return new AbilityData[0];
-            ControlledRageTier tier;
-            if (!TryCurrentTier(parent.Caster, out tier))
-                return new AbilityData[0];
-            return ControlledRageAllocationPolicy.Generate(tier)
-                .Select(value => new AbilityData(parent,
-                    _abilitiesByAllocation[value]))
-                .ToArray();
+            if (owner == null || _legacySelector == null ||
+                _selectorsByTier == null || !_selectorsByTier.ContainsKey(tier))
+                return false;
+            BlueprintAbility selected = _selectorsByTier[tier];
+            RemoveSelector(owner, _legacySelector);
+            foreach (BlueprintAbility selector in _selectorsByTier.Values)
+                if (!ReferenceEquals(selector, selected))
+                    RemoveSelector(owner, selector);
+            return owner.HasFact(selected) || owner.AddFact(selected) != null;
+        }
+
+        private static void RemoveSelector(UnitDescriptor owner,
+            BlueprintAbility selector)
+        {
+            if (owner != null && selector != null && owner.HasFact(selector))
+                owner.RemoveFact(selector);
         }
 
         internal static bool IsSelected(AbilityData ability)
@@ -209,6 +256,42 @@ namespace KingmakerGunslinger.UrbanBarbarian
             return _allocationsByAbility.TryGetValue(ability.Blueprint,
                 out allocation) && Equals(ResolveSelection(
                     ability.Caster, false), allocation);
+        }
+
+        internal static Sprite PresentationIcon(AbilityData ability,
+            Sprite fallback)
+        {
+            if (ability == null || ability.Caster == null ||
+                ability.Blueprint == null || _selectedIcons == null)
+                return fallback;
+            ControlledRageAllocation allocation;
+            if (_allocationsByAbility.TryGetValue(ability.Blueprint,
+                    out allocation))
+                return IsSelected(ability) ? _selectedIcons[allocation] : fallback;
+            ControlledRageTier tier;
+            if (_tiersBySelector == null || !_tiersBySelector.TryGetValue(
+                    ability.Blueprint, out tier)) return fallback;
+            allocation = ResolveSelection(ability.Caster, false);
+            return allocation != null && allocation.Total == (int)tier ?
+                _selectedIcons[allocation] : fallback;
+        }
+
+        internal static string PresentationTitle(AbilityData ability,
+            string fallback)
+        {
+            if (ability == null || ability.Caster == null ||
+                ability.Blueprint == null) return fallback;
+            ControlledRageAllocation allocation;
+            if (_allocationsByAbility != null && _allocationsByAbility.TryGetValue(
+                    ability.Blueprint, out allocation))
+                return IsSelected(ability) ? "Selected \u2713 " + fallback : fallback;
+            ControlledRageTier tier;
+            if (_tiersBySelector == null || !_tiersBySelector.TryGetValue(
+                    ability.Blueprint, out tier)) return fallback;
+            allocation = ResolveSelection(ability.Caster, false);
+            return allocation == null || allocation.Total != (int)tier ? fallback :
+                "Controlled Rage Allocation (+" + (int)tier + "): " +
+                    allocation.Name;
         }
     }
 
@@ -269,15 +352,6 @@ namespace KingmakerGunslinger.UrbanBarbarian
         { __0 = ControlledRageRuntime.Substitute(__instance, __0); }
     }
 
-    [HarmonyPatch(typeof(AbilityData), "get_Variants")]
-    [HarmonyAfter("CallOfTheWild")]
-    internal static class ControlledRageVariantsPatch
-    {
-        private static void Postfix(AbilityData __instance,
-            ref IList<AbilityData> __result)
-        { __result = ControlledRageRuntime.FilterVariants(__instance, __result); }
-    }
-
     [HarmonyPatch(typeof(AbilityData), "get_Name")]
     internal static class ControlledRageSelectedNamePatch
     {
@@ -285,6 +359,28 @@ namespace KingmakerGunslinger.UrbanBarbarian
         {
             if (ControlledRageRuntime.IsSelected(__instance))
                 __result = "Selected -- " + __result;
+        }
+    }
+
+    [HarmonyPatch(typeof(MechanicActionBarSlotAbility), "GetIcon")]
+    internal static class ControlledRageLiveSlotIconPatch
+    {
+        private static void Postfix(MechanicActionBarSlotAbility __instance,
+            ref Sprite __result)
+        {
+            __result = ControlledRageRuntime.PresentationIcon(
+                __instance == null ? null : __instance.Ability, __result);
+        }
+    }
+
+    [HarmonyPatch(typeof(MechanicActionBarSlotAbility), "GetTitle")]
+    internal static class ControlledRageLiveSlotTitlePatch
+    {
+        private static void Postfix(MechanicActionBarSlotAbility __instance,
+            ref string __result)
+        {
+            __result = ControlledRageRuntime.PresentationTitle(
+                __instance == null ? null : __instance.Ability, __result);
         }
     }
 }

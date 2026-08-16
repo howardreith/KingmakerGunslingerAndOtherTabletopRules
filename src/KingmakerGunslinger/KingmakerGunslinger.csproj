@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="UrbanBarbarian\ControlledRageAllocation.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageAllocationPolicy.cs" />
+    <Compile Include="UrbanBarbarian\ControlledRageIconPolicy.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageSelectionState.cs" />
     <Compile Include="UrbanBarbarian\UnitPartControlledRageSelection.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageHitPointPolicy.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="UrbanBarbarian\CrowdControlComponent.cs" />
     <Compile Include="UrbanBarbarian\UrbanBarbarianPublication.cs" />
     <Compile Include="Blueprints\UrbanBarbarianBlueprints.cs" />
+    <Compile Include="Blueprints\UrbanBarbarianAllocationIcons.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearNamedEffects.cs" />

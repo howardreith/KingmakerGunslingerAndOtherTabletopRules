@@ -63,6 +63,9 @@ namespace KingmakerGunslinger.DomainTests
                 "urban-ordinary-rage",
                 "urban-constitution-hp-cycle",
                 "urban-greater-mighty-tiers",
+                "urban-level-two-live-selector-boundary",
+                "MechanicActionBarSlotAbility.GetConvertedAbilityData",
+                "LivePanelVariants",
                 "urban-native-rage-lifecycle",
                 "urban-crowd-control-rule-events",
                 "RuleCalculateAttackBonusWithoutTarget",
@@ -109,7 +112,9 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("set.Count == UrbanBarbarianIdentityCatalog.IdentityCount") &&
                 runner.Contains("archetypeReferences == (expectedActive ? 1 : 0)") &&
                 runner.Contains("fixtureFeatures.Reverse()") &&
-                runner.Contains("owner.Descriptor.RemoveFact(set.Selector)") &&
+                runner.Contains("owner.Descriptor.RemoveFact(selector)") &&
+                runner.Contains("set.TierSelectors") &&
+                runner.Contains("set.LegacySelector") &&
                 runner.Contains("cleanupDetail = \"features=\"") &&
                 runner.Contains("Remove<UnitPartControlledRageSelection>()") &&
                 persistence.Contains("[JsonProperty]") &&
@@ -117,10 +122,12 @@ namespace KingmakerGunslinger.DomainTests
                 persistence.Contains("public override void PostLoad()") &&
                 persistence.Contains("TrySelectExact") &&
                 rageRuntime.Contains("SynchronizeSelectionFacts") &&
+                rageRuntime.Contains("SynchronizeSelector") &&
                 rageRuntime.Contains("owner.Ensure<UnitPartControlledRageSelection>()") &&
                 blueprints.Contains("ControlledRageSelectionController") &&
-                blueprints.Contains("grant.Facts = new BlueprintUnitFact[] { selector }") &&
-                !blueprints.Contains("grant.Facts = new BlueprintUnitFact[] { selector, ordinaryDefault }"),
+                blueprints.Contains("CreateLegacySelector") &&
+                blueprints.Contains("SequenceEqual(new[] { 6, 10, 15 })") &&
+                !blueprints.Contains("grant.Facts = new BlueprintUnitFact[] { selector }"),
                 "Urban persistence is not guarded, module-aware, or cleanup-complete.");
             Assertions.Equal(2, Count(runner,
                 "IsUrbanBarbarianPersistenceScenario() ||"),

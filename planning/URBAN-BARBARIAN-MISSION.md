@@ -9,7 +9,8 @@
 - Feature branch: `codex/urban-barbarian`.
 - Version authority before the mission: `Info.json` and
   `Directory.Build.props` both identify package version `0.0.82`.
-- Reserved next development version: `0.0.83`.
+- Superseded human-review candidate: `0.0.83`.
+- Active repair candidate version: `0.0.84`.
 
 The on-disk checkout is named `KingmakerGunslinger`, but its configured origin
 is the requested combined-package repository. The requested sibling directory
@@ -59,10 +60,12 @@ been exhausted. Build or source-test success is not runtime qualification.
   corpulence, +1 untyped attack and +1 dodge AC at two or more adjacent enemies.
 - Controlled Rage pools: +4, +6, and +8 morale ability-score bonuses, allocated
   among Strength, Dexterity, and Constitution in +2 increments.
-- Selector: one compact nested current-tier selector, with exactly 6/10/15
-  deterministic allocations. It costs no Rage rounds, persists, cannot change
-  while raging, defaults each newly unlocked tier to full Strength, and grants
-  no benefit outside Rage.
+- Selector: three compact tier-specific parent selectors with exactly 6/10/15
+  deterministic allocations. Only the current parent is owner-granted; the
+  rejected 31-entry root remains registered but hidden and inert for save
+  compatibility. Selection costs no Rage rounds, persists, cannot change while
+  raging, defaults each newly unlocked tier to full Strength, and grants no
+  benefit outside Rage.
 - No ordinary native Rage attack, damage, temporary HP, Will, or AC effects.
 - Preserve the native activation/resource/per-round/fatigue/Tireless/end-rage
   lifecycle, spell/concentration restriction, rage powers, and Rage-inspecting
@@ -157,7 +160,7 @@ Greater and Mighty Rage, ordinary-benefit leakage checks, native resource and
 fatigue/Tireless lifecycle, repeated low-HP Constitution cycles, and Crowd
 Control attack/AC threshold changes. The guarded two-launch working-save
 fixture is designed to persist an active CON +4 Controlled Rage and its exact
-feature and selection state, restart with Urban publication OFF, prove all 70
+feature and selection state, restart with Urban publication OFF, prove all 73
 identities and owner behavior remain available while new selection is hidden,
 clean the fixture, save, and restore feature settings byte-for-byte.
 

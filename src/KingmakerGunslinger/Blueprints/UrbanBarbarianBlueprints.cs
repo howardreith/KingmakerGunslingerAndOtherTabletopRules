@@ -24,7 +24,9 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintArchetype archetype, BlueprintFeature proficiency,
             BlueprintFeature crowdControl, BlueprintFeature controlledRage,
             BlueprintFeature greaterDefault, BlueprintFeature mightyDefault,
-            BlueprintBuff rageBuff, BlueprintAbility selector,
+            BlueprintBuff rageBuff, BlueprintAbility legacySelector,
+            BlueprintAbility ordinarySelector, BlueprintAbility greaterSelector,
+            BlueprintAbility mightySelector,
             BlueprintFeature[] selectionFacts, BlueprintAbility[] allocations,
             BlueprintFeature nativeGreaterRage, BlueprintFeature nativeTirelessRage,
             BlueprintFeature nativeMightyRage, BlueprintBuff nativeRageBuff)
@@ -33,7 +35,9 @@ namespace KingmakerGunslinger.Blueprints
             Proficiency = proficiency; CrowdControl = crowdControl;
             ControlledRage = controlledRage; GreaterDefault = greaterDefault;
             MightyDefault = mightyDefault; RageBuff = rageBuff;
-            Selector = selector; SelectionFacts = selectionFacts;
+            LegacySelector = legacySelector; OrdinarySelector = ordinarySelector;
+            GreaterSelector = greaterSelector; MightySelector = mightySelector;
+            SelectionFacts = selectionFacts;
             AllocationAbilities = allocations; NativeGreaterRage = nativeGreaterRage;
             NativeTirelessRage = nativeTirelessRage;
             NativeMightyRage = nativeMightyRage; NativeRageBuff = nativeRageBuff;
@@ -47,7 +51,13 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature GreaterDefault { get; private set; }
         internal BlueprintFeature MightyDefault { get; private set; }
         internal BlueprintBuff RageBuff { get; private set; }
-        internal BlueprintAbility Selector { get; private set; }
+        internal BlueprintAbility LegacySelector { get; private set; }
+        internal BlueprintAbility OrdinarySelector { get; private set; }
+        internal BlueprintAbility GreaterSelector { get; private set; }
+        internal BlueprintAbility MightySelector { get; private set; }
+        internal BlueprintAbility Selector { get { return LegacySelector; } }
+        internal BlueprintAbility[] TierSelectors { get { return new[] {
+            OrdinarySelector, GreaterSelector, MightySelector }; } }
         internal BlueprintFeature[] SelectionFacts { get; private set; }
         internal BlueprintAbility[] AllocationAbilities { get; private set; }
         internal BlueprintFeature NativeGreaterRage { get; private set; }
@@ -121,12 +131,15 @@ namespace KingmakerGunslinger.Blueprints
                 ControlledRageTier.Mighty })
                 allocationValues.AddRange(
                     ControlledRageAllocationPolicy.Generate(tier));
+            UrbanBarbarianAllocationIconSet allocationIcons =
+                UrbanBarbarianAllocationIcons.Create(library, allocationValues);
 
             var facts = new Dictionary<ControlledRageAllocation, BlueprintFeature>();
             foreach (ControlledRageAllocation allocation in allocationValues)
                 facts.Add(allocation, registry.Register<BlueprintFeature>(
                     UrbanBarbarianIdentityCatalog.SelectionFeature(allocation),
-                    () => CreateSelectionFact(allocation, rageFeature.Icon)));
+                    () => CreateSelectionFact(allocation,
+                        allocationIcons.Require(allocation))));
 
             var abilities = new Dictionary<BlueprintAbility,
                 ControlledRageAllocation>();
@@ -139,16 +152,31 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintAbility ability = registry.Register<BlueprintAbility>(
                     UrbanBarbarianIdentityCatalog.SelectionAbility(captured),
                     () => CreateAllocationAbility(captured, facts[captured],
-                        tierFacts, rageFeature.Icon));
+                        tierFacts, allocationIcons.Require(captured)));
                 abilities.Add(ability, captured);
             }
 
-            BlueprintAbility selector = registry.Register<BlueprintAbility>(
+            BlueprintAbility legacySelector = registry.Register<BlueprintAbility>(
                 UrbanBarbarianIdentityCatalog.Selector,
-                () => CreateSelector(abilities.Keys.ToArray(), rageFeature.Icon));
+                () => CreateLegacySelector(rageFeature.Icon));
+            var selectors = new Dictionary<ControlledRageTier, BlueprintAbility>();
+            foreach (ControlledRageTier tier in new[] {
+                ControlledRageTier.Ordinary, ControlledRageTier.Greater,
+                ControlledRageTier.Mighty })
+            {
+                ControlledRageTier captured = tier;
+                ControlledRageAllocation fullStrength =
+                    ControlledRageAllocationPolicy.Generate(captured)[0];
+                selectors.Add(captured, registry.Register<BlueprintAbility>(
+                    SelectorSymbol(captured), () => CreateSelector(captured,
+                        ControlledRageAllocationPolicy.Generate(captured)
+                            .Select(value => abilities.Single(pair =>
+                                Equals(pair.Value, value)).Key).ToArray(),
+                        allocationIcons.Require(fullStrength))));
+            }
             BlueprintFeature controlled = registry.Register<BlueprintFeature>(
                 UrbanBarbarianIdentityCatalog.ControlledRage,
-                () => CreateControlledRageFeature(selector, rageFeature.Icon));
+                () => CreateControlledRageFeature(rageFeature.Icon));
             BlueprintFeature greaterDefault = registry.Register<BlueprintFeature>(
                 UrbanBarbarianIdentityCatalog.GreaterDefault,
                 () => CreateTierDefault("Greater Controlled Rage",
@@ -167,11 +195,16 @@ namespace KingmakerGunslinger.Blueprints
                     mightyDefault, rageFeature.Icon));
 
             ControlledRageRuntime.Configure(nativeRage, urbanRage, controlled,
-                greaterRage, mightyRage, selector, abilities, facts);
+                greaterRage, mightyRage, legacySelector, selectors, abilities,
+                facts, allocationIcons.SelectedIcons);
             UrbanCotwCompatibilityRuntime.Reconcile(nativeRage, urbanRage);
             var set = new UrbanBarbarianBlueprintSet(barbarian, archetype,
                 proficiency, crowd, controlled, greaterDefault, mightyDefault,
-                urbanRage, selector, facts.Values.ToArray(), abilities.Keys.ToArray(),
+                urbanRage, legacySelector,
+                selectors[ControlledRageTier.Ordinary],
+                selectors[ControlledRageTier.Greater],
+                selectors[ControlledRageTier.Mighty], facts.Values.ToArray(),
+                abilities.Keys.ToArray(),
                 greaterRage, tirelessRage, mightyRage, nativeRage);
             Validate(set, nativeProficiency, fastMovement, rageFeature);
             return set;
@@ -239,13 +272,26 @@ namespace KingmakerGunslinger.Blueprints
             return ability;
         }
 
-        private static BlueprintAbility CreateSelector(BlueprintAbility[] variants,
-            Sprite icon)
+        private static BlueprintAbility CreateLegacySelector(Sprite icon)
         {
             BlueprintAbility ability = CreatePersonalAbility(
-                "KMG_UrbanBarbarian_ControlledRage_Selector",
-                "Controlled Rage Allocation",
-                "Choose how to allocate the current Controlled Rage morale bonus among Strength, Dexterity, and Constitution in +2 increments. Only allocations for your current Rage tier are shown. The selected allocation is marked and applies only while raging.",
+                "KMG_UrbanBarbarian_ControlledRage_LegacySelector",
+                "Controlled Rage Allocation (Legacy)",
+                "Hidden save-compatibility identity superseded by the exact tier-specific Controlled Rage selectors.",
+                icon);
+            ability.Hidden = true;
+            ability.ActionBarAutoFillIgnored = true;
+            return ability;
+        }
+
+        private static BlueprintAbility CreateSelector(ControlledRageTier tier,
+            BlueprintAbility[] variants, Sprite icon)
+        {
+            BlueprintAbility ability = CreatePersonalAbility(
+                "KMG_UrbanBarbarian_ControlledRage_Selector_T" + (int)tier,
+                TierName(tier) + " Controlled Rage Allocation (+" + (int)tier + ")",
+                "Choose how to allocate the +" + (int)tier +
+                    " Controlled Rage morale bonus among Strength, Dexterity, and Constitution in +2 increments. This panel contains exactly the legal current-tier allocations. The selected allocation has a bright green border and check and applies only while raging.",
                 icon);
             var component = ScriptableObject.CreateInstance<AbilityVariants>();
             component.Variants = variants;
@@ -253,18 +299,15 @@ namespace KingmakerGunslinger.Blueprints
             return ability;
         }
 
-        private static BlueprintFeature CreateControlledRageFeature(
-            BlueprintAbility selector, Sprite icon)
+        private static BlueprintFeature CreateControlledRageFeature(Sprite icon)
         {
-            var grant = ScriptableObject.CreateInstance<AddFacts>();
-            grant.Facts = new BlueprintUnitFact[] { selector };
             var selection = ScriptableObject.CreateInstance<
                 ControlledRageSelectionController>();
             selection.Tier = (int)ControlledRageTier.Ordinary;
             return CreateFeature("KMG_UrbanBarbarian_ControlledRage",
                 "Controlled Rage",
                 "When raging, allocate a +4 morale bonus among Strength, Dexterity, and Constitution in +2 increments. The pool increases to +6 with Greater Rage and +8 with Mighty Rage. Controlled Rage grants no ordinary Rage attack bonus, damage bonus, temporary hit points, Will bonus, or AC penalty, and it does not prevent Intelligence-, Dexterity-, or Charisma-based skills. It retains the normal Rage resource, fatigue, spellcasting restriction, Rage powers, and Rage equivalence.",
-                icon, grant, selection);
+                icon, selection);
         }
 
         private static BlueprintFeature CreateTierDefault(string name,
@@ -396,8 +439,16 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature nativeProficiency, BlueprintFeature fastMovement,
             BlueprintFeature rageFeature)
         {
-            if (set.Count != 70 || set.SelectionFacts.Length != 31 ||
+            int[] selectorCounts = set.TierSelectors.Select(value =>
+                value.ComponentsArray.OfType<AbilityVariants>().Single()
+                    .Variants.Length).ToArray();
+            if (set.Count != UrbanBarbarianIdentityCatalog.IdentityCount ||
+                set.SelectionFacts.Length != 31 ||
                 set.AllocationAbilities.Length != 31 ||
+                !set.LegacySelector.Hidden ||
+                !set.LegacySelector.ActionBarAutoFillIgnored ||
+                set.LegacySelector.ComponentsArray.OfType<AbilityVariants>().Any() ||
+                !selectorCounts.SequenceEqual(new[] { 6, 10, 15 }) ||
                 set.Archetype.GetParentClass() != set.BarbarianClass ||
                 !set.Archetype.ReplaceClassSkills ||
                 set.Archetype.ClassSkills.Length != 5 ||
@@ -409,6 +460,25 @@ namespace KingmakerGunslinger.Blueprints
                     .Contains(rageFeature))
                 throw new InvalidOperationException(
                     "Urban Barbarian blueprint validation failed.");
+        }
+
+        private static string SelectorSymbol(ControlledRageTier tier)
+        {
+            if (tier == ControlledRageTier.Ordinary)
+                return UrbanBarbarianIdentityCatalog.OrdinarySelector;
+            if (tier == ControlledRageTier.Greater)
+                return UrbanBarbarianIdentityCatalog.GreaterSelector;
+            if (tier == ControlledRageTier.Mighty)
+                return UrbanBarbarianIdentityCatalog.MightySelector;
+            throw new ArgumentOutOfRangeException("tier");
+        }
+
+        private static string TierName(ControlledRageTier tier)
+        {
+            if (tier == ControlledRageTier.Ordinary) return "Ordinary";
+            if (tier == ControlledRageTier.Greater) return "Greater";
+            if (tier == ControlledRageTier.Mighty) return "Mighty";
+            throw new ArgumentOutOfRangeException("tier");
         }
 
         private static LevelEntry Entry(int level,

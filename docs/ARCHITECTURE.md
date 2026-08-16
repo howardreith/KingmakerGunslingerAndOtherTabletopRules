@@ -517,7 +517,7 @@ Expanded Summoning, the Elven Branched Spear, and the Eastern Weapons named
 catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
 plus the Brown-Fur identity ledger, six appended score-toggle identities, and
 the seventy always-registered Urban Barbarian identities, freeze the
-append-only ledger at 1613 stable IDs: 1612 active and one reserved.
+append-only ledger at 1616 stable IDs: 1615 active and one reserved.
 Twenty-five active identities belong to the isolated Brown-Fur extension and
 do not change the unconditional core registration count; they register only
 after the structural CotW contract succeeds, while selector publication

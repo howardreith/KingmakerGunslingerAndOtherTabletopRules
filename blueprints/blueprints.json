@@ -12254,7 +12254,19 @@
     },
     {
       "symbol": "KMG.UrbanBarbarian.ControlledRage.SelectionAbility", "guid": "f43181528e5111bb5b86f5317997c8e2",
-      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Hidden save-compatibility identity superseded by tier-specific selectors after 0.0.83 human review."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.ControlledRage.OrdinarySelectionAbility", "guid": "1e55a3f9645a49c1a29cf0e3431605a1",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian 0.0.84 repair", "notes": "Player-facing ordinary Controlled Rage selector with exactly six +4 variants."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.ControlledRage.GreaterSelectionAbility", "guid": "92f8c98bc8fe4f4e82b52ea561211e50",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian 0.0.84 repair", "notes": "Player-facing Greater Controlled Rage selector with exactly ten +6 variants."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.ControlledRage.MightySelectionAbility", "guid": "f9a741d541f84912a428e36145907325",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian 0.0.84 repair", "notes": "Player-facing Mighty Controlled Rage selector with exactly fifteen +8 variants."
     },
     {
       "symbol": "KMG.UrbanBarbarian.Allocation.T4.S4.D0.C0.Feature", "guid": "c50b25c9f09e50c7a62679dd2bb9c553",

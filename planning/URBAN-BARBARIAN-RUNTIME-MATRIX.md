@@ -162,6 +162,27 @@ native/CotW rage powers, UMM status, ON/OFF owner behavior, and duplication.
 
 ## Final immutable candidate result
 
+### 0.0.84 repair implementation checkpoint
+
+The repaired source graph uses three static tier parents. Kingmaker's actual
+player grid method, `MechanicActionBarSlotAbility.GetConvertedAbilityData`,
+reads `BlueprintAbility.Variants` directly; the focused fixture now calls that
+method and will fail if the level-2 surface differs from exactly six. The old
+`AbilityData.get_Variants` Harmony visibility patch has been removed. The
+ordinary, Greater, and Mighty parent components contain exactly 6, 10, and 15
+children, respectively, and owner reconciliation removes the legacy/future/
+obsolete roots before granting the current one.
+
+The 31 child identities remain stable. Three parent identities were appended,
+bringing Urban ownership to 73 registered identities and the full ledger to
+1616 (1615 active plus one reserved). Pure allocation icons use the installed
+native stat-spell donors; mixed icons are runtime composites with one donor
+tile per +2 increment. The live action-bar title and icon path reflects the
+persisted allocation and gives the selected child a bright-green border/check.
+Dependency-free validation currently passes 1,150 tests and a diagnostic
+Release compile. These are pre-candidate source results only; no 0.0.84 package
+has been frozen, deployed, launched, or qualified yet.
+
 ### Superseded 0.0.83 human-review result
 
 Human review rejected this candidate. The live allocation panel exposed all 31

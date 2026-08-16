@@ -3145,6 +3145,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (fixtureFeatures.Any(owner.Descriptor.HasFact) ||
                     set.SelectionFacts.Any(owner.Descriptor.HasFact) ||
+                    set.TierSelectors.Any(owner.Descriptor.HasFact) ||
+                    owner.Descriptor.HasFact(set.LegacySelector) ||
                     owner.Descriptor.Get<UnitPartControlledRageSelection>() != null ||
                     owner.Descriptor.HasFact(set.RageBuff) ||
                     owner.Descriptor.HasFact(set.NativeRageBuff))
@@ -3186,7 +3188,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Source, persistedRage)).ToArray();
             _urbanBarbarianPersistenceFactsValid = fixtureFeatures.All(
                 owner.Descriptor.HasFact) &&
-                owner.Descriptor.Abilities.GetAbility(set.Selector) != null;
+                owner.Descriptor.Abilities.GetAbility(set.OrdinarySelector) !=
+                    null && owner.Descriptor.Abilities.GetAbility(
+                        set.LegacySelector) == null &&
+                owner.Descriptor.Abilities.GetAbility(set.GreaterSelector) ==
+                    null && owner.Descriptor.Abilities.GetAbility(
+                        set.MightySelector) == null;
             _urbanBarbarianPersistenceSelectionValid = selection != null &&
                 selection.Strength == 0 && selection.Dexterity == 0 &&
                 selection.Constitution == 4 &&
@@ -3232,8 +3239,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (BlueprintFeature feature in fixtureFeatures.Reverse())
                     if (owner.Descriptor.HasFact(feature))
                         owner.Descriptor.RemoveFact(feature);
-                if (owner.Descriptor.Abilities.GetAbility(set.Selector) != null)
-                    owner.Descriptor.RemoveFact(set.Selector);
+                foreach (BlueprintAbility selector in set.TierSelectors)
+                    if (owner.Descriptor.Abilities.GetAbility(selector) != null)
+                        owner.Descriptor.RemoveFact(selector);
+                if (owner.Descriptor.Abilities.GetAbility(
+                        set.LegacySelector) != null)
+                    owner.Descriptor.RemoveFact(set.LegacySelector);
                 foreach (BlueprintFeature feature in set.SelectionFacts)
                     if (owner.Descriptor.HasFact(feature))
                         owner.Descriptor.RemoveFact(feature);
@@ -3244,8 +3255,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Descriptor.HasFact);
                 bool partAbsent = owner.Descriptor.Get<
                     UnitPartControlledRageSelection>() == null;
-                bool selectorAbsent = owner.Descriptor.Abilities.GetAbility(
-                    set.Selector) == null;
+                bool selectorAbsent = set.TierSelectors.All(value =>
+                    owner.Descriptor.Abilities.GetAbility(value) == null) &&
+                    owner.Descriptor.Abilities.GetAbility(
+                        set.LegacySelector) == null;
                 bool urbanRageAbsent = !owner.Descriptor.HasFact(set.RageBuff);
                 bool nativeRageAbsent = !owner.Descriptor.HasFact(
                     set.NativeRageBuff);

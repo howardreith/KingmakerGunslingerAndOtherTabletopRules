@@ -67,7 +67,7 @@ namespace KingmakerGunslinger.UrbanBarbarian
 
         public override void OnTurnOff()
         {
-            ControlledRageRuntime.ClearTierFacts(Owner,
+            ControlledRageRuntime.RemoveTier(Owner,
                 (ControlledRageTier)Tier);
         }
     }

@@ -24,6 +24,7 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UI.UnitSettings;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -104,18 +105,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ApplyLevel(urban.Descriptor, set.BarbarianClass, set.Archetype,
                     true);
                 Add(assertions, "urban-level-one-progression",
-                    "level 1 Urban owner has proficiency, Crowd Control, Controlled Rage, selector, and no Fast Movement",
+                    "level 1 Urban owner has proficiency, Crowd Control, Controlled Rage, only the ordinary selector, and no Fast Movement",
                     "level=" + urban.Descriptor.Progression.GetClassLevel(
                         set.BarbarianClass) + ";facts=" +
                     string.Join(",", new BlueprintUnitFact[] { set.Proficiency, set.CrowdControl,
-                        set.ControlledRage, set.Selector }.Select(value =>
+                        set.ControlledRage, set.OrdinarySelector,
+                        set.LegacySelector, set.GreaterSelector,
+                        set.MightySelector }.Select(value =>
                             value.name + ":" + urban.Descriptor.HasFact(value))),
                     urban.Descriptor.Progression.GetClassLevel(
                         set.BarbarianClass) == 1 &&
                     urban.Descriptor.HasFact(set.Proficiency) &&
                     urban.Descriptor.HasFact(set.CrowdControl) &&
                     urban.Descriptor.HasFact(set.ControlledRage) &&
-                    urban.Descriptor.HasFact(set.Selector) &&
+                    urban.Descriptor.HasFact(set.OrdinarySelector) &&
+                    !urban.Descriptor.HasFact(set.LegacySelector) &&
+                    !urban.Descriptor.HasFact(set.GreaterSelector) &&
+                    !urban.Descriptor.HasFact(set.MightySelector) &&
                     !urban.Descriptor.HasFact(BlueprintBootstrap.Library
                         .GetAllBlueprints().OfType<BlueprintFeature>().Single(
                             value => value.AssetGuid ==
@@ -145,10 +151,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int conRaging = urban.Descriptor.Stats.Constitution.ModifiedValue;
                 int maxRaging = urban.MaxHP;
                 Ability selectorFact = urban.Descriptor.Abilities.GetAbility(
-                    set.Selector);
+                    set.OrdinarySelector);
                 AbilityData selector = selectorFact == null ? null :
-                    new AbilityData(set.Selector, urban.Descriptor);
-                AbilityData[] visibleOrdinary = Variants(selector);
+                    new AbilityData(set.OrdinarySelector, urban.Descriptor);
+                AbilityData[] visibleOrdinary = LivePanelVariants(urban,
+                    selector);
                 bool locked = visibleOrdinary.Length == 6 &&
                     visibleOrdinary.All(value => !value.IsAvailable);
                 Add(assertions, "urban-ordinary-rage",
@@ -163,9 +170,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                         dexRaging == dexBefore && conRaging == conBefore &&
                         urban.Descriptor.Stats.TemporaryHitPoints.ModifiedValue == 0 &&
                         visibleOrdinary.Length == 6 && locked,
-                    "live BuffCollection substitution, actual stats, and AbilityData variants");
+                    "live BuffCollection substitution, actual stats, and MechanicActionBarSlotAbility.GetConvertedAbilityData");
                 urban.Descriptor.RemoveFact(set.RageBuff);
                 RemoveIntroducedBuffs(urban.Descriptor, beforeDefaultRage);
+
+                stage = "ordinary-live-selector-presentation";
+                AbilityData[] ordinaryPanel = LivePanelVariants(urban,
+                    new AbilityData(set.OrdinarySelector, urban.Descriptor));
+                MechanicActionBarSlotAbility ordinaryParentSlot = LiveSlot(urban,
+                    new AbilityData(set.OrdinarySelector, urban.Descriptor));
+                MechanicActionBarSlotAbility selectedChildSlot = LiveSlot(urban,
+                    ordinaryPanel.Single(value => ControlledRageRuntime.IsSelected(
+                        value)));
+                Sprite selectedChildIcon = selectedChildSlot.GetIcon();
+                string selectedChildTitle = selectedChildSlot.GetTitle();
+                Sprite parentIcon = ordinaryParentSlot.GetIcon();
+                string parentTitle = ordinaryParentSlot.GetTitle();
+                bool ordinaryIcons = ordinaryPanel.All(value =>
+                    value.Blueprint.Icon != null && value.Blueprint.Icon.texture !=
+                        null) && ordinaryPanel.Select(value => value.Blueprint.Icon)
+                    .Distinct().Count() == 6;
+                Add(assertions, "urban-ordinary-live-selector-presentation",
+                    "the actual player-facing grid has six distinguishable icons and the parent/selected child show the persisted selection without hover",
+                    "variants=" + ordinaryPanel.Length + ";baseIcons=" +
+                        string.Join(",", ordinaryPanel.Select(value =>
+                            value.Blueprint.Icon.name)) + ";parentTitle=" + parentTitle +
+                        ";parentIcon=" + (parentIcon == null ? "<null>" :
+                            parentIcon.name) + ";selectedTitle=" +
+                        selectedChildTitle + ";selectedIcon=" +
+                        (selectedChildIcon == null ? "<null>" :
+                            selectedChildIcon.name),
+                    ordinaryPanel.Length == 6 && ordinaryIcons &&
+                        parentTitle.Contains("STR +4") &&
+                        selectedChildTitle.StartsWith("Selected \u2713 ",
+                            StringComparison.Ordinal) && parentIcon != null &&
+                        selectedChildIcon != null && ReferenceEquals(parentIcon,
+                            selectedChildIcon) && selectedChildIcon.name.Contains(
+                                "KMG_ControlledRage_Selected_T4_S4_D0_C0") &&
+                        selectedChildIcon.texture.width == 128 &&
+                        selectedChildIcon.texture.height == 128,
+                    "native MechanicActionBarSlotAbility live title/icon/enumeration path");
 
                 stage = "ordinary-split-and-hp";
                 SelectDirect(urban.Descriptor, set,
@@ -370,10 +414,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native Rage activatable and retained AddFactContextActions lifecycle");
 
                 stage = "tier-transitions";
-                for (int level = 2; level <= 11; level++)
+                ApplyLevel(urban.Descriptor, set.BarbarianClass, null, false);
+                AbilityData[] levelTwo = LivePanelVariants(urban,
+                    new AbilityData(set.OrdinarySelector, urban.Descriptor));
+                bool levelTwoSelectorFacts =
+                    urban.Descriptor.HasFact(set.OrdinarySelector) &&
+                    !urban.Descriptor.HasFact(set.LegacySelector) &&
+                    !urban.Descriptor.HasFact(set.GreaterSelector) &&
+                    !urban.Descriptor.HasFact(set.MightySelector);
+                Add(assertions, "urban-level-two-live-selector-boundary",
+                    "a level-2 player's actual variant-grid enumeration can expose exactly six ordinary allocations and no future-tier parent",
+                    "level=" + urban.Descriptor.Progression.GetClassLevel(
+                        set.BarbarianClass) + ";variants=" + levelTwo.Length +
+                        ";ordinary=" + urban.Descriptor.HasFact(
+                            set.OrdinarySelector) + ";legacy=" +
+                        urban.Descriptor.HasFact(set.LegacySelector) +
+                        ";greater=" + urban.Descriptor.HasFact(
+                            set.GreaterSelector) + ";mighty=" +
+                        urban.Descriptor.HasFact(set.MightySelector),
+                    levelTwo.Length == 6 && levelTwoSelectorFacts,
+                    "MechanicActionBarSlotAbility.GetConvertedAbilityData and owner fact inventory");
+                for (int level = 3; level <= 11; level++)
                     ApplyLevel(urban.Descriptor, set.BarbarianClass, null, false);
-                AbilityData[] greater = Variants(new AbilityData(
-                    set.Selector, urban.Descriptor));
+                AbilityData[] greater = LivePanelVariants(urban,
+                    new AbilityData(set.GreaterSelector, urban.Descriptor));
+                bool greaterSelectorFacts =
+                    urban.Descriptor.HasFact(set.GreaterSelector) &&
+                    !urban.Descriptor.HasFact(set.LegacySelector) &&
+                    !urban.Descriptor.HasFact(set.OrdinarySelector) &&
+                    !urban.Descriptor.HasFact(set.MightySelector);
                 bool greaterDefault = Selected(set, urban.Descriptor,
                     ControlledRageTier.Greater, 6, 0, 0);
                 bool greaterFull = MeasureAllocation(urban.Descriptor, set,
@@ -387,8 +456,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out string greaterThreeWayDetail);
                 for (int level = 12; level <= 20; level++)
                     ApplyLevel(urban.Descriptor, set.BarbarianClass, null, false);
-                AbilityData[] mighty = Variants(new AbilityData(
-                    set.Selector, urban.Descriptor));
+                AbilityData[] mighty = LivePanelVariants(urban,
+                    new AbilityData(set.MightySelector, urban.Descriptor));
+                bool mightySelectorFacts =
+                    urban.Descriptor.HasFact(set.MightySelector) &&
+                    !urban.Descriptor.HasFact(set.LegacySelector) &&
+                    !urban.Descriptor.HasFact(set.OrdinarySelector) &&
+                    !urban.Descriptor.HasFact(set.GreaterSelector);
                 bool mightyDefault = Selected(set, urban.Descriptor,
                     ControlledRageTier.Mighty, 8, 0, 0);
                 bool mightyFull = MeasureAllocation(urban.Descriptor, set,
@@ -414,14 +488,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mightyDefault + "/" + mightyFullDetail + "/" +
                         mightySixTwoDetail + "/" + mightyFourFourDetail +
                         "/" + mightyThreeWayDetail,
-                    greater.Length == 10 && greaterDefault && greaterFull &&
+                    greater.Length == 10 && greaterSelectorFacts &&
+                        greaterDefault && greaterFull &&
                         greaterSplit && greaterThreeWay && mighty.Length == 15 &&
-                        mightyDefault && mightyFull && mightySixTwo &&
+                        mightySelectorFacts && mightyDefault && mightyFull && mightySixTwo &&
                         mightyFourFour && mightyThreeWay &&
                         set.SelectionFacts.Count(urban.Descriptor.HasFact) == 3 &&
                         urban.Descriptor.Get<
                             UnitPartControlledRageSelection>() != null,
-                    "actual Barbarian progression facts, filtered AbilityData variants, and live score modifiers");
+                    "actual Barbarian progression facts, exact live player-panel variants, and live score modifiers");
 
                 stage = "native-rage-toggle";
                 ActivatableAbility nativeToggle = urban.Descriptor
@@ -830,10 +905,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 enumerable.Cast<object>().ToArray();
         }
 
-        private static AbilityData[] Variants(AbilityData selector)
+        private static MechanicActionBarSlotAbility LiveSlot(UnitEntityData unit,
+            AbilityData ability)
         {
-            return selector == null || selector.Variants == null ?
-                new AbilityData[0] : selector.Variants.ToArray();
+            if (unit == null || ability == null) throw new ArgumentNullException(
+                unit == null ? "unit" : "ability");
+            var slot = new MechanicActionBarSlotAbility { Ability = ability };
+            FieldInfo unitField = typeof(MechanicActionBarSlot).GetField("Unit",
+                Members);
+            if (unitField == null || unitField.FieldType != typeof(UnitEntityData))
+                throw new MissingFieldException(
+                    typeof(MechanicActionBarSlot).FullName, "Unit");
+            unitField.SetValue(slot, unit);
+            return slot;
+        }
+
+        private static AbilityData[] LivePanelVariants(UnitEntityData unit,
+            AbilityData selector)
+        {
+            return selector == null ? new AbilityData[0] :
+                LiveSlot(unit, selector).GetConvertedAbilityData().ToArray();
         }
 
         private static string DescribeModifiers(

@@ -16,7 +16,7 @@ namespace KingmakerGunslinger.UrbanBarbarian
 
     internal static class UrbanBarbarianIdentityCatalog
     {
-        internal const int IdentityCount = 70;
+        internal const int IdentityCount = 73;
         internal const string Archetype = "KMG.UrbanBarbarian.Archetype";
         internal const string Proficiency =
             "KMG.UrbanBarbarian.Proficiency.Feature";
@@ -32,6 +32,12 @@ namespace KingmakerGunslinger.UrbanBarbarian
             "KMG.UrbanBarbarian.ControlledRage.Buff";
         internal const string Selector =
             "KMG.UrbanBarbarian.ControlledRage.SelectionAbility";
+        internal const string OrdinarySelector =
+            "KMG.UrbanBarbarian.ControlledRage.OrdinarySelectionAbility";
+        internal const string GreaterSelector =
+            "KMG.UrbanBarbarian.ControlledRage.GreaterSelectionAbility";
+        internal const string MightySelector =
+            "KMG.UrbanBarbarian.ControlledRage.MightySelectionAbility";
 
         private static readonly IDictionary<string, string[]> AllocationGuids =
             new Dictionary<string, string[]>(StringComparer.Ordinal) {
@@ -80,7 +86,10 @@ namespace KingmakerGunslinger.UrbanBarbarian
                     Spec(GreaterDefault, "9fa79d9937a926b6ce54afa85059aac2", "BlueprintFeature"),
                     Spec(MightyDefault, "ba99cfe4d6d8e7c5730c4d61a23120ab", "BlueprintFeature"),
                     Spec(RageBuff, "6359e4bc26d1f311c36c0e8f7aee8f2d", "BlueprintBuff"),
-                    Spec(Selector, "f43181528e5111bb5b86f5317997c8e2", "BlueprintAbility") };
+                    Spec(Selector, "f43181528e5111bb5b86f5317997c8e2", "BlueprintAbility"),
+                    Spec(OrdinarySelector, "1e55a3f9645a49c1a29cf0e3431605a1", "BlueprintAbility"),
+                    Spec(GreaterSelector, "92f8c98bc8fe4f4e82b52ea561211e50", "BlueprintAbility"),
+                    Spec(MightySelector, "f9a741d541f84912a428e36145907325", "BlueprintAbility") };
                 foreach (ControlledRageTier tier in new[] {
                     ControlledRageTier.Ordinary, ControlledRageTier.Greater,
                     ControlledRageTier.Mighty })

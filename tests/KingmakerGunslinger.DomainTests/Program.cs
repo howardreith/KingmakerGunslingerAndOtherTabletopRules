@@ -171,6 +171,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("feature-modules.runtime-matrix", FeatureModuleSettingsTests.RuntimeMatrixUsesAuthoritativeEightModuleCatalog),
             Case("urban-barbarian.allocations", UrbanBarbarianPolicyTests.AllocationSetsAreCompleteAndExact),
             Case("urban-barbarian.allocation-identities", UrbanBarbarianPolicyTests.AllocationPresentationAndIdentitiesAreDeterministic),
+            Case("urban-barbarian.allocation-icons", UrbanBarbarianPolicyTests.AllocationIconVocabularyIsExactAndLegible),
             Case("urban-barbarian.tier-selection", UrbanBarbarianPolicyTests.TierSelectionDefaultsVisibilityAndGuardsAreExact),
             Case("urban-barbarian.selection-persistence", UrbanBarbarianPolicyTests.TierSelectionPersistenceAndLevelTransitionAreExact),
             Case("urban-barbarian.constitution-hp", UrbanBarbarianPolicyTests.ConstitutionHitPointReconciliationCannotHealCycle),
