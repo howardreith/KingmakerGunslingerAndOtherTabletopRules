@@ -2,9 +2,9 @@
 
 The exact immutable `0.0.83` candidate documented below was **REJECTED** in
 human review and is preserved only as superseded evidence. Do not describe it
-as accepted or release complete. This checklist will be finalized for the
-exact `0.0.87` repaired candidate after its new mechanical qualification
-passes. Immutable `0.0.84` failed focused runtime qualification; immutable
+as accepted or release complete. This checklist is finalized for the exact
+`0.0.87` repaired candidate, whose automated mechanical qualification has
+passed. Immutable `0.0.84` failed focused runtime qualification; immutable
 `0.0.85` failed its packaged CotW observer; immutable `0.0.86` passed focused,
 persistence, and CotW profiles but failed its generic module observer. All are
 preserved below as superseded evidence.
@@ -104,6 +104,44 @@ The first boundary run failed before assertions because the separate generic
 module observer still called `.Single()` on the inert legacy selector and
 retained 70/31 presentation assumptions. Feature settings restored exactly.
 The artifact is superseded and is not human accepted or release complete.
+
+## Installed 0.0.87 human-review candidate
+
+Automated qualification: **PASS**. Human presentation/play acceptance:
+**PENDING**. This is not a release-complete claim.
+
+- Artifact/source commit: `b2e6f2b3062cc4146807d44bb1314d3e7bccf4ac`
+- Branch: `codex/urban-barbarian`
+- Version: `0.0.87`
+- Package SHA-256:
+  `0c5c6e88d11682391e9775da8667cb74cb08ae34a9787e6b295e819b881da89b`
+- DLL and installed-DLL SHA-256:
+  `9f6ac2b39abac2907aac90239a29e881a0bb0a4f7bc204dc70e3b17e4248b0c7`
+- DLL MVID: `b8184bf0-09be-480b-90d3-07b42dbaf9ad`
+- Package/build-local manifest SHA-256:
+  `32056c55939d75df59e07ddd9c2668087ac59108b8647bf30b7dd830e950444f`
+- Deployment manifest:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260816T2141227109279Z\deployment.json`
+- Deployment-manifest SHA-256:
+  `f24e17e1996f76399f4a9fe8eb8315c2dd3ae0daa183e5b56b86a1de94666d4f`
+- Kingmaker build: `2018.4.10.10503941`
+- Fast/source tests: `1,150/1,150` PASS, including all 256 module states
+- Focused Urban PASS:
+  `20260816T2141337764548Z-disposable-urban-barbarian-focused`
+- Persistence PASS pair:
+  `20260816T2143310474654Z-working-save-urban-barbarian-prepare` and
+  `20260816T2145437197654Z-working-save-urban-barbarian-off-verify-cleanup`
+- CotW normal/balance/absent PASS:
+  `20260816T2148345402027Z`, `20260816T2151049178079Z`, and
+  `20260816T2153236927353Z-observe-urban-barbarian-rage-inventory`
+- Generic module boundary: `18/18` PASS from
+  `20260816T2154473814977Z` through `20260816T2225030952700Z`
+- Restored feature-settings SHA-256:
+  `5809a8b847c1d350ddffe4fd7cd58435b4a3111f96d602429cccb0629261a271`
+
+The candidate was built, packaged, validated, backed up, and deployed once.
+Every focused and boundary launch reused that exact artifact. It remains
+installed unchanged for the review below.
 
 ## Character creation and presentation
 

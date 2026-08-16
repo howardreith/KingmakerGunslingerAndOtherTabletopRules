@@ -102,6 +102,28 @@ untouched. CotW absence is displayed as not applicable.
 
 ## Final-candidate compatibility seal
 
+The immutable `0.0.87` repair candidate at source commit
+`b2e6f2b3062cc4146807d44bb1314d3e7bccf4ac` repeated the complete observer:
+
+- normal: `20260816T2148345402027Z...`, `balance_fixes=false`, settings
+  SHA-256 `E99445DA6D9E0A73F0D9F3770D6ED5974E0167F0AB8441E969C5EE46E4184885`, PASS;
+- balance fixes: `20260816T2151049178079Z...`, `balance_fixes=true`, settings
+  SHA-256 `24CC3F80269992A53EBBFD1F5986E5AAB056841D6B2F43D8E22E764CDB73F6E8`, PASS;
+- absent: `20260816T2153236927353Z...`, Urban core available and optional
+  interoperability not applicable, PASS.
+
+Both present profiles again resolved CotW `1.14.4c-2.1`, DLL SHA-256
+`4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`,
+and MVID `8caab254-aacf-4811-8093-44b9184e6e53`. Transactions
+`urban87-cotw-normal-20260816`, `urban87-cotw-balance-20260816`, and
+`urban87-cotw-absent-20260816` are all `Restored` with
+`restorationVerified=true`. No adapter is required for the supported
+fingerprint; unknown/ambiguous behavior remains isolated and cannot disable
+Urban core.
+
+The following `0.0.83` seal is preserved as superseded pre-rejection evidence
+only and does not establish human acceptance.
+
 The immutable `0.0.83` candidate at artifact commit
 `06cad804651faaace17bdf8432bcd071d50ce9e7` repeated the graph observer under
 all required focused profiles:

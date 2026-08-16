@@ -15,10 +15,10 @@ extension. They are registered only when the structural Call of the Wild
 contract succeeds and are excluded from the package core's unconditional
 registration count. Active identity status does not by itself publish the
 Brown-Fur archetype to CotW's selector.
-The 70 active `KMG.UrbanBarbarian.*` identities are unconditional native-core
+The 73 active `KMG.UrbanBarbarian.*` identities are unconditional native-core
 identities. They register with the module on or off so existing owners remain
 loadable; the setting controls only publication in the native Barbarian
-archetype selector. The unconditional package-core registration count is 1587.
+archetype selector. The unconditional package-core registration count is 1590.
 The historical non-Brown-Fur reservation remains reserved independently.
 The 1,155 Expanded Summoning identities freeze the feature foundation: 67 unit
 identities, 1,050 abilities, 17 buffs, three AI actions, three brains, nine

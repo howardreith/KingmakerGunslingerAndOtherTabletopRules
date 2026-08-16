@@ -2,8 +2,8 @@
 
 Status: **0.0.83 SUPERSEDED AFTER HUMAN-REVIEW REJECTION; 0.0.84 SUPERSEDED
 AFTER FOCUSED RUNTIME FAILURE; 0.0.85 SUPERSEDED AFTER COTW OBSERVER FAILURE;
-0.0.86 SUPERSEDED AFTER BOUNDARY OBSERVER FAILURE; 0.0.87 REQUALIFICATION IN
-PROGRESS**.
+0.0.86 SUPERSEDED AFTER BOUNDARY OBSERVER FAILURE; 0.0.87 AUTOMATED
+QUALIFICATION PASS; HUMAN ACCEPTANCE PENDING**.
 
 ## Immutable identity fields
 
@@ -163,6 +163,64 @@ state, legal allocations, Rage counter, leakage absence, Constitution/HP,
 native/CotW rage powers, UMM status, ON/OFF owner behavior, and duplication.
 
 ## Final immutable candidate result
+
+### 0.0.87 automated qualification seal
+
+The repaired immutable artifact was built once and deployed once from source
+commit `b2e6f2b3062cc4146807d44bb1314d3e7bccf4ac` on
+`codex/urban-barbarian`. Exact identity:
+
+- package SHA-256
+  `0c5c6e88d11682391e9775da8667cb74cb08ae34a9787e6b295e819b881da89b`;
+- DLL and installed-DLL SHA-256
+  `9f6ac2b39abac2907aac90239a29e881a0bb0a4f7bc204dc70e3b17e4248b0c7`;
+- DLL MVID `b8184bf0-09be-480b-90d3-07b42dbaf9ad`;
+- build-local/package-manifest SHA-256
+  `32056c55939d75df59e07ddd9c2668087ac59108b8647bf30b7dd830e950444f`;
+- deployment manifest
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260816T2141227109279Z\deployment.json`,
+  SHA-256 `f24e17e1996f76399f4a9fe8eb8315c2dd3ae0daa183e5b56b86a1de94666d4f`;
+- Kingmaker build `2018.4.10.10503941`; and
+- original/restored feature-settings SHA-256
+  `5809a8b847c1d350ddffe4fd7cd58435b4a3111f96d602429cccb0629261a271`.
+
+All 1,150 dependency-free tests passed, including all 256 eight-module
+configurations. The clean Release build and strict standalone package
+validation passed. Focused run
+`20260816T2141337764548Z-disposable-urban-barbarian-focused` passed all 15
+assertions. It exercised the actual player-grid enumeration at level 2
+(`6`, not `31`), unique allocation icons, selected parent/child presentation,
+all representative +4/+6/+8 vectors, Trickery during Controlled Rage with
+spellcasting still prohibited, native Rage lifecycle, repeated low-HP
+Constitution cycles, and a real `UnitAttack` pipeline with attack `16->17`,
+target AC `7->8`, exact Crowd Control source attribution, and zero/one-enemy
+negative controls.
+
+The guarded working-save pair
+`20260816T2143310474654Z-working-save-urban-barbarian-prepare` and
+`20260816T2145437197654Z-working-save-urban-barbarian-off-verify-cleanup`
+passed all 16 assertions. It proved active CON +4 selection persistence,
+fresh-process reconstruction, module-OFF hidden publication, continued
+existing-owner behavior, exact request-local cleanup, and authorized save
+correlation without touching `KMG_AUTOMATION_BASELINE`.
+
+CotW normal, balance-fixes, and absent runs
+`20260816T2148345402027Z`, `20260816T2151049178079Z`, and
+`20260816T2153236927353Z-observe-urban-barbarian-rage-inventory` each passed
+all 12 assertions. Transactions `urban87-cotw-normal-20260816`,
+`urban87-cotw-balance-20260816`, and `urban87-cotw-absent-20260816` each
+finished `Restored` with `restorationVerified=true`.
+
+The generic boundary controller produced exactly 18 new PASS results, zero
+FAIL, from `20260816T2154473814977Z-observe-feature-module-settings` through
+`20260816T2225030952700Z-observe-feature-module-settings`. Every result binds
+version `0.0.87` and the exact source commit above. The set is exactly all ON,
+all OFF, eight ON-alone, and eight OFF-with-seven-ON states; no 256-launch game
+matrix was run. The controller restored feature settings byte-for-byte.
+
+The exact artifact remains installed unchanged. Automated qualification is
+complete; subjective presentation/play acceptance remains pending. This is not
+a human acceptance or release-complete claim.
 
 ### Superseded 0.0.84 focused-runtime result
 

@@ -9,6 +9,12 @@
   save identity, and exact 6/10/15 live tier parents in every boundary state.
 - Extends regression validation across both Urban inventory observers and
   removes the remaining stale 70-identity presentation text.
+- Immutable candidate `0.0.87` passed all 1,150 dependency-free tests, a clean
+  Release build, standalone package validation, focused Urban mechanics,
+  two-launch active-Rage/module-OFF persistence, CotW normal/balance/absent
+  profiles, and the authoritative 18/18 module boundary. It is installed
+  unchanged for renewed human presentation/play review; it is not yet human
+  accepted or release complete.
 
 ## 0.0.86-urban-barbarian-human-review-repair-3 (development candidate)
 

@@ -8,6 +8,13 @@ Transmuter. Urban Barbarian is attached to the native Barbarian class and is
 fully usable without Call of the Wild. Brown-Fur alone requires a compatible
 Call of the Wild installation; the combined package and every unrelated module
 continue loading without CotW.
+
+The immutable `0.0.87` Urban repair candidate has passed automated focused,
+persistence, CotW-profile, and 18-state boundary qualification and is installed
+unchanged for human presentation/play review. The rejected `0.0.83` and failed
+`0.0.84` through `0.0.86` candidates remain superseded; `0.0.87` is not yet
+human accepted or release complete.
+
 The first `0.0.81` Brown-Fur candidate failed human review and is superseded.
 The installed `0.0.82` candidate repairs native toggle legibility, live
 reservoir counters, distinct icons, and pre-command Personal-spell target

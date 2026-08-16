@@ -37,7 +37,8 @@ CotW absent/normal/balance profiles, existing-owner OFF persistence, the exact
 human presentation/play-acceptance checklist.
 
 Mission status: **human review rejected the mechanically qualified `0.0.83`
-candidate; `0.0.87` repair work is active**. The superseded artifacts remain
+candidate; `0.0.87` automated qualification passed and renewed human
+presentation/play acceptance is pending**. The superseded artifacts remain
 identified by source commit `06cad804651faaace17bdf8432bcd071d50ce9e7`,
 documentation commit `636e4928502cb6a07374279a3a8b35f79f66f4e3`, package
 SHA-256 `b2b4fdd899a1e00955e972d94b45f5624f4d663e88581043cbf969c3d6e3d193`,
@@ -71,6 +72,16 @@ all passed. The first all-ON boundary run
 `20260816T2134169673139Z-observe-feature-module-settings` errored because the
 separate generic observer retained the rejected legacy-selector `.Single()`
 and 70/31 assumptions. Settings restored exactly; 0.0.86 is superseded.
+
+Immutable `0.0.87` source commit
+`b2e6f2b3062cc4146807d44bb1314d3e7bccf4ac` produced package SHA-256
+`0c5c6e88d11682391e9775da8667cb74cb08ae34a9787e6b295e819b881da89b`,
+DLL/installed-DLL SHA-256
+`9f6ac2b39abac2907aac90239a29e881a0bb0a4f7bc204dc70e3b17e4248b0c7`,
+and MVID `b8184bf0-09be-480b-90d3-07b42dbaf9ad`. Its focused mechanics,
+guarded active-Rage/module-OFF persistence, CotW normal/balance/absent
+profiles, and all 18 generic boundary states passed. It remains installed
+unchanged for human review and is not yet human accepted or release complete.
 
 Stop only at that human boundary or at a documented hard stop after safe,
 reversible, evidence-supported alternatives and narrower instrumentation have
@@ -221,6 +232,7 @@ manifest hash, game build, feature-settings identity, CotW identity/settings
 where relevant, and disposable fixture identity. Package and CotW settings are
 restored byte-for-byte after each profile and after interruption.
 
-The exact immutable accepted artifact remains installed unchanged at handoff.
+The exact immutable `0.0.87` candidate remains installed unchanged at handoff.
+It is mechanically qualified but not human accepted or release complete.
 Any gameplay source or package change requested during human review invalidates
 the candidate and requires a new build and qualification cycle.
