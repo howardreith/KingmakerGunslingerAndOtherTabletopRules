@@ -209,6 +209,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool ordinaryActivated = false, ordinaryCanceled = false,
                     ordinaryFatigued = false;
                 int ordinaryResourceRunning = ordinaryResourceBefore;
+                int ordinaryResourceAfterRound = ordinaryResourceBefore;
                 if (ordinaryToggle != null)
                 {
                     Buff[] beforeToggle = urban.Descriptor.Buffs.RawFacts
@@ -219,7 +220,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         urban.Descriptor.HasFact(set.RageBuff);
                     ordinaryResourceRunning = urban.Descriptor.Resources
                         .GetResourceAmount(rageResource);
+                    urban.CombatState.OnNewRound();
+                    ordinaryResourceAfterRound = urban.Descriptor.Resources
+                        .GetResourceAmount(rageResource);
                     ordinaryToggle.IsOn = false;
+                    ordinaryToggle.Stop(false);
                     ordinaryCanceled = !ordinaryToggle.IsOn &&
                         !urban.Descriptor.HasFact(set.RageBuff);
                     ordinaryFatigued = urban.Descriptor.State.HasCondition(
@@ -234,11 +239,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "toggle=" + (ordinaryToggle != null) + ";activated=" +
                         ordinaryActivated + ";canceled=" + ordinaryCanceled +
                         ";fatigued=" + ordinaryFatigued + ";resource=" +
-                        ordinaryResourceBefore + "->" + ordinaryResourceRunning,
+                        ordinaryResourceBefore + "->" + ordinaryResourceRunning +
+                        "->" + ordinaryResourceAfterRound,
                     ordinaryToggle != null && ordinaryActivated &&
                         ordinaryCanceled && ordinaryFatigued &&
                         ordinaryResourceBefore > 0 &&
-                        ordinaryResourceRunning <= ordinaryResourceBefore,
+                        ordinaryResourceRunning <= ordinaryResourceBefore &&
+                        ordinaryResourceAfterRound == ordinaryResourceBefore - 1,
                     "native Rage activatable and retained AddFactContextActions lifecycle");
 
                 stage = "tier-transitions";
@@ -314,6 +321,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activated = nativeToggle.IsOn &&
                         urban.Descriptor.HasFact(set.RageBuff);
                     nativeToggle.IsOn = false;
+                    nativeToggle.Stop(false);
                     canceled = !nativeToggle.IsOn &&
                         !urban.Descriptor.HasFact(set.RageBuff);
                     fatigueAfterTireless = urban.Descriptor.State.HasCondition(

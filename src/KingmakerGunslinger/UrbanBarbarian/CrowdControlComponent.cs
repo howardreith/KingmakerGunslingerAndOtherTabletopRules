@@ -51,7 +51,7 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 Game.Instance.State == null || Game.Instance.State.Units == null)
                 return 0;
             int adjacent = 0;
-            foreach (UnitEntityData candidate in Game.Instance.State.Units)
+            foreach (UnitEntityData candidate in Game.Instance.State.Units.All)
             {
                 if (!IsAdjacentActiveEnemy(owner, candidate)) continue;
                 adjacent++;
