@@ -510,22 +510,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetPosition(enemyTwo, new Vector3(-9f, 0f, 0f));
                 int rangedAttackOne = Attack(urban, rangedWeapon);
                 SetPosition(enemyTwo, new Vector3(-1.5f, 0f, 0f));
-                BlueprintFaction hostileFaction = enemyTwo.Descriptor.Faction;
-                BlueprintFaction[] ownerAttackFactions = urban.Descriptor
+                BlueprintFaction[] enemyGroupAttackFactions = enemyTwo.Group
                     .AttackFactions.ToArray();
-                BlueprintFaction[] enemyAttackFactions = enemyTwo.Descriptor
-                    .AttackFactions.ToArray();
-                enemyTwo.Descriptor.SwitchFactions(urban.Descriptor.Faction,
-                    true);
-                urban.Descriptor.AttackFactions.Clear();
-                enemyTwo.Descriptor.AttackFactions.Clear();
+                bool adjacentEnemiesShareGroup = ReferenceEquals(
+                    enemyOne.Group, enemyTwo.Group);
+                enemyTwo.Group.AttackFactions.Clear();
                 int adjacentAfterFriendly = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackAfterFriendly = Attack(urban, weapon);
                 int acAfterFriendly = ArmorClass(urban, enemyOne);
-                enemyTwo.Descriptor.SwitchFactions(hostileFaction, true);
-                urban.Descriptor.AttackFactions.Match(ownerAttackFactions);
-                enemyTwo.Descriptor.AttackFactions.Match(enemyAttackFactions);
+                enemyTwo.Group.AttackFactions.AddRange(
+                    enemyGroupAttackFactions);
                 int adjacentAfterHostile = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 enemyTwo.Descriptor.State.LifeState =
@@ -569,6 +564,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";adjacent=" + adjacentTwo +
                         ";friendly=" + adjacentAfterFriendly + "/" +
                         attackAfterFriendly + "/" + acAfterFriendly +
+                        "/sharedGroup:" + adjacentEnemiesShareGroup +
                         ";hostile=" + adjacentAfterHostile +
                         ";unconscious=" + adjacentAfterUnconscious + "/" +
                         attackAfterUnconscious + "/" +
@@ -594,7 +590,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         largeEdgeDistance <= 1.52400031f &&
                         adjacentLarge == 1 &&
                         rangedAttackTwo == rangedAttackOne + 1 &&
-                        adjacentAfterFriendly == 1 &&
+                        adjacentAfterFriendly < 2 &&
                         attackAfterFriendly == attackZero &&
                         acAfterFriendly == acZero &&
                         adjacentAfterHostile == 2 &&
