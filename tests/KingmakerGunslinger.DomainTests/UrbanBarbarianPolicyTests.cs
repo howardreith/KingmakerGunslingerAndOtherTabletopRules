@@ -372,6 +372,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Game.Instance.State.Units.All",
                 "ModifierDescriptor.Dodge", "Owner.Stats.AC.UpdateValue()",
                 "evt.AddBonus(1, Fact)", "DescribeCandidate",
+                "evt.BonusSources.Add(new BonusSource(1, Fact))",
                 "LastAttackObservation", "LastArmorClassObservation",
                 "adjacentActiveEnemy=", "descriptor=Untyped",
                 "descriptor=\" + ModifierDescriptor.Dodge" })

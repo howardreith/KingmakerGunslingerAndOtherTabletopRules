@@ -1,11 +1,27 @@
 # Changelog
 
+## 0.0.85-urban-barbarian-human-review-repair-2 (development candidate)
+
+- Preserves 0.0.84 as a failed immutable runtime candidate after its focused
+  run proved the exact Crowd Control attack and AC deltas but found that the AC
+  rule omitted its `BonusSources` attribution.
+- Adds the exact Crowd Control fact to the AC rule's source inventory while
+  retaining the genuine temporary +1 dodge modifier and owner-scoped rule-event
+  implementation.
+- Keeps the repaired 6/10/15 tier selectors, distinct allocation icons,
+  selected-state presentation, Controlled Rage Trickery permission, and native
+  spellcasting prohibition unchanged.
+
 ## 0.0.84-urban-barbarian-human-review-repair (development candidate)
 
 - Replaces the rejected single 31-entry Controlled Rage allocation surface with three owner-granted tier selectors containing exactly 6, 10, and 15 variants.
 - Preserves the 0.0.83 selector identity as hidden save compatibility while adding stable ordinary, Greater, and Mighty selector identities.
 - Adds distinct native-donor and repeated-glyph composite allocation icons plus a selected green-border/check presentation.
 - Reopens focused Crowd Control, skill-use, persistence, CotW-profile, and 18-state runtime qualification; this candidate is not human accepted.
+- Runtime result: **FAILED and superseded**. The exact command-path fixture
+  observed +1 attack and +1 target AC at two adjacent hostiles, but the AC
+  `BonusSources` inventory lacked Crowd Control and the save-free fixture had no
+  campaign combat-log subscriber. It is not human accepted or release complete.
 
 ## 0.0.83-urban-barbarian (development candidate)
 

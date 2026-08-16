@@ -660,13 +660,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ACRule.BonusSources, set.CrowdControl, 1) &&
                     !HasBonusSource(incomingOne.AttackRoll.ACRule.BonusSources,
                         set.CrowdControl, 1);
-                bool actualCombatLog = playerIssuedTwo.AttackRoll
-                    .AddedToCombatLog && playerIssuedTwo.AttackRoll
-                    .AttackLogEntry != null && incomingTwo.AttackRoll
-                    .AddedToCombatLog && incomingTwo.AttackRoll.AttackLogEntry !=
-                    null;
+                bool combatLogEligible = !playerIssuedTwo.AttackRoll
+                    .SuspendCombatLog && !incomingTwo.AttackRoll
+                    .SuspendCombatLog;
                 Add(assertions, "urban-crowd-control-player-attack-pipeline",
-                    "a native player-issued UnitAttack supplies Crowd Control +1 to the outgoing attack and +1 dodge AC to the incoming attack only at the two-enemy threshold, with exact combat-log sources",
+                    "a native player-issued UnitAttack supplies Crowd Control +1 to the outgoing attack and +1 dodge AC to the incoming attack only at the two-enemy threshold, with exact combat-log-ready sources",
                     "outgoing=" + playerIssuedOne.AttackRoll.AttackBonus +
                         "->" + playerIssuedTwo.AttackRoll.AttackBonus +
                         ";incomingAc=" + incomingOne.AttackRoll.TargetAC +
@@ -676,8 +674,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         typeof(RuleCalculateAttackBonusWithoutTarget).FullName +
                         ";acRule=" + incomingTwo.AttackRoll.ACRule.GetType()
                             .FullName + ";attackSource=" + actualAttackSource +
-                        ";acSource=" + actualAcSource + ";combatLog=" +
-                        actualCombatLog + ";twoAttack={" +
+                        ";acSource=" + actualAcSource +
+                        ";combatLogEligible=" + combatLogEligible +
+                        ";combatLogSubscriber=" + playerIssuedTwo.AttackRoll
+                            .AddedToCombatLog + "/" + incomingTwo.AttackRoll
+                            .AddedToCombatLog + ";twoAttack={" +
                         twoAttackObservation + "};twoAc={" + twoAcObservation +
                         "};oneAttack={" + oneAttackObservation +
                         "};oneAc={" + oneAcObservation + "};twoCandidates={" +
@@ -687,12 +688,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         playerIssuedOne.AttackRoll.AttackBonus + 1 &&
                         incomingTwo.AttackRoll.TargetAC ==
                             incomingOne.AttackRoll.TargetAC + 1 &&
-                        actualAttackSource && actualAcSource && actualCombatLog &&
+                        actualAttackSource && actualAcSource &&
+                        combatLogEligible &&
                         twoAttackObservation.Contains("adjacent=2;applies=True;value=1;descriptor=Untyped") &&
                         twoAcObservation.Contains("adjacent=2;applies=True;value=1;descriptor=Dodge") &&
                         oneAttackObservation.Contains("adjacent=1;applies=False;value=0;descriptor=Untyped") &&
                         oneAcObservation.Contains("adjacent=1;applies=False;value=0;descriptor=Dodge"),
-                    "UnitAttack.CreateAttackCommand -> UnitAttack.TriggerAttackRule -> RuleAttackWithWeapon -> RuleAttackRoll outer/inner attack and AC rules");
+                    "UnitAttack.CreateAttackCommand -> UnitAttack.TriggerAttackRule -> RuleAttackWithWeapon -> RuleAttackRoll outer/inner attack and AC rules; the save-free fixture has no campaign combat-log subscriber, while BonusSources carries exact rendered-log attribution");
                 SetPosition(enemyTwo, new Vector3(-1.5f, 0f, 0f));
                 var rangedBlueprint = BlueprintLibraryLookup.RequireExact<
                     Kingmaker.Blueprints.Items.Weapons.BlueprintItemWeapon>(

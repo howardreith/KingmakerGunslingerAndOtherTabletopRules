@@ -10,7 +10,8 @@
 - Version authority before the mission: `Info.json` and
   `Directory.Build.props` both identify package version `0.0.82`.
 - Superseded human-review candidate: `0.0.83`.
-- Active repair candidate version: `0.0.84`.
+- Active repair candidate version: `0.0.85`; immutable `0.0.84` failed focused
+  runtime source-attribution qualification and is superseded.
 
 The on-disk checkout is named `KingmakerGunslinger`, but its configured origin
 is the requested combined-package repository. The requested sibling directory
@@ -34,7 +35,7 @@ CotW absent/normal/balance profiles, existing-owner OFF persistence, the exact
 human presentation/play-acceptance checklist.
 
 Mission status: **human review rejected the mechanically qualified `0.0.83`
-candidate; `0.0.84` repair work is active**. The superseded artifact remains
+candidate; `0.0.85` repair work is active**. The superseded artifacts remain
 identified by source commit `06cad804651faaace17bdf8432bcd071d50ce9e7`,
 documentation commit `636e4928502cb6a07374279a3a8b35f79f66f4e3`, package
 SHA-256 `b2b4fdd899a1e00955e972d94b45f5624f4d663e88581043cbf969c3d6e3d193`,

@@ -2,8 +2,10 @@
 
 The exact immutable `0.0.83` candidate documented below was **REJECTED** in
 human review and is preserved only as superseded evidence. Do not describe it
-as accepted or release complete. This checklist will be revised for the exact
-`0.0.84` repaired candidate after its new mechanical qualification passes.
+as accepted or release complete. This checklist will be finalized for the
+exact `0.0.85` repaired candidate after its new mechanical qualification
+passes. Immutable `0.0.84` also failed focused runtime qualification and is
+preserved below as superseded evidence.
 
 Human-review rejection findings:
 
@@ -40,6 +42,23 @@ commit. That commit does not change the package, DLL, or installed candidate;
 the artifact/source identity above remains authoritative for the rejected
 candidate's preserved evidence only.
 
+## Superseded 0.0.84 candidate identity
+
+- Artifact/source commit: `034673ab9ae7187a8d1af2ba8f906a286f77b0bc`
+- Package SHA-256: `499fc9e34bd628fed356f235ea124fccc72a0c28201799adbe766e33a7a775fd`
+- DLL SHA-256: `9b7b5e59a155b25d77724b9f9949d6497ac9ace5bd43c354f9f8f19597739abe`
+- DLL MVID: `fe87293c-caa7-4c5f-9d42-06f8a22a8ac7`
+- Package-manifest SHA-256: `94766e6db1cebb7ade6da117c5d294ee2b17de33263f116762f53d63abb02220`
+- Deployment-manifest SHA-256: `fa1615eb10332742a525b6d92624adc5705f98ee9eecdf4ba4b89022d35ae2a7`
+- Failed focused run:
+  `20260816T2049371746501Z-disposable-urban-barbarian-focused`
+
+The run proved exact +1 command-path attack and target-AC mechanics at the
+two-enemy threshold, along with the repaired selector, icon, selected-state,
+Trickery, spell-lock, Rage, and HP assertions. It failed because the AC rule's
+combat-log `BonusSources` inventory omitted Crowd Control. It is not human
+accepted or release complete.
+
 ## Character creation and presentation
 
 - [ ] With Urban Barbarian ON, the native Barbarian archetype list shows
@@ -60,6 +79,10 @@ candidate's preserved evidence only.
   AC, edge-to-edge adjacency, and that weapon reach does not extend adjacency.
 - [ ] Visible combat values grant neither bonus with zero or one adjacent
   enemy and exactly +1 attack/+1 dodge AC with two or more.
+- [ ] The live combat-log breakdown names **Crowd Control** as the +1 attack
+  source on an Urban Barbarian attack and as the +1 dodge AC source on an
+  incoming attack while two qualifying enemies are adjacent; neither entry is
+  present at zero or one qualifying enemy.
 - [ ] The visible result updates promptly when an enemy moves in/out or dies.
 - [ ] A large adjacent enemy behaves by creature edge, and a reach weapon does
   not enlarge the five-foot adjacency boundary.

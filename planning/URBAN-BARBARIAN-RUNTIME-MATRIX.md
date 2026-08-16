@@ -1,7 +1,7 @@
 # Urban Barbarian runtime matrix
 
-Status: **0.0.83 SUPERSEDED AFTER HUMAN-REVIEW REJECTION; 0.0.84 REPAIR AND
-REQUALIFICATION IN PROGRESS**.
+Status: **0.0.83 SUPERSEDED AFTER HUMAN-REVIEW REJECTION; 0.0.84 SUPERSEDED
+AFTER FOCUSED RUNTIME FAILURE; 0.0.85 REQUALIFICATION IN PROGRESS**.
 
 ## Immutable identity fields
 
@@ -162,7 +162,7 @@ native/CotW rage powers, UMM status, ON/OFF owner behavior, and duplication.
 
 ## Final immutable candidate result
 
-### 0.0.84 repair implementation checkpoint
+### Superseded 0.0.84 focused-runtime result
 
 The repaired source graph uses three static tier parents. Kingmaker's actual
 player grid method, `MechanicActionBarSlotAbility.GetConvertedAbilityData`,
@@ -179,9 +179,25 @@ bringing Urban ownership to 73 registered identities and the full ledger to
 native stat-spell donors; mixed icons are runtime composites with one donor
 tile per +2 increment. The live action-bar title and icon path reflects the
 persisted allocation and gives the selected child a bright-green border/check.
-Dependency-free validation currently passes 1,150 tests and a diagnostic
-Release compile. These are pre-candidate source results only; no 0.0.84 package
-has been frozen, deployed, launched, or qualified yet.
+Dependency-free validation passed 1,150 tests and the immutable candidate was
+built from commit `034673ab9ae7187a8d1af2ba8f906a286f77b0bc`. Package SHA-256
+was `499fc9e34bd628fed356f235ea124fccc72a0c28201799adbe766e33a7a775fd`,
+DLL SHA-256 `9b7b5e59a155b25d77724b9f9949d6497ac9ace5bd43c354f9f8f19597739abe`,
+MVID `fe87293c-caa7-4c5f-9d42-06f8a22a8ac7`, package-manifest SHA-256
+`94766e6db1cebb7ade6da117c5d294ee2b17de33263f116762f53d63abb02220`,
+and deployment-manifest SHA-256
+`fa1615eb10332742a525b6d92624adc5705f98ee9eecdf4ba4b89022d35ae2a7`.
+
+Focused run `20260816T2049371746501Z-disposable-urban-barbarian-focused`
+failed exactly one assertion. It proved the actual command path changed attack
+`16->17` and incoming target AC `7->8` only with two qualifying adjacent
+hostiles, with exact identities, corpulence, edge distances, hostility, and
+life state. Attack `BonusSources` named Crowd Control, but AC `BonusSources`
+did not; the save-free fixture also correctly had no campaign combat-log
+subscriber. The result is a failed immutable qualification candidate, not a
+human-accepted or release-complete artifact. Version 0.0.85 adds the missing
+AC source record without applying a second mechanical bonus and must repeat all
+qualification from the start.
 
 ### Superseded 0.0.83 human-review result
 

@@ -61,6 +61,7 @@ namespace KingmakerGunslinger.UrbanBarbarian
             {
                 Owner.Stats.AC.UpdateValue();
                 evt.AddTemporaryModifier(modifier);
+                evt.BonusSources.Add(new BonusSource(1, Fact));
             }
         }
 
