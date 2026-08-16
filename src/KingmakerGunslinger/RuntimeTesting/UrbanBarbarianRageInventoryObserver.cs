@@ -34,9 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintCharacterClass[] barbarianMatches = all
                 .OfType<BlueprintCharacterClass>()
                 .Where(value => string.Equals(value.AssetGuid, BarbarianClassGuid,
-                    StringComparison.Ordinal) ||
-                    ExactText(value.name, "Barbarian") ||
-                    ExactText(DisplayName(value), "Barbarian"))
+                    StringComparison.Ordinal))
                 .Distinct().ToArray();
             BlueprintCharacterClass barbarian = barbarianMatches.Length == 1 ?
                 barbarianMatches[0] : null;
@@ -58,8 +56,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (NameLooksRelevant(blueprint) ||
                     ComponentsLookRelevant(blueprint)) Add(selected, blueprint);
 
-            ExpandForward(selected, 4);
-            ExpandReverse(all, selected, 3);
+            ExpandForward(selected, 2);
+            ExpandReverse(all, selected, 1);
+            ExpandForward(selected, 1);
 
             List<UrbanRageBlueprintRecord> records = selected.Values
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
@@ -124,7 +123,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             AddAssertion(assertions, "rage-candidate-inventory", ">=8",
                 "records=" + records.Count + ";rageNamed=" + rageNamed,
                 records.Count >= 8 && rageNamed >= 8,
-                "forward and reverse final-graph traversal plus semantic candidate scan");
+                "bounded forward and typed reverse final-graph traversal plus semantic candidate scan");
             AddAssertion(assertions, "profile-identity",
                 cotw == null ? "CotW absent" : "CotW assembly and fingerprint",
                 evidence.Profile + ";" + evidence.CotwAssembly + ";" +
@@ -197,7 +196,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int before = selected.Count;
                 foreach (BlueprintScriptableObject blueprint in all)
                 {
-                    if (selected.ContainsKey(blueprint.AssetGuid)) continue;
+                    if (selected.ContainsKey(blueprint.AssetGuid) ||
+                        !CanContainRageContract(blueprint)) continue;
                     if (BlueprintReferences(blueprint).Any(value => value != null &&
                         targetGuids.Contains(value.AssetGuid))) Add(selected, blueprint);
                 }
@@ -368,7 +368,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             return (blueprint.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .Any(component => component != null &&
                     (Contains(component.GetType().FullName, "rage") ||
-                     Contains(component.GetType().Assembly.GetName().Name, "CallOfTheWild")));
+                     Contains(component.GetType().FullName, "barbarian")));
+        }
+
+        private static bool CanContainRageContract(
+            BlueprintScriptableObject blueprint)
+        {
+            string type = blueprint.GetType().FullName ?? string.Empty;
+            return Contains(type, "BlueprintFeature") ||
+                Contains(type, "BlueprintBuff") ||
+                Contains(type, "BlueprintAbility") ||
+                Contains(type, "BlueprintActivatableAbility") ||
+                Contains(type, "BlueprintItem") ||
+                Contains(type, "BlueprintProgression") ||
+                Contains(type, "BlueprintCharacterClass") ||
+                Contains(type, "BlueprintArchetype");
         }
 
         private static string DisplayName(BlueprintScriptableObject blueprint)

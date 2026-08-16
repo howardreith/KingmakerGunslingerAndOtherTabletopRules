@@ -21,12 +21,14 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeAutomation.Common.ps1"));
             Assertions.True(observer.Contains(
                     "f7d7eb166b3dd594fb330d085df41853") &&
-                observer.Contains("ExpandForward(selected, 4)") &&
-                observer.Contains("ExpandReverse(all, selected, 3)") &&
+                observer.Contains("ExpandForward(selected, 2)") &&
+                observer.Contains("ExpandReverse(all, selected, 1)") &&
+                observer.Contains("CanContainRageContract(blueprint)") &&
                 observer.Contains("barbarian.ClassSkills") &&
                 observer.Contains("barbarian.Archetypes") &&
                 observer.Contains("progression.LevelEntries") &&
-                observer.Contains("component.GetType().Assembly.GetName().Name") &&
+                observer.Contains("component.GetType().FullName, \"barbarian\"") &&
+                !observer.Contains("Contains(component.GetType().Assembly.GetName().Name, \"CallOfTheWild\")") &&
                 observer.Contains("save-free-observer") &&
                 !observer.Contains("BlueprintRegistry.Register") &&
                 !observer.Contains("File.WriteAllBytes"),
