@@ -18,9 +18,11 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
@@ -57,10 +59,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData enemyThree = null;
             BlueprintUnit hostileSource = null;
             ItemEntityWeapon weapon = null;
+            BlueprintBuff unconsciousFixture = null;
             bool urbanRegistered = false;
             bool enemyOneRegistered = false;
             bool enemyTwoRegistered = false;
             bool enemyThreeRegistered = false;
+            bool enemyThreeDisposed = false;
             bool cleaned = false;
             string stage = "fixture";
             try
@@ -473,8 +477,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .CountAdjacentActiveEnemies(urban);
                 int attackTwo = Attack(urban, weapon);
                 int acTwo = ArmorClass(urban, enemyOne);
-                enemyTwo.Descriptor.State.AddCondition(
-                    UnitCondition.Unconscious, null);
+                unconsciousFixture = ScriptableObject.CreateInstance<
+                    BlueprintBuff>();
+                unconsciousFixture.name =
+                    "KMG_Urban_Focused_Unconscious_Fixture";
+                var unconsciousCondition = ScriptableObject.CreateInstance<
+                    AddCondition>();
+                unconsciousCondition.Condition = UnitCondition.Unconscious;
+                unconsciousFixture.ComponentsArray = new BlueprintComponent[]
+                    { unconsciousCondition };
+                var unconsciousContext = new MechanicsContext(urban,
+                    urban.Descriptor, set.CrowdControl, null,
+                    new TargetWrapper(enemyTwo));
+                Buff unconscious = enemyTwo.Descriptor.Buffs.AddBuff(
+                    unconsciousFixture, unconsciousContext, null);
                 int adjacentAfterUnconscious = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackAfterUnconscious = Attack(urban, weapon);
@@ -482,7 +498,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetPosition(enemyThree, new Vector3(0f, 0f, 1.5f));
                 int attackThree = Attack(urban, weapon);
                 int acThree = ArmorClass(urban, enemyOne);
-                enemyThree.Destroy();
+                if (enemyThreeRegistered)
+                {
+                    Game.Instance.State.Units.All.Remove(enemyThree);
+                    enemyThreeRegistered = false;
+                }
+                enemyThree.Descriptor.State.Immortality.ReleaseAll();
+                enemyThree.Dispose();
+                enemyThreeDisposed = true;
                 int adjacentAfterDestroyed = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackAfterDestroyed = Attack(urban, weapon);
@@ -509,10 +532,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attackMovedOut == attackZero && acOne == acZero &&
                         acTwo == acZero + 1 && acThree == acZero + 1 &&
                         adjacentTwo == 2 && adjacentAfterUnconscious == 1 &&
+                        unconscious != null &&
                         !enemyTwo.Descriptor.State.IsConscious &&
                         attackAfterUnconscious == attackZero &&
                         acAfterUnconscious == acZero &&
-                        adjacentAfterDestroyed == 1 && enemyThree.Destroyed &&
+                        adjacentAfterDestroyed == 1 && (enemyThree.Destroyed ||
+                            enemyThree.IsDetached || !enemyThree.IsInGame) &&
                         attackAfterDestroyed == attackZero &&
                         acAfterDestroyed == acZero,
                     "live attack/AC Rulebook events and native edge-to-edge DistanceTo");
@@ -536,6 +561,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     enemyOne })
                 {
                     if (unit == null) continue;
+                    if (ReferenceEquals(unit, enemyThree) &&
+                        enemyThreeDisposed) continue;
                     if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat();
                     unit.Descriptor.State.Immortality.ReleaseAll();
                     unit.Dispose();
@@ -549,6 +576,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (scene != null) scene.Dispose();
                 if (hostileSource != null)
                     UnityEngine.Object.DestroyImmediate(hostileSource);
+                if (unconsciousFixture != null)
+                    UnityEngine.Object.DestroyImmediate(unconsciousFixture);
                 cleaned = Same(unitsBefore, Snapshot(allUnits));
             }
             Add(assertions, "urban-focused-cleanup",
