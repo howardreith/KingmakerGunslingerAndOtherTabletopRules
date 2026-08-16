@@ -629,7 +629,7 @@ namespace KingmakerGunslinger.DomainTests
                 "powerful.IsOn = true", interruptionStage,
                 StringComparison.Ordinal);
             int interruptionAvailability = nativeCastScenario.IndexOf(
-                "evidence.InterruptionCanStart = interruptionData.IsAvailable",
+                "evidence.InterruptionCanStart = interruptedCommand.CanStart",
                 StringComparison.Ordinal);
             Assertions.True(interruptionQueueReset > interruptionStage &&
                 interruptionToggle > interruptionQueueReset,
@@ -639,6 +639,11 @@ namespace KingmakerGunslinger.DomainTests
                 interruptionAvailability > interruptionCooldown,
                 "The interruption fixture must neutralize its synthetic " +
                 "back-to-back cooldown before checking command availability.");
+            Assertions.True(nativeCastScenario.Contains(
+                "interruptionSlotsBefore <= 0"),
+                "The interruption fixture must retain an explicit positive " +
+                "spell-slot prerequisite without conflating it with the " +
+                "UnitUseAbility command-start gate.");
             foreach (string token in new[] {
                 "working-save-brown-fur-prepare",
                 "working-save-brown-fur-verify-cleanup",

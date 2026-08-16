@@ -501,10 +501,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.InterruptionTargetable =
                     interruptionData.CanTarget(target);
                 interruptedCommand.IgnoreCooldown(TimeSpan.Zero);
-                evidence.InterruptionCanStart = interruptionData.IsAvailable &&
-                    interruptedCommand.CanStart;
+                evidence.InterruptionCanStart = interruptedCommand.CanStart;
                 if (!evidence.InterruptionTargetable ||
-                    !evidence.InterruptionCanStart)
+                    !evidence.InterruptionCanStart ||
+                    interruptionSlotsBefore <= 0)
                     throw new InvalidOperationException(
                         "Automatic Brown-Fur interruption command was unavailable.");
                 caster.Commands.Run(interruptedCommand);
