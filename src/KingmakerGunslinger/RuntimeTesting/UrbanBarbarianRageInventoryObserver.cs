@@ -53,12 +53,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Add(selected, feature);
             }
             foreach (BlueprintScriptableObject blueprint in all)
-                if (NameLooksRelevant(blueprint) ||
-                    ComponentsLookRelevant(blueprint)) Add(selected, blueprint);
-
-            ExpandForward(selected, 2);
-            ExpandReverse(all, selected, 1);
-            ExpandForward(selected, 1);
+                if (CanContainRageContract(blueprint) &&
+                    (NameLooksRelevant(blueprint) ||
+                     ComponentsLookRelevant(blueprint))) Add(selected, blueprint);
 
             List<UrbanRageBlueprintRecord> records = selected.Values
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
@@ -122,8 +119,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Contains(value.Name, "rage") || Contains(value.DisplayName, "rage"));
             AddAssertion(assertions, "rage-candidate-inventory", ">=8",
                 "records=" + records.Count + ";rageNamed=" + rageNamed,
-                records.Count >= 8 && rageNamed >= 8,
-                "bounded forward and typed reverse final-graph traversal plus semantic candidate scan");
+                records.Count >= 8 && records.Count <= 3000 && rageNamed >= 8,
+                "bounded semantic inventory of finalized Rage-bearing blueprint types");
             AddAssertion(assertions, "profile-identity",
                 cotw == null ? "CotW absent" : "CotW assembly and fingerprint",
                 evidence.Profile + ";" + evidence.CotwAssembly + ";" +
@@ -170,39 +167,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AutomaticExitRequested = request.ExitAfterCompletion,
                 EvidenceDirectory = request.EvidenceDirectory
             };
-        }
-
-        private static void ExpandForward(
-            Dictionary<string, BlueprintScriptableObject> selected, int passes)
-        {
-            for (int pass = 0; pass < passes; pass++)
-            {
-                BlueprintScriptableObject[] snapshot = selected.Values.ToArray();
-                int before = selected.Count;
-                foreach (BlueprintScriptableObject blueprint in snapshot)
-                    foreach (BlueprintScriptableObject reference in
-                        BlueprintReferences(blueprint)) Add(selected, reference);
-                if (selected.Count == before) break;
-            }
-        }
-
-        private static void ExpandReverse(List<BlueprintScriptableObject> all,
-            Dictionary<string, BlueprintScriptableObject> selected, int passes)
-        {
-            for (int pass = 0; pass < passes; pass++)
-            {
-                var targetGuids = new HashSet<string>(selected.Keys,
-                    StringComparer.Ordinal);
-                int before = selected.Count;
-                foreach (BlueprintScriptableObject blueprint in all)
-                {
-                    if (selected.ContainsKey(blueprint.AssetGuid) ||
-                        !CanContainRageContract(blueprint)) continue;
-                    if (BlueprintReferences(blueprint).Any(value => value != null &&
-                        targetGuids.Contains(value.AssetGuid))) Add(selected, blueprint);
-                }
-                if (selected.Count == before) break;
-            }
         }
 
         private static IEnumerable<BlueprintScriptableObject> BlueprintReferences(
@@ -356,7 +320,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool NameLooksRelevant(BlueprintScriptableObject blueprint)
         {
             string text = (blueprint.name ?? string.Empty) + " " +
-                DisplayName(blueprint) + " " + blueprint.GetType().Name;
+                blueprint.GetType().Name;
             return Contains(text, "barbarian") || Contains(text, "rage") ||
                 Contains(text, "fast movement") || Contains(text, "fastmovement") ||
                 Contains(text, "tireless") || Contains(text, "mighty rage") ||

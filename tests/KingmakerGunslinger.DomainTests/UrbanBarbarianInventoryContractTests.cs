@@ -21,9 +21,9 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeAutomation.Common.ps1"));
             Assertions.True(observer.Contains(
                     "f7d7eb166b3dd594fb330d085df41853") &&
-                observer.Contains("ExpandForward(selected, 2)") &&
-                observer.Contains("ExpandReverse(all, selected, 1)") &&
                 observer.Contains("CanContainRageContract(blueprint)") &&
+                observer.Contains("records.Count <= 3000") &&
+                !observer.Contains("ExpandReverse(") &&
                 observer.Contains("barbarian.ClassSkills") &&
                 observer.Contains("barbarian.Archetypes") &&
                 observer.Contains("progression.LevelEntries") &&
