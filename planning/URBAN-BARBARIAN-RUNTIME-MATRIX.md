@@ -1,6 +1,6 @@
 # Urban Barbarian runtime matrix
 
-Status: **PLANNED — no candidate qualified**.
+Status: **INVENTORY OBSERVER SOURCE QUALIFIED — guarded profile runs pending**.
 
 ## Immutable identity fields
 
@@ -81,4 +81,3 @@ and play judgment covers name/description/icon/progression, skills/proficiency,
 Crowd Control tooltip and visible behavior, selector legibility and selected
 state, legal allocations, Rage counter, leakage absence, Constitution/HP,
 native/CotW rage powers, UMM status, ON/OFF owner behavior, and duplication.
-

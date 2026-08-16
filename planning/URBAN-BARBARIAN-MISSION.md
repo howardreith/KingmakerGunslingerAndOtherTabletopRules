@@ -89,8 +89,14 @@ exact native Rage identity without affecting base Barbarians. If that surface is
 invasive or fragile, the approved fallback is an Urban-specific buff cloned from
 the finalized native lifecycle plus an explicit Rage-equivalence bridge.
 
-Status at mission creation: **OPEN — research observer required; no production
-Rage source has been modified**.
+Status after the first research checkpoint: **OBSERVER SOURCE QUALIFIED —
+guarded CotW-present and CotW-absent runs pending; no production Rage source
+has been modified**. The save-free
+`observe-urban-barbarian-rage-inventory` scenario records the exact native
+class/progression graph, class skills, archetype order, component fields and
+assemblies, forward Rage references, and reverse Rage consumers in one atomic
+JSON artifact. Repository validation, 1,139 dependency-free tests, a clean
+Release build, and strict package validation pass for this checkpoint.
 
 ## Qualification contract
 
@@ -109,4 +115,3 @@ restored byte-for-byte after each profile and after interruption.
 The exact immutable accepted artifact remains installed unchanged at handoff.
 Any gameplay source or package change requested during human review invalidates
 the candidate and requires a new build and qualification cycle.
-

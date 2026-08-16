@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.82\"") &&
-                props.Contains("<KmgVersion>0.0.82</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.82-brown-fur-human-review-repair</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.82\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.82\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.82-brown-fur-human-review-repair\")"),
-                "Release and assembly identity are not transactionally pinned to the spear candidate.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.83\"") &&
+                props.Contains("<KmgVersion>0.0.83</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.83-urban-barbarian</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.83\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.83\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.83-urban-barbarian\")"),
+                "Release and assembly identity are not transactionally pinned to the Urban Barbarian candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-brown-fur-human-review-repair.zip") &&
+                "$($info.Id)-$($info.Version)-urban-barbarian.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity can still select the Expanded Summoning archive.");
-            Assertions.True(runtime.Contains("active version 0.0.82") &&
-                localBuild.Contains("active version 0.0.82") &&
-                localBuild.Contains("local-runtime\\0.0.82"),
+                "Package identity is not pinned to the Urban Barbarian archive.");
+            Assertions.True(runtime.Contains("active version 0.0.83") &&
+                localBuild.Contains("active version 0.0.83") &&
+                localBuild.Contains("local-runtime\\0.0.83"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

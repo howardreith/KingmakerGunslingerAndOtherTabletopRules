@@ -576,6 +576,7 @@
       <Link>Qualification\MaintenanceQualificationStage.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="UrbanBarbarianInventoryContractTests.cs" />
     <Compile Include="Sprint29Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Development\ReflectionAccess.cs">
       <Link>Development\ReflectionAccess.cs</Link>

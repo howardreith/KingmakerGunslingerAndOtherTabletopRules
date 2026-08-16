@@ -11,14 +11,16 @@ import validate_eastern80
 VERSION = "0.0.82"
 INFORMATIONAL_VERSION = "0.0.82-brown-fur-human-review-repair"
 PACKAGE = "KingmakerGunslinger-0.0.82-local-runtime.zip"
+MILESTONE_LABEL = "BROWN-FUR-HUMAN-REVIEW-REPAIR"
+PACKAGE_SUFFIX = "brown-fur-human-review-repair"
 
 
 def validate(root: Path) -> None:
     validate_eastern80.VERSION = VERSION
     validate_eastern80.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     validate_eastern80.PACKAGE = PACKAGE
-    validate_eastern80.MILESTONE_LABEL = "BROWN-FUR-HUMAN-REVIEW-REPAIR"
-    validate_eastern80.PACKAGE_SUFFIX = "brown-fur-human-review-repair"
+    validate_eastern80.MILESTONE_LABEL = MILESTONE_LABEL
+    validate_eastern80.PACKAGE_SUFFIX = PACKAGE_SUFFIX
     validate_eastern80.validate(root)
 
     required = (

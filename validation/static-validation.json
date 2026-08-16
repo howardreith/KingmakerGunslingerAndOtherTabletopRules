@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.82-brown-fur-human-review-repair",
-  "version": "0.0.82",
+  "milestone": "0.0.83-urban-barbarian",
+  "version": "0.0.83",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

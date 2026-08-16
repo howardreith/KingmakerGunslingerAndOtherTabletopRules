@@ -455,6 +455,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             string catalogCapturedPath = Path.Combine(evidenceDirectory, "runtime-catalog-captured.json");
             string providerCapturedPath = Path.Combine(
                 evidenceDirectory, "runtime-catalog-provider-captured.json");
+            string urbanRageInventoryPath = Path.Combine(evidenceDirectory,
+                UrbanBarbarianRageInventoryObserver.EvidenceFileName);
             WriteAtomic(summaryPath, BuildSummary(result));
             result.EvidenceFiles = new List<string> { summaryPath, resultPath };
             if (File.Exists(readyPath)) result.EvidenceFiles.Add(readyPath);
@@ -462,6 +464,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (File.Exists(catalogReadyPath)) result.EvidenceFiles.Add(catalogReadyPath);
             if (File.Exists(catalogCapturedPath)) result.EvidenceFiles.Add(catalogCapturedPath);
             if (File.Exists(providerCapturedPath)) result.EvidenceFiles.Add(providerCapturedPath);
+            if (File.Exists(urbanRageInventoryPath))
+                result.EvidenceFiles.Add(urbanRageInventoryPath);
             WriteAtomic(resultPath, JsonConvert.SerializeObject(result, Formatting.Indented) + Environment.NewLine);
         }
 
