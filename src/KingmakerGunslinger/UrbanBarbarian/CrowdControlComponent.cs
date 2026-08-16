@@ -34,7 +34,11 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 Owner.Stats == null) return;
             ModifiableValue.Modifier modifier = Owner.Stats.AC.AddModifier(1,
                 Fact, GetType().FullName, ModifierDescriptor.Dodge);
-            if (modifier != null) evt.AddTemporaryModifier(modifier);
+            if (modifier != null)
+            {
+                Owner.Stats.AC.UpdateValue();
+                evt.AddTemporaryModifier(modifier);
+            }
         }
 
         public void OnEventDidTrigger(RuleCalculateAC evt) { }

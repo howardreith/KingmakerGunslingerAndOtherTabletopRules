@@ -220,6 +220,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             rageBlueprint));
                 bool ordinaryActivated = false, ordinaryCanceled = false,
                     ordinaryFatigued = false;
+                bool ordinaryFatiguedBefore = urban.Descriptor.State.HasCondition(
+                    UnitCondition.Fatigued);
                 int ordinaryResourceRunning = ordinaryResourceBefore;
                 int ordinaryResourceAfterRound = ordinaryResourceBefore;
                 if (ordinaryToggle != null)
@@ -250,11 +252,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native Rage toggle activates Urban buff, cancels, and applies ordinary fatigue",
                     "toggle=" + (ordinaryToggle != null) + ";activated=" +
                         ordinaryActivated + ";canceled=" + ordinaryCanceled +
-                        ";fatigued=" + ordinaryFatigued + ";resource=" +
+                        ";fatigued=" + ordinaryFatiguedBefore + "->" +
+                        ordinaryFatigued + ";resource=" +
                         ordinaryResourceBefore + "->" + ordinaryResourceRunning +
                         "->" + ordinaryResourceAfterRound,
                     ordinaryToggle != null && ordinaryActivated &&
-                        ordinaryCanceled && ordinaryFatigued &&
+                        ordinaryCanceled && !ordinaryFatiguedBefore &&
+                        ordinaryFatigued &&
                         ordinaryResourceBefore > 0 &&
                         ordinaryResourceRunning <= ordinaryResourceBefore &&
                         ordinaryResourceAfterRound == ordinaryResourceBefore - 1,

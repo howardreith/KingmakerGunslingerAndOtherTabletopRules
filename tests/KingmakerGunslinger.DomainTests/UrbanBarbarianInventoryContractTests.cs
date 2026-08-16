@@ -59,7 +59,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ApplyLevel(urban.Descriptor",
                 "State.Units.All.Add(urban)",
                 "ordinaryToggle.OnNewRound()",
-                "ordinaryToggle.Stop(true)" })
+                "ordinaryToggle.Stop(true)",
+                "!ordinaryFatiguedBefore" })
                 Assertions.True(catalog.Contains(token) || runner.Contains(token) ||
                     focused.Contains(token) || automation.Contains(token),
                     "Focused Urban scenario contract is missing: " + token);

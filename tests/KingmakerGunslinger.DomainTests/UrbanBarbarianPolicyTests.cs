@@ -287,7 +287,8 @@ namespace KingmakerGunslinger.DomainTests
                 "candidate.Descriptor.State.IsConscious",
                 "owner.IsEnemy(candidate)", "owner.DistanceTo(candidate)",
                 "Game.Instance.State.Units.All",
-                "ModifierDescriptor.Dodge", "evt.AddBonus(1, Fact)" })
+                "ModifierDescriptor.Dodge", "Owner.Stats.AC.UpdateValue()",
+                "evt.AddBonus(1, Fact)" })
                 Assertions.True(crowd.Contains(token),
                     "Crowd Control runtime contract is missing: " + token);
             Assertions.False(crowd.Contains("GetWeaponRange") ||
