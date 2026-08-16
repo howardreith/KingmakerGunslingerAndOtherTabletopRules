@@ -50,6 +50,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.archetype-balance", BrownFurArchetypePlanTests.BalanceProgressionIsExact),
             Case("brown-fur.archetype-unknown", BrownFurArchetypePlanTests.UnknownProgressionCannotBuildShell),
             Case("brown-fur.archetype-blueprint-contract", BrownFurArchetypePlanTests.BlueprintBuilderRetainsPlayerContract),
+            Case("brown-fur.presentation-human-review-repair", BrownFurArchetypePlanTests.HumanReviewPresentationRepairIsExplicit),
+            Case("brown-fur.targeting-pre-command-repair", BrownFurArchetypePlanTests.PreCommandTargetingRepairIsScoped),
             Case("brown-fur.publication-idempotent", BrownFurPublicationTransactionTests.PublishesAdditivelyAndIdempotently),
             Case("brown-fur.publication-failure-rollback", BrownFurPublicationTransactionTests.FailureRollsBackEveryOwnedSurface),
             Case("brown-fur.publication-preserve-later", BrownFurPublicationTransactionTests.RollbackPreservesProvenLaterAppend),

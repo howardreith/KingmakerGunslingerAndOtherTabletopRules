@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.0.82-brown-fur-human-review-repair (development)
+
+- Records the `0.0.81` Brown-Fur candidate as human-review failed and
+  superseded; it was never accepted and does not authorize the final matrix.
+- Replaces Powerful Change's legacy instant score actions with six native,
+  mutually exclusive one-shot activatable toggles. Native `IsOn` state drives
+  the selected overlay, manual deselection, switching, and committed-cast
+  cleanup while ineligible and canceled casts preserve the armed score.
+- Gives every score and Share Transmutation a distinct native Kingmaker donor
+  icon and a native live Arcane Reservoir counter bound with non-spending
+  activation semantics. The cast transaction remains the only debit authority.
+- Moves Share Transmutation eligibility into the pre-command target-anchor
+  path. An armed supported Personal Transmutation reports a unit anchor before
+  a target or transaction exists, enters native target selection, and retains
+  ordinary Personal self-cast behavior while Share is off.
+- Expands guarded evidence for Beast Shape II, Undead Anatomy I, Resinous Skin,
+  Bull's Strength, Cat's Grace, cancellation, combined use, typed modifier
+  preservation, resource counters, and activatable save/load synchronization.
+- Advances assembly/package identity to `0.0.82`; focused runtime profiles,
+  the 16-state boundary, and renewed human acceptance remain required. The
+  128-state final seal remains prohibited before acceptance.
+
 ## 0.0.81-brown-fur-transmuter (development)
 
 - Adds the independent, default-ON `brown-fur-transmuter` feature-module

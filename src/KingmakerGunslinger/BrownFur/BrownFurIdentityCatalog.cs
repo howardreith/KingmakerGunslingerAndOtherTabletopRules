@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.BrownFur
 
     internal static class BrownFurIdentityCatalog
     {
-        internal const int IdentityCount = 19;
+        internal const int IdentityCount = 25;
         internal const string Archetype = "KMG.BrownFur.Archetype";
         internal const string PowerfulChangeFeature =
             "KMG.BrownFur.PowerfulChange.Feature";
@@ -57,6 +57,24 @@ namespace KingmakerGunslinger.BrownFur
                         "84faeefe28992744fbf19b62e2eccb08", "BlueprintAbility"),
                     Spec("KMG.BrownFur.PowerfulChange.Charisma.Ability",
                         "649b8ea4f5a155141bef5f9827675739", "BlueprintAbility"),
+                    Spec("KMG.BrownFur.PowerfulChange.Strength.Activatable",
+                        "16c06d016437be9e9e6dac6211ff30a5",
+                        "BlueprintActivatableAbility"),
+                    Spec("KMG.BrownFur.PowerfulChange.Dexterity.Activatable",
+                        "d1f274d1a129eedd8ef44efdb3426d7f",
+                        "BlueprintActivatableAbility"),
+                    Spec("KMG.BrownFur.PowerfulChange.Constitution.Activatable",
+                        "434573bfac3915b1a611a1452917d1d9",
+                        "BlueprintActivatableAbility"),
+                    Spec("KMG.BrownFur.PowerfulChange.Intelligence.Activatable",
+                        "bbef0eaabb277fcf2cbb22a82076e4f7",
+                        "BlueprintActivatableAbility"),
+                    Spec("KMG.BrownFur.PowerfulChange.Wisdom.Activatable",
+                        "2e7cfb55db278e75a7bca01ac52e4100",
+                        "BlueprintActivatableAbility"),
+                    Spec("KMG.BrownFur.PowerfulChange.Charisma.Activatable",
+                        "deac03b22537cb6f05c8323a384e9b93",
+                        "BlueprintActivatableAbility"),
                     Spec("KMG.BrownFur.PowerfulChange.Strength.Buff",
                         "958e93bc70e6ae048e2e96193423915a", "BlueprintBuff"),
                     Spec("KMG.BrownFur.PowerfulChange.Dexterity.Buff",
@@ -87,6 +105,9 @@ namespace KingmakerGunslinger.BrownFur
 
         internal static string PowerfulBuff(BrownFurAbilityScore score)
         { return "KMG.BrownFur.PowerfulChange." + score + ".Buff"; }
+
+        internal static string PowerfulActivatable(BrownFurAbilityScore score)
+        { return "KMG.BrownFur.PowerfulChange." + score + ".Activatable"; }
 
         private static BrownFurIdentitySpec Spec(string symbol, string guid,
             string plannedType)

@@ -12158,7 +12158,31 @@
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Charisma.Ability", "guid": "649b8ea4f5a155141bef5f9827675739",
-      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "One-shot Charisma choice."
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Legacy hidden one-shot Charisma choice retained for save compatibility."
+    },
+    {
+      "symbol": "KMG.BrownFur.PowerfulChange.Strength.Activatable", "guid": "16c06d016437be9e9e6dac6211ff30a5",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Brown-Fur human-review repair", "notes": "Native selected-state Strength intent using the exclusive Brown-Fur group and shared reservoir counter."
+    },
+    {
+      "symbol": "KMG.BrownFur.PowerfulChange.Dexterity.Activatable", "guid": "d1f274d1a129eedd8ef44efdb3426d7f",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Brown-Fur human-review repair", "notes": "Native selected-state Dexterity intent using the exclusive Brown-Fur group and shared reservoir counter."
+    },
+    {
+      "symbol": "KMG.BrownFur.PowerfulChange.Constitution.Activatable", "guid": "434573bfac3915b1a611a1452917d1d9",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Brown-Fur human-review repair", "notes": "Native selected-state Constitution intent using the exclusive Brown-Fur group and shared reservoir counter."
+    },
+    {
+      "symbol": "KMG.BrownFur.PowerfulChange.Intelligence.Activatable", "guid": "bbef0eaabb277fcf2cbb22a82076e4f7",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Brown-Fur human-review repair", "notes": "Native selected-state Intelligence intent using the exclusive Brown-Fur group and shared reservoir counter."
+    },
+    {
+      "symbol": "KMG.BrownFur.PowerfulChange.Wisdom.Activatable", "guid": "2e7cfb55db278e75a7bca01ac52e4100",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Brown-Fur human-review repair", "notes": "Native selected-state Wisdom intent using the exclusive Brown-Fur group and shared reservoir counter."
+    },
+    {
+      "symbol": "KMG.BrownFur.PowerfulChange.Charisma.Activatable", "guid": "deac03b22537cb6f05c8323a384e9b93",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Brown-Fur human-review repair", "notes": "Native selected-state Charisma intent using the exclusive Brown-Fur group and shared reservoir counter."
     },
     {
       "symbol": "KMG.BrownFur.PowerfulChange.Strength.Buff", "guid": "958e93bc70e6ae048e2e96193423915a",

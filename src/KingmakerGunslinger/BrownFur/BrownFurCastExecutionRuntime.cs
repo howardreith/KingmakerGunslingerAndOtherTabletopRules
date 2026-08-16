@@ -8,6 +8,7 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
+using KingmakerGunslinger.Blueprints;
 
 namespace KingmakerGunslinger.BrownFur
 {
@@ -24,6 +25,7 @@ namespace KingmakerGunslinger.BrownFur
             internal AbilityData Ability;
             internal CotwArcanistContract Contract;
             internal BrownFurBonusAdapterPlan BonusPlan;
+            internal bool IntentConsumed;
         }
 
         private static readonly object Gate = new object();
@@ -39,6 +41,7 @@ namespace KingmakerGunslinger.BrownFur
             RejectedCommands = new Dictionary<UnitUseAbility, string>(
                 CommandReferenceComparer.Instance);
         private static string _lastFailure;
+        private static string _lastTerminalState = string.Empty;
         private static readonly BrownFurCastCommitCoordinator<UnitDescriptor,
             UnitUseAbility, AbilityData, RuleCastSpell,
             AbilityExecutionContext, AbilityExecutionProcess> Coordinator =
@@ -56,6 +59,8 @@ namespace KingmakerGunslinger.BrownFur
         { get { lock (Gate) return RejectedCommands.Count; } }
         internal static string LastFailure
         { get { lock (Gate) return _lastFailure; } }
+        internal static string LastTerminalState
+        { get { lock (Gate) return _lastTerminalState; } }
 
         internal static bool Begin(CotwArcanistContract contract,
             UnitUseAbility command, AbilityData ability, TargetWrapper target,
@@ -163,6 +168,34 @@ namespace KingmakerGunslinger.BrownFur
             { RecordFailure("attach-process", exception); }
         }
 
+        internal static void ConsumeCommittedIntent(RuleCastSpell rule)
+        {
+            BrownFurCastTransaction transaction;
+            if (rule == null || !Coordinator.TryGetByRule(rule,
+                    out transaction) || transaction == null ||
+                transaction.State != BrownFurCastTransactionState.Committed)
+                return;
+            Binding binding = Get(transaction.Intent.TransactionIdentity);
+            if (binding == null) return;
+            lock (Gate)
+            {
+                if (binding.IntentConsumed) return;
+                binding.IntentConsumed = true;
+            }
+            try
+            {
+                BrownFurBlueprintSet blueprints =
+                    BrownFurOptionalExtensionCoordinator.Blueprints;
+                BrownFurPlayerIntentRuntime.Consume(binding.Owner, blueprints,
+                    transaction.Decision);
+            }
+            catch
+            {
+                lock (Gate) binding.IntentConsumed = false;
+                throw;
+            }
+        }
+
         internal static void RuleFailed(RuleCastSpell rule)
         {
             BrownFurCastTransaction transaction;
@@ -266,7 +299,11 @@ namespace KingmakerGunslinger.BrownFur
 
         internal static void Clear()
         {
-            lock (Gate) _lastFailure = null;
+            lock (Gate)
+            {
+                _lastFailure = null;
+                _lastTerminalState = string.Empty;
+            }
             try { Coordinator.Clear(); }
             catch (Exception exception)
             { RecordFailure("clear", exception); }
@@ -356,7 +393,11 @@ namespace KingmakerGunslinger.BrownFur
                 BrownFurSupremacyRuntime.Release(identity));
             SafeCleanup("release-modifier", () =>
                 BrownFurModifierAdjustmentRuntime.Release(identity));
-            lock (Gate) Bindings.Remove(identity);
+            lock (Gate)
+            {
+                _lastTerminalState = identity + ":" + transaction.State;
+                Bindings.Remove(identity);
+            }
         }
 
         private static void SafeCleanup(string operation, Action cleanup)

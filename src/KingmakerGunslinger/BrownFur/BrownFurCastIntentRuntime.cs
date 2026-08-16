@@ -66,7 +66,7 @@ namespace KingmakerGunslinger.BrownFur
                     playerIntent.ShareTransmutationRequested;
                 bool transmutation = selected != null &&
                     selected.School == SpellSchool.Transmutation;
-                if (record == null && (requested ||
+                if (record == null && transmutation && (requested ||
                     (playerIntent.HasTransmutationSupremacy && transmutation)))
                 {
                     Reject(command, "spell-inventory-unqualified:" +
@@ -114,14 +114,6 @@ namespace KingmakerGunslinger.BrownFur
                         exception.GetType().FullName);
                 BrownFurCastExecutionRuntime.RecordPatchFailure(
                     "intent-arm", exception);
-            }
-            finally
-            {
-                if (playerIntent != null &&
-                    (playerIntent.PowerfulChangeRequested ||
-                     playerIntent.ShareTransmutationRequested ||
-                     !playerIntent.Valid))
-                    BrownFurPlayerIntentRuntime.Clear(owner, blueprints);
             }
         }
 
@@ -238,9 +230,10 @@ namespace KingmakerGunslinger.BrownFur
                 UnitIdentity(ability.Caster == null ? null :
                     ability.Caster.Unit), canonical, GuidOf(selected),
                 GuidOf(sourceBook), UnitIdentity(targetUnit),
-                player.PowerfulChangeRequested,
-                player.SelectedAbilityScore,
-                player.ShareTransmutationRequested,
+                decision.PowerfulChange,
+                decision.PowerfulChange ? decision.SelectedAbilityScore :
+                    BrownFurAbilityScore.None,
+                decision.ShareTransmutation,
                 decision.TransmutationSupremacy,
                 decision.ReservoirCost,
                 decision.ShareTransmutation ? decision.ShareDelivery.ToString() :
@@ -251,7 +244,7 @@ namespace KingmakerGunslinger.BrownFur
                     record.RequiredAdapter : "none");
         }
 
-        private static BrownFurSpellInventoryRecord FindRecord(
+        internal static BrownFurSpellInventoryRecord FindRecord(
             CotwArcanistContract contract, AbilityData ability)
         {
             Dictionary<string, BrownFurSpellInventoryRecord> inventory;

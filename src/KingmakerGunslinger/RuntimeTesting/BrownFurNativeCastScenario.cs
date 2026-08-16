@@ -36,12 +36,67 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private const string FileName = "brown-fur-native-cast.json";
         private const string CanonicalSpellGuid =
-            "61a7ed778dd93f344a5dacdbad324cc9";
+            "5d4028eb28a106d4691ed1b92bbb1915";
         private const string SelectedSpellGuid =
-            "3481906baed9487e8403e91a2e9d010a";
+            "6ceb82df566a42c8a77ccb7b76b09c1b";
         private const string BuffGuid =
-            "00d8fbe9cf61dc24298be8d95500c84b";
-        private const int SpellLevel = 3;
+            "8dc6510d31614345a8c718208fbac1f8";
+        private const int SpellLevel = 4;
+
+        [JsonObject(MemberSerialization.OptIn)]
+        private sealed class SharedSpellEvidence
+        {
+            [JsonProperty("name", Order = 1)] public string Name { get; set; }
+            [JsonProperty("spellGuid", Order = 2)] public string SpellGuid { get; set; }
+            [JsonProperty("buffGuid", Order = 3)] public string BuffGuid { get; set; }
+            [JsonProperty("targetAnchor", Order = 4)] public string TargetAnchor { get; set; }
+            [JsonProperty("targetable", Order = 5)] public bool Targetable { get; set; }
+            [JsonProperty("intentPreservedBeforeCommit", Order = 6)] public bool IntentPreserved { get; set; }
+            [JsonProperty("commandResult", Order = 7)] public string CommandResult { get; set; }
+            [JsonProperty("processEnded", Order = 8)] public bool ProcessEnded { get; set; }
+            [JsonProperty("allyBuffCount", Order = 9)] public int AllyBuffCount { get; set; }
+            [JsonProperty("casterBuffCount", Order = 10)] public int CasterBuffCount { get; set; }
+            [JsonProperty("reservoirBeforeAfter", Order = 11)] public string Reservoir { get; set; }
+            [JsonProperty("slotsBeforeAfter", Order = 12)] public string Slots { get; set; }
+            [JsonProperty("shareOffAfterCommit", Order = 13)] public bool ShareOffAfterCommit { get; set; }
+            [JsonProperty("resourceCounterBeforeAfter", Order = 14)] public string ResourceCounter { get; set; }
+        }
+
+        [JsonObject(MemberSerialization.OptIn)]
+        private sealed class AbilityBonusCastEvidence
+        {
+            [JsonProperty("name", Order = 1)] public string Name { get; set; }
+            [JsonProperty("spellGuid", Order = 2)] public string SpellGuid { get; set; }
+            [JsonProperty("score", Order = 3)] public string Score { get; set; }
+            [JsonProperty("armed", Order = 4)] public bool Armed { get; set; }
+            [JsonProperty("targetAnchor", Order = 5)] public string TargetAnchor { get; set; }
+            [JsonProperty("targetable", Order = 6)] public bool Targetable { get; set; }
+            [JsonProperty("transactionCountAfterCommand", Order = 7)] public int TransactionCountAfterCommand { get; set; }
+            [JsonProperty("commandResult", Order = 8)] public string CommandResult { get; set; }
+            [JsonProperty("processEnded", Order = 9)] public bool ProcessEnded { get; set; }
+            [JsonProperty("modifierValue", Order = 10)] public int ModifierValue { get; set; }
+            [JsonProperty("modifierDescriptor", Order = 11)] public string ModifierDescriptor { get; set; }
+            [JsonProperty("reservoirBeforeAfter", Order = 12)] public string Reservoir { get; set; }
+            [JsonProperty("resourceCounterBeforeAfter", Order = 13)] public string ResourceCounter { get; set; }
+            [JsonProperty("slotsBeforeAfter", Order = 14)] public string Slots { get; set; }
+            [JsonProperty("toggleOffAfter", Order = 15)] public bool ToggleOffAfter { get; set; }
+            [JsonProperty("sourceSpellExact", Order = 16)] public bool SourceSpellExact { get; set; }
+        }
+
+        [JsonObject(MemberSerialization.OptIn)]
+        private sealed class ShareOffCastEvidence
+        {
+            [JsonProperty("spellGuid", Order = 1)] public string SpellGuid { get; set; }
+            [JsonProperty("targetAnchor", Order = 2)] public string TargetAnchor { get; set; }
+            [JsonProperty("transactionCountAfterCommand", Order = 3)] public int TransactionCountAfterCommand { get; set; }
+            [JsonProperty("commandResult", Order = 4)] public string CommandResult { get; set; }
+            [JsonProperty("processEnded", Order = 5)] public bool ProcessEnded { get; set; }
+            [JsonProperty("casterBuffCount", Order = 6)] public int CasterBuffCount { get; set; }
+            [JsonProperty("allyBuffCount", Order = 7)] public int AllyBuffCount { get; set; }
+            [JsonProperty("reservoirBeforeAfter", Order = 8)] public string Reservoir { get; set; }
+            [JsonProperty("slotsBeforeAfter", Order = 9)] public string Slots { get; set; }
+            [JsonProperty("shareRemainedOff", Order = 10)] public bool ShareRemainedOff { get; set; }
+        }
 
         [JsonObject(MemberSerialization.OptIn)]
         private sealed class Evidence
@@ -81,7 +136,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("unitsRemoved", Order = 33)] public bool UnitsRemoved { get; set; }
             [JsonProperty("interruptionIntentArmed", Order = 34)] public bool InterruptionArmed { get; set; }
             [JsonProperty("interruptionIntentOutcome", Order = 35)] public string InterruptionOutcome { get; set; }
-            [JsonProperty("interruptionIntentCleared", Order = 36)] public bool InterruptionCleared { get; set; }
+            [JsonProperty("interruptionIntentPreservedBeforeCommit", Order = 36)] public bool InterruptionPreserved { get; set; }
             [JsonProperty("interruptionTargetable", Order = 37)] public bool InterruptionTargetable { get; set; }
             [JsonProperty("interruptionCanStart", Order = 38)] public bool InterruptionCanStart { get; set; }
             [JsonProperty("interruptionStarted", Order = 39)] public bool InterruptionStarted { get; set; }
@@ -90,6 +145,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("interruptionReservoirBeforeAfter", Order = 42)] public string InterruptionReservoir { get; set; }
             [JsonProperty("interruptionSlotsBeforeAfter", Order = 43)] public string InterruptionSlots { get; set; }
             [JsonProperty("interruptionFinalState", Order = 44)] public string InterruptionFinalState { get; set; }
+            [JsonProperty("interruptionIntentPreservedAfterCancellation", Order = 45)] public bool InterruptionPreservedAfter { get; set; }
+            [JsonProperty("requiredSharedSpells", Order = 46)] public List<SharedSpellEvidence> RequiredSharedSpells { get; set; }
+            [JsonProperty("combinedIntentPreservedBeforeCommit", Order = 47)] public bool CombinedIntentPreserved { get; set; }
+            [JsonProperty("combinedTogglesOffAfterCommit", Order = 48)] public bool CombinedTogglesOff { get; set; }
+            [JsonProperty("combinedResourceCountersBeforeAfter", Order = 49)] public string CombinedResourceCounters { get; set; }
+            [JsonProperty("abilityBonusCasts", Order = 50)] public List<AbilityBonusCastEvidence> AbilityBonusCasts { get; set; }
+            [JsonProperty("shareOffSelfCast", Order = 51)] public ShareOffCastEvidence ShareOffSelfCast { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -103,7 +165,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SelectedSpell = SelectedSpellGuid,
                 CommandResult = string.Empty,
                 TransactionState = string.Empty,
-                ModifierDescriptor = string.Empty
+                ModifierDescriptor = string.Empty,
+                RequiredSharedSpells = new List<SharedSpellEvidence>(),
+                AbilityBonusCasts = new List<AbilityBonusCastEvidence>()
             };
             CotwArcanistContract contract = null;
             BrownFurBlueprintSet blueprints = null;
@@ -114,6 +178,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             object levelController = null;
             UnitUseAbility command = null;
             Buff applied = null;
+            ActivatableAbility share = null;
+            ActivatableAbility powerful = null;
             bool casterCreated = false;
             bool allyCreated = false;
             string stage = "contract";
@@ -128,7 +194,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Compatible CotW Arcanist contract is unavailable.");
                 contract = resolution.Contract;
                 blueprints = BrownFurOptionalExtensionCoordinator.Blueprints;
-                if (blueprints == null || blueprints.Count != 19)
+                if (blueprints == null ||
+                    blueprints.Count != BrownFurIdentityCatalog.IdentityCount)
                     throw new InvalidOperationException(
                         "Registered Brown-Fur blueprints are unavailable.");
                 BlueprintAbility root = ResourcesLibrary.TryGetBlueprint<
@@ -147,8 +214,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     contract.CastingSpellbook.SpellList.GetLevel(root) !=
                         SpellLevel)
                     throw new InvalidOperationException(
-                        "Exact Beast Shape I wrapper, wolf variant, buff, and " +
-                        "level-three spell-list entry were not available.");
+                        "Exact Beast Shape II wrapper, dire-wolf variant, buff, and " +
+                        "level-four spell-list entry were not available.");
 
                 stage = "live-units";
                 UnitEntityData anchor = Game.Instance.Player.Party
@@ -214,6 +281,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 caster.Descriptor.Resources.Add(contract.Reservoir, true);
 
                 stage = "native-cast";
+                EnsureFeature(caster.Descriptor,
+                    blueprints.PowerfulChange);
+                EnsureFeature(caster.Descriptor,
+                    blueprints.ShareTransmutation);
+                powerful = BrownFurPlayerIntentRuntime.Find(
+                    caster.Descriptor, blueprints.ScoreActivatables[0]);
+                share = BrownFurPlayerIntentRuntime.Find(caster.Descriptor,
+                    blueprints.ShareTransmutationAbility);
+                if (powerful == null || share == null)
+                    throw new InvalidOperationException(
+                        "Real combined Brown-Fur toggles were unavailable.");
+                powerful.IsOn = true;
+                share.IsOn = true;
                 var rootData = new AbilityData(root, casting);
                 var data = new AbilityData(rootData, selected);
                 evidence.SourceBook = data.Spellbook == null ? string.Empty :
@@ -222,17 +302,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.ReservoirBefore = caster.Descriptor.Resources
                     .GetResourceAmount(contract.Reservoir);
                 evidence.SlotsBefore = AvailableSlots(casting, SpellLevel);
+                evidence.CombinedResourceCounters =
+                    ResourceCount(powerful) + "/" + ResourceCount(share);
                 var target = new TargetWrapper(ally);
                 var cutscene = new Kingmaker.AreaLogic.Cutscenes
                     .CutsceneParametersContext();
                 using (cutscene.Data)
                     command = new UnitUseAbility(data, target);
-                BrownFurCastTransaction transaction = Transaction(
-                    "native-cast-" + request.RunId, caster, ally);
-                if (!BrownFurCastExecutionRuntime.Begin(contract, command,
-                        data, target, transaction, Plan()))
+                evidence.CombinedIntentPreserved = powerful.IsOn && share.IsOn &&
+                    caster.Descriptor.HasFact(blueprints.ScoreBuffs[0]) &&
+                    caster.Descriptor.HasFact(
+                        blueprints.ShareTransmutationBuff);
+                if (BrownFurCastExecutionRuntime.ActiveTransactionCount != 1 ||
+                    BrownFurCastExecutionRuntime.ReservationCount != 1)
                     throw new InvalidOperationException(
-                        "Validated Brown-Fur native cast could not retain its boundary.");
+                        "Automatic combined Brown-Fur cast did not retain exactly one transaction.");
                 evidence.Targetable = data.CanTarget(target);
                 evidence.CanStart = data.IsAvailable && command.CanStart;
                 if (!evidence.Targetable || !evidence.CanStart)
@@ -261,10 +345,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.ProcessEnded = command.ExecutionProcess.IsEnded;
                 FinishAnimation(command);
                 if (!command.IsFinished) command.Tick();
-                evidence.TransactionState = transaction.State.ToString();
+                evidence.TransactionState =
+                    BrownFurCastExecutionRuntime.LastTerminalState;
                 evidence.ReservoirAfter = caster.Descriptor.Resources
                     .GetResourceAmount(contract.Reservoir);
                 evidence.SlotsAfter = AvailableSlots(casting, SpellLevel);
+                evidence.CombinedResourceCounters += "->" +
+                    ResourceCount(powerful) + "/" + ResourceCount(share);
+                evidence.CombinedTogglesOff = !powerful.IsOn && !share.IsOn &&
+                    !caster.Descriptor.HasFact(blueprints.ScoreBuffs[0]) &&
+                    !caster.Descriptor.HasFact(
+                        blueprints.ShareTransmutationBuff);
 
                 stage = "effect";
                 Buff[] allyBuffs = ally.Descriptor.Buffs.RawFacts.OfType<Buff>()
@@ -299,7 +390,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.BuffTimeSeconds = applied.TimeLeft.TotalSeconds;
                 }
 
-                stage = "native-interruption";
+                stage = "required-shared-spells";
                 if (applied != null)
                 {
                     applied.Remove();
@@ -313,17 +404,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (currentReservoir < evidence.ReservoirBefore)
                     caster.Descriptor.Resources.Restore(contract.Reservoir,
                         evidence.ReservoirBefore - currentReservoir);
-                if (caster.Descriptor.AddFact(blueprints.PowerfulChange) == null ||
-                    caster.Descriptor.AddFact(blueprints.ShareTransmutation) == null ||
-                    caster.Descriptor.AddFact(
-                        blueprints.TransmutationSupremacy) == null ||
-                    caster.Descriptor.AddFact(blueprints.ScoreBuffs[0]) == null)
+                share = BrownFurPlayerIntentRuntime.Find(caster.Descriptor,
+                    blueprints.ShareTransmutationAbility);
+                if (share == null) throw new InvalidOperationException(
+                    "Real Share Transmutation toggle was unavailable.");
+                evidence.RequiredSharedSpells.Add(RunSharedSpell(caster, ally,
+                    casting, contract, blueprints, share,
+                    "Undead Anatomy I",
+                    "8d535e198bb44ba2b6cf6ea603753fe4",
+                    "229a8152555b4d5da573113ee03983b3", 3));
+                evidence.RequiredSharedSpells.Add(RunSharedSpell(caster, ally,
+                    casting, contract, blueprints, share, "Resinous Skin",
+                    "41ceee31b77741e99d3b0990bbe40a2a",
+                    "72067851f2904755a372f4ea4818345e", 3));
+
+                stage = "share-off-native-self-cast";
+                evidence.ShareOffSelfCast = RunShareOffSelfCast(caster, ally,
+                    casting, contract, blueprints, share,
+                    "41ceee31b77741e99d3b0990bbe40a2a",
+                    "72067851f2904755a372f4ea4818345e", 3);
+
+                stage = "bulls-strength-and-cats-grace";
+                casting.Rest();
+                currentReservoir = caster.Descriptor.Resources
+                    .GetResourceAmount(contract.Reservoir);
+                if (currentReservoir < evidence.ReservoirBefore)
+                    caster.Descriptor.Resources.Restore(contract.Reservoir,
+                        evidence.ReservoirBefore - currentReservoir);
+                evidence.AbilityBonusCasts.Add(RunAbilityBonusSpell(
+                    caster, ally, casting, contract, blueprints,
+                    "Bull's Strength OFF",
+                    "4c3d08935262b6544ae97599b3a9556d", 2,
+                    StatType.Strength, 0, false, 4));
+                evidence.AbilityBonusCasts.Add(RunAbilityBonusSpell(
+                    caster, ally, casting, contract, blueprints,
+                    "Bull's Strength ON",
+                    "4c3d08935262b6544ae97599b3a9556d", 2,
+                    StatType.Strength, 0, true, 6));
+                evidence.AbilityBonusCasts.Add(RunAbilityBonusSpell(
+                    caster, ally, casting, contract, blueprints,
+                    "Cat's Grace ON",
+                    "de7a025d48ad5da4991e7d3c682cf69d", 2,
+                    StatType.Dexterity, 1, true, 6));
+
+                stage = "native-interruption";
+                casting.Rest();
+                currentReservoir = caster.Descriptor.Resources
+                    .GetResourceAmount(contract.Reservoir);
+                if (currentReservoir < evidence.ReservoirBefore)
+                    caster.Descriptor.Resources.Restore(contract.Reservoir,
+                        evidence.ReservoirBefore - currentReservoir);
+                EnsureFeature(caster.Descriptor,
+                    blueprints.PowerfulChange);
+                EnsureFeature(caster.Descriptor,
+                    blueprints.ShareTransmutation);
+                EnsureFeature(caster.Descriptor,
+                    blueprints.TransmutationSupremacy);
+                if (!caster.Descriptor.HasFact(blueprints.PowerfulChange) ||
+                    !caster.Descriptor.HasFact(blueprints.ShareTransmutation) ||
+                    !caster.Descriptor.HasFact(
+                        blueprints.TransmutationSupremacy))
                     throw new InvalidOperationException(
                         "Real Brown-Fur interruption facts could not be granted.");
-                ActivatableAbility share = caster.Descriptor
-                    .ActivatableAbilities.Enumerable.SingleOrDefault(value =>
-                        value != null && ReferenceEquals(value.Blueprint,
-                            blueprints.ShareTransmutationAbility));
+                powerful = BrownFurPlayerIntentRuntime.Find(
+                    caster.Descriptor, blueprints.ScoreActivatables[0]);
+                if (powerful == null) throw new InvalidOperationException(
+                    "Real Strength interruption toggle was unavailable.");
+                powerful.IsOn = true;
+                share = BrownFurPlayerIntentRuntime.Find(caster.Descriptor,
+                    blueprints.ShareTransmutationAbility);
                 if (share == null) throw new InvalidOperationException(
                     "Real Share Transmutation interruption toggle was unavailable.");
                 share.IsOn = true;
@@ -344,11 +493,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BrownFurSupremacyRuntime.ActiveScopeCount == 1;
                 evidence.InterruptionOutcome =
                     BrownFurCastIntentRuntime.LastOutcome;
-                evidence.InterruptionCleared =
-                    !blueprints.ScoreBuffs.Any(value =>
-                        caster.Descriptor.HasFact(value)) &&
-                    !caster.Descriptor.HasFact(
-                        blueprints.ShareTransmutationBuff) && !share.IsOn;
+                evidence.InterruptionPreserved = powerful.IsOn && share.IsOn &&
+                    caster.Descriptor.HasFact(blueprints.ScoreBuffs[0]) &&
+                    caster.Descriptor.HasFact(
+                        blueprints.ShareTransmutationBuff);
                 evidence.InterruptionTargetable =
                     interruptionData.CanTarget(target);
                 evidence.InterruptionCanStart = interruptionData.IsAvailable &&
@@ -383,6 +531,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BrownFurSupremacyRuntime.ActiveScopeCount +
                     ";modifier=" +
                     BrownFurModifierAdjustmentRuntime.ActiveScopeCount;
+                evidence.InterruptionPreservedAfter = powerful.IsOn &&
+                    share.IsOn &&
+                    caster.Descriptor.HasFact(blueprints.ScoreBuffs[0]) &&
+                    caster.Descriptor.HasFact(
+                        blueprints.ShareTransmutationBuff);
             }
             catch (Exception exception)
             {
@@ -470,19 +623,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.CommandResult ==
                         UnitCommand.ResultType.Success.ToString() &&
                     evidence.ProcessStarted && evidence.ProcessEnded &&
-                    evidence.TransactionState ==
-                        BrownFurCastTransactionState.Completed.ToString(),
+                    evidence.TransactionState.EndsWith(":" +
+                        BrownFurCastTransactionState.Completed),
                 "native UnitUseAbility, RuleCastSpell, and process Tick");
             Add(assertions, "native-cast-accounting",
-                "combined cost two and exactly one level-three slot",
+                "combined cost two and exactly one level-four slot; both toggles clear and both counters track the shared debit",
                 "reservoir=" + evidence.ReservoirBefore + "->" +
                     evidence.ReservoirAfter + ";slots=" +
                     evidence.SlotsBefore + "->" + evidence.SlotsAfter,
                 evidence.ReservoirAfter == evidence.ReservoirBefore - 2 &&
-                    evidence.SlotsAfter == evidence.SlotsBefore - 1,
+                    evidence.SlotsAfter == evidence.SlotsBefore - 1 &&
+                    evidence.CombinedIntentPreserved &&
+                    evidence.CombinedTogglesOff &&
+                    ResourcePairDelta(evidence.CombinedResourceCounters) == -2,
                 "real CotW reservoir plus native AbilityData.Spend");
             Add(assertions, "native-cast-ally-effect",
-                "one wolf buff on ally, none on caster, +4 Polymorph Strength",
+                "one dire-wolf buff on ally, none on caster, +6 Polymorph Strength",
                 "ally=" + evidence.AllyBuffCount + ";caster=" +
                     evidence.CasterBuffCount + ";modifiers=" +
                     evidence.ModifierCount + ";value=" +
@@ -494,18 +650,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.BuffTimeSeconds,
                 evidence.AllyBuffCount == 1 && evidence.CasterBuffCount == 0 &&
                     evidence.ModifierCount == 1 &&
-                    evidence.ModifierValue == 4 &&
+                    evidence.ModifierValue == 6 &&
                     evidence.ModifierDescriptor ==
                         ModifierDescriptor.Polymorph.ToString() &&
                     evidence.BuffCasterExact && evidence.BuffTargetExact &&
                     evidence.BuffSourceSpellExact &&
                     evidence.BuffTimeSeconds > 0d,
                 "real Personal spell effect redirected by exact cast scope");
+            Add(assertions, "native-cast-required-share-spells",
+                "Undead Anatomy I and Resinous Skin target the ally, cost one, spend one slot, and disarm Share",
+                string.Join("|", evidence.RequiredSharedSpells.Select(value =>
+                    value.Name + ":anchor=" + value.TargetAnchor +
+                    ":target=" + value.Targetable + ":preserved=" +
+                    value.IntentPreserved + ":result=" +
+                    value.CommandResult + ":ended=" + value.ProcessEnded +
+                    ":buffs=" + value.AllyBuffCount + "/" +
+                    value.CasterBuffCount + ":reservoir=" +
+                    value.Reservoir + ":slots=" + value.Slots +
+                    ":counter=" + value.ResourceCounter + ":off=" +
+                    value.ShareOffAfterCommit).ToArray()),
+                evidence.RequiredSharedSpells.Count == 2 &&
+                    evidence.RequiredSharedSpells.All(value =>
+                        value.TargetAnchor == "Unit" && value.Targetable &&
+                        value.IntentPreserved && value.ProcessEnded &&
+                        value.AllyBuffCount == 1 &&
+                        value.CasterBuffCount == 0 &&
+                        Delta(value.Reservoir) == -1 &&
+                        Delta(value.ResourceCounter) == -1 &&
+                        Delta(value.Slots) == -1 &&
+                        value.ShareOffAfterCommit),
+                "actual action-bar-equivalent AbilityData, UnitUseAbility, RuleCastSpell, and selected ally effects");
+            Add(assertions, "native-cast-ability-bonus-human-findings",
+                "Bull's Strength OFF is +4/cost 0; Strength ON is +6 Enhancement/cost 1/off; Cat's Grace Dexterity ON is +6 Enhancement/cost 1/off",
+                string.Join("|", evidence.AbilityBonusCasts.Select(value =>
+                    value.Name + ":armed=" + value.Armed + ":anchor=" +
+                    value.TargetAnchor + ":target=" + value.Targetable +
+                    ":transaction=" + value.TransactionCountAfterCommand +
+                    ":result=" + value.CommandResult + ":ended=" +
+                    value.ProcessEnded + ":modifier=" +
+                    value.ModifierValue + "/" + value.ModifierDescriptor +
+                    ":reservoir=" + value.Reservoir + ":counter=" +
+                    value.ResourceCounter + ":slots=" + value.Slots +
+                    ":off=" + value.ToggleOffAfter + ":source=" +
+                    value.SourceSpellExact).ToArray()),
+                AbilityBonusCasesPass(evidence.AbilityBonusCasts),
+                "actual spellbook casts, native score activatables, typed buff modifiers, reservoir, slots, and automatic cleanup");
+            Add(assertions, "native-cast-share-off-self-cast",
+                "Share OFF preserves native Owner self-cast, costs no reservoir, spends one slot, and affects only caster",
+                Describe(evidence.ShareOffSelfCast),
+                ShareOffCasePass(evidence.ShareOffSelfCast),
+                "actual Personal spell AbilityData, native owner command, RuleCastSpell, and buff target");
             Add(assertions, "native-cast-interruption-no-spend",
-                "submitted command interruption clears intent with no debit or slot spend",
+                "submitted command interruption preserves intent with no debit or slot spend",
                 "armed=" + evidence.InterruptionArmed + ";outcome=" +
-                    evidence.InterruptionOutcome + ";cleared=" +
-                    evidence.InterruptionCleared + ";targetable=" +
+                    evidence.InterruptionOutcome + ";preserved=" +
+                    evidence.InterruptionPreserved + "/" +
+                    evidence.InterruptionPreservedAfter + ";targetable=" +
                     evidence.InterruptionTargetable + ";canStart=" +
                     evidence.InterruptionCanStart + ";started=" +
                     evidence.InterruptionStarted + ";result=" +
@@ -519,7 +719,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.InterruptionOutcome.StartsWith(
                         "armed:brown-fur-") &&
                     evidence.InterruptionOutcome.EndsWith(";cost=2") &&
-                    evidence.InterruptionCleared &&
+                    evidence.InterruptionPreserved &&
+                    evidence.InterruptionPreservedAfter &&
                     evidence.InterruptionTargetable &&
                     evidence.InterruptionCanStart &&
                     evidence.InterruptionStarted &&
@@ -618,6 +819,315 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value != null && value.Available);
         }
 
+        private static SharedSpellEvidence RunSharedSpell(
+            UnitEntityData caster, UnitEntityData ally, Spellbook casting,
+            CotwArcanistContract contract, BrownFurBlueprintSet blueprints,
+            ActivatableAbility share, string name, string spellGuid,
+            string buffGuid, int level)
+        {
+            BlueprintAbility spell = ResourcesLibrary.TryGetBlueprint<
+                BlueprintAbility>(spellGuid);
+            BlueprintBuff buff = ResourcesLibrary.TryGetBlueprint<
+                BlueprintBuff>(buffGuid);
+            if (spell == null || buff == null ||
+                spell.Range != AbilityRange.Personal ||
+                spell.School != SpellSchool.Transmutation)
+                throw new InvalidOperationException(
+                    "Required shared spell fixture is unavailable: " + name);
+            if (!casting.IsKnown(spell)) casting.AddKnown(level, spell, true);
+            share.IsOn = true;
+            var data = new AbilityData(spell, casting);
+            var target = new TargetWrapper(ally);
+            var row = new SharedSpellEvidence {
+                Name = name, SpellGuid = spellGuid, BuffGuid = buffGuid,
+                TargetAnchor = data.TargetAnchor.ToString(),
+                Targetable = data.CanTarget(target),
+                Reservoir = caster.Descriptor.Resources.GetResourceAmount(
+                    contract.Reservoir).ToString(),
+                Slots = AvailableSlots(casting, level).ToString(),
+                ResourceCounter = share.ResourceCount.HasValue ?
+                    share.ResourceCount.Value.ToString() : "none"
+            };
+            if (row.TargetAnchor != "Unit" || !row.Targetable)
+                throw new InvalidOperationException(
+                    name + " did not expose a willing-creature target path.");
+            UnitUseAbility command;
+            var cutscene = new Kingmaker.AreaLogic.Cutscenes
+                .CutsceneParametersContext();
+            using (cutscene.Data)
+                command = new UnitUseAbility(data, target);
+            row.IntentPreserved = share.IsOn &&
+                caster.Descriptor.HasFact(
+                    blueprints.ShareTransmutationBuff);
+            if (BrownFurCastExecutionRuntime.ActiveTransactionCount != 1)
+                throw new InvalidOperationException(
+                    name + " did not arm exactly one cast transaction.");
+            command.IgnoreCooldown(TimeSpan.Zero);
+            caster.Commands.Run(command);
+            command.Start();
+            if (!command.IsRunning)
+                throw new InvalidOperationException(
+                    name + " command did not start.");
+            if (command.Animation != null) command.Animation.IsActed = true;
+            command.Tick();
+            row.CommandResult = command.Result.ToString();
+            if (command.ExecutionProcess == null)
+                throw new InvalidOperationException(
+                    name + " did not create an execution process.");
+            for (int tick = 0; tick < 5000 &&
+                !command.ExecutionProcess.IsEnded; tick++)
+                command.ExecutionProcess.Tick();
+            row.ProcessEnded = command.ExecutionProcess.IsEnded;
+            FinishAnimation(command);
+            if (!command.IsFinished) command.Tick();
+            Buff[] allyBuffs = ally.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint, buff))
+                .ToArray();
+            Buff[] casterBuffs = caster.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint, buff))
+                .ToArray();
+            row.AllyBuffCount = allyBuffs.Length;
+            row.CasterBuffCount = casterBuffs.Length;
+            row.Reservoir += "->" + caster.Descriptor.Resources
+                .GetResourceAmount(contract.Reservoir);
+            row.ResourceCounter += "->" +
+                (share.ResourceCount.HasValue ?
+                    share.ResourceCount.Value.ToString() : "none");
+            row.Slots += "->" + AvailableSlots(casting, level);
+            row.ShareOffAfterCommit = !share.IsOn &&
+                !caster.Descriptor.HasFact(
+                    blueprints.ShareTransmutationBuff);
+            foreach (Buff applied in allyBuffs.Concat(casterBuffs).ToArray())
+                applied.Remove();
+            if (BrownFurCastExecutionRuntime.ActiveTransactionCount != 0 ||
+                BrownFurShareTargetingRuntime.ActiveScopeCount != 0)
+                throw new InvalidOperationException(
+                    name + " retained cast state after process completion.");
+            return row;
+        }
+
+        private static AbilityBonusCastEvidence RunAbilityBonusSpell(
+            UnitEntityData caster, UnitEntityData target, Spellbook casting,
+            CotwArcanistContract contract, BrownFurBlueprintSet blueprints,
+            string name, string spellGuid, int level, StatType stat,
+            int scoreIndex, bool armed, int expectedModifier)
+        {
+            BlueprintAbility spell = ResourcesLibrary.TryGetBlueprint<
+                BlueprintAbility>(spellGuid);
+            if (spell == null || spell.School != SpellSchool.Transmutation)
+                throw new InvalidOperationException(
+                    "Required ability-bonus spell is unavailable: " + name);
+            if (!casting.IsKnown(spell)) casting.AddKnown(level, spell, true);
+            BrownFurPlayerIntentRuntime.Clear(caster.Descriptor, blueprints);
+            ActivatableAbility toggle = BrownFurPlayerIntentRuntime.Find(
+                caster.Descriptor, blueprints.ScoreActivatables[scoreIndex]);
+            if (toggle == null) throw new InvalidOperationException(
+                "Required Powerful Change toggle is unavailable: " + name);
+            toggle.IsOn = armed;
+            var data = new AbilityData(spell, casting);
+            var castTarget = new TargetWrapper(target);
+            var row = new AbilityBonusCastEvidence {
+                Name = name, SpellGuid = spellGuid, Score = stat.ToString(),
+                Armed = armed, TargetAnchor = data.TargetAnchor.ToString(),
+                Targetable = data.CanTarget(castTarget),
+                Reservoir = caster.Descriptor.Resources.GetResourceAmount(
+                    contract.Reservoir).ToString(),
+                ResourceCounter = ResourceCount(toggle),
+                Slots = AvailableSlots(casting, level).ToString(),
+                ModifierDescriptor = string.Empty
+            };
+            if (!row.Targetable) throw new InvalidOperationException(
+                name + " did not accept the allied creature target.");
+            UnitUseAbility command;
+            var cutscene = new Kingmaker.AreaLogic.Cutscenes
+                .CutsceneParametersContext();
+            using (cutscene.Data)
+                command = new UnitUseAbility(data, castTarget);
+            row.TransactionCountAfterCommand =
+                BrownFurCastExecutionRuntime.ActiveTransactionCount;
+            if (row.TransactionCountAfterCommand != (armed ? 1 : 0))
+                throw new InvalidOperationException(
+                    name + " produced the wrong automatic transaction count.");
+            command.IgnoreCooldown(TimeSpan.Zero);
+            caster.Commands.Run(command);
+            command.Start();
+            if (!command.IsRunning) throw new InvalidOperationException(
+                name + " command did not start.");
+            if (command.Animation != null) command.Animation.IsActed = true;
+            command.Tick();
+            row.CommandResult = command.Result.ToString();
+            if (command.ExecutionProcess == null)
+                throw new InvalidOperationException(
+                    name + " did not create an execution process.");
+            for (int tick = 0; tick < 5000 &&
+                !command.ExecutionProcess.IsEnded; tick++)
+                command.ExecutionProcess.Tick();
+            row.ProcessEnded = command.ExecutionProcess.IsEnded;
+            FinishAnimation(command);
+            if (!command.IsFinished) command.Tick();
+
+            ModifiableValue targetStat = target.Descriptor.Stats.GetStat(stat);
+            ModifiableValue.Modifier[] modifiers = targetStat.Modifiers.Where(
+                value => value.Source is Buff &&
+                    ((Buff)value.Source).Context != null &&
+                    ReferenceEquals(((Buff)value.Source).Context.SourceAbility,
+                        spell)).ToArray();
+            ModifiableValue.Modifier modifier = modifiers.SingleOrDefault();
+            if (modifier != null)
+            {
+                row.ModifierValue = modifier.ModValue;
+                row.ModifierDescriptor = modifier.ModDescriptor.ToString();
+                row.SourceSpellExact = true;
+            }
+            row.Reservoir += "->" + caster.Descriptor.Resources
+                .GetResourceAmount(contract.Reservoir);
+            row.ResourceCounter += "->" + ResourceCount(toggle);
+            row.Slots += "->" + AvailableSlots(casting, level);
+            row.ToggleOffAfter = !toggle.IsOn &&
+                !caster.Descriptor.HasFact(blueprints.ScoreBuffs[scoreIndex]);
+            foreach (Buff buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => value.Context != null &&
+                    ReferenceEquals(value.Context.SourceAbility, spell))
+                .ToArray()) buff.Remove();
+            if (row.ModifierValue != expectedModifier ||
+                row.ModifierDescriptor !=
+                    ModifierDescriptor.Enhancement.ToString())
+                throw new InvalidOperationException(name +
+                    " produced an unexpected typed modifier: " +
+                    row.ModifierValue + "/" + row.ModifierDescriptor + ".");
+            return row;
+        }
+
+        private static ShareOffCastEvidence RunShareOffSelfCast(
+            UnitEntityData caster, UnitEntityData ally, Spellbook casting,
+            CotwArcanistContract contract, BrownFurBlueprintSet blueprints,
+            ActivatableAbility share, string spellGuid, string buffGuid,
+            int level)
+        {
+            BlueprintAbility spell = ResourcesLibrary.TryGetBlueprint<
+                BlueprintAbility>(spellGuid);
+            BlueprintBuff buff = ResourcesLibrary.TryGetBlueprint<
+                BlueprintBuff>(buffGuid);
+            if (spell == null || buff == null)
+                throw new InvalidOperationException(
+                    "Share-OFF self-cast fixture is unavailable.");
+            BrownFurPlayerIntentRuntime.Clear(caster.Descriptor, blueprints);
+            if (!casting.IsKnown(spell)) casting.AddKnown(level, spell, true);
+            var data = new AbilityData(spell, casting);
+            var target = new TargetWrapper(caster);
+            var row = new ShareOffCastEvidence {
+                SpellGuid = spellGuid,
+                TargetAnchor = data.TargetAnchor.ToString(),
+                Reservoir = caster.Descriptor.Resources.GetResourceAmount(
+                    contract.Reservoir).ToString(),
+                Slots = AvailableSlots(casting, level).ToString()
+            };
+            UnitUseAbility command;
+            var cutscene = new Kingmaker.AreaLogic.Cutscenes
+                .CutsceneParametersContext();
+            using (cutscene.Data)
+                command = new UnitUseAbility(data, target);
+            row.TransactionCountAfterCommand =
+                BrownFurCastExecutionRuntime.ActiveTransactionCount;
+            command.IgnoreCooldown(TimeSpan.Zero);
+            caster.Commands.Run(command);
+            command.Start();
+            if (!command.IsRunning) throw new InvalidOperationException(
+                "Share-OFF native self-cast command did not start.");
+            if (command.Animation != null) command.Animation.IsActed = true;
+            command.Tick();
+            row.CommandResult = command.Result.ToString();
+            if (command.ExecutionProcess == null)
+                throw new InvalidOperationException(
+                    "Share-OFF native self-cast did not create a process.");
+            for (int tick = 0; tick < 5000 &&
+                !command.ExecutionProcess.IsEnded; tick++)
+                command.ExecutionProcess.Tick();
+            row.ProcessEnded = command.ExecutionProcess.IsEnded;
+            FinishAnimation(command);
+            if (!command.IsFinished) command.Tick();
+            Buff[] casterBuffs = caster.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint, buff)).ToArray();
+            Buff[] allyBuffs = ally.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint, buff)).ToArray();
+            row.CasterBuffCount = casterBuffs.Length;
+            row.AllyBuffCount = allyBuffs.Length;
+            row.Reservoir += "->" + caster.Descriptor.Resources
+                .GetResourceAmount(contract.Reservoir);
+            row.Slots += "->" + AvailableSlots(casting, level);
+            row.ShareRemainedOff = share != null && !share.IsOn &&
+                !caster.Descriptor.HasFact(
+                    blueprints.ShareTransmutationBuff);
+            foreach (Buff applied in casterBuffs.Concat(allyBuffs).ToArray())
+                applied.Remove();
+            return row;
+        }
+
+        private static bool AbilityBonusCasesPass(
+            IList<AbilityBonusCastEvidence> cases)
+        {
+            if (cases == null || cases.Count != 3) return false;
+            AbilityBonusCastEvidence off = cases[0];
+            AbilityBonusCastEvidence bull = cases[1];
+            AbilityBonusCastEvidence cat = cases[2];
+            return !off.Armed && off.TransactionCountAfterCommand == 0 &&
+                off.CommandResult == UnitCommand.ResultType.Success.ToString() &&
+                off.ProcessEnded && off.ModifierValue == 4 &&
+                off.ModifierDescriptor == "Enhancement" &&
+                Delta(off.Reservoir) == 0 && Delta(off.ResourceCounter) == 0 &&
+                Delta(off.Slots) == -1 && off.ToggleOffAfter &&
+                off.SourceSpellExact &&
+                bull.Armed && bull.TransactionCountAfterCommand == 1 &&
+                bull.CommandResult == UnitCommand.ResultType.Success.ToString() &&
+                bull.ProcessEnded && bull.ModifierValue == 6 &&
+                bull.ModifierDescriptor == "Enhancement" &&
+                Delta(bull.Reservoir) == -1 &&
+                Delta(bull.ResourceCounter) == -1 &&
+                Delta(bull.Slots) == -1 && bull.ToggleOffAfter &&
+                bull.SourceSpellExact &&
+                cat.Armed && cat.TransactionCountAfterCommand == 1 &&
+                cat.CommandResult == UnitCommand.ResultType.Success.ToString() &&
+                cat.ProcessEnded && cat.ModifierValue == 6 &&
+                cat.ModifierDescriptor == "Enhancement" &&
+                Delta(cat.Reservoir) == -1 &&
+                Delta(cat.ResourceCounter) == -1 &&
+                Delta(cat.Slots) == -1 && cat.ToggleOffAfter &&
+                cat.SourceSpellExact;
+        }
+
+        private static bool ShareOffCasePass(ShareOffCastEvidence value)
+        {
+            return value != null && value.TargetAnchor == "Owner" &&
+                value.TransactionCountAfterCommand == 0 &&
+                value.CommandResult == UnitCommand.ResultType.Success.ToString() &&
+                value.ProcessEnded && value.CasterBuffCount == 1 &&
+                value.AllyBuffCount == 0 && Delta(value.Reservoir) == 0 &&
+                Delta(value.Slots) == -1 && value.ShareRemainedOff;
+        }
+
+        private static string Describe(ShareOffCastEvidence value)
+        {
+            return value == null ? "missing" : "anchor=" +
+                value.TargetAnchor + ";transaction=" +
+                value.TransactionCountAfterCommand + ";result=" +
+                value.CommandResult + ";ended=" + value.ProcessEnded +
+                ";buffs=" + value.CasterBuffCount + "/" +
+                value.AllyBuffCount + ";reservoir=" + value.Reservoir +
+                ";slots=" + value.Slots + ";off=" +
+                value.ShareRemainedOff;
+        }
+
+        private static void EnsureFeature(UnitDescriptor owner,
+            Kingmaker.Blueprints.Facts.BlueprintUnitFact feature)
+        {
+            if (owner == null || feature == null)
+                throw new ArgumentNullException();
+            if (!owner.HasFact(feature) && owner.AddFact(feature) == null)
+                throw new InvalidOperationException(
+                    "Required Brown-Fur feature could not be granted: " +
+                    feature.name);
+        }
+
         private static int Delta(string transition)
         {
             string[] values = (transition ?? string.Empty).Split(new[] { "->" },
@@ -628,36 +1138,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int.TryParse(values[1], out after) ? after - before : int.MaxValue;
         }
 
+        private static string ResourceCount(ActivatableAbility ability)
+        {
+            return ability != null && ability.ResourceCount.HasValue ?
+                ability.ResourceCount.Value.ToString() : "none";
+        }
+
+        private static int ResourcePairDelta(string transition)
+        {
+            string[] sides = (transition ?? string.Empty).Split(
+                new[] { "->" }, StringSplitOptions.None);
+            if (sides.Length != 2) return int.MaxValue;
+            string[] before = sides[0].Split('/');
+            string[] after = sides[1].Split('/');
+            int beforePowerful;
+            int beforeShare;
+            int afterPowerful;
+            int afterShare;
+            if (before.Length != 2 || after.Length != 2 ||
+                !int.TryParse(before[0], out beforePowerful) ||
+                !int.TryParse(before[1], out beforeShare) ||
+                !int.TryParse(after[0], out afterPowerful) ||
+                !int.TryParse(after[1], out afterShare) ||
+                beforePowerful != beforeShare || afterPowerful != afterShare)
+                return int.MaxValue;
+            return afterPowerful - beforePowerful;
+        }
+
         private static void RemoveFeature(UnitDescriptor owner,
             Kingmaker.Blueprints.Facts.BlueprintUnitFact feature)
         {
             if (owner != null && feature != null && owner.HasFact(feature))
                 owner.RemoveFact(feature);
-        }
-
-        private static BrownFurCastTransaction Transaction(string identity,
-            UnitEntityData caster, UnitEntityData ally)
-        {
-            var intent = new BrownFurCastIntent(identity,
-                caster == null ? string.Empty : caster.UniqueId,
-                CanonicalSpellGuid, SelectedSpellGuid,
-                "cotw-casting-spellbook",
-                ally == null ? string.Empty : ally.UniqueId, true,
-                BrownFurAbilityScore.Strength, true, true, 2,
-                "share-exact-target", "polymorph-modifier",
-                "native-extend");
-            var transaction = new BrownFurCastTransaction(intent);
-            transaction.Validate(new BrownFurCastDecision(true, string.Empty,
-                2, true, true, true, 2, BrownFurShareDelivery.Touch));
-            return transaction;
-        }
-
-        private static BrownFurBonusAdapterPlan Plan()
-        {
-            return new BrownFurBonusAdapterPlan(
-                BrownFurBonusAdapterPlanStatus.Supported, string.Empty,
-                new[] { BrownFurAbilityScore.Strength },
-                new[] { BuffGuid }, new[] { "Polymorph" });
         }
 
         private static void FinishAnimation(UnitUseAbility command)

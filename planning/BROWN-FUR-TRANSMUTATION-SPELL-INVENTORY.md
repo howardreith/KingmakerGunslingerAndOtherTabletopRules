@@ -1,5 +1,11 @@
 # Brown-Fur Transmutation Spell Inventory
 
+The installed-spell classification remains authoritative for the `0.0.82`
+repair. The repair changes pre-command targeting and player intent presentation,
+not spell classification. Beast Shape II, Undead Anatomy I, and Resinous Skin
+remain supported inventory rows whose repaired ally-target execution requires
+fresh guarded runtime qualification.
+
 Status: authoritative installed inventory captured and deterministically
 classified; `Unexplained = 0`. Every separate ownership, interruption, dispel,
 persistence, and publication gate now passes on the immutable pre-human

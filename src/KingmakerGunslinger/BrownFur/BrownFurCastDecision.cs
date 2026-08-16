@@ -5,7 +5,9 @@ namespace KingmakerGunslinger.BrownFur
         internal BrownFurCastDecision(bool eligible, string failure,
             int reservoirCost, bool powerfulChange, bool shareTransmutation,
             bool transmutationSupremacy, int powerfulChangeIncrease,
-            BrownFurShareDelivery shareDelivery)
+            BrownFurShareDelivery shareDelivery,
+            BrownFurAbilityScore selectedAbilityScore =
+                BrownFurAbilityScore.None)
         {
             Eligible = eligible;
             Failure = failure ?? string.Empty;
@@ -15,6 +17,7 @@ namespace KingmakerGunslinger.BrownFur
             TransmutationSupremacy = transmutationSupremacy;
             PowerfulChangeIncrease = powerfulChangeIncrease;
             ShareDelivery = shareDelivery;
+            SelectedAbilityScore = selectedAbilityScore;
         }
 
         internal bool Eligible { get; private set; }
@@ -25,5 +28,6 @@ namespace KingmakerGunslinger.BrownFur
         internal bool TransmutationSupremacy { get; private set; }
         internal int PowerfulChangeIncrease { get; private set; }
         internal BrownFurShareDelivery ShareDelivery { get; private set; }
+        internal BrownFurAbilityScore SelectedAbilityScore { get; private set; }
     }
 }

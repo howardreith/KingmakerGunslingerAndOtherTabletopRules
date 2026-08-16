@@ -122,7 +122,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(
                         spec.Guid));
             Add(assertions, "brown-fur-stable-identities",
-                "19 manifest-backed identities registered",
+                "25 manifest-backed identities registered",
                 blueprints == null ? "missing" : blueprints.Count.ToString(),
                 identitiesExact,
                 "optional BlueprintRegistry and permanent BrownFurIdentityCatalog GUID ledger");

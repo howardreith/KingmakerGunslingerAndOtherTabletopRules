@@ -23,13 +23,16 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal BrownFurBlueprintSet(BlueprintArchetype archetype,
             BlueprintFeature powerful, BlueprintAbility selection,
-            BlueprintAbility[] scoreAbilities, BlueprintBuff[] scoreBuffs,
+            BlueprintAbility[] scoreAbilities,
+            BlueprintActivatableAbility[] scoreActivatables,
+            BlueprintBuff[] scoreBuffs,
             BlueprintFeature share, BlueprintActivatableAbility shareAbility,
             BlueprintBuff shareBuff, BlueprintFeature supremacy)
         {
             Archetype = archetype; PowerfulChange = powerful;
             PowerfulChangeSelection = selection; ScoreAbilities = scoreAbilities;
-            ScoreBuffs = scoreBuffs; ShareTransmutation = share;
+            ScoreActivatables = scoreActivatables; ScoreBuffs = scoreBuffs;
+            ShareTransmutation = share;
             ShareTransmutationAbility = shareAbility;
             ShareTransmutationBuff = shareBuff;
             TransmutationSupremacy = supremacy;
@@ -39,13 +42,15 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature PowerfulChange { get; private set; }
         internal BlueprintAbility PowerfulChangeSelection { get; private set; }
         internal BlueprintAbility[] ScoreAbilities { get; private set; }
+        internal BlueprintActivatableAbility[] ScoreActivatables
+        { get; private set; }
         internal BlueprintBuff[] ScoreBuffs { get; private set; }
         internal BlueprintFeature ShareTransmutation { get; private set; }
         internal BlueprintActivatableAbility ShareTransmutationAbility
         { get; private set; }
         internal BlueprintBuff ShareTransmutationBuff { get; private set; }
         internal BlueprintFeature TransmutationSupremacy { get; private set; }
-        internal int Count { get { return 19; } }
+        internal int Count { get { return 25; } }
     }
 
     internal static class BrownFurBlueprints
@@ -55,55 +60,78 @@ namespace KingmakerGunslinger.Blueprints
             BrownFurAbilityScore.Strength, BrownFurAbilityScore.Dexterity,
             BrownFurAbilityScore.Constitution, BrownFurAbilityScore.Intelligence,
             BrownFurAbilityScore.Wisdom, BrownFurAbilityScore.Charisma };
+        private static readonly string[] ScoreIconDonorGuids = {
+            "4c3d08935262b6544ae97599b3a9556d",
+            "de7a025d48ad5da4991e7d3c682cf69d",
+            "a900628aea19aa74aad0ece0e65d091a",
+            "ae4d3ad6a8fda1542acf2e9bbc13d113",
+            "f0455c9295b53904f9e02fc571dd2ce1",
+            "446f7bf201dc1934f96ac0a26e324803" };
+        private const string ShareIconDonorGuid =
+            "5d4028eb28a106d4691ed1b92bbb1915";
 
         internal static BrownFurBlueprintSet Register(BlueprintRegistry registry,
             CotwArcanistContract contract)
         {
             if (registry == null) throw new ArgumentNullException("registry");
             ValidateContract(contract);
-            Sprite icon = contract.ExploitSelection.Icon ??
+            Sprite featureIcon = contract.ExploitSelection.Icon ??
                 contract.MagicalSupremacy.Icon;
+            Sprite[] scoreIcons = ScoreIconDonorGuids.Select((guid, index) =>
+                ResolveNativeIcon(guid, Scores[index].ToString())).ToArray();
+            Sprite shareIcon = ResolveNativeIcon(ShareIconDonorGuid,
+                "Share Transmutation");
+            ValidateIconSet(featureIcon, scoreIcons, shareIcon,
+                contract.MagicalSupremacy.Icon);
             BlueprintBuff[] scoreBuffs = Scores.Select(score =>
                 registry.Register<BlueprintBuff>(
                     BrownFurIdentityCatalog.PowerfulBuff(score),
-                    () => CreatePendingScoreBuff(score, icon))).ToArray();
+                    () => CreatePendingScoreBuff(score,
+                        scoreIcons[Array.IndexOf(Scores, score)]))).ToArray();
             BlueprintAbility[] scoreAbilities = Scores.Select((score, index) =>
                 registry.Register<BlueprintAbility>(
                     BrownFurIdentityCatalog.PowerfulAbility(score),
                     () => CreateScoreAbility(score, scoreBuffs[index],
-                        scoreBuffs, icon))).ToArray();
+                        scoreBuffs, scoreIcons[index]))).ToArray();
+            BlueprintActivatableAbility[] scoreActivatables = Scores.Select(
+                (score, index) => registry.Register<BlueprintActivatableAbility>(
+                    BrownFurIdentityCatalog.PowerfulActivatable(score),
+                    () => CreateScoreActivatable(score, scoreBuffs[index],
+                        scoreIcons[index], contract.Reservoir))).ToArray();
             BlueprintAbility selection = registry.Register<BlueprintAbility>(
                 BrownFurIdentityCatalog.PowerfulChangeSelection,
-                () => CreateSelection(scoreAbilities, icon));
+                () => CreateSelection(scoreAbilities, featureIcon));
             BlueprintFeature powerful = registry.Register<BlueprintFeature>(
                 BrownFurIdentityCatalog.PowerfulChangeFeature,
                 () => CreateFeature("Powerful Change",
-                    "When you cast a Transmutation spell using an Arcanist spell slot, you may spend 1 point from your arcane reservoir to increase one positive ability-score bonus granted by the spell by 2. Select the ability score before casting. At 20th level, the increase is 4.",
-                    selection, icon));
+                    "At 3rd level, a brown-fur transmuter can empower the physical and mental changes produced by her magic. Before casting, choose Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma. While that score is armed, the next Transmutation spell cast from the brown-fur transmuter's Arcanist spellbook that grants a positive bonus to the chosen score can spend 1 point from her arcane reservoir to increase that spell's bonus to the chosen score by 2. At 20th level, the increase becomes 4.\n\nPowerful Change modifies the spell's original bonus and preserves its bonus type, so normal stacking rules still apply. Spells cast from items, spell-like abilities, supernatural abilities, and non-Arcanist spellbooks are not eligible. A spell that does not improve the chosen score does not spend a reservoir point or consume the selection. Only one ability score can be armed at a time.",
+                    scoreActivatables.Cast<BlueprintUnitFact>().ToArray(),
+                    featureIcon));
             BlueprintBuff shareBuff = registry.Register<BlueprintBuff>(
                 BrownFurIdentityCatalog.ShareBuff,
                 () => CreateMarkerBuff("Share Transmutation",
-                    "Your next eligible Personal-range Transmutation spell may spend 1 arcane reservoir point to affect a willing creature by touch. At 20th level the exact range is 30 feet.", icon));
+                    "Share Transmutation is armed for the next eligible Personal-range Transmutation spell.", shareIcon));
             BlueprintActivatableAbility shareAbility = registry.Register<
                 BlueprintActivatableAbility>(
                     BrownFurIdentityCatalog.ShareActivatable,
-                    () => CreateShareAbility(shareBuff, icon));
+                    () => CreateShareAbility(shareBuff, shareIcon,
+                        contract.Reservoir));
             BlueprintFeature share = registry.Register<BlueprintFeature>(
                 BrownFurIdentityCatalog.ShareFeature,
                 () => CreateFeature("Share Transmutation",
-                    "Spend 1 point from your arcane reservoir when casting a genuine Personal-range Transmutation spell to affect a willing creature by touch. At 20th level, you may instead target a willing creature within exactly 30 feet.",
-                    shareAbility, icon));
+                    "At 9th level, a brown-fur transmuter can spend 1 point from her arcane reservoir to cast a Personal-range Transmutation spell on a willing creature as a touch spell. While Share Transmutation is armed, clicking an eligible Personal-range Transmutation spell enters creature-target selection instead of immediately casting the spell on the brown-fur transmuter. At 20th level, the spell can instead target a willing creature within 30 feet.\n\nActivating or deactivating Share Transmutation costs nothing; the reservoir point is spent only when a qualifying spell is successfully cast. Canceling target selection spends no reservoir point and no spell slot. Item abilities, spell-like abilities, and supernatural abilities are not eligible.",
+                    new BlueprintUnitFact[] { shareAbility }, shareIcon));
             BlueprintFeature supremacy = registry.Register<BlueprintFeature>(
                 BrownFurIdentityCatalog.SupremacyFeature,
                 () => CreateFeature("Transmutation Supremacy",
                     "Every genuine Transmutation spell you cast is Extended without changing its spell slot or casting time. A spell already affected by Extend is not extended again. Powerful Change increases bonuses by 4, and Share Transmutation reaches exactly 30 feet.",
-                    null, contract.MagicalSupremacy.Icon ?? icon));
+                    null, contract.MagicalSupremacy.Icon ?? featureIcon));
             BlueprintArchetype archetype = registry.Register<BlueprintArchetype>(
                 BrownFurIdentityCatalog.Archetype,
                 () => CreateArchetype(contract, powerful, share, supremacy));
             var set = new BrownFurBlueprintSet(archetype, powerful, selection,
-                scoreAbilities, scoreBuffs, share, shareAbility, shareBuff,
-                supremacy);
+                scoreAbilities, scoreActivatables, scoreBuffs, share,
+                shareAbility, shareBuff, supremacy);
             Validate(set, contract);
             return set;
         }
@@ -160,7 +188,7 @@ namespace KingmakerGunslinger.Blueprints
             BrownFurAbilityScore score, Sprite icon)
         {
             return CreateMarkerBuff("Powerful Change: " + score,
-                "Powerful Change will empower the next eligible Transmutation spell only if it grants a positive " + score + " bonus. The selection clears with that cast.", icon);
+                "Pending Powerful Change toggle for " + score + ". This marker grants no statistical benefit by itself and is hidden from Effects and Conditions.", icon);
         }
 
         private static BlueprintBuff CreateMarkerBuff(string name,
@@ -180,6 +208,7 @@ namespace KingmakerGunslinger.Blueprints
             buff.FxOnStart = new PrefabLink();
             buff.FxOnRemove = new PrefabLink();
             buff.ResourceAssetIds = Array.Empty<string>();
+            HideBuffInUi(buff);
             return buff;
         }
 
@@ -189,10 +218,24 @@ namespace KingmakerGunslinger.Blueprints
         {
             BlueprintAbility ability = CreatePersonalAbility(
                 "KMG_BrownFur_PowerfulChange_" + score,
-                "Powerful Change: " + score,
-                "Select " + score + " for your next eligible Powerful Change cast. Selecting another ability score replaces this choice.", icon);
+                "Powerful Change: " + score + " (Legacy)",
+                ToggleDescription(score), icon);
             ability.ComponentsArray = new BlueprintComponent[] {
                 BrownFurPowerfulChangeSelectionLogic.Create(selected, all) };
+            ability.Hidden = true;
+            ability.ActionBarAutoFillIgnored = true;
+            return ability;
+        }
+
+        private static BlueprintActivatableAbility CreateScoreActivatable(
+            BrownFurAbilityScore score, BlueprintBuff buff, Sprite icon,
+            BlueprintAbilityResource reservoir)
+        {
+            var ability = CreateActivatable(
+                "KMG_BrownFur_PowerfulChange_" + score + "_Activatable",
+                "Powerful Change: " + score, ToggleDescription(score), buff,
+                icon, reservoir);
+            ability.Group = BrownFurActivatableGroupRuntime.PowerfulChangeGroup;
             return ability;
         }
 
@@ -201,11 +244,13 @@ namespace KingmakerGunslinger.Blueprints
         {
             BlueprintAbility ability = CreatePersonalAbility(
                 "KMG_BrownFur_PowerfulChange_Selection", "Powerful Change",
-                "Choose the one ability score that Powerful Change should empower on your next eligible Arcanist-slot Transmutation cast.", icon);
+                "Legacy Powerful Change selector retained only for save compatibility. Use the six native Powerful Change score toggles granted by the class feature.", icon);
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();
             variants.name = "$KMG_BrownFur_PowerfulChange_Variants";
             variants.Variants = (BlueprintAbility[])choices.Clone();
             ability.ComponentsArray = new BlueprintComponent[] { variants };
+            ability.Hidden = true;
+            ability.ActionBarAutoFillIgnored = true;
             return ability;
         }
 
@@ -241,17 +286,30 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintActivatableAbility CreateShareAbility(
-            BlueprintBuff buff, Sprite icon)
+            BlueprintBuff buff, Sprite icon, BlueprintAbilityResource reservoir)
         {
-            var ability = ScriptableObject.CreateInstance<BlueprintActivatableAbility>();
-            ability.name = "KMG_BrownFur_ShareTransmutation_Activatable";
-            BlueprintUnitFactAccess.Resolve().Configure(ability,
-                LocalizationService.Create("KMG.BrownFur.Share.Ability.Name",
-                    "Share Transmutation"),
-                LocalizationService.Create("KMG.BrownFur.Share.Ability.Description",
-                    "Arm Share Transmutation for the next eligible Personal-range Transmutation spell. No reservoir point is spent merely for activating this selection."), icon);
-            ability.Buff = buff;
+            BlueprintActivatableAbility ability = CreateActivatable(
+                "KMG_BrownFur_ShareTransmutation_Activatable",
+                "Share Transmutation",
+                "Arm Share Transmutation. Your next eligible Personal-range Transmutation spell becomes a targeted spell and costs 1 point from your arcane reservoir. Select a willing creature in touch range, or within 30 feet at 20th level. The spell does not cast until you select a valid target.\n\nThe toggle remains armed until a qualifying cast succeeds or you turn it off. Canceling target selection or attempting an ineligible spell spends nothing. Powerful Change can modify the same eligible Arcanist spell for a total cost of 2 reservoir points.",
+                buff, icon, reservoir);
             ability.Group = ActivatableAbilityGroup.None;
+            return ability;
+        }
+
+        private static BlueprintActivatableAbility CreateActivatable(
+            string assetName, string displayName, string description,
+            BlueprintBuff buff, Sprite icon, BlueprintAbilityResource reservoir)
+        {
+            if (buff == null || icon == null || reservoir == null)
+                throw new ArgumentNullException();
+            var ability = ScriptableObject.CreateInstance<BlueprintActivatableAbility>();
+            ability.name = assetName;
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(assetName + ".Name", displayName),
+                LocalizationService.Create(assetName + ".Description",
+                    description), icon);
+            ability.Buff = buff;
             ability.WeightInGroup = 1;
             ability.IsOnByDefault = false;
             ability.ActivationType = AbilityActivationType.Immediately;
@@ -262,13 +320,19 @@ namespace KingmakerGunslinger.Blueprints
             ability.DeactivateIfOwnerUnconscious = false;
             ability.OnlyInCombat = false;
             ability.ActionBarAutoFillIgnored = false;
-            ability.ComponentsArray = Array.Empty<BlueprintComponent>();
+            var resource = ScriptableObject.CreateInstance<
+                ActivatableAbilityResourceLogic>();
+            resource.name = "$KMG_BrownFur_ArcaneReservoirUi";
+            resource.RequiredResource = reservoir;
+            resource.SpendType = ActivatableAbilityResourceLogic
+                .ResourceSpendType.Never;
+            ability.ComponentsArray = new BlueprintComponent[] { resource };
             ability.ResourceAssetIds = Array.Empty<string>();
             return ability;
         }
 
         private static BlueprintFeature CreateFeature(string name,
-            string description, BlueprintUnitFact granted, Sprite icon)
+            string description, BlueprintUnitFact[] granted, Sprite icon)
         {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
             feature.name = "KMG_BrownFur_" + name.Replace(" ", string.Empty) +
@@ -277,11 +341,11 @@ namespace KingmakerGunslinger.Blueprints
             feature.IsClassFeature = true;
             feature.HideInUI = false;
             feature.ComponentsArray = Array.Empty<BlueprintComponent>();
-            if (granted != null)
+            if (granted != null && granted.Length > 0)
             {
                 var add = ScriptableObject.CreateInstance<AddFacts>();
                 add.name = "$KMG_BrownFur_Grant_" + name.Replace(" ", string.Empty);
-                add.Facts = new[] { granted };
+                add.Facts = (BlueprintUnitFact[])granted.Clone();
                 add.DoNotRestoreMissingFacts = false;
                 feature.ComponentsArray = new BlueprintComponent[] { add };
             }
@@ -291,6 +355,42 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.BrownFur." + key +
                     ".Description", description), icon);
             return feature;
+        }
+
+        private static string ToggleDescription(BrownFurAbilityScore score)
+        {
+            return "Arm Powerful Change for " + score + ". Your next eligible Transmutation spell cast from your Arcanist spellbook that grants a positive " + score + " bonus spends 1 point from your arcane reservoir and increases that spell's " + score + " bonus by 2, or by 4 at 20th level. The original bonus type is preserved.\n\nThe toggle remains armed until a qualifying cast succeeds or you turn it off. Ineligible or canceled casts spend nothing and do not consume the selection.";
+        }
+
+        private static Sprite ResolveNativeIcon(string guid, string purpose)
+        {
+            BlueprintAbility donor = ResourcesLibrary.TryGetBlueprint<
+                BlueprintAbility>(guid);
+            if (donor == null || donor.Icon == null)
+                throw new InvalidOperationException("Native Brown-Fur icon donor is unavailable: " + purpose + ";guid=" + guid);
+            return donor.Icon;
+        }
+
+        private static void ValidateIconSet(Sprite featureIcon,
+            Sprite[] scoreIcons, Sprite shareIcon, Sprite supremacyIcon)
+        {
+            Sprite[] all = new[] { featureIcon }.Concat(scoreIcons ??
+                new Sprite[0]).Concat(new[] { shareIcon, supremacyIcon }).ToArray();
+            if (all.Length != 9 || all.Any(value => value == null) ||
+                all.Distinct().Count() != all.Length)
+                throw new InvalidOperationException(
+                    "Brown-Fur requires nine distinct readable native icons.");
+        }
+
+        private static void HideBuffInUi(BlueprintBuff buff)
+        {
+            FieldInfo flags = typeof(BlueprintBuff).GetField("m_Flags",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            if (flags == null || !flags.FieldType.IsEnum)
+                throw new MissingFieldException(typeof(BlueprintBuff).FullName,
+                    "m_Flags");
+            flags.SetValue(buff, Enum.Parse(flags.FieldType, "HiddenInUi"));
         }
 
         private static LevelEntry Entry(int level,
@@ -314,6 +414,8 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (set == null || set.Count != BrownFurIdentityCatalog.IdentityCount ||
                 set.ScoreAbilities == null || set.ScoreAbilities.Length != 6 ||
+                set.ScoreActivatables == null ||
+                set.ScoreActivatables.Length != 6 ||
                 set.ScoreBuffs == null || set.ScoreBuffs.Length != 6 ||
                 set.Archetype == null || set.Archetype.AddFeatures == null ||
                 set.Archetype.AddFeatures.Length != 3 ||
@@ -334,6 +436,28 @@ namespace KingmakerGunslinger.Blueprints
                     contract.MagicalSupremacy))
                 throw new InvalidOperationException(
                     "Brown-Fur archetype shell failed its exact progression contract.");
+            if (set.ScoreAbilities.Any(value => value == null || !value.Hidden ||
+                    !value.ActionBarAutoFillIgnored) ||
+                set.ScoreActivatables.Any(value => value == null ||
+                    value.Group != BrownFurActivatableGroupRuntime
+                        .PowerfulChangeGroup || value.WeightInGroup != 1 ||
+                    value.IsOnByDefault || value.OnlyInCombat ||
+                    value.ActivationType != AbilityActivationType.Immediately ||
+                    value.ActionBarAutoFillIgnored ||
+                    !value.ComponentsArray.OfType<
+                        ActivatableAbilityResourceLogic>().Any(component =>
+                            ReferenceEquals(component.RequiredResource,
+                                contract.Reservoir) && component.SpendType ==
+                                ActivatableAbilityResourceLogic.ResourceSpendType
+                                    .Never)) ||
+                set.ShareTransmutationAbility == null ||
+                !set.ShareTransmutationAbility.ComponentsArray.OfType<
+                    ActivatableAbilityResourceLogic>().Any(component =>
+                        ReferenceEquals(component.RequiredResource,
+                            contract.Reservoir) && component.SpendType ==
+                            ActivatableAbilityResourceLogic.ResourceSpendType.Never))
+                throw new InvalidOperationException(
+                    "Brown-Fur activatable and shared-reservoir UI contract is incomplete.");
         }
     }
 }

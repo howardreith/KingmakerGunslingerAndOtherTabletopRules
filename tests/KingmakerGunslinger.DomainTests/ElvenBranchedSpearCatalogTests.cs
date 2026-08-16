@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.81\"") &&
-                props.Contains("<KmgVersion>0.0.81</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.81-brown-fur-transmuter</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.81\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.81\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.81-brown-fur-transmuter\")"),
+            Assertions.True(info.Contains("\"Version\": \"0.0.82\"") &&
+                props.Contains("<KmgVersion>0.0.82</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.82-brown-fur-human-review-repair</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.82\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.82\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.82-brown-fur-human-review-repair\")"),
                 "Release and assembly identity are not transactionally pinned to the spear candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-brown-fur-transmuter.zip") &&
+                "$($info.Id)-$($info.Version)-brown-fur-human-review-repair.zip") &&
                 !package.Contains("expanded-summoning.zip"),
                 "Package identity can still select the Expanded Summoning archive.");
-            Assertions.True(runtime.Contains("active version 0.0.81") &&
-                localBuild.Contains("active version 0.0.81") &&
-                localBuild.Contains("local-runtime\\0.0.81"),
+            Assertions.True(runtime.Contains("active version 0.0.82") &&
+                localBuild.Contains("active version 0.0.82") &&
+                localBuild.Contains("local-runtime\\0.0.82"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

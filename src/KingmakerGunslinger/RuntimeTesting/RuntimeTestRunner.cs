@@ -119,6 +119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Stopwatch _brownFurPersistenceSaveElapsed;
         private bool _brownFurPersistenceFeaturesValid;
         private bool _brownFurPersistencePresentationValid;
+        private bool _brownFurPersistenceToggleStateValid;
         private bool _brownFurPersistenceBuffValid;
         private bool _brownFurPersistenceContextValid;
         private bool _brownFurPersistenceCarrierValid;
@@ -2701,7 +2702,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BrownFurOptionalExtensionCoordinator.Blueprints;
             if (resolution == null || !resolution.Decision.IsCompatible ||
                 resolution.Contract == null || blueprints == null ||
-                blueprints.Count != 19)
+                blueprints.Count != BrownFurIdentityCatalog.IdentityCount)
                 throw new InvalidOperationException(
                     "Compatible registered Brown-Fur blueprints are unavailable for persistence qualification.");
 
@@ -2732,6 +2733,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         blueprints.TransmutationSupremacy) == null)
                     throw new InvalidOperationException(
                         "The Brown-Fur persistence features could not be granted.");
+                ActivatableAbility wisdom =
+                    BrownFurPlayerIntentRuntime.Find(caster.Descriptor,
+                        blueprints.ScoreActivatables[4]);
+                ActivatableAbility share =
+                    BrownFurPlayerIntentRuntime.Find(caster.Descriptor,
+                        blueprints.ShareTransmutationAbility);
+                if (wisdom == null || share == null)
+                    throw new InvalidOperationException(
+                        "The Brown-Fur persistence toggles could not be resolved.");
+                wisdom.IsOn = true;
+                share.IsOn = true;
 
                 var context = new MechanicsContext(caster, caster.Descriptor,
                     spell, null, new TargetWrapper(subject));
@@ -2770,10 +2782,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BrownFurPersistenceFeatureCount(caster, blueprints) == 3;
             _brownFurPersistencePresentationValid =
                 caster.Descriptor.Abilities.GetAbility(
-                    blueprints.PowerfulChangeSelection) != null &&
+                    blueprints.PowerfulChangeSelection) == null &&
+                blueprints.ScoreActivatables.All(score =>
+                    caster.Descriptor.ActivatableAbilities.Enumerable.Count(
+                        value => value != null && ReferenceEquals(
+                            value.Blueprint, score)) == 1) &&
                 caster.Descriptor.ActivatableAbilities.Enumerable.Count(value =>
                     value != null && ReferenceEquals(value.Blueprint,
-                        blueprints.ShareTransmutationAbility)) == 1;
+                         blueprints.ShareTransmutationAbility)) == 1;
+            ActivatableAbility[] scoreStates = blueprints.ScoreActivatables
+                .Select(value => BrownFurPlayerIntentRuntime.Find(
+                    caster.Descriptor, value)).ToArray();
+            ActivatableAbility persistedShare =
+                BrownFurPlayerIntentRuntime.Find(caster.Descriptor,
+                    blueprints.ShareTransmutationAbility);
+            _brownFurPersistenceToggleStateValid =
+                scoreStates.All(value => value != null) &&
+                scoreStates.Count(value => value.IsOn) == 1 &&
+                scoreStates[4].IsOn && persistedShare != null &&
+                persistedShare.IsOn &&
+                caster.Descriptor.HasFact(blueprints.ScoreBuffs[4]) &&
+                !blueprints.ScoreBuffs.Where((value, index) => index != 4)
+                    .Any(caster.Descriptor.HasFact) &&
+                caster.Descriptor.HasFact(
+                    blueprints.ShareTransmutationBuff);
 
             Buff buff = buffs.Length == 1 ? buffs[0] : null;
             ModifiableValue.Modifier[] modifiers = buff == null
@@ -2826,10 +2858,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BrownFurPersistenceFeatureCount(caster, blueprints) == 0 &&
                     caster.Descriptor.Abilities.GetAbility(
                         blueprints.PowerfulChangeSelection) == null &&
+                    !blueprints.ScoreActivatables.Any(score =>
+                        caster.Descriptor.ActivatableAbilities.Enumerable.Any(
+                            value => value != null && ReferenceEquals(
+                                value.Blueprint, score))) &&
                     !caster.Descriptor.ActivatableAbilities.Enumerable.Any(
                         value => value != null && ReferenceEquals(
                             value.Blueprint,
-                            blueprints.ShareTransmutationAbility)) &&
+                         blueprints.ShareTransmutationAbility)) &&
+                    !blueprints.ScoreBuffs.Any(caster.Descriptor.HasFact) &&
+                    !caster.Descriptor.HasFact(
+                        blueprints.ShareTransmutationBuff) &&
                     persistencePart != null && persistencePart.Count == 0;
             }
 
@@ -2838,7 +2877,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.BrownFurTransmuter +
                 ";identities=" + blueprints.Count + ";features=" +
                 _brownFurPersistenceFeaturesValid + ";presentation=" +
-                _brownFurPersistencePresentationValid + ";buffs=" +
+                _brownFurPersistencePresentationValid + ";toggleState=" +
+                _brownFurPersistenceToggleStateValid + ";buffs=" +
                 buffs.Length + ";modifier=" + (modifier == null ? "missing" :
                     modifier.ModValue + "/" + modifier.ModDescriptor) +
                 ";timeLeftSeconds=" + (buff == null ? 0d :
@@ -2903,6 +2943,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool phaseValid = _brownFurPersistenceModuleStateValid &&
                 _brownFurPersistenceFeaturesValid &&
                 _brownFurPersistencePresentationValid &&
+                _brownFurPersistenceToggleStateValid &&
                 _brownFurPersistenceBuffValid &&
                 _brownFurPersistenceContextValid &&
                 _brownFurPersistenceCarrierValid &&
@@ -2928,11 +2969,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     verify ? "freshly deserialized registered feature facts" :
                         "pre-save registered feature facts"),
                 Assertion("brown-fur-persistence-presentation",
-                    "selection ability and one Share activatable",
+                    "six score activatables and one Share activatable; no legacy selector",
                     _brownFurPersistenceDetail,
                     _brownFurPersistencePresentationValid,
                     verify ? "freshly deserialized AddFacts grants" :
                         "pre-save AddFacts grants"),
+                Assertion("brown-fur-persistence-toggle-state",
+                    "exactly Wisdom and Share remain synchronized ON across save/load",
+                    _brownFurPersistenceDetail,
+                    _brownFurPersistenceToggleStateValid,
+                    verify ? "freshly deserialized native IsOn states and marker buffs" :
+                        "pre-save native IsOn states and marker buffs"),
                 Assertion("brown-fur-persistence-enhanced-buff",
                     "one +6 Enhancement Bull's Strength with positive duration",
                     _brownFurPersistenceDetail,

@@ -197,8 +197,8 @@ namespace KingmakerGunslinger.BrownFur
                 BrownFurFeatureStatusRegistry.Update(new BrownFurFeatureStatus(
                     BrownFurDependencyAvailability.Available, published,
                     published ?
-                        "Compatible CotW contract resolved; 19 stable Brown-Fur identities registered and the archetype is published exactly once." :
-                        "Compatible CotW contract resolved; 19 stable Brown-Fur identities remain registered for existing owners, while the saved OFF setting hides the archetype from new selection."));
+                        "Compatible CotW contract resolved; 25 stable Brown-Fur identities registered and the archetype is published exactly once." :
+                        "Compatible CotW contract resolved; 25 stable Brown-Fur identities remain registered for existing owners, while the saved OFF setting hides the archetype from new selection."));
                 BrownFurDiagnostics.Info(context, "contract.compatible",
                     "checkpoint=" + checkpoint + ";activeSetting=" +
                     context.FeatureModules.Active.BrownFurTransmuter + ";" +

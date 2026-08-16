@@ -1,6 +1,13 @@
 # Brown-Fur runtime qualification matrix
 
 This is the durable scenario-level qualification authority for Brown-Fur.
+
+The `0.0.82-brown-fur-human-review-repair` source adds native score toggles,
+live reservoir counters, distinct donor icons, and early Share target-anchor
+resolution. Its new focused runtime rows, persistence rerun, optional-mod
+profiles, and 16-state boundary are pending. The evidence below remains the
+historical `0.0.81` record and must not be treated as qualification of changed
+source.
 Exact package, DLL, MVID, deployment, backup, CotW, and structured-evidence
 identities are recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`. A passing
 row proves only its stated scope. The `0.0.81` artifact was published when its

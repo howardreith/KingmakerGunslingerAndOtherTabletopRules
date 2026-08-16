@@ -1,12 +1,12 @@
 # Known issues and conservative adaptations
 
-- Brown-Fur's mechanics, persistence, optional-dependency isolation, CotW
-  normal/balance compatibility, and 16-state boundary all pass automated
-  qualification. Its UMM presentation, action-bar clarity, targeting feel, and
-  representative in-game presentation still require the explicit human review
-  in `BROWN-FUR-TRANSMUTER-ACCEPTANCE-CHECKLIST.md`. The final 128-state seal is
-  intentionally prohibited until that review accepts the exact installed
-  artifact.
+- Brown-Fur `0.0.81` failed human review: score state and reservoir cost were
+  not legible, and armed Share caused Personal spells to self-cast instead of
+  entering target selection. The `0.0.82` source contains native activatable,
+  resource-counter, icon, and early-targeting repairs, but a replacement
+  candidate is not accepted until its focused runtime/profile/16-state evidence
+  passes and the exact artifact passes renewed human review. The final
+  128-state seal is intentionally prohibited before that acceptance.
 - Brown-Fur fails closed on an unknown or ambiguous future CotW Arcanist
   structure. This preserves all unrelated package modules but may require a new
   compatibility fingerprint and adapter before the archetype can be published.

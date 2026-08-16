@@ -34,9 +34,11 @@ namespace KingmakerGunslinger.DomainTests
             request.PositiveAbilityBonuses = new HashSet<BrownFurAbilityScore>
                 { BrownFurAbilityScore.Strength, BrownFurAbilityScore.Dexterity };
             BrownFurCastDecision decision = BrownFurCastPolicy.Decide(request);
-            Assertions.True(!decision.Eligible && decision.ReservoirCost == 0 &&
-                decision.Failure == "powerful-stat-not-granted",
-                "A non-granted selected stat must reject before debit.");
+            Assertions.True(decision.Eligible && !decision.PowerfulChange &&
+                decision.ReservoirCost == 0 &&
+                string.IsNullOrEmpty(decision.Failure),
+                "A non-granted selected stat must leave the normal cast and " +
+                "armed selection untouched without a debit.");
         }
 
         internal static void PowerfulChangeRequiresArcanistSpellSlot()
@@ -47,14 +49,17 @@ namespace KingmakerGunslinger.DomainTests
             request.PositiveAbilityBonuses = new HashSet<BrownFurAbilityScore>
                 { BrownFurAbilityScore.Strength };
             request.UsesArcanistSpellSlot = false;
-            Assertions.Equal("powerful-not-arcanist-slot",
-                BrownFurCastPolicy.Decide(request).Failure,
-                "Another real spellbook must not qualify for Powerful Change.");
+            BrownFurCastDecision decision = BrownFurCastPolicy.Decide(request);
+            Assertions.True(decision.Eligible && !decision.PowerfulChange &&
+                decision.ReservoirCost == 0,
+                "Another real spellbook must cast normally without qualifying " +
+                "for Powerful Change.");
             request.UsesArcanistSpellSlot = true;
             request.SourceKind = BrownFurCastSourceKind.Item;
-            Assertions.Equal("not-genuine-spell",
-                BrownFurCastPolicy.Decide(request).Failure,
-                "Items and non-spell activations must not qualify.");
+            decision = BrownFurCastPolicy.Decide(request);
+            Assertions.True(decision.Eligible && !decision.PowerfulChange &&
+                decision.ReservoirCost == 0,
+                "Items and non-spell activations must remain unmodified.");
         }
 
         internal static void ShareTransmutationUsesWillingCreatureContract()

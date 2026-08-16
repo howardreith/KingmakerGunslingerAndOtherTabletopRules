@@ -75,7 +75,11 @@ namespace KingmakerGunslinger.BrownFur
 
         private static void Postfix(RuleCastSpell __instance)
         {
-            try { BrownFurCastExecutionRuntime.AttachProcess(__instance); }
+            try
+            {
+                BrownFurCastExecutionRuntime.AttachProcess(__instance);
+                BrownFurCastExecutionRuntime.ConsumeCommittedIntent(__instance);
+            }
             catch (Exception exception)
             { BrownFurCastExecutionRuntime.RecordPatchFailure(
                 "rule-process", exception); }

@@ -32,9 +32,9 @@ namespace KingmakerGunslinger.DomainTests
                 "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(7, identities.Count(value => value.PlannedType ==
                 "BlueprintBuff"), "Buff identity count changed.");
-            Assertions.Equal(1, identities.Count(value => value.PlannedType ==
+            Assertions.Equal(7, identities.Count(value => value.PlannedType ==
                 "BlueprintActivatableAbility"),
-                "Share activatable identity count changed.");
+                "Score and Share activatable identity count changed.");
 
             foreach (BrownFurAbilityScore score in new[] {
                 BrownFurAbilityScore.Strength, BrownFurAbilityScore.Dexterity,
@@ -47,8 +47,11 @@ namespace KingmakerGunslinger.DomainTests
                         value.PlannedType == "BlueprintAbility") &&
                     identities.Any(value => value.Symbol ==
                         BrownFurIdentityCatalog.PowerfulBuff(score) &&
-                        value.PlannedType == "BlueprintBuff"),
-                    "Powerful Change identity pair missing for " + score + ".");
+                        value.PlannedType == "BlueprintBuff") &&
+                    identities.Any(value => value.Symbol ==
+                        BrownFurIdentityCatalog.PowerfulActivatable(score) &&
+                        value.PlannedType == "BlueprintActivatableAbility"),
+                    "Powerful Change identity trio missing for " + score + ".");
             }
         }
 

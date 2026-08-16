@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.81-brown-fur-transmuter.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.82-brown-fur-human-review-repair.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.81 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.82 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -128,7 +128,8 @@ local Arms and Armor build contains no Katana, Wakizashi, or Nodachi provider,
 so no duplicate-name or cross-proficiency bridge is needed. Every compatibility
 transaction restored the complete Mods tree exactly.
 
-Brown-Fur Transmuter was qualified against the exact local Call of the Wild
+The superseded `0.0.81` Brown-Fur Transmuter candidate was qualified against
+the exact local Call of the Wild
 1.14.4c-2.1 DLL SHA-256
 `4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`
 and MVID `8caab254-aacf-4811-8093-44b9184e6e53`. Structural resolution, rather
@@ -137,9 +138,11 @@ replacements (levels 3/9) and balance-fixes replacements (levels 4/10) passed,
 as did CotW absence, Brown-Fur OFF with an existing owner, the highest-risk
 CotW plus Arms and Armor plus Toggle Custom Soundpacks profile, and all 16
 seven-module boundary states. Unknown or ambiguous future CotW structures are
-reported as Blocked and leave Brown-Fur unpublished. The exact candidate still
-awaits human presentation acceptance; the 128-state final release seal has not
-run.
+reported as Blocked and leave Brown-Fur unpublished. Human review rejected that
+candidate for unclear toggle/resource presentation and immediate Personal-spell
+self-casting. Version `0.0.82` repairs those paths and requires a fresh focused
+runtime/profile/boundary qualification plus renewed human acceptance. The
+128-state final release seal has not run.
 
 - This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
   and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.

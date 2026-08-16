@@ -319,6 +319,7 @@
     <Compile Include="BrownFur\BrownFurIdentityCatalog.cs" />
     <Compile Include="BrownFur\BrownFurArchetypePlan.cs" />
     <Compile Include="BrownFur\BrownFurPowerfulChangeSelectionLogic.cs" />
+    <Compile Include="BrownFur\BrownFurActivatableGroupRuntime.cs" />
     <Compile Include="BrownFur\BrownFurPublicationTransaction.cs" />
     <Compile Include="BrownFur\BrownFurCastRequest.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetPolicy.cs" />

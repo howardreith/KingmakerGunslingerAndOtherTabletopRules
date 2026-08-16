@@ -100,6 +100,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("automaticCanSpendTimeline", Order = 54)] public string AutomaticCanSpendTimeline { get; set; }
             [JsonProperty("automaticRootKnown", Order = 55)] public bool AutomaticRootKnown { get; set; }
             [JsonProperty("automaticRootAvailableCastCount", Order = 56)] public int AutomaticRootAvailableCount { get; set; }
+            [JsonProperty("automaticIntentPreservedBeforeCommit", Order = 57)] public bool AutomaticPreserved { get; set; }
+            [JsonProperty("invalidSelectionPreserved", Order = 58)] public bool InvalidPreserved { get; set; }
+            [JsonProperty("automaticPowerfulCounterBeforeAfter", Order = 59)] public string AutomaticPowerfulCounter { get; set; }
+            [JsonProperty("automaticShareCounterBeforeAfter", Order = 60)] public string AutomaticShareCounter { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -128,7 +132,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Compatible CotW Arcanist contract is unavailable.");
                 contract = resolution.Contract;
                 blueprints = BrownFurOptionalExtensionCoordinator.Blueprints;
-                if (blueprints == null || blueprints.Count != 19)
+                if (blueprints == null ||
+                    blueprints.Count != BrownFurIdentityCatalog.IdentityCount)
                     throw new InvalidOperationException(
                         "Registered Brown-Fur blueprints are unavailable.");
                 evidence.ClassGuid = contract.ArcanistClass.AssetGuid;
@@ -266,9 +271,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Real Transmutation Supremacy fact could not be granted.");
                 string afterSupremacy = ProbeCanSpend(casting, spell);
-                if (caster.Descriptor.AddFact(blueprints.ScoreBuffs[0]) == null)
-                    throw new InvalidOperationException(
-                        "Real Strength intent fact could not be granted.");
+                ActivatableAbility powerful = BrownFurPlayerIntentRuntime.Find(
+                    caster.Descriptor, blueprints.ScoreActivatables[0]);
+                if (powerful == null) throw new InvalidOperationException(
+                    "Real Strength intent activatable could not be granted.");
+                powerful.IsOn = true;
                 string afterScore = ProbeCanSpend(casting, spell);
                 ActivatableAbility share = caster.Descriptor
                     .ActivatableAbilities.Enumerable.SingleOrDefault(value =>
@@ -313,17 +320,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BrownFurShareTargetingRuntime.ActiveScopeCount +
                     ";supremacy=" +
                     BrownFurSupremacyRuntime.ActiveScopeCount;
-                evidence.AutomaticCleared =
-                    !blueprints.ScoreBuffs.Any(value =>
-                        caster.Descriptor.HasFact(value)) &&
-                    !caster.Descriptor.HasFact(
-                        blueprints.ShareTransmutationBuff) && !share.IsOn;
+                evidence.AutomaticPreserved = powerful.IsOn && share.IsOn &&
+                    caster.Descriptor.HasFact(blueprints.ScoreBuffs[0]) &&
+                    caster.Descriptor.HasFact(
+                        blueprints.ShareTransmutationBuff);
+                evidence.AutomaticPowerfulCounter = powerful.ResourceCount
+                    .HasValue ? powerful.ResourceCount.Value.ToString() :
+                    "none";
+                evidence.AutomaticShareCounter = share.ResourceCount.HasValue ?
+                    share.ResourceCount.Value.ToString() : "none";
                 var automaticRule = new RuleCastSpell(automaticData,
                     new TargetWrapper(caster));
                 evidence.AutomaticTracked =
                     BrownFurCastExecutionRuntime.TryCommit(automaticRule,
                         out proceed);
                 evidence.AutomaticProceed = proceed;
+                BrownFurCastExecutionRuntime.ConsumeCommittedIntent(
+                    automaticRule);
+                evidence.AutomaticCleared = !powerful.IsOn && !share.IsOn &&
+                    !blueprints.ScoreBuffs.Any(value =>
+                        caster.Descriptor.HasFact(value)) &&
+                    !caster.Descriptor.HasFact(
+                        blueprints.ShareTransmutationBuff);
+                evidence.AutomaticPowerfulCounter += "->" +
+                    (powerful.ResourceCount.HasValue ?
+                        powerful.ResourceCount.Value.ToString() : "none");
+                evidence.AutomaticShareCounter += "->" +
+                    (share.ResourceCount.HasValue ?
+                        share.ResourceCount.Value.ToString() : "none");
                 int automaticSuppressionBefore =
                     BrownFurCastExecutionRuntime.SuppressedSpendCount;
                 InvokeAbilitySpend(automaticData);
@@ -342,9 +366,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "invalid-intent";
                 casting.Rest();
-                if (caster.Descriptor.AddFact(blueprints.ScoreBuffs[5]) == null)
-                    throw new InvalidOperationException(
-                        "Invalid Charisma marker could not be granted.");
+                RemoveFeature(caster.Descriptor,
+                    blueprints.TransmutationSupremacy);
+                ActivatableAbility charisma = BrownFurPlayerIntentRuntime.Find(
+                    caster.Descriptor, blueprints.ScoreActivatables[5]);
+                if (charisma == null) throw new InvalidOperationException(
+                    "Invalid Charisma activatable could not be granted.");
+                charisma.IsOn = true;
                 int invalidReservoirBefore = caster.Descriptor.Resources
                     .GetResourceAmount(contract.Reservoir);
                 int invalidSlotsBefore = AvailableSlots(casting, SpellLevel);
@@ -353,25 +381,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var invalidCommand = new UnitUseAbility(invalidData,
                     new TargetWrapper(caster));
                 evidence.InvalidMarked =
-                    BrownFurCastExecutionRuntime.RejectedCommandCount == 1 &&
-                    BrownFurCastExecutionRuntime.ActiveTransactionCount == 0 &&
-                    BrownFurCastIntentRuntime.LastOutcome ==
-                        "rejected:powerful-stat-not-granted";
-                MethodInfo onAction = typeof(UnitUseAbility).GetMethod(
-                    "OnAction", BindingFlags.Instance | BindingFlags.Public |
-                    BindingFlags.NonPublic, null, Type.EmptyTypes, null);
-                if (onAction == null) throw new MissingMethodException(
-                    typeof(UnitUseAbility).FullName, "OnAction");
-                evidence.InvalidResult = Convert.ToString(onAction.Invoke(
-                    invalidCommand, null));
-                evidence.InvalidNoSpend =
-                    evidence.InvalidResult == UnitCommand.ResultType.Fail.ToString() &&
                     BrownFurCastExecutionRuntime.RejectedCommandCount == 0 &&
+                    BrownFurCastExecutionRuntime.ActiveTransactionCount == 0;
+                evidence.InvalidResult = "normal-unmodified";
+                evidence.InvalidPreserved = charisma.IsOn &&
+                    caster.Descriptor.HasFact(blueprints.ScoreBuffs[5]);
+                evidence.InvalidNoSpend =
                     caster.Descriptor.Resources.GetResourceAmount(
                         contract.Reservoir) == invalidReservoirBefore &&
-                    AvailableSlots(casting, SpellLevel) == invalidSlotsBefore &&
-                    !blueprints.ScoreBuffs.Any(value =>
-                        caster.Descriptor.HasFact(value));
+                    AvailableSlots(casting, SpellLevel) == invalidSlotsBefore;
             }
             catch (Exception exception)
             {
@@ -478,7 +496,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.SuppressedAfter == 0,
                 "live AbilityData.Spend Harmony suppression on a real spellbook");
             Add(assertions, "arcanist-slot-automatic-intent",
-                "native command constructor snapshots and arms combined owner intent",
+                "native command constructor snapshots combined intent without consuming toggles",
                 "armed=" + evidence.AutomaticArmed + ";outcome=" +
                     evidence.AutomaticOutcome + ";scopes=" +
                     evidence.AutomaticScopes + ";cleared=" +
@@ -487,8 +505,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.AutomaticOutcome.StartsWith("armed:brown-fur-") &&
                     evidence.AutomaticOutcome.EndsWith(";cost=2") &&
                     evidence.AutomaticScopes == "share=1;supremacy=1" &&
-                    evidence.AutomaticCleared,
-                "actual UnitUseAbility constructor and registered owner facts");
+                    evidence.AutomaticPreserved,
+                "actual UnitUseAbility constructor preserves native activatable state");
             Add(assertions, "arcanist-slot-automatic-commit",
                 "automatically derived intent debits two and spends one slot",
                 "tracked=" + evidence.AutomaticTracked + ";proceed=" +
@@ -503,19 +521,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.AutomaticRootCanSpend + ";suppression=" +
                     evidence.AutomaticSuppression + ";known=" +
                     evidence.AutomaticRootKnown + ";available=" +
-                    evidence.AutomaticRootAvailableCount + ";timeline=" +
+                    evidence.AutomaticRootAvailableCount + ";counters=" +
+                    evidence.AutomaticPowerfulCounter + "/" +
+                    evidence.AutomaticShareCounter + ";timeline=" +
                     evidence.AutomaticCanSpendTimeline,
                 evidence.AutomaticTracked && evidence.AutomaticProceed &&
+                    evidence.AutomaticCleared &&
                     Delta(evidence.AutomaticReservoir) == -2 &&
+                    Delta(evidence.AutomaticPowerfulCounter) == -2 &&
+                    Delta(evidence.AutomaticShareCounter) == -2 &&
                     Delta(evidence.AutomaticSlots) == -1,
                 "production constructor bridge, rule commit, and native spend");
             Add(assertions, "arcanist-slot-invalid-intent-pre-action",
-                "invalid selected stat rejects before reservoir or slot expenditure",
+                "wrong selected stat leaves a normal cast path and preserves the toggle",
                 "marked=" + evidence.InvalidMarked + ";result=" +
                     evidence.InvalidResult + ";noSpend=" +
-                    evidence.InvalidNoSpend,
-                evidence.InvalidMarked && evidence.InvalidNoSpend,
-                "exact command-scoped OnAction rejection consumed once");
+                    evidence.InvalidNoSpend + ";preserved=" +
+                    evidence.InvalidPreserved,
+                evidence.InvalidMarked && evidence.InvalidNoSpend &&
+                    evidence.InvalidPreserved &&
+                    evidence.InvalidResult == "normal-unmodified",
+                "ineligible Powerful Change intent is neither rejected nor consumed");
             Add(assertions, "arcanist-slot-cleanup",
                 "all Brown-Fur state, resource, and disposable unit removed",
                 "active=" + evidence.FinalActive + ";reservations=" +

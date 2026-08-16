@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.81-brown-fur-transmuter",
-  "version": "0.0.81",
+  "milestone": "0.0.82-brown-fur-human-review-repair",
+  "version": "0.0.82",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,

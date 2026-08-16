@@ -6,9 +6,11 @@ module for Pathfinder: Kingmaker 2.1.7b while retaining Gunslinger, Acadamae
 Graduate, Shield Other, Expanded Summoning, Elven Branched Spears, and Eastern
 Weapons. Brown-Fur alone requires a compatible Call of the Wild installation;
 the combined package and every unrelated module continue loading without CotW.
-Brown-Fur mechanics and the complete 16-state pre-human boundary are qualified.
-The installed candidate is awaiting human presentation acceptance; the final
-128-state release seal has intentionally not run.
+The first `0.0.81` Brown-Fur candidate failed human review and is superseded.
+The `0.0.82` source repairs native toggle legibility, live reservoir counters,
+distinct icons, and pre-command Personal-spell target acquisition. Its focused
+runtime qualification and 16-state boundary rerun must pass before renewed
+human review; the final 128-state release seal has intentionally not run.
 
 Eastern Weapons adds one stable category each for Wakizashi, Katana, and
 Nodachi. Each family has mundane, masterwork, cold iron, and +1 generic forms
@@ -120,6 +122,13 @@ the same eligible Arcanist spell for exactly two points. Supremacy gives genuine
 Transmutation spells free, non-stacking Extend without changing slot or casting
 time.
 
+Powerful Change exposes six distinct native activatable toggles. Exactly one
+score can be armed; Kingmaker's selected treatment and the shared Arcane
+Reservoir counter remain visible on the action bar. An ineligible or canceled
+cast spends nothing and leaves the score armed. Share is a separate activatable
+using the same counter; when armed, a supported Personal Transmutation enters
+willing-creature target selection before any cast command is created.
+
 Turning Brown-Fur OFF hides it from new character creation and respec after a
 restart while compatible CotW remains installed; existing owners retain their
 features and effects. Removing CotW from a save containing its Arcanist or a
@@ -138,7 +147,7 @@ The Cord is a belt-slot wondrous item costing 15,000 gp and weighing one pound. 
 Kingmaker 2.1.7b has no usable native nonlethal damage path. The adaptation is untyped self-damage capped so the Cord cannot reduce its wearer below 1 HP. The substitution still occurs at the floor. Exactly one Cord is stocked by the established capital blacksmith through `SmithVendorTable` after the capital is available.
 
 The sections below retain historical subsystem detail; where version-specific
-wording conflicts, the 0.0.81 text above and its implementation report are
+wording conflicts, the 0.0.82 text above and its implementation report are
 authoritative.
 
 ## Current vertical slice

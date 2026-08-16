@@ -132,7 +132,9 @@ namespace KingmakerGunslinger.DomainTests
                 "owner.HasFact(blueprints.TransmutationSupremacy)",
                 "owner.HasFact(blueprints.ScoreBuffs[index])",
                 "owner.HasFact(blueprints.ShareTransmutationBuff)",
+                "blueprints.ScoreActivatables[index]",
                 "owner.ActivatableAbilities.Enumerable", "share.IsOn = false",
+                "score.IsOn = false", "internal static void Consume",
                 "owner.RemoveFact(pending)",
                 "owner.RemoveFact(blueprints.ShareTransmutationBuff)" })
                 Assertions.True(source.Contains(token),
@@ -535,9 +537,10 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "disposable-brown-fur-player-intent",
                 "brown-fur-player-intent.json", "intent-stable-blueprints",
-                "intent-feature-grants", "intent-feature-ownership",
-                "intent-combined-request", "intent-clear-transients",
-                "intent-orphan-marker-rejected",
+                "intent-feature-grants", "intent-icons-resource-group",
+                "intent-native-on-off", "intent-exclusive-switch-no-cost",
+                "intent-combined-request", "intent-success-consumption",
+                "intent-orphan-state-reset",
                 "intent-disposable-cleanup",
                 "BrownFurPlayerIntentRuntime.Observe",
                 "BrownFurPlayerIntentRuntime.Clear", "AddFact",
@@ -585,7 +588,7 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurCastExecutionRuntime.SuppressedSpendCount",
                 "BrownFurCastIntentRuntime.LastOutcome",
                 "BrownFurCastExecutionRuntime.RejectedCommandCount",
-                "UnitCommand.ResultType.Fail" })
+                "InvalidPreserved", "normal-unmodified" })
                 Assertions.True(arcanistSlotScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded Arcanist slot fixture lacks evidence token: " +
@@ -594,15 +597,21 @@ namespace KingmakerGunslinger.DomainTests
                 "disposable-brown-fur-native-cast",
                 "brown-fur-native-cast.json", "native-cast-fixture",
                 "native-cast-source-target", "native-cast-command-process",
-                "native-cast-accounting", "native-cast-ally-effect",
-                "native-cast-interruption-no-spend",
+                 "native-cast-accounting", "native-cast-ally-effect",
+                 "native-cast-required-share-spells",
+                 "native-cast-ability-bonus-human-findings",
+                 "native-cast-share-off-self-cast",
+                 "native-cast-interruption-no-spend",
                 "native-cast-cleanup", "EntityCreator.SpawnUnit",
                 "caster.Commands.Run(command)",
                 "command.ExecutionProcess.Tick()",
-                "caster.Commands.InterruptAll(true)",
-                "BrownFurCastIntentRuntime.LastOutcome",
-                "BrownFurCastExecutionRuntime.Begin",
-                "ModifierDescriptor.Polymorph", "ApplyClassMechanics",
+                 "caster.Commands.InterruptAll(true)",
+                 "BrownFurCastIntentRuntime.LastOutcome",
+                 "BrownFurCastExecutionRuntime.ActiveTransactionCount",
+                 "CombinedIntentPreserved", "CombinedTogglesOff",
+                 "Bull's Strength OFF", "Bull's Strength ON",
+                 "Cat's Grace ON", "ResourceCount",
+                 "ModifierDescriptor.Polymorph", "ApplyClassMechanics",
                 "ApplyLevelup", "KMG_AUTOMATION_WORKING" })
                 Assertions.True(nativeCastScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
@@ -623,8 +632,11 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitPartBrownFurModifierPersistence",
                 "persistedBeforeCleanup == 1",
                 "persistencePart.Count == 0",
-                "BrownFurPlayerIntentRuntime.Observe",
-                "RemoveBrownFurPersistenceFeatures",
+                 "BrownFurPlayerIntentRuntime.Observe",
+                 "brown-fur-persistence-toggle-state",
+                 "scoreStates[4].IsOn", "persistedShare.IsOn",
+                 "blueprints.ScoreBuffs[4]",
+                 "RemoveBrownFurPersistenceFeatures",
                 "ArmExactWorkingSaveWrite",
                 "ExpectedWorkingSaveRoutineCount == 1" })
                 Assertions.True(runtimeRunner.Contains(token) ||
@@ -694,14 +706,15 @@ namespace KingmakerGunslinger.DomainTests
                     "Guarded bonus carrier fixture lacks evidence token: " + token);
             foreach (string token in new[] {
                 "disposable-brown-fur-share-targeting",
-                "brown-fur-share-targeting.json", "PersonalSpellGuid",
-                "AbilityRange.Personal", "BaselineAnchor",
-                "BaselineCanTarget", "TouchRejectsDifferentTarget",
-                "TouchApproachMeters", "CapstoneDeltaMeters",
-                "ThirtyFeetMeters", "BrownFurShareTargetingRuntime.Begin",
-                "BrownFurShareTargetingRuntime.Release",
-                "BrownFurShareTargetingRuntime.Clear", "RangeBefore",
-                "RangeAfter", "ActiveScopesAfter", "UnitsRemoved" })
+                "brown-fur-share-targeting.json", "RequiredSpells",
+                "Beast Shape II", "Undead Anatomy I", "Resinous Skin",
+                "TryResolvePendingShareTargeting", "AbilityRange.Personal",
+                "BaselineAnchor", "ArmedAnchor", "PendingEligible",
+                "TransactionsAfterSelection", "ReservoirAfterCancellation",
+                "SlotsAfterCancellation", "ShareOnAfterCancellation",
+                "ThirtyFeetMeters", "CapstoneApproachMeters",
+                "RangeFieldsUnchanged", "ActiveScopesAfter",
+                "TransientsRemoved" })
                 Assertions.True(shareTargetingScenario.Contains(token) ||
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded Share targeting fixture lacks evidence token: " +
@@ -753,7 +766,8 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitEntityData", "ActiveScopeCount", "Scopes.Begin",
                 "TryOverrideAnchor", "TryOverrideTarget",
                 "TryOverrideApproachDistance", "ThirtyFeetMeters",
-                "nativeDistance + ThirtyFeetMeters", "Release", "Clear" })
+                "TryResolvePendingShareTargeting", "distance = ThirtyFeetMeters",
+                "Release", "Clear" })
                 Assertions.True(shareTargetingRuntime.Contains(token),
                     "Share targeting runtime lacks exact scope guard: " + token);
             foreach (string token in new[] { "get_TargetAnchor", "CanTarget",
@@ -771,13 +785,13 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurModifierAdjustmentRuntime.Begin", "RestoreExact",
                 "SuppressedSpends", "SuppressedSpendCommands",
                 "Coordinator.FailRule", "Coordinator.ProcessTerminal",
-                "Coordinator.Clear", "RecordPatchFailure", "LastFailure",
+                "Coordinator.Clear", "ConsumeCommittedIntent",
+                "RecordPatchFailure", "LastFailure",
                 "command.Result != UnitCommand.ResultType.Success" })
                 Assertions.True(castExecutionRuntime.Contains(token),
                     "Cast execution boundary lacks exact guard: " + token);
             foreach (string token in new[] {
                 "BrownFurPlayerIntentRuntime.Observe",
-                "BrownFurPlayerIntentRuntime.Clear",
                 "BrownFurTransmutationInventory.Observe",
                 "record.AbilityScoreBonuses", "record.AppliedBuffs",
                 "current.ConvertedFrom", "ability.Spellbook.Blueprint",
@@ -814,7 +828,7 @@ namespace KingmakerGunslinger.DomainTests
                 "BrownFurRejectedCommandPatch",
                 "ConsumeCommandRejection", "UnitCommand.ResultType.Fail",
                 "AbilityExecutionProcess", "\"Tick\"",
-                "RecordPatchFailure" })
+                "ConsumeCommittedIntent", "RecordPatchFailure" })
                 Assertions.True(castExecutionPatches.Contains(token),
                     "Cast execution patch lacks exact lifecycle guard: " +
                     token);
