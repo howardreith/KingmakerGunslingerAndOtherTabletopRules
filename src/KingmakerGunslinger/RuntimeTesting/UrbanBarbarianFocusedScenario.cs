@@ -80,6 +80,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 enemyOne.Descriptor.State.Immortality.Retain();
                 enemyTwo.Descriptor.State.Immortality.Retain();
                 enemyThree.Descriptor.State.Immortality.Retain();
+                urban.CombatState.JoinCombat();
+                enemyOne.CombatState.JoinCombat();
+                enemyTwo.CombatState.JoinCombat();
+                enemyThree.CombatState.JoinCombat();
 
                 stage = "level-one-archetype";
                 ApplyLevel(urban.Descriptor, set.BarbarianClass, set.Archetype,
@@ -338,6 +342,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetPosition(enemyTwo, new Vector3(-1.5f, 0f, 0f));
                 float distanceOne = urban.DistanceTo(enemyOne);
                 float distanceTwo = urban.DistanceTo(enemyTwo);
+                int adjacentTwo = CrowdControlComponent
+                    .CountAdjacentActiveEnemies(urban);
                 int attackTwo = Attack(urban, weapon);
                 int acTwo = ArmorClass(urban, enemyOne);
                 SetPosition(enemyThree, new Vector3(0f, 0f, 1.5f));
@@ -352,11 +358,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attackTwo + "/" + attackThree + "/" + attackMovedOut +
                         ";ac=" + acZero + "/" + acOne + "/" + acTwo + "/" +
                         acThree + ";distance=" + distanceOne + "/" +
-                        distanceTwo,
+                        distanceTwo + ";adjacent=" + adjacentTwo +
+                        ";states=" + EnemyState(urban, enemyOne) + "/" +
+                        EnemyState(urban, enemyTwo),
                     attackOne == attackZero && attackTwo == attackZero + 1 &&
                         attackThree == attackZero + 1 &&
                         attackMovedOut == attackZero && acOne == acZero &&
-                        acTwo == acZero + 1 && acThree == acZero + 1,
+                        acTwo == acZero + 1 && acThree == acZero + 1 &&
+                        adjacentTwo == 2,
                     "live attack/AC Rulebook events and native edge-to-edge DistanceTo");
             }
             catch (Exception exception)
@@ -370,10 +379,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     enemyOne })
                 {
                     if (unit == null) continue;
+                    if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat();
                     unit.Descriptor.State.Immortality.ReleaseAll();
                     unit.Dispose();
                 }
-                if (urban != null) urban.Dispose();
+                if (urban != null)
+                {
+                    if (urban.CombatState.IsInCombat)
+                        urban.CombatState.LeaveCombat();
+                    urban.Dispose();
+                }
                 if (scene != null) scene.Dispose();
                 if (hostileSource != null)
                     UnityEngine.Object.DestroyImmediate(hostileSource);
@@ -550,6 +565,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.ModValue + ":" + value.ModDescriptor + ":" +
                 (value.SourceComponent == null ? "<null>" :
                     value.SourceComponent.GetType().FullName)));
+        }
+
+        private static string EnemyState(UnitEntityData owner,
+            UnitEntityData candidate)
+        {
+            return "inGame:" + candidate.IsInGame + ",destroyed:" +
+                candidate.Destroyed + ",detached:" + candidate.IsDetached +
+                ",on:" + candidate.IsTurnedOn + ",conscious:" +
+                candidate.Descriptor.State.IsConscious + ",enemy:" +
+                owner.IsEnemy(candidate);
         }
 
         private static void RemoveIntroducedBuffs(UnitDescriptor owner,

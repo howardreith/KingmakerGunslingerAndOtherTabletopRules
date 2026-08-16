@@ -42,17 +42,21 @@ namespace KingmakerGunslinger.UrbanBarbarian
         internal bool HasCrowd()
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            return CountAdjacentActiveEnemies(owner) >= 2;
+        }
+
+        internal static int CountAdjacentActiveEnemies(UnitEntityData owner)
+        {
             if (owner == null || Game.Instance == null ||
                 Game.Instance.State == null || Game.Instance.State.Units == null)
-                return false;
+                return 0;
             int adjacent = 0;
             foreach (UnitEntityData candidate in Game.Instance.State.Units)
             {
                 if (!IsAdjacentActiveEnemy(owner, candidate)) continue;
                 adjacent++;
-                if (adjacent >= 2) return true;
             }
-            return false;
+            return adjacent;
         }
 
         private static bool IsAdjacentActiveEnemy(UnitEntityData owner,
