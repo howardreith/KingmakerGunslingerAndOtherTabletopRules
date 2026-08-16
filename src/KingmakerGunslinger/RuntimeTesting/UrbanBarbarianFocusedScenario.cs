@@ -14,7 +14,6 @@ using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
-using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.ActivatableAbilities;
@@ -474,43 +473,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .CountAdjacentActiveEnemies(urban);
                 int attackTwo = Attack(urban, weapon);
                 int acTwo = ArmorClass(urban, enemyOne);
-                enemyTwo.Descriptor.State.Immortality.ReleaseAll();
-                Rulebook.Trigger(new RuleDealDamage(urban, enemyTwo,
-                    new DamageBundle(new DirectDamage(
-                        new DiceFormula(0, DiceType.D6), enemyTwo.MaxHP + 10)))
-                    {
-                        DisablePrecisionDamage = true,
-                        IgnoreDamageReduction = true
-                    });
-                int adjacentAfterDeath = CrowdControlComponent
+                enemyTwo.Descriptor.State.AddCondition(
+                    UnitCondition.Unconscious, null);
+                int adjacentAfterUnconscious = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
-                int attackAfterDeath = Attack(urban, weapon);
-                int acAfterDeath = ArmorClass(urban, enemyOne);
+                int attackAfterUnconscious = Attack(urban, weapon);
+                int acAfterUnconscious = ArmorClass(urban, enemyOne);
                 SetPosition(enemyThree, new Vector3(0f, 0f, 1.5f));
                 int attackThree = Attack(urban, weapon);
                 int acThree = ArmorClass(urban, enemyOne);
+                enemyThree.Destroy();
+                int adjacentAfterDestroyed = CrowdControlComponent
+                    .CountAdjacentActiveEnemies(urban);
+                int attackAfterDestroyed = Attack(urban, weapon);
+                int acAfterDestroyed = ArmorClass(urban, enemyOne);
                 SetPosition(enemyTwo, new Vector3(-9f, 0f, 0f));
-                SetPosition(enemyThree, new Vector3(0f, 0f, 9f));
+                SetPosition(enemyOne, new Vector3(9f, 0f, 0f));
                 int attackMovedOut = Attack(urban, weapon);
                 Add(assertions, "urban-crowd-control-rule-events",
-                    "zero/one grant none; two/three grant exactly +1 attack and +1 dodge AC; death and movement update immediately",
+                    "zero/one grant none; two/three grant exactly +1 attack and +1 dodge AC; unconsciousness, destruction, and movement update immediately",
                     "attack=" + attackZero + "/" + attackOne + "/" +
                         attackTwo + "/" + attackThree + "/" + attackMovedOut +
                         ";ac=" + acZero + "/" + acOne + "/" + acTwo + "/" +
                         acThree + ";distance=" + distanceOne + "/" +
                         distanceTwo + ";adjacent=" + adjacentTwo +
-                        ";death=" + adjacentAfterDeath + "/" +
-                        attackAfterDeath + "/" + acAfterDeath +
+                        ";unconscious=" + adjacentAfterUnconscious + "/" +
+                        attackAfterUnconscious + "/" +
+                        acAfterUnconscious + ";destroyed=" +
+                        adjacentAfterDestroyed + "/" +
+                        attackAfterDestroyed + "/" + acAfterDestroyed +
                         ";states=" + EnemyState(urban, enemyOne) + "/" +
                         EnemyState(urban, enemyTwo),
                     attackOne == attackZero && attackTwo == attackZero + 1 &&
                         attackThree == attackZero + 1 &&
                         attackMovedOut == attackZero && acOne == acZero &&
                         acTwo == acZero + 1 && acThree == acZero + 1 &&
-                        adjacentTwo == 2 && adjacentAfterDeath == 1 &&
+                        adjacentTwo == 2 && adjacentAfterUnconscious == 1 &&
                         !enemyTwo.Descriptor.State.IsConscious &&
-                        attackAfterDeath == attackZero &&
-                        acAfterDeath == acZero,
+                        attackAfterUnconscious == attackZero &&
+                        acAfterUnconscious == acZero &&
+                        adjacentAfterDestroyed == 1 && enemyThree.Destroyed &&
+                        attackAfterDestroyed == attackZero &&
+                        acAfterDestroyed == acZero,
                     "live attack/AC Rulebook events and native edge-to-edge DistanceTo");
             }
             catch (Exception exception)
