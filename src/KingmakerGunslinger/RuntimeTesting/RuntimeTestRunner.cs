@@ -3219,6 +3219,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 archetypeGuids == (expectedActive ? 1 : 0) &&
                 set.Count == UrbanBarbarianIdentityCatalog.IdentityCount;
 
+            string cleanupDetail = "not-applicable";
             if (!prepare)
             {
                 if (owner.Descriptor.HasFact(set.RageBuff))
@@ -3231,14 +3232,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (BlueprintFeature feature in fixtureFeatures.Reverse())
                     if (owner.Descriptor.HasFact(feature))
                         owner.Descriptor.RemoveFact(feature);
+                if (owner.Descriptor.Abilities.GetAbility(set.Selector) != null)
+                    owner.Descriptor.RemoveFact(set.Selector);
+                foreach (BlueprintFeature feature in set.SelectionFacts)
+                    if (owner.Descriptor.HasFact(feature))
+                        owner.Descriptor.RemoveFact(feature);
                 owner.Descriptor.Remove<UnitPartControlledRageSelection>();
-                _urbanBarbarianPersistenceCleanupValid =
-                    !fixtureFeatures.Any(owner.Descriptor.HasFact) &&
-                    !set.SelectionFacts.Any(owner.Descriptor.HasFact) &&
-                    owner.Descriptor.Get<UnitPartControlledRageSelection>() == null &&
-                    owner.Descriptor.Abilities.GetAbility(set.Selector) == null &&
-                    !owner.Descriptor.HasFact(set.RageBuff) &&
-                    !owner.Descriptor.HasFact(set.NativeRageBuff);
+                bool featuresAbsent = !fixtureFeatures.Any(
+                    owner.Descriptor.HasFact);
+                bool selectionsAbsent = !set.SelectionFacts.Any(
+                    owner.Descriptor.HasFact);
+                bool partAbsent = owner.Descriptor.Get<
+                    UnitPartControlledRageSelection>() == null;
+                bool selectorAbsent = owner.Descriptor.Abilities.GetAbility(
+                    set.Selector) == null;
+                bool urbanRageAbsent = !owner.Descriptor.HasFact(set.RageBuff);
+                bool nativeRageAbsent = !owner.Descriptor.HasFact(
+                    set.NativeRageBuff);
+                _urbanBarbarianPersistenceCleanupValid = featuresAbsent &&
+                    selectionsAbsent && partAbsent && selectorAbsent &&
+                    urbanRageAbsent && nativeRageAbsent;
+                cleanupDetail = "features=" + featuresAbsent +
+                    ";selections=" + selectionsAbsent + ";part=" +
+                    partAbsent + ";selector=" + selectorAbsent +
+                    ";urbanRage=" + urbanRageAbsent + ";nativeRage=" +
+                    nativeRageAbsent;
             }
 
             _urbanBarbarianPersistenceDetail = "phase=" +
@@ -3253,7 +3271,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";conModifiers=" + constitutionModifiers.Length +
                 ";rage=" + _urbanBarbarianPersistenceRageValid +
                 ";module=" + _urbanBarbarianPersistenceModuleStateValid +
-                ";cleanup=" + _urbanBarbarianPersistenceCleanupValid;
+                ";cleanup=" + _urbanBarbarianPersistenceCleanupValid +
+                ";cleanupDetail=" + cleanupDetail;
 
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
             MethodInfo saveGame = typeof(Game).GetMethods(
@@ -3325,7 +3344,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("urban-persistence-cleanup",
                     verify ? "all request-local Urban facts and active buffs removed before cleanup save" :
                         "not-applicable",
-                    verify ? _urbanBarbarianPersistenceCleanupValid.ToString() :
+                    verify ? _urbanBarbarianPersistenceDetail :
                         "not-applicable",
                     !verify || _urbanBarbarianPersistenceCleanupValid,
                     "exact working-save fixture cleanup"),

@@ -121,6 +121,18 @@ STR. No production assertion was accepted from that run. The fixture now uses
 `ControlledRageRuntime.TrySelect` and checks one synchronized fact for each of
 the three unlocked tier states; the exact candidate must be rebuilt and rerun.
 
+On commit `730375b46e0ab56076dbbd342011ba74ca6c6e16`, focused run
+`20260816T1821453096748Z-disposable-urban-barbarian-focused` passed. The
+two-launch persistence rerun then proved the new carrier and active-buff
+reconstruction: OFF verify run `20260816T1826248946753Z...` observed
+`selection=CON +4`, `selectionPart=True`, one exact CON morale modifier, all
+owner facts, zero Urban publication, and all 70 identities. Only the request-
+local cleanup postcondition failed after those proofs, while its authorized
+save and settings restoration still completed. Cleanup now explicitly removes
+the selector after its owner feature, re-sweeps exact selection facts, removes
+the request-local part, and emits six independent cleanup postconditions before
+the next candidate is allowed to pass.
+
 ## Authoritative eight-module boundary
 
 The generic catalog derives exactly `2N + 2 = 18` states for `N = 8`:

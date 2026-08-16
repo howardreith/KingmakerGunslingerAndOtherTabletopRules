@@ -109,6 +109,8 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("set.Count == UrbanBarbarianIdentityCatalog.IdentityCount") &&
                 runner.Contains("archetypeReferences == (expectedActive ? 1 : 0)") &&
                 runner.Contains("fixtureFeatures.Reverse()") &&
+                runner.Contains("owner.Descriptor.RemoveFact(set.Selector)") &&
+                runner.Contains("cleanupDetail = \"features=\"") &&
                 runner.Contains("Remove<UnitPartControlledRageSelection>()") &&
                 persistence.Contains("[JsonProperty]") &&
                 persistence.Contains("public override void PreSave()") &&
