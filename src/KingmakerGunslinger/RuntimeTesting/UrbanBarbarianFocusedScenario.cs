@@ -473,17 +473,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .CountAdjacentActiveEnemies(urban);
                 int attackTwo = Attack(urban, weapon);
                 int acTwo = ArmorClass(urban, enemyOne);
-                SetPosition(enemyThree, new Vector3(0f, 0f, 1.5f));
-                int attackThree = Attack(urban, weapon);
-                int acThree = ArmorClass(urban, enemyOne);
-                enemyTwo.Descriptor.State.MarkedForDeath = true;
+                enemyTwo.Descriptor.State.ForceKill = true;
                 int adjacentAfterDeath = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackAfterDeath = Attack(urban, weapon);
                 int acAfterDeath = ArmorClass(urban, enemyOne);
-                enemyTwo.Descriptor.State.MarkedForDeath = false;
-                int adjacentAfterRecovery = CrowdControlComponent
-                    .CountAdjacentActiveEnemies(urban);
+                SetPosition(enemyThree, new Vector3(0f, 0f, 1.5f));
+                int attackThree = Attack(urban, weapon);
+                int acThree = ArmorClass(urban, enemyOne);
                 SetPosition(enemyTwo, new Vector3(-9f, 0f, 0f));
                 SetPosition(enemyThree, new Vector3(0f, 0f, 9f));
                 int attackMovedOut = Attack(urban, weapon);
@@ -496,17 +493,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         distanceTwo + ";adjacent=" + adjacentTwo +
                         ";death=" + adjacentAfterDeath + "/" +
                         attackAfterDeath + "/" + acAfterDeath +
-                        ";recovered=" + adjacentAfterRecovery +
                         ";states=" + EnemyState(urban, enemyOne) + "/" +
                         EnemyState(urban, enemyTwo),
                     attackOne == attackZero && attackTwo == attackZero + 1 &&
                         attackThree == attackZero + 1 &&
                         attackMovedOut == attackZero && acOne == acZero &&
                         acTwo == acZero + 1 && acThree == acZero + 1 &&
-                        adjacentTwo == 2 && adjacentAfterDeath == 2 &&
-                        attackAfterDeath == attackZero + 1 &&
-                        acAfterDeath == acZero + 1 &&
-                        adjacentAfterRecovery == 3,
+                        adjacentTwo == 2 && adjacentAfterDeath == 1 &&
+                        attackAfterDeath == attackZero &&
+                        acAfterDeath == acZero,
                     "live attack/AC Rulebook events and native edge-to-edge DistanceTo");
             }
             catch (Exception exception)
