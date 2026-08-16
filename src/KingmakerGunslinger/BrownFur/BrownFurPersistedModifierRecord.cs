@@ -53,6 +53,17 @@ namespace KingmakerGunslinger.BrownFur
         internal long EndTimeTicks { get; set; }
     }
 
+    internal sealed class BrownFurOrdinaryRecastProbe
+    {
+        internal string BuffGuid { get; set; }
+        internal string SpellGuid { get; set; }
+        internal string CasterId { get; set; }
+        internal BrownFurAbilityScore AbilityScore { get; set; }
+        internal int CurrentValue { get; set; }
+        internal string CurrentDescriptor { get; set; }
+        internal string CarrierFamily { get; set; }
+    }
+
     internal static class BrownFurPersistedModifierPolicy
     {
         internal static void Validate(BrownFurPersistedModifierRecord record)
@@ -121,6 +132,32 @@ namespace KingmakerGunslinger.BrownFur
             BrownFurPersistedModifierRecord[] matches = records.Where(value =>
                 Matches(value, probe)).Take(2).ToArray();
             return matches.Length == 1 ? matches[0].Increase : 0;
+        }
+
+        internal static BrownFurPersistedModifierRecord ResolveOrdinaryRecast(
+            IEnumerable<BrownFurPersistedModifierRecord> records,
+            BrownFurOrdinaryRecastProbe probe)
+        {
+            if (records == null || probe == null) return null;
+            BrownFurPersistedModifierRecord[] matches = records.Where(value =>
+            {
+                Validate(value);
+                return string.Equals(value.BuffGuid, probe.BuffGuid,
+                           StringComparison.Ordinal) &&
+                    string.Equals(value.SpellGuid, probe.SpellGuid,
+                        StringComparison.Ordinal) &&
+                    string.Equals(value.CasterId, probe.CasterId,
+                        StringComparison.Ordinal) &&
+                    value.AbilityScore == probe.AbilityScore &&
+                    string.Equals(value.OriginalDescriptor,
+                        probe.CurrentDescriptor, StringComparison.Ordinal) &&
+                    string.Equals(value.CarrierFamily, probe.CarrierFamily,
+                        StringComparison.Ordinal) &&
+                    (probe.CurrentValue == value.OriginalValue ||
+                     probe.CurrentValue == value.OriginalValue +
+                        value.Increase);
+            }).Take(2).ToArray();
+            return matches.Length == 1 ? matches[0] : null;
         }
 
         private static void RequireGuid(string value, string role)

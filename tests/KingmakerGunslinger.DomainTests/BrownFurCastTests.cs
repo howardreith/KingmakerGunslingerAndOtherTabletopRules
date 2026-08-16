@@ -600,6 +600,40 @@ namespace KingmakerGunslinger.DomainTests
                 "Malformed persisted modifiers must be rejected.");
         }
 
+        internal static void OrdinaryRecastRestoresOriginalTypedValue()
+        {
+            BrownFurPersistedModifierRecord record = PersistenceRecord();
+            var enhanced = new BrownFurOrdinaryRecastProbe {
+                BuffGuid = record.BuffGuid, SpellGuid = record.SpellGuid,
+                CasterId = record.CasterId,
+                AbilityScore = BrownFurAbilityScore.Strength,
+                CurrentValue = 6, CurrentDescriptor = "Enhancement",
+                CarrierFamily = "AddStatBonus"
+            };
+            Assertions.Equal(record,
+                BrownFurPersistedModifierPolicy.ResolveOrdinaryRecast(
+                    new[] { record }, enhanced),
+                "An ordinary recast must identify the exact persisted +6 " +
+                "Enhancement modifier so it can return to its original +4.");
+            enhanced.CurrentValue = 4;
+            Assertions.Equal(record,
+                BrownFurPersistedModifierPolicy.ResolveOrdinaryRecast(
+                    new[] { record }, enhanced),
+                "A native reapplication that already rebuilt +4 must still " +
+                "clear the stale persisted enhancement record.");
+            enhanced.CurrentDescriptor = "UntypedStackable";
+            Assertions.Equal(null,
+                BrownFurPersistedModifierPolicy.ResolveOrdinaryRecast(
+                    new[] { record }, enhanced),
+                "A descriptor mismatch must never rewrite an unrelated " +
+                "modifier during ordinary recasting.");
+            enhanced.CurrentDescriptor = "Enhancement";
+            Assertions.Equal(null,
+                BrownFurPersistedModifierPolicy.ResolveOrdinaryRecast(
+                    new[] { record, PersistenceRecord() }, enhanced),
+                "Ambiguous persistence records must fail closed on recast.");
+        }
+
         private static BrownFurPersistedModifierRecord PersistenceRecord()
         {
             return new BrownFurPersistedModifierRecord(

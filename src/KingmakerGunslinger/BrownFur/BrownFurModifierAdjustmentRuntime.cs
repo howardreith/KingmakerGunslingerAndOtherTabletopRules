@@ -141,6 +141,53 @@ namespace KingmakerGunslinger.BrownFur
                 source.Context.MaybeCaster.UniqueId);
         }
 
+        internal static bool RestoreOrdinaryRecast(Buff source,
+            MechanicsContext applyingContext)
+        {
+            if (source == null || source.Owner == null ||
+                applyingContext == null ||
+                applyingContext.MaybeCaster == null ||
+                applyingContext.SourceAbility == null ||
+                FindScope(applyingContext) != null) return false;
+            UnitPartBrownFurModifierPersistence part = source.Owner.Get<
+                UnitPartBrownFurModifierPersistence>();
+            if (part == null) return false;
+            string buffGuid = NormalizeGuid(
+                source.Blueprint.AssetGuid.ToString());
+            string spellGuid = NormalizeGuid(
+                applyingContext.SourceAbility.AssetGuid.ToString());
+            string casterId = applyingContext.MaybeCaster.UniqueId;
+            foreach (StatType type in new[] { StatType.Strength,
+                StatType.Dexterity, StatType.Constitution,
+                StatType.Intelligence, StatType.Wisdom,
+                StatType.Charisma })
+            {
+                ModifiableValue stat = source.Owner.Stats.GetStat(type);
+                foreach (ModifiableValue.Modifier modifier in stat.Modifiers
+                    .Where(value => ReferenceEquals(value.Source, source))
+                    .ToArray())
+                {
+                    string family = CarrierFamily(modifier.SourceComponent);
+                    BrownFurPersistedModifierRecord record =
+                        part.ResolveOrdinaryRecast(
+                            new BrownFurOrdinaryRecastProbe {
+                                BuffGuid = buffGuid, SpellGuid = spellGuid,
+                                CasterId = casterId,
+                                AbilityScore = AbilityScore(type),
+                                CurrentValue = modifier.ModValue,
+                                CurrentDescriptor =
+                                    modifier.ModDescriptor.ToString(),
+                                CarrierFamily = family
+                            });
+                    if (record == null) continue;
+                    modifier.ModValue = record.OriginalValue;
+                    part.Forget(buffGuid, spellGuid, casterId);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static bool TryRestorePersisted(ModifiableValue destination,
             ModifiableValue.Modifier modifier, Buff source,
             MechanicsContext sourceContext)

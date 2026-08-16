@@ -765,12 +765,14 @@ namespace KingmakerGunslinger.DomainTests
                 "AbilityScore", "Increase", "OriginalValue",
                 "OriginalDescriptor", "CarrierFamily", "EndTimeTicks",
                 "ResolveIncrease", "matches.Length == 1",
-                "SameLogicalModifier" })
+                "SameLogicalModifier", "ResolveOrdinaryRecast",
+                "BrownFurOrdinaryRecastProbe" })
                 Assertions.True(persistedModifier.Contains(token),
                     "Powerful Change persisted record lacks guard: " + token);
             foreach (string token in new[] {
                 "UnitPart", "JsonProperty", "Remember", "ResolveIncrease",
-                "Forget", "PreSave", "PostLoad", "EnsureValid",
+                "ResolveOrdinaryRecast", "Forget", "PreSave", "PostLoad",
+                "EnsureValid",
                 "duplicate logical modifiers" })
                 Assertions.True(persistedModifierPart.Contains(token),
                     "Powerful Change target-owned persistence lacks guard: " +
@@ -780,12 +782,24 @@ namespace KingmakerGunslinger.DomainTests
                 "destination.Owner.Ensure", "source.EndTime.Ticks",
                 "source.Context.SourceAbility", "MaybeCaster.UniqueId" })
                 Assertions.True(modifierRuntime.Contains(token),
-                    "Powerful Change persisted runtime lacks guard: " + token);
+                "Powerful Change persisted runtime lacks guard: " + token);
+            foreach (string token in new[] { "RestoreOrdinaryRecast",
+                "FindScope(applyingContext) != null",
+                "modifier.ModValue = record.OriginalValue",
+                "part.Forget(buffGuid, spellGuid, casterId)" })
+                Assertions.True(modifierRuntime.Contains(token),
+                    "Powerful Change ordinary recast lacks guard: " + token);
             Assertions.True(modifierPatch.Contains(
                 "BrownFurPersistedModifierRemovalPatch") &&
                 modifierPatch.Contains("typeof(Buff), \"Remove\"") &&
                 modifierPatch.Contains("Forget(__instance)"),
                 "Powerful Change persisted adjustment must retire through native Buff.Remove.");
+            Assertions.True(modifierPatch.Contains(
+                "BrownFurOrdinaryRecastPatch") &&
+                modifierPatch.Contains("typeof(BuffCollection)") &&
+                modifierPatch.Contains("\"AddBuffInternal\"") &&
+                modifierPatch.Contains("RestoreOrdinaryRecast"),
+                "Powerful Change ordinary recasting must reconcile at the narrow native buff application boundary.");
             Assertions.False(modifierRuntime.Contains(
                 "static MechanicsContext Current"),
                 "Powerful Change must not retain one global current cast.");

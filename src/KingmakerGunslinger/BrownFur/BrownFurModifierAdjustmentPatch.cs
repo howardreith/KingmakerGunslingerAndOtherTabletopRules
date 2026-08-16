@@ -1,6 +1,9 @@
+using System;
 using Harmony12;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics;
 
 namespace KingmakerGunslinger.BrownFur
 {
@@ -33,6 +36,26 @@ namespace KingmakerGunslinger.BrownFur
             {
                 // Native removal remains authoritative even if optional
                 // Brown-Fur persistence evidence is malformed.
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(BuffCollection), "AddBuffInternal", new[] {
+        typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?) })]
+    [HarmonyAfter("CallOfTheWild")]
+    internal static class BrownFurOrdinaryRecastPatch
+    {
+        private static void Postfix(MechanicsContext __1, Buff __result)
+        {
+            try
+            {
+                BrownFurModifierAdjustmentRuntime.RestoreOrdinaryRecast(
+                    __result, __1);
+            }
+            catch
+            {
+                // An optional reconciliation failure must not break native
+                // buff application. The persisted carrier remains fail closed.
             }
         }
     }

@@ -86,6 +86,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("brown-fur.modifier-concurrent", BrownFurCastTests.ModifierTransactionsAreIsolated),
             Case("brown-fur.modifier-persistence-exact", BrownFurCastTests.ModifierPersistenceMatchesExactly),
             Case("brown-fur.modifier-persistence-fail-closed", BrownFurCastTests.ModifierPersistenceFailsClosed),
+            Case("brown-fur.modifier-ordinary-recast", BrownFurCastTests.OrdinaryRecastRestoresOriginalTypedValue),
             Case("brown-fur.share-scope-exact", BrownFurCastTests.ShareTargetingScopeIsExact),
             Case("brown-fur.share-scope-concurrent", BrownFurCastTests.ShareTargetingScopesAreIsolated),
             Case("brown-fur.supremacy-scope-exact", BrownFurCastTests.SupremacyScopeIsExactAndNonStacking),

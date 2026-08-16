@@ -43,6 +43,17 @@ namespace KingmakerGunslinger.BrownFur
             }
         }
 
+        internal BrownFurPersistedModifierRecord ResolveOrdinaryRecast(
+            BrownFurOrdinaryRecastProbe probe)
+        {
+            lock (this)
+            {
+                EnsureValid();
+                return BrownFurPersistedModifierPolicy.ResolveOrdinaryRecast(
+                    _records, probe);
+            }
+        }
+
         internal int Forget(string buffGuid, string spellGuid,
             string casterId)
         {
