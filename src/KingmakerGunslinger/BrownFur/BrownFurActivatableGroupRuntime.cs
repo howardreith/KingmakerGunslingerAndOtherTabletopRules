@@ -29,4 +29,29 @@ namespace KingmakerGunslinger.BrownFur
             return false;
         }
     }
+
+    /// <summary>
+    /// Kingmaker normally delays removal of an activatable's applied buff when
+    /// IsOn becomes false. Brown-Fur intent markers must disappear at the same
+    /// instant as the native selected overlay. Force-removal is restricted to
+    /// the seven Brown-Fur toggles and does not alter activation or spending.
+    /// </summary>
+    [HarmonyPatch(typeof(ActivatableAbility), "set_IsOn")]
+    internal static class BrownFurActivatableImmediateOffPatch
+    {
+        private static void Postfix(ActivatableAbility __instance, bool __0)
+        {
+            try
+            {
+                if (!__0 && __instance != null && __instance.IsRunning &&
+                    BrownFurPlayerIntentRuntime.IsBrownFurToggle(__instance))
+                    __instance.Stop(true);
+            }
+            catch (System.Exception exception)
+            {
+                BrownFurCastExecutionRuntime.RecordPatchFailure(
+                    "activatable-immediate-off", exception);
+            }
+        }
+    }
 }

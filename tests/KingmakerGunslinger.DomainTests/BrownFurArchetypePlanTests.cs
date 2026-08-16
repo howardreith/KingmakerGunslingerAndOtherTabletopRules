@@ -53,6 +53,10 @@ namespace KingmakerGunslinger.DomainTests
             string source = System.IO.File.ReadAllText(System.IO.Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "BrownFurBlueprints.cs"));
+            string activatableRuntime = System.IO.File.ReadAllText(
+                System.IO.Path.Combine(Environment.CurrentDirectory, "src",
+                    "KingmakerGunslinger", "BrownFur",
+                    "BrownFurActivatableGroupRuntime.cs"));
             foreach (string token in new[] {
                 "CreateScoreActivatable", "scoreActivatables.Cast<BlueprintUnitFact>()",
                 "WeightInGroup = 1", "IsOnByDefault = false",
@@ -81,6 +85,12 @@ namespace KingmakerGunslinger.DomainTests
                     "Native icon donor identity is missing or duplicated: " + guid);
             Assertions.True(source.Contains("all.Distinct().Count() != all.Length"),
                 "Brown-Fur icon construction does not fail closed on duplicates.");
+            Assertions.True(activatableRuntime.Contains(
+                    "BrownFurActivatableImmediateOffPatch") &&
+                activatableRuntime.Contains(
+                    "BrownFurPlayerIntentRuntime.IsBrownFurToggle") &&
+                activatableRuntime.Contains("__instance.Stop(true)"),
+                "Brown-Fur native OFF state does not immediately synchronize its marker.");
         }
 
         internal static void PreCommandTargetingRepairIsScoped()

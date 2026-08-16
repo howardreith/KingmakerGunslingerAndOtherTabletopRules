@@ -131,5 +131,18 @@ namespace KingmakerGunslinger.BrownFur
             return owner.ActivatableAbilities.Enumerable.SingleOrDefault(value =>
                 value != null && ReferenceEquals(value.Blueprint, blueprint));
         }
+
+        internal static bool IsBrownFurToggle(ActivatableAbility ability)
+        {
+            if (ability == null || ability.Blueprint == null) return false;
+            BrownFurBlueprintSet blueprints =
+                BrownFurOptionalExtensionCoordinator.Blueprints;
+            if (blueprints == null) return false;
+            return ReferenceEquals(ability.Blueprint,
+                    blueprints.ShareTransmutationAbility) ||
+                (blueprints.ScoreActivatables ??
+                    new BlueprintActivatableAbility[0]).Any(value =>
+                        ReferenceEquals(ability.Blueprint, value));
+        }
     }
 }
