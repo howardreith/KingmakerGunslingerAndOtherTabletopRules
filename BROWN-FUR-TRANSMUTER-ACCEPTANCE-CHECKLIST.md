@@ -1,10 +1,10 @@
 # Brown-Fur Transmuter human acceptance checklist
 
-This checklist applies only to the immutable installed pre-human candidate
-below. Checking every presentation item and recording an explicit acceptance
-authorizes the final 128-state matrix on this exact artifact. Any source,
-package, DLL, installed DLL, CotW binary/settings, or game-version change
-invalidates this acceptance and requires a new candidate.
+Status: **HUMAN REVIEW FAILED / SUPERSEDED**.
+
+This checklist records the rejected `0.0.81` candidate. It does not authorize
+the final 128-state matrix. A replacement checklist will be prepared only after
+the `0.0.82` repair passes automated and focused runtime qualification.
 
 ## Candidate identity
 
@@ -28,7 +28,20 @@ invalidates this acceptance and requires a new candidate.
   `4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`;
   MVID `8caab254-aacf-4811-8093-44b9184e6e53`
 
-## Human presentation review
+## Human findings
+
+- Powerful Change score actions did not expose a sufficiently legible native
+  armed state; Strength was unintentionally disarmed and Bull's Strength cast
+  normally at +4 without reservoir cost.
+- Cat's Grace later reached +6 Enhancement while Dexterity was actually armed,
+  confirming that the descriptor-preserving bonus path worked but the player
+  interaction did not.
+- The six score icons were too similar, action descriptions omitted operational
+  rules, and consuming actions did not show the live Arcane Reservoir count.
+- With Share armed, Beast Shape II, Undead Anatomy, and Resinous Skin
+  immediately self-cast instead of entering creature-target selection.
+
+## Superseded presentation checklist
 
 - [ ] The UMM switch visibly says `Brown-Fur Transmuter  requires Call of the Wild`.
 - [ ] Available, Unavailable, and Blocked dependency states are distinct and understandable.
@@ -53,11 +66,11 @@ invalidates this acceptance and requires a new candidate.
 
 - Reviewer: ______________________________
 - Review date/time and timezone: ______________________________
-- Decision: **PENDING** / ACCEPTED / CHANGES REQUIRED
+- Decision: **CHANGES REQUIRED / NOT ACCEPTED**
 - Accepted source commit: ______________________________
 - Accepted package SHA-256: ______________________________
 - Accepted installed DLL SHA-256: ______________________________
 - Notes: ______________________________
 
-Do not run the final exhaustive matrix while Decision remains PENDING. If the
-decision is CHANGES REQUIRED, create and qualify a new immutable candidate.
+Do not run the final exhaustive matrix from this checklist. Create and qualify
+a new immutable candidate, then conduct a new human review.

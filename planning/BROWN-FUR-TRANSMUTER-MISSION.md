@@ -33,28 +33,39 @@ acceptance.
 
 - Branch: `codex/brown-fur-transmuter-cotw-extension`.
 - Release base: `0.0.80`.
-- Preferred candidate identity: `0.0.81-brown-fur-transmuter`.
+- Prior candidate identity: `0.0.81-brown-fur-transmuter`.
+- Preferred repair identity: `0.0.82-brown-fur-human-review-repair`.
 - Base gate: satisfied by explicit user override on 2026-08-15.
 - Cleanup acceptance: still pending and outside the current work cycle.
-- Brown-Fur acceptance: **READY / PENDING HUMAN** for the installed immutable
-  candidate sourced from `2ef6e933ff521dff2330a948336a38083e741082`.
+- Brown-Fur acceptance: **HUMAN REVIEW FAILED / SUPERSEDED** for candidate
+  source `2ef6e933ff521dff2330a948336a38083e741082` and documentation handoff
+  `768877bcf2b6d4d785cbb5f518fb49d66c6a7b25`.
+- Repair status: implementation and qualification pending from branch HEAD
+  `768877bcf2b6d4d785cbb5f518fb49d66c6a7b25`.
 - Pre-human boundary: **PASS 16/16**.
 - Final exhaustive matrix: **NOT RUN / prohibited until human acceptance**.
 
-The installed pre-human artifact is version `0.0.81`, package SHA-256
+The superseded, unaccepted pre-human artifact is version `0.0.81`, package SHA-256
 `883751EDD4AF3427CCE712C2C875EEA0E4B6CCB955E9A2778176E5CE1C2BA7BE`,
 DLL and installed-DLL SHA-256
 `9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF`,
 and MVID `30b587a9-39f6-42c5-a5df-1ce32d73974f`. Deployment
 `20260815T2354477268935Z` is backed by `20260815T2354434393118Z`.
 
-All focused mechanical gates, normal and balance CotW progression, CotW
+Before human review, all focused mechanical gates, normal and balance CotW progression, CotW
 absence, module OFF existing-owner persistence, the 16-state boundary, and the
 highest-risk supported combined profile pass. Brown-Fur publishes exactly once
 to the compatible CotW Arcanist selector when ON and remains registered but
-hidden when OFF. The next mission boundary is the human checklist; no source,
-rebuild, repackage, redeployment, or 128-state matrix is authorized before that
-decision.
+hidden when OFF. Human playtesting nevertheless rejected this artifact because
+Powerful Change's selected state was not legible or native-feeling, its
+descriptions and resource presentation were inadequate, and eligible Personal
+Transmutation spells self-cast instead of entering Share Transmutation target
+selection. These findings supersede the prior readiness claim while preserving
+the successful mechanical evidence that the repair does not invalidate.
+
+The next mission boundary is a newly qualified `0.0.82` repair candidate and a
+new human checklist. The 128-state matrix remains prohibited until that exact
+candidate receives explicit acceptance.
 
 The inspected dependency structure and fail-closed progression authority are
 recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.

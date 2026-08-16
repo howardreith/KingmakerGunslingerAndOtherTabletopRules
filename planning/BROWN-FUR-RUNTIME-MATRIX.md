@@ -3,9 +3,11 @@
 This is the durable scenario-level qualification authority for Brown-Fur.
 Exact package, DLL, MVID, deployment, backup, CotW, and structured-evidence
 identities are recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`. A passing
-row proves only its stated scope. Brown-Fur is published in the installed
-pre-human candidate when its module is ON and compatible CotW is present. The
-final 128-state seal remains prohibited until explicit human acceptance.
+row proves only its stated scope. The `0.0.81` artifact was published when its
+module was ON and compatible CotW was present, but human review rejected its
+toggle presentation and pre-command Share targeting. It is superseded, not
+accepted. The final 128-state seal remains prohibited until a repaired exact
+artifact receives explicit human acceptance.
 
 ## Current focused evidence
 
@@ -51,10 +53,15 @@ final 128-state seal remains prohibited until explicit human acceptance.
 | CotW normal progression | PASS | Runtime graph is Normal with resolved exploit levels `1,3,5,7,9,11,13,15,17,19`, replacements 3/9, setting agreement, compatible contract, and exact settings restoration |
 | CotW balance progression | PASS (focused contract) | Runtime-resolved replacements 4 and 10 |
 | Seven-module boundary matrix | PASS | All 16 formula-derived states passed on commit `2ef6e933`; original settings restored to SHA `5B6030AE...665E` |
-| Human presentation acceptance | READY / PENDING HUMAN | Installed immutable candidate and checklist are ready; explicit acceptance is required |
+| Human presentation acceptance | FAILED / SUPERSEDED | `0.0.81` had unclear Powerful Change state/resource presentation and Personal Share spells self-cast without target acquisition |
+| Human-review repair qualification | PENDING | Native mutually exclusive toggles, live reservoir counters, distinct icons, early Share targeting, focused runtime, persistence, optional profiles, and 16-state boundary |
 | Seven-module exhaustive matrix | PROHIBITED PRE-ACCEPTANCE | Exactly 128 states on the accepted immutable artifact |
 
-## Immutable pre-human candidate
+## Superseded pre-human candidate
+
+Human review did not accept this candidate. Its identities and passing evidence
+remain recorded for regression provenance only and do not authorize the final
+matrix.
 
 - Source commit: `2ef6e933ff521dff2330a948336a38083e741082`
 - Version: `0.0.81-brown-fur-transmuter`
@@ -95,8 +102,8 @@ final 128-state seal remains prohibited until explicit human acceptance.
   `compat-20260816T004352Z-6508dc75fbfa`; both runtime results passed and the
   complete Mods tree plus CotW settings were restored exactly.
 
-The exhaustive `2^7 = 128` matrix has not been run. Human acceptance of this
-exact installed artifact is the next authorized gate.
+The exhaustive `2^7 = 128` matrix has not been run. A new immutable repair
+artifact must complete focused qualification and human acceptance first.
 
 The current focused player-intent run is
 `20260815T2030084869082Z-f2bbc2103df344479f67ea782e23eff4`, evidence
