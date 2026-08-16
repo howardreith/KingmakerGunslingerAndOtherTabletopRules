@@ -55,7 +55,10 @@ namespace KingmakerGunslinger.DomainTests
                 "RuleCalculateAttackBonusWithoutTarget",
                 "RuleCalculateAC",
                 "SpawnHostileTarget",
-                "ApplyLevel(urban.Descriptor" })
+                "ApplyLevel(urban.Descriptor",
+                "State.Units.All.Add(urban)",
+                "ordinaryToggle.OnNewRound()",
+                "ordinaryToggle.Stop(true)" })
                 Assertions.True(catalog.Contains(token) || runner.Contains(token) ||
                     focused.Contains(token) || automation.Contains(token),
                     "Focused Urban scenario contract is missing: " + token);

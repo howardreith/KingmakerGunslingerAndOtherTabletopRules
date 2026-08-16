@@ -57,6 +57,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData enemyThree = null;
             BlueprintUnit hostileSource = null;
             ItemEntityWeapon weapon = null;
+            bool urbanRegistered = false;
+            bool enemyOneRegistered = false;
+            bool enemyTwoRegistered = false;
+            bool enemyThreeRegistered = false;
             bool cleaned = false;
             string stage = "fixture";
             try
@@ -77,6 +81,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     enemyThree == null || urban.View == null)
                     throw new InvalidOperationException(
                         "The disposable Urban live-unit fixture is incomplete.");
+                urbanRegistered = Game.Instance.State.Units.All.Add(urban);
+                enemyOneRegistered = Game.Instance.State.Units.All.Add(enemyOne);
+                enemyTwoRegistered = Game.Instance.State.Units.All.Add(enemyTwo);
+                enemyThreeRegistered = Game.Instance.State.Units.All.Add(enemyThree);
+                if (!urbanRegistered || !enemyOneRegistered ||
+                    !enemyTwoRegistered || !enemyThreeRegistered)
+                    throw new InvalidOperationException(
+                        "The disposable Urban units did not register exactly once in the native world-unit pool.");
                 enemyOne.Descriptor.State.Immortality.Retain();
                 enemyTwo.Descriptor.State.Immortality.Retain();
                 enemyThree.Descriptor.State.Immortality.Retain();
@@ -220,11 +232,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         urban.Descriptor.HasFact(set.RageBuff);
                     ordinaryResourceRunning = urban.Descriptor.Resources
                         .GetResourceAmount(rageResource);
-                    urban.CombatState.OnNewRound();
+                    ordinaryToggle.OnNewRound();
                     ordinaryResourceAfterRound = urban.Descriptor.Resources
                         .GetResourceAmount(rageResource);
                     ordinaryToggle.IsOn = false;
-                    ordinaryToggle.Stop(false);
+                    ordinaryToggle.Stop(true);
                     ordinaryCanceled = !ordinaryToggle.IsOn &&
                         !urban.Descriptor.HasFact(set.RageBuff);
                     ordinaryFatigued = urban.Descriptor.State.HasCondition(
@@ -321,7 +333,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activated = nativeToggle.IsOn &&
                         urban.Descriptor.HasFact(set.RageBuff);
                     nativeToggle.IsOn = false;
-                    nativeToggle.Stop(false);
+                    nativeToggle.Stop(true);
                     canceled = !nativeToggle.IsOn &&
                         !urban.Descriptor.HasFact(set.RageBuff);
                     fatigueAfterTireless = urban.Descriptor.State.HasCondition(
@@ -383,6 +395,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 ElvenBranchedSpearCombatScenario.RemoveEquipped(urban, ref weapon);
+                if (enemyThreeRegistered)
+                    Game.Instance.State.Units.All.Remove(enemyThree);
+                if (enemyTwoRegistered)
+                    Game.Instance.State.Units.All.Remove(enemyTwo);
+                if (enemyOneRegistered)
+                    Game.Instance.State.Units.All.Remove(enemyOne);
+                if (urbanRegistered)
+                    Game.Instance.State.Units.All.Remove(urban);
                 foreach (UnitEntityData unit in new[] { enemyThree, enemyTwo,
                     enemyOne })
                 {

@@ -123,6 +123,15 @@ selected morale ability modifiers. Base Barbarians and every other Rage owner
 continue receiving the native buff. The retained native feature supplies exact
 feat/resource/prerequisite equivalence without a global prerequisite rewrite.
 
+Exact installed metadata also establishes the lifecycle boundary used by the
+focused fixture: `ActivatableAbility.OnNewRound()` calls each attached
+`ActivatableAbilityResourceLogic.OnNewRound()`, whose `SpendType == NewRound`
+branch spends the required Rage resource. `Stop(forceRemovedBuff: true)` is the
+native immediate forced-end path and removes the applied buff, allowing its
+retained deactivation/fatigue action graph to run synchronously. Calling
+`UnitCombatState.OnNewRound()` does not dispatch this activatable-ability
+component contract and is not valid evidence of Rage resource spending.
+
 Research candidate `8edb2cb57206b359e8b67ee8eacbb4df6e98a67a`
 passed both guarded profiles. CotW-present run
 `20260816T1328091838409Z-observe-urban-barbarian-rage-inventory` recorded 952
