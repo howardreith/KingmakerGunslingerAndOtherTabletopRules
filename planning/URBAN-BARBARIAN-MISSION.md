@@ -147,10 +147,23 @@ all three ordinary full allocations plus a split, every allocation family at
 Greater and Mighty Rage, ordinary-benefit leakage checks, native resource and
 fatigue/Tireless lifecycle, repeated low-HP Constitution cycles, and Crowd
 Control attack/AC threshold changes. The guarded two-launch working-save
-fixture persists an active CON +4 Controlled Rage and its exact feature and
-selection facts, restarts with Urban publication OFF, proves all 70 identities
-and owner behavior remain available while new selection is hidden, cleans the
-fixture, saves, and restores feature settings byte-for-byte.
+fixture is designed to persist an active CON +4 Controlled Rage and its exact
+feature and selection state, restart with Urban publication OFF, prove all 70
+identities and owner behavior remain available while new selection is hidden,
+clean the fixture, save, and restore feature settings byte-for-byte.
+
+The first correctly routed persistence checkpoint proved the guarded prepare
+load/write, module-OFF publication behavior, retained Urban feature ownership,
+exact cleanup/write, and settings restoration, but rejected the original
+selection carrier after restart: Kingmaker reconstructed the `AddFacts` full-
+Strength default while the chosen CON child feature was not authoritative, and
+the surviving active buff consequently lacked the required CON modifier. The
+corrected architecture stores independent +4/+6/+8 choices as primitive data
+in `UnitPartControlledRageSelection`. Selection features remain stable
+registered identities and synchronized migration/presentation carriers; they
+are no longer the source of truth. Feature and buff activation reconcile the
+current persisted tier before applying modifiers. Final acceptance remains
+blocked until this narrower carrier passes the same two-launch transaction.
 
 ## Qualification contract
 

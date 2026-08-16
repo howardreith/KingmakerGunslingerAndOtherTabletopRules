@@ -46,6 +46,16 @@ namespace KingmakerGunslinger.UrbanBarbarian
             return true;
         }
 
+        internal bool TrySelectExact(ControlledRageTier tier,
+            ControlledRageAllocation allocation, bool rageActive)
+        {
+            if (rageActive || !_selections.ContainsKey(tier) ||
+                !ControlledRageAllocationPolicy.IsLegalForTier(tier, allocation))
+                return false;
+            _selections[tier] = allocation;
+            return true;
+        }
+
         internal ControlledRageAllocation SelectionFor(ControlledRageTier tier)
         {
             ControlledRageAllocation value;

@@ -29,6 +29,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
             _abilitiesByAllocation;
         private static IDictionary<ControlledRageAllocation, BlueprintFeature>
             _factsByAllocation;
+        private static IDictionary<BlueprintFeature, ControlledRageAllocation>
+            _allocationsByFact;
 
         internal static void Configure(BlueprintBuff nativeRage,
             BlueprintBuff urbanRage, BlueprintFeature ownerFeature,
@@ -52,6 +54,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 value => value.Key);
             _factsByAllocation = new Dictionary<ControlledRageAllocation,
                 BlueprintFeature>(facts);
+            _allocationsByFact = facts.ToDictionary(value => value.Value,
+                value => value.Key);
         }
 
         internal static BlueprintBuff Substitute(BuffCollection collection,
@@ -89,16 +93,96 @@ namespace KingmakerGunslinger.UrbanBarbarian
             ControlledRageAllocation[] selected =
                 ControlledRageAllocationPolicy.Generate(tier).Where(value =>
                     owner.HasFact(_factsByAllocation[value])).ToArray();
-            if (selected.Length == 1) return selected[0];
-            if (!reconcileDefault) return null;
-            foreach (ControlledRageAllocation value in
+            UnitPartControlledRageSelection part = owner.Get<
+                UnitPartControlledRageSelection>();
+            if (part == null)
+            {
+                if (selected.Length == 1)
+                {
+                    part = owner.Ensure<UnitPartControlledRageSelection>();
+                    part.Unlock(tier);
+                    if (!part.TrySelect(tier, selected[0], false)) return null;
+                }
+                else if (!reconcileDefault) return null;
+                else
+                {
+                    part = owner.Ensure<UnitPartControlledRageSelection>();
+                    part.Unlock(tier);
+                }
+            }
+            else part.Unlock(tier);
+            ControlledRageAllocation result = part.SelectionFor(tier);
+            if (result == null) return null;
+            return !reconcileDefault || SynchronizeSelectionFacts(owner, part)
+                ? result : null;
+        }
+
+        internal static void UnlockTier(UnitDescriptor owner,
+            ControlledRageTier tier)
+        {
+            if (owner == null || !ControlledRageAllocationPolicy.Generate(tier)
+                    .Any()) return;
+            UnitPartControlledRageSelection part = owner.Ensure<
+                UnitPartControlledRageSelection>();
+            part.Unlock(tier);
+            SynchronizeSelectionFacts(owner, part);
+        }
+
+        internal static bool TrySelect(UnitDescriptor owner,
+            ControlledRageAllocation allocation)
+        {
+            ControlledRageTier tier;
+            if (owner == null || allocation == null ||
+                !TryCurrentTier(owner, out tier) || allocation.Total != (int)tier ||
+                IsUrbanRageActive(owner)) return false;
+            UnitPartControlledRageSelection part = owner.Ensure<
+                UnitPartControlledRageSelection>();
+            part.Unlock(tier);
+            ControlledRageAllocation previous = part.SelectionFor(tier);
+            if (!part.TrySelect(tier, allocation, false)) return false;
+            if (SynchronizeSelectionFacts(owner, part)) return true;
+            part.TrySelect(tier, previous, false);
+            SynchronizeSelectionFacts(owner, part);
+            return false;
+        }
+
+        internal static bool TryResolveAllocation(BlueprintFeature feature,
+            out ControlledRageAllocation allocation)
+        {
+            allocation = null;
+            return feature != null && _allocationsByFact != null &&
+                _allocationsByFact.TryGetValue(feature, out allocation);
+        }
+
+        internal static void ClearTierFacts(UnitDescriptor owner,
+            ControlledRageTier tier)
+        {
+            if (owner == null || _factsByAllocation == null) return;
+            foreach (ControlledRageAllocation allocation in
                 ControlledRageAllocationPolicy.Generate(tier))
-                if (owner.HasFact(_factsByAllocation[value]))
-                    owner.RemoveFact(_factsByAllocation[value]);
-            ControlledRageAllocation fallback =
-                ControlledRageAllocationPolicy.Default(tier);
-            return owner.AddFact(_factsByAllocation[fallback]) == null ? null :
-                fallback;
+                if (owner.HasFact(_factsByAllocation[allocation]))
+                    owner.RemoveFact(_factsByAllocation[allocation]);
+        }
+
+        private static bool SynchronizeSelectionFacts(UnitDescriptor owner,
+            UnitPartControlledRageSelection part)
+        {
+            foreach (ControlledRageTier tier in new[] {
+                ControlledRageTier.Ordinary, ControlledRageTier.Greater,
+                ControlledRageTier.Mighty })
+            {
+                ControlledRageAllocation selected = part.SelectionFor(tier);
+                foreach (ControlledRageAllocation allocation in
+                    ControlledRageAllocationPolicy.Generate(tier))
+                    if (!Equals(allocation, selected) &&
+                        owner.HasFact(_factsByAllocation[allocation]))
+                        owner.RemoveFact(_factsByAllocation[allocation]);
+                if (selected != null &&
+                    !owner.HasFact(_factsByAllocation[selected]) &&
+                    owner.AddFact(_factsByAllocation[selected]) == null)
+                    return false;
+            }
+            return true;
         }
 
         internal static IList<AbilityData> FilterVariants(AbilityData parent,
@@ -123,8 +207,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 return false;
             ControlledRageAllocation allocation;
             return _allocationsByAbility.TryGetValue(ability.Blueprint,
-                out allocation) && ability.Caster.HasFact(
-                    _factsByAllocation[allocation]);
+                out allocation) && Equals(ResolveSelection(
+                    ability.Caster, false), allocation);
         }
     }
 

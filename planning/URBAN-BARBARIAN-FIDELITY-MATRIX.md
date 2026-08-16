@@ -18,8 +18,8 @@ persistence, compatibility-profile, and boundary qualification pending**.
 | Crowd influence | Intimidate to influence crowds | Intentional no-op: no precise crowd-influence subsystem exists; no global Persuasion/Intimidate bonus | Adaptation locked |
 | Rage pool | +4; +6 Greater; +8 Mighty | Morale modifiers on actual Strength/Dexterity/Constitution values; tier derives from exact native Greater/Mighty facts | Architecture locked |
 | Allocations | Full or split in +2 increments | Deterministic current-tier vectors: 6, 10, 15 | Fast/source and focused fixture PASS |
-| Selection | Player-controlled | Compact nested selector; free, persistent, locked while raging, unmistakable selected state | Mechanical contract PASS; final legibility is human acceptance |
-| Tier state | Preserve legal selection per tier | Independent +4/+6/+8 state; default full Strength when each tier first unlocks | Fast/source and focused fixture PASS |
+| Selection | Player-controlled | Compact nested selector; free, persistent, locked while raging, unmistakable selected state. A primitive serialized `UnitPartControlledRageSelection` is authoritative; stable selection facts are synchronized carriers only. | Mechanical contract PASS; corrected save/restart carrier pending; final legibility is human acceptance |
+| Tier state | Preserve legal selection per tier | Independent +4/+6/+8 persisted state; default full Strength when each tier first unlocks; lower-tier values are retained without mapping | Fast/source transition and serialization policy PASS; guarded rerun pending |
 | Native offensive Rage | None | Owner-scoped buff substitution removes exact melee damage, thrown damage, and melee attack components | Exact components classified |
 | Native defensive Rage | No Will bonus, no AC penalty | Owner-scoped clone removes exact Will and AC components | Exact components classified |
 | Native temporary HP | None | Owner-scoped clone removes exact temporary-HP component | Exact component classified |
@@ -28,7 +28,7 @@ persistence, compatibility-profile, and boundary qualification pending**.
 | Lifecycle | Normal Rage | Retain native feature, activatable, resource/fact, activation actions, shared value, descriptor, fatigue actions, cancellation, and Tireless fact | Focused resource/fatigue/Tireless fixture PASS |
 | Rage powers | Normal integration | Retain native Rage feature/activatable plus `UnitCondition.BarbarianRage` action and Rage descriptor; no recommended powers granted automatically | Native focused mechanics PASS; final CotW profile pending |
 | Rage equivalence | Feats/items/prerequisites recognize Rage | Retain exact native Rage feature `247939...`; substitute only buff application for Urban owners | Architecture locked |
-| Constitution HP | Genuine Constitution modifier | Native morale ability modifier; explicit anti-heal/duplication/reconciliation policy | Focused low-HP/repeated-cycle fixture PASS; guarded save/load pending |
+| Constitution HP | Genuine Constitution modifier | Native morale ability modifier; explicit anti-heal/duplication/reconciliation policy; active-buff load reads the authoritative persisted allocation and re-synchronizes modifiers | Focused low-HP/repeated-cycle fixture PASS; corrected guarded save/load pending |
 | CotW absent | Urban fully usable | Core available; interoperability N/A | Pending focused profile |
 | CotW supported | Urban fully usable | Core available; marker/action behavior qualified; bridge only if proven necessary | Pending focused profile |
 | CotW unknown/ambiguous | Urban remains usable | Core available; optional bridge disabled/unqualified with exact diagnostic | Fast structural simulations PASS |

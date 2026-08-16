@@ -43,6 +43,7 @@
     <Compile Include="UrbanBarbarian\ControlledRageAllocation.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageAllocationPolicy.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageSelectionState.cs" />
+    <Compile Include="UrbanBarbarian\UnitPartControlledRageSelection.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageHitPointPolicy.cs" />
     <Compile Include="UrbanBarbarian\CrowdControlPolicy.cs" />
     <Compile Include="UrbanBarbarian\UrbanCotwCompatibilityPolicy.cs" />

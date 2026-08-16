@@ -3145,6 +3145,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (fixtureFeatures.Any(owner.Descriptor.HasFact) ||
                     set.SelectionFacts.Any(owner.Descriptor.HasFact) ||
+                    owner.Descriptor.Get<UnitPartControlledRageSelection>() != null ||
                     owner.Descriptor.HasFact(set.RageBuff) ||
                     owner.Descriptor.HasFact(set.NativeRageBuff))
                     throw new InvalidOperationException(
@@ -3153,21 +3154,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (owner.Descriptor.AddFact(feature) == null)
                         throw new InvalidOperationException(
                             "An Urban Barbarian persistence feature could not be granted: " + feature.name);
-                foreach (BlueprintFeature feature in set.SelectionFacts)
-                    if (owner.Descriptor.HasFact(feature))
-                        owner.Descriptor.RemoveFact(feature);
                 ControlledRageAllocation con =
                     ControlledRageAllocationPolicy.Generate(
                         ControlledRageTier.Ordinary).Single(value =>
                             value.Strength == 0 && value.Dexterity == 0 &&
                             value.Constitution == 4);
-                string symbol = UrbanBarbarianIdentityCatalog.SelectionFeature(
-                    con);
-                string guid = UrbanBarbarianIdentityCatalog.All.Single(value =>
-                    value.Symbol == symbol).Guid;
-                BlueprintFeature conSelection = set.SelectionFacts.Single(
-                    value => value.AssetGuid == guid);
-                if (owner.Descriptor.AddFact(conSelection) == null)
+                if (!ControlledRageRuntime.TrySelect(owner.Descriptor, con))
                     throw new InvalidOperationException(
                         "The Urban Barbarian persisted CON +4 allocation could not be selected.");
                 var context = new MechanicsContext(owner, owner.Descriptor,
@@ -3182,6 +3174,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             ControlledRageAllocation selection =
                 ControlledRageRuntime.ResolveSelection(owner.Descriptor, false);
+            UnitPartControlledRageSelection selectionPart = owner.Descriptor.Get<
+                UnitPartControlledRageSelection>();
             Buff[] urbanRages = owner.Descriptor.Buffs.RawFacts.OfType<Buff>()
                 .Where(value => ReferenceEquals(value.Blueprint,
                     set.RageBuff)).ToArray();
@@ -3196,6 +3190,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _urbanBarbarianPersistenceSelectionValid = selection != null &&
                 selection.Strength == 0 && selection.Dexterity == 0 &&
                 selection.Constitution == 4 &&
+                selectionPart != null && Equals(selectionPart.SelectionFor(
+                    ControlledRageTier.Ordinary), selection) &&
                 set.SelectionFacts.Count(owner.Descriptor.HasFact) == 1;
             _urbanBarbarianPersistenceRageValid = persistedRage != null &&
                 !owner.Descriptor.HasFact(set.NativeRageBuff) &&
@@ -3235,9 +3231,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (BlueprintFeature feature in fixtureFeatures.Reverse())
                     if (owner.Descriptor.HasFact(feature))
                         owner.Descriptor.RemoveFact(feature);
+                owner.Descriptor.Remove<UnitPartControlledRageSelection>();
                 _urbanBarbarianPersistenceCleanupValid =
                     !fixtureFeatures.Any(owner.Descriptor.HasFact) &&
                     !set.SelectionFacts.Any(owner.Descriptor.HasFact) &&
+                    owner.Descriptor.Get<UnitPartControlledRageSelection>() == null &&
                     owner.Descriptor.Abilities.GetAbility(set.Selector) == null &&
                     !owner.Descriptor.HasFact(set.RageBuff) &&
                     !owner.Descriptor.HasFact(set.NativeRageBuff);
@@ -3251,6 +3249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";facts=" + _urbanBarbarianPersistenceFactsValid +
                 ";selection=" + (selection == null ? "missing" :
                     selection.ToString()) + ";rageCount=" + urbanRages.Length +
+                ";selectionPart=" + (selectionPart != null) +
                 ";conModifiers=" + constitutionModifiers.Length +
                 ";rage=" + _urbanBarbarianPersistenceRageValid +
                 ";module=" + _urbanBarbarianPersistenceModuleStateValid +

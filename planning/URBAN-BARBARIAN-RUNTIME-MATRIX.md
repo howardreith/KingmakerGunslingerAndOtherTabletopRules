@@ -92,6 +92,26 @@ scenarios were absent from both initial guarded working-save dispatch clauses.
 The correction and a two-clause regression assertion are part of the next
 candidate; unchanged retry is forbidden.
 
+Commit `259b326a47ea93cf30286668a30b6117cb334b81` then proved the
+corrected routing. Prepare run
+`20260816T1802241490142Z-working-save-urban-barbarian-prepare` passed its exact
+load, CON +4 selection/active modifier, publication, and single authorized save
+write. The module-OFF restart
+`20260816T1804386784831Z-working-save-urban-barbarian-off-verify-cleanup`
+proved exact load, hidden publication, 70 registered identities, retained
+level-1 owner facts, cleanup, and authorized write, but failed selection and
+active-CON reconstruction: the engine restored the old `AddFacts` STR default
+instead of treating the selected child fact as authoritative. Settings were
+restored to SHA-256 `5809A8B8...9261A271`; no baseline save was touched.
+
+The next candidate replaces that demonstrated weak carrier with a primitive,
+serialized per-owner `UnitPart` containing the independent tier selections.
+Stable selection blueprints remain registered and are synchronized from the
+carrier for migration and presentation. The active buff resolves and
+reconciles the carrier on load before applying its one exact set of morale
+modifiers. This strategy is not qualified until the same two-launch scenario
+passes; no unchanged retry is permitted.
+
 ## Authoritative eight-module boundary
 
 The generic catalog derives exactly `2N + 2 = 18` states for `N = 8`:

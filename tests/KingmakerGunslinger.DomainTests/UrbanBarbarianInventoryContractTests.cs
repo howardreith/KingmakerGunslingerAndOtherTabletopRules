@@ -23,6 +23,15 @@ namespace KingmakerGunslinger.DomainTests
             string request = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRequest.cs"));
+            string persistence = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "UrbanBarbarian",
+                "UnitPartControlledRageSelection.cs"));
+            string rageRuntime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "UrbanBarbarian",
+                "ControlledRageRuntime.cs"));
+            string blueprints = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "UrbanBarbarianBlueprints.cs"));
             string automation = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
             Assertions.True(observer.Contains(
@@ -97,7 +106,17 @@ namespace KingmakerGunslinger.DomainTests
                     "RuntimeTestScenarioCatalog.WorkingSaveUrbanBarbarianOffVerifyCleanup") &&
                 runner.Contains("set.Count == UrbanBarbarianIdentityCatalog.IdentityCount") &&
                 runner.Contains("archetypeReferences == (expectedActive ? 1 : 0)") &&
-                runner.Contains("fixtureFeatures.Reverse()"),
+                runner.Contains("fixtureFeatures.Reverse()") &&
+                runner.Contains("Remove<UnitPartControlledRageSelection>()") &&
+                persistence.Contains("[JsonProperty]") &&
+                persistence.Contains("public override void PreSave()") &&
+                persistence.Contains("public override void PostLoad()") &&
+                persistence.Contains("TrySelectExact") &&
+                rageRuntime.Contains("SynchronizeSelectionFacts") &&
+                rageRuntime.Contains("owner.Ensure<UnitPartControlledRageSelection>()") &&
+                blueprints.Contains("ControlledRageSelectionController") &&
+                blueprints.Contains("grant.Facts = new BlueprintUnitFact[] { selector }") &&
+                !blueprints.Contains("grant.Facts = new BlueprintUnitFact[] { selector, ordinaryDefault }"),
                 "Urban persistence is not guarded, module-aware, or cleanup-complete.");
             Assertions.Equal(2, Count(runner,
                 "IsUrbanBarbarianPersistenceScenario() ||"),

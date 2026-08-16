@@ -106,6 +106,18 @@ namespace KingmakerGunslinger.DomainTests
             loaded.Unlock(ControlledRageTier.Mighty);
             Assertions.Equal("STR +8", loaded.CurrentSelection.Name,
                 "New tier did not receive its independent full-Strength default.");
+            Assertions.True(loaded.TrySelectExact(ControlledRageTier.Ordinary,
+                    ControlledRageAllocationPolicy.Generate(
+                        ControlledRageTier.Ordinary)[1], false),
+                "An unlocked lower-tier persisted selection could not be reconciled after a tier change.");
+            Assertions.Equal("DEX +4", loaded.SelectionFor(
+                    ControlledRageTier.Ordinary).Name,
+                "Exact lower-tier reconciliation rewrote the wrong tier.");
+            Assertions.False(loaded.TrySelectExact(
+                    ControlledRageTier.Ordinary,
+                    ControlledRageAllocationPolicy.Generate(
+                        ControlledRageTier.Ordinary)[0], true),
+                "Exact persisted selection changed while Rage was active.");
             Assertions.Throws<FormatException>(() =>
                 ControlledRageSelectionState.Parse("4:2,2,0;4:4,0,0"),
                 "Duplicate persisted tiers must be rejected.");

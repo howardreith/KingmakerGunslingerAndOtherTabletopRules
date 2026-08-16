@@ -148,21 +148,15 @@ namespace KingmakerGunslinger.Blueprints
                 () => CreateSelector(abilities.Keys.ToArray(), rageFeature.Icon));
             BlueprintFeature controlled = registry.Register<BlueprintFeature>(
                 UrbanBarbarianIdentityCatalog.ControlledRage,
-                () => CreateControlledRageFeature(selector,
-                    facts[ControlledRageAllocationPolicy.Default(
-                        ControlledRageTier.Ordinary)], rageFeature.Icon));
+                () => CreateControlledRageFeature(selector, rageFeature.Icon));
             BlueprintFeature greaterDefault = registry.Register<BlueprintFeature>(
                 UrbanBarbarianIdentityCatalog.GreaterDefault,
                 () => CreateTierDefault("Greater Controlled Rage",
-                    ControlledRageTier.Greater,
-                    facts[ControlledRageAllocationPolicy.Default(
-                        ControlledRageTier.Greater)], rageFeature.Icon));
+                    ControlledRageTier.Greater, rageFeature.Icon));
             BlueprintFeature mightyDefault = registry.Register<BlueprintFeature>(
                 UrbanBarbarianIdentityCatalog.MightyDefault,
                 () => CreateTierDefault("Mighty Controlled Rage",
-                    ControlledRageTier.Mighty,
-                    facts[ControlledRageAllocationPolicy.Default(
-                        ControlledRageTier.Mighty)], rageFeature.Icon));
+                    ControlledRageTier.Mighty, rageFeature.Icon));
             BlueprintBuff urbanRage = registry.Register<BlueprintBuff>(
                 UrbanBarbarianIdentityCatalog.RageBuff,
                 () => CreateUrbanRageBuff(nativeRage));
@@ -260,27 +254,30 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintFeature CreateControlledRageFeature(
-            BlueprintAbility selector, BlueprintFeature ordinaryDefault,
-            Sprite icon)
+            BlueprintAbility selector, Sprite icon)
         {
             var grant = ScriptableObject.CreateInstance<AddFacts>();
-            grant.Facts = new BlueprintUnitFact[] { selector, ordinaryDefault };
+            grant.Facts = new BlueprintUnitFact[] { selector };
+            var selection = ScriptableObject.CreateInstance<
+                ControlledRageSelectionController>();
+            selection.Tier = (int)ControlledRageTier.Ordinary;
             return CreateFeature("KMG_UrbanBarbarian_ControlledRage",
                 "Controlled Rage",
                 "When raging, allocate a +4 morale bonus among Strength, Dexterity, and Constitution in +2 increments. The pool increases to +6 with Greater Rage and +8 with Mighty Rage. Controlled Rage grants no ordinary Rage attack bonus, damage bonus, temporary hit points, Will bonus, or AC penalty, and it does not prevent Intelligence-, Dexterity-, or Charisma-based skills. It retains the normal Rage resource, fatigue, spellcasting restriction, Rage powers, and Rage equivalence.",
-                icon, grant);
+                icon, grant, selection);
         }
 
         private static BlueprintFeature CreateTierDefault(string name,
-            ControlledRageTier tier, BlueprintFeature defaultFact, Sprite icon)
+            ControlledRageTier tier, Sprite icon)
         {
-            var grant = ScriptableObject.CreateInstance<AddFacts>();
-            grant.Facts = new BlueprintUnitFact[] { defaultFact };
+            var selection = ScriptableObject.CreateInstance<
+                ControlledRageSelectionController>();
+            selection.Tier = (int)tier;
             BlueprintFeature feature = CreateFeature(
                 "KMG_UrbanBarbarian_" + name.Replace(" ", string.Empty), name,
                 "Unlocks the +" + (int)tier +
                     " Controlled Rage allocation pool and initializes its independent selection to full Strength.",
-                icon, grant);
+                icon, selection);
             feature.HideInUI = true;
             feature.HideInCharacterSheetAndLevelUp = true;
             return feature;

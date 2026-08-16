@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
@@ -26,7 +25,7 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 (int)tier != Tier ||
                 ControlledRageRuntime.IsUrbanRageActive(ability.Caster))
                 return false;
-            return !ability.Caster.HasFact(Selection);
+            return !ControlledRageRuntime.IsSelected(ability);
         }
 
         public string GetReason()
@@ -41,24 +40,12 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 !IsAvailableFor(context.Ability))
                 throw new InvalidOperationException(
                     "Controlled Rage allocation prerequisites changed before execution.");
-            var previous = TierSelections.Where(value => value != null &&
-                context.Caster.Descriptor.HasFact(value)).ToArray();
-            foreach (BlueprintFeature feature in previous)
-                context.Caster.Descriptor.RemoveFact(feature);
-            try
-            {
-                if (context.Caster.Descriptor.AddFact(Selection) == null ||
-                    !context.Caster.Descriptor.HasFact(Selection))
-                    throw new InvalidOperationException(
-                        "Controlled Rage selection fact was rejected.");
-            }
-            catch
-            {
-                foreach (BlueprintFeature feature in previous)
-                    if (!context.Caster.Descriptor.HasFact(feature))
-                        context.Caster.Descriptor.AddFact(feature);
-                throw;
-            }
+            ControlledRageAllocation allocation;
+            if (!ControlledRageRuntime.TryResolveAllocation(Selection,
+                    out allocation) || !ControlledRageRuntime.TrySelect(
+                    context.Caster.Descriptor, allocation))
+                throw new InvalidOperationException(
+                    "Controlled Rage persisted selection was rejected.");
             yield return new AbilityDeliveryTarget(target);
         }
 
