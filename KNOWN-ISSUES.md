@@ -1,5 +1,19 @@
 # Known issues and conservative adaptations
 
+- Brown-Fur's mechanics, persistence, optional-dependency isolation, CotW
+  normal/balance compatibility, and 16-state boundary all pass automated
+  qualification. Its UMM presentation, action-bar clarity, targeting feel, and
+  representative in-game presentation still require the explicit human review
+  in `BROWN-FUR-TRANSMUTER-ACCEPTANCE-CHECKLIST.md`. The final 128-state seal is
+  intentionally prohibited until that review accepts the exact installed
+  artifact.
+- Brown-Fur fails closed on an unknown or ambiguous future CotW Arcanist
+  structure. This preserves all unrelated package modules but may require a new
+  compatibility fingerprint and adapter before the archetype can be published.
+- Removing Call of the Wild from a save containing a CotW Arcanist or Brown-Fur
+  character is unsupported because CotW owns the parent class. Switching only
+  the Brown-Fur module OFF while compatible CotW remains installed is supported
+  and preserves existing owners.
 - Eastern Weapons' subjective equipped-model appearance remains pending human
   review across the rigs, armor, animations, grips, and size-changing cases in
   `docs/EASTERN-WEAPONS-MANUAL-ACCEPTANCE.md`. Automated checks prove bundle,

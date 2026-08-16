@@ -1,8 +1,9 @@
 # Brown-Fur Transmutation Spell Inventory
 
 Status: authoritative installed inventory captured and deterministically
-classified; `Unexplained = 0`. Brown-Fur remains unpublished pending the
-separate ownership, interruption, dispel, persistence, and publication gates.
+classified; `Unexplained = 0`. Every separate ownership, interruption, dispel,
+persistence, and publication gate now passes on the immutable pre-human
+candidate. Human acceptance remains pending.
 
 ## Authoritative capture
 

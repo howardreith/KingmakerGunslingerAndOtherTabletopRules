@@ -3,13 +3,18 @@
 This is the durable scenario-level qualification authority for Brown-Fur.
 Exact package, DLL, MVID, deployment, backup, CotW, and structured-evidence
 identities are recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`. A passing
-row proves only its stated scope. Brown-Fur remains unpublished until every
-publication-gate row is passing.
+row proves only its stated scope. Brown-Fur is published in the installed
+pre-human candidate when its module is ON and compatible CotW is present. The
+final 128-state seal remains prohibited until explicit human acceptance.
 
 ## Current focused evidence
 
 | Contract | Result | Immutable source | Qualified scope |
 | --- | --- | --- | --- |
+| Transactional archetype publication | PASS | `2ef6e933ff521dff2330a948336a38083e741082` | 19 identities; six CotW archetypes preserved; Brown-Fur appended once as entry 7 when ON and absent when OFF |
+| Seven-module boundary matrix | PASS 16/16 | `2ef6e933ff521dff2330a948336a38083e741082` | Formula-derived all ON, all OFF, seven ON-alone, and seven OFF-with-others-ON states; every Brown-Fur publication assertion passed |
+| Exact-candidate persistence | PASS 4/4 | `2ef6e933ff521dff2330a948336a38083e741082` | ON reload/cleanup and OFF-owner reload/cleanup; exact feature settings restored |
+| Exact-candidate compatibility profiles | PASS | `2ef6e933ff521dff2330a948336a38083e741082` | CotW normal, CotW balance, CotW absent, and highest-risk CotW + Arms & Armor + Toggle Custom Soundpacks |
 | CotW structural resolution | PASS | `dd35e276cac658f3976aaddbcf4f6f61cd7eae26` | Installed CotW balance progression, all required Arcanist surfaces, 19 stable identities, zero selector references |
 | Installed Transmutation inventory | PASS | `b707fd5c3aa8773fb16ae3a3f968de1ab529b766` | 86 roots, 177 rows, 174 generic, 3 named adapters, zero unexplained |
 | Modifier carrier provenance | PASS | `7008c0e1067f47c713612c3d751f7519a9a0c62d` | Six installed ability-bonus component families and exact source context |
@@ -45,9 +50,53 @@ publication-gate row is passing.
 | CotW absent isolation | PASS | Three fresh KMG-only launches prove core readiness, exact six-module publication, saved Brown-Fur intent ON, Unavailable/not-published status, no CotW assembly/contract/identity/reconciliation, and exact profile restoration |
 | CotW normal progression | PASS | Runtime graph is Normal with resolved exploit levels `1,3,5,7,9,11,13,15,17,19`, replacements 3/9, setting agreement, compatible contract, and exact settings restoration |
 | CotW balance progression | PASS (focused contract) | Runtime-resolved replacements 4 and 10 |
-| Seven-module boundary matrix | PENDING | All 16 formula-derived boundary states on one immutable candidate |
-| Human presentation acceptance | BLOCKED BY POLICY | Required before final exhaustive matrix |
+| Seven-module boundary matrix | PASS | All 16 formula-derived states passed on commit `2ef6e933`; original settings restored to SHA `5B6030AE...665E` |
+| Human presentation acceptance | READY / PENDING HUMAN | Installed immutable candidate and checklist are ready; explicit acceptance is required |
 | Seven-module exhaustive matrix | PROHIBITED PRE-ACCEPTANCE | Exactly 128 states on the accepted immutable artifact |
+
+## Immutable pre-human candidate
+
+- Source commit: `2ef6e933ff521dff2330a948336a38083e741082`
+- Version: `0.0.81-brown-fur-transmuter`
+- Package SHA-256: `883751EDD4AF3427CCE712C2C875EEA0E4B6CCB955E9A2778176E5CE1C2BA7BE`
+- DLL SHA-256 / installed DLL SHA-256:
+  `9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF`
+- DLL MVID: `30b587a9-39f6-42c5-a5df-1ce32d73974f`
+- Deployment: `20260815T2354477268935Z`; manifest SHA-256
+  `8ACF004E570BC3319F5A10C8E076DFB473268C3772782E2DC5467CA7908B85B6`
+- Deployment backup: `20260815T2354434393118Z`
+- Build-local manifest SHA-256:
+  `0398BCFE546D9FCD03366F26BA9AEBBB64E188CD99DDC33CA9DBB4D2A12054E0`
+- Domain tests: 1,135 passed, zero failed.
+- Boundary evidence: 16 structured PASS results from
+  `20260815T2355075927972Z-observe-feature-module-settings` through
+  `20260816T0024175089719Z-observe-feature-module-settings`; all 16
+  `feature-module-brown-fur-publication-gate` assertions passed.
+- Normal CotW result: run
+  `20260816T0027010208507Z-452b8977997f4b298b84dc69a61fad79`, result SHA-256
+  `FCC751F8E74B5313E76976CBDE9A989933C51926A72CD6C2B05B298708343EBE`.
+- Canonical balance CotW result: run
+  `20260816T0029106946040Z-6790a0503d20493ab6e7af71851c56b8`, result SHA-256
+  `1888D843658871D366C715441D0F7A88BF5E0CDFEDD333D7F3B1D45FE233D1EC`.
+- CotW-absent result: run
+  `20260816T0031256928674Z-afb989797a48403496a31d4358183a1e`, result SHA-256
+  `0A85C71DC6CA01306495BEA2BCAA72678962BDCF3981778ACEEFA9D8F85A8C90`.
+- ON persistence result SHA-256 values:
+  `A1C79011CD5DD9C03D4638CA6F75A44144A3229DD8A25666381AA7282D9A4447`
+  prepare and
+  `7EE6CD1E60A65B7AE24593670999BCE64AC07A6217D2649B2A62A4098ED36B23`
+  verify/cleanup.
+- OFF-owner persistence result SHA-256 values:
+  `5E94242500730D089812CF2313CF08897400025491C566776F176DC44C8DF9F0`
+  prepare and
+  `4C3760FDAF8E136BFA02B2C3C1A245B6AA9A1A53C58EE75048EDB31E16D931E0`
+  OFF verify/cleanup.
+- Highest-risk combined transaction:
+  `compat-20260816T004352Z-6508dc75fbfa`; both runtime results passed and the
+  complete Mods tree plus CotW settings were restored exactly.
+
+The exhaustive `2^7 = 128` matrix has not been run. Human acceptance of this
+exact installed artifact is the next authorized gate.
 
 The current focused player-intent run is
 `20260815T2030084869082Z-f2bbc2103df344479f67ea782e23eff4`, evidence

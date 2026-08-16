@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.80-eastern-weapons.zip` with Unity Mod
-   Manager for Pathfinder: Kingmaker.
+2. Install the standalone `KingmakerGunslinger-0.0.81-brown-fur-transmuter.zip`
+   with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.80 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.81 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -50,18 +50,29 @@ Weapon Focus remains an exact negative control.
 ## Feature-module settings
 
 The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,
-Expanded Summoning, Elven Branched Spears, and Eastern Weapons checkboxes. All
-default ON. A change is saved for the next complete game restart; the panel
-reports active and pending state separately. Older settings migrate to schema
-5 while preserving explicit values and defaulting absent spear and Eastern
-Weapons keys ON.
+Expanded Summoning, Elven Branched Spears, Eastern Weapons, and `Brown-Fur
+Transmuter  requires Call of the Wild` checkboxes. All default ON. A change is
+saved for the next complete game restart; the panel reports active and saved
+next-restart state separately. Older settings migrate to schema 6 while
+preserving every explicit prior value and defaulting the absent Brown-Fur key
+ON.
+
+Brown-Fur is the only module that requires Call of the Wild. Its adjacent
+status reports Available, Unavailable, or Blocked independently from saved user
+intent, effective publication, and restart-required state. Saved ON intent is
+preserved when CotW is absent, but Brown-Fur is not registered or published.
+Structurally incompatible CotW installations also fail closed without disabling
+the package's six independent modules.
 
 Turning a module OFF removes its content only from new public choices and
 acquisition paths. It does not unregister identities, strip an existing
 Gunslinger, remove owned feats/items, or uninstall firearm state support. An
 owned Elven Branched Spear and an already selected spear feat therefore remain
-loadable and mechanically coherent while that module is OFF. Do not remove the
-entire mod from a campaign that has used any module.
+loadable and mechanically coherent while that module is OFF. With compatible
+CotW still installed, Brown-Fur OFF likewise hides the archetype from new
+character creation and respec while retaining its stable identities and the
+features and effects of existing Brown-Fur owners. Do not remove the entire mod
+from a campaign that has used any module.
 
 ## Removal warning
 
@@ -82,6 +93,10 @@ campaign without it. Deleting visible items or respeccing a character is not
 proof that every serialized reference has been removed.
 
 Never test removal against the only copy of a valued save.
+
+Call of the Wild owns the parent Arcanist class. Removing CotW from a save that
+contains a CotW Arcanist or Brown-Fur character is unsupported even if the
+Brown-Fur module is subsequently disabled.
 
 ## Compatibility boundaries
 
@@ -112,6 +127,19 @@ exact KMG Katana type and changes no foreign identity or blueprint. The exact
 local Arms and Armor build contains no Katana, Wakizashi, or Nodachi provider,
 so no duplicate-name or cross-proficiency bridge is needed. Every compatibility
 transaction restored the complete Mods tree exactly.
+
+Brown-Fur Transmuter was qualified against the exact local Call of the Wild
+1.14.4c-2.1 DLL SHA-256
+`4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`
+and MVID `8caab254-aacf-4811-8093-44b9184e6e53`. Structural resolution, rather
+than the binary hash alone, gates publication. Both resolved normal exploit
+replacements (levels 3/9) and balance-fixes replacements (levels 4/10) passed,
+as did CotW absence, Brown-Fur OFF with an existing owner, the highest-risk
+CotW plus Arms and Armor plus Toggle Custom Soundpacks profile, and all 16
+seven-module boundary states. Unknown or ambiguous future CotW structures are
+reported as Blocked and leave Brown-Fur unpublished. The exact candidate still
+awaits human presentation acceptance; the 128-state final release seal has not
+run.
 
 - This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
   and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.

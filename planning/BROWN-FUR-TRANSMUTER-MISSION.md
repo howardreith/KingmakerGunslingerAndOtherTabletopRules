@@ -36,11 +36,35 @@ acceptance.
 - Preferred candidate identity: `0.0.81-brown-fur-transmuter`.
 - Base gate: satisfied by explicit user override on 2026-08-15.
 - Cleanup acceptance: still pending and outside the current work cycle.
-- Brown-Fur acceptance: not yet requested; implementation investigation is in
-  progress.
+- Brown-Fur acceptance: **READY / PENDING HUMAN** for the installed immutable
+  candidate sourced from `2ef6e933ff521dff2330a948336a38083e741082`.
+- Pre-human boundary: **PASS 16/16**.
+- Final exhaustive matrix: **NOT RUN / prohibited until human acceptance**.
+
+The installed pre-human artifact is version `0.0.81`, package SHA-256
+`883751EDD4AF3427CCE712C2C875EEA0E4B6CCB955E9A2778176E5CE1C2BA7BE`,
+DLL and installed-DLL SHA-256
+`9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF`,
+and MVID `30b587a9-39f6-42c5-a5df-1ce32d73974f`. Deployment
+`20260815T2354477268935Z` is backed by `20260815T2354434393118Z`.
+
+All focused mechanical gates, normal and balance CotW progression, CotW
+absence, module OFF existing-owner persistence, the 16-state boundary, and the
+highest-risk supported combined profile pass. Brown-Fur publishes exactly once
+to the compatible CotW Arcanist selector when ON and remains registered but
+hidden when OFF. The next mission boundary is the human checklist; no source,
+rebuild, repackage, redeployment, or 128-state matrix is authorized before that
+decision.
 
 The inspected dependency structure and fail-closed progression authority are
 recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.
+
+## Chronological engineering checkpoints
+
+The entries below are an append-only investigation and qualification journal.
+Statements such as "unpublished" and "remaining gate" describe the commit
+named in that checkpoint, not the current candidate. The **Current status**
+section above is authoritative for the present gate.
 
 Permanent identities and the archetype shell are source-qualified. The shell
 has exact level 3/9/20 additions, dynamically planned 3/9 or 4/10 exploit

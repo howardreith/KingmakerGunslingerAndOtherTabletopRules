@@ -15,15 +15,20 @@ Blueprint ledger: 1536 active; 1 reserved; 1537 total
 Runtime registration count: 1517 unconditional core identities plus 19 isolated Brown-Fur identities only with structurally compatible CotW
 Eastern Weapons catalog: 3 categories; 12 generic items; 18 named items; 30 total
 Eastern Weapons assets: 3 original equipped models; 6 original production icons
-Dependency-free domain tests: development checkpoint; see current test output
+Dependency-free domain tests: 1135 passed; 0 failed
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
-Native runtime: Brown-Fur contract observer and seven-module matrix qualification pending
-Package: KingmakerGunslinger-0.0.81-brown-fur-transmuter.zip
-Artifact source: pending immutable pre-human candidate
-DLL SHA-256: pending immutable pre-human candidate
-DLL MVID: pending immutable pre-human candidate
-Package SHA-256: pending immutable pre-human candidate
+Native runtime: Brown-Fur focused mechanics, CotW normal/balance/absent profiles, persistence, highest-risk combined profile, and 16/16 boundary PASS; human acceptance pending; 128-state seal not run
+Artifact source commit: 2ef6e933ff521dff2330a948336a38083e741082
+Package: KingmakerGunslinger-0.0.81-local-runtime.zip
+Package SHA-256: 883751EDD4AF3427CCE712C2C875EEA0E4B6CCB955E9A2778176E5CE1C2BA7BE
+DLL SHA-256: 9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF
+Installed DLL SHA-256: 9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF
+DLL MVID: 30b587a9-39f6-42c5-a5df-1ce32d73974f
+Build-local manifest SHA-256: 0398BCFE546D9FCD03366F26BA9AEBBB64E188CD99DDC33CA9DBB4D2A12054E0
+Deployment manifest identity: 20260815T2354477268935Z
+Deployment manifest SHA-256: 8ACF004E570BC3319F5A10C8E076DFB473268C3772782E2DC5467CA7908B85B6
+Deployment backup identity: 20260815T2354434393118Z
 Eastern Weapons bundle SHA-256: F58801B7B34514B06577EA9CE36F2F3FC0A79A6F157113EA227251BFE2A15B43
 Source archive SHA-256: not produced by the standalone package workflow
 Private Kingmaker/Unity/UMM/Harmony/Newtonsoft assemblies are compiler input only and are not redistributed.

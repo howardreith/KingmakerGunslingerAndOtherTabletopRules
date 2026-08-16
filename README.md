@@ -6,7 +6,9 @@ module for Pathfinder: Kingmaker 2.1.7b while retaining Gunslinger, Acadamae
 Graduate, Shield Other, Expanded Summoning, Elven Branched Spears, and Eastern
 Weapons. Brown-Fur alone requires a compatible Call of the Wild installation;
 the combined package and every unrelated module continue loading without CotW.
-Brown-Fur mechanics and human acceptance are still in progress.
+Brown-Fur mechanics and the complete 16-state pre-human boundary are qualified.
+The installed candidate is awaiting human presentation acceptance; the final
+128-state release seal has intentionally not run.
 
 Eastern Weapons adds one stable category each for Wakizashi, Katana, and
 Nodachi. Each family has mundane, masterwork, cold iron, and +1 generic forms
@@ -88,19 +90,40 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find six checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find seven checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
-Summoning**, **Elven Branched Spears**, and **Eastern Weapons**. All default
-enabled. Older settings migrate to schema 5 while preserving explicit existing
-values and enabling newly absent default-on modules.
+Summoning**, **Elven Branched Spears**, **Eastern Weapons**, and **Brown-Fur
+Transmuter  requires Call of the Wild**. All default enabled. Older settings
+migrate to schema 6 while preserving explicit existing values and enabling
+newly absent default-on modules.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All six modules
-publish independently. Keep the whole mod installed for any campaign that has
-used project content.
+items, summons, ammunition state, or equipment from a save. All seven modules
+publish independently. Brown-Fur is the only CotW-dependent module: absent or
+incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
+publication while the other six modules continue. Keep the whole mod installed
+for any campaign that has used project content.
+
+## Brown-Fur Transmuter
+
+Brown-Fur is a CotW Arcanist archetype with Powerful Change at level 3, Share
+Transmutation at level 9, and Transmutation Supremacy at level 20. Powerful
+Change spends one reservoir point to improve one qualifying ability bonus from
+an Arcanist-slot Transmutation by +2, increasing to +4 at level 20 while
+preserving the original bonus descriptor. Share Transmutation independently
+spends one point to deliver a genuine Personal Transmutation spell to a willing
+creature at Touch, increasing to exactly 30 feet at level 20. Both may modify
+the same eligible Arcanist spell for exactly two points. Supremacy gives genuine
+Transmutation spells free, non-stacking Extend without changing slot or casting
+time.
+
+Turning Brown-Fur OFF hides it from new character creation and respec after a
+restart while compatible CotW remains installed; existing owners retain their
+features and effects. Removing CotW from a save containing its Arcanist or a
+Brown-Fur character is unsupported because the parent class belongs to CotW.
 
 ## Acadamae Graduate
 

@@ -1,7 +1,9 @@
 # Brown-Fur / Call of the Wild Contract
 
-Status: structural contract reconciliation qualified for the installed CotW
-subject; archetype publication and mechanical adapters remain disabled.
+Status: structural contract, mechanics, transactional archetype publication,
+normal/balance progression, CotW-absent isolation, persistence, and pre-human
+boundary qualification pass for the installed immutable candidate. Human
+acceptance is pending; the final 128-state matrix has not run.
 
 ## Engineering authority
 
@@ -29,6 +31,35 @@ or package dependency.
 
 These binary hashes are evidence, not the sole compatibility gate. Runtime
 publication requires every structural check below to agree.
+
+## Pre-human publication fingerprint
+
+The installed candidate is source commit
+`2ef6e933ff521dff2330a948336a38083e741082`, package SHA-256
+`883751EDD4AF3427CCE712C2C875EEA0E4B6CCB955E9A2778176E5CE1C2BA7BE`,
+DLL and installed-DLL SHA-256
+`9F0EFEE718F58F2B87292D993A6EC4973810510DF7193612DC5BD220EE04A8CF`,
+and DLL MVID `30b587a9-39f6-42c5-a5df-1ce32d73974f`.
+
+The canonical balance observer resolved exploit levels
+`1,4,7,10,13,16,19`, replacements 4/10, every required identity, both exact
+Shared Spells signatures, 86 Transmutation roots, and publication status
+`published`. The transaction preserved six existing CotW Arcanist archetypes
+and appended Brown-Fur once (`before=6;after=7`). The guarded normal profile
+resolved levels `1,3,5,7,9,11,13,15,17,19` and replacements 3/9, also with
+exactly one publication. CotW settings were restored byte-for-byte to SHA-256
+`24CC3F80269992A53EBBFD1F5986E5AAB056841D6B2F43D8E22E764CDB73F6E8`.
+
+The 16-state boundary, CotW-absent profile, ON and OFF-owner persistence, and
+the high-risk combined profile all reused this exact artifact. Exact run and
+result identities are recorded in `planning/BROWN-FUR-RUNTIME-MATRIX.md`.
+
+## Chronological contract evidence
+
+The evidence below records successive immutable checkpoints. Any statement
+that mechanics or publication were still pending applies only to its named
+checkpoint. The pre-human publication fingerprint above is the current
+authority.
 
 The guarded, save-free `observe-brown-fur-cotw-contract` scenario passed on
 source commit `e1424cf139214e71c740b69049097f031e9571fd`. That result proves the

@@ -1,3 +1,5 @@
+883751edd4af3427cce712c2c875eea0e4b6ccb955e9a2778176e5ce1c2ba7be  artifacts/local-runtime/0.0.81/KingmakerGunslinger-0.0.81-local-runtime.zip
+9f0efee718f58f2b87292d993a6ec4973810510df7193612dc5bd220ee04a8cf  artifacts/local-runtime/0.0.81/exact-build/bin/KingmakerGunslinger.dll
 68dd99b6a796ee4f9f310bae8e70329fbee84ff544089db5491f583eb10466b6  .editorconfig
 6a49c129464d7c40276ecf37ce41ce0206cf131b814c9811880b8950688ef823  .gitattributes
 48a6d4c3aa3fe0bb49e95c64bdd52b3e08bd7016c22df1955b630c3ec87c5191  .gitignore

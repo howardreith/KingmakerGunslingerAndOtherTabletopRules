@@ -8,8 +8,13 @@
   spellbook, Magical Supremacy, and Shared Spells contract resolution.
 - Supports the known CotW normal and balance-fixes exploit schedules through a
   deterministic policy, rejecting unknown or ambiguous schedules.
-- Adds a guarded, save-free CotW contract observer. Brown-Fur blueprint and
-  mechanical publication remain under development and are not claimed complete.
+- Implements descriptor-preserving Powerful Change, owner-scoped Share
+  Transmutation, free non-stacking Transmutation Supremacy, immutable per-cast
+  accounting, stable persistence, and transactional CotW Arcanist publication.
+- Qualifies CotW normal and balance progressions, CotW absence, module-OFF
+  existing owners, the highest-risk combined profile, and all 16 seven-module
+  boundary states on one immutable pre-human candidate. Human acceptance and
+  the post-acceptance 128-state final seal remain pending.
 
 ## Unreleased - Eastern Weapons
 
