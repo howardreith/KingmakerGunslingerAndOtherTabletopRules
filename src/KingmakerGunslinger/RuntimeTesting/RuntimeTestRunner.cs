@@ -2727,12 +2727,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     caster, blueprints) != 0)
                     throw new InvalidOperationException(
                         "The working save already contains the Brown-Fur persistence fixture; run verify/cleanup first.");
+                if (caster.Descriptor.Resources.ContainsResource(
+                    resolution.Contract.Reservoir))
+                    throw new InvalidOperationException(
+                        "The working-save persistence caster already owns the CotW reservoir fixture resource.");
                 if (caster.Descriptor.AddFact(blueprints.PowerfulChange) == null ||
                     caster.Descriptor.AddFact(blueprints.ShareTransmutation) == null ||
                     caster.Descriptor.AddFact(
                         blueprints.TransmutationSupremacy) == null)
                     throw new InvalidOperationException(
                         "The Brown-Fur persistence features could not be granted.");
+                caster.Descriptor.Resources.Add(
+                    resolution.Contract.Reservoir, true);
+                if (!caster.Descriptor.Resources.ContainsResource(
+                        resolution.Contract.Reservoir) ||
+                    caster.Descriptor.Resources.GetResourceAmount(
+                        resolution.Contract.Reservoir) < 2)
+                    throw new InvalidOperationException(
+                        "The Brown-Fur persistence reservoir fixture could not be initialized.");
                 ActivatableAbility wisdom =
                     BrownFurPlayerIntentRuntime.Find(caster.Descriptor,
                         blueprints.ScoreActivatables[4]);
@@ -2796,6 +2808,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             ActivatableAbility persistedShare =
                 BrownFurPlayerIntentRuntime.Find(caster.Descriptor,
                     blueprints.ShareTransmutationAbility);
+            CotwArcanistContract contract = resolution.Contract;
+            int persistedReservoir = caster.Descriptor.Resources
+                .ContainsResource(contract.Reservoir) ?
+                caster.Descriptor.Resources.GetResourceAmount(
+                    contract.Reservoir) : 0;
             _brownFurPersistenceToggleStateValid =
                 scoreStates.All(value => value != null) &&
                 scoreStates.Count(value => value.IsOn) == 1 &&
@@ -2805,7 +2822,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !blueprints.ScoreBuffs.Where((value, index) => index != 4)
                     .Any(caster.Descriptor.HasFact) &&
                 caster.Descriptor.HasFact(
-                    blueprints.ShareTransmutationBuff);
+                    blueprints.ShareTransmutationBuff) &&
+                persistedReservoir >= 2;
 
             Buff buff = buffs.Length == 1 ? buffs[0] : null;
             ModifiableValue.Modifier[] modifiers = buff == null
@@ -2832,7 +2850,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             _brownFurPersistenceCarrierValid = persistedBeforeCleanup == 1;
             bool expectedActive = _request.Scenario != RuntimeTestScenarioCatalog
                 .WorkingSaveBrownFurOffVerifyCleanup;
-            CotwArcanistContract contract = resolution.Contract;
             int selectorReferences = contract.ArcanistClass.Archetypes == null ? 0 :
                 contract.ArcanistClass.Archetypes.Count(value =>
                     ReferenceEquals(value, blueprints.Archetype));
@@ -2851,6 +2868,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BrownFurPlayerIntentRuntime.Clear(caster.Descriptor,
                     blueprints);
                 RemoveBrownFurPersistenceFeatures(caster, blueprints);
+                caster.Descriptor.Resources.Remove(contract.Reservoir);
                 _brownFurPersistenceCleanupValid =
                     !subject.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(
                         value => ReferenceEquals(value.Blueprint,
@@ -2869,6 +2887,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !blueprints.ScoreBuffs.Any(caster.Descriptor.HasFact) &&
                     !caster.Descriptor.HasFact(
                         blueprints.ShareTransmutationBuff) &&
+                    !caster.Descriptor.Resources.ContainsResource(
+                        contract.Reservoir) &&
                     persistencePart != null && persistencePart.Count == 0;
             }
 
@@ -2889,7 +2909,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (persistencePart == null ? 0 : persistencePart.Count) +
                 ";expectedActive=" + expectedActive + ";selectorRefs=" +
                 selectorReferences + ";moduleState=" +
-                _brownFurPersistenceModuleStateValid + ";scopes=" +
+                _brownFurPersistenceModuleStateValid + ";reservoir=" +
+                persistedReservoir + ";scopes=" +
                 BrownFurModifierAdjustmentRuntime.ActiveScopeCount;
 
             _workingSaveSmoke.ArmExactWorkingSaveWrite();

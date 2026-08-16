@@ -663,6 +663,8 @@ namespace KingmakerGunslinger.DomainTests
                  "brown-fur-persistence-toggle-state",
                  "scoreStates[4].IsOn", "persistedShare.IsOn",
                  "blueprints.ScoreBuffs[4]",
+                 "Resources.ContainsResource", "Resources.Add(",
+                 "Resources.Remove(contract.Reservoir)",
                  "RemoveBrownFurPersistenceFeatures",
                 "ArmExactWorkingSaveWrite",
                 "ExpectedWorkingSaveRoutineCount == 1" })
