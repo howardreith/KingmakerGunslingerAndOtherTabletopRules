@@ -154,6 +154,10 @@ namespace KingmakerGunslinger.DomainTests
                 "Native-distance float tolerance rejected adjacency.");
             Assertions.False(CrowdControlPolicy.IsAdjacentActiveEnemy(Candidate(5.01)),
                 "Weapon reach or center distance expanded five-foot adjacency.");
+            Assertions.Equal(5.0, CrowdControlPolicy.EdgeDistance(9.0, 2.0, 2.0),
+                "Corpulence was not removed from center-to-center distance.");
+            Assertions.Equal(0.0, CrowdControlPolicy.EdgeDistance(1.0, 1.0, 1.0),
+                "Overlapping corpulence produced a negative edge distance.");
 
             foreach (Action<CrowdControlCandidate> invalidate in new Action<CrowdControlCandidate>[] {
                 value => value.IsHostile = false,
@@ -298,6 +302,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ITargetRulebookHandler<RuleCalculateAC>",
                 "candidate.Descriptor.State.IsConscious",
                 "owner.IsEnemy(candidate)", "owner.DistanceTo(candidate)",
+                "owner.Corpulence", "candidate.Corpulence",
                 "Game.Instance.State.Units.All",
                 "ModifierDescriptor.Dodge", "Owner.Stats.AC.UpdateValue()",
                 "evt.AddBonus(1, Fact)" })

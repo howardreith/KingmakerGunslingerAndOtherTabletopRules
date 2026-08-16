@@ -34,6 +34,13 @@ namespace KingmakerGunslinger.UrbanBarbarian
             return CountAdjacentActiveEnemies(candidates) >= 2;
         }
 
+        internal static double EdgeDistance(double centerDistance,
+            double ownerCorpulence, double candidateCorpulence)
+        {
+            return Math.Max(0.0, centerDistance - ownerCorpulence -
+                candidateCorpulence);
+        }
+
         internal static bool IsAdjacentActiveEnemy(CrowdControlCandidate candidate)
         {
             return candidate != null && candidate.IsInGame &&

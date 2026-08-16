@@ -71,7 +71,17 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 !candidate.IsDetached && candidate.IsTurnedOn &&
                 candidate.Descriptor != null && candidate.Descriptor.State != null &&
                 candidate.Descriptor.State.IsConscious && owner.IsEnemy(candidate) &&
-                owner.DistanceTo(candidate) <= FiveFeetMeters + ToleranceMeters;
+                EdgeDistance(owner, candidate) <=
+                    FiveFeetMeters + ToleranceMeters;
+        }
+
+        internal static float EdgeDistance(UnitEntityData owner,
+            UnitEntityData candidate)
+        {
+            if (owner == null || candidate == null) return float.PositiveInfinity;
+            return (float)CrowdControlPolicy.EdgeDistance(
+                owner.DistanceTo(candidate), owner.Corpulence,
+                candidate.Corpulence);
         }
     }
 }

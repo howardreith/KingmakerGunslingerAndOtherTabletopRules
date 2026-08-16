@@ -477,7 +477,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float largeCenterDistance = 1.514f + urban.Corpulence +
                     enemyOne.Corpulence;
                 SetPosition(enemyOne, new Vector3(largeCenterDistance, 0f, 0f));
-                float largeEdgeDistance = urban.DistanceTo(enemyOne);
+                float largeNativeDistance = urban.DistanceTo(enemyOne);
+                float largeEdgeDistance = CrowdControlComponent.EdgeDistance(
+                    urban, enemyOne);
                 int adjacentLarge = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 enemyOne.Descriptor.State.Size = originalSize;
@@ -502,12 +504,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int rangedAttackOne = Attack(urban, rangedWeapon);
                 SetPosition(enemyTwo, new Vector3(-1.5f, 0f, 0f));
                 BlueprintFaction hostileFaction = enemyTwo.Descriptor.Faction;
-                enemyTwo.Descriptor.Faction = urban.Descriptor.Faction;
+                enemyTwo.Descriptor.SwitchFactions(urban.Descriptor.Faction,
+                    true);
                 int adjacentAfterFriendly = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackAfterFriendly = Attack(urban, weapon);
                 int acAfterFriendly = ArmorClass(urban, enemyOne);
-                enemyTwo.Descriptor.Faction = hostileFaction;
+                enemyTwo.Descriptor.SwitchFactions(hostileFaction, true);
                 int adjacentAfterHostile = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 enemyTwo.Descriptor.State.LifeState =
@@ -543,7 +546,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         acThree + ";distance=" + distanceOne + "/" +
                         distanceTwo + ";reach=" + adjacentWithinReach + "/" +
                         attackWithinReach + ";large=" + largeCenterDistance +
-                        "/" + largeEdgeDistance + "/" + adjacentLarge +
+                        "/" + largeNativeDistance + "/" + largeEdgeDistance +
+                        "/" + adjacentLarge +
                         ";ranged=" + rangedAttackOne + "/" + rangedAttackTwo +
                         ";adjacent=" + adjacentTwo +
                         ";friendly=" + adjacentAfterFriendly + "/" +
