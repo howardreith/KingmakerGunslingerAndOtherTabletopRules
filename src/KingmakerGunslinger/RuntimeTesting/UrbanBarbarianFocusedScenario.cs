@@ -466,8 +466,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BlueprintBootstrap.ElvenBranchedSpears.Entries[0].Item);
                 int attackZero = Attack(urban, weapon);
                 int acZero = ArmorClass(urban, enemyOne);
-                SetPosition(enemyOne, new Vector3(2f, 0f, 0f));
-                SetPosition(enemyTwo, new Vector3(-2f, 0f, 0f));
+                float reachOnlyEdgeDistance = 1.8f;
+                float reachOnlyCenterDistance = reachOnlyEdgeDistance +
+                    urban.Corpulence + enemyOne.Corpulence;
+                SetPosition(enemyOne, new Vector3(reachOnlyCenterDistance,
+                    0f, 0f));
+                SetPosition(enemyTwo, new Vector3(-reachOnlyCenterDistance,
+                    0f, 0f));
+                float observedReachEdgeDistance = CrowdControlComponent
+                    .EdgeDistance(urban, enemyOne);
                 int adjacentWithinReach = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackWithinReach = Attack(urban, weapon);
@@ -504,13 +511,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int rangedAttackOne = Attack(urban, rangedWeapon);
                 SetPosition(enemyTwo, new Vector3(-1.5f, 0f, 0f));
                 BlueprintFaction hostileFaction = enemyTwo.Descriptor.Faction;
+                BlueprintFaction[] ownerAttackFactions = urban.Descriptor
+                    .AttackFactions.ToArray();
+                BlueprintFaction[] enemyAttackFactions = enemyTwo.Descriptor
+                    .AttackFactions.ToArray();
                 enemyTwo.Descriptor.SwitchFactions(urban.Descriptor.Faction,
                     true);
+                urban.Descriptor.AttackFactions.Clear();
+                enemyTwo.Descriptor.AttackFactions.Clear();
                 int adjacentAfterFriendly = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackAfterFriendly = Attack(urban, weapon);
                 int acAfterFriendly = ArmorClass(urban, enemyOne);
                 enemyTwo.Descriptor.SwitchFactions(hostileFaction, true);
+                urban.Descriptor.AttackFactions.Match(ownerAttackFactions);
+                enemyTwo.Descriptor.AttackFactions.Match(enemyAttackFactions);
                 int adjacentAfterHostile = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 enemyTwo.Descriptor.State.LifeState =
@@ -544,8 +559,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attackTwo + "/" + attackThree + "/" + attackMovedOut +
                         ";ac=" + acZero + "/" + acOne + "/" + acTwo + "/" +
                         acThree + ";distance=" + distanceOne + "/" +
-                        distanceTwo + ";reach=" + adjacentWithinReach + "/" +
-                        attackWithinReach + ";large=" + largeCenterDistance +
+                        distanceTwo + ";reach=" + reachOnlyCenterDistance +
+                        "/" + observedReachEdgeDistance + "/" +
+                        adjacentWithinReach + "/" + attackWithinReach +
+                        ";large=" + largeCenterDistance +
                         "/" + largeNativeDistance + "/" + largeEdgeDistance +
                         "/" + adjacentLarge +
                         ";ranged=" + rangedAttackOne + "/" + rangedAttackTwo +
@@ -570,6 +587,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attackThree == attackZero + 1 &&
                         attackMovedOut == attackZero && acOne == acZero &&
                         acTwo == acZero + 1 && acThree == acZero + 1 &&
+                        observedReachEdgeDistance > 1.52400031f &&
                         adjacentWithinReach == 0 &&
                         attackWithinReach == attackZero &&
                         largeCenterDistance > 1.52400031f &&
