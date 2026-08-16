@@ -907,7 +907,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 7 -or
+        if ($Parameters.Count -ne 8 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -921,8 +921,10 @@ function Assert-KmgRuntimeScenarioPreflight {
             -not $Parameters.ContainsKey('easternWeapons') -or
             $Parameters.easternWeapons -isnot [bool] -or
             -not $Parameters.ContainsKey('brownFurTransmuter') -or
-            $Parameters.brownFurTransmuter -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, and brownFurTransmuter parameters."
+            $Parameters.brownFurTransmuter -isnot [bool] -or
+            -not $Parameters.ContainsKey('urbanBarbarian') -or
+            $Parameters.urbanBarbarian -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, and urbanBarbarian parameters."
         }
     }
     elseif ($Parameters.Count -ne 0) {
@@ -1030,6 +1032,7 @@ function New-KmgRuntimeRequest {
                 elvenBranchedSpears = [bool]$Parameters.elvenBranchedSpears
                 easternWeapons = [bool]$Parameters.easternWeapons
                 brownFurTransmuter = [bool]$Parameters.brownFurTransmuter
+                urbanBarbarian = [bool]$Parameters.urbanBarbarian
             }
         } else { [ordered]@{} }
     }

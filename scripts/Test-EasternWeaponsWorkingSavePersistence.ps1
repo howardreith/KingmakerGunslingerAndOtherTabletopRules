@@ -33,7 +33,7 @@ $originalBytes = if ($originalExists) { [IO.File]::ReadAllBytes($settings) } els
 $failure = $null
 function Set-EasternFeatureState([bool]$enabled) {
     $configuration = [ordered]@{
-        schemaVersion = 6
+        schemaVersion = 7
         gunslinger = $true
         'acadamae-graduate' = $true
         'shield-other' = $true
@@ -41,6 +41,7 @@ function Set-EasternFeatureState([bool]$enabled) {
         'elven-branched-spears' = $true
         'eastern-weapons' = $enabled
         'brown-fur-transmuter' = $true
+        'urban-barbarian' = $true
     }
     $temporary = $settings + '.kmg-eastern-persistence.tmp'
     [IO.File]::WriteAllText($temporary,

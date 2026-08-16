@@ -11,10 +11,11 @@ namespace KingmakerGunslinger.FeatureModules
         internal const string ElvenBranchedSpearsId = "elven-branched-spears";
         internal const string EasternWeaponsId = "eastern-weapons";
         internal const string BrownFurTransmuterId = "brown-fur-transmuter";
+        internal const string UrbanBarbarianId = "urban-barbarian";
 
         internal FeatureModuleConfiguration(bool gunslinger, bool acadamaeGraduate,
             bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears,
-            bool easternWeapons, bool brownFurTransmuter)
+            bool easternWeapons, bool brownFurTransmuter, bool urbanBarbarian)
         {
             Gunslinger = gunslinger;
             AcadamaeGraduate = acadamaeGraduate;
@@ -23,6 +24,7 @@ namespace KingmakerGunslinger.FeatureModules
             ElvenBranchedSpears = elvenBranchedSpears;
             EasternWeapons = easternWeapons;
             BrownFurTransmuter = brownFurTransmuter;
+            UrbanBarbarian = urbanBarbarian;
         }
 
         internal bool Gunslinger { get; private set; }
@@ -32,9 +34,10 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool ElvenBranchedSpears { get; private set; }
         internal bool EasternWeapons { get; private set; }
         internal bool BrownFurTransmuter { get; private set; }
+        internal bool UrbanBarbarian { get; private set; }
         internal static FeatureModuleConfiguration Defaults
         { get { return new FeatureModuleConfiguration(true, true, true, true, true, true,
-            true); } }
+            true, true); } }
 
         public bool Equals(FeatureModuleConfiguration other)
         {
@@ -44,7 +47,8 @@ namespace KingmakerGunslinger.FeatureModules
                 ExpandedSummoning == other.ExpandedSummoning &&
                 ElvenBranchedSpears == other.ElvenBranchedSpears &&
                 EasternWeapons == other.EasternWeapons &&
-                BrownFurTransmuter == other.BrownFurTransmuter;
+                BrownFurTransmuter == other.BrownFurTransmuter &&
+                UrbanBarbarian == other.UrbanBarbarian;
         }
 
         public override bool Equals(object obj)
@@ -54,7 +58,7 @@ namespace KingmakerGunslinger.FeatureModules
         { return (Gunslinger ? 1 : 0) | (AcadamaeGraduate ? 2 : 0) |
             (ShieldOther ? 4 : 0) | (ExpandedSummoning ? 8 : 0) |
             (ElvenBranchedSpears ? 16 : 0) | (EasternWeapons ? 32 : 0) |
-            (BrownFurTransmuter ? 64 : 0); }
+            (BrownFurTransmuter ? 64 : 0) | (UrbanBarbarian ? 128 : 0); }
 
         public override string ToString()
         { return "gunslinger=" + Gunslinger + ";acadamae-graduate=" +
@@ -62,6 +66,7 @@ namespace KingmakerGunslinger.FeatureModules
             ";expanded-summoning=" + ExpandedSummoning +
             ";elven-branched-spears=" + ElvenBranchedSpears +
             ";eastern-weapons=" + EasternWeapons +
-            ";brown-fur-transmuter=" + BrownFurTransmuter; }
+            ";brown-fur-transmuter=" + BrownFurTransmuter +
+            ";urban-barbarian=" + UrbanBarbarian; }
     }
 }

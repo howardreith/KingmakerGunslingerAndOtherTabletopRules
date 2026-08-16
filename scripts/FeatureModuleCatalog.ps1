@@ -51,6 +51,13 @@ function Get-KmgFeatureModuleCatalog {
             DependencyState = 'requires-call-of-the-wild'
             RuntimeParameter = 'brownFurTransmuter'
         }
+        [pscustomobject]@{
+            InternalProperty = 'UrbanBarbarian'
+            JsonKey = 'urban-barbarian'
+            DisplayName = 'Urban Barbarian'
+            DependencyState = 'independent'
+            RuntimeParameter = 'urbanBarbarian'
+        }
     )
 }
 

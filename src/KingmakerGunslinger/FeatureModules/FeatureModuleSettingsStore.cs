@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal static class FeatureModuleSettingsStore
     {
-        internal const int CurrentSchemaVersion = 6;
+        internal const int CurrentSchemaVersion = 7;
         internal const string FileName = "FeatureModules.json";
 
         internal static FeatureModuleSettingsState Load(string modPath,
@@ -26,7 +26,11 @@ namespace KingmakerGunslinger.FeatureModules
                 JToken schemaToken = root["schemaVersion"];
                 int schema = schemaToken == null ? 0 : RequireInteger(schemaToken,
                     "schemaVersion");
-                if (schema < 0 || schema > CurrentSchemaVersion)
+                if (schema > CurrentSchemaVersion)
+                    throw new UnsupportedFeatureModuleSchemaException(
+                        "Unsupported future feature-module settings schema " +
+                        schema + ".");
+                if (schema < 0)
                     throw new JsonException("Unsupported feature-module settings schema " + schema + ".");
                 bool gunslinger = ReadDefaultOn(root, FeatureModuleConfiguration.GunslingerId);
                 bool acadamae = ReadDefaultOn(root,
@@ -41,10 +45,12 @@ namespace KingmakerGunslinger.FeatureModules
                     FeatureModuleConfiguration.EasternWeaponsId);
                 bool brownFurTransmuter = ReadDefaultOn(root,
                     FeatureModuleConfiguration.BrownFurTransmuterId);
+                bool urbanBarbarian = ReadDefaultOn(root,
+                    FeatureModuleConfiguration.UrbanBarbarianId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
                         shieldOther, expandedSummoning, elvenBranchedSpears,
-                        easternWeapons, brownFurTransmuter), path,
+                        easternWeapons, brownFurTransmuter, urbanBarbarian), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
                         "settings", false);
                 if (schema < CurrentSchemaVersion) Save(state);
@@ -52,6 +58,7 @@ namespace KingmakerGunslinger.FeatureModules
             }
             catch (Exception exception)
             {
+                if (exception is UnsupportedFeatureModuleSchemaException) throw;
                 DateTime now = (utcNow ?? (() => DateTime.UtcNow))();
                 string quarantine = path + ".malformed." +
                     now.ToString("yyyyMMddTHHmmssfffffffZ", CultureInfo.InvariantCulture);
@@ -92,7 +99,9 @@ namespace KingmakerGunslinger.FeatureModules
                 [FeatureModuleConfiguration.EasternWeaponsId] =
                     state.Pending.EasternWeapons,
                 [FeatureModuleConfiguration.BrownFurTransmuterId] =
-                    state.Pending.BrownFurTransmuter
+                    state.Pending.BrownFurTransmuter,
+                [FeatureModuleConfiguration.UrbanBarbarianId] =
+                    state.Pending.UrbanBarbarian
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";
@@ -122,6 +131,12 @@ namespace KingmakerGunslinger.FeatureModules
             if (token.Type != JTokenType.Integer)
                 throw new JsonException("Feature-module key '" + key + "' must be integer.");
             return token.Value<int>();
+        }
+
+        private sealed class UnsupportedFeatureModuleSchemaException : JsonException
+        {
+            internal UnsupportedFeatureModuleSchemaException(string message) :
+                base(message) { }
         }
     }
 }

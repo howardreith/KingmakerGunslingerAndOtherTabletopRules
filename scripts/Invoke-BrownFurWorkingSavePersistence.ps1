@@ -51,7 +51,7 @@ $failure = $null
 
 function Set-BrownFurEnabled([bool]$enabled) {
     $configuration = [ordered]@{
-        schemaVersion = 6
+        schemaVersion = 7
         gunslinger = $true
         'acadamae-graduate' = $true
         'shield-other' = $true
@@ -59,6 +59,7 @@ function Set-BrownFurEnabled([bool]$enabled) {
         'elven-branched-spears' = $true
         'eastern-weapons' = $true
         'brown-fur-transmuter' = $enabled
+        'urban-barbarian' = $true
     }
     $temporary = $settings + '.kmg-brown-fur-persistence.tmp'
     [IO.File]::WriteAllText($temporary,
