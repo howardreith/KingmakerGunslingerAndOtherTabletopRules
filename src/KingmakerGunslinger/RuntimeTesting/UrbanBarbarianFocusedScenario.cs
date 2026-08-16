@@ -40,7 +40,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string NativeRageActivatableGuid =
             "df6a2cce8e3a9bd4592fb1968b83f730";
         private const string LongswordGuid =
-            "d56c44bc9eb102c4ab3e2a7de8fcee48";
+            "d56c44bc9eb10204c8b386a02c7eed21";
 
         internal static RuntimeTestResult Run(ModContext context,
             RuntimeTestRequest request)
@@ -158,17 +158,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int maxDuring = urban.MaxHP;
                 int dexSplit = urban.Descriptor.Stats.Dexterity.ModifiedValue;
                 int conSplit = urban.Descriptor.Stats.Constitution.ModifiedValue;
+                ControlledRageAllocation splitSelection =
+                    ControlledRageRuntime.ResolveSelection(urban.Descriptor,
+                        false);
                 urban.Descriptor.RemoveFact(set.RageBuff);
                 int hpAfter = urban.HPLeft;
                 int maxAfter = urban.MaxHP;
                 Add(assertions, "urban-constitution-hp-cycle",
-                    "DEX +2/CON +2 actual scores; damage deficit preserved through entry and exit",
+                    "DEX +2/CON +2 actual scores; Constitution HP and damage deficit restore exactly on exit",
                     "hp=" + hpBefore + "/" + hpDuring + "/" + hpAfter +
                         ";max=" + maxBefore + "/" + maxDuring + "/" + maxAfter +
                         ";damage=" + urban.Descriptor.Damage + ";dex=" + dexSplit +
-                        ";con=" + conSplit,
+                        ";con=" + conSplit + ";selection=" + splitSelection,
                     dexSplit == dexBefore + 2 && conSplit == conBefore + 2 &&
-                        maxDuring >= maxAfter && hpAfter == hpBefore &&
+                        maxDuring == maxAfter + 1 && hpDuring == hpBefore + 1 &&
+                        hpAfter == hpBefore &&
                         maxAfter == maxBefore &&
                         urban.Descriptor.Damage == damageBefore,
                     "genuine Constitution morale modifier and native HP/damage accounting");
@@ -252,7 +256,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.Library.GetAllBlueprints()
                         .OfType<BlueprintFeature>().Single(value =>
                             value.AssetGuid == NativeRageFeatureGuid));
-                bool activated = false, canceled = false, fatigued = true;
+                bool activated = false, canceled = false;
+                bool fatigueBeforeTireless = urban.Descriptor.State.HasCondition(
+                    UnitCondition.Fatigued);
+                bool fatigueAfterTireless = true;
                 if (nativeToggle != null)
                 {
                     nativeToggle.IsOn = true;
@@ -261,17 +268,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     nativeToggle.IsOn = false;
                     canceled = !nativeToggle.IsOn &&
                         !urban.Descriptor.HasFact(set.RageBuff);
-                    fatigued = urban.Descriptor.State.HasCondition(
+                    fatigueAfterTireless = urban.Descriptor.State.HasCondition(
                         UnitCondition.Fatigued);
                 }
                 Add(assertions, "urban-tireless-rage-lifecycle",
                     "level-20 native Rage activates/cancels Urban buff without fatigue",
                     "feature=" + nativeFeature + ";toggle=" +
                         (nativeToggle != null) + ";activated=" + activated +
-                        ";canceled=" + canceled + ";fatigued=" + fatigued,
+                        ";canceled=" + canceled + ";fatigue=" +
+                        fatigueBeforeTireless + "->" + fatigueAfterTireless,
                     nativeFeature && urban.Descriptor.HasFact(
                         set.NativeTirelessRage) && nativeToggle != null &&
-                        activated && canceled && !fatigued,
+                        activated && canceled &&
+                        fatigueAfterTireless == fatigueBeforeTireless,
                     "native Rage activatable and retained AddFactContextActions lifecycle");
 
                 stage = "crowd-control";

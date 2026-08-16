@@ -25,6 +25,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
         private static BlueprintAbility _selector;
         private static IDictionary<BlueprintAbility, ControlledRageAllocation>
             _allocationsByAbility;
+        private static IDictionary<ControlledRageAllocation, BlueprintAbility>
+            _abilitiesByAllocation;
         private static IDictionary<ControlledRageAllocation, BlueprintFeature>
             _factsByAllocation;
 
@@ -46,6 +48,8 @@ namespace KingmakerGunslinger.UrbanBarbarian
             _mightyRage = mightyRage; _selector = selector;
             _allocationsByAbility = new Dictionary<BlueprintAbility,
                 ControlledRageAllocation>(abilities);
+            _abilitiesByAllocation = abilities.ToDictionary(value => value.Value,
+                value => value.Key);
             _factsByAllocation = new Dictionary<ControlledRageAllocation,
                 BlueprintFeature>(facts);
         }
@@ -100,15 +104,15 @@ namespace KingmakerGunslinger.UrbanBarbarian
         internal static IList<AbilityData> FilterVariants(AbilityData parent,
             IList<AbilityData> variants)
         {
-            if (parent == null || !ReferenceEquals(parent.Blueprint, _selector) ||
-                variants == null || parent.Caster == null) return variants;
+            if (parent == null || !ReferenceEquals(parent.Blueprint, _selector))
+                return variants;
+            if (parent.Caster == null) return new AbilityData[0];
             ControlledRageTier tier;
             if (!TryCurrentTier(parent.Caster, out tier))
                 return new AbilityData[0];
-            return variants.Where(value => value != null &&
-                value.Blueprint != null && _allocationsByAbility.ContainsKey(
-                    value.Blueprint) &&
-                _allocationsByAbility[value.Blueprint].Total == (int)tier)
+            return ControlledRageAllocationPolicy.Generate(tier)
+                .Select(value => new AbilityData(parent,
+                    _abilitiesByAllocation[value]))
                 .ToArray();
         }
 
@@ -148,6 +152,9 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 _constitution = Owner.Stats.Constitution.AddModifier(
                     allocation.Constitution, Fact, GetType().FullName,
                     ModifierDescriptor.Morale);
+            Owner.Stats.Strength.UpdateValue();
+            Owner.Stats.Dexterity.UpdateValue();
+            Owner.Stats.Constitution.UpdateValue();
         }
 
         public override void OnTurnOff() { Remove(); }
@@ -160,12 +167,15 @@ namespace KingmakerGunslinger.UrbanBarbarian
                 if (_dexterity != null) Owner.Stats.Dexterity.RemoveModifier(_dexterity);
                 if (_constitution != null)
                     Owner.Stats.Constitution.RemoveModifier(_constitution);
+                Owner.Stats.Strength.UpdateValue();
+                Owner.Stats.Dexterity.UpdateValue();
+                Owner.Stats.Constitution.UpdateValue();
             }
             _strength = _dexterity = _constitution = null;
         }
     }
 
-    [HarmonyPatch(typeof(BuffCollection), "AddBuff", new[] {
+    [HarmonyPatch(typeof(BuffCollection), "AddBuffInternal", new[] {
         typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?) })]
     [HarmonyAfter("CallOfTheWild")]
     internal static class ControlledRageBuffSubstitutionPatch

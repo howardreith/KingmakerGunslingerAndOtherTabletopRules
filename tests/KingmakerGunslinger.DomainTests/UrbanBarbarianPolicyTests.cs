@@ -274,6 +274,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "ReferenceEquals(attempted, _nativeRage)",
                 "collection.Owner.HasFact(_ownerFeature)",
+                "AddBuffInternal", "new AbilityData(parent,",
                 "ModifierDescriptor.Morale",
                 "HarmonyAfter(\"CallOfTheWild\")",
                 "get_Variants", "get_Name", "Selected -- ",
