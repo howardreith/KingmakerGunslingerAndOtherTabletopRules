@@ -38,6 +38,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "2479395977cfeeb46b482bc3385f4647";
         private const string NativeRageActivatableGuid =
             "df6a2cce8e3a9bd4592fb1968b83f730";
+        private const string NativeRageResourceGuid =
+            "24353fcf8096ea54684a72bf58dedbc9";
 
         internal static RuntimeTestResult Run(ModContext context,
             RuntimeTestRequest request)
@@ -190,12 +192,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.Library.GetAllBlueprints()
                     .OfType<BlueprintActivatableAbility>().Single(value =>
                         value.AssetGuid == NativeRageActivatableGuid);
+                BlueprintAbilityResource rageResource = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintAbilityResource>().Single(
+                        value => value.AssetGuid == NativeRageResourceGuid);
+                urban.Descriptor.Resources.Add(rageResource, true);
+                int ordinaryResourceBefore = urban.Descriptor.Resources
+                    .GetResourceAmount(rageResource);
                 ActivatableAbility ordinaryToggle = urban.Descriptor
                     .ActivatableAbilities.Enumerable.SingleOrDefault(value =>
                         value != null && ReferenceEquals(value.Blueprint,
                             rageBlueprint));
                 bool ordinaryActivated = false, ordinaryCanceled = false,
                     ordinaryFatigued = false;
+                int ordinaryResourceRunning = ordinaryResourceBefore;
                 if (ordinaryToggle != null)
                 {
                     Buff[] beforeToggle = urban.Descriptor.Buffs.RawFacts
@@ -204,6 +213,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ordinaryToggle.TryStart();
                     ordinaryActivated = ordinaryToggle.IsOn &&
                         urban.Descriptor.HasFact(set.RageBuff);
+                    ordinaryResourceRunning = urban.Descriptor.Resources
+                        .GetResourceAmount(rageResource);
                     ordinaryToggle.IsOn = false;
                     ordinaryCanceled = !ordinaryToggle.IsOn &&
                         !urban.Descriptor.HasFact(set.RageBuff);
@@ -218,9 +229,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native Rage toggle activates Urban buff, cancels, and applies ordinary fatigue",
                     "toggle=" + (ordinaryToggle != null) + ";activated=" +
                         ordinaryActivated + ";canceled=" + ordinaryCanceled +
-                        ";fatigued=" + ordinaryFatigued,
+                        ";fatigued=" + ordinaryFatigued + ";resource=" +
+                        ordinaryResourceBefore + "->" + ordinaryResourceRunning,
                     ordinaryToggle != null && ordinaryActivated &&
-                        ordinaryCanceled && ordinaryFatigued,
+                        ordinaryCanceled && ordinaryFatigued &&
+                        ordinaryResourceBefore > 0 &&
+                        ordinaryResourceRunning <= ordinaryResourceBefore,
                     "native Rage activatable and retained AddFactContextActions lifecycle");
 
                 stage = "tier-transitions";
@@ -284,6 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.Library.GetAllBlueprints()
                         .OfType<BlueprintFeature>().Single(value =>
                             value.AssetGuid == NativeRageFeatureGuid));
+                urban.Descriptor.Resources.Add(rageResource, true);
                 bool activated = false, canceled = false;
                 bool fatigueBeforeTireless = urban.Descriptor.State.HasCondition(
                     UnitCondition.Fatigued);
@@ -321,6 +336,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int attackOne = Attack(urban, weapon);
                 int acOne = ArmorClass(urban, enemyOne);
                 SetPosition(enemyTwo, new Vector3(-1.5f, 0f, 0f));
+                float distanceOne = urban.DistanceTo(enemyOne);
+                float distanceTwo = urban.DistanceTo(enemyTwo);
                 int attackTwo = Attack(urban, weapon);
                 int acTwo = ArmorClass(urban, enemyOne);
                 SetPosition(enemyThree, new Vector3(0f, 0f, 1.5f));
@@ -334,7 +351,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "attack=" + attackZero + "/" + attackOne + "/" +
                         attackTwo + "/" + attackThree + "/" + attackMovedOut +
                         ";ac=" + acZero + "/" + acOne + "/" + acTwo + "/" +
-                        acThree,
+                        acThree + ";distance=" + distanceOne + "/" +
+                        distanceTwo,
                     attackOne == attackZero && attackTwo == attackZero + 1 &&
                         attackThree == attackZero + 1 &&
                         attackMovedOut == attackZero && acOne == acZero &&
@@ -499,6 +517,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             PropertyInfo property = typeof(UnitEntityData).GetProperty(
                 "Position", Members);
             property.SetValue(unit, position, null);
+            if (unit.View != null) unit.View.transform.position = position;
         }
 
         private static object Read(object value, string name)
