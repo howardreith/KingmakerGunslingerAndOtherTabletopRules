@@ -99,3 +99,23 @@ CotW component copied to the Urban buff. Assembly-count, identity, finalized-
 graph, marker, or duplicate-behavior failures name the exact structural check,
 mark only optional interoperability unqualified, and leave Urban publication
 untouched. CotW absence is displayed as not applicable.
+
+## Final-candidate compatibility seal
+
+The immutable `0.0.83` candidate at artifact commit
+`06cad804651faaace17bdf8432bcd071d50ce9e7` repeated the graph observer under
+all required focused profiles:
+
+- normal: `20260816T1842028623376Z...`, `balance_fixes=false`, settings
+  SHA-256 `E99445DA6D9E0A73F0D9F3770D6ED5974E0167F0AB8441E969C5EE46E4184885`, PASS;
+- balance fixes: `20260816T1844364358461Z...`, `balance_fixes=true`, settings
+  SHA-256 `24CC3F80269992A53EBBFD1F5986E5AAB056841D6B2F43D8E22E764CDB73F6E8`, PASS;
+- absent: `20260816T1847344493320Z...`, no CotW directory or assembly, Urban
+  core available and optional interoperability not applicable, PASS.
+
+Both present profiles resolved CotW `1.14.4c-2.1`, DLL SHA-256
+`4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`,
+and MVID `8caab254-aacf-4811-8093-44b9184e6e53`. Each named profile transaction
+restored the complete pre-profile Mods tree exactly. These results seal the
+no-adapter decision for the supported fingerprint; unknown and ambiguous
+fingerprints remain isolated fast-test outcomes that cannot disable Urban core.

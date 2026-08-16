@@ -32,6 +32,13 @@ CotW absent/normal/balance profiles, existing-owner OFF persistence, the exact
 18-state eight-module runtime boundary, guarded installation, and the final
 human presentation/play-acceptance checklist.
 
+Mission status: **all engineering and mechanical runtime gates complete on the
+immutable `0.0.83` artifact from commit
+`06cad804651faaace17bdf8432bcd071d50ce9e7`; stopped at the required human
+presentation/play-acceptance boundary**. Final focused gameplay, guarded
+module-OFF persistence, CotW normal/balance/absent profiles, and all 18 generic
+module-boundary states passed. The exact candidate remains installed.
+
 Stop only at that human boundary or at a documented hard stop after safe,
 reversible, evidence-supported alternatives and narrower instrumentation have
 been exhausted. Build or source-test success is not runtime qualification.

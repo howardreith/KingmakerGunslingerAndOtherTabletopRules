@@ -1,8 +1,7 @@
 # Urban Barbarian runtime matrix
 
-Status: **ARCHITECTURE INVENTORY 2/2 PASS AND FOCUSED GAMEPLAY CHECKPOINT
-PASS; final immutable persistence, compatibility, and 18-state boundary
-execution pending**.
+Status: **FINAL IMMUTABLE MECHANICAL QUALIFICATION PASS; 18/18 BOUNDARY PASS;
+HUMAN PRESENTATION/PLAY ACCEPTANCE PENDING**.
 
 ## Immutable identity fields
 
@@ -160,3 +159,49 @@ and play judgment covers name/description/icon/progression, skills/proficiency,
 Crowd Control tooltip and visible behavior, selector legibility and selected
 state, legal allocations, Rage counter, leakage absence, Constitution/HP,
 native/CotW rage powers, UMM status, ON/OFF owner behavior, and duplication.
+
+## Final immutable candidate result
+
+The installed candidate is package version `0.0.83` from gameplay/artifact
+commit `06cad804651faaace17bdf8432bcd071d50ce9e7` on
+`codex/urban-barbarian`. Its exact identities are:
+
+- package SHA-256 `b2b4fdd899a1e00955e972d94b45f5624f4d663e88581043cbf969c3d6e3d193`;
+- DLL SHA-256 `c72eb71bc57b6be79b5cd49c58b262bf0897960eac2c118538d7e6e43cfccaae`;
+- DLL MVID `1f53a664-2557-4866-b690-a720cbff840f`;
+- build-local manifest SHA-256
+  `bd4f3de7fd06f707cb18dc600d720371810ede9374a7f6a2afdcf318c6c31565`;
+- deployment manifest
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260816T1831540393986Z\deployment.json`,
+  SHA-256 `145de454d3e7282783f656a65d005036bd39a3f5f0f4bf43d511e07238817584`;
+- installed DLL SHA-256 equal to the built DLL; and
+- Kingmaker build `2018.4.10.10503941`.
+
+Final focused gameplay run
+`20260816T1832319912185Z-disposable-urban-barbarian-focused` passed. The
+guarded persistence pair
+`20260816T1836403726127Z-working-save-urban-barbarian-prepare` and
+`20260816T1838375478457Z-working-save-urban-barbarian-off-verify-cleanup`
+passed on `KMG_AUTOMATION_WORKING`, including active CON +4 selection,
+fresh-process reconstruction, module-OFF existing-owner behavior, exact
+cleanup, and one correlated native save write per phase. A preceding recovery
+run `20260816T1834182204621Z...` intentionally failed already-absent setup
+preconditions but passed all six cleanup postconditions and its exact save
+write before the clean qualifying pair began.
+
+Final CotW graph runs passed for normal settings
+(`20260816T1842028623376Z...`, settings SHA-256 `e99445da...84885`), balance
+fixes (`20260816T1844364358461Z...`, settings SHA-256 `24cc3f80...f6e8`), and
+CotW absent (`20260816T1847344493320Z...`). Transactions
+`urban-cotw-normal-20260816`, `urban-cotw-balance-20260816`, and
+`urban-cotw-absent-20260816` each report `Restored` and
+`restorationVerified=true`.
+
+The generic boundary controller produced exactly 18 new
+`observe-feature-module-settings` results from
+`20260816T1849194367762Z...` through `20260816T1923324946627Z...`; an
+independent result scan counted 18 PASS, zero FAIL. The controller reported the
+complete all-ON, all-OFF, eight ON-alone, and eight OFF-alone names and restored
+the original feature settings byte-for-byte to SHA-256
+`5809a8b847c1d350ddffe4fd7cd58435b4a3111f96d602429cccb0629261a271`.
+No 256-launch game matrix was run.

@@ -6,6 +6,28 @@ runtime evidence are supplied in the handoff. Leave the installed candidate
 unchanged during review. Any gameplay-source or packaged-artifact change
 invalidates the candidate and requires a new build and qualification cycle.
 
+## Immutable candidate under review
+
+- Artifact/source commit: `06cad804651faaace17bdf8432bcd071d50ce9e7`
+- Branch: `codex/urban-barbarian`
+- Version: `0.0.83`
+- Package SHA-256: `b2b4fdd899a1e00955e972d94b45f5624f4d663e88581043cbf969c3d6e3d193`
+- DLL and installed-DLL SHA-256:
+  `c72eb71bc57b6be79b5cd49c58b262bf0897960eac2c118538d7e6e43cfccaae`
+- DLL MVID: `1f53a664-2557-4866-b690-a720cbff840f`
+- Deployment manifest:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260816T1831540393986Z\deployment.json`
+- Deployment manifest SHA-256:
+  `145de454d3e7282783f656a65d005036bd39a3f5f0f4bf43d511e07238817584`
+- Kingmaker build: `2018.4.10.10503941`
+- Mechanical seal: focused Urban PASS; two-launch existing-owner OFF
+  persistence PASS; CotW normal/balance/absent PASS; module boundary 18/18
+  PASS; 1,149/1,149 fast tests PASS.
+
+The tracked qualification evidence was finalized in a later documentation-only
+commit. That commit does not change the package, DLL, or installed candidate;
+the artifact/source identity above remains authoritative for play review.
+
 ## Character creation and presentation
 
 - [ ] With Urban Barbarian ON, the native Barbarian archetype list shows
