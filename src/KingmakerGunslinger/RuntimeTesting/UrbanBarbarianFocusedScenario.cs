@@ -127,9 +127,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Ability selectorFact = urban.Descriptor.Abilities.GetAbility(
                     set.Selector);
                 AbilityData selector = selectorFact == null ? null :
-                    new AbilityData(selectorFact);
-                AbilityData[] visibleOrdinary = selector == null ?
-                    new AbilityData[0] : selector.Variants.ToArray();
+                    new AbilityData(set.Selector, urban.Descriptor);
+                AbilityData[] visibleOrdinary = Variants(selector);
                 bool locked = visibleOrdinary.Length == 6 &&
                     visibleOrdinary.All(value => !value.IsAvailable);
                 Add(assertions, "urban-ordinary-rage",
@@ -209,7 +208,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stage = "tier-transitions";
                 for (int level = 2; level <= 11; level++)
                     ApplyLevel(urban.Descriptor, set.BarbarianClass, null, false);
-                AbilityData[] greater = new AbilityData(selectorFact).Variants.ToArray();
+                AbilityData[] greater = Variants(new AbilityData(
+                    set.Selector, urban.Descriptor));
                 bool greaterDefault = Selected(set, urban.Descriptor,
                     ControlledRageTier.Greater, 6, 0, 0);
                 SelectDirect(urban.Descriptor, set,
@@ -221,7 +221,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 urban.Descriptor.RemoveFact(set.RageBuff);
                 for (int level = 12; level <= 20; level++)
                     ApplyLevel(urban.Descriptor, set.BarbarianClass, null, false);
-                AbilityData[] mighty = new AbilityData(selectorFact).Variants.ToArray();
+                AbilityData[] mighty = Variants(new AbilityData(
+                    set.Selector, urban.Descriptor));
                 bool mightyDefault = Selected(set, urban.Descriptor,
                     ControlledRageTier.Mighty, 8, 0, 0);
                 SelectDirect(urban.Descriptor, set,
@@ -479,6 +480,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             IEnumerable enumerable = source as IEnumerable;
             return enumerable == null ? new object[0] :
                 enumerable.Cast<object>().ToArray();
+        }
+
+        private static AbilityData[] Variants(AbilityData selector)
+        {
+            return selector == null || selector.Variants == null ?
+                new AbilityData[0] : selector.Variants.ToArray();
         }
 
         private static bool Same(object[] left, object[] right)
