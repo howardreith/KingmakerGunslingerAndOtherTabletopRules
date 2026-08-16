@@ -283,7 +283,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Controlled Rage runtime contract is missing: " + token);
             foreach (string token in new[] {
                 "IInitiatorRulebookHandler<RuleCalculateAttackBonusWithoutTarget>",
-                "IInitiatorRulebookHandler<RuleCalculateAC>",
+                "ITargetRulebookHandler<RuleCalculateAC>",
                 "candidate.Descriptor.State.IsConscious",
                 "owner.IsEnemy(candidate)", "owner.DistanceTo(candidate)",
                 "Game.Instance.State.Units.All",

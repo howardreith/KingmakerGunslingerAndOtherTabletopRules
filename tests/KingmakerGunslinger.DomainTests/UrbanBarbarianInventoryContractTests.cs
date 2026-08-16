@@ -55,6 +55,7 @@ namespace KingmakerGunslinger.DomainTests
                 "urban-crowd-control-rule-events",
                 "RuleCalculateAttackBonusWithoutTarget",
                 "RuleCalculateAC",
+                "new RuleCalculateAC(attacker, defender",
                 "SpawnHostileTarget",
                 "ApplyLevel(urban.Descriptor",
                 "State.Units.All.Add(urban)",

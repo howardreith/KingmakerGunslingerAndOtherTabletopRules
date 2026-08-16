@@ -14,7 +14,7 @@ namespace KingmakerGunslinger.UrbanBarbarian
     public sealed class CrowdControlComponent :
         OwnedGameLogicComponent<UnitDescriptor>,
         IInitiatorRulebookHandler<RuleCalculateAttackBonusWithoutTarget>,
-        IInitiatorRulebookHandler<RuleCalculateAC>
+        ITargetRulebookHandler<RuleCalculateAC>
     {
         private const float FiveFeetMeters = 1.524f;
         private const float ToleranceMeters = 0.00031f;

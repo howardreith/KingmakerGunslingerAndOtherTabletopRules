@@ -555,7 +555,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static int ArmorClass(UnitEntityData defender,
             UnitEntityData attacker)
         {
-            return Rulebook.Trigger(new RuleCalculateAC(defender, attacker,
+            return Rulebook.Trigger(new RuleCalculateAC(attacker, defender,
                 AttackType.Melee)).TargetAC;
         }
 
