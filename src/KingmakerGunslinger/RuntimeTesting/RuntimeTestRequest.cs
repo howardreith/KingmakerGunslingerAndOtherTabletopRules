@@ -235,6 +235,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveEasternWeaponsVerifyAbsent ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveUrbanBarbarianPrepare ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveUrbanBarbarianOffVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
                 request.Scenario == RuntimeTestScenarioCatalog.AdvancedCapacity ||

@@ -20,6 +20,9 @@ namespace KingmakerGunslinger.DomainTests
             string focused = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "UrbanBarbarianFocusedScenario.cs"));
+            string request = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRequest.cs"));
             string automation = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
             Assertions.True(observer.Contains(
@@ -88,6 +91,10 @@ namespace KingmakerGunslinger.DomainTests
                 automation.Contains(
                     "'working-save-urban-barbarian-off-verify-cleanup' = [pscustomobject]@{") &&
                 automation.Contains("PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                request.Contains(
+                    "RuntimeTestScenarioCatalog.WorkingSaveUrbanBarbarianPrepare") &&
+                request.Contains(
+                    "RuntimeTestScenarioCatalog.WorkingSaveUrbanBarbarianOffVerifyCleanup") &&
                 runner.Contains("set.Count == UrbanBarbarianIdentityCatalog.IdentityCount") &&
                 runner.Contains("archetypeReferences == (expectedActive ? 1 : 0)") &&
                 runner.Contains("fixtureFeatures.Reverse()"),
