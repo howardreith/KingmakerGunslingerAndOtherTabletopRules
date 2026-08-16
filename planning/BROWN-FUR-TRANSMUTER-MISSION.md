@@ -25,9 +25,10 @@ remain loadable when that dependency is absent or incompatible.
 The mission proceeds through investigation, implementation, focused source and
 runtime qualification, the seven-module 16-state boundary matrix, packaging,
 guarded deployment, and one immutable pre-human candidate. The Brown-Fur human
-acceptance gate remains mandatory. The final 128-state exhaustive matrix must
-not run until the exact installed Brown-Fur candidate receives explicit human
-acceptance.
+acceptance gate remains mandatory. Under the user-authoritative policy revision
+of 2026-08-16, the complete `2N + 2` runtime boundary plus focused mechanics,
+compatibility, and persistence profiles is the final cross-module runtime seal;
+no exhaustive game-launch matrix is required.
 
 ## Current status
 
@@ -43,10 +44,16 @@ acceptance.
 - Repair source: `0940c282237826adfd6ef44f5bf864c2fdf0c588`.
 - Repair status: implementation, 1,138-test domain suite, focused runtime,
   persistence, optional-mod profiles, packaging, guarded deployment, and the
-  complete boundary matrix pass on one immutable artifact. The candidate is
-  installed and awaiting renewed human acceptance.
+  complete boundary matrix pass on one immutable artifact.
 - Pre-human boundary: **PASS 16/16**.
-- Final exhaustive matrix: **NOT RUN / prohibited until human acceptance**.
+- Brown-Fur human acceptance: **GRANTED** on 2026-08-16 for exact source
+  `0940c282237826adfd6ef44f5bf864c2fdf0c588`, package SHA-256
+  `969F89E8744592FFB2D7009F881781498AA14C36932C2920A0ACD608D191B48D`,
+  DLL SHA-256
+  `0D13E393FCD2E3F90D8882583C87915C0DA09EC5778867B5E69B53ABFA6BB265`,
+  and MVID `754d4c45-dbf6-41b9-a5de-67b6e279c8ea`.
+- Exhaustive runtime matrix: **NOT RUN / NOT REQUIRED** by the superseding
+  runtime qualification policy.
 
 The superseded, unaccepted pre-human artifact is version `0.0.81`, package SHA-256
 `883751EDD4AF3427CCE712C2C875EEA0E4B6CCB955E9A2778176E5CE1C2BA7BE`,
@@ -74,9 +81,17 @@ DLL and installed-DLL SHA-256
 and MVID `754d4c45-dbf6-41b9-a5de-67b6e279c8ea`. Its 1,138 domain tests,
 40 focused runtime launches, 435 runtime assertions, normal/balance/absent and
 highest-risk profiles, ON/OFF-owner persistence, and all 16 boundary states
-pass. The next mission boundary is renewed human acceptance using the updated
-checklist. The 128-state matrix remains prohibited until this exact candidate
-receives explicit acceptance.
+pass. Human presentation and play review accepted this exact artifact. The
+16-state boundary and focused profiles are the completed final runtime seal
+under the superseding policy; no additional exhaustive game-launch matrix is
+required.
+
+Post-acceptance immutable verification reconfirmed the package, DLL, installed
+DLL, MVID, deployment/build manifests, feature settings, CotW DLL/MVID, and
+CotW settings. The revised policy and guarded matrix controller passed the
+complete 1,138-test dependency-free suite without rebuilding, repackaging,
+redeploying, or launching Kingmaker. Brown-Fur release qualification is
+complete on the feature branch; merge remains a human-only action.
 
 The inspected dependency structure and fail-closed progression authority are
 recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`.

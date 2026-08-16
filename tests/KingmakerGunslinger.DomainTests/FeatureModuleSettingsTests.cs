@@ -282,10 +282,13 @@ namespace KingmakerGunslinger.DomainTests
                 "Get-KmgFeatureModuleConfigurations", "schemaVersion = 6",
                 "BrownFurTransmuter", "brown-fur-transmuter",
                 "brownFurTransmuter", "2 + 2 * $moduleCount",
+                "$boundaryRequested = $Combination -ceq 'all'",
+                "Get-KmgFeatureModuleConfigurations -Boundary",
+                "deliberately has no generic 2^N game-launch mode",
                 "[switch]$AllowDirtyGit", "AllowDirtyGit = [bool]$AllowDirtyGit",
                 "Settings byte-for-byte restoration failed." })
                 Assertions.True(matrixContract.Contains(token),
-                    "The 128-state runtime matrix contract is missing: " + token);
+                    "The authoritative boundary runtime matrix contract is missing: " + token);
             string common = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
             Assertions.True(common.Contains("$Parameters.Count -ne 7") &&

@@ -18,7 +18,8 @@ Eastern Weapons assets: 3 original equipped models; 6 original production icons
 Dependency-free domain tests: 1138 passed; 0 failed
 Original Expanded Summoning icons: 77 distinct concepts; 77 production 128x128 RGBA PNGs
 Visible menus: 371 Summon Monster choices; 322 Summon Nature's Ally choices
-Native runtime: 40 Brown-Fur focused launches and 435 assertions PASS; CotW normal/balance/absent profiles, ON/OFF-owner persistence, highest-risk combined profile, and 16/16 boundary PASS; human acceptance pending; 128-state seal not run
+Native runtime: 40 Brown-Fur focused launches and 435 assertions PASS; CotW normal/balance/absent profiles, ON/OFF-owner persistence, highest-risk combined profile, and authoritative 16/16 boundary PASS
+Human acceptance: GRANTED 2026-08-16 for exact source/package/DLL/MVID; exhaustive game-launch matrix not required under revised policy
 Artifact source commit: 0940c282237826adfd6ef44f5bf864c2fdf0c588
 Package: KingmakerGunslinger-0.0.82-brown-fur-human-review-repair.zip
 Package SHA-256: 969F89E8744592FFB2D7009F881781498AA14C36932C2920A0ACD608D191B48D

@@ -7,12 +7,14 @@ The immutable `0.0.82-brown-fur-human-review-repair` candidate at
 reservoir counters, distinct donor icons, early Share target-anchor resolution,
 and ordinary-recast typed-bonus restoration. Its focused runtime, persistence,
 optional-mod profiles, and complete 16-state boundary all pass. Human
-acceptance remains pending.
+acceptance was granted on 2026-08-16 for this exact source, package, DLL, and
+MVID.
 Exact package, DLL, MVID, deployment, backup, CotW, and structured-evidence
 identities are recorded in `planning/BROWN-FUR-COTW-CONTRACT.md`. A passing
 row proves only its stated scope. The rejected `0.0.81` artifact remains
-superseded and unaccepted. The final 128-state seal remains prohibited until
-the exact `0.0.82` artifact receives explicit human acceptance.
+superseded and unaccepted. The runtime policy revision of 2026-08-16 makes the
+`2N + 2` boundary authoritative and removes the exhaustive game-launch release
+requirement.
 
 ## Current focused evidence
 
@@ -45,8 +47,8 @@ the exact `0.0.82` artifact receives explicit human acceptance.
 | CotW balance progression | PASS (focused contract) | Runtime-resolved replacements 4 and 10 |
 | Seven-module boundary matrix | PASS | All 16 formula-derived states passed on commit `0940c282`; original settings restored to SHA `5B6030AE...665E` |
 | Human presentation acceptance | FAILED / SUPERSEDED | `0.0.81` had unclear Powerful Change state/resource presentation and Personal Share spells self-cast without target acquisition |
-| Human-review repair qualification | PASS / AWAITING HUMAN | `0.0.82` native toggles, counters, icons, early Share targeting, 40 focused launches, persistence, optional profiles, and 16-state boundary pass on one artifact |
-| Seven-module exhaustive matrix | PROHIBITED PRE-ACCEPTANCE | Exactly 128 states on the accepted immutable artifact |
+| Human-review repair qualification | PASS / ACCEPTED | `0.0.82` native toggles, counters, icons, early Share targeting, 40 focused launches, persistence, optional profiles, and 16-state boundary pass on one artifact; exact artifact accepted 2026-08-16 |
+| Exhaustive runtime enumeration | NOT RUN / NOT REQUIRED | Superseded policy retains exhaustive enumeration for fast source/domain tests and makes the `2N + 2` runtime boundary authoritative |
 
 ## Immutable repaired candidate evidence
 
@@ -66,7 +68,38 @@ the exact `0.0.82` artifact receives explicit human acceptance.
 - Boundary evidence: 16 PASS results from
   `20260816T0531162280854Z-observe-feature-module-settings` through
   `20260816T0601030701355Z-observe-feature-module-settings`.
-- Human acceptance: pending. Final 128-state matrix: not run.
+- Human acceptance: granted 2026-08-16 for the exact identities above.
+- Exhaustive game-launch matrix: not run and not required by the revised policy.
+
+## Final acceptance and policy seal
+
+The user-authoritative human reviewer accepted source
+`0940c282237826adfd6ef44f5bf864c2fdf0c588`, accepted documentation handoff
+`1ddd357d20043a6d547d8fa80f899721b42713fe`, package SHA-256
+`969F89E8744592FFB2D7009F881781498AA14C36932C2920A0ACD608D191B48D`,
+DLL and installed-DLL SHA-256
+`0D13E393FCD2E3F90D8882583C87915C0DA09EC5778867B5E69B53ABFA6BB265`,
+and MVID `754d4c45-dbf6-41b9-a5de-67b6e279c8ea` on 2026-08-16.
+
+No exhaustive runtime state was launched. After acceptance, immutable identity
+verification reconfirmed the accepted package and deployment-bound package are
+byte-identical; build-local manifest SHA-256 is
+`2BF9B8B474053897509B9D6B2F7125D3BA3F12E8F33D174D33A4A409FE8003FC`,
+deployment manifest SHA-256 is
+`06028B8A74685A0FBF294E1CEC651C0733A8E70B63C3B492F3189973836338BC`,
+original feature settings SHA-256 is
+`5B6030AE888F6B127FF23CA03E49578F304DC107ED65E3B2D5F8C8D3D177665E`,
+CotW DLL SHA-256 is
+`4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`
+with MVID `8caab254-aacf-4811-8093-44b9184e6e53`, and CotW settings SHA-256 is
+`24CC3F80269992A53EBBFD1F5986E5AAB056841D6B2F43D8E22E764CDB73F6E8`.
+
+The post-acceptance policy/controller changes do not enter the packaged mod.
+Repository validation and the complete 1,138-test dependency-free suite pass;
+that suite retains fast enumeration of all 128 Boolean configurations while
+the guarded runtime controller defaults to the authoritative 16-state boundary
+and exposes no generic exhaustive game-launch mode. The accepted package was
+not rebuilt, repackaged, or redeployed.
 
 ## Superseded pre-human candidate
 
@@ -113,8 +146,9 @@ matrix.
   `compat-20260816T004352Z-6508dc75fbfa`; both runtime results passed and the
   complete Mods tree plus CotW settings were restored exactly.
 
-The exhaustive `2^7 = 128` matrix has not been run. A new immutable repair
-artifact must complete focused qualification and human acceptance first.
+The formerly planned exhaustive runtime matrix was not run. The superseding
+2026-08-16 policy makes the already-passing 16-state boundary authoritative;
+exhaustive enumeration remains a fast source/domain-test concern.
 
 The current focused player-intent run is
 `20260815T2030084869082Z-f2bbc2103df344479f67ea782e23eff4`, evidence

@@ -3,8 +3,9 @@
 Status: all listed mechanical, presentation-structure, compatibility,
 persistence, and 16-state rows pass on immutable repair source
 `0940c282237826adfd6ef44f5bf864c2fdf0c588`. Human presentation acceptance is
-pending. The final 128-state release seal has not run and remains prohibited
-until that acceptance.
+granted for that exact artifact. The complete 16-state runtime boundary is the
+final cross-module seal under the revised policy; exhaustive game-launch
+enumeration is not required.
 
 | Tabletop or product contract | Kingmaker implementation | Result |
 | --- | --- | --- |
@@ -45,4 +46,4 @@ until that acceptance.
 There are no unexplained installed spells or known silent bonus-mechanics
 approximations in the qualified inventory. The rejected `0.0.81` early Share
 target-acquisition defect is repaired and mechanically proven in `0.0.82`;
-native-feeling presentation remains the human acceptance decision.
+native-feeling presentation passed human acceptance on 2026-08-16.

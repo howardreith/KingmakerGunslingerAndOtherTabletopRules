@@ -5,9 +5,10 @@ The authoritative package-wide policy is now
 retains the six-module context under which it was written; current controllers
 must use the generic active-module catalog and current boundary count.
 
-Ordinary repair iterations use risk-shaped runtime coverage. They do not run
-the exhaustive 64-state feature-module matrix unless shared module authority,
-schema, bootstrap, registration, gating, rollback, or module membership changed.
+Ordinary repair iterations use risk-shaped runtime coverage. Exhaustive Boolean
+enumeration belongs in fast source/domain tests; it is not a game-launch release
+gate, including when shared module authority, schema, bootstrap, registration,
+gating, rollback, or module membership changes.
 
 - Documentation-only: no game process.
 - Icon-only: package/icon validation and focused all-ON asset loading.
@@ -20,8 +21,9 @@ schema, bootstrap, registration, gating, rollback, or module membership changed.
   ON.
 
 Historically, `Invoke-FeatureModuleRuntimeMatrix.ps1 -Boundary14` constructed
-exactly those 14
-states. `Invoke-KingmakerRuntimeTest.ps1 -ReuseInstalledArtifact` skips build
+exactly those 14 states. The current matrix derives `2N + 2` boundary states
+from the active-module catalog by default; the historical option is only a
+deprecated alias. `Invoke-KingmakerRuntimeTest.ps1 -ReuseInstalledArtifact` skips build
 and deployment only after `Assert-KmgReusableDeployment` verifies the clean Git
 commit, version, package SHA-256, DLL SHA-256, DLL MVID, installed DLL hash,
 firearm-bundle hash, exact live path, and current settings hash. The deployment
@@ -37,6 +39,6 @@ run and retains its guarded single build/deploy boundary.
 
 Matrix resumability is intentionally not inferred. A resumed controller must
 separately prove the same immutable deployment and original settings identity;
-otherwise it starts a new settings transaction. Human visual iteration stops
-before any final exhaustive release seal. If such a seal is genuinely required,
-it runs once after human acceptance.
+otherwise it starts a new settings transaction. Add focused higher-order
+profiles only for concrete interaction evidence and test the smallest relevant
+family. The runtime launcher has no generic exhaustive mode.

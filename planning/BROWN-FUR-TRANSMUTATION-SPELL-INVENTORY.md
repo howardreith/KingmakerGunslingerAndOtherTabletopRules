@@ -9,7 +9,8 @@ passes guarded runtime qualification on the immutable repaired candidate.
 Status: authoritative installed inventory captured and deterministically
 classified; `Unexplained = 0`. Every separate ownership, interruption, dispel,
 persistence, and publication gate now passes on the immutable pre-human
-candidate. Human acceptance remains pending.
+candidate. Human acceptance was granted on 2026-08-16 for the exact repaired
+artifact.
 
 ## Repaired-candidate authority
 

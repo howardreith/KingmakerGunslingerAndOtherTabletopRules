@@ -40,6 +40,9 @@ namespace KingmakerGunslinger.DomainTests
                 matrix.Contains("[switch]$Boundary14") &&
                 matrix.Contains("FeatureModuleCatalog.ps1") &&
                 matrix.Contains("Get-KmgFeatureModuleConfigurations") &&
+                matrix.Contains("$boundaryRequested = $Combination -ceq 'all'") &&
+                matrix.Contains("Get-KmgFeatureModuleConfigurations -Boundary") &&
+                matrix.Contains("deliberately has no generic 2^N game-launch mode") &&
                 matrix.Contains("$invokeArguments.ReuseInstalledArtifact = $true") &&
                 matrix.Contains("$invokeArguments.DeploymentManifestPath") &&
                 matrix.Contains("$invokeArguments.PackagePath"),

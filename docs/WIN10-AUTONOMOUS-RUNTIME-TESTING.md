@@ -170,11 +170,12 @@ domain tests, or a successful build alone is not proof of gameplay behavior.
 
 ## Runtime qualification scope policy
 
-Do not run the exhaustive `2^N` feature-module matrix during ordinary iterative
-repairs unless the change modifies feature-module configuration/settings/schema,
-publication plans, shared blueprint bootstrap/registration, shared module
-gating/rollback, module cardinality, or another cross-module authority whose
-correctness genuinely depends on every complete configuration.
+Use exhaustive `2^N` enumeration only in fast source/domain tests where every
+configuration can be evaluated without launching Kingmaker. The standard
+cross-module game-launch coverage is the generic `2N + 2` boundary: all ON,
+all OFF, each module ON alone, and each module OFF while all others are ON.
+For Boolean module settings this covers every possible one-, two-, and
+three-module value combination.
 
 - Documentation-only changes require no game process.
 - Icon-only changes require package/icon validation and focused all-ON asset
@@ -184,15 +185,17 @@ correctness genuinely depends on every complete configuration.
   combined compatibility profile.
 - A single module's mechanics or selector publication requires its focused
   mechanics, relevant optional profiles, persistence when affected, and the
-  14-state boundary matrix: all ON, all OFF, each module ON alone, and each
-  module OFF while every other module is ON.
+  current generic boundary matrix.
+- Add a higher-order combined profile only for a concrete suspected interaction
+  among four or more modules. Test the smallest relevant family.
 
 Build, test, package, validate, back up, and deploy once per immutable source
 commit. Reuse that exact installed artifact across matrix launches and verify
 commit, version, package/DLL SHA-256, DLL MVID, and installed DLL hash. Resume
 matrix evidence only when the immutable artifact and original-settings identity
-still match. During human visual iteration, perform the exhaustive release
-matrix, when required, once after the candidate receives human acceptance.
+still match. The runtime controller deliberately has no generic exhaustive
+game-launch mode. External-mod configurations remain focused profiles rather
+than matrix dimensions.
 
 ## Manual and visual gates
 

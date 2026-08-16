@@ -3,7 +3,8 @@
 Status: structural contract, mechanics, transactional archetype publication,
 normal/balance progression, CotW-absent isolation, persistence, and pre-human
 boundary qualification pass for the installed immutable candidate. Human
-acceptance is pending; the final 128-state matrix has not run.
+acceptance was granted on 2026-08-16. The authoritative 16-state runtime
+boundary is complete; exhaustive game-launch enumeration is not required.
 
 ## Engineering authority
 
@@ -56,8 +57,9 @@ exactly one publication. CotW settings were restored byte-for-byte to SHA-256
 The 16-state boundary, CotW-absent profile, ON and OFF-owner persistence, and
 the high-risk combined profile all reused this exact artifact. Forty focused
 launches produced 435 passing assertions. Exact run and result identities are
-recorded in `planning/BROWN-FUR-RUNTIME-MATRIX.md`. Human acceptance remains
-pending, so the final 128-state matrix has not run.
+recorded in `planning/BROWN-FUR-RUNTIME-MATRIX.md`. Human acceptance was
+granted for these exact identities. The revised policy treats the completed
+16-state boundary as the final cross-module runtime seal.
 
 ## Chronological contract evidence
 

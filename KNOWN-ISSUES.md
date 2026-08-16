@@ -1,13 +1,8 @@
 # Known issues and conservative adaptations
 
-- Brown-Fur `0.0.81` failed human review: score state and reservoir cost were
-  not legible, and armed Share caused Personal spells to self-cast instead of
-  entering target selection. The `0.0.82` source contains native activatable,
-  resource-counter, icon, and early-targeting repairs. Its focused runtime,
-  persistence, optional-mod profiles, and 16-state boundary now pass on one
-  immutable installed artifact, but the replacement candidate is not accepted
-  until that exact artifact passes renewed human review. The final 128-state
-  seal is intentionally prohibited before that acceptance.
+- Brown-Fur `0.0.81` failed human review and is superseded. The repaired
+  `0.0.82` artifact passed focused runtime, persistence, optional-mod profiles,
+  the authoritative 16-state boundary, and human presentation/play acceptance.
 - Brown-Fur fails closed on an unknown or ambiguous future CotW Arcanist
   structure. This preserves all unrelated package modules but may require a new
   compatibility fingerprint and adapter before the archetype can be published.

@@ -3,17 +3,29 @@
 This document is the authoritative runtime-coverage policy for the combined
 package.
 
-Do not run the exhaustive `2^N` feature-module matrix during ordinary iterative
-repairs unless the change modifies:
+Exhaustive `2^N` enumeration belongs in fast domain and source tests for
+configuration, migration, publication-plan, gating, and rollback logic. Those
+tests may evaluate every Boolean configuration without launching Kingmaker.
 
-- `FeatureModuleConfiguration`;
-- `FeatureModuleSettingsStore` or schema migration;
-- `FeatureModulePublicationPlan`;
-- shared blueprint registration or bootstrap;
-- shared module gating or rollback;
-- addition or removal of a module; or
-- another cross-module authority whose correctness genuinely depends on every
-  complete configuration.
+The standard cross-module runtime qualification is the boundary matrix:
+
+- all modules ON;
+- all modules OFF;
+- each module ON alone; and
+- each module OFF while every other module is ON.
+
+For `N` active modules this boundary contains exactly `2N + 2` states. It is
+authoritative because, for Boolean module settings, it covers every possible
+one-, two-, and three-module value combination. Brown-Fur adds the seventh
+module, so the current runtime boundary contains 16 states.
+
+Add focused higher-order combined profiles only when a concrete architectural
+reason suggests an interaction among four or more modules. An exhaustive
+`2^N` game-launch matrix is not required for feature implementation,
+module addition or removal, settings-schema changes, publication-plan changes,
+shared bootstrap changes, or final release sealing. It may be authorized only
+when specific defect evidence genuinely depends on higher-order combinations;
+even then, test the smallest relevant interaction family.
 
 For documentation-only changes, run no game process.
 
@@ -26,21 +38,14 @@ highest-risk combined compatibility profile.
 
 For a single module's mechanics or selector publication, run focused mechanical
 scenarios, relevant optional-mod profiles, persistence when affected, and the
-boundary matrix containing:
+authoritative boundary matrix.
 
-- all ON;
-- all OFF;
-- each module ON alone; and
-- each module OFF while every other module is ON.
-
-For `N` active modules this boundary contains exactly `2 + 2N` states. Brown-Fur
-adds the seventh module, so the current boundary is 16 states. The exhaustive
-matrix contains `2^7 = 128` states.
-
-`Invoke-FeatureModuleRuntimeMatrix.ps1 -Boundary` derives both matrices from the
-authoritative active-module catalog. The historical `-Boundary14` spelling is a
-deprecated compatibility alias: it selects the same complete generic boundary
-and warns that its numeric name is obsolete.
+`Invoke-FeatureModuleRuntimeMatrix.ps1` derives the boundary from the
+authoritative active-module catalog by default. `-Boundary` remains an explicit
+spelling. The historical `-Boundary14` spelling is a deprecated compatibility
+alias: it selects the same complete generic boundary and warns that its numeric
+name is obsolete. `-Combination` runs one explicitly named focused state. The
+runtime launcher deliberately exposes no generic exhaustive mode.
 
 Build, test, package, validate, back up, and deploy exactly once per immutable
 source commit. Reuse the exact installed artifact across every matrix launch,
@@ -52,9 +57,12 @@ dependency, and original-settings identity matches. Package and CotW settings
 must be restored byte-for-byte after qualification, including failure and
 interruption paths.
 
-During human iteration, do not perform a final exhaustive release seal before
-human review. Brown-Fur pre-human qualification uses focused mechanics and CotW
-contract profiles plus the complete 16-state boundary. After the exact immutable
-candidate receives explicit human acceptance, reuse that artifact for the final
-128-state matrix once. Any source change invalidates the prior acceptance and
-requires a new immutable candidate.
+Relevant external-mod configurations such as CotW normal, CotW balance-fixes,
+and CotW absent remain focused compatibility profiles, not Cartesian-product
+dimensions. Persistence remains focused on modules whose changes affect
+persisted identities or state.
+
+Human acceptance applies only to the exact immutable artifact reviewed. A
+source or packaged-artifact change invalidates that acceptance and requires a
+new candidate. Final release sealing reuses the accepted focused and boundary
+evidence; it does not add an exhaustive game-launch requirement.

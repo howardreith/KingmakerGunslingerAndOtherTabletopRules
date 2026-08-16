@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.82-brown-fur-human-review-repair (development)
+## 0.0.82-brown-fur-human-review-repair
 
 - Records the `0.0.81` Brown-Fur candidate as human-review failed and
   superseded; it was never accepted and does not authorize the final matrix.
@@ -21,8 +21,10 @@
 - Advances assembly/package identity to `0.0.82`. The complete 1,138-test
   domain suite, 40 focused runtime launches with 435 passing assertions,
   persistence, normal/balance/absent/high-risk profiles, and all 16 boundary
-  states pass on one immutable installed artifact. Renewed human acceptance
-  remains required, and the 128-state final seal remains prohibited before it.
+  states pass on one immutable installed artifact. Human presentation and play
+  review accepted that exact artifact on 2026-08-16. The revised runtime policy
+  makes the `2N + 2` boundary authoritative and requires no exhaustive
+  game-launch release seal.
 
 ## 0.0.81-brown-fur-transmuter (development)
 
@@ -37,8 +39,8 @@
   accounting, stable persistence, and transactional CotW Arcanist publication.
 - Qualifies CotW normal and balance progressions, CotW absence, module-OFF
   existing owners, the highest-risk combined profile, and all 16 seven-module
-  boundary states on one immutable pre-human candidate. Human acceptance and
-  the post-acceptance 128-state final seal remain pending.
+  boundary states on one immutable pre-human candidate. That candidate was
+  superseded by the accepted `0.0.82` human-review repair.
 
 ## Unreleased - Eastern Weapons
 

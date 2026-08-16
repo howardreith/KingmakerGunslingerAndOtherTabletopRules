@@ -143,8 +143,10 @@ candidate for unclear toggle/resource presentation and immediate Personal-spell
 self-casting. Version `0.0.82` repairs those paths. Its 1,138 domain tests,
 40 focused runtime launches with 435 passing assertions, normal and balance
 progressions, CotW absence, module-OFF persistence, highest-risk profile, and
-all 16 boundary states pass on one immutable installed artifact. Renewed human
-acceptance remains pending. The 128-state final release seal has not run.
+all 16 boundary states pass on one immutable installed artifact. Human
+presentation and play review accepted that exact artifact on 2026-08-16. The
+revised runtime policy treats the 16-state boundary as authoritative and does
+not require an exhaustive game-launch release matrix.
 
 - This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
   and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.

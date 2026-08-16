@@ -10,8 +10,10 @@ The first `0.0.81` Brown-Fur candidate failed human review and is superseded.
 The installed `0.0.82` candidate repairs native toggle legibility, live
 reservoir counters, distinct icons, and pre-command Personal-spell target
 acquisition. Its focused mechanics, persistence, optional-mod profiles, and
-all 16 boundary states pass on one immutable artifact. It now awaits renewed
-human review; the final 128-state release seal has intentionally not run.
+all 16 boundary states pass on one immutable artifact. Human presentation and
+play review accepted that exact artifact on 2026-08-16. Under the revised
+runtime policy, the 16-state boundary is the final cross-module seal and no
+exhaustive game-launch enumeration is required.
 
 Eastern Weapons adds one stable category each for Wakizashi, Katana, and
 Nodachi. Each family has mundane, masterwork, cold iron, and +1 generic forms

@@ -37,8 +37,10 @@ The firearm feat publication change is a single-module selector-publication
 change and therefore requires focused mechanics, relevant optional-mod and
 persistence checks, plus the 14-state boundary matrix. Model/bundle changes
 require focused family visual contracts, Eastern Weapons ON/OFF, all modules ON,
-and the highest-risk combined compatibility profile. A final exhaustive release
-seal will not run during human visual iteration.
+and the highest-risk combined compatibility profile. The superseding 2026-08-16
+policy makes the generic `2N + 2` runtime boundary authoritative; exhaustive
+enumeration remains a fast source/domain-test technique rather than a
+game-launch release seal.
 
 ## Workstream A — Gunslinger-only firearm proficiency
 

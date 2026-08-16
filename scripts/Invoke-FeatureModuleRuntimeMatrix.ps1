@@ -36,15 +36,20 @@ try {
 } finally { $sha.Dispose() }
 
 $moduleCatalog = @(Get-KmgFeatureModuleCatalog)
-$boundaryRequested = [bool]$Boundary -or [bool]$Boundary14
+$boundaryRequested = $Combination -ceq 'all'
 if ($Boundary14) {
     Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (16 states for seven modules).'
 }
-if ($boundaryRequested -and $Combination -ne 'all') {
+if (($Boundary -or $Boundary14) -and $Combination -ne 'all') {
     throw 'A boundary matrix cannot be combined with a single -Combination.'
 }
-$combinations = @(Get-KmgFeatureModuleConfigurations -Boundary:$boundaryRequested)
-if ($Combination -ne 'all') {
+if ($boundaryRequested) {
+    $combinations = @(Get-KmgFeatureModuleConfigurations -Boundary)
+} else {
+    # Exhaustive enumeration remains a fast catalog/domain-test capability.
+    # Runtime callers may select one focused configuration, but this launcher
+    # deliberately has no generic 2^N game-launch mode.
+    $combinations = @(Get-KmgFeatureModuleConfigurations)
     $selected = @($combinations | Where-Object { $_.Name -ceq $Combination })
     if ($selected.Count -ne 1) {
         throw "Unknown feature-module combination '$Combination'."
