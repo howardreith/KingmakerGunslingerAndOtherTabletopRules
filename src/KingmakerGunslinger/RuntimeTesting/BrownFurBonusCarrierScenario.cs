@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -122,6 +123,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             [JsonProperty("dispelCasterLevel", Order = 21)] public int DispelCasterLevel { get; set; }
             [JsonProperty("dispelDc", Order = 22)] public int DispelDc { get; set; }
             [JsonProperty("dispelBonus", Order = 23)] public int DispelBonus { get; set; }
+            [JsonProperty("ordinaryRecastPatch", Order = 24)] public string OrdinaryRecastPatch { get; set; }
+            [JsonProperty("ordinaryRecastPrepared", Order = 25)] public bool OrdinaryRecastPrepared { get; set; }
+            [JsonProperty("ordinaryRecastPreparedState", Order = 26)] public string OrdinaryRecastPreparedState { get; set; }
+            [JsonProperty("ordinaryRecastBuffsBefore", Order = 27)] public int OrdinaryRecastBuffsBefore { get; set; }
+            [JsonProperty("ordinaryRecastRecordsBefore", Order = 28)] public int OrdinaryRecastRecordsBefore { get; set; }
+            [JsonProperty("ordinaryRecastRecordsAfter", Order = 29)] public int OrdinaryRecastRecordsAfter { get; set; }
         }
 
         private static readonly Case[] Cases = {
@@ -192,7 +199,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.Cases.Add(Observe(item, caster, target));
                 }
                 stage = "advanced-stacking-recast-capstone";
-                evidence.Advanced = ObserveAdvanced(caster, target);
+                evidence.Advanced = ObserveAdvanced(context, caster, target);
             }
             catch (Exception exception)
             {
@@ -486,8 +493,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static AdvancedObservation ObserveAdvanced(UnitEntityData caster,
-            UnitEntityData target)
+        private static AdvancedObservation ObserveAdvanced(ModContext context,
+            UnitEntityData caster, UnitEntityData target)
         {
             var result = new AdvancedObservation {
                 CompetitionModifierValues = new List<int>(),
@@ -497,23 +504,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff blueprint = ResourcesLibrary.TryGetBlueprint<
                 BlueprintBuff>("b175001b42b1a02479881b72fe132116");
             if (spell == null || blueprint == null) return result;
+            MethodInfo addBuff = typeof(BuffCollection).GetMethod("AddBuff",
+                BindingFlags.Instance | BindingFlags.Public, null,
+                new[] { typeof(BlueprintBuff), typeof(MechanicsContext),
+                    typeof(TimeSpan?) }, null);
+            Patches patches = addBuff == null ? null :
+                context.Harmony.GetPatchInfo(addBuff);
+            Patch recastPatch = patches == null ? null : patches.Postfixes
+                .FirstOrDefault(value => value.patch != null &&
+                    value.patch.DeclaringType ==
+                        typeof(BrownFurOrdinaryRecastPatch));
+            result.OrdinaryRecastPatch = recastPatch == null ? "missing" :
+                "owner=" + recastPatch.owner + ";priority=" +
+                    recastPatch.priority;
             ModifiableValue stat = target.Descriptor.Stats.Strength;
             int baseline = stat.ModifiedValue;
             foreach (int competitor in new[] { 2, 6, 10 })
             {
                 BlueprintFeature feature = CompetitionFeature(competitor);
                 target.Descriptor.AddFact(feature);
-                var context = CarrierContext(caster, target, spell);
+                var carrierContext = CarrierContext(caster, target, spell);
                 string transaction = "competition-" + competitor;
                 Buff buff = null;
                 try
                 {
                     if (!BrownFurModifierAdjustmentRuntime.Begin(transaction,
-                        context, caster, spell, BrownFurAbilityScore.Strength, 2,
+                        carrierContext, caster, spell,
+                        BrownFurAbilityScore.Strength, 2,
                         new[] { "b175001b42b1a02479881b72fe132116" },
                         new[] { "AddStatBonus" })) return result;
-                    buff = target.Descriptor.Buffs.AddBuff(blueprint, context,
-                        TimeSpan.FromMinutes(20d));
+                    buff = target.Descriptor.Buffs.AddBuff(blueprint,
+                        carrierContext, TimeSpan.FromMinutes(20d));
                     ModifiableValue.Modifier modifier = buff == null ? null :
                         stat.Modifiers.SingleOrDefault(value => ReferenceEquals(
                             value.Source, buff));
@@ -575,10 +596,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 BrownFurModifierAdjustmentRuntime.Release(enhancedToOrdinary);
             }
+            result.OrdinaryRecastBuffsBefore = ExactBuffCount(target,
+                blueprint);
+            UnitPartBrownFurModifierPersistence persisted =
+                target.Descriptor.Get<UnitPartBrownFurModifierPersistence>();
+            result.OrdinaryRecastRecordsBefore = persisted == null ? 0 :
+                persisted.Count;
+            BrownFurModifierAdjustmentRuntime.OrdinaryRecastState prepared =
+                BrownFurModifierAdjustmentRuntime.PrepareOrdinaryRecast(
+                    target.Descriptor.Buffs, blueprint, reverseContext);
+            result.OrdinaryRecastPrepared = prepared != null;
+            result.OrdinaryRecastPreparedState = prepared == null ? "missing" :
+                prepared.BuffGuid + "/" + prepared.SpellGuid + "/" +
+                prepared.CasterId + "/" + prepared.Stat + "/" +
+                prepared.OriginalValue + "+" + prepared.Increase + "/" +
+                prepared.Descriptor + "/" + prepared.CarrierFamily;
             Buff finalOrdinary = target.Descriptor.Buffs.AddBuff(blueprint,
                 reverseContext, TimeSpan.FromMinutes(20d));
             result.EnhancedToOrdinaryValue = stat.ModifiedValue;
             result.EnhancedToOrdinaryCount = ExactBuffCount(target, blueprint);
+            persisted = target.Descriptor.Get<
+                UnitPartBrownFurModifierPersistence>();
+            result.OrdinaryRecastRecordsAfter = persisted == null ? 0 :
+                persisted.Count;
             RemoveExactBuffs(target, blueprint);
 
             var capstoneContext = CarrierContext(caster, target, spell);
@@ -757,7 +797,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.OrdinaryToEnhancedCount + ";retained=" +
                 value.EnhancedRetainedAfterRelease + ";enhancedOrdinary=" +
                 value.EnhancedToOrdinaryValue + "/" +
-                value.EnhancedToOrdinaryCount + ";capstone=" +
+                value.EnhancedToOrdinaryCount + ";recastDiagnostic=" +
+                value.OrdinaryRecastPatch + "/prepared=" +
+                value.OrdinaryRecastPrepared + "/state=" +
+                value.OrdinaryRecastPreparedState + "/buffs=" +
+                value.OrdinaryRecastBuffsBefore + "/records=" +
+                value.OrdinaryRecastRecordsBefore + "->" +
+                value.OrdinaryRecastRecordsAfter + ";capstone=" +
                 value.CapstoneModifierValue + "/" + value.CapstoneDescriptor +
                 ";dispel=" + value.DispelRuleSuccess + "/" +
                 value.DispelBuffRemoved + "/" +
