@@ -10,12 +10,14 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -62,6 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon weapon = null;
             ItemEntityWeapon enemyWeapon = null;
             ItemEntityWeapon rangedWeapon = null;
+            BlueprintAbility spellProbe = null;
             bool urbanRegistered = false;
             bool enemyOneRegistered = false;
             bool enemyTwoRegistered = false;
@@ -271,8 +274,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .TemporaryHitPoints.ModifiedValue;
                 Buff[] beforeLeakageRage = urban.Descriptor.Buffs.RawFacts
                     .OfType<Buff>().ToArray();
+                spellProbe = ScriptableObject.CreateInstance<BlueprintAbility>();
+                spellProbe.name = "UrbanBarbarianRuntimeSpellRestrictionProbe";
+                spellProbe.Type = AbilityType.Spell;
+                spellProbe.ComponentsArray = Array.Empty<BlueprintComponent>();
+                var spellAvailability = new AbilityData(spellProbe,
+                    urban.Descriptor);
+                bool spellAvailableBeforeRage = spellAvailability.IsAvailable;
+                int spellLockBeforeRage = urban.Descriptor.State
+                    .SpellCastingForbidden.Count;
                 rage = urban.Descriptor.Buffs.AddBuff(
                     set.NativeRageBuff, rageContext, null);
+                bool spellAvailableDuringRage = spellAvailability.IsAvailable;
+                int spellLockDuringRage = urban.Descriptor.State
+                    .SpellCastingForbidden.Count;
+                RuleSkillCheck trickeryDuringRage = Rulebook.Trigger(
+                    new RuleSkillCheck(urban, StatType.SkillThievery, 0));
                 int attackDuringRage = Attack(urban, weapon);
                 int damageBonusDuringRage = ElvenBranchedSpearCombatScenario
                     .WeaponStats(urban, weapon).BonusDamage;
@@ -286,6 +303,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ToArray();
                 urban.Descriptor.RemoveFact(set.RageBuff);
                 RemoveIntroducedBuffs(urban.Descriptor, beforeLeakageRage);
+                bool spellAvailableAfterRage = spellAvailability.IsAvailable;
+                int spellLockAfterRage = urban.Descriptor.State
+                    .SpellCastingForbidden.Count;
                 bool spellRestrictionRetained = liveRageComponents.Contains(
                     "Kingmaker.UnitLogic.FactLogic.ForbidSpellCasting");
                 bool ordinaryBenefitTypesAbsent = !liveRageComponents.Any(
@@ -305,15 +325,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "->" + acDuringRage + ";temporaryHp=" +
                         temporaryHpBeforeRage + "->" +
                         temporaryHpDuringRage + ";components=" +
-                        string.Join(",", liveRageComponents),
+                        string.Join(",", liveRageComponents) +
+                        ";spellAvailable=" + spellAvailableBeforeRage + "/" +
+                        spellAvailableDuringRage + "/" +
+                        spellAvailableAfterRage + ";spellLock=" +
+                        spellLockBeforeRage + "/" + spellLockDuringRage +
+                        "/" + spellLockAfterRage + ";trickery=" +
+                        trickeryDuringRage.BaseRollResult,
                     ordinaryDexterity && ordinaryConstitution &&
                         attackDuringRage == attackBeforeRage &&
                         damageBonusDuringRage == damageBonusBeforeRage &&
                         willDuringRage == willBeforeRage &&
                         acDuringRage == acBeforeRage &&
                         temporaryHpDuringRage == temporaryHpBeforeRage &&
-                        spellRestrictionRetained && ordinaryBenefitTypesAbsent,
-                    "live score, attack, weapon-damage, save, AC, temporary-HP, and finalized buff-component observations");
+                        spellRestrictionRetained && ordinaryBenefitTypesAbsent &&
+                        spellAvailableBeforeRage &&
+                        !spellAvailableDuringRage && spellAvailableAfterRage &&
+                        spellLockBeforeRage == 0 && spellLockDuringRage == 1 &&
+                        spellLockAfterRage == 0 &&
+                        trickeryDuringRage.BaseRollResult >= 1 &&
+                        trickeryDuringRage.BaseRollResult <= 20,
+                    "live score, attack, weapon-damage, save, AC, temporary-HP, exact AbilityData spell availability, Dexterity-based RuleSkillCheck, and finalized buff-component observations");
+                Add(assertions,
+                    "urban-controlled-trickery-and-spell-restriction",
+                    "Controlled Rage permits a Dexterity-based Trickery rule while exact native spell availability is prohibited only for the Rage duration",
+                    "trickeryD20=" + trickeryDuringRage.BaseRollResult +
+                        ";spellAvailable=" + spellAvailableBeforeRage + "/" +
+                        spellAvailableDuringRage + "/" +
+                        spellAvailableAfterRage + ";spellLock=" +
+                        spellLockBeforeRage + "/" + spellLockDuringRage +
+                        "/" + spellLockAfterRage,
+                    trickeryDuringRage.BaseRollResult >= 1 &&
+                        trickeryDuringRage.BaseRollResult <= 20 &&
+                        spellAvailableBeforeRage &&
+                        !spellAvailableDuringRage && spellAvailableAfterRage &&
+                        spellLockBeforeRage == 0 && spellLockDuringRage == 1 &&
+                        spellLockAfterRage == 0,
+                    "RuleSkillCheck(StatType.SkillThievery) plus AbilityData.IsAvailable for an exact AbilityType.Spell probe and UnitState.SpellCastingForbidden");
 
                 stage = "ordinary-repeated-constitution";
                 SelectDirect(urban.Descriptor, set,
@@ -767,6 +815,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (rangedWeapon != null) rangedWeapon.Dispose();
+                if (spellProbe != null)
+                    UnityEngine.Object.DestroyImmediate(spellProbe);
                 ElvenBranchedSpearCombatScenario.RemoveEquipped(enemyOne,
                     ref enemyWeapon);
                 ElvenBranchedSpearCombatScenario.RemoveEquipped(urban, ref weapon);
