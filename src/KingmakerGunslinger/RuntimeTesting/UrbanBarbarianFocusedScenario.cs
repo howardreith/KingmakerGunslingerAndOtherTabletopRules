@@ -491,6 +491,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new TargetWrapper(enemyTwo));
                 Buff unconscious = enemyTwo.Descriptor.Buffs.AddBuff(
                     unconsciousFixture, unconsciousContext, null);
+                if (unconscious != null)
+                    enemyTwo.Descriptor.State.AddCondition(
+                        UnitCondition.Unconscious, unconscious);
+                bool hasUnconscious = enemyTwo.Descriptor.State.HasCondition(
+                    UnitCondition.Unconscious);
                 int adjacentAfterUnconscious = CrowdControlComponent
                     .CountAdjacentActiveEnemies(urban);
                 int attackAfterUnconscious = Attack(urban, weapon);
@@ -522,7 +527,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         distanceTwo + ";adjacent=" + adjacentTwo +
                         ";unconscious=" + adjacentAfterUnconscious + "/" +
                         attackAfterUnconscious + "/" +
-                        acAfterUnconscious + ";destroyed=" +
+                        acAfterUnconscious + "/condition:" + hasUnconscious +
+                        "/conscious:" + enemyTwo.Descriptor.State.IsConscious +
+                        ";destroyed=" +
                         adjacentAfterDestroyed + "/" +
                         attackAfterDestroyed + "/" + acAfterDestroyed +
                         ";states=" + EnemyState(urban, enemyOne) + "/" +
@@ -532,7 +539,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attackMovedOut == attackZero && acOne == acZero &&
                         acTwo == acZero + 1 && acThree == acZero + 1 &&
                         adjacentTwo == 2 && adjacentAfterUnconscious == 1 &&
-                        unconscious != null &&
+                        unconscious != null && hasUnconscious &&
                         !enemyTwo.Descriptor.State.IsConscious &&
                         attackAfterUnconscious == attackZero &&
                         acAfterUnconscious == acZero &&
