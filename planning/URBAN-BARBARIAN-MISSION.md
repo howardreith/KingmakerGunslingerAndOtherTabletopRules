@@ -10,10 +10,10 @@
 - Version authority before the mission: `Info.json` and
   `Directory.Build.props` both identify package version `0.0.82`.
 - Superseded human-review candidate: `0.0.83`.
-- Active repair candidate version: `0.0.86`; immutable `0.0.84` failed focused
-  runtime source-attribution qualification, while immutable `0.0.85` passed
-  focused gameplay and persistence but failed its stale CotW inventory
-  observer. Both are superseded.
+- Active repair candidate version: `0.0.87`; immutable `0.0.84` failed focused
+  runtime source-attribution qualification, immutable `0.0.85` failed its
+  stale CotW inventory observer, and immutable `0.0.86` failed the same stale
+  assumption in the generic module-boundary observer. All are superseded.
 
 The on-disk checkout is named `KingmakerGunslinger`, but its configured origin
 is the requested combined-package repository. The requested sibling directory
@@ -37,7 +37,7 @@ CotW absent/normal/balance profiles, existing-owner OFF persistence, the exact
 human presentation/play-acceptance checklist.
 
 Mission status: **human review rejected the mechanically qualified `0.0.83`
-candidate; `0.0.86` repair work is active**. The superseded artifacts remain
+candidate; `0.0.87` repair work is active**. The superseded artifacts remain
 identified by source commit `06cad804651faaace17bdf8432bcd071d50ce9e7`,
 documentation commit `636e4928502cb6a07374279a3a8b35f79f66f4e3`, package
 SHA-256 `b2b4fdd899a1e00955e972d94b45f5624f4d663e88581043cbf969c3d6e3d193`,
@@ -56,6 +56,21 @@ two-launch persistence pair passed, but CotW-normal run
 the packaged observer because it called `.Single()` on the intentionally inert
 legacy selector. The compatibility transaction restored exactly. This is an
 instrumentation qualification failure and makes 0.0.85 superseded.
+
+Immutable `0.0.86` source commit
+`3dbe20ae8e77246df4a711f64e30a07988401ec1` produced package SHA-256
+`c266b3417cba7ab362b9e21fcef990cad3af91c11caffdfb6fe3cdf9cd02e0e5`,
+DLL SHA-256
+`54793b8a7f3f4b33b03b1c152a37b150ca1237c5db7571e9ab635e9b4e018e84`,
+MVID `21473f81-9e24-4e9b-8cdb-59b04e95ddfe`, build-manifest SHA-256
+`d746e50d5d0717a3a3522fd6ca77e7d8eb51ee9ea3fe02868aca5ba553ecd9f8`,
+and deployment-manifest SHA-256
+`aac7a5dc379cd5e3ccba853f1690de8c5c115aceb70b10008379431a5a17f077`.
+Its focused run, persistence pair, and CotW normal/balance/absent transactions
+all passed. The first all-ON boundary run
+`20260816T2134169673139Z-observe-feature-module-settings` errored because the
+separate generic observer retained the rejected legacy-selector `.Single()`
+and 70/31 assumptions. Settings restored exactly; 0.0.86 is superseded.
 
 Stop only at that human boundary or at a documented hard stop after safe,
 reversible, evidence-supported alternatives and narrower instrumentation have

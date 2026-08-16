@@ -3349,8 +3349,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     verify ? "freshly deserialized active buff and stat modifier" :
                         "pre-save active buff and stat modifier"),
                 Assertion("urban-persistence-module-off",
-                    verify ? "module OFF, archetype hidden, 70 identities and owner facts retained" :
-                        "module ON, archetype published once, 70 identities retained",
+                    verify ? "module OFF, archetype hidden, 73 identities and owner facts retained" :
+                        "module ON, archetype published once, 73 identities retained",
                     _urbanBarbarianPersistenceDetail,
                     _urbanBarbarianPersistenceModuleStateValid,
                     "immutable active setting and exact native Barbarian archetype array"),
@@ -9520,9 +9520,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "SkillKnowledgeWorld", "SkillPerception", "SkillPersuasion" };
             AddFacts urbanProficiencies = (urbanSet.Proficiency.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).OfType<AddFacts>().Single();
-            int urbanSelectorVariants = (urbanSet.Selector.ComponentsArray ??
-                Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
-                .Single().Variants.Length;
+            int[] urbanTierSelectorVariants = urbanSet.TierSelectors.Select(
+                value => (value.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
+                    .Single().Variants.Length).ToArray();
+            bool urbanLegacySelectorInert = urbanSet.LegacySelector.Hidden &&
+                urbanSet.LegacySelector.ActionBarAutoFillIgnored &&
+                !(urbanSet.LegacySelector.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AbilityVariants>()
+                    .Any();
             string[] urbanRageComponents = (urbanSet.RageBuff.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(value => value == null ?
                     "<null>" : value.GetType().FullName).ToArray();
@@ -9537,7 +9543,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     urbanProficiencies.Facts.Length) +
                 ";selectionFacts=" + urbanSet.SelectionFacts.Length +
                 ";allocationAbilities=" + urbanSet.AllocationAbilities.Length +
-                ";selectorVariants=" + urbanSelectorVariants +
+                ";legacySelectorInert=" + urbanLegacySelectorInert +
+                ";tierSelectorVariants=" + string.Join("/",
+                    urbanTierSelectorVariants) +
                 ";rageComponents=" + string.Join(",", urbanRageComponents);
             CotwArcanistResolution brownFurResolution =
                 BrownFurOptionalExtensionCoordinator.Current;
@@ -10102,8 +10110,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "structural CotW contract, stable identity set, exact Arcanist archetype array, and Brown-Fur transaction evidence"),
                 Assertion("feature-module-urban-barbarian-publication-gate",
                     expectedUrbanBarbarian ?
-                        "70 identities; exactly one appended native Barbarian archetype" :
-                        "70 identities; no native Barbarian archetype publication",
+                        "73 identities; inert legacy selector; 6/10/15 tier parents; exactly one appended native Barbarian archetype" :
+                        "73 identities; inert legacy selector; 6/10/15 tier parents; no native Barbarian archetype publication",
                     urbanObserved,
                     urbanSet.Count == UrbanBarbarianIdentityCatalog.IdentityCount &&
                     urbanArchetypeReferences == (expectedUrbanBarbarian ? 1 : 0) &&
@@ -10114,7 +10122,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     urbanProficiencies.Facts.Length == 4 &&
                     urbanSet.SelectionFacts.Length == 31 &&
                     urbanSet.AllocationAbilities.Length == 31 &&
-                    urbanSelectorVariants == 31 &&
+                    urbanLegacySelectorInert &&
+                    urbanTierSelectorVariants.SequenceEqual(
+                        new[] { 6, 10, 15 }) &&
                     urbanRageComponents.Length == 7 &&
                     urbanRageComponents.Contains(typeof(
                         ControlledRageAbilityScoreBonus).FullName) &&

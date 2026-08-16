@@ -311,6 +311,9 @@ namespace KingmakerGunslinger.DomainTests
             string inventoryObserver = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "UrbanBarbarianRageInventoryObserver.cs"));
+            string moduleObserver = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
             string project = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
             foreach (string token in new[] {
@@ -403,6 +406,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(inventoryObserver.Contains(
                     "urban.Selector.ComponentsArray"),
                 "Urban runtime inventory still treats the hidden legacy selector as a live parent.");
+            foreach (string token in new[] {
+                "urbanSet.TierSelectors", "urbanLegacySelectorInert",
+                "urbanTierSelectorVariants.SequenceEqual(",
+                "new[] { 6, 10, 15 })", "73 identities; inert legacy selector" })
+                Assertions.True(moduleObserver.Contains(token),
+                    "Generic module runtime observer contract is missing: " + token);
+            Assertions.False(moduleObserver.Contains(
+                    "urbanSet.Selector.ComponentsArray") ||
+                moduleObserver.Contains("urbanSelectorVariants == 31") ||
+                moduleObserver.Contains("70 identities; exactly one appended"),
+                "Generic module observer retains a rejected-selector or stale identity assumption.");
             Assertions.True(project.Contains(
                     "UrbanBarbarian\\UrbanCotwCompatibilityRuntime.cs") &&
                 !project.Contains("CallOfTheWild.dll"),

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.87-urban-barbarian-human-review-repair-4 (development candidate)
+
+- Supersedes immutable 0.0.86 after focused, persistence, and all three CotW
+  profiles passed but the first all-ON module boundary exposed the same stale
+  legacy-selector assumption in the generic module observer.
+- Repairs that packaged observer to validate 73 identities, an inert legacy
+  save identity, and exact 6/10/15 live tier parents in every boundary state.
+- Extends regression validation across both Urban inventory observers and
+  removes the remaining stale 70-identity presentation text.
+
 ## 0.0.86-urban-barbarian-human-review-repair-3 (development candidate)
 
 - Supersedes immutable 0.0.85 after focused gameplay and module-OFF
@@ -10,6 +20,11 @@
   selector parents with exactly 6, 10, and 15 variants.
 - Adds source regression coverage that rejects any observer which again treats
   the legacy selector as the live allocation parent.
+- Runtime result: focused mechanics, module-OFF persistence, and CotW normal,
+  balance-fixes, and absent profiles passed. The first all-ON boundary state
+  failed before assertions because the separate generic module observer still
+  called `.Single()` on the inert legacy selector. The exact artifact is
+  superseded and is not human accepted or release complete.
 
 ## 0.0.85-urban-barbarian-human-review-repair-2 (development candidate)
 

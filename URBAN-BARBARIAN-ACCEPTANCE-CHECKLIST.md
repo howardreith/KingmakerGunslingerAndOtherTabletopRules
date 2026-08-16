@@ -3,10 +3,11 @@
 The exact immutable `0.0.83` candidate documented below was **REJECTED** in
 human review and is preserved only as superseded evidence. Do not describe it
 as accepted or release complete. This checklist will be finalized for the
-exact `0.0.86` repaired candidate after its new mechanical qualification
+exact `0.0.87` repaired candidate after its new mechanical qualification
 passes. Immutable `0.0.84` failed focused runtime qualification; immutable
-`0.0.85` passed focused gameplay and persistence but failed its packaged CotW
-observer. Both are preserved below as superseded evidence.
+`0.0.85` failed its packaged CotW observer; immutable `0.0.86` passed focused,
+persistence, and CotW profiles but failed its generic module observer. All are
+preserved below as superseded evidence.
 
 Human-review rejection findings:
 
@@ -80,6 +81,29 @@ The CotW run failed before assertions because the packaged inventory observer
 still called `.Single()` on the deliberately inert legacy selector. Its
 compatibility transaction restored the original Mods tree exactly. The
 artifact is superseded and is not human accepted or release complete.
+
+## Superseded 0.0.86 candidate identity
+
+- Artifact/source commit: `3dbe20ae8e77246df4a711f64e30a07988401ec1`
+- Package SHA-256: `c266b3417cba7ab362b9e21fcef990cad3af91c11caffdfb6fe3cdf9cd02e0e5`
+- DLL SHA-256: `54793b8a7f3f4b33b03b1c152a37b150ca1237c5db7571e9ab635e9b4e018e84`
+- DLL MVID: `21473f81-9e24-4e9b-8cdb-59b04e95ddfe`
+- Package-manifest SHA-256: `d746e50d5d0717a3a3522fd6ca77e7d8eb51ee9ea3fe02868aca5ba553ecd9f8`
+- Deployment-manifest SHA-256: `aac7a5dc379cd5e3ccba853f1690de8c5c115aceb70b10008379431a5a17f077`
+- Focused PASS: `20260816T2120430615092Z-disposable-urban-barbarian-focused`
+- Persistence PASS pair:
+  `20260816T2122439864672Z-working-save-urban-barbarian-prepare` and
+  `20260816T2124570602978Z-working-save-urban-barbarian-off-verify-cleanup`
+- CotW normal/balance/absent PASS:
+  `20260816T2127485691200Z`, `20260816T2130180421876Z`, and
+  `20260816T2132397239363Z-observe-urban-barbarian-rage-inventory`
+- All-ON boundary ERROR:
+  `20260816T2134169673139Z-observe-feature-module-settings`
+
+The first boundary run failed before assertions because the separate generic
+module observer still called `.Single()` on the inert legacy selector and
+retained 70/31 presentation assumptions. Feature settings restored exactly.
+The artifact is superseded and is not human accepted or release complete.
 
 ## Character creation and presentation
 

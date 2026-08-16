@@ -29,7 +29,7 @@ namespace KingmakerGunslinger.Development
         internal static void Draw(UnityModManager.ModEntry modEntry)
         {
             ImmediateModeGui.Label(
-                "Kingmaker Gunslinger - 0.0.86 URBAN-BARBARIAN / BROWN-FUR-HUMAN-REVIEW-REPAIR / EASTERN-WEAPONS / ELVEN-BRANCHED-SPEAR / EXPANDED-SUMMONING / SHIELD-OTHER / ACADAMAE-MODE-FATIGUE-ICON-REPAIR / FEATURE-MODULES / PAPER-CARTRIDGES-AUTO-RELOAD / RARE-FIREARMS / PISTOLERO-MUSKET-MASTER / FIREARM-NATIVE-WEAPON-RIGS / DODGE-EXPIRATION-R3");
+                "Kingmaker Gunslinger - 0.0.87 URBAN-BARBARIAN / BROWN-FUR-HUMAN-REVIEW-REPAIR / EASTERN-WEAPONS / ELVEN-BRANCHED-SPEAR / EXPANDED-SUMMONING / SHIELD-OTHER / ACADAMAE-MODE-FATIGUE-ICON-REPAIR / FEATURE-MODULES / PAPER-CARTRIDGES-AUTO-RELOAD / RARE-FIREARMS / PISTOLERO-MUSKET-MASTER / FIREARM-NATIVE-WEAPON-RIGS / DODGE-EXPIRATION-R3");
             ImmediateModeGui.Label(
                 "Dodge duration graph: native ContextActionApplyBuff plus a blueprint-scoped expired-fact removal guard.");
             ImmediateModeGui.Label(

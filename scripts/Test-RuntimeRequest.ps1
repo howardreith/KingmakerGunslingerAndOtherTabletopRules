@@ -11,7 +11,7 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
 }
 
 $synthetic = Join-Path $script:KmgRuntimeEvidenceRoot 'source-only-request-test'
-$request = New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.86' `
+$request = New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
 if ($request.schemaVersion -ne 1 -or -not $request.enabled -or
     $request.scenario -ne 'mod-load-smoke' -or $request.parameters.Count -ne 0 -or
@@ -19,55 +19,55 @@ if ($request.schemaVersion -ne 1 -or -not $request.enabled -or
     $failures.Add('valid-request-schema')
 }
 $presentationRequest = New-KmgRuntimeRequest `
-    -Scenario 'observe-gunslinger-presentation' -ExpectedVersion '0.0.86' `
+    -Scenario 'observe-gunslinger-presentation' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
 if ($presentationRequest.scenario -cne 'observe-gunslinger-presentation' -or
     $presentationRequest.parameters.Count -ne 0) {
     $failures.Add('presentation-request-valid')
 }
 $vendorRequest = New-KmgRuntimeRequest `
-    -Scenario 'observe-vendor-table-contracts' -ExpectedVersion '0.0.86' `
+    -Scenario 'observe-vendor-table-contracts' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
 if ($vendorRequest.scenario -cne 'observe-vendor-table-contracts' -or
     $vendorRequest.parameters.Count -ne 0) {
     $failures.Add('vendor-table-request-valid')
 }
 $fallbackRequest = New-KmgRuntimeRequest `
-    -Scenario 'observe-production-firearm-fallbacks' -ExpectedVersion '0.0.86' `
+    -Scenario 'observe-production-firearm-fallbacks' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
 if ($fallbackRequest.scenario -cne 'observe-production-firearm-fallbacks' -or
     $fallbackRequest.parameters.Count -ne 0) {
     $failures.Add('fallback-presentation-request-valid')
 }
 $lifecycleRequest = New-KmgRuntimeRequest `
-    -Scenario 'observe-firearm-item-lifecycle-contracts' -ExpectedVersion '0.0.86' `
+    -Scenario 'observe-firearm-item-lifecycle-contracts' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
 if ($lifecycleRequest.scenario -cne 'observe-firearm-item-lifecycle-contracts' -or
     $lifecycleRequest.parameters.Count -ne 0) {
     $failures.Add('firearm-lifecycle-request-valid')
 }
-Assert-Throws { New-KmgRuntimeRequest -Scenario 'unknown' -ExpectedVersion '0.0.86' `
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'unknown' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic } 'unknown-scenario'
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic } 'empty-version'
-Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.86' `
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 4 -ExitAfterCompletion $false -EvidenceDirectory $synthetic } 'short-timeout'
-Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.86' `
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -StartupTimeoutSeconds 4 -ExitAfterCompletion $false `
     -EvidenceDirectory $synthetic } 'short-startup-timeout'
-Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.86' `
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory 'C:\Windows\Temp' } 'outside-root'
-Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.86' `
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'mod-load-smoke' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic `
     -Parameters @{ unexpected = $true } } 'unknown-parameter'
-Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVersion '0.0.86' `
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic `
     -Parameters @{} } 'working-save-name-missing'
-Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVersion '0.0.86' `
+Assert-Throws { New-KmgRuntimeRequest -Scenario 'working-save-smoke' -ExpectedVersion '0.0.87' `
     -TimeoutSeconds 30 -ExitAfterCompletion $false -EvidenceDirectory $synthetic `
     -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' } } 'baseline-forbidden'
 $featureRequest = New-KmgRuntimeRequest -Scenario 'generic-firearm-actions' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
     -CatalogTimeoutSeconds 30 -SelectionTimeoutSeconds 30 `
     -CompletionTimeoutSeconds 30 -MainMenuTimeoutSeconds 30 `
@@ -79,10 +79,10 @@ if ($featureRequest.scenario -cne 'generic-firearm-actions' -or
     $failures.Add('sprint30-feature-request-valid')
 }
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'generic-firearm-actions' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $false `
     -EvidenceDirectory $synthetic -Parameters @{} } 'sprint30-save-name-missing'
 $catalogRequest = New-KmgRuntimeRequest -Scenario 'production-firearm-catalog' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
     -CatalogTimeoutSeconds 30 -SelectionTimeoutSeconds 30 `
     -CompletionTimeoutSeconds 30 -MainMenuTimeoutSeconds 30 `
@@ -94,10 +94,10 @@ if ($catalogRequest.scenario -cne 'production-firearm-catalog' -or
     $failures.Add('sprint31-catalog-request-valid')
 }
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'production-firearm-catalog' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $false `
     -EvidenceDirectory $synthetic -Parameters @{} } 'sprint31-save-name-missing'
 $capacityRequest = New-KmgRuntimeRequest -Scenario 'advanced-capacity' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
     -CatalogTimeoutSeconds 30 -SelectionTimeoutSeconds 30 `
     -CompletionTimeoutSeconds 30 -MainMenuTimeoutSeconds 30 `
@@ -109,10 +109,10 @@ if ($capacityRequest.scenario -cne 'advanced-capacity' -or
     $failures.Add('sprint33-capacity-request-valid')
 }
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'advanced-capacity' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $false `
     -EvidenceDirectory $synthetic -Parameters @{} } 'sprint33-save-name-missing'
 $startingItemsRequest = New-KmgRuntimeRequest -Scenario 'gunslinger-starting-items' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
     -CatalogTimeoutSeconds 30 -SelectionTimeoutSeconds 30 `
     -CompletionTimeoutSeconds 30 -MainMenuTimeoutSeconds 30 `
@@ -124,10 +124,10 @@ if ($startingItemsRequest.scenario -cne 'gunslinger-starting-items' -or
     $failures.Add('starting-items-request-valid')
 }
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'gunslinger-starting-items' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $false `
     -EvidenceDirectory $synthetic -Parameters @{} } 'starting-items-save-name-missing'
 $entryRequest = New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-action' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
     -CatalogTimeoutSeconds 30 -SelectionTimeoutSeconds 30 `
     -CompletionTimeoutSeconds 30 -MainMenuTimeoutSeconds 30 `
@@ -139,15 +139,15 @@ if ($entryRequest.scenario -cne 'observe-working-save-entry-action' -or
     $failures.Add('entry-request-valid')
 }
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-action' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $false `
     -EvidenceDirectory $synthetic -Parameters @{} } 'entry-save-name-missing'
 Assert-Throws { New-KmgRuntimeRequest -Scenario 'observe-working-save-entry-action' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $false `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $false `
     -EvidenceDirectory $synthetic `
     -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' } } 'entry-baseline-forbidden'
 $startlingRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-startling-shot' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($startlingRequest.scenario -cne 'disposable-gunslinger-startling-shot' -or
     $startlingRequest.parameters.Count -ne 0) {
@@ -155,7 +155,7 @@ if ($startlingRequest.scenario -cne 'disposable-gunslinger-startling-shot' -or
 }
 $targetingRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-targeting-head' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($targetingRequest.scenario -cne 'disposable-gunslinger-targeting-head' -or
     $targetingRequest.parameters.Count -ne 0) {
@@ -163,7 +163,7 @@ if ($targetingRequest.scenario -cne 'disposable-gunslinger-targeting-head' -or
 }
 $torsoRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-targeting-torso' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($torsoRequest.scenario -cne 'disposable-gunslinger-targeting-torso' -or
     $torsoRequest.parameters.Count -ne 0) {
@@ -171,7 +171,7 @@ if ($torsoRequest.scenario -cne 'disposable-gunslinger-targeting-torso' -or
 }
 $legsRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-targeting-legs' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($legsRequest.scenario -cne 'disposable-gunslinger-targeting-legs' -or
     $legsRequest.parameters.Count -ne 0) {
@@ -179,7 +179,7 @@ if ($legsRequest.scenario -cne 'disposable-gunslinger-targeting-legs' -or
 }
 $bleedingRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-bleeding-wound' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($bleedingRequest.scenario -cne 'disposable-gunslinger-bleeding-wound' -or
     $bleedingRequest.parameters.Count -ne 0) {
@@ -187,7 +187,7 @@ if ($bleedingRequest.scenario -cne 'disposable-gunslinger-bleeding-wound' -or
 }
 $expertLoadingRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-expert-loading' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($expertLoadingRequest.scenario -cne 'disposable-gunslinger-expert-loading' -or
     $expertLoadingRequest.parameters.Count -ne 0) {
@@ -195,7 +195,7 @@ if ($expertLoadingRequest.scenario -cne 'disposable-gunslinger-expert-loading' -
 }
 $lightningReloadRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-lightning-reload' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($lightningReloadRequest.scenario -cne 'disposable-gunslinger-lightning-reload' -or
     $lightningReloadRequest.parameters.Count -ne 0) {
@@ -203,7 +203,7 @@ if ($lightningReloadRequest.scenario -cne 'disposable-gunslinger-lightning-reloa
 }
 $evasiveRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-evasive' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($evasiveRequest.scenario -cne 'disposable-gunslinger-evasive' -or
     $evasiveRequest.parameters.Count -ne 0) {
@@ -211,7 +211,7 @@ if ($evasiveRequest.scenario -cne 'disposable-gunslinger-evasive' -or
 }
 $evasiveObserverRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-evasive-native-features' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($evasiveObserverRequest.scenario -cne 'observe-evasive-native-features' -or
     $evasiveObserverRequest.parameters.Count -ne 0) {
@@ -219,7 +219,7 @@ if ($evasiveObserverRequest.scenario -cne 'observe-evasive-native-features' -or
 }
 $menacingObserverRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-menacing-shot-native-fear' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($menacingObserverRequest.scenario -cne 'observe-menacing-shot-native-fear' -or
     $menacingObserverRequest.parameters.Count -ne 0) {
@@ -227,7 +227,7 @@ if ($menacingObserverRequest.scenario -cne 'observe-menacing-shot-native-fear' -
 }
 $menacingRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-menacing-shot' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($menacingRequest.scenario -cne 'disposable-gunslinger-menacing-shot' -or
     $menacingRequest.parameters.Count -ne 0) {
@@ -235,7 +235,7 @@ if ($menacingRequest.scenario -cne 'disposable-gunslinger-menacing-shot' -or
 }
 $slingersLuckObserverRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-slingers-luck-native-rerolls' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($slingersLuckObserverRequest.scenario -cne
     'observe-slingers-luck-native-rerolls' -or
@@ -244,7 +244,7 @@ if ($slingersLuckObserverRequest.scenario -cne
 }
 $slingersLuckRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-slingers-luck' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($slingersLuckRequest.scenario -cne
     'disposable-gunslinger-slingers-luck' -or
@@ -253,7 +253,7 @@ if ($slingersLuckRequest.scenario -cne
 }
 $cheatDeathRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-cheat-death' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($cheatDeathRequest.scenario -cne
     'disposable-gunslinger-cheat-death' -or
@@ -262,7 +262,7 @@ if ($cheatDeathRequest.scenario -cne
 }
 $deathsShotObserverRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-deaths-shot-native-death' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($deathsShotObserverRequest.scenario -cne
     'observe-deaths-shot-native-death' -or
@@ -271,7 +271,7 @@ if ($deathsShotObserverRequest.scenario -cne
 }
 $stunningShotObserverRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-stunning-shot-native-stunned' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($stunningShotObserverRequest.scenario -cne
     'observe-stunning-shot-native-stunned' -or
@@ -280,7 +280,7 @@ if ($stunningShotObserverRequest.scenario -cne
 }
 $stunningShotRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-stunning-shot' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($stunningShotRequest.scenario -cne
     'disposable-gunslinger-stunning-shot' -or
@@ -289,7 +289,7 @@ if ($stunningShotRequest.scenario -cne
 }
 $trueGritRequest = New-KmgRuntimeRequest `
     -Scenario 'disposable-gunslinger-true-grit' `
-    -ExpectedVersion '0.0.86' -TimeoutSeconds 30 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.87' -TimeoutSeconds 30 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic
 if ($trueGritRequest.scenario -cne
     'disposable-gunslinger-true-grit' -or
