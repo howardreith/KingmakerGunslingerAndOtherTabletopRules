@@ -783,10 +783,13 @@ namespace KingmakerGunslinger.DomainTests
                 "source.Context.SourceAbility", "MaybeCaster.UniqueId" })
                 Assertions.True(modifierRuntime.Contains(token),
                 "Powerful Change persisted runtime lacks guard: " + token);
-            foreach (string token in new[] { "RestoreOrdinaryRecast",
+            foreach (string token in new[] { "PrepareOrdinaryRecast",
+                "sources.Length != 1", "matches.Count == 1",
+                "RestoreOrdinaryRecast",
                 "FindScope(applyingContext) != null",
-                "modifier.ModValue = record.OriginalValue",
-                "part.Forget(buffGuid, spellGuid, casterId)" })
+                "modifiers.Length != 1",
+                "modifiers[0].ModValue = state.OriginalValue",
+                "part.Forget(state.BuffGuid" })
                 Assertions.True(modifierRuntime.Contains(token),
                     "Powerful Change ordinary recast lacks guard: " + token);
             Assertions.True(modifierPatch.Contains(

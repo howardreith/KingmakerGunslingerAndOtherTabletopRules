@@ -45,13 +45,28 @@ namespace KingmakerGunslinger.BrownFur
     [HarmonyAfter("CallOfTheWild")]
     internal static class BrownFurOrdinaryRecastPatch
     {
-        private static void Postfix(MechanicsContext __1, Buff __result)
+        private static void Prefix(BuffCollection __instance,
+            BlueprintBuff __0, MechanicsContext __1,
+            out BrownFurModifierAdjustmentRuntime.OrdinaryRecastState __state)
         {
+            __state = null;
             try
             {
-                BrownFurModifierAdjustmentRuntime.RestoreOrdinaryRecast(
-                    __result, __1);
+                __state = BrownFurModifierAdjustmentRuntime.
+                    PrepareOrdinaryRecast(__instance, __0, __1);
             }
+            catch
+            {
+                // Optional state capture must never break native application.
+            }
+        }
+
+        private static void Postfix(Buff __result,
+            BrownFurModifierAdjustmentRuntime.OrdinaryRecastState __state)
+        {
+            try
+            { BrownFurModifierAdjustmentRuntime.RestoreOrdinaryRecast(
+                __result, __state); }
             catch
             {
                 // An optional reconciliation failure must not break native

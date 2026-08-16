@@ -5,12 +5,25 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
 
 namespace KingmakerGunslinger.BrownFur
 {
     internal static class BrownFurModifierAdjustmentRuntime
     {
+        internal sealed class OrdinaryRecastState
+        {
+            internal string BuffGuid;
+            internal string SpellGuid;
+            internal string CasterId;
+            internal StatType Stat;
+            internal int OriginalValue;
+            internal int Increase;
+            internal string Descriptor;
+            internal string CarrierFamily;
+        }
+
         private sealed class Scope
         {
             internal string TransactionIdentity;
@@ -141,22 +154,28 @@ namespace KingmakerGunslinger.BrownFur
                 source.Context.MaybeCaster.UniqueId);
         }
 
-        internal static bool RestoreOrdinaryRecast(Buff source,
+        internal static OrdinaryRecastState PrepareOrdinaryRecast(
+            BuffCollection collection, BlueprintBuff blueprint,
             MechanicsContext applyingContext)
         {
-            if (source == null || source.Owner == null ||
+            if (collection == null || blueprint == null ||
                 applyingContext == null ||
                 applyingContext.MaybeCaster == null ||
                 applyingContext.SourceAbility == null ||
-                FindScope(applyingContext) != null) return false;
+                FindScope(applyingContext) != null) return null;
+            Buff[] sources = collection.RawFacts.OfType<Buff>().Where(value =>
+                ReferenceEquals(value.Blueprint, blueprint)).Take(2).ToArray();
+            if (sources.Length != 1 || sources[0].Owner == null) return null;
+            Buff source = sources[0];
             UnitPartBrownFurModifierPersistence part = source.Owner.Get<
                 UnitPartBrownFurModifierPersistence>();
-            if (part == null) return false;
+            if (part == null) return null;
             string buffGuid = NormalizeGuid(
                 source.Blueprint.AssetGuid.ToString());
             string spellGuid = NormalizeGuid(
                 applyingContext.SourceAbility.AssetGuid.ToString());
             string casterId = applyingContext.MaybeCaster.UniqueId;
+            var matches = new List<OrdinaryRecastState>();
             foreach (StatType type in new[] { StatType.Strength,
                 StatType.Dexterity, StatType.Constitution,
                 StatType.Intelligence, StatType.Wisdom,
@@ -180,12 +199,40 @@ namespace KingmakerGunslinger.BrownFur
                                 CarrierFamily = family
                             });
                     if (record == null) continue;
-                    modifier.ModValue = record.OriginalValue;
-                    part.Forget(buffGuid, spellGuid, casterId);
-                    return true;
+                    matches.Add(new OrdinaryRecastState {
+                        BuffGuid = buffGuid, SpellGuid = spellGuid,
+                        CasterId = casterId, Stat = type,
+                        OriginalValue = record.OriginalValue,
+                        Increase = record.Increase,
+                        Descriptor = record.OriginalDescriptor,
+                        CarrierFamily = record.CarrierFamily
+                    });
                 }
             }
-            return false;
+            return matches.Count == 1 ? matches[0] : null;
+        }
+
+        internal static bool RestoreOrdinaryRecast(Buff source,
+            OrdinaryRecastState state)
+        {
+            if (source == null || source.Owner == null || state == null)
+                return false;
+            ModifiableValue stat = source.Owner.Stats.GetStat(state.Stat);
+            ModifiableValue.Modifier[] modifiers = stat.Modifiers.Where(value =>
+                ReferenceEquals(value.Source, source) &&
+                string.Equals(value.ModDescriptor.ToString(),
+                    state.Descriptor, StringComparison.Ordinal) &&
+                string.Equals(CarrierFamily(value.SourceComponent),
+                    state.CarrierFamily, StringComparison.Ordinal) &&
+                (value.ModValue == state.OriginalValue ||
+                 value.ModValue == state.OriginalValue + state.Increase))
+                .Take(2).ToArray();
+            if (modifiers.Length != 1) return false;
+            modifiers[0].ModValue = state.OriginalValue;
+            UnitPartBrownFurModifierPersistence part = source.Owner.Get<
+                UnitPartBrownFurModifierPersistence>();
+            return part != null && part.Forget(state.BuffGuid,
+                state.SpellGuid, state.CasterId) > 0;
         }
 
         private static bool TryRestorePersisted(ModifiableValue destination,
