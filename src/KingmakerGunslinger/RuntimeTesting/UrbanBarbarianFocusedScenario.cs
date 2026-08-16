@@ -8,7 +8,6 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
-using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
@@ -39,8 +38,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             "2479395977cfeeb46b482bc3385f4647";
         private const string NativeRageActivatableGuid =
             "df6a2cce8e3a9bd4592fb1968b83f730";
-        private const string LongswordGuid =
-            "d56c44bc9eb10204c8b386a02c7eed21";
 
         internal static RuntimeTestResult Run(ModContext context,
             RuntimeTestRequest request)
@@ -113,6 +110,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int dexBefore = urban.Descriptor.Stats.Dexterity.ModifiedValue;
                 int conBefore = urban.Descriptor.Stats.Constitution.ModifiedValue;
                 int maxBefore = urban.MaxHP;
+                Buff[] beforeDefaultRage = urban.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().ToArray();
                 var rageContext = new MechanicsContext(urban, urban.Descriptor,
                     set.ControlledRage, null, new TargetWrapper(urban));
                 Buff rage = urban.Descriptor.Buffs.AddBuff(
@@ -145,13 +144,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         visibleOrdinary.Length == 6 && locked,
                     "live BuffCollection substitution, actual stats, and AbilityData variants");
                 urban.Descriptor.RemoveFact(set.RageBuff);
+                RemoveIntroducedBuffs(urban.Descriptor, beforeDefaultRage);
 
                 stage = "ordinary-split-and-hp";
                 SelectDirect(urban.Descriptor, set,
                     ControlledRageTier.Ordinary, 0, 2, 2);
                 int damageBefore = 17;
                 urban.Descriptor.Damage = damageBefore;
+                int splitDexBefore = urban.Descriptor.Stats.Dexterity.ModifiedValue;
+                int splitConBefore = urban.Descriptor.Stats.Constitution.ModifiedValue;
                 int hpBefore = urban.HPLeft;
+                Buff[] beforeSplitRage = urban.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().ToArray();
                 rage = urban.Descriptor.Buffs.AddBuff(
                     set.NativeRageBuff, rageContext, null);
                 int hpDuring = urban.HPLeft;
@@ -172,12 +176,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";con=" + conSplit + ";selection=" + splitSelection +
                         ";dexModifiers=" + DescribeModifiers(
                             urban.Descriptor.Stats.Dexterity),
-                    dexSplit == dexBefore + 2 && conSplit == conBefore + 2 &&
+                    dexSplit == splitDexBefore + 2 &&
+                        conSplit == splitConBefore + 2 &&
                         maxDuring == maxAfter + 1 && hpDuring == hpBefore + 1 &&
                         hpAfter == hpBefore &&
                         maxAfter == maxBefore &&
                         urban.Descriptor.Damage == damageBefore,
                     "genuine Constitution morale modifier and native HP/damage accounting");
+                RemoveIntroducedBuffs(urban.Descriptor, beforeSplitRage);
 
                 stage = "ordinary-native-rage-toggle";
                 BlueprintActivatableAbility rageBlueprint =
@@ -226,11 +232,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ControlledRageTier.Greater, 6, 0, 0);
                 SelectDirect(urban.Descriptor, set,
                     ControlledRageTier.Greater, 2, 2, 2);
+                int greaterStrengthBefore = urban.Descriptor.Stats.Strength.ModifiedValue;
+                int greaterDexterityBefore = urban.Descriptor.Stats.Dexterity.ModifiedValue;
+                int greaterConstitutionBefore = urban.Descriptor.Stats.Constitution.ModifiedValue;
+                Buff[] beforeGreaterRage = urban.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().ToArray();
                 rage = urban.Descriptor.Buffs.AddBuff(
                     set.NativeRageBuff, rageContext, null);
                 int greaterTotal = AbilityDeltaTotal(urban.Descriptor,
-                    strBefore, dexBefore, conBefore);
+                    greaterStrengthBefore, greaterDexterityBefore,
+                    greaterConstitutionBefore);
                 urban.Descriptor.RemoveFact(set.RageBuff);
+                RemoveIntroducedBuffs(urban.Descriptor, beforeGreaterRage);
                 for (int level = 12; level <= 20; level++)
                     ApplyLevel(urban.Descriptor, set.BarbarianClass, null, false);
                 AbilityData[] mighty = Variants(new AbilityData(
@@ -239,11 +252,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ControlledRageTier.Mighty, 8, 0, 0);
                 SelectDirect(urban.Descriptor, set,
                     ControlledRageTier.Mighty, 4, 2, 2);
+                int mightyStrengthBefore = urban.Descriptor.Stats.Strength.ModifiedValue;
+                int mightyDexterityBefore = urban.Descriptor.Stats.Dexterity.ModifiedValue;
+                int mightyConstitutionBefore = urban.Descriptor.Stats.Constitution.ModifiedValue;
+                Buff[] beforeMightyRage = urban.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().ToArray();
                 rage = urban.Descriptor.Buffs.AddBuff(
                     set.NativeRageBuff, rageContext, null);
                 int mightyTotal = AbilityDeltaTotal(urban.Descriptor,
-                    strBefore, dexBefore, conBefore);
+                    mightyStrengthBefore, mightyDexterityBefore,
+                    mightyConstitutionBefore);
                 urban.Descriptor.RemoveFact(set.RageBuff);
+                RemoveIntroducedBuffs(urban.Descriptor, beforeMightyRage);
                 Add(assertions, "urban-greater-mighty-tiers",
                     "actual level 11 exposes only ten +6 options and level 20 only fifteen +8 options with independent STR defaults",
                     "level=" + urban.Descriptor.Progression.GetClassLevel(
@@ -293,12 +313,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native Rage activatable and retained AddFactContextActions lifecycle");
 
                 stage = "crowd-control";
-                BlueprintItemWeapon longsword = ResourcesLibrary.TryGetBlueprint<
-                    BlueprintItemWeapon>(LongswordGuid);
-                if (longsword == null)
-                    throw new InvalidOperationException(
-                        "The exact native longsword blueprint was unavailable.");
-                weapon = ElvenBranchedSpearCombatScenario.Equip(urban, longsword);
+                weapon = ElvenBranchedSpearCombatScenario.Equip(urban,
+                    BlueprintBootstrap.ElvenBranchedSpears.Entries[0].Item);
                 int attackZero = Attack(urban, weapon);
                 int acZero = ArmorClass(urban, enemyOne);
                 SetPosition(enemyOne, new Vector3(1.5f, 0f, 0f));
@@ -515,6 +531,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.ModValue + ":" + value.ModDescriptor + ":" +
                 (value.SourceComponent == null ? "<null>" :
                     value.SourceComponent.GetType().FullName)));
+        }
+
+        private static void RemoveIntroducedBuffs(UnitDescriptor owner,
+            Buff[] before)
+        {
+            foreach (Buff introduced in owner.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => !before.Contains(value)).ToArray())
+                introduced.Remove();
         }
 
         private static bool Same(object[] left, object[] right)
