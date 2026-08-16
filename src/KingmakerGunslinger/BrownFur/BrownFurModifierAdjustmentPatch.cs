@@ -40,7 +40,7 @@ namespace KingmakerGunslinger.BrownFur
         }
     }
 
-    [HarmonyPatch(typeof(BuffCollection), "AddBuffInternal", new[] {
+    [HarmonyPatch(typeof(BuffCollection), "AddBuff", new[] {
         typeof(BlueprintBuff), typeof(MechanicsContext), typeof(TimeSpan?) })]
     [HarmonyAfter("CallOfTheWild")]
     internal static class BrownFurOrdinaryRecastPatch

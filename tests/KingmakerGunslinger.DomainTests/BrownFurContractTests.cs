@@ -800,7 +800,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(modifierPatch.Contains(
                 "BrownFurOrdinaryRecastPatch") &&
                 modifierPatch.Contains("typeof(BuffCollection)") &&
-                modifierPatch.Contains("\"AddBuffInternal\"") &&
+                modifierPatch.Contains("\"AddBuff\"") &&
                 modifierPatch.Contains("RestoreOrdinaryRecast"),
                 "Powerful Change ordinary recasting must reconcile at the narrow native buff application boundary.");
             Assertions.False(modifierRuntime.Contains(
