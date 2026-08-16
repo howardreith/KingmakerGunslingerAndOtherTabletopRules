@@ -99,6 +99,22 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("archetypeReferences == (expectedActive ? 1 : 0)") &&
                 runner.Contains("fixtureFeatures.Reverse()"),
                 "Urban persistence is not guarded, module-aware, or cleanup-complete.");
+            Assertions.Equal(2, Count(runner,
+                "IsUrbanBarbarianPersistenceScenario() ||"),
+                "Urban persistence must route through both the guarded working-save dispatch and its post-readiness exception path.");
+        }
+
+        private static int Count(string source, string value)
+        {
+            int count = 0;
+            int offset = 0;
+            while ((offset = source.IndexOf(value, offset,
+                StringComparison.Ordinal)) >= 0)
+            {
+                count++;
+                offset += value.Length;
+            }
+            return count;
         }
     }
 }

@@ -1,7 +1,8 @@
 # Urban Barbarian runtime matrix
 
-Status: **ARCHITECTURE INVENTORY 2/2 PASS; final immutable gameplay,
-persistence, compatibility, and 18-state boundary execution pending**.
+Status: **ARCHITECTURE INVENTORY 2/2 PASS AND FOCUSED GAMEPLAY CHECKPOINT
+PASS; final immutable persistence, compatibility, and 18-state boundary
+execution pending**.
 
 ## Immutable identity fields
 
@@ -72,6 +73,24 @@ The final fixture allocation is:
   Rage save/load and existing-owner module-OFF transaction; and
 - generic `Invoke-FeatureModuleRuntimeMatrix.ps1 -Boundary`: the authoritative
   18 publication boundary launches, with no CotW Cartesian multiplication.
+
+Focused gameplay checkpoint `20260816T1736393346849Z-disposable-urban-
+barbarian-focused` passed on commit
+`83dee5282d32cf6fec02f64d9e0ffd9da42f06fe`. It proved exact allocation tiers,
+ability modifiers and leakage exclusions, Rage resource/fatigue/Tireless
+lifecycle, repeated Constitution/HP cycles, and the complete Crowd Control
+threshold family including native group-hostility changes, large-unit
+corpulence, ranged attacks, and reach independence. This remains diagnostic
+checkpoint evidence only; the final immutable candidate must repeat the
+scenario after the working-save dispatch correction.
+
+The first Urban persistence launch on that checkpoint candidate timed out
+safely at `manual-save-load-observation`: no descriptor was accepted, no load
+or save began, all hooks were removed, the process exited, and settings were
+restored. The cause was an exact runner-routing omission: the registered Urban
+scenarios were absent from both initial guarded working-save dispatch clauses.
+The correction and a two-clause regression assertion are part of the next
+candidate; unchanged retry is forbidden.
 
 ## Authoritative eight-module boundary
 

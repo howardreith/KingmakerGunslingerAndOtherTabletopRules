@@ -1285,6 +1285,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
                     IsBrownFurPersistenceScenario() ||
+                    IsUrbanBarbarianPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
@@ -1314,6 +1315,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
                     IsBrownFurPersistenceScenario() ||
+                    IsUrbanBarbarianPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog ||
