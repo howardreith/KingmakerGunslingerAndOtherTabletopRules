@@ -19,6 +19,7 @@ using KingmakerGunslinger.FeatureModules;
 using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
+using KingmakerGunslinger.UrbanBarbarian;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -31,7 +32,8 @@ namespace KingmakerGunslinger.Bootstrap
     internal static class BlueprintBootstrap
     {
         internal const int ExpectedRegisteredBlueprintCount = 333 +
-            ExpandedSummoningIdentityCatalog.FoundationIdentityCount;
+            ExpandedSummoningIdentityCatalog.FoundationIdentityCount +
+            UrbanBarbarianIdentityCatalog.IdentityCount;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -64,6 +66,7 @@ namespace KingmakerGunslinger.Bootstrap
         private static ShieldOtherSpellListPublication _shieldOtherPublication;
         private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;
         private static EasternWeaponBlueprintSet _easternWeapons;
+        private static UrbanBarbarianBlueprintSet _urbanBarbarian;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
@@ -146,6 +149,11 @@ namespace KingmakerGunslinger.Bootstrap
         internal static EasternWeaponBlueprintSet EasternWeapons
         {
             get { lock (Gate) { return _easternWeapons; } }
+        }
+
+        internal static UrbanBarbarianBlueprintSet UrbanBarbarian
+        {
+            get { lock (Gate) { return _urbanBarbarian; } }
         }
 
         internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
@@ -552,6 +560,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _shieldOtherPublication = result.ShieldOtherPublication;
                     _elvenBranchedSpears = result.ElvenBranchedSpears;
                     _easternWeapons = result.EasternWeapons;
+                    _urbanBarbarian = result.UrbanBarbarian;
                     _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
@@ -641,10 +650,17 @@ namespace KingmakerGunslinger.Bootstrap
             EasternWeaponSelectorPublication easternSelectorPublication = null;
             EasternWeaponCampaignPublication easternCampaignPublication = null;
             CustomWeaponFocusedWeaponPublication focusedWeaponPublication = null;
+            UrbanBarbarianPublication urbanBarbarianPublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
                 DiagnosticBlueprints.Validate(diagnosticFeature);
+
+                UrbanBarbarianBlueprintSet urbanBarbarian =
+                    UrbanBarbarianBlueprints.Register(library, registry);
+                urbanBarbarianPublication = UrbanBarbarianPublication.Apply(
+                    urbanBarbarian.BarbarianClass, urbanBarbarian.Archetype,
+                    publicationPlan.UrbanBarbarianArchetype);
 
                 ElvenBranchedSpearBlueprintSet elvenBranchedSpears =
                     ElvenBranchedSpearBlueprints.Register(library, registry,
@@ -969,7 +985,8 @@ namespace KingmakerGunslinger.Bootstrap
                     shieldOther,
                     shieldOtherPublication,
                     elvenBranchedSpears,
-                    easternWeapons);
+                    easternWeapons,
+                    urbanBarbarian);
             }
             catch (Exception initializationException)
             {
@@ -982,6 +999,17 @@ namespace KingmakerGunslinger.Bootstrap
                             "focused-weapon.rollback-failed",
                             "Blueprint initialization failed and Focused Weapon rollback was refused.",
                             focusedWeaponRollbackException);
+                    }
+                }
+                if (urbanBarbarianPublication != null)
+                {
+                    try { urbanBarbarianPublication.Rollback(); }
+                    catch (Exception urbanRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "urban-barbarian.rollback-failed",
+                            "Blueprint initialization failed and Urban Barbarian archetype rollback was refused.",
+                            urbanRollbackException);
                     }
                 }
                 context.Logger.Failure(
@@ -1196,7 +1224,8 @@ namespace KingmakerGunslinger.Bootstrap
                 ShieldOtherBlueprintSet shieldOther,
                 ShieldOtherSpellListPublication shieldOtherPublication,
                 ElvenBranchedSpearBlueprintSet elvenBranchedSpears,
-                EasternWeaponBlueprintSet easternWeapons)
+                EasternWeaponBlueprintSet easternWeapons,
+                UrbanBarbarianBlueprintSet urbanBarbarian)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
                 FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
@@ -1233,6 +1262,8 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("elvenBranchedSpears");
                 EasternWeapons = easternWeapons ??
                     throw new ArgumentNullException("easternWeapons");
+                UrbanBarbarian = urbanBarbarian ??
+                    throw new ArgumentNullException("urbanBarbarian");
             }
 
             internal BlueprintFeature DiagnosticFeature { get; private set; }
@@ -1281,6 +1312,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal ElvenBranchedSpearBlueprintSet ElvenBranchedSpears
             { get; private set; }
             internal EasternWeaponBlueprintSet EasternWeapons
+            { get; private set; }
+            internal UrbanBarbarianBlueprintSet UrbanBarbarian
             { get; private set; }
         }
     }

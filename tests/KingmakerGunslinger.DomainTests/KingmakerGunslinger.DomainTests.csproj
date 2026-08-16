@@ -87,6 +87,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageHitPointPolicy.cs"><Link>UrbanBarbarian\ControlledRageHitPointPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\CrowdControlPolicy.cs"><Link>UrbanBarbarian\CrowdControlPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\UrbanCotwCompatibilityPolicy.cs"><Link>UrbanBarbarian\UrbanCotwCompatibilityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\UrbanBarbarianIdentityCatalog.cs"><Link>UrbanBarbarian\UrbanBarbarianIdentityCatalog.cs</Link></Compile>
     <Compile Include="BrownFurContractTests.cs" />
     <Compile Include="BrownFurInventoryClassificationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurInventoryClassification.cs"><Link>BrownFur\BrownFurInventoryClassification.cs</Link></Compile>

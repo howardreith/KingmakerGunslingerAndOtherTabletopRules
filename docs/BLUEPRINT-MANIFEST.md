@@ -8,13 +8,17 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1543 stable identifiers: 1542 active and one reserved.
+Validator contract: 1613 stable identifiers: 1612 active and one reserved.
 
-The 19 active `KMG.BrownFur.*` identities are owned by the isolated optional
+The 25 active `KMG.BrownFur.*` identities are owned by the isolated optional
 extension. They are registered only when the structural Call of the Wild
 contract succeeds and are excluded from the package core's unconditional
 registration count. Active identity status does not by itself publish the
 Brown-Fur archetype to CotW's selector.
+The 70 active `KMG.UrbanBarbarian.*` identities are unconditional native-core
+identities. They register with the module on or off so existing owners remain
+loadable; the setting controls only publication in the native Barbarian
+archetype selector. The unconditional package-core registration count is 1587.
 The historical non-Brown-Fur reservation remains reserved independently.
 The 1,155 Expanded Summoning identities freeze the feature foundation: 67 unit
 identities, 1,050 abilities, 17 buffs, three AI actions, three brains, nine

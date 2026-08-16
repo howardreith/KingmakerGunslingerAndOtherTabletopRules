@@ -12223,6 +12223,286 @@
     {
       "symbol": "KMG.BrownFur.TransmutationSupremacy.Feature", "guid": "c69cd7091219708f981272f2ac057135",
       "plannedType": "BlueprintFeature", "status": "active", "milestone": "Brown-Fur Transmuter", "notes": "Level-20 Transmutation Supremacy feature and capstone marker."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Archetype", "guid": "28f179bf6d325fecec769cebc560abbd",
+      "plannedType": "BlueprintArchetype", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Proficiency.Feature", "guid": "08eb5c3d109b1de3c9207c10a860b1fa",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.CrowdControl.Feature", "guid": "1644b9cf0e7751a59def80ea8b1b09af",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.ControlledRage.Feature", "guid": "7de402be93a4d62d520463cf695dad2c",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.ControlledRage.GreaterDefault.Feature", "guid": "9fa79d9937a926b6ce54afa85059aac2",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.ControlledRage.MightyDefault.Feature", "guid": "ba99cfe4d6d8e7c5730c4d61a23120ab",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.ControlledRage.Buff", "guid": "6359e4bc26d1f311c36c0e8f7aee8f2d",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.ControlledRage.SelectionAbility", "guid": "f43181528e5111bb5b86f5317997c8e2",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Urban Barbarian owned feature identity."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S4.D0.C0.Feature", "guid": "c50b25c9f09e50c7a62679dd2bb9c553",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S4.D0.C0.Ability", "guid": "93b75bc68cec245203838c8db1d9546a",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S0.D4.C0.Feature", "guid": "d66252e59d7bdfc8d23b300eef07f066",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S0.D4.C0.Ability", "guid": "b121eb92257de77110416b805f6a9372",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S0.D0.C4.Feature", "guid": "f49d2801f4b07c0f5e187afd62808463",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S0.D0.C4.Ability", "guid": "f6544766636fd197501c5a81f1720847",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S2.D2.C0.Feature", "guid": "b9b6e8732dc7be933061073232f3e3c2",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S2.D2.C0.Ability", "guid": "5ccb92e3ac5c59fad5f555f484847a6c",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S2.D0.C2.Feature", "guid": "67e0106c8db6f94a64bb60cb2fd1d596",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S2.D0.C2.Ability", "guid": "b98a130225ae6c81c5f22f12c1dbd9ec",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S0.D2.C2.Feature", "guid": "c9dac714e8097afb2f2ef866b1b59798",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T4.S0.D2.C2.Ability", "guid": "1b9283f751b06e27bdf5d608f0d6ac31",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S6.D0.C0.Feature", "guid": "6b5b7526c3d55cb76ab04e61d9564d11",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S6.D0.C0.Ability", "guid": "00e051e2e2b8d51a51e6fca62c3d26da",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S0.D6.C0.Feature", "guid": "931a4d5d6a1fbbbb23b753c060084d42",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S0.D6.C0.Ability", "guid": "9112621d1472d5111bbb2df96a689254",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S0.D0.C6.Feature", "guid": "c2b22cd72a899b7628d1557e7eacb501",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S0.D0.C6.Ability", "guid": "a2e2f16332f7ef4e4d858dc902ef39f9",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S4.D2.C0.Feature", "guid": "7409cfea692dbb16d9e76e4cefd58e81",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S4.D2.C0.Ability", "guid": "b5b8d96b97714c8e468d9f8a360d86f8",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S4.D0.C2.Feature", "guid": "eb0fd7c9d326607495a2e39d3249f6dd",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S4.D0.C2.Ability", "guid": "de71cb83692622ae63f787d15316ae21",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S2.D4.C0.Feature", "guid": "6817582448f33a6db1227d96e20d513e",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S2.D4.C0.Ability", "guid": "5e8cf923d92356893482bd5975a6bd67",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S0.D4.C2.Feature", "guid": "b7155b8d4817e4b8b2630cb68972b5fb",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S0.D4.C2.Ability", "guid": "9402a3736112840a8686e1badc122f42",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S2.D0.C4.Feature", "guid": "aecbf16f28fe26f871d299a301af3847",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S2.D0.C4.Ability", "guid": "7d90c27de24801aa86697d3304e199d2",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S0.D2.C4.Feature", "guid": "28d12630923e12427067739a35848241",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S0.D2.C4.Ability", "guid": "601ab3b7a205ae0cfa5ae182d93dad31",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S2.D2.C2.Feature", "guid": "41ce02ba95054b20cf3558eabde0b965",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T6.S2.D2.C2.Ability", "guid": "16d19fb6b901166f5bc6554a57ad8cc7",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S8.D0.C0.Feature", "guid": "6ecebe52517eff77fab34b56f5c00624",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S8.D0.C0.Ability", "guid": "e9ca91fcd33ce2ab056458830dac6cb7",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D8.C0.Feature", "guid": "57db8867a9f37a878f358856d74a52fb",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D8.C0.Ability", "guid": "7a1f6de5ff9b5e3c72dc4a3fdc5b7069",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D0.C8.Feature", "guid": "e90c29577ba1ecb498d858f68cd7119e",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D0.C8.Ability", "guid": "6f6e4328198682957c35c9c99f186347",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S6.D2.C0.Feature", "guid": "466fbcb99f3c57f4cdbc676fc6904e7c",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S6.D2.C0.Ability", "guid": "5cf8f0b41dc49cbdf1489716cd40f2ac",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S6.D0.C2.Feature", "guid": "741da13794d9bb6c2abae3856791aab5",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S6.D0.C2.Ability", "guid": "a0a92307a91c1ee02e4a333e2cc8dc97",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D6.C0.Feature", "guid": "8295761ba1b71866f97d0bb9afae6f44",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D6.C0.Ability", "guid": "bc0d8b7745e45e4f126bf31a0788d2af",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D6.C2.Feature", "guid": "7651c176b5a88869f3de2ac87fe0b7fa",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D6.C2.Ability", "guid": "55010dc791d1f4bcfc11baa584e1c5d0",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D0.C6.Feature", "guid": "ae978a6045cc231bccc74c7e8e839cb7",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D0.C6.Ability", "guid": "230b9337f27b7121e4669f49b5ce39b8",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D2.C6.Feature", "guid": "9a1b22d89bb31dd889102c9203ea11ec",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D2.C6.Ability", "guid": "8bd379c41a289ee814de1b0c331089a4",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S4.D4.C0.Feature", "guid": "b77ee34067f450b05aa939a1566e6f30",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S4.D4.C0.Ability", "guid": "ef4d553094bb2eab2219e4b00ca540ae",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S4.D0.C4.Feature", "guid": "6fcbd67547a21cdf7e7700ce0138a12c",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S4.D0.C4.Ability", "guid": "433cd62a7b1cb8a5c3884547ce7dc9fe",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D4.C4.Feature", "guid": "be796f78208b038acc2cdc474a0b8f4d",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S0.D4.C4.Ability", "guid": "6d5b62bd1bf9be4f6d11efb7acdc1c19",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S4.D2.C2.Feature", "guid": "5f11226d2c2f7388e04583f712a4fc33",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S4.D2.C2.Ability", "guid": "63a0d8be6c7ba52ec0cb4f8286f0a6b9",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D4.C2.Feature", "guid": "b0511155f2d6eab90fea88829b19831c",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D4.C2.Ability", "guid": "ffc4ab2e5b35bb6de0ba652e4315a3db",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D2.C4.Feature", "guid": "0d69ef55092ed0cb23b467e929a8f495",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Urban Barbarian", "notes": "Save-stable Controlled Rage allocation selection fact."
+    },
+    {
+      "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D2.C4.Ability", "guid": "639e90f156a420e0cad87315f2377590",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
     }
   ]
 }

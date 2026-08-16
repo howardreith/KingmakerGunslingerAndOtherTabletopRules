@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using KingmakerGunslinger.UrbanBarbarian;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -194,6 +196,101 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(duplicate.CoreAvailable &&
                 duplicate.Diagnostic.Contains("core remains available"),
                 "Unqualified optional surface did not name core availability.");
+        }
+
+        internal static void IdentityManifestIsExactAndCollisionFree()
+        {
+            IReadOnlyList<UrbanBarbarianIdentitySpec> identities =
+                UrbanBarbarianIdentityCatalog.All;
+            Assertions.Equal(70, identities.Count,
+                "Urban Barbarian identity count changed.");
+            Assertions.Equal(70, identities.Select(value => value.Symbol)
+                .Distinct(StringComparer.Ordinal).Count(),
+                "Urban Barbarian identity symbols collide.");
+            Assertions.Equal(70, identities.Select(value => value.Guid)
+                .Distinct(StringComparer.Ordinal).Count(),
+                "Urban Barbarian identity GUIDs collide.");
+            Assertions.True(identities.All(value => value.Guid.Length == 32 &&
+                value.Guid.All(character => character >= '0' && character <= '9' ||
+                    character >= 'a' && character <= 'f')),
+                "An Urban Barbarian identity is not a canonical 32-character GUID.");
+
+            JObject manifest = JObject.Parse(File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "blueprints", "blueprints.json")));
+            var entries = ((JArray)manifest["entries"]).OfType<JObject>()
+                .ToDictionary(value => (string)value["symbol"],
+                    StringComparer.Ordinal);
+            foreach (UrbanBarbarianIdentitySpec identity in identities)
+            {
+                Assertions.True(entries.ContainsKey(identity.Symbol),
+                    "Manifest omits Urban identity " + identity.Symbol + ".");
+                JObject entry = entries[identity.Symbol];
+                Assertions.Equal(identity.Guid, (string)entry["guid"],
+                    "Manifest GUID differs for " + identity.Symbol + ".");
+                Assertions.Equal(identity.PlannedType,
+                    (string)entry["plannedType"],
+                    "Manifest type differs for " + identity.Symbol + ".");
+                Assertions.Equal("active", (string)entry["status"],
+                    "Urban identity is not active: " + identity.Symbol + ".");
+            }
+        }
+
+        internal static void BlueprintAndRageSourceContractsAreNarrow()
+        {
+            string root = Environment.CurrentDirectory;
+            string blueprints = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "UrbanBarbarianBlueprints.cs"));
+            string rage = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "UrbanBarbarian",
+                "ControlledRageRuntime.cs"));
+            string crowd = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "UrbanBarbarian",
+                "CrowdControlComponent.cs"));
+            foreach (string token in new[] {
+                "f7d7eb166b3dd594fb330d085df41853",
+                "acc15a2d19f13864e8cce3ba133a1979",
+                "d294a5dddd0120046aae7d4eb6cbc4fc",
+                "2479395977cfeeb46b482bc3385f4647",
+                "da8ce41ac3cd74742b80984ccc3c9613",
+                "ce49c579fe0bcc647a32c96929fae982",
+                "ca9343d75a83a2745a22fa11c383153a",
+                "06a7e5b60020ad947aed107d82d1f897",
+                "ReplaceClassSkills = true",
+                "StatType.SkillKnowledgeWorld",
+                "StatType.SkillPersuasion",
+                "Entry(1, fastMovement",
+                "nativeProficiency)",
+                "Entry(11, greaterDefault)",
+                "Entry(20, mightyDefault)",
+                "ControlledRageAbilityScoreBonus",
+                "ForbidSpellCasting",
+                "SpellDescriptorComponent" })
+                Assertions.True(blueprints.Contains(token),
+                    "Urban blueprint source contract is missing: " + token);
+            Assertions.False(blueprints.Contains("SkillLoreNature") ||
+                blueprints.Contains("retained.Add(Medium"),
+                "Urban skills or proficiency reintroduced a forbidden grant.");
+            foreach (string token in new[] {
+                "ReferenceEquals(attempted, _nativeRage)",
+                "collection.Owner.HasFact(_ownerFeature)",
+                "ModifierDescriptor.Morale",
+                "HarmonyAfter(\"CallOfTheWild\")",
+                "get_Variants", "get_Name", "Selected -- ",
+                "ResolveSelection(Owner, true)" })
+                Assertions.True(rage.Contains(token),
+                    "Controlled Rage runtime contract is missing: " + token);
+            foreach (string token in new[] {
+                "IInitiatorRulebookHandler<RuleCalculateAttackBonusWithoutTarget>",
+                "ITargetRulebookHandler<RuleCalculateAC>",
+                "candidate.Descriptor.State.IsConscious",
+                "owner.IsEnemy(candidate)", "owner.DistanceTo(candidate)",
+                "ModifierDescriptor.Dodge", "evt.AddBonus(1, Fact)" })
+                Assertions.True(crowd.Contains(token),
+                    "Crowd Control runtime contract is missing: " + token);
+            Assertions.False(crowd.Contains("GetWeaponRange") ||
+                crowd.Contains("Update()") || crowd.Contains("FixedUpdate()"),
+                "Crowd Control uses reach or frame polling.");
         }
 
         private static void AssertTier(ControlledRageTier tier, int expectedCount,

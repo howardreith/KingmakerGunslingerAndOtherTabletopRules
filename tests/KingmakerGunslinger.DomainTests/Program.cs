@@ -176,6 +176,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("urban-barbarian.constitution-hp", UrbanBarbarianPolicyTests.ConstitutionHitPointReconciliationCannotHealCycle),
             Case("urban-barbarian.crowd-control", UrbanBarbarianPolicyTests.CrowdControlThresholdFilteringAndAdjacencyAreExact),
             Case("urban-barbarian.cotw-compatibility", UrbanBarbarianPolicyTests.CotwCompatibilityNeverDisablesCore),
+            Case("urban-barbarian.identities", UrbanBarbarianPolicyTests.IdentityManifestIsExactAndCollisionFree),
+            Case("urban-barbarian.blueprint-source", UrbanBarbarianPolicyTests.BlueprintAndRageSourceContractsAreNarrow),
             Case("eastern-weapons.locked-category-profiles", EasternWeaponFoundationTests.LockedCategoryProfilesAreExact),
             Case("eastern-weapons.generic-catalog", EasternWeaponFoundationTests.GenericCatalogIsExact),
             Case("eastern-weapons.category-collision", EasternWeaponFoundationTests.RegistryFailsClosedOnCollisions),

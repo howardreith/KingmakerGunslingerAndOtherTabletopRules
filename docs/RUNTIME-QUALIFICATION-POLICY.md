@@ -16,8 +16,8 @@ The standard cross-module runtime qualification is the boundary matrix:
 
 For `N` active modules this boundary contains exactly `2N + 2` states. It is
 authoritative because, for Boolean module settings, it covers every possible
-one-, two-, and three-module value combination. Brown-Fur adds the seventh
-module, so the current runtime boundary contains 16 states.
+one-, two-, and three-module value combination. Urban Barbarian adds the eighth
+module, so the current runtime boundary contains 18 states.
 
 Add focused higher-order combined profiles only when a concrete architectural
 reason suggests an interaction among four or more modules. An exhaustive

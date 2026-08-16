@@ -46,6 +46,12 @@
     <Compile Include="UrbanBarbarian\ControlledRageHitPointPolicy.cs" />
     <Compile Include="UrbanBarbarian\CrowdControlPolicy.cs" />
     <Compile Include="UrbanBarbarian\UrbanCotwCompatibilityPolicy.cs" />
+    <Compile Include="UrbanBarbarian\UrbanBarbarianIdentityCatalog.cs" />
+    <Compile Include="UrbanBarbarian\ControlledRageAbilityLogic.cs" />
+    <Compile Include="UrbanBarbarian\ControlledRageRuntime.cs" />
+    <Compile Include="UrbanBarbarian\CrowdControlComponent.cs" />
+    <Compile Include="UrbanBarbarian\UrbanBarbarianPublication.cs" />
+    <Compile Include="Blueprints\UrbanBarbarianBlueprints.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs" />
     <Compile Include="ElvenBranchedSpear\ElvenBranchedSpearNamedEffects.cs" />

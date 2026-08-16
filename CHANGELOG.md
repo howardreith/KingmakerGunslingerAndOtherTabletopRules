@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.0.83-urban-barbarian (development candidate)
+
+- Adds Urban Barbarian as an eighth independent, default-enabled native
+  Barbarian feature module. Its 70 stable blueprints register in every module
+  state; the setting controls only new-selection publication.
+- Replaces medium-armor proficiency and Fast Movement with exact consolidated
+  urban class skills, Crowd Control, and Controlled Rage.
+- Provides one nested allocation selector with all 6, 10, and 15 legal +4,
+  +6, and +8 Strength/Dexterity/Constitution allocations. Tier selections are
+  independent, default to full Strength, persist until changed, and cannot be
+  changed while raging.
+- Preserves native Rage resource, per-round spending, fatigue, Tireless Rage,
+  spellcasting restriction, Rage condition/descriptor integration, and Rage
+  powers while removing ordinary attack, damage, temporary-HP, Will, and AC
+  effects for Urban owners only.
+- Implements Crowd Control from attack and AC rule events using native
+  edge-to-edge five-foot distance, active hostility/life state, and no reach
+  expansion.
+- Records crowd movement and crowd-influence clauses as intentional no-ops:
+  Kingmaker exposes no precise subsystem and broad movement or Persuasion
+  substitutes would change the rule.
+- Advances feature settings to schema 7 and the generic runtime boundary to
+  18 states. Call of the Wild remains optional for Urban Barbarian and for the
+  package.
+
 ## 0.0.82-brown-fur-human-review-repair
 
 - Records the `0.0.81` Brown-Fur candidate as human-review failed and

@@ -1,16 +1,18 @@
 # Kingmaker Gunslinger
 
-The current `codex/brown-fur-transmuter-cotw-extension` development candidate
-adds Brown-Fur Transmuter as a seventh independent, default-enabled feature
-module for Pathfinder: Kingmaker 2.1.7b while retaining Gunslinger, Acadamae
-Graduate, Shield Other, Expanded Summoning, Elven Branched Spears, and Eastern
-Weapons. Brown-Fur alone requires a compatible Call of the Wild installation;
-the combined package and every unrelated module continue loading without CotW.
+The current `codex/urban-barbarian` development candidate adds Urban Barbarian
+as an eighth independent, default-enabled feature module for Pathfinder:
+Kingmaker 2.1.7b while retaining Gunslinger, Acadamae Graduate, Shield Other,
+Expanded Summoning, Elven Branched Spears, Eastern Weapons, and Brown-Fur
+Transmuter. Urban Barbarian is attached to the native Barbarian class and is
+fully usable without Call of the Wild. Brown-Fur alone requires a compatible
+Call of the Wild installation; the combined package and every unrelated module
+continue loading without CotW.
 The first `0.0.81` Brown-Fur candidate failed human review and is superseded.
 The installed `0.0.82` candidate repairs native toggle legibility, live
 reservoir counters, distinct icons, and pre-command Personal-spell target
 acquisition. Its focused mechanics, persistence, optional-mod profiles, and
-all 16 boundary states pass on one immutable artifact. Human presentation and
+all 16 seven-module boundary states pass on one immutable artifact. Human presentation and
 play review accepted that exact artifact on 2026-08-16. Under the revised
 runtime policy, the 16-state boundary is the final cross-module seal and no
 exhaustive game-launch enumeration is required.
@@ -95,22 +97,50 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find seven checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find eight checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
-Summoning**, **Elven Branched Spears**, **Eastern Weapons**, and **Brown-Fur
-Transmuter  requires Call of the Wild**. All default enabled. Older settings
-migrate to schema 6 while preserving explicit existing values and enabling
+Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
+Transmuter -- requires Call of the Wild**, and **Urban Barbarian**. All default
+enabled. Older settings migrate to schema 7 while preserving explicit existing values and enabling
 newly absent default-on modules.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All seven modules
+items, summons, ammunition state, or equipment from a save. All eight modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other six modules continue. Keep the whole mod installed
+publication while the other seven modules continue. Urban Barbarian remains
+available regardless of CotW compatibility. Keep the whole mod installed
 for any campaign that has used project content.
+
+## Urban Barbarian
+
+Urban Barbarian is a native Barbarian archetype. It loses medium-armor
+proficiency and Fast Movement, removes Lore (Nature) from its class skills, and
+adds Knowledge (World) while retaining Athletics, Mobility, Perception, and
+Persuasion. It never changes the base Barbarian class-skill array.
+
+Crowd Control grants +1 attack and +1 dodge AC while at least two active hostile
+creatures are within five feet edge to edge. Weapon reach does not expand that
+adjacency. Kingmaker has no precise crowd-movement or crowd-influence system,
+so those tabletop clauses are intentional no-ops; the mod does not substitute
+difficult-terrain immunity, movement bonuses, or a global Persuasion bonus.
+
+Controlled Rage uses one nested selector containing only the current tier's
+legal allocations: six at +4, ten at +6, and fifteen at +8. Bonuses are morale
+bonuses to actual Strength, Dexterity, and Constitution and may be split in +2
+increments. Each tier defaults independently to full Strength. Selection costs
+nothing, persists until changed, and is locked while Rage is active. Controlled
+Rage retains Rage rounds, fatigue, Tireless Rage, spellcasting restriction,
+Rage powers, and Rage equivalence, but grants none of ordinary Rage's attack,
+damage, temporary-HP, Will, or AC adjustments.
+
+Turning Urban Barbarian OFF hides it from new character creation and respec
+after restart. All Urban identities remain registered, so existing owners keep
+their progression, allocation state, and mechanics. Call of the Wild is an
+optional compatibility profile, not a prerequisite.
 
 ## Brown-Fur Transmuter
 

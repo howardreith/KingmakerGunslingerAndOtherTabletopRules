@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -39,6 +40,17 @@ def validate(root: Path) -> None:
         raise AssertionError("Urban Rage observer is absent from the old-style project")
     if "CallOfTheWild.dll" in project or 'Reference Include="CallOfTheWild' in project:
         raise AssertionError("Urban Barbarian acquired a compile-time CotW reference")
+
+    manifest = json.loads((root / "blueprints/blueprints.json").read_text(
+        encoding="utf-8"))
+    urban = [entry for entry in manifest["entries"]
+        if entry["symbol"].startswith("KMG.UrbanBarbarian.")]
+    if len(urban) != 70 or any(entry.get("status") != "active" for entry in urban):
+        raise AssertionError("Urban Barbarian must own exactly 70 active identities")
+    if len(manifest["entries"]) != 1613:
+        raise AssertionError("0.0.83 blueprint ledger must contain 1613 identities")
+    if sum(entry.get("status") == "active" for entry in manifest["entries"]) != 1612:
+        raise AssertionError("0.0.83 blueprint ledger must contain 1612 active identities")
 
 
 def main() -> int:

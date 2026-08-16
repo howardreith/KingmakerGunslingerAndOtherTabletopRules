@@ -50,19 +50,21 @@ Weapon Focus remains an exact negative control.
 ## Feature-module settings
 
 The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,
-Expanded Summoning, Elven Branched Spears, Eastern Weapons, and `Brown-Fur
-Transmuter  requires Call of the Wild` checkboxes. All default ON. A change is
+Expanded Summoning, Elven Branched Spears, Eastern Weapons, `Brown-Fur
+Transmuter -- requires Call of the Wild`, and Urban Barbarian checkboxes. All
+default ON. A change is
 saved for the next complete game restart; the panel reports active and saved
-next-restart state separately. Older settings migrate to schema 6 while
+next-restart state separately. Older settings migrate to schema 7 while
 preserving every explicit prior value and defaulting the absent Brown-Fur key
-ON.
+and Urban Barbarian key ON.
 
 Brown-Fur is the only module that requires Call of the Wild. Its adjacent
 status reports Available, Unavailable, or Blocked independently from saved user
 intent, effective publication, and restart-required state. Saved ON intent is
 preserved when CotW is absent, but Brown-Fur is not registered or published.
 Structurally incompatible CotW installations also fail closed without disabling
-the package's six independent modules.
+the package's seven independent modules. Urban Barbarian is native-core content
+and remains available when CotW is absent, unknown, or ambiguous.
 
 Turning a module OFF removes its content only from new public choices and
 acquisition paths. It does not unregister identities, strip an existing
@@ -83,6 +85,9 @@ state-token enchantments, summon abilities, summon units, Elven Branched Spear
 items, the spear category, selected spear features, Eastern Weapon items and
 categories, selected Eastern proficiency or chosen-weapon facts,
 enchantments, and buffs.
+Urban Barbarian archetypes, allocation facts and abilities, and its Rage buff
+are likewise stable saved identities and remain registered while its module is
+OFF.
 Removing the mod while such references remain can
 make a save fail to load or leave missing/invalid content.
 
