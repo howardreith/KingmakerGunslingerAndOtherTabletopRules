@@ -36,6 +36,8 @@ $expected = @(
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
     'disposable-urban-barbarian-focused',
+    'working-save-urban-barbarian-prepare',
+    'working-save-urban-barbarian-off-verify-cleanup',
     'observe-brown-fur-cotw-contract',
     'observe-brown-fur-cotw-absent-isolation',
     'observe-brown-fur-transmutation-inventory',

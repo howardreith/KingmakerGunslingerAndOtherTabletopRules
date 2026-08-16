@@ -70,6 +70,28 @@ namespace KingmakerGunslinger.DomainTests
                 focused.Contains("Same(unitsBefore, Snapshot(allUnits))") &&
                 !focused.Contains("SaveGame") && !focused.Contains("LoadGame"),
                 "Focused Urban scenario is not a save-free guarded fixture.");
+            foreach (string token in new[] {
+                "working-save-urban-barbarian-prepare",
+                "working-save-urban-barbarian-off-verify-cleanup",
+                "StartUrbanBarbarianPersistence",
+                "CompleteUrbanBarbarianPersistence",
+                "urban-persistence-features",
+                "urban-persistence-selection",
+                "urban-persistence-active-rage",
+                "urban-persistence-module-off",
+                "ArmExactWorkingSaveWrite" })
+                Assertions.True(catalog.Contains(token) || runner.Contains(token) ||
+                    automation.Contains(token),
+                    "Urban persistence contract is missing: " + token);
+            Assertions.True(automation.Contains(
+                    "'working-save-urban-barbarian-prepare' = [pscustomobject]@{") &&
+                automation.Contains(
+                    "'working-save-urban-barbarian-off-verify-cleanup' = [pscustomobject]@{") &&
+                automation.Contains("PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                runner.Contains("set.Count == UrbanBarbarianIdentityCatalog.IdentityCount") &&
+                runner.Contains("archetypeReferences == (expectedActive ? 1 : 0)") &&
+                runner.Contains("fixtureFeatures.Reverse()"),
+                "Urban persistence is not guarded, module-aware, or cleanup-complete.");
         }
     }
 }

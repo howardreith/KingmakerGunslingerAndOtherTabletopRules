@@ -127,6 +127,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _brownFurPersistenceModuleStateValid;
         private bool _brownFurPersistenceCleanupValid;
         private string _brownFurPersistenceDetail = "";
+        private bool _urbanBarbarianPersistenceSaveStarted;
+        private bool _urbanBarbarianPersistenceSaveCompleted;
+        private Stopwatch _urbanBarbarianPersistenceSaveElapsed;
+        private bool _urbanBarbarianPersistenceFactsValid;
+        private bool _urbanBarbarianPersistenceSelectionValid;
+        private bool _urbanBarbarianPersistenceRageValid;
+        private bool _urbanBarbarianPersistenceModuleStateValid;
+        private bool _urbanBarbarianPersistenceCleanupValid;
+        private string _urbanBarbarianPersistenceDetail = "";
         private bool _expandedSummoningPersistenceSaveStarted;
         private bool _expandedSummoningPersistenceSaveCompleted;
         private Stopwatch _expandedSummoningPersistenceSaveElapsed;
@@ -1451,6 +1460,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "The exact working-save completion callback did not arrive before timeout.");
                 return;
             }
+            if (_urbanBarbarianPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteUrbanBarbarianPersistence(RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_urbanBarbarianPersistenceSaveCompleted)
+                {
+                    CompleteUrbanBarbarianPersistence(RuntimeTestStatuses.Pass,
+                        "");
+                    return;
+                }
+                if (_urbanBarbarianPersistenceSaveElapsed != null &&
+                    _urbanBarbarianPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteUrbanBarbarianPersistence(RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
             if (_shieldOtherPersistenceSaveStarted)
             {
                 if (_workingSaveSmoke.WriteObserved)
@@ -1637,6 +1667,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     StartBrownFurPersistence();
                 }
+                else if (IsUrbanBarbarianPersistenceScenario())
+                {
+                    StartUrbanBarbarianPersistence();
+                }
                 else if (IsShieldOtherPersistenceScenario())
                 {
                     StartShieldOtherPersistenceSave();
@@ -1735,6 +1769,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .WorkingSaveBrownFurVerifyCleanup ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .WorkingSaveBrownFurOffVerifyCleanup;
+        }
+
+        private bool IsUrbanBarbarianPersistenceScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveUrbanBarbarianPrepare ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveUrbanBarbarianOffVerifyCleanup;
         }
 
         private bool IsExpandedSummoningPersistenceScenario()
@@ -3072,6 +3114,238 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(status, assertions, null);
             result.WorkingSaveSmoke = evidence;
             result.Diagnostics.Add(_brownFurPersistenceDetail);
+            if (!string.IsNullOrWhiteSpace(warning))
+                result.Warnings.Add(warning);
+            Complete(result);
+        }
+
+        private void StartUrbanBarbarianPersistence()
+        {
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.Descriptor != null).ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before Urban Barbarian persistence qualification.");
+            UrbanBarbarianBlueprintSet set = BlueprintBootstrap.UrbanBarbarian;
+            UnitEntityData owner = party[0];
+            BlueprintFeature nativeRage = ResourcesLibrary.TryGetBlueprint<
+                BlueprintFeature>("2479395977cfeeb46b482bc3385f4647");
+            if (set == null || set.Count !=
+                    UrbanBarbarianIdentityCatalog.IdentityCount ||
+                nativeRage == null)
+                throw new InvalidOperationException(
+                    "The complete registered Urban Barbarian persistence graph is unavailable.");
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveUrbanBarbarianPrepare;
+            BlueprintFeature[] fixtureFeatures = { nativeRage,
+                set.Proficiency, set.CrowdControl, set.ControlledRage };
+            if (prepare)
+            {
+                if (fixtureFeatures.Any(owner.Descriptor.HasFact) ||
+                    set.SelectionFacts.Any(owner.Descriptor.HasFact) ||
+                    owner.Descriptor.HasFact(set.RageBuff) ||
+                    owner.Descriptor.HasFact(set.NativeRageBuff))
+                    throw new InvalidOperationException(
+                        "The working save already contains the Urban Barbarian persistence fixture; run verify/cleanup first.");
+                foreach (BlueprintFeature feature in fixtureFeatures)
+                    if (owner.Descriptor.AddFact(feature) == null)
+                        throw new InvalidOperationException(
+                            "An Urban Barbarian persistence feature could not be granted: " + feature.name);
+                foreach (BlueprintFeature feature in set.SelectionFacts)
+                    if (owner.Descriptor.HasFact(feature))
+                        owner.Descriptor.RemoveFact(feature);
+                ControlledRageAllocation con =
+                    ControlledRageAllocationPolicy.Generate(
+                        ControlledRageTier.Ordinary).Single(value =>
+                            value.Strength == 0 && value.Dexterity == 0 &&
+                            value.Constitution == 4);
+                string symbol = UrbanBarbarianIdentityCatalog.SelectionFeature(
+                    con);
+                string guid = UrbanBarbarianIdentityCatalog.All.Single(value =>
+                    value.Symbol == symbol).Guid;
+                BlueprintFeature conSelection = set.SelectionFacts.Single(
+                    value => value.AssetGuid == guid);
+                if (owner.Descriptor.AddFact(conSelection) == null)
+                    throw new InvalidOperationException(
+                        "The Urban Barbarian persisted CON +4 allocation could not be selected.");
+                var context = new MechanicsContext(owner, owner.Descriptor,
+                    set.ControlledRage, null, new TargetWrapper(owner));
+                Buff rage = owner.Descriptor.Buffs.AddBuff(
+                    set.NativeRageBuff, context, null);
+                if (rage == null || !ReferenceEquals(rage.Blueprint,
+                        set.RageBuff))
+                    throw new InvalidOperationException(
+                        "The active Urban Rage persistence fixture did not substitute owner-scoped Rage.");
+            }
+
+            ControlledRageAllocation selection =
+                ControlledRageRuntime.ResolveSelection(owner.Descriptor, false);
+            Buff[] urbanRages = owner.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint,
+                    set.RageBuff)).ToArray();
+            Buff persistedRage = urbanRages.Length == 1 ? urbanRages[0] : null;
+            ModifiableValue.Modifier[] constitutionModifiers = persistedRage ==
+                null ? new ModifiableValue.Modifier[0] : owner.Descriptor.Stats
+                    .Constitution.Modifiers.Where(value => ReferenceEquals(
+                        value.Source, persistedRage)).ToArray();
+            _urbanBarbarianPersistenceFactsValid = fixtureFeatures.All(
+                owner.Descriptor.HasFact) &&
+                owner.Descriptor.Abilities.GetAbility(set.Selector) != null;
+            _urbanBarbarianPersistenceSelectionValid = selection != null &&
+                selection.Strength == 0 && selection.Dexterity == 0 &&
+                selection.Constitution == 4 &&
+                set.SelectionFacts.Count(owner.Descriptor.HasFact) == 1;
+            _urbanBarbarianPersistenceRageValid = persistedRage != null &&
+                !owner.Descriptor.HasFact(set.NativeRageBuff) &&
+                constitutionModifiers.Length == 1 &&
+                constitutionModifiers[0].ModValue == 4 &&
+                constitutionModifiers[0].ModDescriptor ==
+                    ModifierDescriptor.Morale &&
+                !owner.Descriptor.Stats.Strength.Modifiers.Any(value =>
+                    ReferenceEquals(value.Source, persistedRage)) &&
+                !owner.Descriptor.Stats.Dexterity.Modifiers.Any(value =>
+                    ReferenceEquals(value.Source, persistedRage)) &&
+                !owner.Descriptor.Stats.TemporaryHitPoints.Modifiers.Any(value =>
+                    ReferenceEquals(value.Source, persistedRage));
+            bool expectedActive = prepare;
+            BlueprintArchetype[] archetypes = set.BarbarianClass.Archetypes ??
+                Array.Empty<BlueprintArchetype>();
+            int archetypeReferences = archetypes.Count(value =>
+                ReferenceEquals(value, set.Archetype));
+            int archetypeGuids = archetypes.Count(value => value != null &&
+                string.Equals(value.AssetGuid, set.Archetype.AssetGuid,
+                    StringComparison.Ordinal));
+            _urbanBarbarianPersistenceModuleStateValid =
+                _context.FeatureModules.Active.UrbanBarbarian == expectedActive &&
+                archetypeReferences == (expectedActive ? 1 : 0) &&
+                archetypeGuids == (expectedActive ? 1 : 0) &&
+                set.Count == UrbanBarbarianIdentityCatalog.IdentityCount;
+
+            if (!prepare)
+            {
+                if (owner.Descriptor.HasFact(set.RageBuff))
+                    owner.Descriptor.RemoveFact(set.RageBuff);
+                if (owner.Descriptor.HasFact(set.NativeRageBuff))
+                    owner.Descriptor.RemoveFact(set.NativeRageBuff);
+                foreach (BlueprintFeature feature in set.SelectionFacts)
+                    if (owner.Descriptor.HasFact(feature))
+                        owner.Descriptor.RemoveFact(feature);
+                foreach (BlueprintFeature feature in fixtureFeatures.Reverse())
+                    if (owner.Descriptor.HasFact(feature))
+                        owner.Descriptor.RemoveFact(feature);
+                _urbanBarbarianPersistenceCleanupValid =
+                    !fixtureFeatures.Any(owner.Descriptor.HasFact) &&
+                    !set.SelectionFacts.Any(owner.Descriptor.HasFact) &&
+                    owner.Descriptor.Abilities.GetAbility(set.Selector) == null &&
+                    !owner.Descriptor.HasFact(set.RageBuff) &&
+                    !owner.Descriptor.HasFact(set.NativeRageBuff);
+            }
+
+            _urbanBarbarianPersistenceDetail = "phase=" +
+                (prepare ? "prepare" : "off-verify-cleanup") +
+                ";active=" + _context.FeatureModules.Active.UrbanBarbarian +
+                ";identities=" + set.Count + ";archetypeRefs=" +
+                archetypeReferences + ";archetypeGuids=" + archetypeGuids +
+                ";facts=" + _urbanBarbarianPersistenceFactsValid +
+                ";selection=" + (selection == null ? "missing" :
+                    selection.ToString()) + ";rageCount=" + urbanRages.Length +
+                ";conModifiers=" + constitutionModifiers.Length +
+                ";rage=" + _urbanBarbarianPersistenceRageValid +
+                ";module=" + _urbanBarbarianPersistenceModuleStateValid +
+                ";cleanup=" + _urbanBarbarianPersistenceCleanupValid;
+
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Game).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" && value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _urbanBarbarianPersistenceSaveStarted = true;
+            _urbanBarbarianPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() =>
+                    _urbanBarbarianPersistenceSaveCompleted = true)
+            });
+        }
+
+        private void CompleteUrbanBarbarianPersistence(string status,
+            string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool verify = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveUrbanBarbarianOffVerifyCleanup;
+            bool phaseValid = _urbanBarbarianPersistenceFactsValid &&
+                _urbanBarbarianPersistenceSelectionValid &&
+                _urbanBarbarianPersistenceRageValid &&
+                _urbanBarbarianPersistenceModuleStateValid &&
+                (!verify || _urbanBarbarianPersistenceCleanupValid);
+            if (status == RuntimeTestStatuses.Pass && !phaseValid)
+                status = RuntimeTestStatuses.Fail;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load",
+                    "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("urban-persistence-features",
+                    "native Rage and all three level-1 Urban features remain owned",
+                    _urbanBarbarianPersistenceDetail,
+                    _urbanBarbarianPersistenceFactsValid,
+                    verify ? "freshly deserialized registered facts" :
+                        "pre-save registered facts"),
+                Assertion("urban-persistence-selection",
+                    "exactly one ordinary CON +4 allocation remains selected",
+                    _urbanBarbarianPersistenceDetail,
+                    _urbanBarbarianPersistenceSelectionValid,
+                    verify ? "freshly deserialized selection fact" :
+                        "pre-save selection fact"),
+                Assertion("urban-persistence-active-rage",
+                    "one substituted Urban Rage buff retains one +4 morale Constitution modifier and no native or temporary-HP fact",
+                    _urbanBarbarianPersistenceDetail,
+                    _urbanBarbarianPersistenceRageValid,
+                    verify ? "freshly deserialized active buff and stat modifier" :
+                        "pre-save active buff and stat modifier"),
+                Assertion("urban-persistence-module-off",
+                    verify ? "module OFF, archetype hidden, 70 identities and owner facts retained" :
+                        "module ON, archetype published once, 70 identities retained",
+                    _urbanBarbarianPersistenceDetail,
+                    _urbanBarbarianPersistenceModuleStateValid,
+                    "immutable active setting and exact native Barbarian archetype array"),
+                Assertion("urban-persistence-cleanup",
+                    verify ? "all request-local Urban facts and active buffs removed before cleanup save" :
+                        "not-applicable",
+                    verify ? _urbanBarbarianPersistenceCleanupValid.ToString() :
+                        "not-applicable",
+                    !verify || _urbanBarbarianPersistenceCleanupValid,
+                    "exact working-save fixture cleanup"),
+                Assertion("exact-working-save-write",
+                    "one SaveRoutine on exact captured SaveInfo",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" +
+                        evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version == _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            result.Diagnostics.Add(_urbanBarbarianPersistenceDetail);
             if (!string.IsNullOrWhiteSpace(warning))
                 result.Warnings.Add(warning);
             Complete(result);

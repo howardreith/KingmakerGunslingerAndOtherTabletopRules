@@ -203,6 +203,108 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "genuine Constitution morale modifier and native HP/damage accounting");
                 RemoveIntroducedBuffs(urban.Descriptor, beforeSplitRage);
 
+                stage = "ordinary-allocation-and-leakage";
+                weapon = ElvenBranchedSpearCombatScenario.Equip(urban,
+                    BlueprintBootstrap.ElvenBranchedSpears.Entries[0].Item);
+                bool ordinaryDexterity = MeasureAllocation(urban.Descriptor,
+                    set, rageContext, ControlledRageTier.Ordinary,
+                    0, 4, 0, out string ordinaryDexterityDetail);
+                bool ordinaryConstitution = MeasureAllocation(urban.Descriptor,
+                    set, rageContext, ControlledRageTier.Ordinary,
+                    0, 0, 4, out string ordinaryConstitutionDetail);
+                SelectDirect(urban.Descriptor, set,
+                    ControlledRageTier.Ordinary, 0, 0, 4);
+                int attackBeforeRage = Attack(urban, weapon);
+                int damageBonusBeforeRage = ElvenBranchedSpearCombatScenario
+                    .WeaponStats(urban, weapon).BonusDamage;
+                int willBeforeRage = urban.Descriptor.Stats.SaveWill.ModifiedValue;
+                int acBeforeRage = ArmorClass(urban, enemyOne);
+                int temporaryHpBeforeRage = urban.Descriptor.Stats
+                    .TemporaryHitPoints.ModifiedValue;
+                Buff[] beforeLeakageRage = urban.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().ToArray();
+                rage = urban.Descriptor.Buffs.AddBuff(
+                    set.NativeRageBuff, rageContext, null);
+                int attackDuringRage = Attack(urban, weapon);
+                int damageBonusDuringRage = ElvenBranchedSpearCombatScenario
+                    .WeaponStats(urban, weapon).BonusDamage;
+                int willDuringRage = urban.Descriptor.Stats.SaveWill.ModifiedValue;
+                int acDuringRage = ArmorClass(urban, enemyOne);
+                int temporaryHpDuringRage = urban.Descriptor.Stats
+                    .TemporaryHitPoints.ModifiedValue;
+                string[] liveRageComponents = (set.RageBuff.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).Select(value =>
+                        value == null ? "<null>" : value.GetType().FullName)
+                    .ToArray();
+                urban.Descriptor.RemoveFact(set.RageBuff);
+                RemoveIntroducedBuffs(urban.Descriptor, beforeLeakageRage);
+                bool spellRestrictionRetained = liveRageComponents.Contains(
+                    "Kingmaker.UnitLogic.FactLogic.ForbidSpellCasting");
+                bool ordinaryBenefitTypesAbsent = !liveRageComponents.Any(
+                    value => value.Contains("TemporaryHitPointsPerLevel") ||
+                        value.Contains("AttackTypeAttackBonus") ||
+                        value.Contains("WeaponAttackTypeDamageBonus") ||
+                        value.Contains("WeaponGroupDamageBonus") ||
+                        value.Contains("AddContextStatBonus"));
+                Add(assertions, "urban-ordinary-allocation-and-leakage",
+                    "full DEX +4 and CON +4 work; CON allocation leaks no attack, damage, temporary HP, Will, or AC; spellcasting restriction remains",
+                    ordinaryDexterityDetail + ";" +
+                        ordinaryConstitutionDetail + ";attack=" +
+                        attackBeforeRage + "->" + attackDuringRage +
+                        ";damage=" + damageBonusBeforeRage + "->" +
+                        damageBonusDuringRage + ";will=" + willBeforeRage +
+                        "->" + willDuringRage + ";ac=" + acBeforeRage +
+                        "->" + acDuringRage + ";temporaryHp=" +
+                        temporaryHpBeforeRage + "->" +
+                        temporaryHpDuringRage + ";components=" +
+                        string.Join(",", liveRageComponents),
+                    ordinaryDexterity && ordinaryConstitution &&
+                        attackDuringRage == attackBeforeRage &&
+                        damageBonusDuringRage == damageBonusBeforeRage &&
+                        willDuringRage == willBeforeRage &&
+                        acDuringRage == acBeforeRage &&
+                        temporaryHpDuringRage == temporaryHpBeforeRage &&
+                        spellRestrictionRetained && ordinaryBenefitTypesAbsent,
+                    "live score, attack, weapon-damage, save, AC, temporary-HP, and finalized buff-component observations");
+
+                stage = "ordinary-repeated-constitution";
+                SelectDirect(urban.Descriptor, set,
+                    ControlledRageTier.Ordinary, 0, 0, 4);
+                int repeatedBaseMax = urban.MaxHP;
+                urban.Descriptor.Damage = repeatedBaseMax - 1;
+                bool repeatedConstitutionValid = true;
+                var repeatedConstitutionDetail = new List<string>();
+                for (int cycle = 1; cycle <= 3; cycle++)
+                {
+                    int cycleDamage = urban.Descriptor.Damage;
+                    int cycleHp = urban.HPLeft;
+                    Buff[] beforeCycle = urban.Descriptor.Buffs.RawFacts
+                        .OfType<Buff>().ToArray();
+                    rage = urban.Descriptor.Buffs.AddBuff(
+                        set.NativeRageBuff, rageContext, null);
+                    int ragingHp = urban.HPLeft;
+                    int ragingMax = urban.MaxHP;
+                    urban.Descriptor.RemoveFact(set.RageBuff);
+                    int endingHp = urban.HPLeft;
+                    int endingMax = urban.MaxHP;
+                    repeatedConstitutionValid &= ragingMax == repeatedBaseMax + 2 &&
+                        ragingHp == cycleHp + 2 && endingHp == cycleHp &&
+                        endingMax == repeatedBaseMax &&
+                        urban.Descriptor.Damage == cycleDamage;
+                    repeatedConstitutionDetail.Add(cycle + ":" + cycleHp +
+                        "/" + ragingHp + "/" + endingHp + ";max=" +
+                        repeatedBaseMax + "/" + ragingMax + "/" + endingMax +
+                        ";damage=" + urban.Descriptor.Damage);
+                    RemoveIntroducedBuffs(urban.Descriptor, beforeCycle);
+                }
+                Add(assertions, "urban-repeated-low-hp-constitution",
+                    "three low-HP CON +4 entry/exit cycles preserve exact damage deficit without healing or duplication",
+                    string.Join("|", repeatedConstitutionDetail),
+                    repeatedConstitutionValid && urban.HPLeft == 1 &&
+                        urban.MaxHP == repeatedBaseMax,
+                    "three live genuine-Constitution modifier cycles at one HP");
+                urban.Descriptor.Damage = damageBefore;
+
                 stage = "ordinary-native-rage-toggle";
                 BlueprintActivatableAbility rageBlueprint =
                     BlueprintBootstrap.Library.GetAllBlueprints()
@@ -271,49 +373,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                     set.Selector, urban.Descriptor));
                 bool greaterDefault = Selected(set, urban.Descriptor,
                     ControlledRageTier.Greater, 6, 0, 0);
-                SelectDirect(urban.Descriptor, set,
-                    ControlledRageTier.Greater, 2, 2, 2);
-                int greaterStrengthBefore = urban.Descriptor.Stats.Strength.ModifiedValue;
-                int greaterDexterityBefore = urban.Descriptor.Stats.Dexterity.ModifiedValue;
-                int greaterConstitutionBefore = urban.Descriptor.Stats.Constitution.ModifiedValue;
-                Buff[] beforeGreaterRage = urban.Descriptor.Buffs.RawFacts
-                    .OfType<Buff>().ToArray();
-                rage = urban.Descriptor.Buffs.AddBuff(
-                    set.NativeRageBuff, rageContext, null);
-                int greaterTotal = AbilityDeltaTotal(urban.Descriptor,
-                    greaterStrengthBefore, greaterDexterityBefore,
-                    greaterConstitutionBefore);
-                urban.Descriptor.RemoveFact(set.RageBuff);
-                RemoveIntroducedBuffs(urban.Descriptor, beforeGreaterRage);
+                bool greaterFull = MeasureAllocation(urban.Descriptor, set,
+                    rageContext, ControlledRageTier.Greater, 6, 0, 0,
+                    out string greaterFullDetail);
+                bool greaterSplit = MeasureAllocation(urban.Descriptor, set,
+                    rageContext, ControlledRageTier.Greater, 4, 2, 0,
+                    out string greaterSplitDetail);
+                bool greaterThreeWay = MeasureAllocation(urban.Descriptor, set,
+                    rageContext, ControlledRageTier.Greater, 2, 2, 2,
+                    out string greaterThreeWayDetail);
                 for (int level = 12; level <= 20; level++)
                     ApplyLevel(urban.Descriptor, set.BarbarianClass, null, false);
                 AbilityData[] mighty = Variants(new AbilityData(
                     set.Selector, urban.Descriptor));
                 bool mightyDefault = Selected(set, urban.Descriptor,
                     ControlledRageTier.Mighty, 8, 0, 0);
-                SelectDirect(urban.Descriptor, set,
-                    ControlledRageTier.Mighty, 4, 2, 2);
-                int mightyStrengthBefore = urban.Descriptor.Stats.Strength.ModifiedValue;
-                int mightyDexterityBefore = urban.Descriptor.Stats.Dexterity.ModifiedValue;
-                int mightyConstitutionBefore = urban.Descriptor.Stats.Constitution.ModifiedValue;
-                Buff[] beforeMightyRage = urban.Descriptor.Buffs.RawFacts
-                    .OfType<Buff>().ToArray();
-                rage = urban.Descriptor.Buffs.AddBuff(
-                    set.NativeRageBuff, rageContext, null);
-                int mightyTotal = AbilityDeltaTotal(urban.Descriptor,
-                    mightyStrengthBefore, mightyDexterityBefore,
-                    mightyConstitutionBefore);
-                urban.Descriptor.RemoveFact(set.RageBuff);
-                RemoveIntroducedBuffs(urban.Descriptor, beforeMightyRage);
+                bool mightyFull = MeasureAllocation(urban.Descriptor, set,
+                    rageContext, ControlledRageTier.Mighty, 8, 0, 0,
+                    out string mightyFullDetail);
+                bool mightySixTwo = MeasureAllocation(urban.Descriptor, set,
+                    rageContext, ControlledRageTier.Mighty, 6, 2, 0,
+                    out string mightySixTwoDetail);
+                bool mightyFourFour = MeasureAllocation(urban.Descriptor, set,
+                    rageContext, ControlledRageTier.Mighty, 4, 4, 0,
+                    out string mightyFourFourDetail);
+                bool mightyThreeWay = MeasureAllocation(urban.Descriptor, set,
+                    rageContext, ControlledRageTier.Mighty, 4, 2, 2,
+                    out string mightyThreeWayDetail);
                 Add(assertions, "urban-greater-mighty-tiers",
-                    "actual level 11 exposes only ten +6 options and level 20 only fifteen +8 options with independent STR defaults",
+                    "level 11 exposes ten +6 options and level 20 fifteen +8 options; full and every allocation family execute exactly with independent STR defaults",
                     "level=" + urban.Descriptor.Progression.GetClassLevel(
                         set.BarbarianClass) + ";greater=" + greater.Length +
-                        "/default:" + greaterDefault + "/total:" + greaterTotal +
+                        "/default:" + greaterDefault + "/" +
+                        greaterFullDetail + "/" + greaterSplitDetail + "/" +
+                        greaterThreeWayDetail +
                         ";mighty=" + mighty.Length + "/default:" +
-                        mightyDefault + "/total:" + mightyTotal,
-                    greater.Length == 10 && greaterDefault && greaterTotal == 6 &&
-                        mighty.Length == 15 && mightyDefault && mightyTotal == 8,
+                        mightyDefault + "/" + mightyFullDetail + "/" +
+                        mightySixTwoDetail + "/" + mightyFourFourDetail +
+                        "/" + mightyThreeWayDetail,
+                    greater.Length == 10 && greaterDefault && greaterFull &&
+                        greaterSplit && greaterThreeWay && mighty.Length == 15 &&
+                        mightyDefault && mightyFull && mightySixTwo &&
+                        mightyFourFour && mightyThreeWay &&
+                        set.SelectionFacts.Count(urban.Descriptor.HasFact) == 1,
                     "actual Barbarian progression facts, filtered AbilityData variants, and live score modifiers");
 
                 stage = "native-rage-toggle";
@@ -356,8 +458,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native Rage activatable and retained AddFactContextActions lifecycle");
 
                 stage = "crowd-control";
-                weapon = ElvenBranchedSpearCombatScenario.Equip(urban,
-                    BlueprintBootstrap.ElvenBranchedSpears.Entries[0].Item);
+                if (weapon == null)
+                    weapon = ElvenBranchedSpearCombatScenario.Equip(urban,
+                        BlueprintBootstrap.ElvenBranchedSpears.Entries[0].Item);
                 int attackZero = Attack(urban, weapon);
                 int acZero = ArmorClass(urban, enemyOne);
                 SetPosition(enemyOne, new Vector3(1.5f, 0f, 0f));
@@ -373,23 +476,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetPosition(enemyThree, new Vector3(0f, 0f, 1.5f));
                 int attackThree = Attack(urban, weapon);
                 int acThree = ArmorClass(urban, enemyOne);
+                enemyTwo.Descriptor.State.MarkedForDeath = true;
+                int adjacentAfterDeath = CrowdControlComponent
+                    .CountAdjacentActiveEnemies(urban);
+                int attackAfterDeath = Attack(urban, weapon);
+                int acAfterDeath = ArmorClass(urban, enemyOne);
+                enemyTwo.Descriptor.State.MarkedForDeath = false;
+                int adjacentAfterRecovery = CrowdControlComponent
+                    .CountAdjacentActiveEnemies(urban);
                 SetPosition(enemyTwo, new Vector3(-9f, 0f, 0f));
                 SetPosition(enemyThree, new Vector3(0f, 0f, 9f));
                 int attackMovedOut = Attack(urban, weapon);
                 Add(assertions, "urban-crowd-control-rule-events",
-                    "zero/one grant none; two/three grant exactly +1 attack and +1 dodge AC; movement updates immediately",
+                    "zero/one grant none; two/three grant exactly +1 attack and +1 dodge AC; death and movement update immediately",
                     "attack=" + attackZero + "/" + attackOne + "/" +
                         attackTwo + "/" + attackThree + "/" + attackMovedOut +
                         ";ac=" + acZero + "/" + acOne + "/" + acTwo + "/" +
                         acThree + ";distance=" + distanceOne + "/" +
                         distanceTwo + ";adjacent=" + adjacentTwo +
+                        ";death=" + adjacentAfterDeath + "/" +
+                        attackAfterDeath + "/" + acAfterDeath +
+                        ";recovered=" + adjacentAfterRecovery +
                         ";states=" + EnemyState(urban, enemyOne) + "/" +
                         EnemyState(urban, enemyTwo),
                     attackOne == attackZero && attackTwo == attackZero + 1 &&
                         attackThree == attackZero + 1 &&
                         attackMovedOut == attackZero && acOne == acZero &&
                         acTwo == acZero + 1 && acThree == acZero + 1 &&
-                        adjacentTwo == 2,
+                        adjacentTwo == 2 && adjacentAfterDeath == 2 &&
+                        attackAfterDeath == attackZero + 1 &&
+                        acAfterDeath == acZero + 1 &&
+                        adjacentAfterRecovery == 3,
                     "live attack/AC Rulebook events and native edge-to-edge DistanceTo");
             }
             catch (Exception exception)
@@ -544,6 +661,39 @@ namespace KingmakerGunslinger.RuntimeTesting
             return owner.Stats.Strength.ModifiedValue - strength +
                 owner.Stats.Dexterity.ModifiedValue - dexterity +
                 owner.Stats.Constitution.ModifiedValue - constitution;
+        }
+
+        private static bool MeasureAllocation(UnitDescriptor owner,
+            UrbanBarbarianBlueprintSet set, MechanicsContext rageContext,
+            ControlledRageTier tier, int strength, int dexterity,
+            int constitution, out string detail)
+        {
+            SelectDirect(owner, set, tier, strength, dexterity, constitution);
+            int strengthBefore = owner.Stats.Strength.ModifiedValue;
+            int dexterityBefore = owner.Stats.Dexterity.ModifiedValue;
+            int constitutionBefore = owner.Stats.Constitution.ModifiedValue;
+            Buff[] before = owner.Buffs.RawFacts.OfType<Buff>().ToArray();
+            Buff rage = owner.Buffs.AddBuff(set.NativeRageBuff,
+                rageContext, null);
+            int strengthDelta = owner.Stats.Strength.ModifiedValue -
+                strengthBefore;
+            int dexterityDelta = owner.Stats.Dexterity.ModifiedValue -
+                dexterityBefore;
+            int constitutionDelta = owner.Stats.Constitution.ModifiedValue -
+                constitutionBefore;
+            bool substituted = rage != null &&
+                ReferenceEquals(rage.Blueprint, set.RageBuff) &&
+                !owner.HasFact(set.NativeRageBuff);
+            owner.RemoveFact(set.RageBuff);
+            RemoveIntroducedBuffs(owner, before);
+            detail = tier + ":" + strength + "/" + dexterity + "/" +
+                constitution + "->" + strengthDelta + "/" + dexterityDelta +
+                "/" + constitutionDelta + ";substituted=" + substituted;
+            return substituted && strengthDelta == strength &&
+                dexterityDelta == dexterity &&
+                constitutionDelta == constitution &&
+                AbilityDeltaTotal(owner, strengthBefore, dexterityBefore,
+                    constitutionBefore) == 0;
         }
 
         private static int Attack(UnitEntityData unit, ItemEntityWeapon weapon)

@@ -12,6 +12,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-urban-barbarian-rage-inventory";
         internal const string DisposableUrbanBarbarianFocused =
             "disposable-urban-barbarian-focused";
+        internal const string WorkingSaveUrbanBarbarianPrepare =
+            "working-save-urban-barbarian-prepare";
+        internal const string WorkingSaveUrbanBarbarianOffVerifyCleanup =
+            "working-save-urban-barbarian-off-verify-cleanup";
         internal const string ObserveBrownFurCotwContract =
             "observe-brown-fur-cotw-contract";
         internal const string ObserveBrownFurCotwAbsentIsolation =
@@ -279,6 +283,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveFeatureModuleSettings,
                 ObserveUrbanBarbarianRageInventory,
                 DisposableUrbanBarbarianFocused,
+                WorkingSaveUrbanBarbarianPrepare,
+                WorkingSaveUrbanBarbarianOffVerifyCleanup,
                 ObserveBrownFurCotwContract,
                 ObserveBrownFurCotwAbsentIsolation,
                 ObserveBrownFurTransmutationInventory,

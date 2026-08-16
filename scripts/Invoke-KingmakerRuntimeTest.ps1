@@ -467,6 +467,8 @@ try {
         'disposable-expanded-summoning-player-path',
         'disposable-expanded-summoning-visual-contracts',
         'disposable-brown-fur-native-cast',
+        'working-save-urban-barbarian-prepare',
+        'working-save-urban-barbarian-off-verify-cleanup',
         'working-save-brown-fur-prepare',
         'working-save-brown-fur-verify-cleanup',
         'working-save-brown-fur-off-verify-cleanup',

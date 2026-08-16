@@ -90,7 +90,7 @@ invasive or fragile, the approved fallback is an Urban-specific buff cloned from
 the finalized native lifecycle plus an explicit Rage-equivalence bridge.
 
 Status after the architecture checkpoint: **GATE PASSED; production Rage
-implementation authorized; no production Rage source has yet been modified**.
+implementation and guarded qualification fixtures implemented**.
 The save-free
 `observe-urban-barbarian-rage-inventory` scenario records the exact native
 class/progression graph, class skills, archetype order, component fields and
@@ -141,6 +141,16 @@ The absent-profile transaction
 `urban-rage-absent-20260816T133054Z-14e8246e` restored the Mods tree and
 settings exactly. This checkpoint artifact is research evidence, not the final
 gameplay candidate.
+
+The save-free gameplay fixture now executes the exact level-1 archetype path,
+all three ordinary full allocations plus a split, every allocation family at
+Greater and Mighty Rage, ordinary-benefit leakage checks, native resource and
+fatigue/Tireless lifecycle, repeated low-HP Constitution cycles, and Crowd
+Control attack/AC threshold changes. The guarded two-launch working-save
+fixture persists an active CON +4 Controlled Rage and its exact feature and
+selection facts, restarts with Urban publication OFF, proves all 70 identities
+and owner behavior remain available while new selection is hidden, cleans the
+fixture, saves, and restores feature settings byte-for-byte.
 
 ## Qualification contract
 

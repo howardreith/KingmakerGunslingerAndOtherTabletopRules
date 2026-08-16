@@ -1,6 +1,7 @@
 # Urban Barbarian runtime matrix
 
-Status: **ARCHITECTURE INVENTORY 2/2 PASS; gameplay scenarios pending**.
+Status: **ARCHITECTURE INVENTORY 2/2 PASS; final immutable gameplay,
+persistence, compatibility, and 18-state boundary execution pending**.
 
 ## Immutable identity fields
 
@@ -58,6 +59,19 @@ trustworthy launch family while covering:
    existing owner, restart idempotence, no duplicate registration.
 9. Compatibility profiles: CotW absent, supported normal, supported balance;
    unknown/ambiguous behavior is primarily a deterministic fast-test simulation.
+
+The final fixture allocation is:
+
+- `disposable-urban-barbarian-focused`: one save-free live-unit launch for
+  progression, allocation families, leakage, HP cycles, native lifecycle, and
+  Crowd Control rule events;
+- `observe-urban-barbarian-rage-inventory`: one read-only launch per required
+  CotW profile for final graph, optional-status, marker, and rage-power evidence;
+- `working-save-urban-barbarian-prepare` followed by
+  `working-save-urban-barbarian-off-verify-cleanup`: the exact guarded active-
+  Rage save/load and existing-owner module-OFF transaction; and
+- generic `Invoke-FeatureModuleRuntimeMatrix.ps1 -Boundary`: the authoritative
+  18 publication boundary launches, with no CotW Cartesian multiplication.
 
 ## Authoritative eight-module boundary
 
