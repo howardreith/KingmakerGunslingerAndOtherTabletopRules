@@ -499,13 +499,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         blueprints.ShareTransmutationBuff);
                 evidence.InterruptionTargetable =
                     interruptionData.CanTarget(target);
+                interruptedCommand.IgnoreCooldown(TimeSpan.Zero);
                 evidence.InterruptionCanStart = interruptionData.IsAvailable &&
                     interruptedCommand.CanStart;
                 if (!evidence.InterruptionTargetable ||
                     !evidence.InterruptionCanStart)
                     throw new InvalidOperationException(
                         "Automatic Brown-Fur interruption command was unavailable.");
-                interruptedCommand.IgnoreCooldown(TimeSpan.Zero);
                 caster.Commands.Run(interruptedCommand);
                 interruptedCommand.Start();
                 evidence.InterruptionStarted = interruptedCommand.IsRunning;

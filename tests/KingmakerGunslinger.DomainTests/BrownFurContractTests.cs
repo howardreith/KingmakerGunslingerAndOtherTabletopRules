@@ -617,6 +617,16 @@ namespace KingmakerGunslinger.DomainTests
                     scenarios.Contains(token) || runtimeCommon.Contains(token),
                     "Guarded native cast fixture lacks evidence token: " +
                     token);
+            int interruptionCooldown = nativeCastScenario.IndexOf(
+                "interruptedCommand.IgnoreCooldown(TimeSpan.Zero)",
+                StringComparison.Ordinal);
+            int interruptionAvailability = nativeCastScenario.IndexOf(
+                "evidence.InterruptionCanStart = interruptionData.IsAvailable",
+                StringComparison.Ordinal);
+            Assertions.True(interruptionCooldown >= 0 &&
+                interruptionAvailability > interruptionCooldown,
+                "The interruption fixture must neutralize its synthetic " +
+                "back-to-back cooldown before checking command availability.");
             foreach (string token in new[] {
                 "working-save-brown-fur-prepare",
                 "working-save-brown-fur-verify-cleanup",
