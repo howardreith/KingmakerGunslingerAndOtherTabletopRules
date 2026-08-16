@@ -1,7 +1,7 @@
 # Urban Barbarian runtime matrix
 
-Status: **FINAL IMMUTABLE MECHANICAL QUALIFICATION PASS; 18/18 BOUNDARY PASS;
-HUMAN PRESENTATION/PLAY ACCEPTANCE PENDING**.
+Status: **0.0.83 SUPERSEDED AFTER HUMAN-REVIEW REJECTION; 0.0.84 REPAIR AND
+REQUALIFICATION IN PROGRESS**.
 
 ## Immutable identity fields
 
@@ -161,6 +161,19 @@ state, legal allocations, Rage counter, leakage absence, Constitution/HP,
 native/CotW rage powers, UMM status, ON/OFF owner behavior, and duplication.
 
 ## Final immutable candidate result
+
+### Superseded 0.0.83 human-review result
+
+Human review rejected this candidate. The live allocation panel exposed all 31
+ordinary/Greater/Mighty variants at level 2, all variants shared the native
+Rage icon, and neither the current tier nor selected allocation was visually
+unmistakable. The prior 6/10/15 assertion exercised the patched
+`AbilityData.Variants` accessor rather than the actual player-facing grid's
+enumeration of the underlying 31-entry `AbilityVariants` collection. Crowd
+Control was also not visibly confirmed during an ordinary two-kobold fight;
+the repaired qualification must inspect the real player-issued and incoming-
+attack pipelines and combat-log modifier attribution. The preserved results
+below are superseded mechanical evidence, not acceptance or release evidence.
 
 The installed candidate is package version `0.0.83` from gameplay/artifact
 commit `06cad804651faaace17bdf8432bcd071d50ce9e7` on

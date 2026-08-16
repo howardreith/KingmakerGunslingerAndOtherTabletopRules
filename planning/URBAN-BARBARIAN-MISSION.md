@@ -32,12 +32,14 @@ CotW absent/normal/balance profiles, existing-owner OFF persistence, the exact
 18-state eight-module runtime boundary, guarded installation, and the final
 human presentation/play-acceptance checklist.
 
-Mission status: **all engineering and mechanical runtime gates complete on the
-immutable `0.0.83` artifact from commit
-`06cad804651faaace17bdf8432bcd071d50ce9e7`; stopped at the required human
-presentation/play-acceptance boundary**. Final focused gameplay, guarded
-module-OFF persistence, CotW normal/balance/absent profiles, and all 18 generic
-module-boundary states passed. The exact candidate remains installed.
+Mission status: **human review rejected the mechanically qualified `0.0.83`
+candidate; `0.0.84` repair work is active**. The superseded artifact remains
+identified by source commit `06cad804651faaace17bdf8432bcd071d50ce9e7`,
+documentation commit `636e4928502cb6a07374279a3a8b35f79f66f4e3`, package
+SHA-256 `b2b4fdd899a1e00955e972d94b45f5624f4d663e88581043cbf969c3d6e3d193`,
+DLL SHA-256 `c72eb71bc57b6be79b5cd49c58b262bf0897960eac2c118538d7e6e43cfccaae`,
+and MVID `1f53a664-2557-4866-b690-a720cbff840f`. Its mechanical evidence is
+preserved but is not human acceptance or a release seal.
 
 Stop only at that human boundary or at a documented hard stop after safe,
 reversible, evidence-supported alternatives and narrower instrumentation have

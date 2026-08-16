@@ -1,14 +1,25 @@
 # Urban Barbarian human acceptance checklist
 
-Use this checklist only against the exact immutable `0.0.83` candidate whose
-commit, package/DLL hashes, MVID, deployment manifest, and completed mechanical
-runtime evidence are supplied in the handoff. Leave the installed candidate
-unchanged during review. Any gameplay-source or packaged-artifact change
-invalidates the candidate and requires a new build and qualification cycle.
+The exact immutable `0.0.83` candidate documented below was **REJECTED** in
+human review and is preserved only as superseded evidence. Do not describe it
+as accepted or release complete. This checklist will be revised for the exact
+`0.0.84` repaired candidate after its new mechanical qualification passes.
 
-## Immutable candidate under review
+Human-review rejection findings:
+
+- the level-2 live allocation grid exposed all 31 variants instead of six;
+- all 31 variants used the same native Rage icon;
+- current selection was not unmistakable in the live grid;
+- the automated tier test exercised a patched accessor rather than the actual
+  live player-facing enumeration path; and
+- Crowd Control was not visibly confirmed in an ordinary two-kobold fight and
+  requires real attack-pipeline and combat-log qualification.
+
+## Superseded 0.0.83 candidate identity
 
 - Artifact/source commit: `06cad804651faaace17bdf8432bcd071d50ce9e7`
+- Qualification documentation commit:
+  `636e4928502cb6a07374279a3a8b35f79f66f4e3`
 - Branch: `codex/urban-barbarian`
 - Version: `0.0.83`
 - Package SHA-256: `b2b4fdd899a1e00955e972d94b45f5624f4d663e88581043cbf969c3d6e3d193`
@@ -26,7 +37,8 @@ invalidates the candidate and requires a new build and qualification cycle.
 
 The tracked qualification evidence was finalized in a later documentation-only
 commit. That commit does not change the package, DLL, or installed candidate;
-the artifact/source identity above remains authoritative for play review.
+the artifact/source identity above remains authoritative for the rejected
+candidate's preserved evidence only.
 
 ## Character creation and presentation
 

@@ -1,7 +1,7 @@
 # Urban Barbarian fidelity matrix
 
-Status: **FINAL IMMUTABLE MECHANICAL QUALIFICATION PASS; HUMAN VISUAL/PLAY
-ACCEPTANCE PENDING**.
+Status: **0.0.83 HUMAN-REVIEW REJECTED; 0.0.84 SELECTOR/PRESENTATION AND CROWD
+CONTROL REPAIR IN PROGRESS**.
 
 | Surface | Tabletop requirement | Kingmaker implementation/adaptation | Qualification |
 | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ ACCEPTANCE PENDING**.
 | Crowd influence | Intimidate to influence crowds | Intentional no-op: no precise crowd-influence subsystem exists; no global Persuasion/Intimidate bonus | Adaptation locked |
 | Rage pool | +4; +6 Greater; +8 Mighty | Morale modifiers on actual Strength/Dexterity/Constitution values; tier derives from exact native Greater/Mighty facts | Architecture locked |
 | Allocations | Full or split in +2 increments | Deterministic current-tier vectors: 6, 10, 15 | Fast/source and focused fixture PASS |
-| Selection | Player-controlled | Compact nested selector; free, persistent, locked while raging, unmistakable selected state. A primitive serialized `UnitPartControlledRageSelection` is authoritative; stable selection facts are synchronized carriers only. | Mechanical and guarded save/restart PASS; final legibility is human acceptance |
+| Selection | Player-controlled | Repair target: three tier-specific parent selectors with 6/10/15 exact children; grant only the current tier. A primitive serialized `UnitPartControlledRageSelection` remains authoritative; stable selection facts remain synchronized carriers. | 0.0.83 rejected: live level-2 grid exposed all 31 children and selected state was unclear |
 | Tier state | Preserve legal selection per tier | Independent +4/+6/+8 persisted state; default full Strength when each tier first unlocks; lower-tier values are retained without mapping | Fast/source, focused runtime, and guarded persistence PASS |
 | Native offensive Rage | None | Owner-scoped buff substitution removes exact melee damage, thrown damage, and melee attack components | Exact components classified |
 | Native defensive Rage | No Will bonus, no AC penalty | Owner-scoped clone removes exact Will and AC components | Exact components classified |
