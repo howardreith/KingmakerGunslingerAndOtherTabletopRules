@@ -89,14 +89,46 @@ exact native Rage identity without affecting base Barbarians. If that surface is
 invasive or fragile, the approved fallback is an Urban-specific buff cloned from
 the finalized native lifecycle plus an explicit Rage-equivalence bridge.
 
-Status after the first research checkpoint: **OBSERVER SOURCE QUALIFIED —
-guarded CotW-present and CotW-absent runs pending; no production Rage source
-has been modified**. The save-free
+Status after the architecture checkpoint: **GATE PASSED; production Rage
+implementation authorized; no production Rage source has yet been modified**.
+The save-free
 `observe-urban-barbarian-rage-inventory` scenario records the exact native
 class/progression graph, class skills, archetype order, component fields and
-assemblies, forward Rage references, and reverse Rage consumers in one atomic
-JSON artifact. Repository validation, 1,139 dependency-free tests, a clean
-Release build, and strict package validation pass for this checkpoint.
+assemblies, and bounded Rage-bearing contracts in one atomic JSON artifact.
+
+The exact identities are native Barbarian
+`f7d7eb166b3dd594fb330d085df41853`, progression
+`74ad9fbd930a1d84aaf9a230f29f8f12`, proficiency
+`acc15a2d19f13864e8cce3ba133a1979`, Fast Movement
+`d294a5dddd0120046aae7d4eb6cbc4fc`, Rage feature
+`2479395977cfeeb46b482bc3385f4647`, activatable
+`df6a2cce8e3a9bd4592fb1968b83f730`, resource
+`24353fcf8096ea54684a72bf58dedbc9`, buff
+`da8ce41ac3cd74742b80984ccc3c9613`, Greater Rage
+`ce49c579fe0bcc647a32c96929fae982`, Tireless Rage
+`ca9343d75a83a2745a22fa11c383153a`, Mighty Rage
+`06a7e5b60020ad947aed107d82d1f897`, and Rage Power selection
+`28710502f46848d48b3f0d6132817c4e`.
+
+Selected architecture: retain the exact native Rage feature, activatable,
+resource, and tier facts. A narrow `BuffCollection.AddBuff` owner check replaces
+only an attempted native Rage-buff application for an Urban owner with a cloned
+Urban buff. The clone retains exact lifecycle/actions, rank integration,
+shared-value, spell prohibition, Rage descriptor, and presentation components;
+it removes only the six classified ordinary benefit components and adds the
+selected morale ability modifiers. Base Barbarians and every other Rage owner
+continue receiving the native buff. The retained native feature supplies exact
+feat/resource/prerequisite equivalence without a global prerequisite rewrite.
+
+Research candidate `8edb2cb57206b359e8b67ee8eacbb4df6e98a67a`
+passed both guarded profiles. CotW-present run
+`20260816T1328091838409Z-observe-urban-barbarian-rage-inventory` recorded 952
+records; CotW-absent run
+`20260816T1331159196672Z-observe-urban-barbarian-rage-inventory` recorded 130.
+The absent-profile transaction
+`urban-rage-absent-20260816T133054Z-14e8246e` restored the Mods tree and
+settings exactly. This checkpoint artifact is research evidence, not the final
+gameplay candidate.
 
 ## Qualification contract
 

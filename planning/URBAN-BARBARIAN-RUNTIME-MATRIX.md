@@ -1,6 +1,6 @@
 # Urban Barbarian runtime matrix
 
-Status: **INVENTORY OBSERVER SOURCE QUALIFIED — guarded profile runs pending**.
+Status: **ARCHITECTURE INVENTORY 2/2 PASS; gameplay scenarios pending**.
 
 ## Immutable identity fields
 
@@ -25,10 +25,15 @@ failure, timeout, or interruption.
 
 | Profile | Scenario | Required result |
 | --- | --- | --- |
-| CotW present, current settings | `observe-urban-barbarian-rage-inventory` | Exact finalized Barbarian/Rage graph, component semantics, CotW marker and representative added powers |
-| CotW absent | `observe-urban-barbarian-rage-inventory` through isolated compatibility transaction | Exact native-only graph; Urban core not yet required for research checkpoint |
+| CotW present, balance fixes (`1.14.4c-2.1`) | `observe-urban-barbarian-rage-inventory` | PASS; run `20260816T1328091838409Z...`; 952 records; CotW DLL SHA-256 `4EBF8E...15`; MVID `8caab254-aacf-4811-8093-44b9184e6e53`; settings SHA-256 `24CC3F...F6E8` |
+| CotW absent | Same scenario through transaction `urban-rage-absent-20260816T133054Z-14e8246e` | PASS; run `20260816T1331159196672Z...`; 130 records; exact restoration verified |
 
-These read-only, save-free launches precede production Rage implementation.
+These read-only, save-free launches used research candidate commit
+`8edb2cb57206b359e8b67ee8eacbb4df6e98a67a`, package SHA-256
+`ca6a49e65d744c5291cd640a423d30063d351fb7410e81964cee1b6a46a755e1`,
+DLL SHA-256 `6e5425f6a243ae9b1258804b8cee5d5de9519e2ce3834147cb87fe4c13d2baaa`,
+and MVID `0eb8cbfb-987c-4ff2-a123-f56caa9f03c3`. They authorize production
+implementation but are not final-candidate gameplay qualification.
 
 ## Focused Urban scenarios
 

@@ -1,6 +1,6 @@
 # Urban Barbarian Call of the Wild contract
 
-Status: **INVESTIGATION OPEN — no adapter authorized**.
+Status: **SUPPORTED GRAPH QUALIFIED; NO RUNTIME ADAPTER REQUIRED**.
 
 ## Independence rule
 
@@ -57,12 +57,35 @@ Only demonstrated missing interoperability may authorize an adapter. It must:
 | Unknown | Available | Disabled or unqualified | Exact failed structural check |
 | Ambiguous | Available | Disabled or unqualified | Exact conflicting candidates/check |
 
-## Current local evidence
+## Adapter decision and evidence
 
-The scoped Kingmaker installation currently contains CotW mod ID
-`CallOfTheWild`, version `1.14.4c-2.1`, with `balance_fixes=true`. This is only
-environment discovery, not a compatibility qualification. Exact binary,
-settings, marker, component, action, and final-graph evidence remains pending
-the guarded observer. The no-CotW profile will use the repository's reversible
-compatibility transaction and must restore the original Mods tree byte-for-byte.
+The supported profile is CotW mod ID `CallOfTheWild`, version `1.14.4c-2.1`,
+`balance_fixes=true`, DLL SHA-256
+`4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915`,
+MVID `8caab254-aacf-4811-8093-44b9184e6e53`, settings SHA-256
+`24CC3F80269992A53EBBFD1F5986E5AAB056841D6B2F43D8E22E764CDB73F6E8`.
+The guarded final graph has 50 Rage Power selection entries versus 17 without
+CotW, for 33 exact CotW additions. Representative passive/activated surfaces
+include Superstition `f5b971182d6445848ab8fd55c47c14f1`, Clear Mind
+`cf9b15c016a64812a088b6a25b703e81`, and Terrifying Howl
+`57c2d49f8b4d45d0b6fcb111bdf16651`.
 
+CotW adds four `FeatureReplacement` components to the native Rage buff. Each
+routes only to CotW Bloodrage or CotW Urban Bloodrager whole-stat buffs. Those
+components are not a generic Rage marker and must not be copied to Urban
+Barbarian. The native retained `AddFactContextActions` action graph supplies
+`UnitCondition.BarbarianRage`; the retained `SpellDescriptorComponent` supplies
+the Rage descriptor; and the exact native Rage feature/activatable/resource
+identities remain owned. The Urban clone therefore already exposes the marker,
+action, descriptor, resource, and prerequisite surfaces used by native and CotW
+rage powers. No reflection adapter is required for this supported fingerprint.
+
+CotW absent run `20260816T1331159196672Z...` passed with the native 12-component
+Rage graph. CotW-present run `20260816T1328091838409Z...` passed with the same
+12 native components followed by the four Bloodrager routing components. The
+reversible absent transaction restored CotW, CotW settings SHA-256
+`24CC3F...F6E8`, and feature settings SHA-256 `5B6030...665E` exactly.
+
+Unknown or ambiguous CotW versions remain an explicit unqualified optional
+status only. Urban core publication and every unrelated module remain active;
+no compatibility mutation is attempted.
