@@ -168,18 +168,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Array.Empty<BlueprintComponent>()).Select(value => value == null ?
                     "<null>" : value.GetType().FullName).ToArray();
             string[] expectedNativePrefix = {
-                "Kingmaker.UnitLogic.FactLogic.TemporaryHitPointsPerLevel",
+                "Kingmaker.Designers.Mechanics.Buffs.TemporaryHitPointsPerLevel",
                 "Kingmaker.Designers.Mechanics.Buffs.BuffParticleEffectPlay",
                 "Kingmaker.UnitLogic.Mechanics.Components.AddFactContextActions",
                 "Kingmaker.UnitLogic.Mechanics.Components.ContextRankConfig",
-                "Kingmaker.UnitLogic.Mechanics.Components.AddContextStatBonus",
-                "Kingmaker.UnitLogic.Mechanics.Components.AddContextStatBonus",
+                "Kingmaker.UnitLogic.FactLogic.AddContextStatBonus",
+                "Kingmaker.UnitLogic.FactLogic.AddContextStatBonus",
                 "Kingmaker.UnitLogic.Mechanics.Components.ContextCalculateSharedValue",
-                "Kingmaker.UnitLogic.FactLogic.WeaponAttackTypeDamageBonus",
+                "Kingmaker.UnitLogic.Buffs.Components.WeaponAttackTypeDamageBonus",
                 "Kingmaker.UnitLogic.FactLogic.ForbidSpellCasting",
                 "Kingmaker.Blueprints.Classes.Spells.SpellDescriptorComponent",
-                "Kingmaker.UnitLogic.FactLogic.WeaponGroupDamageBonus",
-                "Kingmaker.UnitLogic.FactLogic.AttackTypeAttackBonus" };
+                "Kingmaker.Designers.Mechanics.Facts.WeaponGroupDamageBonus",
+                "Kingmaker.Designers.Mechanics.Facts.AttackTypeAttackBonus" };
             bool cotwTailQualified = cotw == null ? sourceTypes.Length == 12 :
                 sourceTypes.Length == 16 && sourceTypes.Skip(12).All(value =>
                     string.Equals(value,

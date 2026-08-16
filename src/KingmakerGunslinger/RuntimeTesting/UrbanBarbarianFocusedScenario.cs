@@ -49,7 +49,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>();
             var diagnostics = new List<string>();
             UrbanBarbarianBlueprintSet set = BlueprintBootstrap.UrbanBarbarian;
-            object allUnits = Read(Game.Instance.State, "AllUnits");
+            object allUnits = Game.Instance.State.Units.All;
             object[] unitsBefore = Snapshot(allUnits);
             Kingmaker.EntitySystem.SceneEntitiesState scene = null;
             UnitEntityData urban = null;
