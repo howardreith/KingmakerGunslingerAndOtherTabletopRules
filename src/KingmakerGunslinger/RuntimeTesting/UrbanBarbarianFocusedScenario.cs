@@ -169,7 +169,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "hp=" + hpBefore + "/" + hpDuring + "/" + hpAfter +
                         ";max=" + maxBefore + "/" + maxDuring + "/" + maxAfter +
                         ";damage=" + urban.Descriptor.Damage + ";dex=" + dexSplit +
-                        ";con=" + conSplit + ";selection=" + splitSelection,
+                        ";con=" + conSplit + ";selection=" + splitSelection +
+                        ";dexModifiers=" + DescribeModifiers(
+                            urban.Descriptor.Stats.Dexterity),
                     dexSplit == dexBefore + 2 && conSplit == conBefore + 2 &&
                         maxDuring == maxAfter + 1 && hpDuring == hpBefore + 1 &&
                         hpAfter == hpBefore &&
@@ -190,7 +192,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ordinaryFatigued = false;
                 if (ordinaryToggle != null)
                 {
+                    Buff[] beforeToggle = urban.Descriptor.Buffs.RawFacts
+                        .OfType<Buff>().ToArray();
                     ordinaryToggle.IsOn = true;
+                    ordinaryToggle.TryStart();
                     ordinaryActivated = ordinaryToggle.IsOn &&
                         urban.Descriptor.HasFact(set.RageBuff);
                     ordinaryToggle.IsOn = false;
@@ -198,7 +203,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !urban.Descriptor.HasFact(set.RageBuff);
                     ordinaryFatigued = urban.Descriptor.State.HasCondition(
                         UnitCondition.Fatigued);
-                    urban.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
+                    foreach (Buff introduced in urban.Descriptor.Buffs.RawFacts
+                        .OfType<Buff>().Where(value => !beforeToggle.Contains(
+                            value)).ToArray())
+                        introduced.Remove();
                 }
                 Add(assertions, "urban-native-rage-lifecycle",
                     "native Rage toggle activates Urban buff, cancels, and applies ordinary fatigue",
@@ -263,6 +271,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (nativeToggle != null)
                 {
                     nativeToggle.IsOn = true;
+                    nativeToggle.TryStart();
                     activated = nativeToggle.IsOn &&
                         urban.Descriptor.HasFact(set.RageBuff);
                     nativeToggle.IsOn = false;
@@ -284,9 +293,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native Rage activatable and retained AddFactContextActions lifecycle");
 
                 stage = "crowd-control";
-                BlueprintItemWeapon longsword = BlueprintBootstrap.Library
-                    .GetAllBlueprints().OfType<BlueprintItemWeapon>().Single(
-                        value => value.AssetGuid == LongswordGuid);
+                BlueprintItemWeapon longsword = ResourcesLibrary.TryGetBlueprint<
+                    BlueprintItemWeapon>(LongswordGuid);
+                if (longsword == null)
+                    throw new InvalidOperationException(
+                        "The exact native longsword blueprint was unavailable.");
                 weapon = ElvenBranchedSpearCombatScenario.Equip(urban, longsword);
                 int attackZero = Attack(urban, weapon);
                 int acZero = ArmorClass(urban, enemyOne);
@@ -495,6 +506,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return selector == null || selector.Variants == null ?
                 new AbilityData[0] : selector.Variants.ToArray();
+        }
+
+        private static string DescribeModifiers(
+            Kingmaker.EntitySystem.Stats.ModifiableValue stat)
+        {
+            return string.Join("|", stat.Modifiers.Select(value =>
+                value.ModValue + ":" + value.ModDescriptor + ":" +
+                (value.SourceComponent == null ? "<null>" :
+                    value.SourceComponent.GetType().FullName)));
         }
 
         private static bool Same(object[] left, object[] right)

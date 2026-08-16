@@ -112,8 +112,9 @@ The exact identities are native Barbarian
 
 Selected architecture: retain the exact native Rage feature, activatable,
 resource, and tier facts. Exact IL/runtime evidence showed that activatable
-Rage enters `BuffCollection.AddBuffInternal`; a narrow owner check on that
-authoritative overload replaces
+Rage enters `UnitHelper.AddBuff`, which delegates to the public
+`BuffCollection.AddBuff(BlueprintBuff, MechanicsContext, TimeSpan?)`; a narrow
+owner check on that authoritative overload replaces
 only an attempted native Rage-buff application for an Urban owner with a cloned
 Urban buff. The clone retains exact lifecycle/actions, rank integration,
 shared-value, spell prohibition, Rage descriptor, and presentation components;
