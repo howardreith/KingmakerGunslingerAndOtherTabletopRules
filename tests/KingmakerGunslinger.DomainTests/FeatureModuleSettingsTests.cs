@@ -267,7 +267,11 @@ namespace KingmakerGunslinger.DomainTests
                 ui.Contains("Active this process:") &&
                 ui.Contains("Saved for next restart:") &&
                 ui.Contains("RESTART REQUIRED") &&
-                ui.Contains("effective current-process state"),
+                ui.Contains("effective current-process state") &&
+                ui.Contains("Urban Barbarian core:") &&
+                ui.Contains("Urban Barbarian optional CotW interoperability:") &&
+                ui.Contains("Urban Barbarian CotW detail:") &&
+                !ui.Contains("Urban Barbarian  requires Call of the Wild"),
                 "Brown-Fur UMM state presentation is incomplete.");
         }
 

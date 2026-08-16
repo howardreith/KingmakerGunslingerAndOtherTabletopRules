@@ -46,6 +46,7 @@
     <Compile Include="UrbanBarbarian\ControlledRageHitPointPolicy.cs" />
     <Compile Include="UrbanBarbarian\CrowdControlPolicy.cs" />
     <Compile Include="UrbanBarbarian\UrbanCotwCompatibilityPolicy.cs" />
+    <Compile Include="UrbanBarbarian\UrbanCotwCompatibilityRuntime.cs" />
     <Compile Include="UrbanBarbarian\UrbanBarbarianIdentityCatalog.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageAbilityLogic.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageRuntime.cs" />

@@ -89,3 +89,13 @@ reversible absent transaction restored CotW, CotW settings SHA-256
 Unknown or ambiguous CotW versions remain an explicit unqualified optional
 status only. Urban core publication and every unrelated module remain active;
 no compatibility mutation is attempted.
+
+The player-facing UMM panel consumes an Urban-only status registry. It always
+labels the native core as available and CotW as optional. The supported status
+requires the exact DLL SHA-256/MVID above, one loaded assembly, the finalized
+four-component CotW `FeatureReplacement` tail on native Rage, exactly one
+retained native action marker, exactly one retained Rage descriptor, and no
+CotW component copied to the Urban buff. Assembly-count, identity, finalized-
+graph, marker, or duplicate-behavior failures name the exact structural check,
+mark only optional interoperability unqualified, and leave Urban publication
+untouched. CotW absence is displayed as not applicable.

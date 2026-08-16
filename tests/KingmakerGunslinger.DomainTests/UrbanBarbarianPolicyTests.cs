@@ -187,6 +187,10 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(decision.InteroperabilityQualified ==
                     (surface == UrbanCotwSurface.Supported),
                     "CotW interoperability status changed.");
+                Assertions.True(decision.CoreStatus.Contains(
+                        "Call of the Wild is optional") &&
+                    !decision.CoreStatus.Contains("requires Call of the Wild"),
+                    "Urban core status implies a CotW dependency.");
             }
             UrbanCotwCompatibilityDecision duplicate =
                 UrbanCotwCompatibilityPolicy.Evaluate(
@@ -194,7 +198,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(duplicate.InteroperabilityQualified,
                 "Duplicate CotW marker/action behavior was qualified.");
             Assertions.True(duplicate.CoreAvailable &&
-                duplicate.Diagnostic.Contains("core remains available"),
+                duplicate.Diagnostic.Contains("core remains available") &&
+                duplicate.Diagnostic.Contains("unspecified-structural-check") &&
+                duplicate.InteroperabilityStatus.Contains(
+                    "optional bridge disabled"),
                 "Unqualified optional surface did not name core availability.");
         }
 
@@ -247,6 +254,11 @@ namespace KingmakerGunslinger.DomainTests
             string crowd = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "UrbanBarbarian",
                 "CrowdControlComponent.cs"));
+            string cotw = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "UrbanBarbarian",
+                "UrbanCotwCompatibilityRuntime.cs"));
+            string project = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
             foreach (string token in new[] {
                 "f7d7eb166b3dd594fb330d085df41853",
                 "acc15a2d19f13864e8cce3ba133a1979",
@@ -294,6 +306,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(crowd.Contains("GetWeaponRange") ||
                 crowd.Contains("Update()") || crowd.Contains("FixedUpdate()"),
                 "Crowd Control uses reach or frame polling.");
+            foreach (string token in new[] {
+                "4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915",
+                "8caab254-aacf-4811-8093-44b9184e6e53",
+                "cotw-assembly-count=", "cotw-assembly-identity",
+                "finalized-native-rage-tail", "UrbanCotwSurface.Supported",
+                "UrbanCotwSurface.Unknown" })
+                Assertions.True(cotw.Contains(token),
+                    "Urban optional CotW runtime contract is missing: " + token);
+            Assertions.True(project.Contains(
+                    "UrbanBarbarian\\UrbanCotwCompatibilityRuntime.cs") &&
+                !project.Contains("CallOfTheWild.dll"),
+                "Urban CotW status runtime is not packaged independently.");
         }
 
         private static void AssertTier(ControlledRageTier tier, int expectedCount,

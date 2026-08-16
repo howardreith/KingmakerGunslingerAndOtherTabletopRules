@@ -243,6 +243,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cotwTailQualified && !retainedTypes.Any(value => value.StartsWith(
                     "CallOfTheWild.", StringComparison.Ordinal)),
                 "assembly presence plus exact finalized Rage component graph");
+            UrbanCotwCompatibilityDecision urbanCotw =
+                UrbanCotwCompatibilityStatusRegistry.Current;
+            bool expectedCotwStatus = urbanCotw.CoreAvailable && (cotw == null ?
+                urbanCotw.Surface == UrbanCotwSurface.Absent &&
+                    !urbanCotw.InteroperabilityQualified :
+                urbanCotw.Surface == UrbanCotwSurface.Supported &&
+                    urbanCotw.InteroperabilityQualified);
+            AddAssertion(assertions, "urban-cotw-player-status",
+                cotw == null ?
+                    "native core available; optional interoperability not applicable" :
+                    "native core available; exact optional interoperability qualified",
+                urbanCotw.CoreStatus + ";" + urbanCotw.InteroperabilityStatus +
+                    ";" + urbanCotw.Diagnostic,
+                expectedCotwStatus,
+                "runtime structural status registry consumed by the UMM panel");
 
             bool pass = assertions.All(value =>
                 value.Status == RuntimeTestStatuses.Pass);

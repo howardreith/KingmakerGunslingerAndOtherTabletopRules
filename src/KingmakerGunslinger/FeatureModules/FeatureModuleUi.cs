@@ -1,5 +1,6 @@
 using System;
 using KingmakerGunslinger.Development;
+using KingmakerGunslinger.UrbanBarbarian;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger.FeatureModules
@@ -46,6 +47,14 @@ namespace KingmakerGunslinger.FeatureModules
                 brownFurStatus.DependencyStatus);
             ImmediateModeGui.Label("Brown-Fur effective current-process state: " +
                 brownFurStatus.PublicationStatus);
+            UrbanCotwCompatibilityDecision urbanCotw =
+                UrbanCotwCompatibilityStatusRegistry.Current;
+            ImmediateModeGui.Label("Urban Barbarian core: " +
+                urbanCotw.CoreStatus);
+            ImmediateModeGui.Label("Urban Barbarian optional CotW interoperability: " +
+                urbanCotw.InteroperabilityStatus);
+            ImmediateModeGui.Label("Urban Barbarian CotW detail: " +
+                urbanCotw.Diagnostic);
             ImmediateModeGui.Label("Active this process: " + _state.Active);
             ImmediateModeGui.Label("Saved for next restart: " + _state.Pending);
             if (_state.RestartRequired)

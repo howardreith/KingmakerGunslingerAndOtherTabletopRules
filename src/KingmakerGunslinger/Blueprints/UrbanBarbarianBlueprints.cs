@@ -174,6 +174,7 @@ namespace KingmakerGunslinger.Blueprints
 
             ControlledRageRuntime.Configure(nativeRage, urbanRage, controlled,
                 greaterRage, mightyRage, selector, abilities, facts);
+            UrbanCotwCompatibilityRuntime.Reconcile(nativeRage, urbanRage);
             var set = new UrbanBarbarianBlueprintSet(barbarian, archetype,
                 proficiency, crowd, controlled, greaterDefault, mightyDefault,
                 urbanRage, selector, facts.Values.ToArray(), abilities.Keys.ToArray(),
