@@ -449,6 +449,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("dependent-feats.critical-kind", DependentFeatCriticalKind),
             Case("dependent-feats.wrong-kind", DependentFeatWrongKind),
             Case("dependent-feats.invalid", DependentFeatInvalid),
+            Case("firearm-feat-icons.semantic-publication", FirearmFeatIconTests.NativeStylePublicationIsExact),
             Case("third-playtest.native-parent-only", ThirdPlaytestNativeParentOnly),
             Case("third-playtest.native-icon-guard", ThirdPlaytestNativeIconGuard),
             Case("third-playtest.firearm-parameter-menu", ThirdPlaytestFirearmParameterMenu),

@@ -32,6 +32,9 @@ namespace KingmakerGunslinger.Blueprints
                 "gunsmithing", "grit", "deeds", "nimble", "bonus-feat",
                 "gun-training", "true-grit", "rapid-reload",
                 "weapon-focus-firearm", "deadeye", "gunslingers-dodge",
+                "firearm-monogram-pistol", "firearm-monogram-musket",
+                "firearm-monogram-blunderbuss", "firearm-monogram-rifle",
+                "firearm-monogram-revolver",
                 "quick-clear", "reload-firearm", "repair-firearm",
                 "overhaul-firearm", "early-pistol", "musket", "blunderbuss",
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
@@ -91,6 +94,7 @@ namespace KingmakerGunslinger.Blueprints
             foreach (BlueprintFeature choice in feats.RapidReloadChoices) ApplyFact(choice, visited);
             ApplyFact(feats.WeaponFocus, visited);
             ApplyFact(feats.RapidReload, visited);
+            ApplyFirearmFeatIcons(feats);
             ApplyFact(feats.ExoticWeaponProficiency, visited);
             ApplyFact(gunslinger.QuickClear.Feature, visited);
             foreach (BlueprintArchetype archetype in gunslinger.CharacterClass
@@ -271,6 +275,44 @@ namespace KingmakerGunslinger.Blueprints
                 items.Any(item => ReferenceEquals(item.Icon, ammunition.Source.Icon)))
                 throw new InvalidOperationException(
                     "Every Gunslinger supply item must have one distinct non-template icon.");
+        }
+
+        private static readonly string[] FirearmFeatIconKeys = {
+            "firearm-monogram-pistol", "firearm-monogram-musket",
+            "firearm-monogram-blunderbuss", "firearm-monogram-rifle",
+            "firearm-monogram-revolver" };
+
+        private static void ApplyFirearmFeatIcons(FirearmFeatBlueprintSet feats)
+        {
+            if (feats == null || feats.WeaponFocusChoices == null ||
+                feats.RapidReloadChoices == null || feats.DependentChoices == null ||
+                feats.WeaponFocusChoices.Length != FirearmFeatIconKeys.Length ||
+                feats.RapidReloadChoices.Length != FirearmFeatIconKeys.Length ||
+                feats.DependentChoices.Length != 4 || feats.DependentChoices.Any(
+                    family => family == null || family.Length != FirearmFeatIconKeys.Length))
+                throw new InvalidOperationException(
+                    "Firearm feat icon publication shape is incomplete.");
+            BlueprintUnitFactAccess access = BlueprintUnitFactAccess.Resolve();
+            Sprite[] monograms = FirearmFeatIconKeys.Select(Require).ToArray();
+            for (int index = 0; index < monograms.Length; index++)
+            {
+                access.SetIcon(feats.WeaponFocusChoices[index], monograms[index]);
+                access.SetIcon(feats.RapidReloadChoices[index], monograms[index]);
+                foreach (BlueprintFeature[] family in feats.DependentChoices)
+                    access.SetIcon(family[index], monograms[index]);
+            }
+            Sprite rapid = Require("rapid-reload");
+            if (!ReferenceEquals(feats.RapidReload.Icon, rapid) ||
+                !string.Equals(rapid.name, "KMG_Icon_rapid-reload",
+                    StringComparison.Ordinal) || monograms.Distinct().Count() != 5 ||
+                monograms.Any(icon => icon == null || ReferenceEquals(icon, rapid)) ||
+                Enumerable.Range(0, monograms.Length).Any(index =>
+                    !ReferenceEquals(feats.WeaponFocusChoices[index].Icon, monograms[index]) ||
+                    !ReferenceEquals(feats.RapidReloadChoices[index].Icon, monograms[index]) ||
+                    feats.DependentChoices.Any(family =>
+                        !ReferenceEquals(family[index].Icon, monograms[index]))))
+                throw new InvalidOperationException(
+                    "Firearm feat choices did not resolve their exact distinct monograms.");
         }
 
         private sealed class SupplyIconMapping

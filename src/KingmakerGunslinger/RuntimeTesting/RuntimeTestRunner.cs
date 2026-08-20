@@ -5345,7 +5345,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool rapidPresentation = rapidChoices.Length == 5 &&
                 rapidReload.Icon != null && rapidReload.Icon.name ==
                     "KMG_Icon_rapid-reload" && rapidChoices.All(value =>
-                        value != null && value.Icon == rapidReload.Icon) &&
+                        value != null && value.Icon != null && value.Icon.name.StartsWith(
+                            "KMG_Icon_firearm-monogram-", StringComparison.Ordinal)) &&
+                rapidChoices.Select(value => value.Icon).Distinct().Count() == 5 &&
                 (basicFeats.AllFeatures ?? Array.Empty<BlueprintFeature>())
                     .Count(value => ReferenceEquals(value, rapidReload)) == 1 &&
                 (fighterFeats.AllFeatures ?? Array.Empty<BlueprintFeature>())
@@ -5549,6 +5551,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.FirearmProficiency);
             string[] expectedFirearmNames = { "Blunderbuss", "Musket", "Pistol",
                 "Revolver", "Rifle" };
+            string[] expectedFirearmIconNames = {
+                "KMG_Icon_firearm-monogram-blunderbuss",
+                "KMG_Icon_firearm-monogram-musket",
+                "KMG_Icon_firearm-monogram-pistol",
+                "KMG_Icon_firearm-monogram-revolver",
+                "KMG_Icon_firearm-monogram-rifle" };
+            string[] nativeTopLevelIcons = native.Select(feature =>
+                feature.Icon == null ? "<null>" : feature.Icon.name).ToArray();
+            bool nativeTopLevelIconsPreserved = nativeTopLevelIcons.All(name =>
+                !string.IsNullOrWhiteSpace(name) && !name.StartsWith(
+                    "KMG_Icon_", StringComparison.Ordinal));
             BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
             var legacyUnit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
             bool ordinaryCannotAcquire = false, legacyOwnerRetained = false,
@@ -5591,7 +5604,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
                                 "KMG_WeaponFocus_", StringComparison.Ordinal))
                         .Select(item => item.Name).ToArray();
-                    return firearmNames.SequenceEqual(expectedFirearmNames);
+                    string[] firearmIcons = menu.Where(item => item != null &&
+                            item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
+                                "KMG_WeaponFocus_", StringComparison.Ordinal))
+                        .Select(item => item.Icon == null ? "<null>" : item.Icon.name)
+                        .ToArray();
+                    return firearmNames.SequenceEqual(expectedFirearmNames) &&
+                        firearmIcons.SequenceEqual(expectedFirearmIconNames);
                 });
                 BlueprintParametrizedFeature weaponFocus = native[0];
                 FeatureUIData pistolChoice = weaponFocus.ExtractSelectionItems(
@@ -5615,10 +5634,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                         item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
                             "KMG_WeaponFocus_", StringComparison.Ordinal))
                     .Select(item => item.Name).ToArray();
+                string[] firearmIcons = menu.Where(item => item != null &&
+                        item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
+                            "KMG_WeaponFocus_", StringComparison.Ordinal))
+                    .Select(item => item.Icon == null ? "<null>" : item.Icon.name)
+                    .ToArray();
                 return names.SequenceEqual(names.OrderBy(name => name,
                            StringComparer.CurrentCultureIgnoreCase)) &&
-                    firearmNames.SequenceEqual(expectedFirearmNames);
+                    firearmNames.SequenceEqual(expectedFirearmNames) &&
+                    firearmIcons.SequenceEqual(expectedFirearmIconNames);
             });
+            FirearmFeatBlueprintSet firearmFeats = BlueprintBootstrap.FirearmFeats;
+            string[] exactKindIcons = {
+                "KMG_Icon_firearm-monogram-pistol",
+                "KMG_Icon_firearm-monogram-musket",
+                "KMG_Icon_firearm-monogram-blunderbuss",
+                "KMG_Icon_firearm-monogram-rifle",
+                "KMG_Icon_firearm-monogram-revolver" };
+            bool rapidChoiceIconsExact = firearmFeats.RapidReload.Icon != null &&
+                firearmFeats.RapidReload.Icon.name == "KMG_Icon_rapid-reload" &&
+                firearmFeats.RapidReloadChoices.Select(value => value.Icon == null ?
+                    "<null>" : value.Icon.name).SequenceEqual(exactKindIcons) &&
+                firearmFeats.RapidReloadChoices.Select(value => value.Icon)
+                    .Distinct().Count() == 5;
+            bool dependentChoiceIconsExact = firearmFeats.DependentChoices.All(
+                family => family.Select(value => value.Icon == null ? "<null>" :
+                    value.Icon.name).SequenceEqual(exactKindIcons));
+            string iconMap = string.Join("|", expectedFirearmNames.Select((name, index) =>
+                name + "=" + expectedFirearmIconNames[index]).ToArray()) +
+                ";rapid=" + (firearmFeats.RapidReload.Icon == null ? "<null>" :
+                    firearmFeats.RapidReload.Icon.name) + ";native=" +
+                string.Join(",", nativeTopLevelIcons);
             bool prerequisites = choices[0].ComponentsArray.OfType<
                     Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteClassLevel>().Any() &&
                 choices[1].ComponentsArray.OfType<
@@ -5691,6 +5737,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";effects=" + effects + ";isolation=" + isolation +
                 ";nativeMenus=" + nativeMenus + ";levelUpMenus=" + levelUpMenus +
                 ";levelUpCommit=" + levelUpCommit +
+                ";iconMap=" + iconMap +
+                ";nativeTopLevelIconsPreserved=" + nativeTopLevelIconsPreserved +
+                ";rapidChoiceIconsExact=" + rapidChoiceIconsExact +
+                ";dependentChoiceIconsExact=" + dependentChoiceIconsExact +
                 ";legacyHidden=" + legacy.HideInUI +
                 ";proficiencyCatalog=" + proficiencyCatalog +
                 ";compatibilityBlueprint=" + compatibilityBlueprint +
@@ -5709,6 +5759,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "all five firearms appear through the actual unit-aware native level-up enumeration path",
                     observed, levelUpMenus,
                     "BlueprintParametrizedFeature.ExtractSelectionItems(beforeLevelUpUnit, previewUnit)"),
+                Assertion("firearm-feat-icon-map",
+                    "five distinct P/M/B/Ri/Rv monograms in all native weapon-feat menus and Rapid Reload choices; separate Rapid Reload top icon; native top icons preserved",
+                    iconMap, nativeMenus && levelUpMenus && nativeTopLevelIconsPreserved &&
+                        rapidChoiceIconsExact && dependentChoiceIconsExact,
+                    "live FeatureUIData icons, project choice blueprints, and native top-level sprites"),
                 Assertion("native-weapon-focus-level-up-commit",
                     "the native Weapon Focus selection state commits the Pistol parameter",
                     observed, levelUpCommit,

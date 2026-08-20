@@ -86,7 +86,7 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 132 } else { 130 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 137 } else { 135 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

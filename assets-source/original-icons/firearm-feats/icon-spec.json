@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "canvas": 64,
+  "fontFamily": "Palatino Linotype",
+  "icons": [
+    { "key": "firearm-monogram-pistol", "monogram": "P", "seed": 9101 },
+    { "key": "firearm-monogram-musket", "monogram": "M", "seed": 9102 },
+    { "key": "firearm-monogram-blunderbuss", "monogram": "B", "seed": 9103 },
+    { "key": "firearm-monogram-rifle", "monogram": "Ri", "seed": 9104 },
+    { "key": "firearm-monogram-revolver", "monogram": "Rv", "seed": 9105 },
+    { "key": "rapid-reload", "monogram": "", "seed": 9106 }
+  ]
+}
