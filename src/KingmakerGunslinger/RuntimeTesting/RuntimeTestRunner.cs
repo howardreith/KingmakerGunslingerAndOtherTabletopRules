@@ -6761,6 +6761,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             BlueprintScriptableObject[] allBlueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
+            var bokkenMatches = allBlueprints
+                .Where(IsBokkenAcquisitionSearchSurface)
+                .Select(value => new
+                {
+                    Blueprint = value,
+                    Matches = DescribeBokkenTextMatches(value)
+                })
+                .Where(value => value.Matches.Length > 0)
+                .Take(64).ToArray();
+            BlueprintScriptableObject[] bokkenCandidates = bokkenMatches
+                .Select(value => value.Blueprint).ToArray();
+            Dictionary<string, List<string>> bokkenReverseReferences =
+                BuildDirectBlueprintReferenceIndex(allBlueprints,
+                    bokkenCandidates);
+            string[] bokkenCandidateRecords = bokkenMatches.Select(value =>
+            {
+                List<string> reverse;
+                bokkenReverseReferences.TryGetValue(value.Blueprint.AssetGuid,
+                    out reverse);
+                return "candidate=" + value.Blueprint.GetType().FullName + ":" +
+                    value.Blueprint.name + ":" + value.Blueprint.AssetGuid +
+                    ";matches=" + string.Join(",", value.Matches) +
+                    ";outgoing=" + DescribeDirectBlueprintReferences(
+                        value.Blueprint) + ";reverse=" + string.Join(",",
+                        (reverse ?? new List<string>()).Take(40).ToArray());
+            }).ToArray();
             BlueprintWeaponEnchantment[] nativeEnchantments = allBlueprints
                 .OfType<BlueprintWeaponEnchantment>()
                 .Where(IsRareFirearmNativeEnchantmentCandidate)
@@ -7273,6 +7299,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             observed += ";nativeEnchantments=" + string.Join(" | ",
                 enchantmentRecords.ToArray()) + ";lootCandidates=" + string.Join(
                     " | ", lootCandidateRecords.ToArray()) +
+                ";bokkenCandidates=" + bokkenCandidateRecords.Length + ":" +
+                    string.Join(" | ", bokkenCandidateRecords) +
                 ";vendorDirectReferences=" + string.Join(" | ", tables.Select(table =>
                 {
                     List<string> references;
@@ -7396,6 +7424,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "no vendor, table, loot, inventory, or save mutation",
                     "read-only blueprint enumeration", true,
                     "scenario contains no assignment, AddLoot, GetTable, shop, or save call"),
+                Assertion("bokken-acquisition-forensics",
+                    "bounded localized/dialog/unit acquisition candidate catalog, including an exact zero-result when the installed graph exposes none",
+                    "candidateCount=" + bokkenCandidateRecords.Length + ";" +
+                        string.Join(" | ", bokkenCandidateRecords),
+                    bokkenCandidateRecords.Length <= 64,
+                    "read-only depth-three metadata scan plus direct outgoing/reverse blueprint references"),
                 Assertion("rare-firearm-native-enchantment-forensics",
                     "installed enhancement +1/+2/+4/+5, Seeking, Thundering, and Fey Bane candidates with exact contracts",
                     string.Join(" | ", enchantmentRecords.ToArray()),
@@ -8006,6 +8040,146 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return (item == null ? "<null>" : item.name + ":" +
                         item.AssetGuid) + "*" + CapitalVendorBlueprints.ReadCount(component);
                 }).ToArray());
+        }
+
+        private static bool IsBokkenAcquisitionSearchSurface(
+            BlueprintScriptableObject blueprint)
+        {
+            if (blueprint == null) return false;
+            string type = blueprint.GetType().FullName ?? string.Empty;
+            return blueprint is BlueprintUnit ||
+                blueprint is BlueprintSharedVendorTable ||
+                type.IndexOf("Dialog", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                type.IndexOf("Cue", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                type.IndexOf("Answer", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                type.IndexOf("Speaker", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                type.IndexOf("Quest", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                type.IndexOf("Etude", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                type.IndexOf("Area", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                type.IndexOf("Vendor", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static string[] DescribeBokkenTextMatches(object root)
+        {
+            var matches = new List<string>();
+            CollectBokkenTextMatches(root, "root", 0, new HashSet<object>(),
+                matches);
+            return matches.Distinct().OrderBy(value => value,
+                StringComparer.Ordinal).Take(32).ToArray();
+        }
+
+        private static void CollectBokkenTextMatches(object value, string path,
+            int depth, HashSet<object> visited, List<string> matches)
+        {
+            if (value == null || depth > 3 || matches.Count >= 32) return;
+            string text = value as string;
+            if (text != null)
+            {
+                if (text.IndexOf("Bokken", StringComparison.OrdinalIgnoreCase) >= 0)
+                    matches.Add(path + "=" + text.Replace("|", "/"));
+                return;
+            }
+            Type valueType = value.GetType();
+            if (valueType.IsPrimitive || valueType.IsEnum) return;
+            if (valueType.FullName != null && valueType.FullName.IndexOf(
+                    "LocalizedString", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                string rendered;
+                try { rendered = value.ToString(); }
+                catch { rendered = null; }
+                if (!string.IsNullOrEmpty(rendered) && rendered.IndexOf("Bokken",
+                        StringComparison.OrdinalIgnoreCase) >= 0)
+                    matches.Add(path + "=" + rendered.Replace("|", "/"));
+            }
+            if (!valueType.IsValueType && !visited.Add(value)) return;
+            if (depth > 0 && value is BlueprintScriptableObject)
+            {
+                var referenced = (BlueprintScriptableObject)value;
+                if ((referenced.name ?? string.Empty).IndexOf("Bokken",
+                        StringComparison.OrdinalIgnoreCase) >= 0)
+                    matches.Add(path + "=" + referenced.name + ":" +
+                        referenced.AssetGuid);
+                return;
+            }
+            for (Type type = valueType; type != null; type = type.BaseType)
+            {
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly))
+                {
+                    object fieldValue;
+                    try { fieldValue = field.GetValue(value); }
+                    catch { continue; }
+                    if (fieldValue == null) continue;
+                    var array = fieldValue as Array;
+                    if (array != null)
+                    {
+                        int count = Math.Min(array.Length, 64);
+                        for (int index = 0; index < count; index++)
+                            CollectBokkenTextMatches(array.GetValue(index), path +
+                                "." + field.Name + "[" + index + "]", depth + 1,
+                                visited, matches);
+                        continue;
+                    }
+                    Type fieldType = fieldValue.GetType();
+                    string fullName = fieldType.FullName ?? string.Empty;
+                    if (fieldValue is string ||
+                        fieldValue is BlueprintScriptableObject ||
+                        fieldValue is BlueprintComponent ||
+                        fullName.IndexOf("LocalizedString",
+                            StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        fullName.StartsWith("Kingmaker.",
+                            StringComparison.Ordinal))
+                        CollectBokkenTextMatches(fieldValue, path + "." +
+                            field.Name, depth + 1, visited, matches);
+                }
+            }
+        }
+
+        private static string DescribeDirectBlueprintReferences(object owner)
+        {
+            var records = new List<string>();
+            CollectDirectBlueprintReferences(owner, records);
+            var blueprint = owner as BlueprintScriptableObject;
+            if (blueprint != null)
+                foreach (BlueprintComponent component in blueprint.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                    CollectDirectBlueprintReferences(component, records);
+            return string.Join(",", records.Distinct().OrderBy(value => value,
+                StringComparer.Ordinal).Take(80).ToArray());
+        }
+
+        private static void CollectDirectBlueprintReferences(object owner,
+            List<string> records)
+        {
+            if (owner == null) return;
+            for (Type type = owner.GetType(); type != null; type = type.BaseType)
+            {
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.DeclaredOnly))
+                {
+                    object value;
+                    try { value = field.GetValue(owner); }
+                    catch { continue; }
+                    var direct = value as BlueprintScriptableObject;
+                    if (direct != null)
+                        records.Add(field.Name + "=" + direct.GetType().FullName +
+                            ":" + direct.name + ":" + direct.AssetGuid);
+                    var array = value as Array;
+                    if (array == null) continue;
+                    int count = Math.Min(array.Length, 80);
+                    for (int index = 0; index < count; index++)
+                    {
+                        var referenced = array.GetValue(index) as
+                            BlueprintScriptableObject;
+                        if (referenced != null)
+                            records.Add(field.Name + "[" + index + "]=" +
+                                referenced.GetType().FullName + ":" +
+                                referenced.name + ":" + referenced.AssetGuid);
+                    }
+                }
+            }
         }
 
         private static Dictionary<string, List<string>>

@@ -221,6 +221,26 @@ namespace KingmakerGunslinger.DomainTests
                 "Oleg stock must be module-gated and roll back before the older capital snapshot.");
         }
 
+        internal static void BokkenAcquisitionForensicsContract()
+        {
+            string source = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            foreach (string token in new[] {
+                "bokken-acquisition-forensics",
+                "IsBokkenAcquisitionSearchSurface",
+                "DescribeBokkenTextMatches",
+                "CollectBokkenTextMatches",
+                "DescribeDirectBlueprintReferences",
+                "BuildDirectBlueprintReferenceIndex(allBlueprints,",
+                "depth > 3",
+                "Math.Min(array.Length, 64)",
+                "bokkenCandidateRecords.Length <= 64",
+                "read-only depth-three metadata scan"
+            }) Assertions.True(source.Contains(token),
+                "Bokken bounded-forensics contract missing: " + token);
+        }
+
         private static int Count(string source, string token)
         {
             int count = 0, index = 0;
