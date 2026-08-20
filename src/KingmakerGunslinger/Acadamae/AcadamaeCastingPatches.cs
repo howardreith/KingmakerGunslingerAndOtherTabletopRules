@@ -429,9 +429,10 @@ namespace KingmakerGunslinger.Acadamae
             if (harmony == null || logger == null) return;
             MethodBase[] targets = {
                 typeof(AbilityData).GetProperty("RequireFullRoundAction").GetGetMethod(),
-                typeof(UnitUseAbility).GetConstructor(new[] { typeof(
-                    UnitCommand.CommandType), typeof(AbilityData),
-                    typeof(TargetWrapper) }),
+                typeof(UnitUseAbility).GetConstructor(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic, null, new[] {
+                        typeof(UnitCommand.CommandType), typeof(AbilityData),
+                        typeof(TargetWrapper) }, null),
                 typeof(UnitUseAbility).GetMethod("OnAction", BindingFlags.Instance |
                     BindingFlags.Public | BindingFlags.NonPublic),
                 typeof(UnitUseAbility).GetMethod("OnEnded", BindingFlags.Instance |

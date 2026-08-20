@@ -94,7 +94,9 @@ namespace KingmakerGunslinger.DomainTests
                 casting.Contains("GetMemorizedSpellSlots(level)") &&
                 casting.Contains("ability.ParamSpellSlot = invocation.Slot") &&
                 casting.Contains("presentation.decision") &&
-                casting.Contains("patch.audit"),
+                casting.Contains("patch.audit") &&
+                casting.Contains("typeof(UnitUseAbility).GetConstructor(BindingFlags.Instance |") &&
+                casting.Contains("BindingFlags.Public | BindingFlags.NonPublic, null, new[]"),
                 "Acadamae must resolve the detached canonical prepared slot for UI presentation, bind it only at command construction, and audit the live Harmony seams.");
         }
 
