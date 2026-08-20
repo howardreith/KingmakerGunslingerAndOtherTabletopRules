@@ -55,7 +55,7 @@ conservative: a lower-level subsystem or old sprint label is not completion.
 | Coverage item | Intake state | Required closure |
 |---|---|---|
 | Save/load safety after Focused Aim states | reported release blocker | root cause, compatibility disposition, complete disposable matrix, two fresh-process passes |
-| Acadamae real prepared player path | rejected by human | Standard UI/command/execution, one DC 16 Fortitude transaction, fatigue/rest/Cord/slot/cancel/save-load |
+| Acadamae real prepared player path | automated-qualified; final human UI check | Exact converted-root slot recovery; two fresh native-command 15/15 runs prove Standard execution, one DC 16 Fortitude transaction, fatigue/rest/Cord/slot/cancel controls |
 | Named magic acquisition pacing | rejected by human | exact normal-loot proof, corrected firearm labels, reduced area density, live read-only locator |
 | BTSL merchant responsibility | reported | Honest Guy equipment, Xelliren supplies, exact four-table idempotent migration/order/rollback |
 | Firearm feat art | rejected by human | actual Nodachi-template parameters and native-feat-style Rapid Reload contact sheets |

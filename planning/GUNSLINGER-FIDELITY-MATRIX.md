@@ -79,7 +79,7 @@ creation and broad player-respec integration remain separately tracked.
 
 | Surface | Prior claim | Authoritative amendment | State |
 |---|---|---|---|
-| Acadamae Graduate | synthetic runtime-qualified | ordinary prepared Summon Monster I remains full-round and triggers no save | reported; prior conclusion superseded |
+| Acadamae Graduate | synthetic runtime-qualified | human failure reproduced as null outer slot on selected variant; exact converted-root prepared-slot rebinding now passes two fresh real-command runs | automated-qualified; prior synthetic conclusion superseded; final visible UI check human-gated |
 | Focused Aim | transactional mechanics qualified | damage, one Grit spend, and kill recovery accepted; save correlation unproven | accepted/frozen mechanics; P0 serialization audit |
 | Magic acquisition | 30 distinct targets qualified | structural distinctness does not prove organic pacing/lootability | reported; prior pacing conclusion superseded |
 | Firearm feat icons | semantic/native-style candidate | dark badges rejected; Nodachi is exact accepted parameter template | reported; human-gated |

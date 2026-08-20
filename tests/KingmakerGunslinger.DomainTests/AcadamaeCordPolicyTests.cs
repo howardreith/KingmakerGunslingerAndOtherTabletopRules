@@ -66,6 +66,9 @@ namespace KingmakerGunslinger.DomainTests
                 "AcadamaeCastingPatches.cs"));
             Assertions.True(casting.Contains("AccelerationModeActive =") &&
                 casting.Contains("AcadamaeGraduateMode.Marker") &&
+                casting.Contains("eligibility.decision") &&
+                casting.Contains("constructor=three-argument-authoritative") &&
+                casting.Contains("preRequireFullRound={23}") &&
                 casting.Contains("Buffs.AddBuff(\n                    _fatigued, rule.Initiator, null)") &&
                 casting.Contains("fatigue.MakePermanent()") &&
                 casting.Contains("AcadamaeSavingThrowTestCompletionPatch") &&
@@ -73,6 +76,22 @@ namespace KingmakerGunslinger.DomainTests
                 casting.Contains("if (naturalRoll == 20) __instance.AutoPass = true") &&
                 !casting.Contains("AddBuff(_fatigued, rule.Context"),
                 "Acadamae must require the exact unit marker and use independent ordinary fatigue context.");
+            string runtime = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(runtime.Contains("ExecuteAcadamaePlayerCommand") &&
+                runtime.Contains("onAction.Invoke(command, null)") &&
+                runtime.Contains("PrepareAcadamaePlayerPathSpell") &&
+                runtime.Contains("invocation.ParamSpellSlot = null") &&
+                runtime.Contains("setExecutor.Invoke(command, new object[] { caster })") &&
+                runtime.Contains("realSuccessSlotSpent") &&
+                runtime.Contains("spellBlueprintContract"),
+                "Acadamae qualification must exercise the real player command and record the exact spell contract.");
+            Assertions.True(casting.Contains("TryResolvePreparedSlot") &&
+                casting.Contains("if (HasAcadamaeModeOwner(ability) &&") &&
+                casting.Contains("source = source.ConvertedFrom") &&
+                casting.Contains("ReferenceEquals(current, candidate.Spell)") &&
+                casting.Contains("ability.ParamSpellSlot = preparedSlot"),
+                "Acadamae must recover only the exact prepared slot retained by a selected spell variant's ConvertedFrom chain.");
         }
 
         internal static void AcadamaeModeIdentityContracts()
@@ -328,10 +347,12 @@ namespace KingmakerGunslinger.DomainTests
                     token);
             foreach (string token in new[] {
                 "IsPreparedInvocation(ability, spellbook)",
-                "slot == null || !slot.Available || slot.Spell == null",
-                "ReferenceEquals(slot.Spell.Spellbook, spellbook)",
+                "candidate == null || !candidate.Available ||",
+                "candidate.Spell == null ||",
+                "ReferenceEquals(candidate.Spell.Spellbook, spellbook)",
+                "source = source.ConvertedFrom",
                 "current = current.ConvertedFrom",
-                "ReferenceEquals(current, slot.Spell)" })
+                "ReferenceEquals(current, candidate.Spell)" })
                 Assertions.True(casting.Contains(token),
                     "Acadamae prepared-variant eligibility contract is missing: " +
                     token);

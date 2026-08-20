@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Harmony12;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -33,6 +36,7 @@ namespace KingmakerGunslinger.Acadamae
         private static int _lastSaveTotal;
         private static string _lastFatigueDisposition;
         private static string _lastResolutionMessage;
+        private static string _lastEligibilityTrace;
         private static long _publishedResolutionCount;
 
         internal static void Configure(BlueprintBuff fatigued)
@@ -48,6 +52,8 @@ namespace KingmakerGunslinger.Acadamae
         { get { return _lastFatigueDisposition; } }
         internal static string LastResolutionMessage
         { get { return _lastResolutionMessage; } }
+        internal static string LastEligibilityTrace
+        { get { return _lastEligibilityTrace; } }
         internal static long PublishedResolutionCount
         { get { return Interlocked.Read(ref _publishedResolutionCount); } }
         internal static void ResetDiagnostics()
@@ -60,18 +66,27 @@ namespace KingmakerGunslinger.Acadamae
             _lastSaveTotal = 0;
             _lastFatigueDisposition = null;
             _lastResolutionMessage = null;
+            _lastEligibilityTrace = null;
             Interlocked.Exchange(ref _publishedResolutionCount, 0);
         }
 
         internal static bool IsEligible(AbilityData ability, bool longerThanStandard)
+        { return Evaluate(ability, longerThanStandard).Eligible; }
+
+        private static AcadamaeCastDecision Evaluate(AbilityData ability,
+            bool longerThanStandard)
         {
             if (ability == null || ability.Caster == null ||
                 ability.Caster.Progression == null || ability.Blueprint == null ||
                 ability.SpellLevel < 0 || ability.SpellLevel > 10)
-                return false;
+                return new AcadamaeCastDecision(false, "invalid-ability",
+                    longerThanStandard ? AcadamaeCastingTime.FullRound :
+                        AcadamaeCastingTime.Standard,
+                    longerThanStandard ? 1 : 0,
+                    ability == null ? -1 : ability.SpellLevel, 0);
             var spellbook = ability.Spellbook;
             bool preparedInvocation = IsPreparedInvocation(ability, spellbook);
-            AcadamaeCastDecision decision = AcadamaeCastingPolicy.Decide(
+            return AcadamaeCastingPolicy.Decide(
                 new AcadamaeCastRequest {
                     HasFeat = BlueprintBootstrap.AcadamaeGraduate != null &&
                         ability.Caster.Progression.Features.GetRank(
@@ -91,7 +106,6 @@ namespace KingmakerGunslinger.Acadamae
                     EffectiveRounds = 1,
                     SpellLevel = ability.SpellLevel
                 });
-            return decision.Eligible;
         }
 
         internal static bool IsPreparedInvocation(AbilityData ability,
@@ -100,12 +114,33 @@ namespace KingmakerGunslinger.Acadamae
             if (ability == null || spellbook == null ||
                 spellbook.Blueprint.Spontaneous) return false;
             if (spellbook.CanSpend(ability, false)) return true;
-            Kingmaker.UnitLogic.SpellSlot slot = ability.ParamSpellSlot;
-            if (slot == null || !slot.Available || slot.Spell == null ||
-                !ReferenceEquals(slot.Spell.Spellbook, spellbook)) return false;
-            for (AbilityData current = ability; current != null;
-                current = current.ConvertedFrom)
-                if (ReferenceEquals(current, slot.Spell)) return true;
+            Kingmaker.UnitLogic.SpellSlot slot;
+            return TryResolvePreparedSlot(ability, spellbook, out slot);
+        }
+
+        private static bool TryResolvePreparedSlot(AbilityData ability,
+            Kingmaker.UnitLogic.Spellbook spellbook,
+            out Kingmaker.UnitLogic.SpellSlot slot)
+        {
+            slot = null;
+            if (ability == null || spellbook == null ||
+                spellbook.Blueprint.Spontaneous) return false;
+            for (AbilityData source = ability; source != null;
+                source = source.ConvertedFrom)
+            {
+                Kingmaker.UnitLogic.SpellSlot candidate = source.ParamSpellSlot;
+                if (candidate == null || !candidate.Available ||
+                    candidate.Spell == null ||
+                    !ReferenceEquals(candidate.Spell.Spellbook, spellbook))
+                    continue;
+                for (AbilityData current = ability; current != null;
+                    current = current.ConvertedFrom)
+                {
+                    if (!ReferenceEquals(current, candidate.Spell)) continue;
+                    slot = candidate;
+                    return true;
+                }
+            }
             return false;
         }
 
@@ -116,8 +151,98 @@ namespace KingmakerGunslinger.Acadamae
         }
 
         internal static bool IsInspecting { get { return _inspectPreAcadamae; } }
-        internal static void Arm(UnitUseAbility command, AbilityData ability)
-        { if (IsEligible(ability, InspectPreAcadamae(ability))) Invocations.Arm(command, ability); }
+        internal static void Arm(UnitUseAbility command, AbilityData ability,
+            UnitCommand.CommandType commandType)
+        {
+            Kingmaker.UnitLogic.SpellSlot preparedSlot;
+            if (HasAcadamaeModeOwner(ability) &&
+                ability.ParamSpellSlot == null &&
+                TryResolvePreparedSlot(ability, ability.Spellbook,
+                    out preparedSlot))
+                ability.ParamSpellSlot = preparedSlot;
+            bool preRequireFullRound = InspectPreAcadamae(ability);
+            AcadamaeCastDecision decision = Evaluate(ability, preRequireFullRound);
+            if (HasAcadamaeModeOwner(ability))
+            {
+                _lastEligibilityTrace = DescribeEligibility(ability, command,
+                    commandType, preRequireFullRound, decision);
+                ModContext context;
+                if (ModContext.TryGet(out context))
+                    context.Logger.Info("acadamae", "eligibility.decision",
+                        _lastEligibilityTrace);
+            }
+            if (decision.Eligible) Invocations.Arm(command, ability);
+        }
+
+        internal static string InspectEligibility(AbilityData ability)
+        {
+            bool preRequireFullRound = InspectPreAcadamae(ability);
+            return DescribeEligibility(ability, null,
+                ability == null ? UnitCommand.CommandType.Standard :
+                    ability.RuntimeActionType,
+                preRequireFullRound, Evaluate(ability, preRequireFullRound));
+        }
+
+        private static bool HasAcadamaeModeOwner(AbilityData ability)
+        {
+            return ability != null && ability.Caster != null &&
+                ability.Caster.Progression != null &&
+                BlueprintBootstrap.AcadamaeGraduate != null &&
+                BlueprintBootstrap.AcadamaeGraduateMode != null &&
+                ability.Caster.Progression.Features.GetRank(
+                    BlueprintBootstrap.AcadamaeGraduate) > 0 &&
+                ability.Caster.Buffs.GetBuff(
+                    BlueprintBootstrap.AcadamaeGraduateMode.Marker) != null;
+        }
+
+        private static string DescribeEligibility(AbilityData ability,
+            UnitUseAbility command, UnitCommand.CommandType commandType,
+            bool preRequireFullRound, AcadamaeCastDecision decision)
+        {
+            if (ability == null) return "constructor=three-argument-authoritative;status=invalid-ability";
+            var spellbook = ability.Spellbook;
+            var slot = ability.ParamSpellSlot;
+            var chain = new List<string>();
+            for (AbilityData current = ability; current != null;
+                current = current.ConvertedFrom)
+                chain.Add((current.Blueprint == null ? "<null>" :
+                    current.Blueprint.name + ":" + current.Blueprint.AssetGuid) +
+                    "@" + RuntimeHelpers.GetHashCode(current));
+            int featRank = BlueprintBootstrap.AcadamaeGraduate == null ||
+                ability.Caster == null || ability.Caster.Progression == null ? 0 :
+                ability.Caster.Progression.Features.GetRank(
+                    BlueprintBootstrap.AcadamaeGraduate);
+            bool mode = BlueprintBootstrap.AcadamaeGraduateMode != null &&
+                ability.Caster != null && ability.Caster.Buffs.GetBuff(
+                    BlueprintBootstrap.AcadamaeGraduateMode.Marker) != null;
+            bool canSpend = spellbook != null && spellbook.CanSpend(ability, false);
+            return string.Format(CultureInfo.InvariantCulture,
+                "constructor=three-argument-authoritative;command={0};commandId={1};caster={2};featRank={3};mode={4};spell={5}:{6};isSpell={7};school={8};descriptor={9}({10});level={11};spellbook={12}:{13};arcane={14};spontaneous={15};prepared={16};canSpend={17};slot={18};slotAvailable={19};slotSpell={20};paramSpellSlot={21};convertedFrom={22};preRequireFullRound={23};actionType={24};runtimeActionType={25};status={26};eligible={27}",
+                commandType, command == null ? 0 : RuntimeHelpers.GetHashCode(command),
+                ability.Caster == null ? "<null>" : ability.Caster.CharacterName,
+                featRank, mode,
+                ability.Blueprint == null ? "<null>" : ability.Blueprint.name,
+                ability.Blueprint == null ? "<null>" : ability.Blueprint.AssetGuid.ToString(),
+                ability.Blueprint != null && ability.Blueprint.IsSpell,
+                ability.Blueprint == null ? "<null>" : ability.Blueprint.School.ToString(),
+                ability.Blueprint == null ? 0L : (long)ability.Blueprint.SpellDescriptor,
+                ability.Blueprint == null ? "<null>" : ability.Blueprint.SpellDescriptor.ToString(),
+                ability.SpellLevel,
+                spellbook == null ? "<null>" : spellbook.Blueprint.name,
+                spellbook == null ? "<null>" : spellbook.Blueprint.AssetGuid.ToString(),
+                spellbook != null && spellbook.Blueprint.IsArcane,
+                spellbook != null && spellbook.Blueprint.Spontaneous,
+                IsPreparedInvocation(ability, spellbook), canSpend,
+                slot == null ? 0 : RuntimeHelpers.GetHashCode(slot),
+                slot != null && slot.Available,
+                slot == null || slot.Spell == null || slot.Spell.Blueprint == null ?
+                    "<null>" : slot.Spell.Blueprint.name + ":" +
+                        slot.Spell.Blueprint.AssetGuid,
+                slot == null ? "<null>" : "exact",
+                string.Join("->", chain.ToArray()), preRequireFullRound,
+                ability.ActionType, ability.RuntimeActionType,
+                decision.Status, decision.Eligible);
+        }
         internal static void Begin(UnitUseAbility command) { Invocations.Begin(command); }
         internal static void End(UnitUseAbility command) { Invocations.EndAction(command); }
         internal static void Cancel(UnitUseAbility command) { Invocations.Cancel(command); }
@@ -298,8 +423,9 @@ namespace KingmakerGunslinger.Acadamae
         typeof(UnitCommand.CommandType), typeof(AbilityData), typeof(TargetWrapper))]
     internal static class AcadamaeCommandConstructorPatch
     {
-        private static void Postfix(UnitUseAbility __instance, AbilityData __1)
-        { AcadamaeCastingRuntime.Arm(__instance, __1); }
+        private static void Postfix(UnitUseAbility __instance,
+            UnitCommand.CommandType __0, AbilityData __1)
+        { AcadamaeCastingRuntime.Arm(__instance, __1, __0); }
     }
 
     [HarmonyPatch(typeof(UnitUseAbility), "OnAction")]

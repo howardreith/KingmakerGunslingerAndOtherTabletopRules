@@ -2,6 +2,10 @@
 
 Status: COMPLETE AND LOCALLY DEPLOYED
 
+## 2026-08-20 authoritative correction
+
+Fresh human evidence superseded the historical completion claim below. The ordinary selected Summon Monster I variant can carry a null outer `ParamSpellSlot` while retaining the exact prepared slot on its `ConvertedFrom` root. That made the integrated eligibility path reject `not-prepared`, so the command remained full-round and no completion save occurred. Production now resolves only an available same-spellbook slot whose exact spell object occurs in the converted chain and binds it during authoritative command construction. Two fresh native-command guarded runs passed 15/15; final visible UI confirmation remains human-gated.
+
 Starting source was `c80615e917d1994daad679e8a78af11ae2c7e115`, version 0.0.75. The focused repair targets 0.0.76 / `0.0.76-acadamae-mode-fatigue-icon-repair` without changing any prior blueprint identity or accepted feature-module behavior.
 
 ## Per-character mode

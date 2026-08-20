@@ -1,5 +1,9 @@
 # Autonomous Gunslinger blockers
 
+## 2026-08-20 human-review continuation
+
+Acadamae is not blocked: the real prepared-player path is repaired and passed two independent fresh-process 15/15 runs. P0 release qualification remains blocked at the Tenebrous after-load boundary: the affected copy and a same-area no-Focused-Aim-marker control both cross the repaired serialization exception and stall after scene setup before the native completion callback. Independent acquisition, merchant, icon, and visual corrections continue; this blocker must not be reported as a qualified release.
+
 ## 2026-08-13 Expanded Summoning final disposition
 
 No active engineering blocker. Exact immutable source `fea6b60` passes the

@@ -3973,3 +3973,7 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
 # 2026-08-20 - Human-review P0 save recovery
 
 Human evidence superseded the 0.0.88 save-safety claim. Root cause: Focused Aim marker buff `ac72998da0a146cf9ca0cff3ea161303` had null FX/resource serialization fields and failed in native view reconstruction. A stable-ID compatibility initialization fixes that boundary without altering Focused Aim mechanics. Full gates pass at `1161/1161`. The affected copy now passes the old exception boundary, but Tenebrous scene completion stalls identically for a no-marker same-area control; release qualification remains blocked while the mission continues to Acadamae and other independent corrections.
+
+# 2026-08-20 - Human-review Acadamae real path
+
+Reproduced the ordinary selected-variant boundary with a null outer prepared slot and exact slot retained on the `ConvertedFrom` root. Exact-chain rebinding at command construction restores Standard action, native slot spend, and the one-save/fatigue transaction without admitting spontaneous or unrelated abilities. Full gates pass at `1161/1161`; fresh Steam runs `20260820T1346113518157Z-cac809535698401786e65c307f7be644` and `20260820T1348390845989Z-5c143a2e41254043849e50afa8aa4598` each passed 15/15. Proceeding to the acquisition re-audit; P0 release blocker remains explicit.

@@ -30,6 +30,8 @@ state is maintained in planning/OVERNIGHT-GUNSLINGER-BUGFIX-MATRIX.md.
 
 ## Issue 1 - Acadamae Graduate
 
+Continuation correction (2026-08-20): fresh playtest evidence superseded the earlier synthetic qualification. A real selected Summon Monster I variant reproduced null outer `ParamSpellSlot` with the exact prepared slot retained on its `ConvertedFrom` root. The eligibility service therefore returned `not-prepared`; the command remained full-round and native spending/save correlation never began. The repair resolves and binds only that exact available same-spellbook chain slot at command construction and publishes one bounded eligibility trace for feat+mode casts. Repository validation, `1161/1161`, clean build/package gates, and fresh Steam runs `20260820T1346113518157Z-cac809535698401786e65c307f7be644` and `20260820T1348390845989Z-5c143a2e41254043849e50afa8aa4598` each pass 15/15 through native `UnitUseAbility.OnAction`. The historical investigation below is retained as superseded evidence, not the current conclusion.
+
 Source-qualified candidate in progress. The prior tracker recognized a
 completed cast only while its command was the thread-local active `OnAction`
 command. The repair attaches the concrete `RuleCastSpell` created by that

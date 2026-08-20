@@ -3,7 +3,7 @@
 One consolidated human pass will be requested only after all safe automated work.
 
 1. Load a protected copy-equivalent of the affected Tenebrous Depths save and the disposable Focused Aim matrix results; never modify the original.
-2. Cast real prepared Summon Monster I with Acadamae OFF and ON; verify action, DC 16 save, success/failure, fatigue/rest, Cord, slot, cancellation, and save/load.
+2. Confirm the automated real-command repair in ordinary UI play: cast prepared Summon Monster I with Acadamae OFF and ON; verify full-round versus Standard action, DC 16 save, success/failure, fatigue/rest, Cord, one slot spend, cancellation, and save/load.
 3. Use the read-only locator to inspect every revised named-item route without looting or altering quests; judge density, theme, power, and discoverability.
 4. Inspect Honest Guy for permanent weapons/equipment and Xelliren for only the specified supplies in both BTSL modes.
 5. Inspect P/M/B/Ri/Rv parameter icons beside Nodachi and Rapid Reload beside ordinary native feats at 32/64-pixel scale.

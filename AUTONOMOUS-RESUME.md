@@ -1,5 +1,17 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-20 human-review Acadamae checkpoint
+
+- Branch `codex/gunslinger-overnight-bugfixes`; version `0.0.88`; pre-commit published HEAD `6a6d2bc0961c31d9758cc884ecaa6b603e8714a7`.
+- Completed continuation corrections: P0 bounded Focused Aim marker compatibility repair; Acadamae real prepared-player command repair. P0 full Tenebrous scene recovery remains release-blocking.
+- Acadamae root cause: the selected Summon Monster I variant had null outer `ParamSpellSlot`; its exact available prepared slot remained on the `ConvertedFrom` root. Eligibility returned `not-prepared`, leaving full-round execution and no terminal save.
+- Repair: resolve only an available same-spellbook slot whose exact `AbilityData` occurs in the converted chain, bind it at authoritative command construction, and log one bounded exact rejection/acceptance trace.
+- Gates: repository PASS; `1161/1161`; clean Release/output/SoundBank/package/strict package PASS.
+- Runtime PASS: `20260820T1346113518157Z-cac809535698401786e65c307f7be644` and `20260820T1348390845989Z-5c143a2e41254043849e50afa8aa4598`, each 15/15 through native `UnitUseAbility.OnAction` with Standard action, one slot, DC 16 success/failure, fatigue/rest, Cord, cancellation and controls.
+- Package/DLL SHA-256: `0c05e106de99654ad9e63efb2a3ab1e589d0ae2d3d6f1308bd9249033a1d3eb4` / `19a87131fcb3b2e10e0c0024de693cfc5b9f7efb08d37c3802cc1d86f825d9dc`.
+- External state: guarded runs restored the live mod transaction; no Kingmaker process or active transaction sentinel remained.
+- Next concrete action: commit/publish this Acadamae issue, verify exact remote equality, then re-audit and redistribute all 30 project magic-item acquisition routes under the corrected density, theme, power, and ordinary-loot contract.
+
 ## 2026-08-20 Issue 10 checkpoint
 
 - Branch: `codex/gunslinger-overnight-bugfixes`; version `0.0.87`.

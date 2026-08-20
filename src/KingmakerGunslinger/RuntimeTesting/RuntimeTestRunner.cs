@@ -16560,8 +16560,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 nativeFailureNatural = -1, nativeFailureModifier = -1,
                 nativeFailureTotal = -1;
             string nativeFailureDisposition = "<none>",
-                successResolution = "<none>";
+                successResolution = "<none>", eligibilityTrace = "<none>",
+                spellBlueprintContract = "<none>";
             long successResolutionCount = -1;
+            bool realSuccessCommand = false, realFailureCommand = false,
+                realSuccessSlotSpent = false, realFailureSlotSpent = false;
             try
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -16674,18 +16677,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Native Acadamae mode activation did not create its exact marker.");
 
-                AbilityData first = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
+                AbilityData first = PrepareAcadamaePlayerPathSpell(spellbook,
+                    spell, spellLevel);
                 prepared = AcadamaeCastingRuntime.IsPreparedInvocation(first,
                     spellbook) &&
                     ReferenceEquals(first.Spellbook, spellbook);
+                eligibilityTrace = AcadamaeCastingRuntime.InspectEligibility(first);
+                spellBlueprintContract = "current=[" +
+                    DescribeAcadamaeSpellBlueprint(first.Blueprint) + "];root=[" +
+                    DescribeAcadamaeSpellBlueprint(first.ConvertedFrom == null ?
+                        null : first.ConvertedFrom.Blueprint) + "]";
                 presentation = AcadamaeCastingRuntime.InspectPreAcadamae(first) &&
                     !first.RequireFullRoundAction &&
                     first.RuntimeActionType == UnitCommand.CommandType.Standard;
 
                 unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = 100;
                 AcadamaeSavingThrowTestControl.Queue(20);
-                RuleCastSpell successRule = ExecuteAcadamaeDelayedTerminalRule(
-                    unit, first);
+                realSuccessCommand = ExecuteAcadamaePlayerCommand(unit, first);
+                realSuccessSlotSpent = first.ParamSpellSlot != null &&
+                    !first.ParamSpellSlot.Available;
                 successCount = AcadamaeCastingRuntime.CompletedCount;
                 observedDc = AcadamaeCastingRuntime.LastDifficultyClass;
                 successNatural = AcadamaeCastingRuntime.LastNaturalRoll;
@@ -16694,7 +16704,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 successResolution = AcadamaeCastingRuntime.LastResolutionMessage;
                 successResolutionCount =
                     AcadamaeCastingRuntime.PublishedResolutionCount;
-                successObserved = successRule.Success && successCount == 1 &&
+                successObserved = realSuccessCommand && realSuccessSlotSpent &&
+                    successCount == 1 &&
                     AcadamaeCastingRuntime.LastSavePassed &&
                     successNatural == 20 && successModifier >= 100 &&
                     successTotal == successNatural + successModifier &&
@@ -16704,10 +16715,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Descriptor.Stats.GetStat(
                     StatType.SaveFortitude).BaseValue = -100;
                 AcadamaeSavingThrowTestControl.Queue(1);
-                AbilityData nativeFailure = PrepareAcadamaeSpell(spellbook,
+                AbilityData nativeFailure = PrepareAcadamaePlayerPathSpell(spellbook,
                     spell, spellLevel);
-                RuleCastSpell nativeFailureRule =
-                    ExecuteAcadamaeDelayedTerminalRule(unit, nativeFailure);
+                realFailureCommand = ExecuteAcadamaePlayerCommand(unit,
+                    nativeFailure);
+                realFailureSlotSpent = nativeFailure.ParamSpellSlot != null &&
+                    !nativeFailure.ParamSpellSlot.Available;
                 nativeFailureNatural = AcadamaeCastingRuntime.LastNaturalRoll;
                 nativeFailureModifier =
                     AcadamaeCastingRuntime.LastFortitudeModifier;
@@ -16715,7 +16728,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 nativeFailureDisposition =
                     AcadamaeCastingRuntime.LastFatigueDisposition;
                 nativeFailureObserved =
-                    nativeFailureRule.Success &&
+                    realFailureCommand && realFailureSlotSpent &&
                     AcadamaeCastingRuntime.CompletedCount == 2 &&
                     !AcadamaeCastingRuntime.LastSavePassed &&
                     nativeFailureNatural == 1 &&
@@ -16950,6 +16963,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";survivedContextCleanup=" + fatigueSurvivedContextCleanup +
                 ";restRemoved=" + restRemoved +
                 ";modeViewLifecycle=" + modeViewLifecycle +
+                ";realSuccessCommand=" + realSuccessCommand +
+                ";realSuccessSlotSpent=" + realSuccessSlotSpent +
+                ";realFailureCommand=" + realFailureCommand +
+                ";realFailureSlotSpent=" + realFailureSlotSpent +
+                ";eligibilityTrace=" + eligibilityTrace +
+                ";spellBlueprintContract=" + spellBlueprintContract +
                 ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -16972,9 +16991,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, successObserved && observedDc == 15 + spellLevel,
                     "native RuleCastSpell and RuleSavingThrow"),
                 Assertion("acadamae-native-command-failure",
-                    "delayed exact RuleCastSpell fails one Fortitude save and applies permanent fatigue",
+                    "real UnitUseAbility.OnAction spends one slot, fails one Fortitude save, and applies permanent fatigue",
                     observed, nativeFailureObserved,
-                    "command scope -> exact RuleCastSpell -> delayed OnTrigger -> native RuleSavingThrow"),
+                    "real player command -> exact RuleCastSpell -> native RuleSavingThrow"),
                 Assertion("acadamae-save-failure", "next Fortitude save fails; Fatigued applies",
                     observed, failureObserved, "native Fatigued blueprint"),
                 Assertion("acadamae-cancellation", "cancelled marker causes no save or fatigue",
@@ -17078,6 +17097,73 @@ namespace KingmakerGunslinger.RuntimeTesting
             // must retain exact rule identity until this native terminal event.
             Rulebook.Trigger(rule);
             return rule;
+        }
+
+        private static AbilityData PrepareAcadamaePlayerPathSpell(
+            Spellbook spellbook, BlueprintAbility spell, int spellLevel)
+        {
+            AbilityData invocation = PrepareAcadamaeSpell(spellbook, spell,
+                spellLevel);
+            if (invocation.ConvertedFrom != null)
+                invocation.ParamSpellSlot = null;
+            return invocation;
+        }
+
+        private static bool ExecuteAcadamaePlayerCommand(UnitEntityData caster,
+            AbilityData ability)
+        {
+            TargetWrapper point = new TargetWrapper(caster.Position);
+            TargetWrapper self = new TargetWrapper(caster);
+            TargetWrapper target = ability.CanTarget(self) ? self :
+                ability.CanTarget(point) ? point : null;
+            if (target == null) throw new InvalidOperationException(
+                "Acadamae real command has no legal disposable target.");
+            UnitUseAbility command;
+            var cutscene = new Kingmaker.AreaLogic.Cutscenes
+                .CutsceneParametersContext();
+            using (cutscene.Data)
+                command = new UnitUseAbility(ability, target);
+            PropertyInfo executor = typeof(UnitCommand).GetProperty("Executor",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            MethodInfo setExecutor = executor == null ? null :
+                executor.GetSetMethod(true);
+            if (setExecutor == null) throw new MissingMethodException(
+                typeof(UnitCommand).FullName, "set_Executor(UnitEntityData)");
+            setExecutor.Invoke(command, new object[] { caster });
+            if (!ability.IsAvailable || !command.CanStart)
+                throw new InvalidOperationException(
+                    "Acadamae real command was unavailable: available=" +
+                    ability.IsAvailable + ";canStart=" + command.CanStart +
+                    ";targetable=" + ability.CanTarget(target) + ".");
+            MethodInfo onAction = typeof(UnitUseAbility).GetMethod("OnAction",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+            if (onAction == null) throw new MissingMethodException(
+                typeof(UnitUseAbility).FullName, "OnAction()");
+            object result = onAction.Invoke(command, null);
+            MethodInfo onEnded = typeof(UnitUseAbility).GetMethod("OnEnded",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic, null, new[] { typeof(bool) }, null);
+            if (onEnded != null) onEnded.Invoke(command, new object[] { false });
+            return result != null && !string.Equals(result.ToString(), "Interrupted",
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string DescribeAcadamaeSpellBlueprint(BlueprintAbility spell)
+        {
+            if (spell == null) return "<null>";
+            return spell.name + ":" + spell.AssetGuid +
+                ",isSpell=" + spell.IsSpell +
+                ",school=" + spell.School +
+                ",descriptor=" + (long)spell.SpellDescriptor + "(" +
+                    spell.SpellDescriptor + ")" +
+                ",fullRound=" + spell.IsFullRoundAction +
+                ",action=" + spell.ActionType +
+                ",components=" + string.Join(",",
+                    (spell.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .Where(value => value != null)
+                        .Select(value => value.GetType().FullName).ToArray());
         }
 
         private RuntimeTestResult RunDisposableCordOfStubbornResolve()

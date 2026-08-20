@@ -30,3 +30,9 @@ unresolved.
 # P0 qualification result - 2026-08-20
 
 `PASS` for source prevention and packaged compatibility fields: repository validator, `1161/1161`, clean Release build, output validation, SoundBank validation, deterministic package, and strict package validation. `NOT QUALIFIED` for full save recovery: the old Focused Aim FX reconstruction exception is absent, but both the affected copy and a same-area no-marker control stall before the native after-load callback. Version advancement and final release qualification remain prohibited until this is resolved or exact human evidence closes the Tenebrous runtime boundary.
+
+## Acadamae real-player qualification - 2026-08-20
+
+`PASS` for the repaired installed boundary. The rejected fixture exposed a selected Summon Monster I variant with a null outer prepared slot and an exact available slot on its `ConvertedFrom` root. Production now resolves and binds only that exact same-spellbook chain slot at command construction. Repository validation, `1161/1161`, clean Release/output, SoundBank, deterministic package, and strict package validation pass.
+
+Fresh Steam run IDs `20260820T1346113518157Z-cac809535698401786e65c307f7be644` and `20260820T1348390845989Z-5c143a2e41254043849e50afa8aa4598` each passed 15/15. Both exercised native `UnitUseAbility.OnAction` and proved Standard presentation/execution, one slot spend, exactly one Fortitude save, DC 16, forced success without fatigue, forced failure with permanent canonical fatigue, rest removal, Cord substitution, toggle-off, cancellation, ineligible controls, and cleanup. Final visible ordinary-play confirmation remains in the consolidated human pass; the former synthetic conclusion remains superseded.
