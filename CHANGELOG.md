@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.0.88-overnight-gunslinger-bugfixes (qualification candidate)
+
+- Repairs Acadamae Graduate's accelerated-cast lifecycle, one-save terminal
+  handling, ordinary fatigue persistence, and duplicate prerequisite prose.
+- Makes Focused Aim's damage marker and shared Grit debit one verified
+  transaction, including zero-Grit, duplicate-callback, and True Grit cases.
+- Requalifies early/advanced firearm Touch AC boundaries using authoritative
+  attack distance and adds truthful item plus battle-log penetration feedback.
+- Stocks exact maintenance kits at Oleg and ammunition at Bokken through
+  bounded idempotent rollback-owned vendor transactions.
+- Moves Border Sentinel later and distributes all 30 scoped named/unique
+  project magic items across 30 distinct deterministic base-campaign targets.
+- Restores once-only native Wwise event routing for all firearm discharge paths
+  while retaining fail-soft mechanics and exact packaged SoundBank validation.
+- Adds distinct native-style firearm monograms and Rapid Reload art.
+- Normalizes and rigs the Elven Branched Spear, Musket, and Blunderbuss assets
+  with deterministic scale-one held frames, native support IK, exact muzzle
+  markers, and independent back presentations.
+- Preserves every existing stable blueprint GUID and records remaining human
+  visual, audible, ordinary-UI, merchant/container materialization, and pacing
+  checks without claiming automated proof.
+- Final candidate gates passed: version-aware repository validation, all
+  1,160 dependency-free tests, clean installed-reference Release build,
+  build-output and SoundBank validation, strict standalone package validation,
+  compatibility profile/schema suites, the exact 30-item guarded acquisition
+  observer, and canonical `KMG_AUTOMATION_WORKING` smoke.
+
 ## 0.0.87-urban-barbarian-human-review-repair-4 (development candidate)
 
 - Supersedes immutable 0.0.86 after focused, persistence, and all three CotW

@@ -361,3 +361,17 @@
 - Runtime package/DLL SHA-256: `72B2E2CDBA163DB127A1ED9B6F6728EBD7AE9DFE5FCA9E674CBF0BFE7D4A81FD` / `3A76F00E2752DB6A7682BC406DEF59FD4E8CDB65410DE3A81AA84831897B6DD9`.
 - Remaining human gate: organic pacing/discoverability and unopened/new-campaign container materialization. Existing instantiated state is intentionally not rewritten.
 - Next: commit Issue 12, publish, remote-verify, then final release qualification/versioning.
+
+## Final 0.0.88 release qualification checkpoint - 2026-08-20
+
+- Issue 12 commit `89336abc2c5c837fb14a7b4aa267f2ffe1f6aacf` is published with exact local/remote equality.
+- Advanced active metadata and guarded-runtime/compatibility package pins to unused patch version `0.0.88`; informational version is `0.0.88-overnight-gunslinger-bugfixes`.
+- Added version-aware `validate_urban_barbarian88.py`, inheriting all 0.0.87 validators and adding Issue 12 acquisition invariants. Repository validation PASS.
+- Final dependency-free suite: 1,160/1,160 PASS. Clean Release, output, SoundBank, package, and strict-package validation PASS. Compatibility transaction/profile/schema suites PASS.
+- Final-version acquisition run `20260820T0917390133721Z-e97b8310338049c294229cb54202ea13`: 25/25 PASS.
+- Canonical working-save run `20260820T0920432961745Z-5ed779093f634facb0bdf4c4ce8d829e`: 11/11 PASS on `KMG_AUTOMATION_WORKING`.
+- Final manifest-backed exact-reference package: `artifacts/local-runtime/0.0.88/KingmakerGunslinger-0.0.88-local-runtime.zip`, SHA-256 `1A542FCBED586343CE7993606F513D4D0A2555CC49F9DB2BF843C914058210C5`; DLL SHA-256 `2A4E099ACE76046470F598762DB46B766989A48799DED6A5D1D5BDB54ACD9B92`.
+- Standalone release archive: `artifacts/packages/KingmakerGunslinger-0.0.88-urban-barbarian.zip`, SHA-256 `858C01EA472A31FCAFDDD89465FA3ACB41CCDDF67D3791F122A5DBEED8F8EC1C`; packaged MSBuild DLL SHA-256 `595AC63E7F0D49F350F10C92E7710A8DFEDF4664B7F533E7EFB150B7B903787E`.
+- Firearm/spear/Eastern AssetBundle SHA-256: `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` / `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85` / `079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041`.
+- SoundBank SHA-256: `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- The final exact-reference package deployed with manifest `20260820T0925381203669Z`; reusable smoke correctly refused only because release metadata was still dirty. Next: commit/publish release metadata, then rerun reusable mod-load smoke from the clean branch.

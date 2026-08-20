@@ -267,3 +267,12 @@ historical reserved entry. Established GUIDs remain unchanged.
 - Do not activate an entry until the sprint that registers it.
 - Add manifest change, source registration, migration note, and tests in the same package.
 - Runtime code must never call `Guid.NewGuid` for blueprint identity.
+
+## 0.0.88 identity statement
+
+The overnight bug-fix batch adds no blueprint identity and changes no existing
+GUID. It changes only acquisition references, runtime policy/adapters, and
+project-owned presentation assets. The 30-item acquisition inventory in
+`planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md` maps existing stable item
+GUIDs to exact installed base-campaign loot GUIDs; target GUIDs are references
+to native Kingmaker blueprints and are not project-owned manifest entries.

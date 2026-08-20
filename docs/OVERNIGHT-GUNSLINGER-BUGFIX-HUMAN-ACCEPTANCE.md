@@ -156,3 +156,15 @@ Use a new campaign or disposable save whose relevant containers have not materia
 7. Late game: Night Without Moon at Castle of Knives; Heaven's Measure, The Last Word, and Watch at World's End in three distinct House at the Edge of Time sources; World-Tree Severer and First Branch in distinct Final Dungeon sources.
 
 Confirm one named project item per target, none of the 30 in ordinary recurring merchants, and preserved native contents. Do not use an already opened container as evidence against static blueprint publication.
+
+## Install the final candidate
+
+Use the manifest-backed exact-reference package:
+
+```powershell
+.\scripts\Deploy-Local.ps1 `
+  -PackagePath .\artifacts\local-runtime\0.0.88\KingmakerGunslinger-0.0.88-local-runtime.zip `
+  -Confirm:$true
+```
+
+The deploy script validates the strict package and build-local manifest, backs up the current live mod without deleting it, replaces only the `KingmakerGunslinger` mod directory, and writes a hash-bound deployment manifest. Launch runtime qualification only through `Invoke-KingmakerRuntimeTest.ps1`/Steam App ID 640820. Do not launch `Kingmaker.exe` directly.

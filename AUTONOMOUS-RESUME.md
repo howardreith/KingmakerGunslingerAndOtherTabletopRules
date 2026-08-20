@@ -2997,3 +2997,13 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Candidate package/DLL: `72B2E2CDBA163DB127A1ED9B6F6728EBD7AE9DFE5FCA9E674CBF0BFE7D4A81FD` / `3A76F00E2752DB6A7682BC406DEF59FD4E8CDB65410DE3A81AA84831897B6DD9`.
 - Blocker: none. Final pacing/materialization is a human acceptance gate.
 - Next: inspect/stage Issue 12, run diff/package gates, commit and publish, then final versioned release qualification.
+
+## Overnight bug-fix resume checkpoint - final release commit pending
+
+- Branch: `codex/gunslinger-overnight-bugfixes`; published issue HEAD `89336abc2c5c837fb14a7b4aa267f2ffe1f6aacf`.
+- Version: `0.0.88`; all Issues 1-12 attempted, automated-qualified, and human-gated only where structure cannot prove presentation/materialization/gameplay experience.
+- Final gates: repository PASS; 1,160/1,160 PASS; clean Release/output/SoundBank/package/strict-package PASS; compatibility suites PASS.
+- Final runtime: acquisition `20260820T0917390133721Z-e97b8310338049c294229cb54202ea13` PASS 25/25; working save `20260820T0920432961745Z-5ed779093f634facb0bdf4c4ce8d829e` PASS 11/11.
+- Final exact-reference package/DLL: `1A542FCBED586343CE7993606F513D4D0A2555CC49F9DB2BF843C914058210C5` / `2A4E099ACE76046470F598762DB46B766989A48799DED6A5D1D5BDB54ACD9B92`.
+- Blocker: none. Reusable exact-package smoke awaits the required clean committed state.
+- Next: diff/stage/commit/publish release metadata, verify remote equality, run clean reusable artifact smoke, record final immutable evidence, publish final seal.

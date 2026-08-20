@@ -202,3 +202,19 @@ The mod hash-verifies the packaged source and existing destination and never
 writes `Init.bnk` or another bank. To uninstall this optional native-audio
 artifact, remove only `KMG_Firearms.bnk`; do not remove any vanilla bank.
 Missing or rejected custom audio does not disable firearm mechanics.
+
+# 0.0.88 overnight bug-fix candidate
+
+Install only the strict standalone package produced under
+`artifacts\packages\KingmakerGunslinger-0.0.88-*.zip` through the existing
+Unity Mod Manager workflow. Remove or replace the prior
+`Mods\KingmakerGunslinger` directory as directed by that workflow; do not mix
+files from `0.0.87` and `0.0.88`. The guarded deployment scripts validate
+`Info.json`, assembly version, package shape, AssetBundle manifests, and the
+allow-listed `KMG_Firearms.bnk` before replacing a live test install.
+
+The batch adds no required dependency and preserves standalone operation.
+Brown-Fur remains the only module with optional Call of the Wild integration.
+Static merchant and fixed-loot blueprint changes are reliable for new games and
+not-yet-materialized sources; no refresh is promised for an already opened
+container or already materialized merchant in an existing save.

@@ -285,3 +285,16 @@ Status: automated-qualified; human-gated for pacing and materialized-container o
 - Exact result: 30 items, 30 distinct exact fixed-loot targets, one intended reference each, zero vendor copies, zero stale copies.
 - Candidate package/DLL SHA-256: `72B2E2CDBA163DB127A1ED9B6F6728EBD7AE9DFE5FCA9E674CBF0BFE7D4A81FD` / `3A76F00E2752DB6A7682BC406DEF59FD4E8CDB65410DE3A81AA84831897B6DD9`.
 - Honest limit: live blueprint publication does not prove refresh of already materialized merchants/containers or subjective campaign pacing.
+
+## Final 0.0.88 automated seal
+
+- Version/informational version: `0.0.88` / `0.0.88-overnight-gunslinger-bugfixes`.
+- Repository validation: PASS through `validate_urban_barbarian88.py` and every inherited validator.
+- Domain/reflection tests: 1,160/1,160 PASS.
+- Clean Release, output, SoundBank, package, strict-package, and compatibility profile/schema suites: PASS.
+- Acquisition run `20260820T0917390133721Z-e97b8310338049c294229cb54202ea13`: 25/25 PASS.
+- Working-save run `20260820T0920432961745Z-5ed779093f634facb0bdf4c4ce8d829e`: 11/11 PASS.
+- Runtime-qualified exact-reference package/DLL: `1A542FCBED586343CE7993606F513D4D0A2555CC49F9DB2BF843C914058210C5` / `2A4E099ACE76046470F598762DB46B766989A48799DED6A5D1D5BDB54ACD9B92`.
+- Standalone package/MSBuild DLL: `858C01EA472A31FCAFDDD89465FA3ACB41CCDDF67D3791F122A5DBEED8F8EC1C` / `595AC63E7F0D49F350F10C92E7710A8DFEDF4664B7F533E7EFB150B7B903787E`.
+- Firearm/spear/Eastern bundles: `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` / `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85` / `079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041`.
+- SoundBank: `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.

@@ -174,3 +174,9 @@ The complete scope is 30 stable identities: five rare firearms, eighteen named E
 The Eastern, spear, and Cord publishers reuse snapshot/validate/rollback transactions. Cleanup lists name only exact project identities and exact old targets. Native and foreign entries retain reference identity and order. Bootstrap rollback includes the Cord transaction. Development controls provide a unified read-only 30-item acquisition audit.
 
 Exact targets, power/chapter reasoning, native-content evidence, old sources, and old-save behavior are in `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md`. Automated qualification is complete at 1,160 tests and two guarded Steam observers. Final campaign pacing and physical discoverability remain human-gated.
+
+## Final release integration
+
+Version `0.0.88` advances all active assembly, UMM, local-build, guarded-runtime, and compatibility package pins together. The new version-aware validator inherits the complete `0.0.87` contract and adds exact acquisition/publication invariants. No blueprint GUID was added, removed, or reassigned.
+
+All 12 issues are automated-qualified to the strongest safe boundary. Final clean tests/build/package, compatibility suites, exact final-version acquisition observation, and canonical working-save smoke pass. Visual, audible, ordinary-UI combat, merchant/container materialization, and campaign pacing remain explicitly human-gated rather than inferred from structure.

@@ -1,19 +1,23 @@
 # Kingmaker Gunslinger
 
-The current `codex/urban-barbarian` development candidate adds Urban Barbarian
-as an eighth independent, default-enabled feature module for Pathfinder:
-Kingmaker 2.1.7b while retaining Gunslinger, Acadamae Graduate, Shield Other,
-Expanded Summoning, Elven Branched Spears, Eastern Weapons, and Brown-Fur
-Transmuter. Urban Barbarian is attached to the native Barbarian class and is
-fully usable without Call of the Wild. Brown-Fur alone requires a compatible
-Call of the Wild installation; the combined package and every unrelated module
-continue loading without CotW.
+The `0.0.88` overnight bug-fix candidate retains the eight independent feature
+modules qualified in `0.0.87` and repairs twelve fresh playtest findings across
+Acadamae Graduate, Focused Aim, firearm penetration feedback, vendors, fixed
+loot, Wwise audio routing, feat icons, and weapon presentation. Its 30 scoped
+named/unique project magic items now occupy 30 distinct deterministic
+base-campaign fixed-loot targets rather than recurring merchants or clustered
+containers.
 
-The immutable `0.0.87` Urban repair candidate has passed automated focused,
-persistence, CotW-profile, and 18-state boundary qualification and is installed
-unchanged for human presentation/play review. The rejected `0.0.83` and failed
-`0.0.84` through `0.0.86` candidates remain superseded; `0.0.87` is not yet
-human accepted or release complete.
+Automated source, 1,160-test domain, clean Release, strict package,
+compatibility, exact acquisition, and canonical working-save qualification has
+passed for this candidate. Visual, audible, merchant-materialization,
+ordinary-UI combat, and campaign pacing observations remain explicit
+consolidated human gates; a passing build or structural blueprint observer is
+not presented as proof of those outcomes.
+
+Urban Barbarian remains the eighth independent default-enabled module and is
+usable without Call of the Wild. Brown-Fur alone requires a compatible Call of
+the Wild installation; every unrelated module continues loading without CotW.
 
 The first `0.0.81` Brown-Fur candidate failed human review and is superseded.
 The installed `0.0.82` candidate repairs native toggle legibility, live

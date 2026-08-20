@@ -562,3 +562,20 @@ firearm domain. It validates and stages only `KMG_Firearms.bnk`, waits for
 and accepts an event only when `PostEvent` returns a nonzero playing ID.
 Gameplay calls occur only after existing transactions have committed; audio
 failure never participates in mechanical rollback.
+
+# Project magic-item acquisition boundary
+
+Named/unique campaign acquisition is an exact-blueprint bootstrap transaction,
+not a display-name search or area-wide hook. Eastern weapons, branched spears,
+rare firearms, and Cord expose immutable item/target specifications. Each
+publisher snapshots the complete affected component array, removes only its
+owned identities from explicitly listed stale targets, appends one exact item
+reference to the intended `BlueprintLoot`, validates cardinality and target
+identity, and owns exact rollback. Bootstrap unwinds these transactions in
+reverse order if any later initialization step fails.
+
+The unified development/runtime audit is read-only. It joins exact item GUIDs,
+fixed target GUIDs, installed area ownership, live loot matches, and live vendor
+matches; it never grants, teleports, opens, selects, loads, or saves. Static
+blueprint publication deliberately does not rewrite already materialized save
+state.
