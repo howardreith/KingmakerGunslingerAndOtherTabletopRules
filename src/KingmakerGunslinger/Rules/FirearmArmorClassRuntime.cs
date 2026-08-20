@@ -194,6 +194,12 @@ namespace KingmakerGunslinger.Rules
 
                 if (!decision.UsesTouchArmorClass)
                 {
+                    if (decision.EffectivePenetrationRangeFeet > 0d)
+                    {
+                        Stamp(ruleCalculateArmorClass);
+                        FirearmArmorClassCombatLog.Publish(marker.Definition,
+                            distanceMeters, decision);
+                    }
                     Interlocked.Increment(ref _ordinaryCount);
                     LogDecision(marker, distanceMeters, currentTargetArmorClass, decision, targetAcMember);
                     return;
@@ -218,6 +224,8 @@ namespace KingmakerGunslinger.Rules
                 }
 
                 Stamp(ruleCalculateArmorClass);
+                FirearmArmorClassCombatLog.Publish(marker.Definition,
+                    distanceMeters, decision);
                 Interlocked.Increment(ref _appliedCount);
                 LogDecision(marker, distanceMeters, currentTargetArmorClass, decision, targetAcMember);
             }
@@ -348,10 +356,11 @@ namespace KingmakerGunslinger.Rules
                 decision.UsesTouchArmorClass ? "ac.touch-selected" : "ac.ordinary-selected",
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "weaponType={0}; distanceMeters={1:0.###}; rangeIncrement={2}; previousTargetAC={3}; selectedTargetAC={4}; adjustment={5}; targetMember={6}; reason={7}",
+                    "weaponType={0}; distanceMeters={1:0.###}; rangeIncrement={2}; penetrationRangeFeet={3:0.###}; previousTargetAC={4}; selectedTargetAC={5}; adjustment={6}; targetMember={7}; reason={8}",
                     marker.WeaponType,
                     distanceMeters,
                     decision.RangeIncrement,
+                    decision.EffectivePenetrationRangeFeet,
                     previousTargetArmorClass,
                     decision.SelectedTargetArmorClass,
                     decision.Adjustment,

@@ -39,6 +39,7 @@ using KingmakerGunslinger.Recovery;
 using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Explosions;
 using KingmakerGunslinger.Grit;
+using KingmakerGunslinger.Rules;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Archetypes;
 using KingmakerGunslinger.Scatter;
@@ -746,6 +747,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableFocusedAim)
                 {
                     Complete(RunDisposableFocusedAim());
+                    return;
+                }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableFirearmPenetration)
+                {
+                    Complete(RunDisposableFirearmPenetration());
                     return;
                 }
                 if (_request.Scenario ==
@@ -15738,6 +15745,179 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableFirearmPenetration()
+        {
+            UnitEntityData attacker = null;
+            UnitEntityData target = null;
+            ItemEntityWeapon weapon = null;
+            bool boundaries = true, nativeEvents = true, feedback = true,
+                effectiveModifier = false, cleaned = false;
+            int observedBoundaries = 0;
+            string stage = "setup";
+            var observations = new List<string>();
+            try
+            {
+                BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+                attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                attacker.Descriptor.Stats.HitPoints.BaseValue = 30;
+                target.Descriptor.Stats.HitPoints.BaseValue = 30;
+                ProductionFirearmBlueprintEntry[] entries =
+                    BlueprintBootstrap.ProductionFirearms.Entries;
+                foreach (ProductionFirearmBlueprintEntry entry in entries)
+                {
+                    stage = entry.Spec.Key;
+                    weapon = new ItemEntityWeapon(entry.Item);
+                    double penetrationFeet = FirearmPenetrationRangePolicy
+                        .EffectivePenetrationRangeFeet(entry.Spec.Definition, 0);
+                    double penetrationMeters = penetrationFeet *
+                        FirearmArmorClassService.MetersPerFoot;
+                    double[] distances =
+                    {
+                        penetrationMeters - 0.001d,
+                        penetrationMeters,
+                        penetrationMeters + 0.001d
+                    };
+                    bool[] expectedTouch = { true, true, false };
+                    for (int index = 0; index < distances.Length; index++)
+                    {
+                        double actualDistance = PositionAtAuthoritativeDistance(
+                            attacker, target, distances[index]);
+                        var attack = new RuleAttackRoll(attacker, target, weapon, 0);
+                        long touchBefore = FirearmArmorClassRuntime.AppliedCount;
+                        long ordinaryBefore = FirearmArmorClassRuntime.OrdinaryCount;
+                        long logBefore = FirearmArmorClassCombatLog.Published;
+                        try
+                        {
+                            FirearmArmorClassRuntime.BeforeAttackRoll(attack);
+                            Rulebook.Trigger(new RuleCalculateAC(attacker, target,
+                                AttackType.Ranged));
+                        }
+                        finally
+                        {
+                            FirearmArmorClassRuntime.AfterAttackRoll(attack);
+                        }
+                        bool touch = FirearmArmorClassRuntime.AppliedCount ==
+                            touchBefore + 1;
+                        bool ordinary = FirearmArmorClassRuntime.OrdinaryCount ==
+                            ordinaryBefore + 1;
+                        string message = FirearmArmorClassCombatLog.LastMessage ??
+                            string.Empty;
+                        bool line = FirearmArmorClassCombatLog.Published ==
+                            logBefore + 1 && message.Contains(expectedTouch[index]
+                                ? "Touch AC" : "Normal AC") &&
+                            message.Contains("penetration range");
+                        boundaries = boundaries && touch == expectedTouch[index];
+                        nativeEvents = nativeEvents && (touch || ordinary);
+                        feedback = feedback && line;
+                        observedBoundaries++;
+                        observations.Add(entry.Spec.Key + "[" + index + "]=" +
+                            actualDistance.ToString("0.####",
+                                System.Globalization.CultureInfo.InvariantCulture) +
+                            "m/" + (touch ? "touch" : "normal"));
+                    }
+                    weapon.Dispose();
+                    weapon = null;
+                }
+
+                stage = "effective-range-modifier";
+                ProductionFirearmBlueprintEntry musket =
+                    BlueprintBootstrap.ProductionFirearms.Musket;
+                weapon = new ItemEntityWeapon(musket.Item);
+                double modifiedMeters = 50d *
+                    FirearmArmorClassService.MetersPerFoot;
+                double modifiedActual = PositionAtAuthoritativeDistance(attacker,
+                    target, modifiedMeters);
+                var modifiedAttack = new RuleAttackRoll(attacker, target, weapon, 0);
+                EffectiveFirearmRangeRuntime.Register(modifiedAttack, 10);
+                long modifiedBefore = FirearmArmorClassRuntime.AppliedCount;
+                try
+                {
+                    FirearmArmorClassRuntime.BeforeAttackRoll(modifiedAttack);
+                    Rulebook.Trigger(new RuleCalculateAC(attacker, target,
+                        AttackType.Ranged));
+                }
+                finally
+                {
+                    FirearmArmorClassRuntime.AfterAttackRoll(modifiedAttack);
+                }
+                effectiveModifier = FirearmArmorClassRuntime.AppliedCount ==
+                    modifiedBefore + 1 &&
+                    (FirearmArmorClassCombatLog.LastMessage ?? string.Empty)
+                        .Contains("penetration range 50 ft.");
+                observations.Add("musket+10=" + modifiedActual.ToString("0.####",
+                    System.Globalization.CultureInfo.InvariantCulture) + "m");
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable firearm penetration failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                FirearmArmorClassRuntime.ResetCurrentThread();
+                if (weapon != null) weapon.Dispose();
+                if (target != null) target.Dispose();
+                if (attacker != null) attacker.Dispose();
+                cleaned = true;
+            }
+            string observed = string.Join(";", observations.ToArray());
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("firearm-penetration-production-boundaries",
+                    "15 live inside/at/outside boundaries",
+                    "count=" + observedBoundaries + ";" + observed,
+                    boundaries && observedBoundaries == 15,
+                    "exact production blueprints and authoritative DistanceTo"),
+                Assertion("firearm-penetration-native-ac-events",
+                    "each boundary resolves through native RuleCalculateAC",
+                    observed, nativeEvents,
+                    "Harmony RuleCalculateAC event boundary"),
+                Assertion("firearm-penetration-player-feedback",
+                    "one Touch/Normal annotation per resolution",
+                    "published=" + FirearmArmorClassCombatLog.Published +
+                        ";last=" + FirearmArmorClassCombatLog.LastMessage,
+                    feedback, "native warning/battle-log event"),
+                Assertion("firearm-penetration-effective-range",
+                    "Steady Aim-style +10 ft. makes 50 ft. Musket boundary touch",
+                    observed, effectiveModifier,
+                    "per-attack EffectiveFirearmRangeRuntime context"),
+                Assertion("request-local-cleanup",
+                    "disposable units/items cleaned", "cleaned=" + cleaned,
+                    cleaned, "finally cleanup; no save API")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static double PositionAtAuthoritativeDistance(
+            UnitEntityData attacker, UnitEntityData target,
+            double desiredDistanceMeters)
+        {
+            SetExactProperty(attacker, "Position", Vector3.zero);
+            Vector3 targetPosition = new Vector3((float)desiredDistanceMeters,
+                0f, 0f);
+            SetExactProperty(target, "Position", targetPosition);
+            double actual;
+            for (int attempt = 0; attempt < 6; attempt++)
+            {
+                if (!KingmakerArmorClassAccess.TryReadDistanceMeters(attacker,
+                        target, out actual))
+                    throw new InvalidOperationException(
+                        "Authoritative DistanceTo was unavailable.");
+                double difference = desiredDistanceMeters - actual;
+                if (Math.Abs(difference) <= 0.00001d) return actual;
+                targetPosition.x += (float)difference;
+                SetExactProperty(target, "Position", targetPosition);
+            }
+            if (!KingmakerArmorClassAccess.TryReadDistanceMeters(attacker, target,
+                    out actual))
+                throw new InvalidOperationException(
+                    "Authoritative DistanceTo was unavailable after positioning.");
+            return actual;
         }
 
         private static void ArmFocusedAimForRuntime(

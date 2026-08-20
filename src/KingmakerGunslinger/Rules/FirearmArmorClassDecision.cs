@@ -15,11 +15,20 @@ namespace KingmakerGunslinger.Rules
             int selectedTargetArmorClass,
             int adjustment,
             int rangeIncrement,
+            double effectivePenetrationRangeFeet,
             string reason)
         {
             if (rangeIncrement < 0)
             {
                 throw new ArgumentOutOfRangeException("rangeIncrement");
+            }
+
+            if (double.IsNaN(effectivePenetrationRangeFeet) ||
+                double.IsInfinity(effectivePenetrationRangeFeet) ||
+                effectivePenetrationRangeFeet < 0d)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "effectivePenetrationRangeFeet");
             }
 
             if (string.IsNullOrWhiteSpace(reason))
@@ -32,6 +41,7 @@ namespace KingmakerGunslinger.Rules
             SelectedTargetArmorClass = selectedTargetArmorClass;
             Adjustment = adjustment;
             RangeIncrement = rangeIncrement;
+            EffectivePenetrationRangeFeet = effectivePenetrationRangeFeet;
             Reason = reason.Trim();
         }
 
@@ -44,6 +54,8 @@ namespace KingmakerGunslinger.Rules
         internal int Adjustment { get; private set; }
 
         internal int RangeIncrement { get; private set; }
+
+        internal double EffectivePenetrationRangeFeet { get; private set; }
 
         internal string Reason { get; private set; }
     }

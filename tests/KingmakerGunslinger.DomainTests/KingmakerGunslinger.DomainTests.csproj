@@ -175,6 +175,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundStateMachine.cs"><Link>Audio\FirearmSoundStateMachine.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Feats\FirearmWeaponFeatPolicy.cs"><Link>Domain\FirearmWeaponFeatPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmConditionPresentation.cs"><Link>Domain\FirearmConditionPresentation.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmPenetrationPresentation.cs"><Link>Domain\FirearmPenetrationPresentation.cs</Link></Compile>
     <Compile Include="Sprint55Tests.cs" />
     <Compile Include="Sprint56Tests.cs" />
     <Compile Include="Sprint58Tests.cs" />
@@ -623,11 +624,17 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmArmorClassDecision.cs">
       <Link>Rules\FirearmArmorClassDecision.cs</Link>
     </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmArmorClassPresentation.cs">
+      <Link>Rules\FirearmArmorClassPresentation.cs</Link>
+    </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmArmorClassRequest.cs">
       <Link>Rules\FirearmArmorClassRequest.cs</Link>
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmArmorClassService.cs">
       <Link>Rules\FirearmArmorClassService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Rules\FirearmPenetrationRangePolicy.cs">
+      <Link>Rules\FirearmPenetrationRangePolicy.cs</Link>
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Rules\EffectiveFirearmRangePolicy.cs">
       <Link>Rules\EffectiveFirearmRangePolicy.cs</Link>

@@ -90,7 +90,10 @@ namespace KingmakerGunslinger.Blueprints
                             spec.InternalName);
                         BlueprintItemAccess.Resolve().ConfigureWeapon(clone,
                             LocalizationService.Create(spec.Symbol + ".Name", spec.DisplayName),
-                            LocalizationService.Create(spec.Symbol + ".Description", spec.Description),
+                            LocalizationService.Create(spec.Symbol + ".Description",
+                                spec.Description + " " +
+                                FirearmPenetrationPresentation.Describe(
+                                    family.Spec.Definition)),
                             LocalizationService.Create(spec.Symbol + ".Flavor", spec.Flavor),
                             spec.Cost, source.Weight);
                         SetEnchantments(clone, spec.Enchantments.ToArray());

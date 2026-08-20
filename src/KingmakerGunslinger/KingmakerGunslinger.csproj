@@ -462,6 +462,7 @@
     <Compile Include="Firearms\AmmunitionId.cs" />
     <Compile Include="Firearms\FirearmCondition.cs" />
     <Compile Include="Firearms\FirearmConditionPresentation.cs" />
+    <Compile Include="Firearms\FirearmPenetrationPresentation.cs" />
     <Compile Include="Firearms\FirearmConditionCombatLog.cs" />
     <Compile Include="Firearms\FirearmConditionTooltipPatch.cs" />
     <Compile Include="Firearms\FirearmQualitiesTooltipPatch.cs" />
@@ -780,9 +781,12 @@
     <Compile Include="Qualification\MaintenanceQualificationStage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\FirearmArmorClassDecision.cs" />
+    <Compile Include="Rules\FirearmArmorClassCombatLog.cs" />
+    <Compile Include="Rules\FirearmArmorClassPresentation.cs" />
     <Compile Include="Rules\FirearmArmorClassRequest.cs" />
     <Compile Include="Rules\FirearmArmorClassRuntime.cs" />
     <Compile Include="Rules\FirearmArmorClassService.cs" />
+    <Compile Include="Rules\FirearmPenetrationRangePolicy.cs" />
     <Compile Include="Rules\EffectiveFirearmRangePolicy.cs" />
     <Compile Include="Rules\EffectiveFirearmRangeRuntime.cs" />
     <Compile Include="Rules\SteadyAimPolicy.cs" />

@@ -37,11 +37,6 @@ namespace KingmakerGunslinger.Rules
                 return Ordinary(request, 0, "already-applied");
             }
 
-            if (request.Definition.Era != FirearmEra.Early)
-            {
-                return Ordinary(request, 0, "advanced-firearm-not-implemented");
-            }
-
             if (!request.Definition.HasFixedRangeIncrement)
             {
                 return Ordinary(request, 0, "special-range-not-implemented");
@@ -55,12 +50,15 @@ namespace KingmakerGunslinger.Rules
             }
 
             int rangeIncrement;
+            double penetrationRangeFeet;
             try
             {
-                double incrementMeters =
-                    EffectiveFirearmRangePolicy.IncrementFeet(
-                        request.Definition, request.RangeIncrementBonusFeet) *
-                    MetersPerFoot;
+                double incrementFeet = EffectiveFirearmRangePolicy.IncrementFeet(
+                    request.Definition, request.RangeIncrementBonusFeet);
+                double incrementMeters = incrementFeet * MetersPerFoot;
+                penetrationRangeFeet = FirearmPenetrationRangePolicy
+                    .EffectivePenetrationRangeFeet(request.Definition,
+                        request.RangeIncrementBonusFeet);
                 double tolerantDistance = Math.Max(
                     0d,
                     request.DistanceMeters - RangeBoundaryToleranceMeters);
@@ -77,9 +75,12 @@ namespace KingmakerGunslinger.Rules
                 return Ordinary(request, 0, "range-overflow");
             }
 
-            if (rangeIncrement != 1 && !request.DeadeyeAuthorized)
+            if (!FirearmPenetrationRangePolicy.UsesTouchArmorClass(
+                    request.Definition, rangeIncrement,
+                    request.DeadeyeAuthorized))
             {
-                return Ordinary(request, rangeIncrement, "outside-first-range-increment");
+                return Ordinary(request, rangeIncrement,
+                    "outside-firearm-penetration-range", penetrationRangeFeet);
             }
 
             long adjustment = (long)request.TouchArmorClass - request.OrdinaryArmorClass;
@@ -98,17 +99,21 @@ namespace KingmakerGunslinger.Rules
                 selectedArmorClass,
                 integerAdjustment,
                 rangeIncrement,
+                penetrationRangeFeet,
                 selectedArmorClass == request.CurrentTargetArmorClass
                     ? "touch-ac-selected-no-numeric-delta"
                     : request.DeadeyeAuthorized && rangeIncrement > 1
                         ? "touch-ac-deadeye"
-                        : "touch-ac-first-range-increment");
+                        : request.Definition.Era == FirearmEra.Advanced
+                            ? "touch-ac-advanced-penetration"
+                            : "touch-ac-first-range-increment");
         }
 
         private static FirearmArmorClassDecision Ordinary(
             FirearmArmorClassRequest request,
             int rangeIncrement,
-            string reason)
+            string reason,
+            double effectivePenetrationRangeFeet = 0d)
         {
             return new FirearmArmorClassDecision(
                 false,
@@ -116,6 +121,7 @@ namespace KingmakerGunslinger.Rules
                 request.CurrentTargetArmorClass,
                 0,
                 rangeIncrement,
+                effectivePenetrationRangeFeet,
                 reason);
         }
     }

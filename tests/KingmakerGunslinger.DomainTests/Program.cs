@@ -1108,7 +1108,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("ac.flat-footed-preserved", ArmorClassPreservesFlatFootedAdjustment),
             Case("ac.equal-no-write", ArmorClassEqualValuesRequireNoWrite),
             Case("ac.already-applied", ArmorClassAlreadyAppliedIsSkipped),
-            Case("ac.advanced-fails-closed", ArmorClassAdvancedFirearmFailsClosed),
+            Case("ac.production-boundaries", ArmorClassProductionBoundaries),
+            Case("ac.penetration-presentation", ArmorClassPenetrationPresentation),
             Case("ac.blunderbuss-first-increment-touch", ArmorClassBlunderbussFirstIncrementTouch),
             Case("ac.invalid-distance", ArmorClassInvalidDistanceFailsClosed),
             Case("ac.negative-distance", ArmorClassNegativeDistanceFailsClosed),
@@ -7949,28 +7950,86 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("already-applied", decision.Reason, "Duplicate-application reason mismatch.");
         }
 
-        private static void ArmorClassAdvancedFirearmFailsClosed()
+        private static void ArmorClassProductionBoundaries()
         {
-            FirearmDefinition advanced = new FirearmDefinition(
-                FirearmEra.Advanced,
-                FirearmKind.Pistol,
-                1,
-                30,
-                1,
-                5,
-                MoveReload(1),
-                false);
-            FirearmArmorClassDecision decision = SelectArmorClass(
-                true,
-                1,
-                advanced,
-                2d,
-                20,
-                12,
-                20,
-                false);
-            Assertions.False(decision.UsesTouchArmorClass, "Advanced-firearm penetration is outside Sprint 9.");
-            Assertions.Equal("advanced-firearm-not-implemented", decision.Reason, "Advanced-firearm reason mismatch.");
+            ProductionFirearmWeaponSpec[] specs =
+            {
+                ProductionFirearmCatalog.CreatePistol(),
+                ProductionFirearmCatalog.CreateMusket(),
+                ProductionFirearmCatalog.CreateBlunderbuss(),
+                ProductionFirearmCatalog.CreateAdvancedRifle(),
+                ProductionFirearmCatalog.CreateAdvancedRevolver()
+            };
+            foreach (ProductionFirearmWeaponSpec spec in specs)
+            {
+                double boundaryFeet = FirearmPenetrationRangePolicy
+                    .EffectivePenetrationRangeFeet(spec.Definition, 0);
+                double boundaryMeters = boundaryFeet *
+                    FirearmArmorClassService.MetersPerFoot;
+                FirearmArmorClassDecision inside = SelectArmorClass(true, 1,
+                    spec.Definition, boundaryMeters - 0.001d, 20, 12, 20,
+                    false);
+                FirearmArmorClassDecision exact = SelectArmorClass(true, 1,
+                    spec.Definition, boundaryMeters, 20, 12, 20, false);
+                FirearmArmorClassDecision outside = SelectArmorClass(true, 1,
+                    spec.Definition, boundaryMeters + 0.001d, 20, 12, 20,
+                    false);
+                Assertions.True(inside.UsesTouchArmorClass,
+                    spec.DisplayName + " just-inside boundary did not use touch AC.");
+                Assertions.True(exact.UsesTouchArmorClass,
+                    spec.DisplayName + " exact boundary did not use touch AC.");
+                Assertions.False(outside.UsesTouchArmorClass,
+                    spec.DisplayName + " outside boundary did not use normal AC.");
+                Assertions.Equal(boundaryFeet,
+                    exact.EffectivePenetrationRangeFeet,
+                    spec.DisplayName + " penetration distance mismatch.");
+            }
+
+            FirearmDefinition musket = FirearmDefinitions.CreateEarlyMusket();
+            FirearmArmorClassDecision steadyAim = FirearmArmorClassService.Select(
+                new FirearmArmorClassRequest(true, 1, musket,
+                    50d * FirearmArmorClassService.MetersPerFoot, 20, 12, 20,
+                    false, false, 10));
+            Assertions.True(steadyAim.UsesTouchArmorClass,
+                "The effective Steady Aim boundary did not use touch AC.");
+            Assertions.Equal(50d, steadyAim.EffectivePenetrationRangeFeet,
+                "Steady Aim did not extend the effective penetration range.");
+
+            FirearmDefinition rifle = FirearmDefinitions.CreateAdvancedRifle();
+            Assertions.Equal(400d, FirearmPenetrationRangePolicy
+                .EffectivePenetrationRangeFeet(rifle, 0),
+                "Advanced Rifle must penetrate through five 80-foot increments.");
+        }
+
+        private static void ArmorClassPenetrationPresentation()
+        {
+            FirearmDefinition pistol = FirearmDefinitions.CreateEarlyPistol();
+            string pistolText = FirearmPenetrationPresentation.Describe(pistol);
+            Assertions.True(pistolText.Contains("first range increment") &&
+                pistolText.Contains("20 ft. base") &&
+                pistolText.Contains("Normal AC beyond"),
+                "Pistol penetration help is incomplete.");
+
+            string rifleText = FirearmPenetrationPresentation.Describe(
+                FirearmDefinitions.CreateAdvancedRifle());
+            Assertions.True(rifleText.Contains("first five range increments") &&
+                rifleText.Contains("400 ft. base"),
+                "Advanced Rifle penetration help is incomplete.");
+
+            string scatterText = FirearmPenetrationPresentation.Describe(
+                FirearmDefinitions.CreateEarlyBlunderbuss());
+            Assertions.True(scatterText.Contains("ordinary direct fire") &&
+                scatterText.Contains("Scatter Shot") &&
+                scatterText.Contains("10 ft. base"),
+                "Blunderbuss direct-fire/scatter distinction is incomplete.");
+
+            string log = FirearmArmorClassPresentation.Format(pistol,
+                20d * FirearmArmorClassService.MetersPerFoot, 20d, true,
+                "touch-ac-first-range-increment");
+            Assertions.True(log.Contains("20 ft.") &&
+                log.Contains("penetration range 20 ft.") &&
+                log.Contains("Touch AC"),
+                "Player-facing firearm AC resolution message is incomplete.");
         }
 
         private static void ArmorClassBlunderbussFirstIncrementTouch()

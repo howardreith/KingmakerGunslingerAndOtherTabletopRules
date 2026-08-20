@@ -38,9 +38,10 @@ namespace KingmakerGunslinger.Firearms
                 definition.MisfireValue +
                     (state.Condition == FirearmCondition.Broken ? 4 : 0));
             return string.Format(CultureInfo.InvariantCulture,
-                "Firearm, {0}, {1}, Capacity {2}, {3}, Misfire {4}, Condition: {5}",
+                "Firearm, {0}, {1}, Capacity {2}, {3}, Misfire {4}, Condition: {5}. {6}",
                 definition.Era, handedness, definition.Capacity, range,
-                misfire, state.Condition);
+                misfire, state.Condition,
+                FirearmPenetrationPresentation.Describe(definition));
         }
     }
 }

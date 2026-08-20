@@ -199,6 +199,8 @@ namespace KingmakerGunslinger.Blueprints
             string descriptionText = spec.Definition.IsScatter
                 ? "An early firearm that can fire an ordinary lead ball at a 10-foot range increment or use Scatter Shot to fire pellets in a 15-foot cone. It uses black powder and lead balls, can misfire, and must be reloaded after firing."
                 : "An " + eraName + " firearm with a black-powder mechanism. It uses powder and lead shot, can misfire, and must be reloaded as its capacity is spent.";
+            descriptionText += " " + FirearmPenetrationPresentation.Describe(
+                spec.Definition);
             var name = LocalizationService.Create(localizationStem + ".Name", spec.DisplayName);
             var description = LocalizationService.Create(
                 localizationStem + ".Description",
