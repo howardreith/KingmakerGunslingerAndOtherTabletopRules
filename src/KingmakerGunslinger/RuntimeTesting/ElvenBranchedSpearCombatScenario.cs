@@ -130,6 +130,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ElvenBranchedSpearAssetRuntime.HasValidatedPrefab &&
                         presentationExact,
                     "dedicated AssetBundle runtime and instantiated GameObject");
+                BlueprintItemWeapon nativeLongspear =
+                    BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                        BlueprintBootstrap.Library, StandardLongspearGuid,
+                        "native Standard Longspear presentation donor");
+                GameObject nativeModel = nativeLongspear.Type == null ||
+                    nativeLongspear.Type.VisualParameters == null ? null :
+                    nativeLongspear.Type.VisualParameters.Model;
+                GameObject nativePresentation = nativeModel == null ? null :
+                    UnityEngine.Object.Instantiate(nativeModel);
+                if (nativePresentation != null)
+                    presentations.Add(nativePresentation);
+                PresentationGeometry nativeGeometry = MeasurePresentation(
+                    nativePresentation);
+                PresentationGeometry customGeometry = MeasurePresentation(
+                    presentations[0]);
+                string geometryObserved = "native=" + nativeGeometry.Describe() +
+                    ";custom=" + customGeometry.Describe();
+                Add(assertions, "spear-native-custom-geometry-inventory",
+                    "finite renderable native Longspear and custom spear root-space bounds",
+                    geometryObserved, nativeGeometry.IsValid &&
+                        customGeometry.IsValid,
+                    "live installed native TH_LongspearKnight1 and packaged custom prefab renderer geometry");
+                diagnostics.Add(geometryObserved);
                 var mappedItems = new List<KeyValuePair<string,
                     BlueprintItemWeapon>>();
                 mappedItems.AddRange(set.Entries.Select(value =>
@@ -151,6 +174,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stage = "proficiency";
                 equipped = Equip(attacker, set.Require(
                     ElvenBranchedSpearItemKind.Mundane).Item);
+                attacker.View.HandsEquipment.UpdateAll();
+                Transform equippedPresentation = FindEquippedPresentation(
+                    attacker.View.transform);
+                PresentationGeometry equippedGeometry = MeasurePresentation(
+                    equippedPresentation == null ? null :
+                    equippedPresentation.gameObject);
+                Renderer[] equippedRenderers = equippedPresentation == null ?
+                    Array.Empty<Renderer>() : equippedPresentation
+                        .GetComponentsInChildren<Renderer>(true);
+                string equippedObserved = "path=" + TransformPath(
+                    equippedPresentation, attacker.View.transform) +
+                    ";localPosition=" + (equippedPresentation == null ?
+                        "<null>" : equippedPresentation.localPosition.ToString("R")) +
+                    ";localRotation=" + (equippedPresentation == null ?
+                        "<null>" : equippedPresentation.localRotation.ToString("R")) +
+                    ";localScale=" + (equippedPresentation == null ?
+                        "<null>" : equippedPresentation.localScale.ToString("R")) +
+                    ";renderers=" + equippedRenderers.Length +
+                    ";geometry=" + equippedGeometry.Describe();
+                Add(assertions, "spear-equipped-world-presentation",
+                    "one active custom spear instance attached beneath the live unit view after native equipment refresh",
+                    equippedObserved, equippedPresentation != null &&
+                        equippedPresentation.gameObject.activeInHierarchy &&
+                        equippedRenderers.Length > 0 && equippedRenderers.All(
+                            value => value != null && value.enabled &&
+                                value.gameObject.activeInHierarchy) &&
+                        equippedGeometry.IsValid,
+                    "live UnitEntityData.View.HandsEquipment.UpdateAll and exact custom prefab hierarchy");
+                diagnostics.Add(equippedObserved);
                 RuleAttackWithWeapon untrained = WeaponAttack(attacker, target,
                     equipped);
                 bool untrainedCategory = attacker.Descriptor.Proficiencies.Contains(
@@ -1457,6 +1509,114 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (owner != null && remembered != null && owner.Memory != null &&
                 owner.Memory.Contains(remembered)) owner.Memory.Remove(remembered);
+        }
+
+        private static Transform FindEquippedPresentation(Transform root)
+        {
+            if (root == null) return null;
+            Transform[] matches = root.GetComponentsInChildren<Transform>(true)
+                .Where(value => value != null &&
+                    value.name.StartsWith("ElvenBranchedSpear",
+                        StringComparison.OrdinalIgnoreCase) &&
+                    value.Find("Visual") != null && value.Find("Grip") != null &&
+                    value.Find("Tip") != null && value.Find("Butt") != null)
+                .ToArray();
+            return matches.Length == 1 ? matches[0] : null;
+        }
+
+        private static string TransformPath(Transform value, Transform root)
+        {
+            if (value == null) return "<null>";
+            var names = new List<string>();
+            for (Transform current = value; current != null;
+                current = current.parent)
+            {
+                names.Add(current.name);
+                if (ReferenceEquals(current, root)) break;
+            }
+            names.Reverse();
+            return string.Join("/", names.ToArray());
+        }
+
+        private static PresentationGeometry MeasurePresentation(GameObject root)
+        {
+            if (root == null) return PresentationGeometry.Invalid("root-null");
+            Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true)
+                .Where(value => value != null).ToArray();
+            if (renderers.Length == 0)
+                return PresentationGeometry.Invalid("renderers-empty");
+            Vector3 minimum = new Vector3(float.PositiveInfinity,
+                float.PositiveInfinity, float.PositiveInfinity);
+            Vector3 maximum = new Vector3(float.NegativeInfinity,
+                float.NegativeInfinity, float.NegativeInfinity);
+            foreach (Renderer renderer in renderers)
+            {
+                Bounds bounds = renderer.bounds;
+                Vector3 min = bounds.min;
+                Vector3 max = bounds.max;
+                foreach (Vector3 world in new[] {
+                    new Vector3(min.x, min.y, min.z),
+                    new Vector3(min.x, min.y, max.z),
+                    new Vector3(min.x, max.y, min.z),
+                    new Vector3(min.x, max.y, max.z),
+                    new Vector3(max.x, min.y, min.z),
+                    new Vector3(max.x, min.y, max.z),
+                    new Vector3(max.x, max.y, min.z),
+                    new Vector3(max.x, max.y, max.z) })
+                {
+                    Vector3 local = root.transform.InverseTransformPoint(world);
+                    minimum = Vector3.Min(minimum, local);
+                    maximum = Vector3.Max(maximum, local);
+                }
+            }
+            Vector3 size = maximum - minimum;
+            bool finite = Finite(minimum) && Finite(maximum) &&
+                size.x > 0f && size.y > 0f && size.z > 0f;
+            return new PresentationGeometry(finite, minimum, maximum,
+                renderers.Length, finite ? string.Empty : "bounds-invalid");
+        }
+
+        private static bool Finite(Vector3 value)
+        {
+            return Finite(value.x) && Finite(value.y) && Finite(value.z);
+        }
+
+        private static bool Finite(float value)
+        {
+            return !float.IsNaN(value) && !float.IsInfinity(value);
+        }
+
+        private sealed class PresentationGeometry
+        {
+            internal PresentationGeometry(bool isValid, Vector3 minimum,
+                Vector3 maximum, int renderers, string failure)
+            {
+                IsValid = isValid;
+                Minimum = minimum;
+                Maximum = maximum;
+                Renderers = renderers;
+                Failure = failure ?? string.Empty;
+            }
+
+            internal bool IsValid { get; private set; }
+            internal Vector3 Minimum { get; private set; }
+            internal Vector3 Maximum { get; private set; }
+            internal int Renderers { get; private set; }
+            internal string Failure { get; private set; }
+
+            internal static PresentationGeometry Invalid(string failure)
+            {
+                return new PresentationGeometry(false, Vector3.zero,
+                    Vector3.zero, 0, failure);
+            }
+
+            internal string Describe()
+            {
+                return IsValid ? "min=" + Minimum.ToString("R") +
+                    ",max=" + Maximum.ToString("R") + ",size=" +
+                    (Maximum - Minimum).ToString("R") + ",renderers=" +
+                    Renderers : "invalid:" + Failure;
+            }
         }
 
         private static void SetProperty(object owner, string name, object value)
