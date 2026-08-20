@@ -216,3 +216,96 @@ Exact post-runtime clean qualification for that source:
 The clean local-runtime package is byte-identical to the package deployed for
 the successful visual-baseline run. Runtime evidence therefore corresponds to
 the exact committed source, not an unqualified intermediate build.
+
+## 2026-08-20 - live native-donor frame capture
+
+Expanded the guarded visual-evidence scenario without changing any production
+asset transform. In addition to the exact 22 production variants, the scenario
+now resolves six exact native donor types and a deterministic native item whose
+effective held model is the donor model: Light Crossbow, Heavy Crossbow,
+Longspear, Scimitar, Bastard Sword, and Greatsword. Each control is materialized
+through the same real equipment lifecycle in both stored and held-idle states.
+
+The records now include presentation role, model-local renderer bounds and
+major/minor axes, plus model-local positions and axes for native IK, weapon
+center, trail, surface, and warhead locators. The successful guarded Steam run
+is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260820T2345261164438Z-weapon-presentation-evidence/`
+
+Exact results:
+
+- Native controls: PASS, 12 records / 6 controls.
+- Native held/stored mesh-local geometry: PASS, 6/6 invariant at an explicit
+  component tolerance of `0.00001`; bounds come from `Mesh.bounds` or
+  `SkinnedMeshRenderer.localBounds`, never reconstructed world AABBs.
+- Full production/control materialization: PASS, 56/56.
+- Evidence output: PASS, 56 PNG/JSON pairs / 224 labelled views / 113 files.
+- Blank or low-density contact sheets: 0 / 0.
+- Cleanup: PASS; no save interaction and exact request-local snapshots restored.
+- Steam route: App ID 640820.
+- Runtime DLL SHA-256:
+  `EA0774E877274437ED63CA94E55FB8FA50CE183C0DBBE566BD2E13EFE8A2617E`.
+- Guarded local-runtime package SHA-256:
+  `24DF7A916343948A8515FE699B14B367914D97FD8D062D1007B9D34212AB098A`.
+- Deployment manifest:
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260820T2345260622459Z/deployment.json`.
+
+Measured donor facts, expressed in each instantiated model's local space:
+
+- Both crossbow controls are longitudinal on `+Z`, use local `+Y` as the stable
+  secondary/up axis, and expose their support-hand IK targets on the fore-end.
+- Native Longspear is longitudinal on `+Y`: its warhead is at local
+  `Y=0.9053`, trail/head locators are near `Y=0.982`, and its left-hand target
+  is behind the root at `Y=-0.1680`. Its physical head therefore establishes
+  donor forward `+Y`, disproving the current authored branched-spear mapping to
+  `-Y`.
+- Scimitar, Bastard Sword, and Greatsword blades are longitudinal on `+Y`.
+  Their blade surfaces occupy the local `YZ` plane, so local `+X` is the
+  donor's blade-normal axis. The scimitar tip curves toward local `-Z`, which
+  also supplies an edge-side convention rather than only an unsigned plane.
+- Native held and stored attachment transforms are different for every control.
+  Held and stored presentation therefore require separate calibration; copying
+  one visible-child transform between those states would be unsupported.
+
+These are donor-frame measurements, not cosmetic acceptance. The next source
+checkpoint will encode complete authored semantic frames and validate their
+basis, polarity, scale, support interval, renderer endpoints, and identity-root
+contract before applying family-specific transforms.
+
+Instrumentation was itself fail-closed. The first donor run at
+`20260820T2329318465808Z` captured valid images and locators, but code review
+found that its local bounds were reconstructed from world-axis-aligned bounds,
+which made attachment rotation inflate the result. That run is not used for
+mesh bounds. A corrected run at `20260820T2340576016289Z` then rejected exact
+string equality for harmless floating-point deltas no larger than roughly
+`0.0000017`. The final run above records numeric components and applies the
+documented `0.00001` tolerance; it passes all six controls. No production asset
+was changed during these iterations.
+
+Post-runtime clean qualification for the exact diagnostic source:
+
+- Runtime scenario preflight: PASS, 112 checks. One initial preflight invocation
+  was invalidated by concurrently running repository validation while its
+  artifact fingerprint assertion was active; the isolated rerun passed and the
+  unsupported fixture performed no build, deployment, launch, or evidence
+  creation. An immediate post-runtime invocation later caught one lingering
+  artifact timestamp update; a direct before/after unsupported-scenario probe
+  showed zero artifact delta and zero CIM/launch calls, and the quiescent rerun
+  again passed all 112 checks.
+- Repository/version validation: PASS for `0.0.88`.
+- Complete clean Release domain suite: PASS, 1,163 tests / 0 failures.
+- Clean Release build/package: PASS, including another complete domain run,
+  output validation, sound-bank validation, and strict package validation.
+- Explicit standalone package validation: PASS.
+- `Build-Local.ps1`: PASS; no deployment performed.
+- Clean standalone and local-runtime package SHA-256:
+  `24DF7A916343948A8515FE699B14B367914D97FD8D062D1007B9D34212AB098A`.
+- Clean DLL SHA-256:
+  `EA0774E877274437ED63CA94E55FB8FA50CE183C0DBBE566BD2E13EFE8A2617E`.
+
+The clean package and DLL exactly match the guarded runtime identities above.
+The source/test checkpoint was committed as
+`07c11236d2047af63fc6aeccfb51be99b06fe708`
+(`test(presentation): capture native donor frames`) and published to the
+identically named origin feature branch with an ordinary non-force push.

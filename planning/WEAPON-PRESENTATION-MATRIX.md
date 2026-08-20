@@ -4,8 +4,20 @@ Status values: `PASS-S` is structured/mechanical evidence only; `OBS-DEFECT`
 means state-labelled imagery directly reproduces a defect; `OBS-OPEN` means the
 state is captured but not accepted; `NC` means not captured; `N/A` means not
 applicable. Source axes describe current authored assets, not accepted donor
-conversions. `V1` is unchanged-asset default-Medium-male evidence and makes no
-combat, movement, sex, or size acceptance claim.
+conversions. `V1` is unchanged-asset default-Medium-male evidence. `V2` adds
+six exact live native donor controls and model-local frame data. Neither makes
+a combat, movement, sex, or size acceptance claim.
+
+## Measured native donor controls
+
+| Donor | Exact control item | Held prefab | Stored presentation | Forward | Secondary axis | Support / head / tip evidence | Evidence |
+|---|---|---|---|---|---|---|---|
+| Light Crossbow | `511c97c1ea111444aa186b1a58496664` | `TH_CrossbowLightArmy_Normal` | same weapon model, independent attachment transform; native quiver also present | `+Z` | up `+Y` | left-hand target `(-0.0250,-0.0240,0.3570)`; warhead near `Z=0.4410` | V2 |
+| Heavy Crossbow | `19a5092244dcf99478dcd73c974828b1` | `TH_CrossbowHeavy` | same weapon model, independent attachment transform; native quiver also present | `+Z` | up `+Y` | left-hand target `(-0.0310,-0.0510,0.3740)` | V2 |
+| Longspear | `f28f6031c2908d84d945865a80f67177` | `TH_LongspearKnight1` | same weapon model, independent attachment transform | `+Y` | head/blade plane `YZ`; normal `+X` | warhead `Y=0.9053`; head trail `Y=0.9820`; left-hand target `Y=-0.1680` | V2 |
+| Scimitar | `2ca0329871f14a27922370f17ea4d15d` | `OH_ScimitarBandits` | held model plus independent native scabbard/attachment | `+Y` | blade normal `+X`; edge side `-Z` | trail start `Y=0.0900`; end `Y=0.6850`; tip curves toward `-Z` | V2 |
+| Bastard Sword | `7b8a4a452f11022488b1c7bfb0ed7746` | `OH_SwordBastardArmy` | held model plus independent native scabbard/attachment | `+Y` | blade normal `+X` | trail start `Y=0.1256`; end `Y=1.1667` | V2 |
+| Greatsword | `0782c8ca4b6c4634a0f6dabbed796211` | `TH_GreatswordBarbarian` | held model plus independent native scabbard/attachment | `+Y` | blade normal `+X` | trail start `Y=0.2130`; end `Y=1.3950`; left-hand target `Y=-0.1690` | V2 |
 
 | Family | Exact weapon / visual variant | Held prefab | Stored prefab / actual baseline mount | Native donor | Source forward | Source up / blade normal / head up | Grip result | Tip / muzzle result | Support-hand result | Held-idle result | Combat-ready result | Attack / fire / thrust result | Reload result | Movement result | Stored result | Male Medium result | Female Medium | Small | Enlarged | Automated validation | Runtime visual status | Remaining uncertainty | Evidence | Acceptance |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -42,8 +54,12 @@ combat, movement, sex, or size acceptance claim.
 - E2: `20260820T2152440037492Z-disposable-eastern-weapons-combat`.
 - V1: `20260820T2307109303617Z-weapon-presentation-evidence` (44 exact
   stored/held PNG/JSON pairs, 176 views, unchanged 0.0.88 assets).
+- V2: `20260820T2345261164438Z-weapon-presentation-evidence` (the same 22
+  production variants plus 6 exact native donor controls; 56 stored/held
+  PNG/JSON pairs, 224 views, model-local locator data, and mesh-local bounds
+  proven invariant across held/stored attachment at tolerance `0.00001`).
 
 All runtime evidence directories are under
-`C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. V1 is direct cosmetic
-evidence only for stored and held-idle on one default Medium male fixture; it
-does not upgrade any uncaptured state or character configuration.
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. V1/V2 are direct cosmetic
+evidence only for stored and held-idle on one default Medium male fixture; they
+do not upgrade any uncaptured state or character configuration.
