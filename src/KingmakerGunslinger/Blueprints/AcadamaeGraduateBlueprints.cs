@@ -83,7 +83,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.Feat.AcadamaeGraduate.Name",
                     "Acadamae Graduate"),
                 LocalizationService.Create("KMG.Feat.AcadamaeGraduate.Description",
-                    "Prerequisite: specialist wizard 1st level; Conjuration cannot be a forbidden school. Activate Use Acadamae Graduate to reduce an eligible prepared arcane Conjuration (Summoning) spell's casting time by one round, to a minimum of one standard action. After an accelerated spell is successfully cast, attempt a Fortitude save (DC 15 + spell level); failure causes fatigue. Leave the mode off to cast normally without this save or fatigue risk."),
+                    "Activate Use Acadamae Graduate to reduce an eligible prepared arcane Conjuration (Summoning) spell's casting time by one round, to a minimum of one standard action. After an accelerated spell is successfully cast, attempt a Fortitude save (DC 15 + spell level); failure causes fatigue. Leave the mode off to cast normally without this save or fatigue risk."),
                 iconDonor.Icon);
             return feature;
         }

@@ -15972,7 +15972,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ActivatableAbility acadamaeMode = null;
             string spellIdentity = "<none>";
             bool prepared = false, modeGranted = false, modeOffObserved = false,
-                presentation = false, successObserved = false,
+                prerequisitePresentation = false, presentation = false,
+                successObserved = false,
                 nativeFailureObserved = false,
                 failureObserved = false, cancellationObserved = false,
                 snapshotObserved = false, fatigueIndependent = false,
@@ -16059,6 +16060,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spellbook.UpdateAllSlotsSize(false);
                 spellbook.Rest();
                 spellbook.AddKnown(spellLevel, spell, true);
+                PrerequisiteAcadamaeGraduate[] featPrerequisites =
+                    BlueprintBootstrap.AcadamaeGraduate.ComponentsArray.OfType<
+                        PrerequisiteAcadamaeGraduate>().ToArray();
+                string featDescription = BlueprintBootstrap.AcadamaeGraduate.Description ??
+                    string.Empty;
+                string prerequisiteText = featPrerequisites.Length == 1 ?
+                    featPrerequisites[0].GetUIText() : string.Empty;
+                prerequisitePresentation = featPrerequisites.Length == 1 &&
+                    featDescription.IndexOf("Prerequisite:",
+                        StringComparison.OrdinalIgnoreCase) < 0 &&
+                    featDescription.IndexOf("specialist wizard 1st level",
+                        StringComparison.OrdinalIgnoreCase) < 0 &&
+                    prerequisiteText.IndexOf("Specialist Wizard level 1",
+                        StringComparison.Ordinal) >= 0 &&
+                    prerequisiteText.IndexOf(
+                        "Conjuration must not be a forbidden school",
+                        StringComparison.Ordinal) >= 0;
                 unit.Descriptor.AddFact(BlueprintBootstrap.AcadamaeGraduate);
 
                 acadamaeMode = unit.Descriptor.ActivatableAbilities.Enumerable
@@ -16332,7 +16350,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AcadamaeSavingThrowTestControl.Cancel();
             }
             string observed = "spell=" + spellIdentity + ";level=" + spellLevel +
-                ";prepared=" + prepared + ";modeGranted=" + modeGranted +
+                ";prepared=" + prepared + ";prerequisitePresentation=" +
+                prerequisitePresentation + ";modeGranted=" + modeGranted +
                 ";modeOff=" + modeOffObserved + ";offCount=" + offCount +
                 ";presentation=" + presentation +
                 ";successCount=" + successCount + ";failureCount=" + failureCount +
@@ -16370,6 +16389,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("acadamae-prepared-summoning",
                     "real prepared arcane Conjuration (Summoning) spell", observed,
                     prepared && spellLevel >= 0, "native Wizard spellbook and slot"),
+                Assertion("acadamae-prerequisite-presentation",
+                    "one native prerequisite presentation and no duplicate description copy",
+                    observed, prerequisitePresentation,
+                    "live feat components, localized description, and prerequisite UI text"),
                 Assertion("acadamae-mode-grant-default-off",
                     "feat grants exact native mode, initially off", observed,
                     modeGranted, "restoring AddFacts and native activatable collection"),

@@ -207,6 +207,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("acadamae.eligibility-matrix", AcadamaeCordPolicyTests.AcadamaeEligibilityMatrix),
             Case("acadamae.multi-round-and-dc", AcadamaeCordPolicyTests.AcadamaeMultiRoundAndDc),
             Case("acadamae.prerequisite-matrix", AcadamaeCordPolicyTests.AcadamaePrerequisiteMatrix),
+            Case("acadamae.prerequisite-presentation", AcadamaeCordPolicyTests.AcadamaePrerequisitePresentation),
             Case("acadamae.native-identity-contracts", AcadamaeCordPolicyTests.AcadamaeNativeIdentityContracts),
             Case("acadamae.invocation-correlation", AcadamaeCordPolicyTests.AcadamaeInvocationCorrelation),
             Case("acadamae.mode-fatigue-source-contracts", AcadamaeCordPolicyTests.AcadamaeModeAndFatigueSourceContracts),

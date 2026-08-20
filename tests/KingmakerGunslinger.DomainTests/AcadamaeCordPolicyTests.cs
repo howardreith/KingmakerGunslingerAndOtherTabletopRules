@@ -183,6 +183,41 @@ namespace KingmakerGunslinger.DomainTests
             AssertPrerequisite(request, false, "specialization-replaced", 1);
         }
 
+        internal static void AcadamaePrerequisitePresentation()
+        {
+            string blueprint = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "AcadamaeGraduateBlueprints.cs"));
+            int descriptionStart = blueprint.IndexOf(
+                "KMG.Feat.AcadamaeGraduate.Description", StringComparison.Ordinal);
+            int descriptionEnd = blueprint.IndexOf("iconDonor.Icon", descriptionStart,
+                StringComparison.Ordinal);
+            Assertions.True(descriptionStart >= 0 && descriptionEnd > descriptionStart,
+                "Acadamae Graduate description localization must remain registered.");
+            string description = blueprint.Substring(descriptionStart,
+                descriptionEnd - descriptionStart);
+            Assertions.True(description.IndexOf("Prerequisite:",
+                    StringComparison.OrdinalIgnoreCase) < 0 &&
+                description.IndexOf("specialist wizard 1st level",
+                    StringComparison.OrdinalIgnoreCase) < 0 &&
+                description.IndexOf("Conjuration cannot be a forbidden school",
+                    StringComparison.OrdinalIgnoreCase) < 0,
+                "The feat description must not duplicate native prerequisite rendering.");
+            Assertions.True(blueprint.Contains(
+                    "new BlueprintComponent[] { prerequisite }") &&
+                blueprint.Contains(
+                    "feature.ComponentsArray[0] is PrerequisiteAcadamaeGraduate"),
+                "The exact native prerequisite component must remain attached once.");
+
+            string prerequisite = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Acadamae", "PrerequisiteAcadamaeGraduate.cs"));
+            Assertions.True(prerequisite.Contains("Specialist Wizard level 1") &&
+                prerequisite.Contains(
+                    "Conjuration must not be a forbidden school"),
+                "Native prerequisite UI text must retain both eligibility requirements.");
+        }
+
         internal static void AcadamaeNativeIdentityContracts()
         {
             string source = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
