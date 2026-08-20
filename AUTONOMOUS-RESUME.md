@@ -1,5 +1,18 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-20 Issue 10 checkpoint
+
+- Branch: `codex/gunslinger-overnight-bugfixes`; version `0.0.87`.
+- Published implementation SHA: `4fb73c18514c05918620238a4d6fa6608ee8cf3d`; exact local/branch/origin equality verified before runtime and this record commit.
+- Completed automated qualification: Issues 1-10; remaining checks are the consolidated human gates recorded per issue.
+- Issue 10 diagnosis: live installed renderer bounds measured native `TH_LongspearKnight1` at 2.2825 m along local Y and the rejected custom spear at 2.9235 m along local Z. The old semantic anchors described source geometry but ordinary Longspear attachment did not consume them.
+- Repair: project source is 2.28 m centered on the grip; the Unity prefab rotates only `Visual` -90 degrees around X to map source +Z onto native +Y. All native `WeaponVisualParameters` fields except the project model reference remain equivalent.
+- Gates: two deterministic Blender FBX/icon exports; two deterministic Unity 2018.4.10f1 bundles; repository; 1,159/1,159 tests; clean Release; output; SoundBank; package; strict package; diff PASS.
+- Guarded run: `20260820T0733252707402Z-1a9897121438417f95edefbf51d348e5`, 22/22 PASS. Native/custom live longitudinal bounds were 2.28250313/2.27855754 m on +Y; all exact item mappings, mechanics, identities, donor fields, attacks, switching, and cleanup passed.
+- Package/DLL/spear AssetBundle/firearm AssetBundle/SoundBank SHA-256: `2DD63CA66036C4CE035B7312F8E771D605D914D42D57FBFCCC970AC646AF80F3` / `B82EBB4243CCC42699E1F2AE6A4C2766FE788097E67FD1E3821C508878F1A469` / `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85` / `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Real blocker: none. The detached fixture deferred synchronous equipped-view materialization, so final world/inventory doll grip and animation acceptance is human-gated.
+- Next concrete action: Issue 11, audit Musket first then Blunderbuss source units, prefab coordinate frame, grip root, left-hand IK target, muzzle, back presentation, renderer/projectile separation, materials, builder, runtime calibration, and current live evidence.
+
 ## 2026-08-20 Issue 9 checkpoint
 
 - Branch: `codex/gunslinger-overnight-bugfixes`; version `0.0.87`.

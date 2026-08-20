@@ -195,3 +195,13 @@ rather than risking the accepted rig with a type split or renderer mutation.
 Broader body-type, armor, size-changing, animation, and repaired-UI visual
 acceptance remains human review. It does not block mechanics. No Brace or
 pseudo-Brace system exists.
+
+## 2026-08-20 overnight scale/grip repair qualification
+
+Fresh human evidence superseded the earlier length/grip acceptance. Diagnostic commit `47259f964f072bede2c6c51789b6f73bf9d250cd` and run `20260820T0712595741030Z-828d00615d54498297ec90f5dfaa4352` measured installed native `TH_LongspearKnight1` at 2.2825 m on local Y and the rejected custom renderer at 2.9235 m on local Z. This proved both excessive length and the wrong equipment coordinate frame; ordinary Longspear attachment did not consume the old project-only anchor children.
+
+Published repair `4fb73c18514c05918620238a4d6fa6608ee8cf3d` reauthors the source to 2.28 m centered on the grip and maps source +Z to native +Y with one -90 degree X rotation on `Visual`. Two clean Blender generations reproduced all FBXs and PNGs. Two complete Unity 2018.4.10f1 builds reproduced the 113,269-byte bundle SHA-256 `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`.
+
+Repository validation, 1,159/1,159 dependency-free tests, clean exact-reference Release, output validation, SoundBank validation, standalone package, strict package validation, and diff checks passed. Guarded run `20260820T0733252707402Z-1a9897121438417f95edefbf51d348e5` passed 22/22. Live custom bounds were 2.27855754 m on +Y versus native 2.28250313 m, and every native `WeaponVisualParameters` field except the exact custom model reference remained equivalent. Package/DLL hashes were `2DD63CA66036C4CE035B7312F8E771D605D914D42D57FBFCCC970AC646AF80F3` / `B82EBB4243CCC42699E1F2AE6A4C2766FE788097E67FD1E3821C508878F1A469`.
+
+Automated geometry, donor, mechanics, identity, and package qualification is complete. The disposable unit view deferred synchronous equipped-model materialization, so world/inventory doll grip, clipping, idle/movement/attack/switch/sheathe behavior, male/female, Small, Enlarge, and Reduce remain consolidated human visual checks.

@@ -123,3 +123,12 @@ Automated boundary already proven: run `20260820T0635323959656Z-88cfa04a0deb4595
 5. Reject the candidate aesthetically if lettering, border weight, contrast, saturation, or 32-pixel readability does not match the native visual language; automated sprite identity is not aesthetic acceptance.
 
 Automated boundary already proven: guarded run `20260820T0659308177934Z-65bd0924b3dc455ebb04097f00172d90` passed 13/13 with the exact live native menu and Rapid Reload icon map. The before/after hashes and deterministic 64/32 map are in `docs/FIREARM-FEAT-ICON-MAP.md`.
+
+## Issue 10 - Elven Branched Spear remaining human check
+
+1. Equip an Elven Branched Spear on medium male and female units and inspect both world and inventory dolls. Confirm the model is approximately ordinary native spear length and the primary hand remains at the centered haft grip.
+2. Observe idle, walk/run, ordinary thrust, full attack, movement attack of opportunity, weapon switch, and sheathe/unsheathe. Reject any backwards point, floor drag, torso penetration, detached hand, or return of the old 2.925 m silhouette.
+3. Repeat on one Small body and with Enlarge Person and Reduce Person where safely available. Record any repeatable body-size residual rather than accepting broad race-specific offsets.
+4. Confirm damage, reach, critical behavior, proficiency, feat interaction, named effects, and icon orientation remain unchanged.
+
+Automated boundary already proven: guarded run `20260820T0733252707402Z-1a9897121438417f95edefbf51d348e5` passed 22/22. The packaged custom model measured 2.27855754 m on the native +Y axis versus 2.28250313 m for installed `TH_LongspearKnight1`, and every non-model native visual field remained equivalent. The disposable unit view did not synchronously materialize the equipped renderer, so this checklist is the required visual acceptance boundary.

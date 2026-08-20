@@ -241,3 +241,20 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Runtime DLL SHA-256: `0F16A59F89E41157FAB580F109A444A02E28C7089CDCD63D0407C233963A82E0`.
 - Firearm AssetBundle/SoundBank remain `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - Automated status: qualified. Actual 32/64-pixel UI composition and aesthetic fit beside native choices remain human-gated.
+
+## Issue 10 qualification - Elven Branched Spear scale and grip
+
+- Diagnostic SHA/run: `47259f964f072bede2c6c51789b6f73bf9d250cd`; `20260820T0712595741030Z-828d00615d54498297ec90f5dfaa4352`. The run failed only the intentionally strict synchronous equipped-view assertion and established the rejected custom 2.9235 m local-Z versus native 2.2825 m local-Y defect.
+- Qualified code SHA: `4fb73c18514c05918620238a4d6fa6608ee8cf3d`.
+- Focused test: `elven-branched-spear.original-asset-pipeline` PASS.
+- Complete domain/reflection suite: 1,159/1,159 PASS.
+- Two deterministic Blender generations reproduced all FBXs and PNGs; two complete Unity 2018.4.10f1 builds reproduced bundle hash `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85` at 113,269 bytes.
+- Repository validation, clean exact-reference Release, output validation, SoundBank validation, package build, strict package validation, and `git diff --check`: PASS.
+- Guarded scenario: `disposable-elven-branched-spear-combat` run `20260820T0733252707402Z-1a9897121438417f95edefbf51d348e5`, 22/22 PASS.
+- Live geometry: native `size=(1.86964834, 2.28250313, 0.396394551)`; custom `size=(0.485548168, 2.27855754, 0.0860000253)`. Custom longest axis and point are +Y and longitudinal difference is below 0.004 m.
+- Live donor assertion: every native `WeaponVisualParameters` field except `m_WeaponModel` remained reference/value equivalent; all 12 exact item mappings, mechanics, attacks, switching, effects, stable identities, and cleanup passed.
+- Runtime package SHA-256: `2DD63CA66036C4CE035B7312F8E771D605D914D42D57FBFCCC970AC646AF80F3`.
+- Runtime DLL SHA-256: `B82EBB4243CCC42699E1F2AE6A4C2766FE788097E67FD1E3821C508878F1A469`.
+- Spear AssetBundle SHA-256: `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`.
+- Firearm AssetBundle/SoundBank SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Automated status: geometry, donor, mechanics, identity, asset, and package qualified. World/inventory doll grip, clipping, and animation appearance remain human-gated because the disposable unit view deferred synchronous equipment materialization.

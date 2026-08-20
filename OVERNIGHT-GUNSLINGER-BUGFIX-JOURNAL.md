@@ -325,3 +325,14 @@
 - Guarded Steam run `20260820T0659308177934Z-65bd0924b3dc455ebb04097f00172d90` passed 13/13. Live full and level-up native menus exposed exact B/M/P/Rv/Ri icon names, Rapid Reload/dependent arrays were exact, native top icons were preserved, and selection/prerequisite/effect/isolation/legacy controls passed.
 - Runtime package/DLL SHA-256: `FC33F1583EEF3404F7237A54454E9B38C6C770EEA745676ED94AE49D08584F9F` / `0F16A59F89E41157FAB580F109A444A02E28C7089CDCD63D0407C233963A82E0`.
 - Final aesthetic/UI-scale acceptance remains human-gated. Next: Issue 10 Elven Branched Spear length, grip, attachment, and attack presentation.
+
+## 2026-08-20 - Issue 10 Elven Branched Spear scale/grip qualified
+
+- Fresh human evidence superseded the earlier visual acceptance. Published diagnostic `47259f964f072bede2c6c51789b6f73bf9d250cd` and failed-closed run `20260820T0712595741030Z-828d00615d54498297ec90f5dfaa4352` measured native `TH_LongspearKnight1` at 2.2825 m along local Y and the rejected custom model at 2.9235 m along local Z. Its child anchors were not part of ordinary Longspear attachment.
+- Published repair `4fb73c18514c05918620238a4d6fa6608ee8cf3d` reauthored the source to 2.28 m centered on the primary grip, converts source +Z to native +Y with one explicit prefab `Visual` rotation, and retains every native `WeaponVisualParameters` field except the exact custom model reference.
+- Two clean Blender runs reproduced the three FBXs and two PNGs byte-for-byte. Two complete Unity 2018.4.10f1 builds reproduced the 113,269-byte spear bundle at `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`.
+- Repository validation, 1,159/1,159 tests, clean exact-reference Release, output, SoundBank, standalone package, strict package, and diff gates PASS.
+- Guarded Steam run `20260820T0733252707402Z-1a9897121438417f95edefbf51d348e5` passed 22/22. Live custom geometry was 2.27855754 m on +Y versus native 2.28250313 m; all 12 item mappings, native donor fields, mechanics, attacks, switching, effects, identities, and cleanup passed.
+- Runtime package/DLL/spear bundle SHA-256: `2DD63CA66036C4CE035B7312F8E771D605D914D42D57FBFCCC970AC646AF80F3` / `B82EBB4243CCC42699E1F2AE6A4C2766FE788097E67FD1E3821C508878F1A469` / `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`.
+- The disposable unit view deferred synchronous equipped-instance materialization. Final world/inventory doll grip and animation judgment is therefore human-gated, not claimed by renderer bounds.
+- Next action: Issue 11 Musket-first, then Blunderbuss, full prefab/IK/muzzle/back/material contract audit and repair.
