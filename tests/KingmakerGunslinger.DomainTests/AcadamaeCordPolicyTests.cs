@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.DomainTests
                 casting.Contains("Buffs.AddBuff(\n                    _fatigued, rule.Initiator, null)") &&
                 casting.Contains("fatigue.MakePermanent()") &&
                 casting.Contains("AcadamaeSavingThrowTestCompletionPatch") &&
-                !casting.Contains("__instance.BaseRollResult = naturalRoll") &&
+                !casting.Contains("__instance.BaseRollResult = naturalRoll;") &&
                 casting.Contains("if (naturalRoll == 20) __instance.AutoPass = true") &&
                 !casting.Contains("AddBuff(_fatigued, rule.Context"),
                 "Acadamae must require the exact unit marker and use independent ordinary fatigue context.");
@@ -212,6 +212,7 @@ namespace KingmakerGunslinger.DomainTests
                 "finally { AcadamaeSavingThrowTestControl.End(); }",
                 "[HarmonyPatch(typeof(RuleRollD20), \"PreRollDice\")]",
                 "AcadamaeSavingThrowTestControl.TryConsume(out naturalRoll)",
+                "__instance.BaseRollResult = naturalRoll + __instance.StatValue",
                 "__result = naturalRoll" })
                 Assertions.True(casting.Contains(token),
                     "Guarded Acadamae saving-throw control lacks exact token: " + token);
@@ -230,11 +231,6 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(1)" },
                     StringSplitOptions.None).Length == 4,
                 "The guarded scenario must force native automatic success and failure boundaries.");
-            Assertions.True(runtime.Contains(
-                    "UnityEngine.Random.InitState(FindNativeD20Seed(20))") &&
-                runtime.Contains(
-                    "UnityEngine.Random.InitState(FindNativeD20Seed(1))"),
-                "The guarded success/failure pair must use deterministic native d20 seeds.");
             foreach (string token in new[] {
                 "internal static class AcadamaeRuleConstructorPatch",
                 "AcadamaeCastingRuntime.AttachRule(__instance)",

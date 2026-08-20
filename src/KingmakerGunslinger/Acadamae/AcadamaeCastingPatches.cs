@@ -264,6 +264,7 @@ namespace KingmakerGunslinger.Acadamae
             int naturalRoll;
             if (AcadamaeSavingThrowTestControl.TryComplete(__instance, out naturalRoll))
             {
+                __instance.BaseRollResult = naturalRoll + __instance.StatValue;
                 if (naturalRoll == 20) __instance.AutoPass = true;
             }
         }
