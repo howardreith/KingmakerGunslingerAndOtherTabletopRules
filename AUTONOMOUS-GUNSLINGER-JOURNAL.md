@@ -3963,3 +3963,10 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
 - Repository validation, focused supply-icon/exact-reference validation, all
   888 domain tests, exact-reference Release compilation, build-output checks,
   deterministic packaging, and strict package validation passed before commit.
+## Human-review correction continuation - 2026-08-20
+
+- Resumed clean published branch `codex/gunslinger-overnight-bugfixes` at `e2e3d9ec941549a889a1e03a590e24241b745b7f`; fetched remote equality and required ancestry pass.
+- No Kingmaker process or unresolved Mods/profile transaction exists.
+- Unchanged baseline repository validation and 1,160/1,160 tests pass.
+- New human evidence overrides contrary automated conclusions. P0 save safety is first; Acadamae real path, acquisition pacing, BTSL ownership, icons, long-gun yaw, and spear frames follow in the authorized order.
+- Focused Aim accepted mechanics, Pistol audio, spear length, and improved long-gun rig direction are regression-frozen.

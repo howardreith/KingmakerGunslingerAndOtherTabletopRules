@@ -3017,3 +3017,14 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Package SHA-256: `FAFBAE86F4D890A958435C2D3D87ED6BFABC5504988E709B0960A90BF161F8CA`
 - DLL SHA-256: `E54E35145EABD51461E9277C1B1CCD8CF7EEA29BA48CFB156D40ADDC9FA4E1EB`
 - Next action: publish this documentation-only release seal, verify exact remote equality and clean status, then hand off the consolidated human acceptance matrix. No merge is authorized.
+## Human-review continuation intake - 2026-08-20
+
+- Branch/HEAD/local/refreshed remote: `codex/gunslinger-overnight-bugfixes` at `e2e3d9ec941549a889a1e03a590e24241b745b7f`.
+- Version: `0.0.88`; intake contains release implementation ancestor `158cfe54c08525a6351a9a551d7b128b24d74dcd`.
+- Git: clean, no lock, exact remote equality. External state: no Kingmaker process, no live Mods transaction sentinel/sibling, no active compatibility state.
+- Baseline: repository validation PASS; 1,160/1,160 dependency-free tests PASS.
+- Fresh authority: P0 unloadable Tenebrous Depths save is release-blocking; Acadamae ordinary player path, icon aesthetics, BTSL ownership, long-gun yaw, spear orientation, and acquisition pacing require correction. Prior conflicting PASS conclusions are superseded.
+- Accepted/frozen: Focused Aim Charisma damage/one-Grit spend/kill recovery, Pistol audio, spear length, and improved long-gun model/texture/scale/support-hand direction.
+- Current issue: P0 save forensics. Focused Aim timing is correlation, not causation.
+- Last command: unchanged repository/full-suite baseline and external-state probe. The probe's only nonzero disposition was no active-state `rg` match; no transaction exists.
+- Next command: inspect exact repository save-catalog/safety tooling and the exact Kingmaker save directory metadata, then hash/copy only an unambiguous affected save to ignored transaction-owned evidence.

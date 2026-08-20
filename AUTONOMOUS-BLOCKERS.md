@@ -422,3 +422,8 @@ Exact 2.1.7b finalized-damage/pre-HP interception, expanded damage behavior,
 save/load persistence, all eight module combinations, standalone x2, CotW x2,
 and highest-risk combined x2 are runtime-qualified for release 0.0.77. Every
 profile restored the prior Mods directory exactly and protected saves are intact.
+## Human-review continuation blockers - 2026-08-20
+
+- Active release blocker: a newly written Tenebrous Depths save reportedly cannot load under the exact `0.0.88` candidate. Root cause and Focused Aim involvement are unproven. The original save is immutable evidence; only exact metadata/hash identification and byte-identical copies are authorized.
+- This is not yet a mission hard stop. Exact logs, safe copied-save inspection, disposable guarded reproduction, and every independent correction remain actionable.
+- Acadamae's former synthetic qualification is superseded by the real-player failure, but investigation remains ordinary engineering work rather than a blocker.

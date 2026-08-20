@@ -1,0 +1,12 @@
+# Gunslinger Human-Review Correction Manual Acceptance
+
+One consolidated human pass will be requested only after all safe automated work.
+
+1. Load a protected copy-equivalent of the affected Tenebrous Depths save and the disposable Focused Aim matrix results; never modify the original.
+2. Cast real prepared Summon Monster I with Acadamae OFF and ON; verify action, DC 16 save, success/failure, fatigue/rest, Cord, slot, cancellation, and save/load.
+3. Use the read-only locator to inspect every revised named-item route without looting or altering quests; judge density, theme, power, and discoverability.
+4. Inspect Honest Guy for permanent weapons/equipment and Xelliren for only the specified supplies in both BTSL modes.
+5. Inspect P/M/B/Ri/Rv parameter icons beside Nodachi and Rapid Reload beside ordinary native feats at 32/64-pixel scale.
+6. Inspect Musket and Blunderbuss yaw on world/inventory dolls, bodies, attack/reload/switch/back states, Scatter, support hand, muzzle, and clipping.
+7. Inspect Elven Branched Spear point-forward active use and natural back carry while confirming accepted length and mechanics.
+8. Reconfirm Focused Aim damage/Grit/kill recovery, Pistol audio, touch AC, firearm state/reload, Oleg/Bokken/Border pending checks, and optional-mod operation.
