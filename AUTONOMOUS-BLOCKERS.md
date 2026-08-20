@@ -434,3 +434,15 @@ profile restored the prior Mods directory exactly and protected saves are intact
 # 2026-08-20 - P0 Tenebrous guarded-load completion blocker
 
 The exact Focused Aim serialization exception is repaired and absent in live load evidence. The affected copy and an exact same-area Akasa control with zero Focused Aim markers both stall after `Dungeon Scene Items` setup and shader fallback before the native after-load callback. The normal working-save scenario passes. Safe strategies attempted: exact affected-copy staging, corrected descriptor identity, 120-second load, 600-second load, targeted exception logging, and same-area no-marker control. No protected save was mutated. This blocks release qualification and automated recovery proof, not independent source corrections. The next bounded closure paths are authoritative Tenebrous-specific lifecycle instrumentation or consolidated human load observation.
+
+## 2026-08-20 final continuation blocker audit
+
+The release blocker remains unchanged after every independently actionable
+correction. Two final-package `KMG_AUTOMATION_WORKING` fresh-process loads pass,
+but neither exercises the affected Tenebrous scene. The final broad disposable
+acceptance run also reports six non-P0 aggregate failures: Dodge timed buff,
+Targeting Torso natural-19 critical cache, Targeting Legs damage and trip,
+Bleeding Wound HP fact, and Evasive progression. That run passed 178/184 and
+does not attribute those six defects to this correction batch. Focused Aim and
+Acadamae pass independently on the same final bytes. No `0.0.89` release is
+authorized while Tenebrous completion is unproven.

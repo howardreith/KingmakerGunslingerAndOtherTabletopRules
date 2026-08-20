@@ -96,3 +96,48 @@ output, SoundBank, package, and strict-package gates passed. Guarded Steam run
 `20260820T1542457366433Z-eb6ee44b6d434229bfc2b1f671afc544` passed 25/25.
 The pre-run live mod backup `20260820T1542422540763Z` was restored with 140
 files and zero full-tree hash differences.
+
+## Integrated final qualification - blocked release
+
+- Branch implementation HEAD entering final gates:
+  `95fd43dab2b19681e8a8d093ed58b4c7009c6413`.
+- Version remains `0.0.88`; `0.0.89` was not assigned because P0 is open.
+- Repository validation, 1,162/1,162 dependency-free tests, clean Release,
+  build-output validation, SoundBank validation, deterministic package build,
+  and strict standalone package validation passed.
+- Final package:
+  `artifacts/packages/KingmakerGunslinger-0.0.88-urban-barbarian.zip`, SHA-256
+  `98BA3475B5CD2068DF6152C49DEAF47CF9D8C1247F889E1F12FB0646079265C9`.
+- Final DLL SHA-256:
+  `E6E08804CD19C69DACA8A3BE77DC04220497BFC78E0CE31B07BE0B498953B76D`.
+- Firearm / spear / Eastern AssetBundle SHA-256:
+  `050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C` /
+  `33EB89C74EC4AE7CDA5A8155224A449233904B74CB59FC453C24AE022EE3CB2A` /
+  `079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041`.
+- SoundBank SHA-256:
+  `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Qualified-combined optional-mod profile
+  `compat-20260820T155202Z-b3c7b51f1e64` passed; runtime
+  `20260820T1552555133802Z-05508b8ce4e947b9a4bf0c70644fdaea`
+  passed 16/16 and the profile restored external state.
+- Final Focused Aim run
+  `20260820T1558117539372Z-38e92ddef9bb4892b87a21ad17f24384`
+  passed 7/7. Final Acadamae run
+  `20260820T1600539794795Z-b798433e90554ecfb153a1052aad1d83`
+  passed 15/15.
+- Final fresh-process working-save runs
+  `20260820T1603352327573Z-0badc91ea9204a5f948a74dffd537b03`
+  and `20260820T1606370368921Z-a040156b8ea249da873b49b434170133`
+  each passed 11/11.
+- Broad disposable acceptance run
+  `20260820T1554523223418Z-9f9d0d577bae4dcc8b56be64ad295c16`
+  failed 6 of 184 assertions: Dodge timed buff; Targeting Torso natural-19
+  critical cache; Targeting Legs damage; Targeting Legs trip; Bleeding Wound HP
+  fact; Evasive progression. The run still passed 178/184 and its relevant
+  Grit/state/reload/audio assertions, but it is recorded as `FAIL` without
+  weakening the aggregate gate.
+- All final launch transactions were restored. Kingmaker is not running and no
+  compatibility/Mods transaction sibling remains.
+- Release disposition: `BLOCKED` by the affected/control Tenebrous
+  scene-completion stall. Visual, audible, merchant-materialization, campaign
+  pacing/accessibility, and ordinary-player acceptance remain human gates.

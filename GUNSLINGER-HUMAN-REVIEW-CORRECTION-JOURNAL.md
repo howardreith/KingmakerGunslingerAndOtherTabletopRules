@@ -100,3 +100,20 @@ run `20260820T1542457366433Z-eb6ee44b6d434229bfc2b1f671afc544`
 passed 25/25. Backup `20260820T1542422540763Z` was restored; full-tree
 comparison found 140/140 files and zero hash differences. Actual doll pose and
 animation aesthetics remain human-gated.
+
+## 2026-08-20 - Integrated final gates and blocked release disposition
+
+The final source/package gate passed repository validation, 1,162/1,162 tests,
+clean Release, output, SoundBank, package, and strict-package validation. The
+qualified-combined optional-mod transaction passed 16/16 and restored external
+state. Focused Aim passed 7/7, Acadamae passed 15/15, and two fresh-process
+`KMG_AUTOMATION_WORKING` loads passed 11/11 each on final package SHA-256
+`98BA3475B5CD2068DF6152C49DEAF47CF9D8C1247F889E1F12FB0646079265C9`.
+
+The broad comprehensive fixture failed six of 184 assertions in Dodge,
+Targeting Torso, Targeting Legs, Bleeding Wound, and Evasive while passing
+178/184. Those failures are preserved without attribution or gate weakening.
+The Tenebrous affected/control stall remains the actual continuation release
+blocker. Version remains `0.0.88`; no release or `0.0.89` claim was made. Every
+runtime transaction was restored, Kingmaker is stopped, and no transaction
+sibling remains.

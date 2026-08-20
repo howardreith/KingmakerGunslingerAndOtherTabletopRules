@@ -62,3 +62,19 @@ than swallowing reconstruction exceptions. The original remains byte-identical.
 - Every run staged only a disposable copy, removed it in `finally`, and reverified the original affected and control hashes. The original affected save remains byte-identical.
 - Source/package qualification: repository validation PASS; dependency-free suite `1161/1161`; clean Release/package/output/SoundBank/strict-package gates PASS. Candidate package SHA-256 `446E7974ECEA9AD9A5201D76D463CECAB33D871FB6017C2D3CAD8E40E59D1E36`; DLL SHA-256 `96BF5C5511DF72E010CFE001350834279335FBDA50D2458C284BA81A339D776F`.
 - Disposition: root cause and bounded compatibility repair are source-qualified. Full affected-save recovery and two consecutive fresh loads remain release-blocking because the guarded Tenebrous scene never reaches the authoritative callback, including for the no-marker control.
+
+## Final integrated save disposition - 2026-08-20
+
+- Final branch package/DLL SHA-256 used for guarded loads:
+  `98BA3475B5CD2068DF6152C49DEAF47CF9D8C1247F889E1F12FB0646079265C9` /
+  `E6E08804CD19C69DACA8A3BE77DC04220497BFC78E0CE31B07BE0B498953B76D`.
+- Authorized `KMG_AUTOMATION_WORKING` fresh-process loads
+  `20260820T1603352327573Z-0badc91ea9204a5f948a74dffd537b03` and
+  `20260820T1606370368921Z-a040156b8ea249da873b49b434170133`
+  each passed 11/11.
+- These two passes prove general final-package save/load stability. They do not
+  supersede or close the Tenebrous affected/control scene-completion stall.
+- The original affected `Quick_6.zks` and control `Quick_5.zks` remained
+  byte-identical. No protected or original save was written.
+- Release disposition remains `BLOCKED`; version remains `0.0.88` and no
+  release commit was created.

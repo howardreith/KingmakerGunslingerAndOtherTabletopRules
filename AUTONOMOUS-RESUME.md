@@ -3115,3 +3115,15 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - External state: exact backup `20260820T1542422540763Z` restored; 140 backup files equal 140 live files with zero SHA-256 differences.
 - Persistent blocker: P0 Tenebrous scene-completion stall remains release-blocking and prevents `0.0.89` qualification.
 - Next concrete action: inspect complete spear diff/staging, commit and publish the issue, then run integrated regressions and finalize the truthful blocked-release handoff without incrementing the version.
+
+## 2026-08-20 final integrated qualification checkpoint
+
+- Branch: `codex/gunslinger-overnight-bugfixes`; implementation HEAD before this documentation commit: `95fd43dab2b19681e8a8d093ed58b4c7009c6413`.
+- Version: `0.0.88`; version advancement is prohibited by the unresolved P0 Tenebrous completion stall.
+- Completed corrections: P0 compatibility prevention, Acadamae player path, 30-item acquisition pacing, BTSL ownership, firearm icons, long-gun yaw, and spear active/back frames.
+- Final gates: repository PASS; 1,162/1,162; clean Release/output/SoundBank/package/strict package PASS.
+- Final package/DLL: `98BA3475B5CD2068DF6152C49DEAF47CF9D8C1247F889E1F12FB0646079265C9` / `E6E08804CD19C69DACA8A3BE77DC04220497BFC78E0CE31B07BE0B498953B76D`.
+- Final runtime PASS: compatibility `20260820T1552555133802Z-05508b8ce4e947b9a4bf0c70644fdaea` 16/16; Focused Aim `20260820T1558117539372Z-38e92ddef9bb4892b87a21ad17f24384` 7/7; Acadamae `20260820T1600539794795Z-b798433e90554ecfb153a1052aad1d83` 15/15; working saves `20260820T1603352327573Z-0badc91ea9204a5f948a74dffd537b03` and `20260820T1606370368921Z-a040156b8ea249da873b49b434170133` 11/11 each.
+- Aggregate FAIL: `20260820T1554523223418Z-9f9d0d577bae4dcc8b56be64ad295c16`, 178/184, exact six failures recorded in qualification/blocker files; no gate was weakened.
+- External state: all backups restored; Kingmaker stopped; no compatibility or Mods transaction sibling remains.
+- Remaining action: commit/publish this blocked qualification record, verify remote equality/clean tree, then issue one consolidated human handoff. Affected-save recovery remains explicitly unqualified.
