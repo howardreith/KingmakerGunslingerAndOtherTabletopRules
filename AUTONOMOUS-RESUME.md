@@ -2908,3 +2908,15 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Runtime hashes: package `00D8405393B74827915C09B67834B9B2D06BC4FE06E5123808AEC64F59868F69`; DLL `8E7FFC30C596F94BA2EF5D06B6C99EFE6A3CB29AEE25E09C29F2624D6C16A003`.
 - Active blocker: none. Remaining Issue 5 check is actual unmaterialized/new-campaign shop UI; already-materialized old-save refresh is not claimed.
 - Next concrete action: resolve Bokken's exact installed unit/vendor table and lifecycle from current live graph evidence, then add the narrow transactional Black Powder/Lead Ball/Paper Cartridge x100 publication and observer coverage.
+## Overnight bugfix resume checkpoint - Issue 6 qualified (2026-08-20)
+
+- Branch: `codex/gunslinger-overnight-bugfixes`; version `0.0.87`.
+- Published diagnostic SHA: `3b29451f24cc163f48f03150cce0e7563165beaa`. Published qualified fix SHA: `73e776a91167bc02024e7be794a822fa63fec48e`; local branch/origin equality verified before runtime.
+- Completed issue IDs: Issues 1-6 automated-qualified/human-gated.
+- Current issue: Issue 7, Border Sentinel later fixed acquisition.
+- Issue 6 result: the renewed localized/dialog/unit graph strategy resolved exact `BlueprintUnitLoot` `C11_BokkenVendorTable` and its two `AddVendorItems` owners. A bounded transaction now publishes the canonical Black Powder, Lead Ball, and existing Paper Cartridge rows once at 100 each with foreign-order preservation, idempotence, and exact rollback.
+- Gates: 1,156/1,156 tests; repository, exact-reference clean Release, output, SoundBank, package, strict-package, diff, and guarded-wrapper preflight PASS.
+- Forensic run `20260820T0548397631886Z-31199f78288f43e2b7655b0433abba7b` passed 21/21. Qualified run `20260820T0555507894600Z-0772504de3254a64986e6ea2da172a02` passed 23/23 with Powder/Balls/Paper `1/100` and both exact owners.
+- Runtime hashes: package `3D5052D73D3D4E1701ED4313ED7DACD072EC179B47BFD3054D93585EDEF2D70B`; DLL `F97D27FE31D4912BBE20D51EC4AACF0B5D793FACF642FDA705CA6C94569317EA`.
+- Active blocker: none. Remaining Issue 6 check is actual unmaterialized/new-campaign Bokken trade UI; old-save refresh is not claimed.
+- Next concrete action: inventory Border Sentinel's exact item/enchantments/cost and every current acquisition reference, reject Oleg, then qualify a later deterministic thematic fixed-loot target and shortest observer route.

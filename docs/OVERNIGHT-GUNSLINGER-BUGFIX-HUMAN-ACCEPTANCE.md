@@ -83,3 +83,12 @@ Automated boundary already proven: guarded run `20260820T0524095518410Z-ea7adae3
 4. Treat an already-materialized old-save shop as informational only: the repair publishes the static shared table and does not claim or force retroactive refresh of save-owned inventory.
 
 Automated boundary already proven: guarded run `20260820T0535269245782Z-7edf2d2c158a4085893931e91b14db1d` passed 20/20, including exact live table rows/counts and exact two-owner identity.
+
+## Issue 6 - Bokken ammunition-stock remaining human check
+
+1. In a disposable new campaign, or before Bokken's shop inventory has materialized, open Bokken's normal trading UI at Oleg's Trading Post.
+2. Confirm one Black Powder Charges entry at quantity 100, one Lead Balls entry at quantity 100, and one Paper Cartridges entry at quantity 100.
+3. Confirm Bokken's normal potion, scroll, wand, alchemical, and material stock remains present and no Jhod/capital/BTSL-only stock was copied into the shop.
+4. Treat an already-materialized old-save shop as informational only: the repair publishes exact static `BlueprintUnitLoot` and does not claim or force retroactive refresh of save-owned inventory.
+
+Automated boundary already proven: guarded run `20260820T0555507894600Z-0772504de3254a64986e6ea2da172a02` passed 23/23, including all three exact `1/100` rows, both exact owners, and retained native stock.

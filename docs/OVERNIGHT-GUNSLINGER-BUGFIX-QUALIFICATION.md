@@ -186,3 +186,15 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Deployed runtime package SHA-256: `00D8405393B74827915C09B67834B9B2D06BC4FE06E5123808AEC64F59868F69`.
 - Deployed DLL SHA-256: `8E7FFC30C596F94BA2EF5D06B6C99EFE6A3CB29AEE25E09C29F2624D6C16A003`.
 - Automated status: qualified for exact static publication. Actual merchant materialization in a disposable/new campaign is human-gated; no refresh claim is made for already-materialized old-save stock.
+## Issue 6 qualification - Bokken ammunition stock
+
+- Forensic commit/run: `3b29451f24cc163f48f03150cce0e7563165beaa`; `20260820T0548397631886Z-31199f78288f43e2b7655b0433abba7b`, 21/21 PASS.
+- Qualified fix SHA: `73e776a91167bc02024e7be794a822fa63fec48e`.
+- Focused tests: `vendors.bokken-acquisition-forensics`, `vendors.bokken-ammunition-stock` PASS.
+- Complete domain/reflection suite: 1,156/1,156 PASS.
+- Repository validation, exact-reference clean Release, output validation, SoundBank validation, package build, strict package validation, runtime preflight, and `git diff --check`: PASS.
+- Guarded scenario: `observe-vendor-table-contracts` run `20260820T0555507894600Z-0772504de3254a64986e6ea2da172a02`, 23/23 PASS.
+- Live assertions: exact `BlueprintUnitLoot` `C11_BokkenVendorTable:4778ecb5df5d48742b9be5a204ed4657`; Black Powder `1/100`; Lead Ball `1/100`; Paper Cartridge `1/100`; exact owners `OTP_Bokken:4f5acdb403f6ef642959f6bedc051ac7*1` and `OTP_Bokken_ZeroState:57f84fdde3cc2994284fb3acc4a3cb97*1`; 21 pre-existing native rows retained.
+- Deployed runtime package SHA-256: `3D5052D73D3D4E1701ED4313ED7DACD072EC179B47BFD3054D93585EDEF2D70B`.
+- Deployed DLL SHA-256: `F97D27FE31D4912BBE20D51EC4AACF0B5D793FACF642FDA705CA6C94569317EA`.
+- Automated status: qualified for exact static publication. Actual merchant materialization in a disposable/new campaign is human-gated; no old-save inventory refresh is claimed.

@@ -1,5 +1,29 @@
 # Paper Cartridges Bokken Acquisition Inventory
 
+## Current authority - Issue 6 qualified on 2026-08-20
+
+The historical defer below is preserved as evidence of the older observer's
+boundary, but it is superseded. The old unit loop skipped `AddVendorItems`
+whenever a unit had no `AddSharedVendor`. A materially distinct bounded
+localized/dialog/unit traversal resolved exact installed authority:
+
+- `BlueprintUnitLoot` `C11_BokkenVendorTable`
+  (`4778ecb5df5d48742b9be5a204ed4657`).
+- `OTP_Bokken` (`4f5acdb403f6ef642959f6bedc051ac7`) and
+  `OTP_Bokken_ZeroState` (`57f84fdde3cc2994284fb3acc4a3cb97`), each with one
+  direct `AddVendorItems` reference. Base `Bokken` is a prototype, not a third
+  stock owner.
+- Forensic run `20260820T0548397631886Z-31199f78288f43e2b7655b0433abba7b`
+  on `3b29451f24cc163f48f03150cce0e7563165beaa`.
+- Qualified publication run
+  `20260820T0555507894600Z-0772504de3254a64986e6ea2da172a02` on
+  `73e776a91167bc02024e7be794a822fa63fec48e`: one Black Powder row at 100,
+  one Lead Ball row at 100, and the existing Paper Cartridge identity once at
+  100, with all 21 native stock rows retained.
+
+Static not-yet-materialized/new-campaign publication is qualified. Refresh of
+already-materialized save-owned merchant inventory is not claimed.
+
 ## Scope and decision
 
 Bokken publication is deferred. No production mutation targets Bokken in this

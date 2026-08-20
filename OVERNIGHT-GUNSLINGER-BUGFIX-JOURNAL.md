@@ -284,3 +284,13 @@
 - Runtime package/DLL SHA-256: `00D8405393B74827915C09B67834B9B2D06BC4FE06E5123808AEC64F59868F69` / `8E7FFC30C596F94BA2EF5D06B6C99EFE6A3CB29AEE25E09C29F2624D6C16A003`.
 - Static blueprint publication is qualified. Already-materialized save-owned shop refresh was not observed and is not claimed; actual new/unmaterialized merchant UI remains human-gated.
 - Next action: Issue 6 exact Bokken table/lifecycle forensics and bounded ammunition publication.
+## 2026-08-20 - Issue 6 Bokken ammunition stock qualified
+
+- Published forensic SHA `3b29451f24cc163f48f03150cce0e7563165beaa` added a bounded read-only localized/dialog/unit metadata traversal because the historical observer discarded units without `AddSharedVendor` before examining `AddVendorItems`.
+- Guarded forensic run `20260820T0548397631886Z-31199f78288f43e2b7655b0433abba7b` passed 21/21 and resolved exact `BlueprintUnitLoot` `C11_BokkenVendorTable` (`4778ecb5df5d48742b9be5a204ed4657`). Exact direct owners are `OTP_Bokken` (`4f5acdb403f6ef642959f6bedc051ac7`) and `OTP_Bokken_ZeroState` (`57f84fdde3cc2994284fb3acc4a3cb97`), one reference each through `AddVendorItems`; base `Bokken` is only a prototype.
+- Published fix SHA `73e776a91167bc02024e7be794a822fa63fec48e` adds a module-gated exact-unit-loot transaction owning only the existing Black Powder, Lead Ball, and Paper Cartridge references. It preserves all unrelated components/order, normalizes stale/duplicate/wrong-count owned rows to 100 each, validates exact cardinality, and restores the exact snapshot on later bootstrap failure.
+- Focused forensic/stock tests and complete 1,156/1,156 suite PASS. Repository validation, clean exact-reference Release, output, SoundBank, standalone package, strict package, and diff gates PASS. Generated test-output access required the approved elevated context after the sandbox denied stale artifact replacement; the same gates then passed without source relaxation.
+- Guarded qualified run `20260820T0555507894600Z-0772504de3254a64986e6ea2da172a02` passed 23/23. Live table rows were Powder `1/100`, Balls `1/100`, Paper `1/100`; all 21 native potion/scroll/wand/material rows remained present before the three additions.
+- Runtime package/DLL SHA-256: `3D5052D73D3D4E1701ED4313ED7DACD072EC179B47BFD3054D93585EDEF2D70B` / `F97D27FE31D4912BBE20D51EC4AACF0B5D793FACF642FDA705CA6C94569317EA`.
+- Static `BlueprintUnitLoot` publication is qualified. Already-materialized save-owned shop refresh was not observed and is not claimed; actual new/unmaterialized Bokken trade UI remains human-gated.
+- Next action: Issue 7 exact Border Sentinel blueprint/profile/current publication audit and later fixed-loot candidate selection.
