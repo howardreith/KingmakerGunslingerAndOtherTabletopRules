@@ -26,3 +26,16 @@ The consolidated sequence must cover:
 11. Musket/Blunderbuss texture, grip, support hand, clipping, fire, reload,
     back state, and muzzle origin.
 12. Every redistributed project unique at its distinct fixed campaign source.
+
+## Issue 1 final human matrix (deferred until consolidated handoff)
+
+Use a feat owner with one qualifying prepared arcane Summoning spell and no
+Cord of Stubborn Resolve, then repeat the specified Cord control. Confirm OFF
+shows and executes native full-round/one-round casting with no Acadamae log or
+fatigue. Confirm ON shows and executes Standard, emits one log entry containing
+d20, Fortitude modifier/total, DC, result, and fatigue disposition, and never
+grants Swift/Move/Free. Observe one success with no fatigue and one failure with
+canonical Fatigued surviving summon expiry and an area transition, then native
+rest removal. Confirm cancel/interruption and ineligible/item/spontaneous casts
+emit no Acadamae save. With the Cord equipped, confirm the save still appears
+and only the accepted Cord consequence substitution changes.

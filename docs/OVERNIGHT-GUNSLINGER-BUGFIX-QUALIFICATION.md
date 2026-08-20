@@ -32,3 +32,24 @@ Status: BASELINE ESTABLISHED; ISSUE QUALIFICATION PENDING
 No runtime launch or deployment was performed for the documentation-only
 mission checkpoint. Issue-specific and final evidence will be appended without
 rewriting this baseline.
+
+## Issue 1 source qualification
+
+- Parent SHA: `879ffe152a4ccfbfe42679055f7c392e5d0f1669`
+- Version: 0.0.87
+- Focused Acadamae tracker and source contracts: PASS
+- Complete domain/reflection suite: 1,150 passed, zero failed
+- Repository validation: PASS
+- Clean exact-reference Release: PASS
+- Build-output validation: PASS
+- Firearm SoundBank validation: PASS
+- Deterministic standalone/local-runtime packages: PASS
+- Strict package validation: PASS
+- Candidate package SHA-256:
+  `538FE2A912B07990B12DC20C89D379ED8C3878C36FF41A5F46A5A7A3D8556B7B`
+- Candidate DLL SHA-256:
+  `E2CCBCE48C95C2183D37442F3D4E334F6EEF151192C6219CA15EFBE19ADB5116`
+
+Guarded runtime is intentionally pending an immutable published commit. Source
+and package gates do not establish live command ordering, fatigue persistence,
+or visible diagnostics.

@@ -8,11 +8,21 @@
   exact-reference/package pipeline PASS after restoring ignored GamePath.props
   in the isolated worktree.
 - Durable contract: planning/OVERNIGHT-GUNSLINGER-BUGFIX-MISSION.md.
-- Completed issue IDs: none.
-- Current checkpoint: create/validate/commit/publish durable mission records.
+- Published checkpoint SHA: `879ffe152a4ccfbfe42679055f7c392e5d0f1669`;
+  local and remote feature refs were equal after approved-helper publication.
+- Completed issue IDs: none; Issue 1 is source-qualified and runtime-pending.
+- Current checkpoint: Issue 1 exact-rule correlation and diagnostics candidate.
+- Current hypothesis: the human failure was caused by completion correlation
+  being limited to the `UnitUseAbility.OnAction` thread-local stack; concrete
+  `RuleCastSpell` identity must survive until the native terminal callback.
+- Exact gates: `test-domain.ps1 -Configuration Release` PASS 1,150/1,150;
+  `Build-Local.ps1` PASS repository, clean exact-reference Release, output,
+  SoundBank, deterministic package, and strict package validation.
+- Candidate package/DLL SHA-256: `538FE2A9...D8556B7B` /
+  `E2CCBCE4...ADB5116`.
 - Real blocker: none.
-- Next concrete action: publish the mission checkpoint, verify local/remote SHA
-  equality, then inspect Issue 1 Acadamae cast/save/fatigue boundaries.
+- Next concrete action: commit/publish Issue 1 source candidate, verify exact
+  remote equality, and run guarded `disposable-acadamae-graduate` runtime.
 
 ## Eastern Weapons first-human-playtest repair (automated seal complete, human recheck pending)
 

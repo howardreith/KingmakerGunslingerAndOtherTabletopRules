@@ -228,8 +228,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(20)" },
                     StringSplitOptions.None).Length == 3 &&
                 runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(1)" },
-                    StringSplitOptions.None).Length == 3,
+                    StringSplitOptions.None).Length == 4,
                 "The guarded scenario must force native automatic success and failure boundaries.");
+            foreach (string token in new[] {
+                "internal static class AcadamaeRuleConstructorPatch",
+                "AcadamaeCastingRuntime.AttachRule(__instance)",
+                "[HarmonyPatch(typeof(RuleCastSpell), \"OnTrigger\",",
+                "[HarmonyPatch(typeof(UnitUseAbility), \"OnEnded\",",
+                "LastNaturalRoll",
+                "LastSaveTotal",
+                "LastFatigueDisposition" })
+                Assertions.True(casting.Contains(token),
+                    "Acadamae exact completed-cast correlation or diagnostics are missing: " + token);
             foreach (string token in new[] {
                 "canonical Summon Monster I parent for Acadamae fixture",
                 "ExpandedSummoningCatalog",
@@ -253,25 +263,34 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void AcadamaeInvocationCorrelation()
         {
-            var tracker = new AcadamaeInvocationTracker<object, object>();
+            var tracker = new AcadamaeInvocationTracker<object, object, object>();
             object commandA = new object(), commandB = new object();
             object spellA = new object(), sameLookingSpell = new object();
+            object ruleA = new object(), ruleB = new object();
             Assertions.True(tracker.Arm(commandA, spellA), "First command must arm.");
             Assertions.False(tracker.Arm(commandA, spellA), "Repeated UI/constructor work must not double-arm.");
             Assertions.True(tracker.Arm(commandB, sameLookingSpell), "Second command must remain isolated.");
             Assertions.True(tracker.Begin(commandA), "Armed command must begin.");
-            Assertions.False(tracker.ConsumeSuccessful(sameLookingSpell),
-                "A distinct prepared invocation must not consume the active marker.");
-            Assertions.True(tracker.ConsumeSuccessful(spellA),
-                "The exact successful spell invocation must consume once.");
-            Assertions.False(tracker.ConsumeSuccessful(spellA),
-                "A successful invocation must not consume twice.");
+            Assertions.False(tracker.AttachRule(ruleA, sameLookingSpell),
+                "A distinct prepared invocation must not attach a cast rule.");
+            Assertions.True(tracker.AttachRule(ruleA, spellA),
+                "The exact native cast rule must attach during the active command.");
+            tracker.EndAction(commandA);
+            Assertions.False(tracker.Consume(ruleA, sameLookingSpell),
+                "A distinct prepared invocation must not consume the attached rule.");
+            Assertions.True(tracker.Consume(ruleA, spellA),
+                "The exact successful rule and spell must consume once after action scope.");
+            Assertions.False(tracker.Consume(ruleA, spellA),
+                "A duplicate rule callback must not consume twice.");
             Assertions.Equal(1, tracker.Count, "The other command marker must remain.");
             Assertions.True(tracker.Begin(commandB), "Second command must begin independently.");
+            Assertions.True(tracker.AttachRule(ruleB, sameLookingSpell),
+                "The second exact rule must attach independently.");
             tracker.EndAction(commandB);
-            Assertions.False(tracker.ConsumeSuccessful(sameLookingSpell),
-                "A cast observed after action scope must not consume.");
-            Assertions.True(tracker.Cancel(commandB), "Cancellation must clear the pending marker.");
+            Assertions.True(tracker.Cancel(commandB),
+                "Cancellation must clear an attached but unresolved rule.");
+            Assertions.False(tracker.Consume(ruleB, sameLookingSpell),
+                "A canceled rule must never resolve Acadamae.");
             Assertions.Equal(0, tracker.Count, "No marker may leak after cancellation.");
         }
 

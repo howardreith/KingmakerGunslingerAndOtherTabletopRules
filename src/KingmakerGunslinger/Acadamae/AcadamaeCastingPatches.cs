@@ -1,9 +1,13 @@
+using System;
+using System.Globalization;
+using System.Threading;
 using Harmony12;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Abilities;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
@@ -15,21 +19,45 @@ namespace KingmakerGunslinger.Acadamae
 {
     internal static class AcadamaeCastingRuntime
     {
-        private static readonly AcadamaeInvocationTracker<UnitUseAbility, AbilityData> Invocations =
-            new AcadamaeInvocationTracker<UnitUseAbility, AbilityData>();
+        private static readonly AcadamaeInvocationTracker<UnitUseAbility, AbilityData,
+            RuleCastSpell> Invocations =
+                new AcadamaeInvocationTracker<UnitUseAbility, AbilityData,
+                    RuleCastSpell>();
         [System.ThreadStatic] private static bool _inspectPreAcadamae;
         private static BlueprintBuff _fatigued;
         private static int _completedCount;
         private static int _lastDifficultyClass;
         private static bool _lastSavePassed;
+        private static int _lastNaturalRoll;
+        private static int _lastSaveTotal;
+        private static string _lastFatigueDisposition;
+        private static string _lastResolutionMessage;
+        private static long _publishedResolutionCount;
 
         internal static void Configure(BlueprintBuff fatigued)
         { _fatigued = fatigued; }
         internal static int CompletedCount { get { return _completedCount; } }
         internal static int LastDifficultyClass { get { return _lastDifficultyClass; } }
         internal static bool LastSavePassed { get { return _lastSavePassed; } }
+        internal static int LastNaturalRoll { get { return _lastNaturalRoll; } }
+        internal static int LastSaveTotal { get { return _lastSaveTotal; } }
+        internal static string LastFatigueDisposition
+        { get { return _lastFatigueDisposition; } }
+        internal static string LastResolutionMessage
+        { get { return _lastResolutionMessage; } }
+        internal static long PublishedResolutionCount
+        { get { return Interlocked.Read(ref _publishedResolutionCount); } }
         internal static void ResetDiagnostics()
-        { _completedCount = 0; _lastDifficultyClass = 0; _lastSavePassed = false; }
+        {
+            _completedCount = 0;
+            _lastDifficultyClass = 0;
+            _lastSavePassed = false;
+            _lastNaturalRoll = 0;
+            _lastSaveTotal = 0;
+            _lastFatigueDisposition = null;
+            _lastResolutionMessage = null;
+            Interlocked.Exchange(ref _publishedResolutionCount, 0);
+        }
 
         internal static bool IsEligible(AbilityData ability, bool longerThanStandard)
         {
@@ -89,10 +117,14 @@ namespace KingmakerGunslinger.Acadamae
         internal static void Begin(UnitUseAbility command) { Invocations.Begin(command); }
         internal static void End(UnitUseAbility command) { Invocations.EndAction(command); }
         internal static void Cancel(UnitUseAbility command) { Invocations.Cancel(command); }
+        internal static void AttachRule(RuleCastSpell rule)
+        {
+            if (rule != null) Invocations.AttachRule(rule, rule.Spell);
+        }
         internal static bool Complete(RuleCastSpell rule)
         {
-            if (rule == null || !rule.Success || _fatigued == null ||
-                !Invocations.ConsumeSuccessful(rule.Spell)) return false;
+            if (rule == null || !Invocations.Consume(rule, rule.Spell)) return false;
+            if (!rule.Success || _fatigued == null) return false;
             var saving = new RuleSavingThrow(rule.Initiator,
                 SavingThrowType.Fortitude, 15 + rule.Spell.SpellLevel);
             AcadamaeSavingThrowTestControl.Begin(saving);
@@ -101,6 +133,9 @@ namespace KingmakerGunslinger.Acadamae
             _completedCount++;
             _lastDifficultyClass = saving.DifficultyClass;
             _lastSavePassed = saving.IsPassed;
+            _lastNaturalRoll = saving.D20.Value;
+            _lastSaveTotal = saving.RollResult;
+            _lastFatigueDisposition = "none-save-passed";
             if (!saving.IsPassed)
             {
                 var fatigue = rule.Initiator.Descriptor.Buffs.AddBuff(
@@ -109,9 +144,50 @@ namespace KingmakerGunslinger.Acadamae
                 // game time. The native permanent transition clears that end
                 // time while retaining the independent caster context and the
                 // ordinary RemoveOnRest blueprint lifecycle.
-                if (fatigue != null) fatigue.MakePermanent();
+                if (fatigue != null)
+                {
+                    fatigue.MakePermanent();
+                    _lastFatigueDisposition = fatigue.IsPermanent ?
+                        "fatigued-permanent" : "fatigued-not-permanent";
+                }
+                else
+                    _lastFatigueDisposition = "fatigue-application-suppressed";
             }
+            PublishResolution(rule, saving, _lastFatigueDisposition);
             return true;
+        }
+
+        private static void PublishResolution(RuleCastSpell rule,
+            RuleSavingThrow saving, string fatigueDisposition)
+        {
+            int modifier = saving.RollResult - saving.D20.Value;
+            string caster = string.IsNullOrWhiteSpace(rule.Initiator.CharacterName) ?
+                "The caster" : rule.Initiator.CharacterName.Trim();
+            string spell = rule.Spell.Blueprint == null ?
+                "<unknown spell>" : rule.Spell.Blueprint.name;
+            string message = string.Format(CultureInfo.InvariantCulture,
+                "Acadamae Graduate: {0} accelerated {1} to Standard; Fortitude d20 {2} {3:+#;-#;+0} = {4} vs DC {5}: {6}; fatigue={7}.",
+                caster, spell, saving.D20.Value, modifier, saving.RollResult,
+                saving.DifficultyClass, saving.IsPassed ? "success" : "failure",
+                fatigueDisposition);
+            _lastResolutionMessage = message;
+            ModContext context;
+            if (ModContext.TryGet(out context))
+                context.Logger.Info("acadamae", "accelerated-cast.resolved", message);
+            try
+            {
+                EventBus.RaiseEvent<IWarningNotificationUIHandler>(
+                    handler => handler.HandleWarning(message, false));
+                Interlocked.Increment(ref _publishedResolutionCount);
+            }
+            catch (Exception exception)
+            {
+                if (ModContext.TryGet(out context))
+                    context.Logger.Failure("acadamae",
+                        "accelerated-cast.notification-failed",
+                        "Acadamae mechanics resolved, but its player-facing resolution notification failed.",
+                        exception);
+            }
         }
     }
 
@@ -226,15 +302,35 @@ namespace KingmakerGunslinger.Acadamae
         { AcadamaeCastingRuntime.End(__instance); }
     }
 
-    [HarmonyPatch(typeof(RuleCastSpell), "OnTrigger")]
+    [HarmonyPatch(typeof(RuleCastSpell), MethodType.Constructor,
+        typeof(AbilityData), typeof(TargetWrapper))]
+    internal static class AcadamaeRuleConstructorPatch
+    {
+        private static void Postfix(RuleCastSpell __instance)
+        { AcadamaeCastingRuntime.AttachRule(__instance); }
+    }
+
+    [HarmonyPatch(typeof(RuleCastSpell), "OnTrigger",
+        new[] { typeof(RulebookEventContext) })]
     [HarmonyAfter("CallOfTheWild")]
     internal static class AcadamaeSuccessfulCastPatch
     {
         private static void Postfix(RuleCastSpell __instance)
-        { AcadamaeCastingRuntime.Complete(__instance); }
+        {
+            try { AcadamaeCastingRuntime.Complete(__instance); }
+            catch (Exception exception)
+            {
+                ModContext context;
+                if (ModContext.TryGet(out context))
+                    context.Logger.Failure("acadamae",
+                        "accelerated-cast.resolution-failed",
+                        "Acadamae post-cast resolution failed without changing the completed spell.",
+                        exception);
+            }
+        }
     }
 
-    [HarmonyPatch(typeof(UnitUseAbility), "OnEnded")]
+    [HarmonyPatch(typeof(UnitUseAbility), "OnEnded", new[] { typeof(bool) })]
     internal static class AcadamaeCommandEndedPatch
     {
         private static void Postfix(UnitUseAbility __instance)
