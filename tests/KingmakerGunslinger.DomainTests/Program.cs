@@ -235,6 +235,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("paper-misfire.central-consumers", PaperCartridgeFoundationTests.MisfireCentralConsumers),
             Case("paper-crafting.shared-transaction-contract", PaperCartridgeFoundationTests.CraftingSharedTransactionContract),
             Case("paper-vendors.normalization-contract", PaperCartridgeFoundationTests.VendorNormalizationContract),
+            Case("vendors.oleg-maintenance-stock", PaperCartridgeFoundationTests.OlegMaintenanceStockContract),
             Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
             Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
             Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),

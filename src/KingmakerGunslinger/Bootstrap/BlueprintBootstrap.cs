@@ -639,6 +639,7 @@ namespace KingmakerGunslinger.Bootstrap
                 new FeatureModulePublicationPlan(context.FeatureModules.Active);
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
+            CapitalVendorPublication olegMaintenancePublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
             RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
@@ -920,6 +921,9 @@ namespace KingmakerGunslinger.Bootstrap
                     publicationPlan.CapitalGunslingerStock,
                     cordOfStubbornResolve, publicationPlan.CordCapitalStock,
                     context.Logger);
+                olegMaintenancePublication = OlegMaintenanceVendorBlueprints.Publish(
+                    library, firearmRepairKit, gunsmithingSupplies,
+                    publicationPlan.CapitalGunslingerStock, context.Logger);
                 if (publicationPlan.BeneathStolenLandsStock)
                     btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
                         library, productionFirearms, magicFirearms, basicAmmunition,
@@ -1076,6 +1080,17 @@ namespace KingmakerGunslinger.Bootstrap
                             "rare-firearm-loot.rollback-failed",
                             "Blueprint initialization failed and rare-firearm fixed-loot rollback was refused.",
                             lootRollbackException);
+                    }
+                }
+                if (olegMaintenancePublication != null)
+                {
+                    try { olegMaintenancePublication.Rollback(); }
+                    catch (Exception vendorRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "oleg-maintenance.rollback-failed",
+                            "Blueprint initialization failed and Oleg maintenance-stock rollback was refused.",
+                            vendorRollbackException);
                     }
                 }
                 if (capitalVendorPublication != null)

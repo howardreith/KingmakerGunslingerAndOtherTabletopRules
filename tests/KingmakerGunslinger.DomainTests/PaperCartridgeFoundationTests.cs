@@ -183,6 +183,44 @@ namespace KingmakerGunslinger.DomainTests
                 "rejected Jhod absent");
         }
 
+        internal static void OlegMaintenanceStockContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string source = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "OlegMaintenanceVendorBlueprints.cs"));
+            foreach (string token in new[] {
+                "f720440559fc00949900bfa1575196ac",
+                "C11_OlegVendorTable",
+                "5db389e0409ef534d81358555e6ab99d",
+                "OTP_Oleg",
+                "67db4b8bacc69e643880f0a4ed6dff6f",
+                "OTP_Oleg_FirstVisit",
+                "RepairKitCount = 5",
+                "OverhaulKitCount = 2",
+                "BlueprintLibraryLookup.RequireExact<BlueprintSharedVendorTable>",
+                "VendorCatalogPublication<BlueprintComponent>.Create",
+                "CapitalVendorPublication.Unchanged",
+                "publication.Validate()",
+                "owned.Contains",
+                "ReferenceEquals"
+            }) Assertions.True(source.Contains(token),
+                "Oleg maintenance publication contract missing: " + token);
+
+            string bootstrap = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            int publish = bootstrap.IndexOf(
+                "OlegMaintenanceVendorBlueprints.Publish", StringComparison.Ordinal);
+            int rollback = bootstrap.IndexOf(
+                "olegMaintenancePublication.Rollback()", StringComparison.Ordinal);
+            int capitalRollback = bootstrap.IndexOf(
+                "capitalVendorPublication.Rollback()", StringComparison.Ordinal);
+            Assertions.True(publish >= 0 && rollback > publish &&
+                capitalRollback > rollback && bootstrap.Contains(
+                    "publicationPlan.CapitalGunslingerStock"),
+                "Oleg stock must be module-gated and roll back before the older capital snapshot.");
+        }
+
         private static int Count(string source, string token)
         {
             int count = 0, index = 0;
