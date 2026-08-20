@@ -36,3 +36,9 @@ selected True Grit choice reduces it to zero but still requires positive Grit.
 The same authoritative resource remains exposed through the existing action-bar
 resource component. Source gates pass at 1,151 tests; guarded runtime evidence
 is recorded in `docs/OVERNIGHT-GUNSLINGER-BUGFIX-QUALIFICATION.md`.
+
+## Overnight Issue 2 corrective qualification
+
+The authoritative diagnosis supersedes the provisional reconciliation hypothesis: native `AddBuff` can return null after placing the exact Focused Aim marker in `RawFacts`. Restoring the pre-activation Grit snapshot on that null return caused the observed bonus-without-spend split. The implementation at `24ffb78ac6821d4aec173213df1f046940be683b` resolves the exact materialized marker before the transactional resource commit.
+
+Guarded run `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235` passed 7/7 assertions: ordinary shared-resource spends, repeated use, zero-Grit rejection, exact True Grit selection, firearm-only damage, wrong-owner/reconciliation controls, and cleanup. Final visible-counter and save/load checks remain human-gated.

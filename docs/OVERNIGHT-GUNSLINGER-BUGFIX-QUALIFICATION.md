@@ -133,3 +133,17 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Candidate DLL SHA-256:
   `206606B2996DDD16D7F2F5FBF3F5FF00B142307F6B722CD85257B43C904133FD`.
 - Guarded scenario: `disposable-focused-aim`, pending immutable publication.
+
+## Issue 2 qualification - Focused Aim
+
+- Qualified code SHA: `24ffb78ac6821d4aec173213df1f046940be683b`.
+- Focused domain test: `mysterious-stranger.focused-aim-transactions` PASS.
+- Complete domain/reflection suite: 1,151/1,151 PASS.
+- Repository validation, exact-reference clean Release build, output validation, package build, strict package validation, SoundBank validation, and `git diff --check`: PASS.
+- Guarded scenario: `disposable-focused-aim`.
+- Passing run ID: `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235`.
+- Runtime assertions: 7/7 PASS; ordinary transactions `2 -> 1 -> 0`; selected True Grit retained positive Grit at `1`; pistol damage delta `+4`; crossbow damage delta `0`; zero-Grit, wrong-owner, and duplicate controls rejected; request-local cleanup PASS.
+- Deployed runtime package SHA-256: `A0D1B53AD3086339167BBBD23BB4B58D596014D989E1754BB4A1DAA30B63DEA0`.
+- Deployed DLL SHA-256: `08FCE67E6947CA22E57BF987D7AD01F3EB78B6BFE9C422D1C3560EB8855B4857`.
+- Deployed firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
+- Automated status: qualified. Final action-bar counter presentation and ordinary save/load remain human-gated.

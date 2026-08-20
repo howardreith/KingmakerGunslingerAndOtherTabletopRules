@@ -45,3 +45,13 @@ canonical Fatigued surviving summon expiry and an area transition, then native
 rest removal. Confirm cancel/interruption and ineligible/item/spontaneous casts
 emit no Acadamae save. With the Cord equipped, confirm the save still appears
 and only the accepted Cord consequence substitution changes.
+
+## Issue 2 - Focused Aim remaining human check
+
+1. On a Mysterious Stranger with at least two visible Grit, activate Focused Aim normally and confirm the same visible Grit counter decreases by exactly one while the firearm damage bonus is active.
+2. Remove the marker or let its native duration expire, activate it again, and confirm exactly one additional point is spent.
+3. At zero Grit, confirm the activation is unavailable or safely rejected and no damage marker appears.
+4. Select Focused Aim through True Grit, retain one positive Grit, activate it, and confirm the established zero-effective-cost behavior without allowing activation at zero.
+5. Save and reload a disposable test state and repeat one ordinary activation to confirm the same authoritative counter and feature facts reconcile.
+
+Automated boundary already proven: guarded run `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235` passed live resource, damage, repeat, zero-Grit, True Grit, owner lifecycle, and cleanup assertions.

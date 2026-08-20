@@ -2854,3 +2854,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Current issue: Issue 2, Focused Aim. Next action: inspect the current deed,
   shared live Grit resource, True Grit reduction, activation/delivery paths,
   focused tests, and guarded scenario before applying one narrow repair.
+
+## Overnight bugfix resume checkpoint - Issue 2 qualified (2026-08-20)
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Qualified code SHA: `24ffb78ac6821d4aec173213df1f046940be683b` (documentation checkpoint follows).
+- Version: `0.0.87`.
+- Completed issue IDs: Issue 1 automated-qualified/human-gated; Issue 2 automated-qualified/human-gated.
+- Current issue: Issue 3, exact firearm Touch AC penetration range and player feedback.
+- Issue 2 diagnosis: `AddBuff` returned null while the exact marker was materialized; old rollback restored Grit but left damage active. Exact `RawFacts` resolution now precedes the verified shared-resource commit.
+- Gates: 1,151/1,151 tests plus repository, exact-reference Release, output, package, strict-package, SoundBank, and diff checks PASS.
+- Guarded run: `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235`, 7/7 PASS.
+- Runtime hashes: package `A0D1B53AD3086339167BBBD23BB4B58D596014D989E1754BB4A1DAA30B63DEA0`; DLL `08FCE67E6947CA22E57BF987D7AD01F3EB78B6BFE9C422D1C3560EB8855B4857`; firearm AssetBundle `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
+- Next concrete action: inspect the current firearm AC decision service, resolution patch, firearm definitions, existing tooltip/log seams, tests, and guarded scenarios; then add exact per-firearm boundary coverage before the narrowest correction.

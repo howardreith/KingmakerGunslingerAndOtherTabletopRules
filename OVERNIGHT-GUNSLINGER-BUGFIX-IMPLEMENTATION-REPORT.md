@@ -90,3 +90,11 @@ UI component still points at the same shared resource and remains presentation
 only. A new guarded scenario exercises the real resource collection and native
 weapon-stat rule for firearm damage and crossbow isolation. Runtime is pending
 publication of the immutable candidate.
+
+## Issue 2 - Focused Aim transactional Grit spend
+
+The verified live defect was not fact-activation reconciliation. Kingmaker materialized the exact Focused Aim buff in the owner's `RawFacts` collection while returning null from `Buffs.AddBuff`. The previous code treated that return value as an activation failure and restored the resource snapshot, but the surviving marker continued to grant the firearm Charisma damage bonus.
+
+The repair resolves only the exact project-owned marker blueprint from `RawFacts` when the native return is null. It then evaluates the established True Grit policy against the live owner, spends the shared Grit resource once, verifies the exact before/after delta, and removes the marker while restoring the snapshot if the commit cannot be proven. Ability ownership, positive-Grit True Grit semantics, firearm-only damage, wrong-owner rejection, duplicate rejection, and feature lifecycle reconciliation are retained.
+
+Commit chain: `24c2bae`, `c8f58e0`, `75d7bc0`, `de46051`, `24ffb78`. Guarded run `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235` passed all seven assertions against `24ffb78ac6821d4aec173213df1f046940be683b`.

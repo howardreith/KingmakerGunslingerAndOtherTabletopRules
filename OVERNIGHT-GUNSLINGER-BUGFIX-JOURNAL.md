@@ -223,3 +223,20 @@
   `206606B2996DDD16D7F2F5FBF3F5FF00B142307F6B722CD85257B43C904133FD`.
 - Next action: commit/publish the Issue 2 candidate and run its guarded Steam
   scenario against the immutable source.
+
+## 2026-08-20 - Issue 2 Focused Aim qualified
+
+- Branch: `codex/gunslinger-overnight-bugfixes`
+- Qualified code SHA: `24ffb78ac6821d4aec173213df1f046940be683b`
+- Version: `0.0.87`
+- Test result: 1,151/1,151 PASS.
+- Full gates: repository validation, exact-reference clean Release build, output validation, package build, strict package validation, SoundBank validation, and `git diff --check` PASS.
+- Rejected experiments: runs `20260820T0441390621400Z-e19b47452eca4d42b948ec6dbc8cb48f`, `20260820T0445553713878Z-33645d179369449a958e03afd42fd4c9`, `20260820T0450089103961Z-190d6b8e8ff141e18b3151772d18d8ac`, and `20260820T0455022913298Z-4407c2f3e3ec4d88ac3bd2d7f387e9fa` all stopped at marker creation. The successive live-fixture changes proved that health and level were not the boundary and that permanent as well as timed `AddBuff` can return null after materializing the fact.
+- Root cause: the old transaction restored Grit when `AddBuff` returned null, even when the exact project marker already existed in `Buffs.RawFacts`; damage therefore remained active without the spend.
+- Repair: resolve only the exact Focused Aim marker blueprint from `RawFacts`, then commit the policy-derived cost against the live shared resource with exact delta verification and rollback/removal on failure.
+- Passing guarded run: `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235`, 7/7 PASS. Observed ordinary uses `2 -> 1 -> 0`, selected True Grit retained `1`, pistol damage delta `+4`, crossbow delta `0`, zero-Grit/wrong-owner/duplicate controls rejected, and request-local cleanup passed.
+- Runtime package SHA-256: `A0D1B53AD3086339167BBBD23BB4B58D596014D989E1754BB4A1DAA30B63DEA0`.
+- Runtime DLL SHA-256: `08FCE67E6947CA22E57BF987D7AD01F3EB78B6BFE9C422D1C3560EB8855B4857`.
+- Runtime firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
+- Remaining human check: visible counter refresh plus ordinary save/load and UI activation coverage.
+- Next action: Issue 3 firearm Touch AC boundary and presentation audit.
