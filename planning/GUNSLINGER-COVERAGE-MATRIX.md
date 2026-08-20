@@ -1,5 +1,11 @@
 # Gunslinger mandatory coverage matrix
 
+Overnight bug-fix note (2026-08-19): fresh human evidence reopens Acadamae
+action/save/fatigue, Focused Aim spend, firearm AC feedback, vendors/loot,
+audio, firearm icons, spear fit, and long-gun fit. The authoritative active
+status is planning/OVERNIGHT-GUNSLINGER-BUGFIX-MATRIX.md; older qualification
+labels do not override those observations.
+
 Optional-mod compatibility note (0.0.72): the base coverage rows remain frozen
 and must be re-proven under exact eligible profiles. Framework inventory and
 static audit are source-qualified; no optional profile is runtime-qualified yet.

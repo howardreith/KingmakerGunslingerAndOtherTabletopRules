@@ -1,5 +1,19 @@
 # Autonomous Gunslinger resume handoff
 
+## Overnight Gunslinger bug-fix batch (active, 2026-08-19)
+
+- Branch: codex/gunslinger-overnight-bugfixes.
+- Starting SHA: d13268d3abe9ffe89c8195b213c1eee194328672.
+- Version: 0.0.87; baseline 1,150/1,150 tests and the full Build-Local
+  exact-reference/package pipeline PASS after restoring ignored GamePath.props
+  in the isolated worktree.
+- Durable contract: planning/OVERNIGHT-GUNSLINGER-BUGFIX-MISSION.md.
+- Completed issue IDs: none.
+- Current checkpoint: create/validate/commit/publish durable mission records.
+- Real blocker: none.
+- Next concrete action: publish the mission checkpoint, verify local/remote SHA
+  equality, then inspect Issue 1 Acadamae cast/save/fatigue boundaries.
+
 ## Eastern Weapons first-human-playtest repair (automated seal complete, human recheck pending)
 
 - Functional/artifact source is

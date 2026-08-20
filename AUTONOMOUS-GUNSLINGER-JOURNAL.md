@@ -1,5 +1,17 @@
 # Autonomous Gunslinger journal
 
+## 2026-08-19 overnight bug-fix mission intake
+
+- Fetched origin/master and established isolated
+  codex/gunslinger-overnight-bugfixes at exact
+  d13268d3abe9ffe89c8195b213c1eee194328672.
+- Preserved unrelated tmp-phase0-clone content in the primary master worktree.
+- Baseline gates pass at 0.0.87 with 1,150 tests. Exact hashes and the complete
+  issue/stopping contract are recorded in the overnight journal and mission.
+- Fresh human findings reopen twelve issue rows and override conflicting prior
+  automated claims. No production code changed in this checkpoint.
+- Next action: publish the mission records, then begin Issue 1.
+
 ## 2026-08-04 seventh-playtest human failure record
 
 - Human playtesting accepts and freezes standalone BTSL vendor publication and

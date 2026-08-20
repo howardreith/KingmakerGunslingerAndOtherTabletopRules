@@ -1,5 +1,10 @@
 # Base Gunslinger fidelity matrix
 
+Overnight bug-fix note (2026-08-19): the current work order preserves all
+accepted tabletop/Kingmaker adaptations while reopening only the twelve
+human-observed implementation and presentation failures. No balance adaptation
+changes are authorized by the repair mission.
+
 Optional-mod compatibility note (0.0.72): compatibility work adds no tabletop
 adaptation or balance rule. Existing base and Mysterious Stranger fidelity
 dispositions remain authoritative and regression-sensitive under every profile.
