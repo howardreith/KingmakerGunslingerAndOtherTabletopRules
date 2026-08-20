@@ -15595,6 +15595,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData outsider = null;
             ItemEntityWeapon pistol = null;
             ItemEntityWeapon crossbow = null;
+            object controller = null;
             bool ordinary = false, repeated = false, duplicate = false;
             bool zeroRejected = false, trueGrit = false, ownerGate = false;
             bool damage = false, isolation = false, reconciliation = false;
@@ -15610,6 +15611,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 outsider.Descriptor.Stats.HitPoints.BaseValue = 30;
                 unit.Descriptor.Stats.Charisma.BaseValue = 18;
                 outsider.Descriptor.Stats.Wisdom.BaseValue = 18;
+                AdvanceDisposableGunslinger(unit.Descriptor, gunslinger, 1,
+                    ref controller);
+                AdvanceDisposableGunslinger(outsider.Descriptor, gunslinger, 1,
+                    ref controller);
                 unit.Descriptor.AddFact(set.Grit);
                 var focusedFact = unit.Descriptor.AddFact(set.FocusedAim);
                 outsider.Descriptor.AddFact(gunslinger.Grit.Feature);
@@ -15699,6 +15704,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (controller != null)
+                {
+                    MethodInfo cancel = controller.GetType().GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance);
+                    if (cancel != null) cancel.Invoke(controller, null);
+                }
                 if (crossbow != null) crossbow.Dispose();
                 if (pistol != null) pistol.Dispose();
                 if (outsider != null) outsider.Dispose();
