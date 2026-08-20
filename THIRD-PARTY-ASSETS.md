@@ -98,24 +98,12 @@ copied, and distribution attribution is not required.
 
 ## Overnight firearm feat icons
 
-The five P/M/B/Ri/Rv firearm monograms and replacement Rapid Reload icon are
-original project-owned procedural artwork. Their editable JSON specification,
-deterministic PowerShell drawing/export source, 64/32-pixel inspection map, and
-hash record are under `assets-source/original-icons/firearm-feats/`. The
-exporter uses the installed Windows Palatino Linotype system font to construct
-lettering paths but does not copy or redistribute any font file. No native game,
-third-party, downloaded, or earlier generated icon pixels are incorporated.
+The five P/M/B/Ri/Rv firearm monograms and replacement Rapid Reload icon are original project-owned procedural artwork. Human review superseded the 0.0.88 dark circular treatment. The current deterministic PowerShell source reconstructs the accepted Nodachi selector presentation contract using an aged pale field, calligraphic oxblood marks, restrained blue corners, and a separate return-arrow/ramrod motif for Rapid Reload. The editable JSON specification, drawing/export source, 64/32-pixel inspection map, and hash record are under assets-source/original-icons/firearm-feats/.
 
-The six 0.0.62 semantic icons are original AI-assisted project artwork. Their editable source sheet and processing record are under `assets-source/original-icons/second-playtest/`.
+The design uses the repository's CustomWeaponSelectorRuntime FeatureUIData null-sprite plus monogram behavior as authority and copies no Kingmaker pixels. Segoe Script and Georgia are installed Windows system fonts used only during rendering; no font binary is copied or packaged. Regenerate with tools/New-FirearmFeatIcons.ps1 and confirm deterministic SHA-256 output before publication.
+The six 0.0.62 semantic icons are original AI-assisted project artwork. Their editable source sheet and processing record are under assets-source/original-icons/second-playtest/.
 
-The Gunsmith's Kit and Firearm Overhaul Kit inventory icons are original
-AI-assisted project artwork generated specifically for Kingmaker Gunslinger
-with the built-in OpenAI image tool. The preserved high-resolution chroma
-sources, exact prompt record, deterministic export record, and hashes are under
-`assets-source/original-icons/supply-icons/`. Existing project icon sheets were
-used only as style references; no third-party source pixels were supplied or
-copied, and distribution attribution is not required.
-
+The Gunsmith's Kit and Firearm Overhaul Kit inventory icons are original AI-assisted project artwork generated specifically for Kingmaker Gunslinger with the built-in OpenAI image tool. The preserved high-resolution chroma sources, exact prompt record, deterministic export record, and hashes are under assets-source/original-icons/supply-icons/. Existing project icon sheets were used only as style references; no third-party source pixels were supplied or copied, and distribution attribution is not required.
 ## Native Wwise firearm bank
 
 The native firearm-audio design authors the same five approved processed SSE

@@ -1,187 +1,225 @@
 [CmdletBinding()]
-param(
-    [string]$SpecPath = (Join-Path $PSScriptRoot '..\assets-source\original-icons\firearm-feats\icon-spec.json'),
-    [string]$OutputDirectory = (Join-Path $PSScriptRoot '..\assets\game\icons'),
-    [string]$SourceDirectory = (Join-Path $PSScriptRoot '..\assets-source\original-icons\firearm-feats')
-)
-
+param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
-$spec = Get-Content -LiteralPath $SpecPath -Raw | ConvertFrom-Json
-if ($spec.version -ne 1 -or $spec.canvas -ne 64 -or @($spec.icons).Count -ne 6) {
+$root = Split-Path -Parent $PSScriptRoot
+$source = Join-Path $root 'assets-source/original-icons/firearm-feats'
+$runtime = Join-Path $root 'assets/game/icons'
+$spec = Get-Content (Join-Path $source 'icon-spec.json') -Raw | ConvertFrom-Json
+if ($spec.schemaVersion -ne 2 -or $spec.canvas -ne 64 -or
+    @($spec.monograms).Count -ne 5 -or $null -eq $spec.rapidReload) {
     throw 'Firearm feat icon specification is incomplete.'
 }
-$fontFamily = [Drawing.FontFamily]::new([string]$spec.fontFamily)
-if ($fontFamily.Name -cne [string]$spec.fontFamily) {
-    throw "Required system font is unavailable: $($spec.fontFamily)"
+$fontFamily = [Drawing.FontFamily]::new('Segoe Script')
+if ($fontFamily.Name -cne 'Segoe Script') {
+    throw 'Required Windows Segoe Script system font is unavailable.'
 }
 
-function New-IconCanvas {
-    return [Drawing.Bitmap]::new(64, 64,
-        [Drawing.Imaging.PixelFormat]::Format32bppArgb)
-}
-
-function Initialize-Graphics([Drawing.Bitmap]$Bitmap) {
-    $graphics = [Drawing.Graphics]::FromImage($Bitmap)
-    $graphics.Clear([Drawing.Color]::Transparent)
+function New-Graphics([Drawing.Bitmap]$bitmap) {
+    $graphics = [Drawing.Graphics]::FromImage($bitmap)
     $graphics.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias
-    $graphics.CompositingQuality = [Drawing.Drawing2D.CompositingQuality]::HighQuality
-    $graphics.InterpolationMode = [Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+    $graphics.InterpolationMode =
+        [Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
     $graphics.PixelOffsetMode = [Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+    $graphics.TextRenderingHint =
+        [Drawing.Text.TextRenderingHint]::AntiAliasGridFit
+    $graphics.Clear([Drawing.Color]::Transparent)
     return $graphics
 }
 
-function Draw-AgedField([Drawing.Graphics]$Graphics, [int]$Seed, [bool]$Salmon) {
-    $bounds = [Drawing.Rectangle]::new(3, 3, 58, 58)
-    $top = if ($Salmon) { [Drawing.Color]::FromArgb(255, 145, 67, 62) } else {
-        [Drawing.Color]::FromArgb(255, 126, 96, 58) }
-    $bottom = if ($Salmon) { [Drawing.Color]::FromArgb(255, 76, 30, 30) } else {
-        [Drawing.Color]::FromArgb(255, 52, 39, 28) }
-    $field = [Drawing.Drawing2D.LinearGradientBrush]::new($bounds, $top, $bottom, 90.0)
-    $outer = [Drawing.Pen]::new([Drawing.Color]::FromArgb(255, 43, 30, 24), 3.0)
-    $middle = [Drawing.Pen]::new([Drawing.Color]::FromArgb(255, 169, 129, 72), 2.0)
-    $inner = [Drawing.Pen]::new([Drawing.Color]::FromArgb(210, 230, 195, 129), 1.0)
-    try {
-        $Graphics.FillEllipse($field, $bounds)
-        $Graphics.DrawEllipse($outer, [Drawing.Rectangle]::new(2, 2, 60, 60))
-        $Graphics.DrawEllipse($middle, [Drawing.Rectangle]::new(5, 5, 54, 54))
-        $Graphics.DrawEllipse($inner, [Drawing.Rectangle]::new(8, 8, 48, 48))
-        $state = $Graphics.Save()
-        $clip = [Drawing.Drawing2D.GraphicsPath]::new()
-        try {
-            $clip.AddEllipse([Drawing.Rectangle]::new(7, 7, 50, 50))
-            $Graphics.SetClip($clip)
-            $random = [Random]::new($Seed)
-            $wearPen = [Drawing.Pen]::new([Drawing.Color]::FromArgb(38, 238, 211, 156), 1.0)
-            $darkPen = [Drawing.Pen]::new([Drawing.Color]::FromArgb(32, 35, 24, 20), 1.0)
-            try {
-                for ($i = 0; $i -lt 34; $i++) {
-                    $x = $random.Next(8, 56); $y = $random.Next(8, 56)
-                    $length = $random.Next(1, 5)
-                    $pen = if (($i % 3) -eq 0) { $wearPen } else { $darkPen }
-                    $Graphics.DrawLine($pen, $x, $y, $x + $length, $y + ($i % 2))
-                }
-            }
-            finally { $wearPen.Dispose(); $darkPen.Dispose() }
-        }
-        finally { $clip.Dispose(); $Graphics.Restore($state) }
-    }
-    finally { $field.Dispose(); $outer.Dispose(); $middle.Dispose(); $inner.Dispose() }
-}
-
-function Draw-Monogram([Drawing.Graphics]$Graphics, [string]$Text) {
-    $size = if ($Text.Length -eq 1) { 35.0 } else { 25.0 }
+function New-FieldPath {
     $path = [Drawing.Drawing2D.GraphicsPath]::new()
-    $format = [Drawing.StringFormat]::GenericTypographic
-    try {
-        $path.AddString($Text, $fontFamily, [int][Drawing.FontStyle]::Bold,
-            $size, [Drawing.PointF]::new(0, 0), $format)
-        $bounds = $path.GetBounds()
-        $matrix = [Drawing.Drawing2D.Matrix]::new()
-        try {
-            $matrix.Translate([single](32 - ($bounds.Left + $bounds.Width / 2)),
-                [single](31 - ($bounds.Top + $bounds.Height / 2)))
-            $path.Transform($matrix)
-        }
-        finally { $matrix.Dispose() }
-        $shadow = [Drawing.Pen]::new([Drawing.Color]::FromArgb(230, 44, 27, 22), 3.2)
-        $edge = [Drawing.Pen]::new([Drawing.Color]::FromArgb(255, 181, 132, 70), 1.1)
-        $fill = [Drawing.SolidBrush]::new([Drawing.Color]::FromArgb(255, 236, 211, 157))
-        try {
-            $Graphics.DrawPath($shadow, $path)
-            $Graphics.FillPath($fill, $path)
-            $Graphics.DrawPath($edge, $path)
-        }
-        finally { $shadow.Dispose(); $edge.Dispose(); $fill.Dispose() }
-    }
-    finally { $path.Dispose(); $format.Dispose() }
+    $path.AddArc(3, 3, 14, 14, 180, 90)
+    $path.AddArc(47, 3, 14, 14, 270, 90)
+    $path.AddArc(47, 47, 14, 14, 0, 90)
+    $path.AddArc(3, 47, 14, 14, 90, 90)
+    $path.CloseFigure()
+    return $path
 }
 
-function Draw-RapidReload([Drawing.Graphics]$Graphics) {
-    $cream = [Drawing.Color]::FromArgb(255, 237, 208, 150)
-    $shadow = [Drawing.Color]::FromArgb(235, 48, 25, 24)
-    $shadowPen = [Drawing.Pen]::new($shadow, 5.0)
-    $linePen = [Drawing.Pen]::new($cream, 2.6)
+function Draw-NativeParameterField(
+    [Drawing.Graphics]$graphics,
+    [int]$seed) {
+    $path = New-FieldPath
+    $fill = [Drawing.Drawing2D.LinearGradientBrush]::new(
+        [Drawing.PointF]::new(4, 3),
+        [Drawing.PointF]::new(60, 61),
+        [Drawing.ColorTranslator]::FromHtml($spec.palette.parchmentLight),
+        [Drawing.ColorTranslator]::FromHtml($spec.palette.parchmentShade))
+    $border = [Drawing.Pen]::new(
+        [Drawing.ColorTranslator]::FromHtml($spec.palette.border), 2.1)
     try {
-        $shadowPen.StartCap = $shadowPen.EndCap = [Drawing.Drawing2D.LineCap]::Round
-        $linePen.StartCap = $linePen.EndCap = [Drawing.Drawing2D.LineCap]::Round
-        $Graphics.DrawArc($shadowPen, 13, 12, 38, 38, 205, 255)
-        $Graphics.DrawArc($linePen, 13, 12, 38, 38, 205, 255)
-        $arrowShadow = @([Drawing.PointF]::new(16, 14), [Drawing.PointF]::new(27, 14), [Drawing.PointF]::new(20, 23))
-        $arrow = @([Drawing.PointF]::new(17, 15), [Drawing.PointF]::new(25, 15), [Drawing.PointF]::new(20, 21))
-        $shadowBrush = [Drawing.SolidBrush]::new($shadow)
-        $creamBrush = [Drawing.SolidBrush]::new($cream)
-        try { $Graphics.FillPolygon($shadowBrush, $arrowShadow); $Graphics.FillPolygon($creamBrush, $arrow) }
-        finally { $shadowBrush.Dispose(); $creamBrush.Dispose() }
-        $Graphics.DrawLine($shadowPen, 20, 48, 43, 21)
-        $Graphics.DrawLine($linePen, 20, 48, 43, 21)
-        $Graphics.DrawLine($shadowPen, 17, 45, 24, 51)
-        $Graphics.DrawLine($linePen, 17, 45, 24, 51)
-        $Graphics.DrawLine($shadowPen, 40, 19, 46, 24)
-        $Graphics.DrawLine($linePen, 40, 19, 46, 24)
+        $graphics.FillPath($fill, $path)
+        $graphics.DrawPath($border, $path)
     }
-    finally { $shadowPen.Dispose(); $linePen.Dispose() }
-}
+    finally {
+        $path.Dispose()
+        $fill.Dispose()
+        $border.Dispose()
+    }
 
-$destination = [IO.Path]::GetFullPath($OutputDirectory)
-$sourceDestination = [IO.Path]::GetFullPath($SourceDirectory)
-New-Item -ItemType Directory -Force -Path $destination,$sourceDestination | Out-Null
-$rendered = @()
-foreach ($icon in $spec.icons) {
-    $bitmap = New-IconCanvas
-    try {
-        $graphics = Initialize-Graphics $bitmap
+    $random = [Random]::new($seed)
+    for ($index = 0; $index -lt 58; $index++) {
+        $tone = if (($index % 3) -eq 0) { 87 } else { 126 }
+        $wear = [Drawing.SolidBrush]::new([Drawing.Color]::FromArgb(
+            8 + $random.Next(13), $tone, 65, 42))
         try {
-            $isReload = [string]$icon.key -ceq 'rapid-reload'
-            Draw-AgedField $graphics ([int]$icon.seed) $isReload
-            if ($isReload) { Draw-RapidReload $graphics }
-            else { Draw-Monogram $graphics ([string]$icon.monogram) }
+            $x = 7 + $random.NextDouble() * 50
+            $y = 7 + $random.NextDouble() * 50
+            $radius = 0.35 + $random.NextDouble() * 0.8
+            $graphics.FillEllipse($wear, $x, $y, $radius, $radius)
         }
-        finally { $graphics.Dispose() }
-        $path = Join-Path $destination ($icon.key + '.png')
-        $bitmap.Save($path, [Drawing.Imaging.ImageFormat]::Png)
-        $rendered += [pscustomobject]@{ Key = [string]$icon.key; Path = $path }
+        finally { $wear.Dispose() }
     }
-    finally { $bitmap.Dispose() }
+
+    $corner = [Drawing.Pen]::new(
+        [Drawing.ColorTranslator]::FromHtml($spec.palette.cornerBlue), 2.2)
+    try {
+        $graphics.DrawLine($corner, 7, 17, 7, 8)
+        $graphics.DrawLine($corner, 7, 8, 16, 8)
+        $graphics.DrawLine($corner, 57, 47, 57, 56)
+        $graphics.DrawLine($corner, 57, 56, 48, 56)
+    }
+    finally { $corner.Dispose() }
 }
 
-$map = [Drawing.Bitmap]::new(480, 126, [Drawing.Imaging.PixelFormat]::Format32bppArgb)
+function Draw-CalligraphicMonogram(
+    [Drawing.Graphics]$graphics,
+    [string]$text) {
+    $size = if ($text.Length -eq 1) { 35 } else { 27 }
+    $font = [Drawing.Font]::new(
+        $fontFamily,
+        $size,
+        ([Drawing.FontStyle]::Bold -bor [Drawing.FontStyle]::Italic),
+        [Drawing.GraphicsUnit]::Pixel)
+    $format = [Drawing.StringFormat]::new()
+    $format.Alignment = [Drawing.StringAlignment]::Center
+    $format.LineAlignment = [Drawing.StringAlignment]::Center
+    $shadow = [Drawing.SolidBrush]::new(
+        [Drawing.Color]::FromArgb(72, 68, 38, 24))
+    $ink = [Drawing.SolidBrush]::new(
+        [Drawing.ColorTranslator]::FromHtml($spec.palette.oxblood))
+    try {
+        $graphics.DrawString($text, $font, $shadow,
+            [Drawing.RectangleF]::new(5.8, 4.1, 54, 54), $format)
+        $graphics.DrawString($text, $font, $ink,
+            [Drawing.RectangleF]::new(5, 3, 54, 54), $format)
+        $flourish = [Drawing.Pen]::new(
+            [Drawing.ColorTranslator]::FromHtml($spec.palette.oxblood), 1.7)
+        try {
+            $graphics.DrawBezier($flourish, 17, 50, 26, 55, 39, 44, 49, 49)
+        }
+        finally { $flourish.Dispose() }
+    }
+    finally {
+        $font.Dispose()
+        $format.Dispose()
+        $shadow.Dispose()
+        $ink.Dispose()
+    }
+}
+
+function Draw-RapidReloadGlyph([Drawing.Graphics]$graphics) {
+    $ink = [Drawing.ColorTranslator]::FromHtml($spec.palette.oxblood)
+    $pen = [Drawing.Pen]::new($ink, 4)
+    $pen.StartCap = [Drawing.Drawing2D.LineCap]::Round
+    $pen.EndCap = [Drawing.Drawing2D.LineCap]::Round
+    try {
+        $graphics.DrawArc($pen, 14, 13, 36, 36, 210, 270)
+        $brush = [Drawing.SolidBrush]::new($ink)
+        try {
+            $graphics.FillPolygon($brush, @(
+                [Drawing.PointF]::new(12, 16),
+                [Drawing.PointF]::new(23, 16),
+                [Drawing.PointF]::new(17, 25)))
+        }
+        finally { $brush.Dispose() }
+        $graphics.DrawLine($pen, 25, 37, 43, 24)
+        $graphics.DrawLine($pen, 39, 22, 46, 29)
+    }
+    finally { $pen.Dispose() }
+}
+
+function Save-Icon($entry, [bool]$rapid) {
+    $bitmap = [Drawing.Bitmap]::new(
+        64, 64, [Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    $graphics = New-Graphics $bitmap
+    try {
+        Draw-NativeParameterField $graphics ([int]$entry.seed)
+        if ($rapid) {
+            Draw-RapidReloadGlyph $graphics
+        }
+        else {
+            Draw-CalligraphicMonogram $graphics ([string]$entry.monogram)
+        }
+        $bitmap.Save(
+            (Join-Path $runtime ($entry.key + '.png')),
+            [Drawing.Imaging.ImageFormat]::Png)
+    }
+    finally {
+        $graphics.Dispose()
+        $bitmap.Dispose()
+    }
+}
+
+foreach ($entry in $spec.monograms) {
+    Save-Icon $entry $false
+}
+Save-Icon $spec.rapidReload $true
+
+$entries = @($spec.monograms) + @($spec.rapidReload)
+$sheet = [Drawing.Bitmap]::new(
+    480, 126, [Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$graphics = [Drawing.Graphics]::FromImage($sheet)
 try {
-    $graphics = Initialize-Graphics $map
+    $graphics.Clear([Drawing.Color]::FromArgb(255, 224, 211, 179))
+    $labelFont = [Drawing.Font]::new(
+        'Georgia', 8, [Drawing.FontStyle]::Bold, [Drawing.GraphicsUnit]::Pixel)
+    $labelBrush = [Drawing.SolidBrush]::new(
+        [Drawing.ColorTranslator]::FromHtml($spec.palette.border))
     try {
-        $graphics.Clear([Drawing.Color]::FromArgb(255, 37, 29, 25))
-        $labelFont = [Drawing.Font]::new($fontFamily, 9.0, [Drawing.FontStyle]::Regular,
-            [Drawing.GraphicsUnit]::Pixel)
-        $labelBrush = [Drawing.SolidBrush]::new([Drawing.Color]::FromArgb(255, 224, 205, 168))
-        try {
-            for ($i = 0; $i -lt $rendered.Count; $i++) {
-                $icon = [Drawing.Bitmap]::FromFile($rendered[$i].Path)
-                try {
-                    $x = 8 + ($i * 78)
-                    $graphics.DrawImage($icon, $x + 7, 7, 64, 64)
-                    $graphics.DrawImage($icon, $x + 23, 76, 32, 32)
-                    $graphics.DrawString($rendered[$i].Key.Replace('firearm-monogram-', ''),
-                        $labelFont, $labelBrush, [single]$x, [single]108)
-                }
-                finally { $icon.Dispose() }
+        for ($index = 0; $index -lt $entries.Count; $index++) {
+            $entry = $entries[$index]
+            $image = [Drawing.Image]::FromFile(
+                (Join-Path $runtime ($entry.key + '.png')))
+            try {
+                $x = 8 + $index * 78
+                $graphics.DrawImage($image, $x, 4, 64, 64)
+                $graphics.DrawImage($image, $x + 16, 86, 32, 32)
+                $graphics.DrawString(
+                    [string]$entry.label, $labelFont, $labelBrush, $x, 72)
             }
+            finally { $image.Dispose() }
         }
-        finally { $labelFont.Dispose(); $labelBrush.Dispose() }
     }
-    finally { $graphics.Dispose() }
-    $map.Save((Join-Path $sourceDestination 'firearm-feat-icon-map.png'),
+    finally {
+        $labelFont.Dispose()
+        $labelBrush.Dispose()
+    }
+    $sheet.Save(
+        (Join-Path $source 'firearm-feat-icon-map.png'),
         [Drawing.Imaging.ImageFormat]::Png)
 }
-finally { $map.Dispose(); $fontFamily.Dispose() }
-
-$sumLines = $rendered | ForEach-Object {
-    $hash = (Get-FileHash -LiteralPath $_.Path -Algorithm SHA256).Hash.ToLowerInvariant()
-    "$hash  ../../../assets/game/icons/$($_.Key).png"
+finally {
+    $graphics.Dispose()
+    $sheet.Dispose()
+    $fontFamily.Dispose()
 }
-$mapPath = Join-Path $sourceDestination 'firearm-feat-icon-map.png'
-$sumLines += "$((Get-FileHash -LiteralPath $mapPath -Algorithm SHA256).Hash.ToLowerInvariant())  firearm-feat-icon-map.png"
-[IO.File]::WriteAllLines((Join-Path $sourceDestination 'SHA256SUMS.txt'), $sumLines,
+
+$hashLines = @($entries | ForEach-Object {
+    $path = Join-Path $runtime ($_.key + '.png')
+    $hash = Get-FileHash $path -Algorithm SHA256
+    '{0}  ../../../assets/game/icons/{1}' -f
+        $hash.Hash.ToLowerInvariant(), [IO.Path]::GetFileName($hash.Path)
+})
+$mapPath = Join-Path $source 'firearm-feat-icon-map.png'
+$mapHash = Get-FileHash $mapPath -Algorithm SHA256
+$hashLines += '{0}  {1}' -f
+    $mapHash.Hash.ToLowerInvariant(), [IO.Path]::GetFileName($mapHash.Path)
+[IO.File]::WriteAllLines(
+    (Join-Path $source 'SHA256SUMS.txt'),
+    $hashLines,
     [Text.UTF8Encoding]::new($false))
-$sumLines | ForEach-Object { Write-Host $_ }
+Write-Output ('Generated {0} Nodachi-selector-style icons.' -f $entries.Count)

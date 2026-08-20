@@ -3984,3 +3984,29 @@ The 30-item campaign map was re-audited against pacing rather than distinct-targ
 # 2026-08-20 human-review BTSL responsibility correction
 
 Exact standalone/campaign Honest Guy tables now own permanent project equipment; exact Xelliren tables own only firearm support stacks. Central, Eastern, and spear publishers normalize wrong-role project rows while preserving all retained order and rollback. Stable-key integration replaces appended project blocks. Repository/build/package gates passed at `1162/1162`; guarded run `20260820T1444126864934Z-observe-rare-firearm-acquisition` passed. Actual merchant materialization remains human-gated.
+
+## 2026-08-20 firearm feat icon correction checkpoint
+
+- Status: implemented; source qualification and guarded UI observation pending.
+- Human rejection: the 0.0.88 dark circular firearm monograms and Rapid Reload medallion are superseded.
+- Root boundary: the accepted Nodachi parameter appearance is produced by CustomWeaponSelectorRuntime through FeatureUIData with a null sprite plus the NO monogram; nodachi.png is item art, not the parameter template.
+- Repair: retained every stable firearm choice blueprint and exact publication mapping, replaced only the six project-owned rendered assets with a deterministic reconstruction of the native selector grammar, and added a separate pale-field oxblood reload glyph.
+- Source/provenance: JSON palette and monograms plus PowerShell vector/source generator; Segoe Script and Georgia system fonts are rendered but not packaged; no native pixels or proprietary fonts are included.
+- Automated evidence: deterministic 64/32 contact sheet generated; focused/full/build/package/runtime gates pending.
+- Human gate: compare P/M/B/Ri/Rv and Rapid Reload beside native choices at actual UI scale.
+- Next action: run focused icon test, repository validator, complete suite, clean Release/package gates, then the packaged disposable firearm-dependent-feats observer.
+## 2026-08-20 firearm feat icon automated qualification
+
+- Status: automated-qualified; final aesthetic judgment remains human-gated.
+- Determinism: a second tools/New-FirearmFeatIcons.ps1 run reproduced all six PNG and 64/32 contact-sheet SHA-256 values exactly.
+- Repository/source: PASS.
+- Complete dependency-free suite: 1,162/1,162 PASS, including firearm-feat-icons.semantic-publication.
+- Clean Release/package: PASS; output validation PASS; firearm AssetBundle manifest/output validation PASS; SoundBank validation PASS; strict standalone package validation PASS.
+- Guarded runtime scenario: disposable-firearm-dependent-feats, run 20260820T1505344745363Z-71ef2e5f35aa45ce9c929d0dc5369f47, 13/13 PASS.
+- Runtime publication: distinct exact P/M/B/Ri/Rv sprites resolved under Weapon Focus, Greater Weapon Focus, Weapon Specialization, Greater Weapon Specialization, Improved Critical, and Rapid Reload children; the separate Rapid Reload top sprite resolved; all native top-level icons were preserved.
+- Local-runtime package SHA-256: f256f59f65587d7475672eb415ed0e648cc60c7c85e4e388f60fa35021630b70.
+- DLL SHA-256: c6060a14968fe0227b601fd0fe5c2c2f736241d4044b24036717576071900ecf.
+- Firearm AssetBundle SHA-256: 1aa75fa1230abfb60cd5148ca90b99d604dbece7d80d98d85cb7d7c0a885a8ff.
+- SoundBank SHA-256: 0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18.
+- Runtime deployment backup: C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260820T1505311020164Z; exact only-target restore verified.
+- Human gate: inspect the five calligraphic parameter fields and Rapid Reload beside native feats at real 32/64 UI scale.

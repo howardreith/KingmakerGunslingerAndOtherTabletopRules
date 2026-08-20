@@ -3072,3 +3072,23 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Tests/gates: repository validation PASS; `1161/1161`; clean Release/output/SoundBank/package/strict-package PASS.
 - External state: no Kingmaker process and no unresolved Mods transaction/sentinel after the run. Latest qualified candidate remains deployed intentionally for guarded testing.
 - Next action: commit and publish the P0 bounded repair, remote-verify, then read the Acadamae real-path implementation and installed API evidence once and repair the authoritative command seam.
+
+## 2026-08-20 icon correction active checkpoint
+- Branch: codex/gunslinger-overnight-bugfixes
+- Published predecessor: 124cc04d9d0d4b3e2475a9023e7237cd0ec313e9
+- Version: 0.0.88
+- Completed correction commits: P0 6a6d2bc, Acadamae 25c27f9, acquisition e27e79b, BTSL 124cc04.
+- Current issue: firearm Weapon Focus family monograms and Rapid Reload icon.
+- Current result: Nodachi parameter presentation is native FeatureUIData null-icon plus NO monogram; stable explicit firearm feature identities remain unchanged. Deterministic project-owned pale/calligraphic reconstruction generated and pending qualification.
+- Last result: tools/New-FirearmFeatIcons.ps1 generated six assets and the 64/32 contact sheet successfully.
+- External state: no game/runtime/profile transaction active.
+- Next command: focused FirearmFeatIconTests followed by all required source/build/package gates.
+## 2026-08-20 icon correction qualification checkpoint
+- Branch: codex/gunslinger-overnight-bugfixes
+- Published predecessor: 124cc04d9d0d4b3e2475a9023e7237cd0ec313e9
+- Version: 0.0.88
+- Current issue disposition: firearm icons automated-qualified, human aesthetic gate retained.
+- Gates: deterministic icons PASS; repository PASS; 1,162/1,162 PASS; clean Release/output/AssetBundle/SoundBank/package PASS.
+- Runtime: disposable-firearm-dependent-feats run 20260820T1505344745363Z-71ef2e5f35aa45ce9c929d0dc5369f47, 13/13 PASS.
+- External state: backup 20260820T1505311020164Z restored and verified; no runtime/profile transaction active.
+- Next command: git diff --check and complete issue-scoped staged audit, then commit/publish and continue to long-gun yaw.

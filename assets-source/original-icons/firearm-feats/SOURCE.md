@@ -1,23 +1,9 @@
 # Firearm feat icon source
 
-These six icons are original project-owned procedural artwork created for the
-overnight firearm-feat presentation repair. No Kingmaker, Wrath, third-party,
-or downloaded pixels or font files are included.
+These six PNG assets are original project-owned deterministic renders produced by tools/New-FirearmFeatIcons.ps1 from icon-spec.json.
 
-`icon-spec.json` is the editable art specification. It fixes the 64-by-64
-canvas, exact monograms, deterministic wear seeds, and the Windows system font
-family used only during rendering. `tools/New-FirearmFeatIcons.ps1` contains
-the editable vector-like drawing operations, muted parchment/oxblood palette,
-border treatment, lettering paths, reload arrow, and ramrod symbol.
+The design authority is the accepted Nodachi presentation path, not its item PNG. CustomWeaponSelectorRuntime constructs native FeatureUIData with a null sprite and the NO monogram, allowing Kingmaker to render its category-glyph treatment. Firearm feat choices are stable explicit blueprint features rather than parametrized rows, so the generator reconstructs that grammar without changing their identities: aged pale field, original calligraphic monogram, restrained border, wear, and compact margins. It copies no native pixels.
 
-Run the exporter from the repository root:
+Rapid Reload uses the same project-owned field with an original oxblood circular-return/ramrod motif and restrained blue corner accents. It no longer uses the rejected dark medallion.
 
-```powershell
-.\tools\New-FirearmFeatIcons.ps1
-```
-
-It deterministically writes five distinct firearm monograms and the Rapid
-Reload icon to `assets/game/icons/`, writes a 64/32-pixel inspection map beside
-this record, and refreshes `SHA256SUMS.txt`. Palatino Linotype is a standard
-Windows system font used at build time only; no font binary is copied or
-redistributed. Final aesthetic acceptance remains a real in-game UI check.
+Segoe Script and Georgia are Windows system fonts used only while rendering; no font file is copied or packaged. The JSON specification and PowerShell vector drawing code are editable source art. firearm-feat-icon-map.png contains deterministic 64-pixel and 32-pixel inspection rows. SHA256SUMS.txt records all six runtime assets and the contact sheet.

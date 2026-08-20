@@ -34,9 +34,21 @@ namespace KingmakerGunslinger.DomainTests
             string spec = File.ReadAllText(Path.Combine(root, "assets-source",
                 "original-icons", "firearm-feats", "icon-spec.json"));
             foreach (string token in new[] { "\"P\"", "\"M\"", "\"B\"",
-                "\"Ri\"", "\"Rv\"", "Palatino Linotype" })
+                "\"Ri\"", "\"Rv\"", "native-custom-weapon-selector-monogram",
+                "CustomWeaponSelectorRuntime FeatureUIData null-icon plus monogram",
+                "parchmentLight", "oxblood", "cornerBlue", "Segoe Script" })
                 Assertions.True(spec.Contains(token),
                     "Editable icon specification lacks token: " + token);
+            string generator = File.ReadAllText(Path.Combine(root, "tools",
+                "New-FirearmFeatIcons.ps1"));
+            foreach (string token in new[] { "Draw-NativeParameterField",
+                "Draw-CalligraphicMonogram", "Draw-RapidReloadGlyph",
+                "firearm-feat-icon-map.png", "DrawImage($image, $x + 16, 86, 32, 32)" })
+                Assertions.True(generator.Contains(token),
+                    "Deterministic native-style icon generator lacks: " + token);
+            Assertions.False(generator.Contains("FillEllipse($badge") ||
+                spec.Contains("\"template\":\"dark"),
+                "Rejected dark circular badge construction returned.");
             string publication = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Blueprints", "ProjectAssetIcons.cs"));
             Assertions.True(publication.Contains("ApplyFirearmFeatIcons(feats)") &&

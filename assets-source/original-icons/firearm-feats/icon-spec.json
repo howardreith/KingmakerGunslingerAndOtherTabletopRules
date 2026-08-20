@@ -1,13 +1,16 @@
 {
-  "version": 1,
+  "schemaVersion": 2,
+  "template": "native-custom-weapon-selector-monogram",
+  "templateAuthority": "CustomWeaponSelectorRuntime FeatureUIData null-icon plus monogram contract used by Nodachi",
   "canvas": 64,
-  "fontFamily": "Palatino Linotype",
-  "icons": [
-    { "key": "firearm-monogram-pistol", "monogram": "P", "seed": 9101 },
-    { "key": "firearm-monogram-musket", "monogram": "M", "seed": 9102 },
-    { "key": "firearm-monogram-blunderbuss", "monogram": "B", "seed": 9103 },
-    { "key": "firearm-monogram-rifle", "monogram": "Ri", "seed": 9104 },
-    { "key": "firearm-monogram-revolver", "monogram": "Rv", "seed": 9105 },
-    { "key": "rapid-reload", "monogram": "", "seed": 9106 }
-  ]
+  "glyphConstruction": "original calligraphic text and vector flourish rendered from the Windows Segoe Script system font; no font file is packaged",
+  "palette": {"parchmentLight":"#F2E4BC","parchmentShade":"#C9A975","border":"#60452F","oxblood":"#813A35","cornerBlue":"#506B78"},
+  "monograms": [
+    {"key":"firearm-monogram-pistol","label":"Pistol","monogram":"P","seed":9101},
+    {"key":"firearm-monogram-musket","label":"Musket","monogram":"M","seed":9102},
+    {"key":"firearm-monogram-blunderbuss","label":"Blunderbuss","monogram":"B","seed":9103},
+    {"key":"firearm-monogram-rifle","label":"Rifle","monogram":"Ri","seed":9104},
+    {"key":"firearm-monogram-revolver","label":"Revolver","monogram":"Rv","seed":9105}
+  ],
+  "rapidReload":{"key":"rapid-reload","label":"Rapid Reload","motif":"oxblood circular return arrow with ramrod and cartridge-motion stroke on pale parchment with restrained blue corners","seed":9106}
 }

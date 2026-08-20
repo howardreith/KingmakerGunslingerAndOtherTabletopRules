@@ -1,7 +1,7 @@
-28de0cc981775ac4e4f66cae03fe72bfece6e6b2b3262877e744e772f4c64200  ../../../assets/game/icons/firearm-monogram-pistol.png
-8a3e2badfee6b89244950df76e42ceb990c19586d61316f91232d88a35e83447  ../../../assets/game/icons/firearm-monogram-musket.png
-0ce9468e625164d4d59985d00e922813c54a03aa80988ba2c1efa087adabf2f0  ../../../assets/game/icons/firearm-monogram-blunderbuss.png
-ecff78eac6d8c60f1be2eeba1f0134e067bbb3bd63621a0008934a292403a7d2  ../../../assets/game/icons/firearm-monogram-rifle.png
-4c2665a67c5e8ac9704798808576ed5fe18db77f4798ca28f9cbfb702b846159  ../../../assets/game/icons/firearm-monogram-revolver.png
-e3056f665d5a8fa9010a87372c63a34d42855e74dab8bcb575a7cf8866ae6ce2  ../../../assets/game/icons/rapid-reload.png
-331c85c81fb135857bab59599bd697b69cb20d919383f61bb0782643956b6467  firearm-feat-icon-map.png
+5b770c8e189b90b3c546e09e5fd5ce52aee09bafc63912d615b7f8deb0c433f7  ../../../assets/game/icons/firearm-monogram-pistol.png
+52b795b74b20c697d490e8e79b0c69a1daa5bfda756c628d4e0a8b457b67d80c  ../../../assets/game/icons/firearm-monogram-musket.png
+17513470989f1af43364e6df4a8bd6d3a953fca89f12bce0a4ac1188b99574be  ../../../assets/game/icons/firearm-monogram-blunderbuss.png
+9ee5e02223e10f813924c16a0b0f1ca1130c2c718e5553daed26cc05eb71f92e  ../../../assets/game/icons/firearm-monogram-rifle.png
+6d6f6e070221ee2ba9b812528f6a1b3d99b5386746eff067996aabdbdb74bb68  ../../../assets/game/icons/firearm-monogram-revolver.png
+03dae978d94f20b22f4ce5b16b42871496ddcf4cb9c5785cd3dac5659987a652  ../../../assets/game/icons/rapid-reload.png
+71b8fc1c62ee767174d918ecb2246c38dd802cc7d364039efee5301d784debd3  firearm-feat-icon-map.png
