@@ -136,3 +136,10 @@ BTSL responsibility amendment: Honest Guy is the permanent-equipment merchant an
 - Runtime package/DLL/SoundBank SHA-256: `A7780EA797ABA10DFED36D47C2EB1B627EAC09FCD29E6F01727CD5A104D94959` / `ED3EAF1A30E3EED42C773EA9D231EE64DEE8106065293344B40CE106B1B78E46` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - External state: exact pre-run backup `20260820T1526055855877Z` restored and verified for only the live Gunslinger mod directory.
 - Human gate: compare Musket and Blunderbuss on world/inventory dolls, male/female/small bodies, idle/combat idle, attack/reload, switch, back state, direct/Scatter, support hand, muzzle, and clipping.
+# Acadamae fidelity amendment (2026-08-20)
+
+- Prepared-spell identity now comes from the exact available native memorized slot, not the outer generated summon variant.
+- The outer variant remains authoritative for targeting/execution; no native or CotW summon blueprint is globally mutated.
+- Unknown or ambiguous spellbook/slot identities remain fail-closed.
+- Actual CotW Harmony owner is `CallOfTheWild`; live order confirms KMG executes after CotW at both overlapping seams.
+- Automated mechanical fidelity is runtime-qualified; ordinary player presentation remains human-gated.

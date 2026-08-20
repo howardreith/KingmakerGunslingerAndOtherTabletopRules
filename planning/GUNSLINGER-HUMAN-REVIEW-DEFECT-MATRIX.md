@@ -77,3 +77,12 @@ Status vocabulary: `reported`, `reproduced`, `root cause proven`, `implemented`,
 | Defect | Reported | Reproduced | Root cause proven | Implemented | Source-qualified | Runtime-qualified | Human-gated | Blocked |
 |---|---|---|---|---|---|---|---|---|
 | Musket and Blunderbuss point too far left | yes | yes, zero held yaw retained after normalized rig work | yes, production held `Visual` and semantic anchors remained at identity while independent back frames were already correct | yes, Musket +3 degrees and Blunderbuss +4 degrees local Y only | yes, deterministic bundle plus 1,162/1,162 and full gates | yes, run `20260820T1526089673122Z-4727a84add664cbbbb4c93f1b3695c06`, 65/65 | yes, final in-character aesthetics | no |
+# Acadamae real-player-path qualification amendment (2026-08-20)
+
+- Defect: prepared Summon Monster I remained Full-Round and produced no Acadamae save in the 0.0.88 human run.
+- Status: `root cause proven`, `implemented`, `source-qualified`, `runtime-qualified`, `human-gated`.
+- Root cause: the selected summon variant reached the authoritative three-argument `UnitUseAbility` constructor, but its outer and `ConvertedFrom` `AbilityData` nodes had no `ParamSpellSlot`. Eligibility therefore rejected the invocation as `not-prepared` before action acceleration or save arming.
+- Repair commits: `44836ac47b2161432339641f6b3d6767109c9de3` (canonical prepared invocation resolver and detached real-path fixture), `7a38cdcd0f740d1fce1b2460166748fcae593ffd` (complete non-public constructor patch audit).
+- Source gates: repository validation PASS; complete dependency-free suite `1162/1162` PASS; clean Release/output/SoundBank/deterministic-package/strict-package gates PASS.
+- Runtime: `20260820T2015089247100Z-disposable-acadamae-graduate` `15/15 PASS`; `20260820T2017093646741Z-disposable-acadamae-graduate` `15/15 PASS`.
+- Remaining human check: ordinary prepared Summon Monster I with Acadamae OFF then ON must visibly change Full-Round to Standard and produce exactly one Fortitude line at DC 16 after the ON cast completes.

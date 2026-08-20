@@ -52,3 +52,11 @@ Do not test the original save until the consolidated handoff. The bounded check 
 ## Long-gun final visual check
 
 Equip the Musket and Blunderbuss in turn. Confirm the bounded rightward yaw removes the leftward aim bias without changing grip, support hand, scale, muzzle origin, direct/Scatter delivery, reload, weapon switching, or the accepted independent back carry. Check world and inventory dolls on available male, female, and small bodies.
+# Minimal Acadamae acceptance for the installed 0.0.88 candidate
+
+1. On Leinna, prepare native `Summon Monster I` in the real arcane spellbook and confirm `Use Acadamae Graduate` is OFF.
+2. Select and cast it once through the ordinary spellbook/action bar. Confirm the UI and command remain Full-Round and no Acadamae Fortitude line appears.
+3. Enable `Use Acadamae Graduate`, prepare/select the same spell again, and confirm the UI and issued command show Standard.
+4. Complete the cast. Confirm the summon appears, exactly one prepared slot is spent, and exactly one Acadamae Fortitude line appears at DC 16.
+
+Report the displayed action type and the exact Acadamae combat-log line. This is the only remaining acceptance gate for the present correction.

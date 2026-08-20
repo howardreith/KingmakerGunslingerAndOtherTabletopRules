@@ -3138,3 +3138,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Aggregate FAIL: `20260820T1554523223418Z-9f9d0d577bae4dcc8b56be64ad295c16`, 178/184, exact six failures recorded in qualification/blocker files; no gate was weakened.
 - External state: all backups restored; Kingmaker stopped; no compatibility or Mods transaction sibling remains.
 - Remaining action: commit/publish this blocked qualification record, verify remote equality/clean tree, then issue one consolidated human handoff. Affected-save recovery remains explicitly unqualified.
+# Resume checkpoint: Acadamae runtime-qualified, human-gated (2026-08-20)
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Product HEAD: `7a38cdcd0f740d1fce1b2460166748fcae593ffd`, published with local/branch/remote equality.
+- Version: `0.0.88`.
+- Current issue: Acadamae Graduate real player path.
+- Root cause: the ordinary selected summon variant/ConvertedFrom chain did not carry `ParamSpellSlot`; the old eligibility logic examined only those detached nodes and rejected the real prepared invocation.
+- Repair: canonical prepared-slot resolution plus command-boundary rebinding in `44836ac47b2161432339641f6b3d6767109c9de3`; complete non-public constructor audit in `7a38cdcd0f740d1fce1b2460166748fcae593ffd`.
+- Last gates: repository validation PASS; `1162/1162` PASS; clean Release/output/SoundBank/deterministic package/strict package PASS.
+- Runtime: `20260820T2015089247100Z-disposable-acadamae-graduate` `15/15 PASS`; `20260820T2017093646741Z-disposable-acadamae-graduate` `15/15 PASS`.
+- Installed candidate: package SHA `60FE24AB03616B63E376EA9B07187990737DBA8A5DEFF88F7AA71121226610AB`; DLL SHA `11DE92F69051E95578C8DCECC33D392D2EE998870708A91760B87D96F5FB9BD0`; live `Info.json` version `0.0.88`.
+- External state: Kingmaker stopped; no Mods transaction/staging/restore markers; exact candidate remains installed for human acceptance.
+- Status: automated-qualified, human-gated. Next action is the four-step ordinary Leinna acceptance check; do not resume parked acquisition/merchant/icon/visual work before that result or new authority.

@@ -127,3 +127,14 @@ The Tenebrous affected/control stall remains the actual continuation release
 blocker. Version remains `0.0.88`; no release or `0.0.89` claim was made. Every
 runtime transaction was restored, Kingmaker is stopped, and no transaction
 sibling remains.
+# 2026-08-20 Acadamae real-player-path repair and qualification
+
+- Intake branch/HEAD was clean and published at `270d02630d32d32d80d128ab7bb9312a37c736a1`.
+- Preserved the authoritative human-run `output_log.txt` under `C:\Dev\KingmakerGunslingerLab\runtime-evidence\acadamae-human-runs\20260820T1949234419079Z`; SHA-256 `5CF02C1F71DBD121855B3B2F0ADBFC9DA3301FA3DC57DB03E59098EAF61CB231`.
+- The real Leinna trace reached `constructor=three-argument-authoritative` with feat rank 1 and mode enabled, but reported `ParamSpellSlot=<null>`, `prepared=False`, `canSpend=False`, `status=not-prepared`. No invocation armed, explaining both unchanged action economy and absent save.
+- Commit `44836ac47b2161432339641f6b3d6767109c9de3` resolves the canonical prepared spellbook slot across the selected/ConvertedFrom chain and binds that exact available slot only at command construction. The outer variant remains the execution/targeting ability.
+- Commit `7a38cdcd0f740d1fce1b2460166748fcae593ffd` makes the one-time audit resolve Kingmaker's non-public three-argument command constructor. Live audit reports all six seams `applied=True`; actual CotW owner is `CallOfTheWild`, and KMG runs after both CotW action-time postfixes.
+- Gates: repository validation PASS; `1162/1162` tests PASS; clean Release/output/SoundBank/deterministic package/strict package PASS.
+- Fresh-process runs `20260820T2015089247100Z-disposable-acadamae-graduate` and `20260820T2017093646741Z-disposable-acadamae-graduate` each passed `15/15` assertions. Trace proves mode OFF `resultBefore=True;resultAfter=True`, mode ON `resultBefore=True;resultAfter=False`, canonical spell `SummonMonsterISingle`, exact prepared slot resolution, DC 16 success, DC 16 failure with permanent native fatigue, rest removal, Cord substitution, cancellation, and request-local cleanup.
+- Final runtime log copy SHA-256: `4CAF684B19C7CBF77CC616311D933DC6A520B81BDE29666B623ADD37D1FD7DE7`.
+- Status remains human-gated; the prior 14/14 and 15/15 claims against the detached old fixture remain superseded.

@@ -4047,3 +4047,6 @@ passed 7/7; Acadamae passed 15/15; two fresh working-save loads passed 11/11.
 The broad aggregate run passed 178/184 but failed six non-mission aggregate slices, recorded
 exactly in the qualification report. P0 Tenebrous affected/control completion
 remains blocked, so version stays `0.0.88` and no release claim is made.
+# 2026-08-20 Acadamae real-player-path correction
+
+Human evidence superseded the prior synthetic PASS. The exact real trace reached the authoritative three-argument command constructor but failed `not-prepared` because the selected summon variant graph carried no `ParamSpellSlot`. Commits `44836ac47b2161432339641f6b3d6767109c9de3` and `7a38cdcd0f740d1fce1b2460166748fcae593ffd` add exact canonical prepared-slot resolution, command-boundary rebinding, detached real-path qualification, and a complete six-seam Harmony audit. Repository validation, `1162/1162`, clean Release/package gates, and fresh-process runs `20260820T2015089247100Z` and `20260820T2017093646741Z` all pass. Status is runtime-qualified but remains human-gated.

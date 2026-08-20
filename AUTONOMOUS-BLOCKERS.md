@@ -446,3 +446,6 @@ Bleeding Wound HP fact, and Evasive progression. That run passed 178/184 and
 does not attribute those six defects to this correction batch. Focused Aim and
 Acadamae pass independently on the same final bytes. No `0.0.89` release is
 authorized while Tenebrous completion is unproven.
+# Acadamae correction blocker status (2026-08-20)
+
+No new engineering or runtime blocker remains for the Acadamae correction. Final disposition is intentionally human-gated because only an ordinary Leinna spellbook/action-bar cast can close the authoritative presentation/command acceptance boundary.
