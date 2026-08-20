@@ -98,3 +98,11 @@ The verified live defect was not fact-activation reconciliation. Kingmaker mater
 The repair resolves only the exact project-owned marker blueprint from `RawFacts` when the native return is null. It then evaluates the established True Grit policy against the live owner, spends the shared Grit resource once, verifies the exact before/after delta, and removes the marker while restoring the snapshot if the commit cannot be proven. Ability ownership, positive-Grit True Grit semantics, firearm-only damage, wrong-owner rejection, duplicate rejection, and feature lifecycle reconciliation are retained.
 
 Commit chain: `24c2bae`, `c8f58e0`, `75d7bc0`, `de46051`, `24ffb78`. Guarded run `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235` passed all seven assertions against `24ffb78ac6821d4aec173213df1f046940be683b`.
+
+## Issue 3 - Firearm Touch AC range and feedback
+
+The existing runtime architecture was retained: the attack-roll frame captures exact firearm identity and per-attack range modifiers, while `RuleCalculateAC` re-reads authoritative participant distance and target AC values. The decision service now applies the repository's completed era policy rather than the Sprint 9 advanced-firearm deferral: one effective increment for early firearms and five for advanced firearms. The contextual ordinary-to-touch delta remains additive, so cover and other native event adjustments are preserved.
+
+Production and magic firearm descriptions plus the dynamic Qualities surface now state exact base penetration distances. Blunderbuss wording limits this to ordinary direct fire and preserves Scatter Shot's cone rules. A new exception-contained player log adapter reuses the existing native warning/battle-log event and publishes one line after a resolvable exact-firearm branch commits. Duplicate callbacks are stamped, and adapter/log failures do not alter native attack processing.
+
+No established safe pre-attack hover seam was found after bounded searches of tooltip, cursor, target-preview, and combat-log adapters. The battle-log fallback is therefore the production candidate; pre-attack hover remains human/UI follow-up rather than a new framework.

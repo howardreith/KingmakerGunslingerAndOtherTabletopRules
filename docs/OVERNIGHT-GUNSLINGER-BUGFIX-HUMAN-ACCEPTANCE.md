@@ -55,3 +55,13 @@ and only the accepted Cord consequence substitution changes.
 5. Save and reload a disposable test state and repeat one ordinary activation to confirm the same authoritative counter and feature facts reconcile.
 
 Automated boundary already proven: guarded run `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235` passed live resource, damage, repeat, zero-Grit, True Grit, owner lifecycle, and cleanup assertions.
+
+## Issue 3 - Firearm penetration remaining human check
+
+1. Inspect Pistol, Musket, Blunderbuss, Advanced Rifle, and Advanced Revolver descriptions and Qualities. Confirm the base penetration distances read 20, 40, 10, 400, and 100 feet respectively, and that Blunderbuss limits the rule to ordinary direct fire.
+2. Fire a Pistol, Musket, and ordinary direct-fire Blunderbuss just inside and just outside one effective range increment. Confirm the battle log says `Touch AC` inside and `Normal AC` outside, with actual distance and effective range but no enemy AC number.
+3. Repeat with Advanced Rifle and Advanced Revolver just inside and outside five effective range increments.
+4. Use Steady Aim or another legal effective-range modifier and confirm the reported penetration range changes for that attack.
+5. Confirm Scatter Shot retains cone behavior and does not gain the direct-fire Touch AC shortcut. Confirm concealment, Mirror Image, cover, line of sight/effect, natural 1, critical confirmation, and normal damage processing remain native.
+
+Automated boundary already proven: guarded run `20260820T0513443721972Z-cceff2c263254181ad15fd7af638ed3f` passed 15 production boundary events, the effective-range case, one exact feedback line per event, and cleanup. Pre-attack hover was not implemented because no qualified narrow seam was found.

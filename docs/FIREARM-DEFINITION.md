@@ -25,3 +25,7 @@ A Heavy Crossbow display name, category, or animation does not make an item a fi
 ## State boundary
 
 The definition is immutable blueprint policy. Loaded rounds and condition are per-item state stored only through item-owned inert `BlueprintWeaponEnchantment` tokens. The definition never stores mutable item state, and `ItemEntityWeapon.UniqueId` is not used as a persistence vault.
+
+## Armor penetration presentation
+
+Every exact firearm item now states its base penetration contract in both its description and Qualities presentation. Base distances are Pistol 20 ft., Musket 40 ft., ordinary direct-fire Blunderbuss 10 ft., Advanced Rifle 400 ft. across five 80-foot increments, and Advanced Revolver 100 ft. across five 20-foot increments. Legal per-attack range-increment modifiers adjust the live boundary. Scatter Shot does not enter the direct-fire Touch AC adapter.

@@ -97,3 +97,11 @@ Fields include:
 - `reason`
 
 The rule remains active while tracing is disabled.
+
+## Overnight Issue 3 qualification update
+
+The production rule now covers the complete current firearm catalog. Early Pistol, Musket, and ordinary direct-fire Blunderbuss attacks use Touch AC through their first effective range increment. Advanced Rifle and Revolver attacks use Touch AC through their first five effective range increments. Per-attack legal range bonuses are applied to each increment before the penetration boundary is calculated. Scatter Shot remains on its separate cone contract.
+
+The live `RuleCalculateAC` adapter still resolves exact weapon markers and authoritative `DistanceTo` at attack resolution, preserves contextual AC deltas, and fails closed when identity, distance, AC access, or the writable event contract is unavailable. The bounded UI investigation found no established target-hover/attack-preview extension seam in the repository or qualified local adapter set. The implemented fallback uses the existing native warning/battle-log event and emits one exact-firearm line per resolved attack with actual distance, effective penetration range, and Touch/Normal branch; no enemy AC number is exposed.
+
+Guarded run `20260820T0513443721972Z-cceff2c263254181ad15fd7af638ed3f` passed against `1c671acc3196a3f416bdcf4177b7426c0e14ea01` with 15/15 production boundaries, native `RuleCalculateAC` events, 16 exact feedback lines including the modifier case, and request-local cleanup.

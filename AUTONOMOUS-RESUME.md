@@ -2867,3 +2867,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Guarded run: `20260820T0458550047640Z-b20727d24cc24d3297e0e9d23d385235`, 7/7 PASS.
 - Runtime hashes: package `A0D1B53AD3086339167BBBD23BB4B58D596014D989E1754BB4A1DAA30B63DEA0`; DLL `08FCE67E6947CA22E57BF987D7AD01F3EB78B6BFE9C422D1C3560EB8855B4857`; firearm AssetBundle `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
 - Next concrete action: inspect the current firearm AC decision service, resolution patch, firearm definitions, existing tooltip/log seams, tests, and guarded scenarios; then add exact per-firearm boundary coverage before the narrowest correction.
+
+## Overnight bugfix resume checkpoint - Issue 3 qualified (2026-08-20)
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Qualified code SHA: `1c671acc3196a3f416bdcf4177b7426c0e14ea01` (documentation checkpoint follows).
+- Version: `0.0.87`.
+- Completed issue IDs: Issues 1, 2, and 3 automated-qualified/human-gated.
+- Current issue: Issue 4, duplicated Acadamae Graduate prerequisite presentation.
+- Issue 3 result: early direct-fire weapons use Touch AC through one effective increment; advanced weapons use Touch AC through five; exact item help and one native Touch/Normal resolution line expose the boundary. Scatter remains separate.
+- Gates: 1,152/1,152 tests; repository, exact-reference Release, output, SoundBank, package, strict-package, diff, and 109 runtime-preflight checks PASS.
+- Guarded run: `20260820T0513443721972Z-cceff2c263254181ad15fd7af638ed3f`, 5/5 PASS with 15 production boundaries and one +10 ft. effective-range case.
+- Runtime hashes: package `A05A0389C3C5D4ABC19891EA1B0F57D40AD9A865DA8DF0C3D2F6A6C62F81BF27`; DLL `44208BB5D6351877C71A73E7A3979B732BD8654E89EABDDB46B493F882197C04`; firearm AssetBundle `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
+- Remaining human check: real-scale tooltip/battle-log readability and ordinary player-issued attacks; pre-attack hover remains bounded UI follow-up.
+- Next concrete action: inspect the exact Acadamae feat description/localization and native prerequisite components/presentation tests, then remove only the duplicated prose.

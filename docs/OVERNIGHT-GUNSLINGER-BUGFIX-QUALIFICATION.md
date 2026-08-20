@@ -147,3 +147,18 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Deployed DLL SHA-256: `08FCE67E6947CA22E57BF987D7AD01F3EB78B6BFE9C422D1C3560EB8855B4857`.
 - Deployed firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
 - Automated status: qualified. Final action-bar counter presentation and ordinary save/load remain human-gated.
+
+## Issue 3 qualification - firearm penetration
+
+- Qualified code SHA: `1c671acc3196a3f416bdcf4177b7426c0e14ea01`.
+- Focused tests: `ac.production-boundaries`, `ac.penetration-presentation` PASS.
+- Complete domain/reflection suite: 1,152/1,152 PASS.
+- Repository validation, clean exact-reference Release, output validation, SoundBank validation, package build, strict package validation, `git diff --check`: PASS.
+- Runtime scenario preflight: 109/109 PASS.
+- Guarded scenario: `disposable-firearm-penetration`.
+- Passing run ID: `20260820T0513443721972Z-cceff2c263254181ad15fd7af638ed3f`.
+- Runtime assertions: 5/5 PASS. All 15 Pistol/Musket/direct-Blunderbuss/Advanced-Rifle/Advanced-Revolver just-inside/exact/just-outside native `RuleCalculateAC` boundaries selected Touch/Touch/Normal; a +10 ft. Musket boundary selected Touch at 50 ft.; 16 native feedback events and cleanup passed.
+- Deployed runtime package SHA-256: `A05A0389C3C5D4ABC19891EA1B0F57D40AD9A865DA8DF0C3D2F6A6C62F81BF27`.
+- Deployed DLL SHA-256: `44208BB5D6351877C71A73E7A3979B732BD8654E89EABDDB46B493F882197C04`.
+- Deployed firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
+- Automated status: qualified. Real-scale tooltip/battle-log readability and ordinary player-issued attacks remain human-gated. No safe pre-attack hover seam was established.

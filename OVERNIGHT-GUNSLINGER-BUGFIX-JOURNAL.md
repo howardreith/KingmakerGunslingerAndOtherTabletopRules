@@ -240,3 +240,21 @@
 - Runtime firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
 - Remaining human check: visible counter refresh plus ordinary save/load and UI activation coverage.
 - Next action: Issue 3 firearm Touch AC boundary and presentation audit.
+
+## 2026-08-20 - Issue 3 firearm penetration qualified
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Qualified code SHA: `1c671acc3196a3f416bdcf4177b7426c0e14ea01`.
+- Version: `0.0.87`.
+- Diagnosis: the early-firearm path already revalidated exact identity and distance at live `RuleCalculateAC`; Advanced Rifle/Revolver remained on the stale Sprint 9 fail-closed branch and normal player feedback was absent.
+- Repair: one effective increment for early direct fire, five effective increments for advanced firearms, with Steady Aim/per-attack bonuses applied before the boundary; exact base help text on production and magic firearms; one Touch/Normal native battle-log annotation per resolved exact-firearm AC event.
+- Bounded presentation investigation: repository and installed-adapter evidence exposed no qualified target-hover or attack-preview extension seam. The existing native warning event consumed by `BattleLogManager` was reused rather than creating a broad UI framework.
+- Tests: `ac.production-boundaries` and `ac.penetration-presentation`; complete suite 1,152/1,152 PASS.
+- Full gates: repository validation, clean exact-reference Release, output validation, SoundBank validation, package build, strict package validation, `git diff --check`, and runtime scenario preflight 109/109 PASS. One initial preflight artifact-fingerprint check raced the just-completed build; an unchanged rerun passed 109/109.
+- Guarded run: `20260820T0513443721972Z-cceff2c263254181ad15fd7af638ed3f`, 5/5 PASS. Pistol boundaries 6.095/6.096/6.097m; Musket 12.191/12.192/12.193m; direct Blunderbuss 3.047/3.048/3.049m; Advanced Rifle 121.919/121.920/121.921m; Advanced Revolver 30.479/30.480/30.481m. Each selected Touch/Touch/Normal. A +10 ft. Musket case selected Touch at 15.24m and reported a 50 ft. penetration range.
+- Runtime feedback: 16 exact annotations; final line `Musket attack: 50 ft.; penetration range 50 ft.; Touch AC.`
+- Runtime package SHA-256: `A05A0389C3C5D4ABC19891EA1B0F57D40AD9A865DA8DF0C3D2F6A6C62F81BF27`.
+- Runtime DLL SHA-256: `44208BB5D6351877C71A73E7A3979B732BD8654E89EABDDB46B493F882197C04`.
+- Firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
+- Remaining human check: real UI tooltip/battle-log readability and player-issued attack confirmation; pre-attack hover remains an optional bounded follow-up.
+- Next action: Issue 4 duplicated Acadamae prerequisite presentation.
