@@ -15604,7 +15604,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cancellationCount = -1, cordCount = -1, cordDamage = -1,
                 cordHpBefore = -1, cordRoll = -1, cordApplied = -1,
                 cordBuffCalls = -1, cordExactMatches = -1, observedDc = -1;
-            int successNatural = -1, successTotal = -1, nativeFailureNatural = -1,
+            int successNatural = -1, successModifier = -1, successTotal = -1,
+                nativeFailureNatural = -1, nativeFailureModifier = -1,
                 nativeFailureTotal = -1;
             string nativeFailureDisposition = "<none>",
                 successResolution = "<none>";
@@ -15719,13 +15720,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 successCount = AcadamaeCastingRuntime.CompletedCount;
                 observedDc = AcadamaeCastingRuntime.LastDifficultyClass;
                 successNatural = AcadamaeCastingRuntime.LastNaturalRoll;
+                successModifier = AcadamaeCastingRuntime.LastFortitudeModifier;
                 successTotal = AcadamaeCastingRuntime.LastSaveTotal;
                 successResolution = AcadamaeCastingRuntime.LastResolutionMessage;
                 successResolutionCount =
                     AcadamaeCastingRuntime.PublishedResolutionCount;
                 successObserved = successRule.Success && successCount == 1 &&
                     AcadamaeCastingRuntime.LastSavePassed &&
-                    successNatural == 20 && successTotal >= successNatural &&
+                    successNatural == 20 && successModifier >= 100 &&
+                    successTotal == successNatural + successModifier &&
                     successResolutionCount == 1 &&
                     successResolution.Contains("to Standard") &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
@@ -15737,6 +15740,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuleCastSpell nativeFailureRule =
                     ExecuteAcadamaeDelayedTerminalRule(unit, nativeFailure);
                 nativeFailureNatural = AcadamaeCastingRuntime.LastNaturalRoll;
+                nativeFailureModifier =
+                    AcadamaeCastingRuntime.LastFortitudeModifier;
                 nativeFailureTotal = AcadamaeCastingRuntime.LastSaveTotal;
                 nativeFailureDisposition =
                     AcadamaeCastingRuntime.LastFatigueDisposition;
@@ -15745,6 +15750,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     AcadamaeCastingRuntime.CompletedCount == 2 &&
                     !AcadamaeCastingRuntime.LastSavePassed &&
                     nativeFailureNatural == 1 &&
+                    nativeFailureModifier <= -100 &&
+                    nativeFailureTotal == nativeFailureNatural +
+                        nativeFailureModifier &&
                     nativeFailureTotal < 15 + spellLevel &&
                     nativeFailureDisposition == "fatigued-permanent" &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
@@ -15945,10 +15953,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";presentation=" + presentation +
                 ";successCount=" + successCount + ";failureCount=" + failureCount +
                 ";successNatural=" + successNatural +
+                ";successModifier=" + successModifier +
                 ";successTotal=" + successTotal +
                 ";successResolutionCount=" + successResolutionCount +
                 ";nativeFailure=" + nativeFailureObserved +
                 ";nativeFailureNatural=" + nativeFailureNatural +
+                ";nativeFailureModifier=" + nativeFailureModifier +
                 ";nativeFailureTotal=" + nativeFailureTotal +
                 ";nativeFailureDisposition=" + nativeFailureDisposition +
                 ";cancellationCount=" + cancellationCount + ";cordCount=" + cordCount +

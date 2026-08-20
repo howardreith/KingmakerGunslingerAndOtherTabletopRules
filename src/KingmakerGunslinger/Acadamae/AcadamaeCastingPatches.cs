@@ -29,6 +29,7 @@ namespace KingmakerGunslinger.Acadamae
         private static int _lastDifficultyClass;
         private static bool _lastSavePassed;
         private static int _lastNaturalRoll;
+        private static int _lastFortitudeModifier;
         private static int _lastSaveTotal;
         private static string _lastFatigueDisposition;
         private static string _lastResolutionMessage;
@@ -40,6 +41,8 @@ namespace KingmakerGunslinger.Acadamae
         internal static int LastDifficultyClass { get { return _lastDifficultyClass; } }
         internal static bool LastSavePassed { get { return _lastSavePassed; } }
         internal static int LastNaturalRoll { get { return _lastNaturalRoll; } }
+        internal static int LastFortitudeModifier
+        { get { return _lastFortitudeModifier; } }
         internal static int LastSaveTotal { get { return _lastSaveTotal; } }
         internal static string LastFatigueDisposition
         { get { return _lastFatigueDisposition; } }
@@ -53,6 +56,7 @@ namespace KingmakerGunslinger.Acadamae
             _lastDifficultyClass = 0;
             _lastSavePassed = false;
             _lastNaturalRoll = 0;
+            _lastFortitudeModifier = 0;
             _lastSaveTotal = 0;
             _lastFatigueDisposition = null;
             _lastResolutionMessage = null;
@@ -134,6 +138,7 @@ namespace KingmakerGunslinger.Acadamae
             _lastDifficultyClass = saving.DifficultyClass;
             _lastSavePassed = saving.IsPassed;
             _lastNaturalRoll = saving.D20.Value;
+            _lastFortitudeModifier = saving.StatValue;
             _lastSaveTotal = saving.RollResult;
             _lastFatigueDisposition = "none-save-passed";
             if (!saving.IsPassed)
@@ -160,14 +165,18 @@ namespace KingmakerGunslinger.Acadamae
         private static void PublishResolution(RuleCastSpell rule,
             RuleSavingThrow saving, string fatigueDisposition)
         {
-            int modifier = saving.RollResult - saving.D20.Value;
+            int natural = saving.D20.Value;
+            int fortitudeModifier = saving.StatValue;
+            int conditionalBonus = saving.RequiresSuccessBonus ?
+                saving.SuccessBonus : 0;
             string caster = string.IsNullOrWhiteSpace(rule.Initiator.CharacterName) ?
                 "The caster" : rule.Initiator.CharacterName.Trim();
             string spell = rule.Spell.Blueprint == null ?
                 "<unknown spell>" : rule.Spell.Blueprint.name;
             string message = string.Format(CultureInfo.InvariantCulture,
-                "Acadamae Graduate: {0} accelerated {1} to Standard; Fortitude d20 {2} {3:+#;-#;+0} = {4} vs DC {5}: {6}; fatigue={7}.",
-                caster, spell, saving.D20.Value, modifier, saving.RollResult,
+                "Acadamae Graduate: {0} accelerated {1} to Standard; Fortitude d20 {2} {3:+#;-#;+0} conditional {4:+#;-#;+0} = {5} vs DC {6}: {7}; fatigue={8}.",
+                caster, spell, natural, fortitudeModifier, conditionalBonus,
+                saving.RollResult,
                 saving.DifficultyClass, saving.IsPassed ? "success" : "failure",
                 fatigueDisposition);
             _lastResolutionMessage = message;
@@ -255,7 +264,6 @@ namespace KingmakerGunslinger.Acadamae
             int naturalRoll;
             if (AcadamaeSavingThrowTestControl.TryComplete(__instance, out naturalRoll))
             {
-                __instance.BaseRollResult = naturalRoll;
                 if (naturalRoll == 20) __instance.AutoPass = true;
             }
         }

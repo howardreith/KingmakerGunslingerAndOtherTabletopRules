@@ -134,3 +134,36 @@
   `3B5AEB2122E2F736340A7F504DE56F50BED9314109769502276DFC764D3A07FD`.
 - Next action: publish this issue-scoped evidence-mode checkpoint and run the
   guarded delayed-terminal scenario.
+
+## 2026-08-20 Issue 1 delayed-terminal live evidence and roll repair
+
+- Published evidence-mode commit:
+  `0708d9d7683bf8646a23efad06631cdddf2e473b`; remote equality verified.
+- Guarded run ID
+  `20260820T0410154111888Z-395ce15edb3b49a19d1f343d0604f369`
+  completed without exception and returned FAIL with 11/13 assertions PASS.
+- Passed live boundaries: prepared Summoning identity, default-OFF mode, OFF
+  native full-round/no-save behavior, Standard action parity, subsequent
+  native failed-save fatigue, cancellation, command snapshot, permanent
+  context-independent fatigue, native rest removal, view lifecycle, Cord
+  substitution, and cleanup.
+- The delayed exact rules were consumed: completed count advanced to one and
+  then two, diagnostics published, and failure applied permanent fatigue. The
+  two failures were diagnostic expectations: success recorded d20 `-80`/total
+  `20`; failure recorded d20 `101`/total `1`.
+- Exact installed `RuleSavingThrow` metadata and getter IL resolved the cause.
+  `BaseRollResult` computes implicit `D20` plus `StatValue`; `RollResult`
+  returns that base total plus `SuccessBonus` only when required. The forced
+  completion postfix wrote the desired natural roll into `BaseRollResult`, so
+  its setter rewrote the stored d20 to natural minus Fortitude.
+- Repair: the existing `RuleRollD20.PreRollDice` hook remains the sole forced
+  natural-roll setter; the completion postfix only retains natural-20
+  `AutoPass`. Diagnostics now record native `D20.Value`, exact `StatValue`,
+  conditional bonus, and final `RollResult` under truthful labels.
+- Gates: 1,150/1,150 PASS and full `Build-Local.ps1` repository/Release/output/
+  SoundBank/package/strict-package PASS.
+- Candidate package/DLL SHA-256:
+  `3A3EEDB3CBB88BF0BFF6AB37A3717B102342F7EEC0A45BA6D543CFCCAECEB06D` /
+  `EC897F4F87166A88FB8A196BA2EB206430D2E6D25364658D03682CE1724AF123`.
+- Next action: commit/publish the native-roll diagnostic repair and rerun the
+  guarded delayed-terminal scenario.

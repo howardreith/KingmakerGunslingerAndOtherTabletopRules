@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.DomainTests
                 casting.Contains("Buffs.AddBuff(\n                    _fatigued, rule.Initiator, null)") &&
                 casting.Contains("fatigue.MakePermanent()") &&
                 casting.Contains("AcadamaeSavingThrowTestCompletionPatch") &&
-                casting.Contains("__instance.BaseRollResult = naturalRoll") &&
+                !casting.Contains("__instance.BaseRollResult = naturalRoll") &&
                 casting.Contains("if (naturalRoll == 20) __instance.AutoPass = true") &&
                 !casting.Contains("AddBuff(_fatigued, rule.Context"),
                 "Acadamae must require the exact unit marker and use independent ordinary fatigue context.");
@@ -236,6 +236,7 @@ namespace KingmakerGunslinger.DomainTests
                 "[HarmonyPatch(typeof(RuleCastSpell), \"OnTrigger\",",
                 "[HarmonyPatch(typeof(UnitUseAbility), \"OnEnded\",",
                 "LastNaturalRoll",
+                "LastFortitudeModifier",
                 "LastSaveTotal",
                 "LastFatigueDisposition" })
                 Assertions.True(casting.Contains(token),

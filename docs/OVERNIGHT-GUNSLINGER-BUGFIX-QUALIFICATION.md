@@ -81,3 +81,19 @@ command scope and deliberately triggers it after that scope. This is the
 smallest live reproduction of the repaired delayed-callback boundary. Actual
 loaded-area animation command execution remains human-gated rather than being
 inferred from this narrower test.
+
+### Third guarded attempt
+
+- Run ID: `20260820T0410154111888Z-395ce15edb3b49a19d1f343d0604f369`
+- Commit: `0708d9d7683bf8646a23efad06631cdddf2e473b`
+- Result: `FAIL`; 11 passed, 2 failed, zero exception
+- Mechanical result: delayed rules consumed exactly once; Standard/OFF,
+  fatigue permanence, rest, cancellation, snapshot, Cord, and cleanup passed
+- Failed boundary: diagnostic/test-control roll semantics only
+- Installed IL: base total is implicit d20 + `StatValue`; final `RollResult`
+  optionally adds `SuccessBonus`
+- Repair: no completion-time `BaseRollResult` mutation; report d20, Fortitude
+  modifier, conditional bonus, and final total separately
+
+The repaired source again passes 1,150/1,150 and all clean Release/package
+gates. A new immutable guarded run is required before Issue 1 disposition.

@@ -55,3 +55,12 @@ scope, and only then triggers the rule. This requires the new constructor-time
 rule identity retention to work and continues through native Rulebook save and
 fatigue handling. It does not claim animation-driven execution or area change;
 those remain human-gated.
+
+The first completed delayed-terminal run proved correlation and consequences,
+but found the new diagnostic labels were inverted by the old forced-roll
+fallback. Installed getter IL proves `BaseRollResult` is d20 plus `StatValue`,
+and `RollResult` adds a conditional success bonus. The test postfix no longer
+writes `BaseRollResult`; natural rolls are controlled only at native
+`RuleRollD20.PreRollDice`. Production diagnostics now report the native d20,
+Fortitude `StatValue`, conditional bonus, final total, DC, outcome, and fatigue
+disposition separately.

@@ -10,9 +10,9 @@
 - Durable contract: planning/OVERNIGHT-GUNSLINGER-BUGFIX-MISSION.md.
 - Published checkpoint SHA: `879ffe152a4ccfbfe42679055f7c392e5d0f1669`;
   local and remote feature refs were equal after approved-helper publication.
-- Completed issue IDs: none; Issue 1 repair is published and narrowed runtime
-  retry is pending an issue-scoped evidence-mode checkpoint.
-- Current checkpoint: Issue 1 delayed exact-rule terminal reproducer.
+- Completed issue IDs: none; Issue 1 correlation is live-proven and its native
+  roll diagnostic repair is source-qualified/runtime-pending.
+- Current checkpoint: Issue 1 native save roll/modifier/total correction.
 - Current hypothesis: the human failure was caused by completion correlation
   being limited to the `UnitUseAbility.OnAction` thread-local stack; concrete
   `RuleCastSpell` identity must survive until the native terminal callback.
@@ -23,13 +23,19 @@
 - Second runtime ID `20260820T0404361106448Z-a262364c94774a8d9e444d73f7c32e10`
   returned ERROR before assertions because installed `OnAction_Patch3` requires
   loaded-area state absent from the save-free detached fixture.
+- Published delayed-rule SHA:
+  `0708d9d7683bf8646a23efad06631cdddf2e473b`.
+- Third runtime ID `20260820T0410154111888Z-395ce15edb3b49a19d1f343d0604f369`
+  completed 11/13 PASS and exposed only forced-roll diagnostic inversion.
+- Installed IL proves `BaseRollResult = D20 + StatValue`; `RollResult` adds an
+  optional success bonus. The completion-time total overwrite is removed.
 - Exact corrected-fixture gates: `test-domain.ps1 -Configuration Release` PASS 1,150/1,150;
   `Build-Local.ps1` PASS repository, clean exact-reference Release, output,
   SoundBank, deterministic package, and strict package validation.
-- Candidate package/DLL SHA-256: `134184B1...7F604B3` /
-  `3B5AEB21...3A07FD`.
+- Candidate package/DLL SHA-256: `3A3EEDB3...CEB06D` /
+  `EC897F4F...4AF123`.
 - Real blocker: none.
-- Next concrete action: commit/publish the delayed-rule fixture, verify exact
+- Next concrete action: commit/publish the native-roll repair, verify exact
   remote equality, and rerun guarded `disposable-acadamae-graduate` runtime.
 
 ## Eastern Weapons first-human-playtest repair (automated seal complete, human recheck pending)
