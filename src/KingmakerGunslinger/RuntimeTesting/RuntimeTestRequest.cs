@@ -217,6 +217,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "startup-timeout-invalid";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                request.Scenario ==
+                    RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -282,7 +284,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
                 string saveName = (string)request.Parameters["saveName"];
-                if (!string.Equals(saveName, ManualSaveLoadObservation.WorkingSave,
+                string expectedSaveName = request.Scenario ==
+                    RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
+                        ? RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveName
+                        : ManualSaveLoadObservation.WorkingSave;
+                if (!string.Equals(saveName, expectedSaveName,
                     StringComparison.Ordinal))
                     return string.Equals(saveName, ManualSaveLoadObservation.BaselineSave,
                         StringComparison.Ordinal)

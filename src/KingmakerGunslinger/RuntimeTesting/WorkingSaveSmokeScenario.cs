@@ -13,6 +13,40 @@ using UnityEngine.UI;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
+    internal sealed class WorkingSaveSmokeIdentity
+    {
+        internal static readonly WorkingSaveSmokeIdentity AutomationWorking =
+            new WorkingSaveSmokeIdentity(
+                "KMG_AUTOMATION_WORKING",
+                "Manual_299_KMG_AUTOMATION_WORKING.zks",
+                "Hedwirg", "dce769e0-229c-4bfd-b8ea-e2d572bf8472",
+                "JamandisMansion", 3);
+
+        internal static readonly WorkingSaveSmokeIdentity AffectedFocusedAim =
+            new WorkingSaveSmokeIdentity(
+                "Quicksave1", "KMG_P0_FOCUSED_AIM_AFFECTED_COPY.zks",
+                "Akasa", "a62c36f7-e9ab-4a97-85e4-f67fc0d6ad01",
+                "Area_Dwarf_10", 2);
+
+        internal WorkingSaveSmokeIdentity(string name, string file,
+            string gameName, string gameId, string area, int partyCount)
+        {
+            Name = name;
+            File = file;
+            GameName = gameName;
+            GameId = gameId;
+            Area = area;
+            PartyCount = partyCount;
+        }
+
+        internal string Name { get; private set; }
+        internal string File { get; private set; }
+        internal string GameName { get; private set; }
+        internal string GameId { get; private set; }
+        internal string Area { get; private set; }
+        internal int PartyCount { get; private set; }
+    }
+
     /// <summary>
     /// Guarded, request-scoped working-save execution and supervised observation.
     /// Autonomous mode invokes only its qualified path; supervised modes consume
@@ -71,6 +105,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly string _runId;
         private readonly int _gameThreadId;
         private readonly Action<SaveLoadObservationEvent> _sink;
+        private readonly WorkingSaveSmokeIdentity _identity;
         private readonly List<MethodBase> _patched = new List<MethodBase>();
         private readonly List<SaveLoadObservationEvent> _events =
             new List<SaveLoadObservationEvent>();
@@ -167,12 +202,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             string runId, Action<SaveLoadObservationEvent> sink,
             bool observeEntryAction = false,
             bool observeSelectionLoadAction = false,
-            bool observeReceiverBoundAction = false)
+            bool observeReceiverBoundAction = false,
+            WorkingSaveSmokeIdentity identity = null)
         {
             _context = context;
             _elapsed = elapsed;
             _runId = runId;
             _sink = sink;
+            _identity = identity ?? WorkingSaveSmokeIdentity.AutomationWorking;
             _gameThreadId = Thread.CurrentThread.ManagedThreadId;
             _observeEntryAction = observeEntryAction;
             _observeSelectionLoadAction = observeSelectionLoadAction;
@@ -1230,6 +1267,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             int declaredCount = ReadCount(_catalogObject);
             _catalogComplete = declaredCount >= 0 && declaredCount == entries.Count &&
                 IsSaveInfoList(_catalogObject.GetType());
+            if (ReferenceEquals(_identity,
+                WorkingSaveSmokeIdentity.AffectedFocusedAim))
+            {
+                foreach (object candidate in entries.Where(value =>
+                    Leaf(Read(value, "FolderName")) == _identity.File ||
+                    Leaf(Read(value, "FileName")) == _identity.File))
+                {
+                    Add("affected-save-candidate", null, null,
+                        "name=" + Read(candidate, "Name") +
+                        ";folder=" + Leaf(Read(candidate, "FolderName")) +
+                        ";file=" + Leaf(Read(candidate, "FileName")) +
+                        ";gameName=" + Read(candidate, "GameName") +
+                        ";gameId=" + Read(candidate, "GameId") +
+                        ";area=" + Read(candidate, "Area"));
+                }
+            }
             var working = entries.Where(IsWorking).ToList();
             var baseline = entries.Where(IsBaseline).ToList();
             _workingCount = working.Count;
@@ -1291,15 +1344,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static bool IsWorking(object value)
+        private bool IsWorking(object value)
         {
             return value != null && value.GetType().FullName == DescriptorType &&
-                Read(value, "Name") == ExpectedName &&
-                Leaf(Read(value, "FolderName")) == ExpectedFile &&
-                Leaf(Read(value, "FileName")) == ExpectedFile &&
-                Read(value, "GameName") == ExpectedGameName &&
-                Read(value, "GameId") == ExpectedGameId &&
-                Read(value, "Area") == ExpectedArea;
+                Read(value, "Name") == _identity.Name &&
+                Leaf(Read(value, "FolderName")) == _identity.File &&
+                Leaf(Read(value, "FileName")) == _identity.File &&
+                Read(value, "GameName") == _identity.GameName &&
+                Read(value, "GameId") == _identity.GameId &&
+                Read(value, "Area") == _identity.Area;
         }
 
         private static bool IsBaseline(object value)
@@ -1310,20 +1363,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Leaf(Read(value, "FileName")) == BaselineFile;
         }
 
-        private static bool IsExactWorkingFileIdentity(object value)
+        private bool IsExactWorkingFileIdentity(object value)
         {
             if (value == null || value.GetType().FullName != DescriptorType ||
-                Read(value, "Name") != ExpectedName) return false;
+                Read(value, "Name") != _identity.Name) return false;
             string folder = Leaf(Read(value, "FolderName"));
             string file = Leaf(Read(value, "FileName"));
-            const string prefix = "Manual_";
-            string suffix = "_" + ExpectedName + ".zks";
-            if (folder != file || !file.StartsWith(prefix,
-                StringComparison.Ordinal) || !file.EndsWith(suffix,
-                StringComparison.Ordinal)) return false;
-            string sequence = file.Substring(prefix.Length,
-                file.Length - prefix.Length - suffix.Length);
-            return sequence.Length != 0 && sequence.All(char.IsDigit);
+            return folder == _identity.File && file == _identity.File;
         }
 
         private void RegisterCompletionCallback()
@@ -1868,7 +1914,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
         }
 
-        private static string Fingerprint(object game)
+        private string Fingerprint(object game)
         {
             object player = ReadMember(game, "Player");
             object area = ReadMember(game, "CurrentlyLoadedArea");
@@ -1882,8 +1928,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";mainCharacterType=" + TypeName(main);
             return TypeName(area) == ExpectedAreaType &&
                 TypeName(scene) == ExpectedSceneType &&
-                Read(player, "GameId") == ExpectedGameId &&
-                ReadCount(party) == ExpectedPartyCount &&
+                Read(player, "GameId") == _identity.GameId &&
+                ReadCount(party) == _identity.PartyCount &&
                 TypeName(main) == ExpectedMainCharacterType ? value : "";
         }
 

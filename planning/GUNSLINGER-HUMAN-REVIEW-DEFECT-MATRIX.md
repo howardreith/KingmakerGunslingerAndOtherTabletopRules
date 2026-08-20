@@ -29,3 +29,8 @@ Status vocabulary: `reported`, `reproduced`, `root cause proven`, `implemented`,
 - Compatibility state root active-status search: no matches; only fixture-test data exists.
 - Repository validation: PASS.
 - Complete dependency-free domain/reflection suite: 1,160/1,160 PASS.
+# Current checkpoint override - 2026-08-20
+
+| Defect | Reported | Reproduced | Root cause proven | Implemented | Source-qualified | Runtime-qualified | Human-gated | Blocked |
+|---|---|---|---|---|---|---|---|---|
+| P0 unloadable Tenebrous save | yes | yes, original stack and affected copy | yes, null Focused Aim FX links at view reconstruction | yes, stable-ID empty-link compatibility repair and guarded copy runner | yes, 1161/1161 plus full build/package gates | no, old exception removed but Tenebrous after-load callback stalls for affected and no-marker control | yes | release qualification only; independent corrections continue |

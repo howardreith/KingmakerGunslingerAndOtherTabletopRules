@@ -27,3 +27,6 @@ guarded runtime evidence, and compatibility restoration.
 Visual and audible judgments remain human gates. No `0.0.89` release claim is
 permitted while the unloadable-save defect or real-player Acadamae path remains
 unresolved.
+# P0 qualification result - 2026-08-20
+
+`PASS` for source prevention and packaged compatibility fields: repository validator, `1161/1161`, clean Release build, output validation, SoundBank validation, deterministic package, and strict package validation. `NOT QUALIFIED` for full save recovery: the old Focused Aim FX reconstruction exception is absent, but both the affected copy and a same-area no-marker control stall before the native after-load callback. Version advancement and final release qualification remain prohibited until this is resolved or exact human evidence closes the Tenebrous runtime boundary.

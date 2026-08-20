@@ -186,6 +186,7 @@
     <Compile Include="Sprint104Tests.cs" />
     <Compile Include="Sprint105Tests.cs" />
     <Compile Include="MysteriousStrangerTests.cs" />
+    <Compile Include="FocusedAimSaveCompatibilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Archetypes\MysteriousStrangerPolicy.cs"><Link>Archetypes\MysteriousStrangerPolicy.cs</Link></Compile>
     <Compile Include="PlaytestRepairTests.cs" />
     <Compile Include="ProStabilizationTests.cs" />

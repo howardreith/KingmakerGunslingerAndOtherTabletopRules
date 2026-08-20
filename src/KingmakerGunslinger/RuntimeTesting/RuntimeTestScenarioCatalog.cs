@@ -260,6 +260,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ObserveLoadGameButtonAction =
             "observe-load-game-button-action";
         internal const string WorkingSaveSmoke = "working-save-smoke";
+        internal const string P0AffectedFocusedAimSaveLoad =
+            "p0-affected-focused-aim-save-load";
+        internal const string P0AffectedFocusedAimSaveName =
+            "KMG_P0_FOCUSED_AIM_AFFECTED_COPY";
         internal const string WorkingSaveShieldOtherPrepare =
             "working-save-shield-other-prepare";
         internal const string WorkingSaveShieldOtherVerifyCleanup =
@@ -413,6 +417,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveSaveCatalogProvider,
                 ObserveLoadGameButtonAction,
                 WorkingSaveSmoke,
+                P0AffectedFocusedAimSaveLoad,
                 WorkingSaveShieldOtherPrepare,
                 WorkingSaveShieldOtherVerifyCleanup,
                 GenericFirearmActions,

@@ -3970,3 +3970,6 @@ at SHA-256 `32D6269B...6994`. Human visual/audio/shop review remains required.
 - Unchanged baseline repository validation and 1,160/1,160 tests pass.
 - New human evidence overrides contrary automated conclusions. P0 save safety is first; Acadamae real path, acquisition pacing, BTSL ownership, icons, long-gun yaw, and spear frames follow in the authorized order.
 - Focused Aim accepted mechanics, Pistol audio, spear length, and improved long-gun rig direction are regression-frozen.
+# 2026-08-20 - Human-review P0 save recovery
+
+Human evidence superseded the 0.0.88 save-safety claim. Root cause: Focused Aim marker buff `ac72998da0a146cf9ca0cff3ea161303` had null FX/resource serialization fields and failed in native view reconstruction. A stable-ID compatibility initialization fixes that boundary without altering Focused Aim mechanics. Full gates pass at `1161/1161`. The affected copy now passes the old exception boundary, but Tenebrous scene completion stalls identically for a no-marker same-area control; release qualification remains blocked while the mission continues to Acadamae and other independent corrections.

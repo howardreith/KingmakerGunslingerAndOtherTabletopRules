@@ -86,3 +86,8 @@ creation and broad player-respec integration remain separately tracked.
 | Rapid Reload icon | native-style candidate | dark field rejected; pale native feat grammar required | reported; human-gated |
 | Long-gun visuals | structural rig qualified | improved overall, but both yaw too far left | reported; preserve accepted work |
 | Elven Branched Spear | length/axis qualified | length accepted; active direction and back carry rejected | reported; preserve length |
+# Human-review correction override - 2026-08-20
+
+| Contract | Status | Notes |
+|---|---|---|
+| Focused Aim persistence | source-qualified, release-blocking runtime gate open | Existing 1-Grit, Charisma damage, and kill recovery behavior is frozen. Compatibility repair initializes only empty native buff presentation fields. |

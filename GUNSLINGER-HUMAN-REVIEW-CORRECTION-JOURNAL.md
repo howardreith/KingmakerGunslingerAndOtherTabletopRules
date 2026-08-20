@@ -22,3 +22,6 @@
   safety tools to enumerate metadata, timestamps, size, and hashes without
   opening or mutating any save; copy only an unambiguous affected save into an
   ignored transaction-owned evidence directory.
+# 2026-08-20 - P0 save compatibility checkpoint
+
+Proved the saved Focused Aim marker reconstructed through a blueprint with null FX links and failed in native `Buff.SpawnParticleEffect`. Initialized the stable blueprint's empty FX/resource fields, added regression coverage and an exact disposable-copy guarded scenario, and passed repository validation, `1161/1161`, clean Release, output, SoundBank, package, and strict-package gates. Affected-copy runs crossed the prior crash. A 600-second affected run and a same-area no-marker control both stalled after Tenebrous scene setup without another material serialization exception. Originals remained byte-identical and staged copies were removed. P0 prevention/compatibility is source-qualified; full recovery is still release-blocking. Next action: commit/publish this bounded P0 repair, then investigate the real Acadamae player-command path while preserving the P0 blocker.

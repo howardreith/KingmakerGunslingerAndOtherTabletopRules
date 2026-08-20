@@ -10,3 +10,6 @@ One consolidated human pass will be requested only after all safe automated work
 6. Inspect Musket and Blunderbuss yaw on world/inventory dolls, bodies, attack/reload/switch/back states, Scatter, support hand, muzzle, and clipping.
 7. Inspect Elven Branched Spear point-forward active use and natural back carry while confirming accepted length and mechanics.
 8. Reconfirm Focused Aim damage/Grit/kill recovery, Pistol audio, touch AC, firearm state/reload, Oleg/Bokken/Border pending checks, and optional-mod operation.
+# Deferred P0 human check
+
+Do not test the original save until the consolidated handoff. The bounded check will install the final candidate, make an external byte-identical backup of `Quick_6.zks`, load the original normally through Steam, confirm the Tenebrous scene becomes interactive, exit without saving if any error appears, and verify Focused Aim still spends one Grit and adds Charisma damage after a successful load.

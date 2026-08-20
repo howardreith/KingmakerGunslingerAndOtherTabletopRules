@@ -3028,3 +3028,13 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Current issue: P0 save forensics. Focused Aim timing is correlation, not causation.
 - Last command: unchanged repository/full-suite baseline and external-state probe. The probe's only nonzero disposition was no active-state `rg` match; no transaction exists.
 - Next command: inspect exact repository save-catalog/safety tooling and the exact Kingmaker save directory metadata, then hash/copy only an unambiguous affected save to ignored transaction-owned evidence.
+# Resume checkpoint - 2026-08-20 P0 compatibility repair
+
+- Branch: `codex/gunslinger-overnight-bugfixes`
+- Pre-commit HEAD: `6c46690677242a3423b40320b0ab312e9a5c9792`
+- Version: `0.0.88`
+- Current issue: P0 save compatibility repair source-qualified; full Tenebrous completion remains blocked.
+- Last exact runtime: `20260820T1307384811579Z-p0-affected-focused-aim-save-load`, same-area `Quick_5` no-marker control, timeout at the same scene boundary, owned PID force-terminated, staged copy removed, both originals unchanged.
+- Tests/gates: repository validation PASS; `1161/1161`; clean Release/output/SoundBank/package/strict-package PASS.
+- External state: no Kingmaker process and no unresolved Mods transaction/sentinel after the run. Latest qualified candidate remains deployed intentionally for guarded testing.
+- Next action: commit and publish the P0 bounded repair, remote-verify, then read the Acadamae real-path implementation and installed API evidence once and repair the authoritative command seam.

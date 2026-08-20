@@ -433,6 +433,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("mysterious-stranger.grit", MysteriousStrangerGrit),
             Case("mysterious-stranger.focused-aim", MysteriousStrangerFocusedAim),
             Case("mysterious-stranger.focused-aim-transactions", MysteriousStrangerFocusedAimTransactions),
+            Case("mysterious-stranger.focused-aim-save-compatibility", MysteriousStrangerFocusedAimSaveCompatibility),
             Case("mysterious-stranger.lucky", MysteriousStrangerLucky),
             Case("mysterious-stranger.fortune", MysteriousStrangerFortune),
             Case("mysterious-stranger.clipping-shot", MysteriousStrangerClippingShot),

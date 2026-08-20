@@ -61,3 +61,8 @@ conservative: a lower-level subsystem or old sprint label is not completion.
 | Firearm feat art | rejected by human | actual Nodachi-template parameters and native-feat-style Rapid Reload contact sheets |
 | Long-gun apparent yaw | reported | smallest per-gun correction with rig/mechanics regressions |
 | Spear active/back frames | reported | forward point and separate natural carry, accepted length/mechanics preserved |
+# Human-review correction override - 2026-08-20
+
+| Surface | Current status | Evidence | Remaining gate |
+|---|---|---|---|
+| Focused Aim save compatibility | source-qualified, runtime recovery incomplete | stable-ID empty FX links; `1161/1161`; affected copy crosses prior native exception | Tenebrous interactive completion and two fresh loads |

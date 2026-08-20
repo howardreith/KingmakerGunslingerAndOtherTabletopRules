@@ -22,7 +22,9 @@ param(
 
     [bool]$ExitAfterCompletion = $true,
     [hashtable]$Parameters = @{},
-    [ValidateSet('KMG_AUTOMATION_WORKING')]
+    [ValidateSet(
+        'KMG_AUTOMATION_WORKING',
+        'KMG_P0_FOCUSED_AIM_AFFECTED_COPY')]
     [string]$SaveName,
     [ValidateSet(
         'gunslinger-only',
