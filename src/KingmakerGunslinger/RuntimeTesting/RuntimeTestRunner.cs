@@ -103,6 +103,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private SaveCatalogProviderObservation _catalogProviderObservation;
         private LoadGameButtonActionObservation _buttonActionObservation;
         private WorkingSaveSmokeScenario _workingSaveSmoke;
+        private WeaponPresentationEvidenceScenario.Session
+            _weaponPresentationEvidence;
         private Stopwatch _catalogElapsed;
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
@@ -609,6 +611,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableElvenBranchedSpearCombat &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableEasternWeaponsCombat &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationEvidence &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
                     _trace.Record("manual-interaction-timeout",
@@ -1290,6 +1293,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                     _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
+                    _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
@@ -1321,6 +1326,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
@@ -1739,6 +1746,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Complete(BrownFurNativeCastScenario.Run(
                         _context, _request));
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .WeaponPresentationEvidence)
+                {
+                    if (_weaponPresentationEvidence == null)
+                        _weaponPresentationEvidence =
+                            WeaponPresentationEvidenceScenario.Begin(
+                                _context, _request);
+                    _weaponPresentationEvidence.Poll();
+                    if (_weaponPresentationEvidence.Complete)
+                        Complete(_weaponPresentationEvidence.Result);
                 }
                 else
                 {
@@ -8781,12 +8799,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmKind.Musket, FirearmKind.Blunderbuss,
                 FirearmKind.Rifle, FirearmKind.Revolver }.All(
                     Assets.FirearmAssetRuntime.HasValidatedPrefab);
-            bool profilesRemainFallback = new[] { FirearmKind.Pistol,
+            bool profilesArePublishedCandidates = new[] { FirearmKind.Pistol,
                 FirearmKind.Musket, FirearmKind.Blunderbuss,
                 FirearmKind.Rifle, FirearmKind.Revolver }.All(kind =>
                     Assets.FirearmPresentationProfile.Require(kind)
                         .EquippedReadiness == Assets.
-                            FirearmPresentationReadiness.NativeFallback);
+                            FirearmPresentationReadiness.AutonomousCandidate);
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("native-light-crossbow-rig",
@@ -8806,10 +8824,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "five independently validated equipped capabilities; long guns have exact native left-hand IK",
                     capabilities, candidatesPrepared,
                     "transactional AssetBundle publication and prepared rig diagnostics"),
-                Assertion("production-readiness-remains-fallback",
-                    "all five NativeFallback until per-weapon mechanical qualification",
-                    "fallback=" + profilesRemainFallback,
-                    profilesRemainFallback,
+                Assertion("production-readiness-matches-published-candidates",
+                    "all five AutonomousCandidate after current mechanical qualification",
+                    "autonomousCandidate=" + profilesArePublishedCandidates,
+                    profilesArePublishedCandidates,
                     "explicit FirearmPresentationReadiness profiles"),
                 Assertion("native-rig-observation-cleanup",
                     "transient donor instances destroyed; no item, unit, inventory, blueprint, or save mutation",

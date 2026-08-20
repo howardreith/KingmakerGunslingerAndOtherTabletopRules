@@ -82,6 +82,7 @@ $expected = @(
     'observe-eastern-weapon-contracts',
     'disposable-elven-branched-spear-combat',
     'disposable-eastern-weapons-combat',
+    'weapon-presentation-evidence',
     'working-save-elven-branched-spear-prepare',
     'working-save-elven-branched-spear-verify-cleanup',
     'working-save-elven-branched-spear-verify-absent',
@@ -160,6 +161,7 @@ $expected = @(
     'observe-save-catalog-provider',
     'observe-load-game-button-action',
     'working-save-smoke',
+    'p0-affected-focused-aim-save-load',
     'working-save-shield-other-prepare',
     'working-save-shield-other-verify-cleanup',
     'working-save-expanded-summoning-prepare',
@@ -174,7 +176,7 @@ $expected = @(
     'observe-working-save-receiver-bound-action'
 )
 $catalog = Get-Content -LiteralPath $catalogPath -Raw
-$csharpNames = @([regex]::Matches($catalog, '"([a-z][a-z-]+)"') |
+$csharpNames = @([regex]::Matches($catalog, '"([a-z][a-z0-9-]+)"') |
     ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique)
 $powershellNames = @($script:KmgRuntimeScenarios | Sort-Object)
 Assert-True (($csharpNames -join "`n") -ceq ($powershellNames -join "`n")) `
@@ -204,6 +206,15 @@ Assert-True (-not $easternCombat.RequiresManualInteraction) `
     'eastern-combat-is-autonomous'
 Assert-True (-not $easternCombat.RequiresSaveName) `
     'eastern-combat-is-save-free'
+$weaponPresentation = Get-KmgRuntimeScenarioMetadata `
+    'weapon-presentation-evidence'
+Assert-True (-not $weaponPresentation.RequiresManualInteraction) `
+    'weapon-presentation-evidence-is-autonomous'
+Assert-True $weaponPresentation.RequiresSaveName `
+    'weapon-presentation-evidence-requires-save-name'
+Assert-True ($weaponPresentation.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'weapon-presentation-evidence-only-permits-working-save'
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
     'vendor-contracts-is-autonomous'
@@ -410,7 +421,7 @@ Assert-True (-not $trueGrit.RequiresSaveName) `
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.87'
+    ExpectedVersion = '0.0.88'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -443,7 +454,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.87' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.88' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -503,7 +514,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.87' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.88' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

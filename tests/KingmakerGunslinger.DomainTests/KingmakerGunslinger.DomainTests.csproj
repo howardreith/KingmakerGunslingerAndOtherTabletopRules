@@ -76,6 +76,7 @@
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="FirearmProficiencyPublicationTests.cs" />
     <Compile Include="WeaponVisualMappingAuditTests.cs" />
+    <Compile Include="WeaponPresentationMissionTests.cs" />
     <Compile Include="FirearmFitAssetTests.cs" />
     <Compile Include="RepairRuntimePolicyTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />

@@ -114,6 +114,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("weapon-visual-audit.spear-runtime-mapping", WeaponVisualMappingAuditTests.RuntimeCatalogMatchesApprovedSpearVariants),
             Case("weapon-visual-audit.eastern-runtime-mapping", WeaponVisualMappingAuditTests.RuntimeCatalogMatchesApprovedEasternVariants),
             Case("weapon-visual-audit.firearm-runtime-mapping", WeaponVisualMappingAuditTests.RuntimeCatalogMatchesApprovedFirearmVariants),
+            Case("weapon-presentation.evidence-scenario", WeaponPresentationMissionTests.EvidenceScenarioIsGuardedAndStateLabelled),
             Case("firearm-fit.generated-candidates", FirearmFitAssetTests.GeneratedCandidatesAreExactAndReproducible),
             Case("firearm-fit.generated-pistol-variants", FirearmFitAssetTests.GeneratedPistolVariantsAreExactAndReproducible),
             Case("firearm-fit.pistol-item-runtime-contract", FirearmFitAssetTests.PistolItemVariantRuntimeContractIsExact),
@@ -1601,10 +1602,10 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("EquipmentOffsets.IkTargetLeftHand") &&
                 runner.Contains("DestroyImmediate(lightInstance)") &&
                 runner.Contains("DestroyImmediate(heavyInstance)") &&
-                runner.Contains("production-readiness-remains-fallback") &&
+                runner.Contains("production-readiness-matches-published-candidates") &&
                 automation.Contains("'observe-native-firearm-rig-contracts'") &&
                 automation.Contains("ReadinessBehavior = 'mod-load'"),
-                "Native donor observation must be allowlisted, save-free, cleanup-owned, and retain production fallback.");
+                "Native donor observation must be allowlisted, save-free, cleanup-owned, and verify the published autonomous candidates.");
         }
 
         private static void NativeRigCalibrationSession()
