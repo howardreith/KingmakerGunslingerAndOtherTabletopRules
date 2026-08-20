@@ -1,5 +1,9 @@
 # Autonomous Gunslinger journal
 
+## 2026-08-20 Acadamae ordinary-player-path correction
+
+Fresh human evidence superseded the previous 15/15 runtime conclusion. The preserved exact run proves the three-argument constructor executed but rejected the detached prepared summon chain as `not-prepared`. Added canonical memorized-slot resolution, read-only UI evaluation, command-only slot binding, bounded presentation diagnostics, startup Harmony owner/order audit, and a runtime fixture with detached slotless outer/root nodes. Source gates pass: repository validation, `1,162/1,162`, clean Release/output, SoundBank, deterministic package, and strict package. Runtime and human gates remain open.
+
 ## 2026-08-19 overnight bug-fix mission intake
 
 - Fetched origin/master and established isolated

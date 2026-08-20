@@ -81,17 +81,21 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Contains("ExecuteAcadamaePlayerCommand") &&
                 runtime.Contains("onAction.Invoke(command, null)") &&
                 runtime.Contains("PrepareAcadamaePlayerPathSpell") &&
-                runtime.Contains("invocation.ParamSpellSlot = null") &&
+                runtime.Contains("var detachedCanonical = new AbilityData(") &&
+                runtime.Contains("detachedCanonical.ParamSpellSlot = null") &&
+                runtime.Contains("playerSelection.ParamSpellSlot = null") &&
                 runtime.Contains("setExecutor.Invoke(command, new object[] { caster })") &&
                 runtime.Contains("realSuccessSlotSpent") &&
                 runtime.Contains("spellBlueprintContract"),
-                "Acadamae qualification must exercise the real player command and record the exact spell contract.");
-            Assertions.True(casting.Contains("TryResolvePreparedSlot") &&
+                "Acadamae qualification must reproduce the UI-detached canonical node, exercise the real player command, and record the exact spell contract.");
+            Assertions.True(casting.Contains("ResolveCanonicalInvocation") &&
                 casting.Contains("if (HasAcadamaeModeOwner(ability) &&") &&
-                casting.Contains("source = source.ConvertedFrom") &&
-                casting.Contains("ReferenceEquals(current, candidate.Spell)") &&
-                casting.Contains("ability.ParamSpellSlot = preparedSlot"),
-                "Acadamae must recover only the exact prepared slot retained by a selected spell variant's ConvertedFrom chain.");
+                casting.Contains("memorized-blueprint-identity") &&
+                casting.Contains("GetMemorizedSpellSlots(level)") &&
+                casting.Contains("ability.ParamSpellSlot = invocation.Slot") &&
+                casting.Contains("presentation.decision") &&
+                casting.Contains("patch.audit"),
+                "Acadamae must resolve the detached canonical prepared slot for UI presentation, bind it only at command construction, and audit the live Harmony seams.");
         }
 
         internal static void AcadamaeModeIdentityContracts()
@@ -346,13 +350,13 @@ namespace KingmakerGunslinger.DomainTests
                     "Acadamae runtime fixture no longer resolves the exact player-facing KMG summon variant: " +
                     token);
             foreach (string token in new[] {
-                "IsPreparedInvocation(ability, spellbook)",
-                "candidate == null || !candidate.Available ||",
-                "candidate.Spell == null ||",
-                "ReferenceEquals(candidate.Spell.Spellbook, spellbook)",
-                "source = source.ConvertedFrom",
-                "current = current.ConvertedFrom",
-                "ReferenceEquals(current, candidate.Spell)" })
+                "ResolveCanonicalInvocation(ability)",
+                "slot != null && slot.Available && slot.Spell != null",
+                "ReferenceEquals(slot.Spell.Spellbook, spellbook)",
+                "GetMemorizedSpellSlots(level)",
+                "memorized-blueprint-identity",
+                "value.Blueprint.AssetGuid.ToString()",
+                "slot.Spell.Blueprint.AssetGuid.ToString()" })
                 Assertions.True(casting.Contains(token),
                     "Acadamae prepared-variant eligibility contract is missing: " +
                     token);

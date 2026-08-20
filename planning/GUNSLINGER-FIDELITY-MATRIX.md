@@ -1,5 +1,9 @@
 # Base Gunslinger fidelity matrix
 
+## 2026-08-20 Acadamae priority continuation
+
+The exact human-run `0.0.88` evidence supersedes both prior automated completion conclusions. Ordinary selection uses a detached canonical prepared-spell node, so object-reference-only slot recovery was not faithful to the installed player path. The replacement resolves the available memorized slot by exact canonical blueprint and spellbook identity, evaluates canonical spell rules while preserving the outer targeting variant, and mutates only the command-bound outer slot. Source gates pass; runtime and ordinary human acceptance remain open.
+
 Overnight bug-fix note (2026-08-19): the current work order preserves all
 accepted tabletop/Kingmaker adaptations while reopening only the twelve
 human-observed implementation and presentation failures. No balance adaptation

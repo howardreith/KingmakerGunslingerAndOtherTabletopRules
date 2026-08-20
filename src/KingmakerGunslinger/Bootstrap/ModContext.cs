@@ -170,6 +170,7 @@ namespace KingmakerGunslinger.Bootstrap
                 harmony.PatchAll(Assembly);
                 Firing.EmptyFirearmAttackCommandPatch.Install(harmony);
                 Firing.FreeActionFullAttackReloadPatch.Install(harmony);
+                Acadamae.AcadamaePatchAudit.Publish(harmony, Logger, ModId);
 
                 lock (_stateGate)
                 {

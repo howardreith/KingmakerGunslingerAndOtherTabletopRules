@@ -17176,9 +17176,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             AbilityData invocation = PrepareAcadamaeSpell(spellbook, spell,
                 spellLevel);
-            if (invocation.ConvertedFrom != null)
-                invocation.ParamSpellSlot = null;
-            return invocation;
+            if (invocation.ConvertedFrom == null) return invocation;
+            BlueprintAbility selectedVariant = invocation.Blueprint;
+            BlueprintAbility canonicalBlueprint = invocation.ConvertedFrom.Blueprint;
+            var detachedCanonical = new AbilityData(canonicalBlueprint, spellbook);
+            detachedCanonical.ParamSpellSlot = null;
+            var playerSelection = new AbilityData(detachedCanonical, selectedVariant);
+            playerSelection.ParamSpellSlot = null;
+            return playerSelection;
         }
 
         private static bool ExecuteAcadamaePlayerCommand(UnitEntityData caster,

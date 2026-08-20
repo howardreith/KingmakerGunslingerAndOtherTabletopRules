@@ -1,5 +1,16 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-20 Acadamae priority continuation checkpoint
+
+- Branch/intake: `codex/gunslinger-overnight-bugfixes` at published `270d02630d32d32d80d128ab7bb9312a37c736a1`; local/ref/remote equality and clean state proved before work.
+- Human evidence preserved before launch: `C:/Dev/KingmakerGunslingerLab/runtime-evidence/acadamae-human-runs/20260820T1949234419079Z`; `output_log.txt` SHA-256 `5CF02C1F71DBD121855B3B2F0ADBFC9DA3301FA3DC57DB03E59098EAF61CB231`.
+- Root cause: the real three-argument constructor saw a detached KMG variant/native `SummonMonsterISingle` chain with no `ParamSpellSlot`; eligibility rejected `not-prepared` before arming.
+- Current implementation: canonical memorized-slot resolver, UI-only read path, command-only binding, bounded getter trace, startup Harmony owner/order audit, detached-node runtime fixture.
+- Last results: repository validation PASS; domain/reflection `1,162/1,162` PASS; clean Release/output/SoundBank/package/strict package PASS.
+- Current status: source-qualified; runtime pending; human-gated. Former 15/15 conclusion is superseded.
+- External state: Kingmaker was not running and transaction markers were zero at intake. No launch has occurred in this continuation.
+- Next action: commit/publish source checkpoint; Build-Local from that commit; deploy transactionally; run `disposable-acadamae-graduate` twice in the exact optional-mod profile; inspect patch and presentation traces.
+
 ## 2026-08-20 human-review BTSL checkpoint
 
 - Branch `codex/gunslinger-overnight-bugfixes`; version `0.0.88`; published pre-commit HEAD `e27e79bd16ed577dbaa3a38949d8317c4f9835ac`.

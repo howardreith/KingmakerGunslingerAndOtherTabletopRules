@@ -1,5 +1,15 @@
 # Gunslinger Human-Review Correction Manual Acceptance
 
+## Acadamae retest remains required
+
+Do not treat the previous 15/15 automation as acceptance. After the exact new candidate is installed, use the same prepared `Summon Monster I` character and perform only:
+
+1. Turn `Use Acadamae Graduate` OFF and confirm Full-Round with no Acadamae save.
+2. Turn it ON and confirm Standard presentation/execution.
+3. Complete one cast and confirm exactly one `Acadamae Graduate` Fortitude line at DC 16.
+
+Status remains human-gated until this ordinary path succeeds.
+
 One consolidated human pass will be requested only after all safe automated work.
 
 1. Load a protected copy-equivalent of the affected Tenebrous Depths save and the disposable Focused Aim matrix results; never modify the original.

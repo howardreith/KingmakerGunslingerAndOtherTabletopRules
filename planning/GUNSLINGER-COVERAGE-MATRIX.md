@@ -1,5 +1,15 @@
 # Gunslinger mandatory coverage matrix
 
+## 2026-08-20 Acadamae priority continuation
+
+| Surface | Current coverage | Status |
+|---|---|---|
+| Ordinary prepared summon selection | detached KMG variant/native canonical graph with both `ParamSpellSlot` values null | reproduced; source-qualified repair; runtime pending |
+| UI action presentation | bounded `get_RequireFullRoundAction` before/after trace using canonical resolver | implemented; runtime pending |
+| Command execution | observed three-argument constructor binds resolved slot only after eligibility | implemented; runtime pending |
+| Completion/save/fatigue | existing exact rule correlation, DC, save, fatigue, rest, Cord, and cancellation suite retained | source-qualified; former runtime conclusion superseded |
+| Harmony compatibility | one-time signature/owner/order/priority audit for all Acadamae seams | implemented; exact Call of the Wild owner runtime pending |
+
 Overnight bug-fix note (2026-08-19): fresh human evidence reopens Acadamae
 action/save/fatigue, Focused Aim spend, firearm AC feedback, vendors/loot,
 audio, firearm icons, spear fit, and long-gun fit. The authoritative active

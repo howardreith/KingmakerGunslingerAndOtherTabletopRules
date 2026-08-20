@@ -1,5 +1,15 @@
 # Gunslinger Human-Review Correction Journal
 
+## 2026-08-20 Acadamae priority continuation: human trace and source repair
+
+The exact post-deployment human run supersedes the earlier synthetic and 15/15 completion claims. Before any new launch, the current `output_log.txt` was copied to `C:/Dev/KingmakerGunslingerLab/runtime-evidence/acadamae-human-runs/20260820T1949234419079Z`; it is 593,769 bytes, last written `2026-08-20T19:36:25.6712189Z`, and SHA-256 `5CF02C1F71DBD121855B3B2F0ADBFC9DA3301FA3DC57DB03E59098EAF61CB231`. No separate GameLogFull, UMM, mod, or Harmony log existed at the authorized exact locations. The capture records package `98BA3475B5CD2068DF6152C49DEAF47CF9D8C1247F889E1F12FB0646079265C9`, DLL `E6E08804CD19C69DACA8A3BE77DC04220497BFC78E0CE31B07BE0B498953B76D`, active Acadamae settings, Bag of Tricks `1.16.4`, and Call of the Wild `1.14.4c-2.1`.
+
+The real three-argument command hook ran. Its exact Dog, Eagle, and Poisonous Frog traces each showed an outer KMG summoning variant converted from native `SummonMonsterISingle`, but `ParamSpellSlot=<null>`, `slotSpell=<null>`, `prepared=False`, `canSpend=False`, `preRequireFullRound=True`, and `status=not-prepared`. The former resolver only searched for a slot already stored on a chain node and required the exact `AbilityData` object to be the slot spell; the ordinary selection graph detached the canonical node, so no invocation armed and no save could occur.
+
+Production now resolves the canonical prepared invocation read-only across the chain and available memorized slots using exact blueprint and spellbook identity. UI presentation uses canonical spell properties without mutation; the three-argument command constructor alone binds the exact resolved slot to the outer targeting variant. A bounded presentation trace records before/after full-round disposition. Startup records exact Harmony targets, application state, owners, order, priority, and Call of the Wild owner metadata. The runtime fixture now builds a detached canonical node with null slot state on both nodes, matching the human trace.
+
+Source gates: repository validation PASS; complete suite `1,162/1,162` PASS; clean Release compilation PASS; output validation PASS; SoundBank PASS; deterministic package PASS; strict package PASS. Runtime remains pending and human status remains gated. Next action: commit/publish this source-qualified checkpoint, build the commit-stamped local runtime package, run two fresh guarded detached-player-path passes, and inspect the exact patch audit.
+
 ## 2026-08-20 intake and authority amendment
 
 - Resumed isolated worktree on `codex/gunslinger-overnight-bugfixes` at exact

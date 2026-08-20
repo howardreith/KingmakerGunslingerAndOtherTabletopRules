@@ -1,5 +1,13 @@
 # Gunslinger Human-Review Correction Qualification
 
+## Acadamae priority continuation override - 2026-08-20
+
+The exact installed `0.0.88` human cast remained Full-Round and produced no save. This supersedes the former 15/15 PASS conclusion. Preserved run evidence is under `C:/Dev/KingmakerGunslingerLab/runtime-evidence/acadamae-human-runs/20260820T1949234419079Z`.
+
+Root cause is proven at the first boundary: ordinary KMG summon selection supplied an outer project variant over a detached native `SummonMonsterISingle` node; neither node carried `ParamSpellSlot`. The old resolver did not search memorized slots by canonical blueprint identity and therefore logged `prepared=False`, `canSpend=False`, `preRequireFullRound=True`, `status=not-prepared`.
+
+The replacement is source-qualified only. It resolves canonical spellbook, blueprint, slot, level, school, summoning marker, and pre-Acadamae time without mutating UI data, then binds the resolved slot only in the observed three-argument command constructor. Repository validation, `1,162/1,162`, clean Release/output, SoundBank, package, and strict-package gates pass. Two fresh guarded runtime runs and ordinary human OFF/ON confirmation remain required.
+
 ## Intake baseline
 
 - Branch/ref equality: `e2e3d9ec941549a889a1e03a590e24241b745b7f` after remote fetch.
