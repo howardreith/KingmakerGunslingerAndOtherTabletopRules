@@ -153,7 +153,7 @@ files and zero full-tree hash differences.
 
 ## Result
 
-`SOURCE-QUALIFIED`, `RUNTIME-QUALIFIED`, `HUMAN-GATED` at product commit `7a38cdcd0f740d1fce1b2460166748fcae593ffd`, version `0.0.88`.
+`SOURCE-QUALIFIED`, `RUNTIME-QUALIFIED`, `HUMAN-ACCEPTED`, `REGRESSION-FROZEN` at product commit `7a38cdcd0f740d1fce1b2460166748fcae593ffd`, version `0.0.88`.
 
 The current repair does not rely on the former detached fixture conclusion. The replacement fixture deliberately removes `ParamSpellSlot` from both the player-selected summon variant and its detached canonical node, then reaches the three-argument player command constructor and `UnitUseAbility.OnAction`.
 
@@ -166,10 +166,11 @@ The current repair does not rely on the former detached fixture conclusion. The 
 - Native completion: exactly one Fortitude resolution at DC 16; forced success has no fatigue; forced failure records `fatigue=fatigued-permanent`; rest, Cord, cancellation, command failure, and cleanup assertions pass.
 - Harmony audit: all six target seams report `applied=True`. CotW's actual owner is `CallOfTheWild`; the KMG `RequireFullRoundAction` and `RuleCastSpell.OnTrigger` patches report `after=CallOfTheWild`.
 - Runtime runs: `20260820T2015089247100Z-disposable-acadamae-graduate` `15/15 PASS`; `20260820T2017093646741Z-disposable-acadamae-graduate` `15/15 PASS`.
+- Human acceptance: Howie subsequently tested the exact installed candidate in ordinary gameplay and explicitly confirmed that Acadamae Graduate is working. This closes only the Acadamae ordinary-player gate.
 - Full suite: `1162/1162 PASS`.
 - Package: `artifacts/local-runtime/0.0.88/KingmakerGunslinger-0.0.88-local-runtime.zip`, SHA-256 `60FE24AB03616B63E376EA9B07187990737DBA8A5DEFF88F7AA71121226610AB`.
 - DLL SHA-256: `11DE92F69051E95578C8DCECC33D392D2EE998870708A91760B87D96F5FB9BD0`.
 - Firearms bundle SHA-256: `050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C`.
 - SoundBank SHA-256: `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 
-Automated qualification is not final human acceptance. Do not label Acadamae fixed until the ordinary Leinna cast passes the manual check.
+Acadamae Graduate's ordinary player path is accepted and regression-frozen. Overall 0.0.88 release qualification remains blocked by the separate Tenebrous completion issue; version remains 0.0.88 and no 0.0.89 release is authorized. Unrelated cosmetic, merchant-materialization, acquisition-accessibility, visual, and audible gates are unchanged.

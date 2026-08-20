@@ -4,7 +4,7 @@ Status: COMPLETE AND LOCALLY DEPLOYED
 
 ## 2026-08-20 authoritative correction
 
-Fresh human evidence superseded the historical completion claim below. The ordinary selected Summon Monster I variant can carry a null outer `ParamSpellSlot` while retaining the exact prepared slot on its `ConvertedFrom` root. That made the integrated eligibility path reject `not-prepared`, so the command remained full-round and no completion save occurred. Production now resolves only an available same-spellbook slot whose exact spell object occurs in the converted chain and binds it during authoritative command construction. Two fresh native-command guarded runs passed 15/15; final visible UI confirmation remains human-gated.
+Fresh human evidence superseded the historical completion claim below. The ordinary selected Summon Monster I variant and its detached `ConvertedFrom` chain can carry no `ParamSpellSlot`, which made the integrated eligibility path reject `not-prepared`; the command remained Full-Round and no completion save occurred. Production now resolves the exact available canonical prepared spellbook slot and binds it during authoritative command construction. Guarded runs `20260820T2015089247100Z-disposable-acadamae-graduate` and `20260820T2017093646741Z-disposable-acadamae-graduate` each passed 15/15. Howie's subsequent ordinary-gameplay test of the exact installed 0.0.88 candidate confirmed that Acadamae Graduate is working. The ordinary player path is human-accepted and regression-frozen.
 
 Starting source was `c80615e917d1994daad679e8a78af11ae2c7e115`, version 0.0.75. The focused repair targets 0.0.76 / `0.0.76-acadamae-mode-fatigue-icon-repair` without changing any prior blueprint identity or accepted feature-module behavior.
 

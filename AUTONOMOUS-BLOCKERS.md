@@ -448,4 +448,4 @@ Acadamae pass independently on the same final bytes. No `0.0.89` release is
 authorized while Tenebrous completion is unproven.
 # Acadamae correction blocker status (2026-08-20)
 
-No new engineering or runtime blocker remains for the Acadamae correction. Final disposition is intentionally human-gated because only an ordinary Leinna spellbook/action-bar cast can close the authoritative presentation/command acceptance boundary.
+No engineering, runtime, or human-acceptance blocker remains for the Acadamae correction. Howie's ordinary-gameplay test of the exact installed 0.0.88 candidate confirmed that Acadamae Graduate is working; the Acadamae gate is closed and the feature is regression-frozen. The separate Tenebrous completion issue remains release-blocking, and no unrelated human gate is changed.

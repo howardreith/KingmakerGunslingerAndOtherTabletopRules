@@ -98,3 +98,11 @@
 - Deployed exact qualified 0.0.76 package through direct `Deploy-Local.ps1` switch binding. Automatic backup: `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260810T0141375127164Z`; deployment manifest: `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260810T0141392337217Z\deployment.json`.
 - Deployed version 0.0.76; package SHA-256 `86bcd1dc738223b2eb4e10c99f57731d2006ffe54f2445b9c6b1ad06df3ec92f`; built/installed DLL SHA-256 `3c9b20738d848e70e08e92f66a7a7a009a44fbb208c9208facf951d4d3b4ef7e`; installed Cord icon SHA-256 `cf3f040eb22691b1e526eb32cc31d1151eafef7113cb0ebe55d0c2637d5d9928`; preserved settings SHA-256 `8aa8233b19e69af001d28dc9db51748baf3abb9ffff37ce96754c4addfac7470`; Kingmaker closed.
 - Next concrete action: commit/publish final evidence documents and prove clean local/remote equality; do not merge.
+
+## 2026-08-20 - ordinary-gameplay human acceptance
+
+- Final product implementation: `7a38cdcd0f740d1fce1b2460166748fcae593ffd`; version `0.0.88`.
+- Guarded runs `20260820T2015089247100Z-disposable-acadamae-graduate` and `20260820T2017093646741Z-disposable-acadamae-graduate` each passed `15/15`.
+- Installed validated package SHA-256: `60FE24AB03616B63E376EA9B07187990737DBA8A5DEFF88F7AA71121226610AB`; installed DLL SHA-256: `11DE92F69051E95578C8DCECC33D392D2EE998870708A91760B87D96F5FB9BD0`.
+- Howie subsequently tested this exact candidate in ordinary gameplay and explicitly confirmed that Acadamae Graduate is working. The human gate is closed; Acadamae Graduate is accepted and regression-frozen.
+- This acceptance does not qualify the overall release or any unrelated human gate. Tenebrous completion remains release-blocking, version remains `0.0.88`, and no `0.0.89` release is authorized.

@@ -3138,7 +3138,7 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Aggregate FAIL: `20260820T1554523223418Z-9f9d0d577bae4dcc8b56be64ad295c16`, 178/184, exact six failures recorded in qualification/blocker files; no gate was weakened.
 - External state: all backups restored; Kingmaker stopped; no compatibility or Mods transaction sibling remains.
 - Remaining action: commit/publish this blocked qualification record, verify remote equality/clean tree, then issue one consolidated human handoff. Affected-save recovery remains explicitly unqualified.
-# Resume checkpoint: Acadamae runtime-qualified, human-gated (2026-08-20)
+# Resume checkpoint: Acadamae human-accepted and regression-frozen (2026-08-20)
 
 - Branch: `codex/gunslinger-overnight-bugfixes`.
 - Product HEAD: `7a38cdcd0f740d1fce1b2460166748fcae593ffd`, published with local/branch/remote equality.
@@ -3149,5 +3149,6 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Last gates: repository validation PASS; `1162/1162` PASS; clean Release/output/SoundBank/deterministic package/strict package PASS.
 - Runtime: `20260820T2015089247100Z-disposable-acadamae-graduate` `15/15 PASS`; `20260820T2017093646741Z-disposable-acadamae-graduate` `15/15 PASS`.
 - Installed candidate: package SHA `60FE24AB03616B63E376EA9B07187990737DBA8A5DEFF88F7AA71121226610AB`; DLL SHA `11DE92F69051E95578C8DCECC33D392D2EE998870708A91760B87D96F5FB9BD0`; live `Info.json` version `0.0.88`.
-- External state: Kingmaker stopped; no Mods transaction/staging/restore markers; exact candidate remains installed for human acceptance.
-- Status: automated-qualified, human-gated. Next action is the four-step ordinary Leinna acceptance check; do not resume parked acquisition/merchant/icon/visual work before that result or new authority.
+- Human acceptance: Howie tested the exact installed 0.0.88 candidate in ordinary gameplay and explicitly confirmed that Acadamae Graduate is working.
+- External state: Kingmaker stopped; no Mods transaction/staging/restore markers; exact accepted candidate remains installed without modification.
+- Status: human-accepted and regression-frozen. The Acadamae gate is closed. Tenebrous completion remains the overall release blocker; version remains `0.0.88` and no `0.0.89` release is authorized. Long-gun presentation/aiming and firearm Weapon Focus icons remain cosmetically rejected; Rapid Reload remains close but not final; BTSL remains accepted; acquisition remains structurally accepted with materialization/accessibility separate. No cosmetic work is authorized in this operation.

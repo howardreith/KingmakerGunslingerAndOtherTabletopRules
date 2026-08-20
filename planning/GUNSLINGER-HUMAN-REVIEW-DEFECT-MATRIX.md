@@ -80,9 +80,9 @@ Status vocabulary: `reported`, `reproduced`, `root cause proven`, `implemented`,
 # Acadamae real-player-path qualification amendment (2026-08-20)
 
 - Defect: prepared Summon Monster I remained Full-Round and produced no Acadamae save in the 0.0.88 human run.
-- Status: `root cause proven`, `implemented`, `source-qualified`, `runtime-qualified`, `human-gated`.
+- Status: `root cause proven`, `implemented`, `source-qualified`, `runtime-qualified`, `human-accepted`, `regression-frozen`.
 - Root cause: the selected summon variant reached the authoritative three-argument `UnitUseAbility` constructor, but its outer and `ConvertedFrom` `AbilityData` nodes had no `ParamSpellSlot`. Eligibility therefore rejected the invocation as `not-prepared` before action acceleration or save arming.
 - Repair commits: `44836ac47b2161432339641f6b3d6767109c9de3` (canonical prepared invocation resolver and detached real-path fixture), `7a38cdcd0f740d1fce1b2460166748fcae593ffd` (complete non-public constructor patch audit).
 - Source gates: repository validation PASS; complete dependency-free suite `1162/1162` PASS; clean Release/output/SoundBank/deterministic-package/strict-package gates PASS.
 - Runtime: `20260820T2015089247100Z-disposable-acadamae-graduate` `15/15 PASS`; `20260820T2017093646741Z-disposable-acadamae-graduate` `15/15 PASS`.
-- Remaining human check: ordinary prepared Summon Monster I with Acadamae OFF then ON must visibly change Full-Round to Standard and produce exactly one Fortitude line at DC 16 after the ON cast completes.
+- Human check: PASS. Howie tested the exact installed 0.0.88 candidate in ordinary gameplay and explicitly confirmed that Acadamae Graduate is working. No Acadamae human check remains.
