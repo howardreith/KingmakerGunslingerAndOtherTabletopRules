@@ -15714,8 +15714,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = 100;
                 AcadamaeSavingThrowTestControl.Queue(20);
-                UnitUseAbility successCommand = ExecuteAcadamaeNativeCommand(unit,
-                    first);
+                RuleCastSpell successRule = ExecuteAcadamaeDelayedTerminalRule(
+                    unit, first);
                 successCount = AcadamaeCastingRuntime.CompletedCount;
                 observedDc = AcadamaeCastingRuntime.LastDifficultyClass;
                 successNatural = AcadamaeCastingRuntime.LastNaturalRoll;
@@ -15723,28 +15723,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 successResolution = AcadamaeCastingRuntime.LastResolutionMessage;
                 successResolutionCount =
                     AcadamaeCastingRuntime.PublishedResolutionCount;
-                successObserved = successCount == 1 &&
+                successObserved = successRule.Success && successCount == 1 &&
                     AcadamaeCastingRuntime.LastSavePassed &&
                     successNatural == 20 && successTotal >= successNatural &&
                     successResolutionCount == 1 &&
                     successResolution.Contains("to Standard") &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
-                if (successCommand.ExecutionProcess != null &&
-                    !successCommand.ExecutionProcess.IsEnded)
-                    successCommand.ExecutionProcess.Detach();
-
                 unit.Descriptor.Stats.GetStat(
                     StatType.SaveFortitude).BaseValue = -100;
                 AcadamaeSavingThrowTestControl.Queue(1);
                 AbilityData nativeFailure = PrepareAcadamaeSpell(spellbook,
                     spell, spellLevel);
-                UnitUseAbility nativeFailureCommand =
-                    ExecuteAcadamaeNativeCommand(unit, nativeFailure);
+                RuleCastSpell nativeFailureRule =
+                    ExecuteAcadamaeDelayedTerminalRule(unit, nativeFailure);
                 nativeFailureNatural = AcadamaeCastingRuntime.LastNaturalRoll;
                 nativeFailureTotal = AcadamaeCastingRuntime.LastSaveTotal;
                 nativeFailureDisposition =
                     AcadamaeCastingRuntime.LastFatigueDisposition;
                 nativeFailureObserved =
+                    nativeFailureRule.Success &&
                     AcadamaeCastingRuntime.CompletedCount == 2 &&
                     !AcadamaeCastingRuntime.LastSavePassed &&
                     nativeFailureNatural == 1 &&
@@ -15752,9 +15749,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     nativeFailureDisposition == "fatigued-permanent" &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
                     AcadamaeCastingRuntime.PublishedResolutionCount == 2;
-                if (nativeFailureCommand.ExecutionProcess != null &&
-                    !nativeFailureCommand.ExecutionProcess.IsEnded)
-                    nativeFailureCommand.ExecutionProcess.Detach();
                 unit.Descriptor.RemoveFact(fatiguedBlueprint);
 
                 AbilityData snapOn = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
@@ -15994,9 +15988,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, successObserved && observedDc == 15 + spellLevel,
                     "native RuleCastSpell and RuleSavingThrow"),
                 Assertion("acadamae-native-command-failure",
-                    "actual UnitUseAbility fails one Fortitude save and applies permanent fatigue",
+                    "delayed exact RuleCastSpell fails one Fortitude save and applies permanent fatigue",
                     observed, nativeFailureObserved,
-                    "UnitUseAbility.OnAction -> exact RuleCastSpell -> native RuleSavingThrow"),
+                    "command scope -> exact RuleCastSpell -> delayed OnTrigger -> native RuleSavingThrow"),
                 Assertion("acadamae-save-failure", "next Fortitude save fails; Fatigued applies",
                     observed, failureObserved, "native Fatigued blueprint"),
                 Assertion("acadamae-cancellation", "cancelled marker causes no save or fatigue",
@@ -16072,7 +16066,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return invocation;
         }
 
-        private static UnitUseAbility ExecuteAcadamaeNativeCommand(
+        private static RuleCastSpell ExecuteAcadamaeDelayedTerminalRule(
             UnitEntityData caster, AbilityData ability)
         {
             TargetWrapper point = new TargetWrapper(caster.Position);
@@ -16088,25 +16082,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 command = new UnitUseAbility(ability, target);
             if (!ability.IsAvailable || !command.CanStart)
                 throw new InvalidOperationException(
-                    "Acadamae native command was unavailable: available=" +
+                    "Acadamae delayed-rule command was unavailable: available=" +
                     ability.IsAvailable + ";canStart=" + command.CanStart +
                     ";targetable=" + ability.CanTarget(target) + ".");
-            // This save-free fixture deliberately uses a detached ChargenUnit,
-            // whose animation/controller clock cannot advance a queued command.
-            // Invoke the exact native terminal action rather than reconstructing
-            // RuleCastSpell manually: Harmony's UnitUseAbility.OnAction patch,
-            // the native RuleCastSpell constructor, and OnTrigger all execute.
-            MethodInfo onAction = typeof(UnitUseAbility).GetMethod("OnAction",
-                BindingFlags.Instance | BindingFlags.NonPublic, null,
-                Type.EmptyTypes, null);
-            if (onAction == null) throw new MissingMethodException(
-                typeof(UnitUseAbility).FullName, "OnAction()");
-            onAction.Invoke(command, null);
-            if (command.ExecutionProcess != null)
-                for (int tick = 0; tick < 5000 &&
-                    !command.ExecutionProcess.IsEnded; tick++)
-                    command.ExecutionProcess.Tick();
-            return command;
+            AcadamaeCastingRuntime.Begin(command);
+            RuleCastSpell rule;
+            try { rule = new RuleCastSpell(ability, target); }
+            finally { AcadamaeCastingRuntime.End(command); }
+            // This ordering is the rejected production boundary: OnTrigger is
+            // deliberately later than the command scope. The constructor patch
+            // must retain exact rule identity until this native terminal event.
+            Rulebook.Trigger(rule);
+            return rule;
         }
 
         private RuntimeTestResult RunDisposableCordOfStubbornResolve()

@@ -10,22 +10,26 @@
 - Durable contract: planning/OVERNIGHT-GUNSLINGER-BUGFIX-MISSION.md.
 - Published checkpoint SHA: `879ffe152a4ccfbfe42679055f7c392e5d0f1669`;
   local and remote feature refs were equal after approved-helper publication.
-- Completed issue IDs: none; Issue 1 repair is published and runtime retry is
-  pending an issue-scoped fixture checkpoint.
-- Current checkpoint: Issue 1 exact native-action save-free fixture correction.
+- Completed issue IDs: none; Issue 1 repair is published and narrowed runtime
+  retry is pending an issue-scoped evidence-mode checkpoint.
+- Current checkpoint: Issue 1 delayed exact-rule terminal reproducer.
 - Current hypothesis: the human failure was caused by completion correlation
   being limited to the `UnitUseAbility.OnAction` thread-local stack; concrete
   `RuleCastSpell` identity must survive until the native terminal callback.
 - Published repair SHA: `d691d508c43f3c048f28860389a6146186c11448`.
 - First runtime ID `20260820T0358157167579Z-246801cb00f44e4a80f6e69e4dffa28c`
   returned ERROR before assertions because detached command `Result=None`.
+- Published fixture SHA: `b2b8d6edcfa16d0fdb72ea7b1e8ecb2cfe50406c`.
+- Second runtime ID `20260820T0404361106448Z-a262364c94774a8d9e444d73f7c32e10`
+  returned ERROR before assertions because installed `OnAction_Patch3` requires
+  loaded-area state absent from the save-free detached fixture.
 - Exact corrected-fixture gates: `test-domain.ps1 -Configuration Release` PASS 1,150/1,150;
   `Build-Local.ps1` PASS repository, clean exact-reference Release, output,
   SoundBank, deterministic package, and strict package validation.
-- Candidate package/DLL SHA-256: `04E72E53...43D1B9D` /
-  `785DCB24...7173C0`.
+- Candidate package/DLL SHA-256: `134184B1...7F604B3` /
+  `3B5AEB21...3A07FD`.
 - Real blocker: none.
-- Next concrete action: commit/publish the exact-action fixture, verify exact
+- Next concrete action: commit/publish the delayed-rule fixture, verify exact
   remote equality, and rerun guarded `disposable-acadamae-graduate` runtime.
 
 ## Eastern Weapons first-human-playtest repair (automated seal complete, human recheck pending)

@@ -106,3 +106,31 @@
   `785DCB24EA3E6B4A91AA9867F9DAAAF374872C71A9857293F0573F1D277173C0`.
 - Next action: commit/publish this issue-scoped runtime fixture correction,
   verify remote equality, and rerun the guarded scenario.
+
+## 2026-08-20 Issue 1 second runtime failure and narrowed boundary
+
+- Published fixture checkpoint:
+  `b2b8d6edcfa16d0fdb72ea7b1e8ecb2cfe50406c`; exact remote equality verified.
+- Guarded run ID
+  `20260820T0404361106448Z-a262364c94774a8d9e444d73f7c32e10`
+  loaded that exact commit/version and returned `ERROR` before assertions.
+- Exact failure: reflection reached the native protected action, but the
+  installed patched `UnitUseAbility.OnAction_Patch3` threw
+  `NullReferenceException` for the detached `ChargenUnit`. This independently
+  confirms the save-free fixture cannot supply the loaded-area command context
+  required by the composed engine/mod action chain.
+- Strategy change: do not attempt another detached animation/action call. The
+  scenario now reproduces the rejected production ordering directly: begin the
+  exact command scope, construct the native `RuleCastSpell` so the production
+  Harmony constructor patch attaches it, end command scope, then trigger that
+  exact rule. This proves the new delayed identity retention and native save/
+  fatigue consequence without claiming loaded-area animation execution.
+- Actual animation-driven command execution and area-transition persistence
+  remain explicit consolidated human checks; they are not silently passed.
+- Narrowed fixture passes 1,150/1,150 and the complete `Build-Local.ps1`
+  repository/Release/output/SoundBank/package/strict-package pipeline.
+- Candidate package/DLL SHA-256:
+  `134184B1A08FC73153780A711CEF1A309DE311BD6D2AFBC2BE36B00DA7F604B3` /
+  `3B5AEB2122E2F736340A7F504DE56F50BED9314109769502276DFC764D3A07FD`.
+- Next action: publish this issue-scoped evidence-mode checkpoint and run the
+  guarded delayed-terminal scenario.

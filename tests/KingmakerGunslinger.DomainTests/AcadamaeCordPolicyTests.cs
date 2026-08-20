@@ -240,10 +240,13 @@ namespace KingmakerGunslinger.DomainTests
                 "LastFatigueDisposition" })
                 Assertions.True(casting.Contains(token),
                     "Acadamae exact completed-cast correlation or diagnostics are missing: " + token);
-            Assertions.True(runtime.Contains(
-                    "typeof(UnitUseAbility).GetMethod(\"OnAction\"") &&
-                runtime.Contains("onAction.Invoke(command, null)"),
-                "The save-free scenario must execute the exact native UnitUseAbility.OnAction boundary.");
+            int delayedEnd = runtime.IndexOf(
+                "finally { AcadamaeCastingRuntime.End(command); }",
+                StringComparison.Ordinal);
+            int delayedTrigger = runtime.IndexOf("Rulebook.Trigger(rule);",
+                delayedEnd < 0 ? 0 : delayedEnd, StringComparison.Ordinal);
+            Assertions.True(delayedEnd >= 0 && delayedTrigger > delayedEnd,
+                "The save-free scenario must trigger the exact native cast rule after command scope ends.");
             foreach (string token in new[] {
                 "canonical Summon Monster I parent for Acadamae fixture",
                 "ExpandedSummoningCatalog",

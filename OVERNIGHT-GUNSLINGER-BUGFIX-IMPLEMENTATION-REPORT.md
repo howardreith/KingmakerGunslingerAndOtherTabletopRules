@@ -46,3 +46,12 @@ animation controller in one synchronous tick. The corrected save-free fixture
 now invokes the exact protected `UnitUseAbility.OnAction()` boundary. It does
 not manually call the production tracker or construct `RuleCastSpell`, so the
 native action and all repaired Harmony correlation points remain exercised.
+
+That direct native action also proved unavailable on the detached fixture: an
+installed composed `OnAction_Patch3` dereferenced loaded-area state. The final
+safe automated mode therefore targets the production defect itself. It creates
+the native `RuleCastSpell` while the exact command scope is active, ends that
+scope, and only then triggers the rule. This requires the new constructor-time
+rule identity retention to work and continues through native Rulebook save and
+fatigue handling. It does not claim animation-driven execution or area change;
+those remain human-gated.

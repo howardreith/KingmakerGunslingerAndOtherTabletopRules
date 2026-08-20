@@ -66,3 +66,18 @@ or visible diagnostics.
 Corrected-fixture source gates pass 1,150/1,150 and the complete clean
 Release/output/SoundBank/package/strict-package pipeline. Runtime retry remains
 pending publication of the corrected immutable source.
+
+### Second guarded attempt
+
+- Run ID: `20260820T0404361106448Z-a262364c94774a8d9e444d73f7c32e10`
+- Commit: `b2b8d6edcfa16d0fdb72ea7b1e8ecb2cfe50406c`
+- Result: `ERROR`; zero assertions evaluated
+- Boundary: installed composed `UnitUseAbility.OnAction_Patch3` threw a null
+  dereference for the detached `ChargenUnit`
+- Disposition: rejected as evidence; further detached action driving stopped
+
+The third mode exercises exact native `RuleCastSpell` construction during the
+command scope and deliberately triggers it after that scope. This is the
+smallest live reproduction of the repaired delayed-callback boundary. Actual
+loaded-area animation command execution remains human-gated rather than being
+inferred from this narrower test.
