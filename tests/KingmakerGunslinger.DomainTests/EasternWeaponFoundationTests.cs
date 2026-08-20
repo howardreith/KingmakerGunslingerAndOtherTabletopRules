@@ -408,9 +408,33 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(campaign.Contains("NamedKinds = new[]") &&
                 campaign.Contains("ordinary BTSL"),
                 "Named Eastern weapons must not enter ordinary BTSL stock.");
-            Assertions.Equal(19, campaign.Split(new[] {
+            Assertions.Equal(29, campaign.Split(new[] {
                 "new EasternLootSpec(" }, StringSplitOptions.None).Length - 1,
                 "Distinct Eastern placement plus cleanup target count changed.");
+            foreach (string token in new[] {
+                "020246502ff864f4aab19e2fc00e63ee", "TrollLair_Exterior",
+                "6abcbbc0a161aa54380808655de92197", "TrollLair_SecondLevel",
+                "27b9b282c32996842bde77e360b72107", "ShrineOfLamashtu",
+                "2bffac36ed3499f4f9a1e6456e96a0f6", "CandlemereTower",
+                "5b8346d4fc947624e9f8728fe7a12535", "SilverstepGrotto_Cave",
+                "2d95232e6fc0b594bb6e13e3d3ea0dc3", "Varnhold",
+                "399410bf927fb3349bad940394fd9abe", "ArmagsTomb",
+                "1946bfd560469984788d4523e0d2786a", "ArmagsTomb_Level2",
+                "3160ffda16f855747ac22738f55a5c67", "RushlightFestivalCamp",
+                "b4183a776ad4c0b44acbc04837630a2e", "Brineheart" })
+                Assertions.True(campaign.Contains(token),
+                    "Rebalanced Eastern acquisition target is missing: " + token);
+
+            string rareCampaign = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "RareFirearmCampaignLootBlueprints.cs"));
+            foreach (string token in new[] {
+                "1f0bef6b8e540d644962171dc8810459", "VarnholdStockade",
+                "aeba7802ade083841935daf88d4652d3", "IrovettiPalaceFW",
+                "3bc451b100283774a9e23699dd869f1a", "FirstWorld_GoodLoot_Locked_2",
+                "CleanupTargets", "RareFirearmLootCleanupMutation" })
+                Assertions.True(rareCampaign.Contains(token),
+                    "Rebalanced rare-firearm acquisition contract is missing: " + token);
 
             string bootstrap = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
@@ -423,6 +447,11 @@ namespace KingmakerGunslinger.DomainTests
             string runtime = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.cs"));
+            Assertions.True(runtime.Contains(
+                    "RareFirearmCampaignLootBlueprints.TargetSpecs") &&
+                runtime.Contains("BlueprintBootstrap.MagicFirearms") &&
+                runtime.Contains("spec.AreaName"),
+                "Live rare-firearm qualification must consume the authoritative target specs.");
             foreach (string token in new[] { "easternVendorRows",
                 "easternNamedVendorRows", "easternBtslRows",
                 "installedEasternBtslTables * 12", "easternLootRows",
@@ -442,8 +471,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Contains(
                     "project-magic-item-distribution") &&
                 runtime.Contains("targets.Values.Distinct().Count() == 30") &&
+                runtime.Contains("maxDensity <= 2") &&
                 runtime.Contains("vendorRows == 0"),
                 "Cross-system unique-item distribution is not live-qualified.");
+            foreach (string areaTerm in new[] { "troll", "womb", "varnhold",
+                "barbarian", "rushlight", "brineheart", "blakemoor" })
+                Assertions.True(runtime.Contains("\"" + areaTerm + "\""),
+                    "The read-only acquisition candidate observer omits underused campaign arc: " +
+                    areaTerm);
 
             string development = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Development",
@@ -480,8 +515,8 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "c8b8159fb695be64883b609a7e77e75d",
                 "PoorHuman_treasure_chest_03", "StagLordFort",
-                "_loot.Count != 19", "LootRowCount != 18",
-                "Distinct().Count() != 19" })
+                "_loot.Count != 29", "LootRowCount != 18",
+                "Distinct().Count() != 29" })
                 Assertions.True(campaign.Contains(token),
                     "Border Sentinel fixed-loot contract is missing: " + token);
 

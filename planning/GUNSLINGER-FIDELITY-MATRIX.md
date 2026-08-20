@@ -88,6 +88,8 @@ creation and broad player-respec integration remain separately tracked.
 | Elven Branched Spear | length/axis qualified | length accepted; active direction and back carry rejected | reported; preserve length |
 # Human-review correction override - 2026-08-20
 
+Acquisition pacing amendment: the former 30-distinct-target result is superseded by a fixed map whose normalized named-area density is at most two. Runtime run `20260820T1425182231173Z-observe-rare-firearm-acquisition` qualified exact publication, uniqueness, and vendor absence; ordinary accessibility and thematic fit remain human-gated. The Last Word remains a Pistol and Watch at the World's End remains a Musket.
+
 | Contract | Status | Notes |
 |---|---|---|
 | Focused Aim persistence | source-qualified, release-blocking runtime gate open | Existing 1-Grit, Charisma damage, and kill recovery behavior is frozen. Compatibility repair initializes only empty native buff presentation fields. |

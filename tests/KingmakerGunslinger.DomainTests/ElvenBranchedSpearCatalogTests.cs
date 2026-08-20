@@ -396,10 +396,10 @@ namespace KingmakerGunslinger.DomainTests
                 "f072a8f6889b5f345b7f4e7c74cb3e4c",
                 "e5ab1fccf37c55f41a20a80c6ba6a460",
                 "19c1920cf93076249b5c4f29488851f9",
-                "99fe8ae070cabca40b25110fc0714b03",
-                "1cf548dcd2a49a94d82be1df8efd26ef",
+                "364711342543d814eb95aa98a4c65e58",
+                "8a07f25d4083eb84c943bf95684f8e16",
                 "53d54ca50fccb8c4d9242904eba04d14",
-                "2179d0c774e6c034c83529fad2ba785c",
+                "decb6060ab534294eb6d35510e45d317",
                 "13e98ebc52714d34eb8e53f1099110fd",
                 "CleanupLoot",
                 "owned.Contains", "CreateFixedEntry(item, 1)",
@@ -422,7 +422,7 @@ namespace KingmakerGunslinger.DomainTests
 
             string manifest = File.ReadAllText(Path.Combine(root, "docs",
                 "ELVEN-BRANCHED-SPEAR-PLACEMENT-MANIFEST.md"));
-            foreach (string token in new[] { "Act I", "Act II", "Act III",
+            foreach (string token in new[] { "Act I", "Act II",
                 "Act IV", "Act V", "Final", "append", "module OFF",
                 "replenishment" })
                 Assertions.True(manifest.IndexOf(token,

@@ -3977,3 +3977,6 @@ Human evidence superseded the 0.0.88 save-safety claim. Root cause: Focused Aim 
 # 2026-08-20 - Human-review Acadamae real path
 
 Reproduced the ordinary selected-variant boundary with a null outer prepared slot and exact slot retained on the `ConvertedFrom` root. Exact-chain rebinding at command construction restores Standard action, native slot spend, and the one-save/fatigue transaction without admitting spontaneous or unrelated abilities. Full gates pass at `1161/1161`; fresh Steam runs `20260820T1346113518157Z-cac809535698401786e65c307f7be644` and `20260820T1348390845989Z-5c143a2e41254043849e50afa8aa4598` each passed 15/15. Proceeding to the acquisition re-audit; P0 release blocker remains explicit.
+# 2026-08-20 human-review acquisition correction
+
+The 30-item campaign map was re-audited against pacing rather than distinct-target count. Exact transactional production specs now cap normalized named-area density at two, clean only retired project-owned rows, and preserve unrelated content and rollback. The production firearm families are documented correctly as The Last Word/Pistol and Watch at the World's End/Musket. Repository validation, `1161/1161`, clean build/package gates, and guarded packaged run `20260820T1425182231173Z-observe-rare-firearm-acquisition` passed. Ordinary accessibility and aesthetic campaign fit remain human-gated.

@@ -66,3 +66,6 @@ conservative: a lower-level subsystem or old sprint label is not completion.
 | Surface | Current status | Evidence | Remaining gate |
 |---|---|---|---|
 | Focused Aim save compatibility | source-qualified, runtime recovery incomplete | stable-ID empty FX links; `1161/1161`; affected copy crosses prior native exception | Tenebrous interactive completion and two fresh loads |
+# Human-review acquisition correction - 2026-08-20
+
+The rejected clustered 30-target campaign publication is superseded. Production now publishes 30 project-owned uniques to 30 exact fixed base-campaign targets with maximum normalized named-area density two, exact retired-row cleanup, idempotence, and rollback. Guarded packaged run `20260820T1425182231173Z-observe-rare-firearm-acquisition` proved one loot row and zero vendor rows per item. Normal player interaction and final pacing/theme remain human-gated.

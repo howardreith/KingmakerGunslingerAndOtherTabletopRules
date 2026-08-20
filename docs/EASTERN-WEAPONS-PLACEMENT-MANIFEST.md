@@ -59,8 +59,8 @@ No named Eastern weapon is placed in ordinary BTSL stock.
 |---|---|---|---|---|
 | late Act I | Paper Lantern | Wayfarer's Oath | Border Sentinel | first two append to `Forest_BarrikadedChest1` / `59cb0ac65b4093440ad341b9a2f372cf`; Border Sentinel appends separately to fixed `PoorHuman_treasure_chest_03` / `c8b8159fb695be64883b609a7e77e75d`; both exact targets are in `StagLordFort` |
 | Act II | Quiet Current | Winter Reed | Cloud-Cleaver | recurring capital blacksmith stock |
-| Act III | Falling Petal | Drawn Horizon | Storm Over Stone | `Forest_LootBoxGood2` / `70c4615a8d667dc4cb740c22ee7b5eed` in `GoblinKingFort` |
-| Act IV | Foxfire Whisper | Thunder at the Gate | Mountain-Sunder | `Forest_cache` / `193b1222846a0114197e716cb35d3ce8` in `VordakaiTombLevel2` |
+| Act III | Falling Petal | Drawn Horizon | none | distinct Silverstep Grotto fixed chests `5b8346d4fc947624e9f8728fe7a12535` and `040bad335c144784798a580e41b5410f` |
+| Act IV | Storm Over Stone / Duelist's Rebuttal | Foxfire Whisper / Viper's Reach | Thunder at the Gate / Mountain-Sunder | paired fixed targets across Varnhold, Vordakai's Tomb, and Armag's Tomb; see `docs/GUNSLINGER-ACQUISITION-REBALANCE.md` |
 | Act V | Empty Sleeve | Moonlit Crossing | Unfixed Form | recurring Pitax specialist stock |
 | late game | Night Without Moon | Heaven's Measure | World-Tree Severer | `RichHuman_Loot_1` / `7e6448d1d8a7e4f4d9cc340b8f15e732` in `FinalDungeon` |
 

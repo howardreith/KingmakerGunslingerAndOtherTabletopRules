@@ -7361,33 +7361,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (jhod.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                     .OfType<LootItemsPackFixed>().Count(value => allProjectFirearms
                         .Contains(CapitalVendorBlueprints.ReadItem(value)));
-            string[] rareLootGuids = { "193b1222846a0114197e716cb35d3ce8",
-                "b34367a637010f743815aed5875152bd",
-                "485300a2036a763499aa77ebac1f83c6",
-                "36d315a81b36980438e2ef1a866791d1",
-                "5a9b9e4b884ae064fa7caa5a13eab065" };
-            string[] rareLootNames = { "Forest_cache",
-                "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)",
-                "Forest_PoorLoot_PuzzleItem3_Instrument",
-                "FirstWorld_BasementGoodLoot01",
-                "FirstWorld_VeryGoodHiddenLoot02" };
-            string[] rareLootAreas = { "VordakaiTombLevel2", "IrovettiPalace",
-                "IrovettiPalace", "HouseAtTheEdgeOfTime_Basement",
-                "HouseAtTheEdgeOfTime" };
+            RareFirearmCampaignLootBlueprints.TargetSpec[] rareLootSpecs =
+                RareFirearmCampaignLootBlueprints.TargetSpecs;
             var rareLootRecords = new List<string>();
             int validRareLoot = 0;
-            for (int index = 0; index < rareLootGuids.Length; index++)
+            foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
+                rareLootSpecs)
             {
                 BlueprintLoot loot = allBlueprints.OfType<BlueprintLoot>()
-                    .SingleOrDefault(value => value.AssetGuid == rareLootGuids[index]);
+                    .SingleOrDefault(value => value.AssetGuid == spec.Guid);
+                BlueprintItem expectedItem = BlueprintBootstrap.MagicFirearms
+                    .Require(spec.ItemSymbol).Item;
                 LootEntry[] matches = loot == null ? new LootEntry[0] :
                     (loot.Items ?? new LootEntry[0]).Where(value => value != null &&
-                        ReferenceEquals(value.Item, namedItems[index])).ToArray();
-                bool valid = loot != null && loot.name == rareLootNames[index] &&
-                    loot.Area != null && loot.Area.name == rareLootAreas[index] &&
+                        ReferenceEquals(value.Item, expectedItem)).ToArray();
+                bool valid = loot != null && loot.name == spec.Name &&
+                    loot.Area != null && loot.Area.name == spec.AreaName &&
                     matches.Length == 1 && matches[0].Count == 1;
                 if (valid) validRareLoot++;
-                rareLootRecords.Add(rareLootGuids[index] + ":" +
+                rareLootRecords.Add(spec.Guid + ":" +
                     (loot == null ? "<missing>" : loot.name + ":" +
                         (loot.Area == null ? "<no-area>" : loot.Area.name)) +
                     ":matches=" + matches.Length +
@@ -7678,32 +7670,39 @@ namespace KingmakerGunslinger.RuntimeTesting
             out bool exact)
         {
             var targets = new Dictionary<BlueprintItem, string>();
+            var targetGroups = new Dictionary<BlueprintItem, string>();
             var enabled = new Dictionary<BlueprintItem, bool>();
-            Action<BlueprintItem, string, bool> add = (item, target, active) =>
+            Action<BlueprintItem, string, string, bool> add = (item, target, area, active) =>
             {
                 targets.Add(item, target);
+                targetGroups.Add(item, NormalizeProjectAcquisitionArea(area));
                 enabled.Add(item, active);
             };
             foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
                 RareFirearmCampaignLootBlueprints.TargetSpecs)
                 add(BlueprintBootstrap.MagicFirearms.Require(spec.ItemSymbol).Item,
-                    spec.Guid, gunslingerEnabled);
+                    spec.Guid, spec.AreaName, gunslingerEnabled);
             EasternWeaponBlueprintSet eastern = BlueprintBootstrap.EasternWeapons;
             foreach (EasternLootSpec spec in
                 EasternWeaponCampaignBlueprints.LootSpecs)
                 add(eastern.Named.Require(spec.NamedKinds.Single()).Item,
-                    spec.Guid, easternEnabled);
+                    spec.Guid, spec.AreaName, easternEnabled);
             ElvenBranchedSpearBlueprintSet spears =
                 BlueprintBootstrap.ElvenBranchedSpears;
             foreach (ElvenBranchedSpearCampaignBlueprints.LootSpec spec in
                 ElvenBranchedSpearCampaignBlueprints.LootSpecs)
                 add(spears.Named.Require(spec.NamedKind).Item, spec.Guid,
-                    spearEnabled);
+                    spec.AreaName, spearEnabled);
             add(BlueprintBootstrap.CordOfStubbornResolve,
-                CordOfStubbornResolveBlueprints.AcquisitionGuid, cordEnabled);
+                CordOfStubbornResolveBlueprints.AcquisitionGuid,
+                "CapitalSquareVillage", cordEnabled);
 
             BlueprintLoot[] loot = allBlueprints.OfType<BlueprintLoot>().ToArray();
-            exact = targets.Count == 30 && targets.Values.Distinct().Count() == 30;
+            var density = targetGroups.Values.GroupBy(value => value)
+                .ToDictionary(group => group.Key, group => group.Count());
+            int maxDensity = density.Values.Max();
+            exact = targets.Count == 30 && targets.Values.Distinct().Count() == 30 &&
+                maxDensity <= 2;
             var records = new List<string>();
             foreach (KeyValuePair<BlueprintItem, string> entry in targets
                 .OrderBy(value => value.Key.name, StringComparer.Ordinal))
@@ -7733,8 +7732,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     vendorRows);
             }
             return "items=" + targets.Count + ";targets=" +
-                targets.Values.Distinct().Count() + ";" +
+                targets.Values.Distinct().Count() + ";maxAreaDensity=" +
+                maxDensity + ";density=" + string.Join(",", density.OrderBy(value =>
+                    value.Key).Select(value => value.Key + "=" + value.Value).ToArray()) + ";" +
                 string.Join(" | ", records.ToArray());
+        }
+
+        private static string NormalizeProjectAcquisitionArea(string area)
+        {
+            if (area.StartsWith("TrollLair", StringComparison.Ordinal)) return "TrollLair";
+            if (area.StartsWith("Silverstep", StringComparison.Ordinal)) return "Silverstep";
+            if (area.StartsWith("Varnhold", StringComparison.Ordinal)) return "Varnhold";
+            if (area.StartsWith("ArmagsTomb", StringComparison.Ordinal)) return "ArmagsTomb";
+            if (area.StartsWith("Vordakai", StringComparison.Ordinal)) return "VordakaiTomb";
+            if (area.StartsWith("IrovettiPalace", StringComparison.Ordinal)) return "IrovettiPalace";
+            if (area.StartsWith("HouseAtTheEdgeOfTime", StringComparison.Ordinal)) return "HouseAtTheEdgeOfTime";
+            if (area.StartsWith("FinalDungeon", StringComparison.Ordinal)) return "FinalDungeon";
+            return area;
         }
 
         private RuntimeTestResult RunRareFirearmBlueprintContracts()
@@ -8312,7 +8326,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] terms = { "pitax", "irovetti", "palace", "armory", "treasur",
                 "duel", "officer", "noble", "cache", "academy", "bard", "opera",
                 "houseattheedge", "house_at_the_edge", "hateot", "finaldungeon",
-                "firstworld", "lanternking", "worldend" };
+                "firstworld", "lanternking", "worldend", "staglord", "capital",
+                "narlmarch", "lonelybarrow", "silverstep", "troll", "dwarvenruin",
+                "lonehouse", "womb", "lamashtu", "bloom", "season", "varnhold",
+                "barbarian", "flintrock", "glenebon", "rushlight", "brineheart",
+                "blakemoor", "candlemere", "cyclop", "linnorm" };
             return terms.Any(lower.Contains);
         }
 

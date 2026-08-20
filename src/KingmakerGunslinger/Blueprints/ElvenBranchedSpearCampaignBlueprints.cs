@@ -52,17 +52,17 @@ namespace KingmakerGunslinger.Blueprints
                 "19c1920cf93076249b5c4f29488851f9",
                 "Forest_PriestGhost_TreasureStoneLoot", "BigNarlmarches"),
             new LootSpec(NamedSpearKind.Thornstep,
-                "99fe8ae070cabca40b25110fc0714b03",
-                "Forest_StoneWithTreasure", "BigNarlmarches"),
+                "364711342543d814eb95aa98a4c65e58",
+                "Forest_cache_1", "LonelyBarrow"),
             new LootSpec(NamedSpearKind.MoonlitFork,
-                "1cf548dcd2a49a94d82be1df8efd26ef",
-                "Forest_cache_1_515", "LonelyBarrow"),
+                "8a07f25d4083eb84c943bf95684f8e16",
+                "Forest_Loot01", "CandlemereTower"),
             new LootSpec(NamedSpearKind.VipersReach,
                 "53d54ca50fccb8c4d9242904eba04d14",
                 "Forest_cache_1561", "VordakaiTombLevel2"),
             new LootSpec(NamedSpearKind.BriarCrownedSpear,
-                "2179d0c774e6c034c83529fad2ba785c",
-                "RichHuman_Armory_ChestHuge_Outline (3)", "IrovettiPalace"),
+                "decb6060ab534294eb6d35510e45d317",
+                "RichHuman_NotHiddenLockedGood", "BlakemoorHideout"),
             new LootSpec(NamedSpearKind.SpearOfTheFirstBranch,
                 "13e98ebc52714d34eb8e53f1099110fd",
                 "RichHuman_Loot_5_2lvl", "FinalDungeon2")
@@ -77,7 +77,13 @@ namespace KingmakerGunslinger.Blueprints
             new CleanupSpec("193b1222846a0114197e716cb35d3ce8",
                 "Forest_cache", "VordakaiTombLevel2"),
             new CleanupSpec("7e6448d1d8a7e4f4d9cc340b8f15e732",
-                "RichHuman_Loot_1", "FinalDungeon")
+                "RichHuman_Loot_1", "FinalDungeon"),
+            new CleanupSpec("99fe8ae070cabca40b25110fc0714b03",
+                "Forest_StoneWithTreasure", "BigNarlmarches"),
+            new CleanupSpec("1cf548dcd2a49a94d82be1df8efd26ef",
+                "Forest_cache_1_515", "LonelyBarrow"),
+            new CleanupSpec("2179d0c774e6c034c83529fad2ba785c",
+                "RichHuman_Armory_ChestHuge_Outline (3)", "IrovettiPalace")
         };
 
         internal static VendorSpec[] VendorSpecs { get { return Vendors.ToArray(); } }

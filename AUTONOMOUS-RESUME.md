@@ -1,5 +1,16 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-20 human-review acquisition checkpoint
+
+- Branch `codex/gunslinger-overnight-bugfixes`; version `0.0.88`; published pre-commit HEAD `25c27f9349d5c7dbb873f2607d673f7a8a79f7d4`.
+- Completed continuation corrections: P0 bounded compatibility repair, Acadamae real command repair, and 30-item acquisition re-audit. P0 full Tenebrous recovery remains release-blocking.
+- Acquisition result: 30 exact fixed base-campaign targets, maximum normalized named-area density reduced from 6 to 2, retired project rows removed transactionally, native/foreign arrays preserved, and exact rollback retained.
+- Gates: repository PASS; `1161/1161`; clean Release/output/SoundBank/package/strict package PASS.
+- Runtime PASS: `20260820T1425182231173Z-observe-rare-firearm-acquisition`; 30 items/30 targets, one loot row and zero vendor rows per item, maximum density 2.
+- Package/DLL SHA-256: `74b6c3b160520308f4cf53fa61c32c9d33d6d0b62f048f1477ad4de93c90155d` / `dae237d18e6b91bd86fc5b017fbcdad9d074c268dc5e06eb393d54a2b278b5af`.
+- External state: backup `20260820T1425147446013Z` restored and verified; no runtime process is expected.
+- Next concrete action: commit/publish acquisition and verify remote equality, then implement the exact Honest Guy/Xelliren BTSL stock split.
+
 ## 2026-08-20 human-review Acadamae checkpoint
 
 - Branch `codex/gunslinger-overnight-bugfixes`; version `0.0.88`; pre-commit published HEAD `6a6d2bc0961c31d9758cc884ecaa6b603e8714a7`.

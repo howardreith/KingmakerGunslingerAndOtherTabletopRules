@@ -45,11 +45,11 @@ blueprint in the exposed graph (the exact area field is the ownership evidence).
 
 | Item | Target GUID / exact name | Area / chapter | Existing fixed contents | References / nature | Disposition |
 |---|---|---|---|---|---|
-| Duelist's Rebuttal | `193b1222846a0114197e716cb35d3ce8` / `Forest_cache` | `VordakaiTombLevel2` (`b4789ad28d5ae9340bf4ea2ed747a8b0`), Act 4 | BreastplateStandartPlus3 ×1 | zero registered direct refs; area-owned fixed martial cache | Selected |
+| Duelist's Rebuttal | `1f0bef6b8e540d644962171dc8810459` / `Forest_Container_7_good` | `VarnholdStockade`, Act 4 | Crimson Counselor, antique cyclops boot, food | zero registered direct refs; ordinary fixed stockade loot | Selected |
 | The River King's Measure | `b34367a637010f743815aed5875152bd` / `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)` | `IrovettiPalace` (`bf9dbc2998849ee40bbdba9cb40a7d4c`), Pitax | fixed gems/valuables (full record in run) | zero registered direct refs; royal-chambers fixed chest | Selected |
-| Irovetti's Ovation | `485300a2036a763499aa77ebac1f83c6` / `Forest_PoorLoot_PuzzleItem3_Instrument` | `IrovettiPalace`, Pitax | `PuzzleItem3_Instrument` ×1 | zero registered direct refs; distinct performance-instrument cache | Selected |
-| The Last Word | `36d315a81b36980438e2ef1a866791d1` / `FirstWorld_BasementGoodLoot01` | `HouseAtTheEdgeOfTime_Basement` (`859897014d874bb4a9d8ad1a94d266bb`), final act | `TheEndItem` ×1 | zero registered direct refs; non-hidden good-loot capstone | Selected |
-| Watch at the World's End | `5a9b9e4b884ae064fa7caa5a13eab065` / `FirstWorld_VeryGoodHiddenLoot02` | `HouseAtTheEdgeOfTime` (`13e7006bce054ce4e82b5064b2f3f8ff`), final act | `ForewarningShieldItem` ×1 | zero registered direct refs; separate deterministic hidden treasure | Selected |
+| Irovetti's Ovation | `aeba7802ade083841935daf88d4652d3` / `RichHuman_GoodLoot` | `IrovettiPalaceFW`, Pitax | Calistria Rapier | zero registered direct refs; ordinary fixed First World palace loot | Selected |
+| The Last Word (Pistol) | `3bc451b100283774a9e23699dd869f1a` / `FirstWorld_GoodLoot_Locked_2` | `CastleOfKnives`, final act | Greater Empower metamagic rod | zero registered direct refs; independent fixed capstone cache | Selected |
+| Watch at the World's End (Musket) | `5a9b9e4b884ae064fa7caa5a13eab065` / `FirstWorld_VeryGoodHiddenLoot02` | `HouseAtTheEdgeOfTime` (`13e7006bce054ce4e82b5064b2f3f8ff`), final act | `ForewarningShieldItem` ×1 | zero registered direct refs; separate deterministic hidden treasure | Selected |
 
 Rejected examples include repeated generic `Forest_FatLoot`/`PoorLoot` palace
 containers, empty/quest-book placeholders, and DLC/other-area armories. The two
@@ -93,6 +93,6 @@ smith table is the narrowest plausible established capital arms merchant.
 
 ## Issue 12 cross-system audit
 
-All five rare-firearm targets remain exact and unchanged. Duelist's Rebuttal remains at `193b1222846a0114197e716cb35d3ce8`, but stale Eastern-weapon and branched-spear references formerly clustered in that cache are now removed by their owning transactions. The complete 30-item cross-system inventory is `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md`.
+All five rare-firearm targets are exact and distinct. Duelist's Rebuttal, Irovetti's Ovation, and The Last Word moved to ordinary fixed targets; their retired rows are removed only when they reference project-owned firearms. Production family truth is The Last Word = Pistol and Watch at the World's End = Musket. The complete 30-item inventory is `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md`.
 
 Guarded runtime `20260820T0855347791407Z-observe-rare-firearm-acquisition` passed with five valid rare-firearm targets and the global 30-item distinct-target assertion.
