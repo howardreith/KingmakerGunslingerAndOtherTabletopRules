@@ -15606,6 +15606,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 outsider = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit.Descriptor.Stats.HitPoints.BaseValue = 30;
+                outsider.Descriptor.Stats.HitPoints.BaseValue = 30;
                 unit.Descriptor.Stats.Charisma.BaseValue = 18;
                 outsider.Descriptor.Stats.Wisdom.BaseValue = 18;
                 unit.Descriptor.AddFact(set.Grit);
