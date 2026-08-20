@@ -2835,3 +2835,22 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   smoke, and identity seals are complete on `5e99d4d7555d9d96efd7bd79714161003e314013`.
   Exact next action is the documentation seal, guarded push, and PR #4 update.
   Human subjective visual recheck remains pending.
+
+## Overnight Gunslinger bug-fix current resume
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Published exact source: `f807eb1cc3dabf9dc66acaa2b773c029a72dc942`;
+  local branch and origin equality verified; version remains `0.0.87`.
+- Completed issue IDs: Issue 1 source and automated qualification complete;
+  status human-gated for loaded-area animation/transition/presentation only.
+- Issue 1 guarded PASS:
+  `20260820T0428503321600Z-d97a49371e1949c89f3de25aac1c6eff`, 14/14.
+- Required gates PASS: repository validation, 1,150/1,150 tests, clean Release,
+  output, SoundBank, package, and strict package validation.
+- Runtime package/DLL SHA-256:
+  `B6E6F409C5B78C16EDBD98A35E349DCD9F6412C08659A6D1300712DA838996CF` /
+  `788E98066FD614F78C3CE42B5ADC680BED45F4AF5C3B4A54AF956E257A1F6DDF`.
+- Active blocker: none.
+- Current issue: Issue 2, Focused Aim. Next action: inspect the current deed,
+  shared live Grit resource, True Grit reduction, activation/delivery paths,
+  focused tests, and guarded scenario before applying one narrow repair.

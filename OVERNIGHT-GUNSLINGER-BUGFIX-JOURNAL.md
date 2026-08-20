@@ -167,3 +167,32 @@
   `EC897F4F87166A88FB8A196BA2EB206430D2E6D25364658D03682CE1724AF123`.
 - Next action: commit/publish the native-roll diagnostic repair and rerun the
   guarded delayed-terminal scenario.
+
+## 2026-08-20 Issue 1 final automated qualification
+
+- Published production diagnostic repair `1963a80eb3f49cffa6324df6d43450ef9e3fb05f`.
+  Run `20260820T0417236469478Z-8e69f69546804934a84ea4d184d7a05d`
+  passed 11/13 and proved truthful native diagnostics: success d20 16 +
+  Fortitude 100 = 116; failure d20 8 + Fortitude -100 = -92. Only the
+  deterministic natural-roll expectations remained stale.
+- Published seed experiment `928fab624ab4cdd6e59a9b98d40d95783c708713`.
+  Run `20260820T0423312051777Z-775c65b925a240ec9590c0ab5d46913c`
+  again passed 12/14 mechanical assertions but proved Unity RNG seeding is not
+  the native saving-throw source.
+- Installed behavior showed this saving throw does not enter the existing
+  `RuleRollD20.PreRollDice` test hook. The final guarded-only completion hook
+  writes base total as forced natural plus the real native `StatValue`; it does
+  not alter unarmed production saves.
+- Published final test-control commit
+  `f807eb1cc3dabf9dc66acaa2b773c029a72dc942`; remote equality verified.
+- Guarded Steam run
+  `20260820T0428503321600Z-d97a49371e1949c89f3de25aac1c6eff`
+  passed 14/14 with exact natural 20 success, natural 1 failure, one save per
+  completed eligible cast, permanent context-independent fatigue, native rest
+  removal, OFF/cancel/snapshot controls, Cord substitution, and cleanup.
+- Runtime candidate package/DLL SHA-256:
+  `B6E6F409C5B78C16EDBD98A35E349DCD9F6412C08659A6D1300712DA838996CF` /
+  `788E98066FD614F78C3CE42B5ADC680BED45F4AF5C3B4A54AF956E257A1F6DDF`.
+- Issue 1 is human-gated only for a loaded-area animation-driven command, area
+  transition persistence, and visual combat-log/Cord presentation. Next:
+  diagnose Issue 2 Focused Aim transactionality.

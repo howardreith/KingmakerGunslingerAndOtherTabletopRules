@@ -29,6 +29,12 @@ The consolidated sequence must cover:
 
 ## Issue 1 final human matrix (deferred until consolidated handoff)
 
+Automated boundary: published commit
+`f807eb1cc3dabf9dc66acaa2b773c029a72dc942` passed guarded run
+`20260820T0428503321600Z-d97a49371e1949c89f3de25aac1c6eff` 14/14.
+The checks below are limited to loaded-area animation, transition persistence,
+and player-visible presentation not established by the disposable fixture.
+
 Use a feat owner with one qualifying prepared arcane Summoning spell and no
 Cord of Stubborn Resolve, then repeat the specified Cord control. Confirm OFF
 shows and executes native full-round/one-round casting with no Acadamae log or

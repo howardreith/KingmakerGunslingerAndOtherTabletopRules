@@ -64,3 +64,12 @@ writes `BaseRollResult`; natural rolls are controlled only at native
 `RuleRollD20.PreRollDice`. Production diagnostics now report the native d20,
 Fortitude `StatValue`, conditional bonus, final total, DC, outcome, and fatigue
 disposition separately.
+
+Final automated disposition: guarded run
+`20260820T0428503321600Z-d97a49371e1949c89f3de25aac1c6eff` passed all 14
+assertions on published commit `f807eb1cc3dabf9dc66acaa2b773c029a72dc942`.
+The installed saving-throw path did not call `RuleRollD20.PreRollDice`, so the
+guarded-only completion control now sets `BaseRollResult` to the requested
+natural plus the actual native `StatValue`. Production diagnostics and
+uncontrolled saves remain native. Loaded-area animation execution, area-change
+persistence, and visible UI/log presentation remain consolidated human checks.

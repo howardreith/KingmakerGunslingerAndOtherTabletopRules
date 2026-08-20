@@ -97,3 +97,24 @@ inferred from this narrower test.
 
 The repaired source again passes 1,150/1,150 and all clean Release/package
 gates. A new immutable guarded run is required before Issue 1 disposition.
+
+### Final guarded qualification
+
+- Diagnostic run: `20260820T0417236469478Z-8e69f69546804934a84ea4d184d7a05d`
+  on `1963a80eb3f49cffa6324df6d43450ef9e3fb05f`; 11/13 passed and
+  native d20/modifier/total reporting was truthful.
+- Rejected seed run: `20260820T0423312051777Z-775c65b925a240ec9590c0ab5d46913c`
+  on `928fab624ab4cdd6e59a9b98d40d95783c708713`; Unity RNG did not
+  control the installed save roll.
+- Passing run: `20260820T0428503321600Z-d97a49371e1949c89f3de25aac1c6eff`
+  on `f807eb1cc3dabf9dc66acaa2b773c029a72dc942`.
+- Result: PASS, 14/14 assertions, zero exception.
+- Gates: repository validation, 1,150/1,150 domain/reflection tests, clean
+  exact-reference Release, output validation, SoundBank validation, package
+  build, and strict package validation PASS.
+- Runtime package SHA-256:
+  `B6E6F409C5B78C16EDBD98A35E349DCD9F6412C08659A6D1300712DA838996CF`.
+- Runtime DLL SHA-256:
+  `788E98066FD614F78C3CE42B5ADC680BED45F4AF5C3B4A54AF956E257A1F6DDF`.
+- Residual: loaded-area animation command execution, area transition, and
+  visual log/Cord presentation require consolidated human observation.
