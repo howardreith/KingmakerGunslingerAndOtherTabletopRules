@@ -90,3 +90,9 @@ selected `SmithVendorTable` is owned only by the two exact capital blacksmith
 unit blueprints above. Oleg is rejected as an early trading-post table and the
 chapter-generic large tables exposed no registered direct owner. The selected
 smith table is the narrowest plausible established capital arms merchant.
+
+## Issue 12 cross-system audit
+
+All five rare-firearm targets remain exact and unchanged. Duelist's Rebuttal remains at `193b1222846a0114197e716cb35d3ce8`, but stale Eastern-weapon and branched-spear references formerly clustered in that cache are now removed by their owning transactions. The complete 30-item cross-system inventory is `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md`.
+
+Guarded runtime `20260820T0855347791407Z-observe-rare-firearm-acquisition` passed with five valid rare-firearm targets and the global 30-item distinct-target assertion.

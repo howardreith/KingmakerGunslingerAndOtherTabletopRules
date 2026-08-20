@@ -20,20 +20,16 @@ namespace KingmakerGunslinger.Blueprints
                 "Act-I mundane and masterwork stock"),
             new EasternVendorSpec(CapitalVendorBlueprints.TableGuid,
                 CapitalVendorBlueprints.ExpectedTableName, AllGenericKinds(),
-                new[] { EasternWeaponNamedKind.QuietCurrent,
-                    EasternWeaponNamedKind.WinterReed,
-                    EasternWeaponNamedKind.CloudCleaver }, false,
-                "capital recurring stock"),
+                new EasternWeaponNamedKind[0], false,
+                "capital recurring generic stock"),
             new EasternVendorSpec("f072a8f6889b5f345b7f4e7c74cb3e4c",
                 "DireNarlmarchesVillageVendorTable", AllGenericKinds(),
                 new EasternWeaponNamedKind[0], false,
                 "later regional replacement stock"),
             new EasternVendorSpec("e5ab1fccf37c55f41a20a80c6ba6a460",
-                "PitaxTownVendorTable", AllGenericKinds(), new[] {
-                    EasternWeaponNamedKind.EmptySleeve,
-                    EasternWeaponNamedKind.MoonlitCrossing,
-                    EasternWeaponNamedKind.UnfixedForm }, false,
-                "Pitax specialist stock"),
+                "PitaxTownVendorTable", AllGenericKinds(),
+                new EasternWeaponNamedKind[0], false,
+                "Pitax specialist generic stock"),
             new EasternVendorSpec(
                 BeneathStolenLandsVendorBlueprints.StandaloneHonestGuyTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[0],
@@ -60,26 +56,66 @@ namespace KingmakerGunslinger.Blueprints
         {
             new EasternLootSpec("59cb0ac65b4093440ad341b9a2f372cf",
                 "Forest_BarrikadedChest1", "StagLordFort", "late Act I",
-                new[] { EasternWeaponNamedKind.PaperLantern,
-                    EasternWeaponNamedKind.WayfarersOath }),
+                new[] { EasternWeaponNamedKind.PaperLantern }),
+            new EasternLootSpec("892f160d48fdaf64293c504c10c21930",
+                "PoorHuman_treasure_chest_04", "StagLordFort", "late Act I",
+                new[] { EasternWeaponNamedKind.WayfarersOath }),
             new EasternLootSpec("c8b8159fb695be64883b609a7e77e75d",
                 "PoorHuman_treasure_chest_03", "StagLordFort", "late Act I",
                 new[] { EasternWeaponNamedKind.BorderSentinel }),
+            new EasternLootSpec("31d7c9d0521aa29419337eb668e97911",
+                "RichHuman_ST_BackpackBard_U_Any", "CapitalTavern_Indoor",
+                "Act II", new[] { EasternWeaponNamedKind.QuietCurrent }),
+            new EasternLootSpec("0a3251c637b071945a445e2a098c21e7",
+                "PoorHuman_treasure_chest_locked", "CapitalSquareVillage",
+                "Act II", new[] { EasternWeaponNamedKind.WinterReed }),
+            new EasternLootSpec("364711342543d814eb95aa98a4c65e58",
+                "Forest_cache_1", "LonelyBarrow", "Act II",
+                new[] { EasternWeaponNamedKind.CloudCleaver }),
             new EasternLootSpec("70c4615a8d667dc4cb740c22ee7b5eed",
                 "Forest_LootBoxGood2", "GoblinKingFort", "Act III",
-                new[] { EasternWeaponNamedKind.FallingPetal,
-                    EasternWeaponNamedKind.DrawnHorizon,
-                    EasternWeaponNamedKind.StormOverStone }),
-            new EasternLootSpec("193b1222846a0114197e716cb35d3ce8",
-                "Forest_cache", "VordakaiTombLevel2", "Act IV",
-                new[] { EasternWeaponNamedKind.FoxfireWhisper,
-                    EasternWeaponNamedKind.ThunderAtTheGate,
-                    EasternWeaponNamedKind.MountainSunder }),
+                new[] { EasternWeaponNamedKind.FallingPetal }),
+            new EasternLootSpec("040bad335c144784798a580e41b5410f",
+                "Forest_Good_GuardedChest", "SilverstepGrotto_FirstWorld",
+                "Act III", new[] { EasternWeaponNamedKind.DrawnHorizon }),
+            new EasternLootSpec("8a75690f59458e542803eda25f7599c9",
+                "Forest_cache_1491", "VordakaiTombLevel1", "Act IV",
+                new[] { EasternWeaponNamedKind.StormOverStone }),
+            new EasternLootSpec("8caed33ddd19e9447b852672e4b795f5",
+                "Forest_cache", "VordakaiTombLevel1", "Act IV",
+                new[] { EasternWeaponNamedKind.FoxfireWhisper }),
+            new EasternLootSpec("098ebbe376dce16468809a54323178af",
+                "Forest_cache_1348", "VordakaiTombLevel1", "Act IV",
+                new[] { EasternWeaponNamedKind.ThunderAtTheGate }),
+            new EasternLootSpec("4f3cc1d502366254d9d4aeef485b942a",
+                "Forest_cache_1666", "VordakaiTombLevel1", "Act IV",
+                new[] { EasternWeaponNamedKind.MountainSunder }),
+            new EasternLootSpec("32f2f5cdbc812664884b52a59300d569",
+                "RichHuman_GoodLoot_Hidden#1", "PitaxTown", "Act V",
+                new[] { EasternWeaponNamedKind.EmptySleeve }),
+            new EasternLootSpec("63820366a0d66b543ba24435bb943bef",
+                "RichHuman_GoodLoot_BarrelJewelry", "PitaxTown", "Act V",
+                new[] { EasternWeaponNamedKind.MoonlitCrossing }),
+            new EasternLootSpec("db0e9ac023132cf46b49cd034dabf283",
+                "RichHuman_GoodLoot_Locked", "PitaxHorde", "Act V",
+                new[] { EasternWeaponNamedKind.UnfixedForm }),
+            new EasternLootSpec("b3344268950f27f4b840f216959f150e",
+                "FirstWorld_GoodLoot_Trapped_1", "CastleOfKnives", "late game",
+                new[] { EasternWeaponNamedKind.NightWithoutMoon }),
+            new EasternLootSpec("2252283386d5fb84b9e41d0187ed6dbc",
+                "FirstWorld_2ndFloorGoodHiddenLockedLoot08",
+                "HouseAtTheEdgeOfTime_2ndFloor", "late game",
+                new[] { EasternWeaponNamedKind.HeavensMeasure }),
             new EasternLootSpec("7e6448d1d8a7e4f4d9cc340b8f15e732",
                 "RichHuman_Loot_1", "FinalDungeon", "late game",
-                new[] { EasternWeaponNamedKind.NightWithoutMoon,
-                    EasternWeaponNamedKind.HeavensMeasure,
-                    EasternWeaponNamedKind.WorldTreeSeverer })
+                new[] { EasternWeaponNamedKind.WorldTreeSeverer })
+        };
+
+        private static readonly EasternLootSpec[] CleanupLoot =
+        {
+            new EasternLootSpec("193b1222846a0114197e716cb35d3ce8",
+                "Forest_cache", "VordakaiTombLevel2", "Issue 12 cleanup",
+                new EasternWeaponNamedKind[0])
         };
 
         internal static EasternVendorSpec[] VendorSpecs
@@ -150,7 +186,7 @@ namespace KingmakerGunslinger.Blueprints
                     vendorMutations.Add(mutation);
                 }
 
-                foreach (EasternLootSpec spec in Loot)
+                foreach (EasternLootSpec spec in Loot.Concat(CleanupLoot))
                 {
                     BlueprintLoot target = BlueprintLibraryLookup
                         .RequireExact<BlueprintLoot>(library, spec.Guid,
@@ -188,7 +224,7 @@ namespace KingmakerGunslinger.Blueprints
                 result.Validate();
                 weapons.AttachCampaign(result);
                 logger.Info("eastern-weapons", "campaign.published",
-                    "Published four required campaign merchants, every installed BTSL weapon table, twelve fixed-loot rows, and all eighteen singular named progression placements.");
+                    "Published generic campaign/BTSL stock and all eighteen named weapons at distinct fixed campaign targets.");
                 return result;
             }
             catch
@@ -296,10 +332,10 @@ namespace KingmakerGunslinger.Blueprints
                 value => !value.Optional);
             int maximum = EasternWeaponCampaignBlueprints.VendorSpecs.Length;
             if (_vendors.Count < required || _vendors.Count > maximum ||
-                _loot.Count != 5 || LootRowCount != 12 ||
+                _loot.Count != 19 || LootRowCount != 18 ||
                 _vendors.Select(value => value.Table).Distinct().Count() !=
                     _vendors.Count ||
-                _loot.Select(value => value.Target).Distinct().Count() != 5 ||
+                _loot.Select(value => value.Target).Distinct().Count() != 19 ||
                 _vendors.Any(value => value.Spec.IsBtsl &&
                     value.Spec.NamedKinds.Length != 0) ||
                 BtslRowCount != BtslTableCount * 12)

@@ -165,6 +165,38 @@ namespace KingmakerGunslinger.DomainTests
                 exhaustion.ApplyFatigue, "Exhaustion downgrade contract failed.");
         }
 
+        internal static void CordCampaignAcquisitionContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string cord = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "CordOfStubbornResolveBlueprints.cs"));
+            foreach (string token in new[] {
+                "e2add2e7254305b40aa1b9ae60ed2be0",
+                "RichHuman_treasure_chest_2", "CapitalSquareVillage",
+                "PublishCampaignLoot", "BlueprintLoot", "Count = 1",
+                "Cord fixed-loot rollback refused after foreign mutation" })
+                Assertions.True(cord.Contains(token),
+                    "Cord fixed campaign acquisition lacks: " + token);
+            string capital = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "CapitalVendorBlueprints.cs"));
+            Assertions.True(capital.Contains("cordOfStubbornResolve") &&
+                capital.Contains("owned") && !capital.Contains("publishCord"),
+                "The capital transaction does not remove stale Cord rows.");
+            string bootstrap = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            Assertions.True(bootstrap.Contains("CordCampaignLoot") &&
+                bootstrap.Contains("cordCampaignLootPublication.Rollback()"),
+                "Cord fixed loot is not module-gated and rollback-owned.");
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            Assertions.True(runtime.Contains("cord-fixed-loot-module-gate") &&
+                runtime.Contains("project-magic-item-distribution"),
+                "Cord acquisition lacks live distribution assertions.");
+        }
+
         internal static void AcadamaePrerequisiteMatrix()
         {
             var request = new AcadamaePrerequisiteRequest {

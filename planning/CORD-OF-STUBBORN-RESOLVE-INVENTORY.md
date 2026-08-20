@@ -24,3 +24,9 @@ Final qualification: standalone Cord runtime passes 7/7 with native belt equip/u
 The fallback implementation uses `RuleRollDice(1d6)` and a self-originated untyped `RuleDealDamage` capped to `HPLeft - 1`; it never claims native nonlethal accounting. Player-facing text and notification call it nonlethal-equivalent.
 
 Next concrete action: preserve this inventory as exact-contract evidence for final 0.0.75 qualification.
+
+## Issue 12 acquisition supersession
+
+Cord of Stubborn Resolve (`c4b804d9ebf941b4842b0a461a2b6b6d`) is no longer recurring Capital Smith stock. It is published exactly once to `RichHuman_treasure_chest_2` (`e2add2e7254305b40aa1b9ae60ed2be0`) in Capital Square Village beside the native Belt of Constitution +2. The exact snapshot transaction removes stale Cord vendor rows and rolls back both loot and vendor mutations on bootstrap failure.
+
+Guarded runtime `20260820T0859287762363Z-observe-capital-cord-vendor` passed. Existing already-materialized vendor/container state is not claimed to refresh.

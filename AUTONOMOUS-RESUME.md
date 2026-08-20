@@ -2985,3 +2985,15 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Runtime package/DLL/firearm-bundle/SoundBank SHA-256: `DB09740418E7892BC1174EBA3EC986D2565CB95B09776DB19F119FE0ADB11F51` / `9B0716451906BEAEF47A4D26794C93878F7D1E3F2C771705021C879813751B8E` / `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - Active blocker: none. Final world/inventory doll clipping, hand contact, firing/reload/back animation, and texture judgment remain consolidated-human-gated.
 - Next concrete action: audit every project-owned named/unique magic item and every deliberate acquisition reference; build the exact chapter/area/target inventory, preserve Issue 7 Border Sentinel, reject clustered/shared/DLC/random targets, then apply the narrow transactional Issue 12 redistribution.
+
+## Overnight bug-fix resume checkpoint - Issue 12 automated qualification
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Published HEAD before Issue 12: `9261dcde6e9442344a37d86f39d7068ebe4a30cc`; version `0.0.87`.
+- Completed issue IDs: 1-11 published; Issue 12 source and automated qualification complete, commit pending.
+- Result: 30 scoped project magic items now occupy 30 distinct exact base-campaign fixed-loot targets with zero vendor or stale copies.
+- Full tests: 1,160/1,160 PASS.
+- Runtime: `20260820T0855347791407Z-observe-rare-firearm-acquisition` PASS 25/25; `20260820T0859287762363Z-observe-capital-cord-vendor` PASS.
+- Candidate package/DLL: `72B2E2CDBA163DB127A1ED9B6F6728EBD7AE9DFE5FCA9E674CBF0BFE7D4A81FD` / `3A76F00E2752DB6A7682BC406DEF59FD4E8CDB65410DE3A81AA84831897B6DD9`.
+- Blocker: none. Final pacing/materialization is a human acceptance gate.
+- Next: inspect/stage Issue 12, run diff/package gates, commit and publish, then final versioned release qualification.

@@ -73,3 +73,9 @@ module-ON and module-OFF runs
 `20260814T0459247497589Z-observe-feature-module-settings` passed and restored
 the settings file byte-for-byte (SHA-256
 `dc76b429302838c52895d1901ac7488bc58e9d18a01b8e584968497cdb30c50c`).
+
+## Issue 12 distribution supersession
+
+The six named branched spears now use six distinct fixed base-campaign loot targets. Thornstep and Briar-Crowned Spear were removed from recurring merchant stock; generic branched-spear commerce and BTSL publication are unchanged. Old Goblin, Vordakai, and Final Dungeon clustered rows are removed by exact project-owned reference only. The authoritative inventory is `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md`.
+
+Guarded runtime `20260820T0855347791407Z-observe-rare-firearm-acquisition` passed with all six named spears at one intended target and zero vendor/stale rows.

@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.FeatureModules
             BeneathStolenLandsStock = active.Gunslinger;
             RareFirearmLoot = active.Gunslinger;
             AcadamaeFeat = active.AcadamaeGraduate;
-            CordCapitalStock = active.AcadamaeGraduate;
+            CordCampaignLoot = active.AcadamaeGraduate;
             ShieldOtherSpellLists = active.ShieldOther;
             ExpandedSummoningParents = active.ExpandedSummoning;
             ElvenBranchedSpearSelectors = active.ElvenBranchedSpears;
@@ -30,7 +30,7 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool BeneathStolenLandsStock { get; private set; }
         internal bool RareFirearmLoot { get; private set; }
         internal bool AcadamaeFeat { get; private set; }
-        internal bool CordCapitalStock { get; private set; }
+        internal bool CordCampaignLoot { get; private set; }
         internal bool ShieldOtherSpellLists { get; private set; }
         internal bool ExpandedSummoningParents { get; private set; }
         internal bool ElvenBranchedSpearSelectors { get; private set; }

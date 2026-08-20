@@ -318,7 +318,7 @@ namespace KingmakerGunslinger.DomainTests
                     plan.RareFirearmLoot == gunslinger,
                     "A Gunslinger publication surface escaped its module gate.");
                 Assertions.True(plan.AcadamaeFeat == acadamae &&
-                    plan.CordCapitalStock == acadamae,
+                    plan.CordCampaignLoot == acadamae,
                     "Acadamae and Cord publication gates are not independent.");
                 Assertions.True(plan.ShieldOtherSpellLists == shieldOther,
                     "Shield Other spell-list publication escaped its independent gate.");
@@ -379,8 +379,8 @@ namespace KingmakerGunslinger.DomainTests
                 "spearStaticOptions ==",
                 "(expectedElvenBranchedSpears ? 3 : 0)",
                 "spearFamiliarityCategories == 1",
-                "24 + installedSpearBtslTables * 6 : 0",
-                "(expectedElvenBranchedSpears ? 4 : 0)",
+                "22 + installedSpearBtslTables * 6 : 0",
+                "(expectedElvenBranchedSpears ? 6 : 0)",
                 "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces" })
                 Assertions.True(runner.Contains(token),
                     "The live six-module observer lacks the spear assertion: " +

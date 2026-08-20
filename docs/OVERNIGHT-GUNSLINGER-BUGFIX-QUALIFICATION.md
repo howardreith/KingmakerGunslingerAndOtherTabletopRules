@@ -273,3 +273,15 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Runtime package/DLL SHA-256: `DB09740418E7892BC1174EBA3EC986D2565CB95B09776DB19F119FE0ADB11F51` / `9B0716451906BEAEF47A4D26794C93878F7D1E3F2C771705021C879813751B8E`.
 - Firearm AssetBundle/SoundBank SHA-256: `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - Automated status: source, provenance, deterministic assets, prefab hierarchy, IK, muzzle, back publication, projectile preservation, build, package, and live structural routing qualified. Actual body clipping, hand contact, firing/reload animation, back pose, and texture aesthetics remain human-gated.
+
+## Issue 12 qualification
+
+Status: automated-qualified; human-gated for pacing and materialized-container observation.
+
+- Repository validation and 1,160/1,160 dependency-free tests: PASS.
+- Clean Release, output, SoundBank, package, and strict-package validation: PASS.
+- Guarded acquisition graph `20260820T0855347791407Z-observe-rare-firearm-acquisition`: PASS, 25/25.
+- Guarded Cord graph `20260820T0859287762363Z-observe-capital-cord-vendor`: PASS.
+- Exact result: 30 items, 30 distinct exact fixed-loot targets, one intended reference each, zero vendor copies, zero stale copies.
+- Candidate package/DLL SHA-256: `72B2E2CDBA163DB127A1ED9B6F6728EBD7AE9DFE5FCA9E674CBF0BFE7D4A81FD` / `3A76F00E2752DB6A7682BC406DEF59FD4E8CDB65410DE3A81AA84831897B6DD9`.
+- Honest limit: live blueprint publication does not prove refresh of already materialized merchants/containers or subjective campaign pacing.

@@ -22,12 +22,12 @@ namespace KingmakerGunslinger.Blueprints
                     ElvenBranchedSpearItemKind.MasterworkColdIron }, null),
             new VendorSpec(CapitalVendorBlueprints.TableGuid,
                 CapitalVendorBlueprints.ExpectedTableName,
-                AllFoundationKinds(), NamedSpearKind.Thornstep),
+                AllFoundationKinds(), null),
             new VendorSpec("f072a8f6889b5f345b7f4e7c74cb3e4c",
                 "DireNarlmarchesVillageVendorTable", AllFoundationKinds(), null),
             new VendorSpec("e5ab1fccf37c55f41a20a80c6ba6a460",
                 "PitaxTownVendorTable", AllFoundationKinds(),
-                NamedSpearKind.BriarCrownedSpear),
+                null),
             new VendorSpec(BeneathStolenLandsVendorBlueprints
                     .StandaloneHonestGuyTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[0],
@@ -49,16 +49,34 @@ namespace KingmakerGunslinger.Blueprints
         private static readonly LootSpec[] Loot =
         {
             new LootSpec(NamedSpearKind.Boughkeeper,
-                "59cb0ac65b4093440ad341b9a2f372cf",
-                "Forest_BarrikadedChest1", "StagLordFort"),
+                "19c1920cf93076249b5c4f29488851f9",
+                "Forest_PriestGhost_TreasureStoneLoot", "BigNarlmarches"),
+            new LootSpec(NamedSpearKind.Thornstep,
+                "99fe8ae070cabca40b25110fc0714b03",
+                "Forest_StoneWithTreasure", "BigNarlmarches"),
             new LootSpec(NamedSpearKind.MoonlitFork,
-                "70c4615a8d667dc4cb740c22ee7b5eed",
-                "Forest_LootBoxGood2", "GoblinKingFort"),
+                "1cf548dcd2a49a94d82be1df8efd26ef",
+                "Forest_cache_1_515", "LonelyBarrow"),
             new LootSpec(NamedSpearKind.VipersReach,
-                "193b1222846a0114197e716cb35d3ce8",
-                "Forest_cache", "VordakaiTombLevel2"),
+                "53d54ca50fccb8c4d9242904eba04d14",
+                "Forest_cache_1561", "VordakaiTombLevel2"),
+            new LootSpec(NamedSpearKind.BriarCrownedSpear,
+                "2179d0c774e6c034c83529fad2ba785c",
+                "RichHuman_Armory_ChestHuge_Outline (3)", "IrovettiPalace"),
             new LootSpec(NamedSpearKind.SpearOfTheFirstBranch,
-                "7e6448d1d8a7e4f4d9cc340b8f15e732",
+                "13e98ebc52714d34eb8e53f1099110fd",
+                "RichHuman_Loot_5_2lvl", "FinalDungeon2")
+        };
+
+        private static readonly CleanupSpec[] CleanupLoot =
+        {
+            new CleanupSpec("59cb0ac65b4093440ad341b9a2f372cf",
+                "Forest_BarrikadedChest1", "StagLordFort"),
+            new CleanupSpec("70c4615a8d667dc4cb740c22ee7b5eed",
+                "Forest_LootBoxGood2", "GoblinKingFort"),
+            new CleanupSpec("193b1222846a0114197e716cb35d3ce8",
+                "Forest_cache", "VordakaiTombLevel2"),
+            new CleanupSpec("7e6448d1d8a7e4f4d9cc340b8f15e732",
                 "RichHuman_Loot_1", "FinalDungeon")
         };
 
@@ -170,11 +188,28 @@ namespace KingmakerGunslinger.Blueprints
                     mutation.Validate();
                     lootMutations.Add(mutation);
                 }
+                foreach (CleanupSpec spec in CleanupLoot)
+                {
+                    BlueprintLoot target = BlueprintLibraryLookup.RequireExact<BlueprintLoot>(
+                        library, spec.Guid, "Elven Branched Spear stale loot " + spec.Name);
+                    if (!string.Equals(target.name, spec.Name, StringComparison.Ordinal) ||
+                        target.Area == null || !string.Equals(target.Area.name,
+                            spec.AreaName, StringComparison.Ordinal))
+                        throw new InvalidOperationException(
+                            "Spear cleanup identity/area mismatch: " + spec.Guid);
+                    LootEntry[] before = target.Items ?? new LootEntry[0];
+                    LootEntry[] published = before.Where(value => value == null ||
+                        !owned.Contains(value.Item)).ToArray();
+                    if (published.Length == before.Length) continue;
+                    target.Items = published;
+                    lootMutations.Add(new SpearLootMutation(target, before,
+                        published, null, null, true));
+                }
                 var result = new ElvenBranchedSpearCampaignPublication(
                     vendorMutations, lootMutations);
                 result.Validate();
                 logger.Info("elven-branched-spear", "campaign.published",
-                    "Normalized four campaign vendors, every installed standalone/campaign BTSL weapon table, and four fixed-loot placements for the module-enabled spear progression.");
+                    "Normalized generic campaign/BTSL stock and six distinct fixed-loot placements for the named spear progression.");
                 return result;
             }
             catch
@@ -215,6 +250,15 @@ namespace KingmakerGunslinger.Blueprints
             internal string Name { get; private set; }
             internal string AreaName { get; private set; }
         }
+
+        private sealed class CleanupSpec
+        {
+            internal CleanupSpec(string guid, string name, string areaName)
+            { Guid = guid; Name = name; AreaName = areaName; }
+            internal string Guid { get; private set; }
+            internal string Name { get; private set; }
+            internal string AreaName { get; private set; }
+        }
     }
 
     internal sealed class ElvenBranchedSpearCampaignPublication
@@ -231,9 +275,10 @@ namespace KingmakerGunslinger.Blueprints
                 .Count(value => !value.Optional);
             int maximumVendors = ElvenBranchedSpearCampaignBlueprints.VendorSpecs.Length;
             if (_vendors.Count < requiredVendors || _vendors.Count > maximumVendors ||
-                _loot.Count != 4 ||
+                _loot.Count < 6 ||
                 _vendors.Select(value => value.Table).Distinct().Count() != _vendors.Count ||
-                _loot.Select(value => value.Target).Distinct().Count() != 4)
+                _loot.Select(value => value.Target).Distinct().Count() !=
+                    _loot.Count)
                 throw new InvalidOperationException(
                     "Elven Branched Spear campaign publication cardinality mismatch.");
             foreach (SpearVendorMutation value in _vendors) value.Validate();
@@ -312,6 +357,7 @@ namespace KingmakerGunslinger.Blueprints
         { return new SpearLootMutation(target, before, before, item, spec, false); }
         internal void Validate()
         {
+            if (Item == null) return;
             LootEntry[] current = Target.Items ?? new LootEntry[0];
             if (current.Count(value => value != null && ReferenceEquals(value.Item, Item) &&
                 value.Count == 1) != 1)

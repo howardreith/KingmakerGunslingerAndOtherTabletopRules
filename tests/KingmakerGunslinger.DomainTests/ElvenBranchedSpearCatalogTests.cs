@@ -395,12 +395,13 @@ namespace KingmakerGunslinger.DomainTests
                 "CapitalVendorBlueprints.TableGuid",
                 "f072a8f6889b5f345b7f4e7c74cb3e4c",
                 "e5ab1fccf37c55f41a20a80c6ba6a460",
-                "59cb0ac65b4093440ad341b9a2f372cf",
-                "70c4615a8d667dc4cb740c22ee7b5eed",
-                "193b1222846a0114197e716cb35d3ce8",
-                "7e6448d1d8a7e4f4d9cc340b8f15e732",
-                "NamedSpearKind.Thornstep",
-                "NamedSpearKind.BriarCrownedSpear",
+                "19c1920cf93076249b5c4f29488851f9",
+                "99fe8ae070cabca40b25110fc0714b03",
+                "1cf548dcd2a49a94d82be1df8efd26ef",
+                "53d54ca50fccb8c4d9242904eba04d14",
+                "2179d0c774e6c034c83529fad2ba785c",
+                "13e98ebc52714d34eb8e53f1099110fd",
+                "CleanupLoot",
                 "owned.Contains", "CreateFixedEntry(item, 1)",
                 "ReferenceEquals", "Rollback()" })
                 Assertions.True(source.Contains(token),
@@ -408,7 +409,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(8, source.Split(new[] { "new VendorSpec(" },
                 StringSplitOptions.None).Length - 1,
                 "Vendor placement count changed.");
-            Assertions.Equal(4, source.Split(new[] { "new LootSpec(" },
+            Assertions.Equal(6, source.Split(new[] { "new LootSpec(" },
                 StringSplitOptions.None).Length - 1,
                 "Fixed-loot placement count changed.");
 
@@ -468,7 +469,7 @@ namespace KingmakerGunslinger.DomainTests
                 "btslSpearEntries == 24",
                 "invalidBtslSpearCounts == 0",
                 "btslEntries == 48",
-                "24 + installedSpearBtslTables * 6" })
+                "22 + installedSpearBtslTables * 6" })
                 Assertions.True(runtime.Contains(token),
                     "BTSL runtime/module regression coverage lacks: " + token);
         }

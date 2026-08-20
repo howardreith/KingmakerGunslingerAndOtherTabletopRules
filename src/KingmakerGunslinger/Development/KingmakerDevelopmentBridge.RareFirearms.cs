@@ -3,10 +3,14 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Kingmaker;
+using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Loot;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.EasternWeapons;
+using KingmakerGunslinger.ElvenBranchedSpear;
 
 namespace KingmakerGunslinger.Development
 {
@@ -93,6 +97,67 @@ namespace KingmakerGunslinger.Development
                 (string.IsNullOrEmpty(currentName) ? "<unresolved>" : currentName) +
                 ":" + (string.IsNullOrEmpty(currentGuid) ? "<unresolved>" : currentGuid) +
                 "; " + report + ". Locator fallback is identity/current-area reporting only; it never opens, moves, highlights, teleports, or mutates loot.");
+        }
+
+        internal DevelopmentActionResult DescribeProjectMagicItemAcquisition()
+        {
+            ResolveRuntime(requireUnit: false);
+            object currentArea = null; string areaMember;
+            ReflectionAccess.TryGetFirstNonNullMember(Game.Instance,
+                new[] { "CurrentlyLoadedArea" }, out currentArea, out areaMember);
+            string currentGuid = ReadString(currentArea, "AssetGuid");
+            string currentName = ReadString(currentArea, "name");
+            var records = new System.Collections.Generic.List<string>();
+            MagicFirearmBlueprintCatalog firearms = RequireRareCatalog();
+            foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
+                RareFirearmCampaignLootBlueprints.TargetSpecs)
+                records.Add(DescribeProjectPlacement(
+                    firearms.Require(spec.ItemSymbol).Item, spec.Guid,
+                    currentArea, currentGuid));
+            EasternWeaponBlueprintSet eastern = BlueprintBootstrap.EasternWeapons;
+            foreach (EasternLootSpec spec in
+                EasternWeaponCampaignBlueprints.LootSpecs)
+                records.Add(DescribeProjectPlacement((BlueprintItem)eastern.Named
+                    .Require(spec.NamedKinds.Single()).Item, spec.Guid,
+                    currentArea, currentGuid));
+            ElvenBranchedSpearBlueprintSet spears =
+                BlueprintBootstrap.ElvenBranchedSpears;
+            foreach (ElvenBranchedSpearCampaignBlueprints.LootSpec spec in
+                ElvenBranchedSpearCampaignBlueprints.LootSpecs)
+                records.Add(DescribeProjectPlacement((BlueprintItem)spears.Named
+                    .Require(spec.NamedKind).Item, spec.Guid, currentArea,
+                    currentGuid));
+            records.Add(DescribeProjectPlacement(
+                BlueprintBootstrap.CordOfStubbornResolve,
+                CordOfStubbornResolveBlueprints.AcquisitionGuid, currentArea,
+                currentGuid));
+            return DevelopmentActionResult.Success(
+                "PROJECT MAGIC ITEM ACQUISITION AUDIT (READ ONLY); placements=" +
+                records.Count + ";currentArea=" +
+                (string.IsNullOrEmpty(currentName) ? "<unresolved>" : currentName) +
+                ":" + (string.IsNullOrEmpty(currentGuid) ? "<unresolved>" :
+                    currentGuid) + "; " + string.Join(" | ", records.ToArray()) +
+                ". This audit does not open, move, grant, select, teleport, or save anything.");
+        }
+
+        private static string DescribeProjectPlacement(BlueprintItem item,
+            string targetGuid, object currentArea, string currentAreaGuid)
+        {
+            BlueprintLoot target = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintLoot>().Single(value => string.Equals(
+                    value.AssetGuid, targetGuid, StringComparison.Ordinal));
+            LootEntry[] matches = (target.Items ?? new LootEntry[0]).Where(value =>
+                value != null && ReferenceEquals(value.Item, item)).ToArray();
+            bool currentAreaMatch = target.Area != null &&
+                (ReferenceEquals(target.Area, currentArea) || string.Equals(
+                    target.Area.AssetGuid, currentAreaGuid,
+                    StringComparison.Ordinal));
+            return item.Name + ":item=" + item.AssetGuid + ":target=" +
+                target.name + ":" + target.AssetGuid + ":area=" +
+                (target.Area == null ? "<none>" : target.Area.name + ":" +
+                    target.Area.AssetGuid) + ":countOneMatches=" +
+                matches.Count(value => value.Count == 1) +
+                ":currentAreaMatch=" + currentAreaMatch;
         }
 
         private static MagicFirearmBlueprintCatalog RequireRareCatalog()

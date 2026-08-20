@@ -639,6 +639,7 @@ namespace KingmakerGunslinger.Bootstrap
                 new FeatureModulePublicationPlan(context.FeatureModules.Active);
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
+            CordCampaignLootPublication cordCampaignLootPublication = null;
             CapitalVendorPublication olegMaintenancePublication = null;
             BokkenVendorPublication bokkenAmmunitionPublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
@@ -920,8 +921,10 @@ namespace KingmakerGunslinger.Bootstrap
                     library, productionFirearms, magicFirearms, basicAmmunition,
                     firearmRepairKit, gunsmithingSupplies,
                     publicationPlan.CapitalGunslingerStock,
-                    cordOfStubbornResolve, publicationPlan.CordCapitalStock,
-                    context.Logger);
+                    cordOfStubbornResolve, context.Logger);
+                cordCampaignLootPublication = CordOfStubbornResolveBlueprints
+                    .PublishCampaignLoot(library, cordOfStubbornResolve,
+                        publicationPlan.CordCampaignLoot, context.Logger);
                 olegMaintenancePublication = OlegMaintenanceVendorBlueprints.Publish(
                     library, firearmRepairKit, gunsmithingSupplies,
                     publicationPlan.CapitalGunslingerStock, context.Logger);
@@ -1111,6 +1114,17 @@ namespace KingmakerGunslinger.Bootstrap
                 }
                 if (capitalVendorPublication != null)
                 {
+                    if (cordCampaignLootPublication != null)
+                    {
+                        try { cordCampaignLootPublication.Rollback(); }
+                        catch (Exception lootRollbackException)
+                        {
+                            context.Logger.Failure("blueprints",
+                                "cord-campaign-loot.rollback-failed",
+                                "Blueprint initialization failed and Cord fixed-loot rollback was refused.",
+                                lootRollbackException);
+                        }
+                    }
                     try
                     {
                         capitalVendorPublication.Rollback();

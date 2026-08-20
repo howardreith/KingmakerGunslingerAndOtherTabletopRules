@@ -29,7 +29,6 @@ namespace KingmakerGunslinger.Blueprints
             GunsmithingSupplyBlueprintSet gunsmithingSupplies,
             bool publishGunslinger,
             BlueprintItem cordOfStubbornResolve,
-            bool publishCord,
             ModLogger logger)
         {
             if (library == null) throw new ArgumentNullException("library");
@@ -69,12 +68,10 @@ namespace KingmakerGunslinger.Blueprints
                 AmmunitionCount, AmmunitionCount, AmmunitionCount,
                 10, 5, WeaponCount
             };
-            BlueprintItem[] items = (publishGunslinger ? gunslingerItems :
-                Array.Empty<BlueprintItem>()).Concat(publishCord ?
-                    new[] { cordOfStubbornResolve } : Array.Empty<BlueprintItem>()).ToArray();
-            int[] counts = (publishGunslinger ? gunslingerCounts :
-                Array.Empty<int>()).Concat(publishCord ? new[] { 1 } :
-                    Array.Empty<int>()).ToArray();
+            BlueprintItem[] items = publishGunslinger ? gunslingerItems :
+                Array.Empty<BlueprintItem>();
+            int[] counts = publishGunslinger ? gunslingerCounts :
+                Array.Empty<int>();
             BlueprintItem[] owned = firearms.Entries.Select(value =>
                 (BlueprintItem)value.Item).Concat(magicFirearms.Entries.Select(value =>
                     (BlueprintItem)value.Item)).Concat(new BlueprintItem[] {
@@ -112,8 +109,8 @@ namespace KingmakerGunslinger.Blueprints
             publication.Validate();
             logger.Info("acquisition", "capital-vendor.published",
                 string.Format(CultureInfo.InvariantCulture,
-                    "Normalized {0} module-aware project entries on {1} ({2}); gunslinger={3}, acadamae-graduate={4}; modern and named firearms excluded.",
-                    items.Length, table.name, TableGuid, publishGunslinger, publishCord));
+                    "Normalized {0} module-aware project entries on {1} ({2}); gunslinger={3}; modern and named firearms excluded.",
+                    items.Length, table.name, TableGuid, publishGunslinger));
             return publication;
         }
 

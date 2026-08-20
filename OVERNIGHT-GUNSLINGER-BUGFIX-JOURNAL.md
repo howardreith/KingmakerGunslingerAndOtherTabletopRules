@@ -347,3 +347,17 @@
 - Guarded Steam run `20260820T0819129064284Z-4b9313e5c2784b099756b97fc139b68e` passed 63/63 at the published SHA. Live Musket/Blunderbuss lengths were `1.33999968/0.8599998 m`; both held frames were identity/scale one, both support targets were exact native IK targets, both back prefabs were distinct and validated, both effective items retained exactly one projectile and Crossbow animation, and inherited sheath models were absent.
 - Runtime package/DLL/firearm-bundle/SoundBank SHA-256: `DB09740418E7892BC1174EBA3EC986D2565CB95B09776DB19F119FE0ADB11F51` / `9B0716451906BEAEF47A4D26794C93878F7D1E3F2C771705021C879813751B8E` / `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - Structural runtime evidence cannot establish hand/torso clearance, firing/reload pose, back placement, or texture aesthetics on real bodies. The full world/inventory doll matrix remains human-gated. Next: Issue 12 complete project-owned unique-magic acquisition inventory and organic redistribution.
+
+## Issue 12 automated qualification checkpoint - 2026-08-20
+
+- Baseline checkpoint before Issue 12: `9261dcde6e9442344a37d86f39d7068ebe4a30cc`, branch `codex/gunslinger-overnight-bugfixes`, version `0.0.87`.
+- Pre-change observer `20260820T0827266290275Z-observe-rare-firearm-acquisition` passed and enumerated 436 exact fixed-loot candidates.
+- Diagnosis: 30 scoped uniques included four multi-project-item clusters, six named Eastern merchant rows, two named branched-spear merchant rows, and Cord in recurring capital Smith stock.
+- Repair: every scoped identity now resolves to one distinct deterministic base-campaign `BlueprintLoot`; merchant publication contains no scoped named items; stale project rows are normalized transactionally while native/foreign rows and order are preserved.
+- Complete dependency-free suite: 1,160/1,160 PASS. Repository, clean Release/package, output, SoundBank, and strict-package gates PASS.
+- First live candidate `20260820T0851451113499Z-5a2a08d9fdc6420d9c8dcef6ed5978eb` failed only a stale Smith-table total; its new 30-item assertion passed. Corrected the exact post-distribution total from 51 to 46 without relaxing reference/null checks.
+- Qualified audit `20260820T0855347791407Z-observe-rare-firearm-acquisition`: PASS, 25/25, 30 items/30 targets, every active item `loot=1;target=1;vendor=0`.
+- Qualified Cord audit `20260820T0859287762363Z-observe-capital-cord-vendor`: PASS; exact fixed Capital Square Village target and zero vendor rows.
+- Runtime package/DLL SHA-256: `72B2E2CDBA163DB127A1ED9B6F6728EBD7AE9DFE5FCA9E674CBF0BFE7D4A81FD` / `3A76F00E2752DB6A7682BC406DEF59FD4E8CDB65410DE3A81AA84831897B6DD9`.
+- Remaining human gate: organic pacing/discoverability and unopened/new-campaign container materialization. Existing instantiated state is intentionally not rewritten.
+- Next: commit Issue 12, publish, remote-verify, then final release qualification/versioning.

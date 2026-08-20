@@ -136,6 +136,9 @@ namespace KingmakerGunslinger.Development
             }
             if (ImmediateModeGui.Button("Print acquisition/current-area location audit"))
                 Run(DevelopmentControls.DescribeRareFirearmAcquisition);
+            if (ImmediateModeGui.Button(
+                    "Print all project magic-item location audits"))
+                Run(DevelopmentControls.DescribeProjectMagicItemAcquisition);
 
             ImmediateModeGui.Space(8f);
             ImmediateModeGui.Label(

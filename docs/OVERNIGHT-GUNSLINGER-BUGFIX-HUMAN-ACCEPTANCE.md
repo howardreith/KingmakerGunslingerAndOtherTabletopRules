@@ -142,3 +142,17 @@ Automated boundary already proven: guarded run `20260820T0733252707402Z-1a989712
 5. Confirm Crossbow-derived delivery, firearm state, reload, audio, one projectile, damage, critical behavior, feats, and save identities remain unchanged. Reject any crossbow placeholder, inherited bolt/release visual/audio, detached model, support-hand miss, floor drag, or back-state clipping.
 
 Automated boundary already proven: guarded run `20260820T0819129064284Z-4b9313e5c2784b099756b97fc139b68e` passed 63/63. Packaged held frames are scale one at exact `1.33999968 m` Musket and `0.8599998 m` Blunderbuss semantic lengths, both native support IK targets are assigned, both back prefabs are distinct with exact `BackMount`, both effective items retain one projectile, and inherited sheath presentation is absent. These structural facts do not establish visual acceptance on animated bodies.
+
+## Issue 12 - Project magic-item distribution
+
+Use a new campaign or disposable save whose relevant containers have not materialized. First use the read-only Development Tools action `Print all project magic-item location audits`; it gives every exact GUID/current count without granting or moving items.
+
+1. Stag Lord Fort: Paper Lantern, Wayfarer's Oath, and Border Sentinel in three distinct chests.
+2. Capital: Quiet Current in the tavern; Winter Reed and Cord in two distinct Capital Square Village chests.
+3. Narlmarches/Lonely Barrow: Boughkeeper, Thornstep, Cloud-Cleaver, and Moonlit Fork in four distinct sources.
+4. Act III: Falling Petal at Goblin King Fort and Drawn Horizon at Silverstep Grotto.
+5. Vordakai's Tomb: four named Eastern weapons in four Level 1 caches; Duelist's Rebuttal and Viper's Reach in two Level 2 caches.
+6. Pitax: Empty Sleeve, Moonlit Crossing, Unfixed Form, River King's Measure, Irovetti's Ovation, and Briar-Crowned Spear in six distinct sources.
+7. Late game: Night Without Moon at Castle of Knives; Heaven's Measure, The Last Word, and Watch at World's End in three distinct House at the Edge of Time sources; World-Tree Severer and First Branch in distinct Final Dungeon sources.
+
+Confirm one named project item per target, none of the 30 in ordinary recurring merchants, and preserved native contents. Do not use an already opened container as evidence against static blueprint publication.

@@ -386,16 +386,16 @@ namespace KingmakerGunslinger.DomainTests
                 "CampaignHonestGuyTableGuid",
                 "CampaignXellirenTableGuid",
                 "BorderSentinel",
-                "QuietCurrent",
-                "WinterReed",
-                "CloudCleaver",
-                "EmptySleeve",
-                "MoonlitCrossing",
-                "UnfixedForm",
                 "Forest_BarrikadedChest1",
                 "Forest_LootBoxGood2",
                 "Forest_cache",
                 "RichHuman_Loot_1",
+                "RichHuman_ST_BackpackBard_U_Any",
+                "Forest_Good_GuardedChest",
+                "RichHuman_GoodLoot_BarrelJewelry",
+                "FirstWorld_GoodLoot_Trapped_1",
+                "FirstWorld_2ndFloorGoodHiddenLockedLoot08",
+                "CleanupLoot",
                 "BtslRowCount != BtslTableCount * 12",
                 "placed.Length != 18",
                 "placed.Distinct().Count() != 18",
@@ -408,6 +408,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(campaign.Contains("NamedKinds = new[]") &&
                 campaign.Contains("ordinary BTSL"),
                 "Named Eastern weapons must not enter ordinary BTSL stock.");
+            Assertions.Equal(19, campaign.Split(new[] {
+                "new EasternLootSpec(" }, StringSplitOptions.None).Length - 1,
+                "Distinct Eastern placement plus cleanup target count changed.");
 
             string bootstrap = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
@@ -428,14 +431,29 @@ namespace KingmakerGunslinger.DomainTests
                 "eastern-btsl-vendor-publication",
                 "eastern-named-campaign-publication",
                 "expectedEasternCommerce",
-                "48 + easternBtslTables * 12 : 0",
+                "42 + easternBtslTables * 12 : 0",
                 "expectedEasternCommerce ? 48 : 0",
                 "easternNamedBtslRows == 0",
-                "expectedEasternCommerce ? 12 : 0",
+                "expectedEasternCommerce ? 18 : 0",
                 "easternPlacedKinds.Distinct().Count() ==",
                 "expectedEasternCommerce ? 18 : 0" })
                 Assertions.True(runtime.Contains(token),
                     "Eastern runtime commerce assertion is missing: " + token);
+            Assertions.True(runtime.Contains(
+                    "project-magic-item-distribution") &&
+                runtime.Contains("targets.Values.Distinct().Count() == 30") &&
+                runtime.Contains("vendorRows == 0"),
+                "Cross-system unique-item distribution is not live-qualified.");
+
+            string development = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Development",
+                "KingmakerDevelopmentBridge.RareFirearms.cs"));
+            Assertions.True(development.Contains(
+                    "DescribeProjectMagicItemAcquisition") &&
+                development.Contains("placements=") &&
+                development.Contains("countOneMatches=") &&
+                development.Contains("currentAreaMatch="),
+                "The read-only all-item location audit is incomplete.");
         }
 
         internal static void BorderSentinelPlacementIsLaterAndSingular()
@@ -462,8 +480,8 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "c8b8159fb695be64883b609a7e77e75d",
                 "PoorHuman_treasure_chest_03", "StagLordFort",
-                "_loot.Count != 5", "LootRowCount != 12",
-                "Distinct().Count() != 5" })
+                "_loot.Count != 19", "LootRowCount != 18",
+                "Distinct().Count() != 19" })
                 Assertions.True(campaign.Contains(token),
                     "Border Sentinel fixed-loot contract is missing: " + token);
 

@@ -133,3 +133,9 @@ the exact item/target/area identities, count-one match, current-area match, and
 complete target contents without opening, moving, granting, teleporting, or
 saving anything. Physical chest materialization and discoverability remain a
 human check on an unopened/new-campaign target.
+
+## Issue 12 distribution supersession
+
+All eighteen named Eastern weapons now use eighteen distinct fixed base-campaign loot targets. Named Eastern merchant rows were removed; generic and masterwork Eastern merchant stock is unchanged. Old Stag Lord, Goblin, Vordakai, and Final Dungeon clusters are normalized by exact project-owned reference only. The authoritative item GUID, target, act, native contents, and route are in `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md`.
+
+Guarded runtime `20260820T0855347791407Z-observe-rare-firearm-acquisition` passed with every named Eastern item at count one on its intended target and zero vendor/stale rows.

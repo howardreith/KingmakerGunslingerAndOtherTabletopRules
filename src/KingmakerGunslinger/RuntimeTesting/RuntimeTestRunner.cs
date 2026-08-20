@@ -7408,6 +7408,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             string catalog = string.Join(" | ", tables.Select(value =>
                 value.name + ":" + value.AssetGuid + ":" +
                 DescribeBlueprintComponents(value)).ToArray());
+            bool projectMagicDistributionExact;
+            string projectMagicDistribution = ObserveProjectMagicItemDistribution(
+                allBlueprints, tables,
+                _context.FeatureModules.Active.Gunslinger,
+                _context.FeatureModules.Active.EasternWeapons,
+                _context.FeatureModules.Active.ElvenBranchedSpears,
+                _context.FeatureModules.Active.AcadamaeGraduate,
+                out projectMagicDistributionExact);
             string observed = vendorLogicContract + ";tables=" + tables.Length + ";associations=" +
                 associations + ";invalid=" + invalidAssociations +
                 ";supplementalLoot=" + supplementalLoot + ";projectEntries=" +
@@ -7448,6 +7456,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";jhodProjectEntries=" + jhodProjectEntries +
                 ";validRareLoot=" + validRareLoot + ";rareLoot=" +
                     string.Join(" | ", rareLootRecords.ToArray()) +
+                ";projectMagicDistribution=" + projectMagicDistribution +
                 ";criticalProfiles=" + criticalProfiles + ";catalog=" + catalog +
                 ";owners=" + string.Join(" | ",
                     ownerRecords.ToArray()) + ";capitalEntries=" + string.Join(" | ",
@@ -7501,7 +7510,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact capital table fixed-item count, cost, and stack contract",
                     observed, capitalTable != null && fixedItemField != null &&
                         fixedCountField != null && capitalEntries.Count ==
-                            (expectedEasternCommerce ? 51 : 36) &&
+                            (expectedEasternCommerce ? 46 : 36) &&
                         capitalReferenceContracts.Count > 0 &&
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
@@ -7556,7 +7565,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "module OFF publishes zero Eastern vendor rows while retaining table identities",
                     observed, easternVendorTargets == 4 + easternBtslTables &&
                         easternVendorRows == (expectedEasternCommerce ?
-                            48 + easternBtslTables * 12 : 0) &&
+                        42 + easternBtslTables * 12 : 0) &&
                         invalidEasternVendorRows == 0,
                     "exact Eastern vendor specs, names, item references, and fixed-entry counts"),
                 Assertion("eastern-btsl-vendor-publication",
@@ -7571,10 +7580,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "four exact DLC table identities and item-reference cardinality"),
                 Assertion("eastern-named-campaign-publication",
                     expectedEasternCommerce ?
-                        "all eighteen named Eastern weapons have one exact count-one merchant or fixed-loot placement; five loot targets contribute twelve rows" :
-                        "module OFF publishes zero named Eastern merchant or fixed-loot rows",
-                    observed, easternLootTargets == 5 && easternLootRows ==
-                        (expectedEasternCommerce ? 12 : 0) &&
+                        "all eighteen named Eastern weapons have one distinct exact count-one fixed-loot placement and zero vendor rows" :
+                        "module OFF publishes zero named Eastern fixed-loot or merchant rows",
+                    observed, easternLootTargets == 18 && easternLootRows ==
+                        (expectedEasternCommerce ? 18 : 0) &&
                         invalidEasternLootRows == 0 &&
                         easternPlacedKinds.Count == (expectedEasternCommerce ?
                             18 : 0) && easternPlacedKinds.Distinct().Count() ==
@@ -7599,6 +7608,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "five distinct exact count-one BlueprintLoot targets with exact names and areas",
                     observed, validRareLoot == 5,
                     "installed live blueprint graph after transactional publication"),
+                Assertion("project-magic-item-distribution",
+                    "30 project-owned uniques on 30 distinct exact fixed targets, zero named vendor rows, and no stale loot copies",
+                    projectMagicDistribution, projectMagicDistributionExact,
+                    "all installed BlueprintLoot and BlueprintSharedVendorTable rows by exact item reference"),
                 Assertion("production-critical-profiles",
                     "pistol=20/x4;musket=20/x4;blunderbuss=20/x2;" +
                         "rifle=20/x4;revolver=20/x4",
@@ -7646,6 +7659,72 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private static string ObserveProjectMagicItemDistribution(
+            BlueprintScriptableObject[] allBlueprints,
+            BlueprintSharedVendorTable[] tables, bool gunslingerEnabled,
+            bool easternEnabled, bool spearEnabled, bool cordEnabled,
+            out bool exact)
+        {
+            var targets = new Dictionary<BlueprintItem, string>();
+            var enabled = new Dictionary<BlueprintItem, bool>();
+            Action<BlueprintItem, string, bool> add = (item, target, active) =>
+            {
+                targets.Add(item, target);
+                enabled.Add(item, active);
+            };
+            foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
+                RareFirearmCampaignLootBlueprints.TargetSpecs)
+                add(BlueprintBootstrap.MagicFirearms.Require(spec.ItemSymbol).Item,
+                    spec.Guid, gunslingerEnabled);
+            EasternWeaponBlueprintSet eastern = BlueprintBootstrap.EasternWeapons;
+            foreach (EasternLootSpec spec in
+                EasternWeaponCampaignBlueprints.LootSpecs)
+                add(eastern.Named.Require(spec.NamedKinds.Single()).Item,
+                    spec.Guid, easternEnabled);
+            ElvenBranchedSpearBlueprintSet spears =
+                BlueprintBootstrap.ElvenBranchedSpears;
+            foreach (ElvenBranchedSpearCampaignBlueprints.LootSpec spec in
+                ElvenBranchedSpearCampaignBlueprints.LootSpecs)
+                add(spears.Named.Require(spec.NamedKind).Item, spec.Guid,
+                    spearEnabled);
+            add(BlueprintBootstrap.CordOfStubbornResolve,
+                CordOfStubbornResolveBlueprints.AcquisitionGuid, cordEnabled);
+
+            BlueprintLoot[] loot = allBlueprints.OfType<BlueprintLoot>().ToArray();
+            exact = targets.Count == 30 && targets.Values.Distinct().Count() == 30;
+            var records = new List<string>();
+            foreach (KeyValuePair<BlueprintItem, string> entry in targets
+                .OrderBy(value => value.Key.name, StringComparer.Ordinal))
+            {
+                int allLootRows = loot.Sum(target => (target.Items ??
+                    Array.Empty<LootEntry>()).Count(value => value != null &&
+                        ReferenceEquals(value.Item, entry.Key)));
+                BlueprintLoot expectedTarget = loot.SingleOrDefault(value =>
+                    string.Equals(value.AssetGuid, entry.Value,
+                        StringComparison.Ordinal));
+                int targetRows = expectedTarget == null ? 0 :
+                    (expectedTarget.Items ?? Array.Empty<LootEntry>()).Count(
+                        value => value != null && ReferenceEquals(value.Item,
+                            entry.Key) && value.Count == 1);
+                int vendorRows = tables.Sum(table => (table.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .Count(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), entry.Key)));
+                bool active = enabled[entry.Key];
+                bool itemExact = active ? allLootRows == 1 && targetRows == 1 &&
+                    vendorRows == 0 : allLootRows == 0 && targetRows == 0 &&
+                    vendorRows == 0;
+                exact = exact && itemExact;
+                records.Add(entry.Key.name + ":" + entry.Key.AssetGuid +
+                    "=>" + entry.Value + ";active=" + active + ";loot=" +
+                    allLootRows + ";target=" + targetRows + ";vendor=" +
+                    vendorRows);
+            }
+            return "items=" + targets.Count + ";targets=" +
+                targets.Values.Distinct().Count() + ";" +
+                string.Join(" | ", records.ToArray());
         }
 
         private RuntimeTestResult RunRareFirearmBlueprintContracts()
@@ -10082,10 +10161,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintSharedVendorTable smith = BlueprintLibraryLookup.RequireExact<
                 BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
                     CapitalVendorBlueprints.TableGuid, "native capital Smith table");
-            int cordRows = (smith.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+            int cordVendorRows = (smith.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
                     CapitalVendorBlueprints.ReadItem(value),
                     BlueprintBootstrap.CordOfStubbornResolve));
+            BlueprintLoot cordLoot = BlueprintLibraryLookup.RequireExact<BlueprintLoot>(
+                BlueprintBootstrap.Library,
+                CordOfStubbornResolveBlueprints.AcquisitionGuid,
+                "Cord fixed campaign loot");
+            int cordRows = (cordLoot.Items ?? Array.Empty<LootEntry>()).Count(
+                value => value != null && ReferenceEquals(value.Item,
+                    BlueprintBootstrap.CordOfStubbornResolve) && value.Count == 1);
             int paperRows = (smith.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
                     CapitalVendorBlueprints.ReadItem(value),
@@ -10490,8 +10576,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "feat arrays and Cord stock absent",
                     observed, acadFeatures == (expectedAcadamae ? 1 : 0) &&
                         acadAll == (expectedAcadamae ? 1 : 0) &&
-                        cordRows == (expectedAcadamae ? 1 : 0),
-                    "basic feat selection and Smith table"),
+                        cordRows == (expectedAcadamae ? 1 : 0) &&
+                        cordVendorRows == 0,
+                    "basic feat selection, exact fixed loot, and capital exclusion"),
                 Assertion("feature-module-shield-other-publication",
                     expectedShieldOther ? "all discovered lists singular" :
                         "all discovered lists absent",
@@ -10506,7 +10593,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "immutable publication-plan input; parent surfaces are added after activation"),
                 Assertion("feature-module-elven-branched-spears-publication-gate",
                     expectedElvenBranchedSpears ?
-                        "12 identities;7 parameter options;3 static references;24 campaign vendor rows plus six rows per installed BTSL table;4 loot rows" :
+                        "12 identities;7 parameter options;3 static references;22 campaign vendor rows plus six rows per installed BTSL table;6 loot rows" :
                         "12 identities;0 parameter options;0 static references;0 vendor rows;0 loot rows",
                     observed,
                     activeElvenBranchedSpears ==
@@ -10519,13 +10606,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spearFamiliarityCategories == 1 &&
                     spearVendorRows ==
                         (expectedElvenBranchedSpears ?
-                            24 + installedSpearBtslTables * 6 : 0) &&
+                            22 + installedSpearBtslTables * 6 : 0) &&
                     spearLootRows ==
-                        (expectedElvenBranchedSpears ? 4 : 0),
+                        (expectedElvenBranchedSpears ? 6 : 0),
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
                 Assertion("feature-module-eastern-weapons-publication-gate",
                     expectedEasternWeapons ?
-                        "44 identities;21 parameter options;4 static references;merged proficiency order;49 campaign/BTSL-base vendor rows;11 fixed-loot rows;presentation enabled" :
+                        "44 identities;21 parameter options;4 static references;merged proficiency order;42 campaign vendor rows plus BTSL;18 fixed-loot rows;presentation enabled" :
                         "44 identities;0 parameter options;0 static references;0 vendor rows;0 fixed-loot rows;presentation disabled",
                     observed,
                     activeEasternWeapons == expectedEasternWeapons &&
@@ -10551,11 +10638,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal) &&
                     nodachiMartialCategories == 1 &&
                     easternVendorRows == (expectedEasternWeapons ?
-                        48 + installedEasternBtslTables * 12 : 0) &&
-                    easternNamedVendorRows == (expectedEasternWeapons ? 6 : 0) &&
+                        42 + installedEasternBtslTables * 12 : 0) &&
+                    easternNamedVendorRows == 0 &&
                     easternBtslRows == (expectedEasternWeapons ?
                         installedEasternBtslTables * 12 : 0) &&
-                    easternLootRows == (expectedEasternWeapons ? 12 : 0) &&
+                    easternLootRows == (expectedEasternWeapons ? 18 : 0) &&
                     (easternSet.Campaign != null) == expectedEasternWeapons &&
                     EasternWeaponCategoryRuntime.PresentationEnabled ==
                         expectedEasternWeapons &&
@@ -17103,47 +17190,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => ReferenceEquals(
                     CapitalVendorBlueprints.ReadItem(value), cord)).ToArray();
             bool enabled = _context.FeatureModules.Active.AcadamaeGraduate;
-            bool rowsExact = enabled ? rows.Length == 1 &&
-                CapitalVendorBlueprints.ReadCount(rows[0]) == 1 : rows.Length == 0;
+            BlueprintLoot target = BlueprintLibraryLookup.RequireExact<BlueprintLoot>(
+                BlueprintBootstrap.Library,
+                CordOfStubbornResolveBlueprints.AcquisitionGuid,
+                "Cord fixed campaign loot");
+            LootEntry[] lootRows = (target.Items ?? Array.Empty<LootEntry>())
+                .Where(value => value != null && ReferenceEquals(value.Item,
+                    cord)).ToArray();
+            bool rowsExact = rows.Length == 0 && (enabled ?
+                lootRows.Length == 1 && lootRows[0].Count == 1 :
+                lootRows.Length == 0);
             bool metadataExact = cord.AssetGuid ==
                     "c4b804d9ebf941b4842b0a461a2b6b6d" &&
                 cord.Cost == 15000 && Math.Abs(cord.Weight - 1f) < 0.001f;
-            BlueprintUnit[] owners = new[] {
-                BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
-                    BlueprintBootstrap.Library,
-                    "ba7a7a2842d072046be55b3f9034d04e",
-                    "capital owlbear-attack blacksmith"),
-                BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
-                    BlueprintBootstrap.Library,
-                    "478862ab88b8ef24385cb386c1644dc2",
-                    "capital Verdel blacksmith") };
-            Dictionary<string, List<string>> ownerReferences =
-                BuildDirectBlueprintReferenceIndex(owners.Cast<BlueprintScriptableObject>()
-                    .ToArray(), new BlueprintScriptableObject[] { table });
-            List<string> tableReferences;
-            bool ownerExact = ownerReferences.TryGetValue(table.AssetGuid,
-                out tableReferences) && tableReferences.Count == 2 &&
-                owners.All(owner => tableReferences.Contains(
-                    typeof(BlueprintUnit).FullName + ":" + owner.name + ":" +
-                    owner.AssetGuid + "*1"));
+            bool targetExact = string.Equals(target.name,
+                    CordOfStubbornResolveBlueprints.AcquisitionName,
+                    StringComparison.Ordinal) && target.Area != null &&
+                string.Equals(target.Area.name,
+                    CordOfStubbornResolveBlueprints.AcquisitionArea,
+                    StringComparison.Ordinal);
             string observed = "active=" + enabled + ";rows=" + rows.Length +
-                ";count=" + (rows.Length == 1 ?
-                    CapitalVendorBlueprints.ReadCount(rows[0]) : -1) +
+                ";lootRows=" + lootRows.Length + ";lootCount=" +
+                (lootRows.Length == 1 ? lootRows[0].Count : -1) +
                 ";cost=" + cord.Cost + ";weight=" + cord.Weight +
-                ";owners=" + string.Join(",", owners.Select(value =>
-                    value.name + ":" + value.AssetGuid)) + ";references=" +
-                string.Join(",", tableReferences ?? new List<string>());
+                ";target=" + target.name + ":" + target.AssetGuid +
+                ";area=" + (target.Area == null ? "<none>" :
+                    target.Area.name + ":" + target.Area.AssetGuid);
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("cord-vendor-module-gate",
-                    enabled ? "one fixed count-1 Cord row" : "no Cord row",
-                    observed, rowsExact, "live SmithVendorTable component array"),
-                Assertion("cord-vendor-item-metadata",
+                Assertion("cord-fixed-loot-module-gate",
+                    enabled ? "one fixed count-1 Cord loot row and no vendor row" :
+                        "no Cord loot or vendor row",
+                    observed, rowsExact,
+                    "live BlueprintLoot and SmithVendorTable arrays"),
+                Assertion("cord-fixed-loot-item-metadata",
                     "exact Cord GUID, 15000 gp, and 1 lb.", observed,
                     metadataExact, "registered BlueprintItemEquipmentBelt"),
-                Assertion("cord-vendor-owner-graph",
-                    "established-capital blacksmith owner pair", observed,
-                    ownerExact, "exact AddSharedVendor owner graph"),
+                Assertion("cord-fixed-loot-target",
+                    "exact CapitalSquareVillage fixed container", observed,
+                    targetExact, "exact BlueprintLoot GUID/name/area"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
