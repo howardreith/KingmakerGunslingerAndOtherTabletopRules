@@ -173,6 +173,9 @@ namespace KingmakerGunslinger.Development
             if (ImmediateModeGui.Button(
                     "Print complete Eastern Weapons catalog audit"))
                 Run(DevelopmentControls.DescribeEasternWeaponCatalog);
+            if (ImmediateModeGui.Button(
+                    "Print Border Sentinel location audit"))
+                Run(DevelopmentControls.DescribeBorderSentinelAcquisition);
             if (ImmediateModeGui.Button("Add all 30 Eastern Weapon variants"))
                 Run(DevelopmentControls.AddEasternWeaponSet);
             if (ImmediateModeGui.Button("Add complete Wakizashi path (10)"))

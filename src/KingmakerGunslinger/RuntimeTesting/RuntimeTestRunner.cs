@@ -7218,6 +7218,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "/" + desired.Length + ";identity=" + identity +
                     ";unexpected=" + unexpected);
             }
+            BlueprintItem borderSentinel = eastern.Named.Require(
+                EasternWeaponNamedKind.BorderSentinel).Item;
+            int borderSentinelVendorRows = tables.Sum(table =>
+                (table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), borderSentinel)));
+            BlueprintSharedVendorTable easternOleg = tables.SingleOrDefault(value =>
+                string.Equals(value.AssetGuid,
+                    OlegMaintenanceVendorBlueprints.TableGuid,
+                    StringComparison.Ordinal));
+            int borderSentinelOlegRows = easternOleg == null ? -1 :
+                (easternOleg.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
+                        CapitalVendorBlueprints.ReadItem(value), borderSentinel));
+            EasternLootSpec borderSentinelSpec =
+                EasternWeaponCampaignBlueprints.LootSpecs.Single(value =>
+                    value.NamedKinds.Contains(
+                        EasternWeaponNamedKind.BorderSentinel));
+            BlueprintLoot borderSentinelTarget = allBlueprints
+                .OfType<BlueprintLoot>().SingleOrDefault(value => string.Equals(
+                    value.AssetGuid, borderSentinelSpec.Guid,
+                    StringComparison.Ordinal));
+            LootEntry[] borderSentinelMatches = borderSentinelTarget == null ?
+                Array.Empty<LootEntry>() : (borderSentinelTarget.Items ??
+                    Array.Empty<LootEntry>()).Where(value => value != null &&
+                        ReferenceEquals(value.Item, borderSentinel)).ToArray();
+            int borderSentinelLootRows = allBlueprints.OfType<BlueprintLoot>()
+                .Sum(value => (value.Items ?? Array.Empty<LootEntry>()).Count(
+                    entry => entry != null && ReferenceEquals(entry.Item,
+                        borderSentinel)));
+            bool borderSentinelTargetIdentity = borderSentinelTarget != null &&
+                string.Equals(borderSentinelTarget.name, borderSentinelSpec.Name,
+                    StringComparison.Ordinal) && borderSentinelTarget.Area != null &&
+                string.Equals(borderSentinelTarget.Area.name,
+                    borderSentinelSpec.AreaName, StringComparison.Ordinal);
+            bool borderSentinelPlacementExact = borderSentinelOlegRows == 0 &&
+                borderSentinelVendorRows == 0 && borderSentinelTargetIdentity &&
+                borderSentinelLootRows == (expectedEasternCommerce ? 1 : 0) &&
+                borderSentinelMatches.Length ==
+                    (expectedEasternCommerce ? 1 : 0) &&
+                (!expectedEasternCommerce || borderSentinelMatches[0].Count == 1);
             BlueprintItem[] namedItems = BlueprintBootstrap.MagicFirearms.Entries
                 .Where(value => value.Spec.Symbol != MagicFirearmBlueprints.PistolPlus1Symbol &&
                     value.Spec.Symbol != MagicFirearmBlueprints.MusketPlus1Symbol &&
@@ -7331,6 +7372,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(" | ", easternVendorRecords.ToArray()) +
                     ";easternLootRecords=" + string.Join(" | ",
                         easternLootRecords.ToArray()) +
+                    ";borderSentinelOlegRows=" + borderSentinelOlegRows +
+                    ";borderSentinelVendorRows=" + borderSentinelVendorRows +
+                    ";borderSentinelLootRows=" + borderSentinelLootRows +
+                    ";borderSentinelTarget=" + borderSentinelSpec.Name + ":" +
+                    borderSentinelSpec.Guid + ":" + borderSentinelSpec.AreaName +
                 ";bannedManagedEntries=" + bannedManagedEntries +
                 ";jhodProjectEntries=" + jhodProjectEntries +
                 ";validRareLoot=" + validRareLoot + ";rareLoot=" +
@@ -7443,7 +7489,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "module OFF publishes zero Eastern vendor rows while retaining table identities",
                     observed, easternVendorTargets == 4 + easternBtslTables &&
                         easternVendorRows == (expectedEasternCommerce ?
-                            49 + easternBtslTables * 12 : 0) &&
+                            48 + easternBtslTables * 12 : 0) &&
                         invalidEasternVendorRows == 0,
                     "exact Eastern vendor specs, names, item references, and fixed-entry counts"),
                 Assertion("eastern-btsl-vendor-publication",
@@ -7458,15 +7504,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "four exact DLC table identities and item-reference cardinality"),
                 Assertion("eastern-named-campaign-publication",
                     expectedEasternCommerce ?
-                        "all eighteen named Eastern weapons have one exact count-one merchant or fixed-loot placement; four loot targets contribute eleven rows" :
+                        "all eighteen named Eastern weapons have one exact count-one merchant or fixed-loot placement; five loot targets contribute twelve rows" :
                         "module OFF publishes zero named Eastern merchant or fixed-loot rows",
-                    observed, easternLootTargets == 4 && easternLootRows ==
-                        (expectedEasternCommerce ? 11 : 0) &&
+                    observed, easternLootTargets == 5 && easternLootRows ==
+                        (expectedEasternCommerce ? 12 : 0) &&
                         invalidEasternLootRows == 0 &&
                         easternPlacedKinds.Count == (expectedEasternCommerce ?
                             18 : 0) && easternPlacedKinds.Distinct().Count() ==
                             (expectedEasternCommerce ? 18 : 0),
                     "exact merchant specs plus BlueprintLoot name, area, item, and quantity contracts"),
+                Assertion("border-sentinel-later-placement",
+                    expectedEasternCommerce ?
+                        "Border Sentinel is absent from every vendor and appears exactly once in the fixed Stag Lord Fort chest" :
+                        "module OFF leaves Border Sentinel absent from vendor and fixed-loot publication",
+                    "olegRows=" + borderSentinelOlegRows + ";vendorRows=" +
+                        borderSentinelVendorRows + ";lootRows=" +
+                        borderSentinelLootRows + ";target=" +
+                        borderSentinelSpec.Name + ":" + borderSentinelSpec.Guid +
+                        ":" + borderSentinelSpec.AreaName,
+                    borderSentinelPlacementExact,
+                    "exact item reference across every registered shared vendor and BlueprintLoot target"),
                 Assertion("rare-firearm-acquisition-exclusions",
                     "no named or modern firearms in managed vendors; no Jhod project firearms",
                     observed, bannedManagedEntries == 0 && jhodProjectEntries == 0,
@@ -10388,11 +10445,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal) &&
                     nodachiMartialCategories == 1 &&
                     easternVendorRows == (expectedEasternWeapons ?
-                        49 + installedEasternBtslTables * 12 : 0) &&
-                    easternNamedVendorRows == (expectedEasternWeapons ? 7 : 0) &&
+                        48 + installedEasternBtslTables * 12 : 0) &&
+                    easternNamedVendorRows == (expectedEasternWeapons ? 6 : 0) &&
                     easternBtslRows == (expectedEasternWeapons ?
                         installedEasternBtslTables * 12 : 0) &&
-                    easternLootRows == (expectedEasternWeapons ? 11 : 0) &&
+                    easternLootRows == (expectedEasternWeapons ? 12 : 0) &&
                     (easternSet.Campaign != null) == expectedEasternWeapons &&
                     EasternWeaponCategoryRuntime.PresentationEnabled ==
                         expectedEasternWeapons &&

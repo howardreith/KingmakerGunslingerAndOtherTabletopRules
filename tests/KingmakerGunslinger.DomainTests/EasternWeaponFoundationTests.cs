@@ -428,14 +428,56 @@ namespace KingmakerGunslinger.DomainTests
                 "eastern-btsl-vendor-publication",
                 "eastern-named-campaign-publication",
                 "expectedEasternCommerce",
-                "49 + easternBtslTables * 12 : 0",
+                "48 + easternBtslTables * 12 : 0",
                 "expectedEasternCommerce ? 48 : 0",
                 "easternNamedBtslRows == 0",
-                "expectedEasternCommerce ? 11 : 0",
+                "expectedEasternCommerce ? 12 : 0",
                 "easternPlacedKinds.Distinct().Count() ==",
                 "expectedEasternCommerce ? 18 : 0" })
                 Assertions.True(runtime.Contains(token),
                     "Eastern runtime commerce assertion is missing: " + token);
+        }
+
+        internal static void BorderSentinelPlacementIsLaterAndSingular()
+        {
+            string root = Environment.CurrentDirectory;
+            string campaign = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "EasternWeaponCampaignBlueprints.cs"));
+            int olegStart = campaign.IndexOf("C11_OlegVendorTable",
+                StringComparison.Ordinal);
+            int capitalStart = campaign.IndexOf(
+                "CapitalVendorBlueprints.TableGuid", olegStart,
+                StringComparison.Ordinal);
+            Assertions.True(olegStart >= 0 && capitalStart > olegStart,
+                "The exact Oleg vendor specification is unavailable.");
+            string olegSpec = campaign.Substring(olegStart,
+                capitalStart - olegStart);
+            Assertions.False(olegSpec.Contains("BorderSentinel"),
+                "Border Sentinel returned to Oleg's desired inventory.");
+            Assertions.Equal(1, campaign.Split(new[] {
+                "EasternWeaponNamedKind.BorderSentinel" },
+                StringSplitOptions.None).Length - 1,
+                "Border Sentinel must have exactly one campaign placement spec.");
+            foreach (string token in new[] {
+                "c8b8159fb695be64883b609a7e77e75d",
+                "PoorHuman_treasure_chest_03", "StagLordFort",
+                "_loot.Count != 5", "LootRowCount != 12",
+                "Distinct().Count() != 5" })
+                Assertions.True(campaign.Contains(token),
+                    "Border Sentinel fixed-loot contract is missing: " + token);
+
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            foreach (string token in new[] {
+                "border-sentinel-later-placement",
+                "borderSentinelOlegRows == 0",
+                "borderSentinelVendorRows == 0",
+                "borderSentinelLootRows == (expectedEasternCommerce ? 1 : 0)",
+                "exact item reference across every registered shared vendor" })
+                Assertions.True(runtime.Contains(token),
+                    "Live Border Sentinel assertion is missing: " + token);
         }
 
         internal static void DevelopmentControlsAreExactAndInventoryOnly()
@@ -445,10 +487,12 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "Development",
                 "KingmakerDevelopmentBridge.EasternWeapons.cs"));
             foreach (string token in new[] {
-                "DescribeEasternWeaponCatalog", "AddEasternWeaponSet",
+                "DescribeEasternWeaponCatalog",
+                "DescribeBorderSentinelAcquisition", "AddEasternWeaponSet",
                 "AddWakizashiPath", "AddKatanaPath", "AddNodachiPath",
                 "AddEasternWeapon(int index)", "items.Length != 30",
                 "path.Length != 10", "after != before + 1",
+                "This audit does not open, move, grant, teleport, or save anything",
                 "No proficiency, feat, class level, vendor, loot, campaign flag, or save API changed" })
                 Assertions.True(bridge.Contains(token),
                     "Eastern development bridge lacks: " + token);

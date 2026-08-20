@@ -1,7 +1,11 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Loot;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.EasternWeapons;
@@ -30,6 +34,46 @@ namespace KingmakerGunslinger.Development
         {
             return AddEasternWeapons(RequireEasternWeapons(),
                 "all 30 Eastern Weapon variants");
+        }
+
+        internal DevelopmentActionResult DescribeBorderSentinelAcquisition()
+        {
+            ResolveRuntime(requireUnit: false);
+            EasternWeaponBlueprintSet set = BlueprintBootstrap.EasternWeapons;
+            if (set == null || set.Named == null)
+                throw new InvalidOperationException(
+                    "Eastern Weapon blueprint initialization has not completed.");
+            BlueprintItemWeapon item = set.Named.Require(
+                EasternWeaponNamedKind.BorderSentinel).Item;
+            EasternLootSpec spec = EasternWeaponCampaignBlueprints.LootSpecs
+                .Single(value => value.NamedKinds.Contains(
+                    EasternWeaponNamedKind.BorderSentinel));
+            BlueprintLoot target = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintLoot>().Single(value => string.Equals(
+                    value.AssetGuid, spec.Guid, StringComparison.Ordinal));
+            LootEntry[] matches = (target.Items ?? new LootEntry[0]).Where(value =>
+                value != null && ReferenceEquals(value.Item, item)).ToArray();
+            object currentArea = null; string areaMember;
+            ReflectionAccess.TryGetFirstNonNullMember(Game.Instance,
+                new[] { "CurrentlyLoadedArea" }, out currentArea, out areaMember);
+            string currentAreaGuid = ReadString(currentArea, "AssetGuid");
+            bool currentAreaMatch = target.Area != null &&
+                (ReferenceEquals(target.Area, currentArea) || string.Equals(
+                    target.Area.AssetGuid, currentAreaGuid,
+                    StringComparison.Ordinal));
+            string contents = string.Join(",", (target.Items ??
+                new LootEntry[0]).Where(value => value != null).Select(value =>
+                    (value.Item == null ? "<null>" : value.Item.name + ":" +
+                        value.Item.AssetGuid) + "*" + value.Count).ToArray());
+            return DevelopmentActionResult.Success(
+                "BORDER SENTINEL ACQUISITION (READ ONLY): item=" + item.Name +
+                ":" + item.AssetGuid + ";profile=+1 cold iron;cost=" + item.Cost +
+                ";target=" + target.name + ":" + target.AssetGuid +
+                ";area=" + (target.Area == null ? "<none>" : target.Area.name +
+                    ":" + target.Area.AssetGuid) + ";countOneMatches=" +
+                matches.Count(value => value.Count == 1) +
+                ";currentAreaMatch=" + currentAreaMatch + ";contents=" +
+                contents + ". This audit does not open, move, grant, teleport, or save anything.");
         }
 
         internal DevelopmentActionResult AddWakizashiPath()

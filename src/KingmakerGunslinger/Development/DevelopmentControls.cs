@@ -62,6 +62,8 @@ namespace KingmakerGunslinger.Development
 
         internal static DevelopmentActionResult DescribeEasternWeaponCatalog()
         { return Execute("eastern-weapons-catalog", bridge => bridge.DescribeEasternWeaponCatalog()); }
+        internal static DevelopmentActionResult DescribeBorderSentinelAcquisition()
+        { return Execute("border-sentinel-acquisition-audit", bridge => bridge.DescribeBorderSentinelAcquisition()); }
         internal static DevelopmentActionResult AddEasternWeaponSet()
         { return Execute("eastern-weapons-add-all", bridge => bridge.AddEasternWeaponSet()); }
         internal static DevelopmentActionResult AddWakizashiPath()

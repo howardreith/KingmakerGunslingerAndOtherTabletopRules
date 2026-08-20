@@ -2,14 +2,16 @@
 
 ## Live qualification
 
-Guarded read-only vendor/loot run
+Historical pre-Issue-7 guarded read-only vendor/loot run
 `20260814T1531432806171Z-d6638ced8af7472fabeb9b65f2c233c7`
 resolved all eight installed vendor tables by exact GUID/name and observed 97
 singular Eastern rows: 49 base-campaign merchant rows plus 48 generic BTSL
 rows. The four BTSL tables contained no named Eastern item and retained all
 expected firearm and Elven Branched Spear rows. Four exact fixed-loot targets
 contained eleven count-one named rows; together with seven named merchant rows,
-all eighteen named weapons were placed exactly once.
+all eighteen named weapons were placed exactly once. The fresh human finding
+that Oleg was too early superseded only Border Sentinel's placement; the old
+run remains historical evidence rather than current acceptance.
 
 Fresh-process run
 `20260814T1534024888613Z-29a2ce31f1db4aa7bedec9c2c14e6047`
@@ -27,13 +29,13 @@ restores the exact pre-publication arrays if no later foreign mutation occurs.
 
 | Band | Vendor/table | Exact identity | Eastern stock | Lifecycle and reachability evidence |
 |---|---|---|---|---|
-| Act I | Oleg | `C11_OlegVendorTable` / `f720440559fc00949900bfa1575196ac` | mundane and masterwork Wakizashi, Katana, and Nodachi; Border Sentinel | one fixed row each under native restock semantics; direct refs from `OTP_Oleg` and `OTP_Oleg_FirstVisit`; Border Sentinel is therefore guaranteed no later than Act I |
+| Act I | Oleg | `C11_OlegVendorTable` / `f720440559fc00949900bfa1575196ac` | mundane and masterwork Wakizashi, Katana, and Nodachi | one fixed row each under native restock semantics; direct refs from `OTP_Oleg` and `OTP_Oleg_FirstVisit`; no named Eastern weapon remains in this table |
 | Act II onward | Capital blacksmith | `SmithVendorTable` / `7de959347266092448d8a72089ef9778` | all 12 generic items; Quiet Current, Winter Reed, Cloud-Cleaver | one fixed row each under the recurring capital merchant lifecycle; direct refs from `CapitalOwlbearAttack_Blacksmith` and `VerdelBlacksmith` |
 | later replacement | Dire Narlmarches village trader | `DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c` | all 12 generic items | one fixed row each under native restock semantics; direct ref from `DireNarlmarchesVillageTrader` |
 | Act V | Pitax specialist | `PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460` | all 12 generic items; Empty Sleeve, Moonlit Crossing, Unfixed Form | one fixed row each under native restock semantics; direct ref from `PitaxTown_Trader` |
 
-The four required tables contain 49 feature-owned rows when the module is on:
-42 generic rows and seven named rows. Tier-two and tier-five progression is
+The four required tables contain 48 feature-owned rows when the module is on:
+42 generic rows and six named rows. Tier-two and tier-five progression is
 dependable for every family. Ordinary item pricing remains authoritative, so
 publication does not grant or discount an item outside the documented balance
 formula.
@@ -55,17 +57,28 @@ No named Eastern weapon is placed in ordinary BTSL stock.
 
 | Band | Wakizashi | Katana | Nodachi | Source |
 |---|---|---|---|---|
-| late Act I | Paper Lantern | Wayfarer's Oath | Border Sentinel | first two append to `Forest_BarrikadedChest1` / `59cb0ac65b4093440ad341b9a2f372cf` in `StagLordFort`; Border Sentinel is guaranteed Oleg stock |
+| late Act I | Paper Lantern | Wayfarer's Oath | Border Sentinel | first two append to `Forest_BarrikadedChest1` / `59cb0ac65b4093440ad341b9a2f372cf`; Border Sentinel appends separately to fixed `PoorHuman_treasure_chest_03` / `c8b8159fb695be64883b609a7e77e75d`; both exact targets are in `StagLordFort` |
 | Act II | Quiet Current | Winter Reed | Cloud-Cleaver | recurring capital blacksmith stock |
 | Act III | Falling Petal | Drawn Horizon | Storm Over Stone | `Forest_LootBoxGood2` / `70c4615a8d667dc4cb740c22ee7b5eed` in `GoblinKingFort` |
 | Act IV | Foxfire Whisper | Thunder at the Gate | Mountain-Sunder | `Forest_cache` / `193b1222846a0114197e716cb35d3ce8` in `VordakaiTombLevel2` |
 | Act V | Empty Sleeve | Moonlit Crossing | Unfixed Form | recurring Pitax specialist stock |
 | late game | Night Without Moon | Heaven's Measure | World-Tree Severer | `RichHuman_Loot_1` / `7e6448d1d8a7e4f4d9cc340b8f15e732` in `FinalDungeon` |
 
-The four fixed containers receive 11 named count-one rows. They are important
+The five fixed containers receive 12 named count-one rows. They are important
 main-path fort, tomb, and final-dungeon caches already accepted by the spear
 qualification. Nothing is hidden behind a new Perception-only route, and every
 family has its own uninterrupted six-item named path.
+
+Border Sentinel is the stable `KMG.EasternWeapons.Nodachi.BorderSentinel`
+blueprint (`c1c7a6746916504ebfdcb2b650a7145b`), a +1 cold-iron nodachi priced at
+4,420 gp. The selected chest is a fixed base-campaign `BlueprintLoot` with zero
+registered direct references, native horseshoe/gold contents, and exact
+`StagLordFort` area ownership. Publication preserves those entries and appends
+Border Sentinel once. It removes the project item only from future static Oleg
+publication; it never removes a copy already owned, sold, dropped, stashed, or
+materialized in an existing save. New campaigns and not-yet-instantiated static
+loot/vendor state receive the changed blueprint contract; no old-save merchant
+or opened-container refresh is claimed.
 
 ## Module, lifecycle, and rollback behavior
 

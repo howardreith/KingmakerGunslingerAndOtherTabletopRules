@@ -15,9 +15,9 @@ namespace KingmakerGunslinger.Blueprints
         private static readonly EasternVendorSpec[] Vendors =
         {
             new EasternVendorSpec("f720440559fc00949900bfa1575196ac",
-                "C11_OlegVendorTable", EarlyGenericKinds(), new[] {
-                    EasternWeaponNamedKind.BorderSentinel }, false,
-                "late-Act-I guaranteed specialist stock"),
+                "C11_OlegVendorTable", EarlyGenericKinds(),
+                new EasternWeaponNamedKind[0], false,
+                "Act-I mundane and masterwork stock"),
             new EasternVendorSpec(CapitalVendorBlueprints.TableGuid,
                 CapitalVendorBlueprints.ExpectedTableName, AllGenericKinds(),
                 new[] { EasternWeaponNamedKind.QuietCurrent,
@@ -62,6 +62,9 @@ namespace KingmakerGunslinger.Blueprints
                 "Forest_BarrikadedChest1", "StagLordFort", "late Act I",
                 new[] { EasternWeaponNamedKind.PaperLantern,
                     EasternWeaponNamedKind.WayfarersOath }),
+            new EasternLootSpec("c8b8159fb695be64883b609a7e77e75d",
+                "PoorHuman_treasure_chest_03", "StagLordFort", "late Act I",
+                new[] { EasternWeaponNamedKind.BorderSentinel }),
             new EasternLootSpec("70c4615a8d667dc4cb740c22ee7b5eed",
                 "Forest_LootBoxGood2", "GoblinKingFort", "Act III",
                 new[] { EasternWeaponNamedKind.FallingPetal,
@@ -185,7 +188,7 @@ namespace KingmakerGunslinger.Blueprints
                 result.Validate();
                 weapons.AttachCampaign(result);
                 logger.Info("eastern-weapons", "campaign.published",
-                    "Published four required campaign merchants, every installed BTSL weapon table, eleven fixed-loot rows, and all eighteen singular named progression placements.");
+                    "Published four required campaign merchants, every installed BTSL weapon table, twelve fixed-loot rows, and all eighteen singular named progression placements.");
                 return result;
             }
             catch
@@ -293,10 +296,10 @@ namespace KingmakerGunslinger.Blueprints
                 value => !value.Optional);
             int maximum = EasternWeaponCampaignBlueprints.VendorSpecs.Length;
             if (_vendors.Count < required || _vendors.Count > maximum ||
-                _loot.Count != 4 || LootRowCount != 11 ||
+                _loot.Count != 5 || LootRowCount != 12 ||
                 _vendors.Select(value => value.Table).Distinct().Count() !=
                     _vendors.Count ||
-                _loot.Select(value => value.Target).Distinct().Count() != 4 ||
+                _loot.Select(value => value.Target).Distinct().Count() != 5 ||
                 _vendors.Any(value => value.Spec.IsBtsl &&
                     value.Spec.NamedKinds.Length != 0) ||
                 BtslRowCount != BtslTableCount * 12)
