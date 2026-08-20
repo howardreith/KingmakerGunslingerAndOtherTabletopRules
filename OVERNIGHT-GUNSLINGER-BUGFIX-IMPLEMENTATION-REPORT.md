@@ -1,5 +1,11 @@
 # Overnight Gunslinger Bug-Fix Implementation Report
 
+## Issue 7 - Border Sentinel later organic placement
+
+The exact item is the stable +1 cold-iron nodachi `c1c7a6746916504ebfdcb2b650a7145b`, price 4,420 gp. The prior Eastern campaign spec deliberately placed it at Oleg. A save-free live inventory of 437 bounded fixed targets selected `PoorHuman_treasure_chest_03` (`c8b8159fb695be64883b609a7e77e75d`) in base-campaign `StagLordFort`: a later late-Act-I fortification source with zero registered direct references, fixed native horseshoe/gold contents, and no project unique.
+
+The existing Eastern transaction now desires no named item at Oleg and desires Border Sentinel once at that separate chest. Its established owner-wide normalization removes only project-owned Eastern rows from wrong publication targets, preserves all native/foreign entries and order, validates five distinct loot targets/twelve fixed rows/all eighteen singular named items, and restores exact pre-publication arrays on failure. Live observation scans every shared vendor and every registered `BlueprintLoot`, not only declared targets. A development-only read-only action reports exact item, target, area, contents, count, and current-area match without gameplay mutation.
+
 Status: MISSION CHECKPOINT IN PROGRESS
 
 ## Baseline

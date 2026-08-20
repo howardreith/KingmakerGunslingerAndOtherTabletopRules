@@ -1,5 +1,20 @@
 # Overnight Gunslinger Bug-Fix Qualification
 
+## Issue 7 - Border Sentinel acquisition qualification
+
+Implementation commit: `3e52dfdac3d86eddabc2e8fa94024b96ced0241b`.
+
+- Focused PASS: `CampaignPublicationIsExactAndTransactional`, `BorderSentinelPlacementIsLaterAndSingular`, and `DevelopmentControlsAreExactAndInventoryOnly`.
+- Complete dependency-free domain/reflection suite: 1,157/1,157 PASS.
+- Repository validation, clean exact-reference Release, output validation, Firearm SoundBank validation, standalone package construction, strict package validation, and `git diff --check`: PASS.
+- Pre-change forensic run: `20260820T0603196319367Z-66ffefa0c02344fd82160591d0a4aea8`, 23/23 PASS.
+- Immutable qualifying run: `20260820T0613577259438Z-865e96f7deb44004bda7cef62f0511bb`, 24/24 PASS.
+- Exact live assertion: `olegRows=0;vendorRows=0;lootRows=1;target=PoorHuman_treasure_chest_03:c8b8159fb695be64883b609a7e77e75d:StagLordFort`.
+- Loaded commit: `3e52dfdac3d86eddabc2e8fa94024b96ced0241b`; loaded DLL SHA-256 `316CF0CAE762ADDC12338B917D283F554C7B93F95BDD369202A578C6DAC76DA0`.
+- Runtime package SHA-256: `F221621C474C4778D92A18D2F126EAED3ACBB675F8B97251CD6FA59E7088EBA8`.
+
+Automated evidence proves static blueprint identity, placement, global singularity, preservation/rollback contracts, and Oleg absence. It does not prove an already-materialized old-save shop/container refresh or physical chest discoverability; those remain human-gated.
+
 Status: BASELINE ESTABLISHED; ISSUE QUALIFICATION PENDING
 
 ## Starting identity

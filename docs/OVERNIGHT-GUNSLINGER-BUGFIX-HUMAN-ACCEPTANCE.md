@@ -1,5 +1,13 @@
 # Overnight Gunslinger Bug-Fix Human Acceptance
 
+## Issue 7 - Border Sentinel
+
+1. Use a new campaign or an unopened/not-yet-instantiated Stag Lord Fort state; do not use a previously opened chest as refresh evidence.
+2. At Oleg, confirm Border Sentinel is absent while mundane/masterwork eastern weapons and the Issue 5 maintenance kits remain intact.
+3. In Stag Lord Fort, open the separate native treasure chest whose original fixed contents are Rusty Horseshoe x1 and Gold x12; confirm Border Sentinel appears exactly once and the native contents remain.
+4. In the development panel under Eastern Weapons Acceptance, run `Print Border Sentinel location audit`. In Stag Lord Fort it must report item GUID `c1c7a6746916504ebfdcb2b650a7145b`, target GUID `c8b8159fb695be64883b609a7e77e75d`, `countOneMatches=1`, and `currentAreaMatch=True`.
+5. Do not interpret an already-owned/sold/dropped/stashed copy, an already-materialized Oleg inventory, or an already-opened chest as a static-publication failure.
+
 Status: DO NOT RUN YET
 
 Human verification is requested only after all safely actionable issues and

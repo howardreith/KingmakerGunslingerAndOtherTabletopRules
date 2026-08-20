@@ -114,3 +114,22 @@ exactly to SHA-256
 The dedicated vendor/loot observer and merchant reopen/refresh lifecycle
 exercise remain part of final runtime qualification; this checkpoint proves
 exact blueprint-array publication, module gating, and transaction restoration.
+
+## Issue 7 current qualification
+
+Save-free guarded run
+`20260820T0613577259438Z-865e96f7deb44004bda7cef62f0511bb`
+passed 24/24 assertions on immutable commit
+`3e52dfdac3d86eddabc2e8fa94024b96ced0241b`. The live installed graph reported
+zero Border Sentinel rows in Oleg, zero rows across all shared vendors, and one
+row across all registered `BlueprintLoot` objects. That row was count one in
+exact target `PoorHuman_treasure_chest_03` /
+`c8b8159fb695be64883b609a7e77e75d`, exact area `StagLordFort`. The complete
+Eastern publication was 48 base-campaign merchant rows, 48 BTSL rows, and 12
+fixed-loot rows across five targets, with zero unexpected Eastern rows.
+
+The development panel's `Print Border Sentinel location audit` action reports
+the exact item/target/area identities, count-one match, current-area match, and
+complete target contents without opening, moving, granting, teleporting, or
+saving anything. Physical chest materialization and discoverability remain a
+human check on an unopened/new-campaign target.

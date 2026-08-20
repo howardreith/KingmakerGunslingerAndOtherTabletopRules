@@ -1,5 +1,16 @@
 # Overnight Gunslinger Bug-Fix Journal
 
+## 2026-08-20 - Issue 7 Border Sentinel later placement
+
+- Pre-change save-free graph run `20260820T0603196319367Z-66ffefa0c02344fd82160591d0a4aea8` passed 23/23 assertions on `e09fbd037b0a0fc41181dd40ff0f77bb972061d5`. It confirmed the stale Oleg row and enumerated 437 bounded fixed-loot candidates.
+- Border Sentinel remains stable identity `KMG.EasternWeapons.Nodachi.BorderSentinel` / `c1c7a6746916504ebfdcb2b650a7145b`, +1 cold iron, price 4,420 gp. Exact selected target is base-campaign fixed `BlueprintLoot` `PoorHuman_treasure_chest_03` / `c8b8159fb695be64883b609a7e77e75d` in `StagLordFort`, with zero registered direct references and native Rusty Horseshoe x1 plus Gold x12 contents.
+- Commit `3e52dfdac3d86eddabc2e8fa94024b96ced0241b` removes Border Sentinel only from Oleg's project-owned desired set, appends it once to the selected chest, updates five-target/twelve-row cardinalities, and adds a read-only development location audit. Existing identity, mechanics, price, contents, order, module gating, idempotence, and exact-snapshot rollback remain intact.
+- Focused campaign/placement/development tests PASS. Repository validation, complete 1,157-test suite, clean exact-reference Release build, output validation, SoundBank validation, standalone package, strict package, and diff checks PASS.
+- Immutable guarded run `20260820T0613577259438Z-865e96f7deb44004bda7cef62f0511bb` passed 24/24: `olegRows=0;vendorRows=0;lootRows=1;target=PoorHuman_treasure_chest_03:c8b8159fb695be64883b609a7e77e75d:StagLordFort`. Eastern totals were vendor 96/8 including 48 BTSL, fixed loot 12/5, with zero invalid/unexpected rows.
+- Runtime package SHA-256 `F221621C474C4778D92A18D2F126EAED3ACBB675F8B97251CD6FA59E7088EBA8`; loaded/runtime DLL SHA-256 `316CF0CAE762ADDC12338B917D283F554C7B93F95BDD369202A578C6DAC76DA0`; unchanged validated SoundBank SHA-256 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Static blueprint publication does not delete any owned/sold/dropped/stashed copy, refresh an already-materialized Oleg inventory, or refill an opened chest. Physical unopened/new-campaign chest materialization remains human-gated.
+- Next action: Issue 8, audit current Wwise bank staging/loading/event posting/emitter/package paths against the fresh missing-sound report.
+
 ## 2026-08-19 mission intake and baseline
 
 - Required branch: codex/gunslinger-overnight-bugfixes.

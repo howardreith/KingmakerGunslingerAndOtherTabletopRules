@@ -1,5 +1,19 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-20 Issue 7 checkpoint
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Published implementation SHA: `3e52dfdac3d86eddabc2e8fa94024b96ced0241b`; local branch and origin were equal before this record commit.
+- Version: `0.0.87`.
+- Completed automated qualification: Issues 1-7. Each remains consolidated-human-gated only where stated.
+- Issue 7 runtime: `20260820T0613577259438Z-865e96f7deb44004bda7cef62f0511bb`, 24/24 PASS; Oleg/vendor rows 0, global fixed-loot rows 1, exact Stag Lord Fort target.
+- Gates: focused PASS; repository PASS; 1,157/1,157 tests PASS; clean Release/output/SoundBank/package/strict package/diff PASS.
+- Package SHA-256: `F221621C474C4778D92A18D2F126EAED3ACBB675F8B97251CD6FA59E7088EBA8`.
+- DLL SHA-256: `316CF0CAE762ADDC12338B917D283F554C7B93F95BDD369202A578C6DAC76DA0`.
+- Current issue: 8, firearm Wwise sound regression.
+- Current hypothesis: the previously qualified Wwise architecture exists, but an integrated regression may be in bank staging/deployment, one-time load readiness, event routing, emitter selection, or a newer physical discharge path.
+- Next action: read the current audio source, bank/package manifests, prior Wwise mission records, and recent relevant history; reproduce the failing boundary without replacing the architecture or assets.
+
 ## Overnight Gunslinger bug-fix batch (active, 2026-08-19)
 
 - Branch: codex/gunslinger-overnight-bugfixes.
