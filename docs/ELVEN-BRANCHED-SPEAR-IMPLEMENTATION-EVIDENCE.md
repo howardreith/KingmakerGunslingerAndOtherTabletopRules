@@ -556,3 +556,22 @@ qualification, and canonical smoke
 `20260814T0334532807442Z-working-save-smoke` passed from `f8dbcb9`. Full asset,
 commerce, package, compatibility, blueprint, and remaining-visual-review facts
 are recorded in `ELVEN-BRANCHED-SPEAR-QUALIFICATION.md`.
+
+## 2026-08-20 overnight visual diagnosis and repair
+
+Fresh human evidence superseded the first-playtest length/grip claim. Published
+diagnostic commit `47259f964f072bede2c6c51789b6f73bf9d250cd` and guarded
+run `20260820T0712595741030Z-828d00615d54498297ec90f5dfaa4352`
+established the exact boundary: installed native `TH_LongspearKnight1` renderer
+bounds were 2.2825 m along local Y, while the custom renderer bounds were
+2.9235 m along local Z. The previous semantic anchors described the custom
+source axis but Kingmaker did not consume them for ordinary Longspear
+attachment.
+
+The repaired source is 2.28 m from -1.14 through +1.14 around the primary grip.
+The Unity builder applies one explicit -90 degree X rotation to `Visual`, so
+source +Z becomes the native Longspear +Y equipment frame, and publishes all
+anchors in that same frame. Runtime validation rejects any other transform,
+axis, or length. `WeaponVisualParameters` still clones every native field and
+changes only `m_WeaponModel`; `PiercingTwoHanded`, sounds, attach-slot policy,
+timing, trails, mechanics, and every stable identity remain unchanged.

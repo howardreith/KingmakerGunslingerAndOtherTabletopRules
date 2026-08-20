@@ -23,14 +23,18 @@ REPORT = ROOT / "elven-branched-spear-build-report.json"
 RUNTIME_ICON = ROOT.parents[2] / "assets" / "game" / "icons" / \
     "elven-branched-spear.png"
 ICON_RENDER_ANGLE_DEGREES = 42.0
+BUTT_Z = -1.14
+TIP_Z = 1.14
+SUPPORT_Z = 0.37
+HEAD_BASE_Z = 0.70
 
 VARIANTS = {
     "classic": {
         "label": "ElvenBranchedSpear",
         "fbx": "elven-branched-spear.fbx",
         "branches": (
-            ("LeftLow", (-0.58, 0.00, -0.36), (-0.030, 0.000, 1.62), 0.35, 0.060),
-            ("RightHigh", (0.55, 0.00, -0.30), (0.030, 0.000, 1.70), 0.32, 0.057),
+            ("LeftLow", (-0.58, 0.00, -0.36), (-0.024, 0.000, 0.82), 0.27, 0.052),
+            ("RightHigh", (0.55, 0.00, -0.30), (0.024, 0.000, 0.91), 0.24, 0.050),
         ),
         "steel": (0.42, 0.52, 0.58),
         "inlay": (0.025, 0.18, 0.24),
@@ -39,9 +43,9 @@ VARIANTS = {
         "label": "ElvenBranchedSpearThorn",
         "fbx": "elven-branched-spear-thorn.fbx",
         "branches": (
-            ("LeftLow", (-0.66, 0.05, -0.38), (-0.028, 0.000, 1.58), 0.37, 0.056),
-            ("RightMid", (0.62, -0.04, -0.32), (0.028, 0.000, 1.67), 0.34, 0.054),
-            ("LeftHigh", (-0.48, -0.08, -0.22), (-0.022, 0.004, 1.76), 0.25, 0.046),
+            ("LeftLow", (-0.66, 0.05, -0.38), (-0.024, 0.000, 0.79), 0.28, 0.050),
+            ("RightMid", (0.62, -0.04, -0.32), (0.024, 0.000, 0.88), 0.25, 0.048),
+            ("LeftHigh", (-0.48, -0.08, -0.22), (-0.018, 0.004, 0.97), 0.19, 0.041),
         ),
         "steel": (0.36, 0.49, 0.43),
         "inlay": (0.11, 0.31, 0.16),
@@ -50,10 +54,10 @@ VARIANTS = {
         "label": "ElvenBranchedSpearCrown",
         "fbx": "elven-branched-spear-crown.fbx",
         "branches": (
-            ("LeftLow", (-0.70, 0.05, -0.42), (-0.032, 0.000, 1.56), 0.39, 0.063),
-            ("RightLow", (0.70, -0.05, -0.42), (0.032, 0.000, 1.60), 0.39, 0.063),
-            ("LeftHigh", (-0.54, -0.10, -0.20), (-0.025, 0.008, 1.75), 0.29, 0.050),
-            ("RightHigh", (0.54, 0.10, -0.20), (0.025, -0.008, 1.79), 0.29, 0.050),
+            ("LeftLow", (-0.70, 0.05, -0.42), (-0.026, 0.000, 0.77), 0.29, 0.055),
+            ("RightLow", (0.70, -0.05, -0.42), (0.026, 0.000, 0.81), 0.29, 0.055),
+            ("LeftHigh", (-0.54, -0.10, -0.20), (-0.020, 0.006, 0.96), 0.22, 0.044),
+            ("RightHigh", (0.54, 0.10, -0.20), (0.020, -0.006, 1.00), 0.22, 0.044),
         ),
         "steel": (0.55, 0.65, 0.68),
         "inlay": (0.48, 0.31, 0.08),
@@ -170,15 +174,15 @@ def build_variant(key, spec):
     steel = material(prefix + "MoonSilver", spec["steel"], 0.88, 0.20)
     inlay = material(prefix + "Inlay", spec["inlay"], 0.62, 0.25)
     objects = [
-        cylinder(prefix + "Shaft", 0.027, 2.35, 0.37, wood),
-        cylinder(prefix + "ButtCap", 0.036, 0.11, -0.86, steel, 16),
-        cylinder(prefix + "HeadCollar", 0.043, 0.18, 1.50, steel),
+        cylinder(prefix + "Shaft", 0.027, 1.88, -0.16, wood),
+        cylinder(prefix + "ButtCap", 0.036, 0.08, -1.10, steel, 16),
+        cylinder(prefix + "HeadCollar", 0.043, 0.14, 0.72, steel),
     ]
-    for index, z in enumerate((-0.48, 0.02, 0.52, 0.92, 1.22)):
+    for index, z in enumerate((-0.72, -0.35, 0.00, 0.30, 0.55)):
         objects.append(cylinder(prefix + "InlayBand%02d" % index,
                                 0.0305, 0.018, z, inlay))
-    central = leaf(prefix + "CentralLeaf", 0.54, 0.105, 0.0085, steel)
-    central.location = (0, 0, 1.47)
+    central = leaf(prefix + "CentralLeaf", 0.44, 0.095, 0.0085, steel)
+    central.location = (0, 0, HEAD_BASE_Z)
     objects.append(central)
 
     branch_records = []
@@ -317,9 +321,9 @@ bpy.ops.object.camera_add(location=(3.15, -4.35, 2.45))
 camera = bpy.context.object
 camera.name = "IconCamera"
 camera.data.type = "ORTHO"
-camera.data.ortho_scale = 3.45
-look_at(camera, (0, 0, 0.45))
-observed_icon_angle, icon_camera_roll = apply_icon_roll(camera, -0.915, 2.01)
+camera.data.ortho_scale = 2.75
+look_at(camera, (0, 0, 0.0))
+observed_icon_angle, icon_camera_roll = apply_icon_roll(camera, BUTT_Z, TIP_Z)
 bpy.context.scene.camera = camera
 bpy.ops.object.light_add(type="AREA", location=(2.5, -2.5, 4.0))
 key_light = bpy.context.object
@@ -391,8 +395,9 @@ report = {
         "sourceDimensions": [512, 512], "runtimeDimensions": [128, 128],
         "background": "transparent RGBA",
     },
-    "dimensionsMeters": {"buttZ": -0.915, "tipZ": 2.01,
-                         "shaftGripExclusionMaxZ": 1.47},
+    "dimensionsMeters": {"buttZ": BUTT_Z, "tipZ": TIP_Z,
+                         "supportZ": SUPPORT_Z,
+                         "shaftGripExclusionMaxZ": HEAD_BASE_Z},
     "variants": {
         key: {"prefab": value["root"].name,
               "fbx": VARIANTS[key]["fbx"],

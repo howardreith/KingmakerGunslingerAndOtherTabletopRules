@@ -499,22 +499,22 @@ namespace KingmakerGunslinger.DomainTests
                 report.Contains("\"branchCount\": 4") &&
                 report.Contains("Original project-owned asset"),
                 "Original Blender source is not deterministic and documented.");
-            Assertions.Equal("80773756F2C403D8569FE811B049FC3B53AE1399FA83446A70710AF1F69833E5",
+            Assertions.Equal("525B6FB2DAC0106C001BCB0901ED892DBBACA48CA1DF6DDB78702F9B2B72AE01",
                 Sha256(Path.Combine(sourceRoot, "elven-branched-spear.fbx")),
                 "Generated classic spear FBX hash changed.");
-            Assertions.Equal("2BE981892A5C08E96A018FC5CC9188311128725B5BB0FC545DA12E298205734F",
+            Assertions.Equal("03B30979A7EA686AA6CA29D436BA434FD91D15BECDEE8BD2C0377A1B8B470579",
                 Sha256(Path.Combine(sourceRoot,
                     "elven-branched-spear-thorn.fbx")),
                 "Generated thorn spear FBX hash changed.");
-            Assertions.Equal("0FAF504CFDD5290E71993A484A77874AEEB2CB01B38174CC7635F716C345D99B",
+            Assertions.Equal("C66E6BBAAB853011FBDA3077566A58D516248230FC5DE7CA6554661EEDCE345A",
                 Sha256(Path.Combine(sourceRoot,
                     "elven-branched-spear-crown.fbx")),
                 "Generated crown spear FBX hash changed.");
-            Assertions.Equal("6E9FE86E43072361EEC3357D9C73E17ADD71D22BAF257FB8C7ED6F52931CE777",
+            Assertions.Equal("F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.elvenbranchedspear")),
                 "Dedicated spear bundle hash changed.");
-            Assertions.Equal("9E959D51A39C3F171403975913CD049C2CB2DE2D7D394F8CC53E71717AF2F8BB",
+            Assertions.Equal("A4CAA5FED242BEE645AD4F9D1E5F201C372EDE4A066254EE6BD4003A6538AF99",
                 Sha256(Path.Combine(root, "assets", "game", "icons",
                     "elven-branched-spear.png")),
                 "Runtime spear icon hash changed.");
@@ -526,7 +526,9 @@ namespace KingmakerGunslinger.DomainTests
                 "ElvenBranchedSpearAssetRuntime.cs"));
             foreach (string token in new[] { "2018.4.10f1",
                 "kingmakergunslinger.elvenbranchedspear", "Grip",
-                "SupportHandTarget", "Tip", "Butt", "Standard" })
+                "SupportHandTarget", "Tip", "Butt", "Standard",
+                "Quaternion.Euler(-90f, 0f, 0f)",
+                "native Longspear +Y/2.28m contract" })
                 Assertions.True(builder.Contains(token) || runtime.Contains(token),
                     "Dedicated asset pipeline lacks: " + token);
             foreach (string token in new[] { "AssetBundle.LoadFromFile",
@@ -561,9 +563,11 @@ namespace KingmakerGunslinger.DomainTests
                  "BriarPenaltyApplications", "GeneratedEvaluations",
                  "InstantiatePrefab", "SameReferences",
                  "spear-native-custom-geometry-inventory",
-                 "spear-equipped-world-presentation",
+                 "spear-equipped-world-presentation-observation",
+                 "spear-native-presentation-donor-preserved",
                  "HandsEquipment.UpdateAll()", "MeasurePresentation",
-                 "FindEquippedPresentation", "TH_LongspearKnight1",
+                 "FindEquippedPresentation", "EquivalentPresentationExceptModel",
+                 "TH_LongspearKnight1",
                  "spear-multiple-dexterity-and-switch",
                  "spear-finesse-training-reselection",
                  "SecondFinesseTrainingTestGuid", "StandardLongspearGuid",

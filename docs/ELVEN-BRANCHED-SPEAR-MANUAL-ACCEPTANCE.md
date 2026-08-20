@@ -75,3 +75,19 @@ category/prerequisite, native `ExoticWeaponProficiency` icon, no spear in
 `Features`, and merged indexes `5/6`. The exact
 runtime-qualified DLL is installed; the remaining step is the requested human
 visual confirmation in the level-up list.
+
+## 2026-08-20 visual repair supersession
+
+The overnight playtest finding supersedes the earlier acceptance statement for
+length and hand alignment. Live run
+`20260820T0712595741030Z-828d00615d54498297ec90f5dfaa4352`
+measured native `TH_LongspearKnight1` at 2.2825 m along local +Y and the rejected
+custom model at 2.9235 m along local +Z. The repair reauthors the custom length
+to 2.28 m and maps its prefab `Visual` onto the native +Y frame while retaining
+all non-model native `WeaponVisualParameters` fields.
+
+Final human acceptance must separately inspect world and inventory dolls for
+idle, walk/run, ordinary thrust, full attack, movement AoO, weapon switch,
+sheathe/unsheathe, medium male/female, one small body, Enlarge Person, and
+Reduce Person. Confirm the primary hand remains on the centered haft and reject
+any backwards point, floor drag, torso penetration, or old 2.925 m silhouette.

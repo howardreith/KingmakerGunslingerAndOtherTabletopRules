@@ -1,9 +1,10 @@
 # Elven Branched Spear visual calibration
 
-Deterministic technical acceptance requires an identity root transform, finite
-positive scales, a +Z point beyond the support-hand anchor, a negative-Z butt,
-opaque Standard materials, at least one enabled renderer, no camera or light,
-and overall anchor length of at least 2.5 m. Runtime diagnostics report either
+Deterministic technical acceptance requires an identity root transform, a
+`Visual` child rotated exactly -90 degrees around X, finite positive scales, a
++Y point beyond the support-hand anchor, a negative-Y butt, opaque Standard
+materials, at least one enabled renderer, no camera or light, and overall
+anchor length from 2.25 through 2.32 m. Runtime diagnostics report either
 `custom:validated:<prefab>` or the exact native-fallback reason.
 
 Human acceptance should use a disposable development character and check:

@@ -70,7 +70,7 @@ public static class BuildElvenBranchedSpearBundle
                 root.transform);
             visual.name = "Visual";
             visual.transform.localPosition = Vector3.zero;
-            visual.transform.localRotation = Quaternion.identity;
+            visual.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
             visual.transform.localScale = Vector3.one;
             foreach (Camera value in visual.GetComponentsInChildren<Camera>(true))
                 UnityEngine.Object.DestroyImmediate(value.gameObject);
@@ -98,14 +98,16 @@ public static class BuildElvenBranchedSpearBundle
                 renderer.sharedMaterials = materials;
             }
             AddAnchor(root, "Grip", Vector3.zero);
-            AddAnchor(root, "SupportHandTarget", new Vector3(0f, 0f, 0.48f));
-            AddAnchor(root, "Tip", new Vector3(0f, 0f, 2.01f));
-            AddAnchor(root, "Butt", new Vector3(0f, 0f, -0.915f));
+            AddAnchor(root, "SupportHandTarget", new Vector3(0f, 0.37f, 0f));
+            AddAnchor(root, "Tip", new Vector3(0f, 1.14f, 0f));
+            AddAnchor(root, "Butt", new Vector3(0f, -1.14f, 0f));
             Bounds bounds = CombinedBounds(renderers);
             if (!Finite(bounds.min) || !Finite(bounds.max) ||
-                bounds.size.magnitude < 1.5f || bounds.size.magnitude > 4.0f)
+                bounds.size.y < 2.20f || bounds.size.y > 2.35f ||
+                bounds.size.y <= bounds.size.x ||
+                bounds.size.y <= bounds.size.z)
                 throw new InvalidOperationException(variant.Root +
-                    " source bounds are nonfinite or implausible: " + bounds);
+                    " source bounds do not match the native Longspear +Y/2.28m contract: " + bounds);
             PrefabUtility.SaveAsPrefabAsset(root, variant.Prefab);
         }
         finally

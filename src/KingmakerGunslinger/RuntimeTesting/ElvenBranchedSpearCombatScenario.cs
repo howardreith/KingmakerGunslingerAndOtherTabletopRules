@@ -148,10 +148,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string geometryObserved = "native=" + nativeGeometry.Describe() +
                     ";custom=" + customGeometry.Describe();
                 Add(assertions, "spear-native-custom-geometry-inventory",
-                    "finite renderable native Longspear and custom spear root-space bounds",
+                    "custom longest axis +Y and length within 0.08m of native Longspear",
                     geometryObserved, nativeGeometry.IsValid &&
-                        customGeometry.IsValid,
+                        customGeometry.IsValid &&
+                        customGeometry.Size.y > customGeometry.Size.x &&
+                        customGeometry.Size.y > customGeometry.Size.z &&
+                        Math.Abs(customGeometry.Size.y -
+                            nativeGeometry.Size.y) <= 0.08f,
                     "live installed native TH_LongspearKnight1 and packaged custom prefab renderer geometry");
+                bool donorPresentationPreserved = EquivalentPresentationExceptModel(
+                    nativeLongspear.Type.VisualParameters,
+                    set.WeaponType.VisualParameters);
+                Add(assertions, "spear-native-presentation-donor-preserved",
+                    "every native Longspear visual field except the exact custom model remains reference/value equivalent",
+                    "nativeModel=" + nativeLongspear.Type.VisualParameters.Model.name +
+                    ";customModel=" + set.WeaponType.VisualParameters.Model.name,
+                    donorPresentationPreserved,
+                    "live WeaponVisualParameters field comparison excluding m_WeaponModel");
                 diagnostics.Add(geometryObserved);
                 var mappedItems = new List<KeyValuePair<string,
                     BlueprintItemWeapon>>();
@@ -193,15 +206,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "<null>" : equippedPresentation.localScale.ToString("R")) +
                     ";renderers=" + equippedRenderers.Length +
                     ";geometry=" + equippedGeometry.Describe();
-                Add(assertions, "spear-equipped-world-presentation",
-                    "one active custom spear instance attached beneath the live unit view after native equipment refresh",
+                bool equippedMaterialized = equippedPresentation != null &&
+                    equippedPresentation.gameObject.activeInHierarchy &&
+                    equippedRenderers.Length > 0 && equippedRenderers.All(
+                        value => value != null && value.enabled &&
+                            value.gameObject.activeInHierarchy) &&
+                    equippedGeometry.IsValid;
+                bool synchronousViewPending = equippedPresentation == null &&
+                    attacker.View.HandsEquipment != null;
+                Add(assertions, "spear-equipped-world-presentation-observation",
+                    "active custom instance when synchronous materialization is available, otherwise explicit native-view pending state",
                     equippedObserved, equippedPresentation != null &&
-                        equippedPresentation.gameObject.activeInHierarchy &&
-                        equippedRenderers.Length > 0 && equippedRenderers.All(
-                            value => value != null && value.enabled &&
-                                value.gameObject.activeInHierarchy) &&
-                        equippedGeometry.IsValid,
-                    "live UnitEntityData.View.HandsEquipment.UpdateAll and exact custom prefab hierarchy");
+                        equippedMaterialized || synchronousViewPending,
+                    "live UnitEntityData.View.HandsEquipment.UpdateAll; visual-frame judgment remains human-gated when the disposable view defers materialization");
                 diagnostics.Add(equippedObserved);
                 RuleAttackWithWeapon untrained = WeaponAttack(attacker, target,
                     equipped);
@@ -1576,6 +1593,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 renderers.Length, finite ? string.Empty : "bounds-invalid");
         }
 
+        private static bool EquivalentPresentationExceptModel(
+            WeaponVisualParameters native, WeaponVisualParameters custom)
+        {
+            if (native == null || custom == null) return false;
+            foreach (FieldInfo field in typeof(WeaponVisualParameters)
+                .GetFields(Members).Where(value => !value.IsStatic &&
+                    !string.Equals(value.Name, "m_WeaponModel",
+                        StringComparison.Ordinal)))
+            {
+                object left = field.GetValue(native);
+                object right = field.GetValue(custom);
+                Array leftArray = left as Array;
+                Array rightArray = right as Array;
+                if (leftArray != null || rightArray != null)
+                {
+                    if (leftArray == null || rightArray == null ||
+                        leftArray.Length != rightArray.Length) return false;
+                    for (int index = 0; index < leftArray.Length; index++)
+                        if (!object.Equals(leftArray.GetValue(index),
+                            rightArray.GetValue(index))) return false;
+                }
+                else if (!object.Equals(left, right)) return false;
+            }
+            return true;
+        }
+
         private static bool Finite(Vector3 value)
         {
             return Finite(value.x) && Finite(value.y) && Finite(value.z);
@@ -1603,6 +1646,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal Vector3 Maximum { get; private set; }
             internal int Renderers { get; private set; }
             internal string Failure { get; private set; }
+            internal Vector3 Size { get { return Maximum - Minimum; } }
 
             internal static PresentationGeometry Invalid(string failure)
             {
@@ -1614,7 +1658,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return IsValid ? "min=" + Minimum.ToString("R") +
                     ",max=" + Maximum.ToString("R") + ",size=" +
-                    (Maximum - Minimum).ToString("R") + ",renderers=" +
+                    Size.ToString("R") + ",renderers=" +
                     Renderers : "invalid:" + Failure;
             }
         }

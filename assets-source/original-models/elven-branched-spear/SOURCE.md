@@ -10,6 +10,12 @@ keeps the primary grip at the origin, points the central blade along +Z, and
 exports the classic, thorn, and crown variants before adding source-only render
 cameras and lights.
 
+The authored extent is -1.14 m to +1.14 m around that grip. The Unity builder
+applies one explicit -90 degree X rotation to the prefab's `Visual` child so
+source +Z becomes Kingmaker's observed native Longspear +Y equipment axis.
+Anchors are expressed in that final Unity frame; the runtime root remains
+identity.
+
 The production FBXs and normalized PNGs matched byte-for-byte across two clean
 runs on 2026-08-15. Blender's `.blend` container embeds session metadata and is
 semantically reproducible but not byte-identical. Exact hashes and branch

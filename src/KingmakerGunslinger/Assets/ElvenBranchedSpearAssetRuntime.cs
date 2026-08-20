@@ -243,15 +243,24 @@ namespace KingmakerGunslinger.Assets
             if (visual == null || grip == null || support == null || tip == null ||
                 butt == null) throw new InvalidDataException(
                     variant + " semantic anchors are incomplete.");
+            if (!Approximately(visual.localPosition, Vector3.zero) ||
+                !Approximately(visual.localRotation,
+                    Quaternion.Euler(-90f, 0f, 0f)) ||
+                !Approximately(visual.localScale, Vector3.one))
+                throw new InvalidDataException(variant +
+                    " visual transform does not map source +Z to native Longspear +Y.");
             if (!Finite(grip.localPosition) || !Finite(support.localPosition) ||
                 !Finite(tip.localPosition) || !Finite(butt.localPosition) ||
                 !Approximately(grip.localPosition, Vector3.zero) ||
-                Mathf.Abs(support.localPosition.z - 0.48f) > 0.002f ||
-                Mathf.Abs(tip.localPosition.z - 2.01f) > 0.002f ||
-                Mathf.Abs(butt.localPosition.z + 0.915f) > 0.002f ||
-                Vector3.Distance(tip.localPosition, butt.localPosition) < 2.5f)
+                Mathf.Abs(support.localPosition.y - 0.37f) > 0.002f ||
+                Mathf.Abs(tip.localPosition.y - 1.14f) > 0.002f ||
+                Mathf.Abs(butt.localPosition.y + 1.14f) > 0.002f ||
+                Mathf.Abs(support.localPosition.x) > 0.002f ||
+                Mathf.Abs(support.localPosition.z) > 0.002f ||
+                Vector3.Distance(tip.localPosition, butt.localPosition) < 2.25f ||
+                Vector3.Distance(tip.localPosition, butt.localPosition) > 2.32f)
                 throw new InvalidDataException(variant +
-                    " grip/support/tip/butt geometry is implausible.");
+                    " grip/support/tip/butt geometry does not match the native Longspear frame.");
             Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
             if (renderers.Length == 0 || renderers.Any(value => value == null ||
                 !value.enabled || !value.gameObject.activeSelf ||

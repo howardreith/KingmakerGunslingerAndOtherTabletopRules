@@ -14,13 +14,15 @@
 
 4. Verify the emitted
    `Builds/Windows/kingmakergunslinger.elvenbranchedspear` SHA-256 is
-   `6E9FE86E43072361EEC3357D9C73E17ADD71D22BAF257FB8C7ED6F52931CE777`,
+   `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`,
    then stage it as `assets/bundles/kingmakergunslinger.elvenbranchedspear`.
 
 The dedicated builder rejects every Unity version except 2018.4.10f1, creates
 three uniquely named prefabs, uses opaque Standard materials, removes cameras and
-lights, validates finite plausible bounds, and emits Grip, SupportHandTarget,
-Tip, and Butt anchors. It does not touch the firearm bundle.
+lights, rotates only `Visual` -90 degrees around X to map source +Z onto the
+installed native Longspear +Y axis, validates the 2.28 m longitudinal bounds,
+and emits Grip, SupportHandTarget, Tip, and Butt anchors in that final frame. It
+does not touch the firearm bundle.
 
 At game startup, the dedicated runtime loads into a candidate cache, requires
 the exact classic, thorn, and crown prefabs and validates every complete

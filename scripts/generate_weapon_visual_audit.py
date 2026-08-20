@@ -309,7 +309,7 @@ def make_record(entry: dict) -> dict:
             "sourceBlend": "assets-source/original-models/elven-branched-spear/elven-branched-spear.blend",
             "deterministicGenerator": "assets-source/original-models/elven-branched-spear/generate_elven_branched_spear.py",
             "animationDonorStyle": "native Longspear VisualParameters and animation style",
-            "gripHandednessContract": "two-handed reach polearm; Grip 0; support +0.48m; tip +2.01m; butt -0.915m",
+            "gripHandednessContract": "native Longspear +Y frame; two-handed reach polearm; Grip 0; support +0.37m; tip +1.14m; butt -1.14m",
             "currentMaterial": "project-owned Blender materials forced to opaque Unity Standard",
             "currentBundle": "kingmakergunslinger.elvenbranchedspear",
             "sourceLicenseProvenance": "project-owned clean-room Blender geometry; repository provenance/build reports",
