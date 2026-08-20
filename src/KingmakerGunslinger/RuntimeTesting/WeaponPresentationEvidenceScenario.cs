@@ -60,21 +60,61 @@ namespace KingmakerGunslinger.RuntimeTesting
             WeaponVisualVariantCatalog.NodachiCapstone
         };
 
+        private static readonly NativeControlSpec[] NativeControls =
+        {
+            new NativeControlSpec("LightCrossbow",
+                ProductionFirearmBlueprints.NativeLightCrossbowWeaponTypeGuid,
+                ProductionFirearmBlueprints.NativeStandardLightCrossbowItemGuid),
+            new NativeControlSpec("HeavyCrossbow",
+                TestMusketBlueprints.NativeHeavyCrossbowWeaponTypeGuid,
+                TestMusketBlueprints.NativeStandardHeavyCrossbowItemGuid),
+            new NativeControlSpec("Longspear",
+                ElvenBranchedSpearBlueprints.NativeLongspearTypeGuid,
+                ElvenBranchedSpearBlueprints.NativeLongspearItemGuid),
+            new NativeControlSpec("Scimitar",
+                EasternWeaponBlueprints.WakizashiVisualDonorGuid, null),
+            new NativeControlSpec("BastardSword",
+                EasternWeaponBlueprints.KatanaVisualDonorGuid,
+                "7b8a4a452f11022488b1c7bfb0ed7746"),
+            new NativeControlSpec("Greatsword",
+                EasternWeaponBlueprints.NodachiVisualDonorGuid, null)
+        };
+
+        private sealed class NativeControlSpec
+        {
+            internal NativeControlSpec(string label, string typeGuid,
+                string preferredItemGuid)
+            {
+                Label = label;
+                TypeGuid = typeGuid;
+                PreferredItemGuid = preferredItemGuid;
+            }
+
+            internal string Label;
+            internal string TypeGuid;
+            internal string PreferredItemGuid;
+        }
+
         private sealed class EvidenceCase
         {
             internal EvidenceCase(string symbol, string variant,
-                BlueprintItemWeapon item)
+                BlueprintItemWeapon item, bool nativeControl,
+                string donorTypeGuid)
             {
                 Symbol = symbol;
                 Variant = variant;
                 Item = item;
-                Family = FamilyFor(variant);
+                NativeControl = nativeControl;
+                DonorTypeGuid = donorTypeGuid;
+                Family = nativeControl ? "NativeControl" : FamilyFor(variant);
             }
 
             internal string Symbol;
             internal string Variant;
             internal string Family;
             internal BlueprintItemWeapon Item;
+            internal bool NativeControl;
+            internal string DonorTypeGuid;
         }
 
         private sealed class CaptureSummary
@@ -118,6 +158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private BlueprintUnit _actorBlueprint;
             private Renderer[] _fixtureBodyRenderers = new Renderer[0];
             private ItemEntityWeapon _equipped;
+            private bool _equippedFirearmStateSet;
             private EvidenceCase[] _cases = new EvidenceCase[0];
             private Transform _removedPresentation;
             private int _caseIndex;
@@ -217,13 +258,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _actor.View.HandsEquipment.UpdateAll();
                 _actor.View.HandsEquipment.ForceSwitch(false);
                 _cases = BuildCases();
-                if (_cases.Length != 22 ||
-                    _cases.Select(value => value.Variant).Distinct(
+                EvidenceCase[] production = _cases.Where(value =>
+                    !value.NativeControl).ToArray();
+                EvidenceCase[] controls = _cases.Where(value =>
+                    value.NativeControl).ToArray();
+                if (_cases.Length != 28 || production.Length != 22 ||
+                    controls.Length != 6 ||
+                    production.Select(value => value.Variant).Distinct(
                         StringComparer.Ordinal).Count() != 22 ||
-                    !_cases.Select(value => value.Variant)
+                    !production.Select(value => value.Variant)
                         .SequenceEqual(ProductionVariants))
                     throw new InvalidOperationException(
-                        "The evidence catalog is not the exact 22-variant production matrix.");
+                        "The evidence catalog is not the exact 22-variant " +
+                        "production matrix plus six native controls.");
             }
 
             private bool EquipCurrent()
@@ -259,10 +306,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " did not remain in the primary hand.");
                 if (value.Symbol.StartsWith("KMG.Firearms.",
                     StringComparison.Ordinal))
+                {
                     FirearmRuntimeState.Service.Set(_equipped,
                         new FirearmState(FirearmState.CurrentSchemaVersion,
                             1, FirearmStateTokenCatalog.DiagnosticLeadBall,
                             FirearmCondition.Normal));
+                    _equippedFirearmStateSet = true;
+                }
                 _actor.View.HandsEquipment.UpdateAll();
                 _actor.View.HandsEquipment.ForceSwitch(false);
                 _presentationState = "stored";
@@ -280,10 +330,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (visual == null || visual.Model == null)
                     throw new InvalidOperationException(value.Variant +
                         " has no effective held visual model.");
-                GameObject activeModel = _actor.View.HandsEquipment
-                    .GetWeaponModel(false);
-                Transform model = activeModel == null ? null :
-                    activeModel.transform;
+                string presentationRole;
+                Transform model = ResolveActivePresentation(_actor, visual,
+                    _presentationState, out presentationRole);
                 bool exactState = _presentationState == "held-idle"
                     ? _actor.View.HandsEquipment.InCombat
                     : !_actor.View.HandsEquipment.InCombat;
@@ -304,7 +353,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";expectedHeld=" + (_presentationState == "held-idle") +
                         ";effectiveModel=" + visual.Model.name +
                         ";activeModel=" + (model == null ? "<null>" :
-                            model.name) + ";renderer hierarchy: " +
+                            model.name) + ";presentationRole=" +
+                        presentationRole + ";renderer hierarchy: " +
                         DescribeRendererHierarchy(_actor.View.transform));
                 }
                 _materialized++;
@@ -318,7 +368,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.EvidenceDirectory, stem + ".png"));
                 JObject record = Describe(value, _actor, model, visual,
                     _fixtureBodyRenderers, capture, stem + ".png",
-                    _presentationState);
+                    _presentationState, presentationRole);
                 string jsonPath = Path.Combine(_request.EvidenceDirectory,
                     stem + ".json");
                 WriteJsonAtomic(jsonPath, record);
@@ -350,7 +400,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
 
                 _removedPresentation = model;
-                RemoveEquipped(_actor, ref _equipped, value.Symbol);
+                RemoveEquipped(_actor, ref _equipped,
+                    ref _equippedFirearmStateSet);
                 _actor.View.HandsEquipment.UpdateAll();
                 _actor.View.HandsEquipment.ForceSwitch(false);
                 _phase = 3;
@@ -397,9 +448,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _context.Assembly, _context.ModEntry.Info.Version);
                 var index = new JObject
                 {
-                    { "schemaVersion", 1 },
+                    { "schemaVersion", 2 },
                     { "states", new JArray("stored", "held-idle") },
                     { "fixture", "live disposable default Medium humanoid" },
+                    { "productionVariantCount", 22 },
+                    { "nativeControlCount", 6 },
                     { "views", new JArray("front", "right-side", "rear",
                         "front-right-three-quarter") },
                     { "loadedModVersion", _context.ModEntry.Info.Version },
@@ -417,7 +470,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_cleanupStarted) return;
                 _stage = "request-cleanup";
-                RemoveEquipped(_actor, ref _equipped, null);
+                RemoveEquipped(_actor, ref _equipped,
+                    ref _equippedFirearmStateSet);
                 if (_actor != null && ContainsReference(_allUnits, _actor))
                     Game.Instance.State.Units.All.Remove(_actor);
                 if (_actor != null) _actor.Dispose();
@@ -442,29 +496,55 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void Finish(bool cleaned)
             {
+                JObject[] productionRecords = _records.OfType<JObject>()
+                    .Where(value => !(bool)value["nativeControl"]).ToArray();
+                JObject[] controlRecords = _records.OfType<JObject>()
+                    .Where(value => (bool)value["nativeControl"]).ToArray();
                 Add(_assertions,
                     "weapon-presentation-production-variant-matrix",
                     "22 exact production visual variants in two states each",
-                    "records=" + _records.Count + ";variants=" +
-                        _records.OfType<JObject>().Select(value =>
+                    "records=" + productionRecords.Length + ";variants=" +
+                        productionRecords.Select(value =>
                             (string)value["variant"]).Distinct(
                                 StringComparer.Ordinal).Count(),
-                    _records.Count == 44 &&
-                        _records.OfType<JObject>().Select(value =>
+                    productionRecords.Length == 44 &&
+                        productionRecords.Select(value =>
                             (string)value["variant"]).Distinct(
                                 StringComparer.Ordinal).Count() == 22,
                     "registered production, named, and exact visual-variant catalogs");
+                Add(_assertions,
+                    "weapon-presentation-native-donor-controls",
+                    "six exact native presentation donors in stored and held-idle states",
+                    "records=" + controlRecords.Length + ";controls=" +
+                        controlRecords.Select(value =>
+                            (string)value["variant"]).Distinct(
+                                StringComparer.Ordinal).Count(),
+                    controlRecords.Length == 12 &&
+                        controlRecords.Select(value =>
+                            (string)value["variant"]).Distinct(
+                                StringComparer.Ordinal).Count() == 6,
+                    "Light/Heavy Crossbow, Longspear, Scimitar, Bastard Sword, and Greatsword native controls");
+                bool nativeGeometryInvariant = controlRecords.GroupBy(value =>
+                    (string)value["variant"], StringComparer.Ordinal).All(
+                        NativeGeometryInvariant);
+                Add(_assertions,
+                    "weapon-presentation-native-local-geometry-invariant",
+                    "each native control has identical mesh-local geometry in stored and held states",
+                    nativeGeometryInvariant ? "6/6 invariant" :
+                        "one or more native controls changed local geometry",
+                    controlRecords.Length == 12 && nativeGeometryInvariant,
+                    "component tolerance=0.00001; Mesh.bounds or SkinnedMeshRenderer.localBounds transformed through the prefab hierarchy, never world AABB reconstruction");
                 Add(_assertions, "weapon-presentation-live-materialization",
-                    "44/44 exact stored/held models on one live native humanoid view",
-                    _materialized + "/44", _materialized == 44,
+                    "56/56 exact stored/held presentations on one live native humanoid view",
+                    _materialized + "/56", _materialized == 56,
                     "real BlueprintItemWeapon, primary hand, UnitViewHandsEquipment.GetWeaponModel(false), ForceSwitch, and multi-update settling");
                 Add(_assertions,
                     "weapon-presentation-state-contact-sheets",
-                    "44 PNG/JSON pairs and 176 state-labelled views",
+                    "56 PNG/JSON pairs and 224 state-labelled views",
                     "captures=" + _captured + ";views=" + _viewCount +
                         ";files=" + _evidenceFiles.Count,
-                    _captured == 44 && _viewCount == 176 && _indexWritten &&
-                        _evidenceFiles.Count == 89 &&
+                    _captured == 56 && _viewCount == 224 && _indexWritten &&
+                        _evidenceFiles.Count == 113 &&
                     _evidenceFiles.All(File.Exists),
                     "stored and held-idle front/right-side/rear/front-right-three-quarter live render contact sheets");
                 int zeroPixelSheets = _records.OfType<JObject>().Count(value =>
@@ -475,7 +555,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "every state sheet contains non-background pixels; low-density sheets remain explicitly marked",
                     "zeroPixelSheets=" + zeroPixelSheets +
                         ";lowDensitySheets=" + lowDensitySheets,
-                    _records.Count == 44 && zeroPixelSheets == 0,
+                    _records.Count == 56 && zeroPixelSheets == 0,
                     "pixel comparison against the request camera's exact solid background");
                 Add(_assertions, "weapon-presentation-state-label",
                     "stored and held-idle only; no attack/reload claim",
@@ -483,13 +563,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string.Join(",", _records.OfType<JObject>()
                             .Select(value => (string)value["state"])
                             .Distinct().ToArray()),
-                    _records.Count == 44 &&
+                    _records.Count == 56 &&
                         _records.OfType<JObject>().Count(value => string.Equals(
                             (string)value["state"], "stored",
-                            StringComparison.Ordinal)) == 22 &&
+                            StringComparison.Ordinal)) == 28 &&
                         _records.OfType<JObject>().Count(value => string.Equals(
                             (string)value["state"], "held-idle",
-                            StringComparison.Ordinal)) == 22,
+                            StringComparison.Ordinal)) == 28,
                     "per-variant JSON evidence and global index");
                 Add(_assertions, "weapon-presentation-request-cleanup",
                     "exact party/global-unit snapshots restored; no save call",
@@ -579,18 +659,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                 eastern.Named.Entries)
                 Add(candidates, entry.Spec.Symbol, entry.Item);
 
-            return ProductionVariants.Select(variant => candidates.Where(value =>
+            EvidenceCase[] production = ProductionVariants.Select(variant =>
+                candidates.Where(value =>
                     string.Equals(value.Variant, variant,
                         StringComparison.Ordinal))
                 .OrderBy(value => value.Symbol, StringComparer.Ordinal).First())
                 .ToArray();
+            EvidenceCase[] controls = NativeControls.Select(
+                BuildNativeControl).ToArray();
+            return production.Concat(controls).ToArray();
         }
 
         private static void Add(ICollection<EvidenceCase> values, string symbol,
             BlueprintItemWeapon item)
         {
             values.Add(new EvidenceCase(symbol,
-                WeaponVisualVariantCatalog.Require(symbol), item));
+                WeaponVisualVariantCatalog.Require(symbol), item, false, null));
+        }
+
+        private static EvidenceCase BuildNativeControl(NativeControlSpec spec)
+        {
+            BlueprintWeaponType type = BlueprintLibraryLookup.RequireExact<
+                BlueprintWeaponType>(BlueprintBootstrap.Library, spec.TypeGuid,
+                    "native " + spec.Label + " presentation donor");
+            BlueprintItemWeapon preferred = string.IsNullOrEmpty(
+                spec.PreferredItemGuid) ? null : BlueprintLibraryLookup
+                .RequireExact<BlueprintItemWeapon>(BlueprintBootstrap.Library,
+                    spec.PreferredItemGuid, "native " + spec.Label +
+                    " presentation control item");
+            if (preferred != null && !ReferenceEquals(preferred.Type, type))
+                throw new InvalidOperationException(spec.Label +
+                    " preferred control item does not use its donor type.");
+            BlueprintItemWeapon[] candidates = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintItemWeapon>().Where(item =>
+                    item != null && ReferenceEquals(item.Type, type) &&
+                    item.VisualParameters != null &&
+                    item.VisualParameters.Model != null &&
+                    type.VisualParameters != null &&
+                    ReferenceEquals(item.VisualParameters.Model,
+                        type.VisualParameters.Model))
+                .OrderBy(item => item.AssetGuid.ToString(),
+                    StringComparer.Ordinal).ToArray();
+            BlueprintItemWeapon selected = preferred ?? candidates.FirstOrDefault();
+            if (selected == null || !candidates.Any(item =>
+                    ReferenceEquals(item, selected)))
+                throw new InvalidOperationException(spec.Label +
+                    " has no exact native item with the donor's held model.");
+            return new EvidenceCase("NativeControl." + spec.Label,
+                "Native." + spec.Label, selected, true, spec.TypeGuid);
         }
 
         private static string FamilyFor(string variant)
@@ -616,6 +732,51 @@ namespace KingmakerGunslinger.RuntimeTesting
             Transform[] top = values.Where(value =>
                 TransformDepth(value, root) == minimumDepth).ToArray();
             return top.Length == 1 ? top[0] : null;
+        }
+
+        private static Transform ResolveActivePresentation(UnitEntityData actor,
+            WeaponVisualParameters visual, string state, out string role)
+        {
+            GameObject weapon = actor.View.HandsEquipment.GetWeaponModel(false);
+            Transform model = weapon == null ? null : weapon.transform;
+            if (Renderable(model))
+            {
+                role = "weapon-model";
+                return model;
+            }
+            if (!string.Equals(state, "stored", StringComparison.Ordinal))
+            {
+                role = "missing-held-weapon-model";
+                return model;
+            }
+            var candidates = new[]
+            {
+                new KeyValuePair<string, GameObject>("belt-model",
+                    visual.BeltModel),
+                new KeyValuePair<string, GameObject>("sheath-model",
+                    visual.SheathModel),
+                new KeyValuePair<string, GameObject>("stored-weapon-model",
+                    visual.Model)
+            };
+            foreach (KeyValuePair<string, GameObject> candidate in candidates)
+            {
+                if (candidate.Value == null) continue;
+                Transform resolved = FindPresentation(actor.View.transform,
+                    candidate.Value.name);
+                if (!Renderable(resolved)) continue;
+                role = candidate.Key;
+                return resolved;
+            }
+            role = "missing-stored-presentation";
+            return model;
+        }
+
+        private static bool Renderable(Transform value)
+        {
+            return value != null && value.gameObject.activeInHierarchy &&
+                value.GetComponentsInChildren<Renderer>(true).Any(renderer =>
+                    renderer != null && renderer.enabled &&
+                    renderer.gameObject.activeInHierarchy);
         }
 
         private static int TransformDepth(Transform value, Transform root)
@@ -794,7 +955,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static JObject Describe(EvidenceCase value,
             UnitEntityData actor, Transform model, WeaponVisualParameters visual,
             Renderer[] fixtureBodyRenderers, CaptureSummary capture,
-            string pngName, string state)
+            string pngName, string state, string presentationRole)
         {
             Renderer[] weaponRenderers = model
                 .GetComponentsInChildren<Renderer>(true).Where(renderer =>
@@ -806,6 +967,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     renderer.gameObject.activeInHierarchy).ToArray();
             Bounds weaponBounds = CombinedBounds(weaponRenderers);
             Bounds bodyBounds = CombinedBounds(bodyRenderers);
+            int modelLocalBoundsSourceCount;
+            Bounds modelLocalBounds = LocalBounds(model, weaponRenderers,
+                out modelLocalBoundsSourceCount);
             Vector3 overlap = Vector3.Max(Vector3.zero,
                 Vector3.Min(weaponBounds.max, bodyBounds.max) -
                 Vector3.Max(weaponBounds.min, bodyBounds.min));
@@ -835,6 +999,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "family", value.Family },
                 { "variant", value.Variant },
                 { "symbol", value.Symbol },
+                { "nativeControl", value.NativeControl },
+                { "donorTypeGuid", value.DonorTypeGuid == null
+                    ? JValue.CreateNull() : (JToken)value.DonorTypeGuid },
                 { "itemGuid", value.Item.AssetGuid },
                 { "itemName", value.Item.Name },
                 { "state", state },
@@ -848,6 +1015,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "sheathModel", visual.SheathModel == null ? "<null>" :
                     visual.SheathModel.name },
                 { "modelPath", TransformPath(model, actor.View.transform) },
+                { "presentationRole", presentationRole },
                 { "modelLocalPosition", model.localPosition.ToString("R") },
                 { "modelLocalRotation", model.localRotation.eulerAngles
                     .ToString("R") },
@@ -855,6 +1023,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "weaponRendererCount", weaponRenderers.Length },
                 { "weaponBoundsCenter", weaponBounds.center.ToString("R") },
                 { "weaponBoundsSize", weaponBounds.size.ToString("R") },
+                { "modelLocalRendererBoundsCenter",
+                    modelLocalBounds.center.ToString("R") },
+                { "modelLocalRendererBoundsCenterComponents",
+                    Components(modelLocalBounds.center) },
+                { "modelLocalRendererBoundsSize",
+                    modelLocalBounds.size.ToString("R") },
+                { "modelLocalRendererBoundsSizeComponents",
+                    Components(modelLocalBounds.size) },
+                { "modelLocalMajorAxis", MajorAxis(modelLocalBounds.size) },
+                { "modelLocalMinorAxis", MinorAxis(modelLocalBounds.size) },
+                { "modelLocalBoundsSourceCount", modelLocalBoundsSourceCount },
+                { "semanticLocators", DescribeSemanticLocators(model) },
                 { "bodyBoundsCenter", bodyBounds.center.ToString("R") },
                 { "bodyBoundsSize", bodyBounds.size.ToString("R") },
                 { "aabbOverlap", overlap.ToString("R") },
@@ -885,6 +1065,137 @@ namespace KingmakerGunslinger.RuntimeTesting
             return value;
         }
 
+        private static Bounds LocalBounds(Transform root, Renderer[] renderers,
+            out int sourceCount)
+        {
+            bool initialized = false;
+            Bounds value = new Bounds();
+            sourceCount = 0;
+            foreach (Renderer renderer in renderers)
+            {
+                Transform sourceTransform;
+                Bounds bounds;
+                SkinnedMeshRenderer skinned = renderer as SkinnedMeshRenderer;
+                if (skinned != null)
+                {
+                    sourceTransform = skinned.transform;
+                    bounds = skinned.localBounds;
+                }
+                else
+                {
+                    MeshFilter filter = renderer.GetComponent<MeshFilter>();
+                    if (filter == null || filter.sharedMesh == null) continue;
+                    sourceTransform = filter.transform;
+                    bounds = filter.sharedMesh.bounds;
+                }
+                sourceCount++;
+                Vector3 min = bounds.min;
+                Vector3 max = bounds.max;
+                for (int x = 0; x < 2; x++)
+                    for (int y = 0; y < 2; y++)
+                        for (int z = 0; z < 2; z++)
+                        {
+                            Vector3 sourceLocal = new Vector3(
+                                x == 0 ? min.x : max.x,
+                                y == 0 ? min.y : max.y,
+                                z == 0 ? min.z : max.z);
+                            Vector3 local = root.InverseTransformPoint(
+                                sourceTransform.TransformPoint(sourceLocal));
+                            if (!initialized)
+                            {
+                                value = new Bounds(local, Vector3.zero);
+                                initialized = true;
+                            }
+                            else value.Encapsulate(local);
+                        }
+            }
+            if (!initialized) throw new InvalidOperationException(
+                "Local presentation bounds require at least one mesh-backed renderer.");
+            return value;
+        }
+
+        private static JArray Components(Vector3 value)
+        {
+            return new JArray(value.x, value.y, value.z);
+        }
+
+        private static bool NativeGeometryInvariant(
+            IGrouping<string, JObject> group)
+        {
+            JObject[] values = group.ToArray();
+            if (values.Length != 2) return false;
+            return SameComponents(
+                    values[0]["modelLocalRendererBoundsCenterComponents"],
+                    values[1]["modelLocalRendererBoundsCenterComponents"],
+                    0.00001) &&
+                SameComponents(
+                    values[0]["modelLocalRendererBoundsSizeComponents"],
+                    values[1]["modelLocalRendererBoundsSizeComponents"],
+                    0.00001) &&
+                string.Equals((string)values[0]["modelLocalMajorAxis"],
+                    (string)values[1]["modelLocalMajorAxis"],
+                    StringComparison.Ordinal) &&
+                string.Equals((string)values[0]["modelLocalMinorAxis"],
+                    (string)values[1]["modelLocalMinorAxis"],
+                    StringComparison.Ordinal) &&
+                (int)values[0]["modelLocalBoundsSourceCount"] ==
+                    (int)values[1]["modelLocalBoundsSourceCount"];
+        }
+
+        private static bool SameComponents(JToken left, JToken right,
+            double tolerance)
+        {
+            JArray leftValues = left as JArray;
+            JArray rightValues = right as JArray;
+            if (leftValues == null || rightValues == null ||
+                leftValues.Count != 3 || rightValues.Count != 3)
+                return false;
+            for (int i = 0; i < 3; i++)
+                if (Math.Abs((double)leftValues[i] -
+                        (double)rightValues[i]) > tolerance)
+                    return false;
+            return true;
+        }
+
+        private static string MajorAxis(Vector3 size)
+        {
+            if (size.x >= size.y && size.x >= size.z) return "+/-X";
+            return size.y >= size.z ? "+/-Y" : "+/-Z";
+        }
+
+        private static string MinorAxis(Vector3 size)
+        {
+            if (size.x <= size.y && size.x <= size.z) return "+/-X";
+            return size.y <= size.z ? "+/-Y" : "+/-Z";
+        }
+
+        private static JArray DescribeSemanticLocators(Transform root)
+        {
+            string[] needles = { "ik_target", "warhead", "weaponcenter",
+                "trail", "surface", "muzzle", "tip", "grip", "butt",
+                "support", "up", "normal", "mount" };
+            var values = new JArray();
+            foreach (Transform transform in root.GetComponentsInChildren<
+                Transform>(true).Where(transform => transform != null &&
+                    needles.Any(needle => transform.name.IndexOf(needle,
+                        StringComparison.OrdinalIgnoreCase) >= 0))
+                .OrderBy(transform => TransformPath(transform, root),
+                    StringComparer.Ordinal).Take(100))
+            {
+                values.Add(new JObject
+                {
+                    { "path", TransformPath(transform, root) },
+                    { "modelLocalPosition", root.InverseTransformPoint(
+                        transform.position).ToString("R") },
+                    { "modelLocalForward", root.InverseTransformDirection(
+                        transform.forward).ToString("R") },
+                    { "modelLocalUp", root.InverseTransformDirection(
+                        transform.up).ToString("R") }
+                });
+            }
+            return values;
+        }
+
         private static void ClearHand(UnitEntityData actor, bool primary)
         {
             if (actor == null || actor.Body == null) return;
@@ -895,7 +1206,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static void RemoveEquipped(UnitEntityData actor,
-            ref ItemEntityWeapon item, string symbol)
+            ref ItemEntityWeapon item, ref bool firearmStateSet)
         {
             if (actor != null && actor.Body != null &&
                 actor.Body.PrimaryHand != null &&
@@ -903,12 +1214,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 actor.Body.PrimaryHand.RemoveItem(false);
             if (item != null)
             {
-                if (string.IsNullOrEmpty(symbol) || symbol.StartsWith(
-                    "KMG.Firearms.", StringComparison.Ordinal))
+                if (firearmStateSet)
                     FirearmRuntimeState.Service.Forget(item);
                 item.Dispose();
             }
             item = null;
+            firearmStateSet = false;
         }
 
         private static string TransformPath(Transform value, Transform root)

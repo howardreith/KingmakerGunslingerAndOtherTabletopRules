@@ -52,8 +52,20 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(scenario.Contains(token),
                     "Evidence catalog omitted production variant " + token + ".");
 
-            Assertions.True(scenario.Contains("cases.Length != 22") &&
+            foreach (string token in new[] { "LightCrossbow",
+                "HeavyCrossbow", "Longspear", "Scimitar", "BastardSword",
+                "Greatsword" })
+                Assertions.True(scenario.Contains(
+                    "new NativeControlSpec(\"" + token + "\""),
+                    "Evidence catalog omitted native control " + token + ".");
+
+            Assertions.True(scenario.Contains("_cases.Length != 28") &&
+                scenario.Contains("production.Length != 22") &&
+                scenario.Contains("controls.Length != 6") &&
                 scenario.Contains("SequenceEqual(ProductionVariants)") &&
+                scenario.Contains("BuildNativeControl") &&
+                scenario.Contains("ReferenceEquals(item.VisualParameters.Model,") &&
+                scenario.Contains("type.VisualParameters.Model") &&
                 scenario.Contains("HandsEquipment.UpdateAll()") &&
                 scenario.Contains("HandsEquipment.ForceSwitch(false)") &&
                 scenario.Contains("HandsEquipment.ForceSwitch(true)") &&
@@ -69,6 +81,20 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("_presentationState + \"-default-medium-\"") &&
                 scenario.Contains("front-right-three-quarter") &&
                 scenario.Contains("aabbOverlapVolume") &&
+                scenario.Contains("modelLocalRendererBoundsSize") &&
+                scenario.Contains("modelLocalRendererBoundsCenterComponents") &&
+                scenario.Contains("modelLocalRendererBoundsSizeComponents") &&
+                scenario.Contains("modelLocalMajorAxis") &&
+                scenario.Contains("modelLocalMinorAxis") &&
+                scenario.Contains("modelLocalBoundsSourceCount") &&
+                scenario.Contains("filter.sharedMesh.bounds") &&
+                scenario.Contains("skinned.localBounds") &&
+                scenario.Contains("weapon-presentation-native-local-geometry-invariant") &&
+                scenario.Contains("SameComponents") &&
+                scenario.Contains("0.00001") &&
+                scenario.Contains("semanticLocators") &&
+                scenario.Contains("presentationRole") &&
+                scenario.Contains("weapon-presentation-native-donor-controls") &&
                 scenario.Contains("no attack, reload, or movement claim") &&
                 scenario.Contains("body-centered-capped") &&
                 scenario.Contains("SameReferences(_unitsBefore") &&
