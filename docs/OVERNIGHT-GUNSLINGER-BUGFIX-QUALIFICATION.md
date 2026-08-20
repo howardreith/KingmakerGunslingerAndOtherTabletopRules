@@ -227,3 +227,17 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
 - SoundBank SHA-256: `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - Automated status: routing/package qualified, audibility unresolved. The current human report remains authoritative because nonzero Wwise playing IDs do not prove audible speaker output or absence of inherited crossbow layers.
+
+## Issue 9 qualification - firearm feat icons
+
+- Qualified code SHA: `15fff80bef6d6319c5281343264891ce13aa7b4a`.
+- Focused test: `firearm-feat-icons.semantic-publication` PASS.
+- Complete domain/reflection suite: 1,159/1,159 PASS.
+- Two consecutive deterministic exports produced identical hashes for all five monograms, Rapid Reload, and the 64/32-pixel inspection map.
+- Repository validation, clean exact-reference Release, output validation, SoundBank validation, deterministic 137-file package, strict package, and `git diff --check`: PASS.
+- Guarded scenario: `disposable-firearm-dependent-feats` run `20260820T0659308177934Z-65bd0924b3dc455ebb04097f00172d90`, 13/13 PASS.
+- Live icon assertion: B/M/P/Rv/Ri exact monogram sprites appeared in all five full and unit-aware native menus; Rapid Reload used its separate top icon and five exact child monograms; all four dependent arrays matched; native top-level sprites remained `WeaponFocus`, `WeaponFocusGreater`, `WeaponSpecialization`, `WeaponSpecializationGreater`, and `tag_ImprovedCritical`.
+- Runtime package SHA-256: `FC33F1583EEF3404F7237A54454E9B38C6C770EEA745676ED94AE49D08584F9F`.
+- Runtime DLL SHA-256: `0F16A59F89E41157FAB580F109A444A02E28C7089CDCD63D0407C233963A82E0`.
+- Firearm AssetBundle/SoundBank remain `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Automated status: qualified. Actual 32/64-pixel UI composition and aesthetic fit beside native choices remain human-gated.

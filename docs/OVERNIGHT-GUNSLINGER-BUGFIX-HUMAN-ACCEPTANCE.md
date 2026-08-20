@@ -113,3 +113,13 @@ Use the final immutable candidate and a fresh Steam launch after final package d
 6. Listen specifically for inherited crossbow release/twang/bolt layers and record any weapon, action, and timing where one remains.
 
 Automated boundary already proven: run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` passed 6/6 with the exact bank loaded once, all five Event families accepted, live-unit and ordinary committed Blunderbuss posts accepted, and forced misfire suppressed. That evidence deliberately makes no audibility claim.
+
+## Issue 9 - firearm feat icon remaining human check
+
+1. Open Weapon Focus, Greater Weapon Focus, Weapon Specialization, Greater Weapon Specialization, and Improved Critical in the real feat-selection UI.
+2. Confirm Pistol `P`, Musket `M`, Blunderbuss `B`, Rifle `Ri`, and Revolver `Rv` are distinct, legible, and visually coherent beside native rows at both ordinary and compact UI scale.
+3. Confirm each native top-level feat keeps its original icon and all non-firearm choices remain unchanged.
+4. Open Rapid Reload; confirm its top-level muted salmon reload/ramrod symbol fits neighboring feats and its five children use the same exact monograms.
+5. Reject the candidate aesthetically if lettering, border weight, contrast, saturation, or 32-pixel readability does not match the native visual language; automated sprite identity is not aesthetic acceptance.
+
+Automated boundary already proven: guarded run `20260820T0659308177934Z-65bd0924b3dc455ebb04097f00172d90` passed 13/13 with the exact live native menu and Rapid Reload icon map. The before/after hashes and deterministic 64/32 map are in `docs/FIREARM-FEAT-ICON-MAP.md`.

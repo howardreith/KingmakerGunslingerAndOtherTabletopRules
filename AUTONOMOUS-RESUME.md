@@ -1,5 +1,17 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-20 Issue 9 checkpoint
+
+- Branch: `codex/gunslinger-overnight-bugfixes`; version `0.0.87`.
+- Published implementation SHA: `15fff80bef6d6319c5281343264891ce13aa7b4a`; exact local/branch/origin equality verified before runtime and this record commit.
+- Completed automated qualification: Issues 1-9; remaining checks are the consolidated human gates recorded per issue.
+- Issue 9 result: five deterministic P/M/B/Ri/Rv monograms replace the generic target on all native firearm parameter menus and Rapid Reload children; a separate muted salmon reload/ramrod icon replaces the old top-level art. Native top-level feats, non-firearm choices, IDs, and mechanics are unchanged.
+- Gates: deterministic double export; repository; 1,159/1,159 tests; clean Release; output; SoundBank; deterministic 137-file package; strict package; diff PASS.
+- Guarded run: `20260820T0659308177934Z-65bd0924b3dc455ebb04097f00172d90`, 13/13 PASS with exact live icon maps and mechanics/compatibility controls.
+- Package/DLL/AssetBundle/SoundBank SHA-256: `FC33F1583EEF3404F7237A54454E9B38C6C770EEA745676ED94AE49D08584F9F` / `0F16A59F89E41157FAB580F109A444A02E28C7089CDCD63D0407C233963A82E0` / `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Real blocker: none. Final native-scale aesthetic acceptance is human-gated.
+- Next concrete action: Issue 10 exact Elven Branched Spear blueprint, donor, prefab/root/pivot/scale/attachment/animation and asset-build audit.
+
 ## 2026-08-20 Issue 8 checkpoint
 
 - Branch: `codex/gunslinger-overnight-bugfixes`.

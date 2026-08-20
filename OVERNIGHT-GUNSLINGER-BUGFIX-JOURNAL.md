@@ -316,3 +316,12 @@
 - Runtime package/DLL/AssetBundle/SoundBank SHA-256: `8A6E72FEFE3FC2CF585582574776010CDB1DC391E310D5E0807AB72E2023E7E9` / `8DB79393CE44D51029D1B5271B17D75DA4F1E74C38BC365A2232C474B4712821` / `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - Issue 8 is human-gated, not declared audibly fixed. A nonzero playing ID cannot prove speaker output, mix, or absence of inherited crossbow layers.
 - Next action: Issue 9 firearm selector monograms and Rapid Reload icon audit.
+
+## 2026-08-20 - Issue 9 firearm feat icons qualified
+
+- Root cause: one `KMG_WeaponFocus_*` parameter sprite feeds all five native parametrized feat menus, and the icon publisher assigned the same generic target to every kind. Rapid Reload similarly reused one rejected icon for its top-level feat and children.
+- Published `15fff80bef6d6319c5281343264891ce13aa7b4a`: original deterministic P/M/B/Ri/Rv monograms, separate muted salmon reload/ramrod art, editable spec/export source, 64/32 map, provenance, exact publication, package allowlists/counts, semantic test, and live observer.
+- Double export reproduced exact hashes. Full gates PASS: repository, 1,159/1,159 tests, exact-reference clean Release, output, SoundBank, deterministic 137-file package, strict package, and diff.
+- Guarded Steam run `20260820T0659308177934Z-65bd0924b3dc455ebb04097f00172d90` passed 13/13. Live full and level-up native menus exposed exact B/M/P/Rv/Ri icon names, Rapid Reload/dependent arrays were exact, native top icons were preserved, and selection/prerequisite/effect/isolation/legacy controls passed.
+- Runtime package/DLL SHA-256: `FC33F1583EEF3404F7237A54454E9B38C6C770EEA745676ED94AE49D08584F9F` / `0F16A59F89E41157FAB580F109A444A02E28C7089CDCD63D0407C233963A82E0`.
+- Final aesthetic/UI-scale acceptance remains human-gated. Next: Issue 10 Elven Branched Spear length, grip, attachment, and attack presentation.
