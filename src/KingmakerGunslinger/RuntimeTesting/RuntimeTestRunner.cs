@@ -15715,6 +15715,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 unit.Descriptor.Stats.GetStat(StatType.SaveFortitude).BaseValue = 100;
                 AcadamaeSavingThrowTestControl.Queue(20);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 RuleCastSpell successRule = ExecuteAcadamaeDelayedTerminalRule(
                     unit, first);
                 successCount = AcadamaeCastingRuntime.CompletedCount;
@@ -15735,6 +15736,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Descriptor.Stats.GetStat(
                     StatType.SaveFortitude).BaseValue = -100;
                 AcadamaeSavingThrowTestControl.Queue(1);
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
                 AbilityData nativeFailure = PrepareAcadamaeSpell(spellbook,
                     spell, spellLevel);
                 RuleCastSpell nativeFailureRule =

@@ -230,6 +230,11 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(1)" },
                     StringSplitOptions.None).Length == 4,
                 "The guarded scenario must force native automatic success and failure boundaries.");
+            Assertions.True(runtime.Contains(
+                    "UnityEngine.Random.InitState(FindNativeD20Seed(20))") &&
+                runtime.Contains(
+                    "UnityEngine.Random.InitState(FindNativeD20Seed(1))"),
+                "The guarded success/failure pair must use deterministic native d20 seeds.");
             foreach (string token in new[] {
                 "internal static class AcadamaeRuleConstructorPatch",
                 "AcadamaeCastingRuntime.AttachRule(__instance)",
