@@ -67,19 +67,30 @@ namespace KingmakerGunslinger.Archetypes
         {
             if (context == null || context.Caster == null || !IsAvailableFor(context.Ability))
                 throw new InvalidOperationException("Mysterious Stranger deed prerequisites changed.");
-            TrueGritDecision decision = Decision(context.Caster.Descriptor);
-            int effectiveCost = SpendOnActivation ? decision.EffectiveCost : 0;
             Buff marker = context.Caster.Descriptor.Buffs.AddBuff(Marker, context,
                 TimeSpan.FromSeconds(6d));
             if (marker == null)
                 throw new InvalidOperationException(
                     "Mysterious Stranger deed marker was rejected.");
-            int before = context.Caster.Descriptor.Resources.GetResourceAmount(Resource);
+            CommitAfterMarker(context.Caster.Descriptor, marker);
+            yield return new AbilityDeliveryTarget(target);
+        }
+        public override void Cleanup(AbilityExecutionContext context) { }
+
+        internal void CommitAfterMarker(UnitDescriptor owner, Buff marker)
+        {
+            if (owner == null) throw new ArgumentNullException("owner");
+            if (marker == null || !ReferenceEquals(marker.Blueprint, Marker))
+                throw new ArgumentException("The exact deed marker is required.",
+                    "marker");
+            TrueGritDecision decision = Decision(owner);
+            int effectiveCost = SpendOnActivation ? decision.EffectiveCost : 0;
+            int before = owner.Resources.GetResourceAmount(Resource);
             if (!decision.Available || (SpendOnActivation &&
                 !MysteriousStrangerPolicy.CanActivateFocusedAim(before,
                     effectiveCost, true, false)))
             {
-                context.Caster.Descriptor.Buffs.RemoveFact(marker);
+                owner.Buffs.RemoveFact(marker);
                 throw new InvalidOperationException(
                     "Mysterious Stranger deed resource changed before commit.");
             }
@@ -87,19 +98,17 @@ namespace KingmakerGunslinger.Archetypes
             {
                 int expected = MysteriousStrangerPolicy.FocusedAimGritAfter(
                     before, effectiveCost);
-                context.Caster.Descriptor.Resources.Spend(Resource, effectiveCost);
-                int actual = context.Caster.Descriptor.Resources.GetResourceAmount(Resource);
+                owner.Resources.Spend(Resource, effectiveCost);
+                int actual = owner.Resources.GetResourceAmount(Resource);
                 if (actual != expected)
                 {
-                    RestoreSnapshot(context.Caster.Descriptor, before, actual);
-                    context.Caster.Descriptor.Buffs.RemoveFact(marker);
+                    RestoreSnapshot(owner, before, actual);
+                    owner.Buffs.RemoveFact(marker);
                     throw new InvalidOperationException(
                         "Mysterious Stranger deed resource spend was not exact.");
                 }
             }
-            yield return new AbilityDeliveryTarget(target);
         }
-        public override void Cleanup(AbilityExecutionContext context) { }
 
         private bool IsAvailable(UnitDescriptor owner, TrueGritDecision decision)
         {

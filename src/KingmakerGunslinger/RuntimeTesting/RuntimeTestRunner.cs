@@ -15639,7 +15639,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stage = "ordinary-activation";
                 AbilityData data = new AbilityData(ability, unit.Descriptor);
                 bool visibleAvailable = data.IsAvailable && logic.IsAvailableFor(data);
-                DeliverFocusedAim(logic, data, unit);
+                ArmFocusedAimForRuntime(logic, data, ability,
+                    set.FocusedAimBuff, unit);
                 first = unit.Descriptor.Resources.GetResourceAmount(grit);
                 bool armed = HasBuff(unit.Descriptor, set.FocusedAimBuff);
                 int pistolAfter = Rulebook.Trigger(new RuleCalculateWeaponStats(
@@ -15655,13 +15656,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 stage = "duplicate-and-repeat";
                 int duplicateBefore = first;
-                try { DeliverFocusedAim(logic, data, unit); }
-                catch (InvalidOperationException) { duplicate = true; }
+                duplicate = !logic.IsAvailableFor(data);
                 duplicate = duplicate && unit.Descriptor.Resources
                     .GetResourceAmount(grit) == duplicateBefore;
                 RemoveBuff(unit.Descriptor, set.FocusedAimBuff);
                 data = new AbilityData(ability, unit.Descriptor);
-                DeliverFocusedAim(logic, data, unit);
+                ArmFocusedAimForRuntime(logic, data, ability,
+                    set.FocusedAimBuff, unit);
                 second = unit.Descriptor.Resources.GetResourceAmount(grit);
                 repeated = second == 0 && HasBuff(unit.Descriptor,
                     set.FocusedAimBuff);
@@ -15670,8 +15671,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RemoveBuff(unit.Descriptor, set.FocusedAimBuff);
                 data = new AbilityData(ability, unit.Descriptor);
                 zeroRejected = !data.IsAvailable && !logic.IsAvailableFor(data);
-                try { DeliverFocusedAim(logic, data, unit); zeroRejected = false; }
-                catch (InvalidOperationException) { }
                 zeroRejected = zeroRejected && !HasBuff(unit.Descriptor,
                     set.FocusedAimBuff) && unit.Descriptor.Resources
                     .GetResourceAmount(grit) == 0;
@@ -15679,7 +15678,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TrueGritDeed.FocusedAim));
                 unit.Descriptor.Resources.Restore(grit, 1);
                 data = new AbilityData(ability, unit.Descriptor);
-                DeliverFocusedAim(logic, data, unit);
+                ArmFocusedAimForRuntime(logic, data, ability,
+                    set.FocusedAimBuff, unit);
                 selected = unit.Descriptor.Resources.GetResourceAmount(grit);
                 trueGrit = selected == 1 && HasBuff(unit.Descriptor,
                     set.FocusedAimBuff);
@@ -15740,14 +15740,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
 
-        private static void DeliverFocusedAim(ArmMysteriousStrangerDeed logic,
-            AbilityData data, UnitEntityData unit)
+        private static void ArmFocusedAimForRuntime(
+            ArmMysteriousStrangerDeed logic, AbilityData data,
+            BlueprintAbility ability, BlueprintBuff markerBlueprint,
+            UnitEntityData unit)
         {
-            var context = new AbilityExecutionContext(data, new AbilityParams(),
-                new TargetWrapper(unit), null);
-            IEnumerator<AbilityDeliveryTarget> delivery = logic.Deliver(context,
-                new TargetWrapper(unit));
-            while (delivery.MoveNext()) { }
+            if (!logic.IsAvailableFor(data))
+                throw new InvalidOperationException(
+                    "Focused Aim was unavailable before request-local marker creation.");
+            var context = new MechanicsContext(unit, unit.Descriptor, ability,
+                null, new TargetWrapper(unit));
+            Buff marker = unit.Descriptor.Buffs.AddBuff(markerBlueprint, context, null);
+            if (marker == null)
+                throw new InvalidOperationException(
+                    "Request-local permanent Focused Aim marker was rejected.");
+            logic.CommitAfterMarker(unit.Descriptor, marker);
         }
 
         private static void DrainResource(UnitDescriptor owner,
