@@ -132,3 +132,13 @@ The earlier shared-vendor investigation was incomplete because its unit loop con
 Published fix `73e776a91167bc02024e7be794a822fa63fec48e` adds a dedicated transaction for that exact type/GUID/name. It owns only the existing canonical Black Powder, Lead Ball, and Paper Cartridge item references, publishes each once at 100, preserves all native/foreign component references and relative order, removes only owned stale rows, is idempotent at the exact state, and performs guarded exact-snapshot rollback. No Jhod, capital, BTSL, player inventory, or save-owned shop state is mutated.
 
 Guarded run `20260820T0555507894600Z-0772504de3254a64986e6ea2da172a02` passed 23/23 with all three exact rows at `1/100`, both exact owners, and all 21 existing Bokken stock rows retained. Merchant UI materialization remains human-gated.
+
+## Issue 8 - Firearm Wwise regression audit
+
+The fresh human report that Pistol and possibly other firearm sounds are absent supersedes the earlier listening record. The bounded investigation did not find an evidence-supported replacement for the existing native-Wwise path: `KMG_Firearms.bnk` remains byte-identical to the qualified post-polish bank, all five approved source WAVs contain nonzero PCM, and the bank contains five unique nonempty in-bounds embedded media entries. The staging path now rejects a bank unless its BKHD, DIDX, DATA, and HIRC chunks and exact five-media cardinality are structurally valid.
+
+The guarded preview boundary now accepts an exact `FirearmKind` and the save-free scenario posts all five exact Event families before exercising a live Blunderbuss preview, ordinary committed discharge, and forced misfire. Commit `d8fd4ad1836f3ad4d9b54dec908d7818725c64d1` preserves the existing bank, emitter, and mechanical transaction architecture while strengthening bank validation and event-family coverage.
+
+Run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` passed 6/6: state Ready, one bank load, Pistol/Musket/Blunderbuss/Revolver/Rifle playing IDs 2-6, live Blunderbuss preview ID 7, ordinary committed Blunderbuss ID 8, and no additional post for forced misfire. Repository, authoring, deterministic-source, SoundBank, 1,158-test, clean Release, output, package, strict-package, and diff gates passed. No bank, source recording, or AssetBundle bytes changed.
+
+This is automated event-routing qualification, not an audible-fix claim. Kingmaker/Wwise can return a nonzero playing ID without establishing speaker output, mix, or absence of inherited layers. Issue 8 therefore remains human-gated for fresh five-family listening, empty/rejected/misfire silence, Scatter once-per-volley, and crossbow release/bolt suppression.

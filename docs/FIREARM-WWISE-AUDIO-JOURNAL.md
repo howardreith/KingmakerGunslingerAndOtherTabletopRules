@@ -313,3 +313,11 @@ DLL SHA-256:
 last strict package SHA-256:
 `94AFF3D386BDE6111EA06E8340C751DE3C7CA9EFDDB617D9F10398C982F0B1B6`.
 Only fresh human auditory/visual acceptance remains.
+
+## 2026-08-20 - integrated human-regression audit
+
+The new human report that Pistol and possibly other firearm sounds are absent overrides the previous listening result. The current production bank remains byte-identical to the post-polish bank and contains five nonempty embedded media entries; all five approved source WAVs contain nonzero PCM. No evidence supported regenerating or replacing the bank.
+
+Published `d8fd4ad1836f3ad4d9b54dec908d7818725c64d1`: staging now validates BKHD, DIDX, DATA, HIRC, five unique media IDs, nonzero sizes, and in-bounds payloads; the guarded preview supports all five exact firearm kinds. All 1,158 tests and authoring/source/bank/repository/build/output/package/strict-package gates passed.
+
+Fresh Steam run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` passed 6/6, with exact family IDs 2-6, live Blunderbuss ID 7, committed Blunderbuss ID 8, and no forced-misfire post. Automated routing is qualified; audible output and inherited crossbow-layer absence remain a consolidated human check.

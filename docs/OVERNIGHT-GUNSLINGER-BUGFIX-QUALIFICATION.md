@@ -213,3 +213,17 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Deployed runtime package SHA-256: `3D5052D73D3D4E1701ED4313ED7DACD072EC179B47BFD3054D93585EDEF2D70B`.
 - Deployed DLL SHA-256: `F97D27FE31D4912BBE20D51EC4AACF0B5D793FACF642FDA705CA6C94569317EA`.
 - Automated status: qualified for exact static publication. Actual merchant materialization in a disposable/new campaign is human-gated; no old-save inventory refresh is claimed.
+
+## Issue 8 qualification - firearm Wwise regression audit
+
+- Qualified code SHA: `d8fd4ad1836f3ad4d9b54dec908d7818725c64d1`.
+- Focused test: `audio.bank-binary-validation` PASS, including exact BKHD/DIDX/DATA/HIRC presence, five unique nonempty embedded media entries, and malformed/empty/out-of-bounds rejection.
+- Complete domain/reflection suite: 1,158/1,158 PASS.
+- Authored-project, deterministic-source/audio-polish, production SoundBank, repository, clean exact-reference Release, output, standalone package, strict package, and `git diff --check` gates: PASS.
+- Guarded scenario: `disposable-firearm-wwise-audio` run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31`, 6/6 PASS.
+- Live assertions: state Ready; one bank-load attempt; exact all-family Event acceptance Pistol/Musket/Blunderbuss/Revolver/Rifle at playing IDs 2-6; live-unit Blunderbuss preview ID 7; ordinary committed Blunderbuss ID 8; forced Blunderbuss misfire produced no additional normal post; cleanup PASS.
+- Deployed runtime package SHA-256: `8A6E72FEFE3FC2CF585582574776010CDB1DC391E310D5E0807AB72E2023E7E9`.
+- Deployed DLL SHA-256: `8DB79393CE44D51029D1B5271B17D75DA4F1E74C38BC365A2232C474B4712821`.
+- Firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
+- SoundBank SHA-256: `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Automated status: routing/package qualified, audibility unresolved. The current human report remains authoritative because nonzero Wwise playing IDs do not prove audible speaker output or absence of inherited crossbow layers.

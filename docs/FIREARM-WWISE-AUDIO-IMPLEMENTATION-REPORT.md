@@ -117,3 +117,11 @@ last strict release-package SHA-256:
 `94AFF3D386BDE6111EA06E8340C751DE3C7CA9EFDDB617D9F10398C982F0B1B6`.
 Mechanical/runtime work is complete. Fresh human listening must decide timing,
 release-twang suppression, Scatter spell-audio removal, and Scatter visuals.
+
+## 2026-08-20 integrated regression requalification
+
+Fresh playtest evidence reports Pistol and possibly other firearm reports absent, so the earlier auditory result is stale until repeated. The integrated audit found the production bank unchanged at SHA-256 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`, with five unique nonempty embedded media entries and nonzero PCM in all five approved source recordings. Staging now validates the exact binary media contract before copying the allow-listed bank.
+
+Commit `d8fd4ad1836f3ad4d9b54dec908d7818725c64d1` expanded the guarded preview from Pistol-only to all five exact firearm Event families. Fresh-process run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` passed 6/6, accepting Pistol/Musket/Blunderbuss/Revolver/Rifle as playing IDs 2-6, live Blunderbuss preview as ID 7, ordinary committed Blunderbuss as ID 8, and no additional normal post for forced misfire.
+
+This excludes the currently representable bank/package/load/routing failures; it does not prove audio reached the listener. No bank or source-audio bytes were changed without evidence. Fresh five-family auditory acceptance remains required on the final integrated candidate.

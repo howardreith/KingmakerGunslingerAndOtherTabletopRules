@@ -30,3 +30,7 @@ bank hash, game version, audio device, and observer.
   listening and visual confirmation.
 
 A nonzero Wwise playing ID is not evidence that any checklist item was heard.
+
+## 2026-08-20 integrated regression status
+
+Fresh human playtest evidence reports Pistol and possibly other firearm sounds absent. Treat every checked historical listening item above as stale for the current integrated candidate. Automated run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` proves the exact bank loaded and all five Events returned nonzero playing IDs; it does not resolve the audible failure. Repeat the complete checklist on the final overnight candidate and record the exact commit, package, bank hash, audio device, and observed weapon/action for any silent or layered result.

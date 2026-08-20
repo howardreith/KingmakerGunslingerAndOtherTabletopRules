@@ -85,3 +85,9 @@ unequip, and inventory values into the firearm-owned instance before severing
 Prototype. Only `m_WhooshSound` is emptied. This is the narrow testable
 intervention for the release/twang hypothesis; human listening remains the
 authority for whether the overlap is gone.
+
+## Integrated regression evidence, 2026-08-20
+
+The staging boundary additionally requires a structurally valid BKHD/DIDX/DATA/HIRC bank with exactly five unique, nonempty, in-bounds embedded media entries. The guarded global preview accepts an exact `FirearmKind`, permitting one fresh process to validate the complete Pistol, Musket, Blunderbuss, Revolver, and Rifle Event-name mapping.
+
+Run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` observed one load and nonzero playing IDs for all five global Events plus the live-unit/committed Blunderbuss controls, with zero normal-post increment for forced misfire. This is the strongest safe automated event-acceptance boundary. It does not supersede the fresh human report of silence and cannot establish audibility, mix, device output, or absence of an inherited crossbow layer.

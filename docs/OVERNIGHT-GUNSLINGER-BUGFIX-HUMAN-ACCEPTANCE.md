@@ -100,3 +100,16 @@ Automated boundary already proven: guarded run `20260820T0535269245782Z-7edf2d2c
 4. Treat an already-materialized old-save shop as informational only: the repair publishes exact static `BlueprintUnitLoot` and does not claim or force retroactive refresh of save-owned inventory.
 
 Automated boundary already proven: guarded run `20260820T0555507894600Z-0772504de3254a64986e6ea2da172a02` passed 23/23, including all three exact `1/100` rows, both exact owners, and retained native stock.
+
+## Issue 8 - firearm audio remaining human check
+
+Use the final immutable candidate and a fresh Steam launch after final package deployment. A nonzero playing ID is not an audible pass.
+
+1. Fire one ordinary committed shot each from Pistol, Musket, Blunderbuss, Revolver, and Rifle; confirm one audible, correctly mapped firearm report.
+2. Confirm an ordinary miss after a committed shot still produces one report.
+3. Confirm empty, Wrecked, rejected/canceled, and true-misfire paths produce no normal firearm report.
+4. Confirm Scatter produces one Blunderbuss report per volley, not per target.
+5. Exercise Dead Shot, Startling Shot, Menacing Shot, and Stop Bleeding where available; confirm one normal report per committed physical discharge.
+6. Listen specifically for inherited crossbow release/twang/bolt layers and record any weapon, action, and timing where one remains.
+
+Automated boundary already proven: run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` passed 6/6 with the exact bank loaded once, all five Event families accepted, live-unit and ordinary committed Blunderbuss posts accepted, and forced misfire suppressed. That evidence deliberately makes no audibility claim.

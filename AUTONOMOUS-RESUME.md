@@ -1,5 +1,18 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-20 Issue 8 checkpoint
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Published implementation SHA: `d8fd4ad1836f3ad4d9b54dec908d7818725c64d1`; local branch and origin were equal before this record commit.
+- Version: `0.0.87`.
+- Completed automated qualification: Issues 1-8. Each remains consolidated human-gated only where its record states.
+- Issue 8 diagnosis: no bank/staging/loading/event-routing regression was reproduced. The current bank is byte-identical to the post-polish bank, contains five nonempty embedded media entries, and all five exact Events are accepted in a fresh process. Accepted Events do not establish audible output, so the fresh human report remains unresolved rather than dismissed.
+- Guarded run: `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31`, 6/6 PASS.
+- Gates: authoring, deterministic source, SoundBank, repository, 1,158/1,158 tests, clean Release, output, package, strict package, and diff PASS.
+- Package/DLL/AssetBundle/SoundBank SHA-256: `8A6E72FEFE3FC2CF585582574776010CDB1DC391E310D5E0807AB72E2023E7E9` / `8DB79393CE44D51029D1B5271B17D75DA4F1E74C38BC365A2232C474B4712821` / `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Real blocker: none. Remaining Issue 8 work is irreducible fresh human listening after the consolidated final candidate.
+- Next concrete action: Issue 9 exact firearm selector-icon publication and native-scale source/provenance audit.
+
 ## 2026-08-20 Issue 7 checkpoint
 
 - Branch: `codex/gunslinger-overnight-bugfixes`.

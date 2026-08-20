@@ -305,3 +305,14 @@
 - Runtime package/DLL SHA-256: `3D5052D73D3D4E1701ED4313ED7DACD072EC179B47BFD3054D93585EDEF2D70B` / `F97D27FE31D4912BBE20D51EC4AACF0B5D793FACF642FDA705CA6C94569317EA`.
 - Static `BlueprintUnitLoot` publication is qualified. Already-materialized save-owned shop refresh was not observed and is not claimed; actual new/unmaterialized Bokken trade UI remains human-gated.
 - Next action: Issue 7 exact Border Sentinel blueprint/profile/current publication audit and later fixed-loot candidate selection.
+
+## 2026-08-20 - Issue 8 firearm Wwise regression requalification
+
+- Fresh human evidence that Pistol and possibly other firearm reports are gone supersedes the older listening result. The investigation did not treat the existing structural/runtime pass as audible proof.
+- Bounded source and artifact audit found the production bank byte-identical to the last post-polish bank, all five approved WAV sources with nonzero PCM, five unique nonempty embedded media entries, and no recent bank/media byte replacement. A bank/content regeneration hypothesis was therefore rejected as unsupported.
+- Published commit `d8fd4ad1836f3ad4d9b54dec908d7818725c64d1` strengthens staging with exact binary chunk/media validation and expands the guarded preview path from Pistol-only to all five exact firearm kinds.
+- Full gates PASS: authored-project, deterministic source/audio-polish, production SoundBank, repository, 1,158/1,158 tests, exact-reference clean Release, output, standalone package, strict package, and diff checks.
+- Fresh Steam run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` passed 6/6: Ready, one load, all-family IDs 2-6, live Blunderbuss ID 7, ordinary committed Blunderbuss ID 8, and no additional normal post on forced misfire.
+- Runtime package/DLL/AssetBundle/SoundBank SHA-256: `8A6E72FEFE3FC2CF585582574776010CDB1DC391E310D5E0807AB72E2023E7E9` / `8DB79393CE44D51029D1B5271B17D75DA4F1E74C38BC365A2232C474B4712821` / `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Issue 8 is human-gated, not declared audibly fixed. A nonzero playing ID cannot prove speaker output, mix, or absence of inherited crossbow layers.
+- Next action: Issue 9 firearm selector monograms and Rapid Reload icon audit.
