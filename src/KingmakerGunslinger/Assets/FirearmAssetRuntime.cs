@@ -73,10 +73,10 @@ namespace KingmakerGunslinger.Assets
                     FirearmKind.Rifle, "rifle", true, context);
                 TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Pistol,
                     "pistolbelt", context);
-                TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Musket,
-                    "musketbelt", context);
-                TryLoadPrefab(candidate, names, beltPrefabs, FirearmKind.Blunderbuss,
-                    "blunderbussbelt", context);
+                TryLoadBackPrefab(candidate, names, beltPrefabs,
+                    FirearmKind.Musket, "musketbelt", context);
+                TryLoadBackPrefab(candidate, names, beltPrefabs,
+                    FirearmKind.Blunderbuss, "blunderbussbelt", context);
                 TryLoadDiagnosticPrefab(candidate, names, diagnosticPrefabs,
                     diagnosticCapabilities, "MusketPassThrough",
                     "musketpassthrough", context);
@@ -148,6 +148,33 @@ namespace KingmakerGunslinger.Assets
             destination[kind] = prefab;
             capabilities[kind] = capability;
             context.Logger.Info("assets", "rig.validated", capability.Describe());
+        }
+
+        private static void TryLoadBackPrefab(AssetBundle bundle,
+            string[] names, IDictionary<FirearmKind, GameObject> destination,
+            FirearmKind kind, string name, ModContext context)
+        {
+            GameObject prefab = TryLoadPrefab(bundle, names, kind, name, context);
+            Transform back = prefab == null ? null : prefab.transform.Find("BackMount");
+            Transform visual = prefab == null ? null : prefab.transform.Find("Visual");
+            Renderer[] renderers = prefab == null
+                ? new Renderer[0] : prefab.GetComponentsInChildren<Renderer>(true);
+            bool valid = prefab != null && back != null && visual != null &&
+                renderers.Length > 0 && Finite(back.localPosition) &&
+                prefab.transform.localPosition == Vector3.zero &&
+                prefab.transform.localRotation == Quaternion.identity &&
+                prefab.transform.localScale == Vector3.one;
+            if (!valid)
+            {
+                context.Logger.Warning("assets", "back-rig.rejected",
+                    "kind=" + kind + ";asset=" + name +
+                    ";requires=identity-root+Visual+BackMount+renderer;nativeFallback=true");
+                return;
+            }
+            destination[kind] = prefab;
+            context.Logger.Info("assets", "back-rig.validated",
+                "kind=" + kind + ";asset=" + name +
+                ";independentBackFrame=true;rendererCount=" + renderers.Length);
         }
 
         private static void TryLoadDiagnosticPrefab(AssetBundle bundle,

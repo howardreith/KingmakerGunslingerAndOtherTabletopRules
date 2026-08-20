@@ -29,6 +29,9 @@ namespace KingmakerGunslinger.Development
         internal Vector3 MuzzlePosition;
         internal Vector3 MuzzleEuler;
         internal Vector3 ButtPosition;
+        internal Vector3 BackPosition;
+        internal Vector3 BackEuler;
+        internal float BackScale = 1f;
         internal WeaponAnimationStyle Animation = WeaponAnimationStyle.Crossbow;
         internal bool UseCustomCandidate = true;
 
@@ -43,7 +46,8 @@ namespace KingmakerGunslinger.Development
                 Finite(VisualScale) && VisualScale > 0f &&
                 Finite(SupportPosition) && Finite(SupportEuler) &&
                 Finite(MuzzlePosition) && Finite(MuzzleEuler) &&
-                Finite(ButtPosition);
+                Finite(ButtPosition) && Finite(BackPosition) &&
+                Finite(BackEuler) && Finite(BackScale) && BackScale > 0f;
         }
 
         internal string ToJson(string prefabName, string bundleIdentity)
@@ -63,6 +67,9 @@ namespace KingmakerGunslinger.Development
             output.AppendLine("  \"muzzlePosition\": " + VectorJson(MuzzlePosition) + ",");
             output.AppendLine("  \"muzzleEuler\": " + VectorJson(MuzzleEuler) + ",");
             output.AppendLine("  \"buttPosition\": " + VectorJson(ButtPosition) + ",");
+            output.AppendLine("  \"backPosition\": " + VectorJson(BackPosition) + ",");
+            output.AppendLine("  \"backEuler\": " + VectorJson(BackEuler) + ",");
+            output.AppendLine("  \"backScale\": " + Number(BackScale) + ",");
             output.AppendLine("  \"candidateAnimation\": \"" + Animation + "\",");
             output.AppendLine("  \"humanAccepted\": false");
             output.AppendLine("}");
@@ -104,6 +111,10 @@ namespace KingmakerGunslinger.Development
                 if (capability.MuzzlePosition.HasValue) value.MuzzlePosition = capability.MuzzlePosition.Value;
                 if (capability.SupportPosition.HasValue) value.SupportPosition = capability.SupportPosition.Value;
                 if (capability.ButtPosition.HasValue) value.ButtPosition = capability.ButtPosition.Value;
+                if (kind == FirearmKind.Musket)
+                { value.BackEuler = new Vector3(0f, 0f, 12f); value.BackScale = 0.82f; }
+                if (kind == FirearmKind.Blunderbuss)
+                { value.BackEuler = new Vector3(0f, 0f, -14f); value.BackScale = 0.88f; }
                 Committed[kind] = value;
                 Session[kind] = value.Clone();
             }
@@ -161,7 +172,18 @@ namespace KingmakerGunslinger.Development
                 if (offsets == null || !ReferenceEquals(offsets.IkTargetLeftHand, support))
                     return SetResult("FAILED: instantiated EquipmentOffsets does not target SupportHandTarget.");
             }
-            return SetResult("PASS: applied session calibration to exact world candidate; inventory doll refresh unavailable in the confirmed Kingmaker contract and was not mutated.");
+            Transform back = FindUnique(unit.View == null ? null : unit.View.transform,
+                capability.PrefabName + "Belt");
+            if (back != null)
+            {
+                Transform backVisual = back.Find("Visual");
+                if (backVisual == null || back.Find("BackMount") == null)
+                    return SetResult("FAILED: active back candidate hierarchy is incomplete.");
+                backVisual.localPosition = state.BackPosition;
+                backVisual.localRotation = Quaternion.Euler(state.BackEuler);
+                backVisual.localScale = Vector3.one * state.BackScale;
+            }
+            return SetResult("PASS: applied held and available back calibration to exact world candidate; use native equipment refresh for world/inventory doll rematerialization.");
         }
 
         internal static string ToggleSelectedCandidate(bool useCustom)

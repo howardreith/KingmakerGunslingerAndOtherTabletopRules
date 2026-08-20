@@ -9275,6 +9275,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             FirearmKind kind, BlueprintItemWeapon item)
         {
             GameObject instance = null;
+            GameObject backInstance = null;
             bool cleaned = false;
             string id = kind.ToString().ToLowerInvariant();
             try
@@ -9286,6 +9287,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
                 Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
                 Transform butt = instance == null ? null : instance.transform.Find("Butt");
+                GameObject backPrefab = FirearmAssetRuntime.GetBeltPrefab(kind);
+                backInstance = backPrefab == null ? null :
+                    UnityEngine.Object.Instantiate(backPrefab);
+                Transform backVisual = backInstance == null ? null :
+                    backInstance.transform.Find("Visual");
+                Transform backMount = backInstance == null ? null :
+                    backInstance.transform.Find("BackMount");
                 EquipmentOffsets offsets = instance == null ? null : instance.GetComponent<EquipmentOffsets>();
                 Renderer[] renderers = instance == null ? Array.Empty<Renderer>() : instance.GetComponentsInChildren<Renderer>(true);
                 bool visiblyRenderable;
@@ -9316,6 +9324,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     support.localPosition.z < muzzle.localPosition.z &&
                     semanticLength >= 0.4f,
                     "source-space semantic anchor contract"));
+                bool normalizedProduction = kind == FirearmKind.Musket ||
+                    kind == FirearmKind.Blunderbuss;
+                assertions.Add(Assertion(id + "-normalized-held-frame",
+                    normalizedProduction ? "Visual position/rotation zero; scale one" :
+                        "legacy exact candidate retained",
+                    visual == null ? "<null>" : "position=" +
+                        visual.localPosition.ToString("R") + ";rotation=" +
+                        visual.localEulerAngles.ToString("R") + ";scale=" +
+                        visual.localScale.ToString("R"),
+                    !normalizedProduction || (visual != null &&
+                        visual.localPosition == Vector3.zero &&
+                        visual.localRotation == Quaternion.identity &&
+                        visual.localScale == Vector3.one),
+                    "runtime-loaded normalized derivative prefab"));
+                assertions.Add(Assertion(id + "-independent-back-prefab",
+                    normalizedProduction ? "distinct validated Visual+BackMount prefab" :
+                        "no custom back required",
+                    "back=" + (backInstance == null ? "<null>" : backInstance.name) +
+                    ";visual=" + (backVisual != null) + ";mount=" + (backMount != null),
+                    !normalizedProduction || (backInstance != null &&
+                        backVisual != null && backMount != null &&
+                        !ReferenceEquals(backPrefab, FirearmAssetRuntime.GetPrefab(kind))),
+                    "runtime-loaded independently calibrated back prefab"));
                 assertions.Add(Assertion(id + "-native-left-hand-ik", "EquipmentOffsets.IkTargetLeftHand == SupportHandTarget",
                     observed, offsets != null && ReferenceEquals(offsets.IkTargetLeftHand, support),
                     "exact installed Kingmaker EquipmentOffsets"));
@@ -9323,16 +9354,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int projectiles = effective == null || effective.Projectiles == null ? -1 : effective.Projectiles.Length;
                 assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
                     "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
-                assertions.Add(Assertion(id + "-holster-policy", "hidden; no inherited crossbow sheath",
-                    profile.HolsterPolicy, effective != null && effective.BeltModel == null &&
+                assertions.Add(Assertion(id + "-holster-policy",
+                    normalizedProduction ? "custom back; no inherited crossbow sheath" :
+                        "hidden; no inherited crossbow sheath",
+                    profile.HolsterPolicy, effective != null &&
+                        (normalizedProduction ? ReferenceEquals(effective.BeltModel,
+                            backPrefab) && profile.HolsterPolicy == "custom-belt/back" :
+                            effective.BeltModel == null && profile.HolsterPolicy == "hidden") &&
                         effective.SheathModel == null && effective.AttachSlots != null &&
-                        effective.AttachSlots.Any() && profile.HolsterPolicy == "hidden",
+                        effective.AttachSlots.Any(),
                     "exact project-owned firearm visual parameters"));
             }
             finally
             {
                 if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
-                cleaned = instance == null || instance.Equals(null);
+                if (backInstance != null)
+                    UnityEngine.Object.DestroyImmediate(backInstance);
+                cleaned = (instance == null || instance.Equals(null)) &&
+                    (backInstance == null || backInstance.Equals(null));
             }
             assertions.Add(Assertion(id + "-cleanup", "destroyed", cleaned.ToString(), cleaned,
                 "finally-owned transient GameObject"));

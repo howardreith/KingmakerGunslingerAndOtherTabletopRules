@@ -131,7 +131,13 @@ namespace KingmakerGunslinger.Blueprints
             GameObject equipped = profile.EquippedModel;
             if (equipped != null) Set(visual, "m_WeaponModel", equipped);
             GameObject belt = profile.BeltModel;
-            if (belt != null) Set(visual, "m_WeaponBeltModel", belt);
+            if (belt != null)
+            {
+                Set(visual, "m_WeaponBeltModel", belt);
+                // The exact project back prefab replaces, rather than layers on,
+                // the inherited crossbow sheath presentation.
+                Set(visual, "m_WeaponSheathModel", null);
+            }
             GameObject sheath = profile.SheathModel;
             if (sheath != null) Set(visual, "m_WeaponSheathModel", sheath);
             if (profile.HideHolsteredModel)

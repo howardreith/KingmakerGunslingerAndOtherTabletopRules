@@ -174,12 +174,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             string builder = Read("tools", "unity", "BuildFirearmBundles.cs");
             foreach (string marker in new[] { "KMG_Grip", "KMG_Support",
-                "KMG_Butt", "KMG_Muzzle" })
+                "KMG_Butt", "KMG_Muzzle", "KMG_Back" })
                 Assertions.True(builder.Contains(marker),
                     "Unity marker importer omitted " + marker + ".");
             foreach (string failure in new[] {
                 "partial-or-duplicate-marker-set=true",
-                "requires source-authored KMG_Grip/KMG_Support/KMG_Butt/KMG_Muzzle markers",
+                "requires its complete source-authored KMG marker set",
                 "non-finite source-authored semantic marker",
                 "marker-authored +Z muzzle axis is invalid",
                 "marker-authored support point is outside the plausible weapon envelope",
@@ -243,17 +243,47 @@ namespace KingmakerGunslinger.DomainTests
             string builder = Read("tools", "unity", "BuildFirearmBundles.cs");
             string profile = Read("src", "KingmakerGunslinger", "Assets",
                 "FirearmPresentationProfile.cs");
-            Assertions.True(builder.Contains(
-                "Spec(\"Musket\", \"Musket\", \"Musket 01.fbx\", false, true") &&
-                builder.Contains("new Vector3(0.0400f, 0f, 0f)") &&
-                builder.Contains("new Vector3(-0.1000f, -0.0122f, -0.0074f)") &&
+            string runtime = Read("src", "KingmakerGunslinger", "Assets",
+                "FirearmAssetRuntime.cs");
+            string presentation = Read("src", "KingmakerGunslinger", "Blueprints",
+                "FirearmWeaponPresentation.cs");
+            string generator = Read("assets-source", "third-party", "models",
+                "firearm-long-gun-derivatives", "generate_long_gun_derivatives.py");
+            string staging = Read("scripts", "Prepare-UnityAssets.ps1");
+            JObject report = JObject.Parse(Read("assets-source", "third-party",
+                "models", "firearm-long-gun-derivatives", "generation-report.json"));
+            Assertions.Equal(2, report["outputs"].Count(),
+                "The normalized long-gun build must publish exactly two derivatives.");
+            foreach (JToken output in report["outputs"])
+            {
+                string path = Path.Combine(Environment.CurrentDirectory,
+                    "assets-source", "third-party", "models",
+                    "firearm-long-gun-derivatives", (string)output["output"]);
+                Assertions.True(File.Exists(path), "Normalized long-gun FBX is missing.");
+                Assertions.Equal((string)output["outputSha256"], Hash(path),
+                    "Normalized long-gun FBX differs from its generation report.");
+                Assertions.Equal(5, output["markers"].Count(),
+                    "A normalized long-gun derivative lacks its exact five-marker contract.");
+            }
+            Assertions.True(builder.Contains("musket-normalized.fbx") &&
+                builder.Contains("blunderbuss-normalized.fbx") &&
+                builder.Contains("Vector3.zero, Vector3.zero, 1f") &&
+                builder.Contains("BackMount") && builder.Contains("KMG_Back") &&
                 builder.Contains("diagnostic-pass-through; not-production-bound") &&
                 builder.Contains("diagnostic-minimal-control; not-production-bound") &&
                 builder.Contains("diagnostic-clearance-stock; not-production-bound"),
-                "The production Musket fallback or diagnostic-only status changed.");
+                "Normalized production binding or diagnostic isolation changed.");
             Assertions.True(!Identities.Any(profile.Contains) &&
-                profile.Contains("FirearmKind.Musket"),
-                "A diagnostic candidate leaked into production item presentation before human selection.");
+                profile.Contains("FirearmKind.Musket") &&
+                profile.Contains("FirearmHolsterPolicy.Custom"),
+                "A diagnostic candidate leaked or custom back publication was removed.");
+            Assertions.True(runtime.Contains("TryLoadBackPrefab") &&
+                runtime.Contains("identity-root+Visual+BackMount+renderer") &&
+                presentation.Contains("m_WeaponSheathModel\", null") &&
+                generator.Contains("KMG_Support") &&
+                generator.Contains("KMG_Muzzle") &&
+                staging.Contains("two normalized long-gun derivatives"),
+                "The normalized rig/back fail-closed runtime contract is incomplete.");
         }
 
         private static string Hash(string path)

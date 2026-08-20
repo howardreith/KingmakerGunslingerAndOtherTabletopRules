@@ -74,17 +74,17 @@ FIREARM_DATA = {
     },
     "Musket": {
         "type": "KMG.Firearms.EarlyMusketWeaponType",
-        "source": "assets-source/third-party/models/mesh-masters-rifle-musket/source/Musket 01.fbx",
-        "provenance": "Mesh Masters, Flintlock Rifle, CC-BY-4.0; original FBX preserved",
+        "source": "assets-source/third-party/models/firearm-long-gun-derivatives/musket-normalized.fbx",
+        "provenance": "Modified Mesh Masters Flintlock Rifle, CC-BY-4.0; original FBX preserved; deterministic derivative recorded",
         "animation": "Crossbow; inherited native attachment slots",
-        "grip": "two-handed; identity firing grip plus SupportHandTarget; +Z muzzle",
+        "grip": "two-handed; identity firing grip plus SupportHandTarget; +Z muzzle; independent BackMount",
     },
     "Blunderbuss": {
         "type": "KMG.Firearms.EarlyBlunderbussWeaponType",
-        "source": "assets-source/third-party/models/ccotwist-blunderbuss/source/Blunderbuss_Low_Poly.fbx",
-        "provenance": "ccotwist, Blunderbuss Low Poly, CC-BY-4.0; original FBX preserved",
+        "source": "assets-source/third-party/models/firearm-long-gun-derivatives/blunderbuss-normalized.fbx",
+        "provenance": "Modified ccotwist Blunderbuss Low Poly, CC-BY-4.0; original FBX preserved; deterministic derivative recorded",
         "animation": "Crossbow; inherited native attachment slots",
-        "grip": "two-handed; identity firing grip plus SupportHandTarget; +Z muzzle",
+        "grip": "two-handed; identity firing grip plus SupportHandTarget; +Z muzzle; independent BackMount",
     },
     "Rifle": {
         "type": "KMG.Firearms.AdvancedRifleWeaponType",
@@ -236,7 +236,7 @@ def make_record(entry: dict) -> dict:
         weapon_type = "KMG.Test.TestMusketWeaponType" if symbol.startswith(
             "KMG.Test.") else data["type"]
         concern = "human inventory/world readability and hand fit remain required" if kind == "Pistol" else \
-            "residual torso/upper-arm clipping; human matrix required" if kind in \
+            "normalized held/back rig; final torso/support-hand clearance human-gated" if kind in \
             ("Musket", "Blunderbuss") else \
             "qualified structurally; lower-priority human visual review remains"
         common.update({
@@ -247,7 +247,7 @@ def make_record(entry: dict) -> dict:
             "effectiveEquippedPrefab": prefab,
             "sourceFbx": source_fbx,
             "sourceBlend": "assets-source/original-models/firearm-pistol-variants/firearm-pistol-variants.blend" if project_variant else "none; preserved licensed source imported directly",
-            "deterministicGenerator": "assets-source/original-models/firearm-pistol-variants/generate_firearm_pistol_variants.py" if project_variant else "tools/unity/BuildFirearmBundles.cs imports the preserved licensed source",
+            "deterministicGenerator": "assets-source/original-models/firearm-pistol-variants/generate_firearm_pistol_variants.py" if project_variant else ("assets-source/third-party/models/firearm-long-gun-derivatives/generate_long_gun_derivatives.py plus tools/unity/BuildFirearmBundles.cs" if kind in ("Musket", "Blunderbuss") else "tools/unity/BuildFirearmBundles.cs imports the preserved licensed source"),
             "animationDonorStyle": data["animation"],
             "gripHandednessContract": data["grip"],
             "currentMaterial": "project-owned three-material source forced to opaque Unity Standard" if project_variant else f"opaque Unity Standard; generated {kind}_* material assets",

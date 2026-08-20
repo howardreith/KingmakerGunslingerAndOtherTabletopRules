@@ -1725,7 +1725,11 @@ namespace KingmakerGunslinger.DomainTests
                 profile.Contains("Custom = 1") &&
                 profile.Contains("Hidden = 2") &&
                 profile.Contains("FirearmKind.Musket") &&
+                profile.Contains("FirearmHolsterPolicy.Custom, null, false") &&
+                profile.Contains("FirearmKind.Rifle") &&
                 profile.Contains("FirearmHolsterPolicy.Hidden, null, false") &&
+                profile.Contains("GetBeltPrefab(Kind)") &&
+                presentation.Contains("if (belt != null)") &&
                 presentation.Contains("if (profile.HideHolsteredModel)") &&
                 presentation.Contains("Set(visual, \"m_WeaponBeltModel\", null)") &&
                 presentation.Contains("Set(visual, \"m_WeaponSheathModel\", null)") &&
@@ -1740,7 +1744,7 @@ namespace KingmakerGunslinger.DomainTests
                 presentation.Contains("Native crossbow") &&
                 !presentation.Contains("GetComponentsInChildren<Renderer>") &&
                 !lifecycle.Contains("Renderer"),
-                "Hidden long-gun holsters must clear attach models and exact firearm sheath lifecycle without renderer scanning or native donor mutation.");
+                "Normalized Musket/Blunderbuss back models and the bounded hidden Rifle fallback must remain exact without renderer scanning or native donor mutation.");
         }
 
         private static void NativeRigVisibilityRepair()
@@ -1788,16 +1792,22 @@ namespace KingmakerGunslinger.DomainTests
                 builder.Contains("SourceMuzzlePoint") &&
                 builder.Contains("AnchorRelativeToGrip") &&
                 builder.Contains("KMG_RIG_ANCHORS") &&
-                builder.Contains("new Vector3(0.0400f, 0f, 0f)") &&
-                builder.Contains("new Vector3(-0.1000f, -0.0122f, -0.0074f)") &&
-                builder.Contains("new Vector3(0.0100f, 0f, -0.00316f)") &&
+                builder.Contains("musket-normalized.fbx") &&
+                builder.Contains("blunderbuss-normalized.fbx") &&
+                builder.Contains("Vector3.zero, Vector3.zero, 1f") &&
+                builder.Contains("KMG_Back") &&
+                builder.Contains("BackMount") &&
                 builder.Contains("new Vector3(0.1300f, 0f, 0f)") &&
+                runtime.Contains("TryLoadBackPrefab") &&
+                runtime.Contains("identity-root+Visual+BackMount+renderer") &&
                 runtime.Contains("semantic-length-or-butt-implausible") &&
                 runner.Contains("-semantic-anchors") &&
                 runner.Contains("long-gun-relative-semantic-length") &&
+                runner.Contains("-normalized-held-frame") &&
+                runner.Contains("-independent-back-prefab") &&
                 runner.Contains("pistol-human-accepted-held-freeze") &&
                 runner.Contains("narrow 2026-08-07 held-appearance freeze; other states unaccepted"),
-                "Accepted Pistol freeze or source-space long-gun semantic anchor contract is missing.");
+                "Accepted Pistol freeze or normalized long-gun held/back contract is missing.");
             Assertions.True(!System.IO.File.Exists(System.IO.Path.Combine(
                 Environment.CurrentDirectory,
                 "tools/unity/KmgDoubleSidedDiffuse.shader")),

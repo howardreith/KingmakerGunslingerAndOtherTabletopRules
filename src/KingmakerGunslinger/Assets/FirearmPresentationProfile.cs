@@ -43,15 +43,15 @@ namespace KingmakerGunslinger.Assets
                     FirearmHolsterPolicy.Hidden,
                     WeaponAnimationStyle.PiercingOneHanded, false) },
 
-                // Long-gun wrappers have repeatedly been invisible, inverted, or
-                // body-clipping. Preserve visible native crossbow fallbacks until
-                // each replacement is calibrated and human-approved.
+                // Musket and Blunderbuss use normalized project meshes with an
+                // independently calibrated back frame. Rifle retains the bounded
+                // hidden-holster policy pending its own visual qualification.
                 { FirearmKind.Musket, new FirearmPresentationProfile(
                     FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate,
-                    FirearmHolsterPolicy.Hidden, null, false) },
+                    FirearmHolsterPolicy.Custom, null, false) },
                 { FirearmKind.Blunderbuss, new FirearmPresentationProfile(
                     FirearmKind.Blunderbuss, FirearmPresentationReadiness.AutonomousCandidate,
-                    FirearmHolsterPolicy.Hidden, null, false) },
+                    FirearmHolsterPolicy.Custom, null, false) },
                 { FirearmKind.Rifle, new FirearmPresentationProfile(
                     FirearmKind.Rifle, FirearmPresentationReadiness.AutonomousCandidate,
                     FirearmHolsterPolicy.Hidden, null, false) }
