@@ -60,7 +60,7 @@ conservative: a lower-level subsystem or old sprint label is not completion.
 | BTSL merchant responsibility | reported | Honest Guy equipment, Xelliren supplies, exact four-table idempotent migration/order/rollback |
 | Firearm feat art | rejected by human | actual Nodachi-template parameters and native-feat-style Rapid Reload contact sheets |
 | Long-gun apparent yaw | reported | smallest per-gun correction with rig/mechanics regressions |
-| Spear active/back frames | reported | forward point and separate natural carry, accepted length/mechanics preserved |
+| Spear active/back frames | automated-qualified; human-gated | source `+Z` maps to installed held forward `-Y`; distinct diagonal BeltModel published; accepted 2.28 m length and all native donor fields except held/back models preserved; run `20260820T1542457366433Z-eb6ee44b6d434229bfc2b1f671afc544` |
 # Human-review correction override - 2026-08-20
 
 | Surface | Current status | Evidence | Remaining gate |

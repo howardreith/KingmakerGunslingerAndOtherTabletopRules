@@ -18,32 +18,44 @@ namespace KingmakerGunslinger.Assets
         private static readonly object Sync = new object();
         private static readonly Dictionary<string, GameObject> Prefabs =
             new Dictionary<string, GameObject>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, GameObject> BackPrefabs =
+            new Dictionary<string, GameObject>(StringComparer.Ordinal);
         private static AssetBundle _bundle;
         private static ModLogger _logger;
         private static string _status = "native-fallback:not-configured";
 
         private sealed class Contract
         {
-            internal Contract(string variant, string assetName)
-            { Variant = variant; AssetName = assetName; }
+            internal Contract(string variant, string assetName,
+                string backAssetName)
+            {
+                Variant = variant;
+                AssetName = assetName;
+                BackAssetName = backAssetName;
+            }
             internal string Variant;
             internal string AssetName;
+            internal string BackAssetName;
         }
 
         private static readonly Contract[] Contracts =
         {
             new Contract(WeaponVisualVariantCatalog.SpearClassic,
-                "elvenbranchedspear.prefab"),
+                "elvenbranchedspear.prefab",
+                "elvenbranchedspearback.prefab"),
             new Contract(WeaponVisualVariantCatalog.SpearThorn,
-                "elvenbranchedspearthorn.prefab"),
+                "elvenbranchedspearthorn.prefab",
+                "elvenbranchedspearthornback.prefab"),
             new Contract(WeaponVisualVariantCatalog.SpearCrown,
-                "elvenbranchedspearcrown.prefab")
+                "elvenbranchedspearcrown.prefab",
+                "elvenbranchedspearcrownback.prefab")
         };
 
         internal static bool IsLoaded
         { get { lock (Sync) return _bundle != null; } }
         internal static bool HasValidatedPrefab
-        { get { lock (Sync) return Prefabs.Count == Contracts.Length; } }
+        { get { lock (Sync) return Prefabs.Count == Contracts.Length &&
+            BackPrefabs.Count == Contracts.Length; } }
         internal static string Status
         { get { lock (Sync) return _status; } }
 
@@ -60,10 +72,11 @@ namespace KingmakerGunslinger.Assets
             }
             lock (Sync)
             {
-                if (_bundle != null && Prefabs.Count == Contracts.Length)
+                if (_bundle != null && Prefabs.Count == Contracts.Length &&
+                    BackPrefabs.Count == Contracts.Length)
                 {
                     context.Logger.Info("elven-branched-spear", "bundle.reused",
-                        "The three validated dedicated spear prefabs are already published.");
+                        "The three validated held/back spear pairs are already published.");
                     return;
                 }
             }
@@ -85,11 +98,13 @@ namespace KingmakerGunslinger.Assets
                 string[] prefabs = candidate.GetAllAssetNames().Where(value =>
                     value.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase))
                     .ToArray();
-                if (prefabs.Length != Contracts.Length)
+                if (prefabs.Length != Contracts.Length * 2)
                     throw new InvalidDataException(
-                        "Expected exactly three spear prefabs; observed " +
+                        "Expected exactly three held/back spear pairs; observed " +
                         prefabs.Length + ".");
                 var validated = new Dictionary<string, GameObject>(
+                    StringComparer.Ordinal);
+                var validatedBack = new Dictionary<string, GameObject>(
                     StringComparer.Ordinal);
                 foreach (Contract contract in Contracts)
                 {
@@ -100,8 +115,18 @@ namespace KingmakerGunslinger.Assets
                         "Expected one " + contract.AssetName + "; observed " +
                         matches.Length + ".");
                     GameObject prefab = candidate.LoadAsset<GameObject>(matches[0]);
-                    Validate(prefab, contract.Variant);
+                    Validate(prefab, contract.Variant, false);
                     validated.Add(contract.Variant, prefab);
+                    string[] backMatches = prefabs.Where(value => value.EndsWith(
+                        "/" + contract.BackAssetName,
+                        StringComparison.OrdinalIgnoreCase)).ToArray();
+                    if (backMatches.Length != 1) throw new InvalidDataException(
+                        "Expected one " + contract.BackAssetName + "; observed " +
+                        backMatches.Length + ".");
+                    GameObject backPrefab = candidate.LoadAsset<GameObject>(
+                        backMatches[0]);
+                    Validate(backPrefab, contract.Variant, true);
+                    validatedBack.Add(contract.Variant, backPrefab);
                 }
                 AssetBundle previous;
                 lock (Sync)
@@ -111,18 +136,22 @@ namespace KingmakerGunslinger.Assets
                     Prefabs.Clear();
                     foreach (KeyValuePair<string, GameObject> pair in validated)
                         Prefabs.Add(pair.Key, pair.Value);
-                    _status = "custom:validated:3";
+                    BackPrefabs.Clear();
+                    foreach (KeyValuePair<string, GameObject> pair in validatedBack)
+                        BackPrefabs.Add(pair.Key, pair.Value);
+                    _status = "custom:validated:3-pairs";
                     candidate = null;
                 }
                 if (previous != null) previous.Unload(false);
                 context.Logger.Info("elven-branched-spear", "bundle.loaded",
-                    "Published three exact spear variants transactionally; native donor animation, sockets, timing, trails, and sounds remain inherited.");
+                    "Published three exact held/back spear pairs transactionally; native donor animation, sockets, timing, trails, and sounds remain inherited.");
             }
             catch (Exception exception)
             {
                 lock (Sync)
                 {
                     Prefabs.Clear();
+                    BackPrefabs.Clear();
                     _status = "native-fallback:bundle-rejected:" +
                         exception.GetType().Name;
                 }
@@ -138,7 +167,9 @@ namespace KingmakerGunslinger.Assets
         {
             if (weaponType == null) throw new ArgumentNullException("weaponType");
             GameObject prefab = GetPrefab(WeaponVisualVariantCatalog.SpearClassic);
-            if (prefab == null) return false;
+            GameObject backPrefab = GetBackPrefab(
+                WeaponVisualVariantCatalog.SpearClassic);
+            if (prefab == null || backPrefab == null) return false;
             WeaponVisualParameters source = weaponType.VisualParameters;
             if (source == null || source.Model == null)
                 return RejectTypeAssignment(weaponType, source,
@@ -146,10 +177,13 @@ namespace KingmakerGunslinger.Assets
                         "Native Longspear fallback presentation is unavailable."));
             try
             {
-                WeaponVisualParameters visual = CloneWithModel(source, prefab);
+                WeaponVisualParameters visual = CloneWithModels(source, prefab,
+                    backPrefab);
                 Find(typeof(BlueprintWeaponType), "m_VisualParameters")
                     .SetValue(weaponType, visual);
-                if (!ReferenceEquals(weaponType.VisualParameters.Model, prefab))
+                if (!ReferenceEquals(weaponType.VisualParameters.Model, prefab) ||
+                    !ReferenceEquals(weaponType.VisualParameters.BeltModel,
+                        backPrefab))
                     throw new InvalidOperationException(
                         "Validated spear type fallback did not round-trip.");
                 return true;
@@ -164,7 +198,8 @@ namespace KingmakerGunslinger.Assets
             if (item == null) throw new ArgumentNullException("item");
             string variant = WeaponVisualVariantCatalog.Require(blueprintSymbol);
             GameObject prefab = GetPrefab(variant);
-            if (prefab == null) return false;
+            GameObject backPrefab = GetBackPrefab(variant);
+            if (prefab == null || backPrefab == null) return false;
             FieldInfo field = Find(item.GetType(), "m_VisualParameters");
             object original = field.GetValue(item);
             WeaponVisualParameters source = item.VisualParameters ??
@@ -175,9 +210,10 @@ namespace KingmakerGunslinger.Assets
                         "Spear item/type fallback presentation is unavailable."));
             try
             {
-                field.SetValue(item, CloneWithModel(source, prefab));
+                field.SetValue(item, CloneWithModels(source, prefab, backPrefab));
                 if (item.VisualParameters == null ||
-                    !ReferenceEquals(item.VisualParameters.Model, prefab))
+                    !ReferenceEquals(item.VisualParameters.Model, prefab) ||
+                    !ReferenceEquals(item.VisualParameters.BeltModel, backPrefab))
                     throw new InvalidOperationException(
                         "Exact spear item variant did not round-trip.");
                 return true;
@@ -192,8 +228,10 @@ namespace KingmakerGunslinger.Assets
             if (item == null) return false;
             string variant = WeaponVisualVariantCatalog.Require(blueprintSymbol);
             GameObject prefab = GetPrefab(variant);
+            GameObject backPrefab = GetBackPrefab(variant);
             return prefab != null && item.VisualParameters != null &&
-                ReferenceEquals(item.VisualParameters.Model, prefab);
+                ReferenceEquals(item.VisualParameters.Model, prefab) &&
+                ReferenceEquals(item.VisualParameters.BeltModel, backPrefab);
         }
 
         internal static GameObject InstantiatePrefab()
@@ -205,8 +243,15 @@ namespace KingmakerGunslinger.Assets
             return prefab == null ? null : UnityEngine.Object.Instantiate(prefab);
         }
 
-        private static WeaponVisualParameters CloneWithModel(
-            WeaponVisualParameters source, GameObject prefab)
+        internal static GameObject InstantiateBackPrefab(string variant)
+        {
+            GameObject prefab = GetBackPrefab(variant);
+            return prefab == null ? null : UnityEngine.Object.Instantiate(prefab);
+        }
+
+        private static WeaponVisualParameters CloneWithModels(
+            WeaponVisualParameters source, GameObject prefab,
+            GameObject backPrefab)
         {
             var visual = new WeaponVisualParameters();
             foreach (FieldInfo field in typeof(WeaponVisualParameters)
@@ -215,6 +260,8 @@ namespace KingmakerGunslinger.Assets
                     field.SetValue(visual, field.GetValue(source));
             Find(typeof(WeaponVisualParameters), "m_WeaponModel")
                 .SetValue(visual, prefab);
+            Find(typeof(WeaponVisualParameters), "m_WeaponBeltModel")
+                .SetValue(visual, backPrefab);
             return visual;
         }
 
@@ -225,7 +272,14 @@ namespace KingmakerGunslinger.Assets
             return prefab;
         }
 
-        private static void Validate(GameObject prefab, string variant)
+        internal static GameObject GetBackPrefab(string variant)
+        {
+            GameObject prefab;
+            lock (Sync) BackPrefabs.TryGetValue(variant, out prefab);
+            return prefab;
+        }
+
+        private static void Validate(GameObject prefab, string variant, bool back)
         {
             if (prefab == null) throw new InvalidDataException(
                 variant + " prefab is null.");
@@ -240,25 +294,42 @@ namespace KingmakerGunslinger.Assets
             Transform support = root.Find("SupportHandTarget");
             Transform tip = root.Find("Tip");
             Transform butt = root.Find("Butt");
+            Transform backMount = root.Find("BackMount");
             if (visual == null || grip == null || support == null || tip == null ||
-                butt == null) throw new InvalidDataException(
+                butt == null || (back && backMount == null))
+                throw new InvalidDataException(
                     variant + " semantic anchors are incomplete.");
-            if (!Approximately(visual.localPosition, Vector3.zero) ||
-                !Approximately(visual.localRotation,
-                    Quaternion.Euler(-90f, 0f, 0f)) ||
+            Vector3 expectedPosition = back
+                ? new Vector3(0f, -0.18f, 0.06f) : Vector3.zero;
+            Quaternion expectedRotation = back
+                ? Quaternion.AngleAxis(35f, Vector3.forward) *
+                    Quaternion.Euler(-90f, 0f, 0f)
+                : Quaternion.Euler(90f, 0f, 0f);
+            if (!Approximately(visual.localPosition, expectedPosition) ||
+                !Approximately(visual.localRotation, expectedRotation) ||
                 !Approximately(visual.localScale, Vector3.one))
                 throw new InvalidDataException(variant +
-                    " visual transform does not map source +Z to native Longspear +Y.");
+                    (back ? " back visual transform is not the exact diagonal frame." :
+                    " visual transform does not map source +Z to native Longspear forward -Y."));
+            Vector3 expectedGrip = expectedPosition;
+            Vector3 expectedSupport = expectedPosition + expectedRotation *
+                new Vector3(0f, 0f, 0.37f);
+            Vector3 expectedTip = expectedPosition + expectedRotation *
+                new Vector3(0f, 0f, 1.14f);
+            Vector3 expectedButt = expectedPosition + expectedRotation *
+                new Vector3(0f, 0f, -1.14f);
             if (!Finite(grip.localPosition) || !Finite(support.localPosition) ||
                 !Finite(tip.localPosition) || !Finite(butt.localPosition) ||
-                !Approximately(grip.localPosition, Vector3.zero) ||
-                Mathf.Abs(support.localPosition.y - 0.37f) > 0.002f ||
-                Mathf.Abs(tip.localPosition.y - 1.14f) > 0.002f ||
-                Mathf.Abs(butt.localPosition.y + 1.14f) > 0.002f ||
-                Mathf.Abs(support.localPosition.x) > 0.002f ||
-                Mathf.Abs(support.localPosition.z) > 0.002f ||
+                !Approximately(grip.localPosition, expectedGrip) ||
+                !Approximately(support.localPosition, expectedSupport) ||
+                !Approximately(tip.localPosition, expectedTip) ||
+                !Approximately(butt.localPosition, expectedButt) ||
                 Vector3.Distance(tip.localPosition, butt.localPosition) < 2.25f ||
-                Vector3.Distance(tip.localPosition, butt.localPosition) > 2.32f)
+                Vector3.Distance(tip.localPosition, butt.localPosition) > 2.32f ||
+                (!back && (tip.localPosition.y >= 0f ||
+                    butt.localPosition.y <= 0f)) ||
+                (back && (tip.localPosition.y <= butt.localPosition.y ||
+                    Mathf.Abs(tip.localPosition.x - butt.localPosition.x) < 1f)))
                 throw new InvalidDataException(variant +
                     " grip/support/tip/butt geometry does not match the native Longspear frame.");
             Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);

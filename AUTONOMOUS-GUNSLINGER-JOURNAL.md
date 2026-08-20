@@ -3989,6 +3989,7 @@ Exact standalone/campaign Honest Guy tables now own permanent project equipment;
 
 - Status: implemented; source qualification and guarded UI observation pending.
 - Human rejection: the 0.0.88 dark circular firearm monograms and Rapid Reload medallion are superseded.
+
 - Root boundary: the accepted Nodachi parameter appearance is produced by CustomWeaponSelectorRuntime through FeatureUIData with a null sprite plus the NO monogram; nodachi.png is item art, not the parameter template.
 - Repair: retained every stable firearm choice blueprint and exact publication mapping, replaced only the six project-owned rendered assets with a deterministic reconstruction of the native selector grammar, and added a separate pale-field oxblood reload glyph.
 - Source/provenance: JSON palette and monograms plus PowerShell vector/source generator; Segoe Script and Georgia system fonts are rendered but not packaged; no native pixels or proprietary fonts are included.
@@ -4021,3 +4022,15 @@ Exact standalone/campaign Honest Guy tables now own permanent project equipment;
 - Runtime package/DLL/SoundBank SHA-256: `A7780EA797ABA10DFED36D47C2EB1B627EAC09FCD29E6F01727CD5A104D94959` / `ED3EAF1A30E3EED42C773EA9D231EE64DEE8106065293344B40CE106B1B78E46` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - External state: exact pre-run backup `20260820T1526055855877Z` restored and verified for only the live Gunslinger mod directory.
 - Human gate: compare Musket and Blunderbuss on world/inventory dolls, male/female/small bodies, idle/combat idle, attack/reload, switch, back state, direct/Scatter, support hand, muzzle, and clipping.
+
+### 2026-08-20 continuation spear orientation checkpoint
+
+Elven Branched Spear source `+Z` is now mapped to installed Longspear forward
+`-Y`; three distinct project-owned BeltModel prefabs provide diagonal back
+carry without changing the accepted source length, mechanics, or stable IDs.
+The deterministic bundle is
+`33EB89C74EC4AE7CDA5A8155224A449233904B74CB59FC453C24AE022EE3CB2A`
+(126,658 bytes). All 1,162 tests and clean package gates passed. Guarded run
+`20260820T1542457366433Z-eb6ee44b6d434229bfc2b1f671afc544`
+passed 25/25; exact live-mod restoration had zero differences across 140 files.
+Final visual judgment remains human-gated.

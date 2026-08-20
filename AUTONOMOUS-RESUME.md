@@ -3102,3 +3102,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Last result: Unity deterministic bundle `050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C`; repository PASS; 1,162/1,162; clean Release/output/SoundBank/package PASS; runtime run `20260820T1526089673122Z-4727a84add664cbbbb4c93f1b3695c06`, 65/65 PASS.
 - External state: backup `20260820T1526055855877Z` restored and verified; no runtime/profile transaction active.
 - Next command: diff/staged audit, commit and publish long-gun yaw, then inspect and repair the Elven Branched Spear active and holstered frames.
+
+## 2026-08-20 spear orientation/carry qualification checkpoint
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Intake for this issue: `806e3139691d12c9744366bf3bb6594f2d788741`; version `0.0.88`.
+- Current issue disposition: Elven Branched Spear active/back frame repair is source-qualified and runtime-qualified; actual world/inventory doll aesthetics remain human-gated.
+- Root cause: source point `+Z` was mapped to installed `+Y` instead of Longspear forward `-Y`; null native belt/sheath references caused held-model reuse during carry.
+- Implementation: held `+90 X` wrapper plus three distinct upper-left diagonal BeltModel prefabs; accepted 2.28 m meshes, mechanics, donor fields, and stable IDs preserved.
+- Deterministic AssetBundle: `33EB89C74EC4AE7CDA5A8155224A449233904B74CB59FC453C24AE022EE3CB2A`, 126,658 bytes, two matching Unity 2018.4.10f1 builds.
+- Commands/results: repository validation PASS; complete suite 1,162/1,162; clean Release/output/SoundBank/package/strict package PASS; guarded run `20260820T1542457366433Z-eb6ee44b6d434229bfc2b1f671afc544` PASS 25/25.
+- External state: exact backup `20260820T1542422540763Z` restored; 140 backup files equal 140 live files with zero SHA-256 differences.
+- Persistent blocker: P0 Tenebrous scene-completion stall remains release-blocking and prevents `0.0.89` qualification.
+- Next concrete action: inspect complete spear diff/staging, commit and publish the issue, then run integrated regressions and finalize the truthful blocked-release handoff without incrementing the version.

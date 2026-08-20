@@ -8,7 +8,7 @@ One consolidated human pass will be requested only after all safe automated work
 4. In a new or not-yet-materialized shop, inspect Honest Guy for permanent firearms, Eastern weapons, and Elven Branched Spears; inspect Xelliren for only 200 Powder, 200 Balls, 200 Paper Cartridges, 10 Repair Kits, 5 Overhaul Kits, and one Gunsmith's Kit in both BTSL modes. Confirm project rows are naturally interleaved rather than a conspicuous appended block.
 5. Inspect P/M/B/Ri/Rv parameter icons beside Nodachi and Rapid Reload beside ordinary native feats at 32/64-pixel scale.
 6. Inspect Musket and Blunderbuss yaw on world/inventory dolls, bodies, attack/reload/switch/back states, Scatter, support hand, muzzle, and clipping.
-7. Inspect Elven Branched Spear point-forward active use and natural back carry while confirming accepted length and mechanics.
+7. Inspect each Elven Branched Spear visual family on world and inventory dolls. Confirm the point faces forward during idle, movement, each attack phase, and full attacks; confirm the accepted length is unchanged; switch/sheathe/unsheathe and confirm the separate carry lies diagonally along the back rather than horizontally across the shoulder. Include male/female Medium and one safely available Small body, area transition, polymorph recovery, and death/revival if practical; report head, hand, ground, or duplicate-model clipping.
 8. Reconfirm Focused Aim damage/Grit/kill recovery, Pistol audio, touch AC, firearm state/reload, Oleg/Bokken/Border pending checks, and optional-mod operation.
 # Deferred P0 human check
 

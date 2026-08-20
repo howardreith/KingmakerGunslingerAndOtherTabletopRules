@@ -514,7 +514,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sha256(Path.Combine(sourceRoot,
                     "elven-branched-spear-crown.fbx")),
                 "Generated crown spear FBX hash changed.");
-            Assertions.Equal("F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85",
+            Assertions.Equal("33EB89C74EC4AE7CDA5A8155224A449233904B74CB59FC453C24AE022EE3CB2A",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.elvenbranchedspear")),
                 "Dedicated spear bundle hash changed.");
@@ -530,9 +530,10 @@ namespace KingmakerGunslinger.DomainTests
                 "ElvenBranchedSpearAssetRuntime.cs"));
             foreach (string token in new[] { "2018.4.10f1",
                 "kingmakergunslinger.elvenbranchedspear", "Grip",
-                "SupportHandTarget", "Tip", "Butt", "Standard",
-                "Quaternion.Euler(-90f, 0f, 0f)",
-                "native Longspear +Y/2.28m contract" })
+                "SupportHandTarget", "Tip", "Butt", "BackMount", "Standard",
+                "Quaternion.Euler(90f, 0f, 0f)",
+                "Quaternion.AngleAxis(35f, Vector3.forward)",
+                "native Longspear -Y/2.28m forward or diagonal-back contract" })
                 Assertions.True(builder.Contains(token) || runtime.Contains(token),
                     "Dedicated asset pipeline lacks: " + token);
             foreach (string token in new[] { "AssetBundle.LoadFromFile",
@@ -540,7 +541,8 @@ namespace KingmakerGunslinger.DomainTests
                 "native-fallback:bundle-rejected", "ApplyTo",
                 "ReferenceEquals(weaponType.VisualParameters.Model, prefab)",
                 "bundle.reused", "native-fallback:model-assignment-rejected",
-                "RejectItemAssignment", "HasExactVisual" })
+                "RejectItemAssignment", "HasExactVisual",
+                "m_WeaponBeltModel", "InstantiateBackPrefab" })
                 Assertions.True(runtime.Contains(token),
                     "Fail-safe runtime lacks: " + token);
             Assertions.False(runtime.Contains("FirearmKind") ||

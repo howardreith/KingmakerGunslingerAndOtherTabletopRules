@@ -48,6 +48,7 @@ Repository validation, the new integration-order behavior, `1162/1162`, clean Re
 
 - Status: implemented; source qualification and guarded UI observation pending.
 - Human rejection: the 0.0.88 dark circular firearm monograms and Rapid Reload medallion are superseded.
+
 - Root boundary: the accepted Nodachi parameter appearance is produced by CustomWeaponSelectorRuntime through FeatureUIData with a null sprite plus the NO monogram; nodachi.png is item art, not the parameter template.
 - Repair: retained every stable firearm choice blueprint and exact publication mapping, replaced only the six project-owned rendered assets with a deterministic reconstruction of the native selector grammar, and added a separate pale-field oxblood reload glyph.
 - Source/provenance: JSON palette and monograms plus PowerShell vector/source generator; Segoe Script and Georgia system fonts are rendered but not packaged; no native pixels or proprietary fonts are included.
@@ -80,3 +81,22 @@ Repository validation, the new integration-order behavior, `1162/1162`, clean Re
 - Runtime package/DLL/SoundBank SHA-256: `A7780EA797ABA10DFED36D47C2EB1B627EAC09FCD29E6F01727CD5A104D94959` / `ED3EAF1A30E3EED42C773EA9D231EE64DEE8106065293344B40CE106B1B78E46` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - External state: exact pre-run backup `20260820T1526055855877Z` restored and verified for only the live Gunslinger mod directory.
 - Human gate: compare Musket and Blunderbuss on world/inventory dolls, male/female/small bodies, idle/combat idle, attack/reload, switch, back state, direct/Scatter, support hand, muzzle, and clipping.
+
+## 2026-08-20 - Elven Branched Spear held/back frame repair
+
+The source mesh was already a correct 2.28 m spear with its point on source
+`+Z`; that accepted geometry remains byte-identical. The prior Unity wrapper
+mapped the point to `+Y`, while live installed Longspear evidence establishes
+forward as `-Y`. In addition, the native donor has null belt/sheath models, so
+overriding only `m_WeaponModel` made the engine reuse the held frame while
+carried. Production now maps held source `+Z` to `-Y` and publishes distinct
+project-owned diagonal BeltModel prefabs for classic, thorn, and crown variants.
+
+Two clean Unity 2018.4.10f1 builds matched at
+`33EB89C74EC4AE7CDA5A8155224A449233904B74CB59FC453C24AE022EE3CB2A`
+(126,658 bytes). Repository validation, 1,162/1,162 tests, clean Release,
+output, SoundBank, package, and strict package validation passed. Guarded Steam
+run `20260820T1542457366433Z-eb6ee44b6d434229bfc2b1f671afc544`
+passed 25/25. Backup `20260820T1542422540763Z` was restored; full-tree
+comparison found 140/140 files and zero hash differences. Actual doll pose and
+animation aesthetics remain human-gated.

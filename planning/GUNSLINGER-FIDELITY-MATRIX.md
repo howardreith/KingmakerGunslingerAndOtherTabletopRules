@@ -85,7 +85,7 @@ creation and broad player-respec integration remain separately tracked.
 | Firearm feat icons | semantic/native-style candidate | dark badges rejected; Nodachi is exact accepted parameter template | reported; human-gated |
 | Rapid Reload icon | native-style candidate | dark field rejected; pale native feat grammar required | reported; human-gated |
 | Long-gun visuals | structural rig qualified | improved overall, but both yaw too far left | reported; preserve accepted work |
-| Elven Branched Spear | length/axis qualified | length accepted; active direction and back carry rejected | reported; preserve length |
+| Elven Branched Spear | held/back frames and mechanics runtime-qualified | accepted 2.28 m length preserved; active point now follows installed `-Y` forward; separate upper-left diagonal BeltModel replaces held-model shoulder reuse | human-gated for world/inventory dolls, attacks, switching, body sizes, and carry aesthetics |
 # Human-review correction override - 2026-08-20
 
 Acquisition pacing amendment: the former 30-distinct-target result is superseded by a fixed map whose normalized named-area density is at most two. Runtime run `20260820T1425182231173Z-observe-rare-firearm-acquisition` qualified exact publication, uniqueness, and vendor absence; ordinary accessibility and thematic fit remain human-gated. The Last Word remains a Pistol and Watch at the World's End remains a Musket.

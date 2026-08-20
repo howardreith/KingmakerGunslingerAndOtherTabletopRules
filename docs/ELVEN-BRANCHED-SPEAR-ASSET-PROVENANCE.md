@@ -22,11 +22,13 @@ exclusion boundary, and are intentionally readable at isometric scale.
 - Blender version: 4.5.10 LTS
 - Geometry: 45 mesh objects and 2,700 triangles across three variants
 - Source coordinate contract: metric; grip at origin; point along +Z
-- Unity coordinate contract: source `Visual` rotates -90 degrees around X so
-  the equipped point follows the native Longspear +Y axis
+- Unity held coordinate contract: source `Visual` rotates +90 degrees around X so
+  the equipped point follows the installed native Longspear forward `-Y` axis
 - Bounds contract: butt -1.14 m, point +1.14 m, total 2.28 m
-- Unity prefabs: `ElvenBranchedSpear`, `ElvenBranchedSpearThorn`, and
+- Unity held prefabs: `ElvenBranchedSpear`, `ElvenBranchedSpearThorn`, and
   `ElvenBranchedSpearCrown`
+- Unity back prefabs: `ElvenBranchedSpearBack`,
+  `ElvenBranchedSpearThornBack`, and `ElvenBranchedSpearCrownBack`
 
 SHA-256:
 
@@ -36,21 +38,25 @@ SHA-256:
 - crown FBX: `C66E6BBAAB853011FBDA3077566A58D516248230FC5DE7CA6554661EEDCE345A`
 - 512px source icon: `8C07FE074C8677446DDF5010B8C9B121BDE48BBCB7EB5E59579062E5CB9B1D0C`
 - 128px runtime icon: `A4CAA5FED242BEE645AD4F9D1E5F201C372EDE4A066254EE6BD4003A6538AF99`
-- Unity bundle: `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`
+- Unity bundle: `33EB89C74EC4AE7CDA5A8155224A449233904B74CB59FC453C24AE022EE3CB2A`
 
-Two clean Blender runs produced byte-identical FBXs and normalized PNGs. Two
-unchanged-input Unity 2018.4.10f1 builds produced the same 113,269-byte bundle.
-The `.blend` binary is deliberately not claimed byte-stable because Blender
-embeds session metadata; regenerating it produces the same authored object and
+Two clean Blender runs produced byte-identical FBXs and normalized PNGs. The
+`.blend` binary is deliberately not claimed byte-stable because Blender embeds
+session metadata; regenerating it produces the same authored object and
 geometry contract. The generator's build report records the current container
 hash and this limitation.
 
-The previous human-rejected three-prefab bundle was 111,659 bytes; the repaired
-bundle is 113,269 bytes. It contains three prefabs, 45 source
-mesh objects, 15 material definitions, and no texture asset. Growth is explained
-by the reauthored mesh coordinates and explicit prefab frame metadata.
+The earlier visual repair changed a human-rejected 111,659-byte bundle to a
+113,269-byte three-prefab bundle. The current orientation/carry repair leaves
+all source FBXs and recorded source hashes unchanged and changes only
+project-owned Unity wrappers and manifest data. Two independently restaged
+Unity 2018.4.10f1 builds produced the identical current 126,658-byte six-prefab
+bundle. It contains the same 45 source mesh objects and 15 material definitions
+with no texture asset. The superseded three-prefab bundle SHA-256 was
+`F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`.
 
 Existing item, weapon-type, proficiency, effect, category, placement, and save
 identities are unchanged. Runtime maps exact item symbols to approved variants
 and retains the classic type-level/native Longspear fallback. Human in-game
-acceptance of branch readability and clipping remains a separate gate.
+acceptance of point direction, attack grip, back silhouette, body-size clipping,
+and inventory presentation remains a separate gate.

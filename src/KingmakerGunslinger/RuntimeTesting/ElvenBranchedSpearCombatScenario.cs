@@ -85,6 +85,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon equipped = null;
             var facts = new List<BlueprintUnitFact>();
             var presentations = new List<GameObject>();
+            var heldPresentations = new List<GameObject>();
+            var backPresentations = new List<GameObject>();
             BlueprintFeature secondFinesseTraining = null;
             bool cleaned = false;
             string stage = "create-live-fixture";
@@ -115,21 +117,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                     WeaponVisualVariantCatalog.SpearClassic,
                     WeaponVisualVariantCatalog.SpearThorn,
                     WeaponVisualVariantCatalog.SpearCrown })
-                    presentations.Add(ElvenBranchedSpearAssetRuntime
-                        .InstantiatePrefab(variant));
-                bool presentationExact = presentations.Count == 3 &&
-                    presentations.All(value => value != null &&
+                {
+                    GameObject held = ElvenBranchedSpearAssetRuntime
+                        .InstantiatePrefab(variant);
+                    GameObject back = ElvenBranchedSpearAssetRuntime
+                        .InstantiateBackPrefab(variant);
+                    heldPresentations.Add(held);
+                    backPresentations.Add(back);
+                    presentations.Add(held);
+                    presentations.Add(back);
+                }
+                bool presentationExact = heldPresentations.Count == 3 &&
+                    backPresentations.Count == 3 &&
+                    heldPresentations.All(value => value != null &&
                         value.transform.Find("Visual") != null &&
                         value.transform.Find("Grip") != null &&
                         value.transform.Find("SupportHandTarget") != null &&
                         value.transform.Find("Tip") != null &&
+                        value.transform.Find("Butt") != null) &&
+                    backPresentations.All(value => value != null &&
+                        value.transform.Find("Visual") != null &&
+                        value.transform.Find("BackMount") != null &&
+                        value.transform.Find("Tip") != null &&
                         value.transform.Find("Butt") != null);
                 Add(assertions, "spear-custom-presentation",
-                    "three validated custom prefabs with all semantic anchors",
+                    "three validated held/back prefab pairs with all semantic anchors",
                     ElvenBranchedSpearAssetRuntime.Status,
                     ElvenBranchedSpearAssetRuntime.HasValidatedPrefab &&
                         presentationExact,
                     "dedicated AssetBundle runtime and instantiated GameObject");
+                bool activeForward = heldPresentations.All(value =>
+                    value.transform.Find("Tip").localPosition.y < 0f &&
+                    value.transform.Find("Butt").localPosition.y > 0f &&
+                    Mathf.Abs(Quaternion.Dot(value.transform.Find("Visual")
+                        .localRotation, Quaternion.Euler(90f, 0f, 0f))) >
+                        0.9999f);
+                Add(assertions, "spear-active-forward-frame",
+                    "source point maps to installed Longspear forward -Y; accepted 2.28m length retained",
+                    "tip=" + heldPresentations[0].transform.Find("Tip")
+                        .localPosition.ToString("R") + ";butt=" +
+                        heldPresentations[0].transform.Find("Butt")
+                        .localPosition.ToString("R"), activeForward,
+                    "runtime-loaded held prefab transforms and semantic anchors");
+                bool diagonalBack = backPresentations.All(value =>
+                    value.transform.Find("Tip").localPosition.y >
+                        value.transform.Find("Butt").localPosition.y &&
+                    Mathf.Abs(value.transform.Find("Tip").localPosition.x -
+                        value.transform.Find("Butt").localPosition.x) > 1f &&
+                    Mathf.Abs(Quaternion.Dot(value.transform.Find("Visual")
+                        .localRotation, Quaternion.AngleAxis(35f,
+                            Vector3.forward) * Quaternion.Euler(-90f, 0f, 0f))) >
+                        0.9999f);
+                Add(assertions, "spear-diagonal-back-frame",
+                    "distinct upper-left diagonal back prefab; no horizontal shoulder reuse",
+                    "tip=" + backPresentations[0].transform.Find("Tip")
+                        .localPosition.ToString("R") + ";butt=" +
+                        backPresentations[0].transform.Find("Butt")
+                        .localPosition.ToString("R"), diagonalBack,
+                    "runtime-loaded BeltModel prefab and BackMount contract");
                 BlueprintItemWeapon nativeLongspear =
                     BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
                         BlueprintBootstrap.Library, StandardLongspearGuid,
@@ -144,7 +189,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PresentationGeometry nativeGeometry = MeasurePresentation(
                     nativePresentation);
                 PresentationGeometry customGeometry = MeasurePresentation(
-                    presentations[0]);
+                    heldPresentations[0]);
                 string geometryObserved = "native=" + nativeGeometry.Describe() +
                     ";custom=" + customGeometry.Describe();
                 Add(assertions, "spear-native-custom-geometry-inventory",
@@ -156,15 +201,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Math.Abs(customGeometry.Size.y -
                             nativeGeometry.Size.y) <= 0.08f,
                     "live installed native TH_LongspearKnight1 and packaged custom prefab renderer geometry");
-                bool donorPresentationPreserved = EquivalentPresentationExceptModel(
+                bool donorPresentationPreserved = EquivalentPresentationExceptModels(
                     nativeLongspear.Type.VisualParameters,
                     set.WeaponType.VisualParameters);
                 Add(assertions, "spear-native-presentation-donor-preserved",
-                    "every native Longspear visual field except the exact custom model remains reference/value equivalent",
+                    "every native Longspear visual field except exact held/back models remains reference/value equivalent",
                     "nativeModel=" + nativeLongspear.Type.VisualParameters.Model.name +
-                    ";customModel=" + set.WeaponType.VisualParameters.Model.name,
-                    donorPresentationPreserved,
-                    "live WeaponVisualParameters field comparison excluding m_WeaponModel");
+                    ";customModel=" + set.WeaponType.VisualParameters.Model.name +
+                    ";customBack=" + set.WeaponType.VisualParameters.BeltModel.name,
+                    donorPresentationPreserved &&
+                        ReferenceEquals(set.WeaponType.VisualParameters.BeltModel,
+                            ElvenBranchedSpearAssetRuntime.GetBackPrefab(
+                                WeaponVisualVariantCatalog.SpearClassic)),
+                    "live WeaponVisualParameters comparison excluding only m_WeaponModel and m_WeaponBeltModel");
                 diagnostics.Add(geometryObserved);
                 var mappedItems = new List<KeyValuePair<string,
                     BlueprintItemWeapon>>();
@@ -1593,13 +1642,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 renderers.Length, finite ? string.Empty : "bounds-invalid");
         }
 
-        private static bool EquivalentPresentationExceptModel(
+        private static bool EquivalentPresentationExceptModels(
             WeaponVisualParameters native, WeaponVisualParameters custom)
         {
             if (native == null || custom == null) return false;
             foreach (FieldInfo field in typeof(WeaponVisualParameters)
                 .GetFields(Members).Where(value => !value.IsStatic &&
                     !string.Equals(value.Name, "m_WeaponModel",
+                        StringComparison.Ordinal) &&
+                    !string.Equals(value.Name, "m_WeaponBeltModel",
                         StringComparison.Ordinal)))
             {
                 object left = field.GetValue(native);
