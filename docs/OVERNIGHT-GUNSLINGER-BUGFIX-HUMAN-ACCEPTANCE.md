@@ -65,3 +65,12 @@ Automated boundary already proven: guarded run `20260820T0458550047640Z-b20727d2
 5. Confirm Scatter Shot retains cone behavior and does not gain the direct-fire Touch AC shortcut. Confirm concealment, Mirror Image, cover, line of sight/effect, natural 1, critical confirmation, and normal damage processing remain native.
 
 Automated boundary already proven: guarded run `20260820T0513443721972Z-cceff2c263254181ad15fd7af638ed3f` passed 15 production boundary events, the effective-range case, one exact feedback line per event, and cleanup. Pre-attack hover was not implemented because no qualified narrow seam was found.
+
+## Issue 4 - Acadamae prerequisite text remaining human check
+
+1. Open feat selection on an eligible specialist Wizard and inspect Acadamae Graduate at normal UI scale.
+2. Confirm Kingmaker shows one native prerequisite presentation for Wizard level 1 and Conjuration not being forbidden.
+3. Confirm the rules description begins with the activation/effect text and does not repeat a separate `Prerequisite:` paragraph.
+4. Repeat on an ineligible Wizard configuration and confirm the native prerequisite failure presentation remains truthful.
+
+Automated boundary already proven: guarded run `20260820T0524095518410Z-ea7adae339fc4fa4a98bfe7bd52b4222` passed the live registered-blueprint presentation assertion and all existing Acadamae action/save/fatigue assertions.

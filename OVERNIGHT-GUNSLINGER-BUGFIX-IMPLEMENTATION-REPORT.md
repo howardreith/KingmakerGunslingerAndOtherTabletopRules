@@ -106,3 +106,11 @@ The existing runtime architecture was retained: the attack-roll frame captures e
 Production and magic firearm descriptions plus the dynamic Qualities surface now state exact base penetration distances. Blunderbuss wording limits this to ordinary direct fire and preserves Scatter Shot's cone rules. A new exception-contained player log adapter reuses the existing native warning/battle-log event and publishes one line after a resolvable exact-firearm branch commits. Duplicate callbacks are stamped, and adapter/log failures do not alter native attack processing.
 
 No established safe pre-attack hover seam was found after bounded searches of tooltip, cursor, target-preview, and combat-log adapters. The battle-log fallback is therefore the production candidate; pre-attack hover remains human/UI follow-up rather than a new framework.
+
+## Issue 4 - Acadamae Graduate prerequisite presentation
+
+The selected feat contained one correct `PrerequisiteAcadamaeGraduate` component, but its localized rules description also began with a manual prerequisite sentence. Kingmaker therefore presented the same specialist-Wizard and Conjuration eligibility contract through both the native prerequisite renderer and description body.
+
+The repair removes only the manually embedded sentence. The exact prerequisite component, its `Check` implementation and `GetUIText()` output, feature GUID/identity, feat group, publication order, module toggle, and `AddFacts` mode grant are unchanged. A focused semantic test isolates the description localization span rather than snapshotting the full description, and the guarded runtime scenario inspects the live registered feature for one prerequisite component, retained native prerequisite text, and absence of the duplicate prose.
+
+Commit: `78bc46d21b71dbfb35d430d00755228348afb751`. Guarded run `20260820T0524095518410Z-ea7adae339fc4fa4a98bfe7bd52b4222` passed all 15 assertions. Final visual confirmation in the actual feat-selection UI remains human-gated.

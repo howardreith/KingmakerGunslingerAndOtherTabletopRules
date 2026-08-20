@@ -258,3 +258,18 @@
 - Firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
 - Remaining human check: real UI tooltip/battle-log readability and player-issued attack confirmation; pre-attack hover remains an optional bounded follow-up.
 - Next action: Issue 4 duplicated Acadamae prerequisite presentation.
+
+## 2026-08-20 - Issue 4 Acadamae prerequisite presentation qualified
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Qualified code SHA: `78bc46d21b71dbfb35d430d00755228348afb751`.
+- Version: `0.0.87`.
+- Diagnosis: `KMG.Feat.AcadamaeGraduate.Description` manually repeated the specialist-Wizard and non-forbidden-Conjuration eligibility requirements already rendered by the exact `PrerequisiteAcadamaeGraduate` component.
+- Repair: removed only the manual prerequisite sentence. The prerequisite component, eligibility policy, native `GetUIText()` requirements, feature identity, publication, and mode grant remain unchanged.
+- Focused test: `acadamae.prerequisite-presentation` PASS. Complete dependency-free suite: 1,153/1,153 PASS.
+- Gates: repository validation, clean exact-reference Release, output validation, SoundBank validation, package build, strict package validation, `git diff --check`, and runtime preflight 109/109 PASS. The first unchanged post-build preflight hit the known staging-state transient `unsupported-does-not-build-or-stage-package`; its cleanup retry passed without a source change.
+- Guarded run: `20260820T0524095518410Z-ea7adae339fc4fa4a98bfe7bd52b4222`, 15/15 PASS. Live evidence reported `prerequisitePresentation=True`, exactly one native prerequisite component, retained native prerequisite text, and no duplicated description prose.
+- Runtime package SHA-256: `60C0B8AFA7F3E7E9EB98710D6300C9B7D3D4F4AB3BE3C761CED8D5FA5FFCCB34`.
+- Runtime DLL SHA-256: `0ECE4157AA0512A5887B7FD6BB5B82BCE963758EE796873FE2AC20113E482E14`.
+- Remaining human check: inspect the real feat-selection UI at normal scale and confirm one coherent prerequisite block.
+- Next action: Issue 5 exact Oleg maintenance-kit publication.

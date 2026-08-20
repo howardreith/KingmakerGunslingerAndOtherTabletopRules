@@ -2881,3 +2881,17 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Runtime hashes: package `A05A0389C3C5D4ABC19891EA1B0F57D40AD9A865DA8DF0C3D2F6A6C62F81BF27`; DLL `44208BB5D6351877C71A73E7A3979B732BD8654E89EABDDB46B493F882197C04`; firearm AssetBundle `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
 - Remaining human check: real-scale tooltip/battle-log readability and ordinary player-issued attacks; pre-attack hover remains bounded UI follow-up.
 - Next concrete action: inspect the exact Acadamae feat description/localization and native prerequisite components/presentation tests, then remove only the duplicated prose.
+
+## Overnight bugfix resume checkpoint - Issue 4 qualified (2026-08-20)
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Qualified code SHA: `78bc46d21b71dbfb35d430d00755228348afb751` (documentation checkpoint follows); local branch and origin equality verified.
+- Version: `0.0.87`.
+- Completed issue IDs: Issues 1, 2, 3, and 4 automated-qualified/human-gated.
+- Current issue: Issue 5, exact Oleg maintenance-kit publication.
+- Issue 4 result: removed the manually duplicated prerequisite sentence from the Acadamae feat description while retaining the exact native prerequisite component, eligibility policy, and UI text.
+- Gates: 1,153/1,153 tests; repository, exact-reference clean Release, output, SoundBank, package, strict-package, diff, and 109 runtime-preflight checks PASS.
+- Guarded run: `20260820T0524095518410Z-ea7adae339fc4fa4a98bfe7bd52b4222`, 15/15 PASS with `prerequisitePresentation=True` on the live registered blueprint.
+- Runtime hashes: package `60C0B8AFA7F3E7E9EB98710D6300C9B7D3D4F4AB3BE3C761CED8D5FA5FFCCB34`; DLL `0ECE4157AA0512A5887B7FD6BB5B82BCE963758EE796873FE2AC20113E482E14`.
+- Active blocker: none. Remaining Issue 4 check is the actual feat-selection layout at display scale.
+- Next concrete action: inspect Oleg's exact installed vendor table, current publication transaction, maintenance-kit identities/counts, existing vendor observers, and materialization lifecycle before applying one narrow Issue 5 repair.

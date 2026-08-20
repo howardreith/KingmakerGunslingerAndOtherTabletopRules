@@ -162,3 +162,16 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Deployed DLL SHA-256: `44208BB5D6351877C71A73E7A3979B732BD8654E89EABDDB46B493F882197C04`.
 - Deployed firearm AssetBundle SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20`.
 - Automated status: qualified. Real-scale tooltip/battle-log readability and ordinary player-issued attacks remain human-gated. No safe pre-attack hover seam was established.
+
+## Issue 4 qualification - Acadamae prerequisite presentation
+
+- Qualified code SHA: `78bc46d21b71dbfb35d430d00755228348afb751`.
+- Focused test: `acadamae.prerequisite-presentation` PASS.
+- Complete domain/reflection suite: 1,153/1,153 PASS.
+- Repository validation, clean exact-reference Release, output validation, SoundBank validation, package build, strict package validation, and `git diff --check`: PASS.
+- Runtime scenario preflight: 109/109 PASS after one unchanged cleanup retry of the known post-build staging-state transient.
+- Guarded scenario: `disposable-acadamae-graduate` run `20260820T0524095518410Z-ea7adae339fc4fa4a98bfe7bd52b4222`, 15/15 PASS.
+- Live presentation assertion: exactly one `PrerequisiteAcadamaeGraduate` component, native eligibility text retained, feat description contains no manual prerequisite block.
+- Deployed runtime package SHA-256: `60C0B8AFA7F3E7E9EB98710D6300C9B7D3D4F4AB3BE3C761CED8D5FA5FFCCB34`.
+- Deployed DLL SHA-256: `0ECE4157AA0512A5887B7FD6BB5B82BCE963758EE796873FE2AC20113E482E14`.
+- Automated status: qualified. Real feat-selection layout remains human-gated because blueprint/localization assertions cannot establish final UI composition at display scale.
