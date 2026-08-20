@@ -3,7 +3,7 @@
   "unityVersion": "2018.4.10f1",
   "buildTarget": "StandaloneWindows64",
   "bundleName": "kingmakergunslinger.firearms",
-  "sha256": "1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF",
+  "sha256": "050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C",
   "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketPassThrough", "MusketMinimalControl", "MusketClearanceStock", "PistolDuelist", "PistolLastWord", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle"],
   "itemVariantPrefabs": [
     {
@@ -74,7 +74,7 @@
   "bundles": [
     {
       "name": "kingmakergunslinger.firearms",
-      "sha256": "1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF"
+      "sha256": "050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C"
     },
     {
       "name": "kingmakergunslinger.elvenbranchedspear",

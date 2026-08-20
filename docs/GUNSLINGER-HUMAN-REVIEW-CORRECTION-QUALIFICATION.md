@@ -70,3 +70,14 @@ Fresh Steam run IDs `20260820T1346113518157Z-cac809535698401786e65c307f7be644` a
 - SoundBank SHA-256: 0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18.
 - Runtime deployment backup: C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260820T1505311020164Z; exact only-target restore verified.
 - Human gate: inspect the five calligraphic parameter fields and Rapid Reload beside native feats at real 32/64 UI scale.
+## 2026-08-20 long-gun yaw refinement qualification
+
+- Status: automated-qualified; final visual judgment remains human-gated.
+- Repair boundary: Musket held `Visual` uses local Y `+3` degrees and Blunderbuss held `Visual` uses local Y `+4` degrees. The normalized source meshes, scale, firing-hand root, support target, muzzle, projectile, materials, audio, and independent back prefabs are unchanged.
+- Measured effect: live Musket muzzle `(0.05470153, 0, 1.04376733)` and Blunderbuss muzzle `(0.0437930971, 0, 0.626270533)` follow the exact revised held axes. Back `Visual` rotations remain `(0,0,12)` and `(0,0,346)` respectively.
+- Determinism: two independently restaged Unity 2018.4.10f1 ForceRebuild passes produced identical 17,971,200-byte firearm bundles at SHA-256 `050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C`.
+- Gates: repository validation PASS; complete clean Release suite `1,162/1,162` PASS; clean Release/output PASS; SoundBank PASS; package and strict package PASS.
+- Guarded runtime: `disposable-firearm-visual-rigs`, run `20260820T1526089673122Z-4727a84add664cbbbb4c93f1b3695c06`, `65/65` PASS.
+- Runtime package/DLL/SoundBank SHA-256: `A7780EA797ABA10DFED36D47C2EB1B627EAC09FCD29E6F01727CD5A104D94959` / `ED3EAF1A30E3EED42C773EA9D231EE64DEE8106065293344B40CE106B1B78E46` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- External state: exact pre-run backup `20260820T1526055855877Z` restored and verified for only the live Gunslinger mod directory.
+- Human gate: compare Musket and Blunderbuss on world/inventory dolls, male/female/small bodies, idle/combat idle, attack/reload, switch, back state, direct/Scatter, support hand, muzzle, and clipping.

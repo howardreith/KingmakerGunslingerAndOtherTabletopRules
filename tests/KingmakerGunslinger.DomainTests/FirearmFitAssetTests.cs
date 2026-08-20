@@ -267,7 +267,10 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.True(builder.Contains("musket-normalized.fbx") &&
                 builder.Contains("blunderbuss-normalized.fbx") &&
-                builder.Contains("Vector3.zero, Vector3.zero, 1f") &&
+                builder.Contains("\"musket-normalized.fbx\", false, true,\n" +
+                    "            Vector3.zero, new Vector3(0f, 3f, 0f), 1f") &&
+                builder.Contains("\"blunderbuss-normalized.fbx\", false, true,\n" +
+                    "            Vector3.zero, new Vector3(0f, 4f, 0f), 1f") &&
                 builder.Contains("BackMount") && builder.Contains("KMG_Back") &&
                 builder.Contains("diagnostic-pass-through; not-production-bound") &&
                 builder.Contains("diagnostic-minimal-control; not-production-bound") &&

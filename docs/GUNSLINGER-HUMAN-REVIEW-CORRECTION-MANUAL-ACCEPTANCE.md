@@ -39,3 +39,6 @@ Do not test the original save until the consolidated handoff. The bounded check 
 - SoundBank SHA-256: 0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18.
 - Runtime deployment backup: C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260820T1505311020164Z; exact only-target restore verified.
 - Human gate: inspect the five calligraphic parameter fields and Rapid Reload beside native feats at real 32/64 UI scale.
+## Long-gun final visual check
+
+Equip the Musket and Blunderbuss in turn. Confirm the bounded rightward yaw removes the leftward aim bias without changing grip, support hand, scale, muzzle origin, direct/Scatter delivery, reload, weapon switching, or the accepted independent back carry. Check world and inventory dolls on available male, female, and small bodies.

@@ -9453,8 +9453,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "source-space semantic anchor contract"));
                 bool normalizedProduction = kind == FirearmKind.Musket ||
                     kind == FirearmKind.Blunderbuss;
+                float expectedHeldYaw = kind == FirearmKind.Musket ? 3f :
+                    kind == FirearmKind.Blunderbuss ? 4f : 0f;
+                Quaternion expectedHeldRotation = Quaternion.Euler(0f,
+                    expectedHeldYaw, 0f);
                 assertions.Add(Assertion(id + "-normalized-held-frame",
-                    normalizedProduction ? "Visual position/rotation zero; scale one" :
+                    normalizedProduction ? "Visual position zero; exact bounded rightward yaw; scale one" :
                         "legacy exact candidate retained",
                     visual == null ? "<null>" : "position=" +
                         visual.localPosition.ToString("R") + ";rotation=" +
@@ -9462,16 +9466,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                         visual.localScale.ToString("R"),
                     !normalizedProduction || (visual != null &&
                         visual.localPosition == Vector3.zero &&
-                        visual.localRotation == Quaternion.identity &&
+                        Mathf.Abs(Quaternion.Dot(visual.localRotation,
+                            expectedHeldRotation)) > 0.9999f &&
                         visual.localScale == Vector3.one),
                     "runtime-loaded normalized derivative prefab"));
+                Vector3 expectedHeldForward = expectedHeldRotation * Vector3.forward;
+                assertions.Add(Assertion(id + "-rightward-yaw-refinement",
+                    normalizedProduction ? "Musket +3 degrees; Blunderbuss +4 degrees; muzzle follows exact held axis" :
+                        "legacy exact candidate retained",
+                    "expectedYaw=" + expectedHeldYaw.ToString("R") +
+                    ";muzzle=" + (muzzle == null ? "<null>" :
+                        muzzle.localPosition.ToString("R")),
+                    !normalizedProduction || (muzzle != null &&
+                        Vector3.Dot(muzzle.localPosition.normalized,
+                            expectedHeldForward) > 0.9999f &&
+                        muzzle.localPosition.x > 0f),
+                    "runtime-loaded held Visual and semantic muzzle frame"));
+                float expectedBackRoll = kind == FirearmKind.Musket ? 12f :
+                    kind == FirearmKind.Blunderbuss ? -14f : 0f;
                 assertions.Add(Assertion(id + "-independent-back-prefab",
                     normalizedProduction ? "distinct validated Visual+BackMount prefab" :
                         "no custom back required",
                     "back=" + (backInstance == null ? "<null>" : backInstance.name) +
-                    ";visual=" + (backVisual != null) + ";mount=" + (backMount != null),
+                    ";visual=" + (backVisual != null) + ";mount=" + (backMount != null) +
+                    ";rotation=" + (backVisual == null ? "<null>" :
+                        backVisual.localEulerAngles.ToString("R")),
                     !normalizedProduction || (backInstance != null &&
                         backVisual != null && backMount != null &&
+                        Mathf.Abs(Mathf.DeltaAngle(backVisual.localEulerAngles.y,
+                            0f)) < 0.01f &&
+                        Mathf.Abs(Mathf.DeltaAngle(backVisual.localEulerAngles.z,
+                            expectedBackRoll)) < 0.01f &&
                         !ReferenceEquals(backPrefab, FirearmAssetRuntime.GetPrefab(kind))),
                     "runtime-loaded independently calibrated back prefab"));
                 assertions.Add(Assertion(id + "-native-left-hand-ik", "EquipmentOffsets.IkTargetLeftHand == SupportHandTarget",

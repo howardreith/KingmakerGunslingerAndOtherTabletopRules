@@ -63,3 +63,8 @@ Status vocabulary: `reported`, `reproduced`, `root cause proven`, `implemented`,
 - SoundBank SHA-256: 0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18.
 - Runtime deployment backup: C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260820T1505311020164Z; exact only-target restore verified.
 - Human gate: inspect the five calligraphic parameter fields and Rapid Reload beside native feats at real 32/64 UI scale.
+## Long-gun yaw correction disposition - 2026-08-20
+
+| Defect | Reported | Reproduced | Root cause proven | Implemented | Source-qualified | Runtime-qualified | Human-gated | Blocked |
+|---|---|---|---|---|---|---|---|---|
+| Musket and Blunderbuss point too far left | yes | yes, zero held yaw retained after normalized rig work | yes, production held `Visual` and semantic anchors remained at identity while independent back frames were already correct | yes, Musket +3 degrees and Blunderbuss +4 degrees local Y only | yes, deterministic bundle plus 1,162/1,162 and full gates | yes, run `20260820T1526089673122Z-4727a84add664cbbbb4c93f1b3695c06`, 65/65 | yes, final in-character aesthetics | no |

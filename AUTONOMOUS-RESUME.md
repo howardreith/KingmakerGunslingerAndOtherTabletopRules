@@ -3092,3 +3092,13 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Runtime: disposable-firearm-dependent-feats run 20260820T1505344745363Z-71ef2e5f35aa45ce9c929d0dc5369f47, 13/13 PASS.
 - External state: backup 20260820T1505311020164Z restored and verified; no runtime/profile transaction active.
 - Next command: git diff --check and complete issue-scoped staged audit, then commit/publish and continue to long-gun yaw.
+## 2026-08-20 long-gun yaw qualification checkpoint
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Published predecessor: `726399988c771a038b799290bf838b5d14482c67`.
+- Version: `0.0.88`; P0 release blocker remains open.
+- Completed correction issues: P0 bounded repair, Acadamae, acquisition, BTSL split, feat icons, long-gun yaw candidate.
+- Current issue disposition: Musket +3 degree and Blunderbuss +4 degree held yaw automated-qualified; final visual acceptance human-gated.
+- Last result: Unity deterministic bundle `050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C`; repository PASS; 1,162/1,162; clean Release/output/SoundBank/package PASS; runtime run `20260820T1526089673122Z-4727a84add664cbbbb4c93f1b3695c06`, 65/65 PASS.
+- External state: backup `20260820T1526055855877Z` restored and verified; no runtime/profile transaction active.
+- Next command: diff/staged audit, commit and publish long-gun yaw, then inspect and repair the Elven Branched Spear active and holstered frames.
