@@ -375,3 +375,13 @@
 - Firearm/spear/Eastern AssetBundle SHA-256: `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` / `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85` / `079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041`.
 - SoundBank SHA-256: `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - The final exact-reference package deployed with manifest `20260820T0925381203669Z`; reusable smoke correctly refused only because release metadata was still dirty. Next: commit/publish release metadata, then rerun reusable mod-load smoke from the clean branch.
+## Final immutable artifact smoke - 2026-08-20
+
+- Release implementation commit `158cfe54c08525a6351a9a551d7b128b24d74dcd` was published before the final artifact build.
+- Clean-HEAD `Build-Local.ps1` passed repository validation, 1,160/1,160 dependency-free domain/reflection tests, Release build/output validation, SoundBank validation, and strict package validation.
+- Guarded Steam `mod-load-smoke` run `20260820T0930236838361Z-f2cdf3b1f77d499f9a1c1ba419556627` passed 3/3 assertions with loaded version `0.0.88` and runtime commit `158cfe54c08525a6351a9a551d7b128b24d74dcd`.
+- Runtime-qualified package SHA-256: `FAFBAE86F4D890A958435C2D3D87ED6BFABC5504988E709B0960A90BF161F8CA`.
+- Runtime-qualified DLL SHA-256: `E54E35145EABD51461E9277C1B1CCD8CF7EEA29BA48CFB156D40ADDC9FA4E1EB`.
+- Firearm, Elven Branched Spear, and Eastern Weapons bundle SHA-256 values are `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF`, `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`, and `079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041`.
+- `KMG_Firearms.bnk` SHA-256: `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- All twelve issues are automated-qualified. Visible, audible, merchant-materialization, and campaign-pacing judgments remain consolidated human acceptance work.

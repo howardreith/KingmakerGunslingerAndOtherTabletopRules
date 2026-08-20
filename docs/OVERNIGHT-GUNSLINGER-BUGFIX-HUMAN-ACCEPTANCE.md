@@ -168,3 +168,9 @@ Use the manifest-backed exact-reference package:
 ```
 
 The deploy script validates the strict package and build-local manifest, backs up the current live mod without deleting it, replaces only the `KingmakerGunslinger` mod directory, and writes a hash-bound deployment manifest. Launch runtime qualification only through `Invoke-KingmakerRuntimeTest.ps1`/Steam App ID 640820. Do not launch `Kingmaker.exe` directly.
+## Final candidate identity
+
+- Install package: `artifacts/local-runtime/0.0.88/KingmakerGunslinger-0.0.88-local-runtime.zip`
+- Package SHA-256: `FAFBAE86F4D890A958435C2D3D87ED6BFABC5504988E709B0960A90BF161F8CA`
+- DLL SHA-256: `E54E35145EABD51461E9277C1B1CCD8CF7EEA29BA48CFB156D40ADDC9FA4E1EB`
+- Runtime artifact smoke: `20260820T0930236838361Z-f2cdf3b1f77d499f9a1c1ba419556627`, PASS

@@ -3007,3 +3007,13 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Final exact-reference package/DLL: `1A542FCBED586343CE7993606F513D4D0A2555CC49F9DB2BF843C914058210C5` / `2A4E099ACE76046470F598762DB46B766989A48799DED6A5D1D5BDB54ACD9B92`.
 - Blocker: none. Reusable exact-package smoke awaits the required clean committed state.
 - Next: diff/stage/commit/publish release metadata, verify remote equality, run clean reusable artifact smoke, record final immutable evidence, publish final seal.
+## Overnight bug-fix final seal - 2026-08-20
+
+- Branch: `codex/gunslinger-overnight-bugfixes`
+- Published implementation commit: `158cfe54c08525a6351a9a551d7b128b24d74dcd`
+- Version: `0.0.88`
+- Completed issues: 1-12
+- Final exact artifact run: `20260820T0930236838361Z-f2cdf3b1f77d499f9a1c1ba419556627`, `mod-load-smoke`, 3/3 PASS
+- Package SHA-256: `FAFBAE86F4D890A958435C2D3D87ED6BFABC5504988E709B0960A90BF161F8CA`
+- DLL SHA-256: `E54E35145EABD51461E9277C1B1CCD8CF7EEA29BA48CFB156D40ADDC9FA4E1EB`
+- Next action: publish this documentation-only release seal, verify exact remote equality and clean status, then hand off the consolidated human acceptance matrix. No merge is authorized.

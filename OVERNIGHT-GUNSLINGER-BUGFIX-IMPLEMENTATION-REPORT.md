@@ -180,3 +180,6 @@ Exact targets, power/chapter reasoning, native-content evidence, old sources, an
 Version `0.0.88` advances all active assembly, UMM, local-build, guarded-runtime, and compatibility package pins together. The new version-aware validator inherits the complete `0.0.87` contract and adds exact acquisition/publication invariants. No blueprint GUID was added, removed, or reassigned.
 
 All 12 issues are automated-qualified to the strongest safe boundary. Final clean tests/build/package, compatibility suites, exact final-version acquisition observation, and canonical working-save smoke pass. Visual, audible, ordinary-UI combat, merchant/container materialization, and campaign pacing remain explicitly human-gated rather than inferred from structure.
+## Final release seal
+
+Version `0.0.88` was built from published implementation commit `158cfe54c08525a6351a9a551d7b128b24d74dcd`. The exact manifest-backed package passed guarded Steam `mod-load-smoke` run `20260820T0930236838361Z-f2cdf3b1f77d499f9a1c1ba419556627` with 3/3 assertions. Package SHA-256 is `FAFBAE86F4D890A958435C2D3D87ED6BFABC5504988E709B0960A90BF161F8CA`; DLL SHA-256 is `E54E35145EABD51461E9277C1B1CCD8CF7EEA29BA48CFB156D40ADDC9FA4E1EB`.
