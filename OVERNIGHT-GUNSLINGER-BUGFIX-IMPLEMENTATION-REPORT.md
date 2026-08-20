@@ -39,3 +39,10 @@ completed casts only. The guarded scenario now includes actual native command
 success and failure paths instead of proving those paths through manual tracker
 calls. All source/build/package gates pass; guarded runtime remains pending the
 immutable issue commit.
+
+The first immutable runtime attempt exposed a fixture limitation before any
+assertion: a detached `ChargenUnit` cannot advance a queued command through its
+animation controller in one synchronous tick. The corrected save-free fixture
+now invokes the exact protected `UnitUseAbility.OnAction()` boundary. It does
+not manually call the production tracker or construct `RuleCastSpell`, so the
+native action and all repaired Harmony correlation points remain exercised.

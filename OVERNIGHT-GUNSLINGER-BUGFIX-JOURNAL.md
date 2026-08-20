@@ -77,3 +77,32 @@
 - Runtime has not yet run. Next action: diff/staging safety audit, commit and
   approved-helper publish, exact remote verification, then guarded
   `disposable-acadamae-graduate` qualification on the immutable SHA.
+
+## 2026-08-20 Issue 1 first runtime failure and fixture repair
+
+- Dedicated repair commit `d691d508c43f3c048f28860389a6146186c11448`
+  was published; HEAD/local/origin equality was exact before launch.
+- Guarded Steam run ID
+  `20260820T0358157167579Z-246801cb00f44e4a80f6e69e4dffa28c`
+  loaded exact source `d691d508...`, version 0.0.87, then returned `ERROR`.
+- Exact failure: `ExecuteAcadamaeNativeCommand` required a detached
+  `ChargenUnit` command to reach `Success` after one animation tick, but its
+  result remained `None`. No scenario assertion ran, so this is not mechanical
+  PASS evidence and is not recorded as an Acadamae production failure.
+- Repository precedent establishes that the one-tick native command driver
+  requires a caster in an actually loaded area. This scenario is intentionally
+  save-free and its detached animation/controller clock cannot advance that
+  boundary.
+- Materially different safe strategy: invoke the exact protected
+  `UnitUseAbility.OnAction()` method through reflection. This retains the real
+  Harmony prefix/postfix, native `RuleCastSpell` constructor, `OnTrigger`, and
+  ability delivery while avoiding a fabricated animation clock and avoiding
+  manual tracker/RuleCast calls.
+- Corrected fixture gates: `test-domain.ps1 -Configuration Release` PASS
+  1,150/1,150; `Build-Local.ps1` PASS repository, all tests, clean exact-
+  reference Release, output, SoundBank, package, and strict package validation.
+- New package/DLL SHA-256:
+  `04E72E53DF1D8F58CEB9C60FDFD23C164E2EDE25991F02458A44F542843D1B9D` /
+  `785DCB24EA3E6B4A91AA9867F9DAAAF374872C71A9857293F0573F1D277173C0`.
+- Next action: commit/publish this issue-scoped runtime fixture correction,
+  verify remote equality, and rerun the guarded scenario.

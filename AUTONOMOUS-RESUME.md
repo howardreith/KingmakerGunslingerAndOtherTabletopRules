@@ -10,19 +10,23 @@
 - Durable contract: planning/OVERNIGHT-GUNSLINGER-BUGFIX-MISSION.md.
 - Published checkpoint SHA: `879ffe152a4ccfbfe42679055f7c392e5d0f1669`;
   local and remote feature refs were equal after approved-helper publication.
-- Completed issue IDs: none; Issue 1 is source-qualified and runtime-pending.
-- Current checkpoint: Issue 1 exact-rule correlation and diagnostics candidate.
+- Completed issue IDs: none; Issue 1 repair is published and runtime retry is
+  pending an issue-scoped fixture checkpoint.
+- Current checkpoint: Issue 1 exact native-action save-free fixture correction.
 - Current hypothesis: the human failure was caused by completion correlation
   being limited to the `UnitUseAbility.OnAction` thread-local stack; concrete
   `RuleCastSpell` identity must survive until the native terminal callback.
-- Exact gates: `test-domain.ps1 -Configuration Release` PASS 1,150/1,150;
+- Published repair SHA: `d691d508c43f3c048f28860389a6146186c11448`.
+- First runtime ID `20260820T0358157167579Z-246801cb00f44e4a80f6e69e4dffa28c`
+  returned ERROR before assertions because detached command `Result=None`.
+- Exact corrected-fixture gates: `test-domain.ps1 -Configuration Release` PASS 1,150/1,150;
   `Build-Local.ps1` PASS repository, clean exact-reference Release, output,
   SoundBank, deterministic package, and strict package validation.
-- Candidate package/DLL SHA-256: `538FE2A9...D8556B7B` /
-  `E2CCBCE4...ADB5116`.
+- Candidate package/DLL SHA-256: `04E72E53...43D1B9D` /
+  `785DCB24...7173C0`.
 - Real blocker: none.
-- Next concrete action: commit/publish Issue 1 source candidate, verify exact
-  remote equality, and run guarded `disposable-acadamae-graduate` runtime.
+- Next concrete action: commit/publish the exact-action fixture, verify exact
+  remote equality, and rerun guarded `disposable-acadamae-graduate` runtime.
 
 ## Eastern Weapons first-human-playtest repair (automated seal complete, human recheck pending)
 

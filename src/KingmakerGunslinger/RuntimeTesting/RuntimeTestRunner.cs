@@ -16077,8 +16077,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             TargetWrapper point = new TargetWrapper(caster.Position);
             TargetWrapper self = new TargetWrapper(caster);
-            TargetWrapper target = ability.CanTarget(point) ? point :
-                ability.CanTarget(self) ? self : null;
+            TargetWrapper target = ability.CanTarget(self) ? self :
+                ability.CanTarget(point) ? point : null;
             if (target == null) throw new InvalidOperationException(
                 "Acadamae native command has no legal disposable target.");
             UnitUseAbility command;
@@ -16091,18 +16091,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Acadamae native command was unavailable: available=" +
                     ability.IsAvailable + ";canStart=" + command.CanStart +
                     ";targetable=" + ability.CanTarget(target) + ".");
-            command.IgnoreCooldown(TimeSpan.Zero);
-            caster.Commands.Run(command);
-            command.Start();
-            if (!command.IsRunning) throw new InvalidOperationException(
-                "Acadamae native command did not enter its running state.");
-            if (command.Animation != null) command.Animation.IsActed = true;
-            command.Tick();
-            if (!string.Equals(command.Result.ToString(), "Success",
-                    StringComparison.Ordinal))
-                throw new InvalidOperationException(
-                    "Acadamae native command did not complete its cast action: " +
-                    command.Result + ".");
+            // This save-free fixture deliberately uses a detached ChargenUnit,
+            // whose animation/controller clock cannot advance a queued command.
+            // Invoke the exact native terminal action rather than reconstructing
+            // RuleCastSpell manually: Harmony's UnitUseAbility.OnAction patch,
+            // the native RuleCastSpell constructor, and OnTrigger all execute.
+            MethodInfo onAction = typeof(UnitUseAbility).GetMethod("OnAction",
+                BindingFlags.Instance | BindingFlags.NonPublic, null,
+                Type.EmptyTypes, null);
+            if (onAction == null) throw new MissingMethodException(
+                typeof(UnitUseAbility).FullName, "OnAction()");
+            onAction.Invoke(command, null);
+            if (command.ExecutionProcess != null)
+                for (int tick = 0; tick < 5000 &&
+                    !command.ExecutionProcess.IsEnded; tick++)
+                    command.ExecutionProcess.Tick();
             return command;
         }
 

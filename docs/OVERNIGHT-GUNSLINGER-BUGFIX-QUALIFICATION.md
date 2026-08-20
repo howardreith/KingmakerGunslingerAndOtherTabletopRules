@@ -53,3 +53,16 @@ rewriting this baseline.
 Guarded runtime is intentionally pending an immutable published commit. Source
 and package gates do not establish live command ordering, fatigue persistence,
 or visible diagnostics.
+
+### First guarded attempt
+
+- Run ID: `20260820T0358157167579Z-246801cb00f44e4a80f6e69e4dffa28c`
+- Commit: `d691d508c43f3c048f28860389a6146186c11448`
+- Result: `ERROR`; zero assertions evaluated
+- Boundary: detached test command remained `Result=None` after one tick
+- Disposition: rejected as evidence; fixture corrected to invoke exact native
+  `UnitUseAbility.OnAction()` without manually constructing a cast rule
+
+Corrected-fixture source gates pass 1,150/1,150 and the complete clean
+Release/output/SoundBank/package/strict-package pipeline. Runtime retry remains
+pending publication of the corrected immutable source.
