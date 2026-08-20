@@ -46,10 +46,13 @@ namespace KingmakerGunslinger.Audio
         }
 
         internal static FirearmSoundPostResult TryPostGlobalPistolPreview()
+        { return TryPostGlobalPreview(FirearmKind.Pistol); }
+
+        internal static FirearmSoundPostResult TryPostGlobalPreview(FirearmKind kind)
         {
             GameObject emitter=Game.Instance==null||Game.Instance.UI==null||Game.Instance.UI.Common==null?null:Game.Instance.UI.Common.gameObject;
-            string eventName=FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol); uint id;
-            FirearmSoundStateMachine machine;lock(Sync){machine=_machine;}id=emitter==null||machine==null?0:machine.TryPost(eventName,emitter); return Record(id!=0,FirearmKind.Pistol,eventName,"development-global-preview",emitter==null?null:emitter.name,id,id==0?"Global preview emitter or Wwise was unavailable.":null);
+            string eventName; if(!FirearmSoundEventCatalog.TryResolve(kind,out eventName)) return Record(false,kind,null,"development-global-preview",null,0,"Unsupported firearm kind."); uint id;
+            FirearmSoundStateMachine machine;lock(Sync){machine=_machine;}id=emitter==null||machine==null?0:machine.TryPost(eventName,emitter); return Record(id!=0,kind,eventName,"development-global-preview",emitter==null?null:emitter.name,id,id==0?"Global preview emitter or Wwise was unavailable.":null);
         }
 
         internal static string RetryConfigurationForDevelopment()

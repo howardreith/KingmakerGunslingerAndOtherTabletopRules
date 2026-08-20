@@ -5149,9 +5149,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private RuntimeTestResult RunFirearmWwiseAudio()
         {
             int before=Audio.FirearmSoundRuntime.AcceptedPosts;
-            Audio.FirearmSoundPostResult preview=Audio.FirearmSoundRuntime.TryPostGlobalPistolPreview();
+            FirearmKind[] previewKinds={FirearmKind.Pistol,FirearmKind.Musket,
+                FirearmKind.Blunderbuss,FirearmKind.Revolver,FirearmKind.Rifle};
+            Audio.FirearmSoundPostResult[] previews=previewKinds.Select(
+                Audio.FirearmSoundRuntime.TryPostGlobalPreview).ToArray();
             int afterGlobal=Audio.FirearmSoundRuntime.AcceptedPosts;
             string globalDiagnostics=Audio.FirearmSoundRuntime.Describe();
+            string previewDiagnostics=string.Join("|",previews.Select(value=>
+                value.Kind+":"+value.EventName+":"+value.PlayingId+":"+
+                value.Accepted).ToArray());
             BlueprintUnit source=BlueprintRoot.Instance.DefaultPlayerCharacter;
             object state=ReadExactMember(Kingmaker.Game.Instance,"State");
             object allUnits=ReadExactMember(state,"AllUnits");
@@ -5224,7 +5230,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions=new List<RuntimeTestAssertion>
             {
                 Assertion("firearm-wwise-ready","state=Ready",globalDiagnostics,globalDiagnostics.Contains("state=Ready"),"FirearmSoundRuntime state machine"),
-                Assertion("global-pistol-event-accepted","one valid nonzero playing ID",globalDiagnostics,preview.Accepted&&preview.PlayingId!=0&&afterGlobal==before+1&&preview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Pistol),"AkSoundEngine.PostEvent global technical preview"),
+                Assertion("all-firearm-events-accepted","five valid nonzero playing IDs with exact family mapping",previewDiagnostics,
+                    afterGlobal==before+previewKinds.Length&&previews.Length==previewKinds.Length&&
+                    previews.Select((value,index)=>value.Accepted&&value.PlayingId!=0&&
+                        value.Kind==previewKinds[index]&&value.EventName==
+                        Audio.FirearmSoundEventCatalog.Resolve(previewKinds[index])).All(value=>value),
+                    "AkSoundEngine.PostEvent global technical previews"),
                 Assertion("unit-emitter-blunderbuss-event-accepted","one valid nonzero playing ID from live disposable unit view",selectedDiagnostics,selectedPreview!=null&&selectedPreview.Accepted&&selectedPreview.PlayingId!=0&&afterSelected==afterGlobal+1&&selectedPreview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&selectedPreview.Source=="development-selected-preview","AkSoundEngine.PostEvent live unit emitter preview"),
                 Assertion("ordinary-discharge-event-accepted","accepted count +1; exact Blunderbuss event; ordinary-attack",ordinaryDiagnostics,afterOrdinary==afterSelected+1&&ordinaryPlayingId!=0&&Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)==Audio.FirearmSoundRuntime.LastEventName&&ordinaryDiagnostics.Contains("lastSource=ordinary-attack"),"RuleAttackWithWeapon committed non-misfire discharge"),
                 Assertion("blunderbuss-misfire-no-normal-event","accepted count unchanged; live misfire available for inherited-release listening",misfireDiagnostics,afterMisfire==afterOrdinary,"forced Blunderbuss natural 1 through RuleAttackWithWeapon"),
@@ -5232,6 +5243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             bool pass=assertions.TrueForAll(value=>value.Status=="PASS");
             RuntimeTestResult result=CreateResult(pass?"PASS":"FAIL",assertions,null);
+            result.Diagnostics.Add(previewDiagnostics);
             result.Diagnostics.Add(globalDiagnostics);
             result.Diagnostics.Add(selectedDiagnostics);
             result.Diagnostics.Add(ordinaryDiagnostics);

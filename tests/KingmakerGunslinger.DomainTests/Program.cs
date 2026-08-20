@@ -271,6 +271,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-pistolero.replacement-skeleton", PistoleroReplacementSkeleton),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
+            Case("audio.bank-binary-validation", FirearmAudioTests.BankBinaryValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),
             Case("audio.state-machine", FirearmAudioTests.StateMachineLifecycle),
             Case("audio.discharge-route-shape", FirearmAudioDischargeRouteShape),
