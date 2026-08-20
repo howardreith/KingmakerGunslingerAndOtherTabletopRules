@@ -69,6 +69,9 @@ namespace KingmakerGunslinger.Archetypes
                 throw new InvalidOperationException("Mysterious Stranger deed prerequisites changed.");
             Buff marker = context.Caster.Descriptor.Buffs.AddBuff(Marker, context,
                 TimeSpan.FromSeconds(6d));
+            marker = marker ?? context.Caster.Descriptor.Buffs.RawFacts
+                .OfType<Buff>().SingleOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, Marker));
             if (marker == null)
                 throw new InvalidOperationException(
                     "Mysterious Stranger deed marker was rejected.");

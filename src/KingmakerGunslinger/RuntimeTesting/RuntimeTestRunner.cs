@@ -15751,6 +15751,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var context = new MechanicsContext(unit, unit.Descriptor, ability,
                 null, new TargetWrapper(unit));
             Buff marker = unit.Descriptor.Buffs.AddBuff(markerBlueprint, context, null);
+            marker = marker ?? unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .SingleOrDefault(value => ReferenceEquals(value.Blueprint,
+                    markerBlueprint));
             if (marker == null)
                 throw new InvalidOperationException(
                     "Request-local permanent Focused Aim marker was rejected.");
