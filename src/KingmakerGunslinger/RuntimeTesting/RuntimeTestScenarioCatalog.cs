@@ -104,6 +104,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-cord-of-stubborn-resolve";
         internal const string DisposableAcadamaeGraduate =
             "disposable-acadamae-graduate";
+        internal const string DisposableFocusedAim =
+            "disposable-focused-aim";
         internal const string ObserveRareFirearmAcquisition =
             "observe-rare-firearm-acquisition";
         internal const string ObserveRareFirearmBlueprintContracts =
@@ -329,6 +331,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveCapitalCordVendor,
                 DisposableCordOfStubbornResolve,
                 DisposableAcadamaeGraduate,
+                DisposableFocusedAim,
                 ObserveRareFirearmAcquisition,
                 ObserveRareFirearmBlueprintContracts,
                 MagicFirearmNativeProperties,

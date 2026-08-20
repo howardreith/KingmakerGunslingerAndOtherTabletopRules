@@ -25,3 +25,14 @@ row through level 20, verify Charisma controls Grit and Fortune uses, exercise F
 Aim with ordinary and Dead Shot firearm attacks, force a misfire with Fortune armed,
 and verify Clipping Shot deals half rolled damage after a miss without affecting Dead
 Shot. Confirm a base Gunslinger still receives the original replaced features.
+
+## Overnight Focused Aim transaction repair
+
+The current candidate establishes the Focused Aim marker before debiting the
+shared live Grit resource, then verifies the exact decrement. A failed or
+inconsistent debit removes the marker, preventing the damage bonus from
+surviving without its cost. Ordinary Focused Aim costs one Grit; a legally
+selected True Grit choice reduces it to zero but still requires positive Grit.
+The same authoritative resource remains exposed through the existing action-bar
+resource component. Source gates pass at 1,151 tests; guarded runtime evidence
+is recorded in `docs/OVERNIGHT-GUNSLINGER-BUGFIX-QUALIFICATION.md`.

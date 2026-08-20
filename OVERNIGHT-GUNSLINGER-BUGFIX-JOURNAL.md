@@ -196,3 +196,30 @@
 - Issue 1 is human-gated only for a loaded-area animation-driven command, area
   transition persistence, and visual combat-log/Cord presentation. Next:
   diagnose Issue 2 Focused Aim transactionality.
+
+## 2026-08-20 Issue 2 Focused Aim source candidate
+
+- Human evidence supersedes the prior structural claim that fixed-cost Focused
+  Aim was complete: the damage marker appeared while the visible Grit pool did
+  not decrease.
+- The current delivery path manually spent shared Grit before adding the timed
+  Focused Aim buff. That ordering allowed fact-activation resource
+  reconciliation to restore the pool after the debit while retaining damage.
+- The candidate adds the marker first, rechecks the live authoritative pool,
+  spends the effective cost exactly once, verifies the observed delta, and
+  removes the marker/restores the snapshot if the debit is not exact.
+- Ability ownership is now checked through the exact granted ability fact.
+  Existing Swift action, duration, firearm-only damage, Dead Shot multiplier,
+  shared resource UI component, and True Grit positive-Grit rule remain intact.
+- Added transaction-policy coverage for positive/two uses, exactly one Grit,
+  zero Grit, selected True Grit, wrong owner, and duplicate armed activation.
+- Added guarded `disposable-focused-aim` coverage for live shared-resource
+  deltas, real firearm/crossbow weapon-stat calculation, duplicate/repeat,
+  zero-Grit, True Grit, feature remove/add reconciliation, and cleanup.
+- Gates PASS: repository validation, 1,151/1,151 tests, exact-reference Release,
+  output, SoundBank, package, and strict package validation.
+- Candidate package/DLL SHA-256:
+  `13BAFA9437E887BDDAE512D63C997542605DA4B5A9C60D033DD5D50812D88B40` /
+  `206606B2996DDD16D7F2F5FBF3F5FF00B142307F6B722CD85257B43C904133FD`.
+- Next action: commit/publish the Issue 2 candidate and run its guarded Steam
+  scenario against the immutable source.

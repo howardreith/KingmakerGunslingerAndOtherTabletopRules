@@ -118,3 +118,18 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
   `788E98066FD614F78C3CE42B5ADC680BED45F4AF5C3B4A54AF956E257A1F6DDF`.
 - Residual: loaded-area animation command execution, area transition, and
   visual log/Cord presentation require consolidated human observation.
+
+## Issue 2 source qualification
+
+- Candidate: marker-first, verified shared-Grit transaction with marker removal
+  and resource snapshot restoration on an inconsistent debit.
+- Focused cases: ordinary positive Grit, exactly one Grit, repeated activation,
+  armed duplicate, zero Grit, selected/unselected True Grit, and wrong owner.
+- Full gates: repository validation PASS; 1,151/1,151 domain/reflection tests
+  PASS; exact-reference Release PASS; output, SoundBank, package, and strict
+  package validation PASS.
+- Candidate package SHA-256:
+  `13BAFA9437E887BDDAE512D63C997542605DA4B5A9C60D033DD5D50812D88B40`.
+- Candidate DLL SHA-256:
+  `206606B2996DDD16D7F2F5FBF3F5FF00B142307F6B722CD85257B43C904133FD`.
+- Guarded scenario: `disposable-focused-aim`, pending immutable publication.

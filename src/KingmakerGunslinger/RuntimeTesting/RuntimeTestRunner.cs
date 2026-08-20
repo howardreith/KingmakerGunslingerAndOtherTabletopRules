@@ -743,6 +743,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunDisposableAcadamaeGraduate());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableFocusedAim)
+                {
+                    Complete(RunDisposableFocusedAim());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)
                 {
@@ -15574,6 +15579,182 @@ namespace KingmakerGunslinger.RuntimeTesting
             return (table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .OfType<LootItemsPackFixed>().Count(value => targets.Any(target =>
                     ReferenceEquals(CapitalVendorBlueprints.ReadItem(value), target)));
+        }
+
+        private RuntimeTestResult RunDisposableFocusedAim()
+        {
+            GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
+            MysteriousStrangerBlueprintSet set = gunslinger.MysteriousStranger;
+            BlueprintAbility ability = set.FocusedAim.ComponentsArray
+                .OfType<AddFacts>().Single().Facts.OfType<BlueprintAbility>().Single();
+            ArmMysteriousStrangerDeed logic = ability.ComponentsArray
+                .OfType<ArmMysteriousStrangerDeed>().Single();
+            BlueprintAbilityResource grit = gunslinger.Grit.Resource;
+            BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
+            UnitEntityData unit = null;
+            UnitEntityData outsider = null;
+            ItemEntityWeapon pistol = null;
+            ItemEntityWeapon crossbow = null;
+            bool ordinary = false, repeated = false, duplicate = false;
+            bool zeroRejected = false, trueGrit = false, ownerGate = false;
+            bool damage = false, isolation = false, reconciliation = false;
+            bool cleaned = false;
+            int initial = -1, first = -1, second = -1, selected = -1;
+            int pistolDelta = int.MinValue, crossbowDelta = int.MinValue;
+            string stage = "setup";
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                outsider = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
+                unit.Descriptor.Stats.Charisma.BaseValue = 18;
+                outsider.Descriptor.Stats.Wisdom.BaseValue = 18;
+                unit.Descriptor.AddFact(set.Grit);
+                var focusedFact = unit.Descriptor.AddFact(set.FocusedAim);
+                outsider.Descriptor.AddFact(gunslinger.Grit.Feature);
+                DrainResource(unit.Descriptor, grit);
+                unit.Descriptor.Resources.Restore(grit, 2);
+                DrainResource(outsider.Descriptor, grit);
+                outsider.Descriptor.Resources.Restore(grit, 2);
+                initial = unit.Descriptor.Resources.GetResourceAmount(grit);
+
+                pistol = new ItemEntityWeapon(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                BlueprintItemWeapon nativeCrossbow = BlueprintLibraryLookup
+                    .RequireExact<BlueprintItemWeapon>(BlueprintBootstrap.Library,
+                        TestMusketBlueprints.NativeStandardHeavyCrossbowItemGuid,
+                        "native crossbow Focused Aim isolation fixture");
+                crossbow = new ItemEntityWeapon(nativeCrossbow);
+                int pistolBefore = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                    unit, pistol, null)).BonusDamage;
+                int crossbowBefore = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                    unit, crossbow, null)).BonusDamage;
+
+                stage = "ordinary-activation";
+                AbilityData data = new AbilityData(ability, unit.Descriptor);
+                bool visibleAvailable = data.IsAvailable && logic.IsAvailableFor(data);
+                DeliverFocusedAim(logic, data, unit);
+                first = unit.Descriptor.Resources.GetResourceAmount(grit);
+                bool armed = HasBuff(unit.Descriptor, set.FocusedAimBuff);
+                int pistolAfter = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                    unit, pistol, null)).BonusDamage;
+                int crossbowAfter = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                    unit, crossbow, null)).BonusDamage;
+                pistolDelta = pistolAfter - pistolBefore;
+                crossbowDelta = crossbowAfter - crossbowBefore;
+                ordinary = visibleAvailable && initial == 2 && first == 1 && armed;
+                damage = pistolDelta == Math.Max(1,
+                    unit.Descriptor.Stats.Charisma.Bonus);
+                isolation = crossbowDelta == 0;
+
+                stage = "duplicate-and-repeat";
+                int duplicateBefore = first;
+                try { DeliverFocusedAim(logic, data, unit); }
+                catch (InvalidOperationException) { duplicate = true; }
+                duplicate = duplicate && unit.Descriptor.Resources
+                    .GetResourceAmount(grit) == duplicateBefore;
+                RemoveBuff(unit.Descriptor, set.FocusedAimBuff);
+                data = new AbilityData(ability, unit.Descriptor);
+                DeliverFocusedAim(logic, data, unit);
+                second = unit.Descriptor.Resources.GetResourceAmount(grit);
+                repeated = second == 0 && HasBuff(unit.Descriptor,
+                    set.FocusedAimBuff);
+
+                stage = "zero-and-true-grit";
+                RemoveBuff(unit.Descriptor, set.FocusedAimBuff);
+                data = new AbilityData(ability, unit.Descriptor);
+                zeroRejected = !data.IsAvailable && !logic.IsAvailableFor(data);
+                try { DeliverFocusedAim(logic, data, unit); zeroRejected = false; }
+                catch (InvalidOperationException) { }
+                zeroRejected = zeroRejected && !HasBuff(unit.Descriptor,
+                    set.FocusedAimBuff) && unit.Descriptor.Resources
+                    .GetResourceAmount(grit) == 0;
+                unit.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
+                    TrueGritDeed.FocusedAim));
+                unit.Descriptor.Resources.Restore(grit, 1);
+                data = new AbilityData(ability, unit.Descriptor);
+                DeliverFocusedAim(logic, data, unit);
+                selected = unit.Descriptor.Resources.GetResourceAmount(grit);
+                trueGrit = selected == 1 && HasBuff(unit.Descriptor,
+                    set.FocusedAimBuff);
+
+                stage = "ownership-and-reconciliation";
+                AbilityData outsiderData = new AbilityData(ability,
+                    outsider.Descriptor);
+                ownerGate = !logic.IsAvailableFor(outsiderData);
+                RemoveBuff(unit.Descriptor, set.FocusedAimBuff);
+                unit.Descriptor.RemoveFact(focusedFact);
+                bool removed = !unit.Descriptor.HasFact(ability) &&
+                    !logic.IsAvailableFor(new AbilityData(ability, unit.Descriptor));
+                unit.Descriptor.AddFact(set.FocusedAim);
+                reconciliation = removed && unit.Descriptor.HasFact(ability) &&
+                    logic.IsAvailableFor(new AbilityData(ability, unit.Descriptor));
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Disposable Focused Aim failed at stage " + stage + ".",
+                    exception);
+            }
+            finally
+            {
+                if (crossbow != null) crossbow.Dispose();
+                if (pistol != null) pistol.Dispose();
+                if (outsider != null) outsider.Dispose();
+                if (unit != null) unit.Dispose();
+                cleaned = true;
+            }
+            string observed = "grit=" + initial + "->" + first + "->" +
+                second + ";trueGrit=" + selected + ";pistolDelta=" +
+                pistolDelta + ";crossbowDelta=" + crossbowDelta;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("focused-aim-ordinary-transaction", "2 -> 1 and marker",
+                    observed, ordinary, "live shared Grit collection and exact buff"),
+                Assertion("focused-aim-damage", "Charisma bonus on firearm only",
+                    observed, damage && isolation, "native RuleCalculateWeaponStats"),
+                Assertion("focused-aim-repeat-duplicate", "one spend per legal use",
+                    observed, repeated && duplicate, "duplicate rejection and second delivery"),
+                Assertion("focused-aim-zero-grit", "unavailable, no marker, no negative",
+                    observed, zeroRejected, "native AbilityData and availability provider"),
+                Assertion("focused-aim-true-grit", "positive Grit, zero effective cost",
+                    observed, trueGrit, "exact True Grit choice fact"),
+                Assertion("focused-aim-owner-reconciliation", "wrong owner rejected; remove/add reconciles",
+                    observed, ownerGate && reconciliation, "real AddFacts activation lifecycle"),
+                Assertion("request-local-cleanup", "disposable owners/items cleaned",
+                    "cleaned=" + cleaned, cleaned, "finally cleanup; no save API")
+            };
+            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+        }
+
+        private static void DeliverFocusedAim(ArmMysteriousStrangerDeed logic,
+            AbilityData data, UnitEntityData unit)
+        {
+            var context = new AbilityExecutionContext(data, new AbilityParams(),
+                new TargetWrapper(unit), null);
+            IEnumerator<AbilityDeliveryTarget> delivery = logic.Deliver(context,
+                new TargetWrapper(unit));
+            while (delivery.MoveNext()) { }
+        }
+
+        private static void DrainResource(UnitDescriptor owner,
+            BlueprintAbilityResource resource)
+        {
+            int current = owner.Resources.GetResourceAmount(resource);
+            if (current > 0) owner.Resources.Spend(resource, current);
+        }
+
+        private static bool HasBuff(UnitDescriptor owner, BlueprintBuff blueprint)
+        {
+            return owner.Buffs.RawFacts.OfType<Buff>().Any(value =>
+                ReferenceEquals(value.Blueprint, blueprint));
+        }
+
+        private static void RemoveBuff(UnitDescriptor owner, BlueprintBuff blueprint)
+        {
+            Buff value = owner.Buffs.RawFacts.OfType<Buff>().FirstOrDefault(candidate =>
+                ReferenceEquals(candidate.Blueprint, blueprint));
+            if (value != null) owner.Buffs.RemoveFact(value);
         }
 
         private RuntimeTestResult RunDisposableAcadamaeGraduate()

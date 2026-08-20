@@ -58,9 +58,8 @@ namespace KingmakerGunslinger.Archetypes
         public bool IsAvailableFor(AbilityData ability)
         {
             return ability != null && ability.Caster != null && Marker != null &&
-                Resource != null && Decision(ability.Caster).Available &&
-                !ability.Caster.Buffs.RawFacts.OfType<Buff>().Any(value =>
-                    ReferenceEquals(value.Blueprint, Marker));
+                Resource != null && ability.Caster.HasFact(ability.Blueprint) &&
+                IsAvailable(ability.Caster, Decision(ability.Caster));
         }
         public string GetReason() { return "The deed is already armed or lacks its required resource."; }
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
@@ -70,19 +69,53 @@ namespace KingmakerGunslinger.Archetypes
                 throw new InvalidOperationException("Mysterious Stranger deed prerequisites changed.");
             TrueGritDecision decision = Decision(context.Caster.Descriptor);
             int effectiveCost = SpendOnActivation ? decision.EffectiveCost : 0;
-            bool spent = effectiveCost > 0;
-            if (spent) context.Caster.Descriptor.Resources.Spend(Resource,
-                effectiveCost);
-            if (context.Caster.Descriptor.Buffs.AddBuff(Marker, context,
-                    TimeSpan.FromSeconds(6d)) == null)
+            Buff marker = context.Caster.Descriptor.Buffs.AddBuff(Marker, context,
+                TimeSpan.FromSeconds(6d));
+            if (marker == null)
+                throw new InvalidOperationException(
+                    "Mysterious Stranger deed marker was rejected.");
+            int before = context.Caster.Descriptor.Resources.GetResourceAmount(Resource);
+            if (!decision.Available || (SpendOnActivation &&
+                !MysteriousStrangerPolicy.CanActivateFocusedAim(before,
+                    effectiveCost, true, false)))
             {
-                if (spent) context.Caster.Descriptor.Resources.Restore(Resource,
-                    effectiveCost);
-                throw new InvalidOperationException("Mysterious Stranger deed marker was rejected.");
+                context.Caster.Descriptor.Buffs.RemoveFact(marker);
+                throw new InvalidOperationException(
+                    "Mysterious Stranger deed resource changed before commit.");
+            }
+            if (effectiveCost > 0)
+            {
+                int expected = MysteriousStrangerPolicy.FocusedAimGritAfter(
+                    before, effectiveCost);
+                context.Caster.Descriptor.Resources.Spend(Resource, effectiveCost);
+                int actual = context.Caster.Descriptor.Resources.GetResourceAmount(Resource);
+                if (actual != expected)
+                {
+                    RestoreSnapshot(context.Caster.Descriptor, before, actual);
+                    context.Caster.Descriptor.Buffs.RemoveFact(marker);
+                    throw new InvalidOperationException(
+                        "Mysterious Stranger deed resource spend was not exact.");
+                }
             }
             yield return new AbilityDeliveryTarget(target);
         }
         public override void Cleanup(AbilityExecutionContext context) { }
+
+        private bool IsAvailable(UnitDescriptor owner, TrueGritDecision decision)
+        {
+            bool armed = owner.Buffs.RawFacts.OfType<Buff>().Any(value =>
+                ReferenceEquals(value.Blueprint, Marker));
+            if (!SpendOnActivation) return decision.Available && !armed;
+            return decision.Available && MysteriousStrangerPolicy
+                .CanActivateFocusedAim(owner.Resources.GetResourceAmount(Resource),
+                    decision.EffectiveCost, true, armed);
+        }
+
+        private void RestoreSnapshot(UnitDescriptor owner, int expected, int actual)
+        {
+            if (actual < expected) owner.Resources.Restore(Resource, expected - actual);
+            else if (actual > expected) owner.Resources.Spend(Resource, actual - expected);
+        }
     }
 
     public sealed class ClippingShotAttackHandler :

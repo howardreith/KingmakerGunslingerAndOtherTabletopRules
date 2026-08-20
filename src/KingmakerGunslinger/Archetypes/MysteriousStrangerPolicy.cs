@@ -12,6 +12,22 @@ namespace KingmakerGunslinger.Archetypes
             if (deadShotHits < 1) throw new ArgumentOutOfRangeException("deadShotHits");
             return Math.Max(1, charismaModifier) * deadShotHits;
         }
+        internal static bool CanActivateFocusedAim(int currentGrit,
+            int effectiveCost, bool ownsAbility, bool alreadyArmed)
+        {
+            if (currentGrit < 0) throw new ArgumentOutOfRangeException("currentGrit");
+            if (effectiveCost < 0) throw new ArgumentOutOfRangeException("effectiveCost");
+            return ownsAbility && !alreadyArmed && currentGrit > 0 &&
+                currentGrit >= effectiveCost;
+        }
+        internal static int FocusedAimGritAfter(int currentGrit,
+            int effectiveCost)
+        {
+            if (!CanActivateFocusedAim(currentGrit, effectiveCost, true, false))
+                throw new InvalidOperationException(
+                    "Focused Aim cannot commit the requested Grit transaction.");
+            return currentGrit - effectiveCost;
+        }
         internal static int LuckyBonus(int gunslingerLevel)
         {
             if (gunslingerLevel < 1 || gunslingerLevel > 20)

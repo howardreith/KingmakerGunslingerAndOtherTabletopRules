@@ -73,3 +73,20 @@ guarded-only completion control now sets `BaseRollResult` to the requested
 natural plus the actual native `StatValue`. Production diagnostics and
 uncontrolled saves remain native. Loaded-area animation execution, area-change
 persistence, and visible UI/log presentation remain consolidated human checks.
+
+## Issue 2 - Focused Aim
+
+Source-qualified candidate in progress. The prior ability manually debited the
+shared Grit resource before activating its timed damage marker. The candidate
+reverses that vulnerable ordering: it first establishes the marker, then
+rechecks the live True Grit decision and authoritative shared pool, commits the
+effective debit, and verifies the exact post-spend amount. Any unavailable or
+inconsistent debit removes the marker, so damage cannot survive a failed spend.
+
+Exact ability-fact ownership is required, armed duplicates remain unavailable,
+ordinary uses spend one, and a legally selected True Grit Focused Aim remains a
+zero-cost activation requiring positive Grit. The native `AbilityResourceLogic`
+UI component still points at the same shared resource and remains presentation
+only. A new guarded scenario exercises the real resource collection and native
+weapon-stat rule for firearm damage and crossbow isolation. Runtime is pending
+publication of the immutable candidate.

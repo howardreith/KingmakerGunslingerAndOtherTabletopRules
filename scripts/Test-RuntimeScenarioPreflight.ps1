@@ -62,6 +62,7 @@ $expected = @(
     'observe-capital-cord-vendor',
     'disposable-cord-of-stubborn-resolve',
     'disposable-acadamae-graduate',
+    'disposable-focused-aim',
     'disposable-firearm-wwise-audio',
     'disposable-empty-firearm-command',
     'disposable-firearm-dependent-feats',
