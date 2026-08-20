@@ -9,7 +9,7 @@ Guarded read-only baseline run
 | GUID | Runtime type | Exact name / contents | Ownership / references | Disposition |
 |---|---|---|---|---|
 | afa2c7f292b8e1c4d9c835f0e8047dd3 | BlueprintSharedVendorTable | C11_JhodVendorTable; 61 fixed entries after current ten-entry publication | Base campaign; shared by Capital_Jhod and many priest/Jhod variants | Reject future firearm stock |
-| f720440559fc00949900bfa1575196ac | BlueprintSharedVendorTable | C11_OlegVendorTable; 84 fixed entries | Base campaign; exact ownership pending | General-merchant candidate |
+| f720440559fc00949900bfa1575196ac | BlueprintSharedVendorTable | `C11_OlegVendorTable`; 97 fixed entries after current publication, including Repair Kit x5 and Overhaul Kit x2 | Base campaign; exact owners `OTP_Oleg` (`5db389e0409ef534d81358555e6ab99d`) and `OTP_Oleg_FirstVisit` (`67db4b8bacc69e643880f0a4ed6dff6f`), one direct reference each | Selected only for bounded early maintenance/eastern mundane stock; reject named magic firearm placement |
 | 7de959347266092448d8a72089ef9778 | BlueprintSharedVendorTable | SmithVendorTable; 16 fixed entries | Base capital; exact owners `CapitalOwlbearAttack_Blacksmith` (`ba7a7a2842d072046be55b3f9034d04e`) and `VerdelBlacksmith` (`478862ab88b8ef24385cb386c1644dc2`), one direct reference each | Selected capital blacksmith table |
 | 03139ca71b2f2a34bae0a8a11a342fe4 | BlueprintSharedVendorTable | C2_VendorTableLarge; 52 fixed entries | Exact ownership pending | Candidate |
 | b3bc1bb9f4a59f3438edc505e0f3b407 | BlueprintSharedVendorTable | C3_VendorTableLarge; 50 fixed entries | Exact ownership pending | Candidate |
@@ -27,6 +27,13 @@ No fixed loot target is selected yet. The next observer must inventory exact
 `BlueprintLoot`/`BlueprintUnitLoot` candidates, contents, owners, areas, DLC,
 fixed/random contract and reference counts for Act 3/4, Pitax and final act.
 Static shared publication is proven; save-owned legacy vendor cleanup is not.
+
+Issue 5 guarded PASS `20260820T0535269245782Z-7edf2d2c158a4085893931e91b14db1d`
+supersedes the pending Oleg ownership note above: the exact live table contained
+one Repair Kit row at 5 and one Overhaul Kit row at 2 and only the two exact
+direct owners recorded in the inventory. Publication affects the static shared
+table for future/unmaterialized inventory. No already-materialized old-save
+merchant refresh or player-inventory mutation is claimed.
 
 ## Fixed campaign selections from live graph
 

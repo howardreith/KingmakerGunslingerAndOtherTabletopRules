@@ -2895,3 +2895,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Runtime hashes: package `60C0B8AFA7F3E7E9EB98710D6300C9B7D3D4F4AB3BE3C761CED8D5FA5FFCCB34`; DLL `0ECE4157AA0512A5887B7FD6BB5B82BCE963758EE796873FE2AC20113E482E14`.
 - Active blocker: none. Remaining Issue 4 check is the actual feat-selection layout at display scale.
 - Next concrete action: inspect Oleg's exact installed vendor table, current publication transaction, maintenance-kit identities/counts, existing vendor observers, and materialization lifecycle before applying one narrow Issue 5 repair.
+
+## Overnight bugfix resume checkpoint - Issue 5 qualified (2026-08-20)
+
+- Branch: `codex/gunslinger-overnight-bugfixes`.
+- Qualified and published code SHA: `1586c5e7abd9c8d1b18bac483df88e86700677b0`; local branch and origin equality verified. Version remains `0.0.87`.
+- Completed issue IDs: Issues 1-5 automated-qualified/human-gated.
+- Current issue: Issue 6, Bokken ammunition stock.
+- Issue 5 result: exact `C11_OlegVendorTable` transaction publishes Repair Kit x5 and Overhaul Kit x2 while preserving unrelated rows/order, normalizing only owned stale rows, and rolling back to the exact snapshot.
+- Gates: 1,154/1,154 tests; repository, exact-reference clean Release, output, SoundBank, package, strict-package, diff, and 109 runtime-preflight checks PASS.
+- Guarded run: `20260820T0535269245782Z-7edf2d2c158a4085893931e91b14db1d`, 20/20 PASS. Exact table rows were `1/5` and `1/2`; exact owners were `OTP_Oleg` and `OTP_Oleg_FirstVisit`, one reference each.
+- Runtime hashes: package `00D8405393B74827915C09B67834B9B2D06BC4FE06E5123808AEC64F59868F69`; DLL `8E7FFC30C596F94BA2EF5D06B6C99EFE6A3CB29AEE25E09C29F2624D6C16A003`.
+- Active blocker: none. Remaining Issue 5 check is actual unmaterialized/new-campaign shop UI; already-materialized old-save refresh is not claimed.
+- Next concrete action: resolve Bokken's exact installed unit/vendor table and lifecycle from current live graph evidence, then add the narrow transactional Black Powder/Lead Ball/Paper Cartridge x100 publication and observer coverage.

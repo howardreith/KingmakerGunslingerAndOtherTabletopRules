@@ -273,3 +273,14 @@
 - Runtime DLL SHA-256: `0ECE4157AA0512A5887B7FD6BB5B82BCE963758EE796873FE2AC20113E482E14`.
 - Remaining human check: inspect the real feat-selection UI at normal scale and confirm one coherent prerequisite block.
 - Next action: Issue 5 exact Oleg maintenance-kit publication.
+
+## 2026-08-20 - Issue 5 Oleg maintenance stock qualified
+
+- Published code SHA: `1586c5e7abd9c8d1b18bac483df88e86700677b0`; local branch and origin equality verified before runtime qualification. Version remains `0.0.87`.
+- Diagnosis: the exact installed `C11_OlegVendorTable` (`f720440559fc00949900bfa1575196ac`) was already a bounded publication target but had no issue-owned maintenance transaction. Exact direct owners are `OTP_Oleg` (`5db389e0409ef534d81358555e6ab99d`) and `OTP_Oleg_FirstVisit` (`67db4b8bacc69e643880f0a4ed6dff6f`), one reference each.
+- Implemented a module-gated transaction that owns only Repair Kit and Overhaul Kit rows, preserves every unrelated component reference and order, normalizes stale/duplicate/wrong-count owned rows, validates Repair Kit x5 and Overhaul Kit x2, and restores the exact snapshot on later bootstrap failure.
+- Focused `vendors.oleg-maintenance-stock` and complete 1,154/1,154 domain/reflection tests PASS. Repository validation, exact-reference clean Release, output validation, SoundBank validation, standalone package, strict package validation, runtime preflight 109/109, and diff checks PASS. The first unchanged post-build preflight hit the known package-staging transient; cleanup retry passed without source changes.
+- Guarded Steam run `20260820T0535269245782Z-7edf2d2c158a4085893931e91b14db1d`, scenario `observe-vendor-table-contracts`, passed 20/20. Live registered table showed one Repair Kit row at 5, one Overhaul Kit row at 2, and the two exact owners above.
+- Runtime package/DLL SHA-256: `00D8405393B74827915C09B67834B9B2D06BC4FE06E5123808AEC64F59868F69` / `8E7FFC30C596F94BA2EF5D06B6C99EFE6A3CB29AEE25E09C29F2624D6C16A003`.
+- Static blueprint publication is qualified. Already-materialized save-owned shop refresh was not observed and is not claimed; actual new/unmaterialized merchant UI remains human-gated.
+- Next action: Issue 6 exact Bokken table/lifecycle forensics and bounded ammunition publication.

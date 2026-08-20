@@ -74,3 +74,12 @@ Automated boundary already proven: guarded run `20260820T0513443721972Z-cceff2c2
 4. Repeat on an ineligible Wizard configuration and confirm the native prerequisite failure presentation remains truthful.
 
 Automated boundary already proven: guarded run `20260820T0524095518410Z-ea7adae339fc4fa4a98bfe7bd52b4222` passed the live registered-blueprint presentation assertion and all existing Acadamae action/save/fatigue assertions.
+
+## Issue 5 - Oleg maintenance-stock remaining human check
+
+1. In a disposable new campaign, or before Oleg's shop inventory has materialized, open Oleg's normal trading UI.
+2. Confirm one Firearm Repair Kit stock entry with quantity 5 and one Overhaul Kit stock entry with quantity 2.
+3. Confirm Oleg's native and foreign-mod stock remains present and ordered normally, with no added firearm, named magic firearm, or unrelated capital-only stock attributable to this issue.
+4. Treat an already-materialized old-save shop as informational only: the repair publishes the static shared table and does not claim or force retroactive refresh of save-owned inventory.
+
+Automated boundary already proven: guarded run `20260820T0535269245782Z-7edf2d2c158a4085893931e91b14db1d` passed 20/20, including exact live table rows/counts and exact two-owner identity.

@@ -175,3 +175,14 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Deployed runtime package SHA-256: `60C0B8AFA7F3E7E9EB98710D6300C9B7D3D4F4AB3BE3C761CED8D5FA5FFCCB34`.
 - Deployed DLL SHA-256: `0ECE4157AA0512A5887B7FD6BB5B82BCE963758EE796873FE2AC20113E482E14`.
 - Automated status: qualified. Real feat-selection layout remains human-gated because blueprint/localization assertions cannot establish final UI composition at display scale.
+## Issue 5 qualification - Oleg maintenance stock
+
+- Qualified code SHA: `1586c5e7abd9c8d1b18bac483df88e86700677b0`.
+- Focused test: `vendors.oleg-maintenance-stock` PASS.
+- Complete domain/reflection suite: 1,154/1,154 PASS.
+- Repository validation, exact-reference clean Release, output validation, SoundBank validation, package build, strict package validation, runtime preflight 109/109, and `git diff --check`: PASS.
+- Guarded scenario: `observe-vendor-table-contracts` run `20260820T0535269245782Z-7edf2d2c158a4085893931e91b14db1d`, 20/20 PASS.
+- Live assertions: exact table `C11_OlegVendorTable:f720440559fc00949900bfa1575196ac`; Repair Kit rows/count `1/5`; Overhaul Kit rows/count `1/2`; exact owners `OTP_Oleg:5db389e0409ef534d81358555e6ab99d*1` and `OTP_Oleg_FirstVisit:67db4b8bacc69e643880f0a4ed6dff6f*1`.
+- Deployed runtime package SHA-256: `00D8405393B74827915C09B67834B9B2D06BC4FE06E5123808AEC64F59868F69`.
+- Deployed DLL SHA-256: `8E7FFC30C596F94BA2EF5D06B6C99EFE6A3CB29AEE25E09C29F2624D6C16A003`.
+- Automated status: qualified for exact static publication. Actual merchant materialization in a disposable/new campaign is human-gated; no refresh claim is made for already-materialized old-save stock.
