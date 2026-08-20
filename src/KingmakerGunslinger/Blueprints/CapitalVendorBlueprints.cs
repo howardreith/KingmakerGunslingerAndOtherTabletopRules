@@ -133,6 +133,13 @@ namespace KingmakerGunslinger.Blueprints
             return (int)field.GetValue(component);
         }
 
+        internal static string ReadVendorSortKey(BlueprintComponent component)
+        {
+            LootItemsPackFixed fixedEntry = component as LootItemsPackFixed;
+            BlueprintItem item = ReadItem(fixedEntry);
+            return item == null ? null : item.GetType().Name + ":" + item.name;
+        }
+
         internal static LootItemsPackFixed CreateFixedEntry(BlueprintItem item, int count)
         {
             if (item == null) throw new ArgumentNullException("item");

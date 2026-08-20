@@ -50,5 +50,30 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<InvalidOperationException>(() => result.Rollback(),
                 "Rollback must be single-use.");
         }
+
+        private static void VendorPublicationIntegratesByStableKey()
+        {
+            string[] native = { "weapon:A", "weapon:N", "weapon:Z" };
+            string middle = "weapon:M", late = "weapon:Y";
+            var result = VendorCatalogPublication<string>.CreateIntegrated(
+                native, new[] { late, middle }, value => value);
+            Assertions.True(result.Changed,
+                "A fresh integrated publication must report a change.");
+            Assertions.Equal("weapon:A", result.Published[0],
+                "The first native row moved.");
+            Assertions.Equal(middle, result.Published[1],
+                "The middle project row was not integrated by key.");
+            Assertions.Equal("weapon:N", result.Published[2],
+                "Native relative order changed at the middle insertion.");
+            Assertions.Equal(late, result.Published[3],
+                "The late project row was not integrated by key.");
+            Assertions.Equal("weapon:Z", result.Published[4],
+                "The last native row moved.");
+            string[] restored = result.Rollback();
+            Assertions.Equal(3, restored.Length,
+                "Integrated rollback length mismatch.");
+            Assertions.Equal("weapon:A", restored[0],
+                "Integrated rollback changed native order.");
+        }
     }
 }

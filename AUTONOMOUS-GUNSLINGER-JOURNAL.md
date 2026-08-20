@@ -3980,3 +3980,7 @@ Reproduced the ordinary selected-variant boundary with a null outer prepared slo
 # 2026-08-20 human-review acquisition correction
 
 The 30-item campaign map was re-audited against pacing rather than distinct-target count. Exact transactional production specs now cap normalized named-area density at two, clean only retired project-owned rows, and preserve unrelated content and rollback. The production firearm families are documented correctly as The Last Word/Pistol and Watch at the World's End/Musket. Repository validation, `1161/1161`, clean build/package gates, and guarded packaged run `20260820T1425182231173Z-observe-rare-firearm-acquisition` passed. Ordinary accessibility and aesthetic campaign fit remain human-gated.
+
+# 2026-08-20 human-review BTSL responsibility correction
+
+Exact standalone/campaign Honest Guy tables now own permanent project equipment; exact Xelliren tables own only firearm support stacks. Central, Eastern, and spear publishers normalize wrong-role project rows while preserving all retained order and rollback. Stable-key integration replaces appended project blocks. Repository/build/package gates passed at `1162/1162`; guarded run `20260820T1444126864934Z-observe-rare-firearm-acquisition` passed. Actual merchant materialization remains human-gated.

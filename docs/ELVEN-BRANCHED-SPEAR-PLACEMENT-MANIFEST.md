@@ -16,9 +16,9 @@ pre-publication arrays if no foreign mutation intervened.
 | later fallback | Dire Narlmarches village trader | `DireNarlmarchesVillageVendorTable` / `f072a8f6889b5f345b7f4e7c74cb3e4c` | all six generic versions | one each; native restock semantics | guarded observer found direct ref from `DireNarlmarchesVillageTrader` |
 | Act V | Pitax specialist trader | `PitaxTownVendorTable` / `e5ab1fccf37c55f41a20a80c6ba6a460` | all six generic versions | one each; native restock semantics | guarded observer found direct ref from `PitaxTown_Trader` |
 | BTSL standalone | Honest Guy weapons merchant | `RogueLike_NPCVendorTable` / `a6bae621a7bd96b4fb3c1511cd2f9fac` | all six generic versions | one fixed catalog entry each; native standalone vendor refresh semantics | installed table and `DungeonVendorItemsComponent` verified; guarded observer found six singular spear rows |
-| BTSL standalone | Xelliren/Dragon weapons merchant | `RogueLike_DragonVendorTable` / `08e090bb2038e3d47be56d8752d5dcaf` | all six generic versions | one fixed catalog entry each; native standalone vendor refresh semantics | installed table and `DungeonVendorItemsComponent` verified; guarded observer found six singular spear rows |
+| BTSL standalone | Xelliren/Dragon support merchant | `RogueLike_DragonVendorTable` / `08e090bb2038e3d47be56d8752d5dcaf` | none | exact project-owned stale spear cleanup; unrelated rows retained | installed table and `DungeonVendorItemsComponent` verified |
 | BTSL campaign | Honest Guy weapons merchant | `DLC3_VendorFirstTable` / `45f027c06962df249b8c014a4b4e95e3` | all six generic versions | one fixed catalog entry each; native campaign vendor refresh semantics | exact installed campaign table verified; guarded observer found six singular spear rows |
-| BTSL campaign | Xelliren weapons merchant | `DLC3_VendorSecondTable` / `420f1da6c2523f64eba810b9b484f60f` | all six generic versions | one fixed catalog entry each; native campaign vendor refresh semantics | exact installed campaign table verified; guarded observer found six singular spear rows |
+| BTSL campaign | Xelliren support merchant | `DLC3_VendorSecondTable` / `420f1da6c2523f64eba810b9b484f60f` | none | exact project-owned stale spear cleanup; unrelated rows retained | exact installed campaign table verified |
 
 The inexpensive weapon is therefore available in Act I, generic cold iron is
 available before the main fey escalation, masterwork cold iron is available no
@@ -47,8 +47,8 @@ entirely missable or concentrated on one vendor.
 
 ## Module and save behavior
 
-With the module ON, the four campaign vendor tables, every installed BTSL table,
-and four containers are normalized.
+With the module ON, the four campaign vendor tables, both installed Honest Guy
+tables, both Xelliren stale-row cleanup targets, and six containers are normalized.
 With the module OFF, no vendor or fixed-loot publication occurs. All item and
 effect blueprints remain registered under every module profile, so an existing
 owner, selected feat, or saved item identity remains valid. Module settings are

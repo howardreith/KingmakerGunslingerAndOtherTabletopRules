@@ -444,6 +444,9 @@ namespace KingmakerGunslinger.DomainTests
                 "standalone BTSL",
                 "campaign Tenebrous Depths",
                 "AllFoundationKinds(), null, true",
+                "support merchant cleanup",
+                "new ElvenBranchedSpearItemKind[0]",
+                "CreateIntegrated",
                 "SKIPPED_OPTIONAL_TABLE_ABSENT",
                 "!owned.Contains",
                 "CreateFixedEntry(item, 1)" })
@@ -466,10 +469,10 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
             foreach (string token in new[] {
                 "btsl-spear-vendor-publication",
-                "btslSpearEntries == 24",
+                "btslSpearEntries == 12",
                 "invalidBtslSpearCounts == 0",
-                "btslEntries == 48",
-                "22 + installedSpearBtslTables * 6" })
+                "btslEntries == 24",
+                "22 + installedSpearHonestGuyTables * 6" })
                 Assertions.True(runtime.Contains(token),
                     "BTSL runtime/module regression coverage lacks: " + token);
         }

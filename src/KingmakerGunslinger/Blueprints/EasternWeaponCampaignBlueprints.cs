@@ -38,8 +38,8 @@ namespace KingmakerGunslinger.Blueprints
             new EasternVendorSpec(
                 BeneathStolenLandsVendorBlueprints.StandaloneXellirenTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[1],
-                AllGenericKinds(), new EasternWeaponNamedKind[0], true,
-                "standalone BTSL"),
+                new EasternWeaponGenericKind[0], new EasternWeaponNamedKind[0], true,
+                "standalone BTSL support merchant cleanup"),
             new EasternVendorSpec(
                 BeneathStolenLandsVendorBlueprints.CampaignHonestGuyTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[2],
@@ -48,8 +48,8 @@ namespace KingmakerGunslinger.Blueprints
             new EasternVendorSpec(
                 BeneathStolenLandsVendorBlueprints.CampaignXellirenTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[3],
-                AllGenericKinds(), new EasternWeaponNamedKind[0], true,
-                "campaign Tenebrous Depths")
+                new EasternWeaponGenericKind[0], new EasternWeaponNamedKind[0], true,
+                "campaign Tenebrous Depths support merchant cleanup")
         };
 
         private static readonly EasternLootSpec[] Loot =
@@ -207,8 +207,11 @@ namespace KingmakerGunslinger.Blueprints
                         (BlueprintComponent)CapitalVendorBlueprints
                             .CreateFixedEntry(item, 1)).ToArray();
                     VendorCatalogPublication<BlueprintComponent> transaction =
-                        VendorCatalogPublication<BlueprintComponent>.Create(
-                            retained, additions);
+                        spec.IsBtsl ? VendorCatalogPublication<BlueprintComponent>
+                            .CreateIntegrated(retained, additions,
+                                CapitalVendorBlueprints.ReadVendorSortKey) :
+                            VendorCatalogPublication<BlueprintComponent>.Create(
+                                retained, additions);
                     table.ComponentsArray = transaction.Published;
                     var mutation = new EasternVendorMutation(table, before,
                         transaction.Published, desired, spec, true);
@@ -368,7 +371,9 @@ namespace KingmakerGunslinger.Blueprints
                 _loot.Select(value => value.Target).Distinct().Count() != 29 ||
                 _vendors.Any(value => value.Spec.IsBtsl &&
                     value.Spec.NamedKinds.Length != 0) ||
-                BtslRowCount != BtslTableCount * 12)
+                BtslRowCount != _vendors.Count(value => value.Spec.IsBtsl &&
+                    BeneathStolenLandsVendorBlueprints.IsHonestGuyTable(
+                        value.Spec.Guid)) * 12)
                 throw new InvalidOperationException(
                     "Eastern campaign publication cardinality mismatch.");
             foreach (EasternVendorMutation value in _vendors) value.Validate();

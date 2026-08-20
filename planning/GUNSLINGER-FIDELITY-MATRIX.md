@@ -90,6 +90,8 @@ creation and broad player-respec integration remain separately tracked.
 
 Acquisition pacing amendment: the former 30-distinct-target result is superseded by a fixed map whose normalized named-area density is at most two. Runtime run `20260820T1425182231173Z-observe-rare-firearm-acquisition` qualified exact publication, uniqueness, and vendor absence; ordinary accessibility and thematic fit remain human-gated. The Last Word remains a Pistol and Watch at the World's End remains a Musket.
 
+BTSL responsibility amendment: Honest Guy is the permanent-equipment merchant and Xelliren is the firearm-support merchant in both exact modes. This changes no item mechanics, acquisition price, stable identity, or balance rule. Run `20260820T1444126864934Z-observe-rare-firearm-acquisition` qualified exact live table ownership; merchant materialization remains human-gated.
+
 | Contract | Status | Notes |
 |---|---|---|
 | Focused Aim persistence | source-qualified, release-blocking runtime gate open | Existing 1-Grit, Charisma damage, and kill recovery behavior is frozen. Compatibility repair initializes only empty native buff presentation fields. |

@@ -176,9 +176,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(Count(capital, "ammunition.PaperCartridge") >= 2 &&
                 capital.Contains("AmmunitionCount = 200"),
                 "capital desired and owned Paper stock");
+            foreach (string token in new[] { "equipment", "support",
+                "equipmentCounts", "supportCounts", "IsHonestGuyTable",
+                "IsXellirenTable", "CreateIntegrated" })
+                Assertions.True(btsl.Contains(token),
+                    "BTSL merchant responsibility contract lacks: " + token);
             Assertions.True(Count(btsl, "ammunition.PaperCartridge") >= 2 &&
-                btsl.Contains("200, 200, 200"),
-                "BTSL desired and owned Paper stock");
+                btsl.Contains("200, 200, 200") &&
+                btsl.Contains("honestGuy ? equipment : support"),
+                "BTSL Xelliren support and Honest Guy equipment split");
             Assertions.False(capital.Contains("afa2c7f292b8e1c4d9c835f0e8047dd3"),
                 "rejected Jhod absent");
         }

@@ -69,3 +69,7 @@ conservative: a lower-level subsystem or old sprint label is not completion.
 # Human-review acquisition correction - 2026-08-20
 
 The rejected clustered 30-target campaign publication is superseded. Production now publishes 30 project-owned uniques to 30 exact fixed base-campaign targets with maximum normalized named-area density two, exact retired-row cleanup, idempotence, and rollback. Guarded packaged run `20260820T1425182231173Z-observe-rare-firearm-acquisition` proved one loot row and zero vendor rows per item. Normal player interaction and final pacing/theme remain human-gated.
+
+# Human-review BTSL merchant correction - 2026-08-20
+
+The rejected symmetric four-table stock contract is superseded. Both exact Honest Guy tables own permanent project equipment; both exact Xelliren tables own only the prescribed six support stacks. Wrong-owner project rows are normalized by exact identity, retained rows preserve relative order, and stable-key insertion avoids an appended mod block. Run `20260820T1444126864934Z-observe-rare-firearm-acquisition` qualified the live blueprint graph; actual new-shop materialization remains human-gated.

@@ -35,7 +35,8 @@ namespace KingmakerGunslinger.Blueprints
             new VendorSpec(BeneathStolenLandsVendorBlueprints
                     .StandaloneXellirenTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[1],
-                AllFoundationKinds(), null, true, "standalone BTSL"),
+                new ElvenBranchedSpearItemKind[0], null, true,
+                "standalone BTSL support merchant cleanup"),
             new VendorSpec(BeneathStolenLandsVendorBlueprints
                     .CampaignHonestGuyTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[2],
@@ -43,7 +44,8 @@ namespace KingmakerGunslinger.Blueprints
             new VendorSpec(BeneathStolenLandsVendorBlueprints
                     .CampaignXellirenTableGuid,
                 BeneathStolenLandsVendorBlueprints.ExpectedNames[3],
-                AllFoundationKinds(), null, true, "campaign Tenebrous Depths")
+                new ElvenBranchedSpearItemKind[0], null, true,
+                "campaign Tenebrous Depths support merchant cleanup")
         };
 
         private static readonly LootSpec[] Loot =
@@ -154,7 +156,11 @@ namespace KingmakerGunslinger.Blueprints
                         (BlueprintComponent)CapitalVendorBlueprints.CreateFixedEntry(item, 1))
                         .ToArray();
                     VendorCatalogPublication<BlueprintComponent> transaction =
-                        VendorCatalogPublication<BlueprintComponent>.Create(retained, additions);
+                        spec.Optional ? VendorCatalogPublication<BlueprintComponent>
+                            .CreateIntegrated(retained, additions,
+                                CapitalVendorBlueprints.ReadVendorSortKey) :
+                            VendorCatalogPublication<BlueprintComponent>.Create(
+                                retained, additions);
                     table.ComponentsArray = transaction.Published;
                     var mutation = new SpearVendorMutation(table, before,
                         transaction.Published, desired, spec, true);

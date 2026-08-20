@@ -280,6 +280,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("vendor-publication.idempotent", VendorPublicationIsIdempotent),
             Case("vendor-publication.ambiguity", VendorPublicationRejectsAmbiguity),
             Case("vendor-publication.rollback", VendorPublicationRollbackRestoresNativeReferences),
+            Case("vendor-publication.integrated-order", VendorPublicationIntegratesByStableKey),
             Case("battered.owner-normal", Sprint83Tests.OwnerNormal),
             Case("battered.owner-broken", Sprint83Tests.OwnerBroken),
             Case("battered.nonowner-normal", Sprint83Tests.NonOwnerNormal),

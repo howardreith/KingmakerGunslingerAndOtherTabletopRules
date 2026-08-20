@@ -7124,7 +7124,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         blunderbussEntries++;
                 }
             }
-            var btslExpected = new Dictionary<BlueprintItem, int>
+            var btslEquipmentExpected = new Dictionary<BlueprintItem, int>
             {
                 { production.Pistol.Item, 1 }, { production.Musket.Item, 1 },
                 { production.Blunderbuss.Item, 1 },
@@ -7133,7 +7133,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { BlueprintBootstrap.MagicFirearms.Require(
                     MagicFirearmBlueprints.MusketPlus1Symbol).Item, 1 },
                 { BlueprintBootstrap.MagicFirearms.Require(
-                    MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 },
+                    MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item, 1 }
+            };
+            var btslSupportExpected = new Dictionary<BlueprintItem, int>
+            {
                 { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                 { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                 { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
@@ -7141,22 +7144,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                 { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
             };
+            BlueprintItem[] btslOwned = btslEquipmentExpected.Keys.Concat(
+                btslSupportExpected.Keys).ToArray();
             foreach (string guid in BeneathStolenLandsVendorBlueprints.TableGuids)
             {
                 BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
                     string.Equals(value.AssetGuid, guid, StringComparison.Ordinal));
                 if (table == null) continue;
                 btslTables++;
-                foreach (KeyValuePair<BlueprintItem, int> expected in btslExpected)
+                Dictionary<BlueprintItem, int> desired =
+                    BeneathStolenLandsVendorBlueprints.IsHonestGuyTable(guid) ?
+                    btslEquipmentExpected : btslSupportExpected;
+                LootItemsPackFixed[] fixedRows = (table.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .ToArray();
+                foreach (KeyValuePair<BlueprintItem, int> expected in desired)
                 {
-                    LootItemsPackFixed[] matches = (table.ComponentsArray ??
-                        Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
-                        .Where(value => ReferenceEquals(
-                            CapitalVendorBlueprints.ReadItem(value), expected.Key)).ToArray();
+                    LootItemsPackFixed[] matches = fixedRows.Where(value =>
+                        ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                            expected.Key)).ToArray();
                     btslEntries += matches.Length;
                     if (matches.Length != 1 || CapitalVendorBlueprints.ReadCount(
                         matches[0]) != expected.Value) invalidBtslCounts++;
                 }
+                invalidBtslCounts += fixedRows.Count(value =>
+                    btslOwned.Contains(CapitalVendorBlueprints.ReadItem(value)) &&
+                    !desired.ContainsKey(CapitalVendorBlueprints.ReadItem(value)));
             }
             BlueprintItem[] btslSpearItems = BlueprintBootstrap.ElvenBranchedSpears
                 .Entries.Select(value => (BlueprintItem)value.Item).ToArray();
@@ -7173,6 +7186,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal));
                 if (table == null) continue;
                 btslSpearTables++;
+                bool honestGuy = BeneathStolenLandsVendorBlueprints
+                    .IsHonestGuyTable(table.AssetGuid);
                 int validRows = 0;
                 foreach (BlueprintItem item in btslSpearItems)
                 {
@@ -7181,14 +7196,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Where(value => ReferenceEquals(
                             CapitalVendorBlueprints.ReadItem(value), item)).ToArray();
                     btslSpearEntries += matches.Length;
-                    if (matches.Length == 1 &&
+                    if (honestGuy && matches.Length == 1 &&
                         CapitalVendorBlueprints.ReadCount(matches[0]) == 1)
                         validRows++;
-                    else invalidBtslSpearCounts++;
+                    else if (honestGuy || matches.Length != 0)
+                        invalidBtslSpearCounts++;
                 }
                 btslSpearRecords.Add(table.name + ":" + table.AssetGuid +
                     ";mode=" + (index < 2 ? "standalone" : "campaign") +
-                    ";validRows=" + validRows + "/6");
+                    ";role=" + (honestGuy ? "equipment" : "support") +
+                    ";validRows=" + validRows + "/" + (honestGuy ? 6 : 0));
             }
             EasternWeaponBlueprintSet eastern = BlueprintBootstrap.EasternWeapons;
             bool expectedEasternCommerce =
@@ -7200,7 +7217,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var easternPlacedKinds = new List<EasternWeaponNamedKind>();
             int easternVendorTargets = 0, easternVendorRows = 0,
                 invalidEasternVendorRows = 0, easternBtslTables = 0,
-                easternBtslRows = 0, easternNamedBtslRows = 0;
+                easternBtslHonestGuyTables = 0, easternBtslRows = 0,
+                easternNamedBtslRows = 0;
             foreach (EasternVendorSpec spec in
                 EasternWeaponCampaignBlueprints.VendorSpecs)
             {
@@ -7248,6 +7266,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (spec.IsBtsl)
                 {
                     easternBtslTables++;
+                    if (BeneathStolenLandsVendorBlueprints.IsHonestGuyTable(
+                        spec.Guid)) easternBtslHonestGuyTables++;
                     easternBtslRows += valid;
                     easternNamedBtslRows += fixedRows.Count(value =>
                         eastern.Named.Entries.Any(named => ReferenceEquals(
@@ -7551,33 +7571,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, bokkenOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("btsl-vendor-publication",
-                    "four exact standalone/campaign tables; twelve unique entries each",
-                    observed, btslTables == 4 && btslEntries == 48 &&
+                    "four exact standalone/campaign tables; six equipment rows on Honest Guy and six support rows on Xelliren",
+                    observed, btslTables == 4 && btslEntries == 24 &&
                         invalidBtslCounts == 0,
                     "exact discovered DLC shared-vendor table GUID contracts"),
                 Assertion("btsl-spear-vendor-publication",
-                    "four exact standalone/campaign weapon tables; six singular generic spear entries each; existing firearm rows retained",
-                    observed, btslSpearTables == 4 && btslSpearEntries == 24 &&
-                        invalidBtslSpearCounts == 0 && btslEntries == 48 &&
+                    "six singular generic spear entries on each Honest Guy table and zero on Xelliren",
+                    observed, btslSpearTables == 4 && btslSpearEntries == 12 &&
+                        invalidBtslSpearCounts == 0 && btslEntries == 24 &&
                         invalidBtslCounts == 0,
                     "exact installed shared-vendor table identities and additive fixed-item rows"),
                 Assertion("eastern-vendor-publication",
                     expectedEasternCommerce ?
-                        "four required base merchants plus every installed BTSL table contain each exact desired Eastern item once at count one with no foreign Eastern row" :
+                        "four required base merchants plus both installed Honest Guy tables contain each exact desired Eastern item once; Xelliren contains none" :
                         "module OFF publishes zero Eastern vendor rows while retaining table identities",
                     observed, easternVendorTargets == 4 + easternBtslTables &&
                         easternVendorRows == (expectedEasternCommerce ?
-                        42 + easternBtslTables * 12 : 0) &&
+                        42 + easternBtslHonestGuyTables * 12 : 0) &&
                         invalidEasternVendorRows == 0,
                     "exact Eastern vendor specs, names, item references, and fixed-entry counts"),
                 Assertion("eastern-btsl-vendor-publication",
                     expectedEasternCommerce ?
-                        "all four installed BTSL tables retain firearms and spears and contain exactly 48 singular generic Eastern rows with no named Eastern row" :
+                        "the two Honest Guy tables contain 24 singular generic Eastern rows; Xelliren contains none; no named Eastern row" :
                         "module OFF publishes zero Eastern BTSL rows while retaining firearm and spear rows",
                     observed, easternBtslTables == 4 && easternBtslRows ==
-                        (expectedEasternCommerce ? 48 : 0) &&
-                        easternNamedBtslRows == 0 && btslEntries == 48 &&
-                        invalidBtslCounts == 0 && btslSpearEntries == 24 &&
+                        (expectedEasternCommerce ? 24 : 0) &&
+                        easternNamedBtslRows == 0 && btslEntries == 24 &&
+                        invalidBtslCounts == 0 && btslSpearEntries == 12 &&
                         invalidBtslSpearCounts == 0,
                     "four exact DLC table identities and item-reference cardinality"),
                 Assertion("eastern-named-campaign-publication",
@@ -10332,6 +10352,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ElvenBranchedSpearCategoryRuntime.Category));
             int spearVendorRows = 0;
             int installedSpearBtslTables = 0;
+            int installedSpearHonestGuyTables = 0;
             foreach (ElvenBranchedSpearCampaignBlueprints.VendorSpec spec in
                 ElvenBranchedSpearCampaignBlueprints.VendorSpecs)
             {
@@ -10344,7 +10365,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Required Elven Branched Spear vendor table is absent: " +
                         spec.Guid);
-                if (spec.Optional) installedSpearBtslTables++;
+                if (spec.Optional)
+                {
+                    installedSpearBtslTables++;
+                    if (BeneathStolenLandsVendorBlueprints.IsHonestGuyTable(
+                        spec.Guid)) installedSpearHonestGuyTables++;
+                }
                 spearVendorRows += (table.ComponentsArray ??
                     Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
                     .Count(value => spearItems.Contains(
@@ -10443,6 +10469,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int easternVendorRows = 0;
             int easternNamedVendorRows = 0;
             int installedEasternBtslTables = 0;
+            int installedEasternHonestGuyTables = 0;
             int easternBtslRows = 0;
             foreach (EasternVendorSpec spec in
                 EasternWeaponCampaignBlueprints.VendorSpecs)
@@ -10470,6 +10497,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (spec.IsBtsl)
                 {
                     installedEasternBtslTables++;
+                    if (BeneathStolenLandsVendorBlueprints.IsHonestGuyTable(
+                        spec.Guid)) installedEasternHonestGuyTables++;
                     easternBtslRows += rows;
                 }
             }
@@ -10589,7 +10618,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         firearmParameterCount == (expectedGunslinger ? 25 : 0) &&
                         capitalGunslingerRows == (expectedGunslinger ? 12 : 0) &&
                         btslGunslingerRows == (expectedGunslinger ?
-                            installedBtslTables * 12 : 0) &&
+                            installedBtslTables * 6 : 0) &&
                         rareLootRows == (expectedGunslinger ? 5 : 0),
                     "class, feat catalogs, native parameter menus, vendors, and fixed loot"),
                 Assertion("feature-module-legacy-firearm-proficiency",
@@ -10634,7 +10663,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spearFamiliarityCategories == 1 &&
                     spearVendorRows ==
                         (expectedElvenBranchedSpears ?
-                            22 + installedSpearBtslTables * 6 : 0) &&
+                            22 + installedSpearHonestGuyTables * 6 : 0) &&
                     spearLootRows ==
                         (expectedElvenBranchedSpears ? 6 : 0),
                     "always-registered identities and exact selector, familiarity, vendor, and fixed-loot surfaces"),
@@ -10666,10 +10695,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal) &&
                     nodachiMartialCategories == 1 &&
                     easternVendorRows == (expectedEasternWeapons ?
-                        42 + installedEasternBtslTables * 12 : 0) &&
+                        42 + installedEasternHonestGuyTables * 12 : 0) &&
                     easternNamedVendorRows == 0 &&
                     easternBtslRows == (expectedEasternWeapons ?
-                        installedEasternBtslTables * 12 : 0) &&
+                        installedEasternHonestGuyTables * 12 : 0) &&
                     easternLootRows == (expectedEasternWeapons ? 18 : 0) &&
                     (easternSet.Campaign != null) == expectedEasternWeapons &&
                     EasternWeaponCategoryRuntime.PresentationEnabled ==
@@ -17413,21 +17442,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(value => ReferenceEquals(
                         CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge))
                     .ToArray();
-                int installedBtsl = 0, validBtsl = 0;
+                int installedXelliren = 0, validXelliren = 0,
+                    honestGuyPaperRows = 0;
                 foreach (string guid in BeneathStolenLandsVendorBlueprints.TableGuids)
                 {
                     BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
                         value.AssetGuid == guid);
                     if (table == null) continue;
-                    installedBtsl++;
                     LootItemsPackFixed[] matches = (table.ComponentsArray ??
                         Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
                         .Where(value => ReferenceEquals(
                             CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge))
                         .ToArray();
-                    if (matches.Length == 1 &&
-                        CapitalVendorBlueprints.ReadCount(matches[0]) == 200)
-                        validBtsl++;
+                    if (BeneathStolenLandsVendorBlueprints.IsXellirenTable(guid))
+                    {
+                        installedXelliren++;
+                        if (matches.Length == 1 &&
+                            CapitalVendorBlueprints.ReadCount(matches[0]) == 200)
+                            validXelliren++;
+                    }
+                    else honestGuyPaperRows += matches.Length;
                 }
                 BlueprintSharedVendorTable jhod = tables.Single(value =>
                     value.AssetGuid == "afa2c7f292b8e1c4d9c835f0e8047dd3");
@@ -17436,12 +17470,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         CapitalVendorBlueprints.ReadItem(value), ammo.PaperCartridge));
                 vendors = smithPaper.Length == 1 &&
                     CapitalVendorBlueprints.ReadCount(smithPaper[0]) == 200 &&
-                    installedBtsl == validBtsl;
+                    installedXelliren == validXelliren && honestGuyPaperRows == 0;
                 jhodPreserved = jhodPaper == 0;
                 vendorObserved = "smith=" + smithPaper.Length + ":" +
                     (smithPaper.Length == 0 ? -1 :
                         CapitalVendorBlueprints.ReadCount(smithPaper[0])) +
-                    ";btsl=" + validBtsl + "/" + installedBtsl +
+                    ";xelliren=" + validXelliren + "/" + installedXelliren +
+                    ";honestGuy=" + honestGuyPaperRows +
                     ";jhod=" + jhodPaper;
             }
             finally
@@ -17471,7 +17506,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native ability command plus shared atomic transaction"),
                 Assertion("paper-crafting-shared-marker", "either recipe blocks both until rest",
                     observed, sharedBlocked, "one exact persisted marker"),
-                Assertion("paper-vendor-publication", "Smith and every installed BTSL table contain one exact count-200 entry",
+                Assertion("paper-vendor-publication", "Smith and each installed Xelliren table contain one exact count-200 entry; Honest Guy contains none",
                     observed, vendors, "bounded normalized live blueprint tables"),
                 Assertion("paper-jhod-exclusion", "rejected Jhod table contains no Paper Cartridge",
                     observed, jhodPreserved, "exact rejected table identity"),

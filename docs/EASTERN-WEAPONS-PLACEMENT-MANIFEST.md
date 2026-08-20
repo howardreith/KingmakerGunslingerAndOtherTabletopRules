@@ -44,13 +44,14 @@ formula.
 
 | Mode | Table | Exact GUID | Rows |
 |---|---|---|---|
-| standalone | `RogueLike_NPCVendorTable` | `a6bae621a7bd96b4fb3c1511cd2f9fac` | all 12 generic items, once each |
-| standalone | `RogueLike_DragonVendorTable` | `08e090bb2038e3d47be56d8752d5dcaf` | all 12 generic items, once each |
-| campaign | `DLC3_VendorFirstTable` | `45f027c06962df249b8c014a4b4e95e3` | all 12 generic items, once each |
-| campaign | `DLC3_VendorSecondTable` | `420f1da6c2523f64eba810b9b484f60f` | all 12 generic items, once each |
+| standalone Honest Guy | `RogueLike_NPCVendorTable` | `a6bae621a7bd96b4fb3c1511cd2f9fac` | all 12 generic items, once each |
+| standalone Xelliren | `RogueLike_DragonVendorTable` | `08e090bb2038e3d47be56d8752d5dcaf` | no Eastern weapon rows; exact stale-row cleanup |
+| campaign Honest Guy | `DLC3_VendorFirstTable` | `45f027c06962df249b8c014a4b4e95e3` | all 12 generic items, once each |
+| campaign Xelliren | `DLC3_VendorSecondTable` | `420f1da6c2523f64eba810b9b484f60f` | no Eastern weapon rows; exact stale-row cleanup |
 
-When all installed tables are present this is exactly 48 singular rows. DLC
-absence is a safe skip. Installed tables are validated by exact GUID and name.
+When all installed tables are present this is exactly 24 singular rows across
+the two Honest Guy tables. DLC absence is a safe skip. Installed tables are
+validated by exact GUID and name.
 No named Eastern weapon is placed in ordinary BTSL stock.
 
 ## Named progression

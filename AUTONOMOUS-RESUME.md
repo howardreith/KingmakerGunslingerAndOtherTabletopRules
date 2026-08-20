@@ -1,5 +1,16 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-08-20 human-review BTSL checkpoint
+
+- Branch `codex/gunslinger-overnight-bugfixes`; version `0.0.88`; published pre-commit HEAD `e27e79bd16ed577dbaa3a38949d8317c4f9835ac`.
+- Completed continuation corrections: P0 bounded compatibility, Acadamae real command, 30-item acquisition, and BTSL merchant responsibility. P0 full Tenebrous recovery remains release-blocking.
+- BTSL result: Honest Guy exact tables receive permanent firearms, Eastern weapons, and spears; Xelliren exact tables receive only the six prescribed support stacks. Wrong-role project rows are removed by exact reference. Stable-key insertion preserves retained relative order and exact rollback.
+- Gates: repository PASS; `1162/1162`; clean Release/output/SoundBank/package/strict package PASS.
+- Runtime PASS: `20260820T1444126864934Z-observe-rare-firearm-acquisition`.
+- Package/DLL SHA-256: `24485e1762cdf75a5ee9f734b870a3916e5e21954485a3d23e99bc53d07450fb` / `de43f1941d499ea02ccf7c88c27257cdc1b60f6516b91d0f5de0e694af48fb44`.
+- External state: backup `20260820T1444092863954Z` restored and verified.
+- Next concrete action: commit/publish BTSL and verify remote equality, then regenerate firearm parameter icons from the actual Nodachi source/template and replace Rapid Reload art.
+
 ## 2026-08-20 human-review acquisition checkpoint
 
 - Branch `codex/gunslinger-overnight-bugfixes`; version `0.0.88`; published pre-commit HEAD `25c27f9349d5c7dbb873f2607d673f7a8a79f7d4`.

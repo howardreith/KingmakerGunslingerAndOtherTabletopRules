@@ -18,7 +18,7 @@ namespace KingmakerGunslinger.Blueprints
         internal void Rollback() { for (int i = _tables.Count - 1; i >= 0; i--) _tables[i].Rollback(); }
         internal int Count { get { return _tables.Count; } }
         internal bool ContainsExact(BlueprintItem item)
-        { return _tables.All(table => table.ContainsExact(item)); }
+        { return _tables.Any(table => table.ContainsExact(item)); }
     }
 
     internal static class BeneathStolenLandsVendorBlueprints
@@ -34,22 +34,39 @@ namespace KingmakerGunslinger.Blueprints
             "RogueLike_NPCVendorTable", "RogueLike_DragonVendorTable",
             "DLC3_VendorFirstTable", "DLC3_VendorSecondTable" };
 
+        internal static bool IsHonestGuyTable(string guid)
+        {
+            return string.Equals(guid, StandaloneHonestGuyTableGuid,
+                    StringComparison.Ordinal) ||
+                string.Equals(guid, CampaignHonestGuyTableGuid,
+                    StringComparison.Ordinal);
+        }
+
+        internal static bool IsXellirenTable(string guid)
+        {
+            return string.Equals(guid, StandaloneXellirenTableGuid,
+                    StringComparison.Ordinal) ||
+                string.Equals(guid, CampaignXellirenTableGuid,
+                    StringComparison.Ordinal);
+        }
+
         internal static BeneathStolenLandsVendorPublication Publish(
             LibraryScriptableObject library, ProductionFirearmBlueprintCatalog firearms,
             MagicFirearmBlueprintCatalog magicFirearms,
             BasicAmmunitionBlueprintSet ammunition, BlueprintItem repairKit,
             GunsmithingSupplyBlueprintSet supplies, ModLogger logger)
         {
-            BlueprintItem[] items = { firearms.Pistol.Item, firearms.Musket.Item,
+            BlueprintItem[] equipment = { firearms.Pistol.Item, firearms.Musket.Item,
                 firearms.Blunderbuss.Item,
                 magicFirearms.Require(MagicFirearmBlueprints.PistolPlus1Symbol).Item,
                 magicFirearms.Require(MagicFirearmBlueprints.MusketPlus1Symbol).Item,
-                magicFirearms.Require(MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item,
-                ammunition.BlackPowder,
+                magicFirearms.Require(MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item };
+            int[] equipmentCounts = { 1, 1, 1, 1, 1, 1 };
+            BlueprintItem[] support = { ammunition.BlackPowder,
                 ammunition.LeadBall, ammunition.PaperCartridge,
                 repairKit, supplies.OverhaulKit,
                 supplies.GunsmithKit };
-            int[] counts = { 1, 1, 1, 1, 1, 1, 200, 200, 200, 10, 5, 1 };
+            int[] supportCounts = { 200, 200, 200, 10, 5, 1 };
             BlueprintItem[] owned = firearms.Entries.Select(value =>
                 (BlueprintItem)value.Item).Concat(magicFirearms.Entries.Select(value =>
                     (BlueprintItem)value.Item)).Concat(new BlueprintItem[] {
@@ -62,6 +79,9 @@ namespace KingmakerGunslinger.Blueprints
                 for (int tableIndex = 0; tableIndex < TableGuids.Length; tableIndex++)
                 {
                     string guid = TableGuids[tableIndex];
+                    bool honestGuy = IsHonestGuyTable(guid);
+                    BlueprintItem[] items = honestGuy ? equipment : support;
+                    int[] counts = honestGuy ? equipmentCounts : supportCounts;
                     BlueprintSharedVendorTable table = library.GetAllBlueprints()
                         .OfType<BlueprintSharedVendorTable>().SingleOrDefault(value =>
                             string.Equals(value.AssetGuid, guid, StringComparison.Ordinal));
@@ -99,7 +119,9 @@ namespace KingmakerGunslinger.Blueprints
                         BlueprintComponent[] additions = items.Select((item, index) =>
                             (BlueprintComponent)CapitalVendorBlueprints.CreateFixedEntry(item, counts[index])).ToArray();
                         VendorCatalogPublication<BlueprintComponent> transaction =
-                            VendorCatalogPublication<BlueprintComponent>.Create(retained, additions);
+                            VendorCatalogPublication<BlueprintComponent>.CreateIntegrated(
+                                retained, additions,
+                                CapitalVendorBlueprints.ReadVendorSortKey);
                         table.ComponentsArray = transaction.Published;
                         publication = new CapitalVendorPublication(table, transaction,
                             items, counts, true, existing);
@@ -107,8 +129,8 @@ namespace KingmakerGunslinger.Blueprints
                     publication.Validate(); publications.Add(publication);
                 }
                 logger.Info("acquisition", "btsl-vendors.published",
-                    "Published exact Gunslinger testing stock to " + publications.Count +
-                    " installed standalone/campaign BTSL vendor tables.");
+                    "Published permanent equipment to Honest Guy and support supplies to Xelliren across " +
+                    publications.Count + " installed standalone/campaign BTSL vendor tables.");
                 return new BeneathStolenLandsVendorPublication(publications);
             }
             catch
