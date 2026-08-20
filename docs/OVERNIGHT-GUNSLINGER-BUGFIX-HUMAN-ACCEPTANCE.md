@@ -132,3 +132,13 @@ Automated boundary already proven: guarded run `20260820T0659308177934Z-65bd0924
 4. Confirm damage, reach, critical behavior, proficiency, feat interaction, named effects, and icon orientation remain unchanged.
 
 Automated boundary already proven: guarded run `20260820T0733252707402Z-1a9897121438417f95edefbf51d348e5` passed 22/22. The packaged custom model measured 2.27855754 m on the native +Y axis versus 2.28250313 m for installed `TH_LongspearKnight1`, and every non-model native visual field remained equivalent. The disposable unit view did not synchronously materialize the equipped renderer, so this checklist is the required visual acceptance boundary.
+
+## Issue 11 - Musket and Blunderbuss remaining human check
+
+1. Equip the Musket first on medium male and female units. Inspect world and inventory dolls for the actual Musket mesh, muted wood/metal treatment, firing-hand grip at the trigger/stock, support hand on the fore-end, and no torso or upper-arm clipping.
+2. Observe Musket idle, walk/run, ordinary firing, miss, reload, weapon switch, sheathe/unsheathe, and back state. Confirm the muzzle flash/projectile origin is the barrel opening and the back pose is independently aligned rather than reusing the held frame.
+3. Repeat the same matrix for Blunderbuss and confirm its shorter flared-barrel silhouette and material remain visually distinct from the Musket.
+4. Repeat both weapons on one Small body and with Enlarge Person and Reduce Person where safely available. Record only repeatable residual size defects; do not request broad race-specific offsets from one ambiguous frame.
+5. Confirm Crossbow-derived delivery, firearm state, reload, audio, one projectile, damage, critical behavior, feats, and save identities remain unchanged. Reject any crossbow placeholder, inherited bolt/release visual/audio, detached model, support-hand miss, floor drag, or back-state clipping.
+
+Automated boundary already proven: guarded run `20260820T0819129064284Z-4b9313e5c2784b099756b97fc139b68e` passed 63/63. Packaged held frames are scale one at exact `1.33999968 m` Musket and `0.8599998 m` Blunderbuss semantic lengths, both native support IK targets are assigned, both back prefabs are distinct with exact `BackMount`, both effective items retain one projectile, and inherited sheath presentation is absent. These structural facts do not establish visual acceptance on animated bodies.

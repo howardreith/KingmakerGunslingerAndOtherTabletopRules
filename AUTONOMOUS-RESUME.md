@@ -2972,3 +2972,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Runtime hashes: package `3D5052D73D3D4E1701ED4313ED7DACD072EC179B47BFD3054D93585EDEF2D70B`; DLL `F97D27FE31D4912BBE20D51EC4AACF0B5D793FACF642FDA705CA6C94569317EA`.
 - Active blocker: none. Remaining Issue 6 check is actual unmaterialized/new-campaign Bokken trade UI; old-save refresh is not claimed.
 - Next concrete action: inventory Border Sentinel's exact item/enchantments/cost and every current acquisition reference, reject Oleg, then qualify a later deterministic thematic fixed-loot target and shortest observer route.
+
+## Overnight bugfix resume checkpoint - Issue 11 qualified (2026-08-20)
+
+- Branch: `codex/gunslinger-overnight-bugfixes`; version `0.0.87`.
+- Qualified and published code SHA: `b3b76d74edc27664a0bae538e558b7bd6a15b208`; local branch and origin equality verified before runtime. Documentation checkpoint follows.
+- Completed issue IDs: Issues 1-11 automated-qualified/human-gated where stated.
+- Current issue: Issue 12, complete project-owned unique-magic acquisition inventory and organic campaign redistribution.
+- Issue 11 result: deterministic metric/+Z licensed-mesh derivatives now supply identity scale-1 held frames, exact support/muzzle/butt semantics, native left-hand IK, and distinct validated back prefabs for Musket and Blunderbuss. Crossbow animation, inherited attach slots, one projectile, mechanics, audio/state/reload paths, and stable identities are preserved.
+- Gates: deterministic Blender x2 and Unity ForceRebuild x2; repository; 1,159/1,159 tests; clean exact-reference Release; output; SoundBank; standalone package; strict package; diff PASS.
+- Guarded run `20260820T0819129064284Z-4b9313e5c2784b099756b97fc139b68e` passed 63/63 at published commit `b3b76d74edc27664a0bae538e558b7bd6a15b208`.
+- Runtime package/DLL/firearm-bundle/SoundBank SHA-256: `DB09740418E7892BC1174EBA3EC986D2565CB95B09776DB19F119FE0ADB11F51` / `9B0716451906BEAEF47A4D26794C93878F7D1E3F2C771705021C879813751B8E` / `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Active blocker: none. Final world/inventory doll clipping, hand contact, firing/reload/back animation, and texture judgment remain consolidated-human-gated.
+- Next concrete action: audit every project-owned named/unique magic item and every deliberate acquisition reference; build the exact chapter/area/target inventory, preserve Issue 7 Border Sentinel, reject clustered/shared/DLC/random targets, then apply the narrow transactional Issue 12 redistribution.

@@ -258,3 +258,18 @@ gates. A new immutable guarded run is required before Issue 1 disposition.
 - Spear AssetBundle SHA-256: `F671904DDB492EA194C259889D18BC4916E161E107C5E9F179A375DDF87B5B85`.
 - Firearm AssetBundle/SoundBank SHA-256: `CC9DA6B2FB43FD2932971E3CCE015610497E4C2DB657F62DBA675A31DE327B20` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 - Automated status: geometry, donor, mechanics, identity, asset, and package qualified. World/inventory doll grip, clipping, and animation appearance remain human-gated because the disposable unit view deferred synchronous equipment materialization.
+
+## Issue 11 qualification - Musket and Blunderbuss rig/retexture
+
+- Qualified code SHA: `b3b76d74edc27664a0bae538e558b7bd6a15b208`.
+- Focused cases: `firearm-fit.production-binding-frozen`, marker-import fail-closed, native-rig visibility, custom-back/hidden-Rifle holster policy: PASS.
+- Complete domain/reflection suite: 1,159/1,159 PASS.
+- Two clean Blender 4.5 processes reproduced derivative hashes Musket `AF8B08BF8153E23A6B8329A79634A9016347E43DDDF90B53028285B1C25ED397` and Blunderbuss `559F8D8B434729DC8D81881F69C0EB9D39FA33B49402A58A977D004E1DEBF6F3`.
+- Two Unity 2018.4.10f1 ForceRebuild passes reproduced firearm AssetBundle `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` at 17,971,166 bytes.
+- Repository validation, clean exact-reference Release, output validation, SoundBank validation, standalone package build, strict package validation, and `git diff --check`: PASS.
+- Guarded scenario: `disposable-firearm-visual-rigs` run `20260820T0819129064284Z-4b9313e5c2784b099756b97fc139b68e`, 63/63 PASS.
+- Live Musket: identity held frame and scale one; butt/support/muzzle `-0.294799924/0.47999993/1.04519975 m`; semantic length `1.33999968 m`; exact native left-hand IK; distinct `MusketBelt` with `BackMount`; custom back and no inherited sheath; one projectile.
+- Live Blunderbuss: identity held frame and scale one; butt/support/muzzle `-0.232199952/0.359999955/0.6277998 m`; semantic length `0.8599998 m`; exact native left-hand IK; distinct `BlunderbussBelt` with `BackMount`; custom back and no inherited sheath; one projectile.
+- Runtime package/DLL SHA-256: `DB09740418E7892BC1174EBA3EC986D2565CB95B09776DB19F119FE0ADB11F51` / `9B0716451906BEAEF47A4D26794C93878F7D1E3F2C771705021C879813751B8E`.
+- Firearm AssetBundle/SoundBank SHA-256: `1AA75FA1230ABFB60CD5148CA90B99D604DBECE7D80D98D85CB7D7C0A885A8FF` / `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Automated status: source, provenance, deterministic assets, prefab hierarchy, IK, muzzle, back publication, projectile preservation, build, package, and live structural routing qualified. Actual body clipping, hand contact, firing/reload animation, back pose, and texture aesthetics remain human-gated.
