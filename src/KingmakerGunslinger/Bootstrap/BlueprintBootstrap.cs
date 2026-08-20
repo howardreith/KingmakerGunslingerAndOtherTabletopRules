@@ -640,6 +640,7 @@ namespace KingmakerGunslinger.Bootstrap
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
             CapitalVendorPublication olegMaintenancePublication = null;
+            BokkenVendorPublication bokkenAmmunitionPublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
             RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
@@ -924,6 +925,10 @@ namespace KingmakerGunslinger.Bootstrap
                 olegMaintenancePublication = OlegMaintenanceVendorBlueprints.Publish(
                     library, firearmRepairKit, gunsmithingSupplies,
                     publicationPlan.CapitalGunslingerStock, context.Logger);
+                bokkenAmmunitionPublication =
+                    BokkenAmmunitionVendorBlueprints.Publish(library,
+                        basicAmmunition,
+                        publicationPlan.CapitalGunslingerStock, context.Logger);
                 if (publicationPlan.BeneathStolenLandsStock)
                     btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
                         library, productionFirearms, magicFirearms, basicAmmunition,
@@ -1084,6 +1089,17 @@ namespace KingmakerGunslinger.Bootstrap
                 }
                 if (olegMaintenancePublication != null)
                 {
+                    if (bokkenAmmunitionPublication != null)
+                    {
+                        try { bokkenAmmunitionPublication.Rollback(); }
+                        catch (Exception vendorRollbackException)
+                        {
+                            context.Logger.Failure("blueprints",
+                                "bokken-ammunition.rollback-failed",
+                                "Blueprint initialization failed and Bokken ammunition-stock rollback was refused.",
+                                vendorRollbackException);
+                        }
+                    }
                     try { olegMaintenancePublication.Rollback(); }
                     catch (Exception vendorRollbackException)
                     {

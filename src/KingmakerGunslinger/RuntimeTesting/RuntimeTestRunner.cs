@@ -6733,7 +6733,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             int olegRepairRows = -1, olegRepairCount = -1,
                 olegOverhaulRows = -1, olegOverhaulCount = -1;
-            bool olegOwnerContracts = false;
+            int bokkenPowderRows = -1, bokkenPowderCount = -1,
+                bokkenBallRows = -1, bokkenBallCount = -1,
+                bokkenPaperRows = -1, bokkenPaperCount = -1;
+            bool olegOwnerContracts = false, bokkenOwnerContracts = false;
             ProductionFirearmBlueprintCatalog production =
                 BlueprintBootstrap.ProductionFirearms;
             string criticalProfiles = production == null ? "catalog-unavailable" :
@@ -6787,6 +6790,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Blueprint) + ";reverse=" + string.Join(",",
                         (reverse ?? new List<string>()).Take(40).ToArray());
             }).ToArray();
+            BlueprintUnitLoot bokkenTable = allBlueprints.OfType<BlueprintUnitLoot>()
+                .SingleOrDefault(value => string.Equals(value.AssetGuid,
+                    BokkenAmmunitionVendorBlueprints.TableGuid,
+                    StringComparison.Ordinal));
+            Dictionary<string, List<string>> bokkenTableReferences =
+                BuildDirectBlueprintReferenceIndex(allBlueprints,
+                    bokkenTable == null ? Array.Empty<BlueprintScriptableObject>() :
+                        new BlueprintScriptableObject[] { bokkenTable });
+            List<string> bokkenReferenceList;
+            string[] bokkenReferences = bokkenTable != null &&
+                bokkenTableReferences.TryGetValue(bokkenTable.AssetGuid,
+                    out bokkenReferenceList) ? bokkenReferenceList.ToArray() :
+                Array.Empty<string>();
+            string expectedBokkenOwner = typeof(BlueprintUnit).FullName + ":" +
+                BokkenAmmunitionVendorBlueprints.BokkenOwnerName + ":" +
+                BokkenAmmunitionVendorBlueprints.BokkenOwnerGuid + "*1";
+            string expectedZeroStateOwner = typeof(BlueprintUnit).FullName + ":" +
+                BokkenAmmunitionVendorBlueprints.ZeroStateOwnerName + ":" +
+                BokkenAmmunitionVendorBlueprints.ZeroStateOwnerGuid + "*1";
+            bokkenOwnerContracts = bokkenReferences.Length == 2 &&
+                bokkenReferences.Contains(expectedBokkenOwner) &&
+                bokkenReferences.Contains(expectedZeroStateOwner);
+            if (bokkenTable != null)
+            {
+                LootItemsPackFixed[] fixedRows = (bokkenTable.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<LootItemsPackFixed>()
+                    .ToArray();
+                LootItemsPackFixed[] powderRows = fixedRows.Where(value =>
+                    ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder)).ToArray();
+                LootItemsPackFixed[] ballRows = fixedRows.Where(value =>
+                    ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                        BlueprintBootstrap.BasicAmmunition.LeadBall)).ToArray();
+                LootItemsPackFixed[] paperRows = fixedRows.Where(value =>
+                    ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                        BlueprintBootstrap.BasicAmmunition.PaperCartridge)).ToArray();
+                bokkenPowderRows = powderRows.Length;
+                bokkenPowderCount = powderRows.Length == 1 ?
+                    CapitalVendorBlueprints.ReadCount(powderRows[0]) : -1;
+                bokkenBallRows = ballRows.Length;
+                bokkenBallCount = ballRows.Length == 1 ?
+                    CapitalVendorBlueprints.ReadCount(ballRows[0]) : -1;
+                bokkenPaperRows = paperRows.Length;
+                bokkenPaperCount = paperRows.Length == 1 ?
+                    CapitalVendorBlueprints.ReadCount(paperRows[0]) : -1;
+            }
             BlueprintWeaponEnchantment[] nativeEnchantments = allBlueprints
                 .OfType<BlueprintWeaponEnchantment>()
                 .Where(IsRareFirearmNativeEnchantmentCandidate)
@@ -7301,6 +7350,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     " | ", lootCandidateRecords.ToArray()) +
                 ";bokkenCandidates=" + bokkenCandidateRecords.Length + ":" +
                     string.Join(" | ", bokkenCandidateRecords) +
+                ";bokkenTable=" + (bokkenTable == null ? "<missing>" :
+                    bokkenTable.name + ":" + bokkenTable.AssetGuid) +
+                    ";bokkenPowder=" + bokkenPowderRows + "/" +
+                    bokkenPowderCount + ";bokkenBalls=" + bokkenBallRows +
+                    "/" + bokkenBallCount + ";bokkenPaper=" +
+                    bokkenPaperRows + "/" + bokkenPaperCount +
+                    ";bokkenOwners=" + string.Join(",", bokkenReferences) +
+                    ";bokkenContents=" + (bokkenTable == null ? "<missing>" :
+                        DescribeFixedLootComponents(bokkenTable)) +
                 ";vendorDirectReferences=" + string.Join(" | ", tables.Select(table =>
                 {
                     List<string> references;
@@ -7351,6 +7409,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("oleg-vendor-owners",
                     "OTP_Oleg and OTP_Oleg_FirstVisit are the two exact direct table owners",
                     observed, olegOwnerContracts,
+                    "read-only direct blueprint reference index and exact owner GUIDs"),
+                Assertion("bokken-ammunition-stock",
+                    "exact Bokken unit-loot table contains one Black Powder, Lead Ball, and Paper Cartridge row at 100 each",
+                    observed, bokkenTable != null && string.Equals(bokkenTable.name,
+                        BokkenAmmunitionVendorBlueprints.ExpectedTableName,
+                        StringComparison.Ordinal) && bokkenPowderRows == 1 &&
+                        bokkenPowderCount ==
+                            BokkenAmmunitionVendorBlueprints.AmmunitionCount &&
+                        bokkenBallRows == 1 && bokkenBallCount ==
+                            BokkenAmmunitionVendorBlueprints.AmmunitionCount &&
+                        bokkenPaperRows == 1 && bokkenPaperCount ==
+                            BokkenAmmunitionVendorBlueprints.AmmunitionCount,
+                    "exact BlueprintUnitLoot and project-owned item references"),
+                Assertion("bokken-vendor-owners",
+                    "OTP_Bokken and OTP_Bokken_ZeroState are the two exact direct loot-table owners",
+                    observed, bokkenOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("btsl-vendor-publication",
                     "four exact standalone/campaign tables; twelve unique entries each",

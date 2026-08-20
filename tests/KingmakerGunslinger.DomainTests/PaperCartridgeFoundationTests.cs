@@ -241,6 +241,47 @@ namespace KingmakerGunslinger.DomainTests
                 "Bokken bounded-forensics contract missing: " + token);
         }
 
+        internal static void BokkenAmmunitionStockContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string source = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "BokkenAmmunitionVendorBlueprints.cs"));
+            foreach (string token in new[] {
+                "4778ecb5df5d48742b9be5a204ed4657",
+                "C11_BokkenVendorTable",
+                "4f5acdb403f6ef642959f6bedc051ac7",
+                "OTP_Bokken",
+                "57f84fdde3cc2994284fb3acc4a3cb97",
+                "OTP_Bokken_ZeroState",
+                "AmmunitionCount = 100",
+                "BlueprintLibraryLookup.RequireExact<BlueprintUnitLoot>",
+                "ammunition.BlackPowder",
+                "ammunition.LeadBall",
+                "ammunition.PaperCartridge",
+                "VendorCatalogPublication<BlueprintComponent>.Create",
+                "BokkenVendorPublication.Unchanged",
+                "publication.Validate()",
+                "ReferenceEquals"
+            }) Assertions.True(source.Contains(token),
+                "Bokken ammunition publication contract missing: " + token);
+
+            string bootstrap = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
+            int publish = bootstrap.IndexOf(
+                "BokkenAmmunitionVendorBlueprints.Publish",
+                StringComparison.Ordinal);
+            int rollback = bootstrap.IndexOf(
+                "bokkenAmmunitionPublication.Rollback()",
+                StringComparison.Ordinal);
+            int olegRollback = bootstrap.IndexOf(
+                "olegMaintenancePublication.Rollback()", StringComparison.Ordinal);
+            Assertions.True(publish >= 0 && rollback > publish &&
+                olegRollback > rollback && bootstrap.Contains(
+                    "publicationPlan.CapitalGunslingerStock"),
+                "Bokken stock must be module-gated and roll back before the prior Oleg snapshot.");
+        }
+
         private static int Count(string source, string token)
         {
             int count = 0, index = 0;
