@@ -1002,7 +1002,90 @@ stored sheets, the exact before/after reproductions, and all three stored native
 donor controls confirms the same acceptance. The dirty-source runs remain
 diagnostic history; the clean exact-commit results above are authoritative.
 
-Mission acceptance remains bounded to the recorded default Medium male states.
-Firearm reload, handgun ready/fire and valid dual wield, armor/cloak
-interaction, female, Small, and Enlarged coverage remain open. No run called a
-save API or touched `KMG_AUTOMATION_BASELINE`.
+At that checkpoint, mission acceptance remained bounded to the recorded
+default Medium male states. Firearm reload, handgun ready/fire and valid dual
+wield, armor/cloak interaction, female, Small, and Enlarged coverage were still
+open. No run called a save API or touched `KMG_AUTOMATION_BASELINE`.
+
+## 2026-08-21 - guarded firearm reload presentation checkpoint
+
+The request-gated `weapon-presentation-reload-evidence` scenario now exercises
+the production Reload Firearm ability for all seven firearm variants. It uses
+the real `AbilityData`, `UnitUseAbility`, `UnitCommands.Run`, acted animation,
+execution process, and production reload transactions. Each case captures a
+reload-ready sheet, fixed updates `1/4/8/12/18/24/36/60/96/120/160/200/220/240`,
+and an event-aligned acted sheet, producing 16 PNG/JSON pairs and 64 labelled
+views per firearm. Request-local inventory, firearm state, and global stacks
+are restored exactly; the scenario never invokes a save API or projectile
+discharge.
+
+The first diagnostic correctly disproved the fixture's assumption that every
+production reload would succeed: Advanced Revolver's six-round state write
+fails closed because the current active item-token carrier represents
+capacity-one states. The fixture was narrowed to assert that existing boundary
+without changing mechanics. Its exact command still reaches the acted delivery,
+but reports zero loaded rounds, zero ammunition drift, zero discharge, and an
+exact state rollback. The other six production variants each load exactly one
+round exactly once. This is a pre-existing mechanical limitation outside the
+cosmetic mission, not a presentation defect or authorization to change firearm
+state behavior.
+
+The expanded dirty-source engineering run is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T1034434172396Z-weapon-presentation-reload-evidence/`
+
+It passes 7/7 assertions with 112 PNG/JSON pairs and 448 views. Result/index
+SHA-256 are
+`B4565FB34985E10C766ED82CBBD4A8DC17373576D23C35EB21D59DDD0DD5876F` /
+`51E9095F456FB4A977260BFCC45AA00189712D94E06FE87133CBA7C13D78A24A`.
+Its package/DLL SHA-256 are
+`3B7553E2F6A2F778B16F25D326B7A7AB16AFB42638D5206D7AE4996870AE83AB` /
+`49C37AB8C835E47268CFF01ABC46978E73F4E833732086C437F6CC77CD70372C`.
+
+Repository validation passed; all 1,164 Release domain tests passed; clean
+Release compilation and package creation passed; strict standalone package
+validation passed; and `Build-Local.ps1` passed. Runtime preflight passed all
+127 checks after one immediately-post-build artifact-fingerprint negative case.
+Inspection found lingering MSBuild/VBCS processes, while a controlled before/
+after snapshot of all 4,029 artifact entries around the unsupported-scenario
+probe showed zero changes. The clean rerun passed and the source checkpoint was
+committed and published as
+`c0f193c1fa75741043b8be753bbc61ecb829bb9a` (`test(presentation): capture
+firearm reload frames`).
+
+The authoritative clean exact-commit guarded Steam App ID 640820 result is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T1043103685398Z-weapon-presentation-reload-evidence/`
+
+It passes 7/7 assertions in 188,253 ms with 112 PNG/JSON pairs, 448 views, all
+seven exact native commands acted, exact cleanup, and loaded version `0.0.88`.
+Result/index SHA-256 are
+`5BAFCEF840A1A8C012CAC43E14F514CD7D77D4F1A86B2BEF1F79C844E4138F38` /
+`013A8E10A3E184FE3B9C1CCDE04DAA7CF4EAE43FB8DC64DDBE0C4E482674908E`.
+The 22,426,625-byte package SHA-256 is
+`E7CDDA3D58A1C942F7A56C9DE5CA59711D7DF27DAF3FF1B8153AC6B10928BA30`;
+the 3,595,776-byte DLL SHA-256 is
+`07A68E8303040AF585B57558C7E65A50A9854340FC5291F58676C49B250E26B5`
+with MVID `6be83c36-acb0-47a9-bbe0-34bdb408165c`. Deployment manifest
+`runtime-evidence/deployments/20260821T1043103064297Z/deployment.json` has
+SHA-256
+`D1E170269094870331ECAFAE06DB70BDED00C064B9599928A43EF820D7E4038E`;
+the run's `runtime-evidence.json` SHA-256 is
+`B18D0FDC32A43CF57B532FA5FCCAC4F4A804E0F556F7073453B3C5572288A3B4`.
+
+Direct review accepts all four handgun variants at the hip throughout their
+acted and fixed samples: dominant-hand contact and visible muzzle polarity
+remain plausible, and none persistently penetrates the actor. Musket and
+Blunderbuss release the support hand during the production generic `Self`
+action but keep the long gun outside persistent torso traversal and return to
+a plausible two-hand ready pose by update 240. Rifle's acted update 66 is
+clear, and the weapon transitions to its independent `RifleBelt` back model by
+the late samples. A transient awkward Blunderbuss pose seen in one diagnostic
+run did not recur as severe or persistent clipping in the exact-commit run.
+Changing weapon roots, projectile semantics, or reload mechanics would address
+the wrong layer; no such change was made.
+
+This checkpoint accepts only sampled Reload Firearm presentation on the
+default Medium male. Handgun combat-ready, firing, valid dual wield, armor or
+cloak interaction, female Medium, Small, and Enlarged coverage remain ordinary
+mission work.

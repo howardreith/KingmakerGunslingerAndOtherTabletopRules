@@ -64,6 +64,9 @@
 - Published Eastern clone-only sheath repair commit:
   `754ae076de0c02b5dd1e62691ba5905aa363432c`
   (`fix(presentation): replace detached eastern donor sheaths`).
+- Published guarded firearm reload fixture commit:
+  `c0f193c1fa75741043b8be753bbc61ecb829bb9a`
+  (`test(presentation): capture firearm reload frames`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
@@ -75,7 +78,9 @@
   family-donor held bases, independent stored prefabs, and held-only Nodachi IK;
   runtime replaces the donor clone's held and belt model fields and clears only
   that clone's redundant sheath field. Native donor sheaths and all other donor
-  fields remain unchanged.
+  fields remain unchanged. A guarded production-ability fixture now captures
+  the complete sampled Reload Firearm delivery window for all seven firearm
+  variants without changing firearm mechanics or presentation transforms.
 
 ## Qualified unchanged baseline
 
@@ -474,10 +479,53 @@ stored sheets, exact before/after defect frames, and all three stored native
 donor controls. No detached sheath remains; custom stored models and native
 donor sheaths remain present. No save API was called.
 
+## Qualified guarded firearm reload checkpoint
+
+Published commit `c0f193c1fa75741043b8be753bbc61ecb829bb9a` adds the guarded
+`weapon-presentation-reload-evidence` fixture. It executes the real production
+Reload Firearm ability and native command lifecycle for Pistol, Duelist Pistol,
+Last Word, Revolver, Musket, Blunderbuss, and Rifle. Each case captures
+reload-ready, 14 fixed updates through 240, and an event-aligned acted frame.
+The fixture performs exact request-local state/inventory cleanup and never
+calls a save or projectile discharge path.
+
+Qualification passes runtime preflight 127/127, repository validation, all
+1,164 Release domain tests, clean Release compilation/package creation, strict
+package validation, and `Build-Local.ps1`. The authoritative clean exact-commit
+Steam App ID 640820 run is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T1043103685398Z-weapon-presentation-reload-evidence/`
+
+It passes 7/7 assertions in 188,253 ms with 112 PNG/JSON pairs, 448 labelled
+views, and all seven exact production commands acted. Six capacity-one
+transactions load exactly once with zero discharge. Advanced Revolver reaches
+its acted delivery but retains the pre-existing exact fail-closed rollback
+because the active token carrier cannot represent a six-round state; ammunition
+and state remain unchanged. That mechanical limitation is outside this cosmetic
+mission.
+
+Result/index SHA-256 are
+`5BAFCEF840A1A8C012CAC43E14F514CD7D77D4F1A86B2BEF1F79C844E4138F38` /
+`013A8E10A3E184FE3B9C1CCDE04DAA7CF4EAE43FB8DC64DDBE0C4E482674908E`.
+The 22,426,625-byte package SHA-256 is
+`E7CDDA3D58A1C942F7A56C9DE5CA59711D7DF27DAF3FF1B8153AC6B10928BA30`;
+the 3,595,776-byte DLL SHA-256 is
+`07A68E8303040AF585B57558C7E65A50A9854340FC5291F58676C49B250E26B5`
+with MVID `6be83c36-acb0-47a9-bbe0-34bdb408165c`. The exact deployment manifest is
+`runtime-evidence/deployments/20260821T1043103064297Z/deployment.json`.
+
+Direct review accepts sampled reload presentation for all seven firearms on
+the default Medium male. Handguns remain clear at the hip. Musket and
+Blunderbuss transiently release the support hand during the generic `Self`
+action, remain outside persistent torso traversal, and return to plausible
+two-hand ready. Rifle's acted frame is clear and its late samples use the
+independent `RifleBelt` back model. No weapon root, muzzle, projectile, reload
+mechanic, or gameplay field changed.
+
 ## Next concrete actions
 
-1. Add firearm reload visual sampling without changing reload mechanics, then
-   exercise handgun ready/fire and valid dual-wield presentation.
+1. Exercise all handgun variants in combat-ready, firing, and valid dual-wield
+   presentation while preserving the already-qualified projectile semantics.
 2. Construct narrower request-local female Medium, Small, and Enlarged visual
    fixtures and add representative armor/cloak coverage without relying on
    manual save mutation.
@@ -501,9 +549,9 @@ donor sheaths remain present. No save API was called.
   fixture. Only the broader body matrix remains.
 - Long-gun V4 defects are superseded for the states captured by V5/V6. Musket,
   Blunderbuss, and Rifle are now basis-derived and renderer-endpoint verified;
-  V12 accepts default-Medium-male locomotion, turning, and transitions. Reload
-  and the broader body matrix remain evidence gaps rather than transform
-  hypotheses.
+  V12 accepts default-Medium-male locomotion, turning, and transitions, and V17
+  accepts their sampled production reload actions. The broader body matrix
+  remains an evidence gap rather than a transform hypothesis.
 
 ## Safety/publication
 

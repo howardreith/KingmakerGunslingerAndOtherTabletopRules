@@ -25,8 +25,11 @@ None as of 2026-08-21.
   stored prefab remains visible, and all 12 Eastern variants are accepted in
   the captured default-Medium-male stored/motion/transition states. Clean
   exact-commit E5/V15/V16 reruns now supersede those dirty-source repair runs.
-  Firearm reload, handgun ready/fire and valid dual wield, armor or cloak
-  interaction, female, Small, and Enlarged coverage remain ordinary open work.
+  Clean exact-commit V17 now accepts Reload Firearm presentation for all seven
+  production variants on the default Medium male: 112 PNG/JSON pairs span
+  reload-ready, 14 fixed updates through 240, and an event-aligned acted frame.
+  Handgun ready/fire and valid dual wield, armor or cloak interaction, female,
+  Small, and Enlarged coverage remain ordinary open work.
 - Native donor axes have been measured by exact live controls (`V2`), and all
   production authored assets now expose complete secondary-axis markers under
   a shared fail-closed contract. Branched-spears additionally have
@@ -40,14 +43,22 @@ None as of 2026-08-21.
   explicit in `V2`; V6 supplies native-control combat-ready and acted-attack
   observation. Across all ten ready/attack samples, Musket's support-hand
   average is `0.131895 m` versus the native control's `0.132578 m`; V12 accepts
-  locomotion/turning/transitions on the default Medium male, while reload
-  remains open.
+  locomotion/turning/transitions and V17 accepts the complete sampled production
+  reload sequence on the default Medium male.
 - Service Pistol and Revolver source frames have renderer/component proof and
   basis-derived transforms. Musket, Blunderbuss, and Rifle now use deterministic
   canonical source frames, measured trigger-wrist grips, renderer-bound ends,
   identity equipment roots, the measured Heavy Crossbow held basis, and
   independent BackMount prefabs. V5/V6 accept their captured default-Medium-
-  male states without changing projectile semantics.
+  male states without changing projectile semantics; V17 adds exact native
+  Reload Firearm commands, acted frames, and full-round delivery-window
+  sampling without a projectile or save call.
+- Advanced Revolver's production reload command reaches its acted delivery but
+  the six-round state write still fails closed because the active item-token
+  catalog represents capacity-one states. V17 proves zero ammunition drift,
+  zero discharge, zero loaded rounds, and exact rollback. This is a pre-existing
+  mechanical limitation outside the cosmetic mission, not a presentation hard
+  stop and not permission to change firearm-state mechanics here.
 - Medium female, Small, and Enlarged cosmetic fixtures may require narrower
   request-local character construction. Lack of first-pass coverage is not a
   stop condition.

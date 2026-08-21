@@ -88,6 +88,15 @@ turning, and equip/unequip transitions. Eastern custom clones use their complete
 independent stored prefabs without also recreating a donor sheath; native donor
 blueprints retain their own sheaths unchanged. That repair is published at
 `754ae076de0c02b5dd1e62691ba5905aa363432c` and clean-qualified by E5/V15/V16.
-Remaining runtime matrix work is firearm reload, handgun ready/fire and valid
-dual wield, armor/cloak interaction, and female, Small, and Enlarged fixtures.
-Version remains `0.0.88` until those rows and the final package qualify.
+All seven production firearm variants now also have clean commit-bound Reload
+Firearm evidence at `c0f193c1fa75741043b8be753bbc61ecb829bb9a`: each exact
+production `UnitUseAbility` reaches its acted frame, 14 fixed samples cover the
+full-round delivery window, six capacity-one transactions load exactly once,
+no discharge occurs, and request-local state is restored exactly. The Advanced
+Revolver reaches the same acted delivery but retains its pre-existing exact
+fail-closed rollback because the current item-token carrier cannot represent a
+six-round state; this cosmetic mission records and does not alter that
+mechanical boundary. Remaining runtime matrix work is handgun ready/fire and
+valid dual wield, armor/cloak interaction, and female, Small, and Enlarged
+fixtures. Version remains `0.0.88` until those rows and the final package
+qualify.
