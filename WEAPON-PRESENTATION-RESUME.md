@@ -55,6 +55,9 @@
 - Published Eastern held/stored calibration implementation commit:
   `8aeef5e7fb2ef976e7ca5cbe82ba44d50b01401b`
   (`fix(presentation): calibrate eastern held and stored rigs`).
+- Published Eastern qualification documentation commit:
+  `54e4af1f16351700282aba2b8a4f47b5433384f3`
+  (`docs(presentation): qualify eastern held and stored rigs`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
@@ -365,11 +368,46 @@ contact, variant identity, and no severe persistent clipping on the default
 Medium male. Movement/turning, equip/unequip transitions, armor/cloak, female,
 Small, and Enlarged remain open and are not inferred.
 
+## Qualified transition and locomotion fixture checkpoint
+
+The guarded `weapon-presentation-transition-motion-evidence` fixture now
+covers all 22 production variants plus Light Crossbow, Heavy Crossbow,
+Longspear, Scimitar, Bastard Sword, and Greatsword controls. Each case captures
+an active native equip transition, native navmesh-backed movement, a native
+90-degree body-relative turn, and an active native unequip transition from
+front, right-side, rear, and front-right-three-quarter views. It uses the
+equipment view's own combat-state transition guard without joining real combat,
+so `Game.Player.IsInCombat` and turn-based movement gating remain untouched.
+
+The dirty-source qualification run passed at
+`20260821T0837326051191Z-weapon-presentation-transition-motion-evidence` with
+7/7 assertions, 112 PNG/JSON pairs, 448 labelled views, exact request-local
+cleanup, no save call, and automatic exit. Every `UnitMoveTo` was accepted and
+produced nonzero velocity plus `0.367545..0.372974 m` displacement; every held
+presentation followed a `89.99999..90.00001` degree turn; and every equip and
+unequip capture found the matching native coroutine active. Result/index
+SHA-256 are
+`6F877A4ADA88F7D49CD4745514F2BF6D705B14FECB1E64668863CA2F52B2CF8B` /
+`0A25959DCEB32254ACF609F6D7127575913AEEF7B109F67F7C2015E41A22D2F1`.
+The tested package is 22,418,038 bytes, SHA-256
+`9F08E75EACAB8FFB4A7CDEC4A49F7CD1A3F77E9B01A4A00A9EFCE229085E47DB`;
+DLL SHA-256 is
+`F6E7934CAB20D0C86B5C42D01AD0C0D30FABB4BAFE8299A5454BAAEC3039D5DE`.
+
+Direct review of every moving, turned, equip-transition, and unequip-transition
+sheet accepts all calibrated variants against their native controls on the
+default Medium male. No severe persistent body clipping or world-space-pinned
+weapon was visible. This evidence does not cover firearm reload, handgun
+ready/fire or dual wield, armor/cloak interaction, female, Small, or Enlarged
+fixtures. Because the generic wrapper timed out while the responsive game was
+still completing the 204-second matrix, its orchestration record is `ERROR`;
+the guarded runtime result itself subsequently flushed PASS and the game exited
+normally. A clean commit-bound rerun is the next required action.
+
 ## Next concrete actions
 
-1. Extend the guarded evidence fixture to cover locomotion/turning and explicit
-   equip/unequip transitions for every calibrated family, retaining exact
-   native controls and request-local cleanup.
+1. Commit and publish the qualified transition/motion fixture, rebuild from the
+   clean commit, and rerun it so evidence binds to that exact commit.
 2. Add firearm reload visual sampling without changing reload mechanics, then
    exercise handgun ready/fire and valid dual-wield presentation.
 3. Construct narrower request-local female Medium, Small, and Enlarged visual
@@ -393,8 +431,9 @@ Small, and Enlarged remain open and are not inferred.
   the broader motion/body matrix remains.
 - Long-gun V4 defects are superseded for the states captured by V5/V6. Musket,
   Blunderbuss, and Rifle are now basis-derived and renderer-endpoint verified;
-  their uncaptured reload, locomotion, transition, and body-matrix states
-  remain evidence gaps rather than transform hypotheses.
+  V12 accepts default-Medium-male locomotion, turning, and transitions. Reload
+  and the broader body matrix remain evidence gaps rather than transform
+  hypotheses.
 
 ## Safety/publication
 

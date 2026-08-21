@@ -16,10 +16,12 @@ None as of 2026-08-21.
   grip is exactly on `R_WeaponBone`. V10/V11 now supersede the baseline Eastern
   defects with accepted held, independently stored, combat-ready, and sampled-
   attack evidence for all 12 production variants; E3 passes all 30 Eastern item
-  identities and protected mechanics on the same exact artifact. Firearm
-  reload, all-family locomotion/turning and equip/unequip transitions, armor or
-  cloak interaction, female, Small, and Enlarged coverage remain ordinary open
-  work.
+  identities and protected mechanics on the same exact artifact. V12 adds
+  accepted locomotion, 90-degree body-relative turning, and active native
+  equip/unequip transitions for all 22 variants plus six native controls on the
+  default Medium male. Firearm reload, handgun ready/fire and valid dual wield,
+  armor or cloak interaction, female, Small, and Enlarged coverage remain
+  ordinary open work.
 - Native donor axes have been measured by exact live controls (`V2`), and all
   production authored assets now expose complete secondary-axis markers under
   a shared fail-closed contract. Branched-spears additionally have
@@ -32,8 +34,9 @@ None as of 2026-08-21.
   observer passes. Crossbow donor forward/up and support-locator positions are
   explicit in `V2`; V6 supplies native-control combat-ready and acted-attack
   observation. Across all ten ready/attack samples, Musket's support-hand
-  average is `0.131895 m` versus the native control's `0.132578 m`; reload and
-  locomotion remain open.
+  average is `0.131895 m` versus the native control's `0.132578 m`; V12 accepts
+  locomotion/turning/transitions on the default Medium male, while reload
+  remains open.
 - Service Pistol and Revolver source frames have renderer/component proof and
   basis-derived transforms. Musket, Blunderbuss, and Rifle now use deterministic
   canonical source frames, measured trigger-wrist grips, renderer-bound ends,
@@ -48,9 +51,13 @@ None as of 2026-08-21.
 
 The initial Eastern observer timeout, stale firearm observer expectation, the
 first Nodachi null slot-offset failure, a post-build artifact-timestamp race,
-and the first static wrapper deadline race were ordinary engineering tasks.
+the first static wrapper deadline race, and the transition matrix's generic
+wrapper deadline were ordinary engineering tasks.
 The Nodachi failure was isolated to native sheath recreation and corrected by
 initializing an empty custom slot-offset collection without clearing the sheath
 or moving the equipment root. The final clean static and motion runs both pass.
+The transition matrix continued responsively after its wrapper deadline,
+flushed a complete structured PASS, and exited automatically; a clean
+commit-bound rerun will supersede that dirty-source qualification.
 No protected save was selected or overwritten, and no launch-environment safety
 condition was encountered.

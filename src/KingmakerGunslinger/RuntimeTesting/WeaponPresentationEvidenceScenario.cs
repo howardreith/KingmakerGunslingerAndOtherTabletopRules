@@ -15,6 +15,7 @@ using Kingmaker.Items;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.View.Equipment;
+using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -181,6 +182,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestRequest request)
         {
             return new MotionSession(context, request);
+        }
+
+        internal static TransitionMotionSession BeginTransitionMotion(
+            ModContext context, RuntimeTestRequest request)
+        {
+            return new TransitionMotionSession(context, request);
         }
 
         /// <summary>
@@ -1741,6 +1748,979 @@ namespace KingmakerGunslinger.RuntimeTesting
                 };
                 Complete = true;
             }
+        }
+
+        private sealed class TransitionMotionOutcome
+        {
+            internal string Variant;
+            internal bool EquipMatchReturned;
+            internal bool EquipAnimationObserved;
+            internal int EquipClipCount;
+            internal bool MovementCommandAccepted;
+            internal bool MovementAgentMovingObserved;
+            internal bool MovementVelocityObserved;
+            internal int LocomotionClipCount;
+            internal float MovementDistanceMeters;
+            internal float TurnDegrees;
+            internal bool UnequipMatchReturned;
+            internal bool UnequipAnimationObserved;
+            internal int UnequipClipCount;
+        }
+
+        /// <summary>
+        /// Request-gated evidence for native equip/unequip animation, navmesh
+        /// locomotion, and a body-relative turn. This remains separate from the
+        /// static and attack fixtures so their original claim boundaries stay
+        /// exact. It never calls a save API and removes every request-local unit
+        /// and item before returning a result.
+        /// </summary>
+        internal sealed class TransitionMotionSession
+        {
+            private const int MaximumSettleUpdates = 360;
+            private const int StableStoredUpdates = 20;
+            private readonly ModContext _context;
+            private readonly RuntimeTestRequest _request;
+            private readonly DateTime _started = DateTime.UtcNow;
+            private readonly List<RuntimeTestAssertion> _assertions =
+                new List<RuntimeTestAssertion>();
+            private readonly List<string> _diagnostics = new List<string>();
+            private readonly List<string> _warnings = new List<string>();
+            private readonly List<string> _evidenceFiles = new List<string>();
+            private readonly List<TransitionMotionOutcome> _outcomes =
+                new List<TransitionMotionOutcome>();
+            private readonly JArray _records = new JArray();
+            private object _allUnits;
+            private object _party;
+            private object[] _unitsBefore = new object[0];
+            private object[] _partyBefore = new object[0];
+            private UnitEntityData _actor;
+            private BlueprintUnit _actorBlueprint;
+            private Renderer[] _fixtureBodyRenderers = new Renderer[0];
+            private ItemEntityWeapon _equipped;
+            private bool _equippedFirearmStateSet;
+            private EvidenceCase[] _cases = new EvidenceCase[0];
+            private UnitMoveTo _moveCommand;
+            private Transform _removedPresentation;
+            private Vector3 _movementStart;
+            private Vector3 _movementDestination;
+            private Vector3 _turnStartForward;
+            private int _caseIndex;
+            private int _phase;
+            private int _settleUpdates;
+            private int _captured;
+            private int _viewCount;
+            private bool _equipCaptured;
+            private bool _unequipCaptured;
+            private bool _equipAnimationObserved;
+            private bool _unequipAnimationObserved;
+            private bool _movementCommandAccepted;
+            private bool _movementAgentMovingObserved;
+            private bool _movementVelocityObserved;
+            private bool _turnRequested;
+            private bool _equipMatchReturned;
+            private bool _unequipMatchReturned;
+            private int _equipClipCount;
+            private int _unequipClipCount;
+            private int _locomotionClipCount;
+            private float _movementDistanceMeters;
+            private float _turnDegrees;
+            private uint _movementStartArea;
+            private uint _movementDestinationArea;
+            private uint _movementGraphIndex;
+            private bool _cleanupStarted;
+            private bool _indexWritten;
+            private string _stage = "resolve-working-save-anchor";
+            private string _exceptionSummary = string.Empty;
+
+            internal TransitionMotionSession(ModContext context,
+                RuntimeTestRequest request)
+            {
+                if (context == null) throw new ArgumentNullException("context");
+                if (request == null) throw new ArgumentNullException("request");
+                _context = context;
+                _request = request;
+            }
+
+            internal bool Complete { get; private set; }
+            internal RuntimeTestResult Result { get; private set; }
+
+            internal void Poll()
+            {
+                if (Complete) return;
+                try
+                {
+                    if (_cleanupStarted)
+                    {
+                        PollCleanup();
+                        return;
+                    }
+                    if (_phase == 0)
+                    {
+                        Initialize();
+                        _phase = 1;
+                        return;
+                    }
+                    if (_phase == 1)
+                    {
+                        PollStoredAndStartEquipTransition();
+                        return;
+                    }
+                    if (_phase == 2)
+                    {
+                        PollEquipTransition();
+                        return;
+                    }
+                    if (_phase == 3)
+                    {
+                        PollMovement();
+                        return;
+                    }
+                    if (_phase == 4)
+                    {
+                        PollTurnAndStartUnequipTransition();
+                        return;
+                    }
+                    if (_phase == 5)
+                    {
+                        PollUnequipTransition();
+                        return;
+                    }
+                    PollRemoval();
+                }
+                catch (Exception exception)
+                {
+                    _exceptionSummary = "stage=" + _stage + ";" + exception;
+                    Add(_assertions,
+                        "weapon-presentation-transition-motion-exception",
+                        "no exception", _exceptionSummary, false,
+                        "guarded request-local transition/movement fixture");
+                    BeginCleanup();
+                }
+            }
+
+            private void Initialize()
+            {
+                _allUnits = Game.Instance.State.Units.All;
+                _party = Game.Instance.Player.Party;
+                _unitsBefore = Snapshot(_allUnits);
+                _partyBefore = Snapshot(_party);
+                UnitEntityData areaAnchor = _partyBefore.OfType<UnitEntityData>()
+                    .FirstOrDefault(value => value != null &&
+                        value.HoldingState != null && value.View != null);
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save has no live party-area anchor.");
+
+                _stage = "spawn-disposable-transition-actor";
+                _actorBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                _actorBlueprint.name =
+                    "KMG_Runtime_Weapon_Presentation_Transition_Actor";
+                _actorBlueprint.IsCheater = true;
+                Vector3 position = NearestNavigable(areaAnchor.Position +
+                    new Vector3(-4f, 0f, 4f));
+                _actor = Game.Instance.EntityCreator.SpawnUnit(_actorBlueprint,
+                    position, Quaternion.identity, areaAnchor.HoldingState);
+                Game.Instance.EntityCreator.Tick();
+                if (_actor == null || _actor.View == null ||
+                    _actor.View.Data == null ||
+                    _actor.View.HandsEquipment == null ||
+                    _actor.View.MovementAgent == null)
+                    throw new InvalidOperationException(
+                        "Native spawning did not attach the disposable transition view.");
+
+                _actor.Descriptor.State.Immortality.Retain();
+                _actor.Commands.InterruptAll(true);
+                if (_actor.CombatState.IsInCombat)
+                    _actor.CombatState.LeaveCombat();
+                ClearHand(_actor, true);
+                ClearHand(_actor, false);
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                _cases = BuildCases();
+                if (_cases.Length != 28 ||
+                    !_cases.Take(ProductionVariants.Length).Select(value =>
+                        value.Variant).SequenceEqual(ProductionVariants) ||
+                    !_cases.Skip(ProductionVariants.Length).Select(value =>
+                        value.Variant).SequenceEqual(NativeControls.Select(
+                            value => "Native." + value.Label)))
+                    throw new InvalidOperationException(
+                        "The transition matrix is not the exact 22 production " +
+                        "variants plus six native donor controls.");
+            }
+
+            private void PollStoredAndStartEquipTransition()
+            {
+                if (_equipped == null)
+                {
+                    if (_fixtureBodyRenderers.Length == 0)
+                    {
+                        _stage = "settle-empty-handed-transition-body-renderers";
+                        TickRuntime();
+                        _fixtureBodyRenderers = _actor.View
+                            .GetComponentsInChildren<Renderer>(true)
+                            .Where(renderer => renderer != null &&
+                                renderer.enabled &&
+                                renderer.gameObject.activeInHierarchy)
+                            .ToArray();
+                        if (_fixtureBodyRenderers.Length == 0)
+                        {
+                            _settleUpdates++;
+                            if (_settleUpdates < MaximumSettleUpdates) return;
+                            throw new InvalidOperationException(
+                                "The transition actor has no active body renderers.");
+                        }
+                    }
+
+                    EvidenceCase value = _cases[_caseIndex];
+                    _stage = "equip-stored-transition-case-" + value.Variant;
+                    _equipped = new ItemEntityWeapon(value.Item);
+                    _actor.Body.PrimaryHand.InsertItem(_equipped);
+                    if (!ReferenceEquals(_actor.Body.PrimaryHand.MaybeWeapon,
+                            _equipped))
+                        throw new InvalidOperationException(value.Variant +
+                            " did not remain in the primary hand.");
+                    if (IsFirearm(value))
+                    {
+                        FirearmRuntimeState.Service.Set(_equipped,
+                            new FirearmState(FirearmState.CurrentSchemaVersion,
+                                1, FirearmStateTokenCatalog.DiagnosticLeadBall,
+                                FirearmCondition.Normal));
+                        _equippedFirearmStateSet = true;
+                    }
+                    _actor.View.HandsEquipment.UpdateAll();
+                    _actor.View.HandsEquipment.ForceSwitch(false);
+                    _settleUpdates = 0;
+                    return;
+                }
+
+                EvidenceCase current = _cases[_caseIndex];
+                _stage = "settle-stored-before-equip-transition-" +
+                    current.Variant;
+                TickRuntime();
+                WeaponVisualParameters visual = current.Item.VisualParameters;
+                string role;
+                Transform stored = ResolveActivePresentation(_actor, visual,
+                    "stored", out role);
+                _settleUpdates++;
+                if (!Renderable(stored) ||
+                    _actor.View.HandsEquipment.InCombat ||
+                    _settleUpdates < StableStoredUpdates)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(current.Variant +
+                        " did not reach a stable stored presentation before " +
+                        "the equip transition. renderable=" +
+                        Renderable(stored) + ";handsInCombat=" +
+                        _actor.View.HandsEquipment.InCombat + ";role=" + role +
+                        ".");
+                }
+
+                var equipAction = _actor.View.AnimationManager == null ? null :
+                    _actor.View.AnimationManager.GetAction(
+                        UnitAnimationType.MainHandEquip);
+                _equipClipCount = equipAction == null ? 0 :
+                    equipAction.Clips.Count(clip => clip != null);
+                // UnitViewHandsEquipment owns its presentation transition via
+                // m_ShoudBeInCombat. Joining UnitCombatState would also set
+                // Game.Player.IsInCombat and incorrectly gate request-local
+                // locomotion in turn-based mode.
+                _actor.View.HandsEquipment.OnCombatStateChanged(true);
+                _equipMatchReturned = _actor.View.HandsEquipment
+                    .MatchWithCurrentCombatState();
+                _settleUpdates = 0;
+                _phase = 2;
+            }
+
+            private void PollEquipTransition()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "equip-transition-" + value.Variant;
+                TickRuntime();
+                _settleUpdates++;
+                bool animating = CombatStateTransitionAnimating(_actor);
+                _equipAnimationObserved |= animating;
+                WeaponVisualParameters visual = value.Item.VisualParameters;
+                string role;
+                Transform presentation = ResolveActivePresentation(_actor,
+                    visual, "stored", out role);
+                if (animating && !_equipCaptured && Renderable(presentation))
+                {
+                    CaptureTransitionRecord(value, presentation, visual, role,
+                        "equip-transition", true,
+                        "native MainHandEquip coroutine while changing from " +
+                        "stored to held presentation");
+                    _equipCaptured = true;
+                }
+
+                string heldRole;
+                Transform held = ResolveActivePresentation(_actor, visual,
+                    "held-idle", out heldRole);
+                bool complete = _equipAnimationObserved && _equipCaptured &&
+                    !animating && _actor.View.HandsEquipment.InCombat &&
+                    Renderable(held);
+                if (!complete)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(value.Variant +
+                        " did not expose a complete native equip transition. " +
+                        "animationObserved=" + _equipAnimationObserved +
+                        ";captured=" + _equipCaptured + ";animating=" +
+                        animating + ";handsInCombat=" +
+                        _actor.View.HandsEquipment.InCombat + ";heldRole=" +
+                        heldRole + ".");
+                }
+                StartMovement(value);
+                _settleUpdates = 0;
+                _phase = 3;
+            }
+
+            private void StartMovement(EvidenceCase value)
+            {
+                _stage = "start-native-movement-" + value.Variant;
+                if (_actor.CombatState.IsInCombat ||
+                    Game.Instance.Player.IsInCombat ||
+                    TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat())
+                    throw new InvalidOperationException(value.Variant +
+                        " cannot start request-local locomotion because an " +
+                        "equipment-only transition polluted combat state.");
+                Pathfinding.NNInfo start = AstarPath.active.GetNearest(
+                    _actor.Position);
+                if (start.node == null || !start.node.Walkable)
+                    throw new InvalidOperationException(value.Variant +
+                        " has no walkable movement start node.");
+                _movementStart = start.clampedPosition;
+                SetUnitPosition(_actor, _movementStart);
+                _movementStartArea = start.node.Area;
+                _movementGraphIndex = start.node.GraphIndex;
+                Vector3[] offsets =
+                {
+                    new Vector3(2.5f, 0f, 2.5f),
+                    new Vector3(-2.5f, 0f, 2.5f),
+                    new Vector3(2.5f, 0f, -2.5f),
+                    new Vector3(-2.5f, 0f, -2.5f)
+                };
+                Pathfinding.NNInfo[] candidates = offsets.Select(offset =>
+                        AstarPath.active.GetNearest(_movementStart + offset))
+                    .Where(candidate => candidate.node != null &&
+                        candidate.node.Walkable &&
+                        candidate.node.Area == _movementStartArea &&
+                        candidate.node.GraphIndex == _movementGraphIndex)
+                    .OrderByDescending(candidate => Vector3.Distance(
+                        candidate.clampedPosition, _movementStart)).ToArray();
+                if (candidates.Length == 0)
+                    throw new InvalidOperationException(value.Variant +
+                        " has no same-area walkable movement destination.");
+                Pathfinding.NNInfo destination = candidates[0];
+                _movementDestination = destination.clampedPosition;
+                _movementDestinationArea = destination.node.Area;
+                if (Vector3.Distance(_movementDestination, _movementStart) < 1f)
+                    throw new InvalidOperationException(value.Variant +
+                        " has no request-local navigable movement span.");
+                var locomotion = _actor.View.AnimationManager == null ? null :
+                    _actor.View.AnimationManager.GetAction(
+                        UnitAnimationType.LocoMotion);
+                _locomotionClipCount = locomotion == null ? 0 :
+                    locomotion.Clips.Count(clip => clip != null);
+                _moveCommand = new UnitMoveTo(_movementDestination);
+                _actor.Commands.Run(_moveCommand);
+                _movementCommandAccepted =
+                    _actor.Commands.Contains(_moveCommand) &&
+                    ReferenceEquals(_moveCommand.Executor, _actor);
+                if (!_movementCommandAccepted)
+                    throw new InvalidOperationException(value.Variant +
+                        " native UnitMoveTo was not accepted by UnitCommands.");
+                var path = new Pathfinding.ForcedPath(new List<Vector3>
+                {
+                    _movementStart,
+                    _movementDestination
+                });
+                path.UserTag = "KMG weapon-presentation locomotion " +
+                    value.Variant;
+                _actor.View.AgentASP.ForcePath(path, 0.1f);
+                if (!_actor.View.MovementAgent.WantsToMove)
+                    throw new InvalidOperationException(value.Variant +
+                        " native movement agent rejected the same-area path.");
+            }
+
+            private void PollMovement()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "native-movement-" + value.Variant;
+                TickRuntime();
+                if (!TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat() || IsActorCurrentTurn())
+                    _actor.View.MovementAgent.TickMovement(
+                        Game.Instance.TimeController.DeltaTime);
+                _settleUpdates++;
+                bool moving = _actor.View.IsMoving() ||
+                    _actor.View.MovementAgent.IsReallyMoving ||
+                    _actor.View.MovementAgent.WantsToMove;
+                bool nonzeroVelocity = _actor.View.MovementAgent.Velocity
+                    .sqrMagnitude > 0.0001f;
+                _movementAgentMovingObserved |= moving;
+                _movementVelocityObserved |= nonzeroVelocity;
+                _movementDistanceMeters = Vector3.Distance(_movementStart,
+                    _actor.Position);
+                WeaponVisualParameters visual = value.Item.VisualParameters;
+                string role;
+                Transform held = ResolveActivePresentation(_actor, visual,
+                    "held-idle", out role);
+                if (_movementAgentMovingObserved &&
+                    _movementVelocityObserved &&
+                    _movementDistanceMeters > 0.05f && Renderable(held))
+                {
+                    CaptureTransitionRecord(value, held, visual, role,
+                        "moving", false,
+                        "live nonzero native movement-agent velocity and " +
+                        "measurable displacement on a same-area two-node path " +
+                        "matching the accepted UnitMoveTo target");
+                    _actor.View.StopMoving();
+                    _actor.Commands.InterruptAll(true);
+                    _moveCommand = null;
+                    _settleUpdates = 0;
+                    _phase = 4;
+                    return;
+                }
+                if (_settleUpdates < MaximumSettleUpdates) return;
+                throw new InvalidOperationException(value.Variant +
+                    " did not expose a live movement frame. started=" +
+                    _moveCommand.IsStarted + ";accepted=" +
+                    _movementCommandAccepted + ";agentMovingObserved=" +
+                    _movementAgentMovingObserved + ";velocityObserved=" +
+                    _movementVelocityObserved + ";distance=" +
+                    _movementDistanceMeters.ToString("R") + ";destination=" +
+                    _movementDestination.ToString("R") + ";wantsToMove=" +
+                    _actor.View.MovementAgent.WantsToMove +
+                    ";isReallyMoving=" +
+                    _actor.View.MovementAgent.IsReallyMoving +
+                    ";velocity=" +
+                    _actor.View.MovementAgent.Velocity.ToString("R") +
+                    ";startArea=" + _movementStartArea +
+                    ";destinationArea=" + _movementDestinationArea +
+                    ";graphIndex=" + _movementGraphIndex +
+                    ";turnBased=" + TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat() + ";actorCurrentTurn=" +
+                    IsActorCurrentTurn() + ";actorInCombat=" +
+                    _actor.CombatState.IsInCombat + ";handsInCombat=" +
+                    _actor.View.HandsEquipment.InCombat +
+                    ";animationPreventsMovement=" +
+                    _actor.View.AnimationManager.IsPreventingMovement +
+                    ";commandsPreventMovement=" +
+                    _actor.View.IsCommandsPreventMovement +
+                    ";deltaTime=" + Game.Instance.TimeController.DeltaTime
+                        .ToString("R") + ".");
+            }
+
+            private bool IsActorCurrentTurn()
+            {
+                TurnBased.Controllers.CombatController controller =
+                    Game.Instance.TurnBasedCombatController;
+                return controller != null && controller.CurrentTurn != null &&
+                    ReferenceEquals(controller.CurrentTurn.Unit, _actor);
+            }
+
+            private void PollTurnAndStartUnequipTransition()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "native-turn-" + value.Variant;
+                if (!_turnRequested)
+                {
+                    _turnStartForward = _actor.OrientationDirection;
+                    _turnStartForward.y = 0f;
+                    if (_turnStartForward.sqrMagnitude < 0.5f)
+                        _turnStartForward = Vector3.forward;
+                    _turnStartForward.Normalize();
+                    Vector3 right = new Vector3(_turnStartForward.z, 0f,
+                        -_turnStartForward.x).normalized;
+                    _actor.ForceLookAt(_actor.Position + right * 5f);
+                    _turnRequested = true;
+                    _settleUpdates = 0;
+                    return;
+                }
+
+                TickRuntime();
+                _settleUpdates++;
+                Vector3 currentForward = _actor.OrientationDirection;
+                currentForward.y = 0f;
+                if (currentForward.sqrMagnitude > 0.01f)
+                    currentForward.Normalize();
+                _turnDegrees = Vector3.Angle(_turnStartForward,
+                    currentForward);
+                WeaponVisualParameters visual = value.Item.VisualParameters;
+                string role;
+                Transform held = ResolveActivePresentation(_actor, visual,
+                    "held-idle", out role);
+                if (_turnDegrees >= 60f && Renderable(held) &&
+                    _settleUpdates >= 4)
+                {
+                    CaptureTransitionRecord(value, held, visual, role,
+                        "turned-right", false,
+                        "native ForceLookAt endpoint after a body-relative " +
+                        "right turn; verifies the weapon follows its rig");
+                    var unequipAction = _actor.View.AnimationManager == null ?
+                        null : _actor.View.AnimationManager.GetAction(
+                            UnitAnimationType.MainHandUnequip);
+                    _unequipClipCount = unequipAction == null ? 0 :
+                        unequipAction.Clips.Count(clip => clip != null);
+                    _actor.View.HandsEquipment.OnCombatStateChanged(false);
+                    _unequipMatchReturned = _actor.View.HandsEquipment
+                        .MatchWithCurrentCombatState();
+                    _settleUpdates = 0;
+                    _phase = 5;
+                    return;
+                }
+                if (_settleUpdates < MaximumSettleUpdates) return;
+                throw new InvalidOperationException(value.Variant +
+                    " did not reach the requested body-relative turn. degrees=" +
+                    _turnDegrees.ToString("R") + ".");
+            }
+
+            private void PollUnequipTransition()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "unequip-transition-" + value.Variant;
+                TickRuntime();
+                _settleUpdates++;
+                bool animating = CombatStateTransitionAnimating(_actor);
+                _unequipAnimationObserved |= animating;
+                WeaponVisualParameters visual = value.Item.VisualParameters;
+                string role;
+                Transform presentation = ResolveActivePresentation(_actor,
+                    visual, "stored", out role);
+                if (animating && !_unequipCaptured && Renderable(presentation))
+                {
+                    CaptureTransitionRecord(value, presentation, visual, role,
+                        "unequip-transition", true,
+                        "native MainHandUnequip coroutine while changing from " +
+                        "held to stored presentation");
+                    _unequipCaptured = true;
+                }
+
+                bool complete = _unequipAnimationObserved &&
+                    _unequipCaptured && !animating &&
+                    !_actor.View.HandsEquipment.InCombat &&
+                    Renderable(presentation);
+                if (!complete)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(value.Variant +
+                        " did not expose a complete native unequip transition. " +
+                        "animationObserved=" + _unequipAnimationObserved +
+                        ";captured=" + _unequipCaptured + ";animating=" +
+                        animating + ";handsInCombat=" +
+                        _actor.View.HandsEquipment.InCombat +
+                        ";actorInCombat=" +
+                        _actor.CombatState.IsInCombat +
+                        ";matchReturned=" + _unequipMatchReturned +
+                        ";role=" + role + ".");
+                }
+
+                _outcomes.Add(new TransitionMotionOutcome
+                {
+                    Variant = value.Variant,
+                    EquipMatchReturned = _equipMatchReturned,
+                    EquipAnimationObserved = _equipAnimationObserved,
+                    EquipClipCount = _equipClipCount,
+                    MovementCommandAccepted = _movementCommandAccepted,
+                    MovementAgentMovingObserved =
+                        _movementAgentMovingObserved,
+                    MovementVelocityObserved = _movementVelocityObserved,
+                    LocomotionClipCount = _locomotionClipCount,
+                    MovementDistanceMeters = _movementDistanceMeters,
+                    TurnDegrees = _turnDegrees,
+                    UnequipMatchReturned = _unequipMatchReturned,
+                    UnequipAnimationObserved = _unequipAnimationObserved,
+                    UnequipClipCount = _unequipClipCount
+                });
+                _removedPresentation = presentation;
+                RemoveEquipped(_actor, ref _equipped,
+                    ref _equippedFirearmStateSet);
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                _settleUpdates = 0;
+                _phase = 6;
+            }
+
+            private void PollRemoval()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "settle-transition-removal-" + value.Variant;
+                TickRuntime();
+                _actor.View.HandsEquipment.UpdateAll();
+                GameObject current = _actor.View.HandsEquipment
+                    .GetWeaponModel(false);
+                bool removed = current == null &&
+                    (_removedPresentation == null ||
+                    !_removedPresentation.gameObject.activeInHierarchy ||
+                    !_removedPresentation.IsChildOf(_actor.View.transform));
+                _settleUpdates++;
+                if (!removed)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(value.Variant +
+                        " presentation remained active after transition-case " +
+                        "cleanup: " + TransformPath(_removedPresentation,
+                            _actor.View.transform));
+                }
+                _removedPresentation = null;
+                _caseIndex++;
+                ResetCaseState();
+                if (_caseIndex < _cases.Length)
+                {
+                    _phase = 1;
+                    return;
+                }
+                WriteIndex();
+                _indexWritten = true;
+                BeginCleanup();
+            }
+
+            private void ResetCaseState()
+            {
+                _moveCommand = null;
+                _settleUpdates = 0;
+                _equipCaptured = false;
+                _unequipCaptured = false;
+                _equipAnimationObserved = false;
+                _unequipAnimationObserved = false;
+                _movementCommandAccepted = false;
+                _movementAgentMovingObserved = false;
+                _movementVelocityObserved = false;
+                _turnRequested = false;
+                _equipMatchReturned = false;
+                _unequipMatchReturned = false;
+                _equipClipCount = 0;
+                _unequipClipCount = 0;
+                _locomotionClipCount = 0;
+                _movementDistanceMeters = 0f;
+                _turnDegrees = 0f;
+                _movementStartArea = 0;
+                _movementDestinationArea = 0;
+                _movementGraphIndex = 0;
+            }
+
+            private void CaptureTransitionRecord(EvidenceCase value,
+                Transform model, WeaponVisualParameters visual, string role,
+                string state, bool transitionAnimating, string claim)
+            {
+                string prefix = _caseIndex.ToString("D2") + "-" +
+                    SafeFileName(value.Variant) + "-" + state +
+                    "-default-medium";
+                string pngPath = Path.Combine(_request.EvidenceDirectory,
+                    prefix + ".png");
+                string jsonPath = Path.Combine(_request.EvidenceDirectory,
+                    prefix + ".json");
+                CaptureSummary capture = CaptureContactSheet(_actor, model,
+                    _fixtureBodyRenderers, pngPath);
+                JObject record = Describe(value, _actor, model, visual,
+                    _fixtureBodyRenderers, capture,
+                    Path.GetFileName(pngPath), state, role);
+                record["claimBoundary"] = claim;
+                record["transitionAnimating"] = transitionAnimating;
+                record["combatStateTransitionAnimating"] =
+                    CombatStateTransitionAnimating(_actor);
+                record["caseIndex"] = _caseIndex;
+                record["settleUpdates"] = _settleUpdates;
+                record["unitPosition"] = _actor.Position.ToString("R");
+                record["unitOrientationDirection"] =
+                    _actor.OrientationDirection.ToString("R");
+                record["movementStart"] = _movementStart.ToString("R");
+                record["movementDestination"] =
+                    _movementDestination.ToString("R");
+                record["movementStartArea"] = _movementStartArea;
+                record["movementDestinationArea"] = _movementDestinationArea;
+                record["movementGraphIndex"] = _movementGraphIndex;
+                record["movementDistanceMeters"] = _movementDistanceMeters;
+                record["movementCommandAccepted"] = _movementCommandAccepted;
+                record["movementAgentMovingObserved"] =
+                    _movementAgentMovingObserved;
+                record["movementVelocityObserved"] =
+                    _movementVelocityObserved;
+                record["movementAgentWantsToMove"] =
+                    _actor.View.MovementAgent.WantsToMove;
+                record["movementAgentIsReallyMoving"] =
+                    _actor.View.MovementAgent.IsReallyMoving;
+                record["movementAgentVelocity"] =
+                    _actor.View.MovementAgent.Velocity.ToString("R");
+                record["actorInCombat"] = _actor.CombatState.IsInCombat;
+                record["playerInCombat"] = Game.Instance.Player.IsInCombat;
+                record["turnBasedCombat"] =
+                    TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat();
+                record["turnDegrees"] = _turnDegrees;
+                WriteJsonAtomic(jsonPath, record);
+                _records.Add(record);
+                _evidenceFiles.Add(pngPath);
+                _evidenceFiles.Add(jsonPath);
+                _captured++;
+                _viewCount += 4;
+                _diagnostics.Add(value.Variant + ":state=" + state +
+                    ";role=" + role + ";animating=" +
+                    transitionAnimating + ";movement=" +
+                    _movementDistanceMeters.ToString("R") + ";turn=" +
+                    _turnDegrees.ToString("R") + ";png=" +
+                    Path.GetFileName(pngPath) + ";sha256=" + capture.Sha256 +
+                    ";bytes=" + capture.Bytes + ";meaningfulPixels=" +
+                    capture.MeaningfulPixels + ";framing=" + capture.Framing);
+                if (capture.LowPixelDensity)
+                    _warnings.Add(value.Variant + ":" + state +
+                        " contact sheet has low foreground pixel density; " +
+                        "retain it as an explicit framing diagnostic.");
+            }
+
+            private void WriteIndex()
+            {
+                _stage = "write-transition-motion-index";
+                RuntimeBuildIdentity identity = RuntimeBuildIdentity.Capture(
+                    _context.Assembly, _context.ModEntry.Info.Version);
+                JArray outcomes = new JArray(_outcomes.Select(value =>
+                    new JObject
+                    {
+                        { "variant", value.Variant },
+                        { "equipMatchReturned", value.EquipMatchReturned },
+                        { "equipAnimationObserved",
+                            value.EquipAnimationObserved },
+                        { "equipClipCount", value.EquipClipCount },
+                        { "movementCommandAccepted",
+                            value.MovementCommandAccepted },
+                        { "movementAgentMovingObserved",
+                            value.MovementAgentMovingObserved },
+                        { "movementVelocityObserved",
+                            value.MovementVelocityObserved },
+                        { "locomotionClipCount",
+                            value.LocomotionClipCount },
+                        { "movementDistanceMeters",
+                            value.MovementDistanceMeters },
+                        { "turnDegrees", value.TurnDegrees },
+                        { "unequipMatchReturned",
+                            value.UnequipMatchReturned },
+                        { "unequipAnimationObserved",
+                            value.UnequipAnimationObserved },
+                        { "unequipClipCount", value.UnequipClipCount }
+                    }).ToArray());
+                var index = new JObject
+                {
+                    { "schemaVersion", 1 },
+                    { "fixture", "live disposable default Medium humanoid" },
+                    { "productionVariantCount", 22 },
+                    { "nativeControlCount", 6 },
+                    { "states", new JArray("equip-transition", "moving",
+                        "turned-right", "unequip-transition") },
+                    { "views", new JArray("front", "right-side", "rear",
+                        "front-right-three-quarter") },
+                    { "loadedModVersion", _context.ModEntry.Info.Version },
+                    { "gitCommit", identity.GitCommit },
+                    { "runtimeIdentity", identity.RuntimeIdentity },
+                    { "outcomes", outcomes },
+                    { "records", _records }
+                };
+                string indexPath = Path.Combine(_request.EvidenceDirectory,
+                    "weapon-presentation-transition-motion-index.json");
+                WriteJsonAtomic(indexPath, index);
+                _evidenceFiles.Add(indexPath);
+            }
+
+            private void BeginCleanup()
+            {
+                if (_cleanupStarted) return;
+                _stage = "transition-motion-request-cleanup";
+                if (_actor != null)
+                {
+                    _actor.Commands.InterruptAll(true);
+                    if (_actor.View != null &&
+                        _actor.View.HandsEquipment != null)
+                        _actor.View.HandsEquipment.ForceSwitch(false);
+                    RemoveEquipped(_actor, ref _equipped,
+                        ref _equippedFirearmStateSet);
+                    if (_actor.CombatState != null &&
+                        _actor.CombatState.IsInCombat)
+                        _actor.CombatState.LeaveCombat();
+                    _actor.Descriptor.State.Immortality.ReleaseAll();
+                }
+                if (_actor != null && ContainsReference(_allUnits, _actor))
+                    Game.Instance.State.Units.All.Remove(_actor);
+                if (_actor != null) _actor.Dispose();
+                if (_actorBlueprint != null)
+                    UnityEngine.Object.DestroyImmediate(_actorBlueprint);
+                _actorBlueprint = null;
+                _cleanupStarted = true;
+                _settleUpdates = 0;
+            }
+
+            private void PollCleanup()
+            {
+                Game.Instance.EntityCreator.Tick();
+                bool cleaned = SameReferences(_unitsBefore,
+                        Snapshot(_allUnits)) &&
+                    SameReferences(_partyBefore, Snapshot(_party)) &&
+                    (_actor == null || !ContainsReference(_allUnits, _actor));
+                _settleUpdates++;
+                if (!cleaned && _settleUpdates < MaximumSettleUpdates) return;
+                Finish(cleaned);
+            }
+
+            private void Finish(bool cleaned)
+            {
+                const int expectedCases = 28;
+                const int statesPerCase = 4;
+                const int expectedRecords = expectedCases * statesPerCase;
+                int variants = _records.OfType<JObject>().Select(value =>
+                    (string)value["variant"]).Distinct(
+                        StringComparer.Ordinal).Count();
+                string[] states = { "equip-transition", "moving",
+                    "turned-right", "unequip-transition" };
+                bool exactStates = states.All(state =>
+                    _records.OfType<JObject>().Count(value => string.Equals(
+                        (string)value["state"], state,
+                        StringComparison.Ordinal)) == expectedCases);
+                Add(_assertions,
+                    "weapon-presentation-transition-motion-matrix",
+                    "22 production variants and six native controls in four " +
+                        "exact transition/movement states",
+                    "records=" + _records.Count + ";variants=" + variants +
+                        ";exactStates=" + exactStates,
+                    _records.Count == expectedRecords &&
+                        variants == expectedCases && exactStates,
+                    "native equipment coroutines, UnitMoveTo, ForceLookAt, and exact live held/stored models");
+                Add(_assertions,
+                    "weapon-presentation-native-equip-unequip-transitions",
+                    "every case exposes MainHandEquip and MainHandUnequip clips " +
+                        "and is captured while the native combat-state " +
+                        "coroutine is active",
+                    string.Join(";", _outcomes.Select(value => value.Variant +
+                        "=equip:" + value.EquipClipCount + "/animated:" +
+                        value.EquipAnimationObserved + "/matched:" +
+                        value.EquipMatchReturned + ",unequip:" +
+                        value.UnequipClipCount + "/animated:" +
+                        value.UnequipAnimationObserved + "/matched:" +
+                        value.UnequipMatchReturned).ToArray()),
+                    _outcomes.Count == expectedCases &&
+                        _outcomes.All(value => value.EquipClipCount > 0 &&
+                            value.UnequipClipCount > 0 &&
+                            value.EquipMatchReturned &&
+                            value.UnequipMatchReturned &&
+                            value.EquipAnimationObserved &&
+                            value.UnequipAnimationObserved),
+                    "UnitViewHandsEquipment.OnCombatStateChanged, " +
+                        "MatchWithCurrentCombatState, m_Coroutine, and " +
+                        "AreHandsBusyWithAnimation; equipment guard only, " +
+                        "without UnitCombatState.JoinCombat");
+                Add(_assertions,
+                    "weapon-presentation-native-locomotion",
+                    "every case starts and runs navmesh-backed UnitMoveTo with " +
+                        "nonzero native velocity and measurable displacement",
+                    string.Join(";", _outcomes.Select(value => value.Variant +
+                        "=accepted:" + value.MovementCommandAccepted +
+                        "/agentMoving:" + value.MovementAgentMovingObserved +
+                        "/velocity:" + value.MovementVelocityObserved +
+                        "/clips:" + value.LocomotionClipCount +
+                        "/meters:" + value.MovementDistanceMeters
+                            .ToString("R")).ToArray()),
+                    _outcomes.Count == expectedCases &&
+                        _outcomes.All(value =>
+                            value.MovementCommandAccepted &&
+                            value.MovementAgentMovingObserved &&
+                            value.MovementVelocityObserved &&
+                            value.MovementDistanceMeters > 0.05f),
+                    "native UnitMoveTo, same-area ForcedPath, MovementAgent " +
+                        "velocity, and live rig-bound displacement; LocoMotion " +
+                        "clip count is retained as non-gating diagnostics");
+                Add(_assertions,
+                    "weapon-presentation-body-relative-turn",
+                    "every held presentation follows a native turn of at least " +
+                        "60 degrees instead of remaining world-space pinned",
+                    string.Join(";", _outcomes.Select(value => value.Variant +
+                        "=" + value.TurnDegrees.ToString("R")).ToArray()),
+                    _outcomes.Count == expectedCases && _outcomes.All(value =>
+                        value.TurnDegrees >= 60f),
+                    "UnitEntityData.ForceLookAt plus live rig-bound held model");
+                int zeroPixelSheets = _records.OfType<JObject>().Count(value =>
+                    (int)value["meaningfulPixels"] <= 0);
+                Add(_assertions,
+                    "weapon-presentation-transition-motion-contact-sheets",
+                    expectedRecords + " PNG/JSON pairs and " +
+                        (expectedRecords * 4) + " labelled views",
+                    "captures=" + _captured + ";views=" + _viewCount +
+                        ";files=" + _evidenceFiles.Count +
+                        ";zeroPixelSheets=" + zeroPixelSheets,
+                    _captured == expectedRecords &&
+                        _viewCount == expectedRecords * 4 && _indexWritten &&
+                        _evidenceFiles.Count == expectedRecords * 2 + 1 &&
+                        _evidenceFiles.All(File.Exists) && zeroPixelSheets == 0,
+                    "front/right-side/rear/front-right-three-quarter live transition and movement contact sheets");
+                Add(_assertions,
+                    "weapon-presentation-transition-motion-request-cleanup",
+                    "exact party/global-unit snapshots restored; no save call",
+                    "cleaned=" + cleaned + ";settleUpdates=" +
+                        _settleUpdates, cleaned,
+                    "request-local item, actor, blueprint clone, commands, camera, light, and textures");
+                Add(_assertions, "loaded-mod-version",
+                    _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    string.Equals(_request.ExpectedModVersion,
+                        _context.ModEntry.Info.Version,
+                        StringComparison.Ordinal),
+                    "Unity Mod Manager ModEntry.Info.Version");
+
+                _warnings.Add("Transition/motion evidence is limited to the " +
+                    "default Medium humanoid. It does not establish reload, " +
+                    "dual-wield, armor/cloak, female, Small, or Enlarged " +
+                    "acceptance.");
+                RuntimeBuildIdentity build = RuntimeBuildIdentity.Capture(
+                    _context.Assembly, _context.ModEntry.Info.Version);
+                bool passed = _assertions.All(value =>
+                    value.Status == RuntimeTestStatuses.Pass);
+                Result = new RuntimeTestResult
+                {
+                    SchemaVersion = 1,
+                    RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    Status = passed ? RuntimeTestStatuses.Pass :
+                        RuntimeTestStatuses.Fail,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    RuntimeIdentity = build.RuntimeIdentity + "; mvid=" +
+                        build.ModuleVersionId + "; sha256=" +
+                        build.LoadedModuleSha256 + "; pid=" + build.ProcessId,
+                    GitCommit = build.GitCommit,
+                    GameVersion = Application.version ?? string.Empty,
+                    StartUtc = _started.ToString("o"),
+                    EndUtc = DateTime.UtcNow.ToString("o"),
+                    DurationMilliseconds = (long)(DateTime.UtcNow - _started)
+                        .TotalMilliseconds,
+                    Assertions = _assertions,
+                    Diagnostics = _diagnostics,
+                    Warnings = _warnings,
+                    ExceptionSummary = _exceptionSummary,
+                    EvidenceFiles = _evidenceFiles,
+                    AutomaticExitRequested = _request.ExitAfterCompletion,
+                    EvidenceDirectory = _request.EvidenceDirectory
+                };
+                Complete = true;
+            }
+
+            private void TickRuntime()
+            {
+                Game.Instance.EntityCreator.Tick();
+                if (_actor != null && _actor.View != null &&
+                    _actor.View.AnimationManager != null)
+                    _actor.View.AnimationManager.Tick();
+            }
+        }
+
+        private static bool CombatStateTransitionAnimating(UnitEntityData actor)
+        {
+            object hands = actor == null || actor.View == null ? null :
+                (object)actor.View.HandsEquipment;
+            if (hands == null) return false;
+            FieldInfo field = hands.GetType().GetField(
+                "m_Coroutine", Members);
+            if (field == null || field.FieldType != typeof(Coroutine))
+                throw new MissingFieldException(hands.GetType().FullName,
+                    "m_Coroutine");
+            return field.GetValue(hands) != null &&
+                actor.View.HandsEquipment.AreHandsBusyWithAnimation.Value;
         }
 
         private static bool TryResolveEasternBladeFrame(

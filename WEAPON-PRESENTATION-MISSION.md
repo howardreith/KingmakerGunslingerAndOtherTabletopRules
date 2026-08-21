@@ -78,3 +78,13 @@ rewrite, or public release is authorized.
 Checkpoint completion is not mission completion. Work continues to the next
 open row in `planning/WEAPON-PRESENTATION-MATRIX.md` unless a mission hard stop
 remains after safe alternatives are exhausted.
+
+## Current qualified scope
+
+Presentation calibration is implemented for all 22 production variants.
+Default-Medium-male guarded evidence currently covers held, independently
+stored, family-appropriate ready/attack states, locomotion, body-relative
+turning, and equip/unequip transitions. Remaining runtime matrix work is
+firearm reload, handgun ready/fire and valid dual wield, armor/cloak
+interaction, and female, Small, and Enlarged fixtures. Version remains
+`0.0.88` until those rows and the final package qualify.

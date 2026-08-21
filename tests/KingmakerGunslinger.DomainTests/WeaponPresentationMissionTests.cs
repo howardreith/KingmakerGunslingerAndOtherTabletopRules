@@ -127,6 +127,8 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-spear-motion-evidence";
             const string easternMotionIdentity =
                 "weapon-presentation-eastern-motion-evidence";
+            const string transitionMotionIdentity =
+                "weapon-presentation-transition-motion-evidence";
             int workingSaveCompletion = runner.IndexOf(
                 "if (_workingSaveSmoke.Complete)", StringComparison.Ordinal);
             int evidenceExecution = runner.IndexOf(
@@ -135,10 +137,14 @@ namespace KingmakerGunslinger.DomainTests
             int motionEvidenceExecution = runner.IndexOf(
                 "WeaponPresentationEvidenceScenario.BeginMotion(",
                 StringComparison.Ordinal);
+            int transitionMotionEvidenceExecution = runner.IndexOf(
+                ".BeginTransitionMotion(_context, _request)",
+                StringComparison.Ordinal);
             Assertions.True(catalog.Contains(identity) &&
                 catalog.Contains(motionIdentity) &&
                 catalog.Contains(spearMotionIdentity) &&
                 catalog.Contains(easternMotionIdentity) &&
+                catalog.Contains(transitionMotionIdentity) &&
                 runner.Contains("WeaponPresentationEvidenceScenario.Begin(") &&
                 runner.Contains("_weaponPresentationEvidence.Poll()") &&
                 runner.Contains("if (_weaponPresentationEvidence.Complete)") &&
@@ -147,9 +153,14 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("_weaponPresentationMotionEvidence.Poll()") &&
                 runner.Contains(
                     "if (_weaponPresentationMotionEvidence.Complete)") &&
+                runner.Contains(
+                    "_weaponPresentationTransitionMotionEvidence.Poll()") &&
+                runner.Contains(
+                    "if (_weaponPresentationTransitionMotionEvidence.Complete)") &&
                 workingSaveCompletion >= 0 &&
                 evidenceExecution > workingSaveCompletion &&
                 motionEvidenceExecution > workingSaveCompletion &&
+                transitionMotionEvidenceExecution > workingSaveCompletion &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||") &&
                 request.Contains(
@@ -158,6 +169,8 @@ namespace KingmakerGunslinger.DomainTests
                     "RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||") &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence ||") &&
+                request.Contains(
+                    "RuntimeTestScenarioCatalog.WeaponPresentationTransitionMotionEvidence ||") &&
                 automation.Contains("'" + identity + "' = [pscustomobject]") &&
                 automation.Contains("'" + motionIdentity +
                     "' = [pscustomobject]") &&
@@ -165,10 +178,13 @@ namespace KingmakerGunslinger.DomainTests
                     "' = [pscustomobject]") &&
                 automation.Contains("'" + easternMotionIdentity +
                     "' = [pscustomobject]") &&
+                automation.Contains("'" + transitionMotionIdentity +
+                    "' = [pscustomobject]") &&
                 preflight.Contains("'" + identity + "'") &&
                 preflight.Contains("'" + motionIdentity + "'") &&
                 preflight.Contains("'" + spearMotionIdentity + "'") &&
                 preflight.Contains("'" + easternMotionIdentity + "'") &&
+                preflight.Contains("'" + transitionMotionIdentity + "'") &&
                 automation.Contains(
                     "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
                 automation.Contains(
@@ -204,6 +220,36 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-eastern-physical-blade-frame" })
                 Assertions.True(scenario.Contains(token),
                     "Eastern motion evidence omitted " + token + ".");
+
+            foreach (string token in new[] {
+                "BeginTransitionMotion", "TransitionMotionSession",
+                "MainHandEquip", "MainHandUnequip",
+                "CombatStateTransitionAnimating", "m_Coroutine",
+                "AreHandsBusyWithAnimation.Value", "UnitMoveTo",
+                "_actor.Commands.Contains(_moveCommand)",
+                "_moveCommand.Executor", "Pathfinding.ForcedPath",
+                "AgentASP.ForcePath(path, 0.1f)",
+                "candidate.node.Area == _movementStartArea",
+                "candidate.node.GraphIndex == _movementGraphIndex",
+                "MovementAgent.TickMovement(",
+                "Game.Instance.TimeController.DeltaTime",
+                "MovementAgent.IsReallyMoving", "MovementAgent.WantsToMove",
+                "_actor.View.IsMoving()", "MovementAgent.Velocity",
+                "_movementVelocityObserved", "m_ShoudBeInCombat",
+                "without UnitCombatState.JoinCombat",
+                "Game.Instance.Player.IsInCombat",
+                "TurnBased.Controllers.CombatController",
+                "IsActorCurrentTurn()", "IsPreventingMovement",
+                "IsCommandsPreventMovement",
+                "UnitAnimationType.LocoMotion", "ForceLookAt",
+                "equip-transition", "unequip-transition", "turned-right",
+                "weapon-presentation-transition-motion-index.json",
+                "weapon-presentation-native-equip-unequip-transitions",
+                "weapon-presentation-native-locomotion",
+                "weapon-presentation-body-relative-turn",
+                "weapon-presentation-transition-motion-request-cleanup" })
+                Assertions.True(scenario.Contains(token),
+                    "Transition/movement evidence omitted " + token + ".");
 
             foreach (string token in new[] {
                 "PistolService", "PistolDuelist", "PistolLastWord",

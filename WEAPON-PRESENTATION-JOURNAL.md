@@ -820,3 +820,71 @@ sampled attacks on the default Medium male. Locomotion/turning, equip/unequip
 transitions, armor/cloak, female, Small, and Enlarged remain ordinary final-
 matrix work. Every save-backed run named only `KMG_AUTOMATION_WORKING`; no run
 called a save API or touched `KMG_AUTOMATION_BASELINE`.
+
+## 2026-08-21 - guarded all-family transition and locomotion checkpoint
+
+The request-gated `weapon-presentation-transition-motion-evidence` scenario
+now instantiates all 22 production variants plus the six exact native controls.
+It captures four explicit states for each case: an active MainHandEquip native
+coroutine, navmesh-backed movement, a native 90-degree body-relative turn, and
+an active MainHandUnequip native coroutine. Every state produces a PNG/JSON
+pair with front, right-side, rear, and front-right-three-quarter views.
+
+Initial implementation attempts exposed three distinct engine layers rather
+than a presentation defect. `UnitMoveTo.Start()` accepting a command did not
+prove that the movement agent advanced; explicitly ticking a forced path was
+rejected; and actual `UnitCombatState.JoinCombat` polluted
+`Game.Player.IsInCombat`, enabling turn-based movement gating across cases.
+Read-only native inspection showed that `UnitViewHandsEquipment` maintains an
+independent `m_ShoudBeInCombat` transition guard. The final fixture calls that
+view transition path directly, verifies the matching native animation clips and
+coroutine, and never joins actor or player combat. Movement uses native
+`UnitMoveTo`, a same-area `ForcedPath`, nonzero `MovementAgent` velocity, and
+measured rig-bound displacement. Turning uses `ForceLookAt` and fails unless
+the held model follows at least 60 degrees. Each movement record also fails
+closed if actor combat, player combat, or turn-based combat is unexpectedly
+active.
+
+Repository validation passed; all 1,164 Release domain tests passed; clean
+Release compilation and packaging passed; strict package validation passed;
+and runtime preflight passed 124 checks after one known immediately-post-build
+timestamp race was rerun. The guarded Steam App ID 640820 run is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T0837326051191Z-weapon-presentation-transition-motion-evidence/`
+
+Its structured result passes 7/7 assertions in 204,192 ms: 28 exact cases,
+112 PNG/JSON pairs, 448 labelled views, all native equip/unequip transitions
+active and matched, every movement command accepted with nonzero velocity and
+`0.367545..0.372974 m` displacement, every body-relative turn
+`89.99999..90.00001` degrees, no zero-pixel sheet, exact request-local cleanup,
+no save call, and loaded version `0.0.88`. Result/index SHA-256 are
+`6F877A4ADA88F7D49CD4745514F2BF6D705B14FECB1E64668863CA2F52B2CF8B` /
+`0A25959DCEB32254ACF609F6D7127575913AEEF7B109F67F7C2015E41A22D2F1`.
+The 22,418,038-byte local-runtime package SHA-256 is
+`9F08E75EACAB8FFB4A7CDEC4A49F7CD1A3F77E9B01A4A00A9EFCE229085E47DB`;
+DLL SHA-256 is
+`F6E7934CAB20D0C86B5C42D01AD0C0D30FABB4BAFE8299A5454BAAEC3039D5DE`.
+
+The generic wrapper reached its deadline while the same responsive Kingmaker
+process was still traversing the large matrix, so `orchestration.json` records
+`ERROR` and deliberately leaves PID 18488 running. The guarded scenario then
+completed normally, atomically wrote the PASS result above, and auto-exited.
+This dirty-source run is valid engineering qualification bound by the exact
+package/DLL/evidence hashes, but a clean commit-bound rerun is required and
+will supersede it.
+
+Direct review covered every moving, turned, equip-transition, and unequip-
+transition contact sheet for all 22 variants and six controls. Handguns follow
+the native one-handed shoulder-carry motion without severe torso penetration.
+Long guns track the native crossbow shoulder line without severe persistent
+body clipping. Spearheads remain forward and clear in the native Longspear
+overhead locomotion. Eastern blade planes remain upright and track their
+Scimitar, Bastard Sword, and Greatsword controls. Independent stored models
+visibly transition to and from held presentation without severe clipping, and
+every held model follows the actor turn instead of remaining world-space
+pinned.
+
+Acceptance remains bounded to locomotion, turning, and transitions on the
+default Medium male. Firearm reload, handgun ready/fire and valid dual wield,
+armor/cloak interaction, female, Small, and Enlarged coverage remain open.
+No run called a save API or touched `KMG_AUTOMATION_BASELINE`.
