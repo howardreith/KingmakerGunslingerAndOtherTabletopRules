@@ -5,8 +5,11 @@
 The first playtest accepted category/proficiency/Improved Critical discovery,
 but rejected vertical icons, western-looking generic silhouettes, Wakizashi's
 obscured Kukri-like stance, and the apparent back-edge long-blade swing. The
-automated repair candidate is ready for a new human pass; no subjective item
-below is marked accepted by structural tests.
+2026-08-21 calibration now has guarded in-game held/stored/ready/attack evidence
+for all 12 variants and their three native controls. That evidence accepts the
+objective frame, grip, cutting-edge polarity, and severe-clipping checks on one
+default Medium male. It does not convert the broader subjective checklist below
+into human acceptance.
 
 - [ ] Generic and +1 Katana read as the same thin curved single-edged katana.
 - [ ] Generic and +1 Wakizashi read as the same compact curved sword.
@@ -22,7 +25,9 @@ below is marked accepted by structural tests.
 - [ ] Improved Critical monogram presentation remains accepted.
 
 Status: **PENDING HUMAN REVIEW**. Structural automation and generated icon
-inspection do not constitute subjective in-game acceptance.
+inspection do not constitute subjective in-game acceptance. Objective runtime
+evidence and its narrower acceptance boundary are recorded in
+`EASTERN-WEAPONS-VISUAL-CALIBRATION.md`.
 
 For each family, inspect male and female rigs; small and medium races; robes;
 light, medium, and bulky armor; idle, walk, run, attack, full attack, critical,

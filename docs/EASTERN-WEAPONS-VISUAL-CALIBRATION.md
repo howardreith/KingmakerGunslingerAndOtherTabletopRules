@@ -1,47 +1,71 @@
 # Eastern Weapons visual calibration
 
-## First-playtest repair candidate (2026-08-14)
+## Calibrated presentation contract (2026-08-21)
 
-The repair generator replaces the broad/symmetric blade surfaces with a narrow
-asymmetric wedge: local `-X` is the distinct cutting edge and local `+X` the
-blunt spine. Curvature is `0.055`, `0.085`, and `0.140` meters for Wakizashi,
-Katana, and Nodachi respectively. Equipped roots remain identity transforms,
-the primary grip remains the origin, and the tip remains along `+Z`.
+The production meshes use a complete, renderer-grounded source frame rather
+than an unexplained Euler correction. Physical grip-to-tip is source `+Z`,
+blade normal is `+Y`, and the distinct cutting-edge side is `-X`. Unity's FBX
+reflection is accounted for when reconstructing the right-handed imported
+basis. Equipment roots remain identity transformed; only the visible child is
+basis-converted and translated.
 
-All seven affected icons are measured at 42 degrees above horizontal with the
-tip upper-right and butt lower-left. Camera and light objects are created only
-after FBX export and therefore cannot alter equipped transforms.
+| Family | Physical length | Native donor | Held grip | Held support |
+|---|---:|---|---|---|
+| Wakizashi | 0.76 m | Scimitar / `OH_ScimitarBandits` | measured Scimitar grip `(-0.008433,-0.020029,0.001054)` | none; compact one hand, valid main/offhand |
+| Katana | 1.05 m | Bastard Sword / `OH_SwordBastardArmy` | donor weapon-bone origin | donor versatile/two-hand behavior; no custom IK |
+| Nodachi | 1.58 m | Greatsword / `TH_GreatswordBarbarian` | donor weapon-bone origin | held-only IK at the native `-0.169 m` butt-side station |
 
-The selected presentation donors are Scimitar for Wakizashi, Bastard Sword for
-Katana, and Greatsword for Nodachi. These donors contribute only animation,
-sockets, trails, and sound; the stable KMG categories and all rules fields are
-unchanged. Human review of stance, clipping, and perceived attack-edge direction
-remains pending.
+Each donor contributes its measured target forward `+Y`, blade normal `+X`,
+and cutting-edge side `-Z`. Translation then solves the held grip or independent
+stored renderer-center anchor. The serialized visible-child transform is an
+output of that basis solve. It is not shared between held and stored roles.
 
-## Structural calibration
+All 12 production variants have exact held and `Stored` prefabs. Runtime clones
+the donor `WeaponVisualParameters` and changes only `m_WeaponModel` and
+`m_WeaponBeltModel`; animation style, trails, sounds, slots, sheath, timing, and
+all other fields are preserved. The native donor blueprints are never mutated.
+The custom models retain separate palettes, guards, wraps, and silhouettes.
 
-| Family | Original length | Native presentation donor | Intended grip |
-|---|---:|---|---|
-| Wakizashi | 0.76 m | Scimitar forward one-handed contract | compact one hand; valid main or offhand |
-| Katana | 1.05 m | Bastard Sword versatile contract | one hand or native two-hand support |
-| Nodachi | 1.58 m | Greatsword two-handed sword contract | two-handed sword, never polearm animation |
+## Validation and artifact identity
 
-Every prefab has an identity root, `Visual`, grip at zero, a finite positive
-support target, tip, and negative butt. Opaque materials use Unity's Standard
-shader. No prefab contains a light or camera. Runtime rejects an incomplete,
-nonrenderable, nonfinite, implausible, or wrong-cardinality bundle and retains
-the exact native family fallback.
+The Unity 2018.4.10f1 builder and runtime both reject missing semantics,
+degenerate/collinear axes, negative scale, reversed tip/butt, endpoints outside
+renderer bounds, nonidentity roots, incompatible held/stored roles, wrong
+cardinality, or unexpected cameras/lights. Runtime publication is transactional:
+all 12 held/stored pairs must pass before any custom model is exposed.
 
-The category icons share each family's equipped silhouette. Night Without
-Moon, Heaven's Measure, and World-Tree Severer have distinct capstone palettes
-and distinct file hashes. All six production icons are exact 128x128
-transparent RGBA PNGs.
+Two consecutive forced builds produced the same 365,592-byte bundle:
 
-## Automated versus human evidence
+`AE311993F683295D3DD996285D28385A20F593DF16903D909818EB4F25A0096B`
 
-Automated validation proves bundle identity, three-prefab cardinality,
-family mapping, root/anchor relationships, renderer and material completeness,
-finite plausible lengths, absence of cameras/lights, module-disabled fallback,
-and instantiated-object cleanup. It cannot establish taste, clipping quality,
-or animation appearance. Those claims remain open until the human checklist is
-performed in game.
+The clean published checkpoint is
+`8aeef5e7fb2ef976e7ca5cbe82ba44d50b01401b`. Its clean Release runtime package
+and DLL SHA-256 values are
+`0AC692C8D3F5EFC8D7A15968BBA8B791C6F4885D8A17156B8F8AFF2695927A5B`
+and `CCF8F81C0025762CD52835A6949848652C255F45EC7B895B083ABA4AD368B8FB`;
+DLL MVID is `3e3d7594-5eab-4c58-b739-0e9e04e5326f`.
+
+## Runtime visual acceptance
+
+Guarded Steam App ID 640820 evidence from the clean checkpoint passes:
+
+- `20260821T0655066469058Z-weapon-presentation-evidence`: all 22 production
+  variants and six native controls, 56 held/stored PNG/JSON pairs, 224 labelled
+  views, 9/9 assertions, no blank or low-density sheets, exact cleanup.
+- `20260821T0657502514655Z-weapon-presentation-eastern-motion-evidence`: all 12
+  Eastern variants and Scimitar/Bastard Sword/Greatsword controls in
+  combat-ready plus nine attack samples, 150 PNG/JSON pairs, 600 views, 6/6
+  assertions, all 15 commands acted, exact cleanup.
+- `20260821T0701587480686Z-disposable-eastern-weapons-combat`: 21/21 live
+  identity, presentation-donor, item-resolution, combat-rule, and cleanup
+  assertions across all 30 Eastern items.
+
+Front, side, rear, and three-quarter review accepts grip, tip polarity, blade
+plane, and held/stored independence for all 12 variants on the captured default
+Medium male. Katana follows the Bastard Sword attack frame; Nodachi follows the
+Greatsword frame with both hands plausibly on its handle; Wakizashi retains its
+valid light-blade attack pose without sideways roll. No severe persistent
+clipping is visible in captured held-idle, stored, combat-ready, or acted
+states. This acceptance does not infer locomotion, equip/unequip transitions,
+armor/cloak, female, Small, or Enlarged results; those remain mission-matrix
+work.

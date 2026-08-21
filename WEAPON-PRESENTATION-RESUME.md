@@ -49,15 +49,22 @@
 - Published branched-spear calibration implementation commit:
   `a1d45c630502d873debf89ac56562568739c5d58`
   (`fix(presentation): calibrate branched-spear held and stored rigs`).
+- Published branched-spear qualification documentation commit:
+  `185c3a74bde8d5768c97ffb4565c0e171c02798a`
+  (`docs(presentation): record calibrated spear qualification`).
+- Published Eastern held/stored calibration implementation commit:
+  `8aeef5e7fb2ef976e7ca5cbe82ba44d50b01401b`
+  (`fix(presentation): calibrate eastern held and stored rigs`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
   basis-calibrates the service Pistol and Revolver, and gives all three long
   guns deterministic source frames plus independent donor-calibrated held and
   stored presentation. All three branched spears now have mesh-grounded source
-  frames, native-derived held/stored bases, and held-only support-hand IK.
-  Eastern bundles expose complete frames but retain their known incorrect
-  mappings until the next family-specific phase.
+  frames, native-derived held/stored bases, and held-only support-hand IK. All
+  12 Eastern variants now have renderer-grounded source frames, measured
+  family-donor held bases, independent stored prefabs, and held-only Nodachi IK;
+  runtime changes only the donor clone's held and belt model fields.
 
 ## Qualified unchanged baseline
 
@@ -267,19 +274,110 @@ held idle, stored, combat-ready, and sampled thrust states for Classic, Thorn,
 and Crown on the default Medium male without severe persistent clipping.
 Movement/transitions, armor/cloak, female, Small, and Enlarged remain open.
 
+## Qualified calibrated Eastern held and stored checkpoint
+
+Commit `8aeef5e7fb2ef976e7ca5cbe82ba44d50b01401b` is published. The
+schema-3 source generator emits actual-mesh `Grip`, `Tip`, `Butt`,
+`BladeNormal`, `Edge`, and `Stored` semantics for all 12 FBXs plus butt-side
+`Support` for Nodachi. It validates the semantic endpoints against evaluated
+renderer geometry and records source `+Z` forward, `+Y` blade normal, and `-X`
+cutting edge. The Unity 2018.4.10f1 builder accounts for the FBX reflection,
+solves a right-handed source-to-donor basis on the visible child, keeps every
+equipment root identity, and emits exact held/`Stored` pairs.
+
+Measured donors remain Scimitar, Bastard Sword, and Greatsword. Held
+translation maps source grip to the donor grip. Stored translation separately
+maps `StoredMount` to the measured donor renderer-center anchor. Runtime loads
+all 24 prefabs transactionally and changes only `m_WeaponModel` and
+`m_WeaponBeltModel` on donor clones, preserving animation, trail, sound,
+attachment slots, sheath, timing, and all other visual fields. Nodachi alone
+uses held-only left-hand IK at the native `-0.169 m` butt-side station.
+
+The first static run failed closed at
+`20260821T0629124884888Z-weapon-presentation-evidence` while recreating the
+preserved native Greatsword sheath: a runtime-added `EquipmentOffsets` had a
+null `m_SlotOffsets`, which native `GetOffsets` enumerates for non-hand slots.
+The narrow correction initializes an empty slot-offset array. It neither adds
+an offset nor clears the native sheath, and it leaves the root identity. The
+immediate dirty-source retry completed all 56 captures and wrote PASS after the
+generic 120-second wrapper deadline; clean commit-bound reruns below supersede
+that wrapper race.
+
+Exact calibrated source FBX SHA-256 values are:
+
+- Wakizashi Classic `A121C0BD1010B4083A29644D49DDD61020829AFAB5687E6D0249AC1EC80543D0`;
+  Petal `5A7C77D2C382ACC71C1AD0DCF9D48B7E5A5C271933B163D0BC8EF4C83CC9979C`;
+  Moon `4EDB462134FA8BDE867A0AAD42E4109746317F9BBA27C0C4AF2347755A5DF2FA`;
+  Capstone `5031D238E65D6D57A859E4FBF2DEEB5AA800D0F58D0376E6EA1C31935DB98233`.
+- Katana Classic `CD9047823503CBE1367FD6667FC0835BF6A578376210E8B9CD48C1ECD02234B8`;
+  Reed `2579AFE8BB2B18EDB274B3CBF323C815368F77A0A1543756CE72667CCF48F3BF`;
+  Regal `D3B7D032F170CE97447A6AC815D79D5608CC910E148ED2185D5AD663027EB753`;
+  Capstone `4E58F7AB12FE45787BA0F3C4860E7F3E8EB759F4519A481AB2987FA6DBB0664E`.
+- Nodachi Classic `87BDFBBE364865F3C9A824C9F74FD0E5823045328C096FAE2EDF5A105F211A3E`;
+  Cleaver `7A689899A799A4AB8060FCEB9691586259AAA80713D1697651058C1A3F35CAD0`;
+  Titan `AC28942CED2F76060EC75323353AF7BA11DC98958F5CC0E62173BDBAA87C918F`;
+  Capstone `ACFA2048E8A339AA3670A7CDF240A2E8A3F8E9187A9E3828EDA9ED0E8D3CFB84`.
+
+Two forced Unity builds produced the identical 365,592-byte Eastern bundle,
+SHA-256
+`AE311993F683295D3DD996285D28385A20F593DF16903D909818EB4F25A0096B`.
+Logs are `eastern-presentation-build-3.log` and
+`eastern-presentation-build-4.log` under the authorized Unity project's
+`Logs` directory. Repository validation, all 1,164 Release domain tests,
+exact-reference compilation, output/SoundBank checks, strict standalone package
+validation, `Build-Local.ps1`, and runtime preflight 121/121 pass.
+
+The final clean 0.0.88 local-runtime package is
+`artifacts/local-runtime/0.0.88/KingmakerGunslinger-0.0.88-local-runtime.zip`,
+22,411,475 bytes, SHA-256
+`0AC692C8D3F5EFC8D7A15968BBA8B791C6F4885D8A17156B8F8AFF2695927A5B`.
+Its DLL SHA-256 is
+`CCF8F81C0025762CD52835A6949848652C255F45EC7B895B083ABA4AD368B8FB`;
+MVID is `3e3d7594-5eab-4c58-b739-0e9e04e5326f`. The verified deployment manifest is
+`runtime-evidence/deployments/20260821T0655065885306Z/deployment.json`.
+
+Clean commit-bound guarded Steam evidence passes:
+
+- `20260821T0655066469058Z-weapon-presentation-evidence`: 9/9; 56
+  held/stored PNG/JSON pairs; 224 views; result/index SHA-256
+  `57582D42D5893709EA97B29BB6DD1B881661AA923E70FDD51D6C06D224D32AFD` /
+  `05ADD4CD0C2BA202BE20089548C41B2D383A64175CBB55ADB8F3DC839B7E336D`.
+- `20260821T0657502514655Z-weapon-presentation-eastern-motion-evidence`: 6/6;
+  150 combat-ready/attack PNG/JSON pairs; 600 views; all 15 commands acted;
+  result/index SHA-256
+  `242062B3D515D1FD0697DC235285E2ADC674EFD3FB05C14BBECF524D256837A1` /
+  `31266732D4D8D96B0085F6185A7379BB301BB9D4695A0C5EA29FD8B441A50084`.
+- `20260821T0701587480686Z-disposable-eastern-weapons-combat`: 21/21 live
+  identity, exact held/stored pair, donor preservation, all-30-item resolution,
+  protected combat mechanics, and cleanup assertions; result SHA-256
+  `0327284F9E9516B870E23FCA1C8021FD81B4F7CAF8DFF3E206CA7097416F0EE5`.
+
+Nodachi support-hand distance ranges/averages over ten samples are Classic
+`0.005465..0.123422 m` / `0.077418 m`, Cleaver
+`0.013458..0.132114 m` / `0.081420 m`, Titan
+`0.075276..0.141783 m` / `0.093722 m`, Capstone
+`0.035726..0.124915 m` / `0.084998 m`, versus native Greatsword
+`0.076106..0.137768 m` / `0.093011 m`. Katana and Nodachi grips coincide with
+the donor weapon-bone origin; Wakizashi retains the measured Scimitar grip
+offset. Direct review of every variant's held, stored, and an acted frame
+accepts grip, tip polarity, blade roll, cutting-edge plane, two-hand Nodachi
+contact, variant identity, and no severe persistent clipping on the default
+Medium male. Movement/turning, equip/unequip transitions, armor/cloak, female,
+Small, and Enlarged remain open and are not inferred.
+
 ## Next concrete actions
 
-1. Inspect the current Eastern generator/bundle/runtime path and historical
-   Eastern authoring evidence, then add mesh-grounded grip, tip, butt/pommel,
-   and blade-normal markers for every production variant.
-2. Derive Wakizashi, Katana, and Nodachi held bases from their measured native
-   Scimitar, Bastard Sword, and Greatsword donors, preserving family-specific
-   animation and two-hand contracts.
-3. Author independently calibrated stored prefabs and qualify held/stored plus
-   native-attack evidence without waiting for checkpoint confirmation.
-4. Before final acceptance, extend runtime coverage to reload,
-   locomotion/turning, transitions, armor/cloak, and representative sex/size
-   fixtures, including the calibrated long guns and branched spears.
+1. Extend the guarded evidence fixture to cover locomotion/turning and explicit
+   equip/unequip transitions for every calibrated family, retaining exact
+   native controls and request-local cleanup.
+2. Add firearm reload visual sampling without changing reload mechanics, then
+   exercise handgun ready/fire and valid dual-wield presentation.
+3. Construct narrower request-local female Medium, Small, and Enlarged visual
+   fixtures and add representative armor/cloak coverage without relying on
+   manual save mutation.
+4. Run the complete final runtime matrix, select the next unused patch version
+   only after all visual rows qualify, produce and hash the final clean package,
+   update all version surfaces, and publish the remaining coherent commits.
 
 ## Supported hypotheses requiring donor confirmation
 
@@ -290,7 +388,9 @@ Movement/transitions, armor/cloak, female, Small, and Enlarged remain open.
   broader motion/body matrix coverage remains.
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
-  side `-Z`. Identity presentation is therefore not a valid basis conversion.
+  side `-Z`. V10/V11 and E3 confirm the implemented full-basis conversion and
+  independent stored models for all 12 variants on the captured fixture. Only
+  the broader motion/body matrix remains.
 - Long-gun V4 defects are superseded for the states captured by V5/V6. Musket,
   Blunderbuss, and Rifle are now basis-derived and renderer-endpoint verified;
   their uncaptured reload, locomotion, transition, and body-matrix states

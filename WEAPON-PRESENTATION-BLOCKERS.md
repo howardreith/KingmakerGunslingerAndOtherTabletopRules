@@ -13,15 +13,21 @@ None as of 2026-08-21.
   defects with accepted held, stored, combat-ready, and sampled-thrust evidence
   for all three variants on the same fixture. All 15 acted samples lead with
   the physical tip, custom support-hand averages match native Longspear, and
-  grip is exactly on `R_WeaponBone`. Eastern attacks,
-  reload, locomotion, equip/unequip transition, female, Small, and Enlarged
-  coverage remain ordinary open work.
+  grip is exactly on `R_WeaponBone`. V10/V11 now supersede the baseline Eastern
+  defects with accepted held, independently stored, combat-ready, and sampled-
+  attack evidence for all 12 production variants; E3 passes all 30 Eastern item
+  identities and protected mechanics on the same exact artifact. Firearm
+  reload, all-family locomotion/turning and equip/unequip transitions, armor or
+  cloak interaction, female, Small, and Enlarged coverage remain ordinary open
+  work.
 - Native donor axes have been measured by exact live controls (`V2`), and all
   production authored assets now expose complete secondary-axis markers under
   a shared fail-closed contract. Branched-spears additionally have
   mesh-grounded FBX markers, donor-derived held/stored bases, and held-only IK.
-  Eastern visible transforms still need conversion to the measured donor bases
-  and independent stored authoring.
+  Eastern weapons now additionally have renderer-grounded FBX grip/tip/butt,
+  blade-normal, cutting-edge, and stored anchors; full donor-basis conversion;
+  exact held/stored pairs; and held-only Nodachi IK at the native Greatsword
+  butt-side station.
 - The stale firearm donor readiness assertion is repaired and the guarded
   observer passes. Crossbow donor forward/up and support-locator positions are
   explicit in `V2`; V6 supplies native-control combat-ready and acted-attack
@@ -40,7 +46,11 @@ None as of 2026-08-21.
 
 ## Rejected stopping rationales
 
-The initial Eastern observer timeout, stale firearm observer expectation,
-missing screenshots, and current transform uncertainty are ordinary
-engineering tasks. No protected save was selected or overwritten, and no
-launch-environment safety condition was encountered.
+The initial Eastern observer timeout, stale firearm observer expectation, the
+first Nodachi null slot-offset failure, a post-build artifact-timestamp race,
+and the first static wrapper deadline race were ordinary engineering tasks.
+The Nodachi failure was isolated to native sheath recreation and corrected by
+initializing an empty custom slot-offset collection without clearing the sheath
+or moving the equipment root. The final clean static and motion runs both pass.
+No protected save was selected or overwritten, and no launch-environment safety
+condition was encountered.

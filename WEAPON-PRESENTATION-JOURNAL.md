@@ -718,3 +718,105 @@ equip/unequip transitions, armor/cloak, female, Small, and Enlarged coverage
 remain ordinary final-matrix work. Both save-backed runs named only
 `KMG_AUTOMATION_WORKING`; the save-free run used no save; no run called a save
 API or touched `KMG_AUTOMATION_BASELINE`.
+
+## 2026-08-21 - calibrated Eastern held and stored checkpoint
+
+Published implementation commit
+`8aeef5e7fb2ef976e7ca5cbe82ba44d50b01401b`
+(`fix(presentation): calibrate eastern held and stored rigs`) replaces the
+baseline family-wide sideways-roll and shared-stored-transform defects for all
+12 production Eastern variants. The change is presentation-only: it does not
+alter a category, item identity, enhancement, proficiency, grip rule, damage,
+range, attack timing, or any other gameplay field.
+
+The project-owned Blender generator now emits a schema-3, renderer-grounded
+physical frame for every FBX. `KMG_Grip`, physical `KMG_Tip`, physical
+`KMG_Butt`, `KMG_BladeNormal`, `KMG_Edge`, and `KMG_Stored` are checked against
+evaluated mesh geometry. Source forward is grip-to-tip `+Z`, blade normal is
+`+Y`, and the cutting-edge side is `-X`; Nodachi additionally places
+`KMG_Support` on the butt/pommel side of the grip. These semantics expose the
+full roll-resolving frame rather than merely proving a longitudinal vector.
+
+The Unity 2018.4.10f1 builder corrects the FBX reflection and solves the full
+source basis onto independently measured native held and stored frames:
+Scimitar for Wakizashi, Bastard Sword for Katana, and Greatsword for Nodachi.
+Equipment roots remain identity. Held translation lands the source grip on the
+donor grip; stored translation lands a separate `StoredMount` on the donor's
+measured renderer-center anchor. The output has exactly 24 prefabs, one held
+and one `Stored` prefab for each production variant. Only held Nodachi prefabs
+carry a left-hand target, at the native Greatsword `-0.169 m` butt-side
+station.
+
+Runtime publication is transactional: every held/stored pair must validate
+before any custom presentation is exposed. `WeaponVisualParameters` is cloned
+and only `m_WeaponModel` and `m_WeaponBeltModel` change. Animation style,
+trails, sounds, slots, sheath, timing, and all other donor fields remain exact;
+native donor blueprints are not mutated.
+
+The first static runtime attempt at
+`20260821T0629124884888Z-weapon-presentation-evidence` failed closed on the
+first Nodachi held recreation. Structured evidence isolated the exception to
+native Greatsword sheath reattachment: Kingmaker's `EquipmentOffsets.GetOffsets`
+enumerates `m_SlotOffsets` for a sheath slot, while a runtime-added component
+left that serialized collection null. The correction initializes an empty
+`EquipmentOffsets.Offsets[0]`, expressing that the calibrated custom root has
+no slot-specific correction. It does not clear the preserved native sheath,
+copy model-specific donor offsets, move the root, or affect held IK.
+
+After the correction, repository validation and all 1,164 Release domain tests
+passed. Runtime preflight passed 121/121 after one immediately post-build
+artifact-timestamp race was rerun standalone. Clean exact-reference Release
+compilation, output and SoundBank checks, strict standalone package validation,
+and `Build-Local.ps1` all passed. Two forced Unity builds produced the same
+365,592-byte bundle with SHA-256
+`AE311993F683295D3DD996285D28385A20F593DF16903D909818EB4F25A0096B`.
+
+The first corrected static run completed its structured PASS and all 56 sheets
+seconds after the generic 120-second wrapper deadline. The game exited normally,
+but that recoverable orchestration race is not used as final evidence. The
+source was committed and rebuilt cleanly, producing package SHA-256
+`0AC692C8D3F5EFC8D7A15968BBA8B791C6F4885D8A17156B8F8AFF2695927A5B`
+and DLL SHA-256
+`CCF8F81C0025762CD52835A6949848652C255F45EC7B895B083ABA4AD368B8FB`;
+DLL MVID is `3e3d7594-5eab-4c58-b739-0e9e04e5326f`. Deployment manifest
+`20260821T0655065885306Z/deployment.json` binds that artifact to published
+commit `8aeef5e7`.
+
+Final clean commit-bound guarded Steam evidence is:
+
+- `20260821T0655066469058Z-weapon-presentation-evidence`: PASS 9/9;
+  56 exact held/stored PNG/JSON pairs, 224 labelled views, six native controls,
+  no blank or low-density sheet, no save call, exact cleanup. Result/index
+  SHA-256 are
+  `57582D42D5893709EA97B29BB6DD1B881661AA923E70FDD51D6C06D224D32AFD` /
+  `05ADD4CD0C2BA202BE20089548C41B2D383A64175CBB55ADB8F3DC839B7E336D`.
+- `20260821T0657502514655Z-weapon-presentation-eastern-motion-evidence`: PASS
+  6/6; all 12 production variants plus Scimitar, Bastard Sword, and Greatsword
+  controls in combat-ready and nine fixed attack updates; 150 PNG/JSON pairs,
+  600 views, all 15 native commands acted, all physical blade frames
+  nondegenerate/orthogonal with correct cutting-edge polarity, no blank sheet,
+  no save call, exact cleanup. Result/index SHA-256 are
+  `242062B3D515D1FD0697DC235285E2ADC674EFD3FB05C14BBECF524D256837A1` /
+  `31266732D4D8D96B0085F6185A7379BB301BB9D4695A0C5EA29FD8B441A50084`.
+- `20260821T0701587480686Z-disposable-eastern-weapons-combat`: PASS 21/21;
+  all 30 item blueprints resolve their exact held/stored pair and distinct
+  variant, every pair preserves the donor contract and CuttingEdge materials,
+  and the complete protected mechanics/cleanup fixture passes. Result SHA-256
+  is `0327284F9E9516B870E23FCA1C8021FD81B4F7CAF8DFF3E206CA7097416F0EE5`.
+
+Direct review covered every production variant in held idle, stored, and at
+least one acted frame from front, right side, rear, and front-right three-
+quarter views. Wakizashi blades are no longer sideways in the light-blade
+attack; Katana blade planes track Bastard Sword; Nodachi planes track
+Greatsword, with both hands plausibly on the handle throughout the sampled
+swing. Nodachi support-hand distance averages are `0.077418..0.093722 m`
+across variants versus native Greatsword `0.093011 m`. Physical tips lead the
+grips, cutting edges retain canonical polarity, each stored model uses its own
+calibration, variant silhouettes/palettes remain distinct, and no severe
+persistent clipping is visible in captured states.
+
+Acceptance is intentionally bounded to held-idle, stored, combat-ready, and
+sampled attacks on the default Medium male. Locomotion/turning, equip/unequip
+transitions, armor/cloak, female, Small, and Enlarged remain ordinary final-
+matrix work. Every save-backed run named only `KMG_AUTOMATION_WORKING`; no run
+called a save API or touched `KMG_AUTOMATION_BASELINE`.

@@ -8,8 +8,10 @@ generative source. Repository licensing applies.
 The silhouettes derive only from mission-authorized visual language. The four
 variants per family combine visibly different guard/pommel geometry with
 bounded blade width and curvature. Family scale remains fixed: Wakizashi 0.76
-m, Katana 1.05 m, and two-handed Nodachi 1.58 m. No scabbard or secondary
-carried model is included.
+m, Katana 1.05 m, and two-handed Nodachi 1.58 m. No project-owned scabbard mesh
+is included. The bundle does include independently transformed stored prefabs
+of each project-owned weapon mesh while preserving the native donor sheath
+field at runtime.
 
 ## Reproducible sources
 
@@ -21,23 +23,26 @@ carried model is included.
 - Blender: 4.5.10 LTS
 - geometry: 190 mesh objects and 12,252 triangles across 12 variants
 - materials: four definitions per prefab; no textures
-- coordinate contract: metric, primary grip at origin, tip along +Z
+- coordinate contract: metric; physical source forward `+Z`; blade normal
+  `+Y`; cutting-edge side `-X`; renderer-grounded grip/tip/butt/stored markers
 
 Stable identities:
 
 - generator SHA-256:
-  `9A55B6D41FDDABEB6A9D08005E3C93064840B9E02CB57273E50AB71F2D5EF283`
-- Unity bundle: 310,375 bytes, SHA-256
-  `079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041`
+  `758D015B44372C427FDD58397662A44244CD93F3389D86E5945A0AA592B373E5`
+- Unity bundle: 365,592 bytes, SHA-256
+  `AE311993F683295D3DD996285D28385A20F593DF16903D909818EB4F25A0096B`
 
 The exact 12 FBX hashes are locked in the bundle manifest and domain tests.
-Two clean Blender runs produced byte-identical FBXs and normalized PNGs. Two
+The schema-3 report records the evaluated semantic/renderer relationship. Two
 unchanged-input Unity 2018.4.10f1 builds produced the exact bundle hash above.
 The `.blend` container is not falsely claimed byte-stable because Blender
 embeds session metadata; it regenerates the same authored object contract.
 
-The previous three-prefab bundle was 147,724 bytes. The 12-prefab result is
-310,375 bytes, an increase of 162,651 bytes attributable to nine additional
-geometry/material prefabs. Blueprint/type GUIDs, family categories, mechanics,
-donor animations, grips, campaign placement, persistence, and optional-mod
-contracts are unchanged. Human in-game acceptance remains separate.
+The previous 12-held-prefab bundle was 311,289 bytes. The calibrated result has
+12 held plus 12 independently stored prefabs. Blueprint/type GUIDs, family
+categories, mechanics, campaign placement, persistence, and optional-mod
+contracts are unchanged. Runtime clones the native presentation donor and
+changes only its held and belt model fields, preserving animations, trails,
+sounds, slots, sheath, and timing. Guarded visual acceptance is recorded in
+`docs/EASTERN-WEAPONS-VISUAL-CALIBRATION.md`.
