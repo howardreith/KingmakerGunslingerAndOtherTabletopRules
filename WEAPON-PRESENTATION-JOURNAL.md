@@ -418,3 +418,82 @@ open and are not inferred from the static sheets. The profile label `hidden`
 continues to mean no inherited belt/sheath prefab; Kingmaker still displays
 the held weapon model in its native stored attachment, so true hidden behavior
 has not been claimed.
+
+## 2026-08-21 - guarded long-gun motion diagnostic checkpoint
+
+Published commit `0e9c2902b255f0e091093e10f03655965d441123`
+(`feat(presentation): add guarded long-gun motion evidence`) adds the autonomous
+`weapon-presentation-motion-evidence` scenario. It is restricted to
+`KMG_AUTOMATION_WORKING`, launches through Steam App ID 640820, creates a
+request-local Medium male actor and immortal hostile target, and never calls a
+save API. The exact case list is Musket.Service, Blunderbuss.Service,
+Rifle.Service, and the native Heavy Crossbow control. Each case captures a
+combat-ready sheet and fixed native-attack updates
+`1/4/8/12/18/24/36/60/96`, with front, right-side, rear, and
+front-right-three-quarter views.
+
+Read-only inspection of the installed Kingmaker command implementation showed
+that `UnitCommand.Start` rejects a command unless `IsUnitEnoughClose` is true,
+while `UnitAttack.Init` derives `ApproachRadius` from the selected weapon and
+target. The final fixture therefore searches only navmesh-backed target
+positions and requires the native `CanStart`, `IsUnitEnoughClose`, target-state,
+line-of-sight, and approach-radius contract before starting. It uses a
+single-attack command and performs one guarded explicit command tick only after
+the live animation reaches `IsActed`; this prevents contact-sheet capture work
+from starving the normal action callback. The PASS gate requires the acted
+animation event for the native control as well as the three firearms.
+
+The instrumentation failures were retained as engineering history rather than
+treated as presentation evidence:
+
+- `20260821T0116250424801Z`: the first fixture did not establish the native
+  command start contract and could not settle removal.
+- `20260821T0123062470123Z`: a blind explicit start left commands interrupted;
+  its motion and firing assertions failed.
+- `20260821T0151032534857Z`: navmesh readiness produced real animation for all
+  four cases; Blunderbuss and Rifle fired, but Musket's acted animation was
+  starved before its action callback.
+- `20260821T0159502682905Z`: the guarded single-attack tick proved the strategy;
+  all assertions passed. A final source-review tightening then made
+  `AnimationActedObserved` part of the PASS condition.
+
+The final qualifying run is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T0210452969596Z-weapon-presentation-motion-evidence/`
+
+It passed all six assertions. All four commands were installed, start-ready,
+started, running, and observed with both a live animation handle and its acted
+event. Musket, Blunderbuss, and Rifle each recorded exactly one discharge, no
+fault, and zero loaded rounds afterward. The run captured 40 PNG/JSON pairs,
+160 labelled views, no blank sheets, exact party/global-unit cleanup, loaded
+version `0.0.88`, and automatic game exit. Result SHA-256 is
+`6955A29800592B07B0008051F7990F9E2D3B581C77DCD9D066E220B531B0F374`;
+motion-index SHA-256 is
+`B3D2348D4F6EA3AE2E782D533F63F1E3B590E41C4C1C68524AA0E03316AC80E4`.
+Deployment manifest:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260821T0210452354655Z/deployment.json`.
+
+Direct review of the final contact sheets establishes, only for the default
+Medium male fixture:
+
+- Musket remains low and transverse through the pelvis/lower torso in
+  combat-ready and attack poses; its hands cluster near the dominant-hand end
+  instead of occupying a plausible shoulder/fore-end relationship.
+- Blunderbuss spans the waist in combat-ready and the upper torso/neck during
+  its acted attack; the visible support-hand relationship is implausible.
+- Rifle crosses the hips in combat-ready, then places its stock/receiver over
+  the upper torso while the barrel exits across the opposite side during its
+  acted attack.
+- Native Heavy Crossbow provides the control: it lifts along the shoulder line
+  during its acted attack rather than remaining transverse through the body.
+
+This is defect reproduction, not calibration acceptance. Reload, locomotion,
+turning, storage transitions, female, Small, and Enlarged evidence remain open.
+Repository validation and the complete Release domain suite pass at 1,164/1,164.
+Runtime preflight passes 115 checks after one documented post-build artifact
+timestamp race. Clean Release compilation, strict standalone package
+validation, and `Build-Local.ps1` pass. Standalone and local-runtime package
+SHA-256 are
+`8A01BB7E6B1952AEEA14A9675987EEB481BB7BFBA9F73E3807D322757F01A1D7`;
+DLL SHA-256 is
+`2B7EC67E836D7290E71AE62D5621172F1231FC88340B23D2CE3118275158382E`.

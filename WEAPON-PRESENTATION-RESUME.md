@@ -22,6 +22,9 @@
 - Published semantic-frame/handgun commit:
   `e2aba9d24cebbf38aadc236044c84f641a69534c`
   (`fix(presentation): validate frames and calibrate handguns`).
+- Published guarded long-gun motion diagnostic commit:
+  `0e9c2902b255f0e091093e10f03655965d441123`
+  (`feat(presentation): add guarded long-gun motion evidence`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract and
@@ -97,14 +100,48 @@ packaging, strict validation, and Build-Local pass. Runtime evidence passes at
 SHA-256 are `32BAA60B1427EF9880DC986A8030D2E83EBEC42465079C8CA4E2E823232ABF13`
 and `E6240EB8B5BE1B93FF7400F4EDCFD9479C7C795F8AB9F90AAF1F21D2A51BF421`.
 
+## Qualified guarded long-gun motion diagnostic
+
+Commit `0e9c2902b255f0e091093e10f03655965d441123` is published on the
+mission branch. The request-gated `weapon-presentation-motion-evidence`
+scenario uses the exact working save only as an area anchor, creates and
+removes its own Medium male combat pair, issues real navmesh-ready native
+`UnitAttack` commands, requires each animation to reach `IsActed`, and records
+per-firearm discharge deltas. Its final guarded Steam run passes at:
+
+`20260821T0210452969596Z-weapon-presentation-motion-evidence`
+
+The run captured Musket, Blunderbuss, Rifle, and native Heavy Crossbow in
+combat-ready plus nine fixed attack samples each: 40 PNG/JSON pairs and 160
+views. All four commands were installed, start-ready, running, and acted. Each
+firearm fired once, faulted zero times, and consumed its round. Exact cleanup
+and automatic exit passed. Result/index SHA-256 are
+`6955A29800592B07B0008051F7990F9E2D3B581C77DCD9D066E220B531B0F374`
+and `B3D2348D4F6EA3AE2E782D533F63F1E3B590E41C4C1C68524AA0E03316AC80E4`.
+
+Visual review proves the current long-gun defect in ready and acted-attack
+states on the default Medium male: Musket crosses the pelvis/lower torso,
+Blunderbuss spans the waist then upper torso/neck, and Rifle crosses the hips
+then upper torso. The native control lifts along the shoulder line. This does
+not claim reload, locomotion, storage-transition, sex, or size acceptance.
+
+Current source gates pass: runtime preflight 115, repository validation,
+1,164/1,164 Release domain tests, clean Release build, strict package
+validation, and Build-Local. Package/DLL SHA-256 are
+`8A01BB7E6B1952AEEA14A9675987EEB481BB7BFBA9F73E3807D322757F01A1D7`
+and `2B7EC67E836D7290E71AE62D5621172F1231FC88340B23D2CE3118275158382E`.
+
 ## Next concrete actions
 
-1. Calibrate Musket, Blunderbuss, and Rifle held grip/butt/support frames and
-   independent stored/back presentation against the measured Heavy Crossbow
-   donor. Preserve the identity root and projectile data.
-2. Expand guarded evidence to combat-ready, fire/reload, locomotion, and the
-   representative sex/size matrix; then continue through branched-spear,
-   Eastern held, and Eastern stored calibration.
+1. Apply family-specific Musket, Blunderbuss, and Rifle visible-child
+   grip/butt/support calibration against the measured Heavy Crossbow donor.
+   Preserve identity equipment roots, marker/projectile semantics, and the
+   exact discharge behavior proved by the motion fixture.
+2. Calibrate independent long-gun stored/back prefabs, regenerate bundles
+   deterministically, rerun static and motion evidence, then extend coverage to
+   reload, locomotion, and representative sex/size fixtures.
+3. Continue through branched-spear, Eastern held, and Eastern stored
+   calibration without waiting for a checkpoint confirmation.
 
 ## Supported hypotheses requiring donor confirmation
 
@@ -114,9 +151,11 @@ and `E6240EB8B5BE1B93FF7400F4EDCFD9479C7C795F8AB9F90AAF1F21D2A51BF421`.
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
   side `-Z`. Identity presentation is therefore not a valid basis conversion.
-- Rifle still relies on an unexplained source transform.
-  Musket/Blunderbuss `3°`/`4°` yaw is not a full basis conversion. Service
-  Pistol and Revolver are now basis-derived and renderer-endpoint verified.
+- Rifle still relies on an unexplained source transform, and V4 now proves its
+  resulting torso intersection under native attack. Musket/Blunderbuss
+  `3°`/`4°` yaw is not a full basis conversion and V4 proves both remain
+  transverse to the body. Service Pistol and Revolver are already
+  basis-derived and renderer-endpoint verified.
 
 ## Safety/publication
 
