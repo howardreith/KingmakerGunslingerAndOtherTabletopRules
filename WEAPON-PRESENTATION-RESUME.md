@@ -40,14 +40,24 @@
 - Published branched-spear thrust diagnostic commit:
   `4e66d30afb1030849f7dcedb61669f84d79bf7bb`
   (`test(presentation): capture branched-spear thrust frames`).
+- Published branched-spear defect documentation commit:
+  `d9ba208d5c30d29ee7cb9b8c41a1e78ba531cebc`
+  (`docs(presentation): record branched-spear thrust defects`).
+- Published branched-spear grip interpretation correction:
+  `3ff4d4400d67c7efda25fbdd0c58870a96f3f0a4`
+  (`docs(presentation): correct spear grip interpretation`).
+- Published branched-spear calibration implementation commit:
+  `a1d45c630502d873debf89ac56562568739c5d58`
+  (`fix(presentation): calibrate branched-spear held and stored rigs`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
   basis-calibrates the service Pistol and Revolver, and gives all three long
   guns deterministic source frames plus independent donor-calibrated held and
-  stored presentation. Spear and Eastern bundles expose complete frames but
-  deliberately retain their known incorrect mappings until their
-  family-specific phases.
+  stored presentation. All three branched spears now have mesh-grounded source
+  frames, native-derived held/stored bases, and held-only support-hand IK.
+  Eastern bundles expose complete frames but retain their known incorrect
+  mappings until the next family-specific phase.
 
 ## Qualified unchanged baseline
 
@@ -223,28 +233,61 @@ and the V5 near-horizontal shoulder-spanning stored presentation. Preserve the
 working physical polarity and grip anchor while repairing support, roll, and
 the independent back frame.
 
+## Qualified calibrated branched-spear checkpoint
+
+Commit `a1d45c630502d873debf89ac56562568739c5d58` is published. All three
+project-owned FBXs now carry mesh-grounded grip, support, physical-tip,
+physical-butt, head-normal, and renderer-center markers. The source generator
+validates those markers against evaluated geometry. The builder maps the full
+source basis to measured native Longspear held and stored bases, keeps the
+equipment root identity, aligns the held grip to the weapon-bone origin,
+aligns stored renderer center to the donor BeltModel anchor, and assigns
+held-only left-hand IK at the native `0.593016 m` station.
+
+The deterministic bundle SHA-256 is
+`A59DC61CE246A7F5931F22494C4C52CE39C6E96312F3448FB9138A0AC0D7DC9B`.
+Repository validation, all 1,164 Release domain tests, clean Release build,
+build-output/SoundBank checks, and strict package validation pass. Exact tested
+package/DLL SHA-256 values are
+`97B2F5FF735F7BF141740652F7FED392F1CC6A3267D3D3C070041DC280BD4E45`
+and `DFEB9E71B034448F735EF00492CCD143AFBE3F63E09C015D6EE5598AAA638682`.
+
+Runtime evidence passes at:
+
+- `20260821T0517404957120Z-disposable-elven-branched-spear-combat` (24/24);
+- `20260821T0520508017635Z-weapon-presentation-evidence` (9/9; 56 sheets;
+  224 views; held/stored);
+- `20260821T0525081495864Z-weapon-presentation-spear-motion-evidence` (6/6;
+  40 sheets; 160 views; ready plus nine attack updates).
+
+All 40 motion samples and all 15 acted samples lead with the physical head.
+Custom support-hand averages `0.123882..0.130179 m` match native Longspear
+`0.126062 m`; every custom weapon-bone/grip error is zero. Visual review accepts
+held idle, stored, combat-ready, and sampled thrust states for Classic, Thorn,
+and Crown on the default Medium male without severe persistent clipping.
+Movement/transitions, armor/cloak, female, Small, and Enlarged remain open.
+
 ## Next concrete actions
 
-1. Add mesh-grounded source markers for physical head, butt, grip, support,
-   and branch-face normal to the project-owned spear generator, retaining the
-   V7-proven head polarity.
-2. Derive held and independently stored frames from the measured live native
-   Longspear attachment transforms, regenerate deterministically, and qualify
-   the exact package with static V5-style and thrust V7-style evidence.
-3. Continue through Eastern held and Eastern stored calibration without
-   waiting for checkpoint confirmation.
+1. Inspect the current Eastern generator/bundle/runtime path and historical
+   Eastern authoring evidence, then add mesh-grounded grip, tip, butt/pommel,
+   and blade-normal markers for every production variant.
+2. Derive Wakizashi, Katana, and Nodachi held bases from their measured native
+   Scimitar, Bastard Sword, and Greatsword donors, preserving family-specific
+   animation and two-hand contracts.
+3. Author independently calibrated stored prefabs and qualify held/stored plus
+   native-attack evidence without waiting for checkpoint confirmation.
 4. Before final acceptance, extend runtime coverage to reload,
    locomotion/turning, transitions, armor/cloak, and representative sex/size
-   fixtures, including the already calibrated long guns.
+   fixtures, including the calibrated long guns and branched spears.
 
 ## Supported hypotheses requiring donor confirmation
 
 - Branched-spear physical head is source `+Z` and source head normal is `+Y`.
-  Current held maps the local physical head to root `-Y`, but V7 proves all
-  acted custom thrust samples lead toward the target. Preserve that live
-  polarity and weapon-bone grip; repair the measured support offset and
-  independent stored basis without inferring world behavior from local-axis
-  labels alone.
+  V7 proved the live polarity; the calibrated checkpoint preserves it while
+  mapping the full basis to measured native held/stored frames. V8/V9 accept
+  support, roll, storage, and captured default-Medium-male presentation. Only
+  broader motion/body matrix coverage remains.
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
   side `-Z`. Identity presentation is therefore not a valid basis conversion.

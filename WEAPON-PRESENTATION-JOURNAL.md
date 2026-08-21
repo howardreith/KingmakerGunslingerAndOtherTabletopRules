@@ -644,3 +644,77 @@ The remaining objective defects are:
 Repository validation, all 1,164 Release domain tests, clean Release build,
 strict package validation, and guarded Steam runtime qualification passed.
 `KMG_AUTOMATION_BASELINE` was untouched and no unsafe dialog appeared.
+
+## 2026-08-21 - calibrated branched-spear held and stored checkpoint
+
+Published commit `a1d45c630502d873debf89ac56562568739c5d58`
+(`fix(presentation): calibrate branched-spear held and stored rigs`) replaces
+the measured V7 defects without changing the V7-proven physical polarity or
+weapon-bone grip. The project-owned generator now emits mesh-grounded source
+markers for grip, support, physical tip, physical butt, head-face normal, and
+renderer center. It proves the central leaf and butt cap own the evaluated mesh
+extremes, branches remain behind the physical tip, grip/support remain inside
+the shaft, and all rendered scales are positive identity.
+
+The six-prefab Unity builder maps source +Z physical-forward and +Y head-normal
+to separately measured native Longspear held and stored bases. Translation is
+solved from the held grip or stored renderer-center anchor; equipment roots
+remain identity. The measured native support station is `0.593016 m`, exposed
+through held-only `EquipmentOffsets.IkTargetLeftHand`; stored prefabs cannot
+drive hand IK. Native visual parameters are cloned and only custom held/Belt
+models are replaced, preserving donor animation, trail, sound, slot, timing,
+and blueprint identity.
+
+Two clean Blender 4.5.10 runs produced byte-identical FBXs and normalized PNGs
+plus identical schema-3 semantic reports after excluding only Blender's
+documented `.blend` session-container hash. SHA-256 values are:
+
+- generator: `F9977A854176D047D0B0DF4C32C960CF96DD0E99BD4BAE608E1E7E5B3750274F`;
+- Classic FBX: `A7FE4DEE53B18D1778D994F8B24A349B22C000E87660934B882D239A0F807E3A`;
+- Thorn FBX: `3EC09E5A662991944F5B41E01852A8ABCB3A040506481D3789E1E3F94C0F430B`;
+- Crown FBX: `EA5B392F95AADA371185188021A8935C26621C8CE20C485014C215ADE4BA9443`;
+- unchanged runtime icon: `A4CAA5FED242BEE645AD4F9D1E5F201C372EDE4A066254EE6BD4003A6538AF99`.
+
+Two forced Unity 2018.4.10f1 builds produced the identical 127,369-byte bundle
+SHA-256 `A59DC61CE246A7F5931F22494C4C52CE39C6E96312F3448FB9138A0AC0D7DC9B`.
+Repository validation, all 1,164 Release domain tests, clean exact-reference
+Release build, build-output and SoundBank checks, and strict package validation
+passed. The tested 0.0.88 package/DLL SHA-256 values are
+`97B2F5FF735F7BF141740652F7FED392F1CC6A3267D3D3C070041DC280BD4E45`
+and `DFEB9E71B034448F735EF00492CCD143AFBE3F63E09C015D6EE5598AAA638682`;
+DLL MVID is `6be90c7b-b38d-46b5-baf8-01f59e0aba68`.
+
+Three guarded Steam runtime layers pass:
+
+- save-free semantic/combat qualification at
+  `20260821T0517404957120Z-disposable-elven-branched-spear-combat` (24/24;
+  result SHA-256
+  `9BA7F08F144ABFD4DA95BD479444DA60E7963187205A1DA19294F817D01CC6C3`);
+- held/stored static evidence at
+  `20260821T0520508017635Z-weapon-presentation-evidence` (9/9; 56
+  PNG/JSON pairs; 224 views; result/index SHA-256
+  `80BE05F0D94040446163D53DC434C9B59E62594CD4269F5D0294E60B92F48AC2` /
+  `22D045AFA893D5A34A611C50297842D95F37F3A77E3A90CF03D1A3C83645ECF2`);
+- combat-ready/thrust evidence at
+  `20260821T0525081495864Z-weapon-presentation-spear-motion-evidence` (6/6;
+  40 PNG/JSON pairs; 160 views; result/index SHA-256
+  `CFB570DC4A726DE0182DDEB6A8F834B23282CB8066AA83DDB9ACB21A8F159CA8` /
+  `E1D0096EA98CD9CEC0CE553C323FF9E0C4EC3017355AF528A5C7780F9D0A2CE9`).
+
+All 40 motion records and all 15 acted records lead with the renderer-grounded
+physical spearhead. Left-hand-to-support-target ranges/averages are Classic
+`0.101770..0.181390 m` / `0.130179 m`, Thorn
+`0.107490..0.146483 m` / `0.123882 m`, Crown
+`0.108711..0.157084 m` / `0.124882 m`, and native Longspear
+`0.107776..0.174014 m` / `0.126062 m`. Weapon-bone-to-grip error is zero in
+every custom frame. Direct front, side, rear, and three-quarter review accepts
+all three distinct variants in held idle, stored, combat-ready, and sampled
+thrust states on the default Medium male: branch roll is consistent with the
+native control, both hands remain plausibly on the shaft, the physical head
+leads, and no severe persistent clipping remains.
+
+Acceptance is bounded to those states and fixture. Movement/turning,
+equip/unequip transitions, armor/cloak, female, Small, and Enlarged coverage
+remain ordinary final-matrix work. Both save-backed runs named only
+`KMG_AUTOMATION_WORKING`; the save-free run used no save; no run called a save
+API or touched `KMG_AUTOMATION_BASELINE`.

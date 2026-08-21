@@ -9,19 +9,19 @@ None as of 2026-08-21.
 - The unchanged baseline has exact stored and held-idle imagery for all 22
   production variants. V5/V6 supersede the V4 long-gun defects with accepted
   held, stored, combat-ready, and acted-fire evidence for all three production
-  long guns on one default Medium male. V7 captures all three branched spears
-  plus native Longspear and proves 14/14 acted samples lead with the physical
-  tip, while quantifying the unresolved support-target offset. The custom
-  grip is exactly on `R_WeaponBone`; its hand-to-shaft radial offset is
-  native-equivalent. Eastern attacks,
+  long guns on one default Medium male. V8/V9 supersede V7's branched-spear
+  defects with accepted held, stored, combat-ready, and sampled-thrust evidence
+  for all three variants on the same fixture. All 15 acted samples lead with
+  the physical tip, custom support-hand averages match native Longspear, and
+  grip is exactly on `R_WeaponBone`. Eastern attacks,
   reload, locomotion, equip/unequip transition, female, Small, and Enlarged
   coverage remain ordinary open work.
 - Native donor axes have been measured by exact live controls (`V2`), and all
   production authored assets now expose complete secondary-axis markers under
-  a shared fail-closed contract. Branched-spear asset authoring still needs
-  mesh-grounded source markers, calibrated grip/support placement, and an
-  independent stored basis; Eastern visible transforms still need conversion
-  to the measured donor bases.
+  a shared fail-closed contract. Branched-spears additionally have
+  mesh-grounded FBX markers, donor-derived held/stored bases, and held-only IK.
+  Eastern visible transforms still need conversion to the measured donor bases
+  and independent stored authoring.
 - The stale firearm donor readiness assertion is repaired and the guarded
   observer passes. Crossbow donor forward/up and support-locator positions are
   explicit in `V2`; V6 supplies native-control combat-ready and acted-attack
