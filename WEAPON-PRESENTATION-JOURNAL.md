@@ -1089,3 +1089,93 @@ This checkpoint accepts only sampled Reload Firearm presentation on the
 default Medium male. Handgun combat-ready, firing, valid dual wield, armor or
 cloak interaction, female Medium, Small, and Enlarged coverage remain ordinary
 mission work.
+
+## 2026-08-21 - calibrated handgun held and firing checkpoint
+
+The request-gated `weapon-presentation-handgun-motion-evidence` scenario now
+uses four exact production handguns, native Light Crossbow and exact native
+Shortspear controls, a real navmesh-backed `UnitAttack`, and a real rendered-
+body facing gate. It captures combat-ready, fixed attack updates
+`1/4/8/12/18/24/36/60/96`, the event-aligned acted/discharge frame, and both
+valid firearm/Shortsword dual-wield layouts for each custom variant. Each sheet
+contains front, right-side, rear, and front-right-three-quarter views. The
+fixture also records authored `Grip`, `Muzzle`, `WeaponForward`, and `WeaponUp`
+markers, rendered and logical actor direction, physical bore direction, exact
+fire/fault counters, round state, resolver identity, and cleanup.
+
+Early diagnostic attempts separated three layers that had previously been
+conflated. Interrupting the start-readiness probe temporarily dropped the
+hands out of combat until the fixture restored the native hand-equipment combat
+contract. Requiring a native low-ready handgun to aim directly at the target
+was incorrect; that state is now measured but not confused with the exact
+acted frame. Finally, logical actor rotation could precede the rendered body;
+waiting for `actor.View.transform.forward` isolated a real donor-relative
+visible-model bias instead of hiding it with timing. With the rendered body
+exactly target-facing, the prior basis produced a `0.8942875` minimum acted
+muzzle/target dot.
+
+A bounded semantic-basis search over all four acted frames and all four ready
+frames selected the direct donor correction `forward - 0.468 * donorUp +
+0.184 * donorRight`. The secondary axis is still the donor up vector
+orthonormalized against that forward. The correction is applied only while
+authoring the visible held prefab and its semantic markers; every equipment
+root stays identity-transformed, the donor grip anchor remains unchanged, and
+no muzzle, projectile, attack, item, or native-blueprint field moves. Unity
+2018.4.10f1 generated the 18,172,963-byte firearm bundle with SHA-256
+`B3CFFB49BA32AF10DB12470401A58F6DFF0EAD9F219F87E41D9EC138D62FBAEB`.
+The batch log is
+`C:/Dev/KingmakerGunslingerLab/unity-asset-build/weapon-presentation-handgun-rendered-body-calibration-build.log`
+with SHA-256
+`C50AC5A47D3848E37DF33444902A88340EDE54149162034C12C21FF7501D73A1`.
+
+Repository validation passed, all 1,164 Release domain tests passed, runtime
+preflight passed 130/130, the clean Release/package build passed, and strict
+standalone package validation passed. The first complete calibrated
+dirty-source run is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T1414184583550Z-weapon-presentation-handgun-motion-evidence/`
+
+It passed 8/8 assertions with 74 PNG/JSON pairs and 296 views. Its minimum
+ready/acted dots were `0.9075612` / `0.9751976`; all four custom firearms fired
+exactly once, recorded zero faults, consumed their one round, and passed both
+dual layouts. Result/index SHA-256 are
+`748C1B9278FFA9B27A251AA0C3DBBBE417930589C88D0F5CEBAF8C68D7F18207` /
+`11CA80DB33995373D7C8CE6468158C42662E867A64FF3FE718D6EC282046B637`.
+
+The source checkpoint was committed and published as
+`e7e333c8da9f78064a2d99133004af4ef315515c` (`fix(presentation): calibrate
+handgun held and firing rigs`). Its authoritative clean exact-commit guarded
+Steam App ID 640820 result is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T1423438224380Z-weapon-presentation-handgun-motion-evidence/`
+
+It independently passed 8/8 in 176,118 ms with 74 PNG/JSON pairs, 296 views,
+zero blank sheets, exact cleanup, and loaded version `0.0.88`. All six native
+attack cases reached their acted animation. Each custom handgun again fired
+once, faulted zero times, and ended with zero rounds. The minimum ready dot was
+`0.9025886`; exact acted dots were Pistol Service `0.9802467`, Duelist
+`0.9768526`, Last Word `0.993026257`, and Revolver `0.9818531`. Both valid
+dual-wield layouts passed for all four variants. Result/index SHA-256 are
+`E8AA374C339E90AEF540E4495A0C75495B05DF36EA503AD2804D7DE9B051BDEC` /
+`10F8F54093D788F517191FFE677883D253EACC7C1DAE3222AD0A7F0F827FA7F6`;
+the run manifest SHA-256 is
+`1C8D218914F5AB1AF44CC7E6E4525430E4F3690BBFE36BA454BB3F09FD626FC0`.
+The 22,434,348-byte package SHA-256 is
+`E69FCF5C6B7FAAA4EE0439D279579B80821A0819BCA224411FB62B811C2A239E`;
+the 3,619,328-byte DLL SHA-256 is
+`F34B5655AFD270E1886338909271B44936BC0A5B2B2CFDE949BE356CD577E7AC`
+with MVID `16ae7063-60b2-4b3a-ac00-a340de0984c2`. Deployment manifest
+`runtime-evidence/deployments/20260821T1423437498106Z/deployment.json` has
+SHA-256
+`D14A26BD4F5C0779301CB2BCB30D7EC71A9EEE01B789BFBAEF2D37B32ECD33E3`.
+
+Direct clean-run review accepts all four combat-ready sheets, all four exact
+acted sheets, and all eight custom dual-wield sheets. The handguns remain in
+the dominant or off hand selected by the native two-weapon pose, physical
+muzzles visibly lead the acted motion, grip contact is plausible, variants are
+distinct, and no severe or persistent torso/forearm penetration appears. The
+native animation can transiently carry a handgun high during an acted sample;
+that motion is body-relative and muzzle-leading rather than a transform or
+clipping defect. This accepts handgun ready/fire/valid-dual presentation only
+for the default Medium male. Stored handgun disposition, armor/cloak, female,
+Small, and Enlarged coverage remain ordinary mission work.

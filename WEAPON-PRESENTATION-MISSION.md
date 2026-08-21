@@ -96,7 +96,14 @@ no discharge occurs, and request-local state is restored exactly. The Advanced
 Revolver reaches the same acted delivery but retains its pre-existing exact
 fail-closed rollback because the current item-token carrier cannot represent a
 six-round state; this cosmetic mission records and does not alter that
-mechanical boundary. Remaining runtime matrix work is handgun ready/fire and
-valid dual wield, armor/cloak interaction, and female, Small, and Enlarged
-fixtures. Version remains `0.0.88` until those rows and the final package
-qualify.
+mechanical boundary. All four production handguns now additionally derive
+their complete held frame from the exact native PiercingOneHanded Shortspear
+control plus a measured donor-relative firing correction. Clean exact-commit
+V18 at `e7e333c8da9f78064a2d99133004af4ef315515c` accepts combat-ready,
+event-aligned firing, and both valid firearm/Shortsword dual-wield layouts on
+the default Medium male. Every custom attack fired exactly once with no fault
+or remaining round; the minimum acted physical-muzzle/target dot was
+`0.9768526`, and equipment roots, grip anchors, projectile semantics, native
+donors, and gameplay fields remained unchanged. Stored handgun disposition,
+armor/cloak interaction, and female, Small, and Enlarged fixtures remain.
+Version remains `0.0.88` until those rows and the final package qualify.

@@ -67,6 +67,9 @@
 - Published guarded firearm reload fixture commit:
   `c0f193c1fa75741043b8be753bbc61ecb829bb9a`
   (`test(presentation): capture firearm reload frames`).
+- Published handgun held/firing calibration commit:
+  `e7e333c8da9f78064a2d99133004af4ef315515c`
+  (`fix(presentation): calibrate handgun held and firing rigs`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
@@ -80,7 +83,11 @@
   that clone's redundant sheath field. Native donor sheaths and all other donor
   fields remain unchanged. A guarded production-ability fixture now captures
   the complete sampled Reload Firearm delivery window for all seven firearm
-  variants without changing firearm mechanics or presentation transforms.
+  variants without changing firearm mechanics or presentation transforms. All
+  four held handgun variants now use the exact native PiercingOneHanded
+  Shortspear grip/roll frame plus a measured donor-relative visible-model
+  firing correction, with guarded ready, acted-fire, and valid dual-wield
+  evidence.
 
 ## Qualified unchanged baseline
 
@@ -522,10 +529,52 @@ two-hand ready. Rifle's acted frame is clear and its late samples use the
 independent `RifleBelt` back model. No weapon root, muzzle, projectile, reload
 mechanic, or gameplay field changed.
 
+## Qualified handgun held and firing checkpoint
+
+Published commit `e7e333c8da9f78064a2d99133004af4ef315515c` adds the guarded
+`weapon-presentation-handgun-motion-evidence` fixture and the final held basis
+for Pistol Service, Duelist, Last Word, and Revolver Service. The exact native
+`OH_SpearShortCommon` PiercingOneHanded frame supplies grip and roll. After the
+rendered actor—not only logical actor state—is target-facing, the authored
+visible-model forward is derived as `donorForward - 0.468 * donorUp + 0.184 *
+donorRight`; up is the donor secondary axis orthonormalized against it. This
+changes no equipment root, projectile/muzzle association, attack mechanic,
+item identity, or native donor.
+
+Unity 2018.4.10f1 rebuilt the 18,172,963-byte firearm bundle, SHA-256
+`B3CFFB49BA32AF10DB12470401A58F6DFF0EAD9F219F87E41D9EC138D62FBAEB`.
+Qualification passes repository validation, all 1,164 Release domain tests,
+runtime preflight 130/130, clean Release compilation/package creation, strict
+package validation, and the clean guarded Steam run at:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T1423438224380Z-weapon-presentation-handgun-motion-evidence/`
+
+That run is bound to exact commit `e7e333c8`, passes 8/8 assertions in 176,118
+ms, and contains 74 PNG/JSON pairs / 296 labelled views. Every custom handgun
+fires exactly once with zero fault and zero rounds remaining; all six custom/
+native attack cases act; all eight valid firearm/Shortsword dual layouts pass;
+and cleanup is exact. Minimum ready and acted physical-bore dots are
+`0.9025886` and `0.9768526`. Result/index SHA-256 are
+`E8AA374C339E90AEF540E4495A0C75495B05DF36EA503AD2804D7DE9B051BDEC` /
+`10F8F54093D788F517191FFE677883D253EACC7C1DAE3222AD0A7F0F827FA7F6`.
+The exact 22,434,348-byte package SHA-256 is
+`E69FCF5C6B7FAAA4EE0439D279579B80821A0819BCA224411FB62B811C2A239E`;
+the 3,619,328-byte DLL SHA-256 is
+`F34B5655AFD270E1886338909271B44936BC0A5B2B2CFDE949BE356CD577E7AC`
+with MVID `16ae7063-60b2-4b3a-ac00-a340de0984c2`.
+
+Direct review accepts all four ready sheets, all four acted sheets, and all
+eight custom dual-wield sheets on the default Medium male: plausible grip,
+physical muzzle leading, distinct variants, native body-relative animation,
+and no severe persistent torso or forearm penetration. Stored handgun
+disposition and the broader armor/body matrix remain open.
+
 ## Next concrete actions
 
-1. Exercise all handgun variants in combat-ready, firing, and valid dual-wield
-   presentation while preserving the already-qualified projectile semantics.
+1. Determine and qualify the actual stored handgun path independently from the
+   held basis. Prefer an explicit acceptable stored prefab; otherwise hide the
+   stored model with a documented exact-firearm policy rather than exposing a
+   severe native-slot mismatch.
 2. Construct narrower request-local female Medium, Small, and Enlarged visual
    fixtures and add representative armor/cloak coverage without relying on
    manual save mutation.

@@ -28,8 +28,10 @@ None as of 2026-08-21.
   Clean exact-commit V17 now accepts Reload Firearm presentation for all seven
   production variants on the default Medium male: 112 PNG/JSON pairs span
   reload-ready, 14 fixed updates through 240, and an event-aligned acted frame.
-  Handgun ready/fire and valid dual wield, armor or cloak interaction, female,
-  Small, and Enlarged coverage remain ordinary open work.
+  Clean exact-commit V18 now additionally accepts all four handgun variants in
+  combat-ready, event-aligned firing, and both valid firearm/Shortsword dual-
+  wield layouts on that fixture. Stored handgun disposition, armor or cloak
+  interaction, female, Small, and Enlarged coverage remain ordinary open work.
 - Native donor axes have been measured by exact live controls (`V2`), and all
   production authored assets now expose complete secondary-axis markers under
   a shared fail-closed contract. Branched-spears additionally have
@@ -46,13 +48,18 @@ None as of 2026-08-21.
   locomotion/turning/transitions and V17 accepts the complete sampled production
   reload sequence on the default Medium male.
 - Service Pistol and Revolver source frames have renderer/component proof and
-  basis-derived transforms. Musket, Blunderbuss, and Rifle now use deterministic
-  canonical source frames, measured trigger-wrist grips, renderer-bound ends,
-  identity equipment roots, the measured Heavy Crossbow held basis, and
-  independent BackMount prefabs. V5/V6 accept their captured default-Medium-
-  male states without changing projectile semantics; V17 adds exact native
-  Reload Firearm commands, acted frames, and full-round delivery-window
-  sampling without a projectile or save call.
+  basis-derived transforms. All four handguns now share the exact native
+  PiercingOneHanded Shortspear attachment frame plus the measured semantic
+  correction `-0.468 donorUp + 0.184 donorRight`. V18 proves every physical
+  muzzle leads its exact acted discharge (`0.9768526` minimum), each weapon
+  fires once without fault, every dual layout resolves the exact firearm, and
+  ready/acted/dual imagery has no severe persistent body penetration. Musket,
+  Blunderbuss, and Rifle use deterministic canonical source frames, measured
+  trigger-wrist grips, renderer-bound ends, identity equipment roots, the
+  measured Heavy Crossbow held basis, and independent BackMount prefabs. V5/V6
+  accept their captured default-Medium-male states without changing projectile
+  semantics; V17 adds exact native Reload Firearm commands, acted frames, and
+  full-round delivery-window sampling without a projectile or save call.
 - Advanced Revolver's production reload command reaches its acted delivery but
   the six-round state write still fails closed because the active item-token
   catalog represents capacity-one states. V17 proves zero ammunition drift,
