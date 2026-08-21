@@ -480,6 +480,10 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-native-reload-command",
                 "weapon-presentation-reload-action-contract",
                 "weapon-presentation-reload-transaction-nonregression",
+                "reload-post-command-stored-hidden-update-",
+                "postReloadStoredHidden",
+                "_reloadCommand.IsFinished",
+                "weapon-presentation-reload-visibility-lifecycle",
                 "weapon-presentation-reload-request-cleanup" })
                 Assertions.True(scenario.Contains(token),
                     "Reload visual evidence omitted " + token + ".");

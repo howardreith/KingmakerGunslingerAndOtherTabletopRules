@@ -2285,15 +2285,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string role;
                     Transform model = ResolveActivePresentation(_actor, visual,
                         "reload", out role);
-                    if (!Renderable(model))
+                    bool renderable = Renderable(model);
+                    bool postReloadStoredHidden = !renderable &&
+                        IsIntentionallyHiddenStored(value, "stored") &&
+                        _reloadCommand != null &&
+                        !_reloadCommand.IsRunning &&
+                        _reloadCommand.IsFinished &&
+                        !_actor.View.HandsEquipment.InCombat;
+                    if (!renderable && !postReloadStoredHidden)
                         throw new InvalidOperationException(value.Variant +
                             " lost its renderable held model during reload update " +
-                            _reloadUpdates + ".");
-                    string state = "reload-update-" +
+                            _reloadUpdates + ";commandRunning=" +
+                            (_reloadCommand != null &&
+                                _reloadCommand.IsRunning) +
+                            ";commandFinished=" + (_reloadCommand != null &&
+                                _reloadCommand.IsFinished) +
+                            ";handsInCombat=" +
+                            _actor.View.HandsEquipment.InCombat + ".");
+                    if (postReloadStoredHidden)
+                        role = "intentionally-hidden-post-reload-storage";
+                    string state = (postReloadStoredHidden
+                            ? "reload-post-command-stored-hidden-update-"
+                            : "reload-update-") +
                         _reloadUpdates.ToString("000");
                     CaptureReloadRecord(value, model, visual, role, state,
                         _reloadUpdates,
-                        "fixed live production UnitUseAbility reload-animation sample");
+                        postReloadStoredHidden
+                            ? "fixed post-command sample after the completed native reload returned an out-of-combat handgun to its intentionally hidden stored state"
+                            : "fixed live production UnitUseAbility reload-animation sample",
+                        postReloadStoredHidden);
                     _captureScheduleIndex++;
                 }
 
@@ -2340,20 +2360,24 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void CaptureReloadRecord(EvidenceCase value,
                 Transform model, WeaponVisualParameters visual, string role,
-                string state, int update, string claimBoundary)
+                string state, int update, string claimBoundary,
+                bool postReloadStoredHidden = false)
             {
                 _stage = "capture-" + state + "-" + value.Variant;
                 string stem = state + "-default-medium-" +
                     SafeFileName(value.Variant);
                 CaptureSummary capture = CaptureContactSheet(_actor, model,
                     _fixtureBodyRenderers, Path.Combine(
-                        _request.EvidenceDirectory, stem + ".png"));
+                        _request.EvidenceDirectory, stem + ".png"),
+                    postReloadStoredHidden);
                 JObject record = Describe(value, _actor, model, visual,
-                    _fixtureBodyRenderers, capture, stem + ".png", state, role);
+                    _fixtureBodyRenderers, capture, stem + ".png", state, role,
+                    postReloadStoredHidden);
                 FirearmState current = _equipped == null ? null :
                     FirearmRuntimeState.Service.GetOrCreate(_equipped)
                         .Repository.State;
                 record["claimBoundary"] = claimBoundary;
+                record["postReloadStoredHidden"] = postReloadStoredHidden;
                 record["reloadUpdate"] = update;
                 record["abilityBlueprint"] = _reloadBlueprint == null ?
                     "<not-resolved>" : _reloadBlueprint.name;
@@ -2429,7 +2453,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";update=" + update + ";running=" +
                     (bool)record["commandIsRunning"] + ";acted=" +
                     (bool)record["commandAnimationActed"] + ";rounds=" +
-                    (int)record["loadedRounds"] + ";png=" +
+                    (int)record["loadedRounds"] + ";postReloadStoredHidden=" +
+                    postReloadStoredHidden + ";png=" +
                     Path.GetFileName(capture.PngPath) + ";sha256=" +
                     capture.Sha256);
             }
@@ -2796,6 +2821,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _outcomes.Count == 7 && capacityOneTransactions &&
                         capacitySixRollback,
                     "ReloadRuntimeDiagnostics, FirearmDischargeRuntimeDiagnostics, exact item state, shared inventory deltas, and current finite item-token carrier boundary");
+                JObject[] postReloadHidden = _records.OfType<JObject>()
+                    .Where(value => value["postReloadStoredHidden"] != null &&
+                        (bool)value["postReloadStoredHidden"]).ToArray();
+                string[] hiddenVariants = postReloadHidden.Select(value =>
+                    (string)value["variant"]).Distinct(StringComparer.Ordinal)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                string[] expectedHiddenVariants = ProductionVariants.Take(4)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                bool postReloadLifecycleExact =
+                    hiddenVariants.SequenceEqual(expectedHiddenVariants) &&
+                    postReloadHidden.All(value =>
+                        !(bool)value["weaponRenderable"] &&
+                        (bool)value["intentionallyHiddenStored"] &&
+                        !(bool)value["commandIsRunning"] &&
+                        (bool)value["commandIsFinished"] &&
+                        !(bool)value["handsEquipmentInCombat"]);
+                Add(_assertions,
+                    "weapon-presentation-reload-visibility-lifecycle",
+                    "every live reload-command sample remains renderable; an intentionally hidden handgun may become body-only only after its command finishes and the native hand rig returns to stored state",
+                    "postReloadHidden=" + postReloadHidden.Length +
+                        ";variants=" + string.Join(",", hiddenVariants),
+                    postReloadLifecycleExact && _records.OfType<JObject>()
+                        .Where(value => !(bool)value[
+                            "postReloadStoredHidden"]).All(value =>
+                                (bool)value["weaponRenderable"]),
+                    "live command state, UnitViewHandsEquipment.InCombat, exact hidden-firearm policy, and renderer visibility");
                 int zeroPixelSheets = _records.OfType<JObject>().Count(value =>
                     (int)value["meaningfulPixels"] <= 0);
                 Add(_assertions,
@@ -2835,6 +2886,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Reload Firearm Self animation on the default Medium actor. " +
                     "It does not establish sex-specific, Small, Enlarged, armor, " +
                     "cloak, or dual-wield acceptance.");
+                _warnings.Add("Late fixed samples for the four out-of-combat " +
+                    "handguns truthfully record their intentionally hidden " +
+                    "stored state only after the native reload command has " +
+                    "finished; they are not labelled as active reload frames.");
                 _warnings.Add("Advanced Revolver visual sampling reaches an " +
                     "acted native command, but its six-round production delivery " +
                     "continues to fail closed and restore state/ammunition because " +
