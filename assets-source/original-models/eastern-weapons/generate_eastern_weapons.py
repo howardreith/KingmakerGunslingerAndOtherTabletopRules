@@ -1,4 +1,11 @@
-"""Deterministically generate four variants for each Eastern blade family."""
+"""Deterministically generate four variants for each Eastern blade family.
+
+Every exported blade carries a mesh-grounded semantic frame: physical tip and
+pommel ends, the longitudinal blade axis, blade-plane normal, cutting-edge
+polarity, grip, optional support hand, and renderer center. The Unity builder
+uses that complete frame rather than treating an identity FBX import as a
+native Kingmaker hand frame.
+"""
 import bpy
 import datetime
 import hashlib
@@ -17,6 +24,7 @@ BLEND = ROOT / "eastern-weapons.blend"
 REPORT = ROOT / "eastern-weapons-build-report.json"
 RUNTIME_ICONS = REPO / "assets" / "game" / "icons"
 ICON_RENDER_ANGLE_DEGREES = 42.0
+SEMANTIC_AXIS_DISTANCE = 0.10
 
 if os.environ.get("PYTHONHASHSEED") != "0":
     raise RuntimeError("Deterministic generation requires PYTHONHASHSEED=0")
@@ -25,17 +33,17 @@ FAMILIES = {
     "wakizashi": {
         "label": "Wakizashi", "butt": -0.20, "guard": 0.10,
         "tip": 0.56, "blade_width": 0.026, "curve": 0.055,
-        "handle_radius": 0.017, "support": 0.07,
+        "handle_radius": 0.017, "support": None,
     },
     "katana": {
         "label": "Katana", "butt": -0.29, "guard": 0.12,
         "tip": 0.76, "blade_width": 0.030, "curve": 0.085,
-        "handle_radius": 0.019, "support": 0.10,
+        "handle_radius": 0.019, "support": None,
     },
     "nodachi": {
         "label": "Nodachi", "butt": -0.42, "guard": 0.15,
         "tip": 1.16, "blade_width": 0.036, "curve": 0.140,
-        "handle_radius": 0.022, "support": 0.13,
+        "handle_radius": 0.022, "support": -0.169,
     },
 }
 
@@ -268,6 +276,171 @@ def apply_mesh_contract(objects):
         obj.select_set(False)
 
 
+def evaluated_points(objects):
+    bpy.context.view_layer.update()
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    points = []
+    for obj in objects:
+        evaluated = obj.evaluated_get(depsgraph)
+        mesh = evaluated.to_mesh()
+        try:
+            points.extend(evaluated.matrix_world @ vertex.co
+                          for vertex in mesh.vertices)
+        finally:
+            evaluated.to_mesh_clear()
+    if not points:
+        raise RuntimeError("Eastern blade mesh contract has no evaluated vertices")
+    return points
+
+
+def bounds_for_points(points):
+    minimum = Vector((math.inf, math.inf, math.inf))
+    maximum = Vector((-math.inf, -math.inf, -math.inf))
+    for point in points:
+        minimum.x = min(minimum.x, point.x)
+        minimum.y = min(minimum.y, point.y)
+        minimum.z = min(minimum.z, point.z)
+        maximum.x = max(maximum.x, point.x)
+        maximum.y = max(maximum.y, point.y)
+        maximum.z = max(maximum.z, point.z)
+    return minimum, maximum
+
+
+def evaluated_bounds(objects):
+    points = evaluated_points(objects)
+    minimum, maximum = bounds_for_points(points)
+    return minimum, maximum, points
+
+
+def extreme_center(points, forward):
+    extreme = (max(point.z for point in points) if forward else
+               min(point.z for point in points))
+    selected = [point for point in points
+                if abs(point.z - extreme) <= 0.00001]
+    if not selected:
+        raise RuntimeError("Eastern blade endpoint selection is empty")
+    return sum(selected, Vector()) / len(selected)
+
+
+def rounded_vector(value):
+    return [round(component, 6) for component in value]
+
+
+def cutting_edge_measurement(blade):
+    bpy.context.view_layer.update()
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    evaluated = blade.evaluated_get(depsgraph)
+    mesh = evaluated.to_mesh()
+    try:
+        edge_indices = {index for index, material in
+                        enumerate(blade.data.materials)
+                        if material is not None and
+                        material.name.endswith("CuttingEdge")}
+        if len(edge_indices) != 1:
+            raise RuntimeError(blade.name +
+                               " does not have one CuttingEdge material")
+        edge_vertices = set()
+        for polygon in mesh.polygons:
+            if polygon.material_index in edge_indices:
+                edge_vertices.update(polygon.vertices)
+        if not edge_vertices:
+            raise RuntimeError(blade.name +
+                               " has no geometry bound to CuttingEdge")
+        all_points = [evaluated.matrix_world @ vertex.co
+                      for vertex in mesh.vertices]
+        edge_points = [all_points[index] for index in edge_vertices]
+        all_minimum, all_maximum = bounds_for_points(all_points)
+        edge_minimum, edge_maximum = bounds_for_points(edge_points)
+        all_mean_x = sum(point.x for point in all_points) / len(all_points)
+        edge_mean_x = sum(point.x for point in edge_points) / len(edge_points)
+        return {
+            "material": next(iter(edge_indices)),
+            "vertexCount": len(edge_vertices),
+            "minimum": rounded_vector(edge_minimum),
+            "maximum": rounded_vector(edge_maximum),
+            "meanX": round(edge_mean_x, 6),
+            "allMeanX": round(all_mean_x, 6),
+            "ownsNegativeXExtreme":
+                edge_minimum.x <= all_minimum.x + 0.002,
+            "isNegativeXOfBladeMean": edge_mean_x < all_mean_x - 0.001,
+        }
+    finally:
+        evaluated.to_mesh_clear()
+
+
+def measure_mesh_contract(label, objects, spec):
+    minimum, maximum, points = evaluated_bounds(objects)
+    center = (minimum + maximum) * 0.5
+    span = maximum - minimum
+    blade = next(obj for obj in objects if obj.name == label + "Blade")
+    handle = next(obj for obj in objects if obj.name == label + "Handle")
+    pommels = [obj for obj in objects if obj.name.startswith(label + "Pommel")]
+    blade_minimum, blade_maximum, blade_points = evaluated_bounds([blade])
+    handle_minimum, handle_maximum, _ = evaluated_bounds([handle])
+    pommel_minimum, _, _ = evaluated_bounds(pommels)
+    tip = extreme_center(blade_points, True)
+    butt = extreme_center(points, False)
+    cutting_edge = cutting_edge_measurement(blade)
+    tip_matches_mesh = (abs(blade_maximum.z - maximum.z) <= 0.002 and
+                        abs(tip.z - maximum.z) <= 0.00001)
+    butt_matches_mesh = (abs(pommel_minimum.z - minimum.z) <= 0.002 and
+                         abs(butt.z - minimum.z) <= 0.00001)
+    grip_inside_handle = handle_minimum.z < 0.0 < handle_maximum.z
+    grip_clear_of_blade = blade_minimum.z > 0.05
+    blade_normal_ratio = ((blade_maximum.y - blade_minimum.y) /
+                          (blade_maximum.z - blade_minimum.z))
+    positive_identity_scales = all(
+        all(abs(component - 1.0) <= 0.000001 for component in obj.scale)
+        for obj in objects)
+    if abs(maximum.z - spec["tip"]) > 0.004:
+        raise RuntimeError(label + " physical tip disagrees with authored length")
+    if not tip_matches_mesh or not butt_matches_mesh:
+        raise RuntimeError(label +
+                           " physical tip/pommel markers do not own mesh ends")
+    if not grip_inside_handle or not grip_clear_of_blade:
+        raise RuntimeError(label + " grip is not confined to the handle")
+    if blade_normal_ratio >= 0.05:
+        raise RuntimeError(label + " +Y is not a thin blade-plane normal")
+    if (not cutting_edge["ownsNegativeXExtreme"] or
+            not cutting_edge["isNegativeXOfBladeMean"]):
+        raise RuntimeError(label + " CuttingEdge is not the physical -X edge")
+    if not positive_identity_scales:
+        raise RuntimeError(label + " has reflected or nonidentity mesh scale")
+    return {
+        "evaluatedVertexCount": len(points),
+        "minimum": rounded_vector(minimum),
+        "maximum": rounded_vector(maximum),
+        "center": rounded_vector(center),
+        "span": rounded_vector(span),
+        "physicalTip": rounded_vector(tip),
+        "physicalButt": rounded_vector(butt),
+        "sourceForward": [0.0, 0.0, 1.0],
+        "sourceBladeNormal": [0.0, 1.0, 0.0],
+        "sourceCuttingEdge": [-1.0, 0.0, 0.0],
+        "tipIsBladeExtreme": tip_matches_mesh,
+        "pommelIsRearExtreme": butt_matches_mesh,
+        "gripInsidePhysicalHandle": grip_inside_handle,
+        "gripClearOfPhysicalBlade": grip_clear_of_blade,
+        "bladeNormalToForwardSpanRatio": round(blade_normal_ratio, 6),
+        "cuttingEdge": cutting_edge,
+        "positiveIdentityMeshScales": positive_identity_scales,
+    }
+
+
+def add_semantic_marker(root, key, name, location):
+    # Blender object names are scene-global. Keep stable variant-qualified names
+    # in the .blend, then expose exact names in each independently exported FBX.
+    marker = bpy.data.objects.new(name + "__" + key, None)
+    bpy.context.collection.objects.link(marker)
+    marker.empty_display_type = "PLAIN_AXES"
+    marker.empty_display_size = 0.035
+    marker.location = location
+    marker.rotation_euler = (0.0, 0.0, 0.0)
+    marker.scale = (1.0, 1.0, 1.0)
+    marker.parent = root
+    return marker
+
+
 def palette_for(family, variant):
     steel, wrap, accent = PALETTES[family]
     shifts = {"classic": 1.0, "petal": 1.08, "reed": 0.92,
@@ -308,14 +481,42 @@ def build_variant(family, variant_tuple):
                                 spec["curve"] * curve_scale,
                                 steel_mat, edge_mat))
     apply_mesh_contract(objects)
+    mesh_contract = measure_mesh_contract(label, objects, spec)
     root = bpy.data.objects.new(label, None)
     bpy.context.collection.objects.link(root)
     for obj in objects:
         obj.parent = root
+    markers = {
+        "KMG_Grip": add_semantic_marker(
+            root, family + "." + variant, "KMG_Grip", (0, 0, 0)),
+        "KMG_Tip": add_semantic_marker(
+            root, family + "." + variant, "KMG_Tip",
+            mesh_contract["physicalTip"]),
+        "KMG_Butt": add_semantic_marker(
+            root, family + "." + variant, "KMG_Butt",
+            mesh_contract["physicalButt"]),
+        "KMG_Forward": add_semantic_marker(
+            root, family + "." + variant, "KMG_Forward",
+            (0, 0, SEMANTIC_AXIS_DISTANCE)),
+        "KMG_BladeNormal": add_semantic_marker(
+            root, family + "." + variant, "KMG_BladeNormal",
+            (0, SEMANTIC_AXIS_DISTANCE, 0)),
+        "KMG_Edge": add_semantic_marker(
+            root, family + "." + variant, "KMG_Edge",
+            (-SEMANTIC_AXIS_DISTANCE, 0, 0)),
+        "KMG_Stored": add_semantic_marker(
+            root, family + "." + variant, "KMG_Stored",
+            mesh_contract["center"]),
+    }
+    if spec["support"] is not None:
+        markers["KMG_Support"] = add_semantic_marker(
+            root, family + "." + variant, "KMG_Support",
+            (0, 0, spec["support"]))
     filename = family + ("" if variant == "classic" else "-" + variant) + ".fbx"
     return {"family": family, "variant": variant, "label": label,
             "filename": filename, "root": root, "objects": objects,
             "materials": (steel_mat, wrap_mat, accent_mat, edge_mat),
+            "markers": markers, "meshContract": mesh_contract,
             "geometry": {"guard": guard_mode, "widthScale": width_scale,
                          "curveScale": curve_scale, "pommel": pommel_mode}}
 
@@ -327,17 +528,27 @@ def select_tree(root):
 
 
 def export_variant(built):
-    bpy.ops.object.select_all(action="DESELECT")
-    select_tree(built["root"])
-    bpy.context.view_layer.objects.active = built["root"]
-    path = ROOT / built["filename"]
-    bpy.ops.export_scene.fbx(filepath=str(path), use_selection=True,
-                             apply_unit_scale=True,
-                             apply_scale_options="FBX_SCALE_UNITS",
-                             object_types={"EMPTY", "MESH"},
-                             add_leaf_bones=False, bake_anim=False,
-                             axis_forward="-Z", axis_up="Y")
-    return path
+    for key, value in BUILT.items():
+        for semantic, marker in value["markers"].items():
+            marker.name = semantic + "__" + key
+    for semantic, marker in built["markers"].items():
+        marker.name = semantic
+    try:
+        bpy.ops.object.select_all(action="DESELECT")
+        select_tree(built["root"])
+        bpy.context.view_layer.objects.active = built["root"]
+        path = ROOT / built["filename"]
+        bpy.ops.export_scene.fbx(filepath=str(path), use_selection=True,
+                                 apply_unit_scale=True,
+                                 apply_scale_options="FBX_SCALE_UNITS",
+                                 object_types={"EMPTY", "MESH"},
+                                 add_leaf_bones=False, bake_anim=False,
+                                 axis_forward="-Z", axis_up="Y")
+        return path
+    finally:
+        for key, value in BUILT.items():
+            for semantic, marker in value["markers"].items():
+                marker.name = semantic + "__" + key
 
 
 def look_at(obj, point):
@@ -518,12 +729,13 @@ mesh_objects = [obj for value in BUILT.values() for obj in value["objects"]]
 for obj in mesh_objects:
     obj.data.calc_loop_triangles()
 report = {
-    "schemaVersion": 2,
+    "schemaVersion": 3,
     "generator": Path(__file__).name,
     "blenderVersion": bpy.app.version_string,
     "license": "Original project-owned assets; repository license applies",
-    "sourceCoordinateContract": "+Z tip; grip origin; metric",
-    "equippedExportContract": "12 identity roots exported before render-only cameras/lights",
+    "sourceCoordinateContract": "+Z longitudinal forward; +Y blade normal; -X physical cutting edge; mesh-grounded tip/pommel; grip origin; metric",
+    "unityImportCoordinateContract": "FBX import reflects Blender X: Unity +Z longitudinal, raw +Y marker, +X physical edge; Unity builder reverses the oriented normal to -Y to restore the authored right-handed +Y-normal/-X-edge relationship before donor-basis solving",
+    "equippedExportContract": "12 identity roots with KMG semantic markers exported before render-only cameras/lights",
     "bladeContract": "family-safe curved asymmetric single edge at local -X; blunt spine at local +X",
     "determinism": {"verifiedCleanRuns": 2,
         "byteStableBoundary": "12 FBXs and 12 normalized PNGs",
@@ -536,7 +748,12 @@ report = {
         for key, value in FAMILIES.items()},
     "variants": {key: {"prefab": value["label"],
         "fbx": value["filename"], "geometry": value["geometry"],
-        "meshObjects": len(value["objects"])} for key, value in BUILT.items()},
+        "meshObjects": len(value["objects"]),
+        "semanticMarkers": {
+            name: rounded_vector(marker.location)
+            for name, marker in value["markers"].items()
+        },
+        "meshFrame": value["meshContract"]} for key, value in BUILT.items()},
     "meshObjects": len(mesh_objects),
     "triangles": sum(len(obj.data.loop_triangles) for obj in mesh_objects),
     "outputs": {},

@@ -78,7 +78,7 @@ namespace KingmakerGunslinger.Assets
             float maximumLength)
         {
             return RequireInternal(root, label, tipMarker, secondaryMarker,
-                null, requireSupport, minimumLength, maximumLength);
+                null, requireSupport, false, minimumLength, maximumLength);
         }
 
         internal static WeaponPresentationSemanticFrame RequireWithForwardMarker(
@@ -91,13 +91,29 @@ namespace KingmakerGunslinger.Assets
                     "An explicit semantic forward marker is required.",
                     "forwardMarker");
             return RequireInternal(root, label, tipMarker, secondaryMarker,
-                forwardMarker, requireSupport, minimumLength, maximumLength);
+                forwardMarker, requireSupport, false, minimumLength,
+                maximumLength);
+        }
+
+        internal static WeaponPresentationSemanticFrame
+            RequireWithForwardMarkerAndButtSupport(Transform root,
+                string label, string tipMarker, string secondaryMarker,
+                string forwardMarker, float minimumLength,
+                float maximumLength)
+        {
+            if (string.IsNullOrEmpty(forwardMarker))
+                throw new ArgumentException(
+                    "An explicit semantic forward marker is required.",
+                    "forwardMarker");
+            return RequireInternal(root, label, tipMarker, secondaryMarker,
+                forwardMarker, true, true, minimumLength, maximumLength);
         }
 
         private static WeaponPresentationSemanticFrame RequireInternal(
             Transform root, string label, string tipMarker,
             string secondaryMarker, string forwardMarker,
-            bool requireSupport, float minimumLength, float maximumLength)
+            bool requireSupport, bool supportTowardButt,
+            float minimumLength, float maximumLength)
         {
             if (root == null)
                 throw new InvalidDataException(label + " root is null.");
@@ -176,8 +192,15 @@ namespace KingmakerGunslinger.Assets
                 Vector3 fromGrip = support.localPosition - grip.localPosition;
                 float supportProjection = Vector3.Dot(fromGrip, forward);
                 float lateral = (fromGrip - supportProjection * forward).magnitude;
-                if (supportProjection <= Epsilon ||
-                    supportProjection >= tipProjection - Epsilon)
+                if (supportTowardButt)
+                {
+                    if (supportProjection <= buttProjection + Epsilon ||
+                        supportProjection >= -Epsilon)
+                        throw new InvalidDataException(label +
+                            " support-hand target is outside the butt-to-grip handle interval.");
+                }
+                else if (supportProjection <= Epsilon ||
+                         supportProjection >= tipProjection - Epsilon)
                     throw new InvalidDataException(label +
                         " support-hand target is outside the grip-to-tip interval.");
                 if (lateral > Mathf.Max(0.10f, semanticLength * 0.25f))

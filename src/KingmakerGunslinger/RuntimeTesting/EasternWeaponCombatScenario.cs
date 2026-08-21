@@ -396,38 +396,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                 object itemOverride = TryReadFieldRecursive(item,
                     "m_VisualParameters", out itemOverrideFieldExists);
                 GameObject model = visual == null ? null : visual.Model;
+                GameObject beltModel = visual == null ? null :
+                    visual.BeltModel;
                 GameObject instance = null;
-                bool instanceResolved = false;
-                bool instanceCleaned = false;
+                GameObject storedInstance = null;
+                bool heldResolved = false;
+                bool storedResolved = false;
+                bool heldCleaned = false;
+                bool storedCleaned = false;
+                bool independentTransforms = false;
                 string instantiated = "<null>";
+                string storedInstantiated = "<null>";
                 string materialSummary = "<none>";
+                string storedMaterialSummary = "<none>";
                 bool cuttingEdge = false;
+                bool storedCuttingEdge = false;
+                bool calibratedFrames = false;
                 try
                 {
+                    string variant = WeaponVisualVariantCatalog.Require(symbol);
                     instance = Assets.EasternWeaponAssetRuntime
-                        .InstantiatePrefab(WeaponVisualVariantCatalog.Require(
-                            symbol));
-                    if (instance != null)
+                        .InstantiatePrefab(variant);
+                    storedInstance = Assets.EasternWeaponAssetRuntime
+                        .InstantiateStoredPrefab(variant);
+                    if (instance != null && storedInstance != null)
                     {
-                        instanceResolved = true;
+                        heldResolved = true;
+                        storedResolved = true;
                         instantiated = instance.name;
-                        Material[] materials = instance
-                            .GetComponentsInChildren<Renderer>(true)
-                            .SelectMany(value => value.sharedMaterials ??
-                                Array.Empty<Material>()).Where(value =>
-                                    value != null).ToArray();
+                        storedInstantiated = storedInstance.name;
+                        Material[] materials = Materials(instance);
+                        Material[] storedMaterials = Materials(storedInstance);
                         materialSummary = string.Join(",", materials.Select(
                             value => value.name).Distinct().ToArray());
+                        storedMaterialSummary = string.Join(",",
+                            storedMaterials.Select(value => value.name)
+                                .Distinct().ToArray());
                         cuttingEdge = materials.Any(value => value.name
                             .IndexOf("CuttingEdge",
                                 StringComparison.OrdinalIgnoreCase) >= 0);
+                        storedCuttingEdge = storedMaterials.Any(value =>
+                            value.name.IndexOf("CuttingEdge",
+                                StringComparison.OrdinalIgnoreCase) >= 0);
+                        Transform heldVisual = instance.transform.Find("Visual");
+                        Transform storedVisual = storedInstance.transform.Find(
+                            "Visual");
+                        independentTransforms = heldVisual != null &&
+                            storedVisual != null &&
+                            (!Approximately(heldVisual.localPosition,
+                                storedVisual.localPosition) ||
+                             !Approximately(heldVisual.localRotation,
+                                storedVisual.localRotation));
+                        calibratedFrames = Assets.EasternWeaponAssetRuntime
+                            .HasCalibratedDonorFrame(instance, family, false) &&
+                            Assets.EasternWeaponAssetRuntime
+                            .HasCalibratedDonorFrame(storedInstance, family,
+                                true);
                     }
                 }
                 finally
                 {
                     if (instance != null)
                         UnityEngine.Object.DestroyImmediate(instance);
-                    instanceCleaned = instance == null || instance.Equals(null);
+                    if (storedInstance != null)
+                        UnityEngine.Object.DestroyImmediate(storedInstance);
+                    heldCleaned = instance == null || instance.Equals(null);
+                    storedCleaned = storedInstance == null ||
+                        storedInstance.Equals(null);
                 }
                 string[] overlays = item.Enchantments.Select(value =>
                     value == null ? "<null>" : value.AssetGuid).ToArray();
@@ -435,10 +470,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(itemOverride, visual) && visual != null &&
                     !ReferenceEquals(visual, familySet.WeaponType
                         .VisualParameters) && model != null &&
+                    beltModel != null &&
                     Assets.EasternWeaponAssetRuntime.HasExactVisual(item,
                         symbol) &&
                     VisualContractMatches(visual, donor.VisualParameters) &&
-                    instanceResolved && cuttingEdge && instanceCleaned;
+                    heldResolved && storedResolved && cuttingEdge &&
+                    storedCuttingEdge && independentTransforms &&
+                    calibratedFrames && heldCleaned && storedCleaned;
                 exact &= itemExact;
                 rows.Add(item.AssetGuid + ":" + item.Name +
                     ";symbol=" + symbol + ";variant=" +
@@ -449,20 +487,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(itemOverride, visual) ?
                             "exact-item-visual" : "different-visual") +
                     ";model=" + (model == null ? "<null>" : model.name) +
-                    ";instantiated=" + instantiated + ";donor=" +
+                    ";beltModel=" + (beltModel == null ? "<null>" :
+                        beltModel.name) + ";instantiated=" + instantiated +
+                    ";storedInstantiated=" + storedInstantiated +
+                    ";donor=" +
                     donorGuid + "/" + (visual == null ? "<null>" :
                         visual.AnimStyle.ToString()) + ";materials=" +
-                    materialSummary + ";overlays=" +
+                    materialSummary + ";storedMaterials=" +
+                    storedMaterialSummary + ";independent=" +
+                    independentTransforms + ";calibratedFrames=" +
+                    calibratedFrames + ";overlays=" +
                     string.Join(",", overlays));
             }
             string observed = string.Join("|", rows.ToArray());
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-all-30-visual-identities",
-                "30 exact items; 10 per family; inherited equipment-hand field equals the approved blueprint-specific variant; exact family and native donor contract; CuttingEdge material; transient cleanup",
+                "30 exact items; 10 per family; inherited held and independently calibrated stored fields equal the approved blueprint-specific pair; exact family and native donor contract including sheath; CuttingEdge material in both roles; transient cleanup",
                 observed, exact && set.Families.All(family => items.Count(
                     item => ReferenceEquals(item.Type,
                         family.WeaponType)) == 10),
-                "live recursive inherited item visual resolution plus one exact AssetBundle prefab instantiation per item");
+                "live recursive inherited item visual resolution plus one exact held/stored AssetBundle prefab-pair instantiation per item");
             diagnostics.Add("all30Visuals{" + observed + "}");
         }
 
@@ -483,13 +527,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetFields(Members))
             {
                 if (field.IsStatic || string.Equals(field.Name,
-                    "m_WeaponModel", StringComparison.Ordinal)) continue;
+                        "m_WeaponModel", StringComparison.Ordinal) ||
+                    string.Equals(field.Name, "m_WeaponBeltModel",
+                        StringComparison.Ordinal)) continue;
                 object left = field.GetValue(value);
                 object right = field.GetValue(donor);
                 if (!ReferenceEquals(left, right) && !Equals(left, right))
                     return false;
             }
             return true;
+        }
+
+        private static Material[] Materials(GameObject instance)
+        {
+            return instance.GetComponentsInChildren<Renderer>(true)
+                .SelectMany(value => value.sharedMaterials ??
+                    Array.Empty<Material>()).Where(value => value != null)
+                .ToArray();
+        }
+
+        private static bool Approximately(Vector3 left, Vector3 right)
+        {
+            return (left - right).sqrMagnitude <= 0.000001f;
+        }
+
+        private static bool Approximately(Quaternion left, Quaternion right)
+        {
+            return Mathf.Abs(Quaternion.Dot(left, right)) >= 0.999999f;
         }
 
         private static object TryReadFieldRecursive(object owner, string name,

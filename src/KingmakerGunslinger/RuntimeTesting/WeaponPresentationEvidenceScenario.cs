@@ -100,6 +100,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             "Native.Longspear"
         };
 
+        private static readonly string[] EasternMotionVariants =
+        {
+            WeaponVisualVariantCatalog.WakizashiClassic,
+            WeaponVisualVariantCatalog.WakizashiPetal,
+            WeaponVisualVariantCatalog.WakizashiMoon,
+            WeaponVisualVariantCatalog.WakizashiCapstone,
+            WeaponVisualVariantCatalog.KatanaClassic,
+            WeaponVisualVariantCatalog.KatanaReed,
+            WeaponVisualVariantCatalog.KatanaRegal,
+            WeaponVisualVariantCatalog.KatanaCapstone,
+            WeaponVisualVariantCatalog.NodachiClassic,
+            WeaponVisualVariantCatalog.NodachiCleaver,
+            WeaponVisualVariantCatalog.NodachiTitan,
+            WeaponVisualVariantCatalog.NodachiCapstone,
+            "Native.Scimitar",
+            "Native.BastardSword",
+            "Native.Greatsword"
+        };
+
         private static readonly int[] AttackCaptureUpdates =
         {
             1, 4, 8, 12, 18, 24, 36, 60, 96
@@ -699,6 +718,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new List<MotionOutcome>();
             private readonly JArray _records = new JArray();
             private readonly bool _spearMotion;
+            private readonly bool _easternMotion;
             private readonly string[] _motionVariants;
             private object _allUnits;
             private object _party;
@@ -753,7 +773,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog
                         .WeaponPresentationSpearMotionEvidence,
                     StringComparison.Ordinal);
+                _easternMotion = string.Equals(request.Scenario,
+                    RuntimeTestScenarioCatalog
+                        .WeaponPresentationEasternMotionEvidence,
+                    StringComparison.Ordinal);
                 _motionVariants = _spearMotion ? SpearMotionVariants :
+                    _easternMotion ? EasternMotionVariants :
                     LongGunMotionVariants;
             }
 
@@ -855,13 +880,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _actor.CombatState.Engage(_target);
                 _target.Commands.InterruptAll(true);
                 _cases = BuildMotionCases(_motionVariants);
-                if (_cases.Length != 4 || !_cases.Select(value => value.Variant)
-                    .SequenceEqual(_motionVariants))
+                if (_cases.Length != _motionVariants.Length ||
+                    !_cases.Select(value => value.Variant)
+                        .SequenceEqual(_motionVariants))
                     throw new InvalidOperationException(
-                        "The motion catalog is not the exact three production " +
-                        (_spearMotion ? "branched spears plus native Longspear" :
-                            "long guns plus native Heavy Crossbow") +
-                        " control.");
+                        "The motion catalog is not the exact " +
+                        (_spearMotion ?
+                            "three production branched spears plus native Longspear" :
+                         _easternMotion ?
+                            "twelve production Eastern variants plus three native sword" :
+                            "three production long guns plus native Heavy Crossbow") +
+                        " control set.");
             }
 
             private bool EquipCurrent()
@@ -944,7 +973,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 CaptureMotionRecord(value, model, visual, role,
                     "combat-ready", 0,
-                    "live combat-ready evidence before attack command; no firing claim");
+                    "live combat-ready evidence before native attack command");
                 _firedBefore = FirearmDischargeRuntimeDiagnostics.Fired;
                 _faultsBefore = FirearmDischargeRuntimeDiagnostics.Faults;
                 UnitCommand issued = UnitAttack.CreateAttackCommand(_actor,
@@ -1095,8 +1124,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _attackUpdates.ToString("000");
                     CaptureMotionRecord(value, model, visual, role, state,
                         _attackUpdates,
-                        "fixed live UnitAttack animation sample; exact fire frame " +
-                        "is established only by paired discharge counters");
+                        _easternMotion ?
+                            "fixed live UnitAttack sword-animation sample; visual review determines slash-plane acceptance" :
+                            "fixed live UnitAttack animation sample; exact fire frame is established only by paired discharge counters");
                     _captureScheduleIndex++;
                 }
 
@@ -1177,6 +1207,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                         headUp == null ? "<native-control-unresolved>" :
                         (headUp.position - grip.position).normalized
                             .ToString("R");
+                }
+                else if (_easternMotion)
+                {
+                    string bladeFrameSource;
+                    Vector3 physicalTip;
+                    Vector3 physicalButt;
+                    Vector3 bladeForward;
+                    Vector3 bladeNormal;
+                    Vector3 cuttingEdge;
+                    if (!TryResolveEasternBladeFrame(value, model,
+                            out bladeFrameSource, out physicalTip,
+                            out physicalButt, out bladeForward,
+                            out bladeNormal, out cuttingEdge))
+                        throw new InvalidOperationException(value.Variant +
+                            " lacks a mesh-grounded Eastern blade frame.");
+                    Vector3 physicalForward = physicalTip - physicalButt;
+                    Vector3 frameRight = Vector3.Cross(bladeNormal,
+                        bladeForward).normalized;
+                    record["physicalBladeFrameSource"] = bladeFrameSource;
+                    record["physicalBladeTipWorldPosition"] =
+                        physicalTip.ToString("R");
+                    record["physicalBladeButtWorldPosition"] =
+                        physicalButt.ToString("R");
+                    record["physicalBladeLengthMeters"] =
+                        physicalForward.magnitude;
+                    record["bladeForwardWorld"] =
+                        bladeForward.ToString("R");
+                    record["bladeNormalWorld"] =
+                        bladeNormal.ToString("R");
+                    record["cuttingEdgeWorld"] =
+                        cuttingEdge.ToString("R");
+                    record["physicalTipAheadAlongBladeForward"] =
+                        Vector3.Dot(physicalForward, bladeForward);
+                    record["bladeNormalForwardAbsDot"] = Mathf.Abs(
+                        Vector3.Dot(bladeNormal, bladeForward));
+                    record["cuttingEdgeForwardAbsDot"] = Mathf.Abs(
+                        Vector3.Dot(cuttingEdge, bladeForward));
+                    record["cuttingEdgeBladeNormalAbsDot"] = Mathf.Abs(
+                        Vector3.Dot(cuttingEdge, bladeNormal));
+                    record["cuttingEdgePolarityDot"] = Vector3.Dot(
+                        cuttingEdge, -frameRight);
                 }
                 record["claimBoundary"] = claimBoundary;
                 record["motionUpdate"] = update;
@@ -1386,9 +1457,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixture",
                         "live disposable default Medium combat pair" },
                     { "motionFamily", _spearMotion ?
-                        "elven-branched-spear" : "long-gun" },
-                    { "productionVariantCount", 3 },
-                    { "nativeControlCount", 1 },
+                        "elven-branched-spear" : _easternMotion ?
+                        "eastern-blade" : "long-gun" },
+                    { "productionVariantCount", _easternMotion ? 12 : 3 },
+                    { "nativeControlCount", _easternMotion ? 3 : 1 },
                     { "attackCaptureUpdates",
                         new JArray(AttackCaptureUpdates) },
                     { "views", new JArray("front", "right-side", "rear",
@@ -1402,6 +1474,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string indexPath = Path.Combine(_request.EvidenceDirectory,
                     _spearMotion ?
                         "weapon-presentation-branched-spear-motion-index.json" :
+                    _easternMotion ?
+                        "weapon-presentation-eastern-motion-index.json" :
                         "weapon-presentation-long-gun-motion-index.json");
                 WriteJsonAtomic(indexPath, index);
                 _evidenceFiles.Add(indexPath);
@@ -1465,10 +1539,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Add(_assertions,
                     _spearMotion ?
                         "weapon-presentation-branched-spear-motion-matrix" :
+                    _easternMotion ?
+                        "weapon-presentation-eastern-motion-matrix" :
                         "weapon-presentation-long-gun-motion-matrix",
-                    "three production " + (_spearMotion ?
-                        "branched spears and native Longspear" :
-                        "long guns and native Heavy Crossbow") + " in " +
+                    (_easternMotion ? "twelve production Eastern variants " +
+                        "and native Scimitar/Bastard Sword/Greatsword" :
+                        "three production " + (_spearMotion ?
+                            "branched spears and native Longspear" :
+                            "long guns and native Heavy Crossbow")) + " in " +
                         "combat-ready plus nine fixed attack samples",
                     "records=" + _records.Count + ";variants=" +
                         _records.OfType<JObject>().Select(value =>
@@ -1477,11 +1555,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _records.Count == expectedRecords &&
                         _records.OfType<JObject>().Select(value =>
                             (string)value["variant"]).Distinct(
-                                StringComparer.Ordinal).Count() == 4,
+                                StringComparer.Ordinal).Count() ==
+                                    _motionVariants.Length,
                     "real live held model at updates 1/4/8/12/18/24/36/60/96");
                 Add(_assertions,
                     "weapon-presentation-native-attack-command",
-                    "all four cases install a native UnitAttack and expose its " +
+                    "every case installs a native UnitAttack and exposes its " +
                         "acted animation while the command is running",
                     string.Join(";", _outcomes.Select(value => value.Variant +
                         "=" + value.CommandInstalled + "/" +
@@ -1492,7 +1571,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.CommandRunningObserved + "/" +
                         value.AnimationObserved + "/" +
                         value.AnimationActedObserved).ToArray()),
-                    _outcomes.Count == 4 && _outcomes.All(value =>
+                    _outcomes.Count == _motionVariants.Length &&
+                        _outcomes.All(value =>
                         value.CommandInstalled && value.CommandCanStart &&
                         value.CommandCloseEnough && value.CommandTargetInState &&
                         value.CommandStarted && value.CommandRunningObserved &&
@@ -1539,6 +1619,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "authored renderer-bound Tip/Butt plus native " +
                             "TH_LongspearKnight1 renderer-positive-Y head");
                 }
+                else if (_easternMotion)
+                {
+                    JObject[] bladeRecords = _records.OfType<JObject>()
+                        .ToArray();
+                    JObject[] actedBladeRecords = bladeRecords.Where(record =>
+                            (bool)record["commandAnimationActed"])
+                        .ToArray();
+                    int actedVariants = actedBladeRecords.Select(record =>
+                            (string)record["variant"])
+                        .Distinct(StringComparer.Ordinal).Count();
+                    Add(_assertions,
+                        "weapon-presentation-eastern-physical-blade-frame",
+                        "all fifteen cases expose a nondegenerate physical blade frame with orthogonal normal, canonical cutting-edge polarity, and every variant reaches an acted animation",
+                        "records=" + bladeRecords.Length +
+                            ";actedVariants=" + actedVariants +
+                            ";actedSamples=" + actedBladeRecords.Length,
+                        bladeRecords.Length == expectedRecords &&
+                            bladeRecords.All(record =>
+                                (float)record["physicalBladeLengthMeters"] >
+                                    0.5f &&
+                                (float)record[
+                                    "physicalTipAheadAlongBladeForward"] >
+                                    0.5f &&
+                                (float)record[
+                                    "bladeNormalForwardAbsDot"] < 0.05f &&
+                                (float)record[
+                                    "cuttingEdgeForwardAbsDot"] < 0.05f &&
+                                (float)record[
+                                    "cuttingEdgeBladeNormalAbsDot"] < 0.05f &&
+                                (float)record["cuttingEdgePolarityDot"] >
+                                    0.99f &&
+                                !string.IsNullOrEmpty((string)record[
+                                    "physicalBladeFrameSource"])) &&
+                            actedVariants == _motionVariants.Length &&
+                            actedBladeRecords.Length > 0,
+                        "authored Tip/Butt/WeaponForward/BladeNormal/CuttingEdge markers plus native renderer-local +Y/+X/-Z donor axes");
+                }
                 else
                 {
                     MotionOutcome[] firearms = _outcomes.Where(value =>
@@ -1561,6 +1678,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Add(_assertions,
                     _spearMotion ?
                         "weapon-presentation-spear-motion-contact-sheets" :
+                    _easternMotion ?
+                        "weapon-presentation-eastern-motion-contact-sheets" :
                         "weapon-presentation-motion-contact-sheets",
                     expectedRecords + " PNG/JSON pairs and " +
                         (expectedRecords * 4) + " labelled views",
@@ -1588,7 +1707,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _warnings.Add("Motion evidence is limited to combat-ready and " +
                     "fixed attack-sequence samples on the default Medium actor. " +
                     "It does not establish locomotion, transitions, sex-specific, " +
-                    "Small, or Enlarged acceptance" + (_spearMotion ? "." :
+                    "Small, or Enlarged acceptance" +
+                    (_spearMotion || _easternMotion ? "." :
                         ", or reload acceptance."));
                 RuntimeBuildIdentity build = RuntimeBuildIdentity.Capture(
                     _context.Assembly, _context.ModEntry.Info.Version);
@@ -1621,6 +1741,88 @@ namespace KingmakerGunslinger.RuntimeTesting
                 };
                 Complete = true;
             }
+        }
+
+        private static bool TryResolveEasternBladeFrame(
+            EvidenceCase value, Transform model, out string source,
+            out Vector3 tip, out Vector3 butt, out Vector3 forward,
+            out Vector3 bladeNormal, out Vector3 cuttingEdge)
+        {
+            source = string.Empty;
+            tip = Vector3.zero;
+            butt = Vector3.zero;
+            forward = Vector3.zero;
+            bladeNormal = Vector3.zero;
+            cuttingEdge = Vector3.zero;
+            if (value == null || model == null) return false;
+
+            Transform gripMarker = model.Find(
+                WeaponPresentationFrameContract.GripMarker);
+            Transform tipMarker = model.Find("Tip");
+            Transform buttMarker = model.Find(
+                WeaponPresentationFrameContract.ButtMarker);
+            Transform forwardMarker = model.Find(
+                WeaponPresentationFrameContract.WeaponForwardMarker);
+            Transform normalMarker = model.Find(
+                WeaponPresentationFrameContract.BladeNormalMarker);
+            Transform edgeMarker = model.Find("CuttingEdge");
+            if (gripMarker != null && tipMarker != null &&
+                buttMarker != null && forwardMarker != null &&
+                normalMarker != null && edgeMarker != null)
+            {
+                source =
+                    "authored-renderer-bound-Tip/Butt+WeaponForward/BladeNormal/CuttingEdge";
+                tip = tipMarker.position;
+                butt = buttMarker.position;
+                forward = (forwardMarker.position - gripMarker.position)
+                    .normalized;
+                bladeNormal = (normalMarker.position - gripMarker.position)
+                    .normalized;
+                cuttingEdge = (edgeMarker.position - gripMarker.position)
+                    .normalized;
+            }
+            else
+            {
+                bool native = string.Equals(value.Variant,
+                        "Native.Scimitar", StringComparison.Ordinal) ||
+                    string.Equals(value.Variant, "Native.BastardSword",
+                        StringComparison.Ordinal) ||
+                    string.Equals(value.Variant, "Native.Greatsword",
+                        StringComparison.Ordinal);
+                if (!native) return false;
+                Renderer[] renderers = model.GetComponentsInChildren<Renderer>(
+                    true).Where(renderer => renderer != null).ToArray();
+                if (renderers.Length == 0) return false;
+                int sourceCount;
+                Bounds bounds = LocalBounds(model, renderers,
+                    out sourceCount);
+                if (sourceCount == 0 || bounds.size.y < 0.5f ||
+                    bounds.size.y <= bounds.size.x ||
+                    bounds.size.y <= bounds.size.z)
+                    return false;
+                source = "native-renderer-local-+Y-forward/+X-blade-normal/-Z-cutting-edge";
+                tip = model.TransformPoint(bounds.center +
+                    Vector3.up * bounds.extents.y);
+                butt = model.TransformPoint(bounds.center -
+                    Vector3.up * bounds.extents.y);
+                forward = model.TransformDirection(Vector3.up).normalized;
+                bladeNormal = model.TransformDirection(Vector3.right)
+                    .normalized;
+                cuttingEdge = model.TransformDirection(Vector3.back)
+                    .normalized;
+            }
+
+            if (Vector3.Distance(tip, butt) <= 0.5f ||
+                forward.sqrMagnitude < 0.99f ||
+                bladeNormal.sqrMagnitude < 0.99f ||
+                cuttingEdge.sqrMagnitude < 0.99f)
+                return false;
+            Vector3 right = Vector3.Cross(bladeNormal, forward).normalized;
+            return Mathf.Abs(Vector3.Dot(bladeNormal, forward)) < 0.05f &&
+                Mathf.Abs(Vector3.Dot(cuttingEdge, forward)) < 0.05f &&
+                Mathf.Abs(Vector3.Dot(cuttingEdge, bladeNormal)) < 0.05f &&
+                Vector3.Dot(cuttingEdge, -right) > 0.99f &&
+                Vector3.Dot(tip - butt, forward) > 0.5f;
         }
 
         private static bool TryResolveSpearPhysicalEndpoints(

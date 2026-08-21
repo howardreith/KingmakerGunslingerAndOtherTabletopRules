@@ -8,7 +8,7 @@
     "pngStabilization": "session metadata removed; exact pixels retained",
     "verifiedCleanRuns": 2
   },
-  "equippedExportContract": "12 identity roots exported before render-only cameras/lights",
+  "equippedExportContract": "12 identity roots with KMG semantic markers exported before render-only cameras/lights",
   "families": {
     "katana": {
       "blade_width": 0.03,
@@ -18,7 +18,7 @@
       "handle_radius": 0.019,
       "label": "Katana",
       "overallLengthMeters": 1.05,
-      "support": 0.1,
+      "support": null,
       "tip": 0.76
     },
     "nodachi": {
@@ -29,7 +29,7 @@
       "handle_radius": 0.022,
       "label": "Nodachi",
       "overallLengthMeters": 1.5799999999999998,
-      "support": 0.13,
+      "support": -0.169,
       "tip": 1.16
     },
     "wakizashi": {
@@ -40,7 +40,7 @@
       "handle_radius": 0.017,
       "label": "Wakizashi",
       "overallLengthMeters": 0.76,
-      "support": 0.07,
+      "support": null,
       "tip": 0.56
     }
   },
@@ -147,12 +147,12 @@
   "meshObjects": 190,
   "outputs": {
     "eastern-weapons.blend": {
-      "bytes": 2891996,
-      "sha256": "db55034477b0a04d688af8244377023e7bad2eec2382bafc516898550b7b330c"
+      "bytes": 3008156,
+      "sha256": "bbfcf6b373b23c6f628ca0032ad1c27080286e884227966f3c8f36daf9710b49"
     },
     "generate_eastern_weapons.py": {
-      "bytes": 22363,
-      "sha256": "9a55b6d41fddabeb6a9d08005e3c93064840b9e02cb57273e50ab71f2d5ef283"
+      "bytes": 32223,
+      "sha256": "758d015b44372c427fdd58397662a44244cd93f3389d86e5945a0aa592b373e5"
     },
     "heavens-measure-icon-source.png": {
       "bytes": 94376,
@@ -163,24 +163,24 @@
       "sha256": "7182671c1000a589f960e928a1e74ab95f4c778082d73b1e795938430223a86c"
     },
     "katana-capstone.fbx": {
-      "bytes": 88940,
-      "sha256": "c614a4ce220f9da847efde652553fa4a039a34d91ac729647038730020c86e72"
+      "bytes": 93628,
+      "sha256": "4e58f7ab12fe45787ba0f3c4860e7f3e8eb759f4519a481ab2987fa6dbb0664e"
     },
     "katana-icon-source.png": {
       "bytes": 94038,
       "sha256": "77972a7380bf36d371d1b0d1dba5e977801d024677c01e649276c8e833f52e2f"
     },
     "katana-reed.fbx": {
-      "bytes": 74140,
-      "sha256": "23ecf496991cf05cf11c723916af801fc1ad4bcfdde37fef040cb9da3c5e4c0d"
+      "bytes": 78828,
+      "sha256": "2579afe8bb2b18edb274b3cbf323c815368f77a0a1543756ce72667ccf48f3bf"
     },
     "katana-regal.fbx": {
-      "bytes": 77324,
-      "sha256": "9bc238c2638f7a6b3febcc1568d25dc188648cfd23e8f8064d59654fd2915cb9"
+      "bytes": 81996,
+      "sha256": "d3b7d032f170ce97447a6ac815d79d5608cc910e148ed2185d5ad663027eb753"
     },
     "katana.fbx": {
-      "bytes": 70316,
-      "sha256": "1701a0341573d8ede67f245d621f9e8cbecd44259ea61bfb1832c6329d212083"
+      "bytes": 75004,
+      "sha256": "cd9047823503cbe1367fd6667fc0835bf6a578376210e8b9cd48c1ecd02234b8"
     },
     "katana.png": {
       "bytes": 7390,
@@ -195,48 +195,48 @@
       "sha256": "20c7917024462d8c3ab8c076e98eec6701b114b01781ef58b29aa533ff7e54df"
     },
     "nodachi-capstone.fbx": {
-      "bytes": 89180,
-      "sha256": "e4d2f94a79cfbb3f94af7d246c7c95801c455bff164d68ea957b11446995510e"
+      "bytes": 94540,
+      "sha256": "acfa2048e8a339aa3670a7cdf240a2e8a3f8e9187a9e3828eda9ed0e8d3cfb84"
     },
     "nodachi-cleaver.fbx": {
-      "bytes": 74316,
-      "sha256": "112c16702787d53b6769e0dd69210ae8e321572501c8ac5c98056d70301d7742"
+      "bytes": 79676,
+      "sha256": "7a689899a799a4ab8060fceb9691586259aaa80713d1697651058c1a3f35cad0"
     },
     "nodachi-icon-source.png": {
       "bytes": 78659,
       "sha256": "73b3dfcb8cdae753eb38c2460709349e781fc2130e97dd84af6792ff6afd5a0f"
     },
     "nodachi-titan.fbx": {
-      "bytes": 77484,
-      "sha256": "87fa6f3048f654b897679a1c7368b842fec097a80b8624cb6dbffc7828813a34"
+      "bytes": 82844,
+      "sha256": "ac28942ced2f76060ec75323353af7ba11dc98958f5cc0e62173bdbaa87c918f"
     },
     "nodachi.fbx": {
-      "bytes": 70444,
-      "sha256": "edc0d93ecb61e18bfd6da660dcb7b4968721ab3d86e413a07467fa3e839adde8"
+      "bytes": 75820,
+      "sha256": "87bdfbbe364865f3c9a824c9f74fd0e5823045328c096fae2edf5a105f211a3e"
     },
     "nodachi.png": {
       "bytes": 5887,
       "sha256": "9e9e6045f19085e4a6dc67144800ae02f0ad2a3c2c7e4c2c1dfef95f99389373"
     },
     "wakizashi-capstone.fbx": {
-      "bytes": 79308,
-      "sha256": "a1375c8d17b5a849f8d0e804e4d1c63f9a7fdb88ba41e914774638a724ac3114"
+      "bytes": 83996,
+      "sha256": "5031d238e65d6d57a859e4fbf2deeb5aa800d0f58d0376e6ea1c31935db98233"
     },
     "wakizashi-icon-source.png": {
       "bytes": 100453,
       "sha256": "f37ece9894613b5e37c55bf80ecc1a351fc42ed8971bdac1bb07d6715e859dd3"
     },
     "wakizashi-moon.fbx": {
-      "bytes": 61084,
-      "sha256": "b42f6d4c8d198dda2023ec27fe50a9bfd6366facde8926ae529af6a4d88c27ba"
+      "bytes": 65772,
+      "sha256": "4edb462134fa8bde867a0aad42e4109746317f9bba27c0c4af2347755a5df2fa"
     },
     "wakizashi-petal.fbx": {
-      "bytes": 63852,
-      "sha256": "cb52ccb5b73ac49926ee483548ac2ed37f68d4d24dff6d748d27729189930caa"
+      "bytes": 68540,
+      "sha256": "5a7c77d2c382acc71c1ad0dcf9d48b7e5a5c271933b163d0bc8ef4c83cc9979c"
     },
     "wakizashi.fbx": {
-      "bytes": 60620,
-      "sha256": "ecfa64d35017ee44d184a43e6f4f5a1a1409f9909f5f153b494613e19772dc73"
+      "bytes": 65308,
+      "sha256": "a121c0bd1010b4083a29644d49ddd61020829afab5687e6d0249ac1ec80543d0"
     },
     "wakizashi.png": {
       "bytes": 7918,
@@ -251,9 +251,10 @@
       "sha256": "27f9fef0131f5267c64806359e8976dd27f05fba6bdd08627b8106f151e8282c"
     }
   },
-  "schemaVersion": 2,
-  "sourceCoordinateContract": "+Z tip; grip origin; metric",
+  "schemaVersion": 3,
+  "sourceCoordinateContract": "+Z longitudinal forward; +Y blade normal; -X physical cutting edge; mesh-grounded tip/pommel; grip origin; metric",
   "triangles": 12252,
+  "unityImportCoordinateContract": "FBX import reflects Blender X: Unity +Z longitudinal, raw +Y marker, +X physical edge; Unity builder reverses the oriented normal to -Y to restore the authored right-handed +Y-normal/-X-edge relationship before donor-basis solving",
   "variants": {
     "katana.capstone": {
       "fbx": "katana-capstone.fbx",
@@ -263,8 +264,117 @@
         "pommel": "crown",
         "widthScale": 1.04
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.011129,
+        "center": [
+          0.008558,
+          0.0,
+          0.2005
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.037449,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.1139,
+            0.003494,
+            0.76
+          ],
+          "meanX": 0.026453,
+          "minimum": [
+            -0.022406,
+            -0.003494,
+            0.13203
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 805,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.1139,
+          0.026782,
+          0.76
+        ],
+        "minimum": [
+          -0.096785,
+          -0.026782,
+          -0.359
+        ],
+        "physicalButt": [
+          0.0,
+          0.0,
+          -0.359
+        ],
+        "physicalTip": [
+          0.1139,
+          0.0,
+          0.76
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.210685,
+          0.053564,
+          1.119
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 21,
-      "prefab": "KatanaCapstone"
+      "prefab": "KatanaCapstone",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.359
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.008558,
+          0.0,
+          0.2005
+        ],
+        "KMG_Tip": [
+          0.1139,
+          0.0,
+          0.76
+        ]
+      }
     },
     "katana.classic": {
       "fbx": "katana.fbx",
@@ -274,8 +384,117 @@
         "pommel": "round",
         "widthScale": 1.0
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.010701,
+        "center": [
+          0.0203,
+          0.0,
+          0.22575
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.027422,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.085,
+            0.00336,
+            0.76
+          ],
+          "meanX": 0.016425,
+          "minimum": [
+            -0.021544,
+            -0.00336,
+            0.132029
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 725,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.085,
+          0.031968,
+          0.76
+        ],
+        "minimum": [
+          -0.0444,
+          -0.031968,
+          -0.3085
+        ],
+        "physicalButt": [
+          0.0,
+          0.0,
+          -0.3085
+        ],
+        "physicalTip": [
+          0.085,
+          0.0,
+          0.76
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.1294,
+          0.063936,
+          1.0685
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 14,
-      "prefab": "Katana"
+      "prefab": "Katana",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.3085
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.0203,
+          0.0,
+          0.22575
+        ],
+        "KMG_Tip": [
+          0.085,
+          0.0,
+          0.76
+        ]
+      }
     },
     "katana.reed": {
       "fbx": "katana-reed.fbx",
@@ -285,8 +504,117 @@
         "pommel": "cap",
         "widthScale": 0.92
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.009845,
+        "center": [
+          0.0,
+          0.0,
+          0.229
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.022252,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.0697,
+            0.003091,
+            0.76
+          ],
+          "meanX": 0.011987,
+          "minimum": [
+            -0.019821,
+            -0.003091,
+            0.132027
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 701,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.075977,
+          0.018259,
+          0.76
+        ],
+        "minimum": [
+          -0.075977,
+          -0.018259,
+          -0.302
+        ],
+        "physicalButt": [
+          0.0,
+          0.0,
+          -0.302
+        ],
+        "physicalTip": [
+          0.0697,
+          0.0,
+          0.76
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.151955,
+          0.036518,
+          1.062
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 16,
-      "prefab": "KatanaReed"
+      "prefab": "KatanaReed",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.302
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.0,
+          0.0,
+          0.229
+        ],
+        "KMG_Tip": [
+          0.0697,
+          0.0,
+          0.76
+        ]
+      }
     },
     "katana.regal": {
       "fbx": "katana-regal.fbx",
@@ -296,8 +624,117 @@
         "pommel": "spike",
         "widthScale": 1.1
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.011771,
+        "center": [
+          0.011603,
+          0.0,
+          0.2125
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.03195,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.0986,
+            0.003696,
+            0.76
+          ],
+          "meanX": 0.019942,
+          "minimum": [
+            -0.023699,
+            -0.003696,
+            0.132032
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 725,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.0986,
+          0.016467,
+          0.76
+        ],
+        "minimum": [
+          -0.075394,
+          -0.016467,
+          -0.335
+        ],
+        "physicalButt": [
+          0.0,
+          0.0,
+          -0.335
+        ],
+        "physicalTip": [
+          0.0986,
+          0.0,
+          0.76
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.173994,
+          0.032935,
+          1.095
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 17,
-      "prefab": "KatanaRegal"
+      "prefab": "KatanaRegal",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.335
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.011603,
+          0.0,
+          0.2125
+        ],
+        "KMG_Tip": [
+          0.0986,
+          0.0,
+          0.76
+        ]
+      }
     },
     "nodachi.capstone": {
       "fbx": "nodachi-capstone.fbx",
@@ -307,8 +744,122 @@
         "pommel": "crown",
         "widthScale": 1.18
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.009535,
+        "center": [
+          0.020912,
+          0.0,
+          0.3355
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.057473,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.1736,
+            0.004758,
+            1.16
+          ],
+          "meanX": 0.042823,
+          "minimum": [
+            -0.030507,
+            -0.004758,
+            0.162041
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 805,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.1736,
+          0.036465,
+          1.16
+        ],
+        "minimum": [
+          -0.131776,
+          -0.036465,
+          -0.489
+        ],
+        "physicalButt": [
+          0.0,
+          0.0,
+          -0.489
+        ],
+        "physicalTip": [
+          0.1736,
+          -0.0,
+          1.16
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.305376,
+          0.07293,
+          1.649
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 21,
-      "prefab": "NodachiCapstone"
+      "prefab": "NodachiCapstone",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.489
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.020912,
+          0.0,
+          0.3355
+        ],
+        "KMG_Support": [
+          0.0,
+          0.0,
+          -0.169
+        ],
+        "KMG_Tip": [
+          0.1736,
+          -0.0,
+          1.16
+        ]
+      }
     },
     "nodachi.classic": {
       "fbx": "nodachi.fbx",
@@ -318,8 +869,122 @@
         "pommel": "round",
         "widthScale": 1.0
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.00808,
+        "center": [
+          0.04336,
+          0.0,
+          0.36075
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.046213,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.14,
+            0.004032,
+            1.16
+          ],
+          "meanX": 0.033674,
+          "minimum": [
+            -0.025853,
+            -0.004032,
+            0.162035
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 725,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.14,
+          0.038362,
+          1.16
+        ],
+        "minimum": [
+          -0.05328,
+          -0.038362,
+          -0.4385
+        ],
+        "physicalButt": [
+          -0.0,
+          0.0,
+          -0.4385
+        ],
+        "physicalTip": [
+          0.14,
+          0.0,
+          1.16
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.19328,
+          0.076723,
+          1.5985
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 14,
-      "prefab": "Nodachi"
+      "prefab": "Nodachi",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          -0.0,
+          0.0,
+          -0.4385
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.04336,
+          0.0,
+          0.36075
+        ],
+        "KMG_Support": [
+          0.0,
+          0.0,
+          -0.169
+        ],
+        "KMG_Tip": [
+          0.14,
+          0.0,
+          1.16
+        ]
+      }
     },
     "nodachi.cleaver": {
       "fbx": "nodachi-cleaver.fbx",
@@ -329,8 +994,122 @@
         "pommel": "cap",
         "widthScale": 1.22
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.009858,
+        "center": [
+          0.0,
+          0.0,
+          0.364
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.032849,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.1036,
+            0.004919,
+            1.16
+          ],
+          "meanX": 0.016387,
+          "minimum": [
+            -0.031541,
+            -0.004919,
+            0.162042
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 701,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.120903,
+          0.021142,
+          1.16
+        ],
+        "minimum": [
+          -0.120903,
+          -0.021142,
+          -0.432
+        ],
+        "physicalButt": [
+          0.0,
+          -0.0,
+          -0.432
+        ],
+        "physicalTip": [
+          0.1036,
+          -0.0,
+          1.16
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.241806,
+          0.042284,
+          1.592
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 16,
-      "prefab": "NodachiCleaver"
+      "prefab": "NodachiCleaver",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          -0.0,
+          -0.432
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.0,
+          0.0,
+          0.364
+        ],
+        "KMG_Support": [
+          0.0,
+          0.0,
+          -0.169
+        ],
+        "KMG_Tip": [
+          0.1036,
+          -0.0,
+          1.16
+        ]
+      }
     },
     "nodachi.titan": {
       "fbx": "nodachi-titan.fbx",
@@ -340,8 +1119,122 @@
         "pommel": "spike",
         "widthScale": 1.13
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.009131,
+        "center": [
+          0.02913,
+          0.0,
+          0.3475
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.04977,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.1512,
+            0.004556,
+            1.16
+          ],
+          "meanX": 0.035479,
+          "minimum": [
+            -0.029214,
+            -0.004556,
+            0.162039
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 725,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.1512,
+          0.0203,
+          1.16
+        ],
+        "minimum": [
+          -0.092941,
+          -0.0203,
+          -0.465
+        ],
+        "physicalButt": [
+          0.0,
+          -0.0,
+          -0.465
+        ],
+        "physicalTip": [
+          0.1512,
+          0.0,
+          1.16
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.244141,
+          0.040599,
+          1.625
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 17,
-      "prefab": "NodachiTitan"
+      "prefab": "NodachiTitan",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          -0.0,
+          -0.465
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.02913,
+          0.0,
+          0.3475
+        ],
+        "KMG_Support": [
+          0.0,
+          0.0,
+          -0.169
+        ],
+        "KMG_Tip": [
+          0.1512,
+          0.0,
+          1.16
+        ]
+      }
     },
     "wakizashi.capstone": {
       "fbx": "wakizashi-capstone.fbx",
@@ -351,8 +1244,117 @@
         "pommel": "crown",
         "widthScale": 1.06
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.01378,
+        "center": [
+          0.0,
+          0.0,
+          0.1455
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.025197,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.0781,
+            0.003087,
+            0.56
+          ],
+          "meanX": 0.015094,
+          "minimum": [
+            -0.019792,
+            -0.003087,
+            0.112027
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 709,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.085493,
+          0.023658,
+          0.56
+        ],
+        "minimum": [
+          -0.085493,
+          -0.023658,
+          -0.269
+        ],
+        "physicalButt": [
+          0.0,
+          0.0,
+          -0.269
+        ],
+        "physicalTip": [
+          0.0781,
+          0.0,
+          0.56
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.170987,
+          0.047315,
+          0.829
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 18,
-      "prefab": "WakizashiCapstone"
+      "prefab": "WakizashiCapstone",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.269
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.0,
+          0.0,
+          0.1455
+        ],
+        "KMG_Tip": [
+          0.0781,
+          0.0,
+          0.56
+        ]
+      }
     },
     "wakizashi.classic": {
       "fbx": "wakizashi.fbx",
@@ -362,8 +1364,117 @@
         "pommel": "round",
         "widthScale": 1.0
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.013,
+        "center": [
+          0.00826,
+          0.0,
+          0.17075
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.017229,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.055,
+            0.002912,
+            0.56
+          ],
+          "meanX": 0.007375,
+          "minimum": [
+            -0.018672,
+            -0.002912,
+            0.112025
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 629,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.055,
+          0.027706,
+          0.56
+        ],
+        "minimum": [
+          -0.03848,
+          -0.027706,
+          -0.2185
+        ],
+        "physicalButt": [
+          -0.0,
+          -0.0,
+          -0.2185
+        ],
+        "physicalTip": [
+          0.055,
+          0.0,
+          0.56
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.09348,
+          0.055411,
+          0.7785
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 11,
-      "prefab": "Wakizashi"
+      "prefab": "Wakizashi",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          -0.0,
+          -0.0,
+          -0.2185
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.00826,
+          0.0,
+          0.17075
+        ],
+        "KMG_Tip": [
+          0.055,
+          0.0,
+          0.56
+        ]
+      }
     },
     "wakizashi.moon": {
       "fbx": "wakizashi-moon.fbx",
@@ -373,8 +1484,117 @@
         "pommel": "spike",
         "widthScale": 0.92
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.01196,
+        "center": [
+          0.007875,
+          0.0,
+          0.1575
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.022785,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.0704,
+            0.002679,
+            0.56
+          ],
+          "meanX": 0.014061,
+          "minimum": [
+            -0.017178,
+            -0.002679,
+            0.112023
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 565,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.0704,
+          0.01447,
+          0.56
+        ],
+        "minimum": [
+          -0.054649,
+          -0.01447,
+          -0.245
+        ],
+        "physicalButt": [
+          -0.0,
+          -0.0,
+          -0.245
+        ],
+        "physicalTip": [
+          0.0704,
+          -0.0,
+          0.56
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.125049,
+          0.028941,
+          0.805
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 12,
-      "prefab": "WakizashiMoon"
+      "prefab": "WakizashiMoon",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          -0.0,
+          -0.0,
+          -0.245
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.007875,
+          0.0,
+          0.1575
+        ],
+        "KMG_Tip": [
+          0.0704,
+          -0.0,
+          0.56
+        ]
+      }
     },
     "wakizashi.petal": {
       "fbx": "wakizashi-petal.fbx",
@@ -384,8 +1604,117 @@
         "pommel": "cap",
         "widthScale": 1.1
       },
+      "meshFrame": {
+        "bladeNormalToForwardSpanRatio": 0.0143,
+        "center": [
+          0.003586,
+          0.0,
+          0.174
+        ],
+        "cuttingEdge": {
+          "allMeanX": 0.015101,
+          "isNegativeXOfBladeMean": true,
+          "material": 1,
+          "maximum": [
+            0.0495,
+            0.003203,
+            0.56
+          ],
+          "meanX": 0.00407,
+          "minimum": [
+            -0.020539,
+            -0.003203,
+            0.112028
+          ],
+          "ownsNegativeXExtreme": true,
+          "vertexCount": 119
+        },
+        "evaluatedVertexCount": 581,
+        "gripClearOfPhysicalBlade": true,
+        "gripInsidePhysicalHandle": true,
+        "maximum": [
+          0.0495,
+          0.041753,
+          0.56
+        ],
+        "minimum": [
+          -0.042328,
+          -0.041753,
+          -0.212
+        ],
+        "physicalButt": [
+          0.0,
+          0.0,
+          -0.212
+        ],
+        "physicalTip": [
+          0.0495,
+          0.0,
+          0.56
+        ],
+        "pommelIsRearExtreme": true,
+        "positiveIdentityMeshScales": true,
+        "sourceBladeNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "sourceCuttingEdge": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "span": [
+          0.091828,
+          0.083506,
+          0.772
+        ],
+        "tipIsBladeExtreme": true
+      },
       "meshObjects": 13,
-      "prefab": "WakizashiPetal"
+      "prefab": "WakizashiPetal",
+      "semanticMarkers": {
+        "KMG_BladeNormal": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -0.212
+        ],
+        "KMG_Edge": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "KMG_Forward": [
+          0.0,
+          0.0,
+          0.1
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Stored": [
+          0.003586,
+          0.0,
+          0.174
+        ],
+        "KMG_Tip": [
+          0.0495,
+          0.0,
+          0.56
+        ]
+      }
     }
   }
 }

@@ -28,9 +28,11 @@ namespace KingmakerGunslinger.DomainTests
                 "SupportMarker", "WeaponUpMarker", "HeadUpMarker",
                 "WeaponForwardMarker", "BladeNormalMarker",
                 "RequireWithForwardMarker", "semantic frame is degenerate",
+                "RequireWithForwardMarkerAndButtSupport",
                 "forward and secondary axes are collinear",
                 "tip/butt polarity is reversed",
                 "support-hand target is outside the grip-to-tip interval",
+                "support-hand target is outside the butt-to-grip handle interval",
                 "reflected, zero, or non-finite local scale",
                 "renderer-bound forward end", "renderer-bound rear end",
                 "Quaternion.LookRotation", "targetBasis * Quaternion.Inverse(sourceBasis)",
@@ -75,11 +77,33 @@ namespace KingmakerGunslinger.DomainTests
                     "held and stored presentations share an incompatible transform"),
                 "Spear authoring/runtime does not enforce mesh-authored polarity, donor-derived roll, held IK, and independent stored presentation.");
             Assertions.True(easternBuilder.Contains("BladeNormalMarker") &&
+                easternBuilder.Contains("KMG_Grip") &&
+                easternBuilder.Contains("KMG_Tip") &&
+                easternBuilder.Contains("KMG_Butt") &&
+                easternBuilder.Contains("KMG_Forward") &&
+                easternBuilder.Contains("KMG_BladeNormal") &&
+                easternBuilder.Contains("KMG_Edge") &&
+                easternBuilder.Contains("KMG_Stored") &&
+                easternBuilder.Contains("SolveRotation") &&
+                easternBuilder.Contains("SolveTranslation") &&
+                easternBuilder.Contains("StoredMount") &&
+                easternBuilder.Contains("native-Scimitar") &&
+                easternBuilder.Contains("native-BastardSword") &&
+                easternBuilder.Contains("native-Greatsword") &&
                 easternBuilder.Contains("ValidateSecondaryAsPlaneNormal") &&
                 easternBuilder.Contains("KMG_EASTERN_SEMANTIC_FRAME") &&
                 easternRuntime.Contains("BladeNormalMarker") &&
-                easternRuntime.Contains("ValidateRendererEndpoints"),
-                "Eastern authoring/runtime does not enforce blade-plane semantics.");
+                easternRuntime.Contains("ValidateRendererEndpoints") &&
+                easternRuntime.Contains("StoredPrefabs") &&
+                easternRuntime.Contains("m_WeaponBeltModel") &&
+                easternRuntime.Contains("m_WeaponSheathModel") == false &&
+                easternRuntime.Contains("PreservesNonModelFields") &&
+                easternRuntime.Contains("EquipmentOffsets") &&
+                easternRuntime.Contains("IkTargetLeftHand") &&
+                easternRuntime.Contains("HasCalibratedDonorFrame") &&
+                easternRuntime.Contains(
+                    "held and stored presentations share an incompatible transform"),
+                "Eastern authoring/runtime does not enforce mesh-authored blade polarity, donor-derived roll, held-only Nodachi IK, independent stored presentation, and inherited native sheath data.");
         }
 
         internal static void EvidenceScenarioIsGuardedAndStateLabelled()
@@ -101,6 +125,8 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-motion-evidence";
             const string spearMotionIdentity =
                 "weapon-presentation-spear-motion-evidence";
+            const string easternMotionIdentity =
+                "weapon-presentation-eastern-motion-evidence";
             int workingSaveCompletion = runner.IndexOf(
                 "if (_workingSaveSmoke.Complete)", StringComparison.Ordinal);
             int evidenceExecution = runner.IndexOf(
@@ -112,6 +138,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(catalog.Contains(identity) &&
                 catalog.Contains(motionIdentity) &&
                 catalog.Contains(spearMotionIdentity) &&
+                catalog.Contains(easternMotionIdentity) &&
                 runner.Contains("WeaponPresentationEvidenceScenario.Begin(") &&
                 runner.Contains("_weaponPresentationEvidence.Poll()") &&
                 runner.Contains("if (_weaponPresentationEvidence.Complete)") &&
@@ -129,14 +156,19 @@ namespace KingmakerGunslinger.DomainTests
                     "RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||") &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||") &&
+                request.Contains(
+                    "RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence ||") &&
                 automation.Contains("'" + identity + "' = [pscustomobject]") &&
                 automation.Contains("'" + motionIdentity +
                     "' = [pscustomobject]") &&
                 automation.Contains("'" + spearMotionIdentity +
                     "' = [pscustomobject]") &&
+                automation.Contains("'" + easternMotionIdentity +
+                    "' = [pscustomobject]") &&
                 preflight.Contains("'" + identity + "'") &&
                 preflight.Contains("'" + motionIdentity + "'") &&
                 preflight.Contains("'" + spearMotionIdentity + "'") &&
+                preflight.Contains("'" + easternMotionIdentity + "'") &&
                 automation.Contains(
                     "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
                 automation.Contains(
@@ -156,6 +188,22 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-spear-physical-endpoint-evidence" })
                 Assertions.True(scenario.Contains(token),
                     "Spear motion evidence omitted " + token + ".");
+
+            foreach (string token in new[] {
+                "EasternMotionVariants", "Native.Scimitar",
+                "Native.BastardSword", "Native.Greatsword",
+                "TryResolveEasternBladeFrame",
+                "authored-renderer-bound-Tip/Butt+WeaponForward/BladeNormal/CuttingEdge",
+                "native-renderer-local-+Y-forward/+X-blade-normal/-Z-cutting-edge",
+                "physicalBladeLengthMeters",
+                "physicalTipAheadAlongBladeForward",
+                "bladeNormalForwardAbsDot", "cuttingEdgeForwardAbsDot",
+                "cuttingEdgeBladeNormalAbsDot", "cuttingEdgePolarityDot",
+                "actedVariants == _motionVariants.Length",
+                "weapon-presentation-eastern-motion-index.json",
+                "weapon-presentation-eastern-physical-blade-frame" })
+                Assertions.True(scenario.Contains(token),
+                    "Eastern motion evidence omitted " + token + ".");
 
             foreach (string token in new[] {
                 "PistolService", "PistolDuelist", "PistolLastWord",

@@ -641,6 +641,12 @@ namespace KingmakerGunslinger.DomainTests
                 "\"buttDirection\": \"lower-left\"",
                 "\"runtimeDimensions\": [",
                 "curved asymmetric single edge at local -X; blunt spine at local +X",
+                "\"schemaVersion\": 3",
+                "KMG_Grip", "KMG_Tip", "KMG_Butt", "KMG_Forward",
+                "KMG_BladeNormal", "KMG_Edge", "KMG_Stored",
+                "mesh-grounded tip/pommel",
+                "ownsNegativeXExtreme", "isNegativeXOfBladeMean",
+                "gripInsidePhysicalHandle", "positiveIdentityMeshScales",
                 "\"overallLengthMeters\": 0.76",
                 "\"overallLengthMeters\": 1.05",
                 "\"overallLengthMeters\": 1.5799999999999998" })
@@ -648,28 +654,61 @@ namespace KingmakerGunslinger.DomainTests
                     "Eastern Blender source/report lacks: " + token);
             var expectedFbx = new Dictionary<string, string>
             {
-                { "wakizashi.fbx", "ECFA64D35017EE44D184A43E6F4F5A1A1409F9909F5F153B494613E19772DC73" },
-                { "wakizashi-petal.fbx", "CB52CCB5B73AC49926EE483548AC2ED37F68D4D24DFF6D748D27729189930CAA" },
-                { "wakizashi-moon.fbx", "B42F6D4C8D198DDA2023EC27FE50A9BFD6366FACDE8926AE529AF6A4D88C27BA" },
-                { "wakizashi-capstone.fbx", "A1375C8D17B5A849F8D0E804E4D1C63F9A7FDB88BA41E914774638A724AC3114" },
-                { "katana.fbx", "1701A0341573D8EDE67F245D621F9E8CBECD44259EA61BFB1832C6329D212083" },
-                { "katana-reed.fbx", "23ECF496991CF05CF11C723916AF801FC1AD4BCFDDE37FEF040CB9DA3C5E4C0D" },
-                { "katana-regal.fbx", "9BC238C2638F7A6B3FEBCC1568D25DC188648CFD23E8F8064D59654FD2915CB9" },
-                { "katana-capstone.fbx", "C614A4CE220F9DA847EFDE652553FA4A039A34D91AC729647038730020C86E72" },
-                { "nodachi.fbx", "EDC0D93ECB61E18BFD6DA660DCB7B4968721AB3D86E413A07467FA3E839ADDE8" },
-                { "nodachi-cleaver.fbx", "112C16702787D53B6769E0DD69210AE8E321572501C8AC5C98056D70301D7742" },
-                { "nodachi-titan.fbx", "87FA6F3048F654B897679A1C7368B842FEC097A80B8624CB6DBFFC7828813A34" },
-                { "nodachi-capstone.fbx", "E4D2F94A79CFBB3F94AF7D246C7C95801C455BFF164D68EA957B11446995510E" }
+                { "wakizashi.fbx", "A121C0BD1010B4083A29644D49DDD61020829AFAB5687E6D0249AC1EC80543D0" },
+                { "wakizashi-petal.fbx", "5A7C77D2C382ACC71C1AD0DCF9D48B7E5A5C271933B163D0BC8EF4C83CC9979C" },
+                { "wakizashi-moon.fbx", "4EDB462134FA8BDE867A0AAD42E4109746317F9BBA27C0C4AF2347755A5DF2FA" },
+                { "wakizashi-capstone.fbx", "5031D238E65D6D57A859E4FBF2DEEB5AA800D0F58D0376E6EA1C31935DB98233" },
+                { "katana.fbx", "CD9047823503CBE1367FD6667FC0835BF6A578376210E8B9CD48C1ECD02234B8" },
+                { "katana-reed.fbx", "2579AFE8BB2B18EDB274B3CBF323C815368F77A0A1543756CE72667CCF48F3BF" },
+                { "katana-regal.fbx", "D3B7D032F170CE97447A6AC815D79D5608CC910E148ED2185D5AD663027EB753" },
+                { "katana-capstone.fbx", "4E58F7AB12FE45787BA0F3C4860E7F3E8EB759F4519A481AB2987FA6DBB0664E" },
+                { "nodachi.fbx", "87BDFBBE364865F3C9A824C9F74FD0E5823045328C096FAE2EDF5A105F211A3E" },
+                { "nodachi-cleaver.fbx", "7A689899A799A4AB8060FCEB9691586259AAA80713D1697651058C1A3F35CAD0" },
+                { "nodachi-titan.fbx", "AC28942CED2F76060EC75323353AF7BA11DC98958F5CC0E62173BDBAA87C918F" },
+                { "nodachi-capstone.fbx", "ACFA2048E8A339AA3670A7CDF240A2E8A3F8E9187A9E3828EDA9ED0E8D3CFB84" }
             };
             foreach (KeyValuePair<string, string> pair in expectedFbx)
                 Assertions.Equal(pair.Value,
                     Sha256(Path.Combine(sourceRoot, pair.Key)),
                     "Generated Eastern FBX hash changed: " + pair.Key);
             Assertions.Equal(
-                "7AF99FAA8C63BA91DBAF9BC5295E1629A8E090288A9ED86753D835CCAF3C3C33",
+                "AE311993F683295D3DD996285D28385A20F593DF16903D909818EB4F25A0096B",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.easternweapons")),
                 "Dedicated Eastern Weapons bundle hash changed.");
+            JObject bundleManifest = JObject.Parse(File.ReadAllText(Path.Combine(
+                root, "assets", "bundles", "asset-bundle-manifest.json")));
+            JObject easternBundle = ((JArray)bundleManifest["bundles"])
+                .Cast<JObject>().Single(value => (string)value["name"] ==
+                    "kingmakergunslinger.easternweapons");
+            Assertions.Equal(
+                "AE311993F683295D3DD996285D28385A20F593DF16903D909818EB4F25A0096B",
+                (string)easternBundle["sha256"],
+                "Eastern bundle manifest hash is stale.");
+            string[] expectedPrefabs = {
+                "Wakizashi", "WakizashiStored",
+                "WakizashiPetal", "WakizashiPetalStored",
+                "WakizashiMoon", "WakizashiMoonStored",
+                "WakizashiCapstone", "WakizashiCapstoneStored",
+                "Katana", "KatanaStored", "KatanaReed", "KatanaReedStored",
+                "KatanaRegal", "KatanaRegalStored",
+                "KatanaCapstone", "KatanaCapstoneStored",
+                "Nodachi", "NodachiStored",
+                "NodachiCleaver", "NodachiCleaverStored",
+                "NodachiTitan", "NodachiTitanStored",
+                "NodachiCapstone", "NodachiCapstoneStored" };
+            Assertions.True(((JArray)easternBundle["prefabs"])
+                .Select(value => (string)value).SequenceEqual(expectedPrefabs),
+                "Eastern bundle manifest must enumerate each independent held/stored pair.");
+            JObject reportVariants = (JObject)JObject.Parse(report)["variants"];
+            JObject sourceHashes = (JObject)easternBundle["sourceFbxSha256"];
+            foreach (KeyValuePair<string, string> pair in expectedFbx)
+            {
+                string prefab = (string)reportVariants.Properties().Single(value =>
+                        (string)value.Value["fbx"] == pair.Key).Value["prefab"];
+                Assertions.Equal(pair.Value, (string)sourceHashes[prefab],
+                    "Eastern bundle manifest source hash changed: " + prefab);
+            }
 
             string[] iconNames = { "wakizashi", "katana", "nodachi",
                 "night-without-moon", "heavens-measure",
@@ -713,19 +752,24 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "2018.4.10f1",
                 "kingmakergunslinger.easternweapons", "\"Wakizashi\"",
                 "\"Katana\"", "\"Nodachi\"", "prefabPath", "Grip",
-                "SupportHandTarget", "Tip", "Butt", "Standard",
+                "WeaponPresentationFrameContract.SupportMarker", "Tip", "Butt", "Standard",
                 "DeterministicAssetBundle", "ForceRebuildAssetBundle" })
                 Assertions.True(builder.Contains(token) || runtime.Contains(token),
                     "Eastern Unity pipeline lacks: " + token);
             foreach (string token in new[] { "AssetBundle.LoadFromFile",
-                "prefabs.Length != Contracts.Length", "candidate.Unload(false)",
+                "prefabs.Length != Contracts.Length * 2", "candidate.Unload(false)",
                 "native-fallback:bundle-missing",
                 "native-fallback:bundle-rejected", "ApplyTo",
-                "ReferenceEquals(weaponType.VisualParameters.Model, prefab)",
+                "ExactModels(weaponType.VisualParameters, prefab",
                 "native-fallback:model-assignment-rejected",
                 "HasApprovedVisualOrNativeFallback",
                 "GetComponentsInChildren<Camera>",
-                "GetComponentsInChildren<Light>", "InstantiatePrefab" })
+                "GetComponentsInChildren<Light>", "InstantiatePrefab",
+                "InstantiateStoredPrefab", "m_WeaponBeltModel",
+                "PreservesNonModelFields", "StoredMount",
+                "HasCalibratedDonorFrame",
+                "offsets.m_SlotOffsets = new EquipmentOffsets.Offsets[0]",
+                "held support-hand offset initialization failed" })
                 Assertions.True(runtime.Contains(token),
                     "Eastern fail-safe asset runtime lacks: " + token);
 

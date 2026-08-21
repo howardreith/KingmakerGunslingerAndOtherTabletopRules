@@ -103,22 +103,28 @@
     },
     {
       "name": "kingmakergunslinger.easternweapons",
-      "sha256": "7AF99FAA8C63BA91DBAF9BC5295E1629A8E090288A9ED86753D835CCAF3C3C33",
-      "prefabs": ["Wakizashi", "WakizashiPetal", "WakizashiMoon", "WakizashiCapstone", "Katana", "KatanaReed", "KatanaRegal", "KatanaCapstone", "Nodachi", "NodachiCleaver", "NodachiTitan", "NodachiCapstone"],
+      "sha256": "AE311993F683295D3DD996285D28385A20F593DF16903D909818EB4F25A0096B",
+      "prefabs": ["Wakizashi", "WakizashiStored", "WakizashiPetal", "WakizashiPetalStored", "WakizashiMoon", "WakizashiMoonStored", "WakizashiCapstone", "WakizashiCapstoneStored", "Katana", "KatanaStored", "KatanaReed", "KatanaReedStored", "KatanaRegal", "KatanaRegalStored", "KatanaCapstone", "KatanaCapstoneStored", "Nodachi", "NodachiStored", "NodachiCleaver", "NodachiCleaverStored", "NodachiTitan", "NodachiTitanStored", "NodachiCapstone", "NodachiCapstoneStored"],
       "sourceFbxSha256": {
-        "Wakizashi": "ECFA64D35017EE44D184A43E6F4F5A1A1409F9909F5F153B494613E19772DC73",
-        "WakizashiPetal": "CB52CCB5B73AC49926EE483548AC2ED37F68D4D24DFF6D748D27729189930CAA",
-        "WakizashiMoon": "B42F6D4C8D198DDA2023EC27FE50A9BFD6366FACDE8926AE529AF6A4D88C27BA",
-        "WakizashiCapstone": "A1375C8D17B5A849F8D0E804E4D1C63F9A7FDB88BA41E914774638A724AC3114",
-        "Katana": "1701A0341573D8EDE67F245D621F9E8CBECD44259EA61BFB1832C6329D212083",
-        "KatanaReed": "23ECF496991CF05CF11C723916AF801FC1AD4BCFDDE37FEF040CB9DA3C5E4C0D",
-        "KatanaRegal": "9BC238C2638F7A6B3FEBCC1568D25DC188648CFD23E8F8064D59654FD2915CB9",
-        "KatanaCapstone": "C614A4CE220F9DA847EFDE652553FA4A039A34D91AC729647038730020C86E72",
-        "Nodachi": "EDC0D93ECB61E18BFD6DA660DCB7B4968721AB3D86E413A07467FA3E839ADDE8",
-        "NodachiCleaver": "112C16702787D53B6769E0DD69210AE8E321572501C8AC5C98056D70301D7742",
-        "NodachiTitan": "87FA6F3048F654B897679A1C7368B842FEC097A80B8624CB6DBFFC7828813A34",
-        "NodachiCapstone": "E4D2F94A79CFBB3F94AF7D246C7C95801C455BFF164D68EA957B11446995510E"
+        "Wakizashi": "A121C0BD1010B4083A29644D49DDD61020829AFAB5687E6D0249AC1EC80543D0",
+        "WakizashiPetal": "5A7C77D2C382ACC71C1AD0DCF9D48B7E5A5C271933B163D0BC8EF4C83CC9979C",
+        "WakizashiMoon": "4EDB462134FA8BDE867A0AAD42E4109746317F9BBA27C0C4AF2347755A5DF2FA",
+        "WakizashiCapstone": "5031D238E65D6D57A859E4FBF2DEEB5AA800D0F58D0376E6EA1C31935DB98233",
+        "Katana": "CD9047823503CBE1367FD6667FC0835BF6A578376210E8B9CD48C1ECD02234B8",
+        "KatanaReed": "2579AFE8BB2B18EDB274B3CBF323C815368F77A0A1543756CE72667CCF48F3BF",
+        "KatanaRegal": "D3B7D032F170CE97447A6AC815D79D5608CC910E148ED2185D5AD663027EB753",
+        "KatanaCapstone": "4E58F7AB12FE45787BA0F3C4860E7F3E8EB759F4519A481AB2987FA6DBB0664E",
+        "Nodachi": "87BDFBBE364865F3C9A824C9F74FD0E5823045328C096FAE2EDF5A105F211A3E",
+        "NodachiCleaver": "7A689899A799A4AB8060FCEB9691586259AAA80713D1697651058C1A3F35CAD0",
+        "NodachiTitan": "AC28942CED2F76060EC75323353AF7BA11DC98958F5CC0E62173BDBAA87C918F",
+        "NodachiCapstone": "ACFA2048E8A339AA3670A7CDF240A2E8A3F8E9187A9E3828EDA9ED0E8D3CFB84"
       },
+      "semanticFrame": ["Grip", "Tip", "Butt", "WeaponForward", "BladeNormal", "CuttingEdge"],
+      "sourceSemanticFrame": ["KMG_Grip", "KMG_Tip", "KMG_Butt", "KMG_Forward", "KMG_BladeNormal", "KMG_Edge", "KMG_Stored"],
+      "heldDonors": {"Wakizashi": "native Scimitar measured held basis", "Katana": "native BastardSword measured held basis", "Nodachi": "native Greatsword measured held basis"},
+      "storedDonors": {"Wakizashi": "native Scimitar measured BeltModel basis and renderer anchor", "Katana": "native BastardSword measured BeltModel basis and renderer anchor", "Nodachi": "native Greatsword measured BeltModel basis and renderer anchor"},
+      "nodachiSupportStationMeters": -0.169,
+      "readiness": "basis-calibrated-mesh-grounded-held-independent-stored",
       "originalAsset": true
     }
   ]
