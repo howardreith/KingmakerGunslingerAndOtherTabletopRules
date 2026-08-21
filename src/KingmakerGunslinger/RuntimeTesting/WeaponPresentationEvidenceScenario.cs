@@ -65,7 +65,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly NativeControlSpec HandgunPiercingDonor =
             new NativeControlSpec("Shortspear",
                 "cf72040b79c99504785976b28d54b2b7",
-                null);
+                "926d02c8af0352b46874791d4de9764f");
 
         private static readonly string[] ProductionVariants =
         {

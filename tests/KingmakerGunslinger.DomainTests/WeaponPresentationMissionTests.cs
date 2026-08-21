@@ -564,6 +564,7 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Substring(nativeControlStart,
                     nativeControlEnd - nativeControlStart);
             Assertions.True(
+                scenario.Contains("926d02c8af0352b46874791d4de9764f") &&
                 scenario.Contains("2ca0329871f14a27922370f17ea4d15d") &&
                 scenario.Contains("0782c8ca4b6c4634a0f6dabbed796211") &&
                 nativeControlSource.Length > 0 &&
