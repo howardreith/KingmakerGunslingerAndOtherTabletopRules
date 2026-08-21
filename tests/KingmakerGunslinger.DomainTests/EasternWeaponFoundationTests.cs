@@ -666,7 +666,7 @@ namespace KingmakerGunslinger.DomainTests
                     Sha256(Path.Combine(sourceRoot, pair.Key)),
                     "Generated Eastern FBX hash changed: " + pair.Key);
             Assertions.Equal(
-                "079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041",
+                "7AF99FAA8C63BA91DBAF9BC5295E1629A8E090288A9ED86753D835CCAF3C3C33",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.easternweapons")),
                 "Dedicated Eastern Weapons bundle hash changed.");

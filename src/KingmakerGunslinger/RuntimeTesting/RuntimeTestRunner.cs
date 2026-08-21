@@ -9584,18 +9584,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, effective != null && effective.AnimStyle == WeaponAnimationStyle.PiercingOneHanded,
                     "effective production item visual parameters"));
                 if (kind == FirearmKind.Pistol)
-                    assertions.Add(Assertion("pistol-human-accepted-held-freeze",
-                        "Cyril43 Pistol; position (0,0,0.1632); euler (0,180,180); scale 0.24; PiercingOneHanded",
+                    assertions.Add(Assertion("pistol-basis-calibrated-held-frame",
+                        "Cyril43 Pistol; grip-derived position (0,0,0.1632); euler (0,180,0); scale 0.24; PiercingOneHanded",
                         observed, visual != null &&
                         Vector3.Distance(visual.localPosition,
                             new Vector3(0f, 0f, 0.1632f)) < 0.0001f &&
                         Vector3.Distance(visual.localScale,
                             Vector3.one * 0.24f) < 0.0001f &&
                         Mathf.Abs(Quaternion.Dot(visual.localRotation,
-                            Quaternion.Euler(0f, 180f, 180f))) > 0.9999f &&
+                            Quaternion.Euler(0f, 180f, 0f))) > 0.9999f &&
                         effective != null && effective.AnimStyle ==
                             WeaponAnimationStyle.PiercingOneHanded,
-                        "narrow 2026-08-07 held-appearance freeze; other states unaccepted"));
+                        "source -Z/+Y to donor +Z/+Y semantic-basis solve"));
                 assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
                     "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
                 assertions.Add(Assertion(id + "-holster-policy", "hidden; no inherited crossbow sheath",

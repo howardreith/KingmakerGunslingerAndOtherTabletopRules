@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using KingmakerGunslinger.Assets;
 using UnityEditor;
 using UnityEngine;
 
@@ -115,6 +116,26 @@ public static class BuildEasternWeaponsBundle
             AddAnchor(root, "SupportHandTarget", new Vector3(0f, 0f, weapon.Support));
             AddAnchor(root, "Tip", new Vector3(0f, 0f, weapon.Tip));
             AddAnchor(root, "Butt", new Vector3(0f, 0f, weapon.Butt));
+            AddAnchor(root, WeaponPresentationFrameContract.BladeNormalMarker,
+                Vector3.up * 0.10f);
+            WeaponPresentationSemanticFrame frame =
+                WeaponPresentationFrameContract.Require(root.transform,
+                    weapon.Label, "Tip",
+                    WeaponPresentationFrameContract.BladeNormalMarker, true,
+                    weapon.Minimum, weapon.Maximum);
+            WeaponPresentationProjection projection =
+                WeaponPresentationFrameContract.ValidateRendererEndpoints(
+                    root.transform, visual.transform, frame, weapon.Label,
+                    0.12f);
+            WeaponPresentationFrameContract.ValidateSecondaryAsPlaneNormal(
+                root.transform, visual.transform, frame, weapon.Label, 0.20f);
+            Debug.Log("KMG_EASTERN_SEMANTIC_FRAME name=" + weapon.Label +
+                ";forward=" + frame.Forward.ToString("R") + ";normal=" +
+                frame.Up.ToString("R") + ";right=" +
+                frame.Right.ToString("R") + ";rendererProjection=" +
+                projection.Minimum.ToString("R") + ".." +
+                projection.Maximum.ToString("R") + ";sources=" +
+                projection.SourceCount);
             Bounds bounds = CombinedBounds(renderers);
             if (!Finite(bounds.min) || !Finite(bounds.max) ||
                 bounds.size.magnitude < weapon.Minimum ||

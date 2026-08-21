@@ -28,4 +28,7 @@ Copy-Item -LiteralPath (Join-Path $source 'elven-branched-spear-build-report.jso
 Copy-Item -LiteralPath (Join-Path $root `
     'tools\unity\BuildElvenBranchedSpearBundle.cs') -Destination `
     (Join-Path $editor 'BuildElvenBranchedSpearBundle.cs') -Force
+Copy-Item -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\Assets\WeaponPresentationSemanticFrame.cs') `
+    -Destination (Join-Path $editor 'WeaponPresentationSemanticFrame.cs') -Force
 Write-Host 'Prepared three project-owned spear FBXs and the dedicated Unity builder.'

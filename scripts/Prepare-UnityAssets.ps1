@@ -17,6 +17,9 @@ $editor = Join-Path $ProjectPath 'Assets\Editor'
 New-Item -ItemType Directory -Force -Path $editor | Out-Null
 Copy-Item -LiteralPath (Join-Path $root 'tools\unity\BuildFirearmBundles.cs') `
     -Destination (Join-Path $editor 'BuildFirearmBundles.cs') -Force
+Copy-Item -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\Assets\WeaponPresentationSemanticFrame.cs') `
+    -Destination (Join-Path $editor 'WeaponPresentationSemanticFrame.cs') -Force
 $staging = @(
     @{ Name='Pistol'; Source=(Join-Path $models 'cyril43-flintlock-pistol\source\pistol.zip'); Zip=$true },
     @{ Name='Musket'; Source=(Join-Path $models 'mesh-masters-rifle-musket'); Zip=$false },

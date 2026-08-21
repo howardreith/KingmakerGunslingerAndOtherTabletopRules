@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using KingmakerGunslinger.Assets;
 using UnityEditor;
 using UnityEngine;
 
@@ -120,7 +121,26 @@ public static class BuildElvenBranchedSpearBundle
                 visualRotation, 1.14f));
             AddAnchor(root, "Butt", TransformSourcePoint(visualPosition,
                 visualRotation, -1.14f));
+            AddAnchor(root, WeaponPresentationFrameContract.HeadUpMarker,
+                visualPosition + visualRotation * (Vector3.up * 0.10f));
             if (back) AddAnchor(root, "BackMount", Vector3.zero);
+            WeaponPresentationSemanticFrame frame =
+                WeaponPresentationFrameContract.Require(root.transform,
+                    rootName, "Tip",
+                    WeaponPresentationFrameContract.HeadUpMarker, true,
+                    2.25f, 2.32f);
+            WeaponPresentationProjection projection =
+                WeaponPresentationFrameContract.ValidateRendererEndpoints(
+                    root.transform, visual.transform, frame, rootName, 0.08f);
+            WeaponPresentationFrameContract.ValidateSecondaryAsPlaneNormal(
+                root.transform, visual.transform, frame, rootName, 0.20f);
+            Debug.Log("KMG_SPEAR_SEMANTIC_FRAME name=" + rootName +
+                ";forward=" + frame.Forward.ToString("R") + ";up=" +
+                frame.Up.ToString("R") + ";right=" +
+                frame.Right.ToString("R") + ";rendererProjection=" +
+                projection.Minimum.ToString("R") + ".." +
+                projection.Maximum.ToString("R") + ";sources=" +
+                projection.SourceCount);
             Bounds bounds = CombinedBounds(renderers);
             bool heldBounds = !back && bounds.size.y >= 2.20f &&
                 bounds.size.y <= 2.35f && bounds.size.y > bounds.size.x &&

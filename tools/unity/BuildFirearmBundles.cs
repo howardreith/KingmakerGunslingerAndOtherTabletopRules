@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using KingmakerGunslinger.Assets;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,6 +21,13 @@ public static class BuildFirearmBundles
         internal float VisualScale;
         internal Vector3 MuzzlePosition;
         internal Vector3 MuzzleEuler;
+        internal Vector3 GripPosition;
+        internal Vector3 ButtPosition;
+        internal Vector3 SourceUpAxis;
+        internal Vector3 SourceForwardAxis;
+        internal Vector3 TargetForwardAxis;
+        internal Vector3 TargetUpAxis;
+        internal bool UseSemanticBasis;
         internal Vector3 SupportHandPosition;
         internal Vector3 SupportHandEuler;
         internal bool HasSemanticAnchors;
@@ -40,14 +48,21 @@ public static class BuildFirearmBundles
 
     private static readonly FirearmPrefabSpec[] Specs =
     {
-        Spec("Pistol", "Pistol", "model.dae", false, false,
-            new Vector3(0f, 0f, 0.1632f), new Vector3(0f, 180f, 180f), 0.24f,
-            new Vector3(0f, 0f, 0.264f), 0.264f, 0.15f, 0.45f,
-            "Crossbow", "autonomous-candidate; equipped-visual-roll-corrected"),
-        Spec("PistolBelt", "Pistol", "model.dae", true, false,
+        BasisCalibrated(Anchored(Spec("Pistol", "Pistol", "model.dae", false,
+            false, new Vector3(0f, 0f, 0.1632f),
+            new Vector3(0f, 180f, 0f), 0.24f,
+            new Vector3(0f, 0f, 0.4032f), 0.480f, 0.45f, 0.51f,
+            "Crossbow", "basis-calibrated; renderer-endpoint-verified"),
+            new Vector3(0f, 0f, 0.68f), Vector3.zero,
+            new Vector3(0f, 0f, 1.00f),
+            new Vector3(0f, 0f, -1.00f))),
+        RootFramed(Spec("PistolBelt", "Pistol", "model.dae", true, false,
             Vector3.zero, new Vector3(0f, 90f, 90f), 0.24f,
-            Vector3.zero, 0.264f, 0.15f, 0.45f,
+            new Vector3(0f, 0f, 0.4032f), 0.480f, 0.45f, 0.51f,
             "None", "disabled; independent-holster-calibration-pending"),
+            new Vector3(0.1632f, 0f, 0f),
+            new Vector3(-0.2400f, 0f, 0f),
+            new Vector3(0.2400f, 0f, 0f)),
         BackAuthored(MarkerAuthored(Anchored(Spec("Musket", "Musket",
             "musket-normalized.fbx", false, true,
             Vector3.zero, new Vector3(0f, 3f, 0f), 1f,
@@ -82,7 +97,7 @@ public static class BuildFirearmBundles
             new Vector3(-0.030976f, -0.051069f, 0.586040f),
             new Vector3(0f, 0f, -0.169533f),
             new Vector3(0f, 0f, 1.180452f)), true),
-        MarkerAuthored(Anchored(Spec("PistolDuelist", "Pistol",
+        BasisCalibrated(MarkerAuthored(Anchored(Spec("PistolDuelist", "Pistol",
             "pistol-duelist.fbx", false, false,
             Vector3.zero, Vector3.zero, 1f,
             new Vector3(0f, 0f, 0.264f), 0.339f, 0.30f, 0.40f,
@@ -90,8 +105,8 @@ public static class BuildFirearmBundles
             Vector3.zero,
             new Vector3(0f, -0.020f, 0.145f),
             new Vector3(0f, 0f, -0.075f),
-            new Vector3(0f, 0f, 0.264f)), false),
-        MarkerAuthored(Anchored(Spec("PistolLastWord", "Pistol",
+            new Vector3(0f, 0f, 0.264f)), false)),
+        BasisCalibrated(MarkerAuthored(Anchored(Spec("PistolLastWord", "Pistol",
             "pistol-last-word.fbx", false, false,
             Vector3.zero, Vector3.zero, 1f,
             new Vector3(0f, 0f, 0.264f), 0.339f, 0.30f, 0.40f,
@@ -99,7 +114,7 @@ public static class BuildFirearmBundles
             Vector3.zero,
             new Vector3(0f, -0.020f, 0.145f),
             new Vector3(0f, 0f, -0.075f),
-            new Vector3(0f, 0f, 0.264f)), false),
+            new Vector3(0f, 0f, 0.264f)), false)),
         BackAuthored(MarkerAuthored(Anchored(Spec("MusketBelt", "Musket",
             "musket-normalized.fbx", true, false,
             Vector3.zero, new Vector3(0f, 0f, 12f), 0.82f, Vector3.zero,
@@ -119,11 +134,16 @@ public static class BuildFirearmBundles
             0.7568f, 0.68f, 0.84f, "None", "independent-back-production-rig"),
             Vector3.zero, new Vector3(-0.031f, -0.051f, 0.36f),
             new Vector3(0f, 0f, -0.233f), new Vector3(0f, 0f, 0.627f)), false)),
-        Spec("Revolver", "Revolver", "Final2 Sketchfab.fbx", false, false,
-            new Vector3(-0.0460553f, -0.1052241f, 0.1857974f),
-            new Vector3(0f, 90f, 0f), 0.01719849f,
-            new Vector3(0f, 0f, 0.264f), 0.264f, 0.15f, 0.45f,
-            "Crossbow", "source-unit-normalization-required"),
+        BasisCalibrated(Anchored(Spec("Revolver", "Revolver",
+            "Final2 Sketchfab.fbx", false, false, Vector3.zero,
+            new Vector3(0f, -90f, 0f), 0.01719849f,
+            new Vector3(0f, 0.0593f, 0.2796f), 0.321f, 0.30f, 0.34f,
+            "Crossbow", "basis-calibrated; component-bounds-derived"),
+            new Vector3(-8.889382f, 7.50916529f, 2.68602586f),
+            Vector3.zero,
+            new Vector3(-10.9627813f, 7.50916529f, 2.68602586f),
+            new Vector3(7.3696742f, 10.9590158f, 2.68599129f)),
+            Vector3.right),
         Anchored(Spec("Rifle", "Rifle", "fusilALevier.fbx", false, true,
             Vector3.zero, new Vector3(0f, 90f, 0f),
             1.5401387f, new Vector3(0f, 0f, 0.8525f),
@@ -143,7 +163,22 @@ public static class BuildFirearmBundles
         spec.SourceSupportPoint = support;
         spec.SourceButtPoint = butt;
         spec.SourceMuzzlePoint = muzzle;
+        spec.SourceForwardAxis = (muzzle - grip).normalized;
         return spec;
+    }
+
+    private static FirearmPrefabSpec BasisCalibrated(
+        FirearmPrefabSpec spec)
+    {
+        spec.UseSemanticBasis = true;
+        return spec;
+    }
+
+    private static FirearmPrefabSpec BasisCalibrated(
+        FirearmPrefabSpec spec, Vector3 sourceForwardAxis)
+    {
+        spec.SourceForwardAxis = sourceForwardAxis.normalized;
+        return BasisCalibrated(spec);
     }
 
     private static FirearmPrefabSpec MarkerAuthored(FirearmPrefabSpec spec,
@@ -157,6 +192,17 @@ public static class BuildFirearmBundles
     private static FirearmPrefabSpec BackAuthored(FirearmPrefabSpec spec)
     {
         spec.HasBackAnchor = true;
+        return spec;
+    }
+
+    private static FirearmPrefabSpec RootFramed(FirearmPrefabSpec spec,
+        Vector3 grip, Vector3 muzzle, Vector3 butt)
+    {
+        spec.GripPosition = grip;
+        spec.MuzzlePosition = muzzle;
+        spec.ButtPosition = butt;
+        spec.SourceForwardAxis = Quaternion.Inverse(
+            Quaternion.Euler(spec.VisualEuler)) * (muzzle - grip).normalized;
         return spec;
     }
 
@@ -217,6 +263,13 @@ public static class BuildFirearmBundles
             VisualScale = visualScale,
             MuzzlePosition = muzzlePosition,
             MuzzleEuler = Vector3.zero,
+            GripPosition = Vector3.zero,
+            ButtPosition = new Vector3(0f, 0f,
+                muzzlePosition.z - Mathf.Max(expectedLengthMeters, 0.339f)),
+            SourceUpAxis = Vector3.up,
+            SourceForwardAxis = Vector3.forward,
+            TargetForwardAxis = Vector3.forward,
+            TargetUpAxis = Vector3.up,
             SupportHandPosition = requiresTwoHandRig
                 ? new Vector3(0f, 0f, muzzlePosition.z * 0.55f)
                 : Vector3.zero,
@@ -272,7 +325,7 @@ public static class BuildFirearmBundles
         ApplyMaterials(spec, renderers);
         ValidateVisibleScales(visual, spec);
         LogRendererDiagnostics(visual, spec, renderers);
-        Quaternion visualRotation = Quaternion.Euler(spec.VisualEuler);
+        Quaternion visualRotation = ResolveVisualRotation(spec);
         visual.transform.localPosition = spec.HasSemanticAnchors
             ? -TransformSourcePoint(spec, spec.IsBeltOrBackModel &&
                 spec.HasBackAnchor ? spec.SourceBackPoint : spec.SourceGripPoint)
@@ -286,6 +339,26 @@ public static class BuildFirearmBundles
             ? AnchorRelativeToGrip(spec, spec.SourceMuzzlePoint)
             : spec.MuzzlePosition;
         muzzle.transform.localRotation = Quaternion.Euler(spec.MuzzleEuler);
+        GameObject grip = new GameObject(
+            WeaponPresentationFrameContract.GripMarker);
+        grip.transform.SetParent(root.transform, false);
+        grip.transform.localPosition = spec.GripPosition;
+        GameObject weaponUp = new GameObject(
+            WeaponPresentationFrameContract.WeaponUpMarker);
+        weaponUp.transform.SetParent(root.transform, false);
+        weaponUp.transform.localPosition = spec.GripPosition +
+            visualRotation * spec.SourceUpAxis.normalized * 0.10f;
+        GameObject weaponForward = new GameObject(
+            WeaponPresentationFrameContract.WeaponForwardMarker);
+        weaponForward.transform.SetParent(root.transform, false);
+        weaponForward.transform.localPosition = spec.GripPosition +
+            visualRotation * spec.SourceForwardAxis.normalized * 0.10f;
+        GameObject butt = new GameObject(
+            WeaponPresentationFrameContract.ButtMarker);
+        butt.transform.SetParent(root.transform, false);
+        butt.transform.localPosition = spec.HasSemanticAnchors
+            ? AnchorRelativeToGrip(spec, spec.SourceButtPoint)
+            : spec.ButtPosition;
         if (spec.HasBackAnchor)
         {
             GameObject back = new GameObject("BackMount");
@@ -302,19 +375,32 @@ public static class BuildFirearmBundles
                 : spec.SupportHandPosition;
             support.transform.localRotation = Quaternion.Euler(
                 spec.SupportHandEuler);
-            GameObject butt = new GameObject("Butt");
-            butt.transform.SetParent(root.transform, false);
-            butt.transform.localPosition = AnchorRelativeToGrip(spec,
-                spec.SourceButtPoint);
             GameObject markers = new GameObject("DevelopmentMarkers_RedGrip_GreenSupport_BlueMuzzle_YellowButt");
             markers.transform.SetParent(root.transform, false);
             markers.SetActive(false);
         }
-        if (spec.Name == "Pistol" &&
-            (spec.VisualEuler.x != 0f || spec.VisualEuler.y != 180f ||
-             spec.VisualEuler.z != 180f))
+        if (spec.Name == "Pistol" && !spec.UseSemanticBasis)
             throw new InvalidOperationException(
-                "Pistol equipped Visual must carry the isolated 180-degree roll correction.");
+                "Pistol equipped Visual must be derived from its semantic basis.");
+        WeaponPresentationSemanticFrame frame =
+            WeaponPresentationFrameContract.RequireWithForwardMarker(
+                root.transform,
+                spec.Name, "Muzzle",
+                WeaponPresentationFrameContract.WeaponUpMarker,
+                WeaponPresentationFrameContract.WeaponForwardMarker,
+                spec.RequiresTwoHandRig, spec.MinimumLengthMeters,
+                spec.MaximumLengthMeters);
+        WeaponPresentationProjection projection =
+            WeaponPresentationFrameContract.ValidateRendererEndpoints(
+                root.transform, visual.transform, frame, spec.Name,
+                spec.HasSemanticAnchors ? 0.12f : 0.25f);
+        Debug.Log("KMG_FIREARM_SEMANTIC_FRAME name=" + spec.Name +
+            ";forward=" + frame.Forward.ToString("R") + ";up=" +
+            frame.Up.ToString("R") + ";right=" +
+            frame.Right.ToString("R") + ";rendererProjection=" +
+            projection.Minimum.ToString("R") + ".." +
+            projection.Maximum.ToString("R") + ";sources=" +
+            projection.SourceCount);
         ValidateHierarchy(root, spec, renderers);
         PrefabUtility.CreatePrefab("Assets/ApprovedModels/" + spec.Name +
             ".prefab", root,
@@ -325,7 +411,26 @@ public static class BuildFirearmBundles
     private static Vector3 TransformSourcePoint(FirearmPrefabSpec spec,
         Vector3 point)
     {
-        return Quaternion.Euler(spec.VisualEuler) * (point * spec.VisualScale);
+        return ResolveVisualRotation(spec) * (point * spec.VisualScale);
+    }
+
+    private static Quaternion ResolveVisualRotation(FirearmPrefabSpec spec)
+    {
+        Quaternion declared = Quaternion.Euler(spec.VisualEuler);
+        if (!spec.UseSemanticBasis) return declared;
+        WeaponPresentationSemanticFrame source =
+            new WeaponPresentationSemanticFrame(spec.SourceGripPoint,
+                spec.SourceMuzzlePoint, spec.SourceButtPoint,
+                spec.SourceGripPoint + spec.SourceUpAxis, false,
+                Vector3.zero, spec.SourceForwardAxis);
+        Quaternion solved = WeaponPresentationFrameContract.SolveRotation(
+            source, spec.TargetForwardAxis, spec.TargetUpAxis);
+        if (Quaternion.Angle(solved, declared) > 0.05f)
+            throw new InvalidOperationException(spec.Name +
+                " serialized Euler rotation differs from its solved semantic basis: declared=" +
+                spec.VisualEuler.ToString("R") + ";solved=" +
+                solved.eulerAngles.ToString("R"));
+        return solved;
     }
 
     private static Vector3 AnchorRelativeToGrip(FirearmPrefabSpec spec,
@@ -586,7 +691,9 @@ public static class BuildFirearmBundles
                 ";vertices=" + (mesh == null ? -1 : mesh.vertexCount) +
                 ";normals=" + (mesh == null || mesh.normals == null ? -1 : mesh.normals.Length) +
                 ";materials=" + string.Join("|", materials) +
-                ";localScale=" + renderer.transform.localScale.ToString("R"));
+                ";localScale=" + renderer.transform.localScale.ToString("R") +
+                ";boundsCenter=" + renderer.bounds.center.ToString("R") +
+                ";boundsSize=" + renderer.bounds.size.ToString("R"));
         }
     }
 
@@ -608,10 +715,24 @@ public static class BuildFirearmBundles
             throw new InvalidOperationException("Every firearm rig needs identity.");
         if (!Finite(spec.VisualPosition) || !Finite(spec.VisualEuler) ||
             !Finite(spec.MuzzlePosition) || !Finite(spec.MuzzleEuler) ||
+            !Finite(spec.GripPosition) || !Finite(spec.ButtPosition) ||
+            !Finite(spec.SourceUpAxis) || !Finite(spec.SourceForwardAxis) ||
+            !Finite(spec.TargetForwardAxis) || !Finite(spec.TargetUpAxis) ||
             !Finite(spec.SupportHandPosition) || !Finite(spec.SupportHandEuler) ||
             !Finite(spec.VisualScale) || spec.VisualScale <= 0f)
             throw new InvalidOperationException(spec.Name +
                 " contains a non-finite or non-positive transform.");
+        if (spec.SourceUpAxis.sqrMagnitude <= 0.000001f)
+            throw new InvalidOperationException(spec.Name +
+                " has a degenerate source WeaponUp axis.");
+        if (spec.SourceForwardAxis.sqrMagnitude <= 0.000001f ||
+            spec.TargetForwardAxis.sqrMagnitude <= 0.000001f ||
+            spec.TargetUpAxis.sqrMagnitude <= 0.000001f)
+            throw new InvalidOperationException(spec.Name +
+                " has a degenerate source or target basis axis.");
+        if (spec.UseSemanticBasis && !spec.HasSemanticAnchors)
+            throw new InvalidOperationException(spec.Name +
+                " cannot solve a basis without source semantic points.");
         if (spec.MinimumLengthMeters <= 0f ||
             spec.ExpectedLengthMeters < spec.MinimumLengthMeters ||
             spec.ExpectedLengthMeters > spec.MaximumLengthMeters)
@@ -655,9 +776,12 @@ public static class BuildFirearmBundles
         if (hasSupport != spec.RequiresTwoHandRig)
             throw new InvalidOperationException(spec.Name +
                 " support-target requirement does not match its rig family.");
-        if (spec.RequiresTwoHandRig && root.transform.Find("Butt") == null)
+        if (root.transform.Find("Grip") == null ||
+            root.transform.Find("Butt") == null ||
+            root.transform.Find("WeaponUp") == null ||
+            root.transform.Find("WeaponForward") == null)
             throw new InvalidOperationException(spec.Name +
-                " lacks its semantic Butt anchor.");
+                " lacks its complete Grip/Butt/WeaponForward/WeaponUp frame.");
         if (spec.HasBackAnchor && root.transform.Find("BackMount") == null)
             throw new InvalidOperationException(spec.Name +
                 " lacks its independent BackMount anchor.");

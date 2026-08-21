@@ -126,6 +126,15 @@ namespace KingmakerGunslinger.Assets
                     GameObject backPrefab = candidate.LoadAsset<GameObject>(
                         backMatches[0]);
                     Validate(backPrefab, contract.Variant, true);
+                    Transform heldVisual = prefab.transform.Find("Visual");
+                    Transform storedVisual = backPrefab.transform.Find("Visual");
+                    if (ReferenceEquals(prefab, backPrefab) ||
+                        (Approximately(heldVisual.localPosition,
+                            storedVisual.localPosition) &&
+                         Approximately(heldVisual.localRotation,
+                            storedVisual.localRotation)))
+                        throw new InvalidDataException(contract.Variant +
+                            " held and stored presentations share an incompatible transform.");
                     validatedBack.Add(contract.Variant, backPrefab);
                 }
                 AssetBundle previous;
@@ -294,9 +303,11 @@ namespace KingmakerGunslinger.Assets
             Transform support = root.Find("SupportHandTarget");
             Transform tip = root.Find("Tip");
             Transform butt = root.Find("Butt");
+            Transform headUp = root.Find(
+                WeaponPresentationFrameContract.HeadUpMarker);
             Transform backMount = root.Find("BackMount");
             if (visual == null || grip == null || support == null || tip == null ||
-                butt == null || (back && backMount == null))
+                butt == null || headUp == null || (back && backMount == null))
                 throw new InvalidDataException(
                     variant + " semantic anchors are incomplete.");
             Vector3 expectedPosition = back
@@ -310,7 +321,7 @@ namespace KingmakerGunslinger.Assets
                 !Approximately(visual.localScale, Vector3.one))
                 throw new InvalidDataException(variant +
                     (back ? " back visual transform is not the exact diagonal frame." :
-                    " visual transform does not map source +Z to native Longspear forward -Y."));
+                    " held visual transform differs from its declared source-frame mapping."));
             Vector3 expectedGrip = expectedPosition;
             Vector3 expectedSupport = expectedPosition + expectedRotation *
                 new Vector3(0f, 0f, 0.37f);
@@ -332,6 +343,14 @@ namespace KingmakerGunslinger.Assets
                     Mathf.Abs(tip.localPosition.x - butt.localPosition.x) < 1f)))
                 throw new InvalidDataException(variant +
                     " grip/support/tip/butt geometry does not match the native Longspear frame.");
+            WeaponPresentationSemanticFrame frame =
+                WeaponPresentationFrameContract.Require(root, variant,
+                    "Tip", WeaponPresentationFrameContract.HeadUpMarker,
+                    true, 2.25f, 2.32f);
+            WeaponPresentationFrameContract.ValidateRendererEndpoints(root,
+                visual, frame, variant, 0.08f);
+            WeaponPresentationFrameContract.ValidateSecondaryAsPlaneNormal(
+                root, visual, frame, variant, 0.20f);
             Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
             if (renderers.Length == 0 || renderers.Any(value => value == null ||
                 !value.enabled || !value.gameObject.activeSelf ||

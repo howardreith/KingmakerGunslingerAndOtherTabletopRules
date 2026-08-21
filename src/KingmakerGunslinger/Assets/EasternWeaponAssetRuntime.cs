@@ -305,8 +305,10 @@ namespace KingmakerGunslinger.Assets
             Transform support = root.Find("SupportHandTarget");
             Transform tip = root.Find("Tip");
             Transform butt = root.Find("Butt");
+            Transform bladeNormal = root.Find(
+                WeaponPresentationFrameContract.BladeNormalMarker);
             if (visual == null || grip == null || support == null ||
-                tip == null || butt == null)
+                tip == null || butt == null || bladeNormal == null)
                 throw new InvalidDataException(contract.Variant +
                     " semantic anchors are incomplete.");
             float length = Vector3.Distance(tip.localPosition,
@@ -320,6 +322,15 @@ namespace KingmakerGunslinger.Assets
                 length < contract.Minimum || length > contract.Maximum)
                 throw new InvalidDataException(contract.Variant +
                     " grip/support/tip/butt geometry is implausible.");
+            WeaponPresentationSemanticFrame frame =
+                WeaponPresentationFrameContract.Require(root,
+                    contract.Variant, "Tip",
+                    WeaponPresentationFrameContract.BladeNormalMarker, true,
+                    contract.Minimum, contract.Maximum);
+            WeaponPresentationFrameContract.ValidateRendererEndpoints(root,
+                visual, frame, contract.Variant, 0.12f);
+            WeaponPresentationFrameContract.ValidateSecondaryAsPlaneNormal(
+                root, visual, frame, contract.Variant, 0.20f);
             Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
             if (renderers.Length == 0 || renderers.Any(value => value == null ||
                 !value.enabled || !value.gameObject.activeSelf ||

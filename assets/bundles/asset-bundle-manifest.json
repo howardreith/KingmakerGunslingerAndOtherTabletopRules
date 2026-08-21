@@ -3,7 +3,7 @@
   "unityVersion": "2018.4.10f1",
   "buildTarget": "StandaloneWindows64",
   "bundleName": "kingmakergunslinger.firearms",
-  "sha256": "050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C",
+  "sha256": "4D1F51362D7EF74A7D4DF3001783DD91BA001FDBD23F5F041987C1B6D4E5961D",
   "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketPassThrough", "MusketMinimalControl", "MusketClearanceStock", "PistolDuelist", "PistolLastWord", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle"],
   "itemVariantPrefabs": [
     {
@@ -60,13 +60,13 @@
     }
   ],
   "rigs": [
-    {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"autonomous-candidate-roll-corrected"},
-    {"name":"PistolDuelist","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"production-item-variant-exact-symbol-bound"},
-    {"name":"PistolLastWord","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"production-item-variant-exact-symbol-bound"},
-    {"name":"Musket","family":"long-gun","muzzle":true,"supportHandTarget":true,"backMount":true,"readiness":"normalized-production-rig-human-gated"},
-    {"name":"Blunderbuss","family":"long-gun","muzzle":true,"supportHandTarget":true,"backMount":true,"readiness":"normalized-production-rig-human-gated"},
-    {"name":"Rifle","family":"long-gun","muzzle":true,"supportHandTarget":true,"readiness":"autonomous-candidate-semantic-anchors"},
-    {"name":"Revolver","family":"one-handed","muzzle":true,"supportHandTarget":false,"readiness":"autonomous-candidate-duplicate-preview-cleaned"}
+    {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"readiness":"basis-calibrated-renderer-endpoint-verified"},
+    {"name":"PistolDuelist","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"readiness":"production-item-variant-exact-symbol-bound"},
+    {"name":"PistolLastWord","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"readiness":"production-item-variant-exact-symbol-bound"},
+    {"name":"Musket","family":"long-gun","muzzle":true,"supportHandTarget":true,"backMount":true,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp","SupportHandTarget"],"readiness":"normalized-production-rig-human-gated"},
+    {"name":"Blunderbuss","family":"long-gun","muzzle":true,"supportHandTarget":true,"backMount":true,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp","SupportHandTarget"],"readiness":"normalized-production-rig-human-gated"},
+    {"name":"Rifle","family":"long-gun","muzzle":true,"supportHandTarget":true,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp","SupportHandTarget"],"readiness":"autonomous-candidate-semantic-anchors"},
+    {"name":"Revolver","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"readiness":"basis-calibrated-component-bounds-derived"}
   ],
   "audioMappings": ["pistol-shot", "musket-shot", "blunderbuss-shot", "revolver-shot", "rifle-shot"],
   "quarantined": []
@@ -74,11 +74,11 @@
   "bundles": [
     {
       "name": "kingmakergunslinger.firearms",
-      "sha256": "050197BA87F71B7C8D5D4FF056D4FF7CF0C9CCD1DBBD8FB23E748FCE6492C35C"
+      "sha256": "4D1F51362D7EF74A7D4DF3001783DD91BA001FDBD23F5F041987C1B6D4E5961D"
     },
     {
       "name": "kingmakergunslinger.elvenbranchedspear",
-      "sha256": "33EB89C74EC4AE7CDA5A8155224A449233904B74CB59FC453C24AE022EE3CB2A",
+      "sha256": "0BC67C89D08806B0B67FF074AE983FC1E2CDF6E6618CC10901E66C01B7A725FA",
       "prefabs": ["ElvenBranchedSpear", "ElvenBranchedSpearBack", "ElvenBranchedSpearThorn", "ElvenBranchedSpearThornBack", "ElvenBranchedSpearCrown", "ElvenBranchedSpearCrownBack"],
       "sourceFbxSha256": {
         "ElvenBranchedSpear": "525B6FB2DAC0106C001BCB0901ED892DBBACA48CA1DF6DDB78702F9B2B72AE01",
@@ -89,7 +89,7 @@
     },
     {
       "name": "kingmakergunslinger.easternweapons",
-      "sha256": "079AA2E44E313291C144BD830D302782310274B11375204F9CE8FF6481EF3041",
+      "sha256": "7AF99FAA8C63BA91DBAF9BC5295E1629A8E090288A9ED86753D835CCAF3C3C33",
       "prefabs": ["Wakizashi", "WakizashiPetal", "WakizashiMoon", "WakizashiCapstone", "Katana", "KatanaReed", "KatanaRegal", "KatanaCapstone", "Nodachi", "NodachiCleaver", "NodachiTitan", "NodachiCapstone"],
       "sourceFbxSha256": {
         "Wakizashi": "ECFA64D35017EE44D184A43E6F4F5A1A1409F9909F5F153B494613E19772DC73",

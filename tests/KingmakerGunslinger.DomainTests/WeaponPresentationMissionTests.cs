@@ -5,6 +5,70 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class WeaponPresentationMissionTests
     {
+        internal static void SemanticFrameContractIsCompleteAndShared()
+        {
+            string contract = Read("src", "KingmakerGunslinger", "Assets",
+                "WeaponPresentationSemanticFrame.cs");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            string firearmBuilder = Read("tools", "unity",
+                "BuildFirearmBundles.cs");
+            string spearBuilder = Read("tools", "unity",
+                "BuildElvenBranchedSpearBundle.cs");
+            string easternBuilder = Read("tools", "unity",
+                "BuildEasternWeaponsBundle.cs");
+            string firearmRuntime = Read("src", "KingmakerGunslinger",
+                "Assets", "FirearmAssetRuntime.cs");
+            string spearRuntime = Read("src", "KingmakerGunslinger",
+                "Assets", "ElvenBranchedSpearAssetRuntime.cs");
+            string easternRuntime = Read("src", "KingmakerGunslinger",
+                "Assets", "EasternWeaponAssetRuntime.cs");
+
+            foreach (string token in new[] { "GripMarker", "ButtMarker",
+                "SupportMarker", "WeaponUpMarker", "HeadUpMarker",
+                "WeaponForwardMarker", "BladeNormalMarker",
+                "RequireWithForwardMarker", "semantic frame is degenerate",
+                "forward and secondary axes are collinear",
+                "tip/butt polarity is reversed",
+                "support-hand target is outside the grip-to-tip interval",
+                "reflected, zero, or non-finite local scale",
+                "renderer-bound forward end", "renderer-bound rear end",
+                "Quaternion.LookRotation", "targetBasis * Quaternion.Inverse(sourceBasis)",
+                "targetGrip - rotation * (sourceGrip * scale)" })
+                Assertions.True(contract.Contains(token),
+                    "Shared semantic-frame contract omitted " + token + ".");
+
+            Assertions.True(project.Contains(
+                "Assets\\WeaponPresentationSemanticFrame.cs"),
+                "The runtime project does not compile the shared frame contract.");
+            foreach (string script in new[] { "Prepare-UnityAssets.ps1",
+                "Prepare-ElvenBranchedSpearAssets.ps1",
+                "Prepare-EasternWeaponAssets.ps1" })
+                Assertions.True(Read("scripts", script).Contains(
+                    "WeaponPresentationSemanticFrame.cs"),
+                    script + " does not stage the shared contract into Unity.");
+
+            Assertions.True(firearmBuilder.Contains("WeaponUpMarker") &&
+                firearmBuilder.Contains("ValidateRendererEndpoints") &&
+                firearmBuilder.Contains("KMG_FIREARM_SEMANTIC_FRAME") &&
+                firearmRuntime.Contains("weapon-up-missing") &&
+                firearmRuntime.Contains("ValidateIndependentHeldAndStored"),
+                "Firearm authoring/runtime does not enforce a complete independent frame.");
+            Assertions.True(spearBuilder.Contains("HeadUpMarker") &&
+                spearBuilder.Contains("ValidateSecondaryAsPlaneNormal") &&
+                spearBuilder.Contains("KMG_SPEAR_SEMANTIC_FRAME") &&
+                spearRuntime.Contains("HeadUpMarker") &&
+                spearRuntime.Contains(
+                    "held and stored presentations share an incompatible transform"),
+                "Spear authoring/runtime does not enforce polarity, roll, and presentation separation.");
+            Assertions.True(easternBuilder.Contains("BladeNormalMarker") &&
+                easternBuilder.Contains("ValidateSecondaryAsPlaneNormal") &&
+                easternBuilder.Contains("KMG_EASTERN_SEMANTIC_FRAME") &&
+                easternRuntime.Contains("BladeNormalMarker") &&
+                easternRuntime.Contains("ValidateRendererEndpoints"),
+                "Eastern authoring/runtime does not enforce blade-plane semantics.");
+        }
+
         internal static void EvidenceScenarioIsGuardedAndStateLabelled()
         {
             string scenario = Read("src", "KingmakerGunslinger",

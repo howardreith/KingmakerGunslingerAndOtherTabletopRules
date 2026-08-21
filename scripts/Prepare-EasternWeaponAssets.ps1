@@ -28,4 +28,7 @@ Copy-Item -LiteralPath (Join-Path $source 'eastern-weapons-build-report.json') `
     -Destination (Join-Path $destination 'source-build-report.json') -Force
 Copy-Item -LiteralPath (Join-Path $root 'tools\unity\BuildEasternWeaponsBundle.cs') `
     -Destination (Join-Path $editor 'BuildEasternWeaponsBundle.cs') -Force
+Copy-Item -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\Assets\WeaponPresentationSemanticFrame.cs') `
+    -Destination (Join-Path $editor 'WeaponPresentationSemanticFrame.cs') -Force
 Write-Host 'Prepared twelve original Eastern Weapon FBXs and the dedicated Unity builder.'

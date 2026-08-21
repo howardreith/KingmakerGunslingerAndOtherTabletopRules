@@ -514,7 +514,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sha256(Path.Combine(sourceRoot,
                     "elven-branched-spear-crown.fbx")),
                 "Generated crown spear FBX hash changed.");
-            Assertions.Equal("33EB89C74EC4AE7CDA5A8155224A449233904B74CB59FC453C24AE022EE3CB2A",
+            Assertions.Equal("0BC67C89D08806B0B67FF074AE983FC1E2CDF6E6618CC10901E66C01B7A725FA",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.elvenbranchedspear")),
                 "Dedicated spear bundle hash changed.");

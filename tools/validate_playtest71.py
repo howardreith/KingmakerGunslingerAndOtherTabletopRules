@@ -25,7 +25,8 @@ def validate(root:Path)->None:
                   "Final2 Sketchfab.fbx",
                   "SourceGripPoint", "SourceSupportPoint", "SourceButtPoint",
                   "SourceMuzzlePoint", "AnchorRelativeToGrip", "KMG_RIG_ANCHORS",
-                  "new Vector3(0f, 180f, 180f), 0.24f"):
+                  "new Vector3(0f, 180f, 0f), 0.24f",
+                  "Pistol equipped Visual must be derived from its semantic basis"):
         if token not in builder:raise AssertionError(f"visibility repair missing: {token}")
     if (root/"tools/unity/KmgDoubleSidedDiffuse.shader").exists():raise AssertionError("runtime-invisible custom shader returned")
 def main()->int:

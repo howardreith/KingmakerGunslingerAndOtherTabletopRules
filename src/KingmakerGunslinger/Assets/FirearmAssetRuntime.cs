@@ -77,6 +77,10 @@ namespace KingmakerGunslinger.Assets
                     FirearmKind.Musket, "musketbelt", context);
                 TryLoadBackPrefab(candidate, names, beltPrefabs,
                     FirearmKind.Blunderbuss, "blunderbussbelt", context);
+                ValidateIndependentHeldAndStored(prefabs, beltPrefabs,
+                    FirearmKind.Musket);
+                ValidateIndependentHeldAndStored(prefabs, beltPrefabs,
+                    FirearmKind.Blunderbuss);
                 TryLoadDiagnosticPrefab(candidate, names, diagnosticPrefabs,
                     diagnosticCapabilities, "MusketPassThrough",
                     "musketpassthrough", context);
@@ -164,17 +168,64 @@ namespace KingmakerGunslinger.Assets
                 prefab.transform.localPosition == Vector3.zero &&
                 prefab.transform.localRotation == Quaternion.identity &&
                 prefab.transform.localScale == Vector3.one;
+            string semanticFailure = null;
+            if (valid)
+            {
+                try
+                {
+                    WeaponPresentationSemanticFrame frame =
+                        WeaponPresentationFrameContract.RequireWithForwardMarker(
+                            prefab.transform, prefab.name, "Muzzle",
+                            WeaponPresentationFrameContract.WeaponUpMarker,
+                            WeaponPresentationFrameContract.WeaponForwardMarker,
+                            false, 0.40f, 2.00f);
+                    WeaponPresentationFrameContract.ValidateRendererEndpoints(
+                        prefab.transform, visual, frame, prefab.name, 0.25f);
+                }
+                catch (Exception exception)
+                {
+                    valid = false;
+                    semanticFailure = exception.GetType().Name + ":" +
+                        exception.Message;
+                }
+            }
             if (!valid)
             {
                 context.Logger.Warning("assets", "back-rig.rejected",
                     "kind=" + kind + ";asset=" + name +
-                    ";requires=identity-root+Visual+BackMount+renderer;nativeFallback=true");
+                    ";requires=identity-root+Visual+BackMount+renderer+semantic-frame" +
+                    ";failure=" + (semanticFailure ?? "structural") +
+                    ";nativeFallback=true");
                 return;
             }
             destination[kind] = prefab;
             context.Logger.Info("assets", "back-rig.validated",
                 "kind=" + kind + ";asset=" + name +
                 ";independentBackFrame=true;rendererCount=" + renderers.Length);
+        }
+
+        private static void ValidateIndependentHeldAndStored(
+            IDictionary<FirearmKind, GameObject> held,
+            IDictionary<FirearmKind, GameObject> stored, FirearmKind kind)
+        {
+            GameObject heldPrefab;
+            GameObject storedPrefab;
+            if (!held.TryGetValue(kind, out heldPrefab) || heldPrefab == null ||
+                !stored.TryGetValue(kind, out storedPrefab) ||
+                storedPrefab == null)
+                return;
+            Transform heldVisual = heldPrefab.transform.Find("Visual");
+            Transform storedVisual = storedPrefab.transform.Find("Visual");
+            if (ReferenceEquals(heldPrefab, storedPrefab) ||
+                heldVisual == null || storedVisual == null ||
+                (Approximately(heldVisual.localPosition,
+                    storedVisual.localPosition) &&
+                 Approximately(heldVisual.localRotation,
+                    storedVisual.localRotation) &&
+                 Approximately(heldVisual.localScale,
+                    storedVisual.localScale)))
+                throw new InvalidDataException(kind +
+                    " held and stored presentations share an incompatible transform.");
         }
 
         private static void TryLoadDiagnosticPrefab(AssetBundle bundle,
@@ -308,8 +359,14 @@ namespace KingmakerGunslinger.Assets
             string failure = null;
             Transform root = prefab == null ? null : prefab.transform;
             Transform visual = root == null ? null : root.Find("Visual");
+            Transform grip = root == null ? null : root.Find(
+                WeaponPresentationFrameContract.GripMarker);
             Transform muzzle = root == null ? null : root.Find("Muzzle");
             Transform butt = root == null ? null : root.Find("Butt");
+            Transform weaponUp = root == null ? null : root.Find(
+                WeaponPresentationFrameContract.WeaponUpMarker);
+            Transform weaponForward = root == null ? null : root.Find(
+                WeaponPresentationFrameContract.WeaponForwardMarker);
             Transform support = root == null ? null : root.Find(
                 "SupportHandTarget");
             EquipmentOffsets offsets = null;
@@ -321,7 +378,12 @@ namespace KingmakerGunslinger.Assets
                     !Approximately(root.localScale, Vector3.one))
                     failure = "root-not-identity";
                 else if (visual == null) failure = "visual-missing";
+                else if (grip == null) failure = "grip-missing";
                 else if (muzzle == null) failure = "muzzle-missing";
+                else if (butt == null) failure = "butt-target-missing";
+                else if (weaponUp == null) failure = "weapon-up-missing";
+                else if (weaponForward == null)
+                    failure = "weapon-forward-missing";
                 else if (!Finite(visual.localPosition) ||
                     !Finite(visual.localRotation) || !Finite(visual.localScale) ||
                     !Finite(muzzle.localPosition) || !Finite(muzzle.localRotation))
@@ -330,8 +392,6 @@ namespace KingmakerGunslinger.Assets
                     failure = "muzzle-not-forward-positive-z";
                 else if (requiresTwoHandRig && support == null)
                     failure = "support-target-missing";
-                else if (requiresTwoHandRig && butt == null)
-                    failure = "butt-target-missing";
                 else if (!requiresTwoHandRig && support != null)
                     failure = "one-handed-support-target-present";
                 else if (requiresTwoHandRig && (!Finite(support.localPosition) ||
@@ -354,6 +414,17 @@ namespace KingmakerGunslinger.Assets
                     failure = "negative-mirrored-zero-or-nonfinite-scale";
                 else
                 {
+                    float minimumLength = requiresTwoHandRig ? 0.40f : 0.15f;
+                    float maximumLength = requiresTwoHandRig ? 2.00f : 0.60f;
+                    WeaponPresentationSemanticFrame frame =
+                        WeaponPresentationFrameContract.RequireWithForwardMarker(
+                            root,
+                            prefab.name, "Muzzle",
+                            WeaponPresentationFrameContract.WeaponUpMarker,
+                            WeaponPresentationFrameContract.WeaponForwardMarker,
+                            requiresTwoHandRig, minimumLength, maximumLength);
+                    WeaponPresentationFrameContract.ValidateRendererEndpoints(
+                        root, visual, frame, prefab.name, 0.25f);
                     Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(
                         true);
                     bool renderable = renderers.Any(renderer => renderer != null &&

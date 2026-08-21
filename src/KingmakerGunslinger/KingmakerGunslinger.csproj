@@ -78,6 +78,7 @@
     <Compile Include="Blueprints\EasternWeaponCampaignBlueprints.cs" />
     <Compile Include="Blueprints\EasternWeaponNamedBlueprints.cs" />
     <Compile Include="Assets\ElvenBranchedSpearAssetRuntime.cs" />
+    <Compile Include="Assets\WeaponPresentationSemanticFrame.cs" />
     <Compile Include="Assets\WeaponVisualVariantCatalog.cs" />
     <Compile Include="Assets\EasternWeaponAssetRuntime.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearBlueprints.cs" />
