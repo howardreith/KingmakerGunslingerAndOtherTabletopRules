@@ -5,6 +5,68 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Assets
 {
+    internal static class WeaponPresentationDonorFrames
+    {
+        // Guarded runtime evidence from the exact native OH_SpearShortCommon
+        // PiercingOneHanded control. Local +Y is the physical point-leading
+        // shaft axis; local +Z is its stable secondary/head-up axis.
+        internal static readonly Vector3 PiercingOneHandedHeldPosition =
+            new Vector3(-0.00299995276f, -0.0209996216f, 0.00199998566f);
+        internal static readonly Vector3 PiercingOneHandedHeldEuler =
+            new Vector3(9.712032f, 123.546196f, 178.825317f);
+
+        internal static Quaternion PiercingOneHandedHeldRotation
+        {
+            get { return Quaternion.Euler(PiercingOneHandedHeldEuler); }
+        }
+
+        internal static Vector3 PiercingOneHandedHeldForward
+        {
+            get
+            {
+                return PiercingOneHandedHeldRotation * Vector3.up;
+            }
+        }
+
+        internal static Vector3 PiercingOneHandedHeldUp
+        {
+            get
+            {
+                return PiercingOneHandedHeldRotation * Vector3.forward;
+            }
+        }
+
+        // The native held basis is the attachment-frame donor. Guarded live
+        // UnitAttack evidence for all four production handguns, sampled after
+        // the rendered actor body reached its target-facing direction, measured
+        // the remaining action-frame bias. Express the correction in that
+        // semantic basis instead of serializing an unexplained Euler offset:
+        // -0.468 donor-up and +0.184 donor-right predicts a 0.994 minimum acted
+        // muzzle/target dot while retaining a 0.901 minimum native low-ready
+        // actor-forward dot, the native roll, and the donor grip anchor.
+        internal static Vector3 PiercingOneHandedFirearmForward
+        {
+            get
+            {
+                Vector3 forward = PiercingOneHandedHeldForward;
+                Vector3 up = PiercingOneHandedHeldUp;
+                Vector3 right = Vector3.Cross(up, forward).normalized;
+                return (forward - 0.468f * up + 0.184f * right).normalized;
+            }
+        }
+
+        internal static Vector3 PiercingOneHandedFirearmUp
+        {
+            get
+            {
+                Vector3 forward = PiercingOneHandedFirearmForward;
+                Vector3 donorUp = PiercingOneHandedHeldUp;
+                return (donorUp - Vector3.Dot(donorUp, forward) * forward)
+                    .normalized;
+            }
+        }
+    }
+
     internal struct WeaponPresentationSemanticFrame
     {
         internal WeaponPresentationSemanticFrame(Vector3 grip, Vector3 tip,

@@ -1761,7 +1761,8 @@ namespace KingmakerGunslinger.DomainTests
             string runner = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
             Assertions.True(builder.Contains(
-                    "new Vector3(0f, 180f, 0f), 0.24f") &&
+                    "PiercingOneHandedHeld(Anchored(Spec(\"Pistol\"") &&
+                builder.Contains("WeaponPresentationDonorFrames") &&
                 builder.Contains("RetainHighestDetailRenderers(visual, spec)") &&
                 builder.Contains("policy=retain-lod0-and-remove-lodgroup") &&
                 builder.Contains("KMG_RIG_RENDERER") &&
@@ -1790,7 +1791,7 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("runtime-loaded AssetBundle prefab renderer/material/bounds audit"),
                 "Finishing repair must prove source binding, isolate Pistol roll, clean Revolver duplicates, retain LOD0, generate opaque two-sided long-gun geometry, audit hierarchy/bounds, and reject inactive renderers.");
             Assertions.True(builder.Contains(
-                    "Spec(\"Pistol\", \"Pistol\", \"model.dae\", false,\n            false, new Vector3(0f, 0f, 0.1632f),\n            new Vector3(0f, 180f, 0f), 0.24f") &&
+                    "native-shortspear-held-basis") &&
                 builder.Contains("HasSemanticAnchors") &&
                 builder.Contains("SourceGripPoint") &&
                 builder.Contains("SourceSupportPoint") &&
@@ -1814,8 +1815,10 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("long-gun-relative-semantic-length") &&
                 runner.Contains("-canonical-held-frame") &&
                 runner.Contains("-independent-back-prefab") &&
-                runner.Contains("pistol-basis-calibrated-held-frame") &&
-                runner.Contains("source -Z/+Y to donor +Z/+Y semantic-basis solve"),
+                runner.Contains("-piercing-one-handed-held-frame") &&
+                runner.Contains("native OH_SpearShortCommon held grip and live-fire-calibrated +Y/+Z donor basis") &&
+                runner.Contains("PiercingOneHandedFirearmForward") &&
+                runner.Contains("PiercingOneHandedFirearmUp"),
                 "Basis-calibrated Pistol or normalized long-gun held/back contract is missing.");
             Assertions.True(!System.IO.File.Exists(System.IO.Path.Combine(
                 Environment.CurrentDirectory,

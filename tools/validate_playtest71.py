@@ -29,7 +29,10 @@ def validate(root:Path)->None:
                   "KMG_RIG_ANCHORS", "KMG_WeaponUp",
                   "KMG_WeaponForward", "rifle-normalized.fbx", "RifleBelt",
                   "NativeHeavyCrossbowHeldEuler",
-                  "new Vector3(0f, 180f, 0f), 0.24f",
+                  "PiercingOneHandedHeld(Anchored(Spec(\"Pistol\"",
+                  "WeaponPresentationDonorFrames.PiercingOneHandedFirearmForward",
+                  "native-donor-held-basis-plus-rendered-body-live-fire-envelope",
+                  "native-shortspear-held-basis",
                   "Pistol equipped Visual must be derived from its semantic basis"):
         if token not in builder:raise AssertionError(f"visibility repair missing: {token}")
     if (root/"tools/unity/KmgDoubleSidedDiffuse.shader").exists():raise AssertionError("runtime-invisible custom shader returned")

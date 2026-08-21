@@ -219,6 +219,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationTransitionMotionEvidence ||

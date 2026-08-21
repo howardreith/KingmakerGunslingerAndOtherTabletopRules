@@ -470,6 +470,7 @@ try {
         'disposable-expanded-summoning-visual-contracts',
         'disposable-brown-fur-native-cast',
         'weapon-presentation-motion-evidence',
+        'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',
         'weapon-presentation-reload-evidence',
         'working-save-urban-barbarian-prepare',

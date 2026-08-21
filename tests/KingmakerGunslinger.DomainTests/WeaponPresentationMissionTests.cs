@@ -40,6 +40,31 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(contract.Contains(token),
                     "Shared semantic-frame contract omitted " + token + ".");
 
+            foreach (string token in new[] {
+                "WeaponPresentationDonorFrames",
+                "PiercingOneHandedHeldPosition",
+                "PiercingOneHandedHeldEuler",
+                "PiercingOneHandedHeldRotation * Vector3.up",
+                "PiercingOneHandedHeldRotation * Vector3.forward",
+                "PiercingOneHandedFirearmForward",
+                "forward - 0.468f * up + 0.184f * right",
+                "PiercingOneHandedFirearmUp" })
+                Assertions.True(contract.Contains(token),
+                    "Shared native-donor contract omitted " + token + ".");
+
+            Assertions.True(firearmBuilder.Contains(
+                    "PiercingOneHandedHeld(Anchored(Spec(\"Pistol\"") &&
+                firearmBuilder.Contains(
+                    "PiercingOneHandedHeld(MarkerAuthored(Anchored(Spec(\"PistolDuelist\"") &&
+                firearmBuilder.Contains(
+                    "PiercingOneHandedHeld(MarkerAuthored(Anchored(Spec(\"PistolLastWord\"") &&
+                firearmBuilder.Contains(
+                    "PiercingOneHandedHeld(BasisCalibrated(Anchored(Spec(\"Revolver\"") &&
+                firearmBuilder.Contains("native-shortspear-held-basis") &&
+                firearmBuilder.Contains("spec.TargetAnchorPosition") &&
+                firearmBuilder.Contains("SolveRotation"),
+                "Every production handgun must derive its held frame from the native PiercingOneHanded donor.");
+
             Assertions.True(project.Contains(
                 "Assets\\WeaponPresentationSemanticFrame.cs"),
                 "The runtime project does not compile the shared frame contract.");
@@ -125,6 +150,8 @@ namespace KingmakerGunslinger.DomainTests
             const string identity = "weapon-presentation-evidence";
             const string motionIdentity =
                 "weapon-presentation-motion-evidence";
+            const string handgunMotionIdentity =
+                "weapon-presentation-handgun-motion-evidence";
             const string spearMotionIdentity =
                 "weapon-presentation-spear-motion-evidence";
             const string easternMotionIdentity =
@@ -149,6 +176,7 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparison.Ordinal);
             Assertions.True(catalog.Contains(identity) &&
                 catalog.Contains(motionIdentity) &&
+                catalog.Contains(handgunMotionIdentity) &&
                 catalog.Contains(spearMotionIdentity) &&
                 catalog.Contains(easternMotionIdentity) &&
                 catalog.Contains(transitionMotionIdentity) &&
@@ -180,6 +208,8 @@ namespace KingmakerGunslinger.DomainTests
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||") &&
                 request.Contains(
+                    "RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence ||") &&
+                request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||") &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence ||") &&
@@ -189,6 +219,8 @@ namespace KingmakerGunslinger.DomainTests
                     "RuntimeTestScenarioCatalog.WeaponPresentationReloadEvidence ||") &&
                 automation.Contains("'" + identity + "' = [pscustomobject]") &&
                 automation.Contains("'" + motionIdentity +
+                    "' = [pscustomobject]") &&
+                automation.Contains("'" + handgunMotionIdentity +
                     "' = [pscustomobject]") &&
                 automation.Contains("'" + spearMotionIdentity +
                     "' = [pscustomobject]") &&
@@ -200,6 +232,7 @@ namespace KingmakerGunslinger.DomainTests
                     "' = [pscustomobject]") &&
                 preflight.Contains("'" + identity + "'") &&
                 preflight.Contains("'" + motionIdentity + "'") &&
+                preflight.Contains("'" + handgunMotionIdentity + "'") &&
                 preflight.Contains("'" + spearMotionIdentity + "'") &&
                 preflight.Contains("'" + easternMotionIdentity + "'") &&
                 preflight.Contains("'" + transitionMotionIdentity + "'") &&
@@ -294,6 +327,57 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-reload-request-cleanup" })
                 Assertions.True(scenario.Contains(token),
                     "Reload visual evidence omitted " + token + ".");
+
+            foreach (string token in new[] {
+                "HandgunMotionVariants", "Native.LightCrossbow",
+                "HandgunPiercingDonor", "Native.Shortspear",
+                "NativeShortswordItemGuid", "HandgunDualOutcome",
+                "RecordPiercingOneHandedDonors",
+                "handgunPiercingOneHandedDonors=",
+                "WeaponPresentationHandgunMotionEvidence",
+                "attack-acted-update-", "DescribeFirearmMuzzleFrame",
+                "physicalMuzzleDistanceMeters", "boreWeaponUpAbsDot",
+                "physicalMuzzleOffsetWorld",
+                "readyRecords", "actedRecords",
+                "boreTargetDirectionDot\"] > 0.95f",
+                "MinimumRuntimeFrameVectorSquared",
+                "physicalWeaponUpDistanceMeters",
+                "actorForwardAvailable",
+                "actor.View.transform.forward",
+                "actorTargetDirectionDot\"] > 0.99f",
+                "logicalActorTargetDirectionDot",
+                "boreTargetDirectionDot",
+                "physicalMuzzleLeadsGripTowardTarget",
+                "targetFacingReadyDot=", "readyBoreDot=",
+                "did not reach a target-facing live ready frame",
+                "_attackTargetPrepared",
+                "The installed probe supplies the real ranged approach",
+                "finalIssued",
+                "lost exact native start readiness",
+                "DescribePiercingOneHandedDonorFrame",
+                "piercingDonorFrameSource",
+                "piercingDonorNegativeYTargetDot",
+                "piercingDonorRendererGeometry",
+                "dual-wield-firearm-main-combat-ready",
+                "dual-wield-firearm-offhand-combat-ready",
+                "GetWeaponModel(true)", "ExactEquippedFirearmResolver",
+                "resolverSelectedFirearm", "RemoveDualEquipped",
+                "TryWriteMotionFailureEvidence",
+                "weapon-presentation-handgun-motion-failure.json",
+                "_handgunMotionFailureCount",
+                "failureSequence",
+                "<no-records>",
+                "TryInterruptHandEquipmentAnimation",
+                "m_Coroutine", "InterruptAnimation",
+                "_actor.CombatState.LeaveCombat()",
+                "primarySlotEmpty", "secondarySlotEmpty",
+                "removedPrimaryRenderable", "removedSecondaryRenderable",
+                "weapon-presentation-handgun-motion-index.json",
+                "weapon-presentation-handgun-muzzle-frame",
+                "weapon-presentation-handgun-valid-dual-wield",
+                "weapon-presentation-handgun-motion-contact-sheets" })
+                Assertions.True(scenario.Contains(token),
+                    "Handgun motion evidence omitted " + token + ".");
 
             foreach (string token in new[] {
                 "PistolService", "PistolDuelist", "PistolLastWord",

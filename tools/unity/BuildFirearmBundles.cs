@@ -58,11 +58,11 @@ public static class BuildFirearmBundles
 
     private static readonly FirearmPrefabSpec[] Specs =
     {
-        BasisCalibrated(Anchored(Spec("Pistol", "Pistol", "model.dae", false,
-            false, new Vector3(0f, 0f, 0.1632f),
-            new Vector3(0f, 180f, 0f), 0.24f,
+        PiercingOneHandedHeld(Anchored(Spec("Pistol", "Pistol", "model.dae",
+            false, false, Vector3.zero, Vector3.zero, 0.24f,
             new Vector3(0f, 0f, 0.4032f), 0.480f, 0.45f, 0.51f,
-            "Crossbow", "basis-calibrated; renderer-endpoint-verified"),
+            "PiercingOneHanded",
+            "native-shortspear-held-basis; renderer-endpoint-verified"),
             new Vector3(0f, 0f, 0.68f), Vector3.zero,
             new Vector3(0f, 0f, 1.00f),
             new Vector3(0f, 0f, -1.00f))),
@@ -109,7 +109,7 @@ public static class BuildFirearmBundles
             new Vector3(-0.030976f, -0.051069f, 0.586040f),
             new Vector3(0f, 0f, -0.169533f),
             new Vector3(0f, 0f, 1.180452f)), true),
-        BasisCalibrated(MarkerAuthored(Anchored(Spec("PistolDuelist", "Pistol",
+        PiercingOneHandedHeld(MarkerAuthored(Anchored(Spec("PistolDuelist", "Pistol",
             "pistol-duelist.fbx", false, false,
             Vector3.zero, Vector3.zero, 1f,
             new Vector3(0f, 0f, 0.264f), 0.339f, 0.30f, 0.40f,
@@ -118,7 +118,7 @@ public static class BuildFirearmBundles
             new Vector3(0f, -0.020f, 0.145f),
             new Vector3(0f, 0f, -0.075f),
             new Vector3(0f, 0f, 0.264f)), false)),
-        BasisCalibrated(MarkerAuthored(Anchored(Spec("PistolLastWord", "Pistol",
+        PiercingOneHandedHeld(MarkerAuthored(Anchored(Spec("PistolLastWord", "Pistol",
             "pistol-last-word.fbx", false, false,
             Vector3.zero, Vector3.zero, 1f,
             new Vector3(0f, 0f, 0.264f), 0.339f, 0.30f, 0.40f,
@@ -154,16 +154,17 @@ public static class BuildFirearmBundles
             Vector3.zero, new Vector3(-0.031f, -0.051f, 0.36f),
             new Vector3(-0.002043f, -0.043402f, -0.232200f),
             new Vector3(-0.002044f, 0.024475f, 0.627800f)), false))),
-        BasisCalibrated(Anchored(Spec("Revolver", "Revolver",
-            "Final2 Sketchfab.fbx", false, false, Vector3.zero,
-            new Vector3(0f, -90f, 0f), 0.01719849f,
+        PiercingOneHandedHeld(BasisCalibrated(Anchored(Spec("Revolver",
+            "Revolver", "Final2 Sketchfab.fbx", false, false, Vector3.zero,
+            Vector3.zero, 0.01719849f,
             new Vector3(0f, 0.0593f, 0.2796f), 0.321f, 0.30f, 0.34f,
-            "Crossbow", "basis-calibrated; component-bounds-derived"),
+            "PiercingOneHanded",
+            "native-shortspear-held-basis; component-bounds-derived"),
             new Vector3(-8.889382f, 7.50916529f, 2.68602586f),
             Vector3.zero,
             new Vector3(-10.9627813f, 7.50916529f, 2.68602586f),
             new Vector3(7.3696742f, 10.9590158f, 2.68599129f)),
-            Vector3.right),
+            Vector3.right)),
         CanonicalLongGun(FrameAuthored(Anchored(Spec("Rifle", "Rifle",
             "rifle-normalized.fbx", false, true,
             Vector3.zero, Vector3.zero, 1f,
@@ -236,6 +237,30 @@ public static class BuildFirearmBundles
         spec.SourceUpAxis = Vector3.up;
         spec.TargetForwardAxis = donorRotation * Vector3.forward;
         spec.TargetUpAxis = donorRotation * Vector3.up;
+        return BasisCalibrated(spec);
+    }
+
+    private static FirearmPrefabSpec PiercingOneHandedHeld(
+        FirearmPrefabSpec spec)
+    {
+        if (spec == null || spec.IsBeltOrBackModel || spec.RequiresTwoHandRig)
+            throw new InvalidOperationException(
+                "The native PiercingOneHanded donor frame is held-handgun only.");
+        spec.TargetForwardAxis =
+            WeaponPresentationDonorFrames.PiercingOneHandedFirearmForward;
+        spec.TargetUpAxis =
+            WeaponPresentationDonorFrames.PiercingOneHandedFirearmUp;
+        spec.TargetAnchorPosition =
+            WeaponPresentationDonorFrames.PiercingOneHandedHeldPosition;
+        spec.CalibrationStatus +=
+            "; native-donor-held-basis-plus-rendered-body-live-fire-envelope";
+        WeaponPresentationSemanticFrame source =
+            new WeaponPresentationSemanticFrame(spec.SourceGripPoint,
+                spec.SourceMuzzlePoint, spec.SourceButtPoint,
+                spec.SourceGripPoint + spec.SourceUpAxis, false,
+                Vector3.zero, spec.SourceForwardAxis);
+        spec.VisualEuler = WeaponPresentationFrameContract.SolveRotation(
+            source, spec.TargetForwardAxis, spec.TargetUpAxis).eulerAngles;
         return BasisCalibrated(spec);
     }
 

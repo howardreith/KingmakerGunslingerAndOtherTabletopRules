@@ -3,7 +3,8 @@
   "unityVersion": "2018.4.10f1",
   "buildTarget": "StandaloneWindows64",
   "bundleName": "kingmakergunslinger.firearms",
-  "sha256": "5FA2D053EDC75B8BC7F64C296CE8A4EBB166B4A9C956C0CCFE7278E5ABFCB49E",
+  "sha256": "B3CFFB49BA32AF10DB12470401A58F6DFF0EAD9F219F87E41D9EC138D62FBAEB",
+  "byteLength": 18172963,
   "prefabs": ["Pistol", "PistolBelt", "Musket", "MusketPassThrough", "MusketMinimalControl", "MusketClearanceStock", "PistolDuelist", "PistolLastWord", "MusketBelt", "Blunderbuss", "BlunderbussBelt", "Revolver", "Rifle", "RifleBelt"],
   "itemVariantPrefabs": [
     {
@@ -68,13 +69,13 @@
     }
   ],
   "rigs": [
-    {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"readiness":"basis-calibrated-renderer-endpoint-verified"},
-    {"name":"PistolDuelist","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"readiness":"production-item-variant-exact-symbol-bound"},
-    {"name":"PistolLastWord","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"readiness":"production-item-variant-exact-symbol-bound"},
+    {"name":"Pistol","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"heldDonor":"native OH_SpearShortCommon held grip/roll plus rendered-body-stabilized live-fire envelope","readiness":"native-donor-live-fire-calibrated-renderer-endpoint-verified"},
+    {"name":"PistolDuelist","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"heldDonor":"native OH_SpearShortCommon held grip/roll plus rendered-body-stabilized live-fire envelope","readiness":"native-donor-live-fire-calibrated-exact-symbol-bound"},
+    {"name":"PistolLastWord","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"heldDonor":"native OH_SpearShortCommon held grip/roll plus rendered-body-stabilized live-fire envelope","readiness":"native-donor-live-fire-calibrated-exact-symbol-bound"},
     {"name":"Musket","family":"long-gun","muzzle":true,"supportHandTarget":true,"storedPrefab":"MusketBelt","semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp","SupportHandTarget"],"readiness":"runtime-qualified-default-medium-male-held-stored-ready-fire"},
     {"name":"Blunderbuss","family":"long-gun","muzzle":true,"supportHandTarget":true,"storedPrefab":"BlunderbussBelt","semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp","SupportHandTarget"],"readiness":"runtime-qualified-default-medium-male-held-stored-ready-fire"},
     {"name":"Rifle","family":"long-gun","muzzle":true,"supportHandTarget":true,"storedPrefab":"RifleBelt","semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp","SupportHandTarget"],"readiness":"runtime-qualified-default-medium-male-held-stored-ready-fire"},
-    {"name":"Revolver","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"readiness":"basis-calibrated-component-bounds-derived"}
+    {"name":"Revolver","family":"one-handed","muzzle":true,"supportHandTarget":false,"semanticFrame":["Grip","Butt","Muzzle","WeaponForward","WeaponUp"],"heldDonor":"native OH_SpearShortCommon held grip/roll plus rendered-body-stabilized live-fire envelope","readiness":"native-donor-live-fire-calibrated-component-bounds-derived"}
   ],
   "audioMappings": ["pistol-shot", "musket-shot", "blunderbuss-shot", "revolver-shot", "rifle-shot"],
   "quarantined": []
@@ -82,7 +83,9 @@
   "bundles": [
     {
       "name": "kingmakergunslinger.firearms",
-      "sha256": "E334227FE18B153D3C8720D1524DEEA80D88EAEF0BC7DE00861674A4B344BFFF"
+      "sha256": "B3CFFB49BA32AF10DB12470401A58F6DFF0EAD9F219F87E41D9EC138D62FBAEB",
+      "byteLength": 18172963,
+      "heldDonor": "native OH_SpearShortCommon held grip/roll plus rendered-body-stabilized live-fire envelope"
     },
     {
       "name": "kingmakergunslinger.elvenbranchedspear",

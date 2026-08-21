@@ -84,6 +84,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "weapon-presentation-evidence";
         internal const string WeaponPresentationMotionEvidence =
             "weapon-presentation-motion-evidence";
+        internal const string WeaponPresentationHandgunMotionEvidence =
+            "weapon-presentation-handgun-motion-evidence";
         internal const string WeaponPresentationSpearMotionEvidence =
             "weapon-presentation-spear-motion-evidence";
         internal const string WeaponPresentationEasternMotionEvidence =
@@ -339,6 +341,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableEasternWeaponsCombat,
                 WeaponPresentationEvidence,
                 WeaponPresentationMotionEvidence,
+                WeaponPresentationHandgunMotionEvidence,
                 WeaponPresentationSpearMotionEvidence,
                 WeaponPresentationEasternMotionEvidence,
                 WeaponPresentationTransitionMotionEvidence,

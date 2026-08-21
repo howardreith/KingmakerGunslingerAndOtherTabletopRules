@@ -619,6 +619,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableEasternWeaponsCombat &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationEvidence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationTransitionMotionEvidence &&
@@ -1308,6 +1309,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
                     _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence ||
+                    _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence ||
@@ -1351,6 +1354,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||
                     _request.Scenario ==
@@ -1791,6 +1796,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .WeaponPresentationMotionEvidence ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                    .WeaponPresentationHandgunMotionEvidence ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                     .WeaponPresentationSpearMotionEvidence ||
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -9654,6 +9661,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 instance = FirearmAssetRuntime.InstantiatePrefab(kind);
                 Transform visual = instance == null ? null : instance.transform.Find("Visual");
                 Transform muzzle = instance == null ? null : instance.transform.Find("Muzzle");
+                Transform grip = instance == null ? null : instance.transform.Find(
+                    WeaponPresentationFrameContract.GripMarker);
+                Transform weaponUp = instance == null ? null : instance.transform.Find(
+                    WeaponPresentationFrameContract.WeaponUpMarker);
+                Transform weaponForward = instance == null ? null : instance.transform.Find(
+                    WeaponPresentationFrameContract.WeaponForwardMarker);
                 Transform support = instance == null ? null : instance.transform.Find("SupportHandTarget");
                 Renderer[] renderers = instance == null ? Array.Empty<Renderer>() : instance.GetComponentsInChildren<Renderer>(true);
                 bool visiblyRenderable;
@@ -9677,19 +9690,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions.Add(Assertion(id + "-animation-candidate", "PiercingOneHanded",
                     observed, effective != null && effective.AnimStyle == WeaponAnimationStyle.PiercingOneHanded,
                     "effective production item visual parameters"));
-                if (kind == FirearmKind.Pistol)
-                    assertions.Add(Assertion("pistol-basis-calibrated-held-frame",
-                        "Cyril43 Pistol; grip-derived position (0,0,0.1632); euler (0,180,0); scale 0.24; PiercingOneHanded",
-                        observed, visual != null &&
-                        Vector3.Distance(visual.localPosition,
-                            new Vector3(0f, 0f, 0.1632f)) < 0.0001f &&
-                        Vector3.Distance(visual.localScale,
-                            Vector3.one * 0.24f) < 0.0001f &&
-                        Mathf.Abs(Quaternion.Dot(visual.localRotation,
-                            Quaternion.Euler(0f, 180f, 0f))) > 0.9999f &&
+                Vector3 heldForward = grip == null || weaponForward == null
+                    ? Vector3.zero : (weaponForward.localPosition -
+                        grip.localPosition).normalized;
+                Vector3 heldUp = grip == null || weaponUp == null
+                    ? Vector3.zero : (weaponUp.localPosition -
+                        grip.localPosition).normalized;
+                assertions.Add(Assertion(id +
+                    "-piercing-one-handed-held-frame",
+                    "identity equipment root; native OH_SpearShortCommon held grip and live-fire-calibrated +Y/+Z donor basis",
+                    "grip=" + (grip == null ? "<null>" :
+                        grip.localPosition.ToString("R")) + ";forward=" +
+                        heldForward.ToString("R") + ";up=" +
+                        heldUp.ToString("R"),
+                    grip != null && weaponForward != null && weaponUp != null &&
+                        Vector3.Distance(grip.localPosition,
+                            WeaponPresentationDonorFrames
+                                .PiercingOneHandedHeldPosition) < 0.0001f &&
+                        Vector3.Dot(heldForward,
+                            WeaponPresentationDonorFrames
+                                .PiercingOneHandedFirearmForward) > 0.9999f &&
+                        Vector3.Dot(heldUp,
+                            WeaponPresentationDonorFrames
+                                .PiercingOneHandedFirearmUp) > 0.9999f &&
                         effective != null && effective.AnimStyle ==
                             WeaponAnimationStyle.PiercingOneHanded,
-                        "source -Z/+Y to donor +Z/+Y semantic-basis solve"));
+                    "semantic source frame converted to the measured native PiercingOneHanded held grip/roll and guarded live-fire envelope"));
                 assertions.Add(Assertion(id + "-projectile-contract", "exactly one cloned firearm projectile",
                     "projectiles=" + projectiles, projectiles == 1, "effective production item visual parameters"));
                 assertions.Add(Assertion(id + "-holster-policy", "hidden; no inherited crossbow sheath",

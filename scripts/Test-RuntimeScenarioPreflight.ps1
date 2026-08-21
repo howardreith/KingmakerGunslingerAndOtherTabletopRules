@@ -84,6 +84,7 @@ $expected = @(
     'disposable-eastern-weapons-combat',
     'weapon-presentation-evidence',
     'weapon-presentation-motion-evidence',
+    'weapon-presentation-handgun-motion-evidence',
     'weapon-presentation-spear-motion-evidence',
     'weapon-presentation-eastern-motion-evidence',
     'weapon-presentation-transition-motion-evidence',
@@ -229,6 +230,15 @@ Assert-True $weaponPresentationMotion.RequiresSaveName `
 Assert-True ($weaponPresentationMotion.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'weapon-presentation-motion-evidence-only-permits-working-save'
+$weaponPresentationHandgunMotion = Get-KmgRuntimeScenarioMetadata `
+    'weapon-presentation-handgun-motion-evidence'
+Assert-True (-not $weaponPresentationHandgunMotion.RequiresManualInteraction) `
+    'weapon-presentation-handgun-motion-evidence-is-autonomous'
+Assert-True $weaponPresentationHandgunMotion.RequiresSaveName `
+    'weapon-presentation-handgun-motion-evidence-requires-save-name'
+Assert-True ($weaponPresentationHandgunMotion.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'weapon-presentation-handgun-motion-evidence-only-permits-working-save'
 $weaponPresentationSpearMotion = Get-KmgRuntimeScenarioMetadata `
     'weapon-presentation-spear-motion-evidence'
 Assert-True (-not $weaponPresentationSpearMotion.RequiresManualInteraction) `

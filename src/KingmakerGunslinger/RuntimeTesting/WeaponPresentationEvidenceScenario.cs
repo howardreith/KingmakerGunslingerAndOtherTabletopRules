@@ -22,6 +22,7 @@ using Kingmaker.Utility;
 using Kingmaker.View.Equipment;
 using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Assets;
+using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
@@ -44,6 +45,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             BindingFlags.Public | BindingFlags.NonPublic;
         private const int EvidenceLayer = 31;
         private const int PanelSize = 384;
+        private const float MinimumRuntimeFrameVectorSquared = 0.000001f;
+        private const string NativeShortswordItemGuid =
+            "57c8994d1f1becf49ac4f642e5d8ca9d";
+        private static readonly NativeControlSpec HandgunPiercingDonor =
+            new NativeControlSpec("Shortspear",
+                "cf72040b79c99504785976b28d54b2b7",
+                null);
 
         private static readonly string[] ProductionVariants =
         {
@@ -97,6 +105,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             WeaponVisualVariantCatalog.BlunderbussService,
             WeaponVisualVariantCatalog.RifleService,
             "Native.HeavyCrossbow"
+        };
+
+        private static readonly string[] HandgunMotionVariants =
+        {
+            WeaponVisualVariantCatalog.PistolService,
+            WeaponVisualVariantCatalog.PistolDuelist,
+            WeaponVisualVariantCatalog.PistolLastWord,
+            WeaponVisualVariantCatalog.RevolverService,
+            "Native.LightCrossbow",
+            "Native.Shortspear"
         };
 
         private static readonly string[] SpearMotionVariants =
@@ -1727,6 +1745,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal int LoadedRoundsAfter;
         }
 
+        private sealed class HandgunDualOutcome
+        {
+            internal string Variant;
+            internal string FirearmHand;
+            internal bool PrimaryModelRenderable;
+            internal bool SecondaryModelRenderable;
+            internal bool ResolverAccepted;
+            internal bool ResolverSelectedFirearm;
+        }
+
         /// <summary>
         /// A distinct request-gated session for real combat pose sampling. The
         /// ordinary evidence session intentionally remains limited to stored and
@@ -1748,9 +1776,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<string> _evidenceFiles = new List<string>();
             private readonly List<MotionOutcome> _outcomes =
                 new List<MotionOutcome>();
+            private readonly List<HandgunDualOutcome> _handgunDualOutcomes =
+                new List<HandgunDualOutcome>();
             private readonly JArray _records = new JArray();
             private readonly bool _spearMotion;
             private readonly bool _easternMotion;
+            private readonly bool _handgunMotion;
             private readonly string[] _motionVariants;
             private object _allUnits;
             private object _party;
@@ -1762,10 +1793,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             private BlueprintUnit _hostileBlueprint;
             private Renderer[] _fixtureBodyRenderers = new Renderer[0];
             private ItemEntityWeapon _equipped;
+            private ItemEntityWeapon _offhandEquipped;
             private bool _equippedFirearmStateSet;
+            private bool _offhandFirearmStateSet;
             private EvidenceCase[] _cases = new EvidenceCase[0];
             private UnitAttack _attackCommand;
             private Transform _removedPresentation;
+            private Transform _removedOffhandPresentation;
             private int _caseIndex;
             private int _phase;
             private int _settleUpdates;
@@ -1787,12 +1821,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _commandTargetAttempts;
             private string _commandTargetPlacement = "<not-prepared>";
             private int _explicitCommandTicks;
+            private bool _actedCaptureTaken;
+            private bool _attackTargetPrepared;
             private bool _cleanupStarted;
             private bool _indexWritten;
             private long _firedBefore;
             private long _faultsBefore;
             private string _stage = "resolve-working-save-anchor";
             private string _exceptionSummary = string.Empty;
+            private int _handgunMotionFailureCount;
 
             internal MotionSession(ModContext context,
                 RuntimeTestRequest request)
@@ -1809,8 +1846,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog
                         .WeaponPresentationEasternMotionEvidence,
                     StringComparison.Ordinal);
+                _handgunMotion = string.Equals(request.Scenario,
+                    RuntimeTestScenarioCatalog
+                        .WeaponPresentationHandgunMotionEvidence,
+                    StringComparison.Ordinal);
                 _motionVariants = _spearMotion ? SpearMotionVariants :
                     _easternMotion ? EasternMotionVariants :
+                    _handgunMotion ? HandgunMotionVariants :
                     LongGunMotionVariants;
             }
 
@@ -1852,11 +1894,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                         PollAttackSequence();
                         return;
                     }
-                    PollRemoval();
+                    if (_phase == 4)
+                    {
+                        PollRemoval();
+                        return;
+                    }
+                    if (_phase == 5)
+                    {
+                        PollDualWieldPresentation(true);
+                        return;
+                    }
+                    if (_phase == 6)
+                    {
+                        PollDualWieldRemoval(true);
+                        return;
+                    }
+                    if (_phase == 7)
+                    {
+                        PollDualWieldPresentation(false);
+                        return;
+                    }
+                    PollDualWieldRemoval(false);
                 }
                 catch (Exception exception)
                 {
                     _exceptionSummary = "stage=" + _stage + ";" + exception;
+                    TryWriteMotionFailureEvidence(exception);
                     Add(_assertions,
                         "weapon-presentation-motion-evidence-exception",
                         "no exception", _exceptionSummary, false,
@@ -1912,6 +1975,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _actor.CombatState.Engage(_target);
                 _target.Commands.InterruptAll(true);
                 _cases = BuildMotionCases(_motionVariants);
+                if (_handgunMotion) RecordPiercingOneHandedDonors();
                 if (_cases.Length != _motionVariants.Length ||
                     !_cases.Select(value => value.Variant)
                         .SequenceEqual(_motionVariants))
@@ -1921,8 +1985,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "three production branched spears plus native Longspear" :
                          _easternMotion ?
                             "twelve production Eastern variants plus three native sword" :
+                         _handgunMotion ?
+                            "four production handguns plus native Light Crossbow and native Shortspear" :
                             "three production long guns plus native Heavy Crossbow") +
                         " control set.");
+            }
+
+            private void RecordPiercingOneHandedDonors()
+            {
+                string[] donors = BlueprintBootstrap.Library.GetAllBlueprints()
+                    .OfType<BlueprintItemWeapon>()
+                    .Where(item => item != null && item.Type != null &&
+                        item.VisualParameters != null &&
+                        item.VisualParameters.Model != null &&
+                        string.Equals(item.VisualParameters.AnimStyle.ToString(),
+                            "PiercingOneHanded", StringComparison.Ordinal))
+                    .GroupBy(item => item.Type.AssetGuid.ToString())
+                    .OrderBy(group => group.Key, StringComparer.Ordinal)
+                    .Select(group => group.OrderBy(item =>
+                            item.AssetGuid.ToString(), StringComparer.Ordinal)
+                        .First())
+                    .Select(item => item.name + "/" + item.AssetGuid +
+                        "/type=" + item.Type.name + "/" +
+                        item.Type.AssetGuid + "/model=" +
+                        item.VisualParameters.Model.name + "/position=" +
+                        item.VisualParameters.Model.transform.localPosition
+                            .ToString("R") + "/euler=" +
+                        item.VisualParameters.Model.transform.localEulerAngles
+                            .ToString("R"))
+                    .ToArray();
+                _diagnostics.Add("handgunPiercingOneHandedDonors=" +
+                    (donors.Length == 0 ? "<none>" :
+                        string.Join("|", donors)));
             }
 
             private bool EquipCurrent()
@@ -2003,24 +2097,98 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _actor.CombatState.IsInCombat + ";role=" + role + ".");
                 }
 
+                // Establish the native command target before recording the
+                // ready pose, then allow ForceLookAt to propagate through the
+                // live view and hand rig. Starting the command in the same
+                // update as a 90-degree target relocation measures a turn-in
+                // artifact rather than the weapon's firing presentation.
+                if (!_attackTargetPrepared)
+                {
+                    UnitCommand issued = UnitAttack.CreateAttackCommand(_actor,
+                        _target);
+                    _attackCommand = issued as UnitAttack;
+                    if (_attackCommand == null)
+                        throw new InvalidOperationException(
+                            "Native UnitAttack.CreateAttackCommand did not produce " +
+                            "a UnitAttack for " + value.Variant + ": " +
+                            (issued == null ? "<null>" :
+                                issued.GetType().FullName));
+                    _attackCommand.IsSingleAttack = true;
+                    _actor.Commands.Run(_attackCommand);
+                    PrepareAttackStart(value);
+                    // The installed probe supplies the real ranged approach
+                    // contract. Interrupt it before any attack animation starts;
+                    // a fresh command is created after the rig has visibly
+                    // settled on the selected target.
+                    _actor.Commands.InterruptAll(true);
+                    // InterruptAll can request the stored hand rig even though
+                    // UnitCombatState remains engaged. Restore the owning
+                    // UnitViewHandsEquipment desired-combat contract, then let
+                    // its normal transition settle before recording evidence.
+                    _actor.View.HandsEquipment.OnCombatStateChanged(true);
+                    _actor.View.HandsEquipment.MatchWithCurrentCombatState();
+                    _attackCommand = null;
+                    _commandInstalled = false;
+                    _attackTargetPrepared = true;
+                    _settleUpdates = 0;
+                    return;
+                }
+
+                if (IsFirearm(value))
+                {
+                    var readyFrame = new JObject();
+                    DescribeFirearmMuzzleFrame(readyFrame, model, _actor,
+                        _target);
+                    float readyBoreTargetDot =
+                        (float)readyFrame["boreTargetDirectionDot"];
+                    float actorTargetDirectionDot =
+                        (float)readyFrame["actorTargetDirectionDot"];
+                    if (actorTargetDirectionDot <= 0.99f)
+                    {
+                        if (_settleUpdates < MaximumSettleUpdates) return;
+                        throw new InvalidOperationException(value.Variant +
+                            " did not reach a target-facing live ready frame " +
+                            "after native ForceLookAt visual propagation. " +
+                            "visualActorDot=" +
+                            actorTargetDirectionDot.ToString("R") +
+                            ";boreDot=" + readyBoreTargetDot.ToString("R") +
+                            ".");
+                    }
+                    _diagnostics.Add(value.Variant +
+                        ":targetFacingReadyDot=" +
+                        actorTargetDirectionDot.ToString("R") +
+                        ";readyBoreDot=" +
+                        readyBoreTargetDot.ToString("R") +
+                        ";settleUpdates=" + _settleUpdates);
+                }
+
                 CaptureMotionRecord(value, model, visual, role,
                     "combat-ready", 0,
                     "live combat-ready evidence before native attack command");
                 _firedBefore = FirearmDischargeRuntimeDiagnostics.Fired;
                 _faultsBefore = FirearmDischargeRuntimeDiagnostics.Faults;
-                UnitCommand issued = UnitAttack.CreateAttackCommand(_actor,
+                UnitCommand finalIssued = UnitAttack.CreateAttackCommand(_actor,
                     _target);
-                _attackCommand = issued as UnitAttack;
+                _attackCommand = finalIssued as UnitAttack;
                 if (_attackCommand == null)
                     throw new InvalidOperationException(
-                        "Native UnitAttack.CreateAttackCommand did not produce " +
-                        "a UnitAttack for " + value.Variant + ": " +
-                        (issued == null ? "<null>" : issued.GetType().FullName));
+                        "Native UnitAttack.CreateAttackCommand did not reproduce " +
+                        "a UnitAttack for aligned " + value.Variant + ": " +
+                        (finalIssued == null ? "<null>" :
+                            finalIssued.GetType().FullName));
                 _attackCommand.IsSingleAttack = true;
                 _actor.Commands.Run(_attackCommand);
-                PrepareAttackStart(value);
-                _attackCommand.Start();
                 _commandInstalled = _actor.Commands.Contains(_attackCommand);
+                _commandCanStart = _attackCommand.CanStart;
+                _commandCloseEnough = _attackCommand.IsUnitEnoughClose;
+                if (!_commandInstalled || !_commandCanStart ||
+                    !_commandCloseEnough)
+                    throw new InvalidOperationException(value.Variant +
+                        " lost exact native start readiness when the aligned " +
+                        "UnitAttack was installed. installed=" +
+                        _commandInstalled + ";canStart=" + _commandCanStart +
+                        ";closeEnough=" + _commandCloseEnough + ".");
+                _attackCommand.Start();
                 _commandStarted = _attackCommand.IsStarted;
                 _commandRunningObserved = _attackCommand.IsRunning;
                 _animationObserved = _attackCommand.Animation != null;
@@ -2036,6 +2204,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _attackCommand.Animation.GetType().FullName) + ".");
                 _attackUpdates = 0;
                 _captureScheduleIndex = 0;
+                _actedCaptureTaken = false;
                 _phase = 3;
             }
 
@@ -2140,6 +2309,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (_attackCommand.Animation != null &&
                     _attackCommand.Animation.IsActed);
 
+                if (_handgunMotion && !_actedCaptureTaken &&
+                    _attackCommand.Animation != null &&
+                    _attackCommand.Animation.IsActed)
+                {
+                    WeaponVisualParameters visual = value.Item.VisualParameters;
+                    string actedRole;
+                    Transform actedModel = ResolveActivePresentation(_actor,
+                        visual, "attack", out actedRole);
+                    if (!Renderable(actedModel))
+                        throw new InvalidOperationException(value.Variant +
+                            " lost its renderable held model at the acted " +
+                            "handgun attack frame.");
+                    CaptureMotionRecord(value, actedModel, visual, actedRole,
+                        "attack-acted-update-" +
+                            _attackUpdates.ToString("000"),
+                        _attackUpdates,
+                        "event-aligned live UnitAttack acted frame; paired " +
+                            "discharge counters establish production fire");
+                    _actedCaptureTaken = true;
+                }
+
                 if (_captureScheduleIndex < AttackCaptureUpdates.Length &&
                     _attackUpdates >=
                         AttackCaptureUpdates[_captureScheduleIndex])
@@ -2167,7 +2357,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ? FirearmDischargeRuntimeDiagnostics.Fired -
                         _firedBefore >= 1
                     : _commandRunningObserved && _animationObserved;
-                if (!attackObserved &&
+                bool actedCaptureObserved = !_handgunMotion ||
+                    _actedCaptureTaken;
+                if ((!attackObserved || !actedCaptureObserved) &&
                     _attackUpdates < MaximumSettleUpdates) return;
                 RecordOutcome(value);
                 string removalRole;
@@ -2198,6 +2390,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.EvidenceDirectory, stem + ".png"));
                 JObject record = Describe(value, _actor, model, visual,
                     _fixtureBodyRenderers, capture, stem + ".png", state, role);
+                if (_handgunMotion && IsFirearm(value))
+                    DescribeFirearmMuzzleFrame(record, model, _actor, _target);
+                else if (_handgunMotion && string.Equals(value.Variant,
+                        "Native.Shortspear", StringComparison.Ordinal))
+                    DescribePiercingOneHandedDonorFrame(record, model,
+                        _actor, _target);
                 if (_spearMotion)
                 {
                     string endpointSource;
@@ -2419,6 +2617,267 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _settleUpdates + " updates.");
                 }
                 _removedPresentation = null;
+                ResetAttackState();
+                EvidenceCase value = _cases[_caseIndex];
+                if (_handgunMotion && !value.NativeControl)
+                {
+                    EquipDualWield(value, true);
+                    _phase = 5;
+                    _settleUpdates = 0;
+                    return;
+                }
+                AdvanceMotionCase();
+            }
+
+            private void EquipDualWield(EvidenceCase value,
+                bool firearmInPrimary)
+            {
+                _stage = "equip-dual-wield-" +
+                    (firearmInPrimary ? "firearm-main-" :
+                        "firearm-offhand-") + value.Variant;
+                _actor.Commands.InterruptAll(true);
+                _target.Commands.InterruptAll(true);
+                if (!_actor.CombatState.IsInCombat)
+                    _actor.CombatState.JoinCombat();
+                if (!_target.CombatState.IsInCombat)
+                    _target.CombatState.JoinCombat();
+                BlueprintItemWeapon shortsword = BlueprintLibraryLookup
+                    .RequireExact<BlueprintItemWeapon>(
+                        BlueprintBootstrap.Library, NativeShortswordItemGuid,
+                        "native Shortsword dual-wield presentation control");
+                var firearm = new ItemEntityWeapon(value.Item);
+                var partner = new ItemEntityWeapon(shortsword);
+                FirearmRuntimeState.Service.Set(firearm,
+                    new FirearmState(FirearmState.CurrentSchemaVersion, 1,
+                        FirearmStateTokenCatalog.DiagnosticLeadBall,
+                        FirearmCondition.Normal));
+                if (firearmInPrimary)
+                {
+                    _equipped = firearm;
+                    _offhandEquipped = partner;
+                    _equippedFirearmStateSet = true;
+                    _offhandFirearmStateSet = false;
+                }
+                else
+                {
+                    _equipped = partner;
+                    _offhandEquipped = firearm;
+                    _equippedFirearmStateSet = false;
+                    _offhandFirearmStateSet = true;
+                }
+                _actor.Body.PrimaryHand.InsertItem(_equipped);
+                _actor.Body.SecondaryHand.InsertItem(_offhandEquipped);
+                if (!ReferenceEquals(_actor.Body.PrimaryHand.MaybeWeapon,
+                        _equipped) ||
+                    !ReferenceEquals(_actor.Body.SecondaryHand.MaybeWeapon,
+                        _offhandEquipped))
+                    throw new InvalidOperationException(value.Variant +
+                        " did not remain in both requested dual-wield slots.");
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(true);
+                _actor.CombatState.Engage(_target);
+            }
+
+            private void PollDualWieldPresentation(bool firearmInPrimary)
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "settle-dual-wield-" +
+                    (firearmInPrimary ? "firearm-main-" :
+                        "firearm-offhand-") + value.Variant;
+                Game.Instance.EntityCreator.Tick();
+                _target.Commands.InterruptAll(true);
+                if (_actor.View.AnimationManager != null)
+                    _actor.View.AnimationManager.Tick();
+                GameObject primary = _actor.View.HandsEquipment
+                    .GetWeaponModel(false);
+                GameObject secondary = _actor.View.HandsEquipment
+                    .GetWeaponModel(true);
+                bool primaryRenderable = primary != null &&
+                    Renderable(primary.transform);
+                bool secondaryRenderable = secondary != null &&
+                    Renderable(secondary.transform);
+                bool ready = primaryRenderable && secondaryRenderable &&
+                    _actor.View.HandsEquipment.InCombat &&
+                    _actor.CombatState.IsInCombat;
+                _settleUpdates++;
+                if (!ready || _settleUpdates < ReadySettleUpdates)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(value.Variant +
+                        " did not materialize both dual-wield combat-ready " +
+                        "models. primary=" + primaryRenderable +
+                        ";secondary=" + secondaryRenderable +
+                        ";handsInCombat=" +
+                        _actor.View.HandsEquipment.InCombat + ".");
+                }
+
+                ItemEntityWeapon firearm = firearmInPrimary ? _equipped :
+                    _offhandEquipped;
+                ExactEquippedFirearmContext resolved;
+                string reason;
+                bool resolverAccepted = ExactEquippedFirearmResolver
+                    .TryResolve(_actor.Descriptor, out resolved, out reason);
+                bool resolverSelectedFirearm = resolverAccepted &&
+                    resolved != null && ReferenceEquals(resolved.Weapon,
+                        firearm);
+                Transform firearmModel = (firearmInPrimary ? primary :
+                    secondary).transform;
+                Transform partnerModel = (firearmInPrimary ? secondary :
+                    primary).transform;
+                string state = firearmInPrimary ?
+                    "dual-wield-firearm-main-combat-ready" :
+                    "dual-wield-firearm-offhand-combat-ready";
+                string stem = state + "-default-medium-" +
+                    SafeFileName(value.Variant);
+                CaptureSummary capture = CaptureContactSheet(_actor,
+                    firearmModel, _fixtureBodyRenderers, Path.Combine(
+                        _request.EvidenceDirectory, stem + ".png"));
+                JObject record = Describe(value, _actor, firearmModel,
+                    value.Item.VisualParameters, _fixtureBodyRenderers,
+                    capture, stem + ".png", state,
+                    firearmInPrimary ? "main-hand-weapon-model" :
+                        "offhand-weapon-model");
+                DescribeFirearmMuzzleFrame(record, firearmModel, _actor,
+                    _target);
+                record["firearmHand"] = firearmInPrimary ? "primary" :
+                    "secondary";
+                record["partnerItemGuid"] = (firearmInPrimary ?
+                    _offhandEquipped : _equipped).Blueprint.AssetGuid;
+                record["partnerModelPath"] = TransformPath(partnerModel,
+                    _actor.View.transform);
+                record["primaryModelRenderable"] = primaryRenderable;
+                record["secondaryModelRenderable"] = secondaryRenderable;
+                record["exactFirearmResolverAccepted"] = resolverAccepted;
+                record["exactFirearmResolverSelectedThisItem"] =
+                    resolverSelectedFirearm;
+                record["exactFirearmResolverReason"] = reason ?? string.Empty;
+                record["claimBoundary"] =
+                    "cosmetic two-weapon combat-ready evidence with exactly " +
+                    "one marked firearm and one native Shortsword; no " +
+                    "two-firearm or offhand-fire attack claim";
+                string jsonPath = Path.Combine(_request.EvidenceDirectory,
+                    stem + ".json");
+                WriteJsonAtomic(jsonPath, record);
+                _records.Add(record);
+                _evidenceFiles.Add(capture.PngPath);
+                _evidenceFiles.Add(jsonPath);
+                _captured++;
+                _viewCount += 4;
+                _handgunDualOutcomes.Add(new HandgunDualOutcome
+                {
+                    Variant = value.Variant,
+                    FirearmHand = firearmInPrimary ? "primary" : "secondary",
+                    PrimaryModelRenderable = primaryRenderable,
+                    SecondaryModelRenderable = secondaryRenderable,
+                    ResolverAccepted = resolverAccepted,
+                    ResolverSelectedFirearm = resolverSelectedFirearm
+                });
+                _diagnostics.Add(value.Variant + ":state=" + state +
+                    ";resolver=" + resolverAccepted + "/" +
+                    resolverSelectedFirearm + "/" + (reason ?? string.Empty) +
+                    ";png=" + Path.GetFileName(capture.PngPath) +
+                    ";sha256=" + capture.Sha256);
+
+                _removedPresentation = primary.transform;
+                _removedOffhandPresentation = secondary.transform;
+                _actor.Commands.InterruptAll(true);
+                if (_actor.CombatState.IsInCombat)
+                    _actor.CombatState.LeaveCombat();
+                TryInterruptHandEquipmentAnimation();
+                RemoveDualEquipped();
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                _phase = firearmInPrimary ? 6 : 8;
+                _settleUpdates = 0;
+            }
+
+            private void PollDualWieldRemoval(bool completedPrimaryLayout)
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "settle-dual-wield-removal-" +
+                    (completedPrimaryLayout ? "firearm-main-" :
+                        "firearm-offhand-") + value.Variant;
+                Game.Instance.EntityCreator.Tick();
+                _target.Commands.InterruptAll(true);
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                GameObject primary = _actor.View.HandsEquipment
+                    .GetWeaponModel(false);
+                GameObject secondary = _actor.View.HandsEquipment
+                    .GetWeaponModel(true);
+                bool primarySlotEmpty =
+                    _actor.Body.PrimaryHand.MaybeItem == null;
+                bool secondarySlotEmpty =
+                    _actor.Body.SecondaryHand.MaybeItem == null;
+                bool primaryRenderable = primary != null &&
+                    Renderable(primary.transform);
+                bool secondaryRenderable = secondary != null &&
+                    Renderable(secondary.transform);
+                bool removedPrimaryRenderable =
+                    Renderable(_removedPresentation);
+                bool removedSecondaryRenderable =
+                    Renderable(_removedOffhandPresentation);
+                bool removed = primarySlotEmpty && secondarySlotEmpty &&
+                    !primaryRenderable && !secondaryRenderable &&
+                    !removedPrimaryRenderable && !removedSecondaryRenderable;
+                if (!removed)
+                {
+                    _settleUpdates++;
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(value.Variant +
+                        " retained a dual-wield presentation after removal. " +
+                        "primarySlotEmpty=" + primarySlotEmpty +
+                        ";secondarySlotEmpty=" + secondarySlotEmpty +
+                        ";primaryRenderable=" + primaryRenderable +
+                        ";secondaryRenderable=" + secondaryRenderable +
+                        ";removedPrimaryRenderable=" +
+                        removedPrimaryRenderable +
+                        ";removedSecondaryRenderable=" +
+                        removedSecondaryRenderable + ".");
+                }
+                _removedPresentation = null;
+                _removedOffhandPresentation = null;
+                if (completedPrimaryLayout)
+                {
+                    EquipDualWield(value, false);
+                    _phase = 7;
+                    _settleUpdates = 0;
+                    return;
+                }
+                AdvanceMotionCase();
+            }
+
+            private void RemoveDualEquipped()
+            {
+                if (_actor != null && _actor.Body != null)
+                {
+                    if (_actor.Body.PrimaryHand != null &&
+                        _actor.Body.PrimaryHand.MaybeItem != null)
+                        _actor.Body.PrimaryHand.RemoveItem(false);
+                    if (_actor.Body.SecondaryHand != null &&
+                        _actor.Body.SecondaryHand.MaybeItem != null)
+                        _actor.Body.SecondaryHand.RemoveItem(false);
+                }
+                if (_equipped != null)
+                {
+                    if (_equippedFirearmStateSet)
+                        FirearmRuntimeState.Service.Forget(_equipped);
+                    _equipped.Dispose();
+                }
+                if (_offhandEquipped != null)
+                {
+                    if (_offhandFirearmStateSet)
+                        FirearmRuntimeState.Service.Forget(_offhandEquipped);
+                    _offhandEquipped.Dispose();
+                }
+                _equipped = null;
+                _offhandEquipped = null;
+                _equippedFirearmStateSet = false;
+                _offhandFirearmStateSet = false;
+            }
+
+            private void ResetAttackState()
+            {
                 _attackCommand = null;
                 _commandInstalled = false;
                 _commandCanStart = false;
@@ -2434,6 +2893,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _commandTargetAttempts = 0;
                 _commandTargetPlacement = "<not-prepared>";
                 _explicitCommandTicks = 0;
+                _actedCaptureTaken = false;
+                _attackTargetPrepared = false;
+            }
+
+            private void AdvanceMotionCase()
+            {
                 _caseIndex++;
                 if (_caseIndex < _cases.Length)
                 {
@@ -2483,6 +2948,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "faultDelta", value.FaultDelta },
                         { "loadedRoundsAfter", value.LoadedRoundsAfter }
                     }).ToArray());
+                var dualWieldOutcomes = new JArray(_handgunDualOutcomes.Select(
+                    value => new JObject
+                    {
+                        { "variant", value.Variant },
+                        { "firearmHand", value.FirearmHand },
+                        { "primaryModelRenderable",
+                            value.PrimaryModelRenderable },
+                        { "secondaryModelRenderable",
+                            value.SecondaryModelRenderable },
+                        { "resolverAccepted", value.ResolverAccepted },
+                        { "resolverSelectedFirearm",
+                            value.ResolverSelectedFirearm }
+                    }).ToArray());
                 var index = new JObject
                 {
                     { "schemaVersion", 1 },
@@ -2490,9 +2968,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "live disposable default Medium combat pair" },
                     { "motionFamily", _spearMotion ?
                         "elven-branched-spear" : _easternMotion ?
-                        "eastern-blade" : "long-gun" },
-                    { "productionVariantCount", _easternMotion ? 12 : 3 },
-                    { "nativeControlCount", _easternMotion ? 3 : 1 },
+                        "eastern-blade" : _handgunMotion ?
+                        "handgun" : "long-gun" },
+                    { "productionVariantCount", _easternMotion ? 12 :
+                        _handgunMotion ? 4 : 3 },
+                    { "nativeControlCount", _easternMotion ? 3 :
+                        _handgunMotion ? 2 : 1 },
                     { "attackCaptureUpdates",
                         new JArray(AttackCaptureUpdates) },
                     { "views", new JArray("front", "right-side", "rear",
@@ -2501,6 +2982,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "gitCommit", identity.GitCommit },
                     { "runtimeIdentity", identity.RuntimeIdentity },
                     { "outcomes", outcomes },
+                    { "dualWieldOutcomes", dualWieldOutcomes },
                     { "records", _records }
                 };
                 string indexPath = Path.Combine(_request.EvidenceDirectory,
@@ -2508,6 +2990,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "weapon-presentation-branched-spear-motion-index.json" :
                     _easternMotion ?
                         "weapon-presentation-eastern-motion-index.json" :
+                    _handgunMotion ?
+                        "weapon-presentation-handgun-motion-index.json" :
                         "weapon-presentation-long-gun-motion-index.json");
                 WriteJsonAtomic(indexPath, index);
                 _evidenceFiles.Add(indexPath);
@@ -2520,6 +3004,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_actor != null)
                 {
                     _actor.Commands.InterruptAll(true);
+                    TryInterruptHandEquipmentAnimation();
+                    RemoveDualEquipped();
                     RemoveEquipped(_actor, ref _equipped,
                         ref _equippedFirearmStateSet);
                     if (_actor.CombatState != null &&
@@ -2551,6 +3037,87 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _settleUpdates = 0;
             }
 
+            private void TryWriteMotionFailureEvidence(Exception exception)
+            {
+                if (!_handgunMotion) return;
+                try
+                {
+                    object hands = _actor == null || _actor.View == null ?
+                        null : (object)_actor.View.HandsEquipment;
+                    _handgunMotionFailureCount++;
+                    string fileName = _handgunMotionFailureCount == 1
+                        ? "weapon-presentation-handgun-motion-failure.json"
+                        : "weapon-presentation-handgun-motion-failure-" +
+                            _handgunMotionFailureCount.ToString("000") +
+                            ".json";
+                    string path = Path.Combine(_request.EvidenceDirectory,
+                        fileName);
+                    var evidence = new JObject
+                    {
+                        { "stage", _stage },
+                        { "exception", exception == null ? "<null>" :
+                            exception.ToString() },
+                        { "failureSequence", _handgunMotionFailureCount },
+                        { "actorPresent", _actor != null },
+                        { "actorViewPresent", _actor != null &&
+                            _actor.View != null },
+                        { "targetPresent", _target != null },
+                        { "targetViewPresent", _target != null &&
+                            _target.View != null },
+                        { "actorPosition", _actor == null ? "<null>" :
+                            _actor.Position.ToString("R") },
+                        { "targetPosition", _target == null ? "<null>" :
+                            _target.Position.ToString("R") },
+                        { "targetDistance", _actor == null || _target == null ?
+                            -1f : Vector3.Distance(_actor.Position,
+                                _target.Position) },
+                        { "handsPresent", hands != null },
+                        { "handsInCombat", hands != null &&
+                            _actor.View.HandsEquipment.InCombat },
+                        { "handsBusy", hands != null &&
+                            _actor.View.HandsEquipment
+                                .AreHandsBusyWithAnimation.Value },
+                        { "handAnimationCount", hands == null ? -1 :
+                            _actor.View.HandsEquipment.HandAnimations.Count }
+                    };
+                    WriteJsonAtomic(path, evidence);
+                    if (!_evidenceFiles.Contains(path))
+                        _evidenceFiles.Add(path);
+                }
+                catch (Exception evidenceException)
+                {
+                    _warnings.Add("Handgun motion failure evidence could not " +
+                        "be written: " + evidenceException.Message);
+                }
+            }
+
+            private void TryInterruptHandEquipmentAnimation()
+            {
+                if (_actor == null || _actor.View == null ||
+                    _actor.View.HandsEquipment == null)
+                    return;
+                object hands = _actor.View.HandsEquipment;
+                try
+                {
+                    FieldInfo coroutineField = hands.GetType().GetField(
+                        "m_Coroutine", Members);
+                    MethodInfo interrupt = hands.GetType().GetMethod(
+                        "InterruptAnimation", Members, null, Type.EmptyTypes,
+                        null);
+                    if (coroutineField == null || interrupt == null)
+                        throw new MissingMemberException(hands.GetType().FullName,
+                            "m_Coroutine/InterruptAnimation");
+                    if (coroutineField.GetValue(hands) != null)
+                        interrupt.Invoke(hands, null);
+                }
+                catch (Exception exception)
+                {
+                    _warnings.Add("Request-local hand animation cleanup could " +
+                        "not interrupt the pending native coroutine: " +
+                        exception.Message);
+                }
+            }
+
             private void PollCleanup()
             {
                 Game.Instance.EntityCreator.Tick();
@@ -2567,19 +3134,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void Finish(bool cleaned)
             {
                 int expectedRecords = _motionVariants.Length *
-                    (AttackCaptureUpdates.Length + 1);
+                    (AttackCaptureUpdates.Length + 1 +
+                        (_handgunMotion ? 1 : 0)) +
+                    (_handgunMotion ? 8 : 0);
                 Add(_assertions,
                     _spearMotion ?
                         "weapon-presentation-branched-spear-motion-matrix" :
                     _easternMotion ?
                         "weapon-presentation-eastern-motion-matrix" :
+                    _handgunMotion ?
+                        "weapon-presentation-handgun-motion-matrix" :
                         "weapon-presentation-long-gun-motion-matrix",
                     (_easternMotion ? "twelve production Eastern variants " +
                         "and native Scimitar/Bastard Sword/Greatsword" :
-                        "three production " + (_spearMotion ?
+                     _handgunMotion ? "four production handguns and native " +
+                        "Light Crossbow/Shortspear controls" : "three production " + (_spearMotion ?
                             "branched spears and native Longspear" :
                             "long guns and native Heavy Crossbow")) + " in " +
-                        "combat-ready plus nine fixed attack samples",
+                        "combat-ready plus nine fixed attack samples" +
+                        (_handgunMotion ? ", one acted sample, and two " +
+                            "valid dual-wield layouts per production variant" :
+                            string.Empty),
                     "records=" + _records.Count + ";variants=" +
                         _records.OfType<JObject>().Select(value =>
                             (string)value["variant"]).Distinct(
@@ -2694,16 +3269,107 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Firearm).ToArray();
                     Add(_assertions,
                         "weapon-presentation-firearm-discharge-nonregression",
-                        "each loaded production long gun fires exactly once, consumes " +
+                        "each loaded production " + (_handgunMotion ?
+                            "handgun" : "long gun") +
+                            " fires exactly once, consumes " +
                             "its round, and records no discharge fault",
                         string.Join(";", firearms.Select(value => value.Variant +
                             "=fired:" + value.FiredDelta + "/fault:" +
                             value.FaultDelta + "/rounds:" +
                             value.LoadedRoundsAfter).ToArray()),
-                        firearms.Length == 3 && firearms.All(value =>
+                        firearms.Length == (_handgunMotion ? 4 : 3) &&
+                            firearms.All(value =>
                             value.FiredDelta == 1 && value.FaultDelta == 0 &&
                             value.LoadedRoundsAfter == 0),
                         "FirearmDischargeRuntimeDiagnostics plus exact per-item runtime state");
+                    if (_handgunMotion)
+                    {
+                        JObject[] customRecords = _records.OfType<JObject>()
+                            .Where(record => !(bool)record["nativeControl"])
+                            .ToArray();
+                        JObject[] readyRecords = customRecords.Where(record =>
+                                string.Equals((string)record["state"],
+                                    "combat-ready", StringComparison.Ordinal))
+                            .ToArray();
+                        JObject[] actedRecords = customRecords.Where(record =>
+                                ((string)record["state"]).StartsWith(
+                                    "attack-acted-update-",
+                                    StringComparison.Ordinal))
+                            .ToArray();
+                        float? minimumReadyTargetDot = readyRecords.Length == 0
+                            ? (float?)null : readyRecords.Min(record =>
+                                (float)record["boreTargetDirectionDot"]);
+                        float? minimumActedTargetDot = actedRecords.Length == 0
+                            ? (float?)null : actedRecords.Min(record =>
+                                (float)record["boreTargetDirectionDot"]);
+                        int actedVariants = actedRecords
+                            .Select(record => (string)record["variant"])
+                            .Distinct(StringComparer.Ordinal).Count();
+                        Add(_assertions,
+                            "weapon-presentation-handgun-muzzle-frame",
+                            "every custom handgun sample exposes a complete " +
+                                "orthogonal Grip/Muzzle/WeaponUp frame with " +
+                                "the actor facing its target before attack and " +
+                                "the explicit physical bore aligned at each " +
+                                "exact acted discharge frame",
+                            "records=" + customRecords.Length +
+                                ";readyRecords=" + readyRecords.Length +
+                                ";actedRecords=" + actedRecords.Length +
+                                ";actedVariants=" + actedVariants +
+                                ";minimumReadyTargetDot=" +
+                                (minimumReadyTargetDot.HasValue ?
+                                    minimumReadyTargetDot.Value.ToString() :
+                                    "<no-records>") +
+                                ";minimumActedTargetDot=" +
+                                (minimumActedTargetDot.HasValue ?
+                                    minimumActedTargetDot.Value.ToString() :
+                                    "<no-records>"),
+                            customRecords.Length == 52 &&
+                                customRecords.All(record =>
+                                    (float)record[
+                                        "physicalMuzzleDistanceMeters"] >
+                                        0.1f &&
+                                    (float)record[
+                                        "physicalWeaponUpDistanceMeters"] >
+                                        0.05f &&
+                                    (float)record["boreWeaponUpAbsDot"] <
+                                        0.05f) &&
+                                readyRecords.Length == 4 &&
+                                readyRecords.All(record =>
+                                    (float)record[
+                                        "actorTargetDirectionDot"] > 0.99f) &&
+                                actedRecords.Length == 4 &&
+                                actedRecords.All(record =>
+                                    (bool)record[
+                                        "physicalMuzzleLeadsGripTowardTarget"] &&
+                                    (float)record[
+                                        "boreTargetDirectionDot"] > 0.95f) &&
+                                actedVariants == 4,
+                            "live authored Grip/Muzzle/WeaponForward/WeaponUp " +
+                                "markers in right-hand ready and UnitAttack " +
+                                "presentations; dual sockets retain separate " +
+                                "renderability/resolver validation");
+                        Add(_assertions,
+                            "weapon-presentation-handgun-valid-dual-wield",
+                            "each custom handgun materializes in both hand " +
+                                "slots beside one native Shortsword while the " +
+                                "exact firearm resolver selects that one gun",
+                            string.Join(";", _handgunDualOutcomes.Select(value =>
+                                value.Variant + "/" + value.FirearmHand + "=" +
+                                value.PrimaryModelRenderable + "/" +
+                                value.SecondaryModelRenderable + "/" +
+                                value.ResolverAccepted + "/" +
+                                value.ResolverSelectedFirearm).ToArray()),
+                            _handgunDualOutcomes.Count == 8 &&
+                                _handgunDualOutcomes.All(value =>
+                                    value.PrimaryModelRenderable &&
+                                    value.SecondaryModelRenderable &&
+                                    value.ResolverAccepted &&
+                                    value.ResolverSelectedFirearm),
+                            "primary/secondary native equipment sockets plus " +
+                                "ExactEquippedFirearmResolver with exactly one " +
+                                "marked firearm");
+                    }
                 }
                 int zeroPixelSheets = _records.OfType<JObject>().Count(value =>
                     (int)value["meaningfulPixels"] <= 0);
@@ -2712,6 +3378,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "weapon-presentation-spear-motion-contact-sheets" :
                     _easternMotion ?
                         "weapon-presentation-eastern-motion-contact-sheets" :
+                    _handgunMotion ?
+                        "weapon-presentation-handgun-motion-contact-sheets" :
                         "weapon-presentation-motion-contact-sheets",
                     expectedRecords + " PNG/JSON pairs and " +
                         (expectedRecords * 4) + " labelled views",
@@ -2737,7 +3405,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Unity Mod Manager ModEntry.Info.Version");
 
                 _warnings.Add("Motion evidence is limited to combat-ready and " +
-                    "fixed attack-sequence samples on the default Medium actor. " +
+                    "fixed attack-sequence samples" + (_handgunMotion ?
+                        ", acted handgun frames, and exact one-firearm/one-" +
+                        "Shortsword dual-wield ready layouts" : string.Empty) +
+                    " on the default Medium actor. " +
                     "It does not establish locomotion, transitions, sex-specific, " +
                     "Small, or Enlarged acceptance" +
                     (_spearMotion || _easternMotion ? "." :
@@ -3905,12 +4576,154 @@ namespace KingmakerGunslinger.RuntimeTesting
             return Vector3.Distance(tip, butt) > 2f;
         }
 
+        private static void DescribeFirearmMuzzleFrame(JObject record,
+            Transform model, UnitEntityData actor, UnitEntityData target)
+        {
+            if (record == null || model == null || actor == null ||
+                actor.View == null || target == null)
+                throw new InvalidOperationException(
+                    "Handgun muzzle evidence requires a complete live frame.");
+            Transform grip = model.Find("Grip");
+            Transform muzzle = model.Find("Muzzle");
+            Transform weaponForward = model.Find(
+                WeaponPresentationFrameContract.WeaponForwardMarker);
+            Transform weaponUp = model.Find(
+                WeaponPresentationFrameContract.WeaponUpMarker);
+            if (grip == null || muzzle == null || weaponForward == null ||
+                weaponUp == null)
+                throw new InvalidOperationException(
+                    "A production handgun lacks Grip, Muzzle, WeaponForward, " +
+                    "or WeaponUp on its live held presentation.");
+            Vector3 bore = weaponForward.position - grip.position;
+            Vector3 muzzleOffset = muzzle.position - grip.position;
+            Vector3 up = weaponUp.position - grip.position;
+            Vector3 targetDirection = target.Position - actor.Position;
+            targetDirection.y = 0f;
+            Vector3 logicalActorForward = actor.OrientationDirection;
+            logicalActorForward.y = 0f;
+            Vector3 actorForward = actor.View.transform.forward;
+            actorForward.y = 0f;
+            float boreSquared = bore.sqrMagnitude;
+            float upSquared = up.sqrMagnitude;
+            float targetSquared = targetDirection.sqrMagnitude;
+            if (boreSquared < MinimumRuntimeFrameVectorSquared ||
+                upSquared < MinimumRuntimeFrameVectorSquared ||
+                targetSquared < MinimumRuntimeFrameVectorSquared)
+                throw new InvalidOperationException(
+                    "A production handgun live frame is degenerate. " +
+                    "boreSquared=" + boreSquared + ";upSquared=" +
+                    upSquared + ";targetSquared=" + targetSquared + ".");
+            bool actorForwardAvailable = actorForward.sqrMagnitude >= 0.01f;
+            bool logicalActorForwardAvailable =
+                logicalActorForward.sqrMagnitude >= 0.01f;
+            bore.Normalize();
+            up.Normalize();
+            targetDirection.Normalize();
+            if (actorForwardAvailable) actorForward.Normalize();
+            if (logicalActorForwardAvailable)
+                logicalActorForward.Normalize();
+            record["physicalGripWorldPosition"] =
+                grip.position.ToString("R");
+            record["physicalMuzzleWorldPosition"] =
+                muzzle.position.ToString("R");
+            record["physicalMuzzleDistanceMeters"] =
+                Vector3.Distance(muzzle.position, grip.position);
+            record["physicalWeaponUpDistanceMeters"] =
+                Vector3.Distance(weaponUp.position, grip.position);
+            record["physicalBoreWorld"] = bore.ToString("R");
+            record["physicalMuzzleOffsetWorld"] =
+                muzzleOffset.normalized.ToString("R");
+            record["physicalWeaponUpWorld"] = up.ToString("R");
+            record["boreWeaponUpAbsDot"] = Mathf.Abs(Vector3.Dot(bore, up));
+            record["actorForwardAvailable"] = actorForwardAvailable;
+            record["boreActorForwardDot"] = actorForwardAvailable
+                ? new JValue(Vector3.Dot(bore, actorForward))
+                : JValue.CreateNull();
+            record["actorTargetDirectionDot"] = actorForwardAvailable
+                ? new JValue(Vector3.Dot(actorForward, targetDirection))
+                : JValue.CreateNull();
+            record["logicalActorTargetDirectionDot"] =
+                logicalActorForwardAvailable
+                    ? new JValue(Vector3.Dot(logicalActorForward,
+                        targetDirection))
+                    : JValue.CreateNull();
+            record["boreTargetDirectionDot"] =
+                Vector3.Dot(bore, targetDirection);
+            record["physicalMuzzleLeadsGripTowardTarget"] =
+                Vector3.Dot(muzzleOffset, targetDirection) > 0f;
+        }
+
+        private static void DescribePiercingOneHandedDonorFrame(
+            JObject record, Transform model, UnitEntityData actor,
+            UnitEntityData target)
+        {
+            if (record == null || model == null || actor == null ||
+                target == null)
+                throw new InvalidOperationException(
+                    "Native PiercingOneHanded donor evidence requires a complete live frame.");
+            Renderer[] renderers = model.GetComponentsInChildren<Renderer>(true)
+                .Where(renderer => renderer != null).ToArray();
+            int sourceCount;
+            Bounds bounds = LocalBounds(model, renderers, out sourceCount);
+            if (sourceCount == 0 || bounds.size.y <= bounds.size.x ||
+                bounds.size.y <= bounds.size.z)
+                throw new InvalidOperationException(
+                    "Native Shortspear does not expose a renderer-major local Y axis.");
+            Vector3 targetDirection = target.Position - actor.Position;
+            targetDirection.y = 0f;
+            if (targetDirection.sqrMagnitude < MinimumRuntimeFrameVectorSquared)
+                throw new InvalidOperationException(
+                    "Native Shortspear has a degenerate actor-to-target direction.");
+            targetDirection.Normalize();
+
+            record["piercingDonorFrameSource"] =
+                "native-Shortspear-renderer-geometry-and-live-model-axes";
+            record["piercingDonorLocalBoundsCenter"] =
+                bounds.center.ToString("R");
+            record["piercingDonorLocalBoundsSize"] = bounds.size.ToString("R");
+            record["piercingDonorRendererCount"] = sourceCount;
+            record["piercingDonorPositiveYTargetDot"] = Vector3.Dot(
+                model.TransformDirection(Vector3.up).normalized,
+                targetDirection);
+            record["piercingDonorNegativeYTargetDot"] = Vector3.Dot(
+                model.TransformDirection(Vector3.down).normalized,
+                targetDirection);
+            record["piercingDonorPositiveXTargetDot"] = Vector3.Dot(
+                model.TransformDirection(Vector3.right).normalized,
+                targetDirection);
+            record["piercingDonorPositiveZTargetDot"] = Vector3.Dot(
+                model.TransformDirection(Vector3.forward).normalized,
+                targetDirection);
+            record["piercingDonorRendererGeometry"] = new JArray(renderers
+                .Select(renderer =>
+                {
+                    int count;
+                    Bounds local = LocalBounds(model,
+                        new[] { renderer }, out count);
+                    MeshFilter filter = renderer.GetComponent<MeshFilter>();
+                    Mesh mesh = filter == null ? null : filter.sharedMesh;
+                    return new JObject
+                    {
+                        { "path", TransformPath(renderer.transform, model) },
+                        { "rendererType", renderer.GetType().FullName },
+                        { "localBoundsCenter", local.center.ToString("R") },
+                        { "localBoundsSize", local.size.ToString("R") },
+                        { "boundsSourceCount", count },
+                        { "mesh", mesh == null ? "<none>" : mesh.name },
+                        { "meshVertexCount", mesh == null ? 0 :
+                            mesh.vertexCount }
+                    };
+                }));
+        }
+
         private static EvidenceCase[] BuildMotionCases(string[] variants)
         {
             EvidenceCase[] catalog = BuildCases();
-            return variants.Select(variant => catalog.Single(value =>
-                string.Equals(value.Variant, variant,
-                    StringComparison.Ordinal))).ToArray();
+            return variants.Select(variant => string.Equals(variant,
+                    "Native.Shortspear", StringComparison.Ordinal)
+                ? BuildNativeControl(HandgunPiercingDonor)
+                : catalog.Single(value => string.Equals(value.Variant,
+                    variant, StringComparison.Ordinal))).ToArray();
         }
 
         private static bool IsFirearm(EvidenceCase value)
