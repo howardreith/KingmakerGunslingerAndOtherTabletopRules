@@ -81,36 +81,38 @@ remains after safe alternatives are exhausted.
 
 ## Current qualified scope
 
-Presentation calibration is implemented for all 22 production variants.
-Default-Medium-male guarded evidence currently covers held, independently
-stored, family-appropriate ready/attack states, locomotion, body-relative
-turning, and equip/unequip transitions. Eastern custom clones use their complete
-independent stored prefabs without also recreating a donor sheath; native donor
-blueprints retain their own sheaths unchanged. That repair is published at
-`754ae076de0c02b5dd1e62691ba5905aa363432c` and clean-qualified by E5/V15/V16.
-All seven production firearm variants now also have clean commit-bound Reload
-Firearm evidence at `c0f193c1fa75741043b8be753bbc61ecb829bb9a`: each exact
-production `UnitUseAbility` reaches its acted frame, 14 fixed samples cover the
-full-round delivery window, six capacity-one transactions load exactly once,
-no discharge occurs, and request-local state is restored exactly. The Advanced
-Revolver reaches the same acted delivery but retains its pre-existing exact
-fail-closed rollback because the current item-token carrier cannot represent a
-six-round state; this cosmetic mission records and does not alter that
-mechanical boundary. All four production handguns now additionally derive
-their complete held frame from the exact native PiercingOneHanded Shortspear
-control plus a measured donor-relative firing correction. Clean exact-commit
-V18 at `e7e333c8da9f78064a2d99133004af4ef315515c` accepts combat-ready,
-event-aligned firing, and both valid firearm/Shortsword dual-wield layouts on
-the default Medium male. Every custom attack fired exactly once with no fault
-or remaining round; the minimum acted physical-muzzle/target dot was
-`0.9768526`, and equipment roots, grip anchors, projectile semantics, native
-donors, and gameplay fields remained unchanged. Stored handgun disposition,
-previously the last family-specific gap, is now explicitly hidden for all four
-production variants by the exact live-item `ShowItem(bool)` lifecycle while
-stored and restored by the native lifecycle while held or shown in the
-inventory doll room. Clean exact-commit V19/V20 at
-`d77db3711dcb9bffdc3a65c52d2c3f364392b093` prove the hidden/visible/hidden
-equip round trip without renderer scanning, donor mutation, or gameplay
-changes. Armor/cloak interaction and female, Small, and Enlarged fixtures
-remain. Version remains `0.0.88` until those rows and the final package
-qualify.
+Mission implementation and source-bearing runtime qualification are complete
+at `96d17e1bfaa1be2d2afa2e6758e4472a8a973f3f`, version `0.0.89`.
+All 22 production variants pass the full semantic-frame, bundle, blueprint,
+held/stored assignment, native-donor preservation, and protected-mechanics
+contracts. Equipment roots remain identity transformed; visible-model children
+own calibration; native donors are unchanged.
+
+Eight exact-commit guarded Steam App ID 640820 scenarios pass on one pinned
+package and DLL. Together they cover all production held/stored states,
+family-appropriate ready and acted attack/fire/thrust states, all firearm reload
+commands, native locomotion, 90-degree body-relative turning, equip/unequip
+transitions, valid handgun dual-wield layouts, and six exact body/loadout
+fixtures: male Medium light, female Medium light, native Small light, native
+Enlarge Person Large, male Medium heavy armor, and male Medium cloak. The body
+matrix contains 336 PNG/JSON pairs and 1,344 honest front, side, rear, and
+three-quarter views; all 132 production held grips pass and no sheet is blank.
+
+All firearms retain exact projectile/muzzle associations. Each custom firearm
+attack fires exactly once without a discharge fault in its motion scenario.
+Six capacity-one reloads commit once without discharge; Advanced Revolver still
+reaches its acted native reload frame and then performs the pre-existing exact
+fail-closed rollback because the protected item-token carrier cannot represent
+six loaded rounds. That mechanical limitation was neither introduced nor
+changed here. All four handguns are deliberately hidden in world-stored state
+because no compatible belt/sheath prefab exists; native equip and DollRoom
+inventory-preview visibility remain intact.
+
+All branched-spear samples lead with the physical spearhead, preserve branch
+roll, and retain plausible shaft contacts. All Eastern variants retain their
+distinct identity, correct grip-to-tip polarity and blade-normal roll, donor
+animations/trails/sounds/slots/timing, independent stored prefabs, and
+clone-only sheath replacement. Representative direct review found no severe or
+persistent clipping. Small-fixture sheets have lower foreground density at the
+fixed shared camera distance, including the native controls, but remain usable
+and show no additional presentation defect.

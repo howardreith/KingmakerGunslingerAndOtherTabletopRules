@@ -41,6 +41,44 @@ production handguns intentionally hidden while stored and visible while held.
 before equip, visible while held, and hidden again after unequip. These runs
 make no broader body/armor claim.
 
+`V21` through `V28` are the final exact version `0.0.89` matrix at source-bearing
+commit `96d17e1bfaa1be2d2afa2e6758e4472a8a973f3f`: `V21` reload, `V22`
+stored/held static, `V23` long-gun fire, `V24` handgun fire and valid dual-wield,
+`V25` branched-spear thrust, `V26` Eastern attacks, `V27` locomotion/turning/
+transitions, and `V28` the six-fixture body/loadout matrix. `V28` covers male
+Medium light, female Medium light, native Small light, native Enlarged/Large,
+male Medium heavy armor, and male Medium cloak in stored and held-idle/ready
+states. The final qualification overlay below is authoritative and supersedes
+the historical `NC`, uncertainty, evidence-chain, and `OPEN` cells retained in
+the detailed audit table.
+
+## Final qualification overlay
+
+| Family | Exact production variant | Male Medium | Female Medium | Small | Enlarged | Heavy armor | Cloak / back slot | Dynamic states | Stored presentation | Remaining uncertainty | Acceptance |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Firearm | Pistol.Service | OBS-PASS V21,V22,V24,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/fire/dual/reload/move/turn/transitions PASS | intentionally hidden; visible-held recovery PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Firearm | Pistol.Duelist | OBS-PASS V21,V22,V24,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/fire/dual/reload/move/turn/transitions PASS | intentionally hidden; visible-held recovery PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Firearm | Pistol.LastWord | OBS-PASS V21,V22,V24,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/fire/dual/reload/move/turn/transitions PASS | intentionally hidden; visible-held recovery PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Firearm | Revolver.Service | OBS-PASS V21,V22,V24,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/fire/dual/reload/move/turn/transitions PASS | intentionally hidden; visible-held recovery PASS | protected capacity-six reload carrier still fails closed; dynamic non-male/size states not separately captured | ACCEPTED |
+| Firearm | Musket.Service | OBS-PASS V21-V23,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/fire/reload/move/turn/transitions PASS | independent BackMount PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Firearm | Blunderbuss.Service | OBS-PASS V21-V23,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/fire/reload/move/turn/transitions PASS | independent BackMount PASS | bulky native-comparable silhouette; dynamic non-male/size states not separately captured | ACCEPTED |
+| Firearm | Rifle.Service | OBS-PASS V21-V23,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/fire/reload/move/turn/transitions PASS | independent BackMount PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Elven branched spear | ClassicBranch | OBS-PASS V22,V25,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/thrust/move/turn/transitions PASS | independent donor-derived back mount PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Elven branched spear | ThornBranch | OBS-PASS V22,V25,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/thrust/move/turn/transitions PASS | independent donor-derived back mount PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Elven branched spear | CrownBranch | OBS-PASS V22,V25,V27,V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/thrust/move/turn/transitions PASS | independent donor-derived back mount PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Wakizashi | Classic | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/attack/move/turn/transitions PASS | independent belt mount; clone sheath removed PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Wakizashi | Petal | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/attack/move/turn/transitions PASS | independent belt mount; clone sheath removed PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Wakizashi | Moon | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/attack/move/turn/transitions PASS | independent belt mount; clone sheath removed PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Wakizashi | Capstone | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/attack/move/turn/transitions PASS | independent belt mount; clone sheath removed PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Katana | Classic | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/attack/move/turn/transitions PASS | independent back mount; clone sheath removed PASS | one-hand animation not separately sampled; dynamic non-male/size states not separately captured | ACCEPTED |
+| Katana | Reed | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/attack/move/turn/transitions PASS | independent back mount; clone sheath removed PASS | one-hand animation not separately sampled; dynamic non-male/size states not separately captured | ACCEPTED |
+| Katana | Regal | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/attack/move/turn/transitions PASS | independent back mount; clone sheath removed PASS | one-hand animation not separately sampled; dynamic non-male/size states not separately captured | ACCEPTED |
+| Katana | Capstone | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | ready/attack/move/turn/transitions PASS | independent back mount; clone sheath removed PASS | one-hand animation not separately sampled; dynamic non-male/size states not separately captured | ACCEPTED |
+| Nodachi | Classic | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | two-hand ready/attack/move/turn/transitions PASS | independent back mount; clone sheath removed PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Nodachi | Cleaver | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | two-hand ready/attack/move/turn/transitions PASS | independent back mount; clone sheath removed PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Nodachi | Titan | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | two-hand ready/attack/move/turn/transitions PASS | independent back mount; clone sheath removed PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+| Nodachi | Capstone | OBS-PASS V22,V26-V28 | OBS-PASS V28 | OBS-PASS V28; shared low-density framing | OBS-PASS V28 | OBS-PASS V28 | OBS-PASS V28 | two-hand ready/attack/move/turn/transitions PASS | independent back mount; clone sheath removed PASS | dynamic non-male/size states not separately captured | ACCEPTED |
+
 For every Eastern row below, `V13` supersedes the visual transition/motion
 claim from `V12`, `V14` supersedes the stored/held presentation check from
 `V10`, and `E4` supersedes the custom-clone donor/sheath contract from `E3`.
@@ -277,6 +315,56 @@ additionally requires `E5,V15,V16`.
   `5AE6B8F36629C57BB925BBB3A0FC14741BBC01CE72CD1C6A50D70A5D55C11EC6` /
   `7689B908D28D2F1667AAC2F528E23BE856085B45FE4626D3051D96CA720DAC4C`;
   default Medium male only).
+- V21: `20260821T1902146882186Z-weapon-presentation-reload-evidence`
+  (final exact version `0.0.89` commit `96d17e1b`; 8/8, 112 PNG/JSON pairs,
+  448 views, seven acted native commands, exact action contracts and
+  transaction preservation, 24 exact post-command hidden-handgun samples;
+  result/index SHA-256
+  `652455424137BFC447C1F2D68F50FBE85A000FEE6B9BB650208833DAC4A2B9F3` /
+  `591BD1B2B5AECAA38550B3B9A9640EB098CC0EC39E0B847C82AD29B4A8D507F8`).
+- V22: `20260821T1906002641762Z-weapon-presentation-evidence`
+  (final exact static matrix; 10/10, 56 PNG/JSON pairs, 224 views, all 22
+  production variants and six exact controls, zero blank/low-density sheets;
+  result/index SHA-256
+  `A9E78104013A20402D05E92A92296C779BC7476D59103383894748A82A0A3C4B` /
+  `AB3D1C56EDF8AB56732A048CC0EC9F88559EE6C2BAA8AA8179DDAD57802B6EEA`).
+- V23: `20260821T1908359069877Z-weapon-presentation-motion-evidence`
+  (final exact long-gun ready/fire matrix; 6/6, 40 PNG/JSON pairs, 160 views,
+  all native commands acted and each custom firearm fired once without fault;
+  result/index SHA-256
+  `3BED3FD543934A368062D180C12BA185CDE7721D1D6B33B68A36DE3B8D87C65C` /
+  `FD930C42E9B71CF93EB487EF1C70CF74D8F370965CEE5FCBF41C8E7BDAA0FEB3`).
+- V24: `20260821T1911271191919Z-weapon-presentation-handgun-motion-evidence`
+  (final exact handgun ready/fire/valid-dual matrix; 8/8, 74 PNG/JSON pairs,
+  296 views, four exact discharges without fault, minimum acted target dot
+  `0.978125`; result/index SHA-256
+  `B46DDA02619E0E0BBE158642555B33E39E3327A990BEA9CCF12F204B1BF61EFC` /
+  `9C5EC2AD1F03AD422CC6AD59E8F4AA50E742152E268153BBBBB9F80432D93FF5`).
+- V25: `20260821T1914490623752Z-weapon-presentation-spear-motion-evidence`
+  (final exact branched-spear matrix; 6/6, 40 PNG/JSON pairs, 160 views, all
+  40 records and all 16 acted samples physical-tip-leading; result/index
+  SHA-256
+  `C040CBB8A4199E728C98BB242053AE22FCDC236C28E1A32D9946EA2132DF9663` /
+  `30771197EA964A804774FC64556F21708F6672C5665353F1E83FC0E23E2AEBBA`).
+- V26: `20260821T1917447243562Z-weapon-presentation-eastern-motion-evidence`
+  (final exact Eastern ready/attack matrix; 6/6, 150 PNG/JSON pairs, 600 views,
+  all 12 production variants plus three exact controls and 54 acted samples;
+  result/index SHA-256
+  `93D46AE37EF3DF4AAFA189CE8FA9D2D586408FA4C758B281536552B526893758` /
+  `93FF4F5E188E9FD1A2E4608DA6456964CC318B1C68797F613888D76029C6218F`).
+- V27:
+  `20260821T1922050924039Z-weapon-presentation-transition-motion-evidence`
+  (final exact 28-case transition/motion matrix; 9/9, 112 PNG/JSON pairs, 448
+  views, exact native locomotion/turning/equip/unequip, hidden-handgun round
+  trips, custom/native sheath policy; result/index SHA-256
+  `012E152E6ED3652F64B6BD25D9F5F78E24E36093BA6591BC0ADF606637EDBAE9` /
+  `B3A2303A5A72490363FC4871524DDA21CD631712CFDCC9D0E53AF0352FEA1EB0`).
+- V28: `20260821T1926028784038Z-weapon-presentation-body-matrix-evidence`
+  (final exact six-fixture body/loadout matrix; 7/7, 336 PNG/JSON pairs, 1,344
+  views, 132/132 valid production grips, 24/24 hidden stored handguns and 24/24
+  visible-held recoveries, zero blank sheets; result/index SHA-256
+  `D6DCA747FED0750A1094BEF67711DA0EAC5366F8DF529084FF7E97A84D4AC350` /
+  `0D51718D2432399F4D121612E75D2DBC653879AB5002D3598826774B2667462B`).
 
 All runtime evidence directories are under
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. V1/V2/V3 are direct cosmetic
@@ -297,4 +385,8 @@ Reload Firearm presentation for all seven production firearms on that same
 default Medium male. V18 accepts handgun ready, exact acted fire, and both valid
 dual-wield layouts on that fixture. V19/V20 accept the intentionally hidden
 stored policy and its native equip/unequip round trip for every production
-handgun. They do not add broader character/loadout acceptance.
+handgun. They do not add broader character/loadout acceptance. Final exact
+V21-V27 supersede the corresponding family/default-body claims; V28 adds the
+six exact stored/held body/loadout fixtures. Dynamic cross-body states that V28
+does not capture remain explicitly unclaimed, while all 22 production rows are
+accepted for the complete combined evidence boundary.

@@ -1265,3 +1265,107 @@ Service equip and unequip transition sheets confirms the gun remains visible
 in hand throughout the native body-relative transitions. Stored handgun
 disposition is accepted on the default Medium male. Female Medium, Small,
 Enlarged, bulky-armor, and cloak/back-slot evidence remains ordinary work.
+
+## 2026-08-21 - final body, release, and exact-artifact qualification
+
+The final request-local body fixture was implemented and published at
+`b1895dde052db94061b9d8ad0604b63d02fd7c7a` (`test(presentation): qualify body
+and equipment matrix`). It constructs six exact native humanoid/loadout cases:
+male Medium light, female Medium light, native Small light, male Medium with
+native Enlarge Person (actual Large), male Medium with linked heavy armor, and
+male Medium with a linked cloak. Every fixture captures all 22 production
+variants and six native controls in stored and held-idle/ready states from
+front, right-side, rear, and front-right three-quarter views. The scenario
+requires exact humanoid rig bones, exact equipment links, 132/132 production
+grips within `0.08 m` of `R_WeaponBone`, exact hidden-handgun policy, 336
+PNG/JSON pairs, 1,344 labelled views, no blank sheet, exact cleanup, and no save
+call.
+
+Version surfaces were advanced once, to `0.0.89` / informational version
+`0.0.89-weapon-presentation-calibration`, and published at
+`806e320d87eaf0e08ea95fbc2b6b131425cdea36` (`chore(release): prepare weapon
+presentation 0.0.89`). The standalone filename intentionally follows the
+repository convention and remains
+`KingmakerGunslinger-0.0.89-urban-barbarian.zip`.
+
+Two final-matrix failures were treated as instrumentation defects rather than
+stopping conditions. First, the hardened handgun native-control resolver lacked
+the exact PiercingOneHanded Shortspear item identity and rejected an otherwise
+valid control. Prior accepted evidence supplied exact item GUID
+`926d02c8af0352b46874791d4de9764f`; pinning it and adding a regression test was
+published at `5f96841dfb925c88de9807eecdc317610ed9d78b` (`fix(presentation): pin
+handgun native control identity`). Second, late reload samples saw out-of-combat
+handguns disappear after their native commands had already finished. Structured
+command and hand-rig evidence proved this was the intended return to the
+production hidden-stored policy, not loss during reload. The fixture now
+requires every active-command sample to remain renderable and labels a body-only
+sample as `reload-post-command-stored-hidden-*` only when the command is
+finished, not running, and the native hand rig is out of combat. That correction
+and its focused test were published at
+`96d17e1bfaa1be2d2afa2e6758e4472a8a973f3f` (`test(presentation): distinguish
+post-reload hidden storage`).
+
+At exact source-bearing commit `96d17e1b`, repository validation passed, the
+complete Release domain/reflection suite passed 1,164/1,164, clean Release
+compilation passed, standalone and local-runtime package creation passed, strict
+package validation passed, and runtime preflight passed 133 checks after one
+known post-build artifact-timestamp race was immediately rerun without artifact
+change. The exact deployment manifest is:
+
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260821T1902146363472Z/deployment.json`
+
+The exact 22,447,887-byte standalone and local-runtime package SHA-256 is
+`7f8a384a808cec0d570a4f50d634ad2f5114b7686a907b8b140f894287205e2d`.
+The 3,659,776-byte DLL SHA-256 is
+`aecfc072bf10481f324072fb95b2968e6e001a469f3c8cd21a9a5a9e6b5fca44`,
+MVID `2a3350a5-48e5-42cc-aefe-b9df19c87cec`. Bundle SHA-256 values are firearms
+`b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb`,
+branched spears
+`a59dc61ce246a7f5931f22494c4c52ce39c6e96312f3448fb9138a0ac0d7dc9b`,
+and Eastern weapons
+`ae311993f683295d3dd996285d28385a20f593df16903d909818eb4f25a0096b`.
+
+The complete exact-artifact guarded Steam App ID 640820 matrix passed:
+
+- `20260821T1902146882186Z-weapon-presentation-reload-evidence`: 8/8,
+  112 records / 448 views; seven native commands acted; six capacity-one loads
+  committed exactly once; Advanced Revolver preserved its exact fail-closed
+  rollback; zero discharge; 24 truthful post-command hidden-storage samples.
+- `20260821T1906002641762Z-weapon-presentation-evidence`: 10/10,
+  56 records / 224 views; all 22 variants and six native controls materialized.
+- `20260821T1908359069877Z-weapon-presentation-motion-evidence`: 6/6,
+  40 records / 160 views; all long guns fired once without fault.
+- `20260821T1911271191919Z-weapon-presentation-handgun-motion-evidence`: 8/8,
+  74 records / 296 views; all handguns fired once without fault; minimum acted
+  physical-muzzle/target dot `0.978125`; both valid dual layouts passed.
+- `20260821T1914490623752Z-weapon-presentation-spear-motion-evidence`: 6/6,
+  40 records / 160 views; all 40 records and all 16 acted samples were
+  physical-tip-leading.
+- `20260821T1917447243562Z-weapon-presentation-eastern-motion-evidence`: 6/6,
+  150 records / 600 views; all 12 variants plus three native controls; 54 acted
+  samples retained valid physical blade frames.
+- `20260821T1922050924039Z-weapon-presentation-transition-motion-evidence`:
+  9/9, 112 records / 448 views; all 28 cases passed locomotion, exact 90-degree
+  body-relative turning, and native equip/unequip transitions; all 48 custom
+  Eastern state samples were sheath-free while all 12 native control samples
+  retained their native sheaths.
+- `20260821T1926028784038Z-weapon-presentation-body-matrix-evidence`: 7/7,
+  336 records / 1,344 views; all six exact fixtures; 132/132 valid held grips;
+  all 24 handgun stored states hidden and all 24 held states renderable.
+
+Direct final review covered representative final sheets from every weapon family
+across female Medium, native Small, Enlarged, heavy armor, and cloak fixtures,
+plus acted handgun fire, long-gun fire/reload, branched-spear thrust, Eastern
+slashes, and held/stored transitions. Muzzles and physical spearheads lead;
+blade planes are not rolled sideways; dominant and support hands are plausible;
+stocks and shafts do not persistently traverse the torso; independently stored
+models follow their native donors; hidden handguns remain absent while stored.
+No severe or persistent custom-only clipping remains. Low foreground-density
+warnings on the Small fixture also affect every native control at the same fixed
+camera distance and are retained honestly as framing diagnostics. Minor
+transient intersections comparable to native animation are accepted. No weapon
+requires an unresolved objective or subjective art-direction choice.
+
+No PR, merge, force-push, rebase, history rewrite, GitHub Release, Nexus
+publication, or public release occurred. `KMG_AUTOMATION_BASELINE` was not
+selected or modified.

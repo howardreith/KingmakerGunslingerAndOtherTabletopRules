@@ -4,7 +4,38 @@
 
 None as of 2026-08-21.
 
-## Open evidence gaps (not hard blockers)
+## Remaining limitations (not blockers)
+
+- Advanced Revolver reload still performs its pre-existing exact fail-closed
+  rollback after the acted native command because the protected item-token
+  carrier represents capacity-one states. Final evidence proves zero discharge,
+  zero ammunition drift, and exact restoration. This is a mechanical backlog
+  item outside this cosmetic mission.
+- Dynamic attacks, reloads, and transitions were captured on the default male
+  Medium fixture. Female Medium, Small, Enlarged, heavy-armor, and cloak
+  fixtures were captured in stored and held-idle/ready states. Their use of the
+  same native humanoid hand rigs and semantic anchors is structured evidence,
+  but the final record does not label uncaptured cross-body animation states as
+  observed.
+- The fixed shared camera distance produces low foreground-density warnings for
+  the Small fixture, including every matching native control. Direct review
+  remains usable and found no severe or persistent clipping.
+- Inventory DollRoom visibility is preserved by leaving Kingmaker's native
+  `ShowItem(bool)` override in control. The final automated matrix does not
+  claim a separately captured inventory-preview screenshot.
+- Minor transient intersections comparable to native equipment can still occur
+  during animation. No persistent or severe custom-only clipping remains in the
+  qualified evidence.
+
+No weapon is waiting on an unresolved art-direction choice. A human acceptance
+pass may refine taste, but it is not required to resolve an objective blocker.
+
+## Historical evidence gaps (closed by final qualification)
+
+The checkpoint notes below are retained as an audit trail. Their statements
+that body/loadout coverage "remains" are superseded by the exact version
+`0.0.89` final matrix at commit
+`96d17e1bfaa1be2d2afa2e6758e4472a8a973f3f`.
 
 - The unchanged baseline has exact stored and held-idle imagery for all 22
   production variants. V5/V6 supersede the V4 long-gun defects with accepted

@@ -2,6 +2,19 @@
 
 ## Exact state
 
+- Mission status: engineering and guarded runtime qualification complete;
+  ready for an optional human aesthetic acceptance pass.
+- Final source-bearing and exact-runtime commit:
+  `96d17e1bfaa1be2d2afa2e6758e4472a8a973f3f`.
+- Qualified version: `0.0.89`
+  (`0.0.89-weapon-presentation-calibration`).
+- Exact qualified package SHA-256:
+  `7f8a384a808cec0d570a4f50d634ad2f5114b7686a907b8b140f894287205e2d`.
+- Exact qualified DLL SHA-256:
+  `aecfc072bf10481f324072fb95b2968e6e001a469f3c8cd21a9a5a9e6b5fca44`;
+  MVID `2a3350a5-48e5-42cc-aefe-b9df19c87cec`.
+- Exact deployment manifest:
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260821T1902146363472Z/deployment.json`.
 - Repository: `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger`.
 - Starting master/origin SHA:
   `7af4375238b2492857a131eefdf909b38a000a05`.
@@ -23,7 +36,7 @@
   `e2aba9d24cebbf38aadc236044c84f641a69534c`
   (`fix(presentation): validate frames and calibrate handguns`).
 - Published semantic-frame/handgun qualification documentation commit:
-  `77f47341ae86bc40fe898886660572f6343a7c97`
+  `77f473407ef0308fad9964acdffeedf90e15e8f9`
   (`docs(presentation): qualify semantic frames and handguns`).
 - Published guarded long-gun motion diagnostic commit:
   `0e9c2902b255f0e091093e10f03655965d441123`
@@ -79,8 +92,22 @@
 - Published hidden-handgun-storage implementation commit:
   `d77db3711dcb9bffdc3a65c52d2c3f364392b093`
   (`fix(presentation): hide incompatible handgun holsters`).
-- Version remains `0.0.88`; do not bump until the complete cosmetic package is
-  qualified.
+- Published hidden-storage qualification documentation commit:
+  `c6432d8fda1aecbc6d9b44274cd52494906e3a4a`
+  (`docs(presentation): qualify hidden handgun storage`).
+- Published body/equipment-matrix fixture commit:
+  `b1895dde052db94061b9d8ad0604b63d02fd7c7a`
+  (`test(presentation): qualify body and equipment matrix`).
+- Published release-version commit:
+  `806e320d87eaf0e08ea95fbc2b6b131425cdea36`
+  (`chore(release): prepare weapon presentation 0.0.89`).
+- Published exact handgun donor-control repair:
+  `5f96841dfb925c88de9807eecdc317610ed9d78b`
+  (`fix(presentation): pin handgun native control identity`).
+- Published reload-lifecycle evidence repair and final source-bearing commit:
+  `96d17e1bfaa1be2d2afa2e6758e4472a8a973f3f`
+  (`test(presentation): distinguish post-reload hidden storage`).
+- Version is `0.0.89`; the complete cosmetic package is qualified.
 - The current implementation adds a shared full-frame semantic contract,
   basis-calibrates the service Pistol and Revolver, and gives all three long
   guns deterministic source frames plus independent donor-calibrated held and
@@ -624,34 +651,67 @@ sheets, while the weapon is visibly present during held equip and unequip
 transition captures. No save API, projectile semantic, equipment root, native
 donor blueprint, or gameplay field changed.
 
+## Final exact-commit qualification
+
+All runs below loaded version `0.0.89`, reported Git commit
+`96d17e1bfaa1be2d2afa2e6758e4472a8a973f3f`, reused the exact deployment
+manifest named above, passed, exited automatically, and made no save call:
+
+- `20260821T1902146882186Z-weapon-presentation-reload-evidence`: 8/8;
+  112 records, 448 views, seven acted native reload commands, exact transaction
+  preservation, and the post-command hidden-handgun lifecycle.
+- `20260821T1906002641762Z-weapon-presentation-evidence`: 10/10;
+  56 records, 224 views, all 22 production variants plus six native controls.
+- `20260821T1908359069877Z-weapon-presentation-motion-evidence`: 6/6;
+  40 records, 160 views, all three long guns fired once with zero fault.
+- `20260821T1911271191919Z-weapon-presentation-handgun-motion-evidence`: 8/8;
+  74 records, 296 views, four acted shots, both valid handgun/Shortsword layouts,
+  and minimum acted muzzle/target dot `0.978125`.
+- `20260821T1914490623752Z-weapon-presentation-spear-motion-evidence`: 6/6;
+  40 records, 160 views, 40/40 physical-tip-leading records and 16/16 acted
+  physical-tip-leading samples.
+- `20260821T1917447243562Z-weapon-presentation-eastern-motion-evidence`: 6/6;
+  150 records, 600 views, all 12 production variants plus three controls and 54
+  acted physical-blade-frame samples.
+- `20260821T1922050924039Z-weapon-presentation-transition-motion-evidence`:
+  9/9; 112 records, 448 views, all 28 production/control cases with exact native
+  locomotion, turning, and equip/unequip transitions.
+- `20260821T1926028784038Z-weapon-presentation-body-matrix-evidence`: 7/7;
+  336 records, 1,344 views, six exact body/loadout fixtures, 132/132 production
+  held grips valid, and 24/24 hidden-handgun stored states recovering visibly
+  while held.
+
+Direct final review sampled every weapon family across female Medium, native
+Small, Enlarged, heavy armor, and cloak states, plus acted fire, thrust, slash,
+reload, and transition sheets. No severe or persistent custom-only clipping or
+orientation defect remains. The Small fixture's low-density warnings are a
+shared-camera framing property also present on every native control, not a
+weapon failure.
+
 ## Next concrete actions
 
-1. Construct narrower request-local female Medium, Small, and Enlarged visual
-   fixtures and add representative armor/cloak coverage without relying on
-   manual save mutation.
-2. Run the complete final runtime matrix, select the next unused patch version
-   only after all visual rows qualify, produce and hash the final clean package,
-   update all version surfaces, and publish the remaining coherent commits.
+No engineering action remains for this mission. The branch is ready for an
+optional human aesthetic acceptance pass. Do not change transforms merely to
+chase subjective preference without comparing the proposed adjustment against
+the final native-control evidence and rerunning the affected exact scenario.
 
-## Supported hypotheses requiring donor confirmation
+## Confirmed presentation frames
 
 - Branched-spear physical head is source `+Z` and source head normal is `+Y`.
   V7 proved the live polarity; the calibrated checkpoint preserves it while
-  mapping the full basis to measured native held/stored frames. V8/V9 accept
-  support, roll, storage, and captured default-Medium-male presentation. Only
-  broader motion/body matrix coverage remains.
+  mapping the full basis to measured native held/stored frames. Final exact
+  motion and body runs accept support, roll, storage, thrust polarity, and all
+  six captured body/loadout fixtures.
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
-  side `-Z`. V10/V11 and E3 confirm the implemented full-basis conversion and
-  independent stored models. Post-repair E4/V13/V14 additionally confirm
-  clone-only sheath replacement, unchanged native donor sheaths, and accepted
-  stored/motion/transition presentation for all 12 variants on the captured
-  fixture. Only the broader body matrix remains.
+  side `-Z`. Final exact static, motion, transition, and body runs confirm the
+  full-basis conversion, independent stored models, clone-only sheath
+  replacement, unchanged native donor sheaths, and all 12 distinct variants.
 - Long-gun V4 defects are superseded for the states captured by V5/V6. Musket,
   Blunderbuss, and Rifle are now basis-derived and renderer-endpoint verified;
-  V12 accepts default-Medium-male locomotion, turning, and transitions, and V17
-  accepts their sampled production reload actions. The broader body matrix
-  remains an evidence gap rather than a transform hypothesis.
+  final exact evidence accepts ready/fire/reload, locomotion, turning,
+  transitions, independent back mounts, and held/stored presentation on all six
+  body/loadout fixtures.
 
 ## Safety/publication
 
