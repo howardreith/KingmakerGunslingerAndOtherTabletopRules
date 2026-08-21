@@ -8,6 +8,14 @@ using UnityEngine;
 public static class BuildFirearmBundles
 {
     private const string Bundle = "kingmakergunslinger.firearms";
+    private static readonly Vector3 NativeHeavyCrossbowHeldEuler =
+        new Vector3(81.58254f, 6.878487f, 255.457428f);
+    private static readonly Vector3 NativeHeavyCrossbowStoredPosition =
+        new Vector3(-0.227002054f, -0.0360002033f, 0.111000687f);
+    private static readonly Vector3 NativeHeavyCrossbowStoredEuler =
+        new Vector3(29.35143f, 112.346809f, 16.69746f);
+    private static readonly Vector3 NativeHeavyCrossbowStoredRendererCenter =
+        new Vector3(-0.000450193882f, 0.008564681f, 0.328089476f);
 
     internal sealed class FirearmPrefabSpec
     {
@@ -32,12 +40,14 @@ public static class BuildFirearmBundles
         internal Vector3 SupportHandEuler;
         internal bool HasSemanticAnchors;
         internal bool RequireSourceMarkers;
+        internal bool RequireSourceFrameMarkers;
         internal bool DiagnosticOnly;
         internal Vector3 SourceGripPoint;
         internal Vector3 SourceSupportPoint;
         internal Vector3 SourceButtPoint;
         internal Vector3 SourceMuzzlePoint;
         internal Vector3 SourceBackPoint;
+        internal Vector3 TargetAnchorPosition;
         internal bool HasBackAnchor;
         internal float ExpectedLengthMeters;
         internal float MinimumLengthMeters;
@@ -63,13 +73,15 @@ public static class BuildFirearmBundles
             new Vector3(0.1632f, 0f, 0f),
             new Vector3(-0.2400f, 0f, 0f),
             new Vector3(0.2400f, 0f, 0f)),
-        BackAuthored(MarkerAuthored(Anchored(Spec("Musket", "Musket",
+        CanonicalLongGun(FrameAuthored(Anchored(Spec("Musket", "Musket",
             "musket-normalized.fbx", false, true,
-            Vector3.zero, new Vector3(0f, 3f, 0f), 1f,
-            new Vector3(0f, 0f, 1.04f), 1.34f, 1.25f, 1.45f,
-            "Crossbow", "normalized-production-rig"),
-            Vector3.zero, new Vector3(-0.031f, -0.051f, 0.48f),
-            new Vector3(0f, 0f, -0.30f), new Vector3(0f, 0f, 1.04f)), false)),
+            Vector3.zero, Vector3.zero, 1f,
+            new Vector3(-0.002413f, 0.051845f, 1.045200f),
+            1.342269f, 1.25f, 1.45f,
+            "Crossbow", "canonical-source-frame; trigger-wrist-grip"),
+            Vector3.zero, new Vector3(-0.031f, -0.051f, 0.374f),
+            new Vector3(-0.002425f, -0.026154f, -0.294800f),
+            new Vector3(-0.002413f, 0.051845f, 1.045200f)), false)),
         MarkerAuthored(Anchored(Spec("MusketPassThrough", "Musket",
             "musket-pass-through.fbx", false, true,
             Vector3.zero, new Vector3(0f, 90f, 0f), 4.186f,
@@ -115,25 +127,33 @@ public static class BuildFirearmBundles
             new Vector3(0f, -0.020f, 0.145f),
             new Vector3(0f, 0f, -0.075f),
             new Vector3(0f, 0f, 0.264f)), false)),
-        BackAuthored(MarkerAuthored(Anchored(Spec("MusketBelt", "Musket",
+        StoredLongGun(BackAuthored(FrameAuthored(Anchored(Spec("MusketBelt", "Musket",
             "musket-normalized.fbx", true, false,
-            Vector3.zero, new Vector3(0f, 0f, 12f), 0.82f, Vector3.zero,
-            1.0988f, 1.00f, 1.20f, "None", "independent-back-production-rig"),
-            Vector3.zero, new Vector3(-0.031f, -0.051f, 0.48f),
-            new Vector3(0f, 0f, -0.30f), new Vector3(0f, 0f, 1.04f)), false)),
-        BackAuthored(MarkerAuthored(Anchored(Spec("Blunderbuss", "Blunderbuss",
+            Vector3.zero, NativeHeavyCrossbowStoredEuler, 1f,
+            new Vector3(-0.002413f, 0.051845f, 1.045200f),
+            1.342269f, 1.25f, 1.45f, "None",
+            "native-heavy-crossbow-stored-basis; independent-back-anchor"),
+            Vector3.zero, new Vector3(-0.031f, -0.051f, 0.374f),
+            new Vector3(-0.002425f, -0.026154f, -0.294800f),
+            new Vector3(-0.002413f, 0.051845f, 1.045200f)), false))),
+        CanonicalLongGun(FrameAuthored(Anchored(Spec("Blunderbuss", "Blunderbuss",
             "blunderbuss-normalized.fbx", false, true,
-            Vector3.zero, new Vector3(0f, 4f, 0f), 1f,
-            new Vector3(0f, 0f, 0.627f), 0.86f, 0.78f, 1.05f,
-            "Crossbow", "normalized-production-rig"),
+            Vector3.zero, Vector3.zero, 1f,
+            new Vector3(-0.002044f, 0.024475f, 0.627800f),
+            0.862674f, 0.78f, 1.05f,
+            "Crossbow", "canonical-source-frame; trigger-wrist-grip"),
             Vector3.zero, new Vector3(-0.031f, -0.051f, 0.36f),
-            new Vector3(0f, 0f, -0.233f), new Vector3(0f, 0f, 0.627f)), false)),
-        BackAuthored(MarkerAuthored(Anchored(Spec("BlunderbussBelt", "Blunderbuss",
+            new Vector3(-0.002043f, -0.043402f, -0.232200f),
+            new Vector3(-0.002044f, 0.024475f, 0.627800f)), false)),
+        StoredLongGun(BackAuthored(FrameAuthored(Anchored(Spec("BlunderbussBelt", "Blunderbuss",
             "blunderbuss-normalized.fbx", true, false,
-            Vector3.zero, new Vector3(0f, 0f, -14f), 0.88f, Vector3.zero,
-            0.7568f, 0.68f, 0.84f, "None", "independent-back-production-rig"),
+            Vector3.zero, NativeHeavyCrossbowStoredEuler, 1f,
+            new Vector3(-0.002044f, 0.024475f, 0.627800f),
+            0.862674f, 0.78f, 1.05f, "None",
+            "native-heavy-crossbow-stored-basis; independent-back-anchor"),
             Vector3.zero, new Vector3(-0.031f, -0.051f, 0.36f),
-            new Vector3(0f, 0f, -0.233f), new Vector3(0f, 0f, 0.627f)), false)),
+            new Vector3(-0.002043f, -0.043402f, -0.232200f),
+            new Vector3(-0.002044f, 0.024475f, 0.627800f)), false))),
         BasisCalibrated(Anchored(Spec("Revolver", "Revolver",
             "Final2 Sketchfab.fbx", false, false, Vector3.zero,
             new Vector3(0f, -90f, 0f), 0.01719849f,
@@ -144,15 +164,24 @@ public static class BuildFirearmBundles
             new Vector3(-10.9627813f, 7.50916529f, 2.68602586f),
             new Vector3(7.3696742f, 10.9590158f, 2.68599129f)),
             Vector3.right),
-        Anchored(Spec("Rifle", "Rifle", "fusilALevier.fbx", false, true,
-            Vector3.zero, new Vector3(0f, 90f, 0f),
-            1.5401387f, new Vector3(0f, 0f, 0.8525f),
-            0.8525f, 0.55f, 1.60f, "Crossbow",
-            "semantic-anchor-candidate"),
-            new Vector3(0.1300f, 0f, 0f),
-            new Vector3(-0.1946f, -0.0331f, -0.0201f),
-            new Vector3(0.5030f, 0f, 0f),
-            new Vector3(-0.5030f, 0f, 0f))
+        CanonicalLongGun(FrameAuthored(Anchored(Spec("Rifle", "Rifle",
+            "rifle-normalized.fbx", false, true,
+            Vector3.zero, Vector3.zero, 1f,
+            new Vector3(0f, 0.058063f, 0.679220f),
+            1.011401f, 0.95f, 1.10f, "Crossbow",
+            "canonical-source-frame; trigger-lever-wrist-grip"),
+            Vector3.zero, new Vector3(-0.031f, -0.051f, 0.374f),
+            new Vector3(0f, 0.004849f, -0.330780f),
+            new Vector3(0f, 0.058063f, 0.679220f)), false)),
+        StoredLongGun(BackAuthored(FrameAuthored(Anchored(Spec("RifleBelt",
+            "Rifle", "rifle-normalized.fbx", true, false,
+            Vector3.zero, NativeHeavyCrossbowStoredEuler, 1f,
+            new Vector3(0f, 0.058063f, 0.679220f),
+            1.011401f, 0.95f, 1.10f, "None",
+            "native-heavy-crossbow-stored-basis; independent-back-anchor"),
+            Vector3.zero, new Vector3(-0.031f, -0.051f, 0.374f),
+            new Vector3(0f, 0.004849f, -0.330780f),
+            new Vector3(0f, 0.058063f, 0.679220f)), false)))
     };
 
     private static FirearmPrefabSpec Anchored(FirearmPrefabSpec spec,
@@ -187,6 +216,41 @@ public static class BuildFirearmBundles
         spec.RequireSourceMarkers = true;
         spec.DiagnosticOnly = diagnosticOnly;
         return spec;
+    }
+
+    private static FirearmPrefabSpec FrameAuthored(FirearmPrefabSpec spec,
+        bool diagnosticOnly)
+    {
+        MarkerAuthored(spec, diagnosticOnly);
+        spec.RequireSourceFrameMarkers = true;
+        return spec;
+    }
+
+    private static FirearmPrefabSpec CanonicalLongGun(
+        FirearmPrefabSpec spec)
+    {
+        Quaternion donorRotation = Quaternion.Euler(
+            NativeHeavyCrossbowHeldEuler);
+        spec.VisualEuler = NativeHeavyCrossbowHeldEuler;
+        spec.SourceForwardAxis = Vector3.forward;
+        spec.SourceUpAxis = Vector3.up;
+        spec.TargetForwardAxis = donorRotation * Vector3.forward;
+        spec.TargetUpAxis = donorRotation * Vector3.up;
+        return BasisCalibrated(spec);
+    }
+
+    private static FirearmPrefabSpec StoredLongGun(
+        FirearmPrefabSpec spec)
+    {
+        Quaternion donorRotation = Quaternion.Euler(
+            NativeHeavyCrossbowStoredEuler);
+        spec.SourceForwardAxis = Vector3.forward;
+        spec.SourceUpAxis = Vector3.up;
+        spec.TargetForwardAxis = donorRotation * Vector3.forward;
+        spec.TargetUpAxis = donorRotation * Vector3.up;
+        spec.TargetAnchorPosition = NativeHeavyCrossbowStoredPosition +
+            donorRotation * NativeHeavyCrossbowStoredRendererCenter;
+        return BasisCalibrated(spec);
     }
 
     private static FirearmPrefabSpec BackAuthored(FirearmPrefabSpec spec)
@@ -327,8 +391,8 @@ public static class BuildFirearmBundles
         LogRendererDiagnostics(visual, spec, renderers);
         Quaternion visualRotation = ResolveVisualRotation(spec);
         visual.transform.localPosition = spec.HasSemanticAnchors
-            ? -TransformSourcePoint(spec, spec.IsBeltOrBackModel &&
-                spec.HasBackAnchor ? spec.SourceBackPoint : spec.SourceGripPoint)
+            ? spec.TargetAnchorPosition - TransformSourcePoint(spec,
+                SourceAnchorPoint(spec))
             : spec.VisualPosition;
         visual.transform.localRotation = visualRotation;
         visual.transform.localScale = Vector3.one * spec.VisualScale;
@@ -336,34 +400,36 @@ public static class BuildFirearmBundles
         GameObject muzzle = new GameObject("Muzzle");
         muzzle.transform.SetParent(root.transform, false);
         muzzle.transform.localPosition = spec.HasSemanticAnchors
-            ? AnchorRelativeToGrip(spec, spec.SourceMuzzlePoint)
+            ? TransformAnchoredPoint(spec, spec.SourceMuzzlePoint)
             : spec.MuzzlePosition;
         muzzle.transform.localRotation = Quaternion.Euler(spec.MuzzleEuler);
         GameObject grip = new GameObject(
             WeaponPresentationFrameContract.GripMarker);
         grip.transform.SetParent(root.transform, false);
-        grip.transform.localPosition = spec.GripPosition;
+        grip.transform.localPosition = spec.HasSemanticAnchors
+            ? TransformAnchoredPoint(spec, spec.SourceGripPoint)
+            : spec.GripPosition;
         GameObject weaponUp = new GameObject(
             WeaponPresentationFrameContract.WeaponUpMarker);
         weaponUp.transform.SetParent(root.transform, false);
-        weaponUp.transform.localPosition = spec.GripPosition +
+        weaponUp.transform.localPosition = grip.transform.localPosition +
             visualRotation * spec.SourceUpAxis.normalized * 0.10f;
         GameObject weaponForward = new GameObject(
             WeaponPresentationFrameContract.WeaponForwardMarker);
         weaponForward.transform.SetParent(root.transform, false);
-        weaponForward.transform.localPosition = spec.GripPosition +
+        weaponForward.transform.localPosition = grip.transform.localPosition +
             visualRotation * spec.SourceForwardAxis.normalized * 0.10f;
         GameObject butt = new GameObject(
             WeaponPresentationFrameContract.ButtMarker);
         butt.transform.SetParent(root.transform, false);
         butt.transform.localPosition = spec.HasSemanticAnchors
-            ? AnchorRelativeToGrip(spec, spec.SourceButtPoint)
+            ? TransformAnchoredPoint(spec, spec.SourceButtPoint)
             : spec.ButtPosition;
         if (spec.HasBackAnchor)
         {
             GameObject back = new GameObject("BackMount");
             back.transform.SetParent(root.transform, false);
-            back.transform.localPosition = AnchorRelativeToGrip(spec,
+            back.transform.localPosition = TransformAnchoredPoint(spec,
                 spec.SourceBackPoint);
         }
         if (spec.RequiresTwoHandRig)
@@ -371,7 +437,7 @@ public static class BuildFirearmBundles
             GameObject support = new GameObject("SupportHandTarget");
             support.transform.SetParent(root.transform, false);
             support.transform.localPosition = spec.HasSemanticAnchors
-                ? AnchorRelativeToGrip(spec, spec.SourceSupportPoint)
+                ? TransformAnchoredPoint(spec, spec.SourceSupportPoint)
                 : spec.SupportHandPosition;
             support.transform.localRotation = Quaternion.Euler(
                 spec.SupportHandEuler);
@@ -414,6 +480,19 @@ public static class BuildFirearmBundles
         return ResolveVisualRotation(spec) * (point * spec.VisualScale);
     }
 
+    private static Vector3 SourceAnchorPoint(FirearmPrefabSpec spec)
+    {
+        return spec.IsBeltOrBackModel && spec.HasBackAnchor
+            ? spec.SourceBackPoint : spec.SourceGripPoint;
+    }
+
+    private static Vector3 TransformAnchoredPoint(FirearmPrefabSpec spec,
+        Vector3 point)
+    {
+        return spec.TargetAnchorPosition + TransformSourcePoint(spec,
+            point - SourceAnchorPoint(spec));
+    }
+
     private static Quaternion ResolveVisualRotation(FirearmPrefabSpec spec)
     {
         Quaternion declared = Quaternion.Euler(spec.VisualEuler);
@@ -433,20 +512,32 @@ public static class BuildFirearmBundles
         return solved;
     }
 
-    private static Vector3 AnchorRelativeToGrip(FirearmPrefabSpec spec,
+    private static Vector3 CanonicalRelativeToGrip(FirearmPrefabSpec spec,
         Vector3 point)
     {
-        return TransformSourcePoint(spec, point) -
-            TransformSourcePoint(spec, spec.SourceGripPoint);
+        WeaponPresentationSemanticFrame source =
+            new WeaponPresentationSemanticFrame(spec.SourceGripPoint,
+                spec.SourceMuzzlePoint, spec.SourceButtPoint,
+                spec.SourceGripPoint + spec.SourceUpAxis, false,
+                Vector3.zero, spec.SourceForwardAxis);
+        Quaternion rotation = WeaponPresentationFrameContract.SolveRotation(
+            source, Vector3.forward, Vector3.up);
+        return rotation * ((point - spec.SourceGripPoint) * spec.VisualScale);
     }
 
     private static void ResolveSemanticMarkers(GameObject source,
         FirearmPrefabSpec spec)
     {
         if (!spec.RequiresTwoHandRig && !spec.RequireSourceMarkers) return;
-        string[] required = spec.HasBackAnchor
-            ? new[] { "KMG_Grip", "KMG_Support", "KMG_Butt", "KMG_Muzzle", "KMG_Back" }
-            : new[] { "KMG_Grip", "KMG_Support", "KMG_Butt", "KMG_Muzzle" };
+        var required = new List<string> {
+            "KMG_Grip", "KMG_Support", "KMG_Butt", "KMG_Muzzle"
+        };
+        if (spec.HasBackAnchor) required.Add("KMG_Back");
+        if (spec.RequireSourceFrameMarkers)
+        {
+            required.Add("KMG_WeaponUp");
+            required.Add("KMG_WeaponForward");
+        }
         var matches = new Dictionary<string, List<Transform>>();
         foreach (string marker in required)
             matches[marker] = new List<Transform>();
@@ -476,17 +567,34 @@ public static class BuildFirearmBundles
         spec.SourceMuzzlePoint = SourceLocalPoint(source, matches["KMG_Muzzle"][0]);
         if (spec.HasBackAnchor)
             spec.SourceBackPoint = SourceLocalPoint(source, matches["KMG_Back"][0]);
+        if (spec.RequireSourceFrameMarkers)
+        {
+            Vector3 sourceUpPoint = SourceLocalPoint(source,
+                matches["KMG_WeaponUp"][0]);
+            Vector3 sourceForwardPoint = SourceLocalPoint(source,
+                matches["KMG_WeaponForward"][0]);
+            spec.SourceUpAxis = sourceUpPoint - spec.SourceGripPoint;
+            spec.SourceForwardAxis = sourceForwardPoint -
+                spec.SourceGripPoint;
+        }
         if (!Finite(spec.SourceGripPoint) || !Finite(spec.SourceSupportPoint) ||
             !Finite(spec.SourceButtPoint) || !Finite(spec.SourceMuzzlePoint) ||
-            (spec.HasBackAnchor && !Finite(spec.SourceBackPoint)))
+            (spec.HasBackAnchor && !Finite(spec.SourceBackPoint)) ||
+            !Finite(spec.SourceUpAxis) || !Finite(spec.SourceForwardAxis) ||
+            spec.SourceUpAxis.sqrMagnitude <= 0.000001f ||
+            spec.SourceForwardAxis.sqrMagnitude <= 0.000001f ||
+            Mathf.Abs(Vector3.Dot(spec.SourceUpAxis.normalized,
+                spec.SourceForwardAxis.normalized)) >= 0.98f)
             throw new InvalidOperationException(spec.Name +
-                " contains a non-finite source-authored semantic marker.");
+                " contains a non-finite source-authored semantic marker or a degenerate/collinear source frame marker.");
         ValidateResolvedSemanticPoints(spec);
         Debug.Log("KMG_RIG_MARKERS name=" + spec.Name +
             ";source=authored;grip=" + spec.SourceGripPoint.ToString("R") +
             ";support=" + spec.SourceSupportPoint.ToString("R") +
             ";butt=" + spec.SourceButtPoint.ToString("R") +
             ";muzzle=" + spec.SourceMuzzlePoint.ToString("R") +
+            ";sourceForward=" + spec.SourceForwardAxis.ToString("R") +
+            ";sourceUp=" + spec.SourceUpAxis.ToString("R") +
             ";diagnosticOnly=" + spec.DiagnosticOnly);
     }
 
@@ -498,9 +606,11 @@ public static class BuildFirearmBundles
     private static void ValidateResolvedSemanticPoints(FirearmPrefabSpec spec)
     {
         Vector3 grip = Vector3.zero;
-        Vector3 support = AnchorRelativeToGrip(spec, spec.SourceSupportPoint);
-        Vector3 butt = AnchorRelativeToGrip(spec, spec.SourceButtPoint);
-        Vector3 muzzle = AnchorRelativeToGrip(spec, spec.SourceMuzzlePoint);
+        Vector3 support = CanonicalRelativeToGrip(spec,
+            spec.SourceSupportPoint);
+        Vector3 butt = CanonicalRelativeToGrip(spec, spec.SourceButtPoint);
+        Vector3 muzzle = CanonicalRelativeToGrip(spec,
+            spec.SourceMuzzlePoint);
         float length = Vector3.Distance(butt, muzzle);
         float maximumLateral = Mathf.Max(0.20f, length * 0.25f);
         if (!Finite(support) || !Finite(butt) || !Finite(muzzle) ||
@@ -604,16 +714,19 @@ public static class BuildFirearmBundles
                 child.localScale.ToString("R") + ";components=" + components);
         }
         Bounds bounds = CalculateBounds(renderers);
+        float semanticLength = Vector3.Distance(spec.SourceButtPoint,
+            spec.SourceMuzzlePoint) * spec.VisualScale;
         Debug.Log("KMG_RIG_BOUNDS name=" + spec.Name + ";center=" +
             bounds.center.ToString("R") + ";size=" + bounds.size.ToString("R") +
             ";magnitude=" + bounds.size.magnitude.ToString("R") +
+            ";semanticLength=" + semanticLength.ToString("R") +
             ";renderers=" + renderers.Length);
         if (!spec.IsBeltOrBackModel && spec.RequiresTwoHandRig &&
-            (bounds.size.magnitude < spec.MinimumLengthMeters ||
-             bounds.size.magnitude > spec.MaximumLengthMeters))
+            (semanticLength < spec.MinimumLengthMeters ||
+             semanticLength > spec.MaximumLengthMeters))
             throw new InvalidOperationException(spec.Name +
-                " rendered bounds magnitude is outside its long-gun contract: " +
-                bounds.size.magnitude.ToString("R") + " not in [" +
+                " semantic butt-to-muzzle length is outside its long-gun contract: " +
+                semanticLength.ToString("R") + " not in [" +
                 spec.MinimumLengthMeters.ToString("R") + "," +
                 spec.MaximumLengthMeters.ToString("R") + "]");
     }
@@ -787,16 +900,30 @@ public static class BuildFirearmBundles
                 " lacks its independent BackMount anchor.");
         if (spec.RequiresTwoHandRig)
         {
+            Vector3 grip = root.transform.Find("Grip").localPosition;
             Vector3 muzzle = root.transform.Find("Muzzle").localPosition;
             Vector3 butt = root.transform.Find("Butt").localPosition;
             Vector3 support = root.transform.Find("SupportHandTarget").localPosition;
+            Vector3 forwardMarker = root.transform.Find(
+                "WeaponForward").localPosition;
+            Vector3 forward = (forwardMarker - grip).normalized;
+            float buttProjection = Vector3.Dot(butt - grip, forward);
+            float supportProjection = Vector3.Dot(support - grip, forward);
+            float muzzleProjection = Vector3.Dot(muzzle - grip, forward);
             float length = Vector3.Distance(butt, muzzle);
-            if (length < spec.MinimumLengthMeters || length > spec.MaximumLengthMeters ||
-                support.z <= butt.z || support.z >= muzzle.z)
+            if (length < spec.MinimumLengthMeters ||
+                length > spec.MaximumLengthMeters ||
+                buttProjection >= 0f || supportProjection <= 0f ||
+                supportProjection >= muzzleProjection)
                 throw new InvalidOperationException(spec.Name +
                     " semantic anchor ordering/length is invalid: butt=" + butt.ToString("R") +
                     ";support=" + support.ToString("R") + ";muzzle=" +
-                    muzzle.ToString("R") + ";length=" + length.ToString("R"));
+                    muzzle.ToString("R") + ";forward=" +
+                    forward.ToString("R") + ";projections=" +
+                    buttProjection.ToString("R") + "/" +
+                    supportProjection.ToString("R") + "/" +
+                    muzzleProjection.ToString("R") + ";length=" +
+                    length.ToString("R"));
             Debug.Log("KMG_RIG_ANCHORS name=" + spec.Name + ";sourceGrip=" +
                 spec.SourceGripPoint.ToString("R") + ";sourceSupport=" +
                 spec.SourceSupportPoint.ToString("R") + ";sourceButt=" +

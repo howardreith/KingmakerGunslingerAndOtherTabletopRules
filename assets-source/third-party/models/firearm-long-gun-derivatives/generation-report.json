@@ -1,36 +1,478 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "generator": "generate_long_gun_derivatives.py",
+  "sourceForwardAxis": "+X physical butt-to-muzzle",
+  "sourceUpAxis": "+Z physical stock/receiver up",
+  "canonicalForwardAxis": "+Z",
+  "canonicalUpAxis": "+Y",
   "outputs": [
     {
       "name": "musket-normalized",
-      "source": "assets-source\\third-party\\models\\mesh-masters-rifle-musket\\source\\Musket 01.fbx",
+      "source": "assets-source/third-party/models/mesh-masters-rifle-musket/source/Musket 01.fbx",
       "sourceSha256": "BD3AFC3372453FAFF4742220B5E49FC7E021F10D9596E5C7000D2555FE486E18",
       "output": "musket-normalized.fbx",
-      "outputSha256": "AF8B08BF8153E23A6B8329A79634A9016347E43DDDF90B53028285B1C25ED397",
+      "outputSha256": "C5E2EA93E903782BF3110E50C1D6677C4E7C109248651495192D8B6063F73A0A",
       "lengthMeters": 1.34,
+      "sourceFrame": {
+        "forward": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "up": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "right": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "grip": [
+          -0.009519563,
+          -0.000581455,
+          -0.010190492
+        ],
+        "gripEvidence": "narrow wooden wrist immediately behind trigger guard",
+        "butt": [
+          -0.080430321,
+          1.919e-06,
+          -0.016481582
+        ],
+        "muzzle": [
+          0.24189131,
+          -1.112e-06,
+          0.002280283
+        ],
+        "buttEndpointVertexCount": 32,
+        "muzzleEndpointVertexCount": 144
+      },
+      "canonicalFrame": {
+        "forward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "right": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "scale": 4.157338109,
+        "boundsMinimum": [
+          -0.030136185,
+          -0.090251587,
+          -0.294799984
+        ],
+        "boundsMaximum": [
+          0.023327718,
+          0.118564814,
+          1.04519999
+        ],
+        "nearestGripGeometryMeters": 0.001082468
+      },
       "markers": [
         "KMG_Grip",
         "KMG_Support",
         "KMG_Butt",
         "KMG_Muzzle",
-        "KMG_Back"
-      ]
+        "KMG_Back",
+        "KMG_WeaponUp",
+        "KMG_WeaponForward"
+      ],
+      "blenderMarkerMeters": {
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          0.030999999,
+          -0.050999999,
+          0.374000013
+        ],
+        "KMG_Butt": [
+          0.002425284,
+          -0.02615419,
+          -0.294799984
+        ],
+        "KMG_Muzzle": [
+          0.00241268,
+          0.051845226,
+          1.04519999
+        ],
+        "KMG_Back": [
+          -0.003404235,
+          0.014156617,
+          0.375200033
+        ],
+        "KMG_WeaponUp": [
+          0.0,
+          0.100000001,
+          0.0
+        ],
+        "KMG_WeaponForward": [
+          0.0,
+          0.0,
+          0.100000001
+        ]
+      },
+      "expectedUnityMarkerMeters": {
+        "KMG_Grip": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          -0.030999999,
+          -0.050999999,
+          0.374000013
+        ],
+        "KMG_Butt": [
+          -0.002425284,
+          -0.02615419,
+          -0.294799984
+        ],
+        "KMG_Muzzle": [
+          -0.00241268,
+          0.051845226,
+          1.04519999
+        ],
+        "KMG_Back": [
+          0.003404235,
+          0.014156617,
+          0.375200033
+        ],
+        "KMG_WeaponUp": [
+          -0.0,
+          0.100000001,
+          0.0
+        ],
+        "KMG_WeaponForward": [
+          -0.0,
+          0.0,
+          0.100000001
+        ]
+      },
+      "unityAxisConversion": "Blender canonical (x,y,z) -> Unity (-x,y,z)"
     },
     {
       "name": "blunderbuss-normalized",
-      "source": "assets-source\\third-party\\models\\ccotwist-blunderbuss\\source\\Blunderbuss_Low_Poly.fbx",
+      "source": "assets-source/third-party/models/ccotwist-blunderbuss/source/Blunderbuss_Low_Poly.fbx",
       "sourceSha256": "107783B89D7A72FBCC4D7E657E35D78ECEADE320E0AA9BBFE40AC0C6AA56D52C",
       "output": "blunderbuss-normalized.fbx",
-      "outputSha256": "559F8D8B434729DC8D81881F69C0EB9D39FA33B49402A58A977D004E1DEBF6F3",
+      "outputSha256": "45DD00FD88D7CE1B66690E1A1B6FFE732A343F3C728D84B4FF8956F1F4F4197C",
       "lengthMeters": 0.86,
+      "sourceFrame": {
+        "forward": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "up": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "right": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "grip": [
+          -1.045804977,
+          -0.01008088,
+          -0.074088931
+        ],
+        "gripEvidence": "narrow stock wrist immediately behind trigger guard",
+        "butt": [
+          -2.191274166,
+          -8.8e-08,
+          -0.288196653
+        ],
+        "muzzle": [
+          2.051204205,
+          -3.3e-08,
+          0.046651065
+        ],
+        "buttEndpointVertexCount": 3,
+        "muzzleEndpointVertexCount": 24
+      },
+      "canonicalFrame": {
+        "forward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "right": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "scale": 0.202711699,
+        "boundsMinimum": [
+          -0.128933847,
+          -0.210071415,
+          -0.232199982
+        ],
+        "boundsMaximum": [
+          0.133020878,
+          0.207569897,
+          0.627799928
+        ],
+        "nearestGripGeometryMeters": 0.020219111
+      },
       "markers": [
         "KMG_Grip",
         "KMG_Support",
         "KMG_Butt",
         "KMG_Muzzle",
-        "KMG_Back"
-      ]
+        "KMG_Back",
+        "KMG_WeaponUp",
+        "KMG_WeaponForward"
+      ],
+      "blenderMarkerMeters": {
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          0.030999999,
+          -0.050999999,
+          0.360000014
+        ],
+        "KMG_Butt": [
+          0.002043494,
+          -0.043402139,
+          -0.232200012
+        ],
+        "KMG_Muzzle": [
+          0.002043505,
+          0.024475411,
+          0.627799988
+        ],
+        "KMG_Back": [
+          0.0020435,
+          -0.001250762,
+          0.197799981
+        ],
+        "KMG_WeaponUp": [
+          0.0,
+          0.100000001,
+          0.0
+        ],
+        "KMG_WeaponForward": [
+          0.0,
+          0.0,
+          0.100000001
+        ]
+      },
+      "expectedUnityMarkerMeters": {
+        "KMG_Grip": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          -0.030999999,
+          -0.050999999,
+          0.360000014
+        ],
+        "KMG_Butt": [
+          -0.002043494,
+          -0.043402139,
+          -0.232200012
+        ],
+        "KMG_Muzzle": [
+          -0.002043505,
+          0.024475411,
+          0.627799988
+        ],
+        "KMG_Back": [
+          -0.0020435,
+          -0.001250762,
+          0.197799981
+        ],
+        "KMG_WeaponUp": [
+          -0.0,
+          0.100000001,
+          0.0
+        ],
+        "KMG_WeaponForward": [
+          -0.0,
+          0.0,
+          0.100000001
+        ]
+      },
+      "unityAxisConversion": "Blender canonical (x,y,z) -> Unity (-x,y,z)"
+    },
+    {
+      "name": "rifle-normalized",
+      "source": "assets-source/third-party/models/killian-delias-winchester-lever-action-rifle/source/fusilALevier.fbx",
+      "sourceSha256": "74D60FCC6D9A6E89C20EBB8C2D35471417E9F6C23A840FA65967C20251540A1D",
+      "output": "rifle-normalized.fbx",
+      "outputSha256": "9D9288D04DEED70A6CA7AA321A2107B0F482431A082A1E2EDF4B50CB14742072",
+      "lengthMeters": 1.01,
+      "sourceFrame": {
+        "forward": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "up": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "right": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "grip": [
+          -0.180000007,
+          0.0,
+          0.144999996
+        ],
+        "gripEvidence": "stock wrist behind gachette and inside the rear levier span",
+        "butt": [
+          -0.509601712,
+          -3.934e-06,
+          0.149831817
+        ],
+        "muzzle": [
+          0.496801049,
+          1.7e-08,
+          0.20285657
+        ],
+        "buttEndpointVertexCount": 16,
+        "muzzleEndpointVertexCount": 161
+      },
+      "canonicalFrame": {
+        "forward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "right": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "scale": 1.003574354,
+        "boundsMinimum": [
+          -0.015890278,
+          -0.10239052,
+          -0.33077985
+        ],
+        "boundsMaximum": [
+          0.015890308,
+          0.081259355,
+          0.6792202
+        ],
+        "nearestGripGeometryMeters": 0.004799025
+      },
+      "markers": [
+        "KMG_Grip",
+        "KMG_Support",
+        "KMG_Butt",
+        "KMG_Muzzle",
+        "KMG_Back",
+        "KMG_WeaponUp",
+        "KMG_WeaponForward"
+      ],
+      "blenderMarkerMeters": {
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          0.030999999,
+          -0.050999999,
+          0.374000013
+        ],
+        "KMG_Butt": [
+          -3.948e-06,
+          0.004849091,
+          -0.33077985
+        ],
+        "KMG_Muzzle": [
+          1.7e-08,
+          0.058063388,
+          0.6792202
+        ],
+        "KMG_Back": [
+          1.5e-08,
+          -0.010565579,
+          0.174220189
+        ],
+        "KMG_WeaponUp": [
+          0.0,
+          0.100000001,
+          0.0
+        ],
+        "KMG_WeaponForward": [
+          0.0,
+          0.0,
+          0.100000001
+        ]
+      },
+      "expectedUnityMarkerMeters": {
+        "KMG_Grip": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_Support": [
+          -0.030999999,
+          -0.050999999,
+          0.374000013
+        ],
+        "KMG_Butt": [
+          3.948e-06,
+          0.004849091,
+          -0.33077985
+        ],
+        "KMG_Muzzle": [
+          -1.7e-08,
+          0.058063388,
+          0.6792202
+        ],
+        "KMG_Back": [
+          -1.5e-08,
+          -0.010565579,
+          0.174220189
+        ],
+        "KMG_WeaponUp": [
+          -0.0,
+          0.100000001,
+          0.0
+        ],
+        "KMG_WeaponForward": [
+          -0.0,
+          0.0,
+          0.100000001
+        ]
+      },
+      "unityAxisConversion": "Blender canonical (x,y,z) -> Unity (-x,y,z)"
     }
   ]
 }

@@ -33,3 +33,15 @@ Issue 11 derives
 from the preserved original. The `0.86 m` derivative normalizes units and the
 barrel axis, authors exact grip/support/butt/muzzle/back markers, and applies a
 muted material tint. The original geometry and source files remain preserved.
+
+## 2026-08-21 semantic-frame calibration
+
+Blender 4.5 deterministically regenerated the derivative from preserved source
+SHA-256 `107783B89D7A72FBCC4D7E657E35D78ECEADE320E0AA9BBFE40AC0C6AA56D52C`.
+The physical source frame is `+X` butt-to-muzzle / `+Z` receiver-up; the grip is
+the actual stock wrist immediately behind the trigger guard. Renderer-bound
+endpoints and the full WeaponForward/WeaponUp frame are recorded in the
+generation report. Its mesh-appropriate support station is `0.360 m` along the
+canonical fore-end. Output SHA-256 is
+`45DD00FD88D7CE1B66690E1A1B6FFE732A343F3C728D84B4FF8956F1F4F4197C`.
+No preserved source geometry or texture was overwritten.

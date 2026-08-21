@@ -77,10 +77,14 @@ namespace KingmakerGunslinger.Assets
                     FirearmKind.Musket, "musketbelt", context);
                 TryLoadBackPrefab(candidate, names, beltPrefabs,
                     FirearmKind.Blunderbuss, "blunderbussbelt", context);
+                TryLoadBackPrefab(candidate, names, beltPrefabs,
+                    FirearmKind.Rifle, "riflebelt", context);
                 ValidateIndependentHeldAndStored(prefabs, beltPrefabs,
                     FirearmKind.Musket);
                 ValidateIndependentHeldAndStored(prefabs, beltPrefabs,
                     FirearmKind.Blunderbuss);
+                ValidateIndependentHeldAndStored(prefabs, beltPrefabs,
+                    FirearmKind.Rifle);
                 TryLoadDiagnosticPrefab(candidate, names, diagnosticPrefabs,
                     diagnosticCapabilities, "MusketPassThrough",
                     "musketpassthrough", context);
@@ -372,6 +376,18 @@ namespace KingmakerGunslinger.Assets
             EquipmentOffsets offsets = null;
             try
             {
+                Vector3 semanticForward = grip == null ||
+                    weaponForward == null ? Vector3.zero :
+                    (weaponForward.localPosition - grip.localPosition).normalized;
+                float muzzleProjection = grip == null || muzzle == null ? 0f :
+                    Vector3.Dot(muzzle.localPosition - grip.localPosition,
+                        semanticForward);
+                float supportProjection = grip == null || support == null ? 0f :
+                    Vector3.Dot(support.localPosition - grip.localPosition,
+                        semanticForward);
+                float buttProjection = grip == null || butt == null ? 0f :
+                    Vector3.Dot(butt.localPosition - grip.localPosition,
+                        semanticForward);
                 if (root == null) failure = "prefab-null";
                 else if (!Approximately(root.localPosition, Vector3.zero) ||
                     !Approximately(root.localRotation, Quaternion.identity) ||
@@ -388,19 +404,21 @@ namespace KingmakerGunslinger.Assets
                     !Finite(visual.localRotation) || !Finite(visual.localScale) ||
                     !Finite(muzzle.localPosition) || !Finite(muzzle.localRotation))
                     failure = "transform-nonfinite";
-                else if (muzzle.localPosition.z <= 0f)
-                    failure = "muzzle-not-forward-positive-z";
+                else if (!Finite(semanticForward) ||
+                    semanticForward.sqrMagnitude < 0.99f ||
+                    muzzleProjection <= 0f)
+                    failure = "muzzle-not-forward-on-semantic-axis";
                 else if (requiresTwoHandRig && support == null)
                     failure = "support-target-missing";
                 else if (!requiresTwoHandRig && support != null)
                     failure = "one-handed-support-target-present";
                 else if (requiresTwoHandRig && (!Finite(support.localPosition) ||
                     !Finite(support.localRotation) ||
-                    support.localPosition.z <= 0f ||
-                    support.localPosition.z >= muzzle.localPosition.z))
+                    supportProjection <= 0f ||
+                    supportProjection >= muzzleProjection))
                     failure = "support-target-implausible";
                 else if (requiresTwoHandRig && (!Finite(butt.localPosition) ||
-                    butt.localPosition.z >= 0f ||
+                    buttProjection >= 0f ||
                     Vector3.Distance(butt.localPosition, muzzle.localPosition) < 0.4f))
                     failure = "semantic-length-or-butt-implausible";
                 else if (prefab.GetComponentsInChildren<Camera>(true).Length != 0 ||

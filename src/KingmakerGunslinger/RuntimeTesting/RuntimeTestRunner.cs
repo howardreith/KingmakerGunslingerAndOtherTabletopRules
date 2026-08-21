@@ -9476,52 +9476,78 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "runtime-loaded AssetBundle prefab renderer/material/bounds audit"));
                 float semanticLength = butt == null || muzzle == null ? -1f :
                     Vector3.Distance(butt.localPosition, muzzle.localPosition);
+                Transform weaponForward = instance == null ? null :
+                    instance.transform.Find("WeaponForward");
+                Transform grip = instance == null ? null :
+                    instance.transform.Find("Grip");
+                Vector3 semanticForward = weaponForward == null || grip == null ?
+                    Vector3.zero : (weaponForward.localPosition -
+                        grip.localPosition).normalized;
+                float buttProjection = butt == null || grip == null ? 0f :
+                    Vector3.Dot(butt.localPosition - grip.localPosition,
+                        semanticForward);
+                float supportProjection = support == null || grip == null ? 0f :
+                    Vector3.Dot(support.localPosition - grip.localPosition,
+                        semanticForward);
+                float muzzleProjection = muzzle == null || grip == null ? 0f :
+                    Vector3.Dot(muzzle.localPosition - grip.localPosition,
+                        semanticForward);
                 assertions.Add(Assertion(id + "-semantic-anchors",
                     "Butt behind grip; support between grip and muzzle; finite semantic length",
                     "butt=" + (butt == null ? "<null>" : butt.localPosition.ToString("R")) +
                     ";support=" + (support == null ? "<null>" : support.localPosition.ToString("R")) +
                     ";muzzle=" + (muzzle == null ? "<null>" : muzzle.localPosition.ToString("R")) +
+                    ";forward=" + semanticForward.ToString("R") +
+                    ";projections=" + buttProjection.ToString("R") + "/" +
+                    supportProjection.ToString("R") + "/" +
+                    muzzleProjection.ToString("R") +
                     ";length=" + semanticLength.ToString("R"),
                     butt != null && support != null && muzzle != null &&
-                    butt.localPosition.z < 0f && support.localPosition.z > 0f &&
-                    support.localPosition.z < muzzle.localPosition.z &&
+                    semanticForward.sqrMagnitude > 0.99f &&
+                    buttProjection < 0f && supportProjection > 0f &&
+                    supportProjection < muzzleProjection &&
                     semanticLength >= 0.4f,
-                    "source-space semantic anchor contract"));
+                    "donor-basis semantic anchor contract"));
                 bool normalizedProduction = kind == FirearmKind.Musket ||
-                    kind == FirearmKind.Blunderbuss;
-                float expectedHeldYaw = kind == FirearmKind.Musket ? 3f :
-                    kind == FirearmKind.Blunderbuss ? 4f : 0f;
-                Quaternion expectedHeldRotation = Quaternion.Euler(0f,
-                    expectedHeldYaw, 0f);
-                assertions.Add(Assertion(id + "-normalized-held-frame",
-                    normalizedProduction ? "Visual position zero; exact bounded rightward yaw; scale one" :
+                    kind == FirearmKind.Blunderbuss ||
+                    kind == FirearmKind.Rifle;
+                Quaternion expectedHeldRotation = Quaternion.Euler(
+                    81.58254f, 6.878487f, 255.457428f);
+                assertions.Add(Assertion(id + "-canonical-held-frame",
+                    normalizedProduction ? "canonical +Z/+Y source frame converted to measured native Heavy Crossbow held basis; trigger-wrist grip at identity root; scale one" :
                         "legacy exact candidate retained",
                     visual == null ? "<null>" : "position=" +
                         visual.localPosition.ToString("R") + ";rotation=" +
                         visual.localEulerAngles.ToString("R") + ";scale=" +
                         visual.localScale.ToString("R"),
                     !normalizedProduction || (visual != null &&
-                        visual.localPosition == Vector3.zero &&
+                        visual.localPosition.sqrMagnitude < 0.00000001f &&
                         Mathf.Abs(Quaternion.Dot(visual.localRotation,
                             expectedHeldRotation)) > 0.9999f &&
                         visual.localScale == Vector3.one),
                     "runtime-loaded normalized derivative prefab"));
-                Vector3 expectedHeldForward = expectedHeldRotation * Vector3.forward;
-                assertions.Add(Assertion(id + "-rightward-yaw-refinement",
-                    normalizedProduction ? "Musket +3 degrees; Blunderbuss +4 degrees; muzzle follows exact held axis" :
+                Vector3 expectedHeldForward = expectedHeldRotation *
+                    Vector3.forward;
+                assertions.Add(Assertion(id + "-canonical-muzzle-polarity",
+                    normalizedProduction ? "physical muzzle ahead on measured native Heavy Crossbow held forward axis" :
                         "legacy exact candidate retained",
-                    "expectedYaw=" + expectedHeldYaw.ToString("R") +
+                    "expectedForward=" + expectedHeldForward.ToString("R") +
                     ";muzzle=" + (muzzle == null ? "<null>" :
                         muzzle.localPosition.ToString("R")),
-                    !normalizedProduction || (muzzle != null &&
-                        Vector3.Dot(muzzle.localPosition.normalized,
-                            expectedHeldForward) > 0.9999f &&
-                        muzzle.localPosition.x > 0f),
+                    !normalizedProduction || (muzzle != null && grip != null &&
+                        Vector3.Dot((muzzle.localPosition -
+                            grip.localPosition).normalized,
+                            expectedHeldForward) > 0.995f &&
+                        muzzleProjection > 0f),
                     "runtime-loaded held Visual and semantic muzzle frame"));
-                float expectedBackRoll = kind == FirearmKind.Musket ? 12f :
-                    kind == FirearmKind.Blunderbuss ? -14f : 0f;
+                Quaternion expectedBackRotation = Quaternion.Euler(
+                    29.35143f, 112.346809f, 16.69746f);
+                Vector3 expectedBackAnchor =
+                    new Vector3(-0.227002054f, -0.0360002033f, 0.111000687f) +
+                    expectedBackRotation * new Vector3(-0.000450193882f,
+                        0.008564681f, 0.328089476f);
                 assertions.Add(Assertion(id + "-independent-back-prefab",
-                    normalizedProduction ? "distinct validated Visual+BackMount prefab" :
+                    normalizedProduction ? "distinct donor-basis-calibrated Visual+BackMount prefab" :
                         "no custom back required",
                     "back=" + (backInstance == null ? "<null>" : backInstance.name) +
                     ";visual=" + (backVisual != null) + ";mount=" + (backMount != null) +
@@ -9529,10 +9555,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         backVisual.localEulerAngles.ToString("R")),
                     !normalizedProduction || (backInstance != null &&
                         backVisual != null && backMount != null &&
-                        Mathf.Abs(Mathf.DeltaAngle(backVisual.localEulerAngles.y,
-                            0f)) < 0.01f &&
-                        Mathf.Abs(Mathf.DeltaAngle(backVisual.localEulerAngles.z,
-                            expectedBackRoll)) < 0.01f &&
+                        Mathf.Abs(Quaternion.Dot(backVisual.localRotation,
+                            expectedBackRotation)) > 0.9999f &&
+                        Vector3.Distance(backMount.localPosition,
+                            expectedBackAnchor) < 0.0001f &&
                         !ReferenceEquals(backPrefab, FirearmAssetRuntime.GetPrefab(kind))),
                     "runtime-loaded independently calibrated back prefab"));
                 assertions.Add(Assertion(id + "-native-left-hand-ik", "EquipmentOffsets.IkTargetLeftHand == SupportHandTarget",

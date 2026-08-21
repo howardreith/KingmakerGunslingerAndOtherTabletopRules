@@ -51,13 +51,15 @@ corrected provenance record, and embedded `fusil winchester v3.mb`,
 identity. Former Martini-Henry/ASHISH records remain under `provenance-history`.
 The Winchester derivative is permitted only for Advanced Rifle.
 
-Issue 11 adds deterministic modified derivatives of the preserved Mesh Masters
-Musket and ccotwist Blunderbuss sources under
+Issue 11 and the Weapon Presentation Calibration mission add deterministic
+modified derivatives of the preserved Mesh Masters Musket, ccotwist
+Blunderbuss, and Killian Delias Advanced Rifle sources under
 `assets-source/third-party/models/firearm-long-gun-derivatives`. The derivatives
-normalize units/axes, add project rig markers, and apply muted material tints;
-they remain CC-BY-4.0 with the original creator/title attribution above. Exact
-source and derivative hashes are recorded in the model provenance manifest and
-the adjacent generation report.
+normalize units and complete coordinate frames, add project rig markers, and
+apply muted material tints; they remain CC-BY-4.0 with the original
+creator/title attribution above. The Rifle derivative remains restricted to
+Advanced Rifle. Exact source and derivative hashes are recorded in the model
+provenance manifest and adjacent generation report.
 
 ## Third-playtest SSE audio intake
 

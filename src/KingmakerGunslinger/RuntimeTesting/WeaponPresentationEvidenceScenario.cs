@@ -14,6 +14,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.View.Equipment;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -827,6 +828,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 _actor.Descriptor.State.Immortality.Retain();
                 _target.Descriptor.State.Immortality.Retain();
+                _target.Descriptor.Stats.HitPoints.BaseValue = 10000;
+                _target.Descriptor.Damage = 0;
                 ClearHand(_actor, true);
                 ClearHand(_actor, false);
                 _actor.View.HandsEquipment.UpdateAll();
@@ -866,6 +869,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _stage = "equip-combat-ready-" + value.Variant;
                 _actor.Commands.InterruptAll(true);
                 _target.Commands.InterruptAll(true);
+                _target.Descriptor.Damage = 0;
                 if (!_actor.CombatState.IsInCombat)
                     _actor.CombatState.JoinCombat();
                 if (!_target.CombatState.IsInCombat)
@@ -1122,6 +1126,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 record["targetWorldPosition"] = _target.Position.ToString("R");
                 record["targetDistance"] = Vector3.Distance(_actor.Position,
                     _target.Position);
+                record["targetHitPoints"] = _target.HPLeft;
+                record["targetDamage"] = _target.Descriptor.Damage;
+                record["targetInState"] = _target.IsInState;
                 record["unitInCombat"] = _actor.CombatState.IsInCombat;
                 record["commandType"] = _attackCommand == null ? "<none>" :
                     _attackCommand.GetType().FullName;
@@ -1950,6 +1957,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "modelLocalMinorAxis", MinorAxis(modelLocalBounds.size) },
                 { "modelLocalBoundsSourceCount", modelLocalBoundsSourceCount },
                 { "semanticLocators", DescribeSemanticLocators(model) },
+                { "rigContacts", DescribeRigContacts(actor, model) },
                 { "bodyBoundsCenter", bodyBounds.center.ToString("R") },
                 { "bodyBoundsSize", bodyBounds.size.ToString("R") },
                 { "aabbOverlap", overlap.ToString("R") },
@@ -2109,6 +2117,71 @@ namespace KingmakerGunslinger.RuntimeTesting
                 });
             }
             return values;
+        }
+
+        private static JObject DescribeRigContacts(UnitEntityData actor,
+            Transform model)
+        {
+            Transform view = actor == null || actor.View == null ? null :
+                actor.View.transform;
+            Transform grip = model == null ? null : model.Find("Grip");
+            EquipmentOffsets offsets = model == null ? null :
+                model.GetComponent<EquipmentOffsets>();
+            Transform authoredSupport = model == null ? null :
+                model.Find("SupportHandTarget");
+            Transform support = offsets != null &&
+                offsets.IkTargetLeftHand != null ? offsets.IkTargetLeftHand :
+                authoredSupport;
+            Transform butt = model == null ? null : model.Find("Butt");
+            return new JObject
+            {
+                { "supportTargetSource", offsets != null &&
+                    offsets.IkTargetLeftHand != null ?
+                    "EquipmentOffsets.IkTargetLeftHand" :
+                    authoredSupport != null ? "SupportHandTarget" : "missing" },
+                { "supportTargetPath", support == null ?
+                    JValue.CreateNull() :
+                    (JToken)TransformPath(support, model) },
+                { "dominantHandToGrip", DescribeRigContact(view, model,
+                    "R_Hand", grip) },
+                { "weaponBoneToGrip", DescribeRigContact(view, model,
+                    "R_WeaponBone", grip) },
+                { "supportHandToTarget", DescribeRigContact(view, model,
+                    "L_Hand", support) },
+                { "dominantClavicleToButt", DescribeRigContact(view, model,
+                    "R_Clavicle", butt) }
+            };
+        }
+
+        private static JToken DescribeRigContact(Transform view,
+            Transform model, string boneName, Transform target)
+        {
+            if (view == null || model == null) return JValue.CreateNull();
+            Transform[] matches = view.GetComponentsInChildren<Transform>(true)
+                .Where(value => value != null && string.Equals(value.name,
+                    boneName, StringComparison.Ordinal)).ToArray();
+            if (matches.Length != 1)
+                return new JObject
+                {
+                    { "bone", boneName },
+                    { "matchCount", matches.Length },
+                    { "targetPresent", target != null }
+                };
+            Transform bone = matches[0];
+            return new JObject
+            {
+                { "bone", boneName },
+                { "matchCount", 1 },
+                { "bonePath", TransformPath(bone, view) },
+                { "boneModelLocalPosition", model.InverseTransformPoint(
+                    bone.position).ToString("R") },
+                { "targetPresent", target != null },
+                { "targetModelLocalPosition", target == null ?
+                    JValue.CreateNull() :
+                    (JToken)target.localPosition.ToString("R") },
+                { "distanceMeters", target == null ? JValue.CreateNull() :
+                    (JToken)Vector3.Distance(bone.position, target.position) }
+            };
         }
 
         private static void ClearHand(UnitEntityData actor, bool primary)

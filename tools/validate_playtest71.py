@@ -24,7 +24,11 @@ def validate(root:Path)->None:
                   "RemoveDuplicatePreviewGeometry", "model.dae",
                   "Final2 Sketchfab.fbx",
                   "SourceGripPoint", "SourceSupportPoint", "SourceButtPoint",
-                  "SourceMuzzlePoint", "AnchorRelativeToGrip", "KMG_RIG_ANCHORS",
+                  "SourceMuzzlePoint", "CanonicalRelativeToGrip",
+                  "TransformAnchoredPoint", "TargetAnchorPosition",
+                  "KMG_RIG_ANCHORS", "KMG_WeaponUp",
+                  "KMG_WeaponForward", "rifle-normalized.fbx", "RifleBelt",
+                  "NativeHeavyCrossbowHeldEuler",
                   "new Vector3(0f, 180f, 0f), 0.24f",
                   "Pistol equipped Visual must be derived from its semantic basis"):
         if token not in builder:raise AssertionError(f"visibility repair missing: {token}")

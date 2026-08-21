@@ -43,9 +43,8 @@ namespace KingmakerGunslinger.Assets
                     FirearmHolsterPolicy.Hidden,
                     WeaponAnimationStyle.PiercingOneHanded, false) },
 
-                // Musket and Blunderbuss use normalized project meshes with an
-                // independently calibrated back frame. Rifle retains the bounded
-                // hidden-holster policy pending its own visual qualification.
+                // All long guns use canonical project meshes with independent
+                // Heavy-Crossbow-donor-calibrated back frames.
                 { FirearmKind.Musket, new FirearmPresentationProfile(
                     FirearmKind.Musket, FirearmPresentationReadiness.AutonomousCandidate,
                     FirearmHolsterPolicy.Custom, null, false) },
@@ -54,7 +53,7 @@ namespace KingmakerGunslinger.Assets
                     FirearmHolsterPolicy.Custom, null, false) },
                 { FirearmKind.Rifle, new FirearmPresentationProfile(
                     FirearmKind.Rifle, FirearmPresentationReadiness.AutonomousCandidate,
-                    FirearmHolsterPolicy.Hidden, null, false) }
+                    FirearmHolsterPolicy.Custom, null, false) }
             };
 
         private FirearmPresentationProfile(FirearmKind kind,

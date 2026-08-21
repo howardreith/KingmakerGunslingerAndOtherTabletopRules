@@ -200,6 +200,13 @@ namespace KingmakerGunslinger.DomainTests
                 "FirearmDischargeRuntimeDiagnostics.Fired",
                 "LoadedRoundsAfter", "weapon-presentation-native-attack-command",
                 "weapon-presentation-firearm-discharge-nonregression",
+                "_target.Descriptor.Stats.HitPoints.BaseValue = 10000",
+                "_target.Descriptor.Damage = 0", "targetHitPoints",
+                "targetDamage", "rigContacts", "dominantHandToGrip",
+                "supportHandToTarget", "dominantClavicleToButt",
+                "supportTargetSource", "supportTargetPath",
+                "EquipmentOffsets.IkTargetLeftHand",
+                "R_WeaponBone", "L_Hand", "R_Clavicle",
                 "SameReferences(_unitsBefore", "SameReferences(_partyBefore",
                 "modelWorldForward", "modelWorldUp", "modelWorldRight" })
                 Assertions.True(scenario.Contains(token),

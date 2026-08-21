@@ -77,21 +77,21 @@ FIREARM_DATA = {
         "source": "assets-source/third-party/models/firearm-long-gun-derivatives/musket-normalized.fbx",
         "provenance": "Modified Mesh Masters Flintlock Rifle, CC-BY-4.0; original FBX preserved; deterministic derivative recorded",
         "animation": "Crossbow; inherited native attachment slots",
-        "grip": "two-handed; identity firing grip plus SupportHandTarget; +Z muzzle; independent BackMount",
+        "grip": "two-handed; identity equipment root; canonical source frame converted to measured Heavy Crossbow held basis; SupportHandTarget follows the same semantic solve; independent BackMount",
     },
     "Blunderbuss": {
         "type": "KMG.Firearms.EarlyBlunderbussWeaponType",
         "source": "assets-source/third-party/models/firearm-long-gun-derivatives/blunderbuss-normalized.fbx",
         "provenance": "Modified ccotwist Blunderbuss Low Poly, CC-BY-4.0; original FBX preserved; deterministic derivative recorded",
         "animation": "Crossbow; inherited native attachment slots",
-        "grip": "two-handed; identity firing grip plus SupportHandTarget; +Z muzzle; independent BackMount",
+        "grip": "two-handed; identity equipment root; canonical source frame converted to measured Heavy Crossbow held basis; SupportHandTarget follows the same semantic solve; independent BackMount",
     },
     "Rifle": {
         "type": "KMG.Firearms.AdvancedRifleWeaponType",
-        "source": "assets-source/third-party/models/killian-delias-winchester-lever-action-rifle/source/fusilALevier.fbx",
-        "provenance": "Killian Delias, Winchester lever action rifle, CC-BY-4.0; corrected identity record",
+        "source": "assets-source/third-party/models/firearm-long-gun-derivatives/rifle-normalized.fbx",
+        "provenance": "Modified Killian Delias Winchester lever action rifle, CC-BY-4.0; original FBX preserved; deterministic derivative recorded",
         "animation": "Crossbow; inherited native attachment slots",
-        "grip": "two-handed; identity firing grip plus SupportHandTarget; +Z muzzle",
+        "grip": "two-handed; identity equipment root; canonical source frame converted to measured Heavy Crossbow held basis; SupportHandTarget follows the same semantic solve; independent BackMount",
     },
     "Revolver": {
         "type": "KMG.Firearms.AdvancedRevolverWeaponType",
@@ -236,8 +236,8 @@ def make_record(entry: dict) -> dict:
         weapon_type = "KMG.Test.TestMusketWeaponType" if symbol.startswith(
             "KMG.Test.") else data["type"]
         concern = "human inventory/world readability and hand fit remain required" if kind == "Pistol" else \
-            "normalized held/back rig; final torso/support-hand clearance human-gated" if kind in \
-            ("Musket", "Blunderbuss") else \
+            "runtime-qualified default Medium male held/stored/ready/fire; reload, locomotion, and body matrix open" if kind in \
+            ("Musket", "Blunderbuss", "Rifle") else \
             "qualified structurally; lower-priority human visual review remains"
         common.update({
             "familyOrFirearmKind": kind,
@@ -247,7 +247,7 @@ def make_record(entry: dict) -> dict:
             "effectiveEquippedPrefab": prefab,
             "sourceFbx": source_fbx,
             "sourceBlend": "assets-source/original-models/firearm-pistol-variants/firearm-pistol-variants.blend" if project_variant else "none; preserved licensed source imported directly",
-            "deterministicGenerator": "assets-source/original-models/firearm-pistol-variants/generate_firearm_pistol_variants.py" if project_variant else ("assets-source/third-party/models/firearm-long-gun-derivatives/generate_long_gun_derivatives.py plus tools/unity/BuildFirearmBundles.cs" if kind in ("Musket", "Blunderbuss") else "tools/unity/BuildFirearmBundles.cs imports the preserved licensed source"),
+            "deterministicGenerator": "assets-source/original-models/firearm-pistol-variants/generate_firearm_pistol_variants.py" if project_variant else ("assets-source/third-party/models/firearm-long-gun-derivatives/generate_long_gun_derivatives.py plus tools/unity/BuildFirearmBundles.cs" if kind in ("Musket", "Blunderbuss", "Rifle") else "tools/unity/BuildFirearmBundles.cs imports the preserved licensed source"),
             "animationDonorStyle": data["animation"],
             "gripHandednessContract": data["grip"],
             "currentMaterial": "project-owned three-material source forced to opaque Unity Standard" if project_variant else f"opaque Unity Standard; generated {kind}_* material assets",

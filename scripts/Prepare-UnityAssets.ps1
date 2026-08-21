@@ -53,7 +53,8 @@ foreach ($candidate in $fitCandidates) {
 }
 $derivedLongGuns = @(
     @{ Family='Musket'; File='musket-normalized.fbx' },
-    @{ Family='Blunderbuss'; File='blunderbuss-normalized.fbx' }
+    @{ Family='Blunderbuss'; File='blunderbuss-normalized.fbx' },
+    @{ Family='Rifle'; File='rifle-normalized.fbx' }
 )
 foreach ($candidate in $derivedLongGuns) {
     $source = Join-Path $longGunDerivatives $candidate.File
@@ -75,4 +76,4 @@ foreach ($candidate in $generatedPistols) {
 Get-ChildItem -LiteralPath $approvedAudio -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Copy-Item -LiteralPath (Get-ChildItem -LiteralPath $audio -Filter '*.wav').FullName -Destination $approvedAudio
 
-Write-Host 'Prepared five approved model families, two normalized long-gun derivatives, three Musket fit candidates, two Pistol item variants, and five approved audio clips.'
+Write-Host 'Prepared five approved model families, three canonical long-gun derivatives, three Musket fit candidates, two Pistol item variants, and five approved audio clips.'

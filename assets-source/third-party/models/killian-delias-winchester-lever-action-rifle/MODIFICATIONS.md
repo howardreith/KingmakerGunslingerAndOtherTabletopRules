@@ -51,3 +51,17 @@ used. Grip root, support target, muzzle, animation, and original source are unch
 The semantic-anchor pass declares source Grip `(0.13,0,0)`, Support
 `(-0.1946,-0.0331,-0.0201)`, Butt `(0.503,0,0)`, and Muzzle `(-0.503,0,0)`,
 yielding `1.549379 m` butt-to-muzzle length in the grip frame.
+
+## 2026-08-21 canonical Advanced Rifle derivative
+
+The earlier wrapper calibration above is superseded for production by
+`../firearm-long-gun-derivatives/rifle-normalized.fbx`. Blender 4.5 derives it
+deterministically from the preserved, cleared Advanced Rifle FBX with SHA-256
+`74D60FCC6D9A6E89C20EBB8C2D35471417E9F6C23A840FA65967C20251540A1D`.
+The actual source frame is `+X` butt-to-muzzle / `+Z` receiver-up; the grip is
+the stock wrist behind `gachette` and inside the rear `levier` span. The
+renderer-bound endpoints, full WeaponForward/WeaponUp frame, and native Heavy
+Crossbow `0.374 m` support station are recorded in the generation report.
+Derivative SHA-256 is
+`9D9288D04DEED70A6CA7AA321A2107B0F482431A082A1E2EDF4B50CB14742072`.
+No original FBX, texture, topology, UV, animation, or rig was overwritten.

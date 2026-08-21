@@ -30,3 +30,15 @@ Issue 11 derives
 the preserved original. The `1.34 m` derivative normalizes units and the barrel
 axis, authors exact grip/support/butt/muzzle/back markers, and applies a muted
 material tint. The original geometry and source files remain preserved.
+
+## 2026-08-21 semantic-frame calibration
+
+Blender 4.5 deterministically regenerated the derivative from preserved source
+SHA-256 `BD3AFC3372453FAFF4742220B5E49FC7E021F10D9596E5C7000D2555FE486E18`.
+The physical source frame is `+X` butt-to-muzzle / `+Z` receiver-up; the grip is
+the actual narrow wrist immediately behind the trigger guard. Renderer-bound
+endpoints and the full WeaponForward/WeaponUp frame are recorded in the
+generation report. The Musket support station is `0.374 m`, measured against
+the exact native Heavy Crossbow IK control. Output SHA-256 is
+`C5E2EA93E903782BF3110E50C1D6677C4E7C109248651495192D8B6063F73A0A`.
+No preserved source geometry or texture was overwritten.

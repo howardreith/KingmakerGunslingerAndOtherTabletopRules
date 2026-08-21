@@ -174,7 +174,8 @@ namespace KingmakerGunslinger.DomainTests
         {
             string builder = Read("tools", "unity", "BuildFirearmBundles.cs");
             foreach (string marker in new[] { "KMG_Grip", "KMG_Support",
-                "KMG_Butt", "KMG_Muzzle", "KMG_Back" })
+                "KMG_Butt", "KMG_Muzzle", "KMG_Back", "KMG_WeaponUp",
+                "KMG_WeaponForward" })
                 Assertions.True(builder.Contains(marker),
                     "Unity marker importer omitted " + marker + ".");
             foreach (string failure in new[] {
@@ -252,8 +253,16 @@ namespace KingmakerGunslinger.DomainTests
             string staging = Read("scripts", "Prepare-UnityAssets.ps1");
             JObject report = JObject.Parse(Read("assets-source", "third-party",
                 "models", "firearm-long-gun-derivatives", "generation-report.json"));
-            Assertions.Equal(2, report["outputs"].Count(),
-                "The normalized long-gun build must publish exactly two derivatives.");
+            Assertions.Equal(2, (int)report["schemaVersion"],
+                "The canonical long-gun report schema changed.");
+            Assertions.Equal(3, report["outputs"].Count(),
+                "The canonical long-gun build must publish exactly three derivatives.");
+            Assertions.Equal("+X physical butt-to-muzzle",
+                (string)report["sourceForwardAxis"],
+                "The measured physical source polarity changed.");
+            Assertions.Equal("+Z physical stock/receiver up",
+                (string)report["sourceUpAxis"],
+                "The measured physical source roll axis changed.");
             foreach (JToken output in report["outputs"])
             {
                 string path = Path.Combine(Environment.CurrentDirectory,
@@ -262,15 +271,41 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(File.Exists(path), "Normalized long-gun FBX is missing.");
                 Assertions.Equal((string)output["outputSha256"], Hash(path),
                     "Normalized long-gun FBX differs from its generation report.");
-                Assertions.Equal(5, output["markers"].Count(),
-                    "A normalized long-gun derivative lacks its exact five-marker contract.");
+                Assertions.Equal(7, output["markers"].Count(),
+                    "A canonical long-gun derivative lacks its exact seven-marker frame contract.");
+                Assertions.True(output["markers"].Any(value =>
+                        (string)value == "KMG_WeaponUp") &&
+                    output["markers"].Any(value =>
+                        (string)value == "KMG_WeaponForward") &&
+                    output["sourceFrame"] != null &&
+                    output["canonicalFrame"] != null &&
+                    (double)output["canonicalFrame"][
+                        "nearestGripGeometryMeters"] < 0.12,
+                    "A canonical derivative lacks its measured source basis or physical grip evidence.");
             }
+            JToken musket = report["outputs"].Single(value =>
+                (string)value["name"] == "musket-normalized");
+            Assertions.True(Math.Abs((double)musket["blenderMarkerMeters"]
+                    ["KMG_Support"][2] - 0.374) < 0.000001 &&
+                Math.Abs((double)musket["expectedUnityMarkerMeters"]
+                    ["KMG_Support"][2] - 0.374) < 0.000001,
+                "The Musket support marker drifted from the measured native Heavy Crossbow IK station.");
             Assertions.True(builder.Contains("musket-normalized.fbx") &&
                 builder.Contains("blunderbuss-normalized.fbx") &&
-                builder.Contains("\"musket-normalized.fbx\", false, true,\n" +
-                    "            Vector3.zero, new Vector3(0f, 3f, 0f), 1f") &&
-                builder.Contains("\"blunderbuss-normalized.fbx\", false, true,\n" +
-                    "            Vector3.zero, new Vector3(0f, 4f, 0f), 1f") &&
+                builder.Contains("rifle-normalized.fbx") &&
+                builder.Contains("RifleBelt") &&
+                builder.Contains("CanonicalLongGun") &&
+                builder.Contains("StoredLongGun") &&
+                builder.Contains("NativeHeavyCrossbowHeldEuler") &&
+                builder.Contains("NativeHeavyCrossbowStoredEuler") &&
+                builder.Contains("NativeHeavyCrossbowStoredRendererCenter") &&
+                builder.Contains("TargetAnchorPosition") &&
+                builder.Contains("KMG_WeaponUp") &&
+                builder.Contains("KMG_WeaponForward") &&
+                builder.Contains("buttProjection") &&
+                builder.Contains("supportProjection") &&
+                builder.Contains("muzzleProjection") &&
+                builder.Contains("semantic butt-to-muzzle length is outside") &&
                 builder.Contains("BackMount") && builder.Contains("KMG_Back") &&
                 builder.Contains("diagnostic-pass-through; not-production-bound") &&
                 builder.Contains("diagnostic-minimal-control; not-production-bound") &&
@@ -278,14 +313,20 @@ namespace KingmakerGunslinger.DomainTests
                 "Normalized production binding or diagnostic isolation changed.");
             Assertions.True(!Identities.Any(profile.Contains) &&
                 profile.Contains("FirearmKind.Musket") &&
-                profile.Contains("FirearmHolsterPolicy.Custom"),
+                profile.Contains("FirearmKind.Blunderbuss") &&
+                profile.Contains("FirearmKind.Rifle") &&
+                profile.Split(new[] { "FirearmHolsterPolicy.Custom" },
+                    StringSplitOptions.None).Length - 1 >= 3,
                 "A diagnostic candidate leaked or custom back publication was removed.");
             Assertions.True(runtime.Contains("TryLoadBackPrefab") &&
+                runtime.Contains("FirearmKind.Rifle, \"riflebelt\"") &&
                 runtime.Contains("identity-root+Visual+BackMount+renderer") &&
                 presentation.Contains("m_WeaponSheathModel\", null") &&
                 generator.Contains("KMG_Support") &&
                 generator.Contains("KMG_Muzzle") &&
-                staging.Contains("two normalized long-gun derivatives"),
+                generator.Contains("KMG_WeaponUp") &&
+                generator.Contains("KMG_WeaponForward") &&
+                staging.Contains("three canonical long-gun derivatives"),
                 "The normalized rig/back fail-closed runtime contract is incomplete.");
         }
 

@@ -1566,7 +1566,7 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Assets/FirearmAssetRuntime.cs");
             Assertions.True(source.Contains("TryPrepareRig") &&
                 source.Contains("root-not-identity") &&
-                source.Contains("muzzle-not-forward-positive-z") &&
+                source.Contains("muzzle-not-forward-on-semantic-axis") &&
                 source.Contains("support-target-missing") &&
                 source.Contains("support-target-implausible") &&
                 source.Contains("prefab.AddComponent<EquipmentOffsets>()") &&
@@ -1732,7 +1732,8 @@ namespace KingmakerGunslinger.DomainTests
                 profile.Contains("FirearmKind.Musket") &&
                 profile.Contains("FirearmHolsterPolicy.Custom, null, false") &&
                 profile.Contains("FirearmKind.Rifle") &&
-                profile.Contains("FirearmHolsterPolicy.Hidden, null, false") &&
+                profile.Split(new[] { "FirearmHolsterPolicy.Custom, null, false" },
+                    StringSplitOptions.None).Length - 1 >= 3 &&
                 profile.Contains("GetBeltPrefab(Kind)") &&
                 presentation.Contains("if (belt != null)") &&
                 presentation.Contains("if (profile.HideHolsteredModel)") &&
@@ -1749,7 +1750,7 @@ namespace KingmakerGunslinger.DomainTests
                 presentation.Contains("Native crossbow") &&
                 !presentation.Contains("GetComponentsInChildren<Renderer>") &&
                 !lifecycle.Contains("Renderer"),
-                "Normalized Musket/Blunderbuss back models and the bounded hidden Rifle fallback must remain exact without renderer scanning or native donor mutation.");
+                "Canonical Musket/Blunderbuss/Rifle back models must remain exact without renderer scanning or native donor mutation.");
         }
 
         private static void NativeRigVisibilityRepair()
@@ -1795,20 +1796,23 @@ namespace KingmakerGunslinger.DomainTests
                 builder.Contains("SourceSupportPoint") &&
                 builder.Contains("SourceButtPoint") &&
                 builder.Contains("SourceMuzzlePoint") &&
-                builder.Contains("AnchorRelativeToGrip") &&
+                builder.Contains("CanonicalRelativeToGrip") &&
+                builder.Contains("TransformAnchoredPoint") &&
                 builder.Contains("KMG_RIG_ANCHORS") &&
                 builder.Contains("musket-normalized.fbx") &&
                 builder.Contains("blunderbuss-normalized.fbx") &&
+                builder.Contains("rifle-normalized.fbx") &&
                 builder.Contains("Vector3.zero, Vector3.zero, 1f") &&
                 builder.Contains("KMG_Back") &&
                 builder.Contains("BackMount") &&
-                builder.Contains("new Vector3(0.1300f, 0f, 0f)") &&
+                builder.Contains("NativeHeavyCrossbowHeldEuler") &&
+                builder.Contains("NativeHeavyCrossbowStoredRendererCenter") &&
                 runtime.Contains("TryLoadBackPrefab") &&
                 runtime.Contains("identity-root+Visual+BackMount+renderer") &&
                 runtime.Contains("semantic-length-or-butt-implausible") &&
                 runner.Contains("-semantic-anchors") &&
                 runner.Contains("long-gun-relative-semantic-length") &&
-                runner.Contains("-normalized-held-frame") &&
+                runner.Contains("-canonical-held-frame") &&
                 runner.Contains("-independent-back-prefab") &&
                 runner.Contains("pistol-basis-calibrated-held-frame") &&
                 runner.Contains("source -Z/+Y to donor +Z/+Y semantic-basis solve"),
