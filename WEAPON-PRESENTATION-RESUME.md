@@ -16,11 +16,18 @@
 - Published native-donor diagnostic commit:
   `07c11236d2047af63fc6aeccfb51be99b06fe708`
   (`test(presentation): capture native donor frames`).
+- Published native-donor documentation commit:
+  `c1ea80690e51688e79e50f73cf42ef55c9333236`
+  (`docs(presentation): record native donor frames`).
+- Published semantic-frame/handgun commit:
+  `e2aba9d24cebbf38aadc236044c84f641a69534c`
+  (`fix(presentation): validate frames and calibrate handguns`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
-- The published source checkpoint adds only guarded presentation evidence,
-  preflight/allowlist integration, the repaired firearm readiness expectation,
-  focused tests, and durable mission records. No asset transform has changed.
+- The current implementation adds a shared full-frame semantic contract and
+  basis-calibrates the service Pistol and Revolver. Spear and Eastern bundles
+  now expose complete frames but deliberately retain their known incorrect
+  mappings until their family-specific phases.
 
 ## Qualified unchanged baseline
 
@@ -73,15 +80,31 @@ tolerance. Runtime DLL SHA-256 is
 The local-runtime package SHA-256 is
 `24DF7A916343948A8515FE699B14B367914D97FD8D062D1007B9D34212AB098A`.
 
+## Qualified semantic-frame and handgun checkpoint
+
+Commit `e2aba9d24cebbf38aadc236044c84f641a69534c` is published on the
+mission branch. It requires identity roots, complete forward/secondary frames,
+positive non-reflected hierarchy scales, polarity, support intervals,
+renderer-bound endpoints, and independent held/stored transforms. The service
+Pistol maps physical source `-Z/+Y` to donor `+Z/+Y`; Revolver maps physical
+source `+X/+Y` to donor `+Z/+Y` from its actual component bounds. All three
+bundles reproduced byte-identically across two Unity 2018.4.10f1 builds.
+
+Repository validation, the clean 1,164-test Release suite, clean Release
+packaging, strict validation, and Build-Local pass. Runtime evidence passes at
+`20260821T0034448996480Z-weapon-presentation-evidence` (9/9; 224 views) and
+`20260821T0040087523551Z-disposable-firearm-visual-rigs` (65/65). Package/DLL
+SHA-256 are `32BAA60B1427EF9880DC986A8030D2E83EBEC42465079C8CA4E2E823232ABF13`
+and `E6240EB8B5BE1B93FF7400F4EDCFD9479C7C795F8AB9F90AAF1F21D2A51BF421`.
+
 ## Next concrete actions
 
-1. Complete semantic-frame validation before changing transforms: add
-   secondary-axis markers/contracts (`WeaponUp`, `HeadUp`, `BladeNormal`),
-   reject degenerate/reflected/reversed frames, prove renderer endpoints and
-   support intervals, and retain identity equipment roots.
-2. Continue directly through handgun, long-gun, branched-spear, Eastern held,
-   and Eastern stored calibration. Expand the fixture to combat/attack and the
-   representative character-size/sex matrix as each family is repaired.
+1. Calibrate Musket, Blunderbuss, and Rifle held grip/butt/support frames and
+   independent stored/back presentation against the measured Heavy Crossbow
+   donor. Preserve the identity root and projectile data.
+2. Expand guarded evidence to combat-ready, fire/reload, locomotion, and the
+   representative sex/size matrix; then continue through branched-spear,
+   Eastern held, and Eastern stored calibration.
 
 ## Supported hypotheses requiring donor confirmation
 
@@ -91,8 +114,9 @@ The local-runtime package SHA-256 is
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
   side `-Z`. Identity presentation is therefore not a valid basis conversion.
-- Firearm service Pistol, Revolver, and Rifle still rely on unexplained legacy
-  transforms. Musket/Blunderbuss `3°`/`4°` yaw is not a full basis conversion.
+- Rifle still relies on an unexplained source transform.
+  Musket/Blunderbuss `3°`/`4°` yaw is not a full basis conversion. Service
+  Pistol and Revolver are now basis-derived and renderer-endpoint verified.
 
 ## Safety/publication
 

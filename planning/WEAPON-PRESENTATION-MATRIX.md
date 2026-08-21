@@ -2,11 +2,14 @@
 
 Status values: `PASS-S` is structured/mechanical evidence only; `OBS-DEFECT`
 means state-labelled imagery directly reproduces a defect; `OBS-OPEN` means the
-state is captured but not accepted; `NC` means not captured; `N/A` means not
-applicable. Source axes describe current authored assets, not accepted donor
-conversions. `V1` is unchanged-asset default-Medium-male evidence. `V2` adds
-six exact live native donor controls and model-local frame data. Neither makes
-a combat, movement, sex, or size acceptance claim.
+state is captured but not accepted; `OBS-PASS` means the named captured state
+is visually acceptable only for the explicitly named fixture; `NC` means not
+captured; `N/A` means not applicable. Source axes describe authored source
+assets before any accepted donor conversion. `V1` is unchanged-asset
+default-Medium-male evidence. `V2` adds six exact live native donor controls
+and model-local frame data. `V3` is the semantic-frame/handgun checkpoint on
+the same default Medium male; `F3` is its 65-assertion live firearm rig
+contract. None makes an uncaptured combat, movement, sex, or size claim.
 
 ## Measured native donor controls
 
@@ -21,10 +24,10 @@ a combat, movement, sex, or size acceptance claim.
 
 | Family | Exact weapon / visual variant | Held prefab | Stored prefab / actual baseline mount | Native donor | Source forward | Source up / blade normal / head up | Grip result | Tip / muzzle result | Support-hand result | Held-idle result | Combat-ready result | Attack / fire / thrust result | Reload result | Movement result | Stored result | Male Medium result | Female Medium | Small | Enlarged | Automated validation | Runtime visual status | Remaining uncertainty | Evidence | Acceptance |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Firearm | Pistol.Service | `Pistol` | none declared; held model appears on front-belt slot | Light Crossbow + PiercingOneHanded | unknown legacy DAE | missing | OBS-DEFECT behind/across pelvis | projectile/muzzle PASS-S; visible polarity open | N/A | OBS-DEFECT | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-DEFECT visible belt mount | OBS-DEFECT | NC | NC | NC | bundle/switching/V1 PASS | stored + held captured | source frame, roll, dual wield, combat/fire | F1,F2,V1 | OPEN |
-| Firearm | Pistol.Duelist | `PistolDuelist` | none declared; held model appears on front-belt slot | Light Crossbow + PiercingOneHanded | `+Z` | missing | OBS-DEFECT behind/across pelvis | projectile/muzzle PASS-S; visible polarity open | N/A | OBS-DEFECT | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-DEFECT visible belt mount | OBS-DEFECT | NC | NC | NC | bundle/switching/V1 PASS | stored + held captured | donor secondary axis, dual wield, combat/fire | F1,F2,V1 | OPEN |
-| Firearm | Pistol.LastWord | `PistolLastWord` | none declared; held model appears on front-belt slot | Light Crossbow + PiercingOneHanded | `+Z` | missing | OBS-DEFECT behind/across pelvis | projectile/muzzle PASS-S; visible polarity open | N/A | OBS-DEFECT | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-DEFECT visible belt mount | OBS-DEFECT | NC | NC | NC | bundle/switching/V1 PASS | stored + held captured | donor secondary axis, dual wield, combat/fire | F1,F2,V1 | OPEN |
-| Firearm | Revolver.Service | `Revolver` | none declared; held model appears on front-belt slot | Light Crossbow + PiercingOneHanded | unknown legacy FBX | missing | OBS-DEFECT behind/across pelvis | projectile/muzzle PASS-S; visible polarity open | N/A | OBS-DEFECT | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-DEFECT visible belt mount | OBS-DEFECT | NC | NC | NC | bundle/switching/V1 PASS | stored + held captured | source frame, scale, roll, combat/fire | F1,F2,V1 | OPEN |
+| Firearm | Pistol.Service | `Pistol` | no belt/sheath prefab; held model uses native front-belt attachment | Light Crossbow + PiercingOneHanded | physical source `-Z`; solved root `+Z` | source `+Y`; solved root `+Y` (`WeaponUp`) | PASS-S grip-derived root; OBS-PASS default male hand contact | PASS-S physical muzzle/root `Z=+0.4032`; one projectile preserved | N/A | OBS-PASS default male; no pelvis-spanning model | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-PASS default male muzzle-down native slot | OBS-PASS held/stored only | NC | NC | NC | semantic endpoints; deterministic bundle; F3 65/65 | V3 held/stored reviewed | dual wield, ready/fire/reload/move, transitions, sex/size | F1,F2,V1,V2,F3,V3 | OPEN |
+| Firearm | Pistol.Duelist | `PistolDuelist` | no belt/sheath prefab; held model uses native front-belt attachment | Light Crossbow + PiercingOneHanded | source/root `+Z` | source/root `+Y` (`WeaponUp`) | PASS-S root grip; OBS-PASS default male hand contact | PASS-S physical muzzle `Z=+0.264`; one projectile preserved | N/A | OBS-PASS default male; distinct silhouette | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-OPEN native slot | OBS-PASS held only | NC | NC | NC | semantic endpoints; deterministic bundle; exact variant identity | V3 held/stored reviewed | dual wield, ready/fire/reload/move, transitions, sex/size | F1,F2,V1,V2,F3,V3 | OPEN |
+| Firearm | Pistol.LastWord | `PistolLastWord` | no belt/sheath prefab; held model uses native front-belt attachment | Light Crossbow + PiercingOneHanded | source/root `+Z` | source/root `+Y` (`WeaponUp`) | PASS-S root grip; OBS-PASS default male hand contact | PASS-S physical muzzle `Z=+0.264`; one projectile preserved | N/A | OBS-PASS default male; distinct silhouette | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-OPEN native slot | OBS-PASS held only | NC | NC | NC | semantic endpoints; deterministic bundle; exact variant identity | V3 held/stored reviewed | dual wield, ready/fire/reload/move, transitions, sex/size | F1,F2,V1,V2,F3,V3 | OPEN |
+| Firearm | Revolver.Service | `Revolver` | no belt/sheath prefab; held model uses native front-belt attachment | Light Crossbow + PiercingOneHanded | physical source `+X`; solved root `+Z` | source `+Y`; solved root `+Y` (`WeaponUp`) | PASS-S `Grip_LP`-bounds-derived root; OBS-PASS default male | PASS-S physical muzzle/root forward; vertical bore offset retained; one projectile preserved | N/A | OBS-PASS default male; no pelvis-spanning model | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-PASS default male muzzle-down native slot | OBS-PASS held/stored only | NC | NC | NC | semantic endpoints; deterministic bundle; F3 65/65 | V3 held/stored reviewed | dual wield, ready/fire/reload/move, transitions, sex/size | F1,F2,V1,V2,F3,V3 | OPEN |
 | Firearm | Musket.Service | `Musket` | `MusketBelt`; horizontal shoulder mount | Heavy Crossbow | `+Z` | missing | OBS-DEFECT low diagonal through lower body | projectile/muzzle PASS-S; visible fire NC | interval PASS-S; inactive in idle | OBS-DEFECT | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-DEFECT shoulder-line intersection | OBS-DEFECT | NC | NC | NC | bundle/switching/V1 PASS | stored + held captured | shoulder/support fit, ready/fire/reload/move | F1,F2,V1 | OPEN |
 | Firearm | Blunderbuss.Service | `Blunderbuss` | `BlunderbussBelt`; horizontal shoulder mount | Heavy Crossbow | `+Z` | missing | OBS-DEFECT low diagonal/body proximity | projectile/muzzle PASS-S; visible fire NC | interval PASS-S; inactive in idle | OBS-DEFECT | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-DEFECT shoulder-line intersection | OBS-DEFECT | NC | NC | NC | bundle/switching/V1 PASS | stored + held captured | shoulder/support fit, ready/fire/reload/move | F1,F2,V1 | OPEN |
 | Firearm | Rifle.Service | `Rifle` | none declared; held model still mounts stored | Heavy Crossbow | hard-coded pretransform | missing | OBS-DEFECT stock/barrel cross body | projectile/muzzle PASS-S; visible fire NC | interval PASS-S; inactive in idle | OBS-DEFECT | NC | mechanical PASS-S; visual NC | PASS-S | NC | OBS-DEFECT visible uncalibrated mount | OBS-DEFECT | NC | NC | NC | bundle/switching/V1 PASS | stored + held captured | mesh frame, shoulder/support, ready/fire/reload | F1,F2,V1 | OPEN |
@@ -58,8 +61,14 @@ a combat, movement, sex, or size acceptance claim.
   production variants plus 6 exact native donor controls; 56 stored/held
   PNG/JSON pairs, 224 views, model-local locator data, and mesh-local bounds
   proven invariant across held/stored attachment at tolerance `0.00001`).
+- F3: `20260821T0040087523551Z-disposable-firearm-visual-rigs` (65/65 live
+  bundle, semantic rig, animation, IK, holster, projectile, identity, and
+  cleanup assertions).
+- V3: `20260821T0034448996480Z-weapon-presentation-evidence` (56 stored/held
+  PNG/JSON pairs, 224 views, semantic-frame/handgun implementation, default
+  Medium male, no blank or low-density sheets).
 
 All runtime evidence directories are under
-`C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. V1/V2 are direct cosmetic
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. V1/V2/V3 are direct cosmetic
 evidence only for stored and held-idle on one default Medium male fixture; they
 do not upgrade any uncaptured state or character configuration.

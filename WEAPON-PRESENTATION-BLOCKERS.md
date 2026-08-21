@@ -2,7 +2,7 @@
 
 ## Hard blockers
 
-None as of 2026-08-20.
+None as of 2026-08-21.
 
 ## Open evidence gaps (not hard blockers)
 
@@ -10,15 +10,16 @@ None as of 2026-08-20.
   imagery for all 22 production variants. Combat-ready, attack/fire/thrust,
   reload, locomotion, equip/unequip transition, female, Small, and Enlarged
   coverage remain ordinary open work.
-- Native donor axes have now been measured by exact live controls (`V2`), but
-  production authored assets do not yet expose complete secondary-axis markers
-  or enforce those donor frames. Encoding and validating that contract remains
-  ordinary implementation work.
+- Native donor axes have been measured by exact live controls (`V2`), and all
+  production authored assets now expose complete secondary-axis markers under
+  a shared fail-closed contract. Branched-spear and Eastern visible transforms
+  still need conversion to those measured donor bases.
 - The stale firearm donor readiness assertion is repaired and the guarded
   observer passes. Crossbow donor forward/up and support-locator positions are
   now explicit in `V2`; combat-ready and reload observation remain open.
-- The authored service Pistol, Revolver, and Rifle source frames need actual
-  mesh/marker proof. Existing unexplained transforms are not acceptance data.
+- Service Pistol and Revolver source frames now have actual renderer/component
+  proof and basis-derived transforms. Rifle remains unexplained and is part of
+  the next long-gun calibration phase.
 - Medium female, Small, and Enlarged cosmetic fixtures may require narrower
   request-local character construction. Lack of first-pass coverage is not a
   stop condition.

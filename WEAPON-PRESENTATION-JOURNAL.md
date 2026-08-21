@@ -309,3 +309,112 @@ The source/test checkpoint was committed as
 `07c11236d2047af63fc6aeccfb51be99b06fe708`
 (`test(presentation): capture native donor frames`) and published to the
 identically named origin feature branch with an ordinary non-force push.
+
+## 2026-08-21 - semantic-frame and handgun calibration checkpoint
+
+Published implementation commit
+`e2aba9d24cebbf38aadc236044c84f641a69534c`
+(`fix(presentation): validate frames and calibrate handguns`) adds one shared
+authoring/runtime semantic-frame contract and applies it to every production
+firearm, branched-spear prefab, and Eastern held prefab. The contract requires
+identity equipment roots; unique direct-child markers; finite, positive,
+non-reflected hierarchy scales; a nondegenerate forward/secondary basis;
+correct tip/butt polarity; plausible semantic length; support-hand interval
+and envelope placement; and correspondence between semantic ends and actual
+mesh-backed renderer bounds. Basis rotation and grip translation use the
+documented equations rather than an unexplained Euler value.
+
+The family builders now author `WeaponUp`, `HeadUp`, or `BladeNormal` as
+appropriate. Firearms also author an explicit `WeaponForward`, which keeps the
+barrel axis distinct from a muzzle that is vertically offset from the grip.
+Held and stored long-gun and branched-spear prefabs must be distinct and must
+not repeat one incompatible visible-child transform. Runtime bundle loading
+repeats the semantic and renderer-bound checks and fails closed to the existing
+native fallback on invalid assets. The diagnostic code remains request-gated.
+
+Measured handgun corrections:
+
+- Service Pistol source forward is `-Z`, source up is `+Y`, and its physical
+  grip is source `(0,0,0.68)`. The solved donor frame is forward `+Z`, up `+Y`,
+  visible position `(0,0,0.1632)`, Euler `(0,180,0)`, and scale `0.24`. The
+  real renderer endpoints are root `Z=-0.0768..+0.4032`; the stale `+0.264`
+  muzzle and unexplained `180`-degree roll were rejected.
+- Duelist's Rebuttal and The Last Word retain their distinct project-owned
+  geometry and identity transforms. Their authored `+Z/+Y` frames and
+  `-0.075..+0.264` semantic ends now pass the same full contract.
+- Revolver source forward is physical `+X`, source up is `+Y`, and the grip is
+  derived from the `Grip_LP` component bounds at
+  `(-8.889382,7.50916529,2.68602586)`. The basis solution maps it to donor
+  `+Z/+Y`, yielding Euler `(0,-90,0)` and grip-derived translation. Its live
+  root renderer endpoints are `-0.0356628..+0.279631257` metres. The muzzle's
+  vertical offset is retained; projectile data was not moved to compensate for
+  visible geometry.
+
+Deterministic Unity 2018.4.10f1 qualification:
+
+- Final logs:
+  `artifacts/weapon-presentation/semantic-frame/unity-firearms-determinism.log`,
+  `unity-spear-determinism.log`, and `unity-eastern-determinism.log`.
+- Two independently restaged ForceRebuild passes produced byte-identical
+  tracked/output bundles.
+- Firearms: `4D1F51362D7EF74A7D4DF3001783DD91BA001FDBD23F5F041987C1B6D4E5961D`
+  (17,978,495 bytes).
+- Branched spear:
+  `0BC67C89D08806B0B67FF074AE983FC1E2CDF6E6618CC10901E66C01B7A725FA`
+  (127,202 bytes).
+- Eastern weapons:
+  `7AF99FAA8C63BA91DBAF9BC5295E1629A8E090288A9ED86753D835CCAF3C3C33`
+  (311,289 bytes).
+- Deliberately retained phase boundaries: current spear held geometry still
+  reports forward `-Y`, and Eastern source frames still report `+Z/+Y` rather
+  than the measured native donor frames. The new contract exposes these facts;
+  it does not mislabel them as calibrated.
+
+Source/package gates:
+
+- Repository/version validation: PASS for version `0.0.88`.
+- Complete clean Release domain suite: PASS, 1,164 tests / 0 failures.
+- Clean Release build/package, exact-reference compilation, output validation,
+  SoundBank validation, and strict package validation: PASS.
+- `Build-Local.ps1`: PASS, then repeated identically by each guarded dirty-tree
+  launch.
+- Standalone and local-runtime package SHA-256:
+  `32BAA60B1427EF9880DC986A8030D2E83EBEC42465079C8CA4E2E823232ABF13`
+  (22,192,628 bytes).
+- DLL SHA-256:
+  `E6240EB8B5BE1B93FF7400F4EDCFD9479C7C795F8AB9F90AAF1F21D2A51BF421`
+  (3,491,840 bytes; MVID `9abfc536-78c0-4725-8b91-f9e569e11eb2`).
+
+Guarded Steam App ID 640820 results:
+
+- `weapon-presentation-evidence`: PASS, 9/9 assertions at
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T0034448996480Z-weapon-presentation-evidence/`.
+  It materialized all 22 production variants plus 6 donor controls in stored
+  and held-idle states: 56/56 presentations, 56 PNG/JSON pairs, 224 labelled
+  views, no blank/low-density sheets, and exact no-save cleanup. Result SHA-256:
+  `583124356871E62E52570E1CD6AB2A3C2823F4EBCB84DA7E307C87A67553C8DD`.
+- `disposable-firearm-visual-rigs`: PASS, 65/65 assertions at
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T0040087523551Z-disposable-firearm-visual-rigs/`.
+  It loaded the production bundle, instantiated every production firearm
+  variant, verified exact animation style, native left-hand IK, separate
+  long-gun back prefabs, short-gun sheath policy, one cloned projectile per
+  firearm, cleanup, and the new basis-derived service Pistol transform. Result
+  SHA-256:
+  `3CB1A7D9C3BD34150655B2CAE85EA3F19796EA678760DEA8733470B70A63E10C`.
+- The first attempted immutable reuse correctly stopped before launch because
+  that path requires a clean Git tree. The permitted dirty-source path rebuilt,
+  validated, redeployed, and then passed. Deployment manifests are
+  `20260821T0034448475634Z/deployment.json` and
+  `20260821T0040086863012Z/deployment.json`.
+
+Direct visual review of the four-view contact sheets shows the service Pistol
+and Revolver now originate at the dominant hand instead of spanning the
+pelvis. Duelist and Last Word remain distinct and plausibly grip-centred. On
+this default Medium male, the service Pistol and Revolver stored weapon models
+hang muzzle-down at the front-belt slot without severe torso penetration.
+This is only held-idle/stored evidence. Combat-ready, firing, dual wield,
+reload, movement, transitions, female, Small, and Enlarged acceptance remain
+open and are not inferred from the static sheets. The profile label `hidden`
+continues to mean no inherited belt/sheath prefab; Kingmaker still displays
+the held weapon model in its native stored attachment, so true hidden behavior
+has not been claimed.
