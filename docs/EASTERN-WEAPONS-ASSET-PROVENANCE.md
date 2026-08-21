@@ -47,5 +47,7 @@ contracts are unchanged. Runtime clones the native presentation donor, replaces
 its held and belt model fields, and clears its sheath field only on the custom
 clone because the complete custom stored prefab owns that role. Animations,
 trails, sounds, slots, timing, and every other donor field remain exact.
-Guarded visual acceptance is recorded in
+The clone-only replacement is published at
+`754ae076de0c02b5dd1e62691ba5905aa363432c` and clean-qualified without
+changing the deterministic bundle. Guarded visual acceptance is recorded in
 `docs/EASTERN-WEAPONS-VISUAL-CALIBRATION.md`.

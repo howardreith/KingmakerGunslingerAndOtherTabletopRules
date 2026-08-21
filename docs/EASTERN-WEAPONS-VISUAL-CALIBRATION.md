@@ -103,3 +103,27 @@ Direct before/after review confirms the detached scabbards are gone from all
 remain unchanged. This adds accepted locomotion, turning, and equip/unequip
 transitions on the same default Medium male. Armor/cloak, female, Small, and
 Enlarged results remain open.
+
+Published repair commit
+`754ae076de0c02b5dd1e62691ba5905aa363432c` received clean exact-artifact
+qualification. Its 22,418,712-byte package SHA-256 is
+`82BFCA3C009BC6BCA8DC0CC23E0B89985153B727AB7848D64EE520C8BA12C3AE`;
+DLL SHA-256 is
+`80465348626E6B07570D357FBC89FE1C977E10E88290364B50D135B853C4421F`.
+Clean evidence superseding the dirty-source runs is:
+
+- `20260821T0942301027834Z-disposable-eastern-weapons-combat`: PASS 21/21;
+  result SHA-256
+  `C311F1DD7FA4E82230F5183AF7BE3E12883A2A65DF549A4065EBE8A1580BBDAA`.
+- `20260821T0944317567220Z-weapon-presentation-transition-motion-evidence`:
+  PASS 8/8; 112 PNG/JSON pairs and 448 views; result/index SHA-256
+  `A1A5E9FD2B952201A5D3C6D8C2E34D5B4AB200BE00FBD2FE8B6E907648D6B435` /
+  `66D5E896557E81F1909D08DEC03C42FA73391D05374B6AAA3D7E517B93DBC912`.
+- `20260821T0948158393773Z-weapon-presentation-evidence`: PASS 9/9; 56
+  held/stored PNG/JSON pairs and 224 views; result/index SHA-256
+  `15F2C61FD4F58471254733E493567A176F8B2795E6F19C721B27F50F9C7CD37D` /
+  `3DB3CC5D77DBC850250E9F562DF52E5F1ED89E2B8D9196C2304C03B4D9C7F1E5`.
+
+Direct clean review includes every Eastern turned-right and stored sheet plus
+the three native stored controls. It confirms no detached sheath, all custom
+stored models present, and native donor sheaths retained.

@@ -25,14 +25,16 @@ turning on the default Medium male; its clean review exposed detached inherited
 sheaths on custom Eastern clones. `E4` is the post-repair all-30-item donor and
 mechanics qualification. `V13` is the post-repair transition/motion matrix with
 an explicit custom-null/native-retained sheath assertion. `V14` is the post-
-repair held/stored matrix. None makes an uncaptured reload, handgun ready/fire/
-dual-wield, armor/cloak, sex, or size claim.
+repair held/stored matrix. `E5`, `V15`, and `V16` are their clean exact-commit
+counterparts at published repair commit `754ae076`. None makes an uncaptured
+reload, handgun ready/fire/dual-wield, armor/cloak, sex, or size claim.
 
 For every Eastern row below, `V13` supersedes the visual transition/motion
 claim from `V12`, `V14` supersedes the stored/held presentation check from
 `V10`, and `E4` supersedes the custom-clone donor/sheath contract from `E3`.
-The historical evidence identifiers remain in each row's chain; current
-acceptance additionally requires `E4,V13,V14`.
+Clean exact-commit `E5,V15,V16` supersede dirty-source `E4,V13,V14`. The
+historical evidence identifiers remain in each row's chain; current acceptance
+additionally requires `E5,V15,V16`.
 
 ## Measured native donor controls
 
@@ -195,6 +197,23 @@ acceptance additionally requires `E4,V13,V14`.
   result/index SHA-256
   `D6A2E2F45AED132ABBFFA5469DEB06798521F57376660E14092756E2CC359CF2` /
   `25ADAF37BD7951B289626D5A3C6576D9324A8BE4B259017E6D830657961736CE`).
+- E5: `20260821T0942301027834Z-disposable-eastern-weapons-combat` (clean
+  exact-commit `754ae076` all-30-item identity/donor/mechanics qualification;
+  custom sheaths null, native family sheaths retained; 21/21; result SHA-256
+  `C311F1DD7FA4E82230F5183AF7BE3E12883A2A65DF549A4065EBE8A1580BBDAA`).
+- V15:
+  `20260821T0944317567220Z-weapon-presentation-transition-motion-evidence`
+  (clean exact-commit `754ae076` matrix; 8/8, 112 PNG/JSON pairs, 448 views;
+  custom Eastern sheath null 48/48, native controls retained 12/12; direct
+  review accepts all 12 Eastern turned-right sheets; result/index SHA-256
+  `A1A5E9FD2B952201A5D3C6D8C2E34D5B4AB200BE00FBD2FE8B6E907648D6B435` /
+  `66D5E896557E81F1909D08DEC03C42FA73391D05374B6AAA3D7E517B93DBC912`).
+- V16: `20260821T0948158393773Z-weapon-presentation-evidence` (clean exact-
+  commit `754ae076` held/stored matrix; 9/9, 56 PNG/JSON pairs, 224 views;
+  direct review accepts all 12 custom Eastern stored sheets and the three
+  native stored donor controls; result/index SHA-256
+  `15F2C61FD4F58471254733E493567A176F8B2795E6F19C721B27F50F9C7CD37D` /
+  `3DB3CC5D77DBC850250E9F562DF52E5F1ED89E2B8D9196C2304C03B4D9C7F1E5`).
 
 All runtime evidence directories are under
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. V1/V2/V3 are direct cosmetic
@@ -209,5 +228,6 @@ default-Medium-male states; E3 adds structured identity/donor/mechanical non-
 regression but no broader cosmetic claim. V12 adds locomotion, turning, and
 equip/unequip evidence for the default Medium male, but its Eastern visual
 claim is superseded by the detached-sheath defect and then by post-repair
-E4/V13/V14 acceptance. Those runs do not broaden firearm action, equipment-
+E4/V13/V14 acceptance and clean exact-commit E5/V15/V16. Those runs do not
+broaden firearm action, equipment-
 loadout, armor, sex, or size coverage.

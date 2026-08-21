@@ -955,9 +955,52 @@ the 12 custom variants. Review of all 12 post-repair stored sheets confirms each
 independent custom stored model remains visible and plausibly attached. Native
 Scimitar, Bastard Sword, and Greatsword controls still render their own
 scabbards. This accepts Eastern held-idle, stored, movement, turning, and
-equip/unequip transitions on the default Medium male. A clean commit-bound
-rerun of all three post-repair scenarios remains required before this repair's
-final documentation checkpoint.
+equip/unequip transitions on the default Medium male.
+
+The repair was committed and published as
+`754ae076de0c02b5dd1e62691ba5905aa363432c` (`fix(presentation): replace
+detached eastern donor sheaths`). Before commit, repository validation, all
+1,164 Release domain tests, a clean Release/package build, strict package
+validation, and runtime preflight 124/124 passed. The first clean guarded
+invocation failed safely before launch when the sandbox denied the external
+backup directory; the identical command was rerun with the required permission
+and then used the approved Steam App ID 640820 path. This was an orchestration
+permission failure, not a game or presentation result.
+
+The clean exact-commit runtime artifact is 22,418,712 bytes, SHA-256
+`82BFCA3C009BC6BCA8DC0CC23E0B89985153B727AB7848D64EE520C8BA12C3AE`.
+The 3,568,128-byte DLL SHA-256 is
+`80465348626E6B07570D357FBC89FE1C977E10E88290364B50D135B853C4421F`;
+MVID is `5a93d383-fb11-4e66-8bcd-fdd46f8137ef`. The deployment manifest is
+`runtime-evidence/deployments/20260821T0942300524847Z/deployment.json`,
+SHA-256
+`FA4C3B9EB2A707610A3BA424EDE31E50D9C757ABFB566C5578E82FD8CAD3C83F`.
+The two screenshot runs reused and verified that exact installed artifact.
+
+Clean guarded results are:
+
+- `20260821T0942301027834Z-disposable-eastern-weapons-combat`: PASS 21/21 in
+  90,652 ms; all 30 custom item presentations are sheath-free, each native
+  family donor retains its exact non-null sheath, protected combat mechanics
+  and cleanup pass. Result/runtime-evidence SHA-256 are
+  `C311F1DD7FA4E82230F5183AF7BE3E12883A2A65DF549A4065EBE8A1580BBDAA` /
+  `E43B7D92DAD70A405AE7C3F4A97140B5F70DBAD4A79D8AD3ACB7FB0EF2C84C70`.
+- `20260821T0944317567220Z-weapon-presentation-transition-motion-evidence`:
+  PASS 8/8 in 202,111 ms; custom sheath 48/48 null, native control sheath
+  12/12 retained, 112 PNG/JSON pairs, 448 views, exact cleanup. Result/index
+  SHA-256 are
+  `A1A5E9FD2B952201A5D3C6D8C2E34D5B4AB200BE00FBD2FE8B6E907648D6B435` /
+  `66D5E896557E81F1909D08DEC03C42FA73391D05374B6AAA3D7E517B93DBC912`.
+- `20260821T0948158393773Z-weapon-presentation-evidence`: PASS 9/9 in
+  129,484 ms; 56 exact held/stored PNG/JSON pairs, 224 views, no blank or
+  low-density sheet, exact cleanup. Result/index SHA-256 are
+  `15F2C61FD4F58471254733E493567A176F8B2795E6F19C721B27F50F9C7CD37D` /
+  `3DB3CC5D77DBC850250E9F562DF52E5F1ED89E2B8D9196C2304C03B4D9C7F1E5`.
+
+Direct clean-run review of all 12 Eastern turned-right sheets, all 12 custom
+stored sheets, the exact before/after reproductions, and all three stored native
+donor controls confirms the same acceptance. The dirty-source runs remain
+diagnostic history; the clean exact-commit results above are authoritative.
 
 Mission acceptance remains bounded to the recorded default Medium male states.
 Firearm reload, handgun ready/fire and valid dual wield, armor/cloak

@@ -61,9 +61,9 @@
 - Published transition/locomotion fixture commit:
   `897ec7359cc4d8f9ea1260c04ecccc93c164ce39`
   (`test(presentation): qualify transitions and locomotion`).
-- Current worktree contains only the narrow Eastern custom-clone sheath
-  replacement, its focused/runtime contracts, and mission documentation. It is
-  qualified as dirty-source evidence but not yet committed.
+- Published Eastern clone-only sheath repair commit:
+  `754ae076de0c02b5dd1e62691ba5905aa363432c`
+  (`fix(presentation): replace detached eastern donor sheaths`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
@@ -411,7 +411,7 @@ states, but it exposed detached inherited donor scabbards on custom Katana and
 Nodachi rear views. Eastern V12 visual acceptance is therefore superseded by
 the repair qualification below.
 
-## Eastern custom-clone sheath repair awaiting publication
+## Eastern custom-clone sheath repair published and clean-qualified
 
 The current narrow change clears `m_WeaponSheathModel` only on each validated
 custom Eastern `WeaponVisualParameters` clone. All 12 variants already own a
@@ -446,21 +446,42 @@ DLL SHA-256 is
 
 Before/after review confirms all detached scabbards are gone, every custom
 stored model remains present, and native donor-control scabbards remain
-attached. These runs are dirty-source qualification bound by exact artifact and
-DLL hashes; clean commit-bound reruns are still required after publication.
+attached. Those dirty-source runs are superseded by clean exact-commit
+qualification of published commit
+`754ae076de0c02b5dd1e62691ba5905aa363432c`.
+
+The clean artifact is 22,418,712 bytes, SHA-256
+`82BFCA3C009BC6BCA8DC0CC23E0B89985153B727AB7848D64EE520C8BA12C3AE`;
+the 3,568,128-byte DLL SHA-256 is
+`80465348626E6B07570D357FBC89FE1C977E10E88290364B50D135B853C4421F`
+with MVID `5a93d383-fb11-4e66-8bcd-fdd46f8137ef`. Exact clean runs are:
+
+- `20260821T0942301027834Z-disposable-eastern-weapons-combat`: PASS 21/21;
+  result SHA-256
+  `C311F1DD7FA4E82230F5183AF7BE3E12883A2A65DF549A4065EBE8A1580BBDAA`.
+- `20260821T0944317567220Z-weapon-presentation-transition-motion-evidence`:
+  PASS 8/8; 112 PNG/JSON pairs, 448 views, custom sheaths null 48/48 and
+  native controls retained 12/12; result/index SHA-256
+  `A1A5E9FD2B952201A5D3C6D8C2E34D5B4AB200BE00FBD2FE8B6E907648D6B435` /
+  `66D5E896557E81F1909D08DEC03C42FA73391D05374B6AAA3D7E517B93DBC912`.
+- `20260821T0948158393773Z-weapon-presentation-evidence`: PASS 9/9; 56
+  held/stored PNG/JSON pairs, 224 views; result/index SHA-256
+  `15F2C61FD4F58471254733E493567A176F8B2795E6F19C721B27F50F9C7CD37D` /
+  `3DB3CC5D77DBC850250E9F562DF52E5F1ED89E2B8D9196C2304C03B4D9C7F1E5`.
+
+Direct clean review covered all 12 Eastern turned-right sheets, all 12 custom
+stored sheets, exact before/after defect frames, and all three stored native
+donor controls. No detached sheath remains; custom stored models and native
+donor sheaths remain present. No save API was called.
 
 ## Next concrete actions
 
-1. Commit and publish the qualified clone-only Eastern sheath replacement,
-   rebuild from the clean commit, and rerun the Eastern combat, transition/
-   motion, and static stored/held scenarios so evidence binds to that exact
-   commit.
-2. Add firearm reload visual sampling without changing reload mechanics, then
+1. Add firearm reload visual sampling without changing reload mechanics, then
    exercise handgun ready/fire and valid dual-wield presentation.
-3. Construct narrower request-local female Medium, Small, and Enlarged visual
+2. Construct narrower request-local female Medium, Small, and Enlarged visual
    fixtures and add representative armor/cloak coverage without relying on
    manual save mutation.
-4. Run the complete final runtime matrix, select the next unused patch version
+3. Run the complete final runtime matrix, select the next unused patch version
    only after all visual rows qualify, produce and hash the final clean package,
    update all version surfaces, and publish the remaining coherent commits.
 

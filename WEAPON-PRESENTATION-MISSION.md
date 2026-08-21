@@ -86,7 +86,8 @@ Default-Medium-male guarded evidence currently covers held, independently
 stored, family-appropriate ready/attack states, locomotion, body-relative
 turning, and equip/unequip transitions. Eastern custom clones use their complete
 independent stored prefabs without also recreating a donor sheath; native donor
-blueprints retain their own sheaths unchanged. Remaining runtime matrix work is
-firearm reload, handgun ready/fire and valid dual wield, armor/cloak interaction,
-and female, Small, and Enlarged fixtures. Version remains `0.0.88` until those
-rows and the final package qualify.
+blueprints retain their own sheaths unchanged. That repair is published at
+`754ae076de0c02b5dd1e62691ba5905aa363432c` and clean-qualified by E5/V15/V16.
+Remaining runtime matrix work is firearm reload, handgun ready/fire and valid
+dual wield, armor/cloak interaction, and female, Small, and Enlarged fixtures.
+Version remains `0.0.88` until those rows and the final package qualify.

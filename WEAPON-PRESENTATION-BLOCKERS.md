@@ -24,9 +24,9 @@ None as of 2026-08-21.
   are sheath-free, all native family donors retain their sheaths, every custom
   stored prefab remains visible, and all 12 Eastern variants are accepted in
   the captured default-Medium-male stored/motion/transition states. Clean
-  commit-bound repair reruns remain routine work. Firearm reload, handgun ready/
-  fire and valid dual wield, armor or cloak interaction, female, Small, and
-  Enlarged coverage remain ordinary open work.
+  exact-commit E5/V15/V16 reruns now supersede those dirty-source repair runs.
+  Firearm reload, handgun ready/fire and valid dual wield, armor or cloak
+  interaction, female, Small, and Enlarged coverage remain ordinary open work.
 - Native donor axes have been measured by exact live controls (`V2`), and all
   production authored assets now expose complete secondary-axis markers under
   a shared fail-closed contract. Branched-spears additionally have
@@ -64,8 +64,8 @@ without moving the equipment root. A later clean transition matrix proved that
 retaining the donor sheath on custom clones could render it detached. Because
 all 12 variants have complete independent stored prefabs, the new narrow repair
 clears the sheath only on custom clones; native donors remain unchanged.
-Post-repair E4/V13/V14 pass structurally and visually, with clean commit-bound
-reruns still pending. The original transition matrix continued responsively
+Post-repair E4/V13/V14 pass structurally and visually; clean exact-commit
+E5/V15/V16 now supersede them. The original transition matrix continued responsively
 after its wrapper deadline, flushed a complete structured PASS, and exited
 automatically; the later clean run supersedes that wrapper race.
 No protected save was selected or overwritten, and no launch-environment safety
