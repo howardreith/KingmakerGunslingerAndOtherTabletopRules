@@ -590,3 +590,52 @@ Acceptance is deliberately bounded to held-idle, stored, combat-ready, and
 sampled acted-fire states on the default Medium male. Reload, locomotion,
 turning, equip/unequip transitions, armor/cloak, female, Small, and Enlarged
 coverage remain open and are not inferred from these captures.
+
+## 2026-08-21 - guarded branched-spear thrust diagnostic checkpoint
+
+Published commit `4e66d30afb1030849f7dcedb61669f84d79bf7bb`
+(`test(presentation): capture branched-spear thrust frames`) adds the guarded
+`weapon-presentation-spear-motion-evidence` scenario for Classic, Thorn,
+Crown, and native Longspear. The request is restricted to
+`KMG_AUTOMATION_WORKING`, uses the disposable request-local combat pair, never
+calls a save API, and launches through Steam App ID 640820. Each case records
+combat-ready plus nine native-attack samples from four labelled views.
+
+The instrumentation resolves custom physical endpoints from renderer-bound
+`Tip`/`Butt` markers and native endpoints from the actual
+`TH_LongspearKnight1` renderer's longitudinal positive-`Y` head. It records
+target-relative endpoint projections, head-face normal, dominant-hand grip
+distance, and support-hand target distance. A source-review tightening first
+failed at
+`20260821T0443200507649Z-weapon-presentation-spear-motion-evidence` because
+Classic update 1 preceded the acted event and was therefore not yet a thrust.
+The final assertion correctly retains every setup sample but gates the thrust
+claim on all acted samples leading with the physical tip.
+
+Final evidence is
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T0448131191263Z-weapon-presentation-spear-motion-evidence/`.
+It passes 6/6 with 40 PNG/JSON pairs, 160 views, all four native commands
+acted, 14/14 acted endpoint samples tip-leading, exact cleanup, version
+`0.0.88`, and automatic exit. Result/index SHA-256 are
+`4CC5BA985C01D4E6960C5711859486206C12AE6406BD0FF6BD7D4787E099D664`
+and `BAE8D79ED48118737FA938D09262F01EB578F6DAEE855CE294A62A74EAF3FE76`.
+The exact package/DLL SHA-256 values are
+`F65B2036F42435D41865A63D997CBE5F65404ACEF9EDAFA00F6BCF08D62CEEE6`
+and `4969DC1CC84D6B699C8CF89F4AC8832603264691447FF0210C795AB45F86CC65`.
+
+The current physical spearhead polarity is therefore accepted for the
+captured thrust states and must not be reversed. The remaining objective
+defects are:
+
+- dominant-hand-to-grip distance is a constant `0.105720 m` for all three
+  custom variants versus `0.000000 m` for the native control;
+- support-hand-to-target averages are Classic `0.280264 m`, Thorn
+  `0.287448 m`, Crown `0.279584 m`, versus native `0.127318 m`;
+- V5 static sheets retain a near-horizontal shoulder-spanning custom back
+  mount while native Longspear uses a diagonal, near-vertical stored mount;
+- branch roll and clipping are captured but remain open pending the
+  mesh-grounded source-frame and donor-basis calibration.
+
+Repository validation, all 1,164 Release domain tests, clean Release build,
+strict package validation, and guarded Steam runtime qualification passed.
+`KMG_AUTOMATION_BASELINE` was untouched and no unsafe dialog appeared.

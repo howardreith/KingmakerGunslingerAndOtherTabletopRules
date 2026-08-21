@@ -34,6 +34,12 @@
 - Published long-gun calibration implementation commit:
   `b672406ebbb8af8340d723d074ff8a69bd0ffe25`
   (`fix(presentation): calibrate long-gun held and stored rigs`).
+- Published long-gun qualification documentation commit:
+  `3366a052b2037bbd0d796b776bca8feef68b0dce`
+  (`docs(presentation): record calibrated long-gun qualification`).
+- Published branched-spear thrust diagnostic commit:
+  `4e66d30afb1030849f7dcedb61669f84d79bf7bb`
+  (`test(presentation): capture branched-spear thrust frames`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
@@ -183,14 +189,45 @@ independent stored presentation for the captured default-Medium-male states.
 Reload, locomotion/turning, transitions, armor/cloak, female, Small, and
 Enlarged coverage remain open.
 
+## Qualified branched-spear thrust diagnostic
+
+Commit `4e66d30afb1030849f7dcedb61669f84d79bf7bb` is published. The guarded
+`weapon-presentation-spear-motion-evidence` scenario covers Classic, Thorn,
+Crown, and native Longspear in combat-ready plus nine fixed native-attack
+samples on a disposable default Medium male. It resolves physical endpoints
+from renderer-bound custom `Tip`/`Butt` markers and the native
+`TH_LongspearKnight1` mesh, and fails unless every acted sample leads with the
+physical tip.
+
+Repository validation, all 1,164 Release domain tests, clean Release build,
+strict package validation, and `Build-Local.ps1` pass. The exact package/DLL
+SHA-256 values are
+`F65B2036F42435D41865A63D997CBE5F65404ACEF9EDAFA00F6BCF08D62CEEE6`
+and `4969DC1CC84D6B699C8CF89F4AC8832603264691447FF0210C795AB45F86CC65`.
+Final guarded Steam evidence passes 6/6 at
+`20260821T0448131191263Z-weapon-presentation-spear-motion-evidence`: 40
+PNG/JSON pairs, 160 views, 14/14 acted samples tip-leading, exact cleanup, and
+no save call. Result/index SHA-256 are
+`4CC5BA985C01D4E6960C5711859486206C12AE6406BD0FF6BD7D4787E099D664`
+and `BAE8D79ED48118737FA938D09262F01EB578F6DAEE855CE294A62A74EAF3FE76`.
+
+This evidence disproves the stale current-source polarity hypothesis: local
+source/donor axis labels cannot be compared without the live attachment and
+animation transforms, and every acted custom thrust currently leads with the
+physical spearhead. The actual captured defects are a constant `0.105720 m`
+dominant-hand-to-grip offset, custom support-target averages of
+`0.279584..0.287448 m` versus native `0.127318 m`, and the V5 near-horizontal
+shoulder-spanning stored presentation. Preserve the working physical polarity
+while repairing grip, support, roll, and the independent back frame.
+
 ## Next concrete actions
 
-1. Inspect the actual branched-spear production mesh and historical authoring
-   work, then identify physical head, butt, grip, support, and branch-face axes
-   from renderer geometry rather than the current assumed coordinates.
-2. Derive held and independently stored frames from the measured native
-   Longspear donor, regenerate the spear bundle deterministically, and qualify
-   held/stored plus real thrust motion with the guarded fixture.
+1. Add mesh-grounded source markers for physical head, butt, grip, support,
+   and branch-face normal to the project-owned spear generator, retaining the
+   V7-proven head polarity.
+2. Derive held and independently stored frames from the measured live native
+   Longspear attachment transforms, regenerate deterministically, and qualify
+   the exact package with static V5-style and thrust V7-style evidence.
 3. Continue through Eastern held and Eastern stored calibration without
    waiting for checkpoint confirmation.
 4. Before final acceptance, extend runtime coverage to reload,
@@ -199,9 +236,11 @@ Enlarged coverage remain open.
 
 ## Supported hypotheses requiring donor confirmation
 
-- Branched-spear physical head is source `+Z`, source head normal is `+Y`, and
-  current held maps the physical head to `-Y` while the measured donor head is
-  `+Y`. This polarity defect is now proven; renderer-bound validation remains.
+- Branched-spear physical head is source `+Z` and source head normal is `+Y`.
+  Current held maps the local physical head to root `-Y`, but V7 proves all
+  acted custom thrust samples lead toward the target. Preserve that live
+  polarity; repair the measured grip/support offsets and independent stored
+  basis without inferring world behavior from local-axis labels alone.
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
   side `-Z`. Identity presentation is therefore not a valid basis conversion.
