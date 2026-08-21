@@ -471,6 +471,7 @@ try {
         'disposable-brown-fur-native-cast',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-spear-motion-evidence',
+        'weapon-presentation-reload-evidence',
         'working-save-urban-barbarian-prepare',
         'working-save-urban-barbarian-off-verify-cleanup',
         'working-save-brown-fur-prepare',

@@ -131,6 +131,8 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-eastern-motion-evidence";
             const string transitionMotionIdentity =
                 "weapon-presentation-transition-motion-evidence";
+            const string reloadIdentity =
+                "weapon-presentation-reload-evidence";
             int workingSaveCompletion = runner.IndexOf(
                 "if (_workingSaveSmoke.Complete)", StringComparison.Ordinal);
             int evidenceExecution = runner.IndexOf(
@@ -142,11 +144,15 @@ namespace KingmakerGunslinger.DomainTests
             int transitionMotionEvidenceExecution = runner.IndexOf(
                 ".BeginTransitionMotion(_context, _request)",
                 StringComparison.Ordinal);
+            int reloadEvidenceExecution = runner.IndexOf(
+                "WeaponPresentationEvidenceScenario.BeginReload(",
+                StringComparison.Ordinal);
             Assertions.True(catalog.Contains(identity) &&
                 catalog.Contains(motionIdentity) &&
                 catalog.Contains(spearMotionIdentity) &&
                 catalog.Contains(easternMotionIdentity) &&
                 catalog.Contains(transitionMotionIdentity) &&
+                catalog.Contains(reloadIdentity) &&
                 runner.Contains("WeaponPresentationEvidenceScenario.Begin(") &&
                 runner.Contains("_weaponPresentationEvidence.Poll()") &&
                 runner.Contains("if (_weaponPresentationEvidence.Complete)") &&
@@ -159,10 +165,16 @@ namespace KingmakerGunslinger.DomainTests
                     "_weaponPresentationTransitionMotionEvidence.Poll()") &&
                 runner.Contains(
                     "if (_weaponPresentationTransitionMotionEvidence.Complete)") &&
+                runner.Contains(
+                    "WeaponPresentationEvidenceScenario.BeginReload(") &&
+                runner.Contains("_weaponPresentationReloadEvidence.Poll()") &&
+                runner.Contains(
+                    "if (_weaponPresentationReloadEvidence.Complete)") &&
                 workingSaveCompletion >= 0 &&
                 evidenceExecution > workingSaveCompletion &&
                 motionEvidenceExecution > workingSaveCompletion &&
                 transitionMotionEvidenceExecution > workingSaveCompletion &&
+                reloadEvidenceExecution > workingSaveCompletion &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||") &&
                 request.Contains(
@@ -173,6 +185,8 @@ namespace KingmakerGunslinger.DomainTests
                     "RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence ||") &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationTransitionMotionEvidence ||") &&
+                request.Contains(
+                    "RuntimeTestScenarioCatalog.WeaponPresentationReloadEvidence ||") &&
                 automation.Contains("'" + identity + "' = [pscustomobject]") &&
                 automation.Contains("'" + motionIdentity +
                     "' = [pscustomobject]") &&
@@ -182,11 +196,14 @@ namespace KingmakerGunslinger.DomainTests
                     "' = [pscustomobject]") &&
                 automation.Contains("'" + transitionMotionIdentity +
                     "' = [pscustomobject]") &&
+                automation.Contains("'" + reloadIdentity +
+                    "' = [pscustomobject]") &&
                 preflight.Contains("'" + identity + "'") &&
                 preflight.Contains("'" + motionIdentity + "'") &&
                 preflight.Contains("'" + spearMotionIdentity + "'") &&
                 preflight.Contains("'" + easternMotionIdentity + "'") &&
                 preflight.Contains("'" + transitionMotionIdentity + "'") &&
+                preflight.Contains("'" + reloadIdentity + "'") &&
                 automation.Contains(
                     "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
                 automation.Contains(
@@ -253,6 +270,30 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-transition-motion-request-cleanup" })
                 Assertions.True(scenario.Contains(token),
                     "Transition/movement evidence omitted " + token + ".");
+
+            foreach (string token in new[] {
+                "BeginReload", "ReloadSession", "ReloadCaptureUpdates",
+                "120, 160, 200, 220, 240",
+                "BuildCases().Where(IsFirearm)",
+                "ProductionVariants.Take(7)",
+                "BlueprintBootstrap.ReloadTestMusketAbility",
+                "ReloadTestMusketRuntime.Evaluate", "new AbilityData(",
+                "new UnitUseAbility(", "_reloadCommand.IgnoreCooldown(",
+                "_actor.Commands.Run(_reloadCommand)",
+                "_reloadCommand.Start()", "_reloadCommand.Tick()",
+                "_reloadCommand.ExecutionProcess.Tick()",
+                "reload-acted-update-", "ActedCaptureTaken",
+                "ReloadRuntimeDiagnostics.Loaded",
+                "FirearmDischargeRuntimeDiagnostics.Fired",
+                "ResolveFirearmDefinition(value).Reload.RoundsPerAction",
+                "RestoreInventoryCount", "reload-ready",
+                "reload-update-", "weapon-presentation-reload-index.json",
+                "weapon-presentation-native-reload-command",
+                "weapon-presentation-reload-action-contract",
+                "weapon-presentation-reload-transaction-nonregression",
+                "weapon-presentation-reload-request-cleanup" })
+                Assertions.True(scenario.Contains(token),
+                    "Reload visual evidence omitted " + token + ".");
 
             foreach (string token in new[] {
                 "PistolService", "PistolDuelist", "PistolLastWord",

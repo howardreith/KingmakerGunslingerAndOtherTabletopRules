@@ -8,12 +8,17 @@ using System.Security.Cryptography;
 using System.Text;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.Utility;
 using Kingmaker.View.Equipment;
 using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Assets;
@@ -21,6 +26,7 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Firing;
+using KingmakerGunslinger.Reloading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -125,6 +131,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             1, 4, 8, 12, 18, 24, 36, 60, 96
         };
 
+        private static readonly int[] ReloadCaptureUpdates =
+        {
+            1, 4, 8, 12, 18, 24, 36, 60, 96, 120, 160, 200, 220, 240
+        };
+
         private sealed class NativeControlSpec
         {
             internal NativeControlSpec(string label, string typeGuid,
@@ -188,6 +199,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             ModContext context, RuntimeTestRequest request)
         {
             return new TransitionMotionSession(context, request);
+        }
+
+        internal static ReloadSession BeginReload(ModContext context,
+            RuntimeTestRequest request)
+        {
+            return new ReloadSession(context, request);
         }
 
         /// <summary>
@@ -670,6 +687,1014 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Diagnostics = _diagnostics,
                     Warnings = _warnings,
                     ExceptionSummary = string.Empty,
+                    EvidenceFiles = _evidenceFiles,
+                    AutomaticExitRequested = _request.ExitAfterCompletion,
+                    EvidenceDirectory = _request.EvidenceDirectory
+                };
+                Complete = true;
+            }
+        }
+
+        private sealed class ReloadOutcome
+        {
+            internal string Variant;
+            internal EffectiveReloadAction ExpectedAction;
+            internal int Capacity;
+            internal int PlannedRounds;
+            internal bool AbilityAvailable;
+            internal bool Targetable;
+            internal bool CommandCanStart;
+            internal bool CommandInstalled;
+            internal bool CommandStarted;
+            internal bool CommandRunningObserved;
+            internal bool AnimationObserved;
+            internal bool AnimationActedObserved;
+            internal bool ActedCaptureTaken;
+            internal bool ExecutionProcessObserved;
+            internal bool ExecutionProcessEndedObserved;
+            internal bool CommandFinishedBeforeInterrupt;
+            internal string RuntimeActionType;
+            internal bool RequireFullRoundAction;
+            internal int ExplicitCommandTicks;
+            internal int ExplicitProcessTicks;
+            internal long AttemptsDelta;
+            internal long LoadedDelta;
+            internal long RejectedDelta;
+            internal long ReloadFaultDelta;
+            internal long FiredDelta;
+            internal long DischargeFaultDelta;
+            internal int LoadedRoundsAfter;
+            internal int PowderConsumed;
+            internal int BallsConsumed;
+            internal string CommandResult;
+            internal string AnimationType;
+        }
+
+        /// <summary>
+        /// Request-gated visual sampling of the production Reload Firearm action.
+        /// It equips each real firearm variant on one disposable live humanoid,
+        /// runs the granted production ability through native UnitUseAbility, and
+        /// restores the exact shared-ammunition counts before completion. It never
+        /// changes a blueprint and never calls a save API.
+        /// </summary>
+        internal sealed class ReloadSession
+        {
+            private const int MaximumSettleUpdates = 300;
+            private const int ReadySettleUpdates = 30;
+            private readonly ModContext _context;
+            private readonly RuntimeTestRequest _request;
+            private readonly DateTime _started = DateTime.UtcNow;
+            private readonly List<RuntimeTestAssertion> _assertions =
+                new List<RuntimeTestAssertion>();
+            private readonly List<string> _diagnostics = new List<string>();
+            private readonly List<string> _warnings = new List<string>();
+            private readonly List<string> _evidenceFiles = new List<string>();
+            private readonly List<ReloadOutcome> _outcomes =
+                new List<ReloadOutcome>();
+            private readonly JArray _records = new JArray();
+            private object _allUnits;
+            private object _party;
+            private object[] _unitsBefore = new object[0];
+            private object[] _partyBefore = new object[0];
+            private Player _player;
+            private UnitEntityData _actor;
+            private BlueprintUnit _actorBlueprint;
+            private Renderer[] _fixtureBodyRenderers = new Renderer[0];
+            private EvidenceCase[] _cases = new EvidenceCase[0];
+            private ItemEntityWeapon _equipped;
+            private bool _equippedFirearmStateSet;
+            private BlueprintAbility _reloadBlueprint;
+            private Ability _reloadAbility;
+            private AbilityData _abilityData;
+            private UnitUseAbility _reloadCommand;
+            private BlueprintItem _powder;
+            private BlueprintItem _ball;
+            private int _powderBefore;
+            private int _ballBefore;
+            private int _ammunitionSeed;
+            private bool _inventoryCaptured;
+            private bool _inventoryRestored;
+            private Transform _removedPresentation;
+            private int _caseIndex;
+            private int _phase;
+            private int _settleUpdates;
+            private int _reloadUpdates;
+            private int _captureScheduleIndex;
+            private int _captured;
+            private int _viewCount;
+            private EffectiveReloadAction _expectedAction;
+            private int _plannedRounds;
+            private bool _abilityAvailable;
+            private bool _targetable;
+            private bool _commandCanStart;
+            private bool _commandInstalled;
+            private bool _commandStarted;
+            private bool _commandRunningObserved;
+            private bool _animationObserved;
+            private bool _animationActedObserved;
+            private bool _actedCaptureTaken;
+            private bool _executionProcessObserved;
+            private bool _executionProcessEndedObserved;
+            private UnitCommand.CommandType _runtimeActionType;
+            private bool _requireFullRoundAction;
+            private int _explicitCommandTicks;
+            private int _explicitProcessTicks;
+            private long _attemptsBefore;
+            private long _loadedBefore;
+            private long _rejectedBefore;
+            private long _reloadFaultsBefore;
+            private long _firedBefore;
+            private long _dischargeFaultsBefore;
+            private int _powderBeforeCommand;
+            private int _ballBeforeCommand;
+            private bool _cleanupStarted;
+            private bool _indexWritten;
+            private string _stage = "resolve-working-save-anchor";
+            private string _exceptionSummary = string.Empty;
+
+            internal ReloadSession(ModContext context,
+                RuntimeTestRequest request)
+            {
+                if (context == null) throw new ArgumentNullException("context");
+                if (request == null) throw new ArgumentNullException("request");
+                _context = context;
+                _request = request;
+            }
+
+            internal bool Complete { get; private set; }
+            internal RuntimeTestResult Result { get; private set; }
+
+            internal void Poll()
+            {
+                if (Complete) return;
+                try
+                {
+                    if (_cleanupStarted)
+                    {
+                        PollCleanup();
+                        return;
+                    }
+                    if (_phase == 0)
+                    {
+                        Initialize();
+                        _phase = 1;
+                        return;
+                    }
+                    if (_phase == 1)
+                    {
+                        if (EquipCurrent())
+                        {
+                            _phase = 2;
+                            _settleUpdates = 0;
+                        }
+                        return;
+                    }
+                    if (_phase == 2)
+                    {
+                        PollReloadReady();
+                        return;
+                    }
+                    if (_phase == 3)
+                    {
+                        PollReloadSequence();
+                        return;
+                    }
+                    PollRemoval();
+                }
+                catch (Exception exception)
+                {
+                    _exceptionSummary = "stage=" + _stage + ";" + exception;
+                    Add(_assertions,
+                        "weapon-presentation-reload-evidence-exception",
+                        "no exception", _exceptionSummary, false,
+                        "guarded request-local production reload fixture");
+                    BeginCleanup();
+                }
+            }
+
+            private void Initialize()
+            {
+                _allUnits = Game.Instance.State.Units.All;
+                _party = Game.Instance.Player.Party;
+                _unitsBefore = Snapshot(_allUnits);
+                _partyBefore = Snapshot(_party);
+                UnitEntityData areaAnchor = _partyBefore.OfType<UnitEntityData>()
+                    .FirstOrDefault(value => value != null &&
+                        value.HoldingState != null && value.View != null);
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save has no live party-area anchor.");
+
+                _stage = "spawn-disposable-reload-actor";
+                _actorBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                _actorBlueprint.name =
+                    "KMG_Runtime_Weapon_Presentation_Reload_Actor";
+                _actorBlueprint.IsCheater = true;
+                Vector3 position = NearestNavigable(areaAnchor.Position +
+                    new Vector3(4f, 0f, 4f));
+                _actor = Game.Instance.EntityCreator.SpawnUnit(_actorBlueprint,
+                    position, Quaternion.identity, areaAnchor.HoldingState);
+                Game.Instance.EntityCreator.Tick();
+                if (_actor == null || _actor.View == null ||
+                    _actor.View.Data == null ||
+                    _actor.View.HandsEquipment == null)
+                    throw new InvalidOperationException(
+                        "Native spawning did not attach the disposable reload view.");
+
+                _actor.Descriptor.State.Immortality.Retain();
+                ClearHand(_actor, true);
+                ClearHand(_actor, false);
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(true);
+
+                _cases = BuildCases().Where(IsFirearm).ToArray();
+                string[] expected = ProductionVariants.Take(7).ToArray();
+                if (_cases.Length != expected.Length ||
+                    !_cases.Select(value => value.Variant)
+                        .SequenceEqual(expected))
+                    throw new InvalidOperationException(
+                        "The reload catalog is not the exact seven production firearm variants.");
+
+                _reloadBlueprint = BlueprintBootstrap.ReloadTestMusketAbility;
+                _powder = BlueprintBootstrap.BasicAmmunition.BlackPowder;
+                _ball = BlueprintBootstrap.BasicAmmunition.LeadBall;
+                _player = Game.Instance.Player;
+                if (_reloadBlueprint == null || _powder == null || _ball == null ||
+                    _player == null || _player.Inventory == null)
+                    throw new InvalidOperationException(
+                        "Production reload ability or shared-ammunition dependencies are unavailable.");
+                _actor.Descriptor.AddFact(_reloadBlueprint);
+                _reloadAbility = _actor.Descriptor.Abilities.GetAbility(
+                    _reloadBlueprint);
+                if (_reloadAbility == null)
+                    throw new InvalidOperationException(
+                        "Kingmaker did not retain the granted production Reload Firearm fact.");
+
+                _powderBefore = _player.Inventory.Count(_powder);
+                _ballBefore = _player.Inventory.Count(_ball);
+                _inventoryCaptured = true;
+                _ammunitionSeed = _cases.Sum(value =>
+                    ResolveFirearmDefinition(value).Reload.RoundsPerAction);
+                _player.Inventory.Add(_powder, _ammunitionSeed);
+                _player.Inventory.Add(_ball, _ammunitionSeed);
+                if (_player.Inventory.Count(_powder) !=
+                        _powderBefore + _ammunitionSeed ||
+                    _player.Inventory.Count(_ball) !=
+                        _ballBefore + _ammunitionSeed)
+                    throw new InvalidOperationException(
+                        "Request-local loose ammunition could not be seeded exactly.");
+                _diagnostics.Add("reloadFixture=variants:" + _cases.Length +
+                    ";ammunitionSeed:" + _ammunitionSeed +
+                    ";powderBefore:" + _powderBefore + ";ballBefore:" +
+                    _ballBefore + ";abilityAnimation:" +
+                    _reloadBlueprint.Animation + ";needEquipWeapons:" +
+                    _reloadBlueprint.NeedEquipWeapons);
+            }
+
+            private bool EquipCurrent()
+            {
+                if (_fixtureBodyRenderers.Length == 0)
+                {
+                    _stage = "settle-empty-handed-reload-body-renderers";
+                    Game.Instance.EntityCreator.Tick();
+                    _fixtureBodyRenderers = _actor.View
+                        .GetComponentsInChildren<Renderer>(true).Where(renderer =>
+                            renderer != null && renderer.enabled &&
+                            renderer.gameObject.activeInHierarchy).ToArray();
+                    if (_fixtureBodyRenderers.Length == 0)
+                    {
+                        _settleUpdates++;
+                        if (_settleUpdates < MaximumSettleUpdates) return false;
+                        throw new InvalidOperationException(
+                            "The disposable reload actor has no active body renderers.");
+                    }
+                }
+
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "equip-reload-ready-" + value.Variant;
+                _actor.Commands.InterruptAll(true);
+                _equipped = new ItemEntityWeapon(value.Item);
+                _actor.Body.PrimaryHand.InsertItem(_equipped);
+                if (!ReferenceEquals(_actor.Body.PrimaryHand.MaybeWeapon,
+                        _equipped))
+                    throw new InvalidOperationException(value.Variant +
+                        " did not remain in the primary hand.");
+                FirearmRuntimeState.Service.Set(_equipped,
+                    new FirearmState(FirearmState.CurrentSchemaVersion,
+                        0, null, FirearmCondition.Normal));
+                _equippedFirearmStateSet = true;
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(true);
+                return true;
+            }
+
+            private void PollReloadReady()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "settle-reload-ready-" + value.Variant;
+                Game.Instance.EntityCreator.Tick();
+                if (_actor.View.AnimationManager != null)
+                    _actor.View.AnimationManager.Tick();
+                WeaponVisualParameters visual = value.Item.VisualParameters;
+                if (visual == null || visual.Model == null)
+                    throw new InvalidOperationException(value.Variant +
+                        " has no effective held visual model.");
+                string role;
+                Transform model = ResolveActivePresentation(_actor, visual,
+                    "reload-ready", out role);
+                _settleUpdates++;
+                if (!Renderable(model) ||
+                    _settleUpdates < ReadySettleUpdates)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(value.Variant +
+                        " did not reach a renderable reload-ready presentation after " +
+                        _settleUpdates + " updates;role=" + role + ".");
+                }
+
+                CaptureReloadRecord(value, model, visual, role,
+                    "reload-ready", 0,
+                    "live held evidence before production Reload Firearm command");
+                ReloadTestMusketAvailability availability =
+                    ReloadTestMusketRuntime.Evaluate(_actor.Descriptor,
+                        BlueprintBootstrap.ProductionFirearms.Musket.Item,
+                        _powder, _ball);
+                if (!availability.IsAvailable || availability.Plan == null ||
+                    !ReferenceEquals(availability.Weapon, _equipped))
+                    throw new InvalidOperationException(value.Variant +
+                        " production reload evaluation was unavailable or resolved a different item: " +
+                        availability + ".");
+                _expectedAction = availability.Plan.Action;
+                _plannedRounds = availability.Plan.RoundsLoadable;
+                _abilityData = new AbilityData(_reloadAbility);
+                var target = new TargetWrapper(_actor);
+                _abilityAvailable = _abilityData.IsAvailable;
+                _targetable = _abilityData.CanTarget(target);
+                _runtimeActionType = _abilityData.RuntimeActionType;
+                _requireFullRoundAction = _abilityData.RequireFullRoundAction;
+                _reloadCommand = new UnitUseAbility(_abilityData, target);
+                _commandCanStart = _reloadCommand.CanStart;
+                if (!_abilityAvailable || !_targetable || !_commandCanStart)
+                    throw new InvalidOperationException(value.Variant +
+                        " production Reload Firearm command was not ready: available=" +
+                        _abilityAvailable + ";targetable=" + _targetable +
+                        ";canStart=" + _commandCanStart + ".");
+
+                _attemptsBefore = ReloadRuntimeDiagnostics.Attempts;
+                _loadedBefore = ReloadRuntimeDiagnostics.Loaded;
+                _rejectedBefore = ReloadRuntimeDiagnostics.Rejected;
+                _reloadFaultsBefore = ReloadRuntimeDiagnostics.Faults;
+                _firedBefore = FirearmDischargeRuntimeDiagnostics.Fired;
+                _dischargeFaultsBefore = FirearmDischargeRuntimeDiagnostics.Faults;
+                _powderBeforeCommand = _player.Inventory.Count(_powder);
+                _ballBeforeCommand = _player.Inventory.Count(_ball);
+                _reloadCommand.IgnoreCooldown(TimeSpan.Zero);
+                _actor.Commands.Run(_reloadCommand);
+                _reloadCommand.Start();
+                ObserveCommand();
+                if (!_commandStarted || !_commandRunningObserved)
+                    throw new InvalidOperationException(value.Variant +
+                        " native UnitUseAbility failed to enter its running state: started=" +
+                        _commandStarted + ";running=" +
+                        _commandRunningObserved + ";result=" +
+                        _reloadCommand.Result + ".");
+                _reloadUpdates = 0;
+                _captureScheduleIndex = 0;
+                _phase = 3;
+            }
+
+            private void PollReloadSequence()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "sample-production-reload-" + value.Variant;
+                Game.Instance.EntityCreator.Tick();
+                if (_actor.View.AnimationManager != null)
+                    _actor.View.AnimationManager.Tick();
+                ObserveCommand();
+                if (_reloadCommand.IsRunning &&
+                    _reloadCommand.Animation != null &&
+                    _reloadCommand.Animation.IsActed &&
+                    _reloadCommand.Result == UnitCommand.ResultType.None)
+                {
+                    _reloadCommand.Tick();
+                    _explicitCommandTicks++;
+                }
+                if (_reloadCommand.ExecutionProcess != null &&
+                    !_reloadCommand.ExecutionProcess.IsEnded)
+                {
+                    _reloadCommand.ExecutionProcess.Tick();
+                    _explicitProcessTicks++;
+                }
+                ObserveCommand();
+                _reloadUpdates++;
+
+                if (_animationActedObserved && !_actedCaptureTaken)
+                {
+                    WeaponVisualParameters actedVisual =
+                        value.Item.VisualParameters;
+                    string actedRole;
+                    Transform actedModel = ResolveActivePresentation(_actor,
+                        actedVisual, "reload-acted", out actedRole);
+                    if (!Renderable(actedModel))
+                        throw new InvalidOperationException(value.Variant +
+                            " lost its renderable held model at the acted reload frame.");
+                    CaptureReloadRecord(value, actedModel, actedVisual,
+                        actedRole, "reload-acted-update-" +
+                        _reloadUpdates.ToString("000"), _reloadUpdates,
+                        "event-aligned acted frame from the live production Reload Firearm animation");
+                    _actedCaptureTaken = true;
+                }
+
+                if (_captureScheduleIndex < ReloadCaptureUpdates.Length &&
+                    _reloadUpdates >= ReloadCaptureUpdates[
+                        _captureScheduleIndex])
+                {
+                    WeaponVisualParameters visual = value.Item.VisualParameters;
+                    string role;
+                    Transform model = ResolveActivePresentation(_actor, visual,
+                        "reload", out role);
+                    if (!Renderable(model))
+                        throw new InvalidOperationException(value.Variant +
+                            " lost its renderable held model during reload update " +
+                            _reloadUpdates + ".");
+                    string state = "reload-update-" +
+                        _reloadUpdates.ToString("000");
+                    CaptureReloadRecord(value, model, visual, role, state,
+                        _reloadUpdates,
+                        "fixed live production UnitUseAbility reload-animation sample");
+                    _captureScheduleIndex++;
+                }
+
+                if (_captureScheduleIndex < ReloadCaptureUpdates.Length) return;
+                bool deliveryObserved = ReloadRuntimeDiagnostics.Attempts -
+                    _attemptsBefore >= 1;
+                if (!deliveryObserved &&
+                    _reloadUpdates < MaximumSettleUpdates) return;
+                RecordReloadOutcome(value);
+                string removalRole;
+                _removedPresentation = ResolveActivePresentation(_actor,
+                    value.Item.VisualParameters, "reload", out removalRole);
+                _diagnostics.Add(value.Variant + ":removalRole=" +
+                    removalRole);
+                _actor.Commands.InterruptAll(true);
+                RemoveEquipped(_actor, ref _equipped,
+                    ref _equippedFirearmStateSet);
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                _phase = 4;
+                _settleUpdates = 0;
+            }
+
+            private void ObserveCommand()
+            {
+                if (_reloadCommand == null) return;
+                _commandInstalled = _commandInstalled ||
+                    _actor.Commands.Contains(_reloadCommand);
+                _commandStarted = _commandStarted || _reloadCommand.IsStarted;
+                _commandRunningObserved = _commandRunningObserved ||
+                    _reloadCommand.IsRunning;
+                _animationObserved = _animationObserved ||
+                    _reloadCommand.Animation != null;
+                _animationActedObserved = _animationActedObserved ||
+                    (_reloadCommand.Animation != null &&
+                    _reloadCommand.Animation.IsActed);
+                _executionProcessObserved = _executionProcessObserved ||
+                    _reloadCommand.ExecutionProcess != null;
+                _executionProcessEndedObserved =
+                    _executionProcessEndedObserved ||
+                    (_reloadCommand.ExecutionProcess != null &&
+                    _reloadCommand.ExecutionProcess.IsEnded);
+            }
+
+            private void CaptureReloadRecord(EvidenceCase value,
+                Transform model, WeaponVisualParameters visual, string role,
+                string state, int update, string claimBoundary)
+            {
+                _stage = "capture-" + state + "-" + value.Variant;
+                string stem = state + "-default-medium-" +
+                    SafeFileName(value.Variant);
+                CaptureSummary capture = CaptureContactSheet(_actor, model,
+                    _fixtureBodyRenderers, Path.Combine(
+                        _request.EvidenceDirectory, stem + ".png"));
+                JObject record = Describe(value, _actor, model, visual,
+                    _fixtureBodyRenderers, capture, stem + ".png", state, role);
+                FirearmState current = _equipped == null ? null :
+                    FirearmRuntimeState.Service.GetOrCreate(_equipped)
+                        .Repository.State;
+                record["claimBoundary"] = claimBoundary;
+                record["reloadUpdate"] = update;
+                record["abilityBlueprint"] = _reloadBlueprint == null ?
+                    "<not-resolved>" : _reloadBlueprint.name;
+                record["abilityAnimationStyle"] = _reloadBlueprint == null ?
+                    "<not-resolved>" : _reloadBlueprint.Animation.ToString();
+                record["abilityNeedEquipWeapons"] = _reloadBlueprint != null &&
+                    _reloadBlueprint.NeedEquipWeapons;
+                record["expectedReloadAction"] =
+                    _expectedAction.ToString();
+                record["plannedRounds"] = _plannedRounds;
+                record["abilityAvailable"] = _abilityAvailable;
+                record["abilityTargetable"] = _targetable;
+                record["abilityRuntimeActionType"] =
+                    _abilityData == null ? "<not-started>" :
+                    _runtimeActionType.ToString();
+                record["abilityRequireFullRoundAction"] =
+                    _abilityData != null && _requireFullRoundAction;
+                record["commandType"] = _reloadCommand == null ? "<none>" :
+                    _reloadCommand.GetType().FullName;
+                record["commandCanStart"] = _commandCanStart;
+                record["commandIsStarted"] = _reloadCommand != null &&
+                    _reloadCommand.IsStarted;
+                record["commandIsRunning"] = _reloadCommand != null &&
+                    _reloadCommand.IsRunning;
+                record["commandIsFinished"] = _reloadCommand != null &&
+                    _reloadCommand.IsFinished;
+                record["commandResult"] = _reloadCommand == null ? "<none>" :
+                    _reloadCommand.Result.ToString();
+                record["commandAnimation"] = _reloadCommand == null ||
+                    _reloadCommand.Animation == null ? "<none>" :
+                    _reloadCommand.Animation.GetType().FullName;
+                record["commandAnimationActed"] = _reloadCommand != null &&
+                    _reloadCommand.Animation != null &&
+                    _reloadCommand.Animation.IsActed;
+                record["executionProcessPresent"] = _reloadCommand != null &&
+                    _reloadCommand.ExecutionProcess != null;
+                record["executionProcessEnded"] = _reloadCommand != null &&
+                    _reloadCommand.ExecutionProcess != null &&
+                    _reloadCommand.ExecutionProcess.IsEnded;
+                record["commandExplicitTickCount"] = _explicitCommandTicks;
+                record["processExplicitTickCount"] = _explicitProcessTicks;
+                record["activeCommandTypes"] = new JArray(_actor.Commands.Raw
+                    .Where(command => command != null).Select(command =>
+                        command.GetType().FullName).ToArray());
+                record["loadedRounds"] = current == null ? -1 :
+                    current.LoadedRounds;
+                record["loadedAmmunition"] = current == null ||
+                    current.LoadedAmmunition == null ? JValue.CreateNull() :
+                    (JToken)current.LoadedAmmunition.ToString();
+                record["powderCount"] = _player == null ? -1 :
+                    _player.Inventory.Count(_powder);
+                record["ballCount"] = _player == null ? -1 :
+                    _player.Inventory.Count(_ball);
+                record["reloadAttempts"] = ReloadRuntimeDiagnostics.Attempts;
+                record["reloadLoaded"] = ReloadRuntimeDiagnostics.Loaded;
+                record["reloadRejected"] = ReloadRuntimeDiagnostics.Rejected;
+                record["reloadFaults"] = ReloadRuntimeDiagnostics.Faults;
+                record["reloadLastResult"] =
+                    ReloadRuntimeDiagnostics.LastResult;
+                record["firearmDischargeFired"] =
+                    FirearmDischargeRuntimeDiagnostics.Fired;
+                record["firearmDischargeFaults"] =
+                    FirearmDischargeRuntimeDiagnostics.Faults;
+                string jsonPath = Path.Combine(_request.EvidenceDirectory,
+                    stem + ".json");
+                WriteJsonAtomic(jsonPath, record);
+                _records.Add(record);
+                _evidenceFiles.Add(capture.PngPath);
+                _evidenceFiles.Add(jsonPath);
+                _captured++;
+                _viewCount += 4;
+                _diagnostics.Add(value.Variant + ":state=" + state +
+                    ";update=" + update + ";running=" +
+                    (bool)record["commandIsRunning"] + ";acted=" +
+                    (bool)record["commandAnimationActed"] + ";rounds=" +
+                    (int)record["loadedRounds"] + ";png=" +
+                    Path.GetFileName(capture.PngPath) + ";sha256=" +
+                    capture.Sha256);
+            }
+
+            private void RecordReloadOutcome(EvidenceCase value)
+            {
+                FirearmState state = FirearmRuntimeState.Service
+                    .GetOrCreate(_equipped).Repository.State;
+                ReloadOutcome outcome = new ReloadOutcome
+                {
+                    Variant = value.Variant,
+                    ExpectedAction = _expectedAction,
+                    Capacity = ResolveFirearmDefinition(value).Capacity,
+                    PlannedRounds = _plannedRounds,
+                    AbilityAvailable = _abilityAvailable,
+                    Targetable = _targetable,
+                    CommandCanStart = _commandCanStart,
+                    CommandInstalled = _commandInstalled,
+                    CommandStarted = _commandStarted,
+                    CommandRunningObserved = _commandRunningObserved,
+                    AnimationObserved = _animationObserved,
+                    AnimationActedObserved = _animationActedObserved,
+                    ActedCaptureTaken = _actedCaptureTaken,
+                    ExecutionProcessObserved = _executionProcessObserved,
+                    ExecutionProcessEndedObserved =
+                        _executionProcessEndedObserved,
+                    CommandFinishedBeforeInterrupt =
+                        _reloadCommand.IsFinished,
+                    RuntimeActionType = _runtimeActionType.ToString(),
+                    RequireFullRoundAction = _requireFullRoundAction,
+                    ExplicitCommandTicks = _explicitCommandTicks,
+                    ExplicitProcessTicks = _explicitProcessTicks,
+                    AttemptsDelta = ReloadRuntimeDiagnostics.Attempts -
+                        _attemptsBefore,
+                    LoadedDelta = ReloadRuntimeDiagnostics.Loaded -
+                        _loadedBefore,
+                    RejectedDelta = ReloadRuntimeDiagnostics.Rejected -
+                        _rejectedBefore,
+                    ReloadFaultDelta = ReloadRuntimeDiagnostics.Faults -
+                        _reloadFaultsBefore,
+                    FiredDelta = FirearmDischargeRuntimeDiagnostics.Fired -
+                        _firedBefore,
+                    DischargeFaultDelta =
+                        FirearmDischargeRuntimeDiagnostics.Faults -
+                        _dischargeFaultsBefore,
+                    LoadedRoundsAfter = state.LoadedRounds,
+                    PowderConsumed = _powderBeforeCommand -
+                        _player.Inventory.Count(_powder),
+                    BallsConsumed = _ballBeforeCommand -
+                        _player.Inventory.Count(_ball),
+                    CommandResult = _reloadCommand.Result.ToString(),
+                    AnimationType = _reloadCommand.Animation == null ?
+                        "<none>" : _reloadCommand.Animation.GetType().FullName
+                };
+                _outcomes.Add(outcome);
+                _diagnostics.Add(value.Variant + ":outcome=action:" +
+                    outcome.ExpectedAction + "/" + outcome.RuntimeActionType +
+                    ";started:" + outcome.CommandStarted + ";running:" +
+                    outcome.CommandRunningObserved + ";animation:" +
+                    outcome.AnimationObserved + ";acted:" +
+                    outcome.AnimationActedObserved + ";process:" +
+                    outcome.ExecutionProcessObserved + "/" +
+                    outcome.ExecutionProcessEndedObserved + ";loadedDelta:" +
+                    outcome.LoadedDelta + ";rounds:" +
+                    outcome.LoadedRoundsAfter + ";ammo:" +
+                    outcome.PowderConsumed + "/" + outcome.BallsConsumed +
+                    ";firedDelta:" + outcome.FiredDelta + ";result:" +
+                    outcome.CommandResult);
+            }
+
+            private void PollRemoval()
+            {
+                _stage = "settle-reload-removal-" +
+                    _cases[_caseIndex].Variant;
+                Game.Instance.EntityCreator.Tick();
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                GameObject current = _actor.View.HandsEquipment
+                    .GetWeaponModel(false);
+                bool removed = current == null &&
+                    (_removedPresentation == null ||
+                    !_removedPresentation.gameObject.activeInHierarchy ||
+                    !_removedPresentation.IsChildOf(_actor.View.transform));
+                if (!removed)
+                {
+                    _settleUpdates++;
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(
+                        "The prior reload presentation remained active after " +
+                        _settleUpdates + " updates.");
+                }
+                _removedPresentation = null;
+                ResetCommandState();
+                _caseIndex++;
+                if (_caseIndex < _cases.Length)
+                {
+                    _phase = 1;
+                    return;
+                }
+                WriteReloadIndex();
+                _indexWritten = true;
+                BeginCleanup();
+            }
+
+            private void ResetCommandState()
+            {
+                _abilityData = null;
+                _reloadCommand = null;
+                _expectedAction = EffectiveReloadAction.Unknown;
+                _plannedRounds = 0;
+                _abilityAvailable = false;
+                _targetable = false;
+                _commandCanStart = false;
+                _commandInstalled = false;
+                _commandStarted = false;
+                _commandRunningObserved = false;
+                _animationObserved = false;
+                _animationActedObserved = false;
+                _actedCaptureTaken = false;
+                _executionProcessObserved = false;
+                _executionProcessEndedObserved = false;
+                _runtimeActionType = UnitCommand.CommandType.Free;
+                _requireFullRoundAction = false;
+                _explicitCommandTicks = 0;
+                _explicitProcessTicks = 0;
+            }
+
+            private void WriteReloadIndex()
+            {
+                _stage = "write-reload-index";
+                RuntimeBuildIdentity identity = RuntimeBuildIdentity.Capture(
+                    _context.Assembly, _context.ModEntry.Info.Version);
+                var outcomes = new JArray(_outcomes.Select(value =>
+                    new JObject
+                    {
+                        { "variant", value.Variant },
+                        { "expectedAction", value.ExpectedAction.ToString() },
+                        { "capacity", value.Capacity },
+                        { "plannedRounds", value.PlannedRounds },
+                        { "abilityAvailable", value.AbilityAvailable },
+                        { "targetable", value.Targetable },
+                        { "commandCanStart", value.CommandCanStart },
+                        { "commandInstalled", value.CommandInstalled },
+                        { "commandStarted", value.CommandStarted },
+                        { "commandRunningObserved",
+                            value.CommandRunningObserved },
+                        { "animationObserved", value.AnimationObserved },
+                        { "animationActedObserved",
+                            value.AnimationActedObserved },
+                        { "actedCaptureTaken", value.ActedCaptureTaken },
+                        { "executionProcessObserved",
+                            value.ExecutionProcessObserved },
+                        { "executionProcessEndedObserved",
+                            value.ExecutionProcessEndedObserved },
+                        { "commandFinishedBeforeInterrupt",
+                            value.CommandFinishedBeforeInterrupt },
+                        { "runtimeActionType", value.RuntimeActionType },
+                        { "requireFullRoundAction",
+                            value.RequireFullRoundAction },
+                        { "explicitCommandTicks",
+                            value.ExplicitCommandTicks },
+                        { "explicitProcessTicks",
+                            value.ExplicitProcessTicks },
+                        { "attemptsDelta", value.AttemptsDelta },
+                        { "loadedDelta", value.LoadedDelta },
+                        { "rejectedDelta", value.RejectedDelta },
+                        { "reloadFaultDelta", value.ReloadFaultDelta },
+                        { "firedDelta", value.FiredDelta },
+                        { "dischargeFaultDelta",
+                            value.DischargeFaultDelta },
+                        { "loadedRoundsAfter", value.LoadedRoundsAfter },
+                        { "powderConsumed", value.PowderConsumed },
+                        { "ballsConsumed", value.BallsConsumed },
+                        { "commandResult", value.CommandResult },
+                        { "animationType", value.AnimationType }
+                    }).ToArray());
+                var index = new JObject
+                {
+                    { "schemaVersion", 1 },
+                    { "fixture", "live disposable default Medium reload actor" },
+                    { "productionVariantCount", 7 },
+                    { "nativeCommand", typeof(UnitUseAbility).FullName },
+                    { "ability", _reloadBlueprint.name },
+                    { "abilityAnimation", _reloadBlueprint.Animation.ToString() },
+                    { "needEquipWeapons", _reloadBlueprint.NeedEquipWeapons },
+                    { "ammunitionSeed", _ammunitionSeed },
+                    { "reloadCaptureUpdates",
+                        new JArray(ReloadCaptureUpdates) },
+                    { "views", new JArray("front", "right-side", "rear",
+                        "front-right-three-quarter") },
+                    { "loadedModVersion", _context.ModEntry.Info.Version },
+                    { "gitCommit", identity.GitCommit },
+                    { "runtimeIdentity", identity.RuntimeIdentity },
+                    { "outcomes", outcomes },
+                    { "records", _records }
+                };
+                string indexPath = Path.Combine(_request.EvidenceDirectory,
+                    "weapon-presentation-reload-index.json");
+                WriteJsonAtomic(indexPath, index);
+                _evidenceFiles.Add(indexPath);
+            }
+
+            private void BeginCleanup()
+            {
+                if (_cleanupStarted) return;
+                _stage = "reload-request-cleanup";
+                if (_actor != null)
+                {
+                    _actor.Commands.InterruptAll(true);
+                    RemoveEquipped(_actor, ref _equipped,
+                        ref _equippedFirearmStateSet);
+                    _actor.Descriptor.State.Immortality.ReleaseAll();
+                }
+                RestoreInventory();
+                if (_actor != null && _allUnits != null &&
+                    ContainsReference(_allUnits, _actor))
+                    Game.Instance.State.Units.All.Remove(_actor);
+                if (_actor != null) _actor.Dispose();
+                if (_actorBlueprint != null)
+                    UnityEngine.Object.DestroyImmediate(_actorBlueprint);
+                _actorBlueprint = null;
+                _cleanupStarted = true;
+                _settleUpdates = 0;
+            }
+
+            private void RestoreInventory()
+            {
+                if (!_inventoryCaptured)
+                {
+                    _inventoryRestored = true;
+                    return;
+                }
+                if (_player == null || _player.Inventory == null ||
+                    _powder == null || _ball == null)
+                {
+                    _inventoryRestored = false;
+                    return;
+                }
+                RestoreInventoryCount(_powder, _powderBefore);
+                RestoreInventoryCount(_ball, _ballBefore);
+                _inventoryRestored =
+                    _player.Inventory.Count(_powder) == _powderBefore &&
+                    _player.Inventory.Count(_ball) == _ballBefore;
+            }
+
+            private void RestoreInventoryCount(BlueprintItem item,
+                int expected)
+            {
+                int current = _player.Inventory.Count(item);
+                if (current > expected)
+                    _player.Inventory.Remove(item, current - expected);
+                else if (current < expected)
+                    _player.Inventory.Add(item, expected - current);
+            }
+
+            private void PollCleanup()
+            {
+                Game.Instance.EntityCreator.Tick();
+                RestoreInventory();
+                bool unitsClean = (_allUnits == null ||
+                        (SameReferences(_unitsBefore, Snapshot(_allUnits)) &&
+                        (_actor == null ||
+                        !ContainsReference(_allUnits, _actor)))) &&
+                    (_party == null ||
+                        SameReferences(_partyBefore, Snapshot(_party)));
+                bool cleaned = unitsClean && _inventoryRestored;
+                _settleUpdates++;
+                if (!cleaned && _settleUpdates < MaximumSettleUpdates) return;
+                Finish(cleaned);
+            }
+
+            private void Finish(bool cleaned)
+            {
+                int expectedRecords = _cases.Length *
+                    (ReloadCaptureUpdates.Length + 2);
+                Add(_assertions,
+                    "weapon-presentation-reload-visual-matrix",
+                    "seven production firearm variants in reload-ready, fourteen fixed native reload samples through the full-round delivery window, and one event-aligned acted frame",
+                    "records=" + _records.Count + ";variants=" +
+                        _records.OfType<JObject>().Select(value =>
+                            (string)value["variant"]).Distinct(
+                                StringComparer.Ordinal).Count(),
+                    _cases.Length == 7 && _records.Count == expectedRecords &&
+                        _records.OfType<JObject>().Select(value =>
+                            (string)value["variant"]).Distinct(
+                                StringComparer.Ordinal).Count() == 7,
+                    "real live held model at updates 1/4/8/12/18/24/36/60/96/120/160/200/220/240");
+                Add(_assertions,
+                    "weapon-presentation-native-reload-command",
+                    "every production firearm runs the granted Reload Firearm through native UnitUseAbility and exposes its acted animation",
+                    string.Join(";", _outcomes.Select(value => value.Variant +
+                        "=" + value.CommandInstalled + "/" +
+                        value.CommandCanStart + "/" + value.CommandStarted +
+                        "/" + value.CommandRunningObserved + "/" +
+                        value.AnimationObserved + "/" +
+                        value.AnimationActedObserved + "/" +
+                        value.ExecutionProcessObserved).ToArray()),
+                    _outcomes.Count == 7 && _outcomes.All(value =>
+                        value.AbilityAvailable && value.Targetable &&
+                        value.CommandCanStart && value.CommandInstalled &&
+                        value.CommandStarted && value.CommandRunningObserved &&
+                        value.AnimationObserved &&
+                        value.AnimationActedObserved &&
+                        value.ActedCaptureTaken &&
+                        value.ExecutionProcessObserved &&
+                        value.ExecutionProcessEndedObserved),
+                    "production AbilityData, UnitUseAbility, UnitCommands.Run, and live acted-animation state");
+                Add(_assertions,
+                    "weapon-presentation-reload-action-contract",
+                    "runtime command type and full-round flag match each exact firearm reload plan",
+                    string.Join(";", _outcomes.Select(value => value.Variant +
+                        "=" + value.ExpectedAction + "/" +
+                        value.RuntimeActionType + "/fullRound:" +
+                        value.RequireFullRoundAction).ToArray()),
+                    _outcomes.Count == 7 && _outcomes.All(value =>
+                        string.Equals(value.RuntimeActionType,
+                            ReloadAbilityPresentation.Command(
+                                value.ExpectedAction).ToString(),
+                            StringComparison.Ordinal) &&
+                        value.RequireFullRoundAction ==
+                            (value.ExpectedAction ==
+                                EffectiveReloadAction.FullRound)),
+                    "ReloadTestMusketRuntime plan plus production AbilityData runtime presentation patches");
+                ReloadOutcome[] capacityOne = _outcomes.Where(value =>
+                    value.Capacity == 1).ToArray();
+                ReloadOutcome capacitySix = _outcomes.SingleOrDefault(value =>
+                    value.Capacity == 6);
+                bool capacityOneTransactions = capacityOne.Length == 6 &&
+                    capacityOne.All(value => value.AttemptsDelta == 1 &&
+                        value.LoadedDelta == 1 && value.RejectedDelta == 0 &&
+                        value.ReloadFaultDelta == 0 &&
+                        value.LoadedRoundsAfter == value.PlannedRounds &&
+                        value.PowderConsumed == value.PlannedRounds &&
+                        value.BallsConsumed == value.PlannedRounds &&
+                        value.FiredDelta == 0 &&
+                        value.DischargeFaultDelta == 0);
+                bool capacitySixRollback = capacitySix != null &&
+                    string.Equals(capacitySix.Variant,
+                        WeaponVisualVariantCatalog.RevolverService,
+                        StringComparison.Ordinal) &&
+                    capacitySix.PlannedRounds == 6 &&
+                    capacitySix.AttemptsDelta == 1 &&
+                    capacitySix.LoadedDelta == 0 &&
+                    capacitySix.RejectedDelta == 0 &&
+                    capacitySix.ReloadFaultDelta == 1 &&
+                    capacitySix.LoadedRoundsAfter == 0 &&
+                    capacitySix.PowderConsumed == 0 &&
+                    capacitySix.BallsConsumed == 0 &&
+                    capacitySix.FiredDelta == 0 &&
+                    capacitySix.DischargeFaultDelta == 0;
+                Add(_assertions,
+                    "weapon-presentation-reload-transaction-nonregression",
+                    "six capacity-one firearms reload exactly once; Advanced Revolver reaches the same native delivery and preserves its established exact rollback while the capacity-one token carrier remains out of cosmetic scope; no projectile fires",
+                    string.Join(";", _outcomes.Select(value => value.Variant +
+                        "=attempts:" + value.AttemptsDelta + "/loaded:" +
+                        value.LoadedDelta + "/rejected:" +
+                        value.RejectedDelta + "/fault:" +
+                        value.ReloadFaultDelta + "/rounds:" +
+                        value.LoadedRoundsAfter + "/planned:" +
+                        value.PlannedRounds + "/ammo:" +
+                        value.PowderConsumed + "/" + value.BallsConsumed +
+                        "/fired:" + value.FiredDelta + "/dischargeFault:" +
+                        value.DischargeFaultDelta).ToArray()),
+                    _outcomes.Count == 7 && capacityOneTransactions &&
+                        capacitySixRollback,
+                    "ReloadRuntimeDiagnostics, FirearmDischargeRuntimeDiagnostics, exact item state, shared inventory deltas, and current finite item-token carrier boundary");
+                int zeroPixelSheets = _records.OfType<JObject>().Count(value =>
+                    (int)value["meaningfulPixels"] <= 0);
+                Add(_assertions,
+                    "weapon-presentation-reload-contact-sheets",
+                    expectedRecords + " PNG/JSON pairs and " +
+                        (expectedRecords * 4) + " labelled views",
+                    "captures=" + _captured + ";views=" + _viewCount +
+                        ";files=" + _evidenceFiles.Count +
+                        ";zeroPixelSheets=" + zeroPixelSheets,
+                    _captured == expectedRecords &&
+                        _viewCount == expectedRecords * 4 && _indexWritten &&
+                        _evidenceFiles.Count == expectedRecords * 2 + 1 &&
+                        _evidenceFiles.All(File.Exists) && zeroPixelSheets == 0,
+                    "front/right-side/rear/front-right-three-quarter live reload contact sheets");
+                Add(_assertions,
+                    "weapon-presentation-reload-request-cleanup",
+                    "exact party/global-unit and shared-ammunition snapshots restored; no save call",
+                    "cleaned=" + cleaned + ";inventoryRestored=" +
+                        _inventoryRestored + ";powder=" +
+                        (_player == null ? -1 :
+                            _player.Inventory.Count(_powder)) + "/" +
+                        _powderBefore + ";balls=" +
+                        (_player == null ? -1 :
+                            _player.Inventory.Count(_ball)) + "/" +
+                        _ballBefore + ";settleUpdates=" + _settleUpdates,
+                    cleaned && _inventoryRestored,
+                    "request-local actor, items, firearm state, ammunition, blueprint clone, camera, light, and textures");
+                Add(_assertions, "loaded-mod-version",
+                    _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    string.Equals(_request.ExpectedModVersion,
+                        _context.ModEntry.Info.Version,
+                        StringComparison.Ordinal),
+                    "Unity Mod Manager ModEntry.Info.Version");
+
+                _warnings.Add("Reload evidence is limited to the production " +
+                    "Reload Firearm Self animation on the default Medium actor. " +
+                    "It does not establish sex-specific, Small, Enlarged, armor, " +
+                    "cloak, or dual-wield acceptance.");
+                _warnings.Add("Advanced Revolver visual sampling reaches an " +
+                    "acted native command, but its six-round production delivery " +
+                    "continues to fail closed and restore state/ammunition because " +
+                    "the active item-token carrier represents only capacity-one " +
+                    "states. This cosmetic fixture records rather than changes " +
+                    "that pre-existing mechanical boundary.");
+                RuntimeBuildIdentity build = RuntimeBuildIdentity.Capture(
+                    _context.Assembly, _context.ModEntry.Info.Version);
+                bool passed = _assertions.All(value =>
+                    value.Status == RuntimeTestStatuses.Pass);
+                Result = new RuntimeTestResult
+                {
+                    SchemaVersion = 1,
+                    RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    Status = passed ? RuntimeTestStatuses.Pass :
+                        RuntimeTestStatuses.Fail,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    RuntimeIdentity = build.RuntimeIdentity + "; mvid=" +
+                        build.ModuleVersionId + "; sha256=" +
+                        build.LoadedModuleSha256 + "; pid=" + build.ProcessId,
+                    GitCommit = build.GitCommit,
+                    GameVersion = Application.version ?? string.Empty,
+                    StartUtc = _started.ToString("o"),
+                    EndUtc = DateTime.UtcNow.ToString("o"),
+                    DurationMilliseconds = (long)(DateTime.UtcNow - _started)
+                        .TotalMilliseconds,
+                    Assertions = _assertions,
+                    Diagnostics = _diagnostics,
+                    Warnings = _warnings,
+                    ExceptionSummary = _exceptionSummary,
                     EvidenceFiles = _evidenceFiles,
                     AutomaticExitRequested = _request.ExitAfterCompletion,
                     EvidenceDirectory = _request.EvidenceDirectory
@@ -2892,6 +3917,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return value != null && value.Symbol.StartsWith("KMG.Firearms.",
                 StringComparison.Ordinal);
+        }
+
+        private static FirearmDefinition ResolveFirearmDefinition(
+            EvidenceCase value)
+        {
+            if (!IsFirearm(value) || value.Item == null ||
+                value.Item.Type == null)
+                throw new InvalidOperationException(
+                    "A production firearm presentation case is incomplete.");
+            FirearmDefinitionComponent[] markers =
+                (value.Item.Type.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                .OfType<FirearmDefinitionComponent>().ToArray();
+            if (markers.Length != 1 || markers[0].Definition == null)
+                throw new InvalidOperationException(value.Variant +
+                    " does not expose exactly one firearm definition marker.");
+            return markers[0].Definition;
         }
 
         private static Vector3 NearestNavigable(Vector3 requested)
