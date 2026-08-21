@@ -70,6 +70,15 @@
 - Published handgun held/firing calibration commit:
   `e7e333c8da9f78064a2d99133004af4ef315515c`
   (`fix(presentation): calibrate handgun held and firing rigs`).
+- Published firearm reload qualification documentation commit:
+  `a41a9a91069bcb180880028c32535e7b2b07b0b5`
+  (`docs(presentation): qualify firearm reload evidence`).
+- Published handgun held/firing qualification documentation commit:
+  `f01e440704c7392fe78790dfb06303781fba5449`
+  (`docs(presentation): qualify handgun held and firing rigs`).
+- Published hidden-handgun-storage implementation commit:
+  `d77db3711dcb9bffdc3a65c52d2c3f364392b093`
+  (`fix(presentation): hide incompatible handgun holsters`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
@@ -87,7 +96,10 @@
   four held handgun variants now use the exact native PiercingOneHanded
   Shortspear grip/roll frame plus a measured donor-relative visible-model
   firing correction, with guarded ready, acted-fire, and valid dual-wield
-  evidence.
+  evidence. Their incompatible native-slot stored models are now deliberately
+  hidden through the exact `UnitViewHandSlotData.ShowItem(bool)` lifecycle;
+  native equip restores held visibility and DollRoom inventory preview remains
+  governed by the native method.
 
 ## Qualified unchanged baseline
 
@@ -567,18 +579,57 @@ Direct review accepts all four ready sheets, all four acted sheets, and all
 eight custom dual-wield sheets on the default Medium male: plausible grip,
 physical muzzle leading, distinct variants, native body-relative animation,
 and no severe persistent torso or forearm penetration. Stored handgun
-disposition and the broader armor/body matrix remain open.
+disposition remained open at that checkpoint and is resolved below; the broader
+armor/body matrix remains open.
+
+## Qualified hidden handgun storage checkpoint
+
+Published commit `d77db3711dcb9bffdc3a65c52d2c3f364392b093` replaces the
+ineffective private `ReattachSheath` hook with a Prefix on the exact public
+`UnitViewHandSlotData.ShowItem(bool)` overload. Installed-engine IL proves that
+Kingmaker otherwise reuses the held `Model` in storage when `BeltModel` and
+`SheathModel` are null. The Prefix resolves only exact production firearms,
+sets the native visibility argument false only for `Hidden` profiles while the
+slot is not in hand, and leaves native renderer ownership, held visibility,
+enchantment effects, and DollRoom inventory preview intact.
+
+Qualification passes repository validation, all 1,164 Release domain tests,
+clean Release/package creation, strict package validation, and runtime preflight
+130/130. The exact reusable 0.0.88 artifact is 22,436,065 bytes, SHA-256
+`C1000C1843C7E3761992F2ED8584CA24C9AA46D1B4C00C1A709D0EF69D685307`;
+the installed 3,624,960-byte DLL is SHA-256
+`23124A8B53B2A3EF356E5999DFBA498491EB5A41890A751FFFBCF0F3D75900E8`
+with MVID `86d1bb79-8529-472a-a3fb-b4201873797e`. Deployment manifest
+`runtime-evidence/deployments/20260821T1458080379126Z/deployment.json` has
+SHA-256
+`24DBAFEABA637B73F8C776FA1DB1F9C4AB1D5F575D4128E6A87B3AD3A450373C`.
+
+- V19, `20260821T1458081081114Z-weapon-presentation-evidence`: PASS
+  10/10; exact 56-state matrix, 56 PNG/JSON pairs, 224 views, all four
+  production handguns hidden while stored and all four visible while held,
+  exact cleanup. Result/index/runtime-evidence SHA-256 are
+  `7C1139CD0F761AC125934AD8379FC9C0E7231AEA22F6AFD958664D73B2507FCD` /
+  `838C0662301ECC7579E0DBD36C1BDDD748424654AFE25429CA93EDFC8F931F94` /
+  `B6F080C3E83FC72ED93A1290A13D9DDF451836825FA445355CC4A99D6F4ED3B6`.
+- V20, `20260821T1500520935137Z-weapon-presentation-transition-motion-evidence`:
+  PASS 9/9; 112 PNG/JSON pairs, 448 views, all 28 exact cases, and all four
+  handgun transitions hidden before equip, visible while held, and hidden after
+  unequip. Result/index/runtime-evidence SHA-256 are
+  `5AE6B8F36629C57BB925BBB3A0FC14741BBC01CE72CD1C6A50D70A5D55C11EC6` /
+  `7689B908D28D2F1667AAC2F528E23BE856085B45FE4626D3051D96CA720DAC4C` /
+  `520180E4342418C6DD6B9573C8245BC4BD930FC0E4CF4A0A9972D557E5AF8BD3`.
+
+Direct review confirms no gun is exposed on any of the four stored body-only
+sheets, while the weapon is visibly present during held equip and unequip
+transition captures. No save API, projectile semantic, equipment root, native
+donor blueprint, or gameplay field changed.
 
 ## Next concrete actions
 
-1. Determine and qualify the actual stored handgun path independently from the
-   held basis. Prefer an explicit acceptable stored prefab; otherwise hide the
-   stored model with a documented exact-firearm policy rather than exposing a
-   severe native-slot mismatch.
-2. Construct narrower request-local female Medium, Small, and Enlarged visual
+1. Construct narrower request-local female Medium, Small, and Enlarged visual
    fixtures and add representative armor/cloak coverage without relying on
    manual save mutation.
-3. Run the complete final runtime matrix, select the next unused patch version
+2. Run the complete final runtime matrix, select the next unused patch version
    only after all visual rows qualify, produce and hash the final clean package,
    update all version surfaces, and publish the remaining coherent commits.
 

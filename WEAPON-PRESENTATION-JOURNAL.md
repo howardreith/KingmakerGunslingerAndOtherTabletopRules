@@ -1179,3 +1179,89 @@ that motion is body-relative and muzzle-leading rather than a transform or
 clipping defect. This accepts handgun ready/fire/valid-dual presentation only
 for the default Medium male. Stored handgun disposition, armor/cloak, female,
 Small, and Enlarged coverage remain ordinary mission work.
+
+## 2026-08-21 - hidden handgun storage checkpoint
+
+Installed `Assembly-CSharp.dll` IL isolated the actual stored-model lifecycle.
+`UnitViewHandSlotData.RecreateModel()` uses `WeaponVisualParameters.Model` for
+the held state and substitutes `BeltModel` only when the stored slot has one;
+with both belt and sheath fields null, Kingmaker therefore keeps reusing the
+held handgun model at the native stored attachment. Public
+`UnitViewHandSlotData.ShowItem(bool)` is the exact renderer-visibility owner.
+It toggles the slot's weapon and sheath renderers, preserves enchantment-effect
+lifecycle, and forces visibility in DollRoom inventory preview.
+
+The prior `FirearmHiddenHolsterPatch` targeted private `ReattachSheath()` after
+the fact and additionally required a long gun. No production presentation
+profile is both long-gun and `Hidden`, so the hook could not implement the
+declared handgun policy. The replacement Prefix targets the exact public
+`ShowItem(bool)` overload, resolves the live item through
+`KingmakerFirearmRuntimeItemResolver`, and changes the existing visibility
+argument to false only when that exact production firearm's profile is
+`Hidden` and the slot is not in hand. Native code still owns all renderer
+changes and restores the model on equip or in DollRoom. No renderer hierarchy
+scan, equipment-root transform, projectile reference, native donor blueprint,
+or gameplay field is changed.
+
+The guarded static and transition fixtures now distinguish intentionally hidden
+storage from a missing-model failure. Static capture permits a body-only sheet
+only for the exact hidden profile and asserts all four handguns hidden while
+stored plus visible while held. Transition capture records the native
+hidden-before-equip, visible-held, hidden-after-unequip round trip for each of
+Pistol Service, Duelist, Last Word, and Revolver Service. Focused source tests
+lock the exact lifecycle target and reject the obsolete sheath hook or renderer
+scan.
+
+The first compilation exposed only a missing `System` import for reflected
+`Type`; that narrow error was corrected before qualification was restarted.
+Repository validation passed, all 1,164 Release domain tests passed, clean
+Release/package creation passed, strict standalone package validation passed,
+and runtime preflight passed 130/130. One immediate post-build preflight saw the
+known transient artifact-fingerprint race; a controlled unsupported-scenario
+before/after snapshot showed zero changed artifact entries, and the immediate
+rerun passed. The first full static runtime itself passed but its default outer
+wrapper expired three seconds before the result was observed; the exact clean
+commit run below uses the extended documented wrapper deadlines and supersedes
+that orchestration-only diagnostic.
+
+The implementation was committed and published as
+`d77db3711dcb9bffdc3a65c52d2c3f364392b093` (`fix(presentation): hide
+incompatible handgun holsters`). The clean reusable artifact is
+`artifacts/local-runtime/0.0.88/KingmakerGunslinger-0.0.88-local-runtime.zip`,
+22,436,065 bytes, SHA-256
+`C1000C1843C7E3761992F2ED8584CA24C9AA46D1B4C00C1A709D0EF69D685307`.
+The installed 3,624,960-byte DLL is SHA-256
+`23124A8B53B2A3EF356E5999DFBA498491EB5A41890A751FFFBCF0F3D75900E8`
+with MVID `86d1bb79-8529-472a-a3fb-b4201873797e`; the firearm asset bundle
+remains byte-identical at SHA-256
+`B3CFFB49BA32AF10DB12470401A58F6DFF0EAD9F219F87E41D9EC138D62FBAEB`.
+Deployment manifest
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260821T1458080379126Z/deployment.json`
+has SHA-256
+`24DBAFEABA637B73F8C776FA1DB1F9C4AB1D5F575D4128E6A87B3AD3A450373C`.
+
+Authoritative clean guarded Steam App ID 640820 runs are:
+
+- `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T1458081081114Z-weapon-presentation-evidence/`:
+  PASS 10/10, exact 56 states, 56 PNG/JSON pairs, 224 labelled views, all
+  four stored handguns hidden, all four held handguns renderable, zero blank or
+  low-density sheets, and exact cleanup. Result/index/runtime-evidence SHA-256
+  are
+  `7C1139CD0F761AC125934AD8379FC9C0E7231AEA22F6AFD958664D73B2507FCD` /
+  `838C0662301ECC7579E0DBD36C1BDDD748424654AFE25429CA93EDFC8F931F94` /
+  `B6F080C3E83FC72ED93A1290A13D9DDF451836825FA445355CC4A99D6F4ED3B6`.
+- `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T1500520935137Z-weapon-presentation-transition-motion-evidence/`:
+  PASS 9/9, all 28 cases and 112 exact states, 112 PNG/JSON pairs, 448
+  labelled views, all native equip/unequip actions observed, every handgun
+  hidden before equip / visible held / hidden after unequip, zero blank sheets,
+  and exact cleanup. Result/index/runtime-evidence SHA-256 are
+  `5AE6B8F36629C57BB925BBB3A0FC14741BBC01CE72CD1C6A50D70A5D55C11EC6` /
+  `7689B908D28D2F1667AAC2F528E23BE856085B45FE4626D3051D96CA720DAC4C` /
+  `520180E4342418C6DD6B9573C8245BC4BD930FC0E4CF4A0A9972D557E5AF8BD3`.
+
+Direct review of every stored handgun sheet shows the intended body-only
+presentation from front, side, rear, and three-quarter views. Review of Pistol
+Service equip and unequip transition sheets confirms the gun remains visible
+in hand throughout the native body-relative transitions. Stored handgun
+disposition is accepted on the default Medium male. Female Medium, Small,
+Enlarged, bulky-armor, and cloak/back-slot evidence remains ordinary work.

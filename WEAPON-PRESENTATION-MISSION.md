@@ -105,5 +105,12 @@ the default Medium male. Every custom attack fired exactly once with no fault
 or remaining round; the minimum acted physical-muzzle/target dot was
 `0.9768526`, and equipment roots, grip anchors, projectile semantics, native
 donors, and gameplay fields remained unchanged. Stored handgun disposition,
-armor/cloak interaction, and female, Small, and Enlarged fixtures remain.
-Version remains `0.0.88` until those rows and the final package qualify.
+previously the last family-specific gap, is now explicitly hidden for all four
+production variants by the exact live-item `ShowItem(bool)` lifecycle while
+stored and restored by the native lifecycle while held or shown in the
+inventory doll room. Clean exact-commit V19/V20 at
+`d77db3711dcb9bffdc3a65c52d2c3f364392b093` prove the hidden/visible/hidden
+equip round trip without renderer scanning, donor mutation, or gameplay
+changes. Armor/cloak interaction and female, Small, and Enlarged fixtures
+remain. Version remains `0.0.88` until those rows and the final package
+qualify.

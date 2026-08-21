@@ -30,8 +30,13 @@ None as of 2026-08-21.
   reload-ready, 14 fixed updates through 240, and an event-aligned acted frame.
   Clean exact-commit V18 now additionally accepts all four handgun variants in
   combat-ready, event-aligned firing, and both valid firearm/Shortsword dual-
-  wield layouts on that fixture. Stored handgun disposition, armor or cloak
-  interaction, female, Small, and Enlarged coverage remain ordinary open work.
+  wield layouts on that fixture. Clean exact-commit V19/V20 now accept the
+  explicit stored-handgun policy: all four production variants have no
+  compatible stored prefab and are intentionally hidden while stored, remain
+  visible while held, and return to hidden after native unequip. Direct review
+  confirms body-only stored sheets and visible equip/unequip transition sheets.
+  Armor or cloak interaction, female, Small, and Enlarged coverage remain
+  ordinary open work.
 - Native donor axes have been measured by exact live controls (`V2`), and all
   production authored assets now expose complete secondary-axis markers under
   a shared fail-closed contract. Branched-spears additionally have
@@ -60,6 +65,14 @@ None as of 2026-08-21.
   accept their captured default-Medium-male states without changing projectile
   semantics; V17 adds exact native Reload Firearm commands, acted frames, and
   full-round delivery-window sampling without a projectile or save call.
+- Engine IL proves that stored slots reuse `WeaponVisualParameters.Model` when
+  both `BeltModel` and `SheathModel` are null and that public
+  `UnitViewHandSlotData.ShowItem(bool)` owns renderer visibility. The exact
+  production-firearm Prefix sets the existing visibility argument false only
+  for `Hidden` profiles while `IsInHand` is false. V19 proves all four hidden
+  stored states and all four visible held states; V20 proves the complete native
+  hidden-before/visible-held/hidden-after transition round trip. The DollRoom
+  visibility override remains native and therefore preserves inventory preview.
 - Advanced Revolver's production reload command reaches its acted delivery but
   the six-round state write still fails closed because the active item-token
   catalog represents capacity-one states. V17 proves zero ammunition drift,
@@ -74,8 +87,9 @@ None as of 2026-08-21.
 
 The initial Eastern observer timeout, stale firearm observer expectation, the
 first Nodachi null slot-offset failure, a post-build artifact-timestamp race,
-the first static wrapper deadline race, and the transition matrix's generic
-wrapper deadline were ordinary engineering tasks.
+the first static wrapper deadline race, the transition matrix's generic wrapper
+deadline, and the first hidden-storage static wrapper deadline were ordinary
+engineering tasks.
 The first Nodachi failure was isolated to native sheath recreation and corrected
 at that checkpoint by initializing an empty custom slot-offset collection
 without moving the equipment root. A later clean transition matrix proved that
