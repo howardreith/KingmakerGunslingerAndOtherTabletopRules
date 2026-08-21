@@ -1,53 +1,59 @@
 # Eastern Weapons manual visual acceptance
 
-## Focused first-playtest recheck
+## Human aesthetic acceptance — 2026-08-21
 
-The first playtest accepted category/proficiency/Improved Critical discovery,
-but rejected vertical icons, western-looking generic silhouettes, Wakizashi's
-obscured Kukri-like stance, and the apparent back-edge long-blade swing. The
-2026-08-21 calibration now has guarded in-game held/stored/ready/attack evidence
-for all 12 variants and their three native controls. That evidence accepts the
-objective frame, grip, cutting-edge polarity, and severe-clipping checks on one
-default Medium male. It does not convert the broader subjective checklist below
-into human acceptance.
+- Reviewer: Howie Reith, project owner
+- Qualified version: `0.0.89`
+- Branch: `codex/weapon-presentation-calibration`
+- Runtime-qualified source commit: `96d17e1bfaa1be2d2afa2e6758e4472a8a973f3f`
+- Result: **HUMAN ACCEPTED FOR MERGE**
 
-- [ ] Generic and +1 Katana read as the same thin curved single-edged katana.
-- [ ] Generic and +1 Wakizashi read as the same compact curved sword.
-- [ ] Wakizashi is visibly forward-held in main hand and offhand.
-- [ ] Generic and +1 Nodachi read as the same long curved two-handed sword.
-- [ ] Representative named item in each family uses the same base silhouette.
-- [ ] Heaven's Measure differs only through legitimate enchantment VFX.
-- [ ] Katana one-hand and two-hand presentation both remain plausible.
-- [ ] Nodachi idle and combat no longer resembles the rejected Falchion sweep.
-- [ ] The cutting edge leads attacks and trails originate correctly.
-- [ ] All six Eastern icons and the spear icon read diagonally at inventory size.
-- [ ] Focused Weapon exposes each category only with matching Weapon Focus.
-- [ ] Improved Critical monogram presentation remains accepted.
+The project owner reviewed the deployed weapon-presentation build in game and
+accepted the Eastern weapons visually. The finished presentation was judged
+nearly perfect and comparable in quality to Owlcat's native work.
 
-Status: **PENDING HUMAN REVIEW**. Structural automation and generated icon
-inspection do not constitute subjective in-game acceptance. Objective runtime
-evidence and its narrower acceptance boundary are recorded in
-`EASTERN-WEAPONS-VISUAL-CALIBRATION.md`.
+The katana handhold remains slightly offset. This is explicitly accepted as a
+minor, native-comparable cosmetic imperfection rather than a blocker. No further
+katana transform, grip, blade-plane, animation, held-model, or stored-model
+adjustment is requested for `0.0.89`.
 
-For each family, inspect male and female rigs; small and medium races; robes;
-light, medium, and bulky armor; idle, walk, run, attack, full attack, critical,
-death, weapon-set switching, and dropped-item rendering where available.
+The authoritative human acceptance record for the complete firearm,
+elven-branched-spear, and Eastern-weapon mission is:
 
-Additional required cases:
+`docs/WEAPON-PRESENTATION-HUMAN-ACCEPTANCE.md`
 
-- Wakizashi in main hand and offhand, including two-weapon full attacks.
-- Katana in one hand and native two-handed grip, including shield/offhand
-  changes.
-- Nodachi in its two-handed sword stance; confirm it never uses polearm reach or
-  polearm animation merely because it belongs to the Polearms fighter group.
-- Enlarge Person, Reduce Person, Legendary Proportions, and weapon-retaining
-  polymorph forms.
-- Hand separation, body penetration, floor drag, backwards blade, support-hand
-  drift, trail origin, missing-purple material, and extreme clipping.
-- Clear silhouette distinction at isometric play scale and conservative scale
-  under size-changing effects.
+## Objective qualification retained
 
-Record rig, race, armor, animation, weapon, form/size effect, outcome, and any
-clipping observation. Do not mark the feature visually accepted until all
-required rows have been reviewed by a human. Mechanical acceptance is tracked
-separately in `EASTERN-WEAPONS-QUALIFICATION.md`.
+The 2026-08-21 calibration has guarded in-game held, stored, ready, attack,
+movement, transition, body, and loadout evidence for all 12 Eastern variants and
+three native controls. That evidence accepts the objective frame, grip,
+cutting-edge polarity, variant identity, independent stored presentation,
+donor preservation, and severe-clipping checks.
+
+Human acceptance does not relabel every automated matrix cell as personally
+observed. The precise automated-versus-observed scope remains recorded in
+`planning/WEAPON-PRESENTATION-MATRIX.md` and
+`docs/EASTERN-WEAPONS-VISUAL-CALIBRATION.md`.
+
+## Optional expanded regression checklist
+
+The cases below are retained for future regression passes and are not release
+gates for the human-accepted `0.0.89` presentation:
+
+- Compare generic and enchanted silhouettes within each Eastern weapon family.
+- Recheck Wakizashi in main hand, offhand, and two-weapon full attacks.
+- Recheck Katana in one-hand and two-hand presentation, including shield or
+  offhand changes.
+- Recheck Nodachi through idle, movement, full attack, critical, death, and
+  weapon-set transitions.
+- Recheck robes, light armor, bulky armor, male and female rigs, Small and
+  Medium races, Enlarge Person, Reduce Person, Legendary Proportions, and
+  weapon-retaining polymorph forms.
+- Recheck trail origin, dropped-item rendering, inventory DollRoom visibility,
+  material integrity, floor drag, hand separation, support-hand drift, and
+  extreme transient clipping.
+- Recheck inventory icons, Focused Weapon exposure, and Improved Critical
+  presentation under their separate UI and feature acceptance scopes.
+
+Mechanical acceptance remains tracked separately. This human acceptance changes
+no source, assets, bundles, version, gameplay behavior, or artifact identity.
