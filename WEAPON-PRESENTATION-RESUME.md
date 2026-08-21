@@ -22,15 +22,26 @@
 - Published semantic-frame/handgun commit:
   `e2aba9d24cebbf38aadc236044c84f641a69534c`
   (`fix(presentation): validate frames and calibrate handguns`).
+- Published semantic-frame/handgun qualification documentation commit:
+  `77f47341ae86bc40fe898886660572f6343a7c97`
+  (`docs(presentation): qualify semantic frames and handguns`).
 - Published guarded long-gun motion diagnostic commit:
   `0e9c2902b255f0e091093e10f03655965d441123`
   (`feat(presentation): add guarded long-gun motion evidence`).
+- Published long-gun defect documentation commit:
+  `e530a8ac0e3d79c671ed24e0f14e3a220908867f`
+  (`docs(presentation): record long-gun motion defects`).
+- Published long-gun calibration implementation commit:
+  `b672406ebbb8af8340d723d074ff8a69bd0ffe25`
+  (`fix(presentation): calibrate long-gun held and stored rigs`).
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
-- The current implementation adds a shared full-frame semantic contract and
-  basis-calibrates the service Pistol and Revolver. Spear and Eastern bundles
-  now expose complete frames but deliberately retain their known incorrect
-  mappings until their family-specific phases.
+- The current implementation adds a shared full-frame semantic contract,
+  basis-calibrates the service Pistol and Revolver, and gives all three long
+  guns deterministic source frames plus independent donor-calibrated held and
+  stored presentation. Spear and Eastern bundles expose complete frames but
+  deliberately retain their known incorrect mappings until their
+  family-specific phases.
 
 ## Qualified unchanged baseline
 
@@ -131,17 +142,60 @@ validation, and Build-Local. Package/DLL SHA-256 are
 `8A01BB7E6B1952AEEA14A9675987EEB481BB7BFBA9F73E3807D322757F01A1D7`
 and `2B7EC67E836D7290E71AE62D5621172F1231FC88340B23D2CE3118275158382E`.
 
+## Qualified calibrated long-gun checkpoint
+
+Commit `b672406ebbb8af8340d723d074ff8a69bd0ffe25` is published on the
+mission branch. Musket, Blunderbuss, and Rifle now use deterministic physical
+source measurements, canonical `+Z/+Y` semantic frames, identity equipment
+roots, the measured native Heavy Crossbow held basis, plausible trigger-wrist
+grips, renderer-bound butt/muzzle endpoints, and fore-end support targets.
+`MusketBelt`, `BlunderbussBelt`, and the new `RifleBelt` independently use the
+measured native stored basis.
+
+The derivative FBX SHA-256 values are Musket
+`C5E2EA93E903782BF3110E50C1D6677C4E7C109248651495192D8B6063F73A0A`,
+Blunderbuss
+`45DD00FD88D7CE1B66690E1A1B6FFE732A343F3C728D84B4FF8956F1F4F4197C`,
+and Rifle
+`9D9288D04DEED70A6CA7AA321A2107B0F482431A082A1E2EDF4B50CB14742072`.
+The twice-reproduced firearm bundle SHA-256 is
+`5FA2D053EDC75B8BC7F64C296CE8A4EBB166B4A9C956C0CCFE7278E5ABFCB49E`.
+
+Repository validation, all 1,164 Release domain tests, clean Release build,
+output and SoundBank checks, strict package validation, and Build-Local pass.
+The exact tested package/DLL SHA-256 values are
+`EBE81ABDF3879FCE501A9E9FB2AE71E214765274040F4165020AFDC21577FB2C`
+and `AB69C222DCEF85D3DC819E3138C99B3D47808B72F299E1F0E860710C98D02BDA`.
+
+Final exact-package evidence passes at:
+
+- `20260821T0413290534687Z-weapon-presentation-evidence` (9/9; 56
+  PNG/JSON pairs; 224 views; held/stored).
+- `20260821T0416419128426Z-weapon-presentation-motion-evidence` (6/6;
+  40 PNG/JSON pairs; 160 views; ready plus nine acted-attack samples).
+
+Every firearm fired exactly once with no fault, and the visible physical
+muzzle/bell led toward the target. Across ten motion samples, support-hand
+distance averages were Musket `0.131895 m`, Blunderbuss `0.125596 m`, Rifle
+`0.133205 m`, and native Heavy Crossbow `0.132578 m`. Visual review accepts
+dominant-hand grip, support hand, stock/shoulder, visible direction, and
+independent stored presentation for the captured default-Medium-male states.
+Reload, locomotion/turning, transitions, armor/cloak, female, Small, and
+Enlarged coverage remain open.
+
 ## Next concrete actions
 
-1. Apply family-specific Musket, Blunderbuss, and Rifle visible-child
-   grip/butt/support calibration against the measured Heavy Crossbow donor.
-   Preserve identity equipment roots, marker/projectile semantics, and the
-   exact discharge behavior proved by the motion fixture.
-2. Calibrate independent long-gun stored/back prefabs, regenerate bundles
-   deterministically, rerun static and motion evidence, then extend coverage to
-   reload, locomotion, and representative sex/size fixtures.
-3. Continue through branched-spear, Eastern held, and Eastern stored
-   calibration without waiting for a checkpoint confirmation.
+1. Inspect the actual branched-spear production mesh and historical authoring
+   work, then identify physical head, butt, grip, support, and branch-face axes
+   from renderer geometry rather than the current assumed coordinates.
+2. Derive held and independently stored frames from the measured native
+   Longspear donor, regenerate the spear bundle deterministically, and qualify
+   held/stored plus real thrust motion with the guarded fixture.
+3. Continue through Eastern held and Eastern stored calibration without
+   waiting for checkpoint confirmation.
+4. Before final acceptance, extend runtime coverage to reload,
+   locomotion/turning, transitions, armor/cloak, and representative sex/size
+   fixtures, including the already calibrated long guns.
 
 ## Supported hypotheses requiring donor confirmation
 
@@ -151,11 +205,10 @@ and `2B7EC67E836D7290E71AE62D5621172F1231FC88340B23D2CE3118275158382E`.
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
   side `-Z`. Identity presentation is therefore not a valid basis conversion.
-- Rifle still relies on an unexplained source transform, and V4 now proves its
-  resulting torso intersection under native attack. Musket/Blunderbuss
-  `3°`/`4°` yaw is not a full basis conversion and V4 proves both remain
-  transverse to the body. Service Pistol and Revolver are already
-  basis-derived and renderer-endpoint verified.
+- Long-gun V4 defects are superseded for the states captured by V5/V6. Musket,
+  Blunderbuss, and Rifle are now basis-derived and renderer-endpoint verified;
+  their uncaptured reload, locomotion, transition, and body-matrix states
+  remain evidence gaps rather than transform hypotheses.
 
 ## Safety/publication
 

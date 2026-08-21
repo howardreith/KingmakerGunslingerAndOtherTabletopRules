@@ -497,3 +497,96 @@ SHA-256 are
 `8A01BB7E6B1952AEEA14A9675987EEB481BB7BFBA9F73E3807D322757F01A1D7`;
 DLL SHA-256 is
 `2B7EC67E836D7290E71AE62D5621172F1231FC88340B23D2CE3118275158382E`.
+
+## 2026-08-21 - calibrated long-gun held and stored checkpoint
+
+Published implementation commit
+`b672406ebbb8af8340d723d074ff8a69bd0ffe25`
+(`fix(presentation): calibrate long-gun held and stored rigs`) replaces the
+legacy Musket/Blunderbuss yaw guesses and Rifle source transform with one
+deterministic, family-specific source-authoring pipeline. It does not rotate
+an equipment root or alter projectile semantics. Each production long gun now
+has an identity equipment root, a calibrated visible child, renderer-bound
+butt/muzzle polarity, a measured trigger-wrist grip, an explicit fore-end
+support target, and non-collinear `WeaponForward`/`WeaponUp` markers. Rifle now
+has an independent `RifleBelt` prefab rather than inheriting the held transform
+or relying on a hidden stored policy.
+
+The physical source measurements are recorded as original `+X` butt-to-muzzle
+and `+Z` stock/receiver-up. The generated canonical frame is `+Z` forward and
+`+Y` up. The visible held layer maps that complete frame to the live native
+Heavy Crossbow donor basis measured as Euler
+`(81.58254, 6.878487, 255.457428)`; all root and semantic locators remain
+identity-root children. Stored prefabs independently use the measured native
+stored position `(-0.227002054, -0.0360002033, 0.111000687)`, Euler
+`(29.35143, 112.346809, 16.69746)`, and renderer-center anchor. The Musket
+support station is `0.374 m` forward of its grip, selected from the native
+control contact result rather than an unexplained Euler adjustment.
+
+The derivative generator was executed twice with identical outputs. Exact
+source FBX SHA-256 values are:
+
+- Musket: `C5E2EA93E903782BF3110E50C1D6677C4E7C109248651495192D8B6063F73A0A`.
+- Blunderbuss: `45DD00FD88D7CE1B66690E1A1B6FFE732A343F3C728D84B4FF8956F1F4F4197C`.
+- Rifle: `9D9288D04DEED70A6CA7AA321A2107B0F482431A082A1E2EDF4B50CB14742072`.
+
+Two Unity 2018.4.10f1 builds also reproduced byte-identically. The final
+`kingmakergunslinger.firearms` bundle is 18,172,758 bytes with SHA-256
+`5FA2D053EDC75B8BC7F64C296CE8A4EBB166B4A9C956C0CCFE7278E5ABFCB49E`.
+Build logs are
+`C:/Dev/KingmakerGunslingerLab/unity-asset-build/weapon-presentation-long-guns-musket-support-build.log`
+and
+`C:/Dev/KingmakerGunslingerLab/unity-asset-build/weapon-presentation-long-guns-musket-support-repro.log`.
+
+Final source qualification passed repository validation, all 1,164 Release
+domain tests, clean Release compilation, output validation, SoundBank checks,
+strict package validation, and `Build-Local.ps1`. The exact deployed local
+runtime package is
+`artifacts/local-runtime/0.0.88/KingmakerGunslinger-0.0.88-local-runtime.zip`
+with SHA-256
+`EBE81ABDF3879FCE501A9E9FB2AE71E214765274040F4165020AFDC21577FB2C`.
+Its DLL SHA-256 is
+`AB69C222DCEF85D3DC819E3138C99B3D47808B72F299E1F0E860710C98D02BDA`.
+
+Final exact-package guarded Steam evidence is:
+
+- Static held/stored matrix:
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T0413290534687Z-weapon-presentation-evidence/`.
+  It passed 9/9 assertions with 56 PNG/JSON pairs and 224 labelled views;
+  result SHA-256 is
+  `80AFD853265E79EFE58DCA43EDEA1BC77CC9A99DE4781599A483C18D64FFC974`.
+- Combat-ready/attack matrix:
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T0416419128426Z-weapon-presentation-motion-evidence/`.
+  It passed 6/6 assertions with 40 PNG/JSON pairs and 160 labelled views;
+  every native command ran and reached its acted event, every firearm fired
+  once with no fault and zero rounds afterward, and request-local cleanup was
+  exact. Result SHA-256 is
+  `72B7D8088F0A98A59293B66E6AB8ED85E4D5F7F37F16B17E9044EB63EF807813`;
+  motion-index SHA-256 is
+  `6AB9264D2666C7FCC715CF0EDAF2663018D626FC3E9CF44D82C3D094121C8BAB`.
+
+Across all ten ready/attack samples per weapon, left-hand-to-support-target
+distance was Musket `0.118081..0.143733 m` (average `0.131895 m`),
+Blunderbuss `0.107004..0.141727 m` (average `0.125596 m`), Rifle
+`0.115776..0.144329 m` (average `0.133205 m`), and native Heavy Crossbow
+`0.118313..0.144278 m` (average `0.132578 m`). Direct review of the front,
+right-side, rear, and front-right-three-quarter sheets confirms physical
+muzzles/bell lead toward the target, stocks approach the shoulder plausibly,
+support hands remain at the fore-end rather than the muzzle, and no severe or
+persistent torso traversal remains in the captured states. The independent
+stored models are diagonal and acceptable on the same fixture; the
+Blunderbuss remains visually bulky but does not show severe persistent
+clipping.
+
+Both final launches used the guarded request path through Steam App ID 640820,
+encountered no credential, entitlement, cloud, or security dialog, made no
+save call, exited automatically, and did not touch `KMG_AUTOMATION_BASELINE`.
+The runtime identity records the previously published source commit `e530a8ac`
+because the exact package was built from the qualified dirty worktree; the
+package, DLL, bundle, source-FBX, and evidence hashes above bind the tested
+content now committed at `b672406e`.
+
+Acceptance is deliberately bounded to held-idle, stored, combat-ready, and
+sampled acted-fire states on the default Medium male. Reload, locomotion,
+turning, equip/unequip transitions, armor/cloak, female, Small, and Enlarged
+coverage remain open and are not inferred from these captures.
