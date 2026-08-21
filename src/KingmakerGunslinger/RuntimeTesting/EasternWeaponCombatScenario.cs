@@ -398,6 +398,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 GameObject model = visual == null ? null : visual.Model;
                 GameObject beltModel = visual == null ? null :
                     visual.BeltModel;
+                GameObject sheathModel = visual == null ? null :
+                    visual.SheathModel;
+                GameObject donorSheathModel = donor.VisualParameters == null ?
+                    null : donor.VisualParameters.SheathModel;
                 GameObject instance = null;
                 GameObject storedInstance = null;
                 bool heldResolved = false;
@@ -469,8 +473,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool itemExact = itemOverrideFieldExists &&
                     ReferenceEquals(itemOverride, visual) && visual != null &&
                     !ReferenceEquals(visual, familySet.WeaponType
-                        .VisualParameters) && model != null &&
+                    .VisualParameters) && model != null &&
                     beltModel != null &&
+                    sheathModel == null && donorSheathModel != null &&
                     Assets.EasternWeaponAssetRuntime.HasExactVisual(item,
                         symbol) &&
                     VisualContractMatches(visual, donor.VisualParameters) &&
@@ -488,7 +493,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "exact-item-visual" : "different-visual") +
                     ";model=" + (model == null ? "<null>" : model.name) +
                     ";beltModel=" + (beltModel == null ? "<null>" :
-                        beltModel.name) + ";instantiated=" + instantiated +
+                        beltModel.name) + ";sheathModel=" +
+                    (sheathModel == null ? "<null>" : sheathModel.name) +
+                    ";donorSheathModel=" + (donorSheathModel == null ?
+                        "<null>" : donorSheathModel.name) +
+                    ";instantiated=" + instantiated +
                     ";storedInstantiated=" + storedInstantiated +
                     ";donor=" +
                     donorGuid + "/" + (visual == null ? "<null>" :
@@ -502,7 +511,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string observed = string.Join("|", rows.ToArray());
             ElvenBranchedSpearCombatScenario.Add(assertions,
                 "eastern-all-30-visual-identities",
-                "30 exact items; 10 per family; inherited held and independently calibrated stored fields equal the approved blueprint-specific pair; exact family and native donor contract including sheath; CuttingEdge material in both roles; transient cleanup",
+                "30 exact items; 10 per family; exact held and independently calibrated stored fields equal the approved blueprint-specific pair; complete custom stored presentation replaces the sheath only on custom clones; every native donor retains its sheath and all other presentation fields; CuttingEdge material in both roles; transient cleanup",
                 observed, exact && set.Families.All(family => items.Count(
                     item => ReferenceEquals(item.Type,
                         family.WeaponType)) == 10),
@@ -523,12 +532,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             WeaponVisualParameters donor)
         {
             if (value == null || donor == null) return false;
+            if (value.SheathModel != null || donor.SheathModel == null)
+                return false;
             foreach (FieldInfo field in typeof(WeaponVisualParameters)
                 .GetFields(Members))
             {
                 if (field.IsStatic || string.Equals(field.Name,
                         "m_WeaponModel", StringComparison.Ordinal) ||
                     string.Equals(field.Name, "m_WeaponBeltModel",
+                        StringComparison.Ordinal) ||
+                    string.Equals(field.Name, "m_WeaponSheathModel",
                         StringComparison.Ordinal)) continue;
                 object left = field.GetValue(value);
                 object right = field.GetValue(donor);

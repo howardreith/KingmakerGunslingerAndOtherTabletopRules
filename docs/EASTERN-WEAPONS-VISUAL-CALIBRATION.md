@@ -21,10 +21,13 @@ stored renderer-center anchor. The serialized visible-child transform is an
 output of that basis solve. It is not shared between held and stored roles.
 
 All 12 production variants have exact held and `Stored` prefabs. Runtime clones
-the donor `WeaponVisualParameters` and changes only `m_WeaponModel` and
-`m_WeaponBeltModel`; animation style, trails, sounds, slots, sheath, timing, and
-all other fields are preserved. The native donor blueprints are never mutated.
-The custom models retain separate palettes, guards, wraps, and silhouettes.
+the donor `WeaponVisualParameters`, replaces `m_WeaponModel` and
+`m_WeaponBeltModel`, and clears `m_WeaponSheathModel` only on the custom clone.
+The complete custom stored prefab replaces that presentation role; retaining a
+second donor sheath can recreate it detached during held and transition states.
+Animation style, trails, sounds, slots, timing, and all other fields are
+preserved. The native donor blueprints and their sheaths are never mutated. The
+custom models retain separate palettes, guards, wraps, and silhouettes.
 
 ## Validation and artifact identity
 
@@ -69,3 +72,34 @@ clipping is visible in captured held-idle, stored, combat-ready, or acted
 states. This acceptance does not infer locomotion, equip/unequip transitions,
 armor/cloak, female, Small, or Enlarged results; those remain mission-matrix
 work.
+
+## Clone-only sheath replacement qualification
+
+The first clean transition/motion matrix at
+`20260821T0901591703709Z-weapon-presentation-transition-motion-evidence`
+passed its structural assertions but exposed an objective presentation defect:
+the inherited Bastard Sword or Greatsword scabbard floated away from several
+custom Katana and Nodachi actors during held, turned, and unequip-transition
+frames. Native controls retained correctly attached scabbards. This visual
+finding supersedes the earlier assumption that preserving the custom clone's
+sheath field was harmless.
+
+The narrow repair clears only the custom clone's sheath after its exact held and
+complete stored prefabs pass validation. Post-repair guarded dirty-source runs
+pass:
+
+- `20260821T0916061387506Z-disposable-eastern-weapons-combat`: 21/21; all 30
+  custom item presentations have a null sheath while every native family donor
+  retains its exact sheath and all unreplaced fields.
+- `20260821T0918521143567Z-weapon-presentation-transition-motion-evidence`:
+  8/8; 48/48 custom Eastern state records are sheath-free and 12/12 native
+  sword-control records retain a sheath; 112 PNG/JSON pairs and 448 views.
+- `20260821T0925383218065Z-weapon-presentation-evidence`: 9/9; 56 held/stored
+  PNG/JSON pairs and 224 views confirm every custom stored prefab remains
+  visible and independently calibrated.
+
+Direct before/after review confirms the detached scabbards are gone from all
+12 custom variants while native Scimitar, Bastard Sword, and Greatsword controls
+remain unchanged. This adds accepted locomotion, turning, and equip/unequip
+transitions on the same default Medium male. Armor/cloak, female, Small, and
+Enlarged results remain open.

@@ -9,9 +9,10 @@ The silhouettes derive only from mission-authorized visual language. The four
 variants per family combine visibly different guard/pommel geometry with
 bounded blade width and curvature. Family scale remains fixed: Wakizashi 0.76
 m, Katana 1.05 m, and two-handed Nodachi 1.58 m. No project-owned scabbard mesh
-is included. The bundle does include independently transformed stored prefabs
-of each project-owned weapon mesh while preserving the native donor sheath
-field at runtime.
+is included. The bundle does include independently transformed, complete
+stored prefabs of each project-owned weapon mesh. Those custom presentation
+clones clear the redundant donor sheath field; the native donor blueprints and
+their sheaths remain unchanged.
 
 ## Reproducible sources
 
@@ -42,7 +43,9 @@ embeds session metadata; it regenerates the same authored object contract.
 The previous 12-held-prefab bundle was 311,289 bytes. The calibrated result has
 12 held plus 12 independently stored prefabs. Blueprint/type GUIDs, family
 categories, mechanics, campaign placement, persistence, and optional-mod
-contracts are unchanged. Runtime clones the native presentation donor and
-changes only its held and belt model fields, preserving animations, trails,
-sounds, slots, sheath, and timing. Guarded visual acceptance is recorded in
+contracts are unchanged. Runtime clones the native presentation donor, replaces
+its held and belt model fields, and clears its sheath field only on the custom
+clone because the complete custom stored prefab owns that role. Animations,
+trails, sounds, slots, timing, and every other donor field remain exact.
+Guarded visual acceptance is recorded in
 `docs/EASTERN-WEAPONS-VISUAL-CALIBRATION.md`.

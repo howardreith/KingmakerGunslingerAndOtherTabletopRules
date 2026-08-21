@@ -869,22 +869,97 @@ The generic wrapper reached its deadline while the same responsive Kingmaker
 process was still traversing the large matrix, so `orchestration.json` records
 `ERROR` and deliberately leaves PID 18488 running. The guarded scenario then
 completed normally, atomically wrote the PASS result above, and auto-exited.
-This dirty-source run is valid engineering qualification bound by the exact
-package/DLL/evidence hashes, but a clean commit-bound rerun is required and
-will supersede it.
+The dirty-source run is valid engineering evidence bound by the exact
+package/DLL/evidence hashes. Published commit
+`897ec7359cc4d8f9ea1260c04ecccc93c164ce39` then received a clean exact-commit
+rerun at:
 
-Direct review covered every moving, turned, equip-transition, and unequip-
-transition contact sheet for all 22 variants and six controls. Handguns follow
-the native one-handed shoulder-carry motion without severe torso penetration.
-Long guns track the native crossbow shoulder line without severe persistent
-body clipping. Spearheads remain forward and clear in the native Longspear
-overhead locomotion. Eastern blade planes remain upright and track their
-Scimitar, Bastard Sword, and Greatsword controls. Independent stored models
-visibly transition to and from held presentation without severe clipping, and
-every held model follows the actor turn instead of remaining world-space
-pinned.
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260821T0901591703709Z-weapon-presentation-transition-motion-evidence/`
 
-Acceptance remains bounded to locomotion, turning, and transitions on the
-default Medium male. Firearm reload, handgun ready/fire and valid dual wield,
-armor/cloak interaction, female, Small, and Enlarged coverage remain open.
-No run called a save API or touched `KMG_AUTOMATION_BASELINE`.
+That run passed the same 7/7 structural assertions in 202,568 ms with 112
+PNG/JSON pairs and 448 views. Result/index SHA-256 are
+`7C32187C6148C438E5B40C18BA2C55E7154433D1EFA8D62176AAC345F70EBCA4` /
+`F6AF2475F8AD5706A61CEEDB2EF69B17C389553ADFD84EB7D238AEE979B1652F`.
+Its 22,418,029-byte package SHA-256 is
+`93133DDD1B62E13C40A99318E8A1928D951162A79901C12D89FD9F5375E012FF`;
+DLL SHA-256 is
+`2F8B3F1A230FC7F1F9B7B024A59665CEC0A5AC3E64B53884C7FAB8B990EE7F03`.
+
+Direct review accepts handguns, long guns, and branched spears in the captured
+movement, turn, and transition states. It also proved that all held models
+follow actor rotation rather than remaining world-space pinned. However, rear
+views objectively exposed a separate Eastern stored-presentation defect that
+the structural assertions did not yet cover: inherited donor scabbards floated
+detached from custom Katana Reed, Katana Regal, and Nodachi Titan actors. The
+clearest reproductions are
+`15-katana-reed-turned-right-default-medium.png`,
+`15-katana-reed-unequip-transition-default-medium.png`,
+`16-katana-regal-turned-right-default-medium.png`, and
+`20-nodachi-titan-turned-right-default-medium.png`. Native Scimitar, Bastard
+Sword, and Greatsword controls retained correctly attached scabbards. Eastern
+transition acceptance from the earlier review is therefore superseded by this
+`OBS-DEFECT`; non-Eastern V12 acceptance remains valid.
+
+## 2026-08-21 - Eastern clone-only sheath replacement
+
+All 12 Eastern variants already provide a separately calibrated, complete
+stored prefab. Retaining the native donor sheath on the same custom visual clone
+duplicated that role and allowed Kingmaker to recreate the donor scabbard at an
+incompatible attachment during held and transition states. The narrow repair
+sets `m_WeaponSheathModel` to null only on each custom clone after exact held and
+stored validation. Native donor blueprints retain their non-null sheaths. Every
+other `WeaponVisualParameters` field remains equal to the donor, including
+animation, trails, sounds, attachment slots, and timing. No mesh transform,
+equipment root, gameplay field, item identity, projectile, or native blueprint
+is changed.
+
+Focused contracts now require clone-only sheath replacement, preserved
+unreplaced donor fields, and an explicit live transition assertion. Repository
+validation passed; all 1,164 Release domain tests passed; clean Release
+compilation/package creation and strict package validation passed. Runtime
+preflight's known immediately-post-build timestamp negative case failed once,
+then the standalone rerun passed all 124 checks. The first two attempts to reuse
+an installed artifact failed closed before launch because the invocation first
+lacked an exact package path and then had a dirty Git state; the normal guarded
+dirty-source workflow was used instead.
+
+The exact post-repair dirty-source runtime artifact is 22,418,707 bytes,
+SHA-256
+`1C64964A70861C742948164D2FE9DBBE325172E6064215CC837AA304B78C3232`;
+DLL SHA-256 is
+`7DC0261D8DDAFCCF9AB68091B128099A4F7196FC266A63647A72C01C8F6D40CD`.
+Guarded Steam App ID 640820 results are:
+
+- `20260821T0916061387506Z-disposable-eastern-weapons-combat`: PASS 21/21;
+  all 30 item presentations report `sheathModel=<null>` while each native
+  family donor reports its exact non-null sheath; protected combat mechanics
+  and cleanup pass. Result SHA-256 is
+  `B8566D16AACF4F78808145B5694A1C5A039BE79F8CC7EF5D5D683F03E2F5FB40`.
+- `20260821T0918521143567Z-weapon-presentation-transition-motion-evidence`:
+  PASS 8/8; 48/48 custom Eastern records are sheath-free, 12/12 native Eastern
+  control records retain a sheath, 112 PNG/JSON pairs contain 448 labelled
+  views, every transition/movement/turn assertion passes, and cleanup is exact.
+  Result/index SHA-256 are
+  `DE63A46EDBB4DC68BBAAB6901A8A584003BD314F6262C76EEFDD25457CA4C353` /
+  `82B862659418D2AA2F2B201E737CC8FD99C72B3A9BB7316197CC6ABC00598660`.
+- `20260821T0925383218065Z-weapon-presentation-evidence`: PASS 9/9; all 22
+  production variants plus six controls materialize in stored and held-idle
+  states, producing 56 PNG/JSON pairs and 224 labelled views with no blank or
+  low-density sheet and exact cleanup. Result/index SHA-256 are
+  `D6A2E2F45AED132ABBFFA5469DEB06798521F57376660E14092756E2CC359CF2` /
+  `25ADAF37BD7951B289626D5A3C6576D9324A8BE4B259017E6D830657961736CE`.
+
+Direct before/after review of the exact reproductions above and every Eastern
+turned-right sheet confirms that no detached donor scabbard remains on any of
+the 12 custom variants. Review of all 12 post-repair stored sheets confirms each
+independent custom stored model remains visible and plausibly attached. Native
+Scimitar, Bastard Sword, and Greatsword controls still render their own
+scabbards. This accepts Eastern held-idle, stored, movement, turning, and
+equip/unequip transitions on the default Medium male. A clean commit-bound
+rerun of all three post-repair scenarios remains required before this repair's
+final documentation checkpoint.
+
+Mission acceptance remains bounded to the recorded default Medium male states.
+Firearm reload, handgun ready/fire and valid dual wield, armor/cloak
+interaction, female, Small, and Enlarged coverage remain open. No run called a
+save API or touched `KMG_AUTOMATION_BASELINE`.

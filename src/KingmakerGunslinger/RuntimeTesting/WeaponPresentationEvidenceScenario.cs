@@ -2607,6 +2607,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "MatchWithCurrentCombatState, m_Coroutine, and " +
                         "AreHandsBusyWithAnimation; equipment guard only, " +
                         "without UnitCombatState.JoinCombat");
+                string[] easternFamilies =
+                    { "Wakizashi", "Katana", "Nodachi" };
+                JObject[] easternRecords = _records.OfType<JObject>()
+                    .Where(value => easternFamilies.Contains(
+                        (string)value["family"], StringComparer.Ordinal))
+                    .ToArray();
+                string[] easternNativeVariants =
+                {
+                    "Native.Scimitar", "Native.BastardSword",
+                    "Native.Greatsword"
+                };
+                JObject[] easternNativeRecords = _records.OfType<JObject>()
+                    .Where(value => easternNativeVariants.Contains(
+                        (string)value["variant"], StringComparer.Ordinal))
+                    .ToArray();
+                int clearedEasternSheaths = easternRecords.Count(value =>
+                    string.Equals((string)value["sheathModel"], "<null>",
+                        StringComparison.Ordinal));
+                int retainedNativeEasternSheaths = easternNativeRecords.Count(
+                    value => !string.Equals((string)value["sheathModel"],
+                        "<null>", StringComparison.Ordinal));
+                Add(_assertions,
+                    "weapon-presentation-eastern-custom-sheath-replacement",
+                    "all 12 Eastern variants use complete custom stored " +
+                        "presentation without a donor sheath while all three " +
+                        "native donor controls retain their sheaths in four " +
+                        "states",
+                    "custom=" + clearedEasternSheaths + "/" +
+                        easternRecords.Length + ";native=" +
+                        retainedNativeEasternSheaths + "/" +
+                        easternNativeRecords.Length,
+                    easternRecords.Length == 12 * statesPerCase &&
+                        clearedEasternSheaths == easternRecords.Length &&
+                        easternNativeRecords.Length == 3 * statesPerCase &&
+                        retainedNativeEasternSheaths ==
+                            easternNativeRecords.Length,
+                    "live custom clone and unchanged native donor " +
+                        "WeaponVisualParameters across transitions and motion");
                 Add(_assertions,
                     "weapon-presentation-native-locomotion",
                     "every case starts and runs navmesh-backed UnitMoveTo with " +

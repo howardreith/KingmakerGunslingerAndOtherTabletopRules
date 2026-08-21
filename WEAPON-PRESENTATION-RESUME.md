@@ -58,6 +58,12 @@
 - Published Eastern qualification documentation commit:
   `54e4af1f16351700282aba2b8a4f47b5433384f3`
   (`docs(presentation): qualify eastern held and stored rigs`).
+- Published transition/locomotion fixture commit:
+  `897ec7359cc4d8f9ea1260c04ecccc93c164ce39`
+  (`test(presentation): qualify transitions and locomotion`).
+- Current worktree contains only the narrow Eastern custom-clone sheath
+  replacement, its focused/runtime contracts, and mission documentation. It is
+  qualified as dirty-source evidence but not yet committed.
 - Version remains `0.0.88`; do not bump until the complete cosmetic package is
   qualified.
 - The current implementation adds a shared full-frame semantic contract,
@@ -67,7 +73,9 @@
   frames, native-derived held/stored bases, and held-only support-hand IK. All
   12 Eastern variants now have renderer-grounded source frames, measured
   family-donor held bases, independent stored prefabs, and held-only Nodachi IK;
-  runtime changes only the donor clone's held and belt model fields.
+  runtime replaces the donor clone's held and belt model fields and clears only
+  that clone's redundant sheath field. Native donor sheaths and all other donor
+  fields remain unchanged.
 
 ## Qualified unchanged baseline
 
@@ -298,10 +306,11 @@ uses held-only left-hand IK at the native `-0.169 m` butt-side station.
 
 The first static run failed closed at
 `20260821T0629124884888Z-weapon-presentation-evidence` while recreating the
-preserved native Greatsword sheath: a runtime-added `EquipmentOffsets` had a
+then-preserved native Greatsword sheath: a runtime-added `EquipmentOffsets` had a
 null `m_SlotOffsets`, which native `GetOffsets` enumerates for non-hand slots.
 The narrow correction initializes an empty slot-offset array. It neither adds
-an offset nor clears the native sheath, and it leaves the root identity. The
+an offset nor clears the sheath at that historical checkpoint, and it leaves
+the root identity. The
 immediate dirty-source retry completed all 56 captures and wrote PASS after the
 generic 120-second wrapper deadline; clean commit-bound reruns below supersede
 that wrapper race.
@@ -394,20 +403,58 @@ The tested package is 22,418,038 bytes, SHA-256
 DLL SHA-256 is
 `F6E7934CAB20D0C86B5C42D01AD0C0D30FABB4BAFE8299A5454BAAEC3039D5DE`.
 
-Direct review of every moving, turned, equip-transition, and unequip-transition
-sheet accepts all calibrated variants against their native controls on the
-default Medium male. No severe persistent body clipping or world-space-pinned
-weapon was visible. This evidence does not cover firearm reload, handgun
-ready/fire or dual wield, armor/cloak interaction, female, Small, or Enlarged
-fixtures. Because the generic wrapper timed out while the responsive game was
-still completing the 204-second matrix, its orchestration record is `ERROR`;
-the guarded runtime result itself subsequently flushed PASS and the game exited
-normally. A clean commit-bound rerun is the next required action.
+The dirty run's structural evidence remains valid, and the generic wrapper's
+deadline race is superseded by a clean commit-bound PASS at
+`20260821T0901591703709Z-weapon-presentation-transition-motion-evidence`.
+Direct review of that clean run accepts firearm and spear motion/transition
+states, but it exposed detached inherited donor scabbards on custom Katana and
+Nodachi rear views. Eastern V12 visual acceptance is therefore superseded by
+the repair qualification below.
+
+## Eastern custom-clone sheath repair awaiting publication
+
+The current narrow change clears `m_WeaponSheathModel` only on each validated
+custom Eastern `WeaponVisualParameters` clone. All 12 variants already own a
+complete independent stored prefab, so the inherited donor sheath duplicated
+the stored role and could float detached during held/transition states. Native
+Scimitar, Bastard Sword, and Greatsword donor blueprints remain unchanged and
+retain their exact sheaths. Held/stored models, animation, trails, sounds,
+attachment slots, timing, item identity, roots, transforms, and mechanics are
+otherwise unchanged.
+
+Current qualification passes repository validation, all 1,164 Release domain
+tests, clean Release/package creation, strict package validation, and runtime
+preflight 124/124 after one known immediate-post-build timestamp retry. The
+tested dirty-source package is 22,418,707 bytes, SHA-256
+`1C64964A70861C742948164D2FE9DBBE325172E6064215CC837AA304B78C3232`;
+DLL SHA-256 is
+`7DC0261D8DDAFCCF9AB68091B128099A4F7196FC266A63647A72C01C8F6D40CD`.
+
+- `20260821T0916061387506Z-disposable-eastern-weapons-combat`: PASS 21/21;
+  all 30 custom items are sheath-free, all native family donors retain their
+  sheath, protected mechanics and cleanup pass; result SHA-256
+  `B8566D16AACF4F78808145B5694A1C5A039BE79F8CC7EF5D5D683F03E2F5FB40`.
+- `20260821T0918521143567Z-weapon-presentation-transition-motion-evidence`:
+  PASS 8/8; custom sheath `48/48` null, native controls `12/12` non-null; 112
+  PNG/JSON pairs, 448 views; result/index SHA-256
+  `DE63A46EDBB4DC68BBAAB6901A8A584003BD314F6262C76EEFDD25457CA4C353` /
+  `82B862659418D2AA2F2B201E737CC8FD99C72B3A9BB7316197CC6ABC00598660`.
+- `20260821T0925383218065Z-weapon-presentation-evidence`: PASS 9/9; 56 exact
+  stored/held PNG/JSON pairs, 224 views; result/index SHA-256
+  `D6A2E2F45AED132ABBFFA5469DEB06798521F57376660E14092756E2CC359CF2` /
+  `25ADAF37BD7951B289626D5A3C6576D9324A8BE4B259017E6D830657961736CE`.
+
+Before/after review confirms all detached scabbards are gone, every custom
+stored model remains present, and native donor-control scabbards remain
+attached. These runs are dirty-source qualification bound by exact artifact and
+DLL hashes; clean commit-bound reruns are still required after publication.
 
 ## Next concrete actions
 
-1. Commit and publish the qualified transition/motion fixture, rebuild from the
-   clean commit, and rerun it so evidence binds to that exact commit.
+1. Commit and publish the qualified clone-only Eastern sheath replacement,
+   rebuild from the clean commit, and rerun the Eastern combat, transition/
+   motion, and static stored/held scenarios so evidence binds to that exact
+   commit.
 2. Add firearm reload visual sampling without changing reload mechanics, then
    exercise handgun ready/fire and valid dual-wield presentation.
 3. Construct narrower request-local female Medium, Small, and Enlarged visual
@@ -427,8 +474,10 @@ normally. A clean commit-bound rerun is the next required action.
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
   side `-Z`. V10/V11 and E3 confirm the implemented full-basis conversion and
-  independent stored models for all 12 variants on the captured fixture. Only
-  the broader motion/body matrix remains.
+  independent stored models. Post-repair E4/V13/V14 additionally confirm
+  clone-only sheath replacement, unchanged native donor sheaths, and accepted
+  stored/motion/transition presentation for all 12 variants on the captured
+  fixture. Only the broader body matrix remains.
 - Long-gun V4 defects are superseded for the states captured by V5/V6. Musket,
   Blunderbuss, and Rifle are now basis-derived and renderer-endpoint verified;
   V12 accepts default-Medium-male locomotion, turning, and transitions. Reload

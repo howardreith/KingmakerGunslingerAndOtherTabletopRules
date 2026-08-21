@@ -84,7 +84,9 @@ remains after safe alternatives are exhausted.
 Presentation calibration is implemented for all 22 production variants.
 Default-Medium-male guarded evidence currently covers held, independently
 stored, family-appropriate ready/attack states, locomotion, body-relative
-turning, and equip/unequip transitions. Remaining runtime matrix work is
-firearm reload, handgun ready/fire and valid dual wield, armor/cloak
-interaction, and female, Small, and Enlarged fixtures. Version remains
-`0.0.88` until those rows and the final package qualify.
+turning, and equip/unequip transitions. Eastern custom clones use their complete
+independent stored prefabs without also recreating a donor sheath; native donor
+blueprints retain their own sheaths unchanged. Remaining runtime matrix work is
+firearm reload, handgun ready/fire and valid dual wield, armor/cloak interaction,
+and female, Small, and Enlarged fixtures. Version remains `0.0.88` until those
+rows and the final package qualify.

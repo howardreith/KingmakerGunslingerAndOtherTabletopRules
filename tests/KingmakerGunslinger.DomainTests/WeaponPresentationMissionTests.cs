@@ -96,14 +96,16 @@ namespace KingmakerGunslinger.DomainTests
                 easternRuntime.Contains("ValidateRendererEndpoints") &&
                 easternRuntime.Contains("StoredPrefabs") &&
                 easternRuntime.Contains("m_WeaponBeltModel") &&
-                easternRuntime.Contains("m_WeaponSheathModel") == false &&
-                easternRuntime.Contains("PreservesNonModelFields") &&
+                easternRuntime.Contains("m_WeaponSheathModel") &&
+                easternRuntime.Contains(".SetValue(visual, null)") &&
+                easternRuntime.Contains("visual.SheathModel == null") &&
+                easternRuntime.Contains("PreservesUnreplacedDonorFields") &&
                 easternRuntime.Contains("EquipmentOffsets") &&
                 easternRuntime.Contains("IkTargetLeftHand") &&
                 easternRuntime.Contains("HasCalibratedDonorFrame") &&
                 easternRuntime.Contains(
                     "held and stored presentations share an incompatible transform"),
-                "Eastern authoring/runtime does not enforce mesh-authored blade polarity, donor-derived roll, held-only Nodachi IK, independent stored presentation, and inherited native sheath data.");
+                "Eastern authoring/runtime does not enforce mesh-authored blade polarity, donor-derived roll, held-only Nodachi IK, independent stored presentation, and custom-clone-only sheath replacement.");
         }
 
         internal static void EvidenceScenarioIsGuardedAndStateLabelled()
@@ -245,6 +247,7 @@ namespace KingmakerGunslinger.DomainTests
                 "equip-transition", "unequip-transition", "turned-right",
                 "weapon-presentation-transition-motion-index.json",
                 "weapon-presentation-native-equip-unequip-transitions",
+                "weapon-presentation-eastern-custom-sheath-replacement",
                 "weapon-presentation-native-locomotion",
                 "weapon-presentation-body-relative-turn",
                 "weapon-presentation-transition-motion-request-cleanup" })

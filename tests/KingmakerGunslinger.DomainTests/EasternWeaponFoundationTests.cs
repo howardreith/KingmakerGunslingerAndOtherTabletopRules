@@ -766,7 +766,8 @@ namespace KingmakerGunslinger.DomainTests
                 "GetComponentsInChildren<Camera>",
                 "GetComponentsInChildren<Light>", "InstantiatePrefab",
                 "InstantiateStoredPrefab", "m_WeaponBeltModel",
-                "PreservesNonModelFields", "StoredMount",
+                "m_WeaponSheathModel", "visual.SheathModel == null",
+                "PreservesUnreplacedDonorFields", "StoredMount",
                 "HasCalibratedDonorFrame",
                 "offsets.m_SlotOffsets = new EquipmentOffsets.Offsets[0]",
                 "held support-hand offset initialization failed" })

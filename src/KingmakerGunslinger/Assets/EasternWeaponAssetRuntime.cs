@@ -260,7 +260,7 @@ namespace KingmakerGunslinger.Assets
                 }
                 if (previous != null) previous.Unload(false);
                 context.Logger.Info("eastern-weapons", "bundle.loaded",
-                    "Published twelve exact held/stored Eastern Weapon pairs transactionally; native family animation, sockets, timing, trails, sounds, and sheaths remain inherited.");
+                    "Published twelve exact held/stored Eastern Weapon pairs transactionally; native family animation, sockets, timing, trails, and sounds remain inherited while complete custom stored prefabs replace donor sheaths on custom clones.");
             }
             catch (Exception exception)
             {
@@ -304,7 +304,7 @@ namespace KingmakerGunslinger.Assets
                     .SetValue(weaponType, visual);
                 if (!ExactModels(weaponType.VisualParameters, prefab,
                         storedPrefab) ||
-                    !PreservesNonModelFields(source,
+                    !PreservesUnreplacedDonorFields(source,
                         weaponType.VisualParameters))
                     throw new InvalidOperationException(
                         "Validated Eastern type fallback did not round-trip without altering donor presentation fields.");
@@ -344,7 +344,8 @@ namespace KingmakerGunslinger.Assets
                     storedPrefab));
                 if (!ExactModels(item.VisualParameters, prefab,
                         storedPrefab) ||
-                    !PreservesNonModelFields(source, item.VisualParameters))
+                    !PreservesUnreplacedDonorFields(source,
+                        item.VisualParameters))
                     throw new InvalidOperationException(
                         "Exact Eastern item variant did not round-trip without altering donor presentation fields.");
                 return true;
@@ -477,10 +478,16 @@ namespace KingmakerGunslinger.Assets
                 .SetValue(visual, prefab);
             Find(typeof(WeaponVisualParameters), "m_WeaponBeltModel")
                 .SetValue(visual, storedPrefab);
+            // Every accepted variant has a separately validated complete stored
+            // prefab. Retaining the donor sheath alongside that replacement
+            // duplicates the stored presentation and can leave the donor
+            // scabbard detached during held/transition states.
+            Find(typeof(WeaponVisualParameters), "m_WeaponSheathModel")
+                .SetValue(visual, null);
             if (!ExactModels(visual, prefab, storedPrefab) ||
-                !PreservesNonModelFields(source, visual))
+                !PreservesUnreplacedDonorFields(source, visual))
                 throw new InvalidOperationException(
-                    "Eastern visual clone did not preserve the native donor contract outside held/stored model fields.");
+                    "Eastern visual clone did not preserve the native donor contract outside the replaced held/stored/sheath presentation fields.");
             return visual;
         }
 
@@ -490,10 +497,11 @@ namespace KingmakerGunslinger.Assets
             return visual != null && prefab != null &&
                 storedPrefab != null &&
                 ReferenceEquals(visual.Model, prefab) &&
-                ReferenceEquals(visual.BeltModel, storedPrefab);
+                ReferenceEquals(visual.BeltModel, storedPrefab) &&
+                visual.SheathModel == null;
         }
 
-        private static bool PreservesNonModelFields(
+        private static bool PreservesUnreplacedDonorFields(
             WeaponVisualParameters source, WeaponVisualParameters value)
         {
             if (source == null || value == null) return false;
@@ -502,7 +510,8 @@ namespace KingmakerGunslinger.Assets
             {
                 if (field.IsStatic ||
                     field.Name == "m_WeaponModel" ||
-                    field.Name == "m_WeaponBeltModel")
+                    field.Name == "m_WeaponBeltModel" ||
+                    field.Name == "m_WeaponSheathModel")
                     continue;
                 if (!object.Equals(field.GetValue(source),
                     field.GetValue(value)))
@@ -574,11 +583,10 @@ namespace KingmakerGunslinger.Assets
             {
                 if (offsets == null)
                     offsets = prefab.AddComponent<EquipmentOffsets>();
-                // EquipmentOffsets.GetOffsets enumerates this collection while
-                // Kingmaker reattaches a preserved native sheath. A runtime-
-                // added component has no serialized collection, so represent
-                // the intentional absence of custom slot corrections with an
-                // empty array rather than allowing sheath recreation to throw.
+                // EquipmentOffsets.GetOffsets may enumerate this collection for
+                // native equipment slots. A runtime-added component has no
+                // serialized collection, so represent the intentional absence
+                // of custom slot corrections with an empty array.
                 if (offsets.m_SlotOffsets == null)
                     offsets.m_SlotOffsets = new EquipmentOffsets.Offsets[0];
                 offsets.IkTargetLeftHand = support;

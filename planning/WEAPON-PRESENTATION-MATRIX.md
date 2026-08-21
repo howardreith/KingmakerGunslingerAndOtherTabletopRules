@@ -21,8 +21,18 @@ for all 12 Eastern variants plus their three native controls; `E3` is the same
 artifact's all-30-item identity, donor-preservation, and protected-mechanics
 qualification. `V12` is all 22 variants plus six native controls in active
 equip/unequip transitions, native locomotion, and 90-degree body-relative
-turning on the default Medium male. None makes an uncaptured reload, handgun
-ready/fire/dual-wield, armor/cloak, sex, or size claim.
+turning on the default Medium male; its clean review exposed detached inherited
+sheaths on custom Eastern clones. `E4` is the post-repair all-30-item donor and
+mechanics qualification. `V13` is the post-repair transition/motion matrix with
+an explicit custom-null/native-retained sheath assertion. `V14` is the post-
+repair held/stored matrix. None makes an uncaptured reload, handgun ready/fire/
+dual-wield, armor/cloak, sex, or size claim.
+
+For every Eastern row below, `V13` supersedes the visual transition/motion
+claim from `V12`, `V14` supersedes the stored/held presentation check from
+`V10`, and `E4` supersedes the custom-clone donor/sheath contract from `E3`.
+The historical evidence identifiers remain in each row's chain; current
+acceptance additionally requires `E4,V13,V14`.
 
 ## Measured native donor controls
 
@@ -148,7 +158,7 @@ ready/fire/dual-wield, armor/cloak, sex, or size claim.
   protected combat mechanics, and cleanup qualification; 21/21 assertions;
   result SHA-256
   `0327284F9E9516B870E23FCA1C8021FD81B4F7CAF8DFF3E206CA7097416F0EE5`).
-- V12:
+- V12-D:
   `20260821T0837326051191Z-weapon-presentation-transition-motion-evidence`
   (all 22 production variants plus six native controls in active native equip
   and unequip transitions, navmesh-backed movement, and a 90-degree body-
@@ -157,8 +167,34 @@ ready/fire/dual-wield, armor/cloak, sex, or size claim.
   no save; result/index SHA-256
   `6F877A4ADA88F7D49CD4745514F2BF6D705B14FECB1E64668863CA2F52B2CF8B` /
   `0A25959DCEB32254ACF609F6D7127575913AEEF7B109F67F7C2015E41A22D2F1`;
-  default Medium male only; dirty-source qualification pending a clean commit-
-  bound superseding run).
+  default Medium male only; dirty-source diagnostic).
+- V12:
+  `20260821T0901591703709Z-weapon-presentation-transition-motion-evidence`
+  (clean exact-commit rerun at `897ec735`; 7/7, 112 PNG/JSON pairs, 448 views;
+  result/index SHA-256
+  `7C32187C6148C438E5B40C18BA2C55E7154433D1EFA8D62176AAC345F70EBCA4` /
+  `F6AF2475F8AD5706A61CEEDB2EF69B17C389553ADFD84EB7D238AEE979B1652F`;
+  direct review accepts firearm/spear states but marks custom Eastern rear-view
+  transitions `OBS-DEFECT` because inherited donor scabbards float detached).
+- E4: `20260821T0916061387506Z-disposable-eastern-weapons-combat` (post-repair
+  dirty-source all-30-item identity and donor contract; custom sheaths null,
+  native family sheaths retained, protected mechanics and cleanup; 21/21;
+  result SHA-256
+  `B8566D16AACF4F78808145B5694A1C5A039BE79F8CC7EF5D5D683F03E2F5FB40`).
+- V13:
+  `20260821T0918521143567Z-weapon-presentation-transition-motion-evidence`
+  (post-repair dirty-source matrix; 8/8, 112 PNG/JSON pairs, 448 views; custom
+  Eastern sheath null 48/48, native controls retained 12/12; direct review
+  accepts all 12 Eastern turned/relevant transition frames and native controls;
+  result/index SHA-256
+  `DE63A46EDBB4DC68BBAAB6901A8A584003BD314F6262C76EEFDD25457CA4C353` /
+  `82B862659418D2AA2F2B201E737CC8FD99C72B3A9BB7316197CC6ABC00598660`).
+- V14: `20260821T0925383218065Z-weapon-presentation-evidence` (post-repair
+  dirty-source exact held/stored matrix; 9/9, 56 PNG/JSON pairs, 224 views;
+  every Eastern stored prefab remains visible and independently calibrated;
+  result/index SHA-256
+  `D6A2E2F45AED132ABBFFA5469DEB06798521F57376660E14092756E2CC359CF2` /
+  `25ADAF37BD7951B289626D5A3C6576D9324A8BE4B259017E6D830657961736CE`).
 
 All runtime evidence directories are under
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`. V1/V2/V3 are direct cosmetic
@@ -170,6 +206,8 @@ character configuration. V8/V9 supersede V7's branched-spear defects only for
 their captured default-Medium-male states. V10/V11 supersede the V1 Eastern
 blade-plane and shared-stored-transform defects only for their captured
 default-Medium-male states; E3 adds structured identity/donor/mechanical non-
-regression but no broader cosmetic claim. V12 adds only locomotion, turning,
-and equip/unequip transition acceptance for the default Medium male; it does
-not broaden firearm action, equipment-loadout, armor, sex, or size coverage.
+regression but no broader cosmetic claim. V12 adds locomotion, turning, and
+equip/unequip evidence for the default Medium male, but its Eastern visual
+claim is superseded by the detached-sheath defect and then by post-repair
+E4/V13/V14 acceptance. Those runs do not broaden firearm action, equipment-
+loadout, armor, sex, or size coverage.
