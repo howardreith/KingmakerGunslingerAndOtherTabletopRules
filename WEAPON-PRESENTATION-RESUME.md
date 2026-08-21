@@ -214,11 +214,14 @@ and `BAE8D79ED48118737FA938D09262F01EB578F6DAEE855CE294A62A74EAF3FE76`.
 This evidence disproves the stale current-source polarity hypothesis: local
 source/donor axis labels cannot be compared without the live attachment and
 animation transforms, and every acted custom thrust currently leads with the
-physical spearhead. The actual captured defects are a constant `0.105720 m`
-dominant-hand-to-grip offset, custom support-target averages of
-`0.279584..0.287448 m` versus native `0.127318 m`, and the V5 near-horizontal
-shoulder-spanning stored presentation. Preserve the working physical polarity
-while repairing grip, support, roll, and the independent back frame.
+physical spearhead. Follow-up frame analysis establishes that custom `Grip`
+coincides exactly with `R_WeaponBone`; the `0.105720 m` `R_Hand` distance is
+the native-equivalent radial palm/bone offset from a shaft centerline, not a
+grip translation defect. The actual captured defects are custom
+support-target averages of `0.279584..0.287448 m` versus native `0.127318 m`
+and the V5 near-horizontal shoulder-spanning stored presentation. Preserve the
+working physical polarity and grip anchor while repairing support, roll, and
+the independent back frame.
 
 ## Next concrete actions
 
@@ -239,8 +242,9 @@ while repairing grip, support, roll, and the independent back frame.
 - Branched-spear physical head is source `+Z` and source head normal is `+Y`.
   Current held maps the local physical head to root `-Y`, but V7 proves all
   acted custom thrust samples lead toward the target. Preserve that live
-  polarity; repair the measured grip/support offsets and independent stored
-  basis without inferring world behavior from local-axis labels alone.
+  polarity and weapon-bone grip; repair the measured support offset and
+  independent stored basis without inferring world behavior from local-axis
+  labels alone.
 - Eastern physical tip is source `+Z`, cutting edge is `-X`, blade normal is
   `+Y`; the measured donor target is forward `+Y`, blade normal `+X`, and edge
   side `-Z`. Identity presentation is therefore not a valid basis conversion.

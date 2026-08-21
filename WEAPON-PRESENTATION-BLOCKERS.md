@@ -11,7 +11,9 @@ None as of 2026-08-21.
   held, stored, combat-ready, and acted-fire evidence for all three production
   long guns on one default Medium male. V7 captures all three branched spears
   plus native Longspear and proves 14/14 acted samples lead with the physical
-  tip, while quantifying unresolved grip/support offsets. Eastern attacks,
+  tip, while quantifying the unresolved support-target offset. The custom
+  grip is exactly on `R_WeaponBone`; its hand-to-shaft radial offset is
+  native-equivalent. Eastern attacks,
   reload, locomotion, equip/unequip transition, female, Small, and Enlarged
   coverage remain ordinary open work.
 - Native donor axes have been measured by exact live controls (`V2`), and all

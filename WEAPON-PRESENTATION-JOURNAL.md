@@ -624,11 +624,16 @@ The exact package/DLL SHA-256 values are
 and `4969DC1CC84D6B699C8CF89F4AC8832603264691447FF0210C795AB45F86CC65`.
 
 The current physical spearhead polarity is therefore accepted for the
-captured thrust states and must not be reversed. The remaining objective
-defects are:
+captured thrust states and must not be reversed. A follow-up raw-record audit
+corrected the initial grip interpretation: the native control has no `Grip`
+marker, so its displayed `0.000000 m` was a PowerShell null conversion rather
+than a contact measurement. Every custom `Grip` is exactly coincident with
+`R_WeaponBone`; the custom `R_Hand` radial shaft offset (`0.105720 m`) closely
+matches the native hand-to-physical-shaft-axis offset (about `0.1036 m`). The
+weapon-bone grip anchor is therefore accepted and must not be translated.
 
-- dominant-hand-to-grip distance is a constant `0.105720 m` for all three
-  custom variants versus `0.000000 m` for the native control;
+The remaining objective defects are:
+
 - support-hand-to-target averages are Classic `0.280264 m`, Thorn
   `0.287448 m`, Crown `0.279584 m`, versus native `0.127318 m`;
 - V5 static sheets retain a near-horizontal shoulder-spanning custom back
