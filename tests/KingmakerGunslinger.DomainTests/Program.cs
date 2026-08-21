@@ -1742,15 +1742,19 @@ namespace KingmakerGunslinger.DomainTests
                 presentation.Contains("Materialize(visual, \"m_PossibleAttachSlots\", source.AttachSlots)") &&
                 !presentation.Contains("SetEmptyCollection") &&
                 !presentation.Contains("Set(visual, \"m_OverrideAttachSlots\", true)") &&
-                lifecycle.Contains("ReattachSheath") &&
-                lifecycle.Contains("DestroySheathModel") &&
+                lifecycle.Contains("method.Name == \"ShowItem\"") &&
+                lifecycle.Contains("method.GetParameters()[0].ParameterType == typeof(bool)") &&
+                lifecycle.Contains("ref bool isVisible") &&
                 lifecycle.Contains("KingmakerFirearmRuntimeItemResolver") &&
-                lifecycle.Contains("profile.Holster != FirearmHolsterPolicy.Hidden") &&
-                lifecycle.Contains("!profile.IsLongGun") &&
+                lifecycle.Contains("profile.Holster == FirearmHolsterPolicy.Hidden") &&
+                lifecycle.Contains("!__instance.IsInHand") &&
+                lifecycle.Contains("isVisible = false") &&
+                !lifecycle.Contains("ReattachSheath") &&
+                !lifecycle.Contains("DestroySheathModel") &&
                 presentation.Contains("Native crossbow") &&
                 !presentation.Contains("GetComponentsInChildren<Renderer>") &&
                 !lifecycle.Contains("Renderer"),
-                "Canonical Musket/Blunderbuss/Rifle back models must remain exact without renderer scanning or native donor mutation.");
+                "Canonical long-gun back models and exact hidden handgun storage must remain isolated without renderer scanning or native donor mutation.");
         }
 
         private static void NativeRigVisibilityRepair()

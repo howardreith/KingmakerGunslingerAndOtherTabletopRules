@@ -425,15 +425,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string presentationRole;
                 Transform model = ResolveActivePresentation(_actor, visual,
                     _presentationState, out presentationRole);
+                bool intentionallyHidden = IsIntentionallyHiddenStored(value,
+                    _presentationState);
                 bool exactState = _presentationState == "held-idle"
                     ? _actor.View.HandsEquipment.InCombat
                     : !_actor.View.HandsEquipment.InCombat;
-                bool renderable = model != null &&
-                    model.gameObject.activeInHierarchy &&
-                    model.GetComponentsInChildren<Renderer>(true).Any(renderer =>
-                        renderer != null && renderer.enabled &&
-                        renderer.gameObject.activeInHierarchy);
-                if (!renderable || !exactState)
+                bool renderable = Renderable(model);
+                bool presentationReady = intentionallyHidden
+                    ? !renderable && visual.BeltModel == null &&
+                        visual.SheathModel == null
+                    : renderable;
+                if (intentionallyHidden && !renderable)
+                    presentationRole = "intentionally-hidden-weapon-model";
+                if (!presentationReady || !exactState)
                 {
                     _settleUpdates++;
                     if (_settleUpdates < MaximumSettleUpdates) return;
@@ -443,6 +447,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _settleUpdates + " game updates. inCombat=" +
                         _actor.View.HandsEquipment.InCombat +
                         ";expectedHeld=" + (_presentationState == "held-idle") +
+                        ";intentionallyHidden=" + intentionallyHidden +
                         ";effectiveModel=" + visual.Model.name +
                         ";activeModel=" + (model == null ? "<null>" :
                             model.name) + ";presentationRole=" +
@@ -457,10 +462,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SafeFileName(value.Variant);
                 CaptureSummary capture = CaptureContactSheet(_actor, model,
                     _fixtureBodyRenderers, Path.Combine(
-                        _request.EvidenceDirectory, stem + ".png"));
+                        _request.EvidenceDirectory, stem + ".png"),
+                    intentionallyHidden);
                 JObject record = Describe(value, _actor, model, visual,
                     _fixtureBodyRenderers, capture, stem + ".png",
-                    _presentationState, presentationRole);
+                    _presentationState, presentationRole,
+                    intentionallyHidden);
                 string jsonPath = Path.Combine(_request.EvidenceDirectory,
                     stem + ".json");
                 WriteJsonAtomic(jsonPath, record);
@@ -604,6 +611,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (string)value["variant"]).Distinct(
                                 StringComparer.Ordinal).Count() == 22,
                     "registered production, named, and exact visual-variant catalogs");
+                JObject[] hiddenStoredHandguns = productionRecords.Where(value =>
+                    string.Equals((string)value["state"], "stored",
+                        StringComparison.Ordinal) &&
+                    value["intentionallyHiddenStored"] != null &&
+                    (bool)value["intentionallyHiddenStored"]).ToArray();
+                string[] hiddenVariants = hiddenStoredHandguns.Select(value =>
+                    (string)value["variant"]).OrderBy(value => value,
+                        StringComparer.Ordinal).ToArray();
+                string[] expectedHiddenVariants = ProductionVariants.Take(4)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                JObject[] heldHandguns = productionRecords.Where(value =>
+                    expectedHiddenVariants.Contains((string)value["variant"],
+                        StringComparer.Ordinal) && string.Equals(
+                        (string)value["state"], "held-idle",
+                        StringComparison.Ordinal)).ToArray();
+                Add(_assertions,
+                    "weapon-presentation-handgun-hidden-stored-contract",
+                    "all four production handguns have no renderable world-stored model and recover their exact held model",
+                    "hidden=" + string.Join(",", hiddenVariants) +
+                        ";heldRenderable=" + heldHandguns.Count(value =>
+                            (bool)value["weaponRenderable"]) + "/4",
+                    hiddenVariants.SequenceEqual(expectedHiddenVariants) &&
+                        hiddenStoredHandguns.All(value =>
+                            !(bool)value["weaponRenderable"] &&
+                            (int)value["weaponRendererCount"] == 0 &&
+                            string.Equals((string)value["beltModel"], "<null>",
+                                StringComparison.Ordinal) &&
+                            string.Equals((string)value["sheathModel"], "<null>",
+                                StringComparison.Ordinal) &&
+                            string.Equals((string)value["presentationRole"],
+                                "intentionally-hidden-weapon-model",
+                                StringComparison.Ordinal)) &&
+                        heldHandguns.Length == 4 && heldHandguns.All(value =>
+                            (bool)value["weaponRenderable"] &&
+                            (int)value["weaponRendererCount"] > 0),
+                    "exact firearm profile, live UnitViewHandSlotData renderer state, and stored/held ForceSwitch round trip");
                 Add(_assertions,
                     "weapon-presentation-native-donor-controls",
                     "six exact native presentation donors in stored and held-idle states",
@@ -627,9 +670,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     controlRecords.Length == 12 && nativeGeometryInvariant,
                     "component tolerance=0.00001; Mesh.bounds or SkinnedMeshRenderer.localBounds transformed through the prefab hierarchy, never world AABB reconstruction");
                 Add(_assertions, "weapon-presentation-live-materialization",
-                    "56/56 exact stored/held presentations on one live native humanoid view",
+                    "56/56 exact stored/held presentation states, including four intentionally hidden handgun storage states, on one live native humanoid view",
                     _materialized + "/56", _materialized == 56,
-                    "real BlueprintItemWeapon, primary hand, UnitViewHandsEquipment.GetWeaponModel(false), ForceSwitch, and multi-update settling");
+                    "real BlueprintItemWeapon, primary hand, UnitViewHandsEquipment.GetWeaponModel(false), renderer visibility, ForceSwitch, and multi-update settling");
                 Add(_assertions,
                     "weapon-presentation-state-contact-sheets",
                     "56 PNG/JSON pairs and 224 state-labelled views",
@@ -680,6 +723,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "held-idle on the default Medium humanoid. It does not " +
                     "establish attack, fire, reload, locomotion, sex-specific, " +
                     "Small, or Enlarged acceptance.");
+                _warnings.Add("Pistol and Revolver world-stored presentation " +
+                    "is deliberately hidden because no compatible custom belt " +
+                    "or sheath model exists; inventory doll-room visibility is " +
+                    "owned by Kingmaker's native ShowItem override.");
                 RuntimeBuildIdentity build = RuntimeBuildIdentity.Capture(
                     _context.Assembly, _context.ModEntry.Info.Version);
                 bool passed = _assertions.All(value =>
@@ -3449,6 +3496,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class TransitionMotionOutcome
         {
             internal string Variant;
+            internal bool IntentionalHiddenStored;
+            internal bool StoredHiddenBeforeEquip;
+            internal bool HeldVisibleAfterEquip;
+            internal bool StoredHiddenAfterUnequip;
             internal bool EquipMatchReturned;
             internal bool EquipAnimationObserved;
             internal int EquipClipCount;
@@ -3515,6 +3566,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _turnRequested;
             private bool _equipMatchReturned;
             private bool _unequipMatchReturned;
+            private bool _intentionalHiddenStored;
+            private bool _storedHiddenBeforeEquip;
+            private bool _heldVisibleAfterEquip;
+            private bool _storedHiddenAfterUnequip;
             private int _equipClipCount;
             private int _unequipClipCount;
             private int _locomotionClipCount;
@@ -3698,8 +3753,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string role;
                 Transform stored = ResolveActivePresentation(_actor, visual,
                     "stored", out role);
+                _intentionalHiddenStored = IsIntentionallyHiddenStored(current,
+                    "stored");
+                bool storedRenderable = Renderable(stored);
+                bool storedReady = _intentionalHiddenStored
+                    ? !storedRenderable && visual.BeltModel == null &&
+                        visual.SheathModel == null
+                    : storedRenderable;
+                if (_intentionalHiddenStored && !storedRenderable)
+                {
+                    role = "intentionally-hidden-weapon-model";
+                    _storedHiddenBeforeEquip = true;
+                }
                 _settleUpdates++;
-                if (!Renderable(stored) ||
+                if (!storedReady ||
                     _actor.View.HandsEquipment.InCombat ||
                     _settleUpdates < StableStoredUpdates)
                 {
@@ -3707,7 +3774,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(current.Variant +
                         " did not reach a stable stored presentation before " +
                         "the equip transition. renderable=" +
-                        Renderable(stored) + ";handsInCombat=" +
+                        storedRenderable + ";intentionallyHidden=" +
+                        _intentionalHiddenStored + ";handsInCombat=" +
                         _actor.View.HandsEquipment.InCombat + ";role=" + role +
                         ".");
                 }
@@ -3766,6 +3834,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _actor.View.HandsEquipment.InCombat + ";heldRole=" +
                         heldRole + ".");
                 }
+                _heldVisibleAfterEquip = true;
                 StartMovement(value);
                 _settleUpdates = 0;
                 _phase = 3;
@@ -3985,6 +4054,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string role;
                 Transform presentation = ResolveActivePresentation(_actor,
                     visual, "stored", out role);
+                bool intentionallyHidden = IsIntentionallyHiddenStored(value,
+                    "stored");
                 if (animating && !_unequipCaptured && Renderable(presentation))
                 {
                     CaptureTransitionRecord(value, presentation, visual, role,
@@ -3994,10 +4065,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _unequipCaptured = true;
                 }
 
+                bool presentationRenderable = Renderable(presentation);
+                bool storedComplete = intentionallyHidden
+                    ? !presentationRenderable && visual.BeltModel == null &&
+                        visual.SheathModel == null
+                    : presentationRenderable;
+                if (intentionallyHidden && !presentationRenderable)
+                {
+                    role = "intentionally-hidden-weapon-model";
+                    _storedHiddenAfterUnequip = true;
+                }
                 bool complete = _unequipAnimationObserved &&
                     _unequipCaptured && !animating &&
                     !_actor.View.HandsEquipment.InCombat &&
-                    Renderable(presentation);
+                    storedComplete;
                 if (!complete)
                 {
                     if (_settleUpdates < MaximumSettleUpdates) return;
@@ -4010,12 +4091,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";actorInCombat=" +
                         _actor.CombatState.IsInCombat +
                         ";matchReturned=" + _unequipMatchReturned +
+                        ";intentionallyHidden=" + intentionallyHidden +
+                        ";renderable=" + presentationRenderable +
                         ";role=" + role + ".");
                 }
 
                 _outcomes.Add(new TransitionMotionOutcome
                 {
                     Variant = value.Variant,
+                    IntentionalHiddenStored = _intentionalHiddenStored,
+                    StoredHiddenBeforeEquip = _storedHiddenBeforeEquip,
+                    HeldVisibleAfterEquip = _heldVisibleAfterEquip,
+                    StoredHiddenAfterUnequip = _storedHiddenAfterUnequip,
                     EquipMatchReturned = _equipMatchReturned,
                     EquipAnimationObserved = _equipAnimationObserved,
                     EquipClipCount = _equipClipCount,
@@ -4087,6 +4174,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _turnRequested = false;
                 _equipMatchReturned = false;
                 _unequipMatchReturned = false;
+                _intentionalHiddenStored = false;
+                _storedHiddenBeforeEquip = false;
+                _heldVisibleAfterEquip = false;
+                _storedHiddenAfterUnequip = false;
                 _equipClipCount = 0;
                 _unequipClipCount = 0;
                 _locomotionClipCount = 0;
@@ -4175,6 +4266,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject
                     {
                         { "variant", value.Variant },
+                        { "intentionalHiddenStored",
+                            value.IntentionalHiddenStored },
+                        { "storedHiddenBeforeEquip",
+                            value.StoredHiddenBeforeEquip },
+                        { "heldVisibleAfterEquip",
+                            value.HeldVisibleAfterEquip },
+                        { "storedHiddenAfterUnequip",
+                            value.StoredHiddenAfterUnequip },
                         { "equipMatchReturned", value.EquipMatchReturned },
                         { "equipAnimationObserved",
                             value.EquipAnimationObserved },
@@ -4303,6 +4402,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "MatchWithCurrentCombatState, m_Coroutine, and " +
                         "AreHandsBusyWithAnimation; equipment guard only, " +
                         "without UnitCombatState.JoinCombat");
+                TransitionMotionOutcome[] hiddenHandguns = _outcomes.Where(
+                    value => value.IntentionalHiddenStored).ToArray();
+                Add(_assertions,
+                    "weapon-presentation-handgun-hidden-stored-transition",
+                    "all four production handguns are hidden before equip, visible after equip, and hidden again after unequip",
+                    string.Join(";", hiddenHandguns.Select(value =>
+                        value.Variant + "=stored-before:" +
+                        value.StoredHiddenBeforeEquip + "/held:" +
+                        value.HeldVisibleAfterEquip + "/stored-after:" +
+                        value.StoredHiddenAfterUnequip).ToArray()),
+                    hiddenHandguns.Length == 4 && hiddenHandguns.All(value =>
+                        value.StoredHiddenBeforeEquip &&
+                        value.HeldVisibleAfterEquip &&
+                        value.StoredHiddenAfterUnequip),
+                    "exact hidden firearm profiles, live renderer state, and native MainHandEquip/MainHandUnequip round trip");
                 string[] easternFamilies =
                     { "Wakizashi", "Katana", "Nodachi" };
                 JObject[] easternRecords = _records.OfType<JObject>()
@@ -4732,6 +4846,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 StringComparison.Ordinal);
         }
 
+        private static bool IsIntentionallyHiddenStored(EvidenceCase value,
+            string state)
+        {
+            if (!string.Equals(state, "stored", StringComparison.Ordinal) ||
+                !IsFirearm(value)) return false;
+            FirearmDefinition definition = ResolveFirearmDefinition(value);
+            return FirearmPresentationProfile.Require(definition.Kind).Holster ==
+                FirearmHolsterPolicy.Hidden;
+        }
+
         private static FirearmDefinition ResolveFirearmDefinition(
             EvidenceCase value)
         {
@@ -4946,36 +5070,44 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static CaptureSummary CaptureContactSheet(UnitEntityData actor,
-            Transform model, Renderer[] fixtureBodyRenderers, string pngPath)
+            Transform model, Renderer[] fixtureBodyRenderers, string pngPath,
+            bool allowBodyOnly = false)
         {
-            Renderer[] weaponRenderers = model
-                .GetComponentsInChildren<Renderer>(true).Where(value =>
+            Renderer[] weaponRenderers = model == null ? new Renderer[0] :
+                model.GetComponentsInChildren<Renderer>(true).Where(value =>
                     value != null && value.enabled &&
                     value.gameObject.activeInHierarchy).ToArray();
             Renderer[] bodyRenderers = (fixtureBodyRenderers ??
                 new Renderer[0]).Where(value =>
                     value != null && value.enabled &&
                     value.gameObject.activeInHierarchy).ToArray();
-            if (weaponRenderers.Length == 0 || bodyRenderers.Length == 0)
+            if (bodyRenderers.Length == 0 ||
+                (weaponRenderers.Length == 0 && !allowBodyOnly))
                 throw new InvalidOperationException(
-                    "The live weapon evidence view requires active body and weapon renderers.");
-            Bounds weaponBounds = CombinedBounds(weaponRenderers);
+                    "The live weapon evidence view requires active body " +
+                    "renderers and, unless storage is intentionally hidden, " +
+                    "active weapon renderers.");
             Bounds bodyBounds = CombinedBounds(bodyRenderers);
+            Bounds weaponBounds = weaponRenderers.Length == 0
+                ? new Bounds(bodyBounds.center, Vector3.zero)
+                : CombinedBounds(weaponRenderers);
             Bounds bounds = bodyBounds;
-            bounds.Encapsulate(weaponBounds);
+            if (weaponRenderers.Length > 0) bounds.Encapsulate(weaponBounds);
             float bodyMaximum = Mathf.Max(bodyBounds.size.x,
                 Mathf.Max(bodyBounds.size.y, bodyBounds.size.z));
             float combinedMaximum = Mathf.Max(bounds.size.x,
                 Mathf.Max(bounds.size.y, bounds.size.z));
             float maximumUsefulFrame = Mathf.Max(3f, bodyMaximum * 1.75f);
-            bool capped = combinedMaximum > maximumUsefulFrame ||
+            bool capped = weaponRenderers.Length > 0 &&
+                (combinedMaximum > maximumUsefulFrame ||
                 Vector3.Distance(bodyBounds.center, weaponBounds.center) >
-                    maximumUsefulFrame;
+                    maximumUsefulFrame);
             Vector3 frameCenter = capped ? bodyBounds.center : bounds.center;
             float frameMaximum = capped ? maximumUsefulFrame : combinedMaximum;
             string framing = "mode=" + (capped ? "body-centered-capped" :
                     "combined") + ";body=" + bodyBounds.size.ToString("R") +
-                ";weapon=" + weaponBounds.size.ToString("R") +
+                ";weapon=" + (weaponRenderers.Length == 0 ? "<hidden>" :
+                    weaponBounds.size.ToString("R")) +
                 ";combined=" + bounds.size.ToString("R") + ";center=" +
                 frameCenter.ToString("R") + ";maximum=" +
                 frameMaximum.ToString("R");
@@ -5098,30 +5230,41 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static JObject Describe(EvidenceCase value,
             UnitEntityData actor, Transform model, WeaponVisualParameters visual,
             Renderer[] fixtureBodyRenderers, CaptureSummary capture,
-            string pngName, string state, string presentationRole)
+            string pngName, string state, string presentationRole,
+            bool intentionallyHiddenStored = false)
         {
-            Renderer[] weaponRenderers = model
-                .GetComponentsInChildren<Renderer>(true).Where(renderer =>
+            Renderer[] weaponRenderers = model == null ? new Renderer[0] :
+                model.GetComponentsInChildren<Renderer>(true).Where(renderer =>
                     renderer != null && renderer.enabled &&
                     renderer.gameObject.activeInHierarchy).ToArray();
             Renderer[] bodyRenderers = (fixtureBodyRenderers ??
                 new Renderer[0]).Where(renderer =>
                     renderer != null && renderer.enabled &&
                     renderer.gameObject.activeInHierarchy).ToArray();
-            Bounds weaponBounds = CombinedBounds(weaponRenderers);
             Bounds bodyBounds = CombinedBounds(bodyRenderers);
+            Bounds weaponBounds = weaponRenderers.Length == 0
+                ? new Bounds(bodyBounds.center, Vector3.zero)
+                : CombinedBounds(weaponRenderers);
             int modelLocalBoundsSourceCount;
-            Bounds modelLocalBounds = LocalBounds(model, weaponRenderers,
-                out modelLocalBoundsSourceCount);
-            Vector3 overlap = Vector3.Max(Vector3.zero,
-                Vector3.Min(weaponBounds.max, bodyBounds.max) -
-                Vector3.Max(weaponBounds.min, bodyBounds.min));
+            Bounds modelLocalBounds;
+            if (model != null && weaponRenderers.Length > 0)
+                modelLocalBounds = LocalBounds(model, weaponRenderers,
+                    out modelLocalBoundsSourceCount);
+            else
+            {
+                modelLocalBounds = new Bounds(Vector3.zero, Vector3.zero);
+                modelLocalBoundsSourceCount = 0;
+            }
+            Vector3 overlap = weaponRenderers.Length == 0 ? Vector3.zero :
+                Vector3.Max(Vector3.zero,
+                    Vector3.Min(weaponBounds.max, bodyBounds.max) -
+                    Vector3.Max(weaponBounds.min, bodyBounds.min));
             var anchors = new JObject();
             foreach (string name in new[] { "Grip", "Muzzle", "Tip", "Butt",
                 "SupportHandTarget", "WeaponUp", "HeadUp", "BladeNormal",
                 "BackMount", "BeltMount" })
             {
-                Transform anchor = model.Find(name);
+                Transform anchor = model == null ? null : model.Find(name);
                 if (anchor == null)
                 {
                     anchors[name] = JValue.CreateNull();
@@ -5159,13 +5302,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     visual.SheathModel.name },
                 { "modelPath", TransformPath(model, actor.View.transform) },
                 { "presentationRole", presentationRole },
-                { "modelLocalPosition", model.localPosition.ToString("R") },
-                { "modelLocalRotation", model.localRotation.eulerAngles
-                    .ToString("R") },
-                { "modelLocalScale", model.localScale.ToString("R") },
-                { "modelWorldForward", model.forward.ToString("R") },
-                { "modelWorldUp", model.up.ToString("R") },
-                { "modelWorldRight", model.right.ToString("R") },
+                { "intentionallyHiddenStored", intentionallyHiddenStored },
+                { "weaponRenderable", Renderable(model) },
+                { "modelLocalPosition", model == null ? "<null>" :
+                    model.localPosition.ToString("R") },
+                { "modelLocalRotation", model == null ? "<null>" :
+                    model.localRotation.eulerAngles.ToString("R") },
+                { "modelLocalScale", model == null ? "<null>" :
+                    model.localScale.ToString("R") },
+                { "modelWorldForward", model == null ? "<null>" :
+                    model.forward.ToString("R") },
+                { "modelWorldUp", model == null ? "<null>" :
+                    model.up.ToString("R") },
+                { "modelWorldRight", model == null ? "<null>" :
+                    model.right.ToString("R") },
                 { "weaponRendererCount", weaponRenderers.Length },
                 { "weaponBoundsCenter", weaponBounds.center.ToString("R") },
                 { "weaponBoundsSize", weaponBounds.size.ToString("R") },
@@ -5177,10 +5327,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     modelLocalBounds.size.ToString("R") },
                 { "modelLocalRendererBoundsSizeComponents",
                     Components(modelLocalBounds.size) },
-                { "modelLocalMajorAxis", MajorAxis(modelLocalBounds.size) },
-                { "modelLocalMinorAxis", MinorAxis(modelLocalBounds.size) },
+                { "modelLocalMajorAxis", weaponRenderers.Length == 0 ?
+                    "<hidden>" : MajorAxis(modelLocalBounds.size) },
+                { "modelLocalMinorAxis", weaponRenderers.Length == 0 ?
+                    "<hidden>" : MinorAxis(modelLocalBounds.size) },
                 { "modelLocalBoundsSourceCount", modelLocalBoundsSourceCount },
-                { "semanticLocators", DescribeSemanticLocators(model) },
+                { "semanticLocators", model == null ? new JArray() :
+                    DescribeSemanticLocators(model) },
                 { "rigContacts", DescribeRigContacts(actor, model) },
                 { "bodyBoundsCenter", bodyBounds.center.ToString("R") },
                 { "bodyBoundsSize", bodyBounds.size.ToString("R") },

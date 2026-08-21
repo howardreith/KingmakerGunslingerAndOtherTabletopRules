@@ -30,10 +30,10 @@ namespace KingmakerGunslinger.Assets
         private static readonly Dictionary<FirearmKind, FirearmPresentationProfile>
             Profiles = new Dictionary<FirearmKind, FirearmPresentationProfile>
             {
-                // Every custom firearm wrapper has failed at least one supervised
-                // visibility, grip, orientation, clipping, or idle-state check.
-                // Stabilization therefore keeps the cloned native presentation for
-                // all five weapons until an individual replacement is human-approved.
+                // Handguns use independently calibrated PiercingOneHanded held
+                // frames. No compatible custom belt or sheath model exists, so
+                // their stored world presentation is deliberately hidden while
+                // the native inventory doll-room path remains available.
                 { FirearmKind.Pistol, new FirearmPresentationProfile(
                     FirearmKind.Pistol, FirearmPresentationReadiness.AutonomousCandidate,
                     FirearmHolsterPolicy.Hidden,

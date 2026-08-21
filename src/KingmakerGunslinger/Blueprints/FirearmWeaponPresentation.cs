@@ -143,7 +143,10 @@ namespace KingmakerGunslinger.Blueprints
             if (profile.HideHolsteredModel)
             {
                 // Exact project-owned firearm visual only. Native crossbow
-                // blueprints and unrelated renderers are never mutated.
+                // blueprints and unrelated renderers are never mutated. The
+                // request-local UnitViewHandSlotData visibility patch suppresses
+                // the live held model that Kingmaker otherwise reparents to its
+                // native belt slot when both replacement fields are null.
                 Set(visual, "m_WeaponBeltModel", null);
                 Set(visual, "m_WeaponSheathModel", null);
             }
