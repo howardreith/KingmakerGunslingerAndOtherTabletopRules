@@ -30,3 +30,23 @@ the checked-in script.
   maps source +Z to the native Longspear +Y equipment axis.
 - Preserved all project-owned materials, three silhouettes, identities, and
   native `PiercingTwoHanded` presentation fields.
+
+## 2026-08-21 semantic-frame presentation calibration
+
+- Added mesh-grounded source markers for grip, support hand, physical tip,
+  physical butt, head-face normal, and renderer center to every FBX.
+- Added evaluated-vertex validation proving the central leaf is the physical
+  +Z end, the butt cap is the physical -Z end, branches remain behind the tip,
+  and grip/support markers remain inside the shaft.
+- Moved the support station from +0.37 m to the measured native Longspear
+  grip-to-left-hand interval, +0.593016 m.
+- Replaced unexplained held/back Euler guesses with a full-basis conversion
+  from source +Z/+Y to measured native Longspear held and stored frames.
+- Kept held grip at the weapon-bone origin and aligned the independent stored
+  renderer center to the donor BeltModel anchor.
+- Added held-only `EquipmentOffsets.IkTargetLeftHand`; stored prefabs do not
+  drive hand IK.
+- Regenerated all three FBXs, the Blender source, schema-3 build report, and the
+  six-prefab Unity bundle. The project-owned visual silhouettes, icons,
+  blueprint identities, donor animations, trails, sounds, slots, timing, and
+  mechanics remain unchanged.

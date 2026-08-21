@@ -1,11 +1,27 @@
 # Elven Branched Spear visual calibration
 
-Deterministic technical acceptance requires an identity root transform, a
-`Visual` child rotated exactly -90 degrees around X, finite positive scales, a
-+Y point beyond the support-hand anchor, a negative-Y butt, opaque Standard
-materials, at least one enabled renderer, no camera or light, and overall
-anchor length from 2.25 through 2.32 m. Runtime diagnostics report either
+Deterministic technical acceptance requires an identity equipment root, finite
+positive scales, a complete non-collinear semantic frame, opaque Standard
+materials, at least one enabled renderer, no camera or light, and renderer-
+grounded length from 2.25 through 2.32 m. Runtime diagnostics report either
 `custom:validated:<prefab>` or the exact native-fallback reason.
+
+The authored frame is physical tip +Z and head-face normal +Y, with grip at the
+origin, butt at -1.14 m, tip at +1.14 m, and support at +0.593016 m. The Unity
+builder maps that basis to measured native Longspear frames:
+
+- held donor Euler `(9.712032, 123.546196, 178.825317)`, yielding semantic
+  forward `(-0.1292401,-0.9854609,0.1102895)` and head normal
+  `(0.5553753,0.0202066,0.8313543)`;
+- stored donor Euler `(359.074829,290.676361,267.541138)`, yielding semantic
+  forward `(0.3521154,-0.0428966,0.9349731)` and head normal
+  `(-0.0302411,-0.9989490,-0.0344429)`;
+- held grip at zero; stored renderer-center anchor
+  `(-0.0040513,-0.0071580,0.2127583)`.
+
+Held and stored transforms are separately solved from those bases. The runtime
+assigns `SupportHandTarget` only through the held prefab's
+`EquipmentOffsets.IkTargetLeftHand`; a back prefab cannot drive hand IK.
 
 Human acceptance should use a disposable development character and check:
 
@@ -22,23 +38,29 @@ Human acceptance should use a disposable development character and check:
 The custom mesh does not change animation style, socket, two-hand semantics,
 attack timing, trail, reach, or sound. Those remain native Longspear contracts.
 
-## Human-review orientation correction
+## Qualified default-medium presentation
 
-- Held position: `(0, 0, 0)`.
-- Held rotation: `Quaternion.Euler(90, 0, 0)`, mapping source point `+Z` to the
-  installed Longspear forward `-Y` direction.
-- Back position: `(0, -0.18, 0.06)`.
-- Back rotation: `AngleAxis(35, forward) * Euler(-90, 0, 0)`, producing a
-  distinct upper-left diagonal along the back rather than reusing the held
-  model across the shoulder.
-- Mesh scale and source length remain unchanged at 2.28 m.
+The 2026-08-21 exact-package guarded runs accept the three production variants
+on the disposable default Medium male fixture:
 
-Guarded run `20260820T1542457366433Z-eb6ee44b6d434229bfc2b1f671afc544`
-passed 25/25 assertions. It measured held tip `(0,-1.14,0)` and butt
-`(0,1.14,0)`, and back tip `(-0.654,0.754,0.06)` and butt
-`(0.654,-1.114,0.06)`. The remaining acceptance boundary is visual inspection
-of actual materialized world/inventory dolls, attacks, movement, switching,
-body sizes, and the carried silhouette.
+- static held/stored evidence:
+  `20260821T0520508017635Z-weapon-presentation-evidence` (9/9, 56 sheets,
+  224 labelled views);
+- combat-ready/thrust evidence:
+  `20260821T0525081495864Z-weapon-presentation-spear-motion-evidence` (6/6,
+  40 sheets, 160 labelled views).
+
+All 40 motion samples lead with the renderer-grounded physical spearhead, as do
+all 15 samples in which the native animation reached its acted event. Mean
+left-hand-to-support-target distances are Classic `0.130179 m`, Thorn
+`0.123882 m`, Crown `0.124882 m`, and native Longspear `0.126062 m`. Direct
+front, side, rear, and three-quarter review accepts dominant grip, both hands
+on the shaft, branch roll, held idle, combat ready, thrust, and independent
+stored orientation without severe persistent clipping in those captured
+states.
+
+This does not infer movement, turning, equip/unequip transitions, armor/cloak,
+female, Small, or Enlarged acceptance. Those remain final-matrix work.
 A visual imperfection is not a mechanics failure: disable or remove only the
 dedicated bundle and the native presentation resumes without changing any item
 or weapon-category blueprint identity.

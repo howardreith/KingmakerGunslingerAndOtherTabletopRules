@@ -86,13 +86,19 @@
     },
     {
       "name": "kingmakergunslinger.elvenbranchedspear",
-      "sha256": "0BC67C89D08806B0B67FF074AE983FC1E2CDF6E6618CC10901E66C01B7A725FA",
+      "sha256": "A59DC61CE246A7F5931F22494C4C52CE39C6E96312F3448FB9138A0AC0D7DC9B",
       "prefabs": ["ElvenBranchedSpear", "ElvenBranchedSpearBack", "ElvenBranchedSpearThorn", "ElvenBranchedSpearThornBack", "ElvenBranchedSpearCrown", "ElvenBranchedSpearCrownBack"],
       "sourceFbxSha256": {
-        "ElvenBranchedSpear": "525B6FB2DAC0106C001BCB0901ED892DBBACA48CA1DF6DDB78702F9B2B72AE01",
-        "ElvenBranchedSpearThorn": "03B30979A7EA686AA6CA29D436BA434FD91D15BECDEE8BD2C0377A1B8B470579",
-        "ElvenBranchedSpearCrown": "C66E6BBAAB853011FBDA3077566A58D516248230FC5DE7CA6554661EEDCE345A"
+        "ElvenBranchedSpear": "A7FE4DEE53B18D1778D994F8B24A349B22C000E87660934B882D239A0F807E3A",
+        "ElvenBranchedSpearThorn": "3EC09E5A662991944F5B41E01852A8ABCB3A040506481D3789E1E3F94C0F430B",
+        "ElvenBranchedSpearCrown": "EA5B392F95AADA371185188021A8935C26621C8CE20C485014C215ADE4BA9443"
       },
+      "semanticFrame": ["Grip", "SupportHandTarget", "Tip", "Butt", "HeadUp"],
+      "sourceSemanticFrame": ["KMG_Grip", "KMG_Support", "KMG_Tip", "KMG_Butt", "KMG_HeadUp", "KMG_Back"],
+      "heldDonor": "native Longspear measured held basis",
+      "storedDonor": "native Longspear measured BeltModel basis and renderer anchor",
+      "supportStationMeters": 0.593016,
+      "readiness": "basis-calibrated-mesh-grounded-held-ik-independent-stored",
       "originalAsset": true
     },
     {

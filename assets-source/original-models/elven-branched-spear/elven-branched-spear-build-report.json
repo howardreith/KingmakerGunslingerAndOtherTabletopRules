@@ -16,11 +16,12 @@
   },
   "dimensionsMeters": {
     "buttZ": -1.14,
+    "headUpY": 0.1,
     "shaftGripExclusionMaxZ": 0.7,
-    "supportZ": 0.37,
+    "supportZ": 0.593016,
     "tipZ": 1.14
   },
-  "equippedExportContract": "three identity roots exported before render-only camera/light creation",
+  "equippedExportContract": "three identity roots with mesh-derived KMG semantic markers exported before render-only camera/light creation",
   "generator": "generate_elven_branched_spear.py",
   "iconRender": {
     "background": "transparent RGBA",
@@ -42,36 +43,36 @@
   "meshObjects": 45,
   "outputs": {
     "elven-branched-spear-crown.fbx": {
-      "bytes": 81036,
-      "sha256": "c66e6bbaab853011fbda3077566a58d516248230fc5de7ca6554661eedce345a"
+      "bytes": 85036,
+      "sha256": "ea5b392f95aada371185188021a8935c26621c8ce20c485014c215ade4ba9443"
     },
     "elven-branched-spear-icon.png": {
       "bytes": 80387,
       "sha256": "8c07fe074c8677446ddf5010b8c9b121bde48bbcb7eb5e59579062e5cb9b1d0c"
     },
     "elven-branched-spear-thorn.fbx": {
-      "bytes": 72460,
-      "sha256": "03b30979a7ea686aa6ca29d436ba434fd91d15becdee8bd2c0377a1b8b470579"
+      "bytes": 76460,
+      "sha256": "3ec09e5a662991944f5b41e01852a8abcb3a040506481d3789e1e3f94c0f430b"
     },
     "elven-branched-spear.blend": {
-      "bytes": 934433,
-      "sha256": "b7fe56256d7e9936afdfbdd60e98ed154669d2aacc31659390aa901125e739b4"
+      "bytes": 958193,
+      "sha256": "36de4863143620807352f2d951d367012904617d0da035f05f507b6c38c1bc0c"
     },
     "elven-branched-spear.fbx": {
-      "bytes": 63324,
-      "sha256": "525b6fb2dac0106c001bcb0901ed892dbbaca48ca1df6ddb78702f9b2b72ae01"
+      "bytes": 67324,
+      "sha256": "a7fe4dee53b18d1778d994f8b24a349b22c000e87660934b882d239a0f807e3a"
     },
     "elven-branched-spear.png": {
       "bytes": 6158,
       "sha256": "a4caa5fed242bee645ad4f9d1e5f201c372ede4a066254ee6bd4003a6538af99"
     },
     "generate_elven_branched_spear.py": {
-      "bytes": 16648,
-      "sha256": "66a5b86b8c3fdad00c809c8c38a4c77f5504c08d60e2694dceed2f92084664cd"
+      "bytes": 23653,
+      "sha256": "f9977a854176d047d0b0df4c32c960cf96dd0e99bd4bae608e1e7e5b3750274f"
     }
   },
-  "schemaVersion": 2,
-  "sourceCoordinateContract": "+Z central tip; primary grip origin; metric",
+  "schemaVersion": 3,
+  "sourceCoordinateContract": "+Z physical central tip; +Y head-face normal; primary grip origin; metric",
   "triangles": 2700,
   "variants": {
     "classic": {
@@ -109,7 +110,85 @@
         }
       ],
       "fbx": "elven-branched-spear.fbx",
-      "prefab": "ElvenBranchedSpear"
+      "meshFrame": {
+        "branchMeshMaximumZ": {
+          "LeftLow": 0.819597,
+          "RightHigh": 0.909854
+        },
+        "branchesBehindPhysicalTip": true,
+        "buttCapIsRearExtreme": true,
+        "center": [
+          -0.00936,
+          0.0,
+          -0.000721
+        ],
+        "centralHeadNormalToForwardSpanRatio": 0.06419,
+        "centralTipIsForwardExtreme": true,
+        "evaluatedVertexCount": 606,
+        "gripInsidePhysicalShaft": true,
+        "maximum": [
+          0.233414,
+          0.043,
+          1.138557
+        ],
+        "minimum": [
+          -0.252134,
+          -0.043,
+          -1.14
+        ],
+        "physicalButtZ": -1.14,
+        "physicalTipZ": 1.138557,
+        "positiveIdentityMeshScales": true,
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "sourceHeadFaceNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "span": [
+          0.485548,
+          0.086,
+          2.278557
+        ],
+        "supportInsidePhysicalShaft": true
+      },
+      "prefab": "ElvenBranchedSpear",
+      "semanticMarkers": {
+        "KMG_Back": [
+          -0.00936,
+          0.0,
+          -0.000721
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -1.14
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_HeadUp": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Support": [
+          0.0,
+          0.0,
+          0.593016
+        ],
+        "KMG_Tip": [
+          0.0,
+          0.0,
+          1.14
+        ]
+      }
     },
     "crown": {
       "branchCount": 4,
@@ -176,7 +255,87 @@
         }
       ],
       "fbx": "elven-branched-spear-crown.fbx",
-      "prefab": "ElvenBranchedSpearCrown"
+      "meshFrame": {
+        "branchMeshMaximumZ": {
+          "LeftHigh": 0.966702,
+          "LeftLow": 0.7699,
+          "RightHigh": 1.006702,
+          "RightLow": 0.8099
+        },
+        "branchesBehindPhysicalTip": true,
+        "buttCapIsRearExtreme": true,
+        "center": [
+          0.0,
+          0.0,
+          -0.000721
+        ],
+        "centralHeadNormalToForwardSpanRatio": 0.06419,
+        "centralTipIsForwardExtreme": true,
+        "evaluatedVertexCount": 818,
+        "gripInsidePhysicalShaft": true,
+        "maximum": [
+          0.273408,
+          0.043,
+          1.138557
+        ],
+        "minimum": [
+          -0.273408,
+          -0.043,
+          -1.14
+        ],
+        "physicalButtZ": -1.14,
+        "physicalTipZ": 1.138557,
+        "positiveIdentityMeshScales": true,
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "sourceHeadFaceNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "span": [
+          0.546817,
+          0.086,
+          2.278557
+        ],
+        "supportInsidePhysicalShaft": true
+      },
+      "prefab": "ElvenBranchedSpearCrown",
+      "semanticMarkers": {
+        "KMG_Back": [
+          0.0,
+          0.0,
+          -0.000721
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -1.14
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_HeadUp": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Support": [
+          0.0,
+          0.0,
+          0.593016
+        ],
+        "KMG_Tip": [
+          0.0,
+          0.0,
+          1.14
+        ]
+      }
     },
     "thorn": {
       "branchCount": 3,
@@ -228,7 +387,86 @@
         }
       ],
       "fbx": "elven-branched-spear-thorn.fbx",
-      "prefab": "ElvenBranchedSpearThorn"
+      "meshFrame": {
+        "branchMeshMaximumZ": {
+          "LeftHigh": 0.972943,
+          "LeftLow": 0.789909,
+          "RightMid": 0.880087
+        },
+        "branchesBehindPhysicalTip": true,
+        "buttCapIsRearExtreme": true,
+        "center": [
+          -0.010218,
+          0.0,
+          -0.000721
+        ],
+        "centralHeadNormalToForwardSpanRatio": 0.06419,
+        "centralTipIsForwardExtreme": true,
+        "evaluatedVertexCount": 704,
+        "gripInsidePhysicalShaft": true,
+        "maximum": [
+          0.244887,
+          0.043,
+          1.138557
+        ],
+        "minimum": [
+          -0.265324,
+          -0.043,
+          -1.14
+        ],
+        "physicalButtZ": -1.14,
+        "physicalTipZ": 1.138557,
+        "positiveIdentityMeshScales": true,
+        "sourceForward": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "sourceHeadFaceNormal": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "span": [
+          0.51021,
+          0.086,
+          2.278557
+        ],
+        "supportInsidePhysicalShaft": true
+      },
+      "prefab": "ElvenBranchedSpearThorn",
+      "semanticMarkers": {
+        "KMG_Back": [
+          -0.010218,
+          0.0,
+          -0.000721
+        ],
+        "KMG_Butt": [
+          0.0,
+          0.0,
+          -1.14
+        ],
+        "KMG_Grip": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "KMG_HeadUp": [
+          0.0,
+          0.1,
+          0.0
+        ],
+        "KMG_Support": [
+          0.0,
+          0.0,
+          0.593016
+        ],
+        "KMG_Tip": [
+          0.0,
+          0.0,
+          1.14
+        ]
+      }
     }
   }
 }

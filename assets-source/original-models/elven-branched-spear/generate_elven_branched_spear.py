@@ -2,7 +2,9 @@
 
 Run with Blender 4.5 in background mode and PYTHONHASHSEED=0. Every variant is
 metric, uses an identity root, places the primary grip at the origin, points its
-central blade toward +Z, and has physically separated backward-swept prongs.
+central blade toward +Z, exposes +Y as the head-face normal, and has physically
+separated backward-swept prongs. Build-time semantic empties are derived from
+the evaluated mesh rather than reconstructed later from assumed coordinates.
 """
 import bpy
 import datetime
@@ -25,8 +27,9 @@ RUNTIME_ICON = ROOT.parents[2] / "assets" / "game" / "icons" / \
 ICON_RENDER_ANGLE_DEGREES = 42.0
 BUTT_Z = -1.14
 TIP_Z = 1.14
-SUPPORT_Z = 0.37
+SUPPORT_Z = 0.593016
 HEAD_BASE_Z = 0.70
+HEAD_UP_DISTANCE = 0.10
 
 VARIANTS = {
     "classic": {
@@ -168,6 +171,122 @@ def apply_mesh_contract(objects):
         obj.select_set(False)
 
 
+def evaluated_bounds(objects):
+    bpy.context.view_layer.update()
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    minimum = Vector((math.inf, math.inf, math.inf))
+    maximum = Vector((-math.inf, -math.inf, -math.inf))
+    vertex_count = 0
+    for obj in objects:
+        evaluated = obj.evaluated_get(depsgraph)
+        mesh = evaluated.to_mesh()
+        try:
+            for vertex in mesh.vertices:
+                point = evaluated.matrix_world @ vertex.co
+                minimum.x = min(minimum.x, point.x)
+                minimum.y = min(minimum.y, point.y)
+                minimum.z = min(minimum.z, point.z)
+                maximum.x = max(maximum.x, point.x)
+                maximum.y = max(maximum.y, point.y)
+                maximum.z = max(maximum.z, point.z)
+                vertex_count += 1
+        finally:
+            evaluated.to_mesh_clear()
+    if vertex_count == 0:
+        raise RuntimeError("Spear mesh contract has no evaluated vertices")
+    return minimum, maximum, vertex_count
+
+
+def rounded_vector(value):
+    return [round(component, 6) for component in value]
+
+
+def measure_mesh_contract(prefix, objects, branch_records):
+    minimum, maximum, vertex_count = evaluated_bounds(objects)
+    center = (minimum + maximum) * 0.5
+    span = maximum - minimum
+    central = next(obj for obj in objects
+                   if obj.name == prefix + "CentralLeaf")
+    butt_cap = next(obj for obj in objects
+                    if obj.name == prefix + "ButtCap")
+    shaft = next(obj for obj in objects if obj.name == prefix + "Shaft")
+    central_minimum, central_maximum, _ = evaluated_bounds([central])
+    butt_minimum, _, _ = evaluated_bounds([butt_cap])
+    shaft_minimum, shaft_maximum, _ = evaluated_bounds([shaft])
+    tip_delta = abs(maximum.z - TIP_Z)
+    central_tip_delta = abs(central_maximum.z - maximum.z)
+    butt_delta = abs(minimum.z - BUTT_Z)
+    butt_mesh_delta = abs(butt_minimum.z - minimum.z)
+    central_normal_ratio = ((central_maximum.y - central_minimum.y) /
+                            (central_maximum.z - central_minimum.z))
+    positive_identity_scales = all(
+        all(abs(component - 1.0) <= 0.000001 for component in obj.scale)
+        for obj in objects)
+    grip_inside_shaft = shaft_minimum.z < 0.0 < shaft_maximum.z
+    support_inside_shaft = (shaft_minimum.z < SUPPORT_Z < shaft_maximum.z and
+                            SUPPORT_Z < HEAD_BASE_Z)
+    branch_mesh_maximum_z = {}
+    for record in branch_records:
+        branch = next(obj for obj in objects
+                      if obj.name == prefix + "Branch" + record["name"])
+        _, branch_maximum, _ = evaluated_bounds([branch])
+        branch_mesh_maximum_z[record["name"]] = round(
+            branch_maximum.z, 6)
+    branches_behind_tip = all(value < maximum.z - 0.01
+                              for value in branch_mesh_maximum_z.values())
+    if (tip_delta > 0.002 or central_tip_delta > 0.002 or
+            butt_delta > 0.002 or butt_mesh_delta > 0.002):
+        raise RuntimeError(prefix +
+                           " physical tip/butt markers do not match evaluated mesh ends")
+    if central_normal_ratio >= 0.10:
+        raise RuntimeError(prefix +
+                           " +Y is not a thin central-head plane normal")
+    if not positive_identity_scales:
+        raise RuntimeError(prefix +
+                           " contains reflected or nonidentity mesh scale")
+    if not grip_inside_shaft or not support_inside_shaft:
+        raise RuntimeError(prefix +
+                           " grip/support station is outside the physical shaft")
+    if not branches_behind_tip:
+        raise RuntimeError(prefix +
+                           " a branch was mistaken for the physical central tip")
+    return {
+        "evaluatedVertexCount": vertex_count,
+        "minimum": rounded_vector(minimum),
+        "maximum": rounded_vector(maximum),
+        "center": rounded_vector(center),
+        "span": rounded_vector(span),
+        "sourceForward": [0.0, 0.0, 1.0],
+        "sourceHeadFaceNormal": [0.0, 1.0, 0.0],
+        "physicalTipZ": round(maximum.z, 6),
+        "physicalButtZ": round(minimum.z, 6),
+        "centralTipIsForwardExtreme": central_tip_delta <= 0.002,
+        "buttCapIsRearExtreme": butt_mesh_delta <= 0.002,
+        "centralHeadNormalToForwardSpanRatio": round(
+            central_normal_ratio, 6),
+        "gripInsidePhysicalShaft": grip_inside_shaft,
+        "supportInsidePhysicalShaft": support_inside_shaft,
+        "branchesBehindPhysicalTip": branches_behind_tip,
+        "branchMeshMaximumZ": branch_mesh_maximum_z,
+        "positiveIdentityMeshScales": positive_identity_scales,
+    }
+
+
+def add_semantic_marker(root, key, name, location):
+    # Blender object names are scene-global. Keep stable variant-qualified names
+    # in the .blend, then temporarily expose exact semantic names in each
+    # independently exported FBX.
+    marker = bpy.data.objects.new(name + "__" + key, None)
+    bpy.context.collection.objects.link(marker)
+    marker.empty_display_type = "PLAIN_AXES"
+    marker.empty_display_size = 0.04
+    marker.location = location
+    marker.rotation_euler = (0.0, 0.0, 0.0)
+    marker.scale = (1.0, 1.0, 1.0)
+    marker.parent = root
+    return marker
+
+
 def build_variant(key, spec):
     prefix = spec["label"]
     wood = material(prefix + "Ash", (0.105, 0.055, 0.026), 0.0, 0.38)
@@ -203,12 +322,29 @@ def build_variant(key, spec):
             "width": width,
         })
     apply_mesh_contract(objects)
+    mesh_contract = measure_mesh_contract(prefix, objects, branch_records)
     root = bpy.data.objects.new(spec["label"], None)
     bpy.context.collection.objects.link(root)
     for obj in objects:
         obj.parent = root
+    back = Vector(mesh_contract["center"])
+    markers = {
+        "KMG_Grip": add_semantic_marker(
+            root, key, "KMG_Grip", (0, 0, 0)),
+        "KMG_Support": add_semantic_marker(
+            root, key, "KMG_Support", (0, 0, SUPPORT_Z)),
+        "KMG_Tip": add_semantic_marker(
+            root, key, "KMG_Tip", (0, 0, TIP_Z)),
+        "KMG_Butt": add_semantic_marker(
+            root, key, "KMG_Butt", (0, 0, BUTT_Z)),
+        "KMG_HeadUp": add_semantic_marker(
+            root, key, "KMG_HeadUp", (0, HEAD_UP_DISTANCE, 0)),
+        "KMG_Back": add_semantic_marker(
+            root, key, "KMG_Back", back),
+    }
     return {"key": key, "root": root, "objects": objects,
-            "branches": branch_records}
+            "branches": branch_records, "markers": markers,
+            "meshContract": mesh_contract}
 
 
 def select_tree(root):
@@ -218,17 +354,27 @@ def select_tree(root):
 
 
 def export_variant(built):
-    bpy.ops.object.select_all(action="DESELECT")
-    select_tree(built["root"])
-    bpy.context.view_layer.objects.active = built["root"]
-    path = ROOT / VARIANTS[built["key"]]["fbx"]
-    bpy.ops.export_scene.fbx(filepath=str(path), use_selection=True,
-                             apply_unit_scale=True,
-                             apply_scale_options="FBX_SCALE_UNITS",
-                             object_types={"EMPTY", "MESH"},
-                             add_leaf_bones=False, bake_anim=False,
-                             axis_forward="-Z", axis_up="Y")
-    return path
+    for value in BUILT.values():
+        for semantic, marker in value["markers"].items():
+            marker.name = semantic + "__" + value["key"]
+    for semantic, marker in built["markers"].items():
+        marker.name = semantic
+    try:
+        bpy.ops.object.select_all(action="DESELECT")
+        select_tree(built["root"])
+        bpy.context.view_layer.objects.active = built["root"]
+        path = ROOT / VARIANTS[built["key"]]["fbx"]
+        bpy.ops.export_scene.fbx(filepath=str(path), use_selection=True,
+                                 apply_unit_scale=True,
+                                 apply_scale_options="FBX_SCALE_UNITS",
+                                 object_types={"EMPTY", "MESH"},
+                                 add_leaf_bones=False, bake_anim=False,
+                                 axis_forward="-Z", axis_up="Y")
+        return path
+    finally:
+        for value in BUILT.values():
+            for semantic, marker in value["markers"].items():
+                marker.name = semantic + "__" + value["key"]
 
 
 def look_at(obj, point):
@@ -367,12 +513,12 @@ mesh_objects = [obj for value in BUILT.values() for obj in value["objects"]]
 for obj in mesh_objects:
     obj.data.calc_loop_triangles()
 report = {
-    "schemaVersion": 2,
+    "schemaVersion": 3,
     "generator": Path(__file__).name,
     "blenderVersion": bpy.app.version_string,
     "license": "Original project-owned asset; repository license applies",
-    "sourceCoordinateContract": "+Z central tip; primary grip origin; metric",
-    "equippedExportContract": "three identity roots exported before render-only camera/light creation",
+    "sourceCoordinateContract": "+Z physical central tip; +Y head-face normal; primary grip origin; metric",
+    "equippedExportContract": "three identity roots with mesh-derived KMG semantic markers exported before render-only camera/light creation",
     "branchContract": "physical backward-swept prongs with separated lateral tips outside the shaft grip region",
     "determinism": {
         "verifiedCleanRuns": 2,
@@ -397,12 +543,18 @@ report = {
     },
     "dimensionsMeters": {"buttZ": BUTT_Z, "tipZ": TIP_Z,
                          "supportZ": SUPPORT_Z,
+                         "headUpY": HEAD_UP_DISTANCE,
                          "shaftGripExclusionMaxZ": HEAD_BASE_Z},
     "variants": {
         key: {"prefab": value["root"].name,
               "fbx": VARIANTS[key]["fbx"],
               "branchCount": len(value["branches"]),
-              "branches": value["branches"]}
+              "branches": value["branches"],
+              "semanticMarkers": {
+                  name: rounded_vector(marker.location)
+                  for name, marker in value["markers"].items()
+              },
+              "meshFrame": value["meshContract"]}
         for key, value in BUILT.items()
     },
     "meshObjects": len(mesh_objects),

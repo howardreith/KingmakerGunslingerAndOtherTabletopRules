@@ -54,13 +54,26 @@ namespace KingmakerGunslinger.DomainTests
                 firearmRuntime.Contains("weapon-up-missing") &&
                 firearmRuntime.Contains("ValidateIndependentHeldAndStored"),
                 "Firearm authoring/runtime does not enforce a complete independent frame.");
-            Assertions.True(spearBuilder.Contains("HeadUpMarker") &&
+            Assertions.True(spearBuilder.Contains("KMG_Grip") &&
+                spearBuilder.Contains("KMG_Support") &&
+                spearBuilder.Contains("KMG_Tip") &&
+                spearBuilder.Contains("KMG_Butt") &&
+                spearBuilder.Contains("KMG_HeadUp") &&
+                spearBuilder.Contains("KMG_Back") &&
+                spearBuilder.Contains("NativeLongspearHeldEuler") &&
+                spearBuilder.Contains("NativeLongspearStoredEuler") &&
+                spearBuilder.Contains("SolveRotation") &&
+                spearBuilder.Contains("SolveTranslation") &&
+                spearBuilder.Contains("HeadUpMarker") &&
                 spearBuilder.Contains("ValidateSecondaryAsPlaneNormal") &&
                 spearBuilder.Contains("KMG_SPEAR_SEMANTIC_FRAME") &&
                 spearRuntime.Contains("HeadUpMarker") &&
+                spearRuntime.Contains("EquipmentOffsets") &&
+                spearRuntime.Contains("IkTargetLeftHand") &&
+                spearRuntime.Contains("HasCalibratedDonorFrame") &&
                 spearRuntime.Contains(
                     "held and stored presentations share an incompatible transform"),
-                "Spear authoring/runtime does not enforce polarity, roll, and presentation separation.");
+                "Spear authoring/runtime does not enforce mesh-authored polarity, donor-derived roll, held IK, and independent stored presentation.");
             Assertions.True(easternBuilder.Contains("BladeNormalMarker") &&
                 easternBuilder.Contains("ValidateSecondaryAsPlaneNormal") &&
                 easternBuilder.Contains("KMG_EASTERN_SEMANTIC_FRAME") &&

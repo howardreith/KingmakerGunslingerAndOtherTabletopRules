@@ -494,6 +494,22 @@ namespace KingmakerGunslinger.DomainTests
                 script.Contains("PYTHONHASHSEED") &&
                 script.Contains("stable_uuid") &&
                 script.Contains("normalize_png") &&
+                script.Contains("measure_mesh_contract") &&
+                script.Contains("evaluated_bounds") &&
+                script.Contains("KMG_Grip") &&
+                script.Contains("KMG_Support") &&
+                script.Contains("KMG_Tip") &&
+                script.Contains("KMG_Butt") &&
+                script.Contains("KMG_HeadUp") &&
+                script.Contains("KMG_Back") &&
+                report.Contains("\"schemaVersion\": 3") &&
+                report.Contains("\"supportZ\": 0.593016") &&
+                report.Contains("\"sourceForward\": [") &&
+                report.Contains("\"sourceHeadFaceNormal\": [") &&
+                report.Contains("\"centralTipIsForwardExtreme\": true") &&
+                report.Contains("\"buttCapIsRearExtreme\": true") &&
+                report.Contains("\"branchesBehindPhysicalTip\": true") &&
+                report.Contains("\"positiveIdentityMeshScales\": true") &&
                 report.Contains("\"tipDirection\": \"upper-right\"") &&
                 report.Contains("\"buttDirection\": \"lower-left\"") &&
                 report.Contains("\"targetAngleDegrees\": 42.0") &&
@@ -503,18 +519,18 @@ namespace KingmakerGunslinger.DomainTests
                 report.Contains("\"branchCount\": 4") &&
                 report.Contains("Original project-owned asset"),
                 "Original Blender source is not deterministic and documented.");
-            Assertions.Equal("525B6FB2DAC0106C001BCB0901ED892DBBACA48CA1DF6DDB78702F9B2B72AE01",
+            Assertions.Equal("A7FE4DEE53B18D1778D994F8B24A349B22C000E87660934B882D239A0F807E3A",
                 Sha256(Path.Combine(sourceRoot, "elven-branched-spear.fbx")),
                 "Generated classic spear FBX hash changed.");
-            Assertions.Equal("03B30979A7EA686AA6CA29D436BA434FD91D15BECDEE8BD2C0377A1B8B470579",
+            Assertions.Equal("3EC09E5A662991944F5B41E01852A8ABCB3A040506481D3789E1E3F94C0F430B",
                 Sha256(Path.Combine(sourceRoot,
                     "elven-branched-spear-thorn.fbx")),
                 "Generated thorn spear FBX hash changed.");
-            Assertions.Equal("C66E6BBAAB853011FBDA3077566A58D516248230FC5DE7CA6554661EEDCE345A",
+            Assertions.Equal("EA5B392F95AADA371185188021A8935C26621C8CE20C485014C215ADE4BA9443",
                 Sha256(Path.Combine(sourceRoot,
                     "elven-branched-spear-crown.fbx")),
                 "Generated crown spear FBX hash changed.");
-            Assertions.Equal("0BC67C89D08806B0B67FF074AE983FC1E2CDF6E6618CC10901E66C01B7A725FA",
+            Assertions.Equal("A59DC61CE246A7F5931F22494C4C52CE39C6E96312F3448FB9138A0AC0D7DC9B",
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.elvenbranchedspear")),
                 "Dedicated spear bundle hash changed.");
@@ -530,10 +546,17 @@ namespace KingmakerGunslinger.DomainTests
                 "ElvenBranchedSpearAssetRuntime.cs"));
             foreach (string token in new[] { "2018.4.10f1",
                 "kingmakergunslinger.elvenbranchedspear", "Grip",
-                "SupportHandTarget", "Tip", "Butt", "BackMount", "Standard",
-                "Quaternion.Euler(90f, 0f, 0f)",
-                "Quaternion.AngleAxis(35f, Vector3.forward)",
-                "native Longspear -Y/2.28m forward or diagonal-back contract" })
+                "SupportHandTarget", "Tip", "Butt", "HeadUp", "BackMount",
+                "KMG_Grip", "KMG_Support", "KMG_Tip", "KMG_Butt",
+                "KMG_HeadUp", "KMG_Back", "Standard",
+                "NativeLongspearHeldEuler", "NativeLongspearStoredEuler",
+                "NativeLongspearStoredRendererCenter", "0.593016f",
+                "SolveRotation", "SolveTranslation",
+                "ValidateRendererEndpoints",
+                "ValidateSecondaryAsPlaneNormal",
+                "EquipmentOffsets", "IkTargetLeftHand",
+                "authored-KMG-markers", "StoredRendererAnchor",
+                "independent BackMount" })
                 Assertions.True(builder.Contains(token) || runtime.Contains(token),
                     "Dedicated asset pipeline lacks: " + token);
             foreach (string token in new[] { "AssetBundle.LoadFromFile",
@@ -571,6 +594,8 @@ namespace KingmakerGunslinger.DomainTests
                  "spear-native-custom-geometry-inventory",
                  "spear-equipped-world-presentation-observation",
                  "spear-native-presentation-donor-preserved",
+                 "HasCalibratedDonorFrame",
+                 "EquipmentOffsets", "IkTargetLeftHand", "HeadUp",
                  "HandsEquipment.UpdateAll()", "MeasurePresentation",
                  "FindEquippedPresentation", "EquivalentPresentationExceptModel",
                  "TH_LongspearKnight1",

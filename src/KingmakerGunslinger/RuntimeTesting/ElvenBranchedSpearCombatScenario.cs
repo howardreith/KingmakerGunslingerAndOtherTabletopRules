@@ -25,6 +25,7 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.View.Equipment;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -134,47 +135,56 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.transform.Find("Grip") != null &&
                         value.transform.Find("SupportHandTarget") != null &&
                         value.transform.Find("Tip") != null &&
-                        value.transform.Find("Butt") != null) &&
+                        value.transform.Find("Butt") != null &&
+                        value.transform.Find("HeadUp") != null &&
+                        value.GetComponent<EquipmentOffsets>() != null &&
+                        ReferenceEquals(value.GetComponent<EquipmentOffsets>()
+                            .IkTargetLeftHand, value.transform.Find(
+                                "SupportHandTarget"))) &&
                     backPresentations.All(value => value != null &&
                         value.transform.Find("Visual") != null &&
                         value.transform.Find("BackMount") != null &&
                         value.transform.Find("Tip") != null &&
-                        value.transform.Find("Butt") != null);
+                        value.transform.Find("Butt") != null &&
+                        value.transform.Find("HeadUp") != null &&
+                        (value.GetComponent<EquipmentOffsets>() == null ||
+                         value.GetComponent<EquipmentOffsets>()
+                             .IkTargetLeftHand == null));
                 Add(assertions, "spear-custom-presentation",
-                    "three validated held/back prefab pairs with all semantic anchors",
+                    "three validated held/back prefab pairs with complete semantic frames and held-only support-hand IK",
                     ElvenBranchedSpearAssetRuntime.Status,
                     ElvenBranchedSpearAssetRuntime.HasValidatedPrefab &&
                         presentationExact,
                     "dedicated AssetBundle runtime and instantiated GameObject");
                 bool activeForward = heldPresentations.All(value =>
-                    value.transform.Find("Tip").localPosition.y < 0f &&
-                    value.transform.Find("Butt").localPosition.y > 0f &&
-                    Mathf.Abs(Quaternion.Dot(value.transform.Find("Visual")
-                        .localRotation, Quaternion.Euler(90f, 0f, 0f))) >
-                        0.9999f);
+                    ElvenBranchedSpearAssetRuntime.HasCalibratedDonorFrame(
+                        value, false));
                 Add(assertions, "spear-active-forward-frame",
-                    "source point maps to installed Longspear forward -Y; accepted 2.28m length retained",
+                    "authored +Z physical-tip/+Y head-normal frame maps to the measured native Longspear held basis with its 0.593016m support station",
                     "tip=" + heldPresentations[0].transform.Find("Tip")
                         .localPosition.ToString("R") + ";butt=" +
                         heldPresentations[0].transform.Find("Butt")
-                        .localPosition.ToString("R"), activeForward,
-                    "runtime-loaded held prefab transforms and semantic anchors");
+                        .localPosition.ToString("R") + ";headUp=" +
+                        heldPresentations[0].transform.Find("HeadUp")
+                        .localPosition.ToString("R") + ";support=" +
+                        heldPresentations[0].transform.Find(
+                            "SupportHandTarget").localPosition.ToString("R"),
+                    activeForward,
+                    "runtime-loaded held semantic frame, renderer bounds, and exact EquipmentOffsets.IkTargetLeftHand assignment");
                 bool diagonalBack = backPresentations.All(value =>
-                    value.transform.Find("Tip").localPosition.y >
-                        value.transform.Find("Butt").localPosition.y &&
-                    Mathf.Abs(value.transform.Find("Tip").localPosition.x -
-                        value.transform.Find("Butt").localPosition.x) > 1f &&
-                    Mathf.Abs(Quaternion.Dot(value.transform.Find("Visual")
-                        .localRotation, Quaternion.AngleAxis(35f,
-                            Vector3.forward) * Quaternion.Euler(-90f, 0f, 0f))) >
-                        0.9999f);
+                    ElvenBranchedSpearAssetRuntime.HasCalibratedDonorFrame(
+                        value, true));
                 Add(assertions, "spear-diagonal-back-frame",
-                    "distinct upper-left diagonal back prefab; no horizontal shoulder reuse",
+                    "independent stored prefab maps to the measured native Longspear belt-model basis and renderer anchor",
                     "tip=" + backPresentations[0].transform.Find("Tip")
                         .localPosition.ToString("R") + ";butt=" +
                         backPresentations[0].transform.Find("Butt")
+                        .localPosition.ToString("R") + ";headUp=" +
+                        backPresentations[0].transform.Find("HeadUp")
+                        .localPosition.ToString("R") + ";BackMount=" +
+                        backPresentations[0].transform.Find("BackMount")
                         .localPosition.ToString("R"), diagonalBack,
-                    "runtime-loaded BeltModel prefab and BackMount contract");
+                    "runtime-loaded BeltModel semantic basis, renderer-grounded BackMount, and held/stored separation");
                 BlueprintItemWeapon nativeLongspear =
                     BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
                         BlueprintBootstrap.Library, StandardLongspearGuid,

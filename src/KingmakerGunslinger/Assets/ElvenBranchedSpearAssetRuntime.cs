@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.View.Equipment;
 using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
@@ -13,6 +14,16 @@ namespace KingmakerGunslinger.Assets
     {
         internal const string BundleName =
             "kingmakergunslinger.elvenbranchedspear";
+        private const float NativeSupportStationFromGrip = 0.593016f;
+        private static readonly Vector3 NativeLongspearHeldEuler =
+            new Vector3(9.712032f, 123.546196f, 178.825317f);
+        private static readonly Vector3 NativeLongspearStoredPosition =
+            new Vector3(-0.004000134f, -0.00700025726f, 0.213005632f);
+        private static readonly Vector3 NativeLongspearStoredEuler =
+            new Vector3(359.074829f, 290.676361f, 267.541138f);
+        private static readonly Vector3 NativeLongspearStoredRendererCenter =
+            new Vector3(0.000167660415f, -0.0002424717f,
+                -0.0000419598073f);
         private const BindingFlags Fields = BindingFlags.Instance |
             BindingFlags.Public | BindingFlags.NonPublic;
         private static readonly object Sync = new object();
@@ -288,6 +299,19 @@ namespace KingmakerGunslinger.Assets
             return prefab;
         }
 
+        internal static bool HasCalibratedDonorFrame(GameObject prefab,
+            bool back)
+        {
+            if (prefab == null) return false;
+            try
+            {
+                RequireCalibratedDonorFrame(prefab, back,
+                    prefab.name ?? "spear");
+                return true;
+            }
+            catch { return false; }
+        }
+
         private static void Validate(GameObject prefab, string variant, bool back)
         {
             if (prefab == null) throw new InvalidDataException(
@@ -310,47 +334,34 @@ namespace KingmakerGunslinger.Assets
                 butt == null || headUp == null || (back && backMount == null))
                 throw new InvalidDataException(
                     variant + " semantic anchors are incomplete.");
-            Vector3 expectedPosition = back
-                ? new Vector3(0f, -0.18f, 0.06f) : Vector3.zero;
-            Quaternion expectedRotation = back
-                ? Quaternion.AngleAxis(35f, Vector3.forward) *
-                    Quaternion.Euler(-90f, 0f, 0f)
-                : Quaternion.Euler(90f, 0f, 0f);
-            if (!Approximately(visual.localPosition, expectedPosition) ||
-                !Approximately(visual.localRotation, expectedRotation) ||
-                !Approximately(visual.localScale, Vector3.one))
-                throw new InvalidDataException(variant +
-                    (back ? " back visual transform is not the exact diagonal frame." :
-                    " held visual transform differs from its declared source-frame mapping."));
-            Vector3 expectedGrip = expectedPosition;
-            Vector3 expectedSupport = expectedPosition + expectedRotation *
-                new Vector3(0f, 0f, 0.37f);
-            Vector3 expectedTip = expectedPosition + expectedRotation *
-                new Vector3(0f, 0f, 1.14f);
-            Vector3 expectedButt = expectedPosition + expectedRotation *
-                new Vector3(0f, 0f, -1.14f);
             if (!Finite(grip.localPosition) || !Finite(support.localPosition) ||
                 !Finite(tip.localPosition) || !Finite(butt.localPosition) ||
-                !Approximately(grip.localPosition, expectedGrip) ||
-                !Approximately(support.localPosition, expectedSupport) ||
-                !Approximately(tip.localPosition, expectedTip) ||
-                !Approximately(butt.localPosition, expectedButt) ||
+                !Finite(headUp.localPosition) ||
+                !Finite(visual.localPosition) ||
+                !Approximately(visual.localScale, Vector3.one) ||
                 Vector3.Distance(tip.localPosition, butt.localPosition) < 2.25f ||
-                Vector3.Distance(tip.localPosition, butt.localPosition) > 2.32f ||
-                (!back && (tip.localPosition.y >= 0f ||
-                    butt.localPosition.y <= 0f)) ||
-                (back && (tip.localPosition.y <= butt.localPosition.y ||
-                    Mathf.Abs(tip.localPosition.x - butt.localPosition.x) < 1f)))
+                Vector3.Distance(tip.localPosition, butt.localPosition) > 2.32f)
                 throw new InvalidDataException(variant +
-                    " grip/support/tip/butt geometry does not match the native Longspear frame.");
-            WeaponPresentationSemanticFrame frame =
-                WeaponPresentationFrameContract.Require(root, variant,
-                    "Tip", WeaponPresentationFrameContract.HeadUpMarker,
-                    true, 2.25f, 2.32f);
+                    " grip/support/tip/butt geometry is incomplete or implausible.");
+            WeaponPresentationSemanticFrame frame = RequireCalibratedDonorFrame(
+                prefab, back, variant);
             WeaponPresentationFrameContract.ValidateRendererEndpoints(root,
                 visual, frame, variant, 0.08f);
             WeaponPresentationFrameContract.ValidateSecondaryAsPlaneNormal(
                 root, visual, frame, variant, 0.20f);
+            EquipmentOffsets offsets = prefab.GetComponent<EquipmentOffsets>();
+            if (!back)
+            {
+                if (offsets == null)
+                    offsets = prefab.AddComponent<EquipmentOffsets>();
+                offsets.IkTargetLeftHand = support;
+                if (!ReferenceEquals(offsets.IkTargetLeftHand, support))
+                    throw new InvalidDataException(variant +
+                        " held support-hand IK assignment failed.");
+            }
+            else if (offsets != null && offsets.IkTargetLeftHand != null)
+                throw new InvalidDataException(variant +
+                    " stored presentation unexpectedly drives hand IK.");
             Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
             if (renderers.Length == 0 || renderers.Any(value => value == null ||
                 !value.enabled || !value.gameObject.activeSelf ||
@@ -363,6 +374,51 @@ namespace KingmakerGunslinger.Assets
                 prefab.GetComponentsInChildren<Light>(true).Length != 0)
                 throw new InvalidDataException(variant +
                     " prefab contains a camera or light.");
+        }
+
+        private static WeaponPresentationSemanticFrame
+            RequireCalibratedDonorFrame(GameObject prefab, bool back,
+                string label)
+        {
+            Transform root = prefab.transform;
+            Transform visual = root.Find("Visual");
+            Transform grip = root.Find(WeaponPresentationFrameContract
+                .GripMarker);
+            Transform backMount = root.Find("BackMount");
+            if (visual == null || grip == null)
+                throw new InvalidDataException(label +
+                    " calibrated visual or grip is missing.");
+            WeaponPresentationSemanticFrame frame =
+                WeaponPresentationFrameContract.Require(root, label,
+                    "Tip", WeaponPresentationFrameContract.HeadUpMarker,
+                    true, 2.25f, 2.32f);
+            Quaternion donorRotation = Quaternion.Euler(back ?
+                NativeLongspearStoredEuler : NativeLongspearHeldEuler);
+            Vector3 targetForward = donorRotation * Vector3.up;
+            Vector3 targetHeadNormal = donorRotation * Vector3.right;
+            float supportStation = Vector3.Dot(frame.Support - frame.Grip,
+                frame.Forward);
+            if (Vector3.Dot(frame.Forward, targetForward.normalized) <
+                    0.99999f ||
+                Vector3.Dot(frame.Up, targetHeadNormal.normalized) <
+                    0.99999f ||
+                Mathf.Abs(supportStation -
+                    NativeSupportStationFromGrip) > 0.001f)
+                throw new InvalidDataException(label +
+                    " semantic frame does not match the measured native " +
+                    "Longspear donor basis/support station.");
+            if (!back && !Approximately(frame.Grip, Vector3.zero))
+                throw new InvalidDataException(label +
+                    " held grip no longer lands on the weapon-bone origin.");
+            Vector3 storedAnchor = NativeLongspearStoredPosition +
+                Quaternion.Euler(NativeLongspearStoredEuler) *
+                    NativeLongspearStoredRendererCenter;
+            if (back && (backMount == null ||
+                !Approximately(backMount.localPosition, storedAnchor)))
+                throw new InvalidDataException(label +
+                    " independent BackMount does not match the measured " +
+                    "native Longspear stored renderer anchor.");
+            return frame;
         }
 
         private static bool RejectTypeAssignment(BlueprintWeaponType weaponType,
