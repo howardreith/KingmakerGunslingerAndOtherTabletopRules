@@ -84,21 +84,38 @@ namespace KingmakerGunslinger.DomainTests
                 "Test-RuntimeScenarioPreflight.ps1");
 
             const string identity = "weapon-presentation-evidence";
+            const string motionIdentity =
+                "weapon-presentation-motion-evidence";
             int workingSaveCompletion = runner.IndexOf(
                 "if (_workingSaveSmoke.Complete)", StringComparison.Ordinal);
             int evidenceExecution = runner.IndexOf(
                 "WeaponPresentationEvidenceScenario.Begin(",
                 StringComparison.Ordinal);
+            int motionEvidenceExecution = runner.IndexOf(
+                "WeaponPresentationEvidenceScenario.BeginMotion(",
+                StringComparison.Ordinal);
             Assertions.True(catalog.Contains(identity) &&
+                catalog.Contains(motionIdentity) &&
                 runner.Contains("WeaponPresentationEvidenceScenario.Begin(") &&
                 runner.Contains("_weaponPresentationEvidence.Poll()") &&
                 runner.Contains("if (_weaponPresentationEvidence.Complete)") &&
+                runner.Contains(
+                    "WeaponPresentationEvidenceScenario.BeginMotion(") &&
+                runner.Contains("_weaponPresentationMotionEvidence.Poll()") &&
+                runner.Contains(
+                    "if (_weaponPresentationMotionEvidence.Complete)") &&
                 workingSaveCompletion >= 0 &&
                 evidenceExecution > workingSaveCompletion &&
+                motionEvidenceExecution > workingSaveCompletion &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||") &&
+                request.Contains(
+                    "RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||") &&
                 automation.Contains("'" + identity + "' = [pscustomobject]") &&
+                automation.Contains("'" + motionIdentity +
+                    "' = [pscustomobject]") &&
                 preflight.Contains("'" + identity + "'") &&
+                preflight.Contains("'" + motionIdentity + "'") &&
                 automation.Contains(
                     "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
                 automation.Contains(
@@ -165,6 +182,28 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("SameReferences(_partyBefore") &&
                 scenario.Contains("File.WriteAllBytes(pngPath, png)"),
                 "Evidence must settle exact native stored and held models across game updates, capture four labelled views with outlier-safe framing, retain clipping diagnostics and honest claim limits, and prove exact cleanup.");
+
+            foreach (string token in new[] {
+                "LongGunMotionVariants", "AttackCaptureUpdates",
+                "BeginMotion", "MotionSession", "combat-ready",
+                "UnitAttack.CreateAttackCommand", "_actor.Commands.Run(",
+                "_attackCommand.Start()",
+                "AstarPath.active.GetNearest", "NearestNavigable",
+                "_attackCommand.CanStart",
+                "_attackCommand.IsUnitEnoughClose",
+                "_attackCommand.ApproachRadius",
+                "_attackCommand.NeedLoS", "PrepareAttackStart",
+                "commandTargetPlacement", "commandTargetAttempts",
+                "_attackCommand.IsSingleAttack = true",
+                "_attackCommand.Tick()", "commandExplicitTickCount",
+                "AnimationActedObserved",
+                "FirearmDischargeRuntimeDiagnostics.Fired",
+                "LoadedRoundsAfter", "weapon-presentation-native-attack-command",
+                "weapon-presentation-firearm-discharge-nonregression",
+                "SameReferences(_unitsBefore", "SameReferences(_partyBefore",
+                "modelWorldForward", "modelWorldUp", "modelWorldRight" })
+                Assertions.True(scenario.Contains(token),
+                    "Long-gun motion evidence omitted " + token + ".");
 
             Assertions.False(scenario.Contains("SaveGame") ||
                 scenario.Contains("QuickSave") || scenario.Contains("LoadGame") ||

@@ -12,10 +12,13 @@ using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Firing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -80,6 +83,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EasternWeaponBlueprints.NodachiVisualDonorGuid, null)
         };
 
+        private static readonly string[] LongGunMotionVariants =
+        {
+            WeaponVisualVariantCatalog.MusketService,
+            WeaponVisualVariantCatalog.BlunderbussService,
+            WeaponVisualVariantCatalog.RifleService,
+            "Native.HeavyCrossbow"
+        };
+
+        private static readonly int[] AttackCaptureUpdates =
+        {
+            1, 4, 8, 12, 18, 24, 36, 60, 96
+        };
+
         private sealed class NativeControlSpec
         {
             internal NativeControlSpec(string label, string typeGuid,
@@ -131,6 +147,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestRequest request)
         {
             return new Session(context, request);
+        }
+
+        internal static MotionSession BeginMotion(ModContext context,
+            RuntimeTestRequest request)
+        {
+            return new MotionSession(context, request);
         }
 
         /// <summary>
@@ -621,6 +643,896 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private sealed class MotionOutcome
+        {
+            internal string Variant;
+            internal bool Firearm;
+            internal bool CommandInstalled;
+            internal bool CommandCanStart;
+            internal bool CommandCloseEnough;
+            internal bool CommandTargetInState;
+            internal bool CommandStarted;
+            internal bool CommandRunningObserved;
+            internal bool AnimationObserved;
+            internal bool AnimationActedObserved;
+            internal bool CommandFinishedBeforeInterrupt;
+            internal bool CommandNeedLoS;
+            internal float CommandApproachRadius;
+            internal float CommandTargetDistance;
+            internal int CommandTargetAttempts;
+            internal string CommandTargetPlacement;
+            internal int ExplicitCommandTicks;
+            internal long FiredDelta;
+            internal long FaultDelta;
+            internal int LoadedRoundsAfter;
+        }
+
+        /// <summary>
+        /// A distinct request-gated session for real combat pose sampling. The
+        /// ordinary evidence session intentionally remains limited to stored and
+        /// held-idle states; this fixture adds an immortal disposable target and
+        /// issues native UnitAttack commands without changing either blueprint or
+        /// save state.
+        /// </summary>
+        internal sealed class MotionSession
+        {
+            private const int MaximumSettleUpdates = 300;
+            private const int ReadySettleUpdates = 30;
+            private readonly ModContext _context;
+            private readonly RuntimeTestRequest _request;
+            private readonly DateTime _started = DateTime.UtcNow;
+            private readonly List<RuntimeTestAssertion> _assertions =
+                new List<RuntimeTestAssertion>();
+            private readonly List<string> _diagnostics = new List<string>();
+            private readonly List<string> _warnings = new List<string>();
+            private readonly List<string> _evidenceFiles = new List<string>();
+            private readonly List<MotionOutcome> _outcomes =
+                new List<MotionOutcome>();
+            private readonly JArray _records = new JArray();
+            private object _allUnits;
+            private object _party;
+            private object[] _unitsBefore = new object[0];
+            private object[] _partyBefore = new object[0];
+            private UnitEntityData _actor;
+            private UnitEntityData _target;
+            private BlueprintUnit _actorBlueprint;
+            private BlueprintUnit _hostileBlueprint;
+            private Renderer[] _fixtureBodyRenderers = new Renderer[0];
+            private ItemEntityWeapon _equipped;
+            private bool _equippedFirearmStateSet;
+            private EvidenceCase[] _cases = new EvidenceCase[0];
+            private UnitAttack _attackCommand;
+            private Transform _removedPresentation;
+            private int _caseIndex;
+            private int _phase;
+            private int _settleUpdates;
+            private int _attackUpdates;
+            private int _captureScheduleIndex;
+            private int _captured;
+            private int _viewCount;
+            private bool _commandInstalled;
+            private bool _commandCanStart;
+            private bool _commandCloseEnough;
+            private bool _commandTargetInState;
+            private bool _commandStarted;
+            private bool _commandRunningObserved;
+            private bool _animationObserved;
+            private bool _animationActedObserved;
+            private bool _commandNeedLoS;
+            private float _commandApproachRadius;
+            private float _commandTargetDistance;
+            private int _commandTargetAttempts;
+            private string _commandTargetPlacement = "<not-prepared>";
+            private int _explicitCommandTicks;
+            private bool _cleanupStarted;
+            private bool _indexWritten;
+            private long _firedBefore;
+            private long _faultsBefore;
+            private string _stage = "resolve-working-save-anchor";
+            private string _exceptionSummary = string.Empty;
+
+            internal MotionSession(ModContext context,
+                RuntimeTestRequest request)
+            {
+                if (context == null) throw new ArgumentNullException("context");
+                if (request == null) throw new ArgumentNullException("request");
+                _context = context;
+                _request = request;
+            }
+
+            internal bool Complete { get; private set; }
+            internal RuntimeTestResult Result { get; private set; }
+
+            internal void Poll()
+            {
+                if (Complete) return;
+                try
+                {
+                    if (_cleanupStarted)
+                    {
+                        PollCleanup();
+                        return;
+                    }
+                    if (_phase == 0)
+                    {
+                        Initialize();
+                        _phase = 1;
+                        return;
+                    }
+                    if (_phase == 1)
+                    {
+                        if (EquipCurrent())
+                        {
+                            _phase = 2;
+                            _settleUpdates = 0;
+                        }
+                        return;
+                    }
+                    if (_phase == 2)
+                    {
+                        PollCombatReady();
+                        return;
+                    }
+                    if (_phase == 3)
+                    {
+                        PollAttackSequence();
+                        return;
+                    }
+                    PollRemoval();
+                }
+                catch (Exception exception)
+                {
+                    _exceptionSummary = "stage=" + _stage + ";" + exception;
+                    Add(_assertions,
+                        "weapon-presentation-motion-evidence-exception",
+                        "no exception", _exceptionSummary, false,
+                        "guarded request-local combat visual fixture");
+                    BeginCleanup();
+                }
+            }
+
+            private void Initialize()
+            {
+                _allUnits = Game.Instance.State.Units.All;
+                _party = Game.Instance.Player.Party;
+                _unitsBefore = Snapshot(_allUnits);
+                _partyBefore = Snapshot(_party);
+                UnitEntityData areaAnchor = _partyBefore.OfType<UnitEntityData>()
+                    .FirstOrDefault(value => value != null &&
+                        value.HoldingState != null && value.View != null);
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save has no live party-area anchor.");
+
+                _stage = "spawn-disposable-combat-pair";
+                _actorBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                _actorBlueprint.name =
+                    "KMG_Runtime_Weapon_Presentation_Motion_Actor";
+                _actorBlueprint.IsCheater = true;
+                Vector3 actorPosition = NearestNavigable(areaAnchor.Position +
+                    new Vector3(4f, 0f, 4f));
+                _actor = Game.Instance.EntityCreator.SpawnUnit(_actorBlueprint,
+                    actorPosition, Quaternion.identity, areaAnchor.HoldingState);
+                _target = ElvenBranchedSpearCombatScenario.SpawnHostileTarget(
+                    _actor, _actorBlueprint, NearestNavigable(actorPosition +
+                        Vector3.forward * 6f), areaAnchor.HoldingState,
+                    out _hostileBlueprint);
+                Game.Instance.EntityCreator.Tick();
+                if (_actor == null || _target == null || _actor.View == null ||
+                    _target.View == null || _actor.View.Data == null ||
+                    _actor.View.HandsEquipment == null)
+                    throw new InvalidOperationException(
+                        "Native spawning did not attach the disposable combat views.");
+
+                _actor.Descriptor.State.Immortality.Retain();
+                _target.Descriptor.State.Immortality.Retain();
+                ClearHand(_actor, true);
+                ClearHand(_actor, false);
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(true);
+                _actor.CombatState.JoinCombat();
+                _target.CombatState.JoinCombat();
+                _actor.CombatState.Engage(_target);
+                _target.Commands.InterruptAll(true);
+                _cases = BuildLongGunMotionCases();
+                if (_cases.Length != 4 || !_cases.Select(value => value.Variant)
+                    .SequenceEqual(LongGunMotionVariants))
+                    throw new InvalidOperationException(
+                        "The motion catalog is not the exact three production " +
+                        "long guns plus native Heavy Crossbow control.");
+            }
+
+            private bool EquipCurrent()
+            {
+                if (_fixtureBodyRenderers.Length == 0)
+                {
+                    _stage = "settle-empty-handed-motion-body-renderers";
+                    Game.Instance.EntityCreator.Tick();
+                    _fixtureBodyRenderers = _actor.View
+                        .GetComponentsInChildren<Renderer>(true).Where(renderer =>
+                            renderer != null && renderer.enabled &&
+                            renderer.gameObject.activeInHierarchy).ToArray();
+                    if (_fixtureBodyRenderers.Length == 0)
+                    {
+                        _settleUpdates++;
+                        if (_settleUpdates < MaximumSettleUpdates) return false;
+                        throw new InvalidOperationException(
+                            "The disposable combat actor has no active body renderers.");
+                    }
+                }
+
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "equip-combat-ready-" + value.Variant;
+                _actor.Commands.InterruptAll(true);
+                _target.Commands.InterruptAll(true);
+                if (!_actor.CombatState.IsInCombat)
+                    _actor.CombatState.JoinCombat();
+                if (!_target.CombatState.IsInCombat)
+                    _target.CombatState.JoinCombat();
+                _equipped = new ItemEntityWeapon(value.Item);
+                _actor.Body.PrimaryHand.InsertItem(_equipped);
+                if (!ReferenceEquals(_actor.Body.PrimaryHand.MaybeWeapon,
+                        _equipped))
+                    throw new InvalidOperationException(value.Variant +
+                        " did not remain in the primary hand.");
+                if (IsFirearm(value))
+                {
+                    FirearmRuntimeState.Service.Set(_equipped,
+                        new FirearmState(FirearmState.CurrentSchemaVersion,
+                            1, FirearmStateTokenCatalog.DiagnosticLeadBall,
+                            FirearmCondition.Normal));
+                    _equippedFirearmStateSet = true;
+                }
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(true);
+                _actor.CombatState.Engage(_target);
+                return true;
+            }
+
+            private void PollCombatReady()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "settle-combat-ready-" + value.Variant;
+                Game.Instance.EntityCreator.Tick();
+                _target.Commands.InterruptAll(true);
+                if (_actor.View.AnimationManager != null)
+                    _actor.View.AnimationManager.Tick();
+                WeaponVisualParameters visual = value.Item.VisualParameters;
+                if (visual == null || visual.Model == null)
+                    throw new InvalidOperationException(value.Variant +
+                        " has no effective held visual model.");
+                string role;
+                Transform model = ResolveActivePresentation(_actor, visual,
+                    "combat-ready", out role);
+                bool ready = Renderable(model) &&
+                    _actor.View.HandsEquipment.InCombat &&
+                    _actor.CombatState.IsInCombat;
+                _settleUpdates++;
+                if (!ready || _settleUpdates < ReadySettleUpdates)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(value.Variant +
+                        " did not reach an exact live combat-ready presentation " +
+                        "after " + _settleUpdates + " updates. renderable=" +
+                        Renderable(model) + ";handsInCombat=" +
+                        _actor.View.HandsEquipment.InCombat + ";unitInCombat=" +
+                        _actor.CombatState.IsInCombat + ";role=" + role + ".");
+                }
+
+                CaptureMotionRecord(value, model, visual, role,
+                    "combat-ready", 0,
+                    "live combat-ready evidence before attack command; no firing claim");
+                _firedBefore = FirearmDischargeRuntimeDiagnostics.Fired;
+                _faultsBefore = FirearmDischargeRuntimeDiagnostics.Faults;
+                UnitCommand issued = UnitAttack.CreateAttackCommand(_actor,
+                    _target);
+                _attackCommand = issued as UnitAttack;
+                if (_attackCommand == null)
+                    throw new InvalidOperationException(
+                        "Native UnitAttack.CreateAttackCommand did not produce " +
+                        "a UnitAttack for " + value.Variant + ": " +
+                        (issued == null ? "<null>" : issued.GetType().FullName));
+                _attackCommand.IsSingleAttack = true;
+                _actor.Commands.Run(_attackCommand);
+                PrepareAttackStart(value);
+                _attackCommand.Start();
+                _commandInstalled = _actor.Commands.Contains(_attackCommand);
+                _commandStarted = _attackCommand.IsStarted;
+                _commandRunningObserved = _attackCommand.IsRunning;
+                _animationObserved = _attackCommand.Animation != null;
+                _animationActedObserved = _attackCommand.Animation != null &&
+                    _attackCommand.Animation.IsActed;
+                if (!_commandStarted || !_commandRunningObserved)
+                    throw new InvalidOperationException(value.Variant +
+                        " native UnitAttack failed after exact start readiness. " +
+                        "started=" + _commandStarted + ";running=" +
+                        _commandRunningObserved + ";result=" +
+                        _attackCommand.Result + ";animation=" +
+                        (_attackCommand.Animation == null ? "<none>" :
+                            _attackCommand.Animation.GetType().FullName) + ".");
+                _attackUpdates = 0;
+                _captureScheduleIndex = 0;
+                _phase = 3;
+            }
+
+            private void PrepareAttackStart(EvidenceCase value)
+            {
+                Vector3 forward = _actor.OrientationDirection;
+                forward.y = 0f;
+                if (forward.sqrMagnitude < 0.5f) forward = Vector3.forward;
+                forward.Normalize();
+                Vector3 right = new Vector3(forward.z, 0f, -forward.x);
+                Vector3[] directions =
+                {
+                    forward,
+                    right,
+                    -right,
+                    -forward,
+                    (forward + right).normalized,
+                    (forward - right).normalized,
+                    (-forward + right).normalized,
+                    (-forward - right).normalized
+                };
+                float[] distances = { 6f, 4f, 2f, 1f, 0.5f };
+                var attempts = new List<string>();
+                _commandTargetAttempts = 0;
+                foreach (float distance in distances)
+                    for (int directionIndex = 0;
+                        directionIndex < directions.Length; directionIndex++)
+                    {
+                        Vector3 requested = _actor.Position +
+                            directions[directionIndex] * distance;
+                        Vector3 candidate = NearestNavigable(requested);
+                        SetUnitPosition(_target, candidate);
+                        _actor.ForceLookAt(candidate);
+                        _target.ForceLookAt(_actor.Position);
+                        Game.Instance.EntityCreator.Tick();
+                        _commandTargetAttempts++;
+                        bool targetInState = _target.IsInState;
+                        bool canStart = _attackCommand.CanStart;
+                        bool closeEnough = _attackCommand.IsUnitEnoughClose;
+                        float actualDistance = Vector3.Distance(_actor.Position,
+                            _target.Position);
+                        string placement = "distance-" + distance.ToString("R") +
+                            "-direction-" + directionIndex;
+                        attempts.Add(placement + "@" +
+                            candidate.ToString("R") + ":actual=" +
+                            actualDistance.ToString("R") + ":targetInState=" +
+                            targetInState + ":canStart=" + canStart +
+                            ":closeEnough=" + closeEnough);
+                        if (!targetInState || !canStart || !closeEnough) continue;
+                        _commandTargetInState = targetInState;
+                        _commandCanStart = canStart;
+                        _commandCloseEnough = closeEnough;
+                        _commandNeedLoS = _attackCommand.NeedLoS;
+                        _commandApproachRadius = _attackCommand.ApproachRadius;
+                        _commandTargetDistance = actualDistance;
+                        _commandTargetPlacement = placement;
+                        _diagnostics.Add(value.Variant +
+                            ":attackStartReady=targetInState:" +
+                            _commandTargetInState + "/canStart:" +
+                            _commandCanStart + "/closeEnough:" +
+                            _commandCloseEnough + "/needLoS:" +
+                            _commandNeedLoS + "/approachRadius:" +
+                            _commandApproachRadius.ToString("R") +
+                            "/targetDistance:" +
+                            _commandTargetDistance.ToString("R") +
+                            "/placement:" + _commandTargetPlacement +
+                            "/attempts:" + _commandTargetAttempts);
+                        return;
+                    }
+                throw new InvalidOperationException(value.Variant +
+                    " had no navmesh-backed target position satisfying the " +
+                    "native UnitAttack start contract. approachRadius=" +
+                    _attackCommand.ApproachRadius.ToString("R") +
+                    ";needLoS=" + _attackCommand.NeedLoS + ";attempts=" +
+                    string.Join("|", attempts.ToArray()) + ".");
+            }
+
+            private void PollAttackSequence()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "sample-native-attack-" + value.Variant;
+                Game.Instance.EntityCreator.Tick();
+                _target.Commands.InterruptAll(true);
+                if (_actor.View.AnimationManager != null)
+                    _actor.View.AnimationManager.Tick();
+                if (_attackCommand.IsRunning &&
+                    _attackCommand.Animation != null &&
+                    _attackCommand.Animation.IsActed &&
+                    _attackCommand.Result == UnitCommand.ResultType.None)
+                {
+                    _attackCommand.Tick();
+                    _explicitCommandTicks++;
+                }
+                _attackUpdates++;
+                _commandInstalled = _commandInstalled ||
+                    _actor.Commands.Contains(_attackCommand);
+                _commandRunningObserved = _commandRunningObserved ||
+                    _attackCommand.IsRunning;
+                _animationObserved = _animationObserved ||
+                    _attackCommand.Animation != null;
+                _animationActedObserved = _animationActedObserved ||
+                    (_attackCommand.Animation != null &&
+                    _attackCommand.Animation.IsActed);
+
+                if (_captureScheduleIndex < AttackCaptureUpdates.Length &&
+                    _attackUpdates >=
+                        AttackCaptureUpdates[_captureScheduleIndex])
+                {
+                    WeaponVisualParameters visual = value.Item.VisualParameters;
+                    string role;
+                    Transform model = ResolveActivePresentation(_actor, visual,
+                        "attack", out role);
+                    if (!Renderable(model))
+                        throw new InvalidOperationException(value.Variant +
+                            " lost its renderable held model during attack update " +
+                            _attackUpdates + ".");
+                    string state = "attack-update-" +
+                        _attackUpdates.ToString("000");
+                    CaptureMotionRecord(value, model, visual, role, state,
+                        _attackUpdates,
+                        "fixed live UnitAttack animation sample; exact fire frame " +
+                        "is established only by paired discharge counters");
+                    _captureScheduleIndex++;
+                }
+
+                if (_captureScheduleIndex < AttackCaptureUpdates.Length) return;
+                bool attackObserved = IsFirearm(value)
+                    ? FirearmDischargeRuntimeDiagnostics.Fired -
+                        _firedBefore >= 1
+                    : _commandRunningObserved && _animationObserved;
+                if (!attackObserved &&
+                    _attackUpdates < MaximumSettleUpdates) return;
+                RecordOutcome(value);
+                string removalRole;
+                _removedPresentation = ResolveActivePresentation(_actor,
+                    value.Item.VisualParameters, "attack", out removalRole);
+                _diagnostics.Add(value.Variant + ":removalRole=" +
+                    removalRole);
+                _actor.Commands.InterruptAll(true);
+                if (_actor.CombatState.IsInCombat)
+                    _actor.CombatState.LeaveCombat();
+                RemoveEquipped(_actor, ref _equipped,
+                    ref _equippedFirearmStateSet);
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                _phase = 4;
+                _settleUpdates = 0;
+            }
+
+            private void CaptureMotionRecord(EvidenceCase value,
+                Transform model, WeaponVisualParameters visual, string role,
+                string state, int update, string claimBoundary)
+            {
+                _stage = "capture-" + state + "-" + value.Variant;
+                string stem = state + "-default-medium-" +
+                    SafeFileName(value.Variant);
+                CaptureSummary capture = CaptureContactSheet(_actor, model,
+                    _fixtureBodyRenderers, Path.Combine(
+                        _request.EvidenceDirectory, stem + ".png"));
+                JObject record = Describe(value, _actor, model, visual,
+                    _fixtureBodyRenderers, capture, stem + ".png", state, role);
+                record["claimBoundary"] = claimBoundary;
+                record["motionUpdate"] = update;
+                record["actorWorldPosition"] = _actor.Position.ToString("R");
+                record["actorWorldForward"] =
+                    _actor.View.transform.forward.ToString("R");
+                record["targetWorldPosition"] = _target.Position.ToString("R");
+                record["targetDistance"] = Vector3.Distance(_actor.Position,
+                    _target.Position);
+                record["unitInCombat"] = _actor.CombatState.IsInCombat;
+                record["commandType"] = _attackCommand == null ? "<none>" :
+                    _attackCommand.GetType().FullName;
+                record["commandCanStart"] = _attackCommand != null &&
+                    _attackCommand.CanStart;
+                record["commandIsUnitEnoughClose"] = _attackCommand != null &&
+                    _attackCommand.IsUnitEnoughClose;
+                record["commandTargetInState"] = _attackCommand != null &&
+                    _target != null && _target.IsInState;
+                record["commandApproachRadius"] = _attackCommand == null ?
+                    0f : _attackCommand.ApproachRadius;
+                record["commandNeedLoS"] = _attackCommand != null &&
+                    _attackCommand.NeedLoS;
+                record["commandTargetPlacement"] = _commandTargetPlacement;
+                record["commandTargetAttempts"] = _commandTargetAttempts;
+                record["commandExplicitTickCount"] = _explicitCommandTicks;
+                record["commandIsSingleAttack"] = _attackCommand != null &&
+                    _attackCommand.IsSingleAttack;
+                record["commandIsStarted"] = _attackCommand != null &&
+                    _attackCommand.IsStarted;
+                record["commandIsRunning"] = _attackCommand != null &&
+                    _attackCommand.IsRunning;
+                record["commandIsFinished"] = _attackCommand != null &&
+                    _attackCommand.IsFinished;
+                record["commandResult"] = _attackCommand == null ? "<none>" :
+                    _attackCommand.Result.ToString();
+                record["commandAnimation"] = _attackCommand == null ||
+                    _attackCommand.Animation == null ? "<none>" :
+                    _attackCommand.Animation.GetType().FullName;
+                record["commandAnimationActed"] = _attackCommand != null &&
+                    _attackCommand.Animation != null &&
+                    _attackCommand.Animation.IsActed;
+                record["activeCommandTypes"] = new JArray(_actor.Commands.Raw
+                    .Where(command => command != null).Select(command =>
+                        command.GetType().FullName).ToArray());
+                record["firearmDischargeObserved"] =
+                    FirearmDischargeRuntimeDiagnostics.Observed;
+                record["firearmDischargeFired"] =
+                    FirearmDischargeRuntimeDiagnostics.Fired;
+                record["firearmDischargeFaults"] =
+                    FirearmDischargeRuntimeDiagnostics.Faults;
+                string jsonPath = Path.Combine(_request.EvidenceDirectory,
+                    stem + ".json");
+                WriteJsonAtomic(jsonPath, record);
+                _records.Add(record);
+                _evidenceFiles.Add(capture.PngPath);
+                _evidenceFiles.Add(jsonPath);
+                _captured++;
+                _viewCount += 4;
+                _diagnostics.Add(value.Variant + ":state=" + state +
+                    ";update=" + update + ";running=" +
+                    (string)record["commandIsRunning"] + ";finished=" +
+                    (string)record["commandIsFinished"] + ";fired=" +
+                    FirearmDischargeRuntimeDiagnostics.Fired + ";png=" +
+                    Path.GetFileName(capture.PngPath) + ";sha256=" +
+                    capture.Sha256);
+            }
+
+            private void RecordOutcome(EvidenceCase value)
+            {
+                bool firearm = IsFirearm(value);
+                int loadedRounds = firearm ? FirearmRuntimeState.Service
+                    .GetOrCreate(_equipped).Repository.State.LoadedRounds : -1;
+                _outcomes.Add(new MotionOutcome
+                {
+                    Variant = value.Variant,
+                    Firearm = firearm,
+                    CommandInstalled = _commandInstalled,
+                    CommandCanStart = _commandCanStart,
+                    CommandCloseEnough = _commandCloseEnough,
+                    CommandTargetInState = _commandTargetInState,
+                    CommandStarted = _commandStarted,
+                    CommandRunningObserved = _commandRunningObserved,
+                    AnimationObserved = _animationObserved,
+                    AnimationActedObserved = _animationActedObserved,
+                    CommandFinishedBeforeInterrupt = _attackCommand.IsFinished,
+                    CommandNeedLoS = _commandNeedLoS,
+                    CommandApproachRadius = _commandApproachRadius,
+                    CommandTargetDistance = _commandTargetDistance,
+                    CommandTargetAttempts = _commandTargetAttempts,
+                    CommandTargetPlacement = _commandTargetPlacement,
+                    ExplicitCommandTicks = _explicitCommandTicks,
+                    FiredDelta = FirearmDischargeRuntimeDiagnostics.Fired -
+                        _firedBefore,
+                    FaultDelta = FirearmDischargeRuntimeDiagnostics.Faults -
+                        _faultsBefore,
+                    LoadedRoundsAfter = loadedRounds
+                });
+                _diagnostics.Add(value.Variant + ":outcome=installed=" +
+                    _commandInstalled + ";canStart=" + _commandCanStart +
+                    ";closeEnough=" + _commandCloseEnough +
+                    ";targetInState=" + _commandTargetInState +
+                    ";started=" + _commandStarted + ";running=" +
+                    _commandRunningObserved + ";animation=" +
+                    _animationObserved + ";acted=" +
+                    _animationActedObserved + ";finished=" +
+                    _attackCommand.IsFinished + ";firedDelta=" +
+                    (FirearmDischargeRuntimeDiagnostics.Fired - _firedBefore) +
+                    ";faultDelta=" +
+                    (FirearmDischargeRuntimeDiagnostics.Faults - _faultsBefore) +
+                    ";roundsAfter=" + loadedRounds + ";explicitCommandTicks=" +
+                    _explicitCommandTicks);
+            }
+
+            private void PollRemoval()
+            {
+                _stage = "settle-motion-removal-" +
+                    _cases[_caseIndex].Variant;
+                Game.Instance.EntityCreator.Tick();
+                _target.Commands.InterruptAll(true);
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                GameObject current = _actor.View.HandsEquipment
+                    .GetWeaponModel(false);
+                bool removed = current == null &&
+                    (_removedPresentation == null ||
+                    !_removedPresentation.gameObject.activeInHierarchy ||
+                    !_removedPresentation.IsChildOf(_actor.View.transform));
+                if (!removed)
+                {
+                    _settleUpdates++;
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(
+                        "The prior attack presentation remained active after " +
+                        _settleUpdates + " updates.");
+                }
+                _removedPresentation = null;
+                _attackCommand = null;
+                _commandInstalled = false;
+                _commandCanStart = false;
+                _commandCloseEnough = false;
+                _commandTargetInState = false;
+                _commandStarted = false;
+                _commandRunningObserved = false;
+                _animationObserved = false;
+                _animationActedObserved = false;
+                _commandNeedLoS = false;
+                _commandApproachRadius = 0f;
+                _commandTargetDistance = 0f;
+                _commandTargetAttempts = 0;
+                _commandTargetPlacement = "<not-prepared>";
+                _explicitCommandTicks = 0;
+                _caseIndex++;
+                if (_caseIndex < _cases.Length)
+                {
+                    _phase = 1;
+                    return;
+                }
+                WriteMotionIndex();
+                _indexWritten = true;
+                BeginCleanup();
+            }
+
+            private void WriteMotionIndex()
+            {
+                _stage = "write-motion-index";
+                RuntimeBuildIdentity identity = RuntimeBuildIdentity.Capture(
+                    _context.Assembly, _context.ModEntry.Info.Version);
+                var outcomes = new JArray(_outcomes.Select(value =>
+                    new JObject
+                    {
+                        { "variant", value.Variant },
+                        { "firearm", value.Firearm },
+                        { "commandInstalled", value.CommandInstalled },
+                        { "commandCanStart", value.CommandCanStart },
+                        { "commandCloseEnough", value.CommandCloseEnough },
+                        { "commandTargetInState",
+                            value.CommandTargetInState },
+                        { "commandStarted", value.CommandStarted },
+                        { "commandRunningObserved",
+                            value.CommandRunningObserved },
+                        { "animationObserved", value.AnimationObserved },
+                        { "animationActedObserved",
+                            value.AnimationActedObserved },
+                        { "commandFinishedBeforeInterrupt",
+                            value.CommandFinishedBeforeInterrupt },
+                        { "commandNeedLoS", value.CommandNeedLoS },
+                        { "commandApproachRadius",
+                            value.CommandApproachRadius },
+                        { "commandTargetDistance",
+                            value.CommandTargetDistance },
+                        { "commandTargetAttempts",
+                            value.CommandTargetAttempts },
+                        { "commandTargetPlacement",
+                            value.CommandTargetPlacement },
+                        { "explicitCommandTicks",
+                            value.ExplicitCommandTicks },
+                        { "firedDelta", value.FiredDelta },
+                        { "faultDelta", value.FaultDelta },
+                        { "loadedRoundsAfter", value.LoadedRoundsAfter }
+                    }).ToArray());
+                var index = new JObject
+                {
+                    { "schemaVersion", 1 },
+                    { "fixture",
+                        "live disposable default Medium combat pair" },
+                    { "productionVariantCount", 3 },
+                    { "nativeControlCount", 1 },
+                    { "attackCaptureUpdates",
+                        new JArray(AttackCaptureUpdates) },
+                    { "views", new JArray("front", "right-side", "rear",
+                        "front-right-three-quarter") },
+                    { "loadedModVersion", _context.ModEntry.Info.Version },
+                    { "gitCommit", identity.GitCommit },
+                    { "runtimeIdentity", identity.RuntimeIdentity },
+                    { "outcomes", outcomes },
+                    { "records", _records }
+                };
+                string indexPath = Path.Combine(_request.EvidenceDirectory,
+                    "weapon-presentation-long-gun-motion-index.json");
+                WriteJsonAtomic(indexPath, index);
+                _evidenceFiles.Add(indexPath);
+            }
+
+            private void BeginCleanup()
+            {
+                if (_cleanupStarted) return;
+                _stage = "motion-request-cleanup";
+                if (_actor != null)
+                {
+                    _actor.Commands.InterruptAll(true);
+                    RemoveEquipped(_actor, ref _equipped,
+                        ref _equippedFirearmStateSet);
+                    if (_actor.CombatState != null &&
+                        _actor.CombatState.IsInCombat)
+                        _actor.CombatState.LeaveCombat();
+                    _actor.Descriptor.State.Immortality.ReleaseAll();
+                }
+                if (_target != null)
+                {
+                    _target.Commands.InterruptAll(true);
+                    if (_target.CombatState != null &&
+                        _target.CombatState.IsInCombat)
+                        _target.CombatState.LeaveCombat();
+                    _target.Descriptor.State.Immortality.ReleaseAll();
+                }
+                if (_target != null && ContainsReference(_allUnits, _target))
+                    Game.Instance.State.Units.All.Remove(_target);
+                if (_actor != null && ContainsReference(_allUnits, _actor))
+                    Game.Instance.State.Units.All.Remove(_actor);
+                if (_target != null) _target.Dispose();
+                if (_actor != null) _actor.Dispose();
+                if (_hostileBlueprint != null)
+                    UnityEngine.Object.DestroyImmediate(_hostileBlueprint);
+                if (_actorBlueprint != null)
+                    UnityEngine.Object.DestroyImmediate(_actorBlueprint);
+                _hostileBlueprint = null;
+                _actorBlueprint = null;
+                _cleanupStarted = true;
+                _settleUpdates = 0;
+            }
+
+            private void PollCleanup()
+            {
+                Game.Instance.EntityCreator.Tick();
+                bool cleaned = SameReferences(_unitsBefore,
+                        Snapshot(_allUnits)) &&
+                    SameReferences(_partyBefore, Snapshot(_party)) &&
+                    (_actor == null || !ContainsReference(_allUnits, _actor)) &&
+                    (_target == null || !ContainsReference(_allUnits, _target));
+                _settleUpdates++;
+                if (!cleaned && _settleUpdates < MaximumSettleUpdates) return;
+                Finish(cleaned);
+            }
+
+            private void Finish(bool cleaned)
+            {
+                int expectedRecords = LongGunMotionVariants.Length *
+                    (AttackCaptureUpdates.Length + 1);
+                Add(_assertions,
+                    "weapon-presentation-long-gun-motion-matrix",
+                    "three production long guns and native Heavy Crossbow in " +
+                        "combat-ready plus nine fixed attack samples",
+                    "records=" + _records.Count + ";variants=" +
+                        _records.OfType<JObject>().Select(value =>
+                            (string)value["variant"]).Distinct(
+                                StringComparer.Ordinal).Count(),
+                    _records.Count == expectedRecords &&
+                        _records.OfType<JObject>().Select(value =>
+                            (string)value["variant"]).Distinct(
+                                StringComparer.Ordinal).Count() == 4,
+                    "real live held model at updates 1/4/8/12/18/24/36/60/96");
+                Add(_assertions,
+                    "weapon-presentation-native-attack-command",
+                    "all four cases install a native UnitAttack and expose its " +
+                        "acted animation while the command is running",
+                    string.Join(";", _outcomes.Select(value => value.Variant +
+                        "=" + value.CommandInstalled + "/" +
+                        value.CommandCanStart + "/" +
+                        value.CommandCloseEnough + "/" +
+                        value.CommandTargetInState + "/" +
+                        value.CommandStarted + "/" +
+                        value.CommandRunningObserved + "/" +
+                        value.AnimationObserved + "/" +
+                        value.AnimationActedObserved).ToArray()),
+                    _outcomes.Count == 4 && _outcomes.All(value =>
+                        value.CommandInstalled && value.CommandCanStart &&
+                        value.CommandCloseEnough && value.CommandTargetInState &&
+                        value.CommandStarted && value.CommandRunningObserved &&
+                        value.AnimationObserved &&
+                        value.AnimationActedObserved),
+                    "UnitAttack.CreateAttackCommand, navmesh-backed native " +
+                        "CanStart/IsUnitEnoughClose contract, UnitCommands.Run, " +
+                        "and live command/acted-animation state");
+                MotionOutcome[] firearms = _outcomes.Where(value =>
+                    value.Firearm).ToArray();
+                Add(_assertions,
+                    "weapon-presentation-firearm-discharge-nonregression",
+                    "each loaded production long gun fires exactly once, consumes " +
+                        "its round, and records no discharge fault",
+                    string.Join(";", firearms.Select(value => value.Variant +
+                        "=fired:" + value.FiredDelta + "/fault:" +
+                        value.FaultDelta + "/rounds:" +
+                        value.LoadedRoundsAfter).ToArray()),
+                    firearms.Length == 3 && firearms.All(value =>
+                        value.FiredDelta == 1 && value.FaultDelta == 0 &&
+                        value.LoadedRoundsAfter == 0),
+                    "FirearmDischargeRuntimeDiagnostics plus exact per-item runtime state");
+                int zeroPixelSheets = _records.OfType<JObject>().Count(value =>
+                    (int)value["meaningfulPixels"] <= 0);
+                Add(_assertions,
+                    "weapon-presentation-motion-contact-sheets",
+                    expectedRecords + " PNG/JSON pairs and " +
+                        (expectedRecords * 4) + " labelled views",
+                    "captures=" + _captured + ";views=" + _viewCount +
+                        ";files=" + _evidenceFiles.Count +
+                        ";zeroPixelSheets=" + zeroPixelSheets,
+                    _captured == expectedRecords &&
+                        _viewCount == expectedRecords * 4 && _indexWritten &&
+                        _evidenceFiles.Count == expectedRecords * 2 + 1 &&
+                        _evidenceFiles.All(File.Exists) && zeroPixelSheets == 0,
+                    "front/right-side/rear/front-right-three-quarter live combat contact sheets");
+                Add(_assertions, "weapon-presentation-motion-request-cleanup",
+                    "exact party/global-unit snapshots restored; no save call",
+                    "cleaned=" + cleaned + ";settleUpdates=" +
+                        _settleUpdates, cleaned,
+                    "request-local items, combat pair, blueprint clones, camera, light, and textures");
+                Add(_assertions, "loaded-mod-version",
+                    _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    string.Equals(_request.ExpectedModVersion,
+                        _context.ModEntry.Info.Version,
+                        StringComparison.Ordinal),
+                    "Unity Mod Manager ModEntry.Info.Version");
+
+                _warnings.Add("Motion evidence is limited to combat-ready and " +
+                    "fixed attack-sequence samples on the default Medium actor. " +
+                    "It does not establish reload, locomotion, sex-specific, " +
+                    "Small, or Enlarged acceptance.");
+                RuntimeBuildIdentity build = RuntimeBuildIdentity.Capture(
+                    _context.Assembly, _context.ModEntry.Info.Version);
+                bool passed = _assertions.All(value =>
+                    value.Status == RuntimeTestStatuses.Pass);
+                Result = new RuntimeTestResult
+                {
+                    SchemaVersion = 1,
+                    RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    Status = passed ? RuntimeTestStatuses.Pass :
+                        RuntimeTestStatuses.Fail,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    RuntimeIdentity = build.RuntimeIdentity + "; mvid=" +
+                        build.ModuleVersionId + "; sha256=" +
+                        build.LoadedModuleSha256 + "; pid=" + build.ProcessId,
+                    GitCommit = build.GitCommit,
+                    GameVersion = Application.version ?? string.Empty,
+                    StartUtc = _started.ToString("o"),
+                    EndUtc = DateTime.UtcNow.ToString("o"),
+                    DurationMilliseconds = (long)(DateTime.UtcNow - _started)
+                        .TotalMilliseconds,
+                    Assertions = _assertions,
+                    Diagnostics = _diagnostics,
+                    Warnings = _warnings,
+                    ExceptionSummary = _exceptionSummary,
+                    EvidenceFiles = _evidenceFiles,
+                    AutomaticExitRequested = _request.ExitAfterCompletion,
+                    EvidenceDirectory = _request.EvidenceDirectory
+                };
+                Complete = true;
+            }
+        }
+
+        private static EvidenceCase[] BuildLongGunMotionCases()
+        {
+            EvidenceCase[] catalog = BuildCases();
+            return LongGunMotionVariants.Select(variant => catalog.Single(value =>
+                string.Equals(value.Variant, variant,
+                    StringComparison.Ordinal))).ToArray();
+        }
+
+        private static bool IsFirearm(EvidenceCase value)
+        {
+            return value != null && value.Symbol.StartsWith("KMG.Firearms.",
+                StringComparison.Ordinal);
+        }
+
+        private static Vector3 NearestNavigable(Vector3 requested)
+        {
+            if (AstarPath.active == null) return requested;
+            Pathfinding.NNInfo nearest = AstarPath.active.GetNearest(requested);
+            return nearest.node == null ? requested : nearest.clampedPosition;
+        }
+
+        private static void SetUnitPosition(UnitEntityData unit,
+            Vector3 position)
+        {
+            if (unit == null) throw new ArgumentNullException("unit");
+            unit.Position = position;
+            if (unit.View != null) unit.View.transform.position = position;
+        }
+
         private static EvidenceCase[] BuildCases()
         {
             var candidates = new List<EvidenceCase>();
@@ -1020,6 +1932,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "modelLocalRotation", model.localRotation.eulerAngles
                     .ToString("R") },
                 { "modelLocalScale", model.localScale.ToString("R") },
+                { "modelWorldForward", model.forward.ToString("R") },
+                { "modelWorldUp", model.up.ToString("R") },
+                { "modelWorldRight", model.right.ToString("R") },
                 { "weaponRendererCount", weaponRenderers.Length },
                 { "weaponBoundsCenter", weaponBounds.center.ToString("R") },
                 { "weaponBoundsSize", weaponBounds.size.ToString("R") },
@@ -1173,7 +2088,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string[] needles = { "ik_target", "warhead", "weaponcenter",
                 "trail", "surface", "muzzle", "tip", "grip", "butt",
-                "support", "up", "normal", "mount" };
+                "support", "forward", "up", "normal", "mount" };
             var values = new JArray();
             foreach (Transform transform in root.GetComponentsInChildren<
                 Transform>(true).Where(transform => transform != null &&

@@ -83,6 +83,7 @@ $expected = @(
     'disposable-elven-branched-spear-combat',
     'disposable-eastern-weapons-combat',
     'weapon-presentation-evidence',
+    'weapon-presentation-motion-evidence',
     'working-save-elven-branched-spear-prepare',
     'working-save-elven-branched-spear-verify-cleanup',
     'working-save-elven-branched-spear-verify-absent',
@@ -215,6 +216,15 @@ Assert-True $weaponPresentation.RequiresSaveName `
 Assert-True ($weaponPresentation.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'weapon-presentation-evidence-only-permits-working-save'
+$weaponPresentationMotion = Get-KmgRuntimeScenarioMetadata `
+    'weapon-presentation-motion-evidence'
+Assert-True (-not $weaponPresentationMotion.RequiresManualInteraction) `
+    'weapon-presentation-motion-evidence-is-autonomous'
+Assert-True $weaponPresentationMotion.RequiresSaveName `
+    'weapon-presentation-motion-evidence-requires-save-name'
+Assert-True ($weaponPresentationMotion.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'weapon-presentation-motion-evidence-only-permits-working-save'
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
     'vendor-contracts-is-autonomous'

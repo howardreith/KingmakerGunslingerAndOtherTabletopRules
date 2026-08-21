@@ -218,6 +218,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
                 request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||

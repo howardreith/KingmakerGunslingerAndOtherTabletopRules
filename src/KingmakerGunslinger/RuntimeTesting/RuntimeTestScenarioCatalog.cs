@@ -82,6 +82,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-eastern-weapons-combat";
         internal const string WeaponPresentationEvidence =
             "weapon-presentation-evidence";
+        internal const string WeaponPresentationMotionEvidence =
+            "weapon-presentation-motion-evidence";
         internal const string WorkingSaveElvenBranchedSpearPrepare =
             "working-save-elven-branched-spear-prepare";
         internal const string WorkingSaveElvenBranchedSpearVerifyCleanup =
@@ -328,6 +330,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableElvenBranchedSpearCombat,
                 DisposableEasternWeaponsCombat,
                 WeaponPresentationEvidence,
+                WeaponPresentationMotionEvidence,
                 WorkingSaveElvenBranchedSpearPrepare,
                 WorkingSaveElvenBranchedSpearVerifyCleanup,
                 WorkingSaveElvenBranchedSpearVerifyAbsent,
