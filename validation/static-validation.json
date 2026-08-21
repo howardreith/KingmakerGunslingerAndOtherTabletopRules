@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.88-overnight-gunslinger-bugfixes",
-  "version": "0.0.88",
+  "milestone": "0.0.89-weapon-presentation-calibration",
+  "version": "0.0.89",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -71,5 +71,15 @@
     "exactOptionalProfilesTargeted": true,
     "sixteenModuleConfigurationsQualified": true,
     "expandedSummoningQualified": true
+  },
+  "weaponPresentation89": {
+    "deterministicTestCount": 1164,
+    "productionVisualVariantCount": 22,
+    "nativeControlCount": 6,
+    "bodyFixtureCount": 6,
+    "bodyMatrixCaptureCount": 336,
+    "bodyMatrixViewCount": 1344,
+    "nativeDonorsRemainUnmodified": true,
+    "gameplaySemanticsUnchanged": true
   }
 }

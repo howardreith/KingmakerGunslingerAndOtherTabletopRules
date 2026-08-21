@@ -268,6 +268,13 @@ historical reserved entry. Established GUIDs remain unchanged.
 - Add manifest change, source registration, migration note, and tests in the same package.
 - Runtime code must never call `Guid.NewGuid` for blueprint identity.
 
+## 0.0.89 identity statement
+
+Weapon Presentation Calibration adds no blueprint identity and changes no
+existing GUID. Its changes are confined to project-owned presentation assets,
+clone-local visual parameters, request-gated evidence infrastructure, and
+release metadata. Native donor blueprints remain unmodified.
+
 ## 0.0.88 identity statement
 
 The overnight bug-fix batch adds no blueprint identity and changes no existing

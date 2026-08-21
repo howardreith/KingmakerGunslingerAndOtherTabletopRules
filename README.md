@@ -1,19 +1,17 @@
 # Kingmaker Gunslinger
 
-The `0.0.88` overnight bug-fix candidate retains the eight independent feature
-modules qualified in `0.0.87` and repairs twelve fresh playtest findings across
-Acadamae Graduate, Focused Aim, firearm penetration feedback, vendors, fixed
-loot, Wwise audio routing, feat icons, and weapon presentation. Its 30 scoped
-named/unique project magic items now occupy 30 distinct deterministic
-base-campaign fixed-loot targets rather than recurring merchants or clustered
-containers.
+The `0.0.89` weapon-presentation candidate retains the eight independent
+feature modules and the complete `0.0.88` overnight repair set. It calibrates
+all production firearms, Elven Branched Spears, Wakizashi, Katana, and Nodachi
+against native presentation donors without changing weapon mechanics,
+blueprint identity, damage, range, reload, misfire, or acquisition behavior.
 
-Automated source, 1,160-test domain, clean Release, strict package,
-compatibility, exact acquisition, and canonical working-save qualification has
-passed for this candidate. Visual, audible, merchant-materialization,
-ordinary-UI combat, and campaign pacing observations remain explicit
-consolidated human gates; a passing build or structural blueprint observer is
-not presented as proof of those outcomes.
+The candidate adds full semantic weapon frames, independent held/stored rigs,
+and guarded visual evidence for native controls, firing and thrust motion,
+reloads, transitions, locomotion, male/female Medium bodies, a Small body,
+Enlarge Person, heavy armor, and cloak interaction. Automated visual evidence
+supports this cosmetic qualification; focused human play review remains the
+final subjective acceptance surface.
 
 Urban Barbarian remains the eighth independent default-enabled module and is
 usable without Call of the Wild. Brown-Fur alone requires a compatible Call of

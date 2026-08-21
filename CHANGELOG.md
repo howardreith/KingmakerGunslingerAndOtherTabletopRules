@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.0.89-weapon-presentation-calibration (qualification candidate)
+
+- Calibrates every production pistol, revolver, musket, blunderbuss, and rifle
+  from authored grip/muzzle/butt/up frames while preserving projectile and
+  muzzle semantics.
+- Aligns long-gun dominant grips, shoulder stocks, support-hand fore-ends, and
+  independent back models against native crossbow presentation controls.
+- Corrects all Elven Branched Spear head polarity, branch roll, hand placement,
+  thrust direction, and independently authored stored frames.
+- Canonicalizes Wakizashi, Katana, and Nodachi grip/tip/blade-normal frames and
+  replaces detached inherited donor sheaths with independent custom storage.
+- Deliberately hides stored handguns where no plausible native holster exists;
+  held, firing, transition, and inventory-preview visibility remain intact.
+- Adds guarded Steam evidence for 22 production variants and six native
+  controls across held/stored, attack, firing, thrust, reload, transition,
+  locomotion, male/female Medium, Small, Enlarged, heavy-armor, and cloak
+  configurations.
+- Preserves all stable blueprint identities, native donor blueprints, combat
+  rules, sounds, trails, attachment slots, and the complete `0.0.88` nonvisual
+  repair set.
+
 ## 0.0.88-overnight-gunslinger-bugfixes (qualification candidate)
 
 - Repairs Acadamae Graduate's accelerated-cast lifecycle, one-save terminal
