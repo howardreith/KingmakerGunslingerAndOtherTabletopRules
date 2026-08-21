@@ -86,6 +86,8 @@ namespace KingmakerGunslinger.DomainTests
             const string identity = "weapon-presentation-evidence";
             const string motionIdentity =
                 "weapon-presentation-motion-evidence";
+            const string spearMotionIdentity =
+                "weapon-presentation-spear-motion-evidence";
             int workingSaveCompletion = runner.IndexOf(
                 "if (_workingSaveSmoke.Complete)", StringComparison.Ordinal);
             int evidenceExecution = runner.IndexOf(
@@ -96,6 +98,7 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparison.Ordinal);
             Assertions.True(catalog.Contains(identity) &&
                 catalog.Contains(motionIdentity) &&
+                catalog.Contains(spearMotionIdentity) &&
                 runner.Contains("WeaponPresentationEvidenceScenario.Begin(") &&
                 runner.Contains("_weaponPresentationEvidence.Poll()") &&
                 runner.Contains("if (_weaponPresentationEvidence.Complete)") &&
@@ -111,16 +114,35 @@ namespace KingmakerGunslinger.DomainTests
                     "RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||") &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||") &&
+                request.Contains(
+                    "RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||") &&
                 automation.Contains("'" + identity + "' = [pscustomobject]") &&
                 automation.Contains("'" + motionIdentity +
                     "' = [pscustomobject]") &&
+                automation.Contains("'" + spearMotionIdentity +
+                    "' = [pscustomobject]") &&
                 preflight.Contains("'" + identity + "'") &&
                 preflight.Contains("'" + motionIdentity + "'") &&
+                preflight.Contains("'" + spearMotionIdentity + "'") &&
                 automation.Contains(
                     "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
                 automation.Contains(
                     "ReadinessBehavior = 'autonomous-working-save'"),
                 "Weapon presentation evidence must be an allowlisted autonomous working-save scenario.");
+
+            foreach (string token in new[] {
+                "SpearMotionVariants", "Native.Longspear",
+                "TryResolveSpearPhysicalEndpoints",
+                "authored-renderer-bound-Tip/Butt",
+                "native-TH_LongspearKnight1-renderer-positive-Y-head",
+                "physicalTipLeadsTargetDirection",
+                "physicalTipTargetProjectionMeters",
+                "actedTipLeadingRecords ==",
+                "actedEndpointRecords.Length",
+                "weapon-presentation-branched-spear-motion-index.json",
+                "weapon-presentation-spear-physical-endpoint-evidence" })
+                Assertions.True(scenario.Contains(token),
+                    "Spear motion evidence omitted " + token + ".");
 
             foreach (string token in new[] {
                 "PistolService", "PistolDuelist", "PistolLastWord",

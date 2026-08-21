@@ -615,6 +615,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableEasternWeaponsCombat &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationEvidence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
                     _trace.Record("manual-interaction-timeout",
@@ -1300,6 +1301,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
                     _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||
+                    _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
@@ -1335,6 +1338,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WeaponPresentationSpearMotionEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
@@ -1766,7 +1771,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Complete(_weaponPresentationEvidence.Result);
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
-                    .WeaponPresentationMotionEvidence)
+                    .WeaponPresentationMotionEvidence ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                    .WeaponPresentationSpearMotionEvidence)
                 {
                     if (_weaponPresentationMotionEvidence == null)
                         _weaponPresentationMotionEvidence =

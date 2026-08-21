@@ -92,6 +92,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "Native.HeavyCrossbow"
         };
 
+        private static readonly string[] SpearMotionVariants =
+        {
+            WeaponVisualVariantCatalog.SpearClassic,
+            WeaponVisualVariantCatalog.SpearThorn,
+            WeaponVisualVariantCatalog.SpearCrown,
+            "Native.Longspear"
+        };
+
         private static readonly int[] AttackCaptureUpdates =
         {
             1, 4, 8, 12, 18, 24, 36, 60, 96
@@ -690,6 +698,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<MotionOutcome> _outcomes =
                 new List<MotionOutcome>();
             private readonly JArray _records = new JArray();
+            private readonly bool _spearMotion;
+            private readonly string[] _motionVariants;
             private object _allUnits;
             private object _party;
             private object[] _unitsBefore = new object[0];
@@ -739,6 +749,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (request == null) throw new ArgumentNullException("request");
                 _context = context;
                 _request = request;
+                _spearMotion = string.Equals(request.Scenario,
+                    RuntimeTestScenarioCatalog
+                        .WeaponPresentationSpearMotionEvidence,
+                    StringComparison.Ordinal);
+                _motionVariants = _spearMotion ? SpearMotionVariants :
+                    LongGunMotionVariants;
             }
 
             internal bool Complete { get; private set; }
@@ -838,12 +854,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _target.CombatState.JoinCombat();
                 _actor.CombatState.Engage(_target);
                 _target.Commands.InterruptAll(true);
-                _cases = BuildLongGunMotionCases();
+                _cases = BuildMotionCases(_motionVariants);
                 if (_cases.Length != 4 || !_cases.Select(value => value.Variant)
-                    .SequenceEqual(LongGunMotionVariants))
+                    .SequenceEqual(_motionVariants))
                     throw new InvalidOperationException(
                         "The motion catalog is not the exact three production " +
-                        "long guns plus native Heavy Crossbow control.");
+                        (_spearMotion ? "branched spears plus native Longspear" :
+                            "long guns plus native Heavy Crossbow") +
+                        " control.");
             }
 
             private bool EquipCurrent()
@@ -1118,6 +1136,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.EvidenceDirectory, stem + ".png"));
                 JObject record = Describe(value, _actor, model, visual,
                     _fixtureBodyRenderers, capture, stem + ".png", state, role);
+                if (_spearMotion)
+                {
+                    string endpointSource;
+                    Vector3 physicalTip;
+                    Vector3 physicalButt;
+                    if (!TryResolveSpearPhysicalEndpoints(value, model,
+                            out endpointSource, out physicalTip,
+                            out physicalButt))
+                        throw new InvalidOperationException(value.Variant +
+                            " lacks mesh-grounded physical spear endpoints.");
+                    Vector3 targetDirection = _target.Position -
+                        _actor.Position;
+                    targetDirection.y = 0f;
+                    if (targetDirection.sqrMagnitude < 0.01f)
+                        throw new InvalidOperationException(value.Variant +
+                            " has a degenerate actor-to-target direction.");
+                    targetDirection.Normalize();
+                    float tipProjection = Vector3.Dot(physicalTip -
+                        _actor.Position, targetDirection);
+                    float buttProjection = Vector3.Dot(physicalButt -
+                        _actor.Position, targetDirection);
+                    record["physicalEndpointSource"] = endpointSource;
+                    record["physicalTipWorldPosition"] =
+                        physicalTip.ToString("R");
+                    record["physicalButtWorldPosition"] =
+                        physicalButt.ToString("R");
+                    record["physicalLengthMeters"] = Vector3.Distance(
+                        physicalTip, physicalButt);
+                    record["physicalTipTargetProjectionMeters"] =
+                        tipProjection;
+                    record["physicalButtTargetProjectionMeters"] =
+                        buttProjection;
+                    record["physicalTipLeadsTargetDirection"] =
+                        tipProjection > buttProjection;
+                    Transform grip = model.Find("Grip");
+                    Transform headUp = model.Find(
+                        WeaponPresentationFrameContract.HeadUpMarker);
+                    record["headFaceNormalWorld"] = grip == null ||
+                        headUp == null ? "<native-control-unresolved>" :
+                        (headUp.position - grip.position).normalized
+                            .ToString("R");
+                }
                 record["claimBoundary"] = claimBoundary;
                 record["motionUpdate"] = update;
                 record["actorWorldPosition"] = _actor.Position.ToString("R");
@@ -1325,6 +1385,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "schemaVersion", 1 },
                     { "fixture",
                         "live disposable default Medium combat pair" },
+                    { "motionFamily", _spearMotion ?
+                        "elven-branched-spear" : "long-gun" },
                     { "productionVariantCount", 3 },
                     { "nativeControlCount", 1 },
                     { "attackCaptureUpdates",
@@ -1338,7 +1400,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "records", _records }
                 };
                 string indexPath = Path.Combine(_request.EvidenceDirectory,
-                    "weapon-presentation-long-gun-motion-index.json");
+                    _spearMotion ?
+                        "weapon-presentation-branched-spear-motion-index.json" :
+                        "weapon-presentation-long-gun-motion-index.json");
                 WriteJsonAtomic(indexPath, index);
                 _evidenceFiles.Add(indexPath);
             }
@@ -1396,11 +1460,15 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void Finish(bool cleaned)
             {
-                int expectedRecords = LongGunMotionVariants.Length *
+                int expectedRecords = _motionVariants.Length *
                     (AttackCaptureUpdates.Length + 1);
                 Add(_assertions,
-                    "weapon-presentation-long-gun-motion-matrix",
-                    "three production long guns and native Heavy Crossbow in " +
+                    _spearMotion ?
+                        "weapon-presentation-branched-spear-motion-matrix" :
+                        "weapon-presentation-long-gun-motion-matrix",
+                    "three production " + (_spearMotion ?
+                        "branched spears and native Longspear" :
+                        "long guns and native Heavy Crossbow") + " in " +
                         "combat-ready plus nine fixed attack samples",
                     "records=" + _records.Count + ";variants=" +
                         _records.OfType<JObject>().Select(value =>
@@ -1433,24 +1501,67 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "UnitAttack.CreateAttackCommand, navmesh-backed native " +
                         "CanStart/IsUnitEnoughClose contract, UnitCommands.Run, " +
                         "and live command/acted-animation state");
-                MotionOutcome[] firearms = _outcomes.Where(value =>
-                    value.Firearm).ToArray();
-                Add(_assertions,
-                    "weapon-presentation-firearm-discharge-nonregression",
-                    "each loaded production long gun fires exactly once, consumes " +
-                        "its round, and records no discharge fault",
-                    string.Join(";", firearms.Select(value => value.Variant +
-                        "=fired:" + value.FiredDelta + "/fault:" +
-                        value.FaultDelta + "/rounds:" +
-                        value.LoadedRoundsAfter).ToArray()),
-                    firearms.Length == 3 && firearms.All(value =>
-                        value.FiredDelta == 1 && value.FaultDelta == 0 &&
-                        value.LoadedRoundsAfter == 0),
-                    "FirearmDischargeRuntimeDiagnostics plus exact per-item runtime state");
+                if (_spearMotion)
+                {
+                    JObject[] endpointRecords = _records.OfType<JObject>()
+                        .ToArray();
+                    JObject[] actedEndpointRecords = endpointRecords.Where(
+                            record => (bool)record["commandAnimationActed"])
+                        .ToArray();
+                    int actedEndpointVariants = actedEndpointRecords
+                        .Select(record => (string)record["variant"])
+                        .Distinct(StringComparer.Ordinal).Count();
+                    int tipLeadingRecords = endpointRecords.Count(record =>
+                        (bool)record["physicalTipLeadsTargetDirection"]);
+                    int actedTipLeadingRecords = actedEndpointRecords.Count(
+                        record => (bool)record[
+                            "physicalTipLeadsTargetDirection"]);
+                    Add(_assertions,
+                        "weapon-presentation-spear-physical-endpoint-evidence",
+                        "all four cases expose mesh-grounded physical endpoints " +
+                            "and every acted-animation sample leads with the tip",
+                        "records=" + endpointRecords.Length +
+                            ";actedEndpointVariants=" +
+                            actedEndpointVariants + ";actedEndpointSamples=" +
+                            actedEndpointRecords.Length +
+                            ";actedTipLeadingRecords=" +
+                            actedTipLeadingRecords + ";allTipLeadingRecords=" +
+                            tipLeadingRecords,
+                        endpointRecords.Length == expectedRecords &&
+                            endpointRecords.All(record =>
+                                (float)record["physicalLengthMeters"] > 2f &&
+                                !string.IsNullOrEmpty((string)record[
+                                    "physicalEndpointSource"])) &&
+                            actedEndpointVariants == 4 &&
+                            actedEndpointRecords.Length > 0 &&
+                            actedTipLeadingRecords ==
+                                actedEndpointRecords.Length,
+                        "authored renderer-bound Tip/Butt plus native " +
+                            "TH_LongspearKnight1 renderer-positive-Y head");
+                }
+                else
+                {
+                    MotionOutcome[] firearms = _outcomes.Where(value =>
+                        value.Firearm).ToArray();
+                    Add(_assertions,
+                        "weapon-presentation-firearm-discharge-nonregression",
+                        "each loaded production long gun fires exactly once, consumes " +
+                            "its round, and records no discharge fault",
+                        string.Join(";", firearms.Select(value => value.Variant +
+                            "=fired:" + value.FiredDelta + "/fault:" +
+                            value.FaultDelta + "/rounds:" +
+                            value.LoadedRoundsAfter).ToArray()),
+                        firearms.Length == 3 && firearms.All(value =>
+                            value.FiredDelta == 1 && value.FaultDelta == 0 &&
+                            value.LoadedRoundsAfter == 0),
+                        "FirearmDischargeRuntimeDiagnostics plus exact per-item runtime state");
+                }
                 int zeroPixelSheets = _records.OfType<JObject>().Count(value =>
                     (int)value["meaningfulPixels"] <= 0);
                 Add(_assertions,
-                    "weapon-presentation-motion-contact-sheets",
+                    _spearMotion ?
+                        "weapon-presentation-spear-motion-contact-sheets" :
+                        "weapon-presentation-motion-contact-sheets",
                     expectedRecords + " PNG/JSON pairs and " +
                         (expectedRecords * 4) + " labelled views",
                     "captures=" + _captured + ";views=" + _viewCount +
@@ -1476,8 +1587,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 _warnings.Add("Motion evidence is limited to combat-ready and " +
                     "fixed attack-sequence samples on the default Medium actor. " +
-                    "It does not establish reload, locomotion, sex-specific, " +
-                    "Small, or Enlarged acceptance.");
+                    "It does not establish locomotion, transitions, sex-specific, " +
+                    "Small, or Enlarged acceptance" + (_spearMotion ? "." :
+                        ", or reload acceptance."));
                 RuntimeBuildIdentity build = RuntimeBuildIdentity.Capture(
                     _context.Assembly, _context.ModEntry.Info.Version);
                 bool passed = _assertions.All(value =>
@@ -1511,10 +1623,47 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static EvidenceCase[] BuildLongGunMotionCases()
+        private static bool TryResolveSpearPhysicalEndpoints(
+            EvidenceCase value, Transform model, out string source,
+            out Vector3 tip, out Vector3 butt)
+        {
+            source = string.Empty;
+            tip = Vector3.zero;
+            butt = Vector3.zero;
+            if (value == null || model == null) return false;
+            Transform tipMarker = model.Find("Tip");
+            Transform buttMarker = model.Find("Butt");
+            if (tipMarker != null && buttMarker != null)
+            {
+                source = "authored-renderer-bound-Tip/Butt";
+                tip = tipMarker.position;
+                butt = buttMarker.position;
+                return Vector3.Distance(tip, butt) > 2f;
+            }
+            if (!string.Equals(value.Variant, "Native.Longspear",
+                    StringComparison.Ordinal))
+                return false;
+            Renderer[] renderers = model.GetComponentsInChildren<Renderer>(true)
+                .Where(renderer => renderer != null).ToArray();
+            if (renderers.Length == 0) return false;
+            int sourceCount;
+            Bounds bounds = LocalBounds(model, renderers, out sourceCount);
+            if (sourceCount == 0 || bounds.size.y < 2f ||
+                bounds.size.y <= bounds.size.x ||
+                bounds.size.y <= bounds.size.z)
+                return false;
+            source = "native-TH_LongspearKnight1-renderer-positive-Y-head";
+            tip = model.TransformPoint(bounds.center +
+                Vector3.up * bounds.extents.y);
+            butt = model.TransformPoint(bounds.center -
+                Vector3.up * bounds.extents.y);
+            return Vector3.Distance(tip, butt) > 2f;
+        }
+
+        private static EvidenceCase[] BuildMotionCases(string[] variants)
         {
             EvidenceCase[] catalog = BuildCases();
-            return LongGunMotionVariants.Select(variant => catalog.Single(value =>
+            return variants.Select(variant => catalog.Single(value =>
                 string.Equals(value.Variant, variant,
                     StringComparison.Ordinal))).ToArray();
         }
