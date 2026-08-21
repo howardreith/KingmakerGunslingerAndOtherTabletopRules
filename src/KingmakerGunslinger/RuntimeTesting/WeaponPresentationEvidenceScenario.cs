@@ -9,15 +9,21 @@ using System.Text;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Items.Armors;
+using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using Kingmaker.View.Equipment;
 using Kingmaker.Visual.Animation.Kingmaker;
@@ -48,6 +54,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const float MinimumRuntimeFrameVectorSquared = 0.000001f;
         private const string NativeShortswordItemGuid =
             "57c8994d1f1becf49ac4f642e5d8ca9d";
+        private const string NativeFemaleMediumBodyDonorGuid =
+            "f9161aa0b3f519c47acbce01f53ee217"; // Octavia companion
+        private const string NativeSmallBodyDonorGuid =
+            "77c11edb92ce0fd408ad96b40fd27121"; // Linzi companion
+        private const string NativeFullPlateItemGuid =
+            "559b0b6f194656c428c403a000ceee78"; // FullplateStandard
+        private const string NativeCloakItemGuid =
+            "04dff7841c5f499478c91487d9bbdcef"; // CloakOfResistance2
         private static readonly NativeControlSpec HandgunPiercingDonor =
             new NativeControlSpec("Shortspear",
                 "cf72040b79c99504785976b28d54b2b7",
@@ -91,12 +105,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElvenBranchedSpearBlueprints.NativeLongspearTypeGuid,
                 ElvenBranchedSpearBlueprints.NativeLongspearItemGuid),
             new NativeControlSpec("Scimitar",
-                EasternWeaponBlueprints.WakizashiVisualDonorGuid, null),
+                EasternWeaponBlueprints.WakizashiVisualDonorGuid,
+                "2ca0329871f14a27922370f17ea4d15d"),
             new NativeControlSpec("BastardSword",
                 EasternWeaponBlueprints.KatanaVisualDonorGuid,
                 "7b8a4a452f11022488b1c7bfb0ed7746"),
             new NativeControlSpec("Greatsword",
-                EasternWeaponBlueprints.NodachiVisualDonorGuid, null)
+                EasternWeaponBlueprints.NodachiVisualDonorGuid,
+                "0782c8ca4b6c4634a0f6dabbed796211")
         };
 
         private static readonly string[] LongGunMotionVariants =
@@ -223,6 +239,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestRequest request)
         {
             return new ReloadSession(context, request);
+        }
+
+        internal static BodyMatrixSession BeginBodyMatrix(ModContext context,
+            RuntimeTestRequest request)
+        {
+            return new BodyMatrixSession(context, request);
         }
 
         /// <summary>
@@ -757,6 +779,1090 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EvidenceDirectory = _request.EvidenceDirectory
                 };
                 Complete = true;
+            }
+        }
+
+        private sealed class BodyFixtureSpec
+        {
+            internal BodyFixtureSpec(string label, BlueprintUnit source,
+                bool enlarged, bool heavyArmor, bool cloak)
+            {
+                Label = label;
+                Source = source;
+                Enlarged = enlarged;
+                HeavyArmor = heavyArmor;
+                Cloak = cloak;
+            }
+
+            internal string Label;
+            internal BlueprintUnit Source;
+            internal bool Enlarged;
+            internal bool HeavyArmor;
+            internal bool Cloak;
+        }
+
+        private sealed class BodyFixtureOutcome
+        {
+            internal string Label;
+            internal string SourceName;
+            internal string SourceGuid;
+            internal string Gender;
+            internal string RaceName;
+            internal string RaceGuid;
+            internal string RaceId;
+            internal string OriginalSize;
+            internal string ActualSize;
+            internal bool RigExact;
+            internal int RendererCount;
+            internal Vector3 BoundsSize;
+            internal bool EnlargeBuffApplied;
+            internal string ArmorName;
+            internal string ArmorGuid;
+            internal string ArmorGroup;
+            internal string CloakName;
+            internal string CloakGuid;
+
+            internal JObject Describe()
+            {
+                return new JObject
+                {
+                    { "label", Label },
+                    { "sourceName", SourceName },
+                    { "sourceGuid", SourceGuid },
+                    { "gender", Gender },
+                    { "raceName", RaceName },
+                    { "raceGuid", RaceGuid },
+                    { "raceId", RaceId },
+                    { "originalSize", OriginalSize },
+                    { "actualSize", ActualSize },
+                    { "rigExact", RigExact },
+                    { "rendererCount", RendererCount },
+                    { "bodyBoundsSize", BoundsSize.ToString("R") },
+                    { "enlargeBuffApplied", EnlargeBuffApplied },
+                    { "armorName", ArmorName ?? "<none>" },
+                    { "armorGuid", ArmorGuid ?? "<none>" },
+                    { "armorGroup", ArmorGroup ?? "<none>" },
+                    { "cloakName", CloakName ?? "<none>" },
+                    { "cloakGuid", CloakGuid ?? "<none>" }
+                };
+            }
+        }
+
+        /// <summary>
+        /// Request-gated held/stored presentation coverage across native body,
+        /// size, and equipment configurations. Every actor, item, buff, camera,
+        /// and texture is request-local; no save API or campaign unit is changed.
+        /// </summary>
+        internal sealed class BodyMatrixSession
+        {
+            private const int MaximumSettleUpdates = 360;
+            private const int MinimumBodySettleUpdates = 30;
+            private const string EnlargePersonSpellGuid =
+                "c60969e7f264e6d4b84a1499fdcf9039";
+            private const string EnlargePersonBuffGuid =
+                "4f139d125bb602f48bfaec3d3e1937cb";
+            private readonly ModContext _context;
+            private readonly RuntimeTestRequest _request;
+            private readonly DateTime _started = DateTime.UtcNow;
+            private readonly List<RuntimeTestAssertion> _assertions =
+                new List<RuntimeTestAssertion>();
+            private readonly List<string> _diagnostics = new List<string>();
+            private readonly List<string> _warnings = new List<string>();
+            private readonly List<string> _evidenceFiles = new List<string>();
+            private readonly List<BodyFixtureOutcome> _bodyOutcomes =
+                new List<BodyFixtureOutcome>();
+            private readonly List<UnitEntityData> _retiredActors =
+                new List<UnitEntityData>();
+            private readonly List<BlueprintUnit> _retiredBlueprints =
+                new List<BlueprintUnit>();
+            private readonly JArray _records = new JArray();
+            private object _allUnits;
+            private object _party;
+            private object[] _unitsBefore = new object[0];
+            private object[] _partyBefore = new object[0];
+            private UnitEntityData _anchor;
+            private UnitEntityData _actor;
+            private BlueprintUnit _actorBlueprint;
+            private BodyFixtureSpec[] _fixtures = new BodyFixtureSpec[0];
+            private EvidenceCase[] _cases = new EvidenceCase[0];
+            private Renderer[] _fixtureBodyRenderers = new Renderer[0];
+            private ItemEntityWeapon _equipped;
+            private bool _equippedFirearmStateSet;
+            private ItemEntityArmor _armorItem;
+            private ItemEntity _cloakItem;
+            private Buff _enlargeBuff;
+            private Transform _removedPresentation;
+            private int _fixtureIndex;
+            private int _caseIndex;
+            private int _phase;
+            private int _settleUpdates;
+            private int _materialized;
+            private int _captured;
+            private int _viewCount;
+            private bool _fixtureInitialized;
+            private bool _cleanupStarted;
+            private bool _indexWritten;
+            private string _presentationState = "stored";
+            private string _stage = "resolve-working-save-anchor";
+
+            internal BodyMatrixSession(ModContext context,
+                RuntimeTestRequest request)
+            {
+                if (context == null) throw new ArgumentNullException("context");
+                if (request == null) throw new ArgumentNullException("request");
+                _context = context;
+                _request = request;
+            }
+
+            internal bool Complete { get; private set; }
+            internal RuntimeTestResult Result { get; private set; }
+
+            internal void Poll()
+            {
+                if (Complete) return;
+                try
+                {
+                    if (_cleanupStarted)
+                    {
+                        PollCleanup();
+                        return;
+                    }
+                    if (_phase == 0)
+                    {
+                        Initialize();
+                        _phase = 1;
+                        return;
+                    }
+                    if (_phase == 1)
+                    {
+                        if (!SpawnFixture()) return;
+                        _phase = 2;
+                        _settleUpdates = 0;
+                        return;
+                    }
+                    if (_phase == 2)
+                    {
+                        PollBodyReadiness();
+                        return;
+                    }
+                    if (_phase == 3)
+                    {
+                        EquipCurrent();
+                        _phase = 4;
+                        _settleUpdates = 0;
+                        return;
+                    }
+                    if (_phase == 4)
+                    {
+                        PollMaterialization();
+                        return;
+                    }
+                    PollRemoval();
+                }
+                catch (Exception exception)
+                {
+                    if (_cleanupStarted)
+                    {
+                        WriteProgress("cleanup.exception", "stage=" + _stage +
+                            ";" + exception);
+                        Add(_assertions,
+                            "weapon-presentation-body-matrix-cleanup-exception",
+                            "cleanup completes without exception",
+                            "stage=" + _stage + ";" + exception, false,
+                            "request-local cleanup failure boundary");
+                        Finish(false);
+                        return;
+                    }
+                    WriteProgress("exception", "stage=" + _stage + ";" +
+                        exception);
+                    Add(_assertions,
+                        "weapon-presentation-body-matrix-exception",
+                        "no exception", "stage=" + _stage + ";" + exception,
+                        false, "guarded request-local multi-body visual fixture");
+                    BeginCleanup();
+                }
+            }
+
+            private void Initialize()
+            {
+                _allUnits = Game.Instance.State.Units.All;
+                _party = Game.Instance.Player.Party;
+                _unitsBefore = Snapshot(_allUnits);
+                _partyBefore = Snapshot(_party);
+                _anchor = _partyBefore.OfType<UnitEntityData>().FirstOrDefault(
+                    value => value != null && value.HoldingState != null &&
+                        value.View != null);
+                if (_anchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save has no live party-area anchor.");
+
+                _cases = BuildCases();
+                if (_cases.Length != 28 || _cases.Count(value =>
+                        !value.NativeControl) != 22 || _cases.Count(value =>
+                        value.NativeControl) != 6)
+                    throw new InvalidOperationException(
+                        "The body matrix requires the exact 22 production " +
+                        "variants plus six native controls.");
+
+                BlueprintUnit baseline = ResolvePartyBodyDonor(
+                    value => value.Gender.ToString() == "Male" &&
+                        value.Size == Size.Medium, "male Medium");
+                BlueprintUnit female = ResolveBodyDonor(
+                    NativeFemaleMediumBodyDonorGuid,
+                    value => value.Gender.ToString() == "Female" &&
+                        value.Size == Size.Medium, "female Medium");
+                BlueprintUnit small = ResolveBodyDonor(
+                    NativeSmallBodyDonorGuid,
+                    value => value.Size == Size.Small, "Small humanoid");
+                _fixtures = new[]
+                {
+                    new BodyFixtureSpec("male-medium-light", baseline,
+                        false, false, false),
+                    new BodyFixtureSpec("female-medium-light", female,
+                        false, false, false),
+                    new BodyFixtureSpec("small-light", small,
+                        false, false, false),
+                    new BodyFixtureSpec("male-medium-enlarged", baseline,
+                        true, false, false),
+                    new BodyFixtureSpec("male-medium-heavy-armor", baseline,
+                        false, true, false),
+                    new BodyFixtureSpec("male-medium-cloak", baseline,
+                        false, false, true)
+                };
+                _diagnostics.Add("bodyFixtureCatalog=" + string.Join(",",
+                    _fixtures.Select(value => value.Label + "=" +
+                        DescribeBlueprint(value.Source)).ToArray()));
+            }
+
+            private BlueprintUnit ResolvePartyBodyDonor(
+                Func<BlueprintUnit, bool> predicate, string description)
+            {
+                BlueprintUnit partyCandidate = FindPartyBodyDonor(predicate);
+                if (partyCandidate == null)
+                    throw new InvalidOperationException("The guarded working " +
+                        "save has no live " + description +
+                        " humanoid body donor with a complete native rig and " +
+                        "progression race.");
+                _diagnostics.Add(description + "DonorSource=working-party;" +
+                    DescribeBlueprint(partyCandidate));
+                return partyCandidate;
+            }
+
+            private BlueprintUnit ResolveBodyDonor(string exactGuid,
+                Func<BlueprintUnit, bool> predicate, string description)
+            {
+                BlueprintUnit partyCandidate = FindPartyBodyDonor(predicate);
+                if (partyCandidate != null)
+                {
+                    _diagnostics.Add(description + "DonorSource=working-party;" +
+                        DescribeBlueprint(partyCandidate));
+                    return partyCandidate;
+                }
+
+                BlueprintUnit exact = BlueprintLibraryLookup.RequireExact<
+                    BlueprintUnit>(BlueprintBootstrap.Library, exactGuid,
+                        "weapon-presentation-body-matrix-" + description);
+                if (!IsBodyDonor(exact) || !predicate(exact))
+                    throw new InvalidOperationException("Exact " + description +
+                        " native humanoid donor does not satisfy the body contract: " +
+                        DescribeBlueprint(exact));
+                _diagnostics.Add(description + "DonorSource=exact-native-guid;" +
+                    DescribeBlueprint(exact));
+                return exact;
+            }
+
+            private BlueprintUnit FindPartyBodyDonor(
+                Func<BlueprintUnit, bool> predicate)
+            {
+                return _partyBefore.OfType<UnitEntityData>()
+                    .Where(value => value != null && value.View != null &&
+                        value.View.HandsEquipment != null &&
+                        value.Descriptor != null &&
+                        value.Descriptor.Progression != null &&
+                        value.Descriptor.Progression.Race != null &&
+                        HasExactHumanoidRig(value.View.transform))
+                    .Select(value => value.Blueprint).FirstOrDefault(value =>
+                        IsBodyDonor(value) && predicate(value));
+            }
+
+            private static bool IsBodyDonor(BlueprintUnit value)
+            {
+                return value != null && value.Prefab != null &&
+                    value.Race != null && value.Body != null &&
+                    !value.Body.DisableHands;
+            }
+
+            private static string DescribeBlueprint(BlueprintUnit value)
+            {
+                return value == null ? "<null>" : value.name + "/" +
+                    value.AssetGuid + "/" + value.Gender + "/" + value.Size;
+            }
+
+            private static bool HasExactHumanoidRig(Transform root)
+            {
+                if (root == null) return false;
+                Transform[] transforms = root.GetComponentsInChildren<Transform>(
+                    true);
+                return transforms.Count(value => value != null &&
+                        value.name == "R_WeaponBone") == 1 &&
+                    transforms.Count(value => value != null &&
+                        value.name == "R_Hand") == 1 &&
+                    transforms.Count(value => value != null &&
+                        value.name == "L_Hand") == 1;
+            }
+
+            private bool SpawnFixture()
+            {
+                BodyFixtureSpec fixture = _fixtures[_fixtureIndex];
+                _stage = "spawn-body-fixture-" + fixture.Label;
+                if (_actorBlueprint == null)
+                {
+                    WriteProgress("spawn.begin");
+                    _actorBlueprint = UnityEngine.Object.Instantiate(fixture.Source);
+                    WriteProgress("spawn.clone-ready");
+                    _actorBlueprint.Race = fixture.Source.Race;
+                    _actorBlueprint.name =
+                        "KMG_Runtime_Weapon_Presentation_" +
+                        fixture.Label.Replace('-', '_');
+                    _actorBlueprint.IsCheater = true;
+                }
+
+                Game.Instance.EntityCreator.Tick();
+                var prefab = fixture.Source.Prefab.Load(false);
+                _settleUpdates++;
+                if (prefab == null)
+                {
+                    WriteProgress("spawn.prefab-pending", "updates=" +
+                        _settleUpdates);
+                    if (_settleUpdates < MaximumSettleUpdates) return false;
+                    throw new InvalidOperationException(fixture.Label +
+                        " native unit prefab did not load after " +
+                        _settleUpdates + " updates.");
+                }
+
+                _actor = Game.Instance.EntityCreator.SpawnUnit(_actorBlueprint,
+                    prefab,
+                    NearestNavigable(_anchor.Position +
+                        new Vector3(2.5f, 0f, 2.5f)), Quaternion.identity,
+                    _anchor.HoldingState);
+                WriteProgress("spawn.returned");
+                if (_actor == null)
+                    throw new InvalidOperationException(fixture.Label +
+                        " loaded native prefab did not spawn a unit entity.");
+                _fixtureInitialized = false;
+                return true;
+            }
+
+            private void ApplyEnlargePerson()
+            {
+                BlueprintAbility spell = ResourcesLibrary.TryGetBlueprint<
+                    BlueprintAbility>(EnlargePersonSpellGuid);
+                BlueprintBuff blueprint = ResourcesLibrary.TryGetBlueprint<
+                    BlueprintBuff>(EnlargePersonBuffGuid);
+                if (spell == null || blueprint == null)
+                    throw new InvalidOperationException(
+                        "The exact native Enlarge Person spell/buff is unavailable.");
+                var context = new MechanicsContext(_actor, _actor.Descriptor,
+                    spell, null, new TargetWrapper(_actor));
+                context.Params.CasterLevel = 20;
+                _enlargeBuff = _actor.Descriptor.Buffs.AddBuff(blueprint,
+                    context, TimeSpan.FromMinutes(20d));
+                if (_enlargeBuff == null)
+                    throw new InvalidOperationException(
+                        "The exact native Enlarge Person buff was rejected.");
+            }
+
+            private void EquipHeavyArmor()
+            {
+                BlueprintItemArmor blueprint = BlueprintLibraryLookup
+                    .RequireExact<BlueprintItemArmor>(BlueprintBootstrap.Library,
+                        NativeFullPlateItemGuid,
+                        "weapon-presentation-body-matrix-heavy-armor");
+                if (blueprint.Type == null || !blueprint.Type.IsArmor ||
+                    blueprint.Type.ProficiencyGroup !=
+                        ArmorProficiencyGroup.Heavy)
+                    throw new InvalidOperationException(
+                        "The exact native full-plate item is not heavy armor.");
+                if (!HasEquipmentLinks(blueprint, _actor))
+                    throw new InvalidOperationException(
+                        "The exact native full-plate visual does not support " +
+                        "the fixture actor's native gender/race contract.");
+                _armorItem = new ItemEntityArmor(blueprint);
+                _actor.Body.Armor.InsertItem(_armorItem);
+                if (!ReferenceEquals(_actor.Body.Armor.Armor, _armorItem))
+                    throw new InvalidOperationException(
+                        "The exact native heavy armor did not remain equipped.");
+            }
+
+            private void EquipCloak()
+            {
+                BlueprintItemEquipmentShoulders blueprint =
+                    BlueprintLibraryLookup.RequireExact<
+                        BlueprintItemEquipmentShoulders>(
+                            BlueprintBootstrap.Library, NativeCloakItemGuid,
+                            "weapon-presentation-body-matrix-cloak");
+                if (!HasEquipmentLinks(blueprint, _actor))
+                    throw new InvalidOperationException(
+                        "The exact native cloak visual does not support the " +
+                        "fixture body.");
+                _cloakItem = blueprint.CreateEntity();
+                _actor.Body.Shoulders.InsertItem(_cloakItem);
+                if (!ReferenceEquals(_actor.Body.Shoulders.MaybeItem,
+                        _cloakItem))
+                    throw new InvalidOperationException(
+                        "The exact native cloak did not remain equipped.");
+            }
+
+            private static bool HasEquipmentLinks(BlueprintItemEquipment item,
+                UnitEntityData actor)
+            {
+                if (item == null || actor == null || actor.Descriptor == null ||
+                    actor.Descriptor.Progression == null ||
+                    actor.Descriptor.Progression.Race == null)
+                    return false;
+                try
+                {
+                    var race = actor.Descriptor.Progression.Race.RaceId;
+                    return (item.EquipmentEntity != null &&
+                            item.EquipmentEntity.GetLinks(actor.Gender,
+                                race).EmptyIfNull().Any(value =>
+                                    value != null)) ||
+                        item.EquipmentEntityAlternatives.EmptyIfNull().Any(
+                            entity => entity != null && entity.GetLinks(
+                                actor.Gender, race).EmptyIfNull().Any(value =>
+                                    value != null));
+                }
+                catch (NullReferenceException)
+                {
+                    // Some native equipment assets deserialize a null alternatives
+                    // array even though their public getter assumes a non-null array.
+                    return false;
+                }
+            }
+
+            private void PollBodyReadiness()
+            {
+                BodyFixtureSpec fixture = _fixtures[_fixtureIndex];
+                _stage = "settle-body-fixture-" + fixture.Label;
+                Game.Instance.EntityCreator.Tick();
+                _settleUpdates++;
+                bool completeView = _actor != null && _actor.View != null &&
+                    _actor.View.Data != null &&
+                    _actor.View.HandsEquipment != null &&
+                    _actor.Descriptor != null &&
+                    _actor.Descriptor.Progression != null &&
+                    _actor.Descriptor.Progression.Race != null;
+                if (!completeView)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(fixture.Label +
+                        " did not materialize a complete native unit view " +
+                        "after " + _settleUpdates + " updates. actor=" +
+                        (_actor != null) + ";view=" +
+                        (_actor != null && _actor.View != null) +
+                        ";viewData=" + (_actor != null &&
+                            _actor.View != null && _actor.View.Data != null) +
+                        ";handsEquipment=" + (_actor != null &&
+                            _actor.View != null &&
+                            _actor.View.HandsEquipment != null) +
+                        ";progressionRace=" + (_actor != null &&
+                            _actor.Descriptor != null &&
+                            _actor.Descriptor.Progression != null &&
+                            _actor.Descriptor.Progression.Race != null) + ".");
+                }
+                if (!_fixtureInitialized)
+                {
+                    _actor.Descriptor.State.Immortality.Retain();
+                    _actor.Commands.InterruptAll(true);
+                    if (_actor.CombatState.IsInCombat)
+                        _actor.CombatState.LeaveCombat();
+                    ClearHand(_actor, true);
+                    ClearHand(_actor, false);
+                    if (fixture.Enlarged) ApplyEnlargePerson();
+                    if (fixture.HeavyArmor) EquipHeavyArmor();
+                    if (fixture.Cloak) EquipCloak();
+                    _actor.View.HandsEquipment.UpdateAll();
+                    _actor.View.HandsEquipment.ForceSwitch(false);
+                    _fixtureInitialized = true;
+                    WriteProgress("body.initialized");
+                }
+                if (_actor.View.AnimationManager != null)
+                    _actor.View.AnimationManager.Tick();
+                Renderer[] renderers = _actor.View.GetComponentsInChildren<
+                    Renderer>(true).Where(value => value != null &&
+                        value.enabled && value.gameObject.activeInHierarchy)
+                    .ToArray();
+                bool sizeReady = fixture.Enlarged
+                    ? _actor.Descriptor.OriginalSize == Size.Medium &&
+                        _actor.Descriptor.State.Size == Size.Large
+                    : _actor.Descriptor.State.Size == fixture.Source.Size;
+                bool armorReady = !fixture.HeavyArmor ||
+                    (_armorItem != null && ReferenceEquals(
+                        _actor.Body.Armor.Armor, _armorItem));
+                bool cloakReady = !fixture.Cloak ||
+                    (_cloakItem != null && ReferenceEquals(
+                        _actor.Body.Shoulders.MaybeItem, _cloakItem));
+                bool rigReady = HasExactHumanoidRig(_actor.View.transform);
+                if (_settleUpdates < MinimumBodySettleUpdates ||
+                    renderers.Length == 0 || !sizeReady || !armorReady ||
+                    !cloakReady || !rigReady)
+                {
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(fixture.Label +
+                        " did not settle its native body contract after " +
+                        _settleUpdates + " updates. renderers=" +
+                        renderers.Length + ";gender=" +
+                        ReadOptional(_actor.Descriptor, "Gender") +
+                        ";originalSize=" + _actor.Descriptor.OriginalSize +
+                        ";size=" + _actor.Descriptor.State.Size +
+                        ";rig=" + rigReady + ";armor=" + armorReady +
+                        ";cloak=" + cloakReady + ".");
+                }
+                _fixtureBodyRenderers = renderers;
+                Bounds bounds = CombinedBounds(renderers);
+                var actorRace = _actor.Descriptor.Progression.Race;
+                var outcome = new BodyFixtureOutcome
+                {
+                    Label = fixture.Label,
+                    SourceName = fixture.Source.name,
+                    SourceGuid = fixture.Source.AssetGuid,
+                    Gender = ReadOptional(_actor.Descriptor, "Gender"),
+                    RaceName = actorRace.name,
+                    RaceGuid = actorRace.AssetGuid,
+                    RaceId = actorRace.RaceId.ToString(),
+                    OriginalSize = _actor.Descriptor.OriginalSize.ToString(),
+                    ActualSize = _actor.Descriptor.State.Size.ToString(),
+                    RigExact = rigReady,
+                    RendererCount = renderers.Length,
+                    BoundsSize = bounds.size,
+                    EnlargeBuffApplied = _enlargeBuff != null &&
+                        ReferenceEquals(_enlargeBuff.Blueprint,
+                            ResourcesLibrary.TryGetBlueprint<BlueprintBuff>(
+                                EnlargePersonBuffGuid)),
+                    ArmorName = _armorItem == null ? null :
+                        _armorItem.Blueprint.name,
+                    ArmorGuid = _armorItem == null ? null :
+                        _armorItem.Blueprint.AssetGuid,
+                    ArmorGroup = _armorItem == null ? null :
+                        _armorItem.Blueprint.Type.ProficiencyGroup.ToString(),
+                    CloakName = _cloakItem == null ? null :
+                        _cloakItem.Blueprint.name,
+                    CloakGuid = _cloakItem == null ? null :
+                        _cloakItem.Blueprint.AssetGuid
+                };
+                _bodyOutcomes.Add(outcome);
+                _diagnostics.Add("bodyFixture=" + fixture.Label + ";source=" +
+                    DescribeBlueprint(fixture.Source) + ";gender=" +
+                    outcome.Gender + ";race=" + outcome.RaceName + "/" +
+                    outcome.RaceGuid + "/" + outcome.RaceId +
+                    ";originalSize=" + outcome.OriginalSize +
+                    ";actualSize=" + outcome.ActualSize + ";renderers=" +
+                    outcome.RendererCount + ";bounds=" +
+                    outcome.BoundsSize.ToString("R") + ";armor=" +
+                    (outcome.ArmorGuid ?? "<none>") + ";cloak=" +
+                    (outcome.CloakGuid ?? "<none>"));
+                _phase = 3;
+                _settleUpdates = 0;
+            }
+
+            private void EquipCurrent()
+            {
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "equip-" + _fixtures[_fixtureIndex].Label + "-" +
+                    value.Variant;
+                _equipped = new ItemEntityWeapon(value.Item);
+                _actor.Body.PrimaryHand.InsertItem(_equipped);
+                if (!ReferenceEquals(_actor.Body.PrimaryHand.MaybeWeapon,
+                        _equipped))
+                    throw new InvalidOperationException(value.Variant +
+                        " did not remain in the body-matrix primary hand.");
+                if (IsFirearm(value))
+                {
+                    FirearmRuntimeState.Service.Set(_equipped,
+                        new FirearmState(FirearmState.CurrentSchemaVersion,
+                            1, FirearmStateTokenCatalog.DiagnosticLeadBall,
+                            FirearmCondition.Normal));
+                    _equippedFirearmStateSet = true;
+                }
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                _presentationState = "stored";
+            }
+
+            private void PollMaterialization()
+            {
+                BodyFixtureSpec fixture = _fixtures[_fixtureIndex];
+                EvidenceCase value = _cases[_caseIndex];
+                _stage = "settle-" + fixture.Label + "-" +
+                    _presentationState + "-" + value.Variant;
+                Game.Instance.EntityCreator.Tick();
+                if (_actor.View.AnimationManager != null)
+                    _actor.View.AnimationManager.Tick();
+                WeaponVisualParameters visual = value.Item.VisualParameters;
+                if (visual == null || visual.Model == null)
+                    throw new InvalidOperationException(value.Variant +
+                        " has no effective held visual model.");
+                string presentationRole;
+                Transform model = ResolveActivePresentation(_actor, visual,
+                    _presentationState, out presentationRole);
+                bool intentionallyHidden = IsIntentionallyHiddenStored(value,
+                    _presentationState);
+                bool exactState = _presentationState == "held-idle"
+                    ? _actor.View.HandsEquipment.InCombat
+                    : !_actor.View.HandsEquipment.InCombat;
+                bool renderable = Renderable(model);
+                bool ready = intentionallyHidden
+                    ? !renderable && visual.BeltModel == null &&
+                        visual.SheathModel == null
+                    : renderable;
+                if (intentionallyHidden && !renderable)
+                    presentationRole = "intentionally-hidden-weapon-model";
+                if (!ready || !exactState)
+                {
+                    _settleUpdates++;
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(fixture.Label + "/" +
+                        value.Variant + " did not materialize exact " +
+                        _presentationState + " presentation after " +
+                        _settleUpdates + " updates;role=" + presentationRole +
+                        ";renderable=" + renderable + ";inCombat=" +
+                        _actor.View.HandsEquipment.InCombat + ".");
+                }
+                _materialized++;
+
+                _stage = "capture-" + fixture.Label + "-" +
+                    _presentationState + "-" + value.Variant;
+                string stem = _presentationState + "-" + fixture.Label + "-" +
+                    SafeFileName(value.Variant);
+                CaptureSummary capture = CaptureContactSheet(_actor, model,
+                    _fixtureBodyRenderers, Path.Combine(
+                        _request.EvidenceDirectory, stem + ".png"),
+                    intentionallyHidden);
+                JObject record = Describe(value, _actor, model, visual,
+                    _fixtureBodyRenderers, capture, stem + ".png",
+                    _presentationState, presentationRole,
+                    intentionallyHidden);
+                BodyFixtureOutcome outcome = _bodyOutcomes[_fixtureIndex];
+                record["bodyFixture"] = fixture.Label;
+                record["fixtureSourceName"] = outcome.SourceName;
+                record["fixtureSourceGuid"] = outcome.SourceGuid;
+                record["fixtureOriginalSize"] = outcome.OriginalSize;
+                record["fixtureEnlargeBuffApplied"] =
+                    outcome.EnlargeBuffApplied;
+                record["fixtureArmorName"] = outcome.ArmorName ?? "<none>";
+                record["fixtureArmorGuid"] = outcome.ArmorGuid ?? "<none>";
+                record["fixtureArmorGroup"] = outcome.ArmorGroup ?? "<none>";
+                record["fixtureCloakName"] = outcome.CloakName ?? "<none>";
+                record["fixtureCloakGuid"] = outcome.CloakGuid ?? "<none>";
+                record["claimBoundary"] = "cosmetic " + _presentationState +
+                    " evidence on exact " + fixture.Label +
+                    " fixture; no attack, reload, or movement claim";
+                string jsonPath = Path.Combine(_request.EvidenceDirectory,
+                    stem + ".json");
+                WriteJsonAtomic(jsonPath, record);
+                _records.Add(record);
+                _evidenceFiles.Add(capture.PngPath);
+                _evidenceFiles.Add(jsonPath);
+                _captured++;
+                _viewCount += 4;
+                if (capture.LowPixelDensity)
+                    _warnings.Add(fixture.Label + "/" + value.Variant + "/" +
+                        _presentationState + " has low foreground density.");
+
+                if (_presentationState == "stored")
+                {
+                    _actor.View.HandsEquipment.ForceSwitch(true);
+                    _presentationState = "held-idle";
+                    _settleUpdates = 0;
+                    return;
+                }
+
+                _removedPresentation = model;
+                if (_caseIndex == _cases.Length - 1)
+                    WriteProgress("final-case.remove-equipped.begin");
+                RemoveEquipped(_actor, ref _equipped,
+                    ref _equippedFirearmStateSet);
+                if (_caseIndex == _cases.Length - 1)
+                    WriteProgress("final-case.remove-equipped.complete");
+                _actor.View.HandsEquipment.UpdateAll();
+                _actor.View.HandsEquipment.ForceSwitch(false);
+                if (_caseIndex == _cases.Length - 1)
+                    WriteProgress("final-case.switch-stored.complete");
+                _phase = 5;
+                _settleUpdates = 0;
+            }
+
+            private void PollRemoval()
+            {
+                BodyFixtureSpec fixture = _fixtures[_fixtureIndex];
+                _stage = "settle-removal-" + fixture.Label + "-" +
+                    _cases[_caseIndex].Variant;
+                Game.Instance.EntityCreator.Tick();
+                _actor.View.HandsEquipment.UpdateAll();
+                GameObject current = _actor.View.HandsEquipment
+                    .GetWeaponModel(false);
+                bool removed = current == null &&
+                    (_removedPresentation == null ||
+                    !_removedPresentation.gameObject.activeInHierarchy ||
+                    !_removedPresentation.IsChildOf(_actor.View.transform));
+                if (!removed)
+                {
+                    _settleUpdates++;
+                    if (_settleUpdates < MaximumSettleUpdates) return;
+                    throw new InvalidOperationException(
+                        "The prior body-matrix weapon remained active after " +
+                        _settleUpdates + " updates.");
+                }
+                _removedPresentation = null;
+                _caseIndex++;
+                if (_caseIndex < _cases.Length)
+                {
+                    _phase = 3;
+                    return;
+                }
+
+                WriteProgress("fixture.retire.begin");
+                RetireActor();
+                WriteProgress("fixture.retire.complete");
+                _fixtureIndex++;
+                _caseIndex = 0;
+                if (_fixtureIndex < _fixtures.Length)
+                {
+                    _phase = 1;
+                    _settleUpdates = 0;
+                    return;
+                }
+                WriteIndex();
+                _indexWritten = true;
+                BeginCleanup();
+            }
+
+            private void WriteIndex()
+            {
+                _stage = "write-body-matrix-index";
+                RuntimeBuildIdentity identity = RuntimeBuildIdentity.Capture(
+                    _context.Assembly, _context.ModEntry.Info.Version);
+                var index = new JObject
+                {
+                    { "schemaVersion", 1 },
+                    { "states", new JArray("stored", "held-idle") },
+                    { "fixtureCount", _fixtures.Length },
+                    { "productionVariantCount", 22 },
+                    { "nativeControlCount", 6 },
+                    { "views", new JArray("front", "right-side", "rear",
+                        "front-right-three-quarter") },
+                    { "loadedModVersion", _context.ModEntry.Info.Version },
+                    { "gitCommit", identity.GitCommit },
+                    { "runtimeIdentity", identity.RuntimeIdentity },
+                    { "bodyFixtures", new JArray(_bodyOutcomes.Select(value =>
+                        value.Describe())) },
+                    { "records", _records }
+                };
+                string indexPath = Path.Combine(_request.EvidenceDirectory,
+                    "weapon-presentation-body-matrix-index.json");
+                WriteJsonAtomic(indexPath, index);
+                _evidenceFiles.Add(indexPath);
+            }
+
+            private void WriteProgress(string progressStage,
+                string detail = null)
+            {
+                var progress = new JObject
+                {
+                    { "schemaVersion", 1 },
+                    { "utc", DateTime.UtcNow.ToString("o") },
+                    { "stage", progressStage },
+                    { "detail", detail ?? "" },
+                    { "fixtureIndex", _fixtureIndex },
+                    { "fixture", _fixtures != null && _fixtureIndex >= 0 &&
+                        _fixtureIndex < _fixtures.Length
+                            ? _fixtures[_fixtureIndex].Label : "<none>" },
+                    { "caseIndex", _caseIndex },
+                    { "phase", _phase },
+                    { "captured", _captured },
+                    { "materialized", _materialized },
+                    { "actorPresent", _actor != null },
+                    { "actorBlueprintPresent", _actorBlueprint != null }
+                };
+                WriteJsonAtomic(Path.Combine(_request.EvidenceDirectory,
+                    "weapon-presentation-body-matrix-progress.json"), progress);
+            }
+
+            private void ClearCurrentActorEquipment()
+            {
+                RemoveEquipped(_actor, ref _equipped,
+                    ref _equippedFirearmStateSet);
+                if (_enlargeBuff != null)
+                {
+                    _enlargeBuff.Remove();
+                    _enlargeBuff = null;
+                }
+                if (_actor != null && _actor.Body != null)
+                {
+                    if (_armorItem != null && ReferenceEquals(
+                            _actor.Body.Armor.MaybeItem, _armorItem))
+                        _actor.Body.Armor.RemoveItem(false);
+                    if (_cloakItem != null && ReferenceEquals(
+                            _actor.Body.Shoulders.MaybeItem, _cloakItem))
+                        _actor.Body.Shoulders.RemoveItem(false);
+                }
+                if (_armorItem != null) _armorItem.Dispose();
+                if (_cloakItem != null) _cloakItem.Dispose();
+                _armorItem = null;
+                _cloakItem = null;
+            }
+
+            private void RetireActor()
+            {
+                ClearCurrentActorEquipment();
+                if (_actor != null)
+                {
+                    _actor.Commands.InterruptAll(true);
+                    if (_actor.CombatState.IsInCombat)
+                        _actor.CombatState.LeaveCombat();
+                    if (_actor.View != null)
+                        _actor.View.gameObject.SetActive(false);
+                    _retiredActors.Add(_actor);
+                }
+                if (_actorBlueprint != null)
+                    _retiredBlueprints.Add(_actorBlueprint);
+                _actor = null;
+                _actorBlueprint = null;
+                _fixtureInitialized = false;
+                _fixtureBodyRenderers = new Renderer[0];
+            }
+
+            private void DisposeActor()
+            {
+                WriteProgress("dispose.all.begin");
+                ClearCurrentActorEquipment();
+                if (_actor != null) _retiredActors.Add(_actor);
+                if (_actorBlueprint != null)
+                    _retiredBlueprints.Add(_actorBlueprint);
+                foreach (UnitEntityData actor in _retiredActors)
+                {
+                    if (actor == null) continue;
+                    if (actor.Descriptor != null)
+                        actor.Descriptor.State.Immortality.ReleaseAll();
+                    if (ContainsReference(_allUnits, actor))
+                        Game.Instance.State.Units.All.Remove(actor);
+                    actor.Dispose();
+                }
+                WriteProgress("dispose.entities.complete");
+                foreach (BlueprintUnit blueprint in _retiredBlueprints)
+                    if (blueprint != null)
+                        UnityEngine.Object.DestroyImmediate(blueprint);
+                WriteProgress("dispose.blueprints.complete");
+                _retiredActors.Clear();
+                _retiredBlueprints.Clear();
+                _actor = null;
+                _actorBlueprint = null;
+                _fixtureInitialized = false;
+                _fixtureBodyRenderers = new Renderer[0];
+            }
+
+            private void BeginCleanup()
+            {
+                if (_cleanupStarted) return;
+                _stage = "body-matrix-request-cleanup";
+                DisposeActor();
+                _cleanupStarted = true;
+                _settleUpdates = 0;
+            }
+
+            private void PollCleanup()
+            {
+                bool cleaned = SameReferences(_unitsBefore,
+                        Snapshot(_allUnits)) &&
+                    SameReferences(_partyBefore, Snapshot(_party)) &&
+                    (_actor == null || !ContainsReference(_allUnits, _actor));
+                _settleUpdates++;
+                Finish(cleaned);
+            }
+
+            private void Finish(bool cleaned)
+            {
+                const int fixtureCount = 6;
+                const int expectedRecords = 336;
+                JObject[] records = _records.OfType<JObject>().ToArray();
+                JObject[] production = records.Where(value =>
+                    !(bool)value["nativeControl"]).ToArray();
+                JObject[] controls = records.Where(value =>
+                    (bool)value["nativeControl"]).ToArray();
+                string[] expectedLabels = { "male-medium-light",
+                    "female-medium-light", "small-light",
+                    "male-medium-enlarged", "male-medium-heavy-armor",
+                    "male-medium-cloak" };
+                bool perFixtureExact = expectedLabels.All(label =>
+                    records.Count(value => string.Equals(
+                        (string)value["bodyFixture"], label,
+                        StringComparison.Ordinal)) == 56);
+                Add(_assertions, "weapon-presentation-body-matrix-catalog",
+                    "six exact body/loadout fixtures x 28 cases x two states",
+                    "fixtures=" + _bodyOutcomes.Count + ";records=" +
+                        records.Length + ";production=" + production.Length +
+                        ";controls=" + controls.Length + ";perFixture=" +
+                        perFixtureExact,
+                    _bodyOutcomes.Count == fixtureCount &&
+                        _bodyOutcomes.Select(value => value.Label)
+                            .SequenceEqual(expectedLabels) &&
+                        records.Length == expectedRecords &&
+                        production.Length == 264 && controls.Length == 72 &&
+                        perFixtureExact,
+                    "exact production catalog and exact native controls on each request-local fixture");
+
+                BodyFixtureOutcome baseline = _bodyOutcomes.FirstOrDefault(
+                    value => value.Label == "male-medium-light");
+                BodyFixtureOutcome female = _bodyOutcomes.FirstOrDefault(
+                    value => value.Label == "female-medium-light");
+                BodyFixtureOutcome small = _bodyOutcomes.FirstOrDefault(
+                    value => value.Label == "small-light");
+                BodyFixtureOutcome enlarged = _bodyOutcomes.FirstOrDefault(
+                    value => value.Label == "male-medium-enlarged");
+                BodyFixtureOutcome armored = _bodyOutcomes.FirstOrDefault(
+                    value => value.Label == "male-medium-heavy-armor");
+                BodyFixtureOutcome cloaked = _bodyOutcomes.FirstOrDefault(
+                    value => value.Label == "male-medium-cloak");
+                bool bodyContracts = baseline != null && female != null &&
+                    small != null && enlarged != null && armored != null &&
+                    cloaked != null && baseline.Gender == "Male" &&
+                    baseline.ActualSize == "Medium" &&
+                    female.Gender == "Female" &&
+                    female.ActualSize == "Medium" &&
+                    small.ActualSize == "Small" &&
+                    enlarged.OriginalSize == "Medium" &&
+                    enlarged.ActualSize == "Large" &&
+                    enlarged.EnlargeBuffApplied &&
+                    enlarged.BoundsSize.y > baseline.BoundsSize.y * 1.2f &&
+                    small.BoundsSize.y < baseline.BoundsSize.y * 0.95f &&
+                    armored.ArmorGroup == "Heavy" &&
+                    !string.IsNullOrEmpty(armored.ArmorGuid) &&
+                    !string.IsNullOrEmpty(cloaked.CloakGuid) &&
+                    _bodyOutcomes.All(value => value.RigExact &&
+                        value.RendererCount > 0);
+                Add(_assertions, "weapon-presentation-native-body-contracts",
+                    "male/female Medium, native Small, native Enlarge Person Large, linked heavy armor, and linked cloak with exact humanoid rigs",
+                    string.Join(";", _bodyOutcomes.Select(value =>
+                        value.Label + "=" + value.Gender + "/" +
+                        value.OriginalSize + "->" + value.ActualSize +
+                        "/height=" + value.BoundsSize.y.ToString("R") +
+                        "/renderers=" + value.RendererCount + "/armor=" +
+                        (value.ArmorGuid ?? "<none>") + "/cloak=" +
+                        (value.CloakGuid ?? "<none>")).ToArray()),
+                    bodyContracts,
+                    "native BlueprintUnit view donors, exact rig bones, exact equipment links, and native Enlarge Person buff");
+
+                JObject[] heldProduction = production.Where(value =>
+                    string.Equals((string)value["state"], "held-idle",
+                        StringComparison.Ordinal)).ToArray();
+                bool gripsExact = heldProduction.Length == 132 &&
+                    heldProduction.All(value => GripContactValid(value));
+                Add(_assertions, "weapon-presentation-body-matrix-grips",
+                    "every production held model is renderable with one exact weapon bone and a grip within 0.08 m",
+                    "valid=" + heldProduction.Count(GripContactValid) + "/" +
+                        heldProduction.Length,
+                    gripsExact,
+                    "authored Grip and live R_WeaponBone positions across all six exact fixtures");
+
+                JObject[] hidden = production.Where(value =>
+                    (bool)value["intentionallyHiddenStored"]).ToArray();
+                bool hiddenExact = hidden.Length == 24 && hidden.All(value =>
+                    string.Equals((string)value["state"], "stored",
+                        StringComparison.Ordinal) &&
+                    !(bool)value["weaponRenderable"] &&
+                    (int)value["weaponRendererCount"] == 0);
+                Add(_assertions,
+                    "weapon-presentation-body-matrix-hidden-handguns",
+                    "four intentionally hidden stored handguns on every body/loadout fixture and visible held recovery",
+                    "hidden=" + hidden.Length + ";heldRenderable=" +
+                        heldProduction.Count(value => ProductionVariants.Take(4)
+                            .Contains((string)value["variant"],
+                                StringComparer.Ordinal) &&
+                            (bool)value["weaponRenderable"]) + "/24",
+                    hiddenExact && heldProduction.Count(value =>
+                        ProductionVariants.Take(4).Contains(
+                            (string)value["variant"], StringComparer.Ordinal) &&
+                        (bool)value["weaponRenderable"]) == 24,
+                    "exact Hidden profile and live native renderer visibility on all six fixtures");
+
+                int zeroSheets = records.Count(value =>
+                    (int)value["meaningfulPixels"] <= 0);
+                int lowDensitySheets = records.Count(value =>
+                    (bool)value["lowPixelDensity"]);
+                Add(_assertions,
+                    "weapon-presentation-body-matrix-contact-sheets",
+                    "336 PNG/JSON pairs, 1,344 labelled views, and no blank sheets",
+                    "captures=" + _captured + ";views=" + _viewCount +
+                        ";files=" + _evidenceFiles.Count + ";zero=" +
+                        zeroSheets + ";lowDensity=" + lowDensitySheets,
+                    _captured == expectedRecords && _viewCount == 1344 &&
+                        _materialized == expectedRecords && _indexWritten &&
+                        _evidenceFiles.Count == 673 &&
+                        _evidenceFiles.All(File.Exists) && zeroSheets == 0,
+                    "front/right-side/rear/front-right-three-quarter live contact sheets");
+                Add(_assertions,
+                    "weapon-presentation-body-matrix-request-cleanup",
+                    "exact party/global-unit snapshots restored; no save call",
+                    "cleaned=" + cleaned + ";settleUpdates=" +
+                        _settleUpdates, cleaned,
+                    "request-local actors, items, buff, blueprint clones, camera, light, and textures");
+                Add(_assertions, "loaded-mod-version",
+                    _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    string.Equals(_request.ExpectedModVersion,
+                        _context.ModEntry.Info.Version,
+                        StringComparison.Ordinal),
+                    "Unity Mod Manager ModEntry.Info.Version");
+
+                _warnings.Add("The body matrix is direct cosmetic evidence " +
+                    "for stored and held-idle/ready presentation only. It does " +
+                    "not add attack, reload, locomotion, inventory-preview, or " +
+                    "dual-wield claims beyond the separately qualified runs.");
+                _warnings.Add("AABB overlap is retained as a diagnostic only; " +
+                    "visual acceptance requires review of all four honest views " +
+                    "against the matching native controls.");
+                RuntimeBuildIdentity build = RuntimeBuildIdentity.Capture(
+                    _context.Assembly, _context.ModEntry.Info.Version);
+                bool passed = _assertions.All(value =>
+                    value.Status == RuntimeTestStatuses.Pass);
+                Result = new RuntimeTestResult
+                {
+                    SchemaVersion = 1,
+                    RunId = _request.RunId,
+                    Scenario = _request.Scenario,
+                    Status = passed ? RuntimeTestStatuses.Pass :
+                        RuntimeTestStatuses.Fail,
+                    LoadedModVersion = _context.ModEntry.Info.Version,
+                    RuntimeIdentity = build.RuntimeIdentity + "; mvid=" +
+                        build.ModuleVersionId + "; sha256=" +
+                        build.LoadedModuleSha256 + "; pid=" + build.ProcessId,
+                    GitCommit = build.GitCommit,
+                    GameVersion = Application.version ?? string.Empty,
+                    StartUtc = _started.ToString("o"),
+                    EndUtc = DateTime.UtcNow.ToString("o"),
+                    DurationMilliseconds = (long)(DateTime.UtcNow - _started)
+                        .TotalMilliseconds,
+                    Assertions = _assertions,
+                    Diagnostics = _diagnostics,
+                    Warnings = _warnings,
+                    ExceptionSummary = string.Empty,
+                    EvidenceFiles = _evidenceFiles,
+                    AutomaticExitRequested = _request.ExitAfterCompletion,
+                    EvidenceDirectory = _request.EvidenceDirectory
+                };
+                Complete = true;
+            }
+
+            private static bool GripContactValid(JObject record)
+            {
+                JToken contact = record["rigContacts"] == null ? null :
+                    record["rigContacts"]["weaponBoneToGrip"];
+                return contact != null && contact.Type == JTokenType.Object &&
+                    (int)contact["matchCount"] == 1 &&
+                    (bool)contact["targetPresent"] &&
+                    contact["distanceMeters"] != null &&
+                    contact["distanceMeters"].Type != JTokenType.Null &&
+                    (double)contact["distanceMeters"] <= 0.08d;
             }
         }
 
@@ -4949,31 +6055,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintWeaponType type = BlueprintLibraryLookup.RequireExact<
                 BlueprintWeaponType>(BlueprintBootstrap.Library, spec.TypeGuid,
                     "native " + spec.Label + " presentation donor");
-            BlueprintItemWeapon preferred = string.IsNullOrEmpty(
-                spec.PreferredItemGuid) ? null : BlueprintLibraryLookup
+            if (string.IsNullOrWhiteSpace(spec.PreferredItemGuid))
+                throw new InvalidOperationException(spec.Label +
+                    " requires an exact native control item identity.");
+            BlueprintItemWeapon preferred = BlueprintLibraryLookup
                 .RequireExact<BlueprintItemWeapon>(BlueprintBootstrap.Library,
                     spec.PreferredItemGuid, "native " + spec.Label +
                     " presentation control item");
-            if (preferred != null && !ReferenceEquals(preferred.Type, type))
+            if (!ReferenceEquals(preferred.Type, type))
                 throw new InvalidOperationException(spec.Label +
                     " preferred control item does not use its donor type.");
-            BlueprintItemWeapon[] candidates = BlueprintBootstrap.Library
-                .GetAllBlueprints().OfType<BlueprintItemWeapon>().Where(item =>
-                    item != null && ReferenceEquals(item.Type, type) &&
-                    item.VisualParameters != null &&
-                    item.VisualParameters.Model != null &&
-                    type.VisualParameters != null &&
-                    ReferenceEquals(item.VisualParameters.Model,
-                        type.VisualParameters.Model))
-                .OrderBy(item => item.AssetGuid.ToString(),
-                    StringComparer.Ordinal).ToArray();
-            BlueprintItemWeapon selected = preferred ?? candidates.FirstOrDefault();
-            if (selected == null || !candidates.Any(item =>
-                    ReferenceEquals(item, selected)))
+            if (preferred.VisualParameters == null ||
+                preferred.VisualParameters.Model == null ||
+                type.VisualParameters == null ||
+                !ReferenceEquals(preferred.VisualParameters.Model,
+                    type.VisualParameters.Model))
                 throw new InvalidOperationException(spec.Label +
-                    " has no exact native item with the donor's held model.");
+                    " exact native item does not expose the donor's held model.");
             return new EvidenceCase("NativeControl." + spec.Label,
-                "Native." + spec.Label, selected, true, spec.TypeGuid);
+                "Native." + spec.Label, preferred, true, spec.TypeGuid);
         }
 
         private static string FamilyFor(string variant)

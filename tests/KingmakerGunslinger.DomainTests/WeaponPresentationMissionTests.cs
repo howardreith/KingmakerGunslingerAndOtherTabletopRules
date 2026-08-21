@@ -160,6 +160,8 @@ namespace KingmakerGunslinger.DomainTests
                 "weapon-presentation-transition-motion-evidence";
             const string reloadIdentity =
                 "weapon-presentation-reload-evidence";
+            const string bodyMatrixIdentity =
+                "weapon-presentation-body-matrix-evidence";
             int workingSaveCompletion = runner.IndexOf(
                 "if (_workingSaveSmoke.Complete)", StringComparison.Ordinal);
             int evidenceExecution = runner.IndexOf(
@@ -174,6 +176,9 @@ namespace KingmakerGunslinger.DomainTests
             int reloadEvidenceExecution = runner.IndexOf(
                 "WeaponPresentationEvidenceScenario.BeginReload(",
                 StringComparison.Ordinal);
+            int bodyMatrixEvidenceExecution = runner.IndexOf(
+                "WeaponPresentationEvidenceScenario.BeginBodyMatrix(",
+                StringComparison.Ordinal);
             Assertions.True(catalog.Contains(identity) &&
                 catalog.Contains(motionIdentity) &&
                 catalog.Contains(handgunMotionIdentity) &&
@@ -181,6 +186,7 @@ namespace KingmakerGunslinger.DomainTests
                 catalog.Contains(easternMotionIdentity) &&
                 catalog.Contains(transitionMotionIdentity) &&
                 catalog.Contains(reloadIdentity) &&
+                catalog.Contains(bodyMatrixIdentity) &&
                 runner.Contains("WeaponPresentationEvidenceScenario.Begin(") &&
                 runner.Contains("_weaponPresentationEvidence.Poll()") &&
                 runner.Contains("if (_weaponPresentationEvidence.Complete)") &&
@@ -198,11 +204,17 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("_weaponPresentationReloadEvidence.Poll()") &&
                 runner.Contains(
                     "if (_weaponPresentationReloadEvidence.Complete)") &&
+                runner.Contains(
+                    "WeaponPresentationEvidenceScenario.BeginBodyMatrix(") &&
+                runner.Contains("_weaponPresentationBodyMatrixEvidence.Poll()") &&
+                runner.Contains(
+                    "if (_weaponPresentationBodyMatrixEvidence.Complete)") &&
                 workingSaveCompletion >= 0 &&
                 evidenceExecution > workingSaveCompletion &&
                 motionEvidenceExecution > workingSaveCompletion &&
                 transitionMotionEvidenceExecution > workingSaveCompletion &&
                 reloadEvidenceExecution > workingSaveCompletion &&
+                bodyMatrixEvidenceExecution > workingSaveCompletion &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||") &&
                 request.Contains(
@@ -217,6 +229,8 @@ namespace KingmakerGunslinger.DomainTests
                     "RuntimeTestScenarioCatalog.WeaponPresentationTransitionMotionEvidence ||") &&
                 request.Contains(
                     "RuntimeTestScenarioCatalog.WeaponPresentationReloadEvidence ||") &&
+                request.Contains(
+                    "RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||") &&
                 automation.Contains("'" + identity + "' = [pscustomobject]") &&
                 automation.Contains("'" + motionIdentity +
                     "' = [pscustomobject]") &&
@@ -230,6 +244,8 @@ namespace KingmakerGunslinger.DomainTests
                     "' = [pscustomobject]") &&
                 automation.Contains("'" + reloadIdentity +
                     "' = [pscustomobject]") &&
+                automation.Contains("'" + bodyMatrixIdentity +
+                    "' = [pscustomobject]") &&
                 preflight.Contains("'" + identity + "'") &&
                 preflight.Contains("'" + motionIdentity + "'") &&
                 preflight.Contains("'" + handgunMotionIdentity + "'") &&
@@ -237,11 +253,147 @@ namespace KingmakerGunslinger.DomainTests
                 preflight.Contains("'" + easternMotionIdentity + "'") &&
                 preflight.Contains("'" + transitionMotionIdentity + "'") &&
                 preflight.Contains("'" + reloadIdentity + "'") &&
+                preflight.Contains("'" + bodyMatrixIdentity + "'") &&
                 automation.Contains(
                     "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
                 automation.Contains(
                     "ReadinessBehavior = 'autonomous-working-save'"),
                 "Weapon presentation evidence must be an allowlisted autonomous working-save scenario.");
+
+            Assertions.True(runner.Split(new[] {
+                    "WeaponPresentationBodyMatrixEvidence"
+                }, StringSplitOptions.None).Length - 1 >= 4,
+                "Body-matrix evidence must be wired through timeout exclusion, autonomous working-save routing, exception classification, and post-load dispatch.");
+
+            foreach (string token in new[] {
+                "BeginBodyMatrix", "BodyMatrixSession",
+                "male-medium-light", "female-medium-light", "small-light",
+                "male-medium-enlarged", "male-medium-heavy-armor",
+                "male-medium-cloak", "EnlargePersonSpellGuid",
+                "EnlargePersonBuffGuid", "ArmorProficiencyGroup.Heavy",
+                "BlueprintItemEquipmentShoulders", "HasEquipmentLinks",
+                "EquipmentEntityAlternatives.EmptyIfNull()",
+                "NativeFullPlateItemGuid",
+                "559b0b6f194656c428c403a000ceee78",
+                "NativeCloakItemGuid",
+                "04dff7841c5f499478c91487d9bbdcef",
+                "NativeFemaleMediumBodyDonorGuid",
+                "f9161aa0b3f519c47acbce01f53ee217",
+                "NativeSmallBodyDonorGuid",
+                "77c11edb92ce0fd408ad96b40fd27121",
+                "ResolvePartyBodyDonor",
+                "progression race",
+                "actor.Descriptor.Progression.Race.RaceId",
+                "raceGuid", "raceId",
+                "DonorSource=exact-native-guid",
+                "did not materialize a complete native unit view",
+                "_fixtureInitialized",
+                "weapon-presentation-body-matrix-progress.json",
+                "final-case.remove-equipped.begin",
+                "fixture.retire.begin", "dispose.all.begin",
+                "dispose.entities.complete", "dispose.blueprints.complete",
+                "weapon-presentation-body-matrix-cleanup-exception",
+                "weapon-presentation-body-matrix-index.json",
+                "weapon-presentation-native-body-contracts",
+                "weapon-presentation-body-matrix-grips",
+                "weapon-presentation-body-matrix-hidden-handguns",
+                "weapon-presentation-body-matrix-request-cleanup",
+                "336 PNG/JSON pairs", "1,344 labelled views" })
+                Assertions.True(scenario.Contains(token),
+                    "Body-matrix evidence omitted " + token + ".");
+
+            int donorStart = scenario.IndexOf(
+                "private BlueprintUnit ResolveBodyDonor",
+                StringComparison.Ordinal);
+            int donorEnd = donorStart < 0 ? -1 : scenario.IndexOf(
+                "private static bool IsBodyDonor", donorStart,
+                StringComparison.Ordinal);
+            string donorSource = donorStart < 0 || donorEnd <= donorStart
+                ? "" : scenario.Substring(donorStart, donorEnd - donorStart);
+            Assertions.True(donorSource.Length > 0 &&
+                !donorSource.Contains("GetAllBlueprints"),
+                "Body-matrix donor resolution must use exact native identities instead of traversing the complete blueprint library on the game thread.");
+            int fixtureEquipmentStart = scenario.IndexOf(
+                "private void EquipHeavyArmor", StringComparison.Ordinal);
+            int fixtureEquipmentEnd = fixtureEquipmentStart < 0 ? -1 :
+                scenario.IndexOf("private void PollBodyReadiness",
+                    fixtureEquipmentStart, StringComparison.Ordinal);
+            string fixtureEquipmentSource = fixtureEquipmentStart < 0 ||
+                fixtureEquipmentEnd <= fixtureEquipmentStart ? "" :
+                scenario.Substring(fixtureEquipmentStart,
+                    fixtureEquipmentEnd - fixtureEquipmentStart);
+            Assertions.True(fixtureEquipmentSource.Length > 0 &&
+                !fixtureEquipmentSource.Contains("GetAllBlueprints") &&
+                !scenario.Contains("ResolveCompatibleHeavyArmorForProbe") &&
+                fixtureEquipmentSource.Contains("RequireExact<BlueprintItemArmor>") &&
+                fixtureEquipmentSource.Contains("catch (NullReferenceException)") &&
+                fixtureEquipmentSource.Contains("HasEquipmentLinks(blueprint, _actor)") &&
+                fixtureEquipmentSource.Contains(
+                    "BlueprintItemEquipmentShoulders>("),
+                "Body-matrix armor and cloak fixtures must use exact native identities instead of traversing the complete blueprint library on the game thread.");
+            int spawnFixtureStart = scenario.IndexOf(
+                "private bool SpawnFixture", StringComparison.Ordinal);
+            int spawnFixtureEnd = spawnFixtureStart < 0 ? -1 :
+                scenario.IndexOf("private void ApplyEnlargePerson",
+                    spawnFixtureStart, StringComparison.Ordinal);
+            string spawnFixtureSource = spawnFixtureStart < 0 ||
+                spawnFixtureEnd <= spawnFixtureStart ? "" :
+                scenario.Substring(spawnFixtureStart,
+                    spawnFixtureEnd - spawnFixtureStart);
+            Assertions.True(spawnFixtureSource.Length > 0 &&
+                spawnFixtureSource.Contains(
+                    "UnityEngine.Object.Instantiate(fixture.Source)") &&
+                spawnFixtureSource.Contains(
+                    "_actorBlueprint.Race = fixture.Source.Race") &&
+                spawnFixtureSource.Contains(
+                    "fixture.Source.Prefab.Load(false)") &&
+                spawnFixtureSource.Contains(
+                    "if (_settleUpdates < MaximumSettleUpdates) return false") &&
+                spawnFixtureSource.Contains(
+                    "SpawnUnit(_actorBlueprint,") &&
+                spawnFixtureSource.Contains("prefab,") &&
+                !spawnFixtureSource.Contains("ApplyVisualBodyDonor") &&
+                !spawnFixtureSource.Contains(".Brain = null") &&
+                !spawnFixtureSource.Contains("HandsEquipment == null") &&
+                scenario.Contains("bool completeView = _actor != null") &&
+                scenario.Contains("if (!_fixtureInitialized)"),
+                "Body-matrix fixtures must clone each complete native donor contract and defer view-dependent initialization until native spawning has materialized the complete Unity view.");
+            int bodyCleanupStart = scenario.IndexOf(
+                "private void PollCleanup", spawnFixtureStart,
+                StringComparison.Ordinal);
+            int bodyCleanupEnd = bodyCleanupStart < 0 ? -1 :
+                scenario.IndexOf("private void Finish", bodyCleanupStart,
+                    StringComparison.Ordinal);
+            string bodyCleanupSource = bodyCleanupStart < 0 ||
+                bodyCleanupEnd <= bodyCleanupStart ? "" :
+                scenario.Substring(bodyCleanupStart,
+                    bodyCleanupEnd - bodyCleanupStart);
+            Assertions.True(scenario.Contains(
+                    "private void RetireActor()") &&
+                scenario.Contains("_retiredActors.Add(_actor)") &&
+                scenario.Contains("_retiredBlueprints.Add(_actorBlueprint)") &&
+                scenario.Contains("_actor.View.gameObject.SetActive(false)") &&
+                scenario.Contains("foreach (UnitEntityData actor in " +
+                    "_retiredActors)") &&
+                scenario.Contains("foreach (BlueprintUnit blueprint in " +
+                    "_retiredBlueprints)") &&
+                bodyCleanupSource.Length > 0 &&
+                !bodyCleanupSource.Contains("EntityCreator.Tick"),
+                "Body-matrix actors must retire between fixtures and final cleanup must not re-enter Unity's invalidated entity-creation queue after disposal.");
+            int bodyContractStart = scenario.IndexOf(
+                "private static bool IsBodyDonor", StringComparison.Ordinal);
+            int bodyContractEnd = bodyContractStart < 0 ? -1 :
+                scenario.IndexOf("private static string DescribeBlueprint",
+                    bodyContractStart, StringComparison.Ordinal);
+            string bodyContractSource = bodyContractStart < 0 ||
+                bodyContractEnd <= bodyContractStart ? "" :
+                scenario.Substring(bodyContractStart,
+                    bodyContractEnd - bodyContractStart);
+            Assertions.True(bodyContractSource.Contains("value.Prefab != null") &&
+                bodyContractSource.Contains("!value.Body.DisableHands") &&
+                !bodyContractSource.Contains("PrimaryHand") &&
+                !bodyContractSource.Contains("SecondaryHand"),
+                "Visual body donors must not be rejected merely because their default equipment hands are empty.");
 
             foreach (string token in new[] {
                 "SpearMotionVariants", "Native.Longspear",
@@ -401,12 +553,29 @@ namespace KingmakerGunslinger.DomainTests
                     "new NativeControlSpec(\"" + token + "\""),
                     "Evidence catalog omitted native control " + token + ".");
 
+            int nativeControlStart = scenario.IndexOf(
+                "private static EvidenceCase BuildNativeControl",
+                StringComparison.Ordinal);
+            int nativeControlEnd = nativeControlStart < 0 ? -1 :
+                scenario.IndexOf("private static string FamilyFor",
+                    nativeControlStart, StringComparison.Ordinal);
+            string nativeControlSource = nativeControlStart < 0 ||
+                nativeControlEnd <= nativeControlStart ? "" :
+                scenario.Substring(nativeControlStart,
+                    nativeControlEnd - nativeControlStart);
+            Assertions.True(
+                scenario.Contains("2ca0329871f14a27922370f17ea4d15d") &&
+                scenario.Contains("0782c8ca4b6c4634a0f6dabbed796211") &&
+                nativeControlSource.Length > 0 &&
+                !nativeControlSource.Contains("GetAllBlueprints"),
+                "Native presentation controls must use exact previously observed item identities without game-thread blueprint scans.");
+
             Assertions.True(scenario.Contains("_cases.Length != 28") &&
                 scenario.Contains("production.Length != 22") &&
                 scenario.Contains("controls.Length != 6") &&
                 scenario.Contains("SequenceEqual(ProductionVariants)") &&
                 scenario.Contains("BuildNativeControl") &&
-                scenario.Contains("ReferenceEquals(item.VisualParameters.Model,") &&
+                scenario.Contains("ReferenceEquals(preferred.VisualParameters.Model,") &&
                 scenario.Contains("type.VisualParameters.Model") &&
                 scenario.Contains("HandsEquipment.UpdateAll()") &&
                 scenario.Contains("HandsEquipment.ForceSwitch(false)") &&

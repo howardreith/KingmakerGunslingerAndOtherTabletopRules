@@ -473,6 +473,7 @@ try {
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',
         'weapon-presentation-reload-evidence',
+        'weapon-presentation-body-matrix-evidence',
         'working-save-urban-barbarian-prepare',
         'working-save-urban-barbarian-off-verify-cleanup',
         'working-save-brown-fur-prepare',

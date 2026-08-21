@@ -111,6 +111,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _weaponPresentationTransitionMotionEvidence;
         private WeaponPresentationEvidenceScenario.ReloadSession
             _weaponPresentationReloadEvidence;
+        private WeaponPresentationEvidenceScenario.BodyMatrixSession
+            _weaponPresentationBodyMatrixEvidence;
         private Stopwatch _catalogElapsed;
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
@@ -624,6 +626,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationTransitionMotionEvidence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationReloadEvidence &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
                     _trace.Record("manual-interaction-timeout",
@@ -1319,6 +1322,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationReloadEvidence ||
                     _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||
+                    _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
@@ -1364,6 +1369,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.WeaponPresentationTransitionMotionEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationReloadEvidence ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
@@ -1832,6 +1839,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _weaponPresentationReloadEvidence.Poll();
                     if (_weaponPresentationReloadEvidence.Complete)
                         Complete(_weaponPresentationReloadEvidence.Result);
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .WeaponPresentationBodyMatrixEvidence)
+                {
+                    if (_weaponPresentationBodyMatrixEvidence == null)
+                        _weaponPresentationBodyMatrixEvidence =
+                            WeaponPresentationEvidenceScenario.BeginBodyMatrix(
+                                _context, _request);
+                    _weaponPresentationBodyMatrixEvidence.Poll();
+                    if (_weaponPresentationBodyMatrixEvidence.Complete)
+                        Complete(_weaponPresentationBodyMatrixEvidence.Result);
                 }
                 else
                 {

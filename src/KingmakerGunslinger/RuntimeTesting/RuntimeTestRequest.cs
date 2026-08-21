@@ -224,6 +224,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEasternMotionEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationTransitionMotionEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationReloadEvidence ||
+                request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||
                 request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
