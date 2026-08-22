@@ -193,6 +193,62 @@ namespace KingmakerGunslinger.DomainTests
                 "One protector contributed more than +2 to one attack.");
         }
 
+        internal static void ArmorClassAttributionIsTruthfulAndScoped()
+        {
+            BodyguardArmorClassAttributionPlan one =
+                BodyguardArmorClassAttributionPolicy.Create(13, new[]
+                {
+                    new BodyguardAidResult("protector-one", 10, 0)
+                });
+            Assertions.Equal(13, one.NativeArmorClass,
+                "Bodyguard changed the native AC baseline.");
+            Assertions.Equal(2, one.TotalBonus,
+                "One successful Bodyguard did not contribute exactly +2.");
+            Assertions.Equal(15, one.FinalArmorClass,
+                "The observed 13 AC case no longer resolves to 15.");
+            Assertions.Equal(1, one.Contributions.Count,
+                "One success did not produce one truthful source entry.");
+            Assertions.Equal("protector-one",
+                one.Contributions[0].ProtectorId,
+                "The Bodyguard source lost its protector correlation.");
+            Assertions.Equal(2, one.Contributions[0].Bonus,
+                "The Bodyguard source value changed.");
+
+            BodyguardArmorClassAttributionPlan two =
+                BodyguardArmorClassAttributionPolicy.Create(13, new[]
+                {
+                    new BodyguardAidResult("protector-one", 20, -99),
+                    new BodyguardAidResult("protector-two", 10, 0)
+                });
+            Assertions.Equal(4, two.TotalBonus,
+                "Two successful Bodyguards did not stack to +4.");
+            Assertions.Equal(17, two.FinalArmorClass,
+                "Two successful Bodyguards double-counted or lost AC.");
+            Assertions.True(two.Contributions.Count == 2 &&
+                two.Contributions.All(value => value.Bonus == 2),
+                "Two successful protectors lack two truthful +2 sources.");
+
+            BodyguardArmorClassAttributionPlan failure =
+                BodyguardArmorClassAttributionPolicy.Create(13, new[]
+                {
+                    new BodyguardAidResult("protector-one", 1, 99)
+                });
+            Assertions.True(failure.TotalBonus == 0 &&
+                failure.FinalArmorClass == 13 &&
+                failure.Contributions.Count == 0,
+                "A failed Aid attempt produced AC or source attribution.");
+
+            BodyguardArmorClassAttributionPlan firearmTouch =
+                BodyguardArmorClassAttributionPolicy.Create(11, new[]
+                {
+                    new BodyguardAidResult("protector-one", 10, 0)
+                });
+            Assertions.True(firearmTouch.NativeArmorClass == 11 &&
+                firearmTouch.TotalBonus == 2 &&
+                firearmTouch.FinalArmorClass == 13,
+                "Bodyguard did not preserve the already-selected firearm touch AC baseline.");
+        }
+
         internal static void AttackSelectionIsPreRollAndStable()
         {
             var low = new object();
@@ -232,9 +288,20 @@ namespace KingmakerGunslinger.DomainTests
                 "protector", 20, 0)), "Duplicate callback rerolled Bodyguard.");
             frame.FinishBodyguard();
             object ac = new object();
-            Assertions.True(frame.TryApplyArmorClass(ac) &&
-                !frame.TryApplyArmorClass(ac),
+            bool firstArmorClassCallback = frame.TryApplyArmorClass(ac);
+            BodyguardArmorClassAttributionPlan applied =
+                BodyguardArmorClassAttributionPolicy.Create(13, frame.Attempts);
+            bool duplicateArmorClassCallback = frame.TryApplyArmorClass(ac);
+            int attributedSourceCount = firstArmorClassCallback ?
+                applied.Contributions.Count : 0;
+            int attributedArmorClass = firstArmorClassCallback ?
+                applied.FinalArmorClass : 13;
+            Assertions.True(firstArmorClassCallback &&
+                !duplicateArmorClassCallback,
                 "Duplicate AC callback duplicated a Bodyguard contribution.");
+            Assertions.True(attributedSourceCount == 1 &&
+                attributedArmorClass == 15,
+                "Duplicate AC callback changed either the AC total or source count.");
             Assertions.Equal(2, frame.ArmorClassBonus,
                 "Frame Bodyguard contribution changed.");
             Assertions.True(frame.TryResolveAttack(false),

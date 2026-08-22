@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.90-bodyguard-in-harms-way.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.91-bodyguard-in-harms-way.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.90 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.91 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -202,6 +202,20 @@ The mod hash-verifies the packaged source and existing destination and never
 writes `Init.bnk` or another bank. To uninstall this optional native-audio
 artifact, remove only `KMG_Firearms.bnk`; do not remove any vanilla bank.
 Missing or rejected custom audio does not disable firearm mechanics.
+
+# 0.0.91 Bodyguard AC-breakdown candidate
+
+Install only the strict standalone
+`artifacts\packages\KingmakerGunslinger-0.0.91-bodyguard-in-harms-way.zip`
+through Unity Mod Manager. This candidate supersedes, but does not overwrite,
+the immutable `0.0.90` artifact. It preserves the qualified combat mechanics
+and adds native expanded attack-detail source lines for successful Bodyguard
+AC contributions.
+
+Each successful protector contributes one attack-scoped `Bodyguard +2` source;
+two successful protectors contribute two such sources and exactly +4 total.
+Failed attempts and module-disabled or ineligible attacks produce no source.
+No persistent AC modifier or timed buff is introduced.
 
 # 0.0.90 Bodyguard and In Harm's Way candidate
 

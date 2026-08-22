@@ -179,6 +179,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     turnsMiss.CombatLogLastMessage.Contains("+2 AC") &&
                     Same(turnsMiss.SwiftBefore, turnsMiss.SwiftAfter),
                 "forced Aid natural 20 and incoming natural 10 through native rules");
+            Add(assertions, "bodyguard-ac-breakdown-one",
+                "one successful protector exposes one named +2 Bodyguard source without changing the final total",
+                Describe(turnsMiss),
+                turnsMiss.NativeAcBeforeBodyguard + 2 == turnsMiss.TargetAc &&
+                    turnsMiss.BodyguardContribution == 2 &&
+                    HasTruthfulBodyguardSources(turnsMiss, 1, 2),
+                "RuleCalculateAC.BonusSources consumed by native AttackLogMessage.AppendArmorClassBreakdown");
 
             stage = "bodyguard-failure";
             fixture.ResetEconomy(3, 0f, 3, 0f);
@@ -197,6 +204,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     failure.CombatLogLastMessage.Contains("failure") &&
                     Same(failure.SwiftBefore, failure.SwiftAfter),
                 "native AoO count and attack damage recipient");
+            Add(assertions, "bodyguard-ac-breakdown-failure",
+                "failed Aid exposes no Bodyguard AC source and leaves native AC unchanged",
+                Describe(failure),
+                failure.NativeAcBeforeBodyguard == failure.TargetAc &&
+                    failure.BodyguardContribution == 0 &&
+                    HasTruthfulBodyguardSources(failure, 0, 0),
+                "native RuleCalculateAC source collection negative control");
 
             stage = "preauthorized-already-miss";
             fixture.ResetEconomy(3, 0f, 3, 0f);
@@ -397,6 +411,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     multiple.HpLoss[selected + 1] > 0 &&
                     multiple.HpLoss[unselected + 1] == 0,
                 "party-order fallback then ordinal persistent UnitEntityData.UniqueId");
+            Add(assertions, "bodyguard-ac-breakdown-two",
+                "two successful protectors expose two named +2 sources totaling +4 exactly once",
+                Describe(multiple),
+                multiple.NativeAcBeforeBodyguard + 4 == multiple.TargetAc &&
+                    multiple.BodyguardContribution == 4 &&
+                    HasTruthfulBodyguardSources(multiple, 2, 4) &&
+                    multiple.BodyguardSources.Select(value =>
+                        value.SourceFactIdentity).Distinct().Count() == 2,
+                "two protector-owned Bodyguard facts in native RuleCalculateAC.BonusSources");
 
             stage = "multiple-attacks";
             fixture.SetModes(fixture.ProtectorTwo, false, false);
@@ -418,7 +441,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     first.AttackIdentity != second.AttackIdentity &&
                     first.RollTargetRestored && second.RollTargetRestored &&
                     Counter(first, "faults") == 0 &&
-                    Counter(second, "faults") == 0,
+                    Counter(second, "faults") == 0 &&
+                    HasTruthfulBodyguardSources(first, 1, 2) &&
+                    HasTruthfulBodyguardSources(second, 1, 2),
                 "separate RuleAttackRoll identities and native carried AoO count");
         }
 
@@ -507,6 +532,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Counter(disabled, "interceptions") == 0 &&
                     disabled.CombatLogCount == 0 &&
                     disabled.HpLoss[0] > 0 && disabled.HpLoss[1] == 0 &&
+                    disabled.BodyguardContribution == 0 &&
+                    HasTruthfulBodyguardSources(disabled, 0, 0) &&
                     disabled.RollTargetRestored &&
                     disabled.WeaponTargetRestored,
                 "live module-disabled RuleAttackWithWeapon control");
@@ -529,10 +556,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal) >= 0;
         }
 
+        private static bool HasTruthfulBodyguardSources(
+            BodyguardCombatCaseEvidence value, int expectedCount,
+            int expectedTotal)
+        {
+            if (value == null || value.BodyguardSources == null ||
+                value.BodyguardSources.Length != expectedCount ||
+                value.BodyguardSources.Sum(item => item.Bonus) != expectedTotal)
+                return false;
+            string guid = BlueprintBootstrap.BodyguardFeats == null ? null :
+                BlueprintBootstrap.BodyguardFeats.Bodyguard.AssetGuid;
+            return value.BodyguardSources.All(item => item.Bonus == 2 &&
+                string.Equals(item.SourceName, "Bodyguard",
+                    StringComparison.Ordinal) &&
+                string.Equals(item.SourceBlueprintGuid, guid,
+                    StringComparison.Ordinal) &&
+                string.Equals(item.SourceBlueprintName,
+                    "KMG_Bodyguard_Feature", StringComparison.Ordinal) &&
+                !string.IsNullOrWhiteSpace(item.SourceFactType));
+        }
+
         private static string Describe(BodyguardCombatCaseEvidence value)
         {
             return "roll=" + value.Roll + ";bonus=" + value.AttackBonus +
                 ";ac=" + value.TargetAc + ";hit=" + value.Hit +
+                ";nativeAc=" + value.NativeAcBeforeBodyguard +
+                ";bodyguardContribution=" + value.BodyguardContribution +
+                ";bodyguardSources=" + string.Join(",",
+                    (value.BodyguardSources ??
+                        new BodyguardArmorClassSourceEvidence[0]).Select(item =>
+                            item.Bonus + "/" + item.SourceName + "/" +
+                            item.SourceBlueprintGuid + "/" +
+                            item.SourceFactIdentity).ToArray()) +
                 ";critical=" + value.Critical + ";aoo=" +
                 string.Join("/", value.AooBefore) + "->" +
                 string.Join("/", value.AooAfter) + ";swift=" +

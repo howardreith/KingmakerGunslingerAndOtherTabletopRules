@@ -13,6 +13,8 @@ import validate_weapon_presentation89 as baseline
 VERSION = "0.0.90"
 INFORMATIONAL_VERSION = "0.0.90-bodyguard-in-harms-way"
 PACKAGE = "KingmakerGunslinger-0.0.90-local-runtime.zip"
+STATIC_KEY = "bodyguard90"
+DETERMINISTIC_TEST_COUNT = 1190
 
 EXPECTED_IDENTITIES = {
     "KMG.Feats.Bodyguard":
@@ -67,9 +69,9 @@ def validate(root: Path) -> None:
         encoding="utf-8"))
     entries = manifest["entries"]
     if len(entries) != 1622:
-        raise AssertionError("0.0.90 blueprint ledger must contain 1622 identities")
+        raise AssertionError(f"{VERSION} blueprint ledger must contain 1622 identities")
     if sum(entry.get("status") == "active" for entry in entries) != 1621:
-        raise AssertionError("0.0.90 blueprint ledger must contain 1621 active identities")
+        raise AssertionError(f"{VERSION} blueprint ledger must contain 1621 active identities")
     by_symbol = {entry["symbol"]: entry for entry in entries}
     if len(by_symbol) != len(entries):
         raise AssertionError("Blueprint manifest contains duplicate symbols")
@@ -86,9 +88,9 @@ def validate(root: Path) -> None:
 
     static = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))
-    bodyguard = static.get("bodyguard90", {})
+    bodyguard = static.get(STATIC_KEY, {})
     expected_static = {
-        "deterministicTestCount": 1190,
+        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
         "featureModuleCount": 9,
         "featureModuleSchemaVersion": 8,
         "featureModuleExhaustiveCount": 512,
@@ -122,7 +124,7 @@ def validate(root: Path) -> None:
         "RuleEventCompleted", "AbilityAttackContextDisposed", "RuleRollD20")
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
-        "disposable-bodyguard-feats-disabled", "active version 0.0.90")
+        "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
     require_tokens(root / "scripts/package.ps1",
         "$($info.Id)-$($info.Version)-bodyguard-in-harms-way.zip")
 

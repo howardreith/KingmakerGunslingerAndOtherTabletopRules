@@ -98,10 +98,71 @@ namespace KingmakerGunslinger.DomainTests
                     StringComparison.Ordinal) < runtime.IndexOf(
                     "bool hit = attack.IsHit;", StringComparison.Ordinal) &&
                 runtime.Contains("TryApplyArmorClass(armorClass)") &&
-                runtime.Contains("checked(before + bonus)") &&
+                runtime.Contains("ApplyArmorClassAttribution(armorClass, frame, before, bonus)") &&
+                runtime.Contains("plan.FinalArmorClass") &&
                 runtime.Contains("FramesByRoll") && runtime.Contains(
                     "[ThreadStatic]"),
                 "Attack-scoped preauthorization/AC/frame ordering changed.");
+        }
+
+        internal static void ArmorClassBreakdownUsesNativeBodyguardSources()
+        {
+            string runtime = Read("src", "KingmakerGunslinger",
+                "BodyguardFeats", "BodyguardRuntime.cs");
+            foreach (string token in new[]
+            {
+                "BodyguardArmorClassAttributionPolicy.Create(",
+                "attempt.Protector.Descriptor.GetFact(",
+                "blueprints.Bodyguard",
+                "new BonusSource(contribution.Bonus, source)",
+                "armorClass.BonusSources.Add(source)",
+                "plan.FinalArmorClass",
+                "armorClass.BonusSources.RemoveRange(",
+                "bodyguardSourceCount=",
+                "value.Source.Name",
+                "value.Source.Blueprint.AssetGuid"
+            })
+                Assertions.True(runtime.Contains(token),
+                    "Bodyguard native AC attribution lacks: " + token);
+            Assertions.True(!runtime.Contains("armorClass.AddBonus(") &&
+                !runtime.Contains("AddTemporaryModifier") &&
+                !runtime.Contains("Stats.AC.AddModifier"),
+                "Postfix attribution can double-count or leak through a target stat modifier.");
+
+            string blueprint = Read("src", "KingmakerGunslinger",
+                "Blueprints", "BodyguardFeatBlueprints.cs");
+            Assertions.True(blueprint.Contains(
+                    "CreateFeat(\"KMG_Bodyguard_Feature\", \"Bodyguard\"") &&
+                blueprint.Contains(
+                    "LocalizationService.Create(localizationStem + \".Name\", displayName)") &&
+                runtime.Contains("value.Source.Name"),
+                "The native BonusSource cannot resolve the player-facing Bodyguard label.");
+
+            string il = Read("artifacts", "inspection", "bodyguard-native",
+                "Assembly-CSharp.il");
+            foreach (string token in new[]
+            {
+                "RuleCalculateAC::BonusSources",
+                "RuleCalculateAC::set_TargetAC",
+                "RuleCalculateAC::AddBonus",
+                "AttackLogMessage::AppendArmorClassBreakdown",
+                "StatModifiersBreakdown::AddBonusSources",
+                "Kingmaker.RuleSystem.Rules.BonusSource::Bonus",
+                "Kingmaker.RuleSystem.Rules.BonusSource::Source",
+                "Kingmaker.UI.IUIDataProvider::get_Name()"
+            })
+                Assertions.True(il.Contains(token),
+                    "Installed native AC-breakdown IL contract lacks: " + token);
+
+            string investigation = Read("docs", "investigations",
+                "bodyguard-in-harms-way.md");
+            Assertions.True(investigation.Contains(
+                    "AppendArmorClassBreakdown") &&
+                investigation.Contains("display-only BonusSource") &&
+                investigation.Contains("postfix") &&
+                investigation.Contains("does not") &&
+                investigation.Contains("change TargetAC"),
+                "Durable investigation does not explain the no-double-count attribution seam.");
         }
 
         internal static void DeliverySeamsRedirectCompleteRecipients()
@@ -276,6 +337,8 @@ namespace KingmakerGunslinger.DomainTests
                 fixture.Contains("BodyguardCombatLog.Published") &&
                 scenario.Contains("CombatLogLastMessage") &&
                 scenario.Contains("DamageKinds.Any") &&
+                scenario.Contains("BodyguardSources") &&
+                scenario.Contains("NativeAcBeforeBodyguard") &&
                 scenario.Contains("fixture.ApplyShieldOther") &&
                 scenario.Contains("global unit snapshot restored"),
                 "Guarded Bodyguard qualification no longer uses live rule events, rider/save evidence, Shield Other ordering, and exact cleanup.");

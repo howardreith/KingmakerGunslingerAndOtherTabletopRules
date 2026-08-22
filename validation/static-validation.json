@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.90-bodyguard-in-harms-way",
-  "version": "0.0.90",
+  "milestone": "0.0.91-bodyguard-ac-breakdown",
+  "version": "0.0.91",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -91,6 +91,18 @@
     "projectBlueprintCount": 6,
     "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
     "fullDeliveryRedirectionRequired": true,
+    "runtimeQualificationPending": true
+  },
+  "bodyguard91": {
+    "deterministicTestCount": 1192,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 6,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
     "runtimeQualificationPending": true
   }
 }

@@ -7,6 +7,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
@@ -32,6 +33,21 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
+    internal sealed class BodyguardArmorClassSourceEvidence
+    {
+        [JsonProperty("bonus", Order = 1)] public int Bonus { get; set; }
+        [JsonProperty("sourceName", Order = 2)]
+        public string SourceName { get; set; }
+        [JsonProperty("sourceBlueprintGuid", Order = 3)]
+        public string SourceBlueprintGuid { get; set; }
+        [JsonProperty("sourceBlueprintName", Order = 4)]
+        public string SourceBlueprintName { get; set; }
+        [JsonProperty("sourceFactType", Order = 5)]
+        public string SourceFactType { get; set; }
+        [JsonProperty("sourceFactIdentity", Order = 6)]
+        public int SourceFactIdentity { get; set; }
+    }
+
     internal sealed class BodyguardCombatCaseEvidence
     {
         [JsonProperty("name", Order = 1)] public string Name { get; set; }
@@ -77,6 +93,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         public long CombatLogCount { get; set; }
         [JsonProperty("combatLogLastMessage", Order = 26)]
         public string CombatLogLastMessage { get; set; }
+        [JsonProperty("nativeAcBeforeBodyguard", Order = 27)]
+        public int NativeAcBeforeBodyguard { get; set; }
+        [JsonProperty("bodyguardContribution", Order = 28)]
+        public int BodyguardContribution { get; set; }
+        [JsonProperty("bodyguardSources", Order = 29)]
+        public BodyguardArmorClassSourceEvidence[] BodyguardSources { get; set; }
     }
 
     internal sealed class BodyguardCombatFixture : IDisposable
@@ -384,6 +406,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (attack == null || attack.AttackRoll == null)
                 throw new InvalidOperationException(
                     "Native attack did not expose RuleAttackRoll.");
+            BodyguardArmorClassSourceEvidence[] bodyguardSources =
+                ReadBodyguardArmorClassSources(attack.AttackRoll);
+            int bodyguardContribution = bodyguardSources.Sum(value =>
+                value.Bonus);
             int[] hpAfter = new[] { Target, ProtectorOne, ProtectorTwo }
                 .Select(value => value.HPLeft).ToArray();
             string counters = "frames=" + BodyguardRuntimeDiagnostics.Frames +
@@ -433,7 +459,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CombatLogCount = BodyguardCombatLog.Published - combatLogsBefore,
                 CombatLogLastMessage = BodyguardCombatLog.Published ==
                     combatLogsBefore ? string.Empty :
-                    BodyguardCombatLog.LastMessage ?? string.Empty
+                    BodyguardCombatLog.LastMessage ?? string.Empty,
+                NativeAcBeforeBodyguard = checked(
+                    attack.AttackRoll.TargetAC - bodyguardContribution),
+                BodyguardContribution = bodyguardContribution,
+                BodyguardSources = bodyguardSources
+            };
+        }
+
+        private static BodyguardArmorClassSourceEvidence[]
+            ReadBodyguardArmorClassSources(RuleAttackRoll roll)
+        {
+            BodyguardFeatBlueprintSet set = BlueprintBootstrap.BodyguardFeats;
+            if (roll == null || roll.ACRule == null ||
+                roll.ACRule.BonusSources == null || set == null)
+                throw new InvalidOperationException(
+                    "Native Bodyguard AC source evidence is unavailable.");
+            return roll.ACRule.BonusSources.Where(value =>
+                value.Source != null && value.Source.Blueprint != null &&
+                (ReferenceEquals(value.Source.Blueprint, set.Bodyguard) ||
+                    string.Equals(value.Source.Blueprint.AssetGuid,
+                        set.Bodyguard.AssetGuid, StringComparison.Ordinal)))
+                .Select(value => DescribeBodyguardArmorClassSource(value))
+                .ToArray();
+        }
+
+        private static BodyguardArmorClassSourceEvidence
+            DescribeBodyguardArmorClassSource(BonusSource value)
+        {
+            Fact source = value.Source;
+            return new BodyguardArmorClassSourceEvidence {
+                Bonus = value.Bonus,
+                SourceName = source.Name ?? string.Empty,
+                SourceBlueprintGuid = source.Blueprint.AssetGuid,
+                SourceBlueprintName = source.Blueprint.name ?? string.Empty,
+                SourceFactType = source.GetType().FullName,
+                SourceFactIdentity = System.Runtime.CompilerServices
+                    .RuntimeHelpers.GetHashCode(source)
             };
         }
 

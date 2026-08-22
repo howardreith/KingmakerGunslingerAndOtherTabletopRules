@@ -1,14 +1,20 @@
 # Kingmaker Gunslinger
 
-The `0.0.90` Bodyguard and In Harm's Way candidate adds a ninth independent,
-default-enabled feature module. It publishes both feats to the normal general
-and Fighter combat-feat selections with separate, free, persistent automation
-modes that default off. Bodyguard spends native attack-of-opportunity currency
-before the incoming result is known, rolls a native target-aware melee attack
-calculation against AC 10, and applies stackable attack-scoped AC. In Harm's
-Way spends Kingmaker's shared immediate/swift budget and redirects the original
-successful attack delivery rather than copying, replaying, or transferring
-post-damage results.
+The `0.0.91` Bodyguard AC-breakdown candidate preserves the qualified `0.0.90`
+Bodyguard and In Harm's Way mechanics and makes every successful Bodyguard +2
+explicit in Kingmaker's native expanded attack-roll AC details. Each line is
+sourced from the protector's actual Bodyguard feat fact, remains scoped to the
+exact `RuleCalculateAC` event, and cannot double-count the already-correct final
+AC. Multiple protectors retain their stackable +2 contributions.
+
+The retained subsystem is a ninth independent, default-enabled feature module.
+It publishes both feats to the normal general and Fighter combat-feat selections
+with separate, free, persistent automation modes that default off. Bodyguard
+spends native attack-of-opportunity currency before the incoming result is
+known and rolls a native target-aware melee attack calculation against AC 10.
+In Harm's Way spends Kingmaker's shared immediate/swift budget and redirects
+the original successful attack delivery rather than copying, replaying, or
+transferring post-damage results.
 
 The candidate retains the complete `0.0.89` weapon-presentation and `0.0.88`
 overnight repair sets. Production firearms, Elven Branched Spears, Wakizashi,

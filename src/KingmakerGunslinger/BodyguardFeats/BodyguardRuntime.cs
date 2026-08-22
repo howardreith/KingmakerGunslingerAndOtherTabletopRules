@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Kingmaker;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -113,6 +114,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                 frame.ArmorClassObserved = true;
                 frame.ArmorClassBefore = armorClass.TargetAC;
                 frame.ArmorClassUsed = armorClass.TargetAC;
+                frame.ArmorClassSourceCount = 0;
+                frame.ArmorClassSources = string.Empty;
                 return;
             }
             if (!frame.Policy.TryApplyArmorClass(armorClass))
@@ -126,21 +129,10 @@ namespace KingmakerGunslinger.BodyguardFeats
                 int before;
                 string member;
                 if (!KingmakerArmorClassAccess.TryReadTargetArmorClass(
-                        armorClass, out before, out member) ||
-                    !KingmakerArmorClassAccess.TryWriteTargetArmorClass(
-                        armorClass, checked(before + bonus), out member))
+                        armorClass, out before, out member))
                     throw new InvalidOperationException(
                         "RuleCalculateAC did not expose the exact writable TargetAC contract.");
-                frame.ArmorClassObserved = true;
-                frame.ArmorClassBefore = before;
-                frame.ArmorClassUsed = armorClass.TargetAC;
-                LogInfo("armor-class.applied", DescribeFrame(frame,
-                    "armor-class") + ";acBefore=" + before + ";contribution=" +
-                    bonus + ";acUsed=" + armorClass.TargetAC);
-                BodyguardRuntimeDiagnostics.Observation(DescribeFrame(frame,
-                    "armor-class") + ";acBefore=" + before +
-                    ";contribution=" + bonus + ";acUsed=" +
-                    armorClass.TargetAC);
+                ApplyArmorClassAttribution(armorClass, frame, before, bonus);
             }
             catch (Exception exception)
             {
@@ -148,6 +140,110 @@ namespace KingmakerGunslinger.BodyguardFeats
                 RecordFault("armor-class", exception,
                     DescribeFrame(frame, "armor-class-fault"));
             }
+        }
+
+        private static void ApplyArmorClassAttribution(
+            RuleCalculateAC armorClass, RuntimeFrame frame,
+            int nativeArmorClass, int expectedBonus)
+        {
+            BodyguardArmorClassAttributionPlan plan =
+                BodyguardArmorClassAttributionPolicy.Create(nativeArmorClass,
+                    frame.Policy.Attempts);
+            if (plan.TotalBonus != expectedBonus)
+                throw new InvalidOperationException(
+                    "Bodyguard AC source total diverged from the attack frame.");
+            BodyguardFeatBlueprintSet blueprints = BlueprintBootstrap.BodyguardFeats;
+            if (blueprints == null || armorClass.BonusSources == null)
+                throw new InvalidOperationException(
+                    "Bodyguard blueprint or RuleCalculateAC BonusSources is unavailable.");
+            RuntimeAttempt[] attempts = frame.SuccessfulAttempts.ToArray();
+            if (attempts.Length != plan.Contributions.Count)
+                throw new InvalidOperationException(
+                    "Successful Bodyguard attempts and AC sources diverged.");
+
+            var additions = new List<BonusSource>(attempts.Length);
+            for (int index = 0; index < attempts.Length; index++)
+            {
+                RuntimeAttempt attempt = attempts[index];
+                BodyguardArmorClassContribution contribution =
+                    plan.Contributions[index];
+                if (!string.Equals(attempt.Protector.UniqueId,
+                        contribution.ProtectorId, StringComparison.Ordinal))
+                    throw new InvalidOperationException(
+                        "Bodyguard AC source order diverged from successful attempts.");
+                Fact source = attempt.Protector.Descriptor.GetFact(
+                    blueprints.Bodyguard);
+                if (source == null ||
+                    !ReferenceEquals(source.Blueprint, blueprints.Bodyguard))
+                    throw new InvalidOperationException(
+                        "A successful protector lacks its exact Bodyguard source fact.");
+                additions.Add(new BonusSource(contribution.Bonus, source));
+            }
+
+            int sourceStart = armorClass.BonusSources.Count;
+            bool targetWritten = false;
+            try
+            {
+                foreach (BonusSource source in additions)
+                    armorClass.BonusSources.Add(source);
+                string member;
+                if (!KingmakerArmorClassAccess.TryWriteTargetArmorClass(
+                        armorClass, plan.FinalArmorClass, out member))
+                    throw new InvalidOperationException(
+                        "RuleCalculateAC did not expose the exact writable TargetAC contract.");
+                targetWritten = true;
+                frame.ArmorClassObserved = true;
+                frame.ArmorClassBefore = nativeArmorClass;
+                frame.ArmorClassUsed = armorClass.TargetAC;
+                frame.ArmorClassSourceCount = plan.Contributions.Count;
+                frame.ArmorClassSources = DescribeBonusSources(armorClass,
+                    plan.Contributions.Count);
+                RecordArmorClassObservation(frame);
+            }
+            catch
+            {
+                if (armorClass.BonusSources.Count > sourceStart)
+                    armorClass.BonusSources.RemoveRange(sourceStart,
+                        armorClass.BonusSources.Count - sourceStart);
+                if (targetWritten)
+                {
+                    string member;
+                    KingmakerArmorClassAccess.TryWriteTargetArmorClass(
+                        armorClass, nativeArmorClass, out member);
+                }
+                frame.ArmorClassObserved = false;
+                frame.ArmorClassBefore = nativeArmorClass;
+                frame.ArmorClassUsed = nativeArmorClass;
+                frame.ArmorClassSourceCount = 0;
+                frame.ArmorClassSources = string.Empty;
+                throw;
+            }
+        }
+
+        private static string DescribeBonusSources(RuleCalculateAC armorClass,
+            int count)
+        {
+            int start = armorClass.BonusSources.Count - count;
+            return string.Join(",", armorClass.BonusSources.Skip(start).Select(
+                value => value.Bonus + "/" +
+                    (value.Source == null ? "<null>" : value.Source.Name) + "/" +
+                    (value.Source == null || value.Source.Blueprint == null ?
+                        "<null>" : value.Source.Blueprint.AssetGuid) + "/" +
+                    (value.Source == null ? "<null>" :
+                        RuntimeHelpers.GetHashCode(value.Source).ToString(
+                            CultureInfo.InvariantCulture))).ToArray());
+        }
+
+        private static void RecordArmorClassObservation(RuntimeFrame frame)
+        {
+            string observation = DescribeFrame(frame, "armor-class") +
+                ";acBefore=" + frame.ArmorClassBefore + ";contribution=" +
+                frame.Policy.ArmorClassBonus + ";acUsed=" +
+                frame.ArmorClassUsed + ";bodyguardSourceCount=" +
+                frame.ArmorClassSourceCount + ";bodyguardSources=" +
+                (frame.ArmorClassSources ?? string.Empty);
+            LogInfo("armor-class.applied", observation);
+            BodyguardRuntimeDiagnostics.Observation(observation);
         }
 
         internal static void AfterAttackRoll(RuleAttackRoll attack)
@@ -873,6 +969,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                 ";acContribution=" + frame.Policy.ArmorClassBonus +
                 ";acBefore=" + frame.ArmorClassBefore +
                 ";acUsed=" + frame.ArmorClassUsed +
+                ";acSourceCount=" + frame.ArmorClassSourceCount +
+                ";acSources=" + (frame.ArmorClassSources ?? "") +
                 ";attackD20=" + frame.AttackRoll +
                 ";attackBonus=" + frame.AttackBonus +
                 ";attackTargetAc=" + frame.AttackTargetArmorClass +
@@ -1003,6 +1101,8 @@ namespace KingmakerGunslinger.BodyguardFeats
             internal bool ArmorClassFault { get; set; }
             internal int ArmorClassBefore { get; set; }
             internal int ArmorClassUsed { get; set; }
+            internal int ArmorClassSourceCount { get; set; }
+            internal string ArmorClassSources { get; set; }
             internal bool ResultProcessed { get; set; }
             internal bool? AttackHit { get; set; }
             internal int AttackRoll { get; set; }

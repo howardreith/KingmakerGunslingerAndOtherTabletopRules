@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.0.91-bodyguard-ac-breakdown (qualification candidate)
+
+- Preserves the qualified Bodyguard and In Harm's Way mechanics while adding
+  truthful native expanded attack-detail attribution for successful Bodyguard
+  AC contributions.
+- Adds one attack-scoped `Bodyguard +2` `RuleCalculateAC.BonusSource` per
+  successful protector, sourced from that protector's actual Bodyguard feat
+  fact; failed attempts and ineligible/disabled cases add no source.
+- Retains the single post-firearm `TargetAC` write, so ordinary AC 13 becomes
+  exactly 15 for one protector and 17 for two protectors without double-counting.
+- Extends pure, installed-assembly contract, shared-postfix, and guarded runtime
+  evidence for one/two protectors, failed Aid, duplicate callbacks, firearm touch
+  AC ordering, In Harm's Way delivery, and module-disabled behavior.
+
 ## 0.0.90-bodyguard-in-harms-way (qualification candidate)
 
 - Adds the selectable Bodyguard and In Harm's Way combat feats with exact

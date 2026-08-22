@@ -306,9 +306,46 @@ touch-AC selection, then Bodyguard adds one attack-scoped aggregate of two per
 successful distinct protector to the exact AC event. This order prevents the
 firearm touch-AC replacement from erasing Bodyguard's contribution.
 
-The aggregate is stamped per exact AC event and is owned only by the enclosing
-attack frame. No stat modifier or timed/round buff is created, and duplicate
-callbacks cannot add it twice.
+The installed presentation contract is exact:
+
+- the `RuleCalculateAC` constructor creates its public
+  `List<BonusSource> BonusSources`;
+- `RuleCalculateAC.AddBonus(int, Fact)` increments the private calculation
+  bonus and appends the same value/fact pair to `BonusSources`;
+- `RuleCalculateAC.OnTrigger` consumes that private calculation bonus while it
+  computes `TargetAC`;
+- `AttackLogMessage.AppendArmorClassBreakdown(StringBuilder,
+  RuleCalculateAC)` prints the already-final `TargetAC`, then passes the
+  event's `BonusSources` to `StatModifiersBreakdown.AddBonusSources`;
+- `AddBonusSources` renders each entry through its source fact's
+  `IUIDataProvider.Name`.
+
+The original implementation wrote `TargetAC` only in the shared postfix.
+That made the correct final AC participate in hit resolution but supplied no
+line item to `AppendArmorClassBreakdown`, which explains the human-observed
+15 total with only base 10 and armor +3 displayed.
+
+The repair retains that proven post-firearm aggregate write and appends one
+display-only BonusSource of +2 for each successful protector, using that
+protector's actual project-owned Bodyguard feature fact. The Bodyguard feat's
+localized `IUIDataProvider.Name` is `Bodyguard`, so the native expanded attack
+details render a truthful named line. Multiple protectors produce multiple
+native +2 entries; Kingmaker may render them as separate same-name lines.
+
+The display-only source append occurs after native `OnTrigger`, so it does not
+change TargetAC. The existing aggregate write changes `TargetAC` exactly once;
+the two operations therefore cannot double-count. Calling `AddBonus` in the
+postfix was rejected because it would mutate the already-consumed private
+calculation bonus without applying it automatically. A target AC temporary
+modifier was also rejected: the source fact belongs to another unit, the
+protector, and a target-stat mutation would introduce unnecessary cross-unit
+lifetime and rollback risk.
+
+Both `TargetAC` and newly appended source entries are transactionally restored
+if attribution fails. The aggregate and sources are stamped per exact AC event
+and owned only by the enclosing attack frame. No stat modifier or timed/round
+buff is created, and duplicate callbacks cannot add either AC or source lines
+twice.
 
 ## Rejected approaches
 

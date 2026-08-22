@@ -5,10 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
 using Harmony12;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Controllers;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.Controllers.Units;
@@ -71,11 +73,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> ThreatContract { get; set; }
             [JsonProperty("aidContract", Order = 11)]
             public List<string> AidContract { get; set; }
-            [JsonProperty("deliveryContract", Order = 12)]
+            [JsonProperty("acBreakdownContract", Order = 12)]
+            public List<string> AcBreakdownContract { get; set; }
+            [JsonProperty("deliveryContract", Order = 13)]
             public string DeliveryContract { get; set; }
-            [JsonProperty("harmonyTargets", Order = 13)]
+            [JsonProperty("harmonyTargets", Order = 14)]
             public List<string> HarmonyTargets { get; set; }
-            [JsonProperty("publication", Order = 14)]
+            [JsonProperty("publication", Order = 15)]
             public List<string> Publication { get; set; }
         }
 
@@ -121,6 +125,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.ReturnType == typeof(WeaponSlot));
             MethodInfo applyEffect = InHarmsWayDeliveryAccess
                 .AbilityApplyEffectTarget as MethodInfo;
+            FieldInfo acBonusSources = typeof(RuleCalculateAC).GetField(
+                "BonusSources", ExactInstance);
+            ConstructorInfo bonusSourceConstructor = typeof(BonusSource)
+                .GetConstructor(new[] { typeof(int), typeof(Fact) });
+            Type attackLogMessage = gameAssembly.GetType(
+                "Kingmaker.Blueprints.Root.Strings.GameLog.AttackLogMessage",
+                false);
+            MethodInfo appendArmorClassBreakdown = attackLogMessage == null ?
+                null : attackLogMessage.GetMethod("AppendArmorClassBreakdown",
+                    ExactInstance, null, new[] { typeof(StringBuilder),
+                        typeof(RuleCalculateAC) }, null);
+            Type statBreakdown = gameAssembly.GetType(
+                "Kingmaker.UI.Common.StatModifiersBreakdown", false);
+            MethodInfo addBonusSources = statBreakdown == null ? null :
+                statBreakdown.GetMethod("AddBonusSources",
+                    BindingFlags.Static | BindingFlags.Public |
+                    BindingFlags.NonPublic, null,
+                    new[] { typeof(List<BonusSource>) }, null);
 
             var evidence = new Evidence {
                 GameVersion = ExpectedSupportedGameVersion,
@@ -141,6 +163,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             typeof(UnitEntityData)),
                     typeof(RuleRollDice).GetMethod("Override", ExactInstance,
                         null, new[] { typeof(int) }, null)),
+                AcBreakdownContract = DescribeMembers(acBonusSources,
+                    bonusSourceConstructor, appendArmorClassBreakdown,
+                    addBonusSources),
                 DeliveryContract = InHarmsWayDeliveryAccess
                     .ContractDescription,
                 HarmonyTargets = ObserveHarmony(context),
@@ -206,6 +231,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.AidContract.All(value =>
                         value.IndexOf("<missing>", StringComparison.Ordinal) < 0),
                 "live native rule constructors/methods");
+            Add(assertions, "bodyguard-native-ac-breakdown",
+                "RuleCalculateAC stores named BonusSources rendered by the native attack-detail AC breakdown",
+                string.Join("|", evidence.AcBreakdownContract.ToArray()) +
+                    "|bodyguardName=" + (set == null ? "<missing>" :
+                        set.Bodyguard.Name),
+                acBonusSources != null && acBonusSources.FieldType ==
+                    typeof(List<BonusSource>) &&
+                    bonusSourceConstructor != null &&
+                    appendArmorClassBreakdown != null &&
+                    addBonusSources != null && set != null &&
+                    string.Equals(set.Bodyguard.Name, "Bodyguard",
+                        StringComparison.Ordinal),
+                "live RuleCalculateAC, BonusSource, AttackLogMessage, and StatModifiersBreakdown reflection");
             Add(assertions, "bodyguard-delivery-contract",
                 "all weapon, rule-event, and ability ApplyEffect redirection seams available",
                 evidence.DeliveryContract,

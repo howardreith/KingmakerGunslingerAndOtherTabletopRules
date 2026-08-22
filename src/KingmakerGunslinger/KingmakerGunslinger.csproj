@@ -321,6 +321,7 @@
     <Compile Include="BodyguardFeats\BodyguardFeatPublicationTransaction.cs" />
     <Compile Include="BodyguardFeats\BodyguardEligibilityPolicy.cs" />
     <Compile Include="BodyguardFeats\BodyguardAidPolicy.cs" />
+    <Compile Include="BodyguardFeats\BodyguardArmorClassAttributionPolicy.cs" />
     <Compile Include="BodyguardFeats\BodyguardAttackSelectionPolicy.cs" />
     <Compile Include="BodyguardFeats\BodyguardInterceptionPolicy.cs" />
     <Compile Include="BodyguardFeats\BodyguardAttackFrame.cs" />
