@@ -86,8 +86,12 @@ Assert-True ($deployment.Contains('schemaVersion = 2') -and
     $deployment.Contains('dllMvid = $manifest.dllMvid') -and
     $deployment.Contains('firearmBundleSha256 = Get-KmgSha256')) `
     'deployment-manifest-captures-immutable-artifact-identity'
+Assert-True ($deployment.Contains('[switch]$AllowEmptyFirstInstall') -and
+    $deployment.Contains('-AllowEmptySource:$AllowEmptyFirstInstall') -and
+    $deployment.Contains('backupWasEmpty = [bool]$backup.EmptySource')) `
+    'empty-first-install-is-explicit-and-recorded'
 
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 19'
+Write-Host 'Runtime deployment safety tests passed: 20'

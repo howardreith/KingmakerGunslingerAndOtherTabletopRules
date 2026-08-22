@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.89-weapon-presentation-calibration",
-  "version": "0.0.89",
+  "milestone": "0.0.90-bodyguard-in-harms-way",
+  "version": "0.0.90",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1616,
-    "activeEntryCount": 1615,
+    "entryCount": 1622,
+    "activeEntryCount": 1621,
     "reservedEntryCount": 1,
-    "registrationCount": 1615
+    "registrationCount": 1621
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -81,5 +81,16 @@
     "bodyMatrixViewCount": 1344,
     "nativeDonorsRemainUnmodified": true,
     "gameplaySemanticsUnchanged": true
+  },
+  "bodyguard90": {
+    "deterministicTestCount": 1190,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 6,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "runtimeQualificationPending": true
   }
 }

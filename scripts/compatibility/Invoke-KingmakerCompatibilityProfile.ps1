@@ -101,12 +101,13 @@ $moduleScenario = @($Scenario | Where-Object { $_ -ceq
         $Parameters.Count -gt 0)
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
-    if ($keys.Count -ne 8 -or $keys[0] -cne 'acadamaeGraduate' -or
-        $keys[1] -cne 'brownFurTransmuter' -or
-        $keys[2] -cne 'easternWeapons' -or
-        $keys[3] -cne 'elvenBranchedSpears' -or
-        $keys[4] -cne 'expandedSummoning' -or $keys[5] -cne 'gunslinger' -or
-        $keys[6] -cne 'shieldOther' -or $keys[7] -cne 'urbanBarbarian' -or
+    if ($keys.Count -ne 9 -or $keys[0] -cne 'acadamaeGraduate' -or
+        $keys[1] -cne 'bodyguardFeats' -or
+        $keys[2] -cne 'brownFurTransmuter' -or
+        $keys[3] -cne 'easternWeapons' -or
+        $keys[4] -cne 'elvenBranchedSpears' -or
+        $keys[5] -cne 'expandedSummoning' -or $keys[6] -cne 'gunslinger' -or
+        $keys[7] -cne 'shieldOther' -or $keys[8] -cne 'urbanBarbarian' -or
         $Parameters.gunslinger -isnot [bool] -or
         $Parameters.acadamaeGraduate -isnot [bool] -or
         $Parameters.shieldOther -isnot [bool] -or
@@ -114,8 +115,9 @@ if ($moduleScenario) {
         $Parameters.elvenBranchedSpears -isnot [bool] -or
         $Parameters.easternWeapons -isnot [bool] -or
         $Parameters.brownFurTransmuter -isnot [bool] -or
-        $Parameters.urbanBarbarian -isnot [bool]) {
-        throw 'Feature-module profile observation requires exactly eight Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, and urbanBarbarian.'
+        $Parameters.urbanBarbarian -isnot [bool] -or
+        $Parameters.bodyguardFeats -isnot [bool]) {
+        throw 'Feature-module profile observation requires exactly nine Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, and bodyguardFeats.'
     }
 } elseif ($Parameters.Count -ne 0) {
     throw 'Compatibility profile parameters are supported only for observe-feature-module-settings or module-state vendor-table observation.'
@@ -165,7 +167,7 @@ try {
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settings = [ordered]@{ schemaVersion = 7
+        $settings = [ordered]@{ schemaVersion = 8
             gunslinger = [bool]$Parameters.gunslinger
             'acadamae-graduate' = [bool]$Parameters.acadamaeGraduate
             'shield-other' = [bool]$Parameters.shieldOther
@@ -173,7 +175,8 @@ try {
             'elven-branched-spears' = [bool]$Parameters.elvenBranchedSpears
             'eastern-weapons' = [bool]$Parameters.easternWeapons
             'brown-fur-transmuter' = [bool]$Parameters.brownFurTransmuter
-            'urban-barbarian' = [bool]$Parameters.urbanBarbarian }
+            'urban-barbarian' = [bool]$Parameters.urbanBarbarian
+            'bodyguard-feats' = [bool]$Parameters.bodyguardFeats }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),
@@ -184,7 +187,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.89'
+            ExpectedVersion = '0.0.90'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds

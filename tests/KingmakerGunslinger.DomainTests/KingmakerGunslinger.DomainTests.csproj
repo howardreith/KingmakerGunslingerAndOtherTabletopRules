@@ -81,6 +81,16 @@
     <Compile Include="RepairRuntimePolicyTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />
+    <Compile Include="BodyguardBlueprintContractTests.cs" />
+    <Compile Include="BodyguardPolicyTests.cs" />
+    <Compile Include="BodyguardRuntimeContractTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardFeatPublicationTransaction.cs"><Link>BodyguardFeats\BodyguardFeatPublicationTransaction.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardEligibilityPolicy.cs"><Link>BodyguardFeats\BodyguardEligibilityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAidPolicy.cs"><Link>BodyguardFeats\BodyguardAidPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAttackSelectionPolicy.cs"><Link>BodyguardFeats\BodyguardAttackSelectionPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardInterceptionPolicy.cs"><Link>BodyguardFeats\BodyguardInterceptionPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAttackFrame.cs"><Link>BodyguardFeats\BodyguardAttackFrame.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAttemptCoordinator.cs"><Link>BodyguardFeats\BodyguardAttemptCoordinator.cs</Link></Compile>
     <Compile Include="UrbanBarbarianPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageAllocation.cs"><Link>UrbanBarbarian\ControlledRageAllocation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\UrbanBarbarian\ControlledRageAllocationPolicy.cs"><Link>UrbanBarbarian\ControlledRageAllocationPolicy.cs</Link></Compile>

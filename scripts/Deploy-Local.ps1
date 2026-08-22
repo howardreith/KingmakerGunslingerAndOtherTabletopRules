@@ -4,6 +4,7 @@ param(
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$BackupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod',
     [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
+    [switch]$AllowEmptyFirstInstall,
     [switch]$PassThru
 )
 
@@ -26,6 +27,10 @@ $expectedLive = [IO.Path]::GetFullPath('C:\Program Files (x86)\Steam\steamapps\c
 if (-not $live.Equals($expectedLive, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Refusing deployment outside the exact KingmakerGunslinger directory: $live"
 }
+$liveFiles = @(Get-ChildItem -LiteralPath $live -Recurse -File)
+if ($AllowEmptyFirstInstall -and $liveFiles.Count -ne 0) {
+    throw '-AllowEmptyFirstInstall is valid only when the exact live mod tree contains no files.'
+}
 
 Write-Host "Validated Build-Local package: $($manifest.packagePath)"
 Write-Host "Target directory: $live"
@@ -34,7 +39,9 @@ if (-not $PSCmdlet.ShouldProcess($live, "Back up and deploy version $($manifest.
     return
 }
 
-$backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') -LiveModDirectory $live -BackupRoot $BackupRoot -Confirm:$false
+$backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
+    -LiveModDirectory $live -BackupRoot $BackupRoot `
+    -AllowEmptySource:$AllowEmptyFirstInstall -Confirm:$false
 $featureSettingsPath = Join-Path $live 'FeatureModules.json'
 $featureSettingsExisted = Test-Path -LiteralPath $featureSettingsPath -PathType Leaf
 $featureSettingsBytes = if ($featureSettingsExisted) {
@@ -102,6 +109,7 @@ New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
     } else { '<absent>' }
     liveModDirectory = $live
     backupDirectory = $backup.Destination
+    backupWasEmpty = [bool]$backup.EmptySource
     files = $actualFiles
 } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $deploymentDirectory 'deployment.json') -Encoding UTF8
 $deploymentManifestPath = Join-Path $deploymentDirectory 'deployment.json'

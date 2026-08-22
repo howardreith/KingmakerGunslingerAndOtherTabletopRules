@@ -700,6 +700,24 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-bodyguard-native-contracts' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-bodyguard-feats' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-bodyguard-feats-disabled' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'disposable-gunslinger-expert-loading' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -950,8 +968,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         [switch]$ManualInteractionRequired
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.89') {
-        throw 'ExpectedVersion must be exactly the active version 0.0.89.'
+    if ($ExpectedVersion -cne '0.0.90') {
+        throw 'ExpectedVersion must be exactly the active version 0.0.90.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -993,7 +1011,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 8 -or
+        if ($Parameters.Count -ne 9 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -1009,8 +1027,10 @@ function Assert-KmgRuntimeScenarioPreflight {
             -not $Parameters.ContainsKey('brownFurTransmuter') -or
             $Parameters.brownFurTransmuter -isnot [bool] -or
             -not $Parameters.ContainsKey('urbanBarbarian') -or
-            $Parameters.urbanBarbarian -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, and urbanBarbarian parameters."
+            $Parameters.urbanBarbarian -isnot [bool] -or
+            -not $Parameters.ContainsKey('bodyguardFeats') -or
+            $Parameters.bodyguardFeats -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, and bodyguardFeats parameters."
         }
     }
     elseif ($Parameters.Count -ne 0) {
@@ -1119,6 +1139,7 @@ function New-KmgRuntimeRequest {
                 easternWeapons = [bool]$Parameters.easternWeapons
                 brownFurTransmuter = [bool]$Parameters.brownFurTransmuter
                 urbanBarbarian = [bool]$Parameters.urbanBarbarian
+                bodyguardFeats = [bool]$Parameters.bodyguardFeats
             }
         } else { [ordered]@{} }
     }

@@ -663,6 +663,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveBodyguardNativeContracts)
+                {
+                    Complete(BodyguardNativeContractObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableBodyguardFeats ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.
+                        DisposableBodyguardFeatsDisabled)
+                {
+                    Complete(BodyguardCombatScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveBrownFurCotwContract)
                 {
                     Complete(BrownFurCotwContractObserver.Run(_context, _request));
@@ -10272,6 +10288,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (bool)_request.Parameters["brownFurTransmuter"];
             bool expectedUrbanBarbarian =
                 (bool)_request.Parameters["urbanBarbarian"];
+            bool expectedBodyguardFeats =
+                (bool)_request.Parameters["bodyguardFeats"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
@@ -10285,6 +10303,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.BrownFurTransmuter;
             bool activeUrbanBarbarian =
                 _context.FeatureModules.Active.UrbanBarbarian;
+            bool activeBodyguardFeats =
+                _context.FeatureModules.Active.BodyguardFeats;
             UrbanBarbarianBlueprintSet urbanSet = BlueprintBootstrap.UrbanBarbarian;
             BlueprintArchetype[] barbarianArchetypes = urbanSet.BarbarianClass
                 .Archetypes ?? Array.Empty<BlueprintArchetype>();
@@ -10782,7 +10802,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeElvenBranchedSpears == expectedElvenBranchedSpears &&
                     activeEasternWeapons == expectedEasternWeapons &&
                     activeBrownFurTransmuter == expectedBrownFurTransmuter &&
-                    activeUrbanBarbarian == expectedUrbanBarbarian,
+                    activeUrbanBarbarian == expectedUrbanBarbarian &&
+                    activeBodyguardFeats == expectedBodyguardFeats,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCount + " identities in every state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,

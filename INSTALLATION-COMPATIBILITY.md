@@ -14,12 +14,12 @@ or compiler assemblies into this mod folder.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.82-brown-fur-human-review-repair.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.90-bodyguard-in-harms-way.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.82 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.90 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -51,20 +51,20 @@ Weapon Focus remains an exact negative control.
 
 The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,
 Expanded Summoning, Elven Branched Spears, Eastern Weapons, `Brown-Fur
-Transmuter -- requires Call of the Wild`, and Urban Barbarian checkboxes. All
-default ON. A change is
+Transmuter -- requires Call of the Wild`, Urban Barbarian, and Bodyguard and In
+Harms Way checkboxes. All default ON. A change is
 saved for the next complete game restart; the panel reports active and saved
-next-restart state separately. Older settings migrate to schema 7 while
-preserving every explicit prior value and defaulting the absent Brown-Fur key
-and Urban Barbarian key ON.
+next-restart state separately. Older settings migrate to schema 8 while
+preserving every explicit prior value and defaulting absent module keys ON.
 
 Brown-Fur is the only module that requires Call of the Wild. Its adjacent
 status reports Available, Unavailable, or Blocked independently from saved user
 intent, effective publication, and restart-required state. Saved ON intent is
 preserved when CotW is absent, but Brown-Fur is not registered or published.
 Structurally incompatible CotW installations also fail closed without disabling
-the package's seven independent modules. Urban Barbarian is native-core content
-and remains available when CotW is absent, unknown, or ambiguous.
+the package's eight independent modules. Urban Barbarian and Bodyguard/In Harm's
+Way are native-core content and remain available when CotW is absent, unknown,
+or ambiguous.
 
 Turning a module OFF removes its content only from new public choices and
 acquisition paths. It does not unregister identities, strip an existing
@@ -202,6 +202,20 @@ The mod hash-verifies the packaged source and existing destination and never
 writes `Init.bnk` or another bank. To uninstall this optional native-audio
 artifact, remove only `KMG_Firearms.bnk`; do not remove any vanilla bank.
 Missing or rejected custom audio does not disable firearm mechanics.
+
+# 0.0.90 Bodyguard and In Harm's Way candidate
+
+Install only the strict standalone
+`artifacts\packages\KingmakerGunslinger-0.0.90-bodyguard-in-harms-way.zip`
+through Unity Mod Manager. Do not overlay it onto an older mod directory. The
+new project blueprint identities remain registered when the module is disabled
+so saves that already own either feat or mode marker remain deserializable.
+
+Bodyguard and In Harm's Way are independent of Call of the Wild. Their shared
+module defaults ON, while both per-character automation modes default OFF and
+may be enabled together. Disabling the module at the UMM boundary hides both
+feats from new selection and makes their runtime hooks inert after restart; it
+does not strip facts from existing characters.
 
 # 0.0.89 weapon-presentation candidate
 

@@ -38,9 +38,11 @@ namespace KingmakerGunslinger.FeatureModules
                 "Brown-Fur Transmuter  requires Call of the Wild");
             bool urbanBarbarian = ImmediateModeGui.Toggle(
                 _state.Pending.UrbanBarbarian, "Urban Barbarian");
+            bool bodyguardFeats = ImmediateModeGui.Toggle(
+                _state.Pending.BodyguardFeats, "Bodyguard and In Harms Way");
             _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
                 elvenBranchedSpears, easternWeapons, brownFurTransmuter,
-                urbanBarbarian);
+                urbanBarbarian, bodyguardFeats);
             BrownFurFeatureStatus brownFurStatus =
                 BrownFurFeatureStatusRegistry.Current;
             ImmediateModeGui.Label("Brown-Fur dependency: " +

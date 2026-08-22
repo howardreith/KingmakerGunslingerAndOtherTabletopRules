@@ -69,14 +69,24 @@ def validate(root: Path) -> None:
         if entry["status"] == "active"]
     urban_barbarian_reserved = [entry for entry in urban_barbarian_entries
         if entry["status"] == "reserved"]
+    bodyguard_entries = [entry for entry in manifest["entries"]
+        if entry["symbol"] in {
+            "KMG.Feats.Bodyguard", "KMG.Feats.UseBodyguard",
+            "KMG.Feats.BodyguardModeMarker", "KMG.Feats.InHarmsWay",
+            "KMG.Feats.UseInHarmsWay", "KMG.Feats.InHarmsWayModeMarker"}]
+    bodyguard_active = [entry for entry in bodyguard_entries
+        if entry["status"] == "active"]
+    bodyguard_reserved = [entry for entry in bodyguard_entries
+        if entry["status"] == "reserved"]
     if (len(manifest["entries"]) != 1439 + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) + len(brown_fur_entries) +
-            len(urban_barbarian_entries)
+            len(urban_barbarian_entries) + len(bodyguard_entries)
             or len(active) != 1438 + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
-            len(brown_fur_active) + len(urban_barbarian_active)
+            len(brown_fur_active) + len(urban_barbarian_active) +
+            len(bodyguard_active)
             or len(reserved) != 1 + len(brown_fur_reserved) +
-            len(urban_barbarian_reserved)):
+            len(urban_barbarian_reserved) + len(bodyguard_reserved)):
         raise AssertionError("Expanded Summoning blueprint ledger count mismatch")
     expected_spear_entries = {
         "KMG.ElvenBranchedSpear.WeaponType": ("77f72b0febaf212a5650e7193c00361f", "BlueprintWeaponType"),
@@ -120,7 +130,8 @@ def validate(root: Path) -> None:
         raise AssertionError("Elven Branched Spear blueprint ledger count mismatch")
     expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")
-    expected_registration = ("ExpectedRegisteredBlueprintCount = 333 +"
+    expected_registration = ("ExpectedRegisteredBlueprintCount = 339 +"
+        if bodyguard_entries else "ExpectedRegisteredBlueprintCount = 333 +"
         if focused_entries else "ExpectedRegisteredBlueprintCount = 329 +"
         if eastern_entries else "ExpectedRegisteredBlueprintCount = 283 +"
         if spear_entries else "ExpectedRegisteredBlueprintCount = 254 +")

@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.89\"") &&
-                props.Contains("<KmgVersion>0.0.89</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.89-weapon-presentation-calibration</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.89\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.89\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.89-weapon-presentation-calibration\")"),
-                "Release and assembly identity are not transactionally pinned to the weapon-presentation candidate.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.90\"") &&
+                props.Contains("<KmgVersion>0.0.90</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.90-bodyguard-in-harms-way</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.90\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.90\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.90-bodyguard-in-harms-way\")"),
+                "Release and assembly identity are not transactionally pinned to the Bodyguard candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-urban-barbarian.zip") &&
+                "$($info.Id)-$($info.Version)-bodyguard-in-harms-way.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Urban Barbarian archive.");
-            Assertions.True(runtime.Contains("active version 0.0.89") &&
-                localBuild.Contains("active version 0.0.89") &&
-                localBuild.Contains("local-runtime\\0.0.89"),
+                "Package identity is not pinned to the Bodyguard archive.");
+            Assertions.True(runtime.Contains("active version 0.0.90") &&
+                localBuild.Contains("active version 0.0.90") &&
+                localBuild.Contains("local-runtime\\0.0.90"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

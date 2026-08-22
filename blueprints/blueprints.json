@@ -12515,6 +12515,30 @@
     {
       "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D2.C4.Ability", "guid": "639e90f156a420e0cad87315f2377590",
       "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.Feats.Bodyguard", "guid": "b2baa3384b4d4328848cc07933b513be",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Player-visible combat feat with exact native Combat Reflexes prerequisite."
+    },
+    {
+      "symbol": "KMG.Feats.UseBodyguard", "guid": "ac31a9d5d34140978b7e778dc8d1e226",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Persistent off-by-default automation mode granted by Bodyguard."
+    },
+    {
+      "symbol": "KMG.Feats.BodyguardModeMarker", "guid": "a78147a3655f429883ad88e761ff9438",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Hidden save-stable marker for the Use Bodyguard mode."
+    },
+    {
+      "symbol": "KMG.Feats.InHarmsWay", "guid": "e481f30c8b6940e1b596e121443aa01e",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Player-visible combat feat with project-owned Bodyguard prerequisite."
+    },
+    {
+      "symbol": "KMG.Feats.UseInHarmsWay", "guid": "ca1e74f0e60747209a8b7cf3737243ea",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Persistent off-by-default automation mode granted by In Harm's Way."
+    },
+    {
+      "symbol": "KMG.Feats.InHarmsWayModeMarker", "guid": "57603d0b215e4ac6862bcdf9b5583568",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Hidden save-stable marker for the Use In Harm's Way mode."
     }
   ]
 }

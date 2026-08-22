@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.90-bodyguard-in-harms-way (qualification candidate)
+
+- Adds the selectable Bodyguard and In Harm's Way combat feats with exact
+  Combat Reflexes and Bodyguard prerequisites, native donor icons, and separate
+  persistent automation modes that default off.
+- Adds the default-enabled `bodyguard-feats` module, schema-7-to-8 migration,
+  nine-module publication gating, and the 20-state runtime boundary contract.
+- Uses native attack-of-opportunity availability and expenditure semantics,
+  native reach/threat and target-aware melee attack calculations, stackable
+  attack-scoped AC, and deterministic multi-protector arbitration.
+- Uses the shared immediate/swift action budget and redirects the original
+  attack delivery after its roll is resolved but before damage and on-hit
+  recipients are consumed; it does not clone, replay, reroll, heal, or perform
+  a RuleDealDamage-only transfer.
+- Adds focused policy, blueprint, publication, installed-assembly, Harmony 1.2,
+  nested-frame, associated-rider, Shield Other, and guarded disposable-runtime
+  qualification coverage.
+
 ## 0.0.89-weapon-presentation-calibration (qualification candidate)
 
 - Calibrates every production pistol, revolver, musket, blunderbuss, and rifle

@@ -43,11 +43,23 @@ def validate(root: Path, test_count: int = 865) -> None:
     urban_barbarian_active_count = sum(1 for entry in manifest["entries"]
         if entry.get("symbol", "").startswith("KMG.UrbanBarbarian.")
         and entry.get("status") == "active")
+    bodyguard_count = sum(1 for entry in manifest["entries"]
+        if entry.get("symbol", "").startswith("KMG.Feats.Bodyguard") or
+        entry.get("symbol", "").startswith("KMG.Feats.UseBodyguard") or
+        entry.get("symbol", "").startswith("KMG.Feats.InHarmsWay") or
+        entry.get("symbol", "").startswith("KMG.Feats.UseInHarmsWay"))
+    bodyguard_active_count = sum(1 for entry in manifest["entries"]
+        if (entry.get("symbol", "").startswith("KMG.Feats.Bodyguard") or
+        entry.get("symbol", "").startswith("KMG.Feats.UseBodyguard") or
+        entry.get("symbol", "").startswith("KMG.Feats.InHarmsWay") or
+        entry.get("symbol", "").startswith("KMG.Feats.UseInHarmsWay"))
+        and entry.get("status") == "active")
     active_count, ledger_count = ((1438 + elven_branched_spear_count +
         eastern_weapons_count + focused_weapon_count + brown_fur_active_count +
-        urban_barbarian_active_count,
+        urban_barbarian_active_count + bodyguard_active_count,
         1439 + elven_branched_spear_count + eastern_weapons_count +
-        focused_weapon_count + brown_fur_count + urban_barbarian_count)
+        focused_weapon_count + brown_fur_count + urban_barbarian_count +
+        bodyguard_count)
         if has_expanded_summoning_reservations else
         ((254, 255) if has_shield_other else
         ((252, 253) if current_version == "0.0.76" else (250, 251))))

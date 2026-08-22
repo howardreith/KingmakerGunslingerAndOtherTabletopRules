@@ -1,10 +1,20 @@
 # Kingmaker Gunslinger
 
-The `0.0.89` weapon-presentation candidate retains the eight independent
-feature modules and the complete `0.0.88` overnight repair set. It calibrates
-all production firearms, Elven Branched Spears, Wakizashi, Katana, and Nodachi
-against native presentation donors without changing weapon mechanics,
-blueprint identity, damage, range, reload, misfire, or acquisition behavior.
+The `0.0.90` Bodyguard and In Harm's Way candidate adds a ninth independent,
+default-enabled feature module. It publishes both feats to the normal general
+and Fighter combat-feat selections with separate, free, persistent automation
+modes that default off. Bodyguard spends native attack-of-opportunity currency
+before the incoming result is known, rolls a native target-aware melee attack
+calculation against AC 10, and applies stackable attack-scoped AC. In Harm's
+Way spends Kingmaker's shared immediate/swift budget and redirects the original
+successful attack delivery rather than copying, replaying, or transferring
+post-damage results.
+
+The candidate retains the complete `0.0.89` weapon-presentation and `0.0.88`
+overnight repair sets. Production firearms, Elven Branched Spears, Wakizashi,
+Katana, and Nodachi remain calibrated against native presentation donors
+without changing their weapon mechanics, blueprint identity, damage, range,
+reload, misfire, or acquisition behavior.
 
 The candidate adds full semantic weapon frames, independent held/stored rigs,
 and guarded visual evidence for native controls, firing and thrust motion,
@@ -106,21 +116,22 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find eight checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find nine checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
-Transmuter -- requires Call of the Wild**, and **Urban Barbarian**. All default
-enabled. Older settings migrate to schema 7 while preserving explicit existing values and enabling
-newly absent default-on modules.
+Transmuter -- requires Call of the Wild**, **Urban Barbarian**, and **Bodyguard
+and In Harms Way**. All default enabled. Older settings migrate to schema 8
+while preserving explicit existing values and enabling newly absent default-on
+modules.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All eight modules
+items, summons, ammunition state, or equipment from a save. All nine modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other seven modules continue. Urban Barbarian remains
+publication while the other eight modules continue. Urban Barbarian remains
 available regardless of CotW compatibility. Keep the whole mod installed
 for any campaign that has used project content.
 
