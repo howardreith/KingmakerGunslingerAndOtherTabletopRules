@@ -10439,6 +10439,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 publicFirearmFeats);
             int fighterFirearmAll = CountExactFeatures(fighter.AllFeatures,
                 publicFirearmFeats);
+            BodyguardFeatBlueprintSet bodyguardSet =
+                BlueprintBootstrap.BodyguardFeats;
+            BlueprintFeature[] publicBodyguardFeats = {
+                bodyguardSet.Bodyguard, bodyguardSet.InHarmsWay };
+            int basicBodyguardFeatures = CountExactFeatures(basic.Features,
+                publicBodyguardFeats);
+            int basicBodyguardAll = CountExactFeatures(basic.AllFeatures,
+                publicBodyguardFeats);
+            int fighterBodyguardFeatures = CountExactFeatures(fighter.Features,
+                publicBodyguardFeats);
+            int fighterBodyguardAll = CountExactFeatures(fighter.AllFeatures,
+                publicBodyguardFeats);
             BlueprintFeature legacyFirearmProficiency =
                 firearmFeats.ExoticWeaponProficiency;
             int legacyFirearmCatalogReferences = BlueprintBootstrap.Library
@@ -10737,12 +10749,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 expectedAcadamae + "/" + expectedShieldOther + "/" +
                 expectedExpandedSummoning + "/" + expectedElvenBranchedSpears +
                 "/" + expectedEasternWeapons + "/" + expectedBrownFurTransmuter +
-                "/" + expectedUrbanBarbarian +
+                "/" + expectedUrbanBarbarian + "/" + expectedBodyguardFeats +
                 ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
                 activeShieldOther + "/" + activeExpandedSummoning + "/" +
                 activeElvenBranchedSpears + "/" + activeEasternWeapons + "/" +
-                activeBrownFurTransmuter + "/" + activeUrbanBarbarian +
+                activeBrownFurTransmuter + "/" + activeUrbanBarbarian + "/" +
+                activeBodyguardFeats +
                 ";brownFur=contract:" + brownFurContractCompatible +
                 "/identities:" + (brownFurBlueprints == null ? 0 :
                     brownFurBlueprints.Count) + "/published:" +
@@ -10758,6 +10771,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";cordRows=" + cordRows + ";paperRows=" + paperRows +
                 ";basicFirearm=" + basicFirearmFeatures + "/" + basicFirearmAll +
                 ";fighterFirearm=" + fighterFirearmFeatures + "/" + fighterFirearmAll +
+                ";bodyguardIdentities=" + bodyguardSet.Count +
+                ";basicBodyguard=" + basicBodyguardFeatures + "/" +
+                basicBodyguardAll + ";fighterBodyguard=" +
+                fighterBodyguardFeatures + "/" + fighterBodyguardAll +
                 ";nativeParameters=" + firearmParameterCount +
                 ";capitalGunslinger=" + capitalGunslingerRows +
                 ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
@@ -10838,6 +10855,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         cordRows == (expectedAcadamae ? 1 : 0) &&
                         cordVendorRows == 0,
                     "basic feat selection, exact fixed loot, and capital exclusion"),
+                Assertion("feature-module-bodyguard-publication-gate",
+                    expectedBodyguardFeats ?
+                        "six identities and both feats singular in basic and Fighter selections" :
+                        "six identities and neither feat in basic or Fighter selections",
+                    observed, bodyguardSet.Count == 6 &&
+                        basicBodyguardFeatures == (expectedBodyguardFeats ? 2 : 0) &&
+                        basicBodyguardAll == (expectedBodyguardFeats ? 2 : 0) &&
+                        fighterBodyguardFeatures == (expectedBodyguardFeats ? 2 : 0) &&
+                        fighterBodyguardAll == (expectedBodyguardFeats ? 2 : 0),
+                    "always-registered stable identities and atomic feat-catalog publication"),
                 Assertion("feature-module-shield-other-publication",
                     expectedShieldOther ? "all discovered lists singular" :
                         "all discovered lists absent",

@@ -262,6 +262,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runner.Contains(
                     "BodyguardNativeContractObserver.Run") &&
                 runner.Contains("BodyguardCombatScenario.Run") &&
+                runner.Contains(
+                    "feature-module-bodyguard-publication-gate") &&
+                runner.Contains("bodyguardSet.Count == 6") &&
+                runner.Contains("basicBodyguardFeatures ==") &&
+                runner.Contains("fighterBodyguardAll ==") &&
                 fixture.Contains("new RuleAttackWithWeapon(") &&
                 fixture.Contains("Rulebook.Trigger(attack)") &&
                 fixture.Contains("RuleSavingThrow") == false &&
