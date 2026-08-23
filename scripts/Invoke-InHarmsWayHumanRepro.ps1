@@ -79,8 +79,27 @@ finally {
     if (Test-Path -LiteralPath $staged -PathType Leaf) {
         Remove-Item -LiteralPath $staged -Force
     }
+    $sidecarPrefix = [IO.Path]::GetFileName($staged) + '.'
+    $sidecars = @(Get-ChildItem -LiteralPath $saveRoot -File | Where-Object {
+        $_.Name.StartsWith($sidecarPrefix,
+            [StringComparison]::OrdinalIgnoreCase)
+    })
+    foreach ($sidecar in $sidecars) {
+        $sidecarFull = [IO.Path]::GetFullPath($sidecar.FullName)
+        if (-not $sidecarFull.StartsWith($saveRootFull + '\',
+                [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'A transaction-owned save sidecar escaped the exact save directory.'
+        }
+        Remove-Item -LiteralPath $sidecarFull -Force
+    }
     if (Test-Path -LiteralPath $staged) {
         throw 'The transaction-owned staged human-repro copy was not removed.'
+    }
+    $remainingSidecars = @(Get-ChildItem -LiteralPath $saveRoot -File |
+        Where-Object { $_.Name.StartsWith($sidecarPrefix,
+            [StringComparison]::OrdinalIgnoreCase) })
+    if ($remainingSidecars.Count -ne 0) {
+        throw 'A transaction-owned staged human-repro sidecar was not removed.'
     }
     if ($originalHash -cne $expectedHash) {
         throw 'The original human test save changed during the transaction.'

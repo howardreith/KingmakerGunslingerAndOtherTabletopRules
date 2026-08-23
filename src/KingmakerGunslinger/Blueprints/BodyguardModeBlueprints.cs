@@ -122,7 +122,12 @@ namespace KingmakerGunslinger.Blueprints
             ability.ActivationType = AbilityActivationType.Immediately;
             ability.DeactivateIfCombatEnded = false;
             ability.DeactivateAfterFirstRound = false;
-            ability.DeactivateImmediately = false;
+            // These are persistent opt-in modes, but opting out must stop the
+            // native activatable immediately. With this flag false Kingmaker's
+            // OnTurnOff path can leave IsRunning and the marker buff active
+            // until a later turn boundary, so the icon and reaction consent
+            // diverge in both RTWP and turn-based play.
+            ability.DeactivateImmediately = true;
             ability.DeactivateIfOwnerDisabled = false;
             ability.DeactivateIfOwnerUnconscious = false;
             ability.OnlyInCombat = false;
@@ -140,7 +145,7 @@ namespace KingmakerGunslinger.Blueprints
                 ability.Group != ActivatableAbilityGroup.None || ability.OnlyInCombat ||
                 ability.ActivationType != AbilityActivationType.Immediately ||
                 ability.DeactivateIfCombatEnded || ability.DeactivateAfterFirstRound ||
-                ability.DeactivateImmediately || ability.DeactivateIfOwnerDisabled ||
+                !ability.DeactivateImmediately || ability.DeactivateIfOwnerDisabled ||
                 ability.DeactivateIfOwnerUnconscious || ability.ActionBarAutoFillIgnored ||
                 ability.ResourceAssetIds == null || ability.ResourceAssetIds.Length != 0 ||
                 ability.ComponentsArray == null || ability.ComponentsArray.Length != 0 ||

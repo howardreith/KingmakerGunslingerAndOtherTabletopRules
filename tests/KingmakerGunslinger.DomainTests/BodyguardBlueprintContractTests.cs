@@ -98,7 +98,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ability.ActivationType = AbilityActivationType.Immediately",
                 "ability.DeactivateIfCombatEnded = false",
                 "ability.DeactivateAfterFirstRound = false",
-                "ability.DeactivateImmediately = false",
+                "ability.DeactivateImmediately = true",
                 "ability.OnlyInCombat = false",
                 "Enum.Parse(flags.FieldType, \"HiddenInUi\")",
                 "marker.ComponentsArray = Array.Empty<BlueprintComponent>()",
@@ -111,6 +111,11 @@ namespace KingmakerGunslinger.DomainTests
                 !source.Contains("OnlyInCombat = true") &&
                 !source.Contains("IsOnByDefault = true"),
                 "Bodyguard mode presentation or defaults changed.");
+            Assertions.True(source.Contains(
+                    "!ability.DeactivateImmediately") &&
+                source.Contains("OnTurnOff path can leave IsRunning") &&
+                source.Contains("marker buff active"),
+                "Bodyguard mode validation does not enforce immediate opt-out and marker synchronization.");
         }
 
         internal static void PublicationIsAtomicAndDeterministic()

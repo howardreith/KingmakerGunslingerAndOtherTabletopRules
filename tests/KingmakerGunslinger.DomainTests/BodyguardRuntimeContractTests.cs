@@ -318,7 +318,13 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG_IHW_HUMAN_REPRO_COPY.zks") &&
                 humanReproLauncher.Contains(
                     "The original human test save changed") &&
-                humanReproLauncher.Contains("Remove-Item -LiteralPath $staged"),
+                humanReproLauncher.Contains("Remove-Item -LiteralPath $staged") &&
+                humanReproLauncher.Contains("$sidecarPrefix") &&
+                humanReproLauncher.Contains(
+                    "A transaction-owned staged human-repro sidecar was not removed") &&
+                humanReproLauncher.Contains(
+                    "StartsWith($saveRootFull + '\\'") &&
+                !humanReproLauncher.Contains("Remove-Item -Recurse"),
                 "Human repro save transaction is not exact-hash guarded and self-cleaning.");
             Assertions.True(scenario.Contains(
                     "combat.AidGrantObservations[0].Contains(\";aidD20=20;\")") &&
@@ -353,9 +359,13 @@ namespace KingmakerGunslinger.DomainTests
                     "BodyguardCriticalConfirmationQualificationPatch") &&
                 diceControl.Contains("set_CriticalConfirmationRoll") == false &&
                 diceControl.Contains(
-                    "GetProperty(\n                \"CriticalConfirmationRoll\"") &&
+                    "GetNestedType(\"Dice\"") &&
                 diceControl.Contains(
-                    "BeforeSetCriticalConfirmationRoll(") &&
+                    "TryOverrideCriticalConfirmation(") &&
+                diceControl.Contains("attack.IsCriticalRoll") &&
+                diceControl.Contains("context.CurrentEvent as RuleAttackRoll") &&
+                diceControl.Contains("Patching the tiny") &&
+                diceControl.Contains("setter proved vulnerable to JIT inlining") &&
                 fixture.Contains("ArmCritical(incomingRoll, 20") &&
                 fixture.Contains("ConfirmationRoll =") &&
                 fixture.Contains("ConfirmationTotal =") &&

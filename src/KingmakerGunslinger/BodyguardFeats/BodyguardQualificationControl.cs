@@ -135,21 +135,19 @@ namespace KingmakerGunslinger.BodyguardFeats
             _incomingConsumed++;
         }
 
-        internal static void BeforeSetCriticalConfirmationRoll(
-            RuleAttackRoll attack, ref RulebookEvent.RollEntry value)
+        internal static bool TryOverrideCriticalConfirmation(
+            RuleAttackRoll attack, out RulebookEvent.RollEntry result)
         {
+            result = default(RulebookEvent.RollEntry);
             if (attack == null || BodyguardSyntheticAidContext.IsActive ||
                 !_confirmationRoll.HasValue ||
-                attack.RuleAttackWithWeapon == null) return;
+                attack.RuleAttackWithWeapon == null ||
+                !attack.IsCriticalRoll) return false;
             int forced = _confirmationRoll.Value;
             _confirmationRoll = null;
-            var history = value.RollHistory == null ? new List<int>() :
-                new List<int>(value.RollHistory);
-            if (history.Count == 0) history.Add(forced);
-            else history[history.Count - 1] = forced;
-            value.Value = forced;
-            value.RollHistory = history;
+            result = forced;
             _confirmationConsumed++;
+            return true;
         }
 
         internal static string DescribeAndClear()
@@ -181,9 +179,11 @@ namespace KingmakerGunslinger.BodyguardFeats
     }
 
     /// <summary>
-    /// Exact request-local critical-confirmation dice seam. This does not force
-    /// a threat or a confirmed result; it only replaces the native confirmation
-    /// d20 when a guarded Bodyguard qualification case explicitly armed one.
+    /// Exact request-local critical-confirmation dice seam. RuleAttackRoll calls
+    /// Dice.D20 after it has set IsCriticalRoll and before it calculates the
+    /// native confirmation result. The prefix replaces only that one roll; it
+    /// does not force a threat or a confirmed result. Patching the tiny
+    /// CriticalConfirmationRoll setter proved vulnerable to JIT inlining.
     /// </summary>
     [HarmonyPatch]
     internal static class BodyguardCriticalConfirmationQualificationPatch
@@ -192,29 +192,31 @@ namespace KingmakerGunslinger.BodyguardFeats
 
         private static bool Prepare()
         {
-            PropertyInfo property = typeof(RuleAttackRoll).GetProperty(
-                "CriticalConfirmationRoll", BindingFlags.Instance |
+            Type dice = typeof(RulebookEvent).GetNestedType("Dice",
                 BindingFlags.Public | BindingFlags.NonPublic);
-            MethodInfo setter = property == null ? null :
-                property.GetSetMethod(true);
-            ParameterInfo[] parameters = setter == null ? null :
-                setter.GetParameters();
-            if (setter == null || setter.ReturnType != typeof(void) ||
-                parameters.Length != 1 || parameters[0].ParameterType !=
+            PropertyInfo property = dice == null ? null : dice.GetProperty(
+                "D20", BindingFlags.Static | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            MethodInfo getter = property == null ? null :
+                property.GetGetMethod(true);
+            if (getter == null || !getter.IsStatic || getter.GetParameters()
+                    .Length != 0 || getter.ReturnType !=
                     typeof(RulebookEvent.RollEntry))
                 return false;
-            _target = setter;
+            _target = getter;
             return true;
         }
 
         private static MethodBase TargetMethod()
         { return _target; }
 
-        private static void Prefix(RuleAttackRoll __instance,
-            ref RulebookEvent.RollEntry value)
+        private static bool Prefix(ref RulebookEvent.RollEntry __result)
         {
-            BodyguardQualificationControl.BeforeSetCriticalConfirmationRoll(
-                __instance, ref value);
+            RulebookEventContext context = Rulebook.CurrentContext;
+            RuleAttackRoll attack = context == null ? null :
+                context.CurrentEvent as RuleAttackRoll;
+            return !BodyguardQualificationControl
+                .TryOverrideCriticalConfirmation(attack, out __result);
         }
     }
 }

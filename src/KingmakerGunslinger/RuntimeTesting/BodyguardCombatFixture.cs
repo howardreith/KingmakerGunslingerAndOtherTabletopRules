@@ -74,42 +74,42 @@ namespace KingmakerGunslinger.RuntimeTesting
         public int ConfirmationTotal { get; set; }
         [JsonProperty("targetCriticalAc", Order = 14)]
         public int TargetCriticalAc { get; set; }
-        [JsonProperty("attackPenalty", Order = 11)]
+        [JsonProperty("attackPenalty", Order = 15)]
         public int AttackPenalty { get; set; }
-        [JsonProperty("aooBefore", Order = 12)]
+        [JsonProperty("aooBefore", Order = 16)]
         public int[] AooBefore { get; set; }
-        [JsonProperty("aooAfter", Order = 13)] public int[] AooAfter { get; set; }
-        [JsonProperty("swiftBefore", Order = 14)]
+        [JsonProperty("aooAfter", Order = 17)] public int[] AooAfter { get; set; }
+        [JsonProperty("swiftBefore", Order = 18)]
         public float[] SwiftBefore { get; set; }
-        [JsonProperty("swiftAfter", Order = 15)]
+        [JsonProperty("swiftAfter", Order = 19)]
         public float[] SwiftAfter { get; set; }
-        [JsonProperty("hpLoss", Order = 16)] public int[] HpLoss { get; set; }
-        [JsonProperty("rollTargetRestored", Order = 17)]
+        [JsonProperty("hpLoss", Order = 20)] public int[] HpLoss { get; set; }
+        [JsonProperty("rollTargetRestored", Order = 21)]
         public bool RollTargetRestored { get; set; }
-        [JsonProperty("weaponTargetRestored", Order = 18)]
+        [JsonProperty("weaponTargetRestored", Order = 22)]
         public bool WeaponTargetRestored { get; set; }
-        [JsonProperty("aidControl", Order = 19)]
+        [JsonProperty("aidControl", Order = 23)]
         public string AidControl { get; set; }
-        [JsonProperty("runtimeCounters", Order = 20)]
+        [JsonProperty("runtimeCounters", Order = 24)]
         public string RuntimeCounters { get; set; }
-        [JsonProperty("runtimeObservations", Order = 21)]
+        [JsonProperty("runtimeObservations", Order = 25)]
         public string[] RuntimeObservations { get; set; }
-        [JsonProperty("damageEvents", Order = 22)]
+        [JsonProperty("damageEvents", Order = 26)]
         public string[] DamageEvents { get; set; }
-        [JsonProperty("damageKinds", Order = 23)]
+        [JsonProperty("damageKinds", Order = 27)]
         public string[] DamageKinds { get; set; }
-        [JsonProperty("rider", Order = 24)] public string Rider { get; set; }
-        [JsonProperty("combatLogCount", Order = 25)]
+        [JsonProperty("rider", Order = 28)] public string Rider { get; set; }
+        [JsonProperty("combatLogCount", Order = 29)]
         public long CombatLogCount { get; set; }
-        [JsonProperty("combatLogLastMessage", Order = 26)]
+        [JsonProperty("combatLogLastMessage", Order = 30)]
         public string CombatLogLastMessage { get; set; }
-        [JsonProperty("nativeAcBeforeBodyguard", Order = 27)]
+        [JsonProperty("nativeAcBeforeBodyguard", Order = 31)]
         public int NativeAcBeforeBodyguard { get; set; }
-        [JsonProperty("bodyguardContribution", Order = 28)]
+        [JsonProperty("bodyguardContribution", Order = 32)]
         public int BodyguardContribution { get; set; }
-        [JsonProperty("bodyguardSources", Order = 29)]
+        [JsonProperty("bodyguardSources", Order = 33)]
         public BodyguardArmorClassSourceEvidence[] BodyguardSources { get; set; }
-        [JsonProperty("aidGrantObservations", Order = 30)]
+        [JsonProperty("aidGrantObservations", Order = 34)]
         public string[] AidGrantObservations { get; set; }
     }
 
