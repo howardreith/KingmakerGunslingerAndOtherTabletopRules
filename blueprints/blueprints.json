@@ -12515,6 +12515,62 @@
     {
       "symbol": "KMG.UrbanBarbarian.Allocation.T8.S2.D2.C4.Ability", "guid": "639e90f156a420e0cad87315f2377590",
       "plannedType": "BlueprintAbility", "status": "active", "milestone": "Urban Barbarian", "notes": "Free current-tier Controlled Rage allocation variant."
+    },
+    {
+      "symbol": "KMG.Feats.Bodyguard", "guid": "b2baa3384b4d4328848cc07933b513be",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Player-visible combat feat with exact native Combat Reflexes prerequisite."
+    },
+    {
+      "symbol": "KMG.Feats.UseBodyguard", "guid": "ac31a9d5d34140978b7e778dc8d1e226",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Persistent off-by-default automation mode granted by Bodyguard."
+    },
+    {
+      "symbol": "KMG.Feats.BodyguardModeMarker", "guid": "a78147a3655f429883ad88e761ff9438",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Hidden save-stable marker for the Use Bodyguard mode."
+    },
+    {
+      "symbol": "KMG.Feats.InHarmsWay", "guid": "e481f30c8b6940e1b596e121443aa01e",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Player-visible combat feat with project-owned Bodyguard prerequisite."
+    },
+    {
+      "symbol": "KMG.Feats.UseInHarmsWay", "guid": "ca1e74f0e60747209a8b7cf3737243ea",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Persistent off-by-default automation mode granted by In Harm's Way."
+    },
+    {
+      "symbol": "KMG.Feats.InHarmsWayModeMarker", "guid": "57603d0b215e4ac6862bcdf9b5583568",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Hidden save-stable marker for the Use In Harm's Way mode."
+    },
+    {
+      "symbol": "KMG.Feats.InHarmsWayImmediatePending", "guid": "a92164067bad3a85b1da48db5a787686",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "In Harm's Way immediate-action economy", "notes": "Hidden save-stable debt marker: an off-turn immediate action has charged the owner's next actual turn."
+    },
+    {
+      "symbol": "KMG.Feats.InHarmsWayImmediateChargedTurn", "guid": "326e183f7791e83a38337c6a6d7a8644",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "In Harm's Way immediate-action economy", "notes": "Hidden save-stable marker that denies the swift action throughout the charged actual turn."
+    },
+    {
+      "symbol": "KMG.Traits.HelpfulCombat", "guid": "e4b29a7c8d5f4c1796ab03e1f72d8456",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Aid Another compatibility", "notes": "Save-stable combat Helpful trait; optional publication into Favored Class is late-bound and transactional."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.Selection", "guid": "5ae9f898e45846d19d3802caf91e06b6",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Save-stable three-way Heirloom Weapon (Nodachi) choice; optional publication into Favored Class Equipment Traits is late-bound and transactional."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.Proficiency", "guid": "af205733f7fe49838edb37cdf1b90cbb",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Heirloom Weapon (Nodachi) proficiency choice."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.AttackOfOpportunity", "guid": "4caf60ed8b264701a3965288a65eebc2",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Heirloom Weapon (Nodachi) +1 trait bonus on attacks of opportunity choice."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.CombatManeuver", "guid": "e17fafa6f75641f8a2e3fe4b6f71da78",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Heirloom Weapon (Nodachi) +2 trait bonus on combat maneuvers while wielding the weapon choice."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.CombatManeuverBonus", "guid": "1a7a5d985fe740cc8442f04f0fe814d8",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Hidden equipment-conditional Additional CMB carrier for Heirloom Weapon (Nodachi)."
     }
   ]
 }

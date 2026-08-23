@@ -58,6 +58,13 @@ function Get-KmgFeatureModuleCatalog {
             DependencyState = 'independent'
             RuntimeParameter = 'urbanBarbarian'
         }
+        [pscustomobject]@{
+            InternalProperty = 'BodyguardFeats'
+            JsonKey = 'bodyguard-feats'
+            DisplayName = 'Bodyguard and In Harms Way'
+            DependencyState = 'independent'
+            RuntimeParameter = 'bodyguardFeats'
+        }
     )
 }
 

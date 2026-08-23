@@ -12,6 +12,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-urban-barbarian-rage-inventory";
         internal const string DisposableUrbanBarbarianFocused =
             "disposable-urban-barbarian-focused";
+        internal const string ObserveBodyguardNativeContracts =
+            "observe-bodyguard-native-contracts";
+        internal const string ObserveAidAnotherCompatibilityContracts =
+            "observe-aid-another-compatibility-contracts";
+        internal const string DisposableBodyguardFeats =
+            "disposable-bodyguard-feats";
+        internal const string DisposableHelpfulBodyguard =
+            "disposable-helpful-bodyguard";
+        internal const string DisposableBodyguardFeatsDisabled =
+            "disposable-bodyguard-feats-disabled";
         internal const string WorkingSaveUrbanBarbarianPrepare =
             "working-save-urban-barbarian-prepare";
         internal const string WorkingSaveUrbanBarbarianOffVerifyCleanup =
@@ -280,6 +290,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             "p0-affected-focused-aim-save-load";
         internal const string P0AffectedFocusedAimSaveName =
             "KMG_P0_FOCUSED_AIM_AFFECTED_COPY";
+        internal const string DisposableInHarmsWayHumanRepro =
+            "disposable-in-harms-way-human-repro";
+        internal const string DisposableInHarmsWayOffTurnEconomy =
+            "disposable-in-harms-way-off-turn-economy";
+        internal const string InHarmsWayHumanReproSaveName =
+            "KMG_IHW_HUMAN_REPRO_COPY";
         internal const string WorkingSaveShieldOtherPrepare =
             "working-save-shield-other-prepare";
         internal const string WorkingSaveShieldOtherVerifyCleanup =
@@ -307,6 +323,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveFeatureModuleSettings,
                 ObserveUrbanBarbarianRageInventory,
                 DisposableUrbanBarbarianFocused,
+                ObserveBodyguardNativeContracts,
+                ObserveAidAnotherCompatibilityContracts,
+                DisposableBodyguardFeats,
+                DisposableHelpfulBodyguard,
+                DisposableBodyguardFeatsDisabled,
                 WorkingSaveUrbanBarbarianPrepare,
                 WorkingSaveUrbanBarbarianOffVerifyCleanup,
                 ObserveBrownFurCotwContract,
@@ -442,6 +463,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveLoadGameButtonAction,
                 WorkingSaveSmoke,
                 P0AffectedFocusedAimSaveLoad,
+                DisposableInHarmsWayHumanRepro,
+                DisposableInHarmsWayOffTurnEconomy,
                 WorkingSaveShieldOtherPrepare,
                 WorkingSaveShieldOtherVerifyCleanup,
                 GenericFirearmActions,

@@ -1,5 +1,106 @@
 # Changelog
 
+## 0.0.95-immediate-action-economy
+
+- Replaces the incorrect current-instant `HasSwiftAction()` gate with a
+  turn-aware immediate-action adapter. An idle off-turn protector may now use
+  In Harm's Way even though Kingmaker cannot issue a normal swift command on
+  another unit's turn.
+- Charges an off-turn interception against the protector's next actual turn,
+  blocks native and third-party swift commands throughout that turn, and
+  refreshes only after that turn completes. Delay preserves the debt; global
+  round changes do not clear it.
+- Uses Kingmaker's native six-second shared swift cooldown for own-turn and
+  real-time-with-pause reactions, and rejects genuinely flat-footed or
+  incapacitated protectors with a persistent, exact combat-log reason.
+- Adds a guarded native-turn scenario covering the human off-turn hit, a
+  second-interception denial, next-turn swift denial, post-turn refresh, and a
+  confirmed critical while preserving Bodyguard, Helpful, full-delivery
+  redirection, Shield Other, and the 0.0.93 compatibility work.
+
+## 0.0.94-in-harms-way-runtime-repair (qualification candidate)
+
+- Replaces the former aggregate `immediate-unavailable` outcome with a bounded,
+  per-protector In Harm's Way gate snapshot covering exact feat, activatable,
+  marker, ability-state, native swift cooldown, action availability, delivery
+  contract, arbitration, and target-redirection decisions.
+- Makes both persistent reaction modes deactivate immediately, preventing an
+  activatable that is visibly off from retaining its hidden consent marker
+  until a later turn boundary. Activation remains free, off by default,
+  save-stable, and independent for Bodyguard and In Harm's Way.
+- Adds a concise combat-log explanation when an enabled In Harm's Way reaction
+  is rejected specifically because the native shared swift/immediate budget is
+  unavailable; mode-off attacks remain silent.
+- Qualifies real native normal and confirmed-critical weapon delivery after a
+  Helpful +4 Bodyguard contribution. The original roll and confirmation remain
+  unchanged, the native swift cooldown advances once, the victim loses no HP,
+  the interceptor receives physical damage and attack-linked riders once, and
+  both target fields restore after delivery.
+- Preserves the complete 0.0.93 Eastern Weapons, Favored Class, Tweak or Treat,
+  Call of the Wild Aid Another, Helpful, AC-attribution, In Harm's Way, and
+  Shield Other contracts.
+
+## 0.0.93-eastern-favored-compatibility (qualification candidate)
+
+- Defers Nodachi publication into broad Martial Weapon Proficiency facts until
+  the first UMM update after the complete `LoadDictionary` postfix chain. This
+  keeps Favored Class 1.3.1 from treating KMG's runtime-only category value
+  `4934986` as a foreign Heirloom Weapon blueprint name during trait creation.
+- Applies the late martial mutation transactionally and exactly once across
+  every verified broad-martial grant, with exact-array rollback and native
+  category authority checks. Standalone Eastern Weapons and existing-save
+  proficiency behavior remain intact.
+- Validates the exact installed Favored Class and Tweak or Treat Heirloom
+  contracts. When traits and Eastern Weapons are enabled, publishes one
+  save-stable KMG **Heirloom Weapon: Nodachi** choice with the installed
+  three-option proficiency, attack-of-opportunity, and wielded-CMB structure.
+- Preserves the canonical Call of the Wild Aid Another resolver, combat and
+  halfling Helpful replacement semantics, variable Bodyguard AC contributions,
+  native AC attribution, In Harm's Way delivery, and Shield Other ordering.
+
+## 0.0.92-helpful-aid-another (qualification candidate)
+
+- Adds the KMG combat **Helpful** trait to compatible Favored Class Combat
+  Traits and shares one canonical Call of the Wild Aid Another grant resolver
+  with ordinary Aid Another and Bodyguard.
+- Resolves combat Helpful as +3, Favored Class halfling Helpful as +4, and
+  invalid dual ownership as the better +4 replacement while preserving
+  independent canonical contributors such as Benevolent.
+- Keeps both optional integrations late-bound, transactional, idempotent, and
+  fail-closed; KMG remains fully standalone when either external mod is absent.
+
+## 0.0.91-bodyguard-ac-breakdown (qualification candidate)
+
+- Preserves the qualified Bodyguard and In Harm's Way mechanics while adding
+  truthful native expanded attack-detail attribution for successful Bodyguard
+  AC contributions.
+- Adds one attack-scoped `Bodyguard +2` `RuleCalculateAC.BonusSource` per
+  successful protector, sourced from that protector's actual Bodyguard feat
+  fact; failed attempts and ineligible/disabled cases add no source.
+- Retains the single post-firearm `TargetAC` write, so ordinary AC 13 becomes
+  exactly 15 for one protector and 17 for two protectors without double-counting.
+- Extends pure, installed-assembly contract, shared-postfix, and guarded runtime
+  evidence for one/two protectors, failed Aid, duplicate callbacks, firearm touch
+  AC ordering, In Harm's Way delivery, and module-disabled behavior.
+
+## 0.0.90-bodyguard-in-harms-way (qualification candidate)
+
+- Adds the selectable Bodyguard and In Harm's Way combat feats with exact
+  Combat Reflexes and Bodyguard prerequisites, native donor icons, and separate
+  persistent automation modes that default off.
+- Adds the default-enabled `bodyguard-feats` module, schema-7-to-8 migration,
+  nine-module publication gating, and the 20-state runtime boundary contract.
+- Uses native attack-of-opportunity availability and expenditure semantics,
+  native reach/threat and target-aware melee attack calculations, stackable
+  attack-scoped AC, and deterministic multi-protector arbitration.
+- Uses the shared immediate/swift action budget and redirects the original
+  attack delivery after its roll is resolved but before damage and on-hit
+  recipients are consumed; it does not clone, replay, reroll, heal, or perform
+  a RuleDealDamage-only transfer.
+- Adds focused policy, blueprint, publication, installed-assembly, Harmony 1.2,
+  nested-frame, associated-rider, Shield Other, and guarded disposable-runtime
+  qualification coverage.
+
 ## 0.0.89-weapon-presentation-calibration (qualification candidate)
 
 - Calibrates every production pistol, revolver, musket, blunderbuss, and rifle

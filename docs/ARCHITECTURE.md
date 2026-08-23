@@ -515,15 +515,19 @@ resolvable when publication is disabled.
 
 Expanded Summoning, the Elven Branched Spear, and the Eastern Weapons named
 catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
-plus the Brown-Fur identity ledger, six appended score-toggle identities, and
-the seventy-three always-registered Urban Barbarian identities, freeze the
-append-only ledger at 1616 stable IDs: 1615 active and one reserved.
+plus the Brown-Fur identity ledger, six appended score-toggle identities,
+the seventy-three always-registered Urban Barbarian identities, and the nine
+always-registered Bodyguard/In Harm's Way subsystem identities, extend the
+append-only ledger to 1630 stable IDs: 1629 active and one reserved. The two
+latest active identities are hidden, mechanically inert In Harm's Way
+immediate-action debt facts. They preserve an off-turn spend across save/load
+and tie it to the owner's next actual turn without using a global-round flag.
 Twenty-five active identities belong to the isolated Brown-Fur extension and
 do not change the unconditional core registration count; they register only
 after the structural CotW contract succeeds, while selector publication
-remains independently gated. The Urban identities are native core identities,
-bringing unconditional core registration to 1590 blueprints in every module
-state. All 1184
+remains independently gated. The Urban and Bodyguard identities are native core
+identities, bringing unconditional core registration to 1604 blueprints in
+every module state. All 1184
 Expanded Summoning feature identities, all twenty-nine spear identities, and
 all forty-six Eastern Weapons identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement

@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.89',
+    [string]$ExpectedVersion = '0.0.95',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
     [string]$SaveName = 'KMG_AUTOMATION_WORKING',
     [ValidateRange(120, 900)][int]$TimeoutSeconds = 300,
@@ -34,7 +34,7 @@ $failure = $null
 
 function Set-UrbanEnabled([bool]$enabled) {
     $configuration = [ordered]@{
-        schemaVersion = 7
+        schemaVersion = 8
         gunslinger = $true
         'acadamae-graduate' = $true
         'shield-other' = $true
@@ -43,6 +43,7 @@ function Set-UrbanEnabled([bool]$enabled) {
         'eastern-weapons' = $true
         'brown-fur-transmuter' = $true
         'urban-barbarian' = $enabled
+        'bodyguard-feats' = $true
     }
     $temporary = $settings + '.kmg-urban-barbarian-persistence.tmp'
     [IO.File]::WriteAllText($temporary, ($configuration | ConvertTo-Json -Depth 4), (New-Object Text.UTF8Encoding($false)))

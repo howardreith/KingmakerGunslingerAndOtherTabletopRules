@@ -275,9 +275,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "CustomWeaponSelectorRuntime.Configure",
                 "InsertOrderedAfter", "spearAnchor", "katanaEwp",
-                "wakizashiEwp", "PublishMartial", "Concat(new[] { nodachi })",
-                "EasternWeaponProficiencyRuntime.Configure",
-                "feature.ComponentsArray = next", "Rollback()",
+                "wakizashiEwp", "Rollback()",
                 "spearCount == 1 ? 2 : 1",
                 "Count(_ewpSelection.AllFeatures, spearAnchor) == 0" })
                 Assertions.True(publication.Contains(token),

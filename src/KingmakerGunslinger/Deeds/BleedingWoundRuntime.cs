@@ -8,6 +8,7 @@ using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Diagnostics;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Misfires;
+using KingmakerGunslinger.BodyguardFeats;
 
 namespace KingmakerGunslinger.Deeds
 {
@@ -20,6 +21,8 @@ namespace KingmakerGunslinger.Deeds
         {
             if (attack == null || attack.Initiator == null || attack.Target == null)
                 return;
+            var deliveryTarget = BodyguardRuntime.ResolveDeliveryTarget(attack);
+            if (deliveryTarget == null || deliveryTarget.Descriptor == null) return;
             BleedingWoundBlueprintSet set = BlueprintBootstrap.GunslingerClass == null ?
                 null : BlueprintBootstrap.GunslingerClass.BleedingWound;
             if (set == null) return;
@@ -39,7 +42,7 @@ namespace KingmakerGunslinger.Deeds
             bool eligible = FirearmMisfireRuntime.IsEligibleAttack(attack);
             var request = new BleedingWoundRequest(kind,
                 firearm.IsExactFirearm, eligible, attack.IsHit,
-                !attack.Target.Descriptor.IsUndead,
+                !deliveryTarget.Descriptor.IsUndead,
                 attack.ImmuneToSneakAttack,
                 int.MaxValue,
                 attack.Initiator.Stats.Dexterity.Bonus);
@@ -50,7 +53,7 @@ namespace KingmakerGunslinger.Deeds
             if (!trueGrit.Available)
                 decision = Service.Evaluate(new BleedingWoundRequest(kind,
                     firearm.IsExactFirearm, eligible, attack.IsHit,
-                    !attack.Target.Descriptor.IsUndead,
+                    !deliveryTarget.Descriptor.IsUndead,
                     attack.ImmuneToSneakAttack,
                     attack.Initiator.Descriptor.Resources.GetResourceAmount(
                         BlueprintBootstrap.GunslingerClass.Grit.Resource),
@@ -64,9 +67,9 @@ namespace KingmakerGunslinger.Deeds
                     BlueprintBootstrap.GunslingerClass.Grit.Resource,
                     trueGrit.EffectiveCost);
                 var bleed = set.GetBleed(kind);
-                attack.Target.Descriptor.Buffs.AddBuff(
+                deliveryTarget.Descriptor.Buffs.AddBuff(
                     bleed, marker.Context, null);
-                if (!attack.Target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                if (!deliveryTarget.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Any(value => ReferenceEquals(value.Blueprint, bleed)))
                     throw new InvalidOperationException(
                         "Bleeding Wound native Bleed fact was rejected.");

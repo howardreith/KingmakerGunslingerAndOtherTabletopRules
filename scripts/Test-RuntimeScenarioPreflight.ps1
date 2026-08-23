@@ -147,6 +147,11 @@ $expected = @(
     'disposable-gunslinger-targeting-arms',
     'disposable-gunslinger-deaths-shot',
     'disposable-gunslinger-bleeding-wound',
+    'observe-bodyguard-native-contracts',
+    'observe-aid-another-compatibility-contracts',
+    'disposable-bodyguard-feats',
+    'disposable-helpful-bodyguard',
+    'disposable-bodyguard-feats-disabled',
     'disposable-gunslinger-expert-loading',
     'disposable-gunslinger-lightning-reload',
     'disposable-gunslinger-evasive',
@@ -169,6 +174,7 @@ $expected = @(
     'observe-load-game-button-action',
     'working-save-smoke',
     'p0-affected-focused-aim-save-load',
+    'disposable-in-harms-way-human-repro',
     'working-save-shield-other-prepare',
     'working-save-shield-other-verify-cleanup',
     'working-save-expanded-summoning-prepare',
@@ -488,10 +494,30 @@ Assert-True (-not $trueGrit.RequiresManualInteraction) `
     'true-grit-is-autonomous'
 Assert-True (-not $trueGrit.RequiresSaveName) `
     'true-grit-is-save-free'
+$bodyguardContracts = Get-KmgRuntimeScenarioMetadata `
+    'observe-bodyguard-native-contracts'
+Assert-True (-not $bodyguardContracts.RequiresManualInteraction -and
+    -not $bodyguardContracts.RequiresSaveName) `
+    'bodyguard-contracts-is-autonomous-save-free'
+$bodyguard = Get-KmgRuntimeScenarioMetadata 'disposable-bodyguard-feats'
+Assert-True (-not $bodyguard.RequiresManualInteraction -and
+    -not $bodyguard.RequiresSaveName) `
+    'bodyguard-combat-is-autonomous-save-free'
+$bodyguardDisabled = Get-KmgRuntimeScenarioMetadata `
+    'disposable-bodyguard-feats-disabled'
+Assert-True (-not $bodyguardDisabled.RequiresManualInteraction -and
+    -not $bodyguardDisabled.RequiresSaveName) `
+    'bodyguard-disabled-is-autonomous-save-free'
+$humanRepro = Get-KmgRuntimeScenarioMetadata `
+    'disposable-in-harms-way-human-repro'
+Assert-True (-not $humanRepro.RequiresManualInteraction -and
+    $humanRepro.RequiresSaveName -and
+    $humanRepro.PermittedSaveName -ceq 'KMG_IHW_HUMAN_REPRO_COPY') `
+    'in-harms-way-human-repro-is-autonomous-exact-save'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.89'
+    ExpectedVersion = '0.0.95'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -524,7 +550,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.89' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.95' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -584,7 +610,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.89' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.95' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

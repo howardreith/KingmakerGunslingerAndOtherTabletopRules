@@ -28,6 +28,8 @@ namespace KingmakerGunslinger.Misfires
             RuleAttackRoll __instance,
             ref RulebookEvent.RollEntry value)
         {
+            BodyguardFeats.BodyguardQualificationControl
+                .BeforeSetIncomingRoll(__instance, ref value);
             Deeds.DeadShotRuntime.BeforeSetRoll(__instance, ref value);
             Scatter.ScatterVolleyRuntime.BeforeSetRoll(__instance, ref value);
             FirearmMisfireRuntime.BeforeSetRoll(__instance, ref value);
@@ -52,6 +54,18 @@ namespace KingmakerGunslinger.Misfires
         private static MethodBase TargetMethod()
         {
             return _target;
+        }
+
+        private static void Prefix(
+            RuleAttackRoll __instance,
+            ref int d20)
+        {
+            // Exact guarded-qualification fallback for installed compositions
+            // that replace RuleAttackRoll's ordinary Roll property assignment
+            // with a direct backing-field write. The player-facing path is
+            // inert unless the request-local Bodyguard control is armed.
+            BodyguardFeats.BodyguardQualificationControl
+                .BeforeEvaluateIncomingRoll(__instance, ref d20);
         }
 
         private static void Postfix(

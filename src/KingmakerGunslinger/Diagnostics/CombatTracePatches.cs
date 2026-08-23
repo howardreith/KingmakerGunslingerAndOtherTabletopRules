@@ -5,7 +5,10 @@ using KingmakerGunslinger.Rules;
 using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Grit;
 using KingmakerGunslinger.Deeds;
+using KingmakerGunslinger.BodyguardFeats;
 using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.RuleSystem.Rules;
+using System;
 
 namespace KingmakerGunslinger.Diagnostics
 {
@@ -44,6 +47,7 @@ namespace KingmakerGunslinger.Diagnostics
         {
             CombatTraceRuntime.After(CombatTraceStage.WeaponAttack, __instance);
         }
+
     }
 
     [HarmonyPatch]
@@ -68,13 +72,14 @@ namespace KingmakerGunslinger.Diagnostics
 
         private static void Prefix(object __instance)
         {
+            BodyguardRuntime.BeforeAttackRoll(__instance as RuleAttackRoll);
             TargetingTorsoRuntime.ConfigureAttackRoll(
-                __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                __instance as RuleAttackRoll);
             DeadShotRuntime.ConfigureDelivery(
-                __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                __instance as RuleAttackRoll);
             FirearmDischargeRuntime.BeforeAttackRoll(__instance);
             DeadeyeRuntime.BeforeAttackRoll(
-                __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                __instance as RuleAttackRoll);
             FirearmArmorClassRuntime.BeforeAttackRoll(__instance);
             CombatTraceRuntime.Before(CombatTraceStage.AttackRoll, __instance);
         }
@@ -83,10 +88,11 @@ namespace KingmakerGunslinger.Diagnostics
         {
             try
             {
+                BodyguardRuntime.AfterAttackRoll(__instance as RuleAttackRoll);
                 BleedingWoundRuntime.AfterAttack(
-                    __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                    __instance as RuleAttackRoll);
                 FirearmGritRecoveryRuntime.AfterAttackRoll(
-                    __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                    __instance as RuleAttackRoll);
                 CombatTraceRuntime.After(CombatTraceStage.AttackRoll, __instance);
             }
             finally
@@ -98,10 +104,11 @@ namespace KingmakerGunslinger.Diagnostics
                 finally
                 {
                     FirearmMisfireRuntime.FinishAttack(
-                        __instance as Kingmaker.RuleSystem.Rules.RuleAttackRoll);
+                        __instance as RuleAttackRoll);
                 }
             }
         }
+
     }
 
     [HarmonyPatch]
@@ -127,19 +134,43 @@ namespace KingmakerGunslinger.Diagnostics
         private static void Prefix(object __instance)
         {
             RuleDealDamage damage = __instance as RuleDealDamage;
+            if (damage != null)
+                BodyguardRuntime.ObserveNativeDelivery(damage.AttackRoll,
+                    damage.Target, "rule-deal-damage-prefix");
             Scatter.ScatterVolleyRuntime.SuppressPrecisionDamage(damage);
         }
 
-        private static void Postfix(object __instance) { }
+        private static void Postfix(object __instance)
+        {
+            RuleDealDamage damage = __instance as RuleDealDamage;
+            if (damage != null)
+                BodyguardRuntime.ObserveNativeDelivery(damage.AttackRoll,
+                    damage.Target, "rule-deal-damage-postfix");
+        }
     }
 
     [HarmonyPatch(typeof(Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve),
         "OnTrigger")]
     internal static class RuleAttackWithWeaponResolveGritRecoveryPatch
     {
+        private static void Prefix(
+            Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve __instance)
+        {
+            RuleAttackWithWeapon attack = __instance == null ? null :
+                __instance.AttackWithWeapon;
+            BodyguardRuntime.ObserveNativeDelivery(attack == null ? null :
+                attack.AttackRoll, __instance == null ? null :
+                __instance.Target, "weapon-resolve-prefix");
+        }
+
         private static void Postfix(
             Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve __instance)
         {
+            RuleAttackWithWeapon attack = __instance == null ? null :
+                __instance.AttackWithWeapon;
+            BodyguardRuntime.ObserveNativeDelivery(attack == null ? null :
+                attack.AttackRoll, __instance == null ? null :
+                __instance.Target, "weapon-resolve-postfix");
             FirearmGritRecoveryRuntime.AfterWeaponResolve(__instance);
         }
     }
@@ -172,6 +203,8 @@ namespace KingmakerGunslinger.Diagnostics
         private static void Postfix(object __instance)
         {
             FirearmArmorClassRuntime.AfterCalculateArmorClass(__instance);
+            BodyguardRuntime.AfterCalculateArmorClass(
+                __instance as RuleCalculateAC);
             CombatTraceRuntime.After(CombatTraceStage.ArmorClass, __instance);
         }
     }

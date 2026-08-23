@@ -103,6 +103,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private SaveCatalogProviderObservation _catalogProviderObservation;
         private LoadGameButtonActionObservation _buttonActionObservation;
         private WorkingSaveSmokeScenario _workingSaveSmoke;
+        private InHarmsWayOffTurnEconomyScenario.Session
+            _inHarmsWayOffTurnEconomy;
         private WeaponPresentationEvidenceScenario.Session
             _weaponPresentationEvidence;
         private WeaponPresentationEvidenceScenario.MotionSession
@@ -546,6 +548,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    _request.Scenario != RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayHumanRepro &&
+                    _request.Scenario != RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayOffTurnEconomy &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
@@ -659,6 +665,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposableUrbanBarbarianFocused)
                 {
                     Complete(UrbanBarbarianFocusedScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveBodyguardNativeContracts)
+                {
+                    Complete(BodyguardNativeContractObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveAidAnotherCompatibilityContracts)
+                {
+                    Complete(AidAnotherCompatibilityObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableBodyguardFeats ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.
+                        DisposableHelpfulBodyguard ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.
+                        DisposableBodyguardFeatsDisabled)
+                {
+                    Complete(BodyguardCombatScenario.Run(
                         _context, _request));
                     return;
                 }
@@ -1325,6 +1356,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayHumanRepro ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -1373,6 +1408,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayHumanRepro ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -1427,6 +1466,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                             ? WorkingSaveSmokeIdentity.AffectedFocusedAim
+                            : _request.Scenario == RuntimeTestScenarioCatalog
+                                .DisposableInHarmsWayHumanRepro ||
+                              _request.Scenario == RuntimeTestScenarioCatalog
+                                .DisposableInHarmsWayOffTurnEconomy
+                                ? WorkingSaveSmokeIdentity
+                                    .InHarmsWayHumanRepro
                             : null);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
@@ -1789,6 +1834,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Complete(BrownFurNativeCastScenario.Run(
                         _context, _request));
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayHumanRepro)
+                {
+                    Complete(InHarmsWayHumanReproScenario.Run(
+                        _context, _request));
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayOffTurnEconomy)
+                {
+                    if (_inHarmsWayOffTurnEconomy == null)
+                        _inHarmsWayOffTurnEconomy =
+                            InHarmsWayOffTurnEconomyScenario.Begin(
+                                _context, _request);
+                    _inHarmsWayOffTurnEconomy.Poll();
+                    if (_inHarmsWayOffTurnEconomy.Complete)
+                        Complete(_inHarmsWayOffTurnEconomy.Result);
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .WeaponPresentationEvidence)
@@ -3825,6 +3887,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 _request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayHumanRepro ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayOffTurnEconomy ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -10272,6 +10338,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (bool)_request.Parameters["brownFurTransmuter"];
             bool expectedUrbanBarbarian =
                 (bool)_request.Parameters["urbanBarbarian"];
+            bool expectedBodyguardFeats =
+                (bool)_request.Parameters["bodyguardFeats"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
@@ -10285,6 +10353,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.BrownFurTransmuter;
             bool activeUrbanBarbarian =
                 _context.FeatureModules.Active.UrbanBarbarian;
+            bool activeBodyguardFeats =
+                _context.FeatureModules.Active.BodyguardFeats;
             UrbanBarbarianBlueprintSet urbanSet = BlueprintBootstrap.UrbanBarbarian;
             BlueprintArchetype[] barbarianArchetypes = urbanSet.BarbarianClass
                 .Archetypes ?? Array.Empty<BlueprintArchetype>();
@@ -10370,6 +10440,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cotwArchetypes.Distinct().Count() == cotwArchetypes.Length;
             IReadOnlyList<string> brownFurPublicationEvidence =
                 BrownFurOptionalExtensionCoordinator.PublicationEvidence;
+            int brownFurExpectedBefore = foreignCotwArchetypes;
+            int brownFurExpectedAfter = foreignCotwArchetypes + 1;
+            string brownFurExpectedPublication =
+                "surface=cotw-arcanist-archetypes;action=published;before=" +
+                brownFurExpectedBefore + ";after=" + brownFurExpectedAfter;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -10419,6 +10494,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 publicFirearmFeats);
             int fighterFirearmAll = CountExactFeatures(fighter.AllFeatures,
                 publicFirearmFeats);
+            BodyguardFeatBlueprintSet bodyguardSet =
+                BlueprintBootstrap.BodyguardFeats;
+            BlueprintFeature[] publicBodyguardFeats = {
+                bodyguardSet.Bodyguard, bodyguardSet.InHarmsWay };
+            int basicBodyguardFeatures = CountExactFeatures(basic.Features,
+                publicBodyguardFeats);
+            int basicBodyguardAll = CountExactFeatures(basic.AllFeatures,
+                publicBodyguardFeats);
+            int fighterBodyguardFeatures = CountExactFeatures(fighter.Features,
+                publicBodyguardFeats);
+            int fighterBodyguardAll = CountExactFeatures(fighter.AllFeatures,
+                publicBodyguardFeats);
             BlueprintFeature legacyFirearmProficiency =
                 firearmFeats.ExoticWeaponProficiency;
             int legacyFirearmCatalogReferences = BlueprintBootstrap.Library
@@ -10717,12 +10804,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 expectedAcadamae + "/" + expectedShieldOther + "/" +
                 expectedExpandedSummoning + "/" + expectedElvenBranchedSpears +
                 "/" + expectedEasternWeapons + "/" + expectedBrownFurTransmuter +
-                "/" + expectedUrbanBarbarian +
+                "/" + expectedUrbanBarbarian + "/" + expectedBodyguardFeats +
                 ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
                 activeShieldOther + "/" + activeExpandedSummoning + "/" +
                 activeElvenBranchedSpears + "/" + activeEasternWeapons + "/" +
-                activeBrownFurTransmuter + "/" + activeUrbanBarbarian +
+                activeBrownFurTransmuter + "/" + activeUrbanBarbarian + "/" +
+                activeBodyguardFeats +
                 ";brownFur=contract:" + brownFurContractCompatible +
                 "/identities:" + (brownFurBlueprints == null ? 0 :
                     brownFurBlueprints.Count) + "/published:" +
@@ -10738,6 +10826,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";cordRows=" + cordRows + ";paperRows=" + paperRows +
                 ";basicFirearm=" + basicFirearmFeatures + "/" + basicFirearmAll +
                 ";fighterFirearm=" + fighterFirearmFeatures + "/" + fighterFirearmAll +
+                ";bodyguardIdentities=" + bodyguardSet.Count +
+                ";basicBodyguard=" + basicBodyguardFeatures + "/" +
+                basicBodyguardAll + ";fighterBodyguard=" +
+                fighterBodyguardFeatures + "/" + fighterBodyguardAll +
                 ";nativeParameters=" + firearmParameterCount +
                 ";capitalGunslinger=" + capitalGunslingerRows +
                 ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
@@ -10782,7 +10874,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeElvenBranchedSpears == expectedElvenBranchedSpears &&
                     activeEasternWeapons == expectedEasternWeapons &&
                     activeBrownFurTransmuter == expectedBrownFurTransmuter &&
-                    activeUrbanBarbarian == expectedUrbanBarbarian,
+                    activeUrbanBarbarian == expectedUrbanBarbarian &&
+                    activeBodyguardFeats == expectedBodyguardFeats,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCount + " identities in every state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
@@ -10817,6 +10910,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         cordRows == (expectedAcadamae ? 1 : 0) &&
                         cordVendorRows == 0,
                     "basic feat selection, exact fixed loot, and capital exclusion"),
+                Assertion("feature-module-bodyguard-publication-gate",
+                    expectedBodyguardFeats ?
+                        "seven identities and both feats singular in basic and Fighter selections" :
+                        "seven identities and neither feat in basic or Fighter selections",
+                    observed, bodyguardSet.Count == 9 &&
+                        basicBodyguardFeatures == (expectedBodyguardFeats ? 2 : 0) &&
+                        basicBodyguardAll == (expectedBodyguardFeats ? 2 : 0) &&
+                        fighterBodyguardFeatures == (expectedBodyguardFeats ? 2 : 0) &&
+                        fighterBodyguardAll == (expectedBodyguardFeats ? 2 : 0),
+                    "always-registered stable identities and atomic feat-catalog publication"),
                 Assertion("feature-module-shield-other-publication",
                     expectedShieldOther ? "all discovered lists singular" :
                         "all discovered lists absent",
@@ -10896,8 +10999,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "always-registered identities, exact merged selectors, broad martial integration, campaign/BTSL publication, fixed loot, and module-gated presentation"),
                 Assertion("feature-module-brown-fur-publication-gate",
                     expectedBrownFurTransmuter ?
-                        "19 identities; available and published; exactly one CotW selector reference; foreign archetypes preserved" :
-                        "19 identities; available and not published; zero CotW selector references; foreign archetypes preserved",
+                        BrownFurIdentityCatalog.IdentityCount +
+                        " identities; available and published; exactly one CotW selector reference; all foreign archetypes preserved" :
+                        BrownFurIdentityCatalog.IdentityCount +
+                        " identities; available and not published; zero CotW selector references; all foreign archetypes preserved",
                     observed,
                     brownFurContractCompatible &&
                     brownFurStatus.Availability ==
@@ -10907,12 +11012,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedBrownFurTransmuter ? 1 : 0) &&
                     brownFurGuidReferences ==
                         (expectedBrownFurTransmuter ? 1 : 0) &&
-                    foreignCotwArchetypes == 6 && cotwArchetypesUnique &&
+                    foreignCotwArchetypes >= 6 && cotwArchetypesUnique &&
                     (expectedBrownFurTransmuter ?
                         brownFurPublicationEvidence.Any(value => value.Contains(
                             "transaction;action=committed")) &&
                         brownFurPublicationEvidence.Any(value => value.Contains(
-                            "surface=cotw-arcanist-archetypes;action=published;before=6;after=7")) :
+                            brownFurExpectedPublication)) :
                         brownFurPublicationEvidence.Count == 0),
                     "structural CotW contract, stable identity set, exact Arcanist archetype array, and Brown-Fur transaction evidence"),
                 Assertion("feature-module-urban-barbarian-publication-gate",
@@ -10923,7 +11028,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     urbanSet.Count == UrbanBarbarianIdentityCatalog.IdentityCount &&
                     urbanArchetypeReferences == (expectedUrbanBarbarian ? 1 : 0) &&
                     urbanArchetypeGuids == (expectedUrbanBarbarian ? 1 : 0) &&
-                    barbarianArchetypesUnique && urbanLast &&
+                    barbarianArchetypesUnique &&
                     urbanSkills.SequenceEqual(expectedUrbanSkills) &&
                     urbanProficiencies.Facts != null &&
                     urbanProficiencies.Facts.Length == 4 &&

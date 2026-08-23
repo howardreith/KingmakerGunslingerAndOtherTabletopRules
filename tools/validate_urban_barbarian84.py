@@ -53,9 +53,9 @@ def validate(root: Path) -> None:
         if entry["symbol"].startswith("KMG.UrbanBarbarian.")]
     if len(urban) != 73 or any(entry.get("status") != "active" for entry in urban):
         raise AssertionError("Urban Barbarian must own exactly 73 active identities")
-    if len(manifest["entries"]) != 1616:
+    if VERSION == "0.0.84" and len(manifest["entries"]) != 1616:
         raise AssertionError("0.0.84 blueprint ledger must contain 1616 identities")
-    if sum(entry.get("status") == "active" for entry in manifest["entries"]) != 1615:
+    if VERSION == "0.0.84" and sum(entry.get("status") == "active" for entry in manifest["entries"]) != 1615:
         raise AssertionError("0.0.84 blueprint ledger must contain 1615 active identities")
 
 

@@ -1,10 +1,40 @@
 # Kingmaker Gunslinger
 
-The `0.0.89` weapon-presentation candidate retains the eight independent
-feature modules and the complete `0.0.88` overnight repair set. It calibrates
-all production firearms, Elven Branched Spears, Wakizashi, Katana, and Nodachi
-against native presentation donors without changing weapon mechanics,
-blueprint identity, damage, range, reload, misfire, or acquisition behavior.
+The `0.0.93` compatibility candidate preserves Bodyguard, In Harm's Way, and
+the canonical Call of the Wild Aid Another integration while repairing the
+exact Favored Class 1.3.1 and Tweak or Treat 1.1.0 startup conflict caused by
+Nodachi's runtime-only martial weapon category. Broad-martial proficiency is
+now published transactionally after every `LoadDictionary` postfix has
+finished, allowing Favored Class trait construction and Tweak or Treat's
+Heirloom Weapon integration to complete before either sees the custom enum.
+
+With compatible Call of the Wild and Favored Class installations, Combat
+Traits contain KMG's **Helpful** trait, Race Traits retain Favored Class's
+halfling **Helpful**, and ordinary Aid Another plus Bodyguard share the same
++2/+3/+4 replacement and independent-contributor calculation. When Favored
+Class traits and Eastern Weapons are both enabled, Equipment Traits also gain
+one save-stable **Heirloom Weapon: Nodachi** choice without replacing native or
+third-party options.
+
+Every successful Bodyguard contribution remains explicit in Kingmaker's native
+expanded attack-roll AC details, sourced from the protector's actual Bodyguard
+feat fact and scoped to the exact `RuleCalculateAC` event. Variable Helpful and
+other canonical Aid Another increases retain their truthful final AC values.
+
+The retained subsystem is a ninth independent, default-enabled feature module.
+It publishes both feats to the normal general and Fighter combat-feat selections
+with separate, free, persistent automation modes that default off. Bodyguard
+spends native attack-of-opportunity currency before the incoming result is
+known and rolls a native target-aware melee attack calculation against AC 10.
+In Harm's Way spends Kingmaker's shared immediate/swift budget and redirects
+the original successful attack delivery rather than copying, replaying, or
+transferring post-damage results.
+
+The candidate retains the complete `0.0.89` weapon-presentation and `0.0.88`
+overnight repair sets. Production firearms, Elven Branched Spears, Wakizashi,
+Katana, and Nodachi remain calibrated against native presentation donors
+without changing their weapon mechanics, blueprint identity, damage, range,
+reload, misfire, or acquisition behavior.
 
 The candidate adds full semantic weapon frames, independent held/stored rigs,
 and guarded visual evidence for native controls, firing and thrust motion,
@@ -106,21 +136,22 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find eight checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find nine checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
-Transmuter -- requires Call of the Wild**, and **Urban Barbarian**. All default
-enabled. Older settings migrate to schema 7 while preserving explicit existing values and enabling
-newly absent default-on modules.
+Transmuter -- requires Call of the Wild**, **Urban Barbarian**, and **Bodyguard
+and In Harms Way**. All default enabled. Older settings migrate to schema 8
+while preserving explicit existing values and enabling newly absent default-on
+modules.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All eight modules
+items, summons, ammunition state, or equipment from a save. All nine modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other seven modules continue. Urban Barbarian remains
+publication while the other eight modules continue. Urban Barbarian remains
 available regardless of CotW compatibility. Keep the whole mod installed
 for any campaign that has used project content.
 

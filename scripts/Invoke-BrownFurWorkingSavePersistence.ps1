@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.89',
+    [string]$ExpectedVersion = '0.0.95',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
     [string]$SaveName = 'KMG_AUTOMATION_WORKING',
     [ValidateRange(120, 900)][int]$TimeoutSeconds = 300,
@@ -51,7 +51,7 @@ $failure = $null
 
 function Set-BrownFurEnabled([bool]$enabled) {
     $configuration = [ordered]@{
-        schemaVersion = 7
+        schemaVersion = 8
         gunslinger = $true
         'acadamae-graduate' = $true
         'shield-other' = $true
@@ -60,6 +60,7 @@ function Set-BrownFurEnabled([bool]$enabled) {
         'eastern-weapons' = $true
         'brown-fur-transmuter' = $enabled
         'urban-barbarian' = $true
+        'bodyguard-feats' = $true
     }
     $temporary = $settings + '.kmg-brown-fur-persistence.tmp'
     [IO.File]::WriteAllText($temporary,

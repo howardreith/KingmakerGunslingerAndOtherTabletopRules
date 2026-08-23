@@ -1,6 +1,7 @@
 using System;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.UrbanBarbarian;
+using KingmakerGunslinger.AidAnotherCompatibility;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger.FeatureModules
@@ -38,9 +39,12 @@ namespace KingmakerGunslinger.FeatureModules
                 "Brown-Fur Transmuter  requires Call of the Wild");
             bool urbanBarbarian = ImmediateModeGui.Toggle(
                 _state.Pending.UrbanBarbarian, "Urban Barbarian");
+            bool bodyguardFeats = ImmediateModeGui.Toggle(
+                _state.Pending.BodyguardFeats,
+                "Bodyguard, In Harms Way, and Helpful");
             _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
                 elvenBranchedSpears, easternWeapons, brownFurTransmuter,
-                urbanBarbarian);
+                urbanBarbarian, bodyguardFeats);
             BrownFurFeatureStatus brownFurStatus =
                 BrownFurFeatureStatusRegistry.Current;
             ImmediateModeGui.Label("Brown-Fur dependency: " +
@@ -55,6 +59,15 @@ namespace KingmakerGunslinger.FeatureModules
                 urbanCotw.InteroperabilityStatus);
             ImmediateModeGui.Label("Urban Barbarian CotW detail: " +
                 urbanCotw.Diagnostic);
+            AidAnotherCompatibilityStatus aidAnother =
+                AidAnotherCompatibilityStatusRegistry.Current;
+            ImmediateModeGui.Label("Aid Another compatibility: " +
+                aidAnother.CotwStatus);
+            ImmediateModeGui.Label("Aid Another traits: " +
+                aidAnother.FavoredClassStatus);
+            ImmediateModeGui.Label("Helpful publication: " +
+                aidAnother.PublicationStatus);
+            ImmediateModeGui.Label("Aid Another detail: " + aidAnother.Detail);
             ImmediateModeGui.Label("Active this process: " + _state.Active);
             ImmediateModeGui.Label("Saved for next restart: " + _state.Pending);
             if (_state.RestartRequired)

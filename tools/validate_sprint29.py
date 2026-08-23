@@ -158,7 +158,9 @@ def validate(
         fail("Domain test project does not link every Sprint 29 policy/test source.")
 
     bootstrap = read(root, "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs")
-    registration_token = (("ExpectedRegisteredBlueprintCount = 333 +"
+    registration_token = (("ExpectedRegisteredBlueprintCount = 341 +"
+        if (root / "src/KingmakerGunslinger/Blueprints/BodyguardFeatBlueprints.cs").is_file()
+        else "ExpectedRegisteredBlueprintCount = 333 +"
         if (root / "src/KingmakerGunslinger/Compatibility/CustomWeaponFocusedWeaponCompatibility.cs").is_file()
         else "ExpectedRegisteredBlueprintCount = 329 +"
         if (root / "src/KingmakerGunslinger/EasternWeapons/EasternWeaponCatalog.cs").is_file()

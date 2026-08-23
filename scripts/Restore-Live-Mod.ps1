@@ -24,14 +24,32 @@ if (-not $live.Equals($expectedLive, [StringComparison]::OrdinalIgnoreCase)) {
 if ($backup.Equals($live, [StringComparison]::OrdinalIgnoreCase)) {
     throw 'Backup directory cannot be the live mod directory.'
 }
-foreach ($required in @('Info.json', 'KingmakerGunslinger.dll')) {
-    if (-not (Test-Path -LiteralPath (Join-Path $backup $required) -PathType Leaf)) {
-        throw "Backup structure is invalid; missing $required."
+$emptyMarkerPath = Join-Path $backup '.kmg-empty-live-mod.json'
+$emptyBackup = Test-Path -LiteralPath $emptyMarkerPath -PathType Leaf
+$emptyDirectories = @()
+if ($emptyBackup) {
+    $backupFiles = @(Get-ChildItem -LiteralPath $backup -Recurse -File)
+    if ($backupFiles.Count -ne 1) {
+        throw 'Empty live-mod backup marker must be the only backup file.'
     }
+    $empty = Get-Content -LiteralPath $emptyMarkerPath -Raw | ConvertFrom-Json
+    if ($empty.schemaVersion -ne 1 -or $empty.emptyLiveMod -ne $true -or
+        -not ([IO.Path]::GetFullPath([string]$empty.source).Equals(
+            $expectedLive, [StringComparison]::OrdinalIgnoreCase))) {
+        throw 'Empty live-mod backup marker is invalid.'
+    }
+    $emptyDirectories = @($empty.directories)
 }
-$info = Get-Content -LiteralPath (Join-Path $backup 'Info.json') -Raw | ConvertFrom-Json
-if ($info.Id -ne 'KingmakerGunslinger' -or $info.AssemblyName -ne 'KingmakerGunslinger.dll') {
-    throw 'Backup metadata does not identify the KingmakerGunslinger mod.'
+else {
+    foreach ($required in @('Info.json', 'KingmakerGunslinger.dll')) {
+        if (-not (Test-Path -LiteralPath (Join-Path $backup $required) -PathType Leaf)) {
+            throw "Backup structure is invalid; missing $required."
+        }
+    }
+    $info = Get-Content -LiteralPath (Join-Path $backup 'Info.json') -Raw | ConvertFrom-Json
+    if ($info.Id -ne 'KingmakerGunslinger' -or $info.AssemblyName -ne 'KingmakerGunslinger.dll') {
+        throw 'Backup metadata does not identify the KingmakerGunslinger mod.'
+    }
 }
 
 Write-Host "Explicit restore source: $backup"
@@ -44,9 +62,22 @@ foreach ($child in Get-ChildItem -LiteralPath $live -Force) {
     $target = Assert-KmgPathWithin -Path $child.FullName -Root $live
     Remove-Item -LiteralPath $target -Recurse -Force
 }
-Copy-Item -Path (Join-Path $backup '*') -Destination $live -Recurse -Force
-if ((Get-KmgSha256 -Path (Join-Path $backup 'KingmakerGunslinger.dll')) -ne
-    (Get-KmgSha256 -Path (Join-Path $live 'KingmakerGunslinger.dll'))) {
-    throw 'Restored DLL hash does not match the explicit backup.'
+if ($emptyBackup) {
+    foreach ($relative in $emptyDirectories) {
+        if ([string]::IsNullOrWhiteSpace([string]$relative)) { continue }
+        $target = Assert-KmgPathWithin -Path (Join-Path $live $relative) `
+            -Root $live
+        New-Item -ItemType Directory -Path $target -Force | Out-Null
+    }
+    if (@(Get-ChildItem -LiteralPath $live -Recurse -File).Count -ne 0) {
+        throw 'Restored empty live-mod tree unexpectedly contains files.'
+    }
+}
+else {
+    Copy-Item -Path (Join-Path $backup '*') -Destination $live -Recurse -Force
+    if ((Get-KmgSha256 -Path (Join-Path $backup 'KingmakerGunslinger.dll')) -ne
+        (Get-KmgSha256 -Path (Join-Path $live 'KingmakerGunslinger.dll'))) {
+        throw 'Restored DLL hash does not match the explicit backup.'
+    }
 }
 Write-Host "Restore verified for only: $live"

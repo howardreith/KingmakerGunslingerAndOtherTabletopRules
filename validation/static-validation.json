@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.89-weapon-presentation-calibration",
-  "version": "0.0.89",
+  "milestone": "0.0.95-immediate-action-economy",
+  "version": "0.0.95",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1616,
-    "activeEntryCount": 1615,
+    "entryCount": 1630,
+    "activeEntryCount": 1629,
     "reservedEntryCount": 1,
-    "registrationCount": 1615
+    "registrationCount": 1629
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -81,5 +81,95 @@
     "bodyMatrixViewCount": 1344,
     "nativeDonorsRemainUnmodified": true,
     "gameplaySemanticsUnchanged": true
+  },
+  "bodyguard90": {
+    "deterministicTestCount": 1190,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 6,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "runtimeQualificationPending": true
+  },
+  "bodyguard91": {
+    "deterministicTestCount": 1192,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 6,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "runtimeQualificationPending": true
+  },
+  "helpful92": {
+    "deterministicTestCount": 1201,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 7,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "cotwAidAnotherOptional": true,
+    "favoredClassHelpfulOptional": true,
+    "runtimeQualificationPending": true
+  },
+  "easternFavored93": {
+    "deterministicTestCount": 1211,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 12,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "cotwAidAnotherOptional": true,
+    "favoredClassHelpfulOptional": true,
+    "lateMartialPublicationRequired": true,
+    "favoredClassTraitsMustComplete": true,
+    "tweakOrTreatHeirloomMustComplete": true,
+    "runtimeQualificationPending": false
+  },
+  "inHarmsWay94": {
+    "deterministicTestCount": 1212,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 12,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "cotwAidAnotherOptional": true,
+    "favoredClassHelpfulOptional": true,
+    "lateMartialPublicationRequired": true,
+    "favoredClassTraitsMustComplete": true,
+    "tweakOrTreatHeirloomMustComplete": true,
+    "runtimeQualificationPending": true
+  },
+  "immediateAction95": {
+    "deterministicTestCount": 1218,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 14,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "cotwAidAnotherOptional": true,
+    "favoredClassHelpfulOptional": true,
+    "lateMartialPublicationRequired": true,
+    "favoredClassTraitsMustComplete": true,
+    "tweakOrTreatHeirloomMustComplete": true,
+    "offTurnImmediateActionRequired": true,
+    "nextActualTurnSwiftDebtRequired": true,
+    "runtimeQualificationPending": true
   }
 }
