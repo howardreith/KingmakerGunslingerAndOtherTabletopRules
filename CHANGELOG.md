@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.95-immediate-action-economy
+
+- Replaces the incorrect current-instant `HasSwiftAction()` gate with a
+  turn-aware immediate-action adapter. An idle off-turn protector may now use
+  In Harm's Way even though Kingmaker cannot issue a normal swift command on
+  another unit's turn.
+- Charges an off-turn interception against the protector's next actual turn,
+  blocks native and third-party swift commands throughout that turn, and
+  refreshes only after that turn completes. Delay preserves the debt; global
+  round changes do not clear it.
+- Uses Kingmaker's native six-second shared swift cooldown for own-turn and
+  real-time-with-pause reactions, and rejects genuinely flat-footed or
+  incapacitated protectors with a persistent, exact combat-log reason.
+- Adds a guarded native-turn scenario covering the human off-turn hit, a
+  second-interception denial, next-turn swift denial, post-turn refresh, and a
+  confirmed critical while preserving Bodyguard, Helpful, full-delivery
+  redirection, Shield Other, and the 0.0.93 compatibility work.
+
 ## 0.0.94-in-harms-way-runtime-repair (qualification candidate)
 
 - Replaces the former aggregate `immediate-unavailable` outcome with a bounded,

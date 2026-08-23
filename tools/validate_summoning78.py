@@ -73,7 +73,9 @@ def validate(root: Path) -> None:
         if entry["symbol"] in {
             "KMG.Feats.Bodyguard", "KMG.Feats.UseBodyguard",
             "KMG.Feats.BodyguardModeMarker", "KMG.Feats.InHarmsWay",
-            "KMG.Feats.UseInHarmsWay", "KMG.Feats.InHarmsWayModeMarker"}]
+            "KMG.Feats.UseInHarmsWay", "KMG.Feats.InHarmsWayModeMarker",
+            "KMG.Feats.InHarmsWayImmediatePending",
+            "KMG.Feats.InHarmsWayImmediateChargedTurn"}]
     bodyguard_active = [entry for entry in bodyguard_entries
         if entry["status"] == "active"]
     bodyguard_reserved = [entry for entry in bodyguard_entries
@@ -145,7 +147,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Elven Branched Spear blueprint ledger count mismatch")
     expanded_summoning_manifest.validate(manifest, expanded_summoning_manifest.planned())
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs").read_text(encoding="utf-8")
-    expected_registration = ("ExpectedRegisteredBlueprintCount = 339 +"
+    expected_registration = ("ExpectedRegisteredBlueprintCount = 341 +"
         if bodyguard_entries else "ExpectedRegisteredBlueprintCount = 333 +"
         if focused_entries else "ExpectedRegisteredBlueprintCount = 329 +"
         if eastern_entries else "ExpectedRegisteredBlueprintCount = 283 +"

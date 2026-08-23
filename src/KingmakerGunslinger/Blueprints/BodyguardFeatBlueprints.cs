@@ -101,7 +101,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             return CreateFeat("KMG_InHarmsWay_Feature", "In Harm's Way",
                 "KMG.Feat.InHarmsWay", bodyguard, mode,
-                "After your Bodyguard attempt succeeds, if the protected ally is still hit, you may expend an available immediate action to become the recipient of that attack's complete damage and associated effects without rerolling the attack. Only one protector can intercept each attack. Activate Use In Harm's Way to authorize this automatic reaction; it has no effect unless Use Bodyguard is also active and succeeds for that attack.",
+                "After your Bodyguard attempt succeeds, if the protected ally is still hit, you may expend an available immediate action to become the recipient of that attack's complete damage and associated effects without rerolling the attack. You can react off-turn; doing so consumes your next swift action, prevents another immediate action until that next turn ends, and cannot be done while flat-footed. Only one protector can intercept each attack. Activate Use In Harm's Way to authorize this automatic reaction; it has no effect unless Use Bodyguard is also active and succeeds for that attack.",
                 iconDonor);
         }
 

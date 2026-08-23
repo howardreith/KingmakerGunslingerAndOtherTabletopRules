@@ -12,7 +12,7 @@ $runtimeProfiles = @(
 )
 foreach ($profile in $runtimeProfiles) {
     [void](Assert-KmgRuntimeScenarioPreflight `
-        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.94' `
+        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.95' `
         -TimeoutSeconds 120 -Parameters @{ profileId = $profile })
 }
 
@@ -26,7 +26,7 @@ foreach ($parameters in $rejected) {
     $failedClosed = $false
     try {
         [void](Assert-KmgRuntimeScenarioPreflight `
-            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.94' `
+            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.95' `
             -TimeoutSeconds 120 -Parameters $parameters)
     }
     catch { $failedClosed = $true }

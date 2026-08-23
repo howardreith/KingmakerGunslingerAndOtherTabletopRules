@@ -292,6 +292,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "KMG_P0_FOCUSED_AIM_AFFECTED_COPY";
         internal const string DisposableInHarmsWayHumanRepro =
             "disposable-in-harms-way-human-repro";
+        internal const string DisposableInHarmsWayOffTurnEconomy =
+            "disposable-in-harms-way-off-turn-economy";
         internal const string InHarmsWayHumanReproSaveName =
             "KMG_IHW_HUMAN_REPRO_COPY";
         internal const string WorkingSaveShieldOtherPrepare =
@@ -462,6 +464,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveSmoke,
                 P0AffectedFocusedAimSaveLoad,
                 DisposableInHarmsWayHumanRepro,
+                DisposableInHarmsWayOffTurnEconomy,
                 WorkingSaveShieldOtherPrepare,
                 WorkingSaveShieldOtherVerifyCleanup,
                 GenericFirearmActions,

@@ -13,6 +13,10 @@ INFORMATIONAL_VERSION = "0.0.94-in-harms-way-runtime-repair"
 PACKAGE = "KingmakerGunslinger-0.0.94-local-runtime.zip"
 DETERMINISTIC_TEST_COUNT = 1212
 STATIC_KEY = "inHarmsWay94"
+EXPECTED_LEDGER_ENTRIES = 1628
+EXPECTED_ACTIVE_BLUEPRINTS = 1627
+PROJECT_BLUEPRINT_COUNT = 12
+ADDITIONAL_IDENTITIES = {}
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
@@ -32,6 +36,10 @@ def validate(root: Path) -> None:
     baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
     baseline.STATIC_KEY = STATIC_KEY
     baseline.RUNTIME_QUALIFICATION_PENDING = True
+    baseline.EXPECTED_LEDGER_ENTRIES = EXPECTED_LEDGER_ENTRIES
+    baseline.EXPECTED_ACTIVE_BLUEPRINTS = EXPECTED_ACTIVE_BLUEPRINTS
+    baseline.PROJECT_BLUEPRINT_COUNT = PROJECT_BLUEPRINT_COUNT
+    baseline.HEIRLOOM_IDENTITIES.update(ADDITIONAL_IDENTITIES)
     baseline.validate(root)
 
     required = (

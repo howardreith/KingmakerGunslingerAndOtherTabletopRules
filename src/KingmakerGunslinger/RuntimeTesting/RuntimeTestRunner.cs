@@ -103,6 +103,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private SaveCatalogProviderObservation _catalogProviderObservation;
         private LoadGameButtonActionObservation _buttonActionObservation;
         private WorkingSaveSmokeScenario _workingSaveSmoke;
+        private InHarmsWayOffTurnEconomyScenario.Session
+            _inHarmsWayOffTurnEconomy;
         private WeaponPresentationEvidenceScenario.Session
             _weaponPresentationEvidence;
         private WeaponPresentationEvidenceScenario.MotionSession
@@ -548,6 +550,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
                     _request.Scenario != RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro &&
+                    _request.Scenario != RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayOffTurnEconomy &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
@@ -1354,6 +1358,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -1404,6 +1410,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -1459,7 +1467,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                             ? WorkingSaveSmokeIdentity.AffectedFocusedAim
                             : _request.Scenario == RuntimeTestScenarioCatalog
-                                .DisposableInHarmsWayHumanRepro
+                                .DisposableInHarmsWayHumanRepro ||
+                              _request.Scenario == RuntimeTestScenarioCatalog
+                                .DisposableInHarmsWayOffTurnEconomy
                                 ? WorkingSaveSmokeIdentity
                                     .InHarmsWayHumanRepro
                             : null);
@@ -1830,6 +1840,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Complete(InHarmsWayHumanReproScenario.Run(
                         _context, _request));
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayOffTurnEconomy)
+                {
+                    if (_inHarmsWayOffTurnEconomy == null)
+                        _inHarmsWayOffTurnEconomy =
+                            InHarmsWayOffTurnEconomyScenario.Begin(
+                                _context, _request);
+                    _inHarmsWayOffTurnEconomy.Poll();
+                    if (_inHarmsWayOffTurnEconomy.Complete)
+                        Complete(_inHarmsWayOffTurnEconomy.Result);
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .WeaponPresentationEvidence)
@@ -3868,6 +3889,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableInHarmsWayHumanRepro ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayOffTurnEconomy ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -10891,7 +10914,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     expectedBodyguardFeats ?
                         "seven identities and both feats singular in basic and Fighter selections" :
                         "seven identities and neither feat in basic or Fighter selections",
-                    observed, bodyguardSet.Count == 7 &&
+                    observed, bodyguardSet.Count == 9 &&
                         basicBodyguardFeatures == (expectedBodyguardFeats ? 2 : 0) &&
                         basicBodyguardAll == (expectedBodyguardFeats ? 2 : 0) &&
                         fighterBodyguardFeatures == (expectedBodyguardFeats ? 2 : 0) &&

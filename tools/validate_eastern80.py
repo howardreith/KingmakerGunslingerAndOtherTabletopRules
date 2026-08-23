@@ -133,7 +133,7 @@ def validate(root: Path) -> None:
 
     bootstrap = (root / "src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs") \
         .read_text(encoding="utf-8")
-    registration = ("ExpectedRegisteredBlueprintCount = 339 +"
+    registration = ("ExpectedRegisteredBlueprintCount = 341 +"
         if any(entry["symbol"] == "KMG.Feats.Bodyguard"
             for entry in manifest["entries"])
         else "ExpectedRegisteredBlueprintCount = 333 +")

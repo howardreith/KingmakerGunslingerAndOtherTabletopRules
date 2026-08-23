@@ -330,6 +330,9 @@
     <Compile Include="BodyguardFeats\BodyguardAidPolicy.cs" />
     <Compile Include="BodyguardFeats\BodyguardArmorClassAttributionPolicy.cs" />
     <Compile Include="BodyguardFeats\BodyguardAttackSelectionPolicy.cs" />
+    <Compile Include="BodyguardFeats\ImmediateActionEconomyPolicy.cs" />
+    <Compile Include="BodyguardFeats\ImmediateActionEconomyRuntime.cs" />
+    <Compile Include="BodyguardFeats\ImmediateActionEconomyPatches.cs" />
     <Compile Include="BodyguardFeats\InHarmsWayCandidateGate.cs" />
     <Compile Include="BodyguardFeats\BodyguardInterceptionPolicy.cs" />
     <Compile Include="BodyguardFeats\BodyguardAttackFrame.cs" />
@@ -870,6 +873,7 @@
     <Compile Include="RuntimeTesting\BodyguardCombatFixture.cs" />
     <Compile Include="RuntimeTesting\BodyguardCombatScenario.cs" />
     <Compile Include="RuntimeTesting\InHarmsWayHumanReproScenario.cs" />
+    <Compile Include="RuntimeTesting\InHarmsWayOffTurnEconomyScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurTransmutationInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\BrownFurCastEngineContractObserver.cs" />
     <Compile Include="RuntimeTesting\BrownFurIlDisassembler.cs" />

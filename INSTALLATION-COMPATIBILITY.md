@@ -11,15 +11,32 @@ its supported Unity Mod Manager installation, and the Harmony compatibility
 assembly supplied by that environment. Do not copy game, Unity, UMM, Harmony,
 or compiler assemblies into this mod folder.
 
+## In Harm's Way immediate-action adaptation
+
+Kingmaker 2.1.7b has a native shared swift-action cooldown but no complete
+off-turn immediate-action resource. In turn-based combat, In Harm's Way can
+react on another unit's turn when its mode is active, the protector is not
+flat-footed, and no earlier immediate action is waiting to be charged. That
+off-turn use consumes the protector's next actual turn's swift action and
+prevents another immediate action until that turn completes. Delaying does not
+clear the debt at the old initiative position. In RTWP, the native six-second
+swift cooldown remains the shared swift/immediate budget.
+
+The correlation needed for turn-based play is stored as hidden, save-stable
+KMG facts. They are registered even when the Bodyguard module is not published,
+so a save made while debt exists remains resolvable. Disabling the module does
+not strip saved identities. Combat- and scene-completion cleanup removes only
+transient action debt; it does not alter either feat or automation mode.
+
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.91-bodyguard-in-harms-way.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.95-bodyguard-in-harms-way.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.91 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.95 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 

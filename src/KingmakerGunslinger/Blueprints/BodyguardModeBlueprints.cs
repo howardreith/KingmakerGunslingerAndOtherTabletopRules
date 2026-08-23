@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.ResourceLinks;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -13,7 +14,9 @@ namespace KingmakerGunslinger.Blueprints
         internal BodyguardModeBlueprintSet(BlueprintBuff bodyguardMarker,
             BlueprintActivatableAbility bodyguardAbility,
             BlueprintBuff inHarmsWayMarker,
-            BlueprintActivatableAbility inHarmsWayAbility)
+            BlueprintActivatableAbility inHarmsWayAbility,
+            BlueprintFeature immediatePending,
+            BlueprintFeature immediateChargedTurn)
         {
             BodyguardMarker = bodyguardMarker ??
                 throw new ArgumentNullException("bodyguardMarker");
@@ -23,13 +26,19 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentNullException("inHarmsWayMarker");
             InHarmsWayAbility = inHarmsWayAbility ??
                 throw new ArgumentNullException("inHarmsWayAbility");
+            ImmediatePending = immediatePending ??
+                throw new ArgumentNullException("immediatePending");
+            ImmediateChargedTurn = immediateChargedTurn ??
+                throw new ArgumentNullException("immediateChargedTurn");
         }
 
         internal BlueprintBuff BodyguardMarker { get; private set; }
         internal BlueprintActivatableAbility BodyguardAbility { get; private set; }
         internal BlueprintBuff InHarmsWayMarker { get; private set; }
         internal BlueprintActivatableAbility InHarmsWayAbility { get; private set; }
-        internal int Count { get { return 4; } }
+        internal BlueprintFeature ImmediatePending { get; private set; }
+        internal BlueprintFeature ImmediateChargedTurn { get; private set; }
+        internal int Count { get { return 6; } }
     }
 
     internal static class BodyguardModeBlueprints
@@ -41,12 +50,16 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Feats.InHarmsWayModeMarker";
         internal const string InHarmsWayAbilitySymbol =
             "KMG.Feats.UseInHarmsWay";
+        internal const string ImmediatePendingSymbol =
+            "KMG.Feats.InHarmsWayImmediatePending";
+        internal const string ImmediateChargedTurnSymbol =
+            "KMG.Feats.InHarmsWayImmediateChargedTurn";
         internal const string BodyguardDisplayName = "Use Bodyguard";
         internal const string BodyguardDescription =
             "When an adjacent ally is attacked by an enemy you threaten, automatically expend one available attack of opportunity to attempt an Aid Another melee attack roll against AC 10. On success, the ally gains your normal Aid Another AC bonus against that attack (normally +2, and increased by effects such as Helpful). The attack of opportunity is spent even if the attempt fails.";
         internal const string InHarmsWayDisplayName = "Use In Harm's Way";
         internal const string InHarmsWayDescription =
-            "When your Bodyguard attempt succeeds and the protected ally is still hit, automatically expend an available immediate action to receive that attack's full damage and associated effects. Only one protector can intercept each attack.";
+            "When your Bodyguard attempt succeeds and the protected ally is still hit, automatically expend an available immediate action to receive that attack's full damage and associated effects. This can occur off-turn and consumes your next swift action; you cannot use it again until that next turn ends, and cannot use it while flat-footed. Only one protector can intercept each attack.";
 
         internal static BodyguardModeBlueprintSet Register(BlueprintRegistry registry,
             Sprite icon)
@@ -71,14 +84,48 @@ namespace KingmakerGunslinger.Blueprints
                     CreateAbility("KMG_UseInHarmsWay_ActivatableAbility",
                         InHarmsWayDisplayName, InHarmsWayDescription, "InHarmsWay",
                         inHarmsWayMarker, icon));
+            BlueprintFeature immediatePending = registry.Register<
+                BlueprintFeature>(ImmediatePendingSymbol, () => CreateStateFact(
+                    "KMG_InHarmsWay_ImmediatePending_Feature",
+                    "In Harm's Way Immediate Action Pending",
+                    "An off-turn In Harm's Way use has charged this unit's next actual turn.",
+                    "ImmediatePending"));
+            BlueprintFeature immediateChargedTurn = registry.Register<
+                BlueprintFeature>(ImmediateChargedTurnSymbol, () =>
+                    CreateStateFact(
+                        "KMG_InHarmsWay_ImmediateChargedTurn_Feature",
+                        "In Harm's Way Swift Action Spent",
+                        "This actual turn's swift action was consumed by an earlier off-turn In Harm's Way use.",
+                        "ImmediateChargedTurn"));
             Validate(bodyguardMarker, bodyguardAbility);
             Validate(inHarmsWayMarker, inHarmsWayAbility);
+            ValidateStateFact(immediatePending);
+            ValidateStateFact(immediateChargedTurn);
             if (bodyguardAbility.Group != ActivatableAbilityGroup.None ||
                 inHarmsWayAbility.Group != ActivatableAbilityGroup.None)
                 throw new InvalidOperationException(
                     "Bodyguard modes must not share an activatable-ability group.");
             return new BodyguardModeBlueprintSet(bodyguardMarker, bodyguardAbility,
-                inHarmsWayMarker, inHarmsWayAbility);
+                inHarmsWayMarker, inHarmsWayAbility, immediatePending,
+                immediateChargedTurn);
+        }
+
+        private static BlueprintFeature CreateStateFact(string internalName,
+            string displayName, string description, string localizationStem)
+        {
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = internalName;
+            feature.Ranks = 1;
+            feature.HideInUI = true;
+            feature.IsClassFeature = true;
+            feature.Groups = Array.Empty<FeatureGroup>();
+            feature.ComponentsArray = Array.Empty<BlueprintComponent>();
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create("KMG.ImmediateAction." +
+                    localizationStem + ".Name", displayName),
+                LocalizationService.Create("KMG.ImmediateAction." +
+                    localizationStem + ".Description", description), null);
+            return feature;
         }
 
         private static BlueprintBuff CreateMarker(string internalName,
@@ -154,6 +201,16 @@ namespace KingmakerGunslinger.Blueprints
                 marker.ResourceAssetIds == null || marker.ResourceAssetIds.Length != 0)
                 throw new InvalidOperationException(
                     "Bodyguard automation modes must remain free, off-by-default, persistent, and mechanically inert markers.");
+        }
+
+        private static void ValidateStateFact(BlueprintFeature feature)
+        {
+            if (feature == null || feature.Ranks != 1 || !feature.HideInUI ||
+                !feature.IsClassFeature || feature.Groups == null ||
+                feature.Groups.Length != 0 || feature.ComponentsArray == null ||
+                feature.ComponentsArray.Length != 0)
+                throw new InvalidOperationException(
+                    "Immediate-action debt facts must remain hidden, rank-one, save-stable, and mechanically inert.");
         }
     }
 }

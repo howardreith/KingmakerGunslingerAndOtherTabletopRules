@@ -229,6 +229,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                 request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableInHarmsWayHumanRepro ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayOffTurnEconomy ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -298,7 +300,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                         ? RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveName
                         : request.Scenario == RuntimeTestScenarioCatalog
-                            .DisposableInHarmsWayHumanRepro
+                            .DisposableInHarmsWayHumanRepro ||
+                          request.Scenario == RuntimeTestScenarioCatalog
+                            .DisposableInHarmsWayOffTurnEconomy
                             ? RuntimeTestScenarioCatalog
                                 .InHarmsWayHumanReproSaveName
                         : ManualSaveLoadObservation.WorkingSave;

@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.94-in-harms-way-runtime-repair",
-  "version": "0.0.94",
+  "milestone": "0.0.95-immediate-action-economy",
+  "version": "0.0.95",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1628,
-    "activeEntryCount": 1627,
+    "entryCount": 1630,
+    "activeEntryCount": 1629,
     "reservedEntryCount": 1,
-    "registrationCount": 1627
+    "registrationCount": 1629
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -151,6 +151,25 @@
     "lateMartialPublicationRequired": true,
     "favoredClassTraitsMustComplete": true,
     "tweakOrTreatHeirloomMustComplete": true,
+    "runtimeQualificationPending": true
+  },
+  "immediateAction95": {
+    "deterministicTestCount": 1218,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 14,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "cotwAidAnotherOptional": true,
+    "favoredClassHelpfulOptional": true,
+    "lateMartialPublicationRequired": true,
+    "favoredClassTraitsMustComplete": true,
+    "tweakOrTreatHeirloomMustComplete": true,
+    "offTurnImmediateActionRequired": true,
+    "nextActualTurnSwiftDebtRequired": true,
     "runtimeQualificationPending": true
   }
 }

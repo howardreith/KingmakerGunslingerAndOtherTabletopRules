@@ -14,6 +14,10 @@ namespace KingmakerGunslinger.BodyguardFeats
         MarkerMissing,
         ActivatableMarkerDivergence,
         ProtectorUnableToAct,
+        ProtectorFlatFooted,
+        ActionContractUnreadable,
+        ImmediateDebtActive,
+        SwiftActionSpentThisTurn,
         SwiftCooldownActive,
         HasSwiftActionFalse,
         AlreadyIntercepted,
@@ -49,6 +53,8 @@ namespace KingmakerGunslinger.BodyguardFeats
         internal bool CanAct { get; set; }
         internal bool HasSwiftAction { get; set; }
         internal float SwiftCooldown { get; set; }
+        internal bool ImmediateActionAvailable { get; set; }
+        internal string ImmediateActionReason { get; set; }
         internal bool AlreadyIntercepted { get; set; }
         internal bool DeliveryContractAvailable { get; set; }
     }
@@ -56,14 +62,20 @@ namespace KingmakerGunslinger.BodyguardFeats
     internal sealed class InHarmsWayCandidateGateDecision
     {
         internal InHarmsWayCandidateGateDecision(
-            InHarmsWayCandidateRejection rejection)
-        { Rejection = rejection; }
+            InHarmsWayCandidateRejection rejection, string reason = null)
+        {
+            Rejection = rejection;
+            _reason = reason;
+        }
+
+        private readonly string _reason;
 
         internal InHarmsWayCandidateRejection Rejection { get; private set; }
         internal bool Eligible
         { get { return Rejection == InHarmsWayCandidateRejection.None; } }
         internal string Reason
-        { get { return InHarmsWayCandidateGate.Reason(Rejection); } }
+        { get { return string.IsNullOrWhiteSpace(_reason) ?
+            InHarmsWayCandidateGate.Reason(Rejection) : _reason; } }
     }
 
     internal static class InHarmsWayCandidateGate
@@ -118,16 +130,9 @@ namespace KingmakerGunslinger.BodyguardFeats
             if (!input.DeliveryContractAvailable)
                 return Reject(InHarmsWayCandidateRejection
                     .DeliveryContractUnavailable);
-            if (float.IsNaN(input.SwiftCooldown) ||
-                float.IsInfinity(input.SwiftCooldown))
-                return Reject(InHarmsWayCandidateRejection
-                    .HasSwiftActionFalse);
-            if (input.SwiftCooldown > 0f)
-                return Reject(InHarmsWayCandidateRejection
-                    .SwiftCooldownActive);
-            if (!input.HasSwiftAction)
-                return Reject(InHarmsWayCandidateRejection
-                    .HasSwiftActionFalse);
+            if (!input.ImmediateActionAvailable)
+                return Reject(ActionRejection(input.ImmediateActionReason),
+                    input.ImmediateActionReason);
             return Reject(InHarmsWayCandidateRejection.None);
         }
 
@@ -156,6 +161,14 @@ namespace KingmakerGunslinger.BodyguardFeats
                     return "activatable-marker-divergence";
                 case InHarmsWayCandidateRejection.ProtectorUnableToAct:
                     return "protector-unable-to-act";
+                case InHarmsWayCandidateRejection.ProtectorFlatFooted:
+                    return "protector-flat-footed";
+                case InHarmsWayCandidateRejection.ActionContractUnreadable:
+                    return "action-contract-unreadable";
+                case InHarmsWayCandidateRejection.ImmediateDebtActive:
+                    return "immediate-debt-active";
+                case InHarmsWayCandidateRejection.SwiftActionSpentThisTurn:
+                    return "swift-action-spent-this-turn";
                 case InHarmsWayCandidateRejection.SwiftCooldownActive:
                     return "swift-cooldown-active";
                 case InHarmsWayCandidateRejection.HasSwiftActionFalse:
@@ -175,7 +188,35 @@ namespace KingmakerGunslinger.BodyguardFeats
         }
 
         private static InHarmsWayCandidateGateDecision Reject(
-            InHarmsWayCandidateRejection rejection)
-        { return new InHarmsWayCandidateGateDecision(rejection); }
+            InHarmsWayCandidateRejection rejection, string reason = null)
+        { return new InHarmsWayCandidateGateDecision(rejection, reason); }
+
+        private static InHarmsWayCandidateRejection ActionRejection(
+            string reason)
+        {
+            switch (reason)
+            {
+                case "protector-flat-footed":
+                    return InHarmsWayCandidateRejection.ProtectorFlatFooted;
+                case "immediate-debt-pending-next-turn":
+                case "immediate-debt-charged-turn":
+                    return InHarmsWayCandidateRejection.ImmediateDebtActive;
+                case "swift-action-spent-this-turn":
+                    return InHarmsWayCandidateRejection
+                        .SwiftActionSpentThisTurn;
+                case "swift-cooldown-active":
+                    return InHarmsWayCandidateRejection.SwiftCooldownActive;
+                case "protector-dead":
+                case "protector-unconscious":
+                case "protector-incapacitated":
+                    return InHarmsWayCandidateRejection
+                        .ProtectorUnableToAct;
+                case "has-swift-action-false":
+                    return InHarmsWayCandidateRejection.HasSwiftActionFalse;
+                default:
+                    return InHarmsWayCandidateRejection
+                        .ActionContractUnreadable;
+            }
+        }
     }
 }

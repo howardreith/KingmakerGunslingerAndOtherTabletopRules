@@ -1,8 +1,13 @@
 using System;
 using System.Globalization;
+using Kingmaker;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
+using TurnBased.Controllers;
 
 namespace KingmakerGunslinger.BodyguardFeats
 {
@@ -18,21 +23,39 @@ namespace KingmakerGunslinger.BodyguardFeats
         internal float MoveCooldown { get; set; }
         internal bool IsInCombat { get; set; }
         internal bool IsWaitingInitiative { get; set; }
+        internal bool TurnBased { get; set; }
+        internal bool ProtectorIsCurrentTurn { get; set; }
+        internal string CurrentTurnId { get; set; }
+        internal bool FlatFooted { get; set; }
+        internal bool FlatFootedReadable { get; set; }
+        internal ImmediateActionDebtState DebtState { get; set; }
+        internal ImmediateActionEconomyDecision Decision { get; set; }
         internal bool Available
         {
-            get
-            {
-                return ContractReadable && Alive && Conscious && CanAct &&
-                    HasSwiftAction && !float.IsNaN(SwiftCooldown) &&
-                    !float.IsInfinity(SwiftCooldown) && SwiftCooldown <= 0f;
-            }
+            get { return Decision != null && Decision.Available; }
         }
+        internal string Reason
+        { get { return Decision == null ? "action-contract-unreadable" :
+            Decision.Code; } }
+    }
+
+    internal sealed class BodyguardImmediateActionSpendToken
+    {
+        internal UnitEntityData Unit { get; set; }
+        internal ImmediateActionCombatMode CombatMode { get; set; }
+        internal bool ProtectorWasCurrentTurn { get; set; }
+        internal float SwiftBefore { get; set; }
+        internal float SwiftAfter { get; set; }
+        internal Fact AddedPendingFact { get; set; }
+        internal ImmediateActionDebtState DebtAfter { get; set; }
+        internal bool Committed { get; set; }
     }
 
     /// <summary>
     /// Thin adapter over Kingmaker's authoritative opportunity-attack count and
-    /// shared swift-action cooldown. Bodyguard never creates an attack command,
-    /// and In Harm's Way never owns a parallel per-round resource.
+    /// shared swift-action cooldown. Kingmaker has no complete immediate-action
+    /// resource: turn-based off-turn spends use save-stable next-actual-turn
+    /// debt, while native SwiftAction remains the command gate and RTWP timer.
     /// </summary>
     internal static class BodyguardActionEconomyAccess
     {
@@ -144,16 +167,18 @@ namespace KingmakerGunslinger.BodyguardFeats
         }
 
         internal static bool CanSpendImmediateAction(UnitEntityData unit,
-            out float swiftCooldown)
+            UnitEntityData attacker, out float swiftCooldown,
+            out string reason)
         {
             BodyguardImmediateActionSnapshot snapshot =
-                ObserveImmediateAction(unit);
+                ObserveImmediateAction(unit, attacker);
             swiftCooldown = snapshot.SwiftCooldown;
+            reason = snapshot.Reason;
             return snapshot.Available;
         }
 
         internal static BodyguardImmediateActionSnapshot ObserveImmediateAction(
-            UnitEntityData unit)
+            UnitEntityData unit, UnitEntityData attacker = null)
         {
             var result = new BodyguardImmediateActionSnapshot
             {
@@ -179,62 +204,144 @@ namespace KingmakerGunslinger.BodyguardFeats
                 result.IsWaitingInitiative = unit.CombatState
                     .IsWaitingInitiative;
                 result.HasSwiftAction = unit.HasSwiftAction();
+                result.TurnBased = CombatController.IsInTurnBasedCombat();
+                if (result.TurnBased)
+                {
+                    var controller = Game.Instance == null ? null :
+                        Game.Instance.TurnBasedCombatController;
+                    var turn = controller == null ? null :
+                        controller.CurrentTurn;
+                    UnitEntityData current = turn == null ? null : turn.Unit;
+                    if (controller == null || turn == null || current == null)
+                        result.ContractReadable = false;
+                    result.ProtectorIsCurrentTurn = ReferenceEquals(current,
+                        unit);
+                    result.CurrentTurnId = current == null ? null :
+                        current.UniqueId;
+                }
+                else
+                {
+                    result.ProtectorIsCurrentTurn = false;
+                    result.CurrentTurnId = null;
+                }
+                result.FlatFootedReadable = TryObserveFlatFooted(attacker,
+                    unit, out bool flatFooted);
+                result.FlatFooted = flatFooted;
+                if (!result.FlatFootedReadable)
+                    result.ContractReadable = false;
+                result.DebtState = ImmediateActionEconomyRuntime.ObserveDebt(
+                    unit);
             }
             catch
             { result.ContractReadable = false; }
+            result.Decision = ImmediateActionEconomyPolicy.Evaluate(
+                new ImmediateActionEconomyInput
+                {
+                    ContractReadable = result.ContractReadable,
+                    Alive = result.Alive,
+                    Conscious = result.Conscious,
+                    CanAct = result.CanAct,
+                    FlatFooted = result.FlatFooted,
+                    CombatMode = result.TurnBased ?
+                        ImmediateActionCombatMode.TurnBased :
+                        ImmediateActionCombatMode.RealTime,
+                    ProtectorIsCurrentTurn = result.ProtectorIsCurrentTurn,
+                    RawHasSwiftAction = result.HasSwiftAction,
+                    RawSwiftCooldown = result.SwiftCooldown,
+                    DebtState = result.DebtState
+                });
             return result;
         }
 
         internal static bool TrySpendImmediateAction(UnitEntityData unit,
-            out float before, out float after)
+            UnitEntityData attacker,
+            out BodyguardImmediateActionSpendToken token)
         {
-            before = float.NaN;
-            after = float.NaN;
-            if (!CanSpendImmediateAction(unit, out before))
+            BodyguardImmediateActionSnapshot snapshot =
+                ObserveImmediateAction(unit, attacker);
+            token = new BodyguardImmediateActionSpendToken
             {
-                after = before;
-                return false;
-            }
+                Unit = unit,
+                CombatMode = snapshot.TurnBased ?
+                    ImmediateActionCombatMode.TurnBased :
+                    ImmediateActionCombatMode.RealTime,
+                ProtectorWasCurrentTurn = snapshot.ProtectorIsCurrentTurn,
+                SwiftBefore = snapshot.SwiftCooldown,
+                SwiftAfter = snapshot.SwiftCooldown,
+                DebtAfter = snapshot.DebtState
+            };
+            if (!snapshot.Available) return false;
             try
             {
-                unit.CombatState.Cooldown.SwiftAction = before +
+                ImmediateActionDebtState debt = ImmediateActionEconomyPolicy
+                    .DebtAfterSpend(token.CombatMode,
+                        token.ProtectorWasCurrentTurn);
+                if (debt == ImmediateActionDebtState.PendingNextTurn)
+                {
+                    Fact added;
+                    if (!ImmediateActionEconomyRuntime.TryAddPending(unit,
+                            out added)) return false;
+                    token.AddedPendingFact = added;
+                    token.DebtAfter = debt;
+                    token.SwiftAfter = unit.CombatState.Cooldown.SwiftAction;
+                    token.Committed = true;
+                    return true;
+                }
+
+                unit.CombatState.Cooldown.SwiftAction = token.SwiftBefore +
                     SwiftActionCooldownSeconds;
-                after = unit.CombatState.Cooldown.SwiftAction;
-                if (Math.Abs(after - (before + SwiftActionCooldownSeconds)) <
-                    0.0001f) return true;
-                TryRestoreImmediateAction(unit, before, after);
-                after = unit.CombatState.Cooldown.SwiftAction;
+                token.SwiftAfter = unit.CombatState.Cooldown.SwiftAction;
+                token.DebtAfter = ImmediateActionDebtState.None;
+                token.Committed = Math.Abs(token.SwiftAfter -
+                    (token.SwiftBefore + SwiftActionCooldownSeconds)) <
+                    0.0001f;
+                if (token.Committed) return true;
+                TryRollbackImmediateAction(token);
                 return false;
             }
             catch
             {
-                TryRestoreImmediateAction(unit, before,
-                    before + SwiftActionCooldownSeconds);
-                try
-                {
-                    if (unit != null && unit.CombatState != null &&
-                        unit.CombatState.Cooldown != null)
-                        after = unit.CombatState.Cooldown.SwiftAction;
-                }
-                catch { }
+                TryRollbackImmediateAction(token);
                 return false;
             }
         }
 
-        internal static bool TryRestoreImmediateAction(UnitEntityData unit,
-            float before, float expectedCurrent)
+        internal static bool TryRollbackImmediateAction(
+            BodyguardImmediateActionSpendToken token)
         {
-            if (unit == null || unit.CombatState == null ||
-                unit.CombatState.Cooldown == null || float.IsNaN(before) ||
-                float.IsInfinity(before)) return false;
+            if (token == null || token.Unit == null ||
+                token.Unit.CombatState == null ||
+                token.Unit.CombatState.Cooldown == null) return false;
+            if (token.AddedPendingFact != null)
+                return ImmediateActionEconomyRuntime.TryRemoveAddedPending(
+                    token.Unit, token.AddedPendingFact);
+            if (float.IsNaN(token.SwiftBefore) ||
+                float.IsInfinity(token.SwiftBefore)) return false;
             try
             {
-                float current = unit.CombatState.Cooldown.SwiftAction;
-                if (Math.Abs(current - expectedCurrent) >= 0.0001f)
+                float current = token.Unit.CombatState.Cooldown.SwiftAction;
+                if (Math.Abs(current - token.SwiftAfter) >= 0.0001f)
                     return false;
-                unit.CombatState.Cooldown.SwiftAction = before;
-                return Math.Abs(unit.CombatState.Cooldown.SwiftAction - before) <
-                    0.0001f;
+                token.Unit.CombatState.Cooldown.SwiftAction =
+                    token.SwiftBefore;
+                return Math.Abs(token.Unit.CombatState.Cooldown.SwiftAction -
+                    token.SwiftBefore) < 0.0001f;
+            }
+            catch { return false; }
+        }
+
+        private static bool TryObserveFlatFooted(UnitEntityData attacker,
+            UnitEntityData protector, out bool flatFooted)
+        {
+            flatFooted = false;
+            if (protector == null) return false;
+            if (attacker == null) return true;
+            try
+            {
+                var rule = new RuleCheckTargetFlatFooted(attacker, protector);
+                Rulebook.Trigger(rule);
+                flatFooted = rule.IsFlatFooted;
+                return true;
             }
             catch { return false; }
         }

@@ -12541,6 +12541,14 @@
       "plannedType": "BlueprintBuff", "status": "active", "milestone": "Bodyguard and In Harm's Way", "notes": "Hidden save-stable marker for the Use In Harm's Way mode."
     },
     {
+      "symbol": "KMG.Feats.InHarmsWayImmediatePending", "guid": "a92164067bad3a85b1da48db5a787686",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "In Harm's Way immediate-action economy", "notes": "Hidden save-stable debt marker: an off-turn immediate action has charged the owner's next actual turn."
+    },
+    {
+      "symbol": "KMG.Feats.InHarmsWayImmediateChargedTurn", "guid": "326e183f7791e83a38337c6a6d7a8644",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "In Harm's Way immediate-action economy", "notes": "Hidden save-stable marker that denies the swift action throughout the charged actual turn."
+    },
+    {
       "symbol": "KMG.Traits.HelpfulCombat", "guid": "e4b29a7c8d5f4c1796ab03e1f72d8456",
       "plannedType": "BlueprintFeature", "status": "active", "milestone": "Aid Another compatibility", "notes": "Save-stable combat Helpful trait; optional publication into Favored Class is late-bound and transactional."
     },

@@ -15,6 +15,9 @@ PACKAGE = "KingmakerGunslinger-0.0.93-local-runtime.zip"
 DETERMINISTIC_TEST_COUNT = 1211
 STATIC_KEY = "easternFavored93"
 RUNTIME_QUALIFICATION_PENDING = False
+EXPECTED_LEDGER_ENTRIES = 1628
+EXPECTED_ACTIVE_BLUEPRINTS = 1627
+PROJECT_BLUEPRINT_COUNT = 12
 
 HEIRLOOM_IDENTITIES = {
     "KMG.Traits.HeirloomWeapon.Nodachi.Selection": (
@@ -46,9 +49,9 @@ def validate(root: Path) -> None:
     baseline.PACKAGE = PACKAGE
     baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
     baseline.STATIC_KEY = STATIC_KEY
-    baseline.EXPECTED_LEDGER_ENTRIES = 1628
-    baseline.EXPECTED_ACTIVE_BLUEPRINTS = 1627
-    baseline.PROJECT_BLUEPRINT_COUNT = 12
+    baseline.EXPECTED_LEDGER_ENTRIES = EXPECTED_LEDGER_ENTRIES
+    baseline.EXPECTED_ACTIVE_BLUEPRINTS = EXPECTED_ACTIVE_BLUEPRINTS
+    baseline.PROJECT_BLUEPRINT_COUNT = PROJECT_BLUEPRINT_COUNT
     baseline.EXPECTED_IDENTITIES.update(HEIRLOOM_IDENTITIES)
     baseline.FAVORED_AVAILABILITY_DISPOSITION = (
         "NOT-TESTED", "RUNTIME-QUALIFIED-EXACT")
@@ -139,7 +142,7 @@ def validate(root: Path) -> None:
     contract = static.get(STATIC_KEY, {})
     expected_static = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "projectBlueprintCount": 12,
+        "projectBlueprintCount": PROJECT_BLUEPRINT_COUNT,
         "lateMartialPublicationRequired": True,
         "favoredClassTraitsMustComplete": True,
         "tweakOrTreatHeirloomMustComplete": True,

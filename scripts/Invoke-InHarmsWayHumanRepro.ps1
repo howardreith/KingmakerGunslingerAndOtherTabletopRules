@@ -1,6 +1,9 @@
 [CmdletBinding()]
 param(
-    [string]$ExpectedVersion = '0.0.94',
+    [ValidateSet('disposable-in-harms-way-human-repro',
+        'disposable-in-harms-way-off-turn-economy')]
+    [string]$Scenario = 'disposable-in-harms-way-human-repro',
+    [string]$ExpectedVersion = '0.0.95',
     [ValidateRange(120, 900)]
     [int]$TimeoutSeconds = 600,
     [switch]$AllowDirtyGit,
@@ -22,6 +25,7 @@ if (-not (Test-Path -LiteralPath $source -PathType Leaf) -or
         $expectedHash) {
     throw 'The protected human-repro intake is missing or has changed.'
 }
+$sourceHashBefore = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
 
 $saveRoot = Join-Path $env:USERPROFILE `
     'AppData\LocalLow\Owlcat Games\Pathfinder Kingmaker\Saved Games'
@@ -33,11 +37,9 @@ if (-not $stagedFull.StartsWith($saveRootFull + '\',
         [StringComparison]::OrdinalIgnoreCase)) {
     throw 'The staged-save path escaped the exact Kingmaker save directory.'
 }
-if (-not (Test-Path -LiteralPath $original -PathType Leaf) -or
-    (Get-FileHash -LiteralPath $original -Algorithm SHA256).Hash -cne
-        $expectedHash) {
-    throw 'The original human test save is missing or no longer matches intake.'
-}
+$originalHashBefore = if (Test-Path -LiteralPath $original -PathType Leaf) {
+    (Get-FileHash -LiteralPath $original -Algorithm SHA256).Hash
+} else { 'MISSING' }
 if (Test-Path -LiteralPath $staged) {
     throw 'The transaction-owned staged human-repro save already exists.'
 }
@@ -51,11 +53,19 @@ try {
     }
     $invoke = Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1'
     $arguments = @{
-        Scenario = 'disposable-in-harms-way-human-repro'
+        Scenario = $Scenario
         ExpectedVersion = $ExpectedVersion
         SaveName = 'KMG_IHW_HUMAN_REPRO_COPY'
         TimeoutSeconds = $TimeoutSeconds
+        ObserverStartupTimeoutSeconds = [Math]::Min($TimeoutSeconds, 600)
+        CatalogTimeoutSeconds = $TimeoutSeconds
+        SelectionTimeoutSeconds = $TimeoutSeconds
         CompletionTimeoutSeconds = $TimeoutSeconds
+        MainMenuTimeoutSeconds = $TimeoutSeconds
+        ActionResolutionTimeoutSeconds = $TimeoutSeconds
+        ActionInvocationTimeoutSeconds = $TimeoutSeconds
+        DescriptorResolutionTimeoutSeconds = $TimeoutSeconds
+        LoadEntryTimeoutSeconds = $TimeoutSeconds
         FingerprintTimeoutSeconds = $TimeoutSeconds
         ExitAfterCompletion = $true
         Confirm = $false
@@ -101,8 +111,15 @@ finally {
     if ($remainingSidecars.Count -ne 0) {
         throw 'A transaction-owned staged human-repro sidecar was not removed.'
     }
-    if ($originalHash -cne $expectedHash) {
+    if ($originalHash -cne $originalHashBefore) {
         throw 'The original human test save changed during the transaction.'
     }
-    Write-Output "In Harms Way save transaction cleanup: $outcome; original SHA-256 unchanged."
+    $sourceHashAfter = if (Test-Path -LiteralPath $source -PathType Leaf) {
+        (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
+    } else { 'MISSING' }
+    if ($sourceHashAfter -cne $sourceHashBefore -or
+        $sourceHashAfter -cne $expectedHash) {
+        throw 'The protected human-repro intake changed during the transaction.'
+    }
+    Write-Output "In Harms Way save transaction cleanup: $outcome; protected intake and live Quick_3 state unchanged."
 }

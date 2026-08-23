@@ -441,6 +441,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(eligible.Eligible && eligible.Reason == "eligible",
                 "A fully eligible In Harm's Way candidate was rejected.");
 
+            InHarmsWayCandidateGateInput humanOffTurn =
+                ValidInterceptionGate();
+            humanOffTurn.HasSwiftAction = false;
+            humanOffTurn.SwiftCooldown = 1.5f;
+            InHarmsWayCandidateGateDecision humanOffTurnDecision =
+                InHarmsWayCandidateGate.Evaluate(humanOffTurn);
+            Assertions.True(humanOffTurnDecision.Eligible,
+                "The human 0.0.94 off-turn state was rejected from native " +
+                "turn-end cooldown bookkeeping rather than a spent " +
+                "immediate action.");
+
             InHarmsWayCandidateGateInput missingFeat =
                 ValidInterceptionGate();
             missingFeat.HasInHarmsWayFeat = false;
@@ -474,11 +485,28 @@ namespace KingmakerGunslinger.DomainTests
             InHarmsWayCandidateGateInput cooldown = ValidInterceptionGate();
             cooldown.SwiftCooldown = 0.25f;
             cooldown.HasSwiftAction = false;
+            cooldown.ImmediateActionAvailable = false;
+            cooldown.ImmediateActionReason = "swift-cooldown-active";
             AssertGate(cooldown, "swift-cooldown-active");
 
             InHarmsWayCandidateGateInput noSwift = ValidInterceptionGate();
             noSwift.HasSwiftAction = false;
-            AssertGate(noSwift, "has-swift-action-false");
+            noSwift.ImmediateActionAvailable = false;
+            noSwift.ImmediateActionReason =
+                "swift-action-spent-this-turn";
+            AssertGate(noSwift, "swift-action-spent-this-turn");
+
+            InHarmsWayCandidateGateInput flatFooted =
+                ValidInterceptionGate();
+            flatFooted.ImmediateActionAvailable = false;
+            flatFooted.ImmediateActionReason = "protector-flat-footed";
+            AssertGate(flatFooted, "protector-flat-footed");
+
+            InHarmsWayCandidateGateInput debt = ValidInterceptionGate();
+            debt.ImmediateActionAvailable = false;
+            debt.ImmediateActionReason =
+                "immediate-debt-pending-next-turn";
+            AssertGate(debt, "immediate-debt-pending-next-turn");
 
             InHarmsWayCandidateGateInput intercepted =
                 ValidInterceptionGate();
@@ -559,6 +587,8 @@ namespace KingmakerGunslinger.DomainTests
                 CanAct = true,
                 HasSwiftAction = true,
                 SwiftCooldown = 0f,
+                ImmediateActionAvailable = true,
+                ImmediateActionReason = "available",
                 DeliveryContractAvailable = true
             };
         }

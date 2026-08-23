@@ -22,7 +22,7 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("bodyguard-in-harms-way" if VERSION in {"0.0.90", "0.0.91", "0.0.92", "0.0.93", "0.0.94"}
+    effective_suffix = ("bodyguard-in-harms-way" if VERSION in {"0.0.90", "0.0.91", "0.0.92", "0.0.93", "0.0.94", "0.0.95"}
         else PACKAGE_SUFFIX)
     if f"$($info.Id)-$($info.Version)-{effective_suffix}.zip" not in package_script:
         raise AssertionError(f"{MILESTONE_LABEL} package identity missing")

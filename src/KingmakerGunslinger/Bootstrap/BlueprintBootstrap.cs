@@ -31,7 +31,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 339 + 1 + 5 +
+        internal const int ExpectedRegisteredBlueprintCount = 341 + 1 + 5 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount +
             UrbanBarbarianIdentityCatalog.IdentityCount;
 

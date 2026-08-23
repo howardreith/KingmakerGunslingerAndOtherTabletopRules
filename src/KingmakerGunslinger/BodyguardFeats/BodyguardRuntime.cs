@@ -23,9 +23,11 @@ using KingmakerGunslinger.AidAnotherCompatibility;
 namespace KingmakerGunslinger.BodyguardFeats
 {
     /// <summary>
-    /// Attack-scoped Owlcat adapter for Bodyguard and In Harm's Way. All lasting
-    /// action state belongs to UnitCombatState; this runtime retains only exact
-    /// rule-event correlation and temporary delivery mutations.
+    /// Attack-scoped Owlcat adapter for Bodyguard and In Harm's Way. Native
+    /// cooldowns remain authoritative in RTWP and on the protector's own turn;
+    /// save-stable debt facts bridge Kingmaker's missing off-turn immediate
+    /// action model. This type otherwise retains only exact rule-event
+    /// correlation and temporary delivery mutations.
     /// </summary>
     internal static class BodyguardRuntime
     {
@@ -306,7 +308,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                     LogInfo("interception.candidate", observation);
                     if (ShouldPublishImmediateUnavailable(candidate))
                         BodyguardCombatLog.PublishImmediateUnavailable(
-                            candidate.Attempt.Protector.CharacterName);
+                            candidate.Attempt.Protector.CharacterName,
+                            candidate.Decision.Reason);
                 }
                 frame.CandidateGateSummary = string.Join(",", evaluated.Select(
                     value => value.Attempt.Protector.UniqueId + "/" +
@@ -326,21 +329,22 @@ namespace KingmakerGunslinger.BodyguardFeats
                             orderedCandidate.PersistentId,
                             StringComparison.Ordinal));
                     RuntimeAttempt attempt = runtimeCandidate.Attempt;
-                    float before;
-                    float after;
+                    BodyguardImmediateActionSpendToken spend;
                     if (!BodyguardActionEconomyAccess.TrySpendImmediateAction(
-                            attempt.Protector, out before, out after))
+                            attempt.Protector, frame.Attacker, out spend))
                     {
                         BodyguardImmediateActionSnapshot refreshed =
                             BodyguardActionEconomyAccess.ObserveImmediateAction(
-                                attempt.Protector);
-                        string reason = refreshed.SwiftCooldown > 0f ?
-                            "swift-cooldown-active" :
-                            "has-swift-action-false";
+                                attempt.Protector, frame.Attacker);
+                        string reason = refreshed.Reason;
                         string observation = DescribeInterceptorCandidate(frame,
-                            runtimeCandidate, reason) + ";spendCommitted=false";
+                            runtimeCandidate, reason) +
+                            ";spendCommitted=false;refreshedReason=" + reason +
+                            ";refreshedDebt=" + refreshed.DebtState;
                         BodyguardRuntimeDiagnostics.Observation(observation);
                         LogInfo("interception.spend-rejected", observation);
+                        BodyguardCombatLog.PublishImmediateUnavailable(
+                            attempt.Protector.CharacterName, reason);
                         continue;
                     }
 
@@ -353,18 +357,14 @@ namespace KingmakerGunslinger.BodyguardFeats
                     }
                     catch
                     {
-                        BodyguardActionEconomyAccess.TryRestoreImmediateAction(
-                            attempt.Protector, before, before +
-                            BodyguardActionEconomyAccess
-                                .SwiftActionCooldownSeconds);
+                        BodyguardActionEconomyAccess
+                            .TryRollbackImmediateAction(spend);
                         throw;
                     }
                     if (!redirected)
                     {
                         bool restored = BodyguardActionEconomyAccess
-                            .TryRestoreImmediateAction(attempt.Protector, before,
-                                before + BodyguardActionEconomyAccess
-                                    .SwiftActionCooldownSeconds);
+                            .TryRollbackImmediateAction(spend);
                         frame.Interceptor = null;
                         RecordFault("redirection", null, DescribeFrame(frame,
                             "redirection-rejected") + ";candidate=" +
@@ -380,24 +380,26 @@ namespace KingmakerGunslinger.BodyguardFeats
                     {
                         RestoreTargets(frame, "policy-rejected");
                         frame.Interceptor = null;
-                        BodyguardActionEconomyAccess.TryRestoreImmediateAction(
-                            attempt.Protector, before, before +
-                            BodyguardActionEconomyAccess
-                                .SwiftActionCooldownSeconds);
+                        BodyguardActionEconomyAccess
+                            .TryRollbackImmediateAction(spend);
                         LogInfo("interception.candidate", DescribeInterceptorCandidate(
                             frame, runtimeCandidate, "policy-rejected"));
                         continue;
                     }
 
-                    frame.ImmediateBefore = before;
-                    frame.ImmediateAfter = after;
+                    frame.ImmediateSpend = spend;
+                    frame.ImmediateBefore = spend.SwiftBefore;
+                    frame.ImmediateAfter = spend.SwiftAfter;
                     lock (StateGate) RedirectedFrames.Add(frame);
                     BodyguardRuntimeDiagnostics.Intercept(DescribeFrame(frame,
                         "intercepted"));
                     LogInfo("interception.committed", DescribeFrame(frame,
                         "intercepted") + ";arbitration=" +
-                        frame.ArbitrationOrder + ";swiftBefore=" + before +
-                        ";swiftAfter=" + after + ";contract={" +
+                        frame.ArbitrationOrder + ";swiftBefore=" +
+                        spend.SwiftBefore + ";swiftAfter=" +
+                        spend.SwiftAfter + ";immediateMode=" +
+                        spend.CombatMode + ";debtAfter=" + spend.DebtAfter +
+                        ";contract={" +
                         InHarmsWayDeliveryAccess.ContractDescription + "}");
                     LogInfo("interception.candidate", DescribeInterceptorCandidate(
                         frame, runtimeCandidate,
@@ -405,7 +407,9 @@ namespace KingmakerGunslinger.BodyguardFeats
                     BodyguardCombatLog.PublishInterception(
                         attempt.Protector.CharacterName,
                         frame.OriginalTarget.CharacterName,
-                        frame.Attacker.CharacterName);
+                        frame.Attacker.CharacterName,
+                        spend.DebtAfter ==
+                            ImmediateActionDebtState.PendingNextTurn);
                     Pop(frame);
                     return;
                 }
@@ -506,8 +510,7 @@ namespace KingmakerGunslinger.BodyguardFeats
             if (!redirected)
             {
                 bool restored = BodyguardActionEconomyAccess
-                    .TryRestoreImmediateAction(frame.Interceptor,
-                        frame.ImmediateBefore, frame.ImmediateAfter);
+                    .TryRollbackImmediateAction(frame.ImmediateSpend);
                 FaultAndRestore(frame, "ability-delivery-target", null);
                 RecordFault("ability-delivery-target", null,
                     DescribeFrame(frame, "ability-target-failed") +
@@ -591,6 +594,7 @@ namespace KingmakerGunslinger.BodyguardFeats
 
         internal static void ClearAll(string reason)
         {
+            ImmediateActionEconomyRuntime.ClearAll(reason);
             RuntimeFrame[] redirected;
             lock (StateGate)
             {
@@ -801,7 +805,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                 protector.Descriptor.Buffs.GetBuff(
                     blueprints.Modes.InHarmsWayMarker) != null;
             BodyguardImmediateActionSnapshot action =
-                BodyguardActionEconomyAccess.ObserveImmediateAction(protector);
+                BodyguardActionEconomyAccess.ObserveImmediateAction(protector,
+                    frame.Attacker);
             var input = new InHarmsWayCandidateGateInput
             {
                 PersistentId = protector.UniqueId,
@@ -831,6 +836,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                 CanAct = action.CanAct,
                 HasSwiftAction = action.HasSwiftAction,
                 SwiftCooldown = action.SwiftCooldown,
+                ImmediateActionAvailable = action.Available,
+                ImmediateActionReason = action.Reason,
                 AlreadyIntercepted = frame.Interceptor != null,
                 DeliveryContractAvailable = InHarmsWayDeliveryAccess
                     .ContractAvailable
@@ -866,12 +873,7 @@ namespace KingmakerGunslinger.BodyguardFeats
                 !candidate.Input.HasInHarmsWayActivatable ||
                 candidate.Input.InHarmsWayActivatableIsOn != true ||
                 !candidate.Input.InHarmsWayMarkerPresent) return false;
-            return candidate.Decision.Rejection ==
-                    InHarmsWayCandidateRejection.SwiftCooldownActive ||
-                candidate.Decision.Rejection ==
-                    InHarmsWayCandidateRejection.HasSwiftActionFalse ||
-                candidate.Decision.Rejection ==
-                    InHarmsWayCandidateRejection.ProtectorUnableToAct;
+            return !candidate.Action.Available;
         }
 
         private static string DescribeInterceptorCandidate(RuntimeFrame frame,
@@ -925,6 +927,15 @@ namespace KingmakerGunslinger.BodyguardFeats
                 ";moveCooldown=" + Format(action.MoveCooldown) +
                 ";isInCombat=" + action.IsInCombat +
                 ";isWaitingInitiative=" + action.IsWaitingInitiative +
+                ";turnBased=" + action.TurnBased +
+                ";protectorIsCurrentTurn=" +
+                action.ProtectorIsCurrentTurn + ";currentTurnId=" +
+                (action.CurrentTurnId ?? "<null>") +
+                ";flatFootedReadable=" + action.FlatFootedReadable +
+                ";flatFooted=" + action.FlatFooted +
+                ";immediateDebt=" + action.DebtState +
+                ";immediateAvailable=" + action.Available +
+                ";immediateReason=" + action.Reason +
                 ";alreadyIntercepted=" + input.AlreadyIntercepted +
                 ";deliveryContractAvailable=" +
                 input.DeliveryContractAvailable + ";" +
@@ -1415,6 +1426,8 @@ namespace KingmakerGunslinger.BodyguardFeats
             internal bool WeaponTargetRedirected { get; set; }
             internal float ImmediateBefore { get; set; }
             internal float ImmediateAfter { get; set; }
+            internal BodyguardImmediateActionSpendToken ImmediateSpend
+            { get; set; }
             internal string CandidateGateSummary { get; set; }
             internal string ArbitrationOrder { get; set; }
             internal string CandidateOrder { get; set; }

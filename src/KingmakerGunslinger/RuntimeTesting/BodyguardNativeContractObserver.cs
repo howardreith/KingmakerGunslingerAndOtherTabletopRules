@@ -28,6 +28,7 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.BodyguardFeats;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
+using TurnBased.Controllers;
 using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -69,17 +70,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<string> AooContract { get; set; }
             [JsonProperty("swiftContract", Order = 9)]
             public List<string> SwiftContract { get; set; }
-            [JsonProperty("threatContract", Order = 10)]
+            [JsonProperty("turnContract", Order = 10)]
+            public List<string> TurnContract { get; set; }
+            [JsonProperty("flatFootedContract", Order = 11)]
+            public List<string> FlatFootedContract { get; set; }
+            [JsonProperty("threatContract", Order = 12)]
             public List<string> ThreatContract { get; set; }
-            [JsonProperty("aidContract", Order = 11)]
+            [JsonProperty("aidContract", Order = 13)]
             public List<string> AidContract { get; set; }
-            [JsonProperty("acBreakdownContract", Order = 12)]
+            [JsonProperty("acBreakdownContract", Order = 14)]
             public List<string> AcBreakdownContract { get; set; }
-            [JsonProperty("deliveryContract", Order = 13)]
+            [JsonProperty("deliveryContract", Order = 15)]
             public string DeliveryContract { get; set; }
-            [JsonProperty("harmonyTargets", Order = 14)]
+            [JsonProperty("harmonyTargets", Order = 16)]
             public List<string> HarmonyTargets { get; set; }
-            [JsonProperty("publication", Order = 15)]
+            [JsonProperty("publication", Order = 17)]
             public List<string> Publication { get; set; }
         }
 
@@ -114,6 +119,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "HasSwiftAction", BindingFlags.Static | BindingFlags.Public |
                 BindingFlags.NonPublic | BindingFlags.Instance, null,
                 Type.EmptyTypes, null);
+            MethodInfo cooldownClear = typeof(UnitCombatState.Cooldowns)
+                .GetMethod("Clear", ExactInstance, null, Type.EmptyTypes,
+                    null);
+            MethodInfo turnPrepare = typeof(TurnController).GetMethod(
+                "Prepare", ExactInstance, null, Type.EmptyTypes, null);
+            MethodInfo turnDispose = typeof(TurnController).GetMethod(
+                "Dispose", ExactInstance, null, Type.EmptyTypes, null);
+            MethodInfo forceToEnd = typeof(TurnController).GetMethod(
+                "ForceToEnd", ExactInstance, null, new[] { typeof(bool) },
+                null);
+            MethodInfo delay = typeof(TurnController).GetMethod(
+                "DelayInitiaive", ExactInstance, null,
+                new[] { typeof(UnitEntityData) }, null);
+            ConstructorInfo flatFootedConstructor = typeof(
+                RuleCheckTargetFlatFooted).GetConstructor(new[] {
+                    typeof(UnitEntityData), typeof(UnitEntityData) });
+            MethodInfo flatFootedTrigger = typeof(RuleCheckTargetFlatFooted)
+                .GetMethod("OnTrigger", ExactInstance, null,
+                    new[] { typeof(RulebookEventContext) }, null);
             MethodInfo isReach = typeof(UnitEngagementExtension).GetMethod(
                 "IsReach", BindingFlags.Static | BindingFlags.Public |
                 BindingFlags.NonPublic, null, new[] { typeof(UnitEntityData),
@@ -155,6 +179,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AooContract = DescribeMembers(attackOfOpportunity, aooCount,
                     canAoo),
                 SwiftContract = DescribeMembers(swift, hasSwift),
+                TurnContract = DescribeMembers(cooldownClear, turnPrepare,
+                    turnDispose, forceToEnd, delay),
+                FlatFootedContract = DescribeMembers(flatFootedConstructor,
+                    flatFootedTrigger),
                 ThreatContract = DescribeMembers(isReach, getThreatHand),
                 AidContract = DescribeMembers(
                     typeof(RuleCalculateAttackBonus).GetConstructors()
@@ -171,6 +199,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 HarmonyTargets = ObserveHarmony(context),
                 Publication = DescribePublication(set)
             };
+            evidence.SwiftContract.Add("HasSwiftAction.il=" +
+                MethodIl(hasSwift));
+            evidence.TurnContract.Add("Cooldowns.Clear.il=" +
+                MethodIl(cooldownClear));
+            evidence.TurnContract.Add("TurnController.Prepare.il=" +
+                MethodIl(turnPrepare));
 
             Add(assertions, "bodyguard-game-build",
                 "Kingmaker 2.1.7b Assembly-CSharp exact SHA-256 and MVID",
@@ -212,12 +246,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     canAoo.PropertyType == typeof(bool),
                 "live UnitCombatState reflection");
             Add(assertions, "bodyguard-native-swift-economy",
-                "shared mutable SwiftAction cooldown and HasSwiftAction extension",
+                "shared mutable SwiftAction cooldown and HasSwiftAction exact cooldown-only implementation",
                 string.Join("|", evidence.SwiftContract.ToArray()),
                 swift != null && swift.CanRead && swift.CanWrite &&
                     swift.PropertyType == typeof(float) && hasSwift != null &&
-                    hasSwift.ReturnType == typeof(bool),
+                    hasSwift.ReturnType == typeof(bool) &&
+                    hasSwift.GetMethodBody() != null &&
+                    hasSwift.GetMethodBody().GetILAsByteArray().Length == 27,
                 "live UnitCombatState.Cooldowns reflection");
+            Add(assertions, "bodyguard-native-turn-economy",
+                "actual-turn start clears native cooldowns, actual-turn completion is observable, and delay is distinct",
+                string.Join("|", evidence.TurnContract.ToArray()),
+                cooldownClear != null && turnPrepare != null &&
+                    turnDispose != null && forceToEnd != null &&
+                    delay != null && cooldownClear.ReturnType == typeof(void) &&
+                    turnPrepare.ReturnType == typeof(void) &&
+                    turnDispose.ReturnType == typeof(void),
+                "live TurnController and UnitCombatState.Cooldowns reflection");
+            Add(assertions, "bodyguard-native-flat-footed",
+                "target-aware RuleCheckTargetFlatFooted constructor and trigger remain exact",
+                string.Join("|", evidence.FlatFootedContract.ToArray()),
+                flatFootedConstructor != null && flatFootedTrigger != null &&
+                    flatFootedTrigger.ReturnType == typeof(void),
+                "live RuleCheckTargetFlatFooted reflection");
             Add(assertions, "bodyguard-native-threat",
                 "native edge/reach hand query accepts protector, attacker, and WeaponSlot",
                 string.Join("|", evidence.ThreatContract.ToArray()),
@@ -252,7 +303,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     applyEffect.IsPrivate,
                 "fail-closed InHarmsWayDeliveryAccess reflection contract");
             Add(assertions, "bodyguard-harmony-contract",
-                "all six Harmony-1.2 attack/delivery targets patched by this mod",
+                "all attack/delivery and immediate-action lifecycle targets patched by this mod",
                 string.Join("|", evidence.HarmonyTargets.ToArray()),
                 HasPatch(evidence.HarmonyTargets, "RuleAttackRoll.OnTrigger") &&
                     HasPatch(evidence.HarmonyTargets,
@@ -264,7 +315,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     HasPatch(evidence.HarmonyTargets,
                         "AbilityExecutionProcess.ApplyEffect") &&
                     HasPatch(evidence.HarmonyTargets,
-                        "ElementsContextData.Dispose"),
+                        "ElementsContextData.Dispose") &&
+                    HasPatch(evidence.HarmonyTargets,
+                        "TurnController.Prepare") &&
+                    HasPatch(evidence.HarmonyTargets,
+                        "UnitCombatState+Cooldowns.Clear") &&
+                    HasPatch(evidence.HarmonyTargets,
+                        "TurnController.Dispose") &&
+                    HasPatch(evidence.HarmonyTargets,
+                        "UnitEntityData.HasSwiftAction") &&
+                    HasPatch(evidence.HarmonyTargets,
+                        "UnitEntityData.PostLoad") &&
+                    HasPatch(evidence.HarmonyTargets,
+                        "CombatController.HandlePartyCombatStateChanged"),
                 "live Harmony 1.2 prefix/postfix/transpiler registry");
             Add(assertions, "bodyguard-publication-live",
                 "both feats singular in general and Fighter selections when module active",
@@ -409,6 +472,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return members.Select(value => value == null ? "<missing>" :
                 Signature(value)).ToList();
+        }
+
+        private static string MethodIl(MethodInfo method)
+        {
+            if (method == null || method.GetMethodBody() == null)
+                return "<missing>";
+            byte[] bytes = method.GetMethodBody().GetILAsByteArray();
+            return bytes == null ? "<missing>" :
+                Convert.ToBase64String(bytes);
         }
 
         private static string Signature(MemberInfo member)

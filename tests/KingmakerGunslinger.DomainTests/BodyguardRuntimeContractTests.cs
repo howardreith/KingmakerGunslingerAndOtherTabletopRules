@@ -22,7 +22,7 @@ namespace KingmakerGunslinger.DomainTests
                 "unit.HasSwiftAction()",
                 "unit.CombatState.Cooldown.SwiftAction",
                 "SwiftActionCooldownSeconds = 6f",
-                "TryRestoreImmediateAction"
+                "TryRollbackImmediateAction"
             })
                 Assertions.True(source.Contains(token),
                     "Native action-economy adapter lacks: " + token);
@@ -30,7 +30,37 @@ namespace KingmakerGunslinger.DomainTests
                 !source.Contains("new UnitAttackOfOpportunity") &&
                 !source.Contains("InHarmUsedThisRound") &&
                 !source.Contains("Dictionary<UnitEntityData"),
-                "Bodyguard created an attack command or custom action counter.");
+                "Bodyguard created an attack command or transient dictionary counter.");
+
+            string immediate = Read("src", "KingmakerGunslinger",
+                "BodyguardFeats", "ImmediateActionEconomyRuntime.cs");
+            foreach (string token in new[]
+            {
+                "ImmediatePending",
+                "ImmediateChargedTurn",
+                "OnCooldownCleared",
+                "OnTurnDisposed",
+                "TurnStatus.Delayed",
+                "SwiftActionCooldownSeconds",
+                "RestoreAfterLoad",
+                "ClearAll"
+            })
+                Assertions.True(immediate.Contains(token),
+                    "Turn-based immediate debt runtime lacks: " + token);
+
+            string patches = Read("src", "KingmakerGunslinger",
+                "BodyguardFeats", "ImmediateActionEconomyPatches.cs");
+            foreach (string token in new[]
+            {
+                "UnitCombatState.Cooldowns",
+                "typeof(TurnController), \"Dispose\"",
+                "typeof(UnitEntityData), \"HasSwiftAction\"",
+                "HasChargedTurnDebt(__instance)",
+                "typeof(UnitEntityData), \"PostLoad\"",
+                "ImmediateActionEconomyRuntime.ClearAll"
+            })
+                Assertions.True(patches.Contains(token),
+                    "Immediate-action lifecycle patch lacks: " + token);
         }
 
         internal static void ThreatAndAidUseNativeRulePaths()
@@ -196,8 +226,7 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("RestoreTargets(frame") &&
                 runtime.Contains(
                     "Partial weapon-target redirection did not restore every original recipient.") &&
-                runtime.Contains(
-                    "BodyguardActionEconomyAccess.TryRestoreImmediateAction(") &&
+                runtime.Contains("TryRollbackImmediateAction(") &&
                 runtime.Contains("PendingProjectileResolves") &&
                 deliveryPatches.Contains(
                     "BodyguardRuleEventCompletionPatch") &&
@@ -245,6 +274,46 @@ namespace KingmakerGunslinger.DomainTests
                 "Bodyguard cleanup is not auditable through Harmony 1.2's actual patch registry.");
         }
 
+        internal static void ImmediateActionAssemblyContractIsExact()
+        {
+            string il = Read("artifacts", "inspection", "bodyguard-native",
+                "Assembly-CSharp.il");
+            foreach (string token in new[]
+            {
+                "HasSwiftAction() cil managed",
+                "UnitCombatState/Cooldowns::get_SwiftAction()",
+                "end of method UnitEntityData::HasSwiftAction",
+                "instance void  Clear() cil managed",
+                "Cooldowns::set_SwiftAction(float32)",
+                "end of method Cooldowns::Clear",
+                "TurnController::Prepare()",
+                "TurnController::Dispose()",
+                "TurnController::ForceToEnd",
+                "TurnController::DelayInitiaive",
+                "RuleCheckTargetFlatFooted::OnTrigger",
+                "UnitCombatState::get_CanActInCombat()",
+                "UnitState::get_IsHelpless()"
+            })
+                Assertions.True(il.Contains(token),
+                    "Installed immediate-action engine contract lacks: " +
+                    token);
+
+            string patches = Read("src", "KingmakerGunslinger",
+                "BodyguardFeats", "ImmediateActionEconomyPatches.cs");
+            Assertions.True(patches.Contains(
+                    "typeof(TurnController), \"Prepare\"") &&
+                patches.Contains(
+                    "typeof(UnitCombatState.Cooldowns), \"Clear\"") &&
+                patches.Contains(
+                    "typeof(TurnController), \"Dispose\"") &&
+                patches.Contains(
+                    "typeof(UnitEntityData), \"HasSwiftAction\"") &&
+                patches.Contains(
+                    "HandlePartyCombatStateChanged") &&
+                !patches.Contains("RoundNumber"),
+                "Immediate debt is not tied to exact actual-turn/native-swift lifecycle seams.");
+        }
+
         internal static void GuardedRuntimeScenariosCoverTheSubsystem()
         {
             string catalog = Read("src", "KingmakerGunslinger",
@@ -263,6 +332,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Invoke-BodyguardRuntimeQualification.ps1");
             string humanRepro = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "InHarmsWayHumanReproScenario.cs");
+            string offTurnEconomy = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "InHarmsWayOffTurnEconomyScenario.cs");
             string humanReproLauncher = Read("scripts",
                 "Invoke-InHarmsWayHumanRepro.ps1");
             foreach (string id in new[]
@@ -272,7 +343,8 @@ namespace KingmakerGunslinger.DomainTests
                 "disposable-bodyguard-feats",
                 "disposable-helpful-bodyguard",
                 "disposable-bodyguard-feats-disabled",
-                "disposable-in-harms-way-human-repro"
+                "disposable-in-harms-way-human-repro",
+                "disposable-in-harms-way-off-turn-economy"
             })
                 Assertions.True(catalog.Contains(id),
                     "Guarded runtime catalog lacks " + id + ".");
@@ -286,6 +358,8 @@ namespace KingmakerGunslinger.DomainTests
                     "'disposable-bodyguard-feats-disabled'") &&
                 automation.Contains(
                     "'disposable-in-harms-way-human-repro'") &&
+                automation.Contains(
+                    "'disposable-in-harms-way-off-turn-economy'") &&
                 qualification.Contains("Set-BodyguardFeatureState $true") &&
                 qualification.Contains("Set-BodyguardFeatureState $false") &&
                 qualification.Contains(
@@ -312,6 +386,31 @@ namespace KingmakerGunslinger.DomainTests
                 !humanRepro.Contains("AutoCriticalThreat") &&
                 !humanRepro.Contains("TryCommitRedirection"),
                 "Human repro fixture bypasses the native attack/critical/redirection path.");
+            foreach (string token in new[]
+            {
+                "CombatController.IsInTurnBasedCombat()",
+                "Game.Instance.TurnBasedCombatController.CurrentTurn",
+                "ReferenceEquals(turn.Unit, _attacker)",
+                "BodyguardActionEconomyAccess.ObserveImmediateAction(",
+                "HasSwiftAction = snapshot.HasSwiftAction",
+                "PendingNextTurn",
+                "ChargedTurn",
+                "turn.ForceToEnd(true)",
+                "new RuleAttackWithWeapon(_attacker, _victim,",
+                "Rulebook.Trigger(attack)",
+                "value.BodyguardContribution == 4",
+                "value.VictimHpAfter == value.VictimHpBefore",
+                "value.ProtectorHpAfter < value.ProtectorHpBefore",
+                "off-turn-confirmed-critical-intercepts"
+            })
+                Assertions.True(offTurnEconomy.Contains(token),
+                    "Off-turn native economy scenario lacks: " + token);
+            Assertions.True(!offTurnEconomy.Contains(
+                    "TryCommitRedirection") &&
+                !offTurnEconomy.Contains("TrySpendImmediateAction") &&
+                !offTurnEconomy.Contains("Descriptor.Damage =") &&
+                !offTurnEconomy.Contains("HasSwiftAction = true"),
+                "Off-turn economy scenario manufactures availability, interception, or HP delivery.");
             Assertions.True(humanReproLauncher.Contains(
                     "3414D67CB2E5F8C4F18A952D23247DC6DD9D9F5579066EA64CA7FF29E61B8F01") &&
                 humanReproLauncher.Contains(
@@ -324,6 +423,9 @@ namespace KingmakerGunslinger.DomainTests
                     "A transaction-owned staged human-repro sidecar was not removed") &&
                 humanReproLauncher.Contains(
                     "StartsWith($saveRootFull + '\\'") &&
+                humanReproLauncher.Contains(
+                    "disposable-in-harms-way-off-turn-economy") &&
+                humanReproLauncher.Contains("Scenario = $Scenario") &&
                 !humanReproLauncher.Contains("Remove-Item -Recurse"),
                 "Human repro save transaction is not exact-hash guarded and self-cleaning.");
             Assertions.True(scenario.Contains(
@@ -395,7 +497,7 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("BodyguardCombatScenario.Run") &&
                 runner.Contains(
                     "feature-module-bodyguard-publication-gate") &&
-                runner.Contains("bodyguardSet.Count == 7") &&
+                runner.Contains("bodyguardSet.Count == 9") &&
                 runner.Contains("basicBodyguardFeatures ==") &&
                 runner.Contains("fighterBodyguardAll ==") &&
                 fixture.Contains("new RuleAttackWithWeapon(") &&
