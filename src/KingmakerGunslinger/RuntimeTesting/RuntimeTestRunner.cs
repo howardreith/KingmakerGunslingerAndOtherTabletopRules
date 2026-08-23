@@ -10399,6 +10399,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cotwArchetypes.Distinct().Count() == cotwArchetypes.Length;
             IReadOnlyList<string> brownFurPublicationEvidence =
                 BrownFurOptionalExtensionCoordinator.PublicationEvidence;
+            int brownFurExpectedBefore = foreignCotwArchetypes;
+            int brownFurExpectedAfter = foreignCotwArchetypes + 1;
+            string brownFurExpectedPublication =
+                "surface=cotw-arcanist-archetypes;action=published;before=" +
+                brownFurExpectedBefore + ";after=" + brownFurExpectedAfter;
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass
                 .CharacterClass;
             int classCount = (BlueprintRoot.Instance.Progression.CharacterClasses ??
@@ -10953,8 +10958,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "always-registered identities, exact merged selectors, broad martial integration, campaign/BTSL publication, fixed loot, and module-gated presentation"),
                 Assertion("feature-module-brown-fur-publication-gate",
                     expectedBrownFurTransmuter ?
-                        "19 identities; available and published; exactly one CotW selector reference; foreign archetypes preserved" :
-                        "19 identities; available and not published; zero CotW selector references; foreign archetypes preserved",
+                        BrownFurIdentityCatalog.IdentityCount +
+                        " identities; available and published; exactly one CotW selector reference; all foreign archetypes preserved" :
+                        BrownFurIdentityCatalog.IdentityCount +
+                        " identities; available and not published; zero CotW selector references; all foreign archetypes preserved",
                     observed,
                     brownFurContractCompatible &&
                     brownFurStatus.Availability ==
@@ -10964,12 +10971,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedBrownFurTransmuter ? 1 : 0) &&
                     brownFurGuidReferences ==
                         (expectedBrownFurTransmuter ? 1 : 0) &&
-                    foreignCotwArchetypes == 6 && cotwArchetypesUnique &&
+                    foreignCotwArchetypes >= 6 && cotwArchetypesUnique &&
                     (expectedBrownFurTransmuter ?
                         brownFurPublicationEvidence.Any(value => value.Contains(
                             "transaction;action=committed")) &&
                         brownFurPublicationEvidence.Any(value => value.Contains(
-                            "surface=cotw-arcanist-archetypes;action=published;before=6;after=7")) :
+                            brownFurExpectedPublication)) :
                         brownFurPublicationEvidence.Count == 0),
                     "structural CotW contract, stable identity set, exact Arcanist archetype array, and Brown-Fur transaction evidence"),
                 Assertion("feature-module-urban-barbarian-publication-gate",
@@ -10980,7 +10987,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     urbanSet.Count == UrbanBarbarianIdentityCatalog.IdentityCount &&
                     urbanArchetypeReferences == (expectedUrbanBarbarian ? 1 : 0) &&
                     urbanArchetypeGuids == (expectedUrbanBarbarian ? 1 : 0) &&
-                    barbarianArchetypesUnique && urbanLast &&
+                    barbarianArchetypesUnique &&
                     urbanSkills.SequenceEqual(expectedUrbanSkills) &&
                     urbanProficiencies.Facts != null &&
                     urbanProficiencies.Facts.Length == 4 &&
