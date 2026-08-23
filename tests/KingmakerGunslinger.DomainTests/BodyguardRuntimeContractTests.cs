@@ -261,13 +261,18 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeAutomation.Common.ps1");
             string qualification = Read("scripts",
                 "Invoke-BodyguardRuntimeQualification.ps1");
+            string humanRepro = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "InHarmsWayHumanReproScenario.cs");
+            string humanReproLauncher = Read("scripts",
+                "Invoke-InHarmsWayHumanRepro.ps1");
             foreach (string id in new[]
             {
                 "observe-bodyguard-native-contracts",
                 "observe-aid-another-compatibility-contracts",
                 "disposable-bodyguard-feats",
                 "disposable-helpful-bodyguard",
-                "disposable-bodyguard-feats-disabled"
+                "disposable-bodyguard-feats-disabled",
+                "disposable-in-harms-way-human-repro"
             })
                 Assertions.True(catalog.Contains(id),
                     "Guarded runtime catalog lacks " + id + ".");
@@ -279,6 +284,8 @@ namespace KingmakerGunslinger.DomainTests
                 automation.Contains("'disposable-helpful-bodyguard'") &&
                 automation.Contains(
                     "'disposable-bodyguard-feats-disabled'") &&
+                automation.Contains(
+                    "'disposable-in-harms-way-human-repro'") &&
                 qualification.Contains("Set-BodyguardFeatureState $true") &&
                 qualification.Contains("Set-BodyguardFeatureState $false") &&
                 qualification.Contains(
@@ -289,6 +296,30 @@ namespace KingmakerGunslinger.DomainTests
                 qualification.Contains(
                     "Feature settings bytes were not restored exactly."),
                 "Bodyguard scenarios are not registered in the guarded launcher or do not restore restart-gated settings exactly.");
+            foreach (string token in new[]
+            {
+                "HelpfulDefenderTest", "VictimTest", "Kobold",
+                "new RuleAttackWithWeapon(attacker, victim, weapon, 0)",
+                "Rulebook.Trigger(attack)",
+                "available-normal-hit", "available-confirmed-critical",
+                "immediate-unavailable", "VictimHpLoss",
+                "ProtectorHpLoss", "stage=rule-deal-damage-prefix",
+                "decision=eligible", "decision=swift-cooldown-active"
+            })
+                Assertions.True(humanRepro.Contains(token),
+                    "Human-equivalent In Harm's Way scenario lacks: " + token);
+            Assertions.True(humanRepro.Contains("ArmCritical(incoming,") &&
+                !humanRepro.Contains("AutoCriticalThreat") &&
+                !humanRepro.Contains("TryCommitRedirection"),
+                "Human repro fixture bypasses the native attack/critical/redirection path.");
+            Assertions.True(humanReproLauncher.Contains(
+                    "3414D67CB2E5F8C4F18A952D23247DC6DD9D9F5579066EA64CA7FF29E61B8F01") &&
+                humanReproLauncher.Contains(
+                    "KMG_IHW_HUMAN_REPRO_COPY.zks") &&
+                humanReproLauncher.Contains(
+                    "The original human test save changed") &&
+                humanReproLauncher.Contains("Remove-Item -LiteralPath $staged"),
+                "Human repro save transaction is not exact-hash guarded and self-cleaning.");
             Assertions.True(scenario.Contains(
                     "combat.AidGrantObservations[0].Contains(\";aidD20=20;\")") &&
                 !scenario.Contains("aidRolls=20"),
@@ -318,6 +349,19 @@ namespace KingmakerGunslinger.DomainTests
                 misfirePatches.Contains(
                     "replace RuleAttackRoll's ordinary Roll property assignment"),
                 "Guarded incoming-roll control lacks the exact direct-field-write compatibility fallback.");
+            Assertions.True(diceControl.Contains(
+                    "BodyguardCriticalConfirmationQualificationPatch") &&
+                diceControl.Contains("set_CriticalConfirmationRoll") == false &&
+                diceControl.Contains(
+                    "GetProperty(\n                \"CriticalConfirmationRoll\"") &&
+                diceControl.Contains(
+                    "BeforeSetCriticalConfirmationRoll(") &&
+                fixture.Contains("ArmCritical(incomingRoll, 20") &&
+                fixture.Contains("ConfirmationRoll =") &&
+                fixture.Contains("ConfirmationTotal =") &&
+                !fixture.Contains("AutoCriticalThreat =") &&
+                !fixture.Contains("AutoCriticalConfirmation ="),
+                "The confirmed-critical fixture still bypasses the native confirmation roll/result path.");
             foreach (string caseName in new[]
             {
                 "baseline", "bodyguard-hit-to-miss", "bodyguard-failure",
@@ -326,6 +370,8 @@ namespace KingmakerGunslinger.DomainTests
                 "inside-threat", "ranged-outside-threat",
                 "ranged-inside-threat", "in-harms-way-mode-off",
                 "in-harms-way-full-delivery", "no-immediate-action",
+                "helpful-bodyguard-halfling-four-intercept",
+                "helpful-bodyguard-halfling-four-critical",
                 "multiple-protectors", "sequential-first",
                 "sequential-second", "zero-damage-rider",
                 "shield-other-on-interceptor", "shield-other-on-original",
@@ -351,6 +397,9 @@ namespace KingmakerGunslinger.DomainTests
                 fixture.Contains("BodyguardCombatLog.Published") &&
                 scenario.Contains("CombatLogLastMessage") &&
                 scenario.Contains("DamageKinds.Any") &&
+                scenario.Contains("DamageEvents.Length == 1") &&
+                scenario.Contains("decision=swift-cooldown-active") &&
+                scenario.Contains("confirmationConsumed=1") &&
                 scenario.Contains("BodyguardSources") &&
                 scenario.Contains("NativeAcBeforeBodyguard") &&
                 scenario.Contains("fixture.ApplyShieldOther") &&

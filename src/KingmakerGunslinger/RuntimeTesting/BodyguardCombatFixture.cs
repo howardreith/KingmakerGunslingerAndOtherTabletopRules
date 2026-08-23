@@ -19,6 +19,7 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
@@ -65,6 +66,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         [JsonProperty("targetAc", Order = 8)] public int TargetAc { get; set; }
         [JsonProperty("hit", Order = 9)] public bool Hit { get; set; }
         [JsonProperty("critical", Order = 10)] public bool Critical { get; set; }
+        [JsonProperty("criticalThreat", Order = 11)]
+        public bool CriticalThreat { get; set; }
+        [JsonProperty("confirmationRoll", Order = 12)]
+        public int ConfirmationRoll { get; set; }
+        [JsonProperty("confirmationTotal", Order = 13)]
+        public int ConfirmationTotal { get; set; }
+        [JsonProperty("targetCriticalAc", Order = 14)]
+        public int TargetCriticalAc { get; set; }
         [JsonProperty("attackPenalty", Order = 11)]
         public int AttackPenalty { get; set; }
         [JsonProperty("aooBefore", Order = 12)]
@@ -274,9 +283,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool inHarmsWay)
         {
             SetMode(unit, BlueprintBootstrap.BodyguardFeats.Modes
-                .BodyguardMarker, bodyguard);
+                .BodyguardAbility, BlueprintBootstrap.BodyguardFeats.Modes
+                    .BodyguardMarker, bodyguard);
             SetMode(unit, BlueprintBootstrap.BodyguardFeats.Modes
-                .InHarmsWayMarker, inHarmsWay);
+                .InHarmsWayAbility, BlueprintBootstrap.BodyguardFeats.Modes
+                    .InHarmsWayMarker, inHarmsWay);
         }
 
         internal void SetAttackerPosition(Vector3 position)
@@ -401,17 +412,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Select(value => value.HPLeft).ToArray();
             RuleAttackWithWeapon attack = null;
             string control;
-            BodyguardQualificationControl.Arm(incomingRoll, aidRolls);
+            if (critical)
+                BodyguardQualificationControl.ArmCritical(incomingRoll, 20,
+                    aidRolls);
+            else
+                BodyguardQualificationControl.Arm(incomingRoll, aidRolls);
             try
             {
                 ItemEntityWeapon weapon = _ranged ? _rangedAttackerWeapon :
                     _meleeAttackerWeapon;
                 attack = new RuleAttackWithWeapon(Attacker, Target, weapon,
-                    attackPenalty) {
-                    AutoCriticalThreat = critical,
-                    AutoCriticalConfirmation = critical,
-                    Maximized = true
-                };
+                    attackPenalty) { Maximized = true };
                 Rulebook.Trigger(attack);
             }
             finally
@@ -447,6 +458,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TargetAc = attack.AttackRoll.TargetAC,
                 Hit = attack.AttackRoll.IsHit,
                 Critical = attack.AttackRoll.IsCriticalConfirmed,
+                CriticalThreat = attack.AttackRoll.IsCriticalRoll,
+                ConfirmationRoll = attack.AttackRoll.IsCriticalRoll ?
+                    (int)attack.AttackRoll.CriticalConfirmationRoll : 0,
+                ConfirmationTotal = attack.AttackRoll.IsCriticalRoll ?
+                    attack.AttackRoll.CriticalConfirmationRoll +
+                    attack.AttackRoll.AttackBonus + attack.AttackRoll
+                        .CriticalConfirmationBonus : 0,
+                TargetCriticalAc = attack.AttackRoll.TargetCriticalAC,
                 AttackPenalty = attackPenalty,
                 AooBefore = aooBefore,
                 AooAfter = Protectors.Select(value => value.CombatState
@@ -564,19 +583,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             Cleaned = Same(_unitsBefore, Snapshot(_allUnits));
         }
 
-        private static void SetMode(UnitEntityData unit, BlueprintBuff marker,
+        private static void SetMode(UnitEntityData unit,
+            BlueprintActivatableAbility blueprint, BlueprintBuff marker,
             bool active)
         {
-            foreach (Buff buff in unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
-                .Where(value => ReferenceEquals(value.Blueprint, marker))
-                .ToArray()) buff.Remove();
-            if (!active) return;
-            var context = new MechanicsContext(unit, unit.Descriptor,
-                BlueprintBootstrap.BodyguardFeats.Bodyguard, null,
-                new TargetWrapper(unit));
-            if (unit.Descriptor.Buffs.AddBuff(marker, context, null) == null)
+            ActivatableAbility ability = unit.Descriptor.ActivatableAbilities
+                .Enumerable.SingleOrDefault(value => value != null &&
+                    ReferenceEquals(value.Blueprint, blueprint));
+            if (ability == null)
                 throw new InvalidOperationException(
-                    "Bodyguard request-local mode marker was rejected.");
+                    "Bodyguard request-local unit lacks its real activatable: " +
+                    blueprint.AssetGuid);
+            ability.IsOn = active;
+            if (active) ability.TryStart();
+            bool markerPresent = unit.Descriptor.Buffs.GetBuff(marker) != null;
+            if (ability.IsOn != active || markerPresent != active ||
+                active && !ability.IsRunning)
+                throw new InvalidOperationException(
+                    "Bodyguard real activatable and marker diverged: " +
+                    blueprint.AssetGuid + ";requested=" + active +
+                    ";isOn=" + ability.IsOn + ";isRunning=" +
+                    ability.IsRunning + ";marker=" + markerPresent);
         }
 
         private static void SetFeature(UnitEntityData unit,

@@ -58,6 +58,14 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'disposable-in-harms-way-human-repro' = [pscustomobject]@{
+        RequiresSaveName = $true
+        PermittedSaveName = 'KMG_IHW_HUMAN_REPRO_COPY'
+        RequiresManualInteraction = $false
+        ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'observe-class-blueprint-contracts' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -980,8 +988,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         [switch]$ManualInteractionRequired
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.93') {
-        throw 'ExpectedVersion must be exactly the active version 0.0.93.'
+    if ($ExpectedVersion -cne '0.0.94') {
+        throw 'ExpectedVersion must be exactly the active version 0.0.94.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'

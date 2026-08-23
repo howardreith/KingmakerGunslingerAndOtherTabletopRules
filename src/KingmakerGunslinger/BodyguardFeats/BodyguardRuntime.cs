@@ -11,6 +11,7 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Mechanics.ContextData;
 using Kingmaker.Utility;
@@ -273,6 +274,13 @@ namespace KingmakerGunslinger.BodyguardFeats
                 frame.AttackRoll = attack.Roll;
                 frame.AttackBonus = attack.AttackBonus;
                 frame.AttackTargetArmorClass = attack.TargetAC;
+                frame.CriticalThreat = attack.IsCriticalRoll;
+                frame.CriticalConfirmationRoll = attack.IsCriticalRoll ?
+                    (int)attack.CriticalConfirmationRoll : 0;
+                frame.CriticalConfirmationTotal = attack.IsCriticalRoll ?
+                    (int)attack.CriticalConfirmationRoll +
+                    attack.AttackBonus + attack.CriticalConfirmationBonus : 0;
+                frame.CriticalConfirmed = attack.IsCriticalConfirmed;
                 if (!hit || frame.ArmorClassFault ||
                     !frame.ArmorClassObserved ||
                     frame.SuccessfulAttempts.Count() == 0)
@@ -282,34 +290,59 @@ namespace KingmakerGunslinger.BodyguardFeats
                     return;
                 }
 
+                BodyguardFeatBlueprintSet blueprints = BlueprintBootstrap.BodyguardFeats;
                 if (!InHarmsWayDeliveryAccess.ContractAvailable)
-                {
-                    CompleteWithoutInterception(frame,
-                        "delivery-contract-unavailable");
                     LogWarningOnce("delivery-contract.unavailable",
                         InHarmsWayDeliveryAccess.ContractDescription);
-                    return;
+                RuntimeInterceptorCandidate[] evaluated =
+                    frame.SuccessfulAttempts.Select(value =>
+                        CreateInterceptorCandidate(frame, value, blueprints,
+                            hit)).ToArray();
+                foreach (RuntimeInterceptorCandidate candidate in evaluated)
+                {
+                    string observation = DescribeInterceptorCandidate(frame,
+                        candidate, candidate.Decision.Reason);
+                    BodyguardRuntimeDiagnostics.Observation(observation);
+                    LogInfo("interception.candidate", observation);
+                    if (ShouldPublishImmediateUnavailable(candidate))
+                        BodyguardCombatLog.PublishImmediateUnavailable(
+                            candidate.Attempt.Protector.CharacterName);
                 }
-
-                BodyguardFeatBlueprintSet blueprints = BlueprintBootstrap.BodyguardFeats;
+                frame.CandidateGateSummary = string.Join(",", evaluated.Select(
+                    value => value.Attempt.Protector.UniqueId + "/" +
+                        value.Decision.Reason).ToArray());
                 BodyguardInterceptorCandidate[] ordered =
                     BodyguardInterceptionPolicy.OrderEligible(ModuleEnabled(),
                         hit, frame.Interceptor != null,
-                        frame.SuccessfulAttempts.Select(value =>
-                            CreateInterceptorCandidate(value, blueprints)));
+                        evaluated.Select(value => value.PolicyCandidate));
                 frame.ArbitrationOrder = string.Join(",", ordered.Select(value =>
                     value.PersistentId).ToArray());
 
                 foreach (BodyguardInterceptorCandidate orderedCandidate in ordered)
                 {
-                    RuntimeAttempt attempt = frame.SuccessfulAttempts.First(value =>
-                        string.Equals(value.Protector.UniqueId,
+                    RuntimeInterceptorCandidate runtimeCandidate =
+                        evaluated.First(value => string.Equals(
+                            value.Attempt.Protector.UniqueId,
                             orderedCandidate.PersistentId,
                             StringComparison.Ordinal));
+                    RuntimeAttempt attempt = runtimeCandidate.Attempt;
                     float before;
                     float after;
                     if (!BodyguardActionEconomyAccess.TrySpendImmediateAction(
-                            attempt.Protector, out before, out after)) continue;
+                            attempt.Protector, out before, out after))
+                    {
+                        BodyguardImmediateActionSnapshot refreshed =
+                            BodyguardActionEconomyAccess.ObserveImmediateAction(
+                                attempt.Protector);
+                        string reason = refreshed.SwiftCooldown > 0f ?
+                            "swift-cooldown-active" :
+                            "has-swift-action-false";
+                        string observation = DescribeInterceptorCandidate(frame,
+                            runtimeCandidate, reason) + ";spendCommitted=false";
+                        BodyguardRuntimeDiagnostics.Observation(observation);
+                        LogInfo("interception.spend-rejected", observation);
+                        continue;
+                    }
 
                     frame.Interceptor = attempt.Protector;
                     bool redirected;
@@ -337,6 +370,9 @@ namespace KingmakerGunslinger.BodyguardFeats
                             "redirection-rejected") + ";candidate=" +
                             Identity(attempt.Protector) +
                             ";immediateRestored=" + restored);
+                        LogInfo("interception.candidate", DescribeInterceptorCandidate(
+                            frame, runtimeCandidate,
+                            "target-redirection-rejected"));
                         continue;
                     }
 
@@ -348,6 +384,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                             attempt.Protector, before, before +
                             BodyguardActionEconomyAccess
                                 .SwiftActionCooldownSeconds);
+                        LogInfo("interception.candidate", DescribeInterceptorCandidate(
+                            frame, runtimeCandidate, "policy-rejected"));
                         continue;
                     }
 
@@ -361,6 +399,9 @@ namespace KingmakerGunslinger.BodyguardFeats
                         frame.ArbitrationOrder + ";swiftBefore=" + before +
                         ";swiftAfter=" + after + ";contract={" +
                         InHarmsWayDeliveryAccess.ContractDescription + "}");
+                    LogInfo("interception.candidate", DescribeInterceptorCandidate(
+                        frame, runtimeCandidate,
+                        "selected-and-intercepted"));
                     BodyguardCombatLog.PublishInterception(
                         attempt.Protector.CharacterName,
                         frame.OriginalTarget.CharacterName,
@@ -369,7 +410,9 @@ namespace KingmakerGunslinger.BodyguardFeats
                     return;
                 }
 
-                CompleteWithoutInterception(frame, "immediate-unavailable");
+                string terminal = evaluated.Length == 1 ?
+                    evaluated[0].Decision.Reason : "hit-no-interceptor";
+                CompleteWithoutInterception(frame, terminal);
             }
             catch (Exception exception)
             {
@@ -396,6 +439,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                     frame.RollTargetRedirected = !restored;
                     if (!restored) RecordFault("roll-target-restore", null,
                         DescribeFrame(frame, "restore-failed"));
+                    else RecordTargetObservation(frame,
+                        "attack-roll-pop-restored", frame.OriginalTarget);
                 }
                 else if (FramesByRoll.TryGetValue(roll, out frame) &&
                     !frame.ResultProcessed)
@@ -533,6 +578,15 @@ namespace KingmakerGunslinger.BodyguardFeats
             return attackRoll != null && FramesByRoll.TryGetValue(attackRoll,
                     out frame) && frame.Interceptor != null ?
                 frame.Interceptor : attackRoll == null ? null : attackRoll.Target;
+        }
+
+        internal static void ObserveNativeDelivery(RuleAttackRoll attackRoll,
+            UnitEntityData recipient, string stage)
+        {
+            if (attackRoll == null || string.IsNullOrWhiteSpace(stage)) return;
+            RuntimeFrame frame;
+            if (!FramesByRoll.TryGetValue(attackRoll, out frame)) return;
+            RecordTargetObservation(frame, stage, recipient);
         }
 
         internal static void ClearAll(string reason)
@@ -725,24 +779,201 @@ namespace KingmakerGunslinger.BodyguardFeats
                     StringComparer.Ordinal).ToList();
         }
 
-        private static BodyguardInterceptorCandidate CreateInterceptorCandidate(
-            RuntimeAttempt attempt, BodyguardFeatBlueprintSet blueprints)
+        private static RuntimeInterceptorCandidate CreateInterceptorCandidate(
+            RuntimeFrame frame, RuntimeAttempt attempt,
+            BodyguardFeatBlueprintSet blueprints, bool attackHit)
         {
-            float cooldown;
-            bool immediate = BodyguardActionEconomyAccess
-                .CanSpendImmediateAction(attempt.Protector, out cooldown);
-            bool hasFeat = blueprints != null && attempt.Protector.Descriptor
-                .HasFact(blueprints.InHarmsWay);
-            bool mode = blueprints != null && attempt.Protector.Descriptor.Buffs
-                .GetBuff(blueprints.Modes.InHarmsWayMarker) != null;
-            return new BodyguardInterceptorCandidate(
-                attempt.Protector.UniqueId, attempt.PartyOrder, true,
-                attempt.Result.Success, hasFeat, mode, immediate);
+            UnitEntityData protector = attempt.Protector;
+            Fact bodyguardFact = blueprints == null ? null :
+                protector.Descriptor.GetFact(blueprints.Bodyguard);
+            Fact inHarmsWayFact = blueprints == null ? null :
+                protector.Descriptor.GetFact(blueprints.InHarmsWay);
+            ActivatableAbility bodyguardMode = blueprints == null ? null :
+                FindActivatable(protector,
+                    blueprints.Modes.BodyguardAbility);
+            ActivatableAbility inHarmsWayMode = blueprints == null ? null :
+                FindActivatable(protector,
+                    blueprints.Modes.InHarmsWayAbility);
+            bool bodyguardMarker = blueprints != null &&
+                protector.Descriptor.Buffs.GetBuff(
+                    blueprints.Modes.BodyguardMarker) != null;
+            bool inHarmsWayMarker = blueprints != null &&
+                protector.Descriptor.Buffs.GetBuff(
+                    blueprints.Modes.InHarmsWayMarker) != null;
+            BodyguardImmediateActionSnapshot action =
+                BodyguardActionEconomyAccess.ObserveImmediateAction(protector);
+            var input = new InHarmsWayCandidateGateInput
+            {
+                PersistentId = protector.UniqueId,
+                PartyOrder = attempt.PartyOrder,
+                ModuleEnabled = ModuleEnabled(),
+                AttackHit = attackHit,
+                BodyguardAttempted = true,
+                BodyguardSucceeded = attempt.Result.Success,
+                BodyguardContribution = attempt.Result
+                    .ActualArmorClassContribution,
+                HasBodyguardFeat = bodyguardFact != null &&
+                    ReferenceEquals(bodyguardFact.Blueprint,
+                        blueprints.Bodyguard),
+                HasInHarmsWayFeat = inHarmsWayFact != null &&
+                    ReferenceEquals(inHarmsWayFact.Blueprint,
+                        blueprints.InHarmsWay),
+                HasBodyguardActivatable = bodyguardMode != null,
+                HasInHarmsWayActivatable = inHarmsWayMode != null,
+                BodyguardActivatableIsOn = bodyguardMode == null ?
+                    (bool?)null : bodyguardMode.IsOn,
+                InHarmsWayActivatableIsOn = inHarmsWayMode == null ?
+                    (bool?)null : inHarmsWayMode.IsOn,
+                BodyguardMarkerPresent = bodyguardMarker,
+                InHarmsWayMarkerPresent = inHarmsWayMarker,
+                Alive = action.Alive,
+                Conscious = action.Conscious,
+                CanAct = action.CanAct,
+                HasSwiftAction = action.HasSwiftAction,
+                SwiftCooldown = action.SwiftCooldown,
+                AlreadyIntercepted = frame.Interceptor != null,
+                DeliveryContractAvailable = InHarmsWayDeliveryAccess
+                    .ContractAvailable
+            };
+            InHarmsWayCandidateGateDecision decision =
+                InHarmsWayCandidateGate.Evaluate(input);
+            bool modeActive = input.InHarmsWayActivatableIsOn == true &&
+                input.InHarmsWayMarkerPresent;
+            var candidate = new BodyguardInterceptorCandidate(
+                protector.UniqueId, attempt.PartyOrder, true,
+                attempt.Result.Success, input.HasInHarmsWayFeat, modeActive,
+                action.Available, decision);
+            return new RuntimeInterceptorCandidate(attempt, candidate, input,
+                decision, action, bodyguardFact, inHarmsWayFact,
+                bodyguardMode, inHarmsWayMode);
         }
+
+        private static ActivatableAbility FindActivatable(UnitEntityData unit,
+            Kingmaker.UnitLogic.ActivatableAbilities
+                .BlueprintActivatableAbility blueprint)
+        {
+            if (unit == null || unit.Descriptor == null || blueprint == null ||
+                unit.Descriptor.ActivatableAbilities == null) return null;
+            return unit.Descriptor.ActivatableAbilities.Enumerable
+                .SingleOrDefault(value => value != null &&
+                    ReferenceEquals(value.Blueprint, blueprint));
+        }
+
+        private static bool ShouldPublishImmediateUnavailable(
+            RuntimeInterceptorCandidate candidate)
+        {
+            if (candidate == null || !candidate.Input.HasInHarmsWayFeat ||
+                !candidate.Input.HasInHarmsWayActivatable ||
+                candidate.Input.InHarmsWayActivatableIsOn != true ||
+                !candidate.Input.InHarmsWayMarkerPresent) return false;
+            return candidate.Decision.Rejection ==
+                    InHarmsWayCandidateRejection.SwiftCooldownActive ||
+                candidate.Decision.Rejection ==
+                    InHarmsWayCandidateRejection.HasSwiftActionFalse ||
+                candidate.Decision.Rejection ==
+                    InHarmsWayCandidateRejection.ProtectorUnableToAct;
+        }
+
+        private static string DescribeInterceptorCandidate(RuntimeFrame frame,
+            RuntimeInterceptorCandidate candidate, string decision)
+        {
+            InHarmsWayCandidateGateInput input = candidate.Input;
+            BodyguardImmediateActionSnapshot action = candidate.Action;
+            BodyguardFeatBlueprintSet blueprints = BlueprintBootstrap
+                .BodyguardFeats;
+            return DescribeFrame(frame, "interception-candidate") +
+                ";protector=" + Identity(candidate.Attempt.Protector) +
+                ";partyOrder=" + input.PartyOrder +
+                ";bodyguardAttempted=" + input.BodyguardAttempted +
+                ";bodyguardSuccess=" + input.BodyguardSucceeded +
+                ";bodyguardContribution=" + input.BodyguardContribution +
+                ";bodyguardFeatPresent=" + input.HasBodyguardFeat +
+                ";inHarmsWayFeatPresent=" + input.HasInHarmsWayFeat +
+                ";bodyguardActivatablePresent=" +
+                input.HasBodyguardActivatable +
+                ";inHarmsWayActivatablePresent=" +
+                input.HasInHarmsWayActivatable +
+                ";bodyguardActivatableIsOn=" + NullableBoolean(
+                    input.BodyguardActivatableIsOn) +
+                ";inHarmsWayActivatableIsOn=" + NullableBoolean(
+                    input.InHarmsWayActivatableIsOn) +
+                ";bodyguardMarkerPresent=" + input.BodyguardMarkerPresent +
+                ";inHarmsWayMarkerPresent=" +
+                input.InHarmsWayMarkerPresent +
+                ";bodyguardFeatGuid=" + BlueprintGuid(blueprints == null ?
+                    null : blueprints.Bodyguard) +
+                ";inHarmsWayFeatGuid=" + BlueprintGuid(blueprints == null ?
+                    null : blueprints.InHarmsWay) +
+                ";bodyguardActivatableGuid=" + BlueprintGuid(
+                    blueprints == null ? null :
+                        blueprints.Modes.BodyguardAbility) +
+                ";inHarmsWayActivatableGuid=" + BlueprintGuid(
+                    blueprints == null ? null :
+                        blueprints.Modes.InHarmsWayAbility) +
+                ";bodyguardMarkerGuid=" + BlueprintGuid(
+                    blueprints == null ? null :
+                        blueprints.Modes.BodyguardMarker) +
+                ";inHarmsWayMarkerGuid=" + BlueprintGuid(
+                    blueprints == null ? null :
+                        blueprints.Modes.InHarmsWayMarker) +
+                ";alive=" + input.Alive + ";conscious=" +
+                input.Conscious + ";canAct=" + input.CanAct +
+                ";actionContractReadable=" + action.ContractReadable +
+                ";hasSwiftAction=" + input.HasSwiftAction +
+                ";swiftCooldown=" + Format(action.SwiftCooldown) +
+                ";standardCooldown=" + Format(action.StandardCooldown) +
+                ";moveCooldown=" + Format(action.MoveCooldown) +
+                ";isInCombat=" + action.IsInCombat +
+                ";isWaitingInitiative=" + action.IsWaitingInitiative +
+                ";alreadyIntercepted=" + input.AlreadyIntercepted +
+                ";deliveryContractAvailable=" +
+                input.DeliveryContractAvailable + ";" +
+                DescribeTurnState(candidate.Attempt.Protector) +
+                ";decision=" + decision;
+        }
+
+        private static string DescribeTurnState(UnitEntityData protector)
+        {
+            try
+            {
+                bool turnBased = TurnBased.Controllers.CombatController
+                    .IsInTurnBasedCombat();
+                var controller = Game.Instance == null ? null :
+                    Game.Instance.TurnBasedCombatController;
+                var turn = controller == null ? null : controller.CurrentTurn;
+                UnitEntityData current = turn == null ? null : turn.Unit;
+                string acted = turn != null &&
+                    ReferenceEquals(current, protector) ?
+                        turn.IsActed().ToString() : "unknown-native";
+                return "turnBased=" + turnBased + ";round=" +
+                    (controller == null ? "unknown" : controller.RoundNumber
+                        .ToString(CultureInfo.InvariantCulture)) +
+                    ";currentTurn=" + Identity(current) +
+                    ";protectorIsCurrentTurn=" +
+                    ReferenceEquals(current, protector) +
+                    ";protectorHasActedThisRound=" + acted;
+            }
+            catch (Exception exception)
+            {
+                return "turnState=fault:" + exception.GetType().FullName;
+            }
+        }
+
+        private static string NullableBoolean(bool? value)
+        { return value.HasValue ? value.Value.ToString() : "unknown"; }
+
+        private static string Format(float value)
+        { return value.ToString("R", CultureInfo.InvariantCulture); }
+
+        private static string BlueprintGuid(
+            Kingmaker.Blueprints.BlueprintScriptableObject blueprint)
+        { return blueprint == null ? "<null>" : blueprint.AssetGuid; }
 
         private static bool TryCommitRedirection(RuntimeFrame frame,
             UnitEntityData interceptor)
         {
+            RecordTargetObservation(frame, "redirection-before",
+                frame.OriginalTarget);
             bool rollRedirected = InHarmsWayDeliveryAccess.TryRedirectRuleTarget(
                 frame.Roll, frame.OriginalTarget, interceptor);
             frame.RollTargetRedirected = rollRedirected ||
@@ -769,6 +1000,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                     interceptor);
             if (weaponRedirected)
             {
+                RecordTargetObservation(frame, "redirection-committed",
+                    interceptor);
                 return true;
             }
             bool weaponRestored = !frame.WeaponTargetRedirected &&
@@ -856,6 +1089,9 @@ namespace KingmakerGunslinger.BodyguardFeats
             if (!roll || !weapon)
                 RecordFault("target-restore", null, DescribeFrame(frame, stage) +
                     ";rollRestored=" + roll + ";weaponRestored=" + weapon);
+            else
+                RecordTargetObservation(frame, "target-restored-" + stage,
+                    frame.OriginalTarget);
         }
 
         private static void RemoveUncommittedFrame(RuntimeFrame frame)
@@ -984,6 +1220,11 @@ namespace KingmakerGunslinger.BodyguardFeats
                 ";attackTargetAc=" + frame.AttackTargetArmorClass +
                 ";attackHit=" + (frame.AttackHit.HasValue ?
                     frame.AttackHit.Value.ToString() : "unknown") +
+                ";criticalThreat=" + frame.CriticalThreat +
+                ";confirmationD20=" + frame.CriticalConfirmationRoll +
+                ";confirmationTotal=" + frame.CriticalConfirmationTotal +
+                ";criticalConfirmed=" + frame.CriticalConfirmed +
+                ";candidateGates=" + (frame.CandidateGateSummary ?? "") +
                 ";arbitration=" + (frame.ArbitrationOrder ?? "") +
                 ";swiftBefore=" + frame.ImmediateBefore.ToString("R",
                     CultureInfo.InvariantCulture) +
@@ -995,6 +1236,20 @@ namespace KingmakerGunslinger.BodyguardFeats
                 frame.AbilityDeliveryObserved + ";pendingProjectiles=" +
                 frame.PendingProjectileResolves + ";completed=" +
                 frame.Completed;
+        }
+
+        private static void RecordTargetObservation(RuntimeFrame frame,
+            string stage, UnitEntityData recipient)
+        {
+            if (frame == null) return;
+            string observation = DescribeFrame(frame, stage) +
+                ";rollTargetNow=" + Identity(frame.Roll == null ? null :
+                    frame.Roll.Target) + ";weaponTargetNow=" +
+                Identity(frame.WeaponAttack == null ? null :
+                    frame.WeaponAttack.Target) + ";deliveryRecipient=" +
+                Identity(recipient);
+            BodyguardRuntimeDiagnostics.Observation(observation);
+            LogInfo("delivery.target", observation);
         }
 
         private static string Identity(UnitEntityData unit)
@@ -1078,6 +1333,41 @@ namespace KingmakerGunslinger.BodyguardFeats
             internal int AooAfter { get; private set; }
         }
 
+        private sealed class RuntimeInterceptorCandidate
+        {
+            internal RuntimeInterceptorCandidate(RuntimeAttempt attempt,
+                BodyguardInterceptorCandidate policyCandidate,
+                InHarmsWayCandidateGateInput input,
+                InHarmsWayCandidateGateDecision decision,
+                BodyguardImmediateActionSnapshot action,
+                Fact bodyguardFact, Fact inHarmsWayFact,
+                ActivatableAbility bodyguardMode,
+                ActivatableAbility inHarmsWayMode)
+            {
+                Attempt = attempt;
+                PolicyCandidate = policyCandidate;
+                Input = input;
+                Decision = decision;
+                Action = action;
+                BodyguardFact = bodyguardFact;
+                InHarmsWayFact = inHarmsWayFact;
+                BodyguardMode = bodyguardMode;
+                InHarmsWayMode = inHarmsWayMode;
+            }
+            internal RuntimeAttempt Attempt { get; private set; }
+            internal BodyguardInterceptorCandidate PolicyCandidate
+            { get; private set; }
+            internal InHarmsWayCandidateGateInput Input { get; private set; }
+            internal InHarmsWayCandidateGateDecision Decision
+            { get; private set; }
+            internal BodyguardImmediateActionSnapshot Action
+            { get; private set; }
+            internal Fact BodyguardFact { get; private set; }
+            internal Fact InHarmsWayFact { get; private set; }
+            internal ActivatableAbility BodyguardMode { get; private set; }
+            internal ActivatableAbility InHarmsWayMode { get; private set; }
+        }
+
         private sealed class RuntimeFrame
         {
             internal RuntimeFrame(string identity, RuleAttackRoll roll,
@@ -1116,11 +1406,16 @@ namespace KingmakerGunslinger.BodyguardFeats
             internal int AttackRoll { get; set; }
             internal int AttackBonus { get; set; }
             internal int AttackTargetArmorClass { get; set; }
+            internal bool CriticalThreat { get; set; }
+            internal int CriticalConfirmationRoll { get; set; }
+            internal int CriticalConfirmationTotal { get; set; }
+            internal bool CriticalConfirmed { get; set; }
             internal UnitEntityData Interceptor { get; set; }
             internal bool RollTargetRedirected { get; set; }
             internal bool WeaponTargetRedirected { get; set; }
             internal float ImmediateBefore { get; set; }
             internal float ImmediateAfter { get; set; }
+            internal string CandidateGateSummary { get; set; }
             internal string ArbitrationOrder { get; set; }
             internal string CandidateOrder { get; set; }
             internal int PendingProjectileResolves { get; set; }

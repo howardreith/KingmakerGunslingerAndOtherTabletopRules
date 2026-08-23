@@ -9,10 +9,27 @@ namespace KingmakerGunslinger.BodyguardFeats
         internal BodyguardInterceptorCandidate(string persistentId, int partyOrder,
             bool bodyguardAttempted, bool bodyguardSucceeded,
             bool hasInHarmsWay, bool modeActive, bool immediateActionAvailable)
+            : this(persistentId, partyOrder, bodyguardAttempted,
+                bodyguardSucceeded, hasInHarmsWay, modeActive,
+                immediateActionAvailable,
+                new InHarmsWayCandidateGateDecision(
+                    bodyguardAttempted && bodyguardSucceeded &&
+                    hasInHarmsWay && modeActive && immediateActionAvailable ?
+                        InHarmsWayCandidateRejection.None :
+                        InHarmsWayCandidateRejection.PolicyRejected))
+        { }
+
+        internal BodyguardInterceptorCandidate(string persistentId,
+            int partyOrder, bool bodyguardAttempted,
+            bool bodyguardSucceeded, bool hasInHarmsWay, bool modeActive,
+            bool immediateActionAvailable,
+            InHarmsWayCandidateGateDecision gateDecision)
         {
             if (string.IsNullOrWhiteSpace(persistentId))
                 throw new ArgumentException("A persistent identity is required.",
                     "persistentId");
+            if (gateDecision == null)
+                throw new ArgumentNullException("gateDecision");
             PersistentId = persistentId;
             PartyOrder = partyOrder < 0 ? int.MaxValue : partyOrder;
             BodyguardAttempted = bodyguardAttempted;
@@ -20,6 +37,7 @@ namespace KingmakerGunslinger.BodyguardFeats
             HasInHarmsWay = hasInHarmsWay;
             ModeActive = modeActive;
             ImmediateActionAvailable = immediateActionAvailable;
+            GateDecision = gateDecision;
         }
 
         internal string PersistentId { get; private set; }
@@ -29,6 +47,8 @@ namespace KingmakerGunslinger.BodyguardFeats
         internal bool HasInHarmsWay { get; private set; }
         internal bool ModeActive { get; private set; }
         internal bool ImmediateActionAvailable { get; private set; }
+        internal InHarmsWayCandidateGateDecision GateDecision
+        { get; private set; }
     }
 
     internal static class BodyguardInterceptionPolicy
@@ -46,7 +66,8 @@ namespace KingmakerGunslinger.BodyguardFeats
                 return Array.Empty<BodyguardInterceptorCandidate>();
             return values.Where(value => value.BodyguardAttempted &&
                     value.BodyguardSucceeded && value.HasInHarmsWay &&
-                    value.ModeActive && value.ImmediateActionAvailable)
+                    value.ModeActive && value.ImmediateActionAvailable &&
+                    value.GateDecision.Eligible)
                 .OrderBy(value => value.PartyOrder)
                 .ThenBy(value => value.PersistentId, StringComparer.Ordinal)
                 .ToArray();

@@ -14,6 +14,7 @@ INFORMATIONAL_VERSION = "0.0.93-eastern-favored-compatibility"
 PACKAGE = "KingmakerGunslinger-0.0.93-local-runtime.zip"
 DETERMINISTIC_TEST_COUNT = 1211
 STATIC_KEY = "easternFavored93"
+RUNTIME_QUALIFICATION_PENDING = False
 
 HEIRLOOM_IDENTITIES = {
     "KMG.Traits.HeirloomWeapon.Nodachi.Selection": (
@@ -142,7 +143,7 @@ def validate(root: Path) -> None:
         "lateMartialPublicationRequired": True,
         "favoredClassTraitsMustComplete": True,
         "tweakOrTreatHeirloomMustComplete": True,
-        "runtimeQualificationPending": False,
+        "runtimeQualificationPending": RUNTIME_QUALIFICATION_PENDING,
     }
     for key, value in expected_static.items():
         if contract.get(key) != value:

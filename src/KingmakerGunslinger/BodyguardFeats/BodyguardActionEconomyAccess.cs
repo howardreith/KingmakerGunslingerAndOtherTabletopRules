@@ -6,6 +6,29 @@ using Kingmaker.UnitLogic;
 
 namespace KingmakerGunslinger.BodyguardFeats
 {
+    internal sealed class BodyguardImmediateActionSnapshot
+    {
+        internal bool ContractReadable { get; set; }
+        internal bool Alive { get; set; }
+        internal bool Conscious { get; set; }
+        internal bool CanAct { get; set; }
+        internal bool HasSwiftAction { get; set; }
+        internal float SwiftCooldown { get; set; }
+        internal float StandardCooldown { get; set; }
+        internal float MoveCooldown { get; set; }
+        internal bool IsInCombat { get; set; }
+        internal bool IsWaitingInitiative { get; set; }
+        internal bool Available
+        {
+            get
+            {
+                return ContractReadable && Alive && Conscious && CanAct &&
+                    HasSwiftAction && !float.IsNaN(SwiftCooldown) &&
+                    !float.IsInfinity(SwiftCooldown) && SwiftCooldown <= 0f;
+            }
+        }
+    }
+
     /// <summary>
     /// Thin adapter over Kingmaker's authoritative opportunity-attack count and
     /// shared swift-action cooldown. Bodyguard never creates an attack command,
@@ -123,17 +146,43 @@ namespace KingmakerGunslinger.BodyguardFeats
         internal static bool CanSpendImmediateAction(UnitEntityData unit,
             out float swiftCooldown)
         {
-            swiftCooldown = float.NaN;
+            BodyguardImmediateActionSnapshot snapshot =
+                ObserveImmediateAction(unit);
+            swiftCooldown = snapshot.SwiftCooldown;
+            return snapshot.Available;
+        }
+
+        internal static BodyguardImmediateActionSnapshot ObserveImmediateAction(
+            UnitEntityData unit)
+        {
+            var result = new BodyguardImmediateActionSnapshot
+            {
+                SwiftCooldown = float.NaN,
+                StandardCooldown = float.NaN,
+                MoveCooldown = float.NaN
+            };
             if (unit == null || unit.Descriptor == null ||
                 unit.Descriptor.State == null || unit.CombatState == null ||
                 unit.CombatState.Cooldown == null)
-                return false;
-            swiftCooldown = unit.CombatState.Cooldown.SwiftAction;
-            return unit.Descriptor.State.CanAct &&
-                unit.Descriptor.State.IsConscious &&
-                !unit.Descriptor.State.IsDead && unit.HasSwiftAction() &&
-                !float.IsNaN(swiftCooldown) &&
-                !float.IsInfinity(swiftCooldown) && swiftCooldown <= 0f;
+                return result;
+            try
+            {
+                result.ContractReadable = true;
+                result.Alive = !unit.Descriptor.State.IsDead;
+                result.Conscious = unit.Descriptor.State.IsConscious;
+                result.CanAct = unit.Descriptor.State.CanAct;
+                result.SwiftCooldown = unit.CombatState.Cooldown.SwiftAction;
+                result.StandardCooldown = unit.CombatState.Cooldown
+                    .StandardAction;
+                result.MoveCooldown = unit.CombatState.Cooldown.MoveAction;
+                result.IsInCombat = unit.CombatState.IsInCombat;
+                result.IsWaitingInitiative = unit.CombatState
+                    .IsWaitingInitiative;
+                result.HasSwiftAction = unit.HasSwiftAction();
+            }
+            catch
+            { result.ContractReadable = false; }
+            return result;
         }
 
         internal static bool TrySpendImmediateAction(UnitEntityData unit,

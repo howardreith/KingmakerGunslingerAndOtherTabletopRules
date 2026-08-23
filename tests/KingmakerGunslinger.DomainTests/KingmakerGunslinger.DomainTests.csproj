@@ -95,6 +95,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAidPolicy.cs"><Link>BodyguardFeats\BodyguardAidPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardArmorClassAttributionPolicy.cs"><Link>BodyguardFeats\BodyguardArmorClassAttributionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAttackSelectionPolicy.cs"><Link>BodyguardFeats\BodyguardAttackSelectionPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\InHarmsWayCandidateGate.cs"><Link>BodyguardFeats\InHarmsWayCandidateGate.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardInterceptionPolicy.cs"><Link>BodyguardFeats\BodyguardInterceptionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAttackFrame.cs"><Link>BodyguardFeats\BodyguardAttackFrame.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAttemptCoordinator.cs"><Link>BodyguardFeats\BodyguardAttemptCoordinator.cs</Link></Compile>

@@ -174,6 +174,7 @@ $expected = @(
     'observe-load-game-button-action',
     'working-save-smoke',
     'p0-affected-focused-aim-save-load',
+    'disposable-in-harms-way-human-repro',
     'working-save-shield-other-prepare',
     'working-save-shield-other-verify-cleanup',
     'working-save-expanded-summoning-prepare',
@@ -507,10 +508,16 @@ $bodyguardDisabled = Get-KmgRuntimeScenarioMetadata `
 Assert-True (-not $bodyguardDisabled.RequiresManualInteraction -and
     -not $bodyguardDisabled.RequiresSaveName) `
     'bodyguard-disabled-is-autonomous-save-free'
+$humanRepro = Get-KmgRuntimeScenarioMetadata `
+    'disposable-in-harms-way-human-repro'
+Assert-True (-not $humanRepro.RequiresManualInteraction -and
+    $humanRepro.RequiresSaveName -and
+    $humanRepro.PermittedSaveName -ceq 'KMG_IHW_HUMAN_REPRO_COPY') `
+    'in-harms-way-human-repro-is-autonomous-exact-save'
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.93'
+    ExpectedVersion = '0.0.94'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -543,7 +550,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.93' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.94' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -603,7 +610,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.93' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.94' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

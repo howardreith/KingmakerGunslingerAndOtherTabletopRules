@@ -24,7 +24,8 @@ param(
     [hashtable]$Parameters = @{},
     [ValidateSet(
         'KMG_AUTOMATION_WORKING',
-        'KMG_P0_FOCUSED_AIM_AFFECTED_COPY')]
+        'KMG_P0_FOCUSED_AIM_AFFECTED_COPY',
+        'KMG_IHW_HUMAN_REPRO_COPY')]
     [string]$SaveName,
     [ValidateSet(
         'gunslinger-only',
@@ -249,7 +250,8 @@ try {
 
     if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions',
         'production-firearm-catalog', 'advanced-capacity',
-        'gunslinger-starting-items')) {
+        'gunslinger-starting-items',
+        'disposable-in-harms-way-human-repro')) {
         $orchestration.stage = 'waiting-for-runtime-readiness'
         [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
             -Record $orchestration)
@@ -465,6 +467,7 @@ try {
 
     if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions',
         'production-firearm-catalog',
+        'disposable-in-harms-way-human-repro',
         'disposable-expanded-summoning',
         'disposable-expanded-summoning-player-path',
         'disposable-expanded-summoning-visual-contracts',

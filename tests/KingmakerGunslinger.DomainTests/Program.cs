@@ -189,6 +189,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("bodyguard-policy.frame-deduplication", BodyguardPolicyTests.AttackFramePreauthorizesAndDeduplicates),
             Case("bodyguard-policy.frame-nesting", BodyguardPolicyTests.AttackFramesRemainNestedAndFaultSafe),
             Case("bodyguard-policy.interception-gates", BodyguardPolicyTests.InterceptorEligibilityGatesAreExact),
+            Case("bodyguard-policy.interception-gate-diagnostics", BodyguardPolicyTests.InterceptorGateDiagnosticsAreExact),
             Case("bodyguard-policy.interception-order", BodyguardPolicyTests.InterceptorOrderingIsStable),
             Case("bodyguard-runtime.native-actions", BodyguardRuntimeContractTests.NativeActionEconomyIsAuthoritative),
             Case("bodyguard-runtime.threat-and-aid", BodyguardRuntimeContractTests.ThreatAndAidUseNativeRulePaths),

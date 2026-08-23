@@ -134,19 +134,43 @@ namespace KingmakerGunslinger.Diagnostics
         private static void Prefix(object __instance)
         {
             RuleDealDamage damage = __instance as RuleDealDamage;
+            if (damage != null)
+                BodyguardRuntime.ObserveNativeDelivery(damage.AttackRoll,
+                    damage.Target, "rule-deal-damage-prefix");
             Scatter.ScatterVolleyRuntime.SuppressPrecisionDamage(damage);
         }
 
-        private static void Postfix(object __instance) { }
+        private static void Postfix(object __instance)
+        {
+            RuleDealDamage damage = __instance as RuleDealDamage;
+            if (damage != null)
+                BodyguardRuntime.ObserveNativeDelivery(damage.AttackRoll,
+                    damage.Target, "rule-deal-damage-postfix");
+        }
     }
 
     [HarmonyPatch(typeof(Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve),
         "OnTrigger")]
     internal static class RuleAttackWithWeaponResolveGritRecoveryPatch
     {
+        private static void Prefix(
+            Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve __instance)
+        {
+            RuleAttackWithWeapon attack = __instance == null ? null :
+                __instance.AttackWithWeapon;
+            BodyguardRuntime.ObserveNativeDelivery(attack == null ? null :
+                attack.AttackRoll, __instance == null ? null :
+                __instance.Target, "weapon-resolve-prefix");
+        }
+
         private static void Postfix(
             Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve __instance)
         {
+            RuleAttackWithWeapon attack = __instance == null ? null :
+                __instance.AttackWithWeapon;
+            BodyguardRuntime.ObserveNativeDelivery(attack == null ? null :
+                attack.AttackRoll, __instance == null ? null :
+                __instance.Target, "weapon-resolve-postfix");
             FirearmGritRecoveryRuntime.AfterWeaponResolve(__instance);
         }
     }

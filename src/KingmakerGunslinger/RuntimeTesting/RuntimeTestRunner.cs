@@ -546,6 +546,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    _request.Scenario != RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayHumanRepro &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
@@ -1350,6 +1352,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayHumanRepro ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -1398,6 +1402,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableInHarmsWayHumanRepro ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -1452,6 +1458,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                             ? WorkingSaveSmokeIdentity.AffectedFocusedAim
+                            : _request.Scenario == RuntimeTestScenarioCatalog
+                                .DisposableInHarmsWayHumanRepro
+                                ? WorkingSaveSmokeIdentity
+                                    .InHarmsWayHumanRepro
                             : null);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
@@ -1813,6 +1823,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableBrownFurNativeCast)
                 {
                     Complete(BrownFurNativeCastScenario.Run(
+                        _context, _request));
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayHumanRepro)
+                {
+                    Complete(InHarmsWayHumanReproScenario.Run(
                         _context, _request));
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
@@ -3850,6 +3866,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 _request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayHumanRepro ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||

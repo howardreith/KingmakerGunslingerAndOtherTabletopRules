@@ -28,6 +28,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Akasa", "a62c36f7-e9ab-4a97-85e4-f67fc0d6ad01",
                 "Area_Dwarf_10", 2);
 
+        internal static readonly WorkingSaveSmokeIdentity InHarmsWayHumanRepro =
+            new WorkingSaveSmokeIdentity(
+                "Quicksave3", "KMG_IHW_HUMAN_REPRO_COPY.zks",
+                "HelpfulDefenderTest",
+                "ff125874-eaf1-43d5-972c-5cc1a3a56d73",
+                "Area_Dwarf_1", 2);
+
         internal WorkingSaveSmokeIdentity(string name, string file,
             string gameName, string gameId, string area, int partyCount)
         {

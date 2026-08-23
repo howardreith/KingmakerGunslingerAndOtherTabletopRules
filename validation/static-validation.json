@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.93-eastern-favored-compatibility",
-  "version": "0.0.93",
+  "milestone": "0.0.94-in-harms-way-runtime-repair",
+  "version": "0.0.94",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -135,5 +135,22 @@
     "favoredClassTraitsMustComplete": true,
     "tweakOrTreatHeirloomMustComplete": true,
     "runtimeQualificationPending": false
+  },
+  "inHarmsWay94": {
+    "deterministicTestCount": 1212,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 12,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "cotwAidAnotherOptional": true,
+    "favoredClassHelpfulOptional": true,
+    "lateMartialPublicationRequired": true,
+    "favoredClassTraitsMustComplete": true,
+    "tweakOrTreatHeirloomMustComplete": true,
+    "runtimeQualificationPending": true
   }
 }

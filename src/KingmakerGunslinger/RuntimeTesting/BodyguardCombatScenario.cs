@@ -350,6 +350,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                     combatIntercept.WeaponTargetRestored,
                 "live original attack and shared swift/immediate economy");
 
+            FavoredClassTraitContract favored =
+                AidAnotherOptionalExtensionCoordinator.FavoredClassContract;
+            if (favored != null)
+            {
+                stage = "helpful-halfling-in-harms-way";
+                fixture.SetCombatHelpful(fixture.ProtectorOne, false);
+                fixture.SetAidContributor(fixture.ProtectorOne,
+                    favored.HalflingHelpful, true);
+                fixture.ResetEconomy(8, 0f, 8, 0f);
+                BodyguardCombatCaseEvidence halflingHit = fixture.Attack(
+                    "helpful-bodyguard-halfling-four-intercept", 10,
+                    forceHitPenalty, false, true, 20);
+                evidence.Cases.Add(halflingHit);
+                Add(assertions, "helpful-in-harms-way-after-four",
+                    "+4 halfling Helpful Bodyguard redirects a normal native hit",
+                    Describe(halflingHit),
+                    halflingHit.BodyguardContribution == 4 &&
+                        HasGrantEvidence(halflingHit, 4, "Halfling", 0) &&
+                        Counter(halflingHit, "interceptions") == 1 &&
+                        halflingHit.HpLoss[0] == 0 &&
+                        halflingHit.HpLoss[1] > 0 &&
+                        halflingHit.DamageEvents.Length == 1 &&
+                        HasObservation(halflingHit, "decision=eligible"),
+                    "exact foreign Helpful ownership plus native attack delivery");
+
+                fixture.ResetEconomy(8, 0f, 8, 0f);
+                BodyguardCombatCaseEvidence halflingCritical = fixture.Attack(
+                    "helpful-bodyguard-halfling-four-critical", 20,
+                    forceHitPenalty, true, true, 20);
+                evidence.Cases.Add(halflingCritical);
+                Add(assertions, "helpful-in-harms-way-critical-after-four",
+                    "natural 20 plus native confirmation preserves +4 and redirects one complete critical delivery",
+                    Describe(halflingCritical),
+                    halflingCritical.Roll == 20 &&
+                        halflingCritical.CriticalThreat &&
+                        halflingCritical.ConfirmationRoll == 20 &&
+                        halflingCritical.Critical &&
+                        halflingCritical.BodyguardContribution == 4 &&
+                        Counter(halflingCritical, "attempts") == 1 &&
+                        Counter(halflingCritical, "interceptions") == 1 &&
+                        halflingCritical.HpLoss[0] == 0 &&
+                        halflingCritical.HpLoss[1] > 0 &&
+                        halflingCritical.DamageEvents.Length == 1 &&
+                        halflingCritical.AidControl.Contains(
+                            "confirmationConsumed=1") &&
+                        HasObservation(halflingCritical,
+                            "stage=rule-deal-damage-prefix") &&
+                        HasObservation(halflingCritical,
+                            "deliveryRecipient=" +
+                            fixture.ProtectorOne.UniqueId) &&
+                        halflingCritical.RollTargetRestored &&
+                        halflingCritical.WeaponTargetRestored,
+                    "real RuleAttackRoll confirmation and actual HP recipient");
+                fixture.SetAidContributor(fixture.ProtectorOne,
+                    favored.HalflingHelpful, false);
+                fixture.SetCombatHelpful(fixture.ProtectorOne, true);
+            }
+
             fixture.SetModes(fixture.ProtectorOne, true, false);
             fixture.SetModes(fixture.ProtectorTwo, true, false);
             fixture.SetCombatHelpful(fixture.ProtectorTwo, false);
@@ -511,7 +569,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(off), off.Hit && Counter(off, "successful") == 1 &&
                     Counter(off, "interceptions") == 0 &&
                     off.HpLoss[0] > 0 && off.HpLoss[1] == 0 &&
-                    Same(off.SwiftBefore, off.SwiftAfter),
+                    Same(off.SwiftBefore, off.SwiftAfter) &&
+                    HasObservation(off, "decision=in-harms-way-mode-off") &&
+                    !off.CombatLogLastMessage.Contains(
+                        "no immediate action is available"),
                 "live target HP and shared swift cooldown");
 
             stage = "in-harms-way-full-delivery";
@@ -519,13 +580,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             fixture.AddFlaming();
             fixture.ResetEconomy(3, 0f, 3, 0f);
             BodyguardCombatCaseEvidence intercepted = fixture.Attack(
-                "in-harms-way-full-delivery", 10, baseMargin - 7, true,
+                "in-harms-way-full-delivery", 20, baseMargin - 7, true,
                 true, 20);
             evidence.Cases.Add(intercepted);
             fixture.RemoveFlaming();
             Add(assertions, "in-harms-way-full-delivery",
                 "preserved critical redirects physical, fire, save, condition, and HP exactly once",
                 Describe(intercepted), intercepted.Hit &&
+                    intercepted.Roll == 20 &&
+                    intercepted.CriticalThreat &&
+                    intercepted.ConfirmationRoll == 20 &&
                     intercepted.Critical &&
                     Counter(intercepted, "interceptions") == 1 &&
                     intercepted.AooAfter[0] == intercepted.AooBefore[0] - 1 &&
@@ -545,6 +609,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     HasRider(intercepted, fixture.ProtectorOne) &&
                     fixture.HasRider(fixture.ProtectorOne) &&
                     !fixture.HasRider(fixture.Target) &&
+                    intercepted.DamageEvents.Length == 1 &&
+                    intercepted.DamageEvents[0].Contains("target=" +
+                        fixture.ProtectorOne.UniqueId) &&
+                    HasObservation(intercepted,
+                        "inHarmsWayFeatPresent=True") &&
+                    HasObservation(intercepted,
+                        "inHarmsWayActivatableIsOn=True") &&
+                    HasObservation(intercepted,
+                        "inHarmsWayMarkerPresent=True") &&
+                    HasObservation(intercepted,
+                        "hasSwiftAction=True") &&
+                    HasObservation(intercepted, "decision=eligible") &&
+                    HasObservation(intercepted,
+                        "stage=rule-deal-damage-prefix") &&
+                    HasObservation(intercepted, "deliveryRecipient=" +
+                        fixture.ProtectorOne.UniqueId) &&
+                    intercepted.AidControl.Contains(
+                        "confirmationConsumed=1") &&
                     intercepted.RollTargetRestored &&
                     intercepted.WeaponTargetRestored,
                 "native attack/damage plus attack-roll Did rider and RuleSavingThrow");
@@ -562,6 +644,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Near(unavailable.SwiftAfter[0], 6f) &&
                     unavailable.HpLoss[0] > 0 &&
                     unavailable.HpLoss[1] == 0 &&
+                    HasObservation(unavailable,
+                        "decision=swift-cooldown-active") &&
+                    unavailable.CombatLogLastMessage.Contains(
+                        "no immediate action is available") &&
                     unavailable.RollTargetRestored &&
                     unavailable.WeaponTargetRestored,
                 "native UnitCombatState.Cooldown.SwiftAction");
@@ -745,6 +831,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal) >= 0;
         }
 
+        private static bool HasObservation(BodyguardCombatCaseEvidence value,
+            string token)
+        {
+            return value != null && value.RuntimeObservations != null &&
+                value.RuntimeObservations.Any(item => item != null &&
+                    item.IndexOf(token, StringComparison.Ordinal) >= 0);
+        }
+
         private static bool HasTruthfulBodyguardSources(
             BodyguardCombatCaseEvidence value, int expectedCount,
             int expectedTotal)
@@ -802,7 +896,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             item.Bonus + "/" + item.SourceName + "/" +
                             item.SourceBlueprintGuid + "/" +
                             item.SourceFactIdentity).ToArray()) +
-                ";critical=" + value.Critical + ";aoo=" +
+                ";criticalThreat=" + value.CriticalThreat +
+                ";confirmation=" + value.ConfirmationRoll + "/" +
+                value.ConfirmationTotal + ";criticalAc=" +
+                value.TargetCriticalAc + ";critical=" + value.Critical +
+                ";aoo=" +
                 string.Join("/", value.AooBefore) + "->" +
                 string.Join("/", value.AooAfter) + ";swift=" +
                 string.Join("/", value.SwiftBefore.Select(item =>

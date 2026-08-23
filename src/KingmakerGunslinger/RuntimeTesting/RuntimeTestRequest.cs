@@ -227,6 +227,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationBodyMatrixEvidence ||
                 request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableInHarmsWayHumanRepro ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
@@ -295,6 +297,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string expectedSaveName = request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                         ? RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveName
+                        : request.Scenario == RuntimeTestScenarioCatalog
+                            .DisposableInHarmsWayHumanRepro
+                            ? RuntimeTestScenarioCatalog
+                                .InHarmsWayHumanReproSaveName
                         : ManualSaveLoadObservation.WorkingSave;
                 if (!string.Equals(saveName, expectedSaveName,
                     StringComparison.Ordinal))

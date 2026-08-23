@@ -430,7 +430,65 @@ namespace KingmakerGunslinger.DomainTests
             foreach (BodyguardInterceptorCandidate candidate in gates)
                 Assertions.Equal(0, BodyguardInterceptionPolicy.OrderEligible(true,
                     true, false, new[] { candidate }).Length,
-                    "An In Harm's Way eligibility gate was bypassed.");
+                "An In Harm's Way eligibility gate was bypassed.");
+        }
+
+        internal static void InterceptorGateDiagnosticsAreExact()
+        {
+            InHarmsWayCandidateGateInput valid = ValidInterceptionGate();
+            InHarmsWayCandidateGateDecision eligible =
+                InHarmsWayCandidateGate.Evaluate(valid);
+            Assertions.True(eligible.Eligible && eligible.Reason == "eligible",
+                "A fully eligible In Harm's Way candidate was rejected.");
+
+            InHarmsWayCandidateGateInput missingFeat =
+                ValidInterceptionGate();
+            missingFeat.HasInHarmsWayFeat = false;
+            AssertGate(missingFeat, "missing-in-harms-way-feat");
+
+            InHarmsWayCandidateGateInput markerMissing =
+                ValidInterceptionGate();
+            markerMissing.InHarmsWayMarkerPresent = false;
+            AssertGate(markerMissing, "activatable-marker-divergence");
+
+            InHarmsWayCandidateGateInput markerWithoutMode =
+                ValidInterceptionGate();
+            markerWithoutMode.InHarmsWayActivatableIsOn = false;
+            AssertGate(markerWithoutMode, "activatable-marker-divergence");
+
+            InHarmsWayCandidateGateInput modeOff = ValidInterceptionGate();
+            modeOff.InHarmsWayActivatableIsOn = false;
+            modeOff.InHarmsWayMarkerPresent = false;
+            AssertGate(modeOff, "in-harms-way-mode-off");
+
+            InHarmsWayCandidateGateInput unknownMarker =
+                ValidInterceptionGate();
+            unknownMarker.InHarmsWayActivatableIsOn = null;
+            unknownMarker.InHarmsWayMarkerPresent = false;
+            AssertGate(unknownMarker, "marker-missing");
+
+            InHarmsWayCandidateGateInput unable = ValidInterceptionGate();
+            unable.CanAct = false;
+            AssertGate(unable, "protector-unable-to-act");
+
+            InHarmsWayCandidateGateInput cooldown = ValidInterceptionGate();
+            cooldown.SwiftCooldown = 0.25f;
+            cooldown.HasSwiftAction = false;
+            AssertGate(cooldown, "swift-cooldown-active");
+
+            InHarmsWayCandidateGateInput noSwift = ValidInterceptionGate();
+            noSwift.HasSwiftAction = false;
+            AssertGate(noSwift, "has-swift-action-false");
+
+            InHarmsWayCandidateGateInput intercepted =
+                ValidInterceptionGate();
+            intercepted.AlreadyIntercepted = true;
+            AssertGate(intercepted, "already-intercepted");
+
+            InHarmsWayCandidateGateInput unavailable =
+                ValidInterceptionGate();
+            unavailable.DeliveryContractAvailable = false;
+            AssertGate(unavailable, "delivery-contract-unavailable");
         }
 
         internal static void InterceptorOrderingIsStable()
@@ -476,6 +534,44 @@ namespace KingmakerGunslinger.DomainTests
         private static BodyguardInterceptorCandidate Candidate(string id, int order)
         { return new BodyguardInterceptorCandidate(id, order, true, true, true,
             true, true); }
+
+        private static InHarmsWayCandidateGateInput ValidInterceptionGate()
+        {
+            return new InHarmsWayCandidateGateInput
+            {
+                PersistentId = "protector",
+                PartyOrder = 0,
+                ModuleEnabled = true,
+                AttackHit = true,
+                BodyguardAttempted = true,
+                BodyguardSucceeded = true,
+                BodyguardContribution = 4,
+                HasBodyguardFeat = true,
+                HasInHarmsWayFeat = true,
+                HasBodyguardActivatable = true,
+                HasInHarmsWayActivatable = true,
+                BodyguardActivatableIsOn = true,
+                InHarmsWayActivatableIsOn = true,
+                BodyguardMarkerPresent = true,
+                InHarmsWayMarkerPresent = true,
+                Alive = true,
+                Conscious = true,
+                CanAct = true,
+                HasSwiftAction = true,
+                SwiftCooldown = 0f,
+                DeliveryContractAvailable = true
+            };
+        }
+
+        private static void AssertGate(InHarmsWayCandidateGateInput input,
+            string expected)
+        {
+            InHarmsWayCandidateGateDecision decision =
+                InHarmsWayCandidateGate.Evaluate(input);
+            Assertions.True(!decision.Eligible && decision.Reason == expected,
+                "Expected In Harm's Way rejection '" + expected +
+                "' but observed '" + decision.Reason + "'.");
+        }
 
         private static AidAnotherGrantResolution Grant(bool combat,
             bool halfling, int unrelated)

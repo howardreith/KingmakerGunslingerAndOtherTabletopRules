@@ -42,6 +42,14 @@ namespace KingmakerGunslinger.BodyguardFeats
             return Publish(message, "interception-log.failed");
         }
 
+        internal static bool PublishImmediateUnavailable(string protector)
+        {
+            string message = string.Format(CultureInfo.InvariantCulture,
+                "{0} cannot use In Harm's Way because no immediate action is available.",
+                Normalize(protector, "The protector"));
+            return Publish(message, "immediate-unavailable-log.failed");
+        }
+
         private static bool Publish(string message, string faultCode)
         {
             try

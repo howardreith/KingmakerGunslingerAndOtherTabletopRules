@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Harmony12;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 
@@ -19,17 +20,29 @@ namespace KingmakerGunslinger.BodyguardFeats
             typeof(RuleAttackRoll).GetField("<Roll>k__BackingField", Members);
         [ThreadStatic] private static Queue<int> _aidRolls;
         [ThreadStatic] private static int? _incomingRoll;
+        [ThreadStatic] private static int? _confirmationRoll;
         [ThreadStatic] private static int _aidConsumed;
         [ThreadStatic] private static int _incomingConsumed;
+        [ThreadStatic] private static int _confirmationConsumed;
 
         internal static bool IsArmed
-        { get { return _aidRolls != null || _incomingRoll.HasValue; } }
+        {
+            get
+            {
+                return _aidRolls != null || _incomingRoll.HasValue ||
+                    _confirmationRoll.HasValue;
+            }
+        }
         internal static int AidConsumed { get { return _aidConsumed; } }
         internal static int IncomingConsumed { get { return _incomingConsumed; } }
+        internal static int ConfirmationConsumed
+        { get { return _confirmationConsumed; } }
         internal static int PendingAid
         { get { return _aidRolls == null ? 0 : _aidRolls.Count; } }
         internal static bool PendingIncoming
         { get { return _incomingRoll.HasValue; } }
+        internal static bool PendingConfirmation
+        { get { return _confirmationRoll.HasValue; } }
 
         internal static void Arm(int incomingNaturalRoll,
             params int[] aidNaturalRolls)
@@ -47,6 +60,15 @@ namespace KingmakerGunslinger.BodyguardFeats
             }
             _aidConsumed = 0;
             _incomingConsumed = 0;
+            _confirmationConsumed = 0;
+        }
+
+        internal static void ArmCritical(int incomingNaturalRoll,
+            int confirmationNaturalRoll, params int[] aidNaturalRolls)
+        {
+            Arm(incomingNaturalRoll, aidNaturalRolls);
+            Validate(confirmationNaturalRoll, "confirmationNaturalRoll");
+            _confirmationRoll = confirmationNaturalRoll;
         }
 
         internal static bool TryConsumeAid(out int naturalRoll)
@@ -113,11 +135,30 @@ namespace KingmakerGunslinger.BodyguardFeats
             _incomingConsumed++;
         }
 
+        internal static void BeforeSetCriticalConfirmationRoll(
+            RuleAttackRoll attack, ref RulebookEvent.RollEntry value)
+        {
+            if (attack == null || BodyguardSyntheticAidContext.IsActive ||
+                !_confirmationRoll.HasValue ||
+                attack.RuleAttackWithWeapon == null) return;
+            int forced = _confirmationRoll.Value;
+            _confirmationRoll = null;
+            var history = value.RollHistory == null ? new List<int>() :
+                new List<int>(value.RollHistory);
+            if (history.Count == 0) history.Add(forced);
+            else history[history.Count - 1] = forced;
+            value.Value = forced;
+            value.RollHistory = history;
+            _confirmationConsumed++;
+        }
+
         internal static string DescribeAndClear()
         {
             string result = "aidConsumed=" + _aidConsumed + ";aidPending=" +
                 PendingAid + ";incomingConsumed=" + _incomingConsumed +
-                ";incomingPending=" + PendingIncoming;
+                ";incomingPending=" + PendingIncoming +
+                ";confirmationConsumed=" + _confirmationConsumed +
+                ";confirmationPending=" + PendingConfirmation;
             Clear();
             return result;
         }
@@ -126,14 +167,54 @@ namespace KingmakerGunslinger.BodyguardFeats
         {
             _aidRolls = null;
             _incomingRoll = null;
+            _confirmationRoll = null;
             _aidConsumed = 0;
             _incomingConsumed = 0;
+            _confirmationConsumed = 0;
         }
 
         private static void Validate(int naturalRoll, string parameter)
         {
             if (naturalRoll < 1 || naturalRoll > 20)
                 throw new ArgumentOutOfRangeException(parameter);
+        }
+    }
+
+    /// <summary>
+    /// Exact request-local critical-confirmation dice seam. This does not force
+    /// a threat or a confirmed result; it only replaces the native confirmation
+    /// d20 when a guarded Bodyguard qualification case explicitly armed one.
+    /// </summary>
+    [HarmonyPatch]
+    internal static class BodyguardCriticalConfirmationQualificationPatch
+    {
+        private static MethodBase _target;
+
+        private static bool Prepare()
+        {
+            PropertyInfo property = typeof(RuleAttackRoll).GetProperty(
+                "CriticalConfirmationRoll", BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo setter = property == null ? null :
+                property.GetSetMethod(true);
+            ParameterInfo[] parameters = setter == null ? null :
+                setter.GetParameters();
+            if (setter == null || setter.ReturnType != typeof(void) ||
+                parameters.Length != 1 || parameters[0].ParameterType !=
+                    typeof(RulebookEvent.RollEntry))
+                return false;
+            _target = setter;
+            return true;
+        }
+
+        private static MethodBase TargetMethod()
+        { return _target; }
+
+        private static void Prefix(RuleAttackRoll __instance,
+            ref RulebookEvent.RollEntry value)
+        {
+            BodyguardQualificationControl.BeforeSetCriticalConfirmationRoll(
+                __instance, ref value);
         }
     }
 }

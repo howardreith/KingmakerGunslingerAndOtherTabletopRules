@@ -290,6 +290,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "p0-affected-focused-aim-save-load";
         internal const string P0AffectedFocusedAimSaveName =
             "KMG_P0_FOCUSED_AIM_AFFECTED_COPY";
+        internal const string DisposableInHarmsWayHumanRepro =
+            "disposable-in-harms-way-human-repro";
+        internal const string InHarmsWayHumanReproSaveName =
+            "KMG_IHW_HUMAN_REPRO_COPY";
         internal const string WorkingSaveShieldOtherPrepare =
             "working-save-shield-other-prepare";
         internal const string WorkingSaveShieldOtherVerifyCleanup =
@@ -457,6 +461,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveLoadGameButtonAction,
                 WorkingSaveSmoke,
                 P0AffectedFocusedAimSaveLoad,
+                DisposableInHarmsWayHumanRepro,
                 WorkingSaveShieldOtherPrepare,
                 WorkingSaveShieldOtherVerifyCleanup,
                 GenericFirearmActions,
