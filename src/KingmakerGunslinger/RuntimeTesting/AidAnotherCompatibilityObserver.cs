@@ -340,6 +340,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cotw.Buffs[0], context, null);
             if (attackBuff == null) throw new InvalidOperationException(
                 "CotW attack Aid Another buff was rejected.");
+            attackBuff.Context.RecalculateRanks();
             int attackAfter;
             try { attackAfter = AttackBonus(fixture.ProtectorTwo,
                 fixture.Attacker, weapon); }
@@ -352,6 +353,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cotw.Buffs[1], armorContext, null);
             if (armorBuff == null) throw new InvalidOperationException(
                 "CotW AC Aid Another buff was rejected.");
+            armorBuff.Context.RecalculateRanks();
             int armorAfter;
             try { armorAfter = ArmorClass(fixture.Target, fixture.Attacker); }
             finally { armorBuff.Remove(); }
