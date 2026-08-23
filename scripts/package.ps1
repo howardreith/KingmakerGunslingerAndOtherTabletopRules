@@ -100,3 +100,4 @@ Set-Content -LiteralPath $checksumPath -Value "$checksum  $([IO.Path]::GetFileNa
 
 Write-Host "Created standalone UMM package: $packagePath"
 Write-Host "Created checksum: $checksumPath"
+Write-Output $packagePath
