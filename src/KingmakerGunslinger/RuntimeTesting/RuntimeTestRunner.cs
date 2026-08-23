@@ -670,7 +670,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveAidAnotherCompatibilityContracts)
+                {
+                    Complete(AidAnotherCompatibilityObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableBodyguardFeats ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.
+                        DisposableHelpfulBodyguard ||
                     _request.Scenario == RuntimeTestScenarioCatalog.
                         DisposableBodyguardFeatsDisabled)
                 {
@@ -10857,9 +10866,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "basic feat selection, exact fixed loot, and capital exclusion"),
                 Assertion("feature-module-bodyguard-publication-gate",
                     expectedBodyguardFeats ?
-                        "six identities and both feats singular in basic and Fighter selections" :
-                        "six identities and neither feat in basic or Fighter selections",
-                    observed, bodyguardSet.Count == 6 &&
+                        "seven identities and both feats singular in basic and Fighter selections" :
+                        "seven identities and neither feat in basic or Fighter selections",
+                    observed, bodyguardSet.Count == 7 &&
                         basicBodyguardFeatures == (expectedBodyguardFeats ? 2 : 0) &&
                         basicBodyguardAll == (expectedBodyguardFeats ? 2 : 0) &&
                         fighterBodyguardFeatures == (expectedBodyguardFeats ? 2 : 0) &&

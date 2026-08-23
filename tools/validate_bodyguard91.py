@@ -12,6 +12,8 @@ import validate_bodyguard90 as baseline
 VERSION = "0.0.91"
 INFORMATIONAL_VERSION = "0.0.91-bodyguard-ac-breakdown"
 PACKAGE = "KingmakerGunslinger-0.0.91-local-runtime.zip"
+STATIC_KEY = "bodyguard91"
+DETERMINISTIC_TEST_COUNT = 1192
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
@@ -28,8 +30,8 @@ def validate(root: Path) -> None:
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     baseline.PACKAGE = PACKAGE
-    baseline.STATIC_KEY = "bodyguard91"
-    baseline.DETERMINISTIC_TEST_COUNT = 1192
+    baseline.STATIC_KEY = STATIC_KEY
+    baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
     baseline.validate(root)
 
     policy = root / (
@@ -45,7 +47,7 @@ def validate(root: Path) -> None:
 
     require_tokens(policy, "BodyguardArmorClassAttributionPlan",
         "BodyguardAidPolicy.StackArmorClassBonus",
-        "SuccessArmorClassBonus", "FinalArmorClass")
+        "ActualArmorClassContribution", "FinalArmorClass")
     require_tokens(runtime, "new BonusSource(contribution.Bonus, source)",
         "attempt.Protector.Descriptor.GetFact(",
         "armorClass.BonusSources.Add(source)", "plan.FinalArmorClass",

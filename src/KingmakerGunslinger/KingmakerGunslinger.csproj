@@ -264,6 +264,7 @@
     <Compile Include="Blueprints\AcadamaeGraduateModeBlueprints.cs" />
     <Compile Include="Blueprints\AcadamaeFeatCatalogPublication.cs" />
     <Compile Include="Blueprints\BodyguardFeatBlueprints.cs" />
+    <Compile Include="Blueprints\HelpfulCombatBlueprints.cs" />
     <Compile Include="Blueprints\BodyguardModeBlueprints.cs" />
     <Compile Include="Blueprints\BodyguardFeatCatalogPublication.cs" />
     <Compile Include="Blueprints\ShieldOtherBlueprints.cs" />
@@ -334,6 +335,16 @@
     <Compile Include="BodyguardFeats\BodyguardRuntimeDiagnostics.cs" />
     <Compile Include="BodyguardFeats\BodyguardRuntime.cs" />
     <Compile Include="BodyguardFeats\BodyguardDeliveryPatches.cs" />
+    <Compile Include="AidAnotherCompatibility\AidAnotherGrantResolver.cs" />
+    <Compile Include="AidAnotherCompatibility\HelpfulPublicationTransaction.cs" />
+    <Compile Include="AidAnotherCompatibility\AidAnotherCompatibilityStatus.cs" />
+    <Compile Include="AidAnotherCompatibility\AidAnotherCompatibilityContract.cs" />
+    <Compile Include="AidAnotherCompatibility\CotwAidAnotherResolver.cs" />
+    <Compile Include="AidAnotherCompatibility\FavoredClassTraitResolver.cs" />
+    <Compile Include="AidAnotherCompatibility\AidAnotherGrantRuntime.cs" />
+    <Compile Include="AidAnotherCompatibility\AidAnotherContextRankPatch.cs" />
+    <Compile Include="AidAnotherCompatibility\AidAnotherCompatibilityDiagnostics.cs" />
+    <Compile Include="AidAnotherCompatibility\AidAnotherOptionalExtensionCoordinator.cs" />
     <Compile Include="BrownFur\CotwProgressionShape.cs" />
     <Compile Include="BrownFur\CotwProgressionDecision.cs" />
     <Compile Include="BrownFur\CotwProgressionPolicy.cs" />
@@ -847,6 +858,7 @@
     <Compile Include="RuntimeTesting\UrbanBarbarianRageInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianFocusedScenario.cs" />
     <Compile Include="RuntimeTesting\BodyguardNativeContractObserver.cs" />
+    <Compile Include="RuntimeTesting\AidAnotherCompatibilityObserver.cs" />
     <Compile Include="RuntimeTesting\BodyguardQualificationProbe.cs" />
     <Compile Include="RuntimeTesting\BodyguardCombatFixture.cs" />
     <Compile Include="RuntimeTesting\BodyguardCombatScenario.cs" />

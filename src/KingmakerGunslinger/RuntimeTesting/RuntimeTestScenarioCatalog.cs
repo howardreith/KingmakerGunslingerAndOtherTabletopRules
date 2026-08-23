@@ -14,8 +14,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-urban-barbarian-focused";
         internal const string ObserveBodyguardNativeContracts =
             "observe-bodyguard-native-contracts";
+        internal const string ObserveAidAnotherCompatibilityContracts =
+            "observe-aid-another-compatibility-contracts";
         internal const string DisposableBodyguardFeats =
             "disposable-bodyguard-feats";
+        internal const string DisposableHelpfulBodyguard =
+            "disposable-helpful-bodyguard";
         internal const string DisposableBodyguardFeatsDisabled =
             "disposable-bodyguard-feats-disabled";
         internal const string WorkingSaveUrbanBarbarianPrepare =
@@ -314,7 +318,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveUrbanBarbarianRageInventory,
                 DisposableUrbanBarbarianFocused,
                 ObserveBodyguardNativeContracts,
+                ObserveAidAnotherCompatibilityContracts,
                 DisposableBodyguardFeats,
+                DisposableHelpfulBodyguard,
                 DisposableBodyguardFeatsDisabled,
                 WorkingSaveUrbanBarbarianPrepare,
                 WorkingSaveUrbanBarbarianOffVerifyCleanup,

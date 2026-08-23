@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KingmakerGunslinger.AidAnotherCompatibility;
 
 namespace KingmakerGunslinger.BodyguardFeats
 {
@@ -11,7 +12,7 @@ namespace KingmakerGunslinger.BodyguardFeats
             if (string.IsNullOrWhiteSpace(protectorId))
                 throw new ArgumentException("A protector identity is required.",
                     "protectorId");
-            if (bonus != BodyguardAidPolicy.SuccessArmorClassBonus)
+            if (bonus < AidAnotherGrantResolver.NormalBaseGrant)
                 throw new ArgumentOutOfRangeException("bonus");
             ProtectorId = protectorId;
             Bonus = bonus;
@@ -58,7 +59,7 @@ namespace KingmakerGunslinger.BodyguardFeats
                 .Where(value => value.Success)
                 .Select(value => new BodyguardArmorClassContribution(
                     value.ProtectorId,
-                    BodyguardAidPolicy.SuccessArmorClassBonus))
+                    value.ActualArmorClassContribution))
                 .ToArray();
             var result = new BodyguardArmorClassAttributionPlan(
                 nativeArmorClass, contributions);

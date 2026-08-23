@@ -318,7 +318,9 @@ namespace KingmakerGunslinger.DomainTests
                 ui.Contains("Urban Barbarian core:") &&
                 ui.Contains("Urban Barbarian optional CotW interoperability:") &&
                 ui.Contains("Urban Barbarian CotW detail:") &&
-                ui.Contains("Bodyguard and In Harms Way") &&
+                ui.Contains("Bodyguard, In Harms Way, and Helpful") &&
+                ui.Contains("Aid Another compatibility:") &&
+                ui.Contains("Helpful publication:") &&
                 !ui.Contains("Urban Barbarian  requires Call of the Wild"),
                 "Brown-Fur UMM state presentation is incomplete.");
         }

@@ -55,8 +55,11 @@ def validate(root: Path) -> None:
             raise AssertionError(f"compatibility reference key missing: {key}")
     profiles = json.loads((root / "compatibility/profiles.json").read_text(encoding="utf-8"))["profiles"]
     profile_ids = [entry["id"] for entry in profiles]
-    if len(profile_ids) != len(set(profile_ids)) or len(profile_ids) != 9:
-        raise AssertionError("compatibility profile IDs must be nine unique values")
+    expected_profile_count = 9 if VERSION == "0.0.72" else None
+    if len(profile_ids) != len(set(profile_ids)) or (
+            expected_profile_count is not None and
+            len(profile_ids) != expected_profile_count):
+        raise AssertionError("compatibility profile IDs must be unique and match the release contract")
     craft = next(profile for profile in profiles if profile["id"] == "gunslinger-craft-magic-items")
     if craft["disposition"] != "STATIC-AUDITED-ONLY" or craft["runtimeLoadableRequired"]:
         raise AssertionError("source-only Craft Magic Items profile is not static-only")

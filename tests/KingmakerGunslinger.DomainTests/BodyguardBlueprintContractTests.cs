@@ -17,16 +17,17 @@ namespace KingmakerGunslinger.DomainTests
                 { "KMG.Feats.BodyguardModeMarker", "a78147a3655f429883ad88e761ff9438" },
                 { "KMG.Feats.InHarmsWay", "e481f30c8b6940e1b596e121443aa01e" },
                 { "KMG.Feats.UseInHarmsWay", "ca1e74f0e60747209a8b7cf3737243ea" },
-                { "KMG.Feats.InHarmsWayModeMarker", "57603d0b215e4ac6862bcdf9b5583568" }
+                { "KMG.Feats.InHarmsWayModeMarker", "57603d0b215e4ac6862bcdf9b5583568" },
+                { "KMG.Traits.HelpfulCombat", "e4b29a7c8d5f4c1796ab03e1f72d8456" }
             };
 
         internal static void ManifestIdentitiesAreExact()
         {
             JObject manifest = JObject.Parse(Read("blueprints", "blueprints.json"));
             JToken[] entries = manifest["entries"].ToArray();
-            Assertions.Equal(1622, entries.Length,
+            Assertions.Equal(1623, entries.Length,
                 "Bodyguard milestone blueprint ledger count changed.");
-            Assertions.Equal(1621, entries.Count(value => string.Equals(
+            Assertions.Equal(1622, entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Bodyguard milestone active identity count changed.");
             Assertions.Equal(entries.Length, entries.Select(value =>
@@ -217,7 +218,7 @@ namespace KingmakerGunslinger.DomainTests
                     "BodyguardFeatBlueprints.Register(library, registry)") &&
                 bootstrap.Contains("if (publicationPlan.BodyguardFeats)") &&
                 bootstrap.Contains("bodyguardFeatPublication.Rollback()") &&
-                bootstrap.Contains("ExpectedRegisteredBlueprintCount = 339 +"),
+                bootstrap.Contains("ExpectedRegisteredBlueprintCount = 339 + 1 +"),
                 "Bodyguard always-register/module-gated publication wiring is incomplete.");
         }
 

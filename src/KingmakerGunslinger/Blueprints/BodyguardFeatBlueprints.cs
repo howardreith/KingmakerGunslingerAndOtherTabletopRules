@@ -14,20 +14,23 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal BodyguardFeatBlueprintSet(BlueprintFeature combatReflexes,
             BlueprintFeature bodyguard, BlueprintFeature inHarmsWay,
-            BodyguardModeBlueprintSet modes)
+            BlueprintFeature helpfulCombat, BodyguardModeBlueprintSet modes)
         {
             CombatReflexes = combatReflexes ??
                 throw new ArgumentNullException("combatReflexes");
             Bodyguard = bodyguard ?? throw new ArgumentNullException("bodyguard");
             InHarmsWay = inHarmsWay ?? throw new ArgumentNullException("inHarmsWay");
+            HelpfulCombat = helpfulCombat ??
+                throw new ArgumentNullException("helpfulCombat");
             Modes = modes ?? throw new ArgumentNullException("modes");
         }
 
         internal BlueprintFeature CombatReflexes { get; private set; }
         internal BlueprintFeature Bodyguard { get; private set; }
         internal BlueprintFeature InHarmsWay { get; private set; }
+        internal BlueprintFeature HelpfulCombat { get; private set; }
         internal BodyguardModeBlueprintSet Modes { get; private set; }
-        internal int Count { get { return 2 + Modes.Count; } }
+        internal int Count { get { return 3 + Modes.Count; } }
     }
 
     internal static class BodyguardFeatBlueprints
@@ -58,12 +61,15 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature inHarmsWay = registry.Register<BlueprintFeature>(
                 InHarmsWaySymbol, () => CreateInHarmsWay(bodyguard,
                     modes.InHarmsWayAbility, combatReflexes));
+            BlueprintFeature helpfulCombat = HelpfulCombatBlueprints.Register(
+                registry, combatReflexes.Icon);
             ValidateFeat(bodyguard, combatReflexes, modes.BodyguardAbility,
                 "Bodyguard");
             ValidateFeat(inHarmsWay, bodyguard, modes.InHarmsWayAbility,
                 "In Harm's Way");
+            HelpfulCombatBlueprints.Validate(helpfulCombat);
             return new BodyguardFeatBlueprintSet(combatReflexes, bodyguard,
-                inHarmsWay, modes);
+                inHarmsWay, helpfulCombat, modes);
         }
 
         internal static void ValidateCombatReflexes(BlueprintFeature feature)
@@ -86,7 +92,7 @@ namespace KingmakerGunslinger.Blueprints
         {
             return CreateFeat("KMG_Bodyguard_Feature", "Bodyguard",
                 "KMG.Feat.Bodyguard", combatReflexes, mode,
-                "When an adjacent ally is attacked, you may expend one available attack of opportunity to attempt an Aid Another melee attack roll against AC 10 with a melee attack that threatens the attacker. Success grants the ally +2 AC against that attack; multiple Bodyguard bonuses stack. The attack of opportunity is spent even on failure and never executes a weapon attack. Activate Use Bodyguard to authorize this automatic reaction; owning the feat alone does not make it mandatory.",
+                "When an adjacent ally is attacked, you may expend one available attack of opportunity to attempt an Aid Another melee attack roll against AC 10 with a melee attack that threatens the attacker. Success grants the ally your normal Aid Another AC bonus against that attack (normally +2; effects such as Helpful can increase it), and multiple Bodyguard bonuses stack. The attack of opportunity is spent even on failure and never executes a weapon attack. Activate Use Bodyguard to authorize this automatic reaction; owning the feat alone does not make it mandatory.",
                 combatReflexes);
         }
 

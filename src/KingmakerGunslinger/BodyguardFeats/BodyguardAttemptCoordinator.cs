@@ -1,4 +1,5 @@
 using System;
+using KingmakerGunslinger.AidAnotherCompatibility;
 
 namespace KingmakerGunslinger.BodyguardFeats
 {
@@ -28,11 +29,21 @@ namespace KingmakerGunslinger.BodyguardFeats
         internal static BodyguardAttemptExecution Execute(string protectorId,
             int attackBonus, Func<bool> trySpend, Func<int> rollD20)
         {
+            return Execute(protectorId, attackBonus, trySpend, rollD20,
+                () => AidAnotherGrantResolver.Standalone(false));
+        }
+
+        internal static BodyguardAttemptExecution Execute(string protectorId,
+            int attackBonus, Func<bool> trySpend, Func<int> rollD20,
+            Func<AidAnotherGrantResolution> resolveGrant)
+        {
             if (string.IsNullOrWhiteSpace(protectorId))
                 throw new ArgumentException("A protector identity is required.",
                     "protectorId");
             if (trySpend == null) throw new ArgumentNullException("trySpend");
             if (rollD20 == null) throw new ArgumentNullException("rollD20");
+            if (resolveGrant == null) throw new ArgumentNullException(
+                "resolveGrant");
 
             bool spent;
             try { spent = trySpend(); }
@@ -44,7 +55,8 @@ namespace KingmakerGunslinger.BodyguardFeats
             {
                 int natural = rollD20();
                 return new BodyguardAttemptExecution(true, true,
-                    new BodyguardAidResult(protectorId, natural, attackBonus),
+                    new BodyguardAidResult(protectorId, natural, attackBonus,
+                        resolveGrant()),
                     null);
             }
             catch (Exception exception)

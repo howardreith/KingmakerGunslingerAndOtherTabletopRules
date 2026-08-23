@@ -17,6 +17,7 @@ using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Rules;
+using KingmakerGunslinger.AidAnotherCompatibility;
 
 namespace KingmakerGunslinger.BodyguardFeats
 {
@@ -583,6 +584,11 @@ namespace KingmakerGunslinger.BodyguardFeats
                         }
                         finally
                         { BodyguardSyntheticAidContext.ExitCalculation(); }
+                    },
+                    delegate
+                    {
+                        return AidAnotherGrantRuntime.ResolveForBodyguard(
+                            candidate.Protector);
                     });
             if (!execution.Spent)
             {
@@ -619,14 +625,16 @@ namespace KingmakerGunslinger.BodyguardFeats
                 ";aidD20=" + result.NaturalRoll + ";aidBonus=" +
                 candidate.SelectedAttack.AttackBonus + ";aidTotal=" +
                 result.Total + ";aidTarget=10;aidSuccess=" + result.Success +
-                ";acContribution=" + result.ArmorClassBonus;
+                ";" + result.Grant.Describe() + ";acContribution=" +
+                result.ActualArmorClassContribution;
             BodyguardRuntimeDiagnostics.Attempt(result.Success, detail);
             LogInfo("attempt.committed", detail);
             BodyguardCombatLog.PublishAttempt(
                 candidate.Protector.CharacterName,
                 frame.OriginalTarget.CharacterName,
                 frame.Attacker.CharacterName, result.NaturalRoll,
-                candidate.SelectedAttack.AttackBonus, result.Success);
+                candidate.SelectedAttack.AttackBonus, result.Success,
+                result.ActualArmorClassContribution);
         }
 
         private static List<RuntimeCandidate> GatherCandidates(

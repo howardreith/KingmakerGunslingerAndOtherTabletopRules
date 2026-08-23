@@ -84,6 +84,10 @@
     <Compile Include="BodyguardBlueprintContractTests.cs" />
     <Compile Include="BodyguardPolicyTests.cs" />
     <Compile Include="BodyguardRuntimeContractTests.cs" />
+    <Compile Include="AidAnotherCompatibilityTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\AidAnotherCompatibility\AidAnotherGrantResolver.cs"><Link>AidAnotherCompatibility\AidAnotherGrantResolver.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\AidAnotherCompatibility\HelpfulPublicationTransaction.cs"><Link>AidAnotherCompatibility\HelpfulPublicationTransaction.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\AidAnotherCompatibility\AidAnotherCompatibilityStatus.cs"><Link>AidAnotherCompatibility\AidAnotherCompatibilityStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardFeatPublicationTransaction.cs"><Link>BodyguardFeats\BodyguardFeatPublicationTransaction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardEligibilityPolicy.cs"><Link>BodyguardFeats\BodyguardEligibilityPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BodyguardFeats\BodyguardAidPolicy.cs"><Link>BodyguardFeats\BodyguardAidPolicy.cs</Link></Compile>

@@ -162,6 +162,12 @@ All touched arrays are transactional: CotW feature list, Favored Combat Trait
 restores the exact original references, ordering, and multiplicity. Optional
 absence or incompatibility never fails KMG bootstrap.
 
+The KMG Helpful identity remains registered when publication is unavailable,
+traits are disabled, or `bodyguard-feats` is off, so an existing owner remains
+deserializable. Disabling publication is not uninstall cleanup. Removing KMG
+from a save containing `KMG.Traits.HelpfulCombat` is unsupported; removing CotW
+or Favored Class content follows those mods' own save-compatibility boundaries.
+
 Rejected approaches:
 
 - appending both Helpful encodings without correction: invalid dual owners get

@@ -15,6 +15,9 @@ INFORMATIONAL_VERSION = "0.0.90-bodyguard-in-harms-way"
 PACKAGE = "KingmakerGunslinger-0.0.90-local-runtime.zip"
 STATIC_KEY = "bodyguard90"
 DETERMINISTIC_TEST_COUNT = 1190
+EXPECTED_LEDGER_ENTRIES = 1622
+EXPECTED_ACTIVE_BLUEPRINTS = 1621
+PROJECT_BLUEPRINT_COUNT = 6
 
 EXPECTED_IDENTITIES = {
     "KMG.Feats.Bodyguard":
@@ -68,10 +71,12 @@ def validate(root: Path) -> None:
     manifest = json.loads((root / "blueprints/blueprints.json").read_text(
         encoding="utf-8"))
     entries = manifest["entries"]
-    if len(entries) != 1622:
-        raise AssertionError(f"{VERSION} blueprint ledger must contain 1622 identities")
-    if sum(entry.get("status") == "active" for entry in entries) != 1621:
-        raise AssertionError(f"{VERSION} blueprint ledger must contain 1621 active identities")
+    if len(entries) != EXPECTED_LEDGER_ENTRIES:
+        raise AssertionError(
+            f"{VERSION} blueprint ledger must contain {EXPECTED_LEDGER_ENTRIES} identities")
+    if sum(entry.get("status") == "active" for entry in entries) != EXPECTED_ACTIVE_BLUEPRINTS:
+        raise AssertionError(
+            f"{VERSION} blueprint ledger must contain {EXPECTED_ACTIVE_BLUEPRINTS} active identities")
     by_symbol = {entry["symbol"]: entry for entry in entries}
     if len(by_symbol) != len(entries):
         raise AssertionError("Blueprint manifest contains duplicate symbols")
@@ -95,7 +100,7 @@ def validate(root: Path) -> None:
         "featureModuleSchemaVersion": 8,
         "featureModuleExhaustiveCount": 512,
         "featureModuleBoundaryCount": 20,
-        "projectBlueprintCount": 6,
+        "projectBlueprintCount": PROJECT_BLUEPRINT_COUNT,
         "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
         "fullDeliveryRedirectionRequired": True,
     }

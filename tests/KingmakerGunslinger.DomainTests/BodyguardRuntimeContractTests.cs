@@ -264,18 +264,27 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string id in new[]
             {
                 "observe-bodyguard-native-contracts",
+                "observe-aid-another-compatibility-contracts",
                 "disposable-bodyguard-feats",
+                "disposable-helpful-bodyguard",
                 "disposable-bodyguard-feats-disabled"
             })
                 Assertions.True(catalog.Contains(id),
                     "Guarded runtime catalog lacks " + id + ".");
             Assertions.True(automation.Contains(
                     "'observe-bodyguard-native-contracts'") &&
+                automation.Contains(
+                    "'observe-aid-another-compatibility-contracts'") &&
                 automation.Contains("'disposable-bodyguard-feats'") &&
+                automation.Contains("'disposable-helpful-bodyguard'") &&
                 automation.Contains(
                     "'disposable-bodyguard-feats-disabled'") &&
                 qualification.Contains("Set-BodyguardFeatureState $true") &&
                 qualification.Contains("Set-BodyguardFeatureState $false") &&
+                qualification.Contains(
+                    "Invoke-BodyguardScenario 'observe-aid-another-compatibility-contracts'") &&
+                qualification.Contains(
+                    "Invoke-BodyguardScenario 'disposable-helpful-bodyguard'") &&
                 qualification.Contains("-ReuseInstalledArtifact") &&
                 qualification.Contains(
                     "Feature settings bytes were not restored exactly."),
@@ -322,10 +331,11 @@ namespace KingmakerGunslinger.DomainTests
                     "Bodyguard runtime qualification lacks " + caseName + ".");
             Assertions.True(runner.Contains(
                     "BodyguardNativeContractObserver.Run") &&
+                runner.Contains("AidAnotherCompatibilityObserver.Run") &&
                 runner.Contains("BodyguardCombatScenario.Run") &&
                 runner.Contains(
                     "feature-module-bodyguard-publication-gate") &&
-                runner.Contains("bodyguardSet.Count == 6") &&
+                runner.Contains("bodyguardSet.Count == 7") &&
                 runner.Contains("basicBodyguardFeatures ==") &&
                 runner.Contains("fighterBodyguardAll ==") &&
                 fixture.Contains("new RuleAttackWithWeapon(") &&

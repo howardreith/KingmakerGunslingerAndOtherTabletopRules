@@ -28,6 +28,7 @@ using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.BodyguardFeats;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.AidAnotherCompatibility;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -99,6 +100,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         public int BodyguardContribution { get; set; }
         [JsonProperty("bodyguardSources", Order = 29)]
         public BodyguardArmorClassSourceEvidence[] BodyguardSources { get; set; }
+        [JsonProperty("aidGrantObservations", Order = 30)]
+        public string[] AidGrantObservations { get; set; }
     }
 
     internal sealed class BodyguardCombatFixture : IDisposable
@@ -279,6 +282,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal void SetAttackerPosition(Vector3 position)
         { SetPosition(Attacker, position); }
 
+        internal void SetCombatHelpful(UnitEntityData unit, bool active)
+        {
+            SetFeature(unit, BlueprintBootstrap.BodyguardFeats.HelpfulCombat,
+                active);
+        }
+
+        internal void SetAidContributor(UnitEntityData unit,
+            BlueprintFeature feature, bool active)
+        { SetFeature(unit, feature, active); }
+
         internal void UseSynchronousRangedAttacker(bool ranged)
         { _ranged = ranged; }
 
@@ -419,6 +432,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";faults=" + BodyguardRuntimeDiagnostics.Faults +
                 ";duplicates=" + BodyguardRuntimeDiagnostics.DuplicateCallbacks +
                 ";completed=" + BodyguardRuntimeDiagnostics.Completed;
+            string[] observations = BodyguardRuntimeDiagnostics
+                .SnapshotObservations();
             return new BodyguardCombatCaseEvidence {
                 Name = name,
                 AttackIdentity = System.Runtime.CompilerServices.RuntimeHelpers
@@ -446,8 +461,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WeaponTargetRestored = ReferenceEquals(attack.Target, Target),
                 AidControl = control,
                 RuntimeCounters = counters,
-                RuntimeObservations = BodyguardRuntimeDiagnostics
-                    .SnapshotObservations(),
+                RuntimeObservations = observations,
                 DamageEvents = BodyguardQualificationDamageProbe.Snapshot(),
                 DamageKinds = attack.MeleeDamage == null ||
                     attack.MeleeDamage.ResultDamage == null ? new string[0] :
@@ -463,7 +477,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 NativeAcBeforeBodyguard = checked(
                     attack.AttackRoll.TargetAC - bodyguardContribution),
                 BodyguardContribution = bodyguardContribution,
-                BodyguardSources = bodyguardSources
+                BodyguardSources = bodyguardSources,
+                AidGrantObservations = observations.Where(value =>
+                    value.IndexOf("finalSuccessfulGrant=",
+                        StringComparison.Ordinal) >= 0).ToArray()
             };
         }
 
@@ -560,6 +577,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (unit.Descriptor.Buffs.AddBuff(marker, context, null) == null)
                 throw new InvalidOperationException(
                     "Bodyguard request-local mode marker was rejected.");
+        }
+
+        private static void SetFeature(UnitEntityData unit,
+            BlueprintFeature feature, bool active)
+        {
+            if (unit == null || feature == null) throw new ArgumentNullException(
+                unit == null ? "unit" : "feature");
+            while (unit.Descriptor.HasFact(feature))
+                unit.Descriptor.RemoveFact(feature);
+            if (active && unit.Descriptor.AddFact(feature) == null)
+                throw new InvalidOperationException(
+                    "The request-local Aid Another contributor was rejected: " +
+                    feature.AssetGuid);
         }
 
         private static BlueprintItemWeapon CreateSynchronousRangedClone(

@@ -8,6 +8,7 @@ using KingmakerGunslinger.FeatureModules;
 using KingmakerGunslinger.Spells.ShieldOther;
 using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.BrownFur;
+using KingmakerGunslinger.AidAnotherCompatibility;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger
@@ -81,6 +82,7 @@ namespace KingmakerGunslinger
                 context.InstallPatches();
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);
                 BrownFurOptionalExtensionCoordinator.Install(context);
+                AidAnotherOptionalExtensionCoordinator.Install(context);
 
                 // A LoadDictionary call observed during PatchAll is retained and processed
                 // only after the context reports that patch installation completed.

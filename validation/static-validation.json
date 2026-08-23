@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.91-bodyguard-ac-breakdown",
-  "version": "0.0.91",
+  "milestone": "0.0.92-helpful-aid-another",
+  "version": "0.0.92",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1622,
-    "activeEntryCount": 1621,
+    "entryCount": 1623,
+    "activeEntryCount": 1622,
     "reservedEntryCount": 1,
-    "registrationCount": 1621
+    "registrationCount": 1622
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -103,6 +103,20 @@
     "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
     "fullDeliveryRedirectionRequired": true,
     "nativeAcBreakdownAttributionRequired": true,
+    "runtimeQualificationPending": true
+  },
+  "helpful92": {
+    "deterministicTestCount": 1201,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 7,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "cotwAidAnotherOptional": true,
+    "favoredClassHelpfulOptional": true,
     "runtimeQualificationPending": true
   }
 }

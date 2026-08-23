@@ -4,9 +4,12 @@ param(
     [ValidateSet(
         'gunslinger-only',
         'gunslinger-call-of-the-wild',
+        'gunslinger-call-of-the-wild-favored-class',
+        'gunslinger-call-of-the-wild-favored-class-traits-disabled',
         'gunslinger-arms-armor',
         'gunslinger-toggle-custom-soundpacks',
         'gunslinger-high-risk-combined',
+        'gunslinger-high-risk-combined-favored-class',
         'gunslinger-all-loadable-local',
         'gunslinger-qualified-combined')]
     [string]$ProfileId,
@@ -37,6 +40,8 @@ param(
         'observe-feature-module-settings',
         'observe-brown-fur-cotw-contract',
         'observe-brown-fur-cotw-absent-isolation',
+        'observe-aid-another-compatibility-contracts',
+        'disposable-helpful-bodyguard',
         'observe-elven-branched-spear-contracts',
         'observe-eastern-weapon-contracts',
         'disposable-elven-branched-spear-combat',
@@ -187,7 +192,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.91'
+            ExpectedVersion = '0.0.92'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds

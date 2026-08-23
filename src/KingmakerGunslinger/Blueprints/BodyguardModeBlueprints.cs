@@ -43,7 +43,7 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Feats.UseInHarmsWay";
         internal const string BodyguardDisplayName = "Use Bodyguard";
         internal const string BodyguardDescription =
-            "When an adjacent ally is attacked by an enemy you threaten, automatically expend one available attack of opportunity to attempt an Aid Another melee attack roll against AC 10. On success, the ally gains +2 AC against that attack. The attack of opportunity is spent even if the attempt fails.";
+            "When an adjacent ally is attacked by an enemy you threaten, automatically expend one available attack of opportunity to attempt an Aid Another melee attack roll against AC 10. On success, the ally gains your normal Aid Another AC bonus against that attack (normally +2, and increased by effects such as Helpful). The attack of opportunity is spent even if the attempt fails.";
         internal const string InHarmsWayDisplayName = "Use In Harm's Way";
         internal const string InHarmsWayDescription =
             "When your Bodyguard attempt succeeds and the protected ally is still hit, automatically expend an available immediate action to receive that attack's full damage and associated effects. Only one protector can intercept each attack.";

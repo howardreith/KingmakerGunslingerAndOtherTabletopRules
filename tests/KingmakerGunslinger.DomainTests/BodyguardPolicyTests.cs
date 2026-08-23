@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KingmakerGunslinger.AidAnotherCompatibility;
 using KingmakerGunslinger.BodyguardFeats;
 
 namespace KingmakerGunslinger.DomainTests
@@ -118,6 +119,18 @@ namespace KingmakerGunslinger.DomainTests
                 "Natural 1 must fail regardless of total.");
             Assertions.True(new BodyguardAidResult("p", 20, -99).Success,
                 "Natural 20 must succeed regardless of total.");
+            BodyguardAidResult helpful = new BodyguardAidResult("helpful", 10,
+                0, Grant(true, false, 2));
+            Assertions.True(helpful.Success && helpful.Total == 10 &&
+                helpful.ResolvedSuccessfulGrant == 5 &&
+                helpful.ActualArmorClassContribution == 5,
+                "Helpful/external grant resolution changed the Aid attack roll.");
+            BodyguardAidResult failedHelpful = new BodyguardAidResult(
+                "failed-helpful", 1, 99, Grant(false, true, 2));
+            Assertions.True(!failedHelpful.Success &&
+                failedHelpful.ResolvedSuccessfulGrant == 6 &&
+                failedHelpful.ActualArmorClassContribution == 0,
+                "A failed enhanced Aid attempt contributed AC.");
             Assertions.Equal(10, BodyguardAidPolicy.TargetArmorClass,
                 "Aid Another target AC changed.");
             Assertions.Equal(2, BodyguardAidPolicy.SuccessArmorClassBonus,
@@ -130,12 +143,16 @@ namespace KingmakerGunslinger.DomainTests
             BodyguardAttemptExecution success =
                 BodyguardAttemptCoordinator.Execute("protector", 4,
                     () => { order.Add("spend"); return true; },
-                    () => { order.Add("roll"); return 6; });
-            Assertions.True(order.SequenceEqual(new[] { "spend", "roll" }),
+                    () => { order.Add("roll"); return 6; },
+                    () => { order.Add("grant"); return Grant(true, false, 0); });
+            Assertions.True(order.SequenceEqual(new[] { "spend", "roll",
+                    "grant" }),
                 "Aid result was inspected before native AoO expenditure.");
             Assertions.True(success.Spent && success.RollAttempted &&
-                success.Result != null && success.Result.Success,
-                "Committed AoO did not produce the exact Aid total 10 result.");
+                success.Result != null && success.Result.Success &&
+                success.Result.Total == 10 &&
+                success.Result.ActualArmorClassContribution == 3,
+                "Committed AoO did not preserve its attack roll and resolved grant.");
 
             int deniedRolls = 0;
             BodyguardAttemptExecution denied =
@@ -167,10 +184,11 @@ namespace KingmakerGunslinger.DomainTests
             {
                 new BodyguardAidResult("a", 10, 0),
                 new BodyguardAidResult("b", 1, 99),
-                new BodyguardAidResult("c", 20, -99)
+                new BodyguardAidResult("c", 20, -99,
+                    Grant(true, false, 0))
             };
-            Assertions.Equal(4, BodyguardAidPolicy.StackArmorClassBonus(attempts),
-                "Two distinct successful Bodyguards must stack to +4.");
+            Assertions.Equal(5, BodyguardAidPolicy.StackArmorClassBonus(attempts),
+                "Ordinary +2 and combat Helpful +3 did not stack to +5.");
             Assertions.Equal(0, BodyguardAidPolicy.StackArmorClassBonus(
                 Array.Empty<BodyguardAidResult>()), "Zero successes must add +0.");
             Assertions.Equal(6, BodyguardAidPolicy.StackArmorClassBonus(new[]
@@ -179,6 +197,16 @@ namespace KingmakerGunslinger.DomainTests
                 new BodyguardAidResult("b", 10, 0),
                 new BodyguardAidResult("c", 10, 0)
             }), "Three distinct successes must stack to +6.");
+            Assertions.Equal(7, BodyguardAidPolicy.StackArmorClassBonus(new[]
+            {
+                new BodyguardAidResult("combat", 10, 0,
+                    Grant(true, false, 0)),
+                new BodyguardAidResult("halfling", 10, 0,
+                    Grant(false, true, 0))
+            }), "Combat Helpful +3 and halfling Helpful +4 did not stack to +7.");
+            Assertions.Equal(6, new BodyguardAidResult("dual", 10, 0,
+                Grant(true, true, 2)).ActualArmorClassContribution,
+                "Dual Helpful plus a Benevolent-style +2 did not collapse to +6.");
             bool duplicateRejected = false;
             try
             {
@@ -190,7 +218,7 @@ namespace KingmakerGunslinger.DomainTests
             }
             catch (InvalidOperationException) { duplicateRejected = true; }
             Assertions.True(duplicateRejected,
-                "One protector contributed more than +2 to one attack.");
+                "One protector contributed more than once to one attack.");
         }
 
         internal static void ArmorClassAttributionIsTruthfulAndScoped()
@@ -227,6 +255,20 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(two.Contributions.Count == 2 &&
                 two.Contributions.All(value => value.Bonus == 2),
                 "Two successful protectors lack two truthful +2 sources.");
+
+            BodyguardArmorClassAttributionPlan variable =
+                BodyguardArmorClassAttributionPolicy.Create(13, new[]
+                {
+                    new BodyguardAidResult("combat-helpful", 10, 0,
+                        Grant(true, false, 0)),
+                    new BodyguardAidResult("halfling-helpful", 10, 0,
+                        Grant(false, true, 0))
+                });
+            Assertions.True(variable.TotalBonus == 7 &&
+                variable.FinalArmorClass == 20 &&
+                variable.Contributions.Select(value => value.Bonus)
+                    .SequenceEqual(new[] { 3, 4 }),
+                "Variable Bodyguard grants were double-counted, flattened, or misattributed.");
 
             BodyguardArmorClassAttributionPlan failure =
                 BodyguardArmorClassAttributionPolicy.Create(13, new[]
@@ -345,6 +387,24 @@ namespace KingmakerGunslinger.DomainTests
                 "Fault cleanup did not restore the original target.");
             Assertions.True(parent.InterceptorId == null,
                 "Fault cleanup retained an interceptor.");
+
+            foreach (AidAnotherGrantResolution grant in new[]
+            {
+                Grant(false, false, 0), Grant(true, false, 0),
+                Grant(false, true, 0), Grant(true, false, 2)
+            })
+            {
+                var interception = new BodyguardAttackFrame(
+                    "intercept-" + grant.FinalGrant, "enemy", "ally");
+                interception.TryRecordAttempt(new BodyguardAidResult(
+                    "protector", 10, 0, grant));
+                interception.FinishBodyguard();
+                interception.TryResolveAttack(true);
+                Assertions.True(interception.TryIntercept("protector") &&
+                    interception.ArmorClassBonus == grant.FinalGrant,
+                    "In Harm's Way changed for Bodyguard grant +" +
+                    grant.FinalGrant + ".");
+            }
         }
 
         internal static void InterceptorEligibilityGatesAreExact()
@@ -416,5 +476,18 @@ namespace KingmakerGunslinger.DomainTests
         private static BodyguardInterceptorCandidate Candidate(string id, int order)
         { return new BodyguardInterceptorCandidate(id, order, true, true, true,
             true, true); }
+
+        private static AidAnotherGrantResolution Grant(bool combat,
+            bool halfling, int unrelated)
+        {
+            return AidAnotherGrantResolver.Resolve(new AidAnotherGrantRequest
+            {
+                BaseGrant = AidAnotherGrantResolver.NormalBaseGrant,
+                CombatHelpfulOwned = combat,
+                HalflingHelpfulOwned = halfling,
+                NonHelpfulIncrement = unrelated,
+                SourceMode = AidAnotherGrantSourceMode.CotwCanonical
+            });
+        }
     }
 }

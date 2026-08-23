@@ -7,6 +7,8 @@ using System.Security.Cryptography;
 using Kingmaker.EntitySystem.Entities;
 using KingmakerGunslinger.BodyguardFeats;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.AidAnotherCompatibility;
+using Kingmaker.Blueprints.Classes;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -27,6 +29,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public List<BodyguardCombatCaseEvidence> Cases { get; set; }
             [JsonProperty("cleanup", Order = 4)]
             public string Cleanup { get; set; }
+            [JsonProperty("aidAnotherCompatibility", Order = 5)]
+            public string AidAnotherCompatibility { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -40,9 +44,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             var evidenceFiles = new List<string>();
             var evidence = new ScenarioEvidence {
                 ModuleActive = context.FeatureModules.Active.BodyguardFeats,
-                Cases = new List<BodyguardCombatCaseEvidence>()
+                Cases = new List<BodyguardCombatCaseEvidence>(),
+                AidAnotherCompatibility =
+                    AidAnotherCompatibilityStatusRegistry.Current.Detail
             };
-            bool expectedEnabled = request.Scenario ==
+            bool helpfulScenario = request.Scenario ==
+                RuntimeTestScenarioCatalog.DisposableHelpfulBodyguard;
+            bool expectedEnabled = helpfulScenario || request.Scenario ==
                 RuntimeTestScenarioCatalog.DisposableBodyguardFeats;
             bool cleaned = false;
             string stage = "fixture";
@@ -57,7 +65,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "restart-gated FeatureModuleSettingsState.Active");
                 fixture = new BodyguardCombatFixture();
                 evidence.BodyguardPublication = fixture.PublicationCounts();
-                if (expectedEnabled)
+                if (helpfulScenario)
+                    RunHelpful(fixture, evidence, assertions, ref stage);
+                else if (expectedEnabled)
                     RunEnabled(fixture, evidence, assertions, ref stage);
                 else
                     RunDisabled(context, fixture, evidence, assertions,
@@ -251,6 +261,185 @@ namespace KingmakerGunslinger.RuntimeTesting
                 baseMargin, ref stage);
             QualifyZeroDamageAndShieldOther(fixture, evidence, assertions,
                 baseMargin, ref stage);
+        }
+
+        private static void RunHelpful(BodyguardCombatFixture fixture,
+            ScenarioEvidence evidence,
+            ICollection<RuntimeTestAssertion> assertions, ref string stage)
+        {
+            stage = "helpful-publication";
+            Add(assertions, "helpful-bodyguard-publication",
+                "Bodyguard/In Harm's Way remain singular and combat Helpful identity is registered",
+                evidence.BodyguardPublication + ";helpful=" +
+                    BlueprintBootstrap.BodyguardFeats.HelpfulCombat.AssetGuid,
+                evidence.BodyguardPublication ==
+                    "basic.Features=2;basic.AllFeatures=2;fighter.Features=2;fighter.AllFeatures=2" &&
+                    string.Equals(BlueprintBootstrap.BodyguardFeats
+                        .HelpfulCombat.AssetGuid,
+                        "e4b29a7c8d5f4c1796ab03e1f72d8456",
+                        StringComparison.Ordinal),
+                "live native feat selections plus stable registered trait identity");
+
+            fixture.ClearModes();
+            fixture.SetCombatHelpful(fixture.ProtectorOne, false);
+            fixture.SetCombatHelpful(fixture.ProtectorTwo, false);
+            fixture.ResetEconomy(8, 0f, 8, 0f);
+            BodyguardCombatCaseEvidence control = fixture.Attack(
+                "helpful-control", 10, 0, false, false);
+            evidence.Cases.Add(control);
+            int baseMargin = control.Roll + control.AttackBonus -
+                control.TargetAc;
+            int forceHitPenalty = baseMargin - 12;
+
+            fixture.SetModes(fixture.ProtectorOne, true, false);
+            fixture.ResetEconomy(8, 0f, 8, 0f);
+            BodyguardCombatCaseEvidence normal = fixture.Attack(
+                "helpful-bodyguard-base", 10, forceHitPenalty, false,
+                false, 20);
+            evidence.Cases.Add(normal);
+            Add(assertions, "helpful-bodyguard-base-two",
+                "ordinary helper grants +2", Describe(normal),
+                normal.BodyguardContribution == 2 &&
+                    HasTruthfulBodyguardSources(normal, new[] { 2 }) &&
+                    HasGrantEvidence(normal, 2, "None", 0) && normal.Hit,
+                "live Bodyguard attack frame and canonical grant diagnostics");
+
+            fixture.SetCombatHelpful(fixture.ProtectorOne, true);
+            fixture.ResetEconomy(8, 0f, 8, 0f);
+            BodyguardCombatCaseEvidence combat = fixture.Attack(
+                "helpful-bodyguard-combat-three", 10, forceHitPenalty,
+                false, false, 20);
+            evidence.Cases.Add(combat);
+            Add(assertions, "helpful-bodyguard-combat-three",
+                "combat Helpful helper grants +3 without changing the Aid roll",
+                Describe(combat), combat.BodyguardContribution == 3 &&
+                    HasTruthfulBodyguardSources(combat, new[] { 3 }) &&
+                    HasGrantEvidence(combat, 3, "Combat", 0) &&
+                    combat.CombatLogLastMessage.Contains("+3 AC") &&
+                    combat.AidControl.Contains("aidRolls=20"),
+                "live native Aid d20, combat log, and attack-scoped AC source");
+
+            fixture.ResetEconomy(8, 0f, 8, 0f);
+            BodyguardCombatCaseEvidence failed = fixture.Attack(
+                "helpful-bodyguard-failed", 10, forceHitPenalty, false,
+                false, 1);
+            evidence.Cases.Add(failed);
+            Add(assertions, "helpful-bodyguard-failure-zero",
+                "failed enhanced Aid spends one AoO and contributes zero",
+                Describe(failed), failed.AooAfter[0] ==
+                    failed.AooBefore[0] - 1 &&
+                    failed.BodyguardContribution == 0 &&
+                    HasTruthfulBodyguardSources(failed, new int[0]) &&
+                    failed.CombatLogLastMessage.Contains("failure"),
+                "live native AoO and failed Aid negative control");
+
+            fixture.SetModes(fixture.ProtectorOne, true, true);
+            fixture.ResetEconomy(8, 0f, 8, 0f);
+            BodyguardCombatCaseEvidence combatIntercept = fixture.Attack(
+                "helpful-bodyguard-combat-intercept", 10,
+                forceHitPenalty, false, true, 20);
+            evidence.Cases.Add(combatIntercept);
+            Add(assertions, "helpful-in-harms-way-after-three",
+                "+3 Bodyguard retains exact In Harm's Way delivery",
+                Describe(combatIntercept),
+                combatIntercept.BodyguardContribution == 3 &&
+                    Counter(combatIntercept, "interceptions") == 1 &&
+                    combatIntercept.HpLoss[0] == 0 &&
+                    combatIntercept.HpLoss[1] > 0 &&
+                    combatIntercept.RollTargetRestored &&
+                    combatIntercept.WeaponTargetRestored,
+                "live original attack and shared swift/immediate economy");
+
+            fixture.SetModes(fixture.ProtectorOne, true, false);
+            fixture.SetModes(fixture.ProtectorTwo, true, false);
+            fixture.SetCombatHelpful(fixture.ProtectorTwo, false);
+            fixture.ResetEconomy(8, 0f, 8, 0f);
+            BodyguardCombatCaseEvidence variable = fixture.Attack(
+                "helpful-bodyguard-variable-stack", 10,
+                forceHitPenalty, false, false, 20, 20);
+            evidence.Cases.Add(variable);
+            Add(assertions, "helpful-bodyguard-variable-stack",
+                "+3 and +2 helpers stack to +5 exactly once each",
+                Describe(variable), variable.BodyguardContribution == 5 &&
+                    HasTruthfulBodyguardSources(variable, new[] { 2, 3 }) &&
+                    variable.AooAfter[0] == variable.AooBefore[0] - 1 &&
+                    variable.AooAfter[1] == variable.AooBefore[1] - 1,
+                "two live protector facts and native AC source entries");
+
+            CotwAidAnotherContract cotw =
+                AidAnotherOptionalExtensionCoordinator.CotwContract;
+            AidAnotherCompatibilityStatus status =
+                AidAnotherCompatibilityStatusRegistry.Current;
+            if (cotw == null)
+            {
+                Add(assertions, "helpful-cotw-optional-boundary",
+                    "CotW absent is a safe standalone profile",
+                    status.CotwStatus + ";" + status.Detail,
+                    status.Cotw == OptionalAidAnotherAvailability.Absent,
+                    "optional compatibility status registry");
+            }
+            else
+            {
+                BlueprintFeature[] benevolentEntries = cotw.ReadFeatureList()
+                    .Where(value => value != null && string.Equals(
+                        value.AssetGuid,
+                        CotwAidAnotherResolver.BenevolentFeatureGuid,
+                        StringComparison.Ordinal)).ToArray();
+                BlueprintFeature benevolent = benevolentEntries
+                    .Distinct().SingleOrDefault();
+                Add(assertions, "helpful-cotw-benevolent-contract",
+                    "one Benevolent feature occurs twice in the canonical list",
+                    "matches=" + benevolentEntries.Length + ";fingerprint=" +
+                        cotw.Fingerprint,
+                    benevolent != null && benevolentEntries.Length == 2 &&
+                        benevolentEntries.All(value => ReferenceEquals(value,
+                            benevolent)),
+                    "exact canonical ContextRankConfig feature-list identity");
+                if (benevolent != null)
+                {
+                    fixture.SetModes(fixture.ProtectorTwo, false, false);
+                    fixture.SetCombatHelpful(fixture.ProtectorOne, false);
+                    fixture.SetAidContributor(fixture.ProtectorOne,
+                        benevolent, true);
+                    fixture.ResetEconomy(8, 0f, 8, 0f);
+                    BodyguardCombatCaseEvidence external = fixture.Attack(
+                        "helpful-bodyguard-benevolent-four", 10,
+                        forceHitPenalty, false, false, 20);
+                    evidence.Cases.Add(external);
+                    Add(assertions, "helpful-bodyguard-benevolent-four",
+                        "Benevolent-style canonical +2 produces Bodyguard +4",
+                        Describe(external),
+                        external.BodyguardContribution == 4 &&
+                            HasTruthfulBodyguardSources(external,
+                                new[] { 4 }) &&
+                            HasGrantEvidence(external, 4, "None", 2),
+                        "live owned foreign contributor multiplicity");
+
+                    fixture.SetCombatHelpful(fixture.ProtectorOne, true);
+                    fixture.SetModes(fixture.ProtectorOne, true, true);
+                    fixture.ResetEconomy(8, 0f, 8, 0f);
+                    BodyguardCombatCaseEvidence combined = fixture.Attack(
+                        "helpful-bodyguard-combat-benevolent-five", 10,
+                        forceHitPenalty, false, true, 20);
+                    evidence.Cases.Add(combined);
+                    Add(assertions,
+                        "helpful-bodyguard-combat-benevolent-five",
+                        "combat Helpful replacement plus Benevolent produces +5 and still intercepts",
+                        Describe(combined),
+                        combined.BodyguardContribution == 5 &&
+                            HasTruthfulBodyguardSources(combined,
+                                new[] { 5 }) &&
+                            HasGrantEvidence(combined, 5, "Combat", 2) &&
+                            Counter(combined, "interceptions") == 1 &&
+                            combined.HpLoss[0] == 0 &&
+                            combined.HpLoss[1] > 0,
+                        "shared canonical resolver plus live complete-delivery redirection");
+                    fixture.SetAidContributor(fixture.ProtectorOne,
+                        benevolent, false);
+                }
+            }
+            fixture.SetCombatHelpful(fixture.ProtectorOne, false);
+            fixture.SetCombatHelpful(fixture.ProtectorTwo, false);
         }
 
         private static void QualifyThreatAndRanged(
@@ -560,20 +749,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             BodyguardCombatCaseEvidence value, int expectedCount,
             int expectedTotal)
         {
+            return HasTruthfulBodyguardSources(value,
+                Enumerable.Repeat(2, expectedCount).ToArray()) &&
+                expectedCount * 2 == expectedTotal;
+        }
+
+        private static bool HasTruthfulBodyguardSources(
+            BodyguardCombatCaseEvidence value, int[] expectedBonuses)
+        {
             if (value == null || value.BodyguardSources == null ||
-                value.BodyguardSources.Length != expectedCount ||
-                value.BodyguardSources.Sum(item => item.Bonus) != expectedTotal)
-                return false;
+                expectedBonuses == null || value.BodyguardSources.Length !=
+                    expectedBonuses.Length ||
+                !value.BodyguardSources.Select(item => item.Bonus).OrderBy(
+                    item => item).SequenceEqual(expectedBonuses.OrderBy(
+                        item => item))) return false;
             string guid = BlueprintBootstrap.BodyguardFeats == null ? null :
                 BlueprintBootstrap.BodyguardFeats.Bodyguard.AssetGuid;
-            return value.BodyguardSources.All(item => item.Bonus == 2 &&
+            return value.BodyguardSources.All(item =>
                 string.Equals(item.SourceName, "Bodyguard",
                     StringComparison.Ordinal) &&
                 string.Equals(item.SourceBlueprintGuid, guid,
                     StringComparison.Ordinal) &&
                 string.Equals(item.SourceBlueprintName,
                     "KMG_Bodyguard_Feature", StringComparison.Ordinal) &&
-                !string.IsNullOrWhiteSpace(item.SourceFactType));
+                    !string.IsNullOrWhiteSpace(item.SourceFactType));
+        }
+
+        private static bool HasGrantEvidence(
+            BodyguardCombatCaseEvidence value, int finalGrant,
+            string helpfulVariant, int nonHelpfulIncrement)
+        {
+            string expected = "baseGrant=2;helpfulVariant=" + helpfulVariant +
+                ";helpfulIncrement=" +
+                (helpfulVariant == "Combat" ? "1" :
+                    helpfulVariant == "Halfling" || helpfulVariant == "Both" ?
+                        "2" : "0") + ";nonHelpfulIncrement=" +
+                nonHelpfulIncrement + ";finalSuccessfulGrant=" + finalGrant;
+            return value != null && value.AidGrantObservations != null &&
+                value.AidGrantObservations.Length == 1 &&
+                value.AidGrantObservations[0].Contains(expected);
         }
 
         private static string Describe(BodyguardCombatCaseEvidence value)

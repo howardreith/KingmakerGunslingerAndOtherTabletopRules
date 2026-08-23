@@ -17,14 +17,17 @@ namespace KingmakerGunslinger.BodyguardFeats
         internal static string LastMessage { get { return _lastMessage; } }
 
         internal static bool PublishAttempt(string protector, string ally,
-            string attacker, int naturalRoll, int attackBonus, bool success)
+            string attacker, int naturalRoll, int attackBonus, bool success,
+            int armorClassContribution)
         {
             string message = string.Format(CultureInfo.InvariantCulture,
                 "{0} spends an attack of opportunity to Bodyguard {1} against {2}: {3} + {4} = {5} vs AC 10 ({6}{7}).",
                 Normalize(protector, "The protector"),
                 Normalize(ally, "the ally"), Normalize(attacker, "the attacker"),
                 naturalRoll, attackBonus, naturalRoll + attackBonus,
-                success ? "success" : "failure", success ? "; +2 AC" : "");
+                success ? "success" : "failure", success ? "; +" +
+                    armorClassContribution.ToString(CultureInfo.InvariantCulture) +
+                    " AC" : "");
             return Publish(message, "attempt-log.failed");
         }
 

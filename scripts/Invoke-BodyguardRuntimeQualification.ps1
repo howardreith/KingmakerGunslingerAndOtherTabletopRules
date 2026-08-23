@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.91',
+    [string]$ExpectedVersion = '0.0.92',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
     [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
     [Parameter(Mandatory = $true)][string]$PackagePath,
@@ -26,7 +26,7 @@ foreach ($path in @($DeploymentManifestPath, $PackagePath)) {
     }
 }
 if (-not $PSCmdlet.ShouldProcess($settings,
-    'run three guarded Bodyguard qualification launches with exact settings restoration')) {
+    'run five guarded Bodyguard/Aid Another qualification launches with exact settings restoration')) {
     return
 }
 
@@ -95,7 +95,9 @@ function Invoke-BodyguardScenario([string]$scenario) {
 try {
     Set-BodyguardFeatureState $true
     Invoke-BodyguardScenario 'observe-bodyguard-native-contracts'
+    Invoke-BodyguardScenario 'observe-aid-another-compatibility-contracts'
     Invoke-BodyguardScenario 'disposable-bodyguard-feats'
+    Invoke-BodyguardScenario 'disposable-helpful-bodyguard'
     Set-BodyguardFeatureState $false
     Invoke-BodyguardScenario 'disposable-bodyguard-feats-disabled'
 }
