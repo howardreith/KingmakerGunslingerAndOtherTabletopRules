@@ -289,6 +289,10 @@ namespace KingmakerGunslinger.DomainTests
                 qualification.Contains(
                     "Feature settings bytes were not restored exactly."),
                 "Bodyguard scenarios are not registered in the guarded launcher or do not restore restart-gated settings exactly.");
+            Assertions.True(scenario.Contains(
+                    "combat.AidGrantObservations[0].Contains(\";aidD20=20;\")") &&
+                !scenario.Contains("aidRolls=20"),
+                "Helpful runtime qualification must assert the observed native Aid d20 rather than a nonexistent queue-description field.");
             Assertions.True(fixture.Contains(
                     "its native zero-projectile synchronous resolve branch") &&
                 fixture.Contains("new BlueprintProjectile[0]") &&

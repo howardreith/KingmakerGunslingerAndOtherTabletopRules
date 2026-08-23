@@ -316,7 +316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     HasTruthfulBodyguardSources(combat, new[] { 3 }) &&
                     HasGrantEvidence(combat, 3, "Combat", 0) &&
                     combat.CombatLogLastMessage.Contains("+3 AC") &&
-                    combat.AidControl.Contains("aidRolls=20"),
+                    combat.AidGrantObservations[0].Contains(";aidD20=20;"),
                 "live native Aid d20, combat log, and attack-scoped AC source");
 
             fixture.ResetEconomy(8, 0f, 8, 0f);
