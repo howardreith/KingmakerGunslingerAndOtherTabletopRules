@@ -383,8 +383,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData initiator, UnitEntityData target,
             ItemEntityWeapon weapon)
         {
+            // RuleAttackWithWeapon.AttackBonusPenalty is a positive
+            // subtraction in Kingmaker 2.1.7b.
             var attack = new RuleAttackWithWeapon(initiator, target, weapon,
-                -1000);
+                1000);
             string control;
             BodyguardQualificationControl.Arm(2);
             try { Rulebook.Trigger(attack); }

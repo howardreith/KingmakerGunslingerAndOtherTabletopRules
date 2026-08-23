@@ -295,6 +295,7 @@ namespace KingmakerGunslinger.DomainTests
                 "AttackBonus = attack.AttackRoll.AttackBonus",
                 "ArmorClass = attack.AttackRoll.TargetAC",
                 "BodyguardQualificationControl.Arm(2)",
+                "AttackBonusPenalty is a positive",
                 "fixture.Cleaned" })
                 Assertions.True(observer.Contains(token),
                     "Guarded Aid Another observer lacks: " + token);
