@@ -229,11 +229,14 @@ namespace KingmakerGunslinger.DomainTests
             string investigation = Read("docs", "investigations",
                 "aid-another-cotw-favored-class.md");
             Assertions.True(investigation.Contains(
-                    "No `ZFavoredClass.dll`") && investigation.Contains(
-                    "awaiting exact installed-binary and runtime qualification") &&
+                    "Favored Class installed-binary contract") &&
+                investigation.Contains(
+                    "DCD3ADF98D1A04C30D772381E7C56CE4BEFF35A98BCEA165AFF206A2F0AAC26C") &&
+                investigation.Contains(
+                    "af37d78d7bc5451d943b63356f438949") &&
                 investigation.Contains(
                     "56ec6c5fd34f0da037350f951383ca7f1a0c5e57"),
-                "The missing Favored Class binary boundary is not recorded honestly.");
+                "The exact installed Favored Class boundary is not recorded honestly.");
         }
 
         internal static void LifecycleAndStatusRemainOptional()

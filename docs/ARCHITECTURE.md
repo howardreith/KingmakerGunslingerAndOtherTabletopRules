@@ -518,7 +518,7 @@ catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
 plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the six
 always-registered Bodyguard/In Harm's Way feat-mode identities, extend the
-append-only ledger to 1623 stable IDs: 1622 active and one reserved.
+append-only ledger to 1628 stable IDs: 1627 active and one reserved.
 Twenty-five active identities belong to the isolated Brown-Fur extension and
 do not change the unconditional core registration count; they register only
 after the structural CotW contract succeeds, while selector publication

@@ -9,6 +9,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.EasternWeapons;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger.AidAnotherCompatibility
@@ -236,6 +237,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                 AidAnotherGrantRuntime.Configure(cotw.Contract,
                     favored.IsCompatible ? favored.Contract.HalflingHelpful :
                         null);
+                EasternWeaponLatePublicationCoordinator.TryPublish(
+                    "aid-another-compatible-reconcile");
                 bool published = favored.IsCompatible &&
                     favored.Contract.TraitsEnabled &&
                     context.FeatureModules.Active.BodyguardFeats;

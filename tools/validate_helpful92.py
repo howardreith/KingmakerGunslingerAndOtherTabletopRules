@@ -13,6 +13,17 @@ VERSION = "0.0.92"
 INFORMATIONAL_VERSION = "0.0.92-helpful-aid-another"
 PACKAGE = "KingmakerGunslinger-0.0.92-local-runtime.zip"
 DETERMINISTIC_TEST_COUNT = 1201
+STATIC_KEY = "helpful92"
+EXPECTED_LEDGER_ENTRIES = 1623
+EXPECTED_ACTIVE_BLUEPRINTS = 1622
+PROJECT_BLUEPRINT_COUNT = 7
+EXPECTED_IDENTITIES = {
+    "KMG.Traits.HelpfulCombat": (
+        "e4b29a7c8d5f4c1796ab03e1f72d8456", "BlueprintFeature"),
+}
+FAVORED_AVAILABILITY_DISPOSITION = "UNAVAILABLE-LOCAL-REFERENCE"
+FAVORED_PROFILE_DISPOSITION = "UNAVAILABLE-LOCAL-REFERENCE"
+FAVORED_PROFILE_RUNTIME_LOADABLE = False
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
@@ -24,17 +35,22 @@ def require_tokens(path: Path, *tokens: str) -> None:
         raise AssertionError(f"{path.name} lacks Helpful contract token(s): {missing}")
 
 
+def matches_expected(actual: object, expected: object) -> bool:
+    if isinstance(expected, (tuple, list, set, frozenset)):
+        return actual in expected
+    return actual == expected
+
+
 def validate(root: Path) -> None:
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     baseline.PACKAGE = PACKAGE
-    baseline.STATIC_KEY = "helpful92"
+    baseline.STATIC_KEY = STATIC_KEY
     baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
-    baseline.baseline.EXPECTED_LEDGER_ENTRIES = 1623
-    baseline.baseline.EXPECTED_ACTIVE_BLUEPRINTS = 1622
-    baseline.baseline.PROJECT_BLUEPRINT_COUNT = 7
-    baseline.baseline.EXPECTED_IDENTITIES["KMG.Traits.HelpfulCombat"] = (
-        "e4b29a7c8d5f4c1796ab03e1f72d8456", "BlueprintFeature")
+    baseline.baseline.EXPECTED_LEDGER_ENTRIES = EXPECTED_LEDGER_ENTRIES
+    baseline.baseline.EXPECTED_ACTIVE_BLUEPRINTS = EXPECTED_ACTIVE_BLUEPRINTS
+    baseline.baseline.PROJECT_BLUEPRINT_COUNT = PROJECT_BLUEPRINT_COUNT
+    baseline.baseline.EXPECTED_IDENTITIES.update(EXPECTED_IDENTITIES)
     baseline.validate(root)
 
     required = (
@@ -74,9 +90,9 @@ def validate(root: Path) -> None:
     catalog = json.loads((root / "compatibility/reference-catalog.json")
         .read_text(encoding="utf-8"))
     references = {entry["key"]: entry for entry in catalog["references"]}
-    if references.get("favored-class", {}).get(
-            "availabilityDisposition") != "UNAVAILABLE-LOCAL-REFERENCE":
-        raise AssertionError("missing Favored Class compiled-reference boundary")
+    if not matches_expected(references.get("favored-class", {}).get(
+            "availabilityDisposition"), FAVORED_AVAILABILITY_DISPOSITION):
+        raise AssertionError("Favored Class compiled-reference boundary changed")
     profiles = json.loads((root / "compatibility/profiles.json")
         .read_text(encoding="utf-8"))["profiles"]
     by_id = {entry["id"]: entry for entry in profiles}
@@ -87,9 +103,10 @@ def validate(root: Path) -> None:
     )
     for profile_id in required_profiles:
         profile = by_id.get(profile_id)
-        if not profile or profile["disposition"] != \
-                "UNAVAILABLE-LOCAL-REFERENCE" or \
-                profile["runtimeLoadableRequired"]:
+        if not profile or not matches_expected(profile["disposition"], \
+                FAVORED_PROFILE_DISPOSITION) or \
+                profile["runtimeLoadableRequired"] != \
+                FAVORED_PROFILE_RUNTIME_LOADABLE:
             raise AssertionError(
                 f"Favored Class blocked profile is not exact: {profile_id}")
 

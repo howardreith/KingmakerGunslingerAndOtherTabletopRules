@@ -8,14 +8,16 @@ Kingmaker 2.1.7b. Its `Assembly-CSharp.dll` SHA-256 is
 `3B6450FFEC440E296E586F71C711B195AED144B28D53E1CBB29406D18FEF5AFB` and
 its MVID is `07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`.
 
-The exact installed/reference Call of the Wild artifact is present. No `ZFavoredClass.dll`,
-Favored Class UMM directory, settings file, or
-`loaded_blueprints.txt` exists in the compatibility reference root or live Mods
-directory as of 2026-08-22. Consequently, the CotW conclusions below are exact
-binary contracts, while the Favored Class conclusions are public-source-backed
-adapter contracts awaiting exact installed-binary and runtime qualification.
-The adapter treats absence normally and fails closed on any future structural
-mismatch.
+The exact installed/reference Call of the Wild and Favored Class artifacts are
+now present. Favored Class 1.3.1 was copied read-only from the authorized live
+UMM profile into the ignored compatibility-reference root with per-file hash
+verification. Its DLL SHA-256 is
+`DCD3ADF98D1A04C30D772381E7C56CE4BEFF35A98BCEA165AFF206A2F0AAC26C`
+and MVID is `3efd38e7-8682-4b4d-8d53-e368a3664919`. Its exact setting is
+`enable_traits=true`. The installed binary, decompiled IL, live blueprint graph,
+hash, and MVID supersede the earlier source-only boundary. Full Eastern Weapons
+failure analysis is in
+`docs/investigations/eastern-weapons-favored-class-tweak-or-treat.md`.
 
 ## Call of the Wild artifact
 
@@ -95,13 +97,17 @@ list. KMG lifecycle postfixes only request reconciliation; the first UMM update,
 after every LoadDictionary postfix has completed, performs the transaction.
 Repeated callbacks reconcile idempotently.
 
-## Favored Class source contract (binary absent)
+## Favored Class installed-binary contract
 
-The authorized public source checkout is Holic75/KingmakerFavoredClass commit
-`56ec6c5fd34f0da037350f951383ca7f1a0c5e57`. Its UMM metadata declares:
+The authorized public source reference was inspected at commit
+`56ec6c5fd34f0da037350f951383ca7f1a0c5e57` for intent and naming only; its
+reported 1.3.2b source version is not asserted byte-equivalent to the exact
+installed Favored Class 1.3.1 binary described below.
+
+The exact installed metadata and reflection contract establish:
 
 - UMM ID and expected assembly: `ZFavoredClass` / `ZFavoredClass.dll`;
-- version: `1.3.2b`;
+- installed version: `1.3.1`;
 - entry point: `ZFavoredClass.Main.Load`;
 - setting: exact `Main.settings.enable_traits` Boolean;
 - lifecycle: exact static `ZFavoredClass.Traits.load(bool)`.
@@ -110,6 +116,7 @@ Blueprint identities in that source ledger are:
 
 - Combat Trait selection: `43d763957f364315b5fff85f9e91ca51`;
 - Race Trait selection: `331ed3c4a988415785f71a37b826d0f1`;
+- Equipment Trait selection: `af37d78d7bc5451d943b63356f438949`;
 - first top-level Trait selection: `34e2812e0f8241bb9e1bee5240c9eb2e`;
 - second top-level Trait selection: `5253dcee502a49249bdd8bfdfe525e9f`;
 - Adopted: `987e573c15e241c285e0fa1d5ac0a0a2`;
@@ -117,7 +124,7 @@ Blueprint identities in that source ledger are:
 - existing halfling Helpful: `c9bd9f6cc24f41e684a68e6510afc726`;
 - native halfling race: `b0c3ef2729c498f47970bb50fa1acd30`.
 
-The source builds `HelpfulTrait`, displayed as `Helpful`, as a rank-one
+The installed binary builds `HelpfulTrait`, displayed as `Helpful`, as a rank-one
 `FeatureGroup.Trait` with exactly one
 `ZFavoredClass.NewMechanics.PrerequisiteRace` targeting the halfling race. It
 adds the same feature twice to CotW's canonical list and puts it once in Race
@@ -128,6 +135,12 @@ halfling Helpful contributor; it omits only top-level/new-selection publication
 and companion initialization. `Traits.load(true)` additionally routes both
 top-level Trait choices and Additional Traits through the category selections.
 KMG never changes companion presets.
+
+KMG also requires the installed Equipment Trait selection, its structurally
+valid three-choice Heirloom entries, and its presence in both top-level Trait
+choices. This complete-graph gate rejects a green UMM entry whose
+`Traits.createEquipmentTraits` exception prevented the remainder of
+`Traits.load` from running.
 
 Adopted is a clone of Race Traits with empty components and
 `IgnorePrerequisites=true`. Reciprocal `PrerequisiteNoFeature` components safely
@@ -185,8 +198,8 @@ Rejected approaches:
 
 ## Qualification status
 
-The exact CotW artifact supports binary contract and CotW-only runtime work. The
-Favored Class adapter, selection publication, traits-disabled profile, and
-three-mod profile cannot be called runtime-qualified until an authorized exact
-`ZFavoredClass.dll` profile is present. This absence is an optional-extension
-qualification blocker, not a KMG package/bootstrap failure.
+Exact installed CotW 1.14.4c-2.1, Favored Class 1.3.1, Tweak or Treat 1.1.0,
+and Races Unleashed 1.0.11 artifacts are available to the guarded compatibility
+profile machinery. Final pass/fail results and restoration hashes are recorded
+with the immutable 0.0.93 runtime candidate rather than inferred from source or
+build success.

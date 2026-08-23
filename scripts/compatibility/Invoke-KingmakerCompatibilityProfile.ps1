@@ -42,6 +42,7 @@ param(
         'observe-brown-fur-cotw-absent-isolation',
         'observe-aid-another-compatibility-contracts',
         'disposable-helpful-bodyguard',
+        'disposable-bodyguard-feats-disabled',
         'observe-elven-branched-spear-contracts',
         'observe-eastern-weapon-contracts',
         'disposable-elven-branched-spear-combat',
@@ -87,8 +88,23 @@ $cotwSettingsOriginalSha = if ($cotwSettingsOriginalExists) {
 } else { $null }
 $cotwSettingsStagedBeforeSha = $null
 $cotwSettingsStagedAfterSha = $null
+$favoredSettingsPath = Join-Path $KingmakerInstallDir `
+    'Mods\ZFavoredClass\settings.json'
+$favoredSettingsStagedBeforeSha = $null
+$favoredSettingsStagedAfterSha = $null
+$favoredTraitsMode = if ($ProfileId -ceq
+    'gunslinger-call-of-the-wild-favored-class-traits-disabled') {
+    'disabled'
+} elseif ($ProfileId -in @(
+    'gunslinger-call-of-the-wild-favored-class',
+    'gunslinger-high-risk-combined-favored-class')) { 'enabled' } else {
+    'unchanged'
+}
 
 $cotwProfileIds = @('gunslinger-call-of-the-wild',
+    'gunslinger-call-of-the-wild-favored-class',
+    'gunslinger-call-of-the-wild-favored-class-traits-disabled',
+    'gunslinger-high-risk-combined-favored-class',
     'gunslinger-high-risk-combined', 'gunslinger-all-loadable-local')
 if ($CotwProgressionMode -cne 'unchanged' -and
     $ProfileId -notin $cotwProfileIds) {
@@ -169,6 +185,41 @@ try {
         $cotwSettingsStagedAfterSha = (Get-FileHash -LiteralPath `
             $cotwSettingsPath -Algorithm SHA256).Hash
     }
+    if ($favoredTraitsMode -cne 'unchanged') {
+        if (-not (Test-Path -LiteralPath $favoredSettingsPath -PathType Leaf)) {
+            throw "Staged Favored Class settings file is missing: $favoredSettingsPath"
+        }
+        $favoredSettingsStagedBeforeSha = (Get-FileHash -LiteralPath `
+            $favoredSettingsPath -Algorithm SHA256).Hash
+        $settingsText = [IO.File]::ReadAllText($favoredSettingsPath)
+        $traitsPattern = '("enable_traits"\s*:\s*)(true|false)'
+        $traitsMatches = [regex]::Matches($settingsText, $traitsPattern,
+            [Text.RegularExpressions.RegexOptions]::IgnoreCase)
+        if ($traitsMatches.Count -ne 1) {
+            throw 'Staged Favored Class settings must contain exactly one enable_traits Boolean.'
+        }
+        $desiredTraits = if ($favoredTraitsMode -ceq 'enabled') {
+            'true'
+        } else { 'false' }
+        $match = $traitsMatches[0]
+        $replacement = $match.Groups[1].Value + $desiredTraits
+        $updated = $settingsText.Substring(0, $match.Index) + $replacement +
+            $settingsText.Substring($match.Index + $match.Length)
+        $temporaryFavored = $favoredSettingsPath + '.kmg-traits.tmp'
+        [IO.File]::WriteAllText($temporaryFavored, $updated,
+            (New-Object Text.UTF8Encoding($false)))
+        Move-Item -LiteralPath $temporaryFavored -Destination `
+            $favoredSettingsPath -Force
+        $resolvedSettings = Get-Content -Raw -LiteralPath `
+            $favoredSettingsPath | ConvertFrom-Json
+        $expectedTraits = $favoredTraitsMode -ceq 'enabled'
+        if ($resolvedSettings.enable_traits -isnot [bool] -or
+            [bool]$resolvedSettings.enable_traits -ne $expectedTraits) {
+            throw 'Staged Favored Class enable_traits did not resolve to the requested mode.'
+        }
+        $favoredSettingsStagedAfterSha = (Get-FileHash -LiteralPath `
+            $favoredSettingsPath -Algorithm SHA256).Hash
+    }
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
@@ -192,7 +243,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.92'
+            ExpectedVersion = '0.0.93'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
@@ -303,6 +354,16 @@ $cotwSettingsEvidencePath = Join-Path $StateRoot `
 if (-not $cotwSettingsBytesRestored) {
     throw "CotW settings bytes were not restored exactly: $runId"
 }
+$favoredSettingsEvidencePath = Join-Path $StateRoot `
+    "$runId\favored-settings-profile.json"
+[ordered]@{
+    schemaVersion = 1
+    traitsMode = $favoredTraitsMode
+    stagedBeforeSha256 = $favoredSettingsStagedBeforeSha
+    stagedAfterSha256 = $favoredSettingsStagedAfterSha
+    completeModsRestorationVerified = [bool]$state.restorationVerified
+} | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath `
+    $favoredSettingsEvidencePath -Encoding UTF8
 [pscustomobject][ordered]@{
     profileId = $ProfileId
     transactionRunId = $runId
@@ -313,5 +374,9 @@ if (-not $cotwSettingsBytesRestored) {
     cotwSettingsRestoredSha256 = $cotwSettingsRestoredSha
     cotwSettingsBytesRestored = $cotwSettingsBytesRestored
     cotwSettingsEvidencePath = $cotwSettingsEvidencePath
+    favoredTraitsMode = $favoredTraitsMode
+    favoredSettingsStagedBeforeSha256 = $favoredSettingsStagedBeforeSha
+    favoredSettingsStagedAfterSha256 = $favoredSettingsStagedAfterSha
+    favoredSettingsEvidencePath = $favoredSettingsEvidencePath
     runtimeResults = @($results)
 }

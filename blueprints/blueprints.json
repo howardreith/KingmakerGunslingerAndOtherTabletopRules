@@ -12543,6 +12543,26 @@
     {
       "symbol": "KMG.Traits.HelpfulCombat", "guid": "e4b29a7c8d5f4c1796ab03e1f72d8456",
       "plannedType": "BlueprintFeature", "status": "active", "milestone": "Aid Another compatibility", "notes": "Save-stable combat Helpful trait; optional publication into Favored Class is late-bound and transactional."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.Selection", "guid": "5ae9f898e45846d19d3802caf91e06b6",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Save-stable three-way Heirloom Weapon (Nodachi) choice; optional publication into Favored Class Equipment Traits is late-bound and transactional."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.Proficiency", "guid": "af205733f7fe49838edb37cdf1b90cbb",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Heirloom Weapon (Nodachi) proficiency choice."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.AttackOfOpportunity", "guid": "4caf60ed8b264701a3965288a65eebc2",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Heirloom Weapon (Nodachi) +1 trait bonus on attacks of opportunity choice."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.CombatManeuver", "guid": "e17fafa6f75641f8a2e3fe4b6f71da78",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Heirloom Weapon (Nodachi) +2 trait bonus on combat maneuvers while wielding the weapon choice."
+    },
+    {
+      "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.CombatManeuverBonus", "guid": "1a7a5d985fe740cc8442f04f0fe814d8",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Hidden equipment-conditional Additional CMB carrier for Heirloom Weapon (Nodachi)."
     }
   ]
 }

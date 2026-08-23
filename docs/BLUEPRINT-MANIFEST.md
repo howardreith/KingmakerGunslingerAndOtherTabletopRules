@@ -8,7 +8,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1623 stable identifiers: 1622 active and one reserved.
+Validator contract: 1628 stable identifiers: 1627 active and one reserved.
 
 The 25 active `KMG.BrownFur.*` identities are owned by the isolated optional
 extension. They are registered only when the structural Call of the Wild

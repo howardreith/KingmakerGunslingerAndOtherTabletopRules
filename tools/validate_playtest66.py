@@ -48,13 +48,17 @@ def validate(root: Path, test_count: int = 865) -> None:
         entry.get("symbol", "").startswith("KMG.Feats.UseBodyguard") or
         entry.get("symbol", "").startswith("KMG.Feats.InHarmsWay") or
         entry.get("symbol", "").startswith("KMG.Feats.UseInHarmsWay") or
-        entry.get("symbol", "").startswith("KMG.Traits.HelpfulCombat"))
+        entry.get("symbol", "").startswith("KMG.Traits.HelpfulCombat") or
+        entry.get("symbol", "").startswith(
+            "KMG.Traits.HeirloomWeapon.Nodachi."))
     bodyguard_active_count = sum(1 for entry in manifest["entries"]
         if (entry.get("symbol", "").startswith("KMG.Feats.Bodyguard") or
         entry.get("symbol", "").startswith("KMG.Feats.UseBodyguard") or
         entry.get("symbol", "").startswith("KMG.Feats.InHarmsWay") or
         entry.get("symbol", "").startswith("KMG.Feats.UseInHarmsWay") or
-        entry.get("symbol", "").startswith("KMG.Traits.HelpfulCombat"))
+        entry.get("symbol", "").startswith("KMG.Traits.HelpfulCombat") or
+        entry.get("symbol", "").startswith(
+            "KMG.Traits.HeirloomWeapon.Nodachi."))
         and entry.get("status") == "active")
     active_count, ledger_count = ((1438 + elven_branched_spear_count +
         eastern_weapons_count + focused_weapon_count + brown_fur_active_count +

@@ -1,11 +1,25 @@
 # Kingmaker Gunslinger
 
-The `0.0.91` Bodyguard AC-breakdown candidate preserves the qualified `0.0.90`
-Bodyguard and In Harm's Way mechanics and makes every successful Bodyguard +2
-explicit in Kingmaker's native expanded attack-roll AC details. Each line is
-sourced from the protector's actual Bodyguard feat fact, remains scoped to the
-exact `RuleCalculateAC` event, and cannot double-count the already-correct final
-AC. Multiple protectors retain their stackable +2 contributions.
+The `0.0.93` compatibility candidate preserves Bodyguard, In Harm's Way, and
+the canonical Call of the Wild Aid Another integration while repairing the
+exact Favored Class 1.3.1 and Tweak or Treat 1.1.0 startup conflict caused by
+Nodachi's runtime-only martial weapon category. Broad-martial proficiency is
+now published transactionally after every `LoadDictionary` postfix has
+finished, allowing Favored Class trait construction and Tweak or Treat's
+Heirloom Weapon integration to complete before either sees the custom enum.
+
+With compatible Call of the Wild and Favored Class installations, Combat
+Traits contain KMG's **Helpful** trait, Race Traits retain Favored Class's
+halfling **Helpful**, and ordinary Aid Another plus Bodyguard share the same
++2/+3/+4 replacement and independent-contributor calculation. When Favored
+Class traits and Eastern Weapons are both enabled, Equipment Traits also gain
+one save-stable **Heirloom Weapon: Nodachi** choice without replacing native or
+third-party options.
+
+Every successful Bodyguard contribution remains explicit in Kingmaker's native
+expanded attack-roll AC details, sourced from the protector's actual Bodyguard
+feat fact and scoped to the exact `RuleCalculateAC` event. Variable Helpful and
+other canonical Aid Another increases retain their truthful final AC values.
 
 The retained subsystem is a ninth independent, default-enabled feature module.
 It publishes both feats to the normal general and Fighter combat-feat selections

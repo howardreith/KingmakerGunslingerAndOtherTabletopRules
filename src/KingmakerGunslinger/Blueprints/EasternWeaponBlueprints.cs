@@ -190,6 +190,14 @@ namespace KingmakerGunslinger.Blueprints
                     weaponType, entries.ToArray()));
             }
 
+            BlueprintItemWeapon masterworkNodachi = families.Single(value =>
+                value.Family == EasternWeaponFamily.Nodachi).Entries.Single(
+                    value => value.Spec.Kind ==
+                        EasternWeaponGenericKind.Masterwork).Item;
+            HeirloomNodachiBlueprintSet heirloomNodachi =
+                HeirloomNodachiBlueprints.Register(registry,
+                    masterworkNodachi);
+
             BlueprintFeature nativeEwpDonor = BlueprintLibraryLookup
                 .RequireExact<BlueprintFeature>(library,
                     NativeElvenCurveBladeProficiencyGuid,
@@ -241,7 +249,7 @@ namespace KingmakerGunslinger.Blueprints
 
             var result = new EasternWeaponBlueprintSet(families.ToArray(),
                 proficiencyPolicy, wakizashiEwp, katanaEwp,
-                wakizashiFinesse, publication);
+                wakizashiFinesse, heirloomNodachi, publication);
             Validate(result, typeAccess, typeAdapter, itemAdapter);
             logger.Info("eastern-weapons", "generic-catalog.ready",
                 "Registered three stable categories, twelve generic items, exact proficiency children, and one merged selector publication; selectors=" +
@@ -731,6 +739,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature wakizashiProficiency,
             BlueprintFeature katanaProficiency,
             BlueprintFeature wakizashiFinesseTraining,
+            HeirloomNodachiBlueprintSet heirloomNodachi,
             EasternWeaponSelectorPublication publication)
         {
             Families = families ?? throw new ArgumentNullException("families");
@@ -742,6 +751,8 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentNullException("katanaProficiency");
             WakizashiFinesseTraining = wakizashiFinesseTraining ??
                 throw new ArgumentNullException("wakizashiFinesseTraining");
+            HeirloomNodachi = heirloomNodachi ??
+                throw new ArgumentNullException("heirloomNodachi");
             Publication = publication ?? throw new ArgumentNullException(
                 "publication");
         }
@@ -750,6 +761,8 @@ namespace KingmakerGunslinger.Blueprints
         internal BlueprintFeature WakizashiProficiency { get; private set; }
         internal BlueprintFeature KatanaProficiency { get; private set; }
         internal BlueprintFeature WakizashiFinesseTraining { get; private set; }
+        internal HeirloomNodachiBlueprintSet HeirloomNodachi
+        { get; private set; }
         internal EasternWeaponSelectorPublication Publication { get; private set; }
         internal EasternWeaponNamedBlueprintSet Named { get; private set; }
         internal EasternWeaponCampaignPublication Campaign { get; private set; }

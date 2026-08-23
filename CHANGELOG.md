@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.0.93-eastern-favored-compatibility (qualification candidate)
+
+- Defers Nodachi publication into broad Martial Weapon Proficiency facts until
+  the first UMM update after the complete `LoadDictionary` postfix chain. This
+  keeps Favored Class 1.3.1 from treating KMG's runtime-only category value
+  `4934986` as a foreign Heirloom Weapon blueprint name during trait creation.
+- Applies the late martial mutation transactionally and exactly once across
+  every verified broad-martial grant, with exact-array rollback and native
+  category authority checks. Standalone Eastern Weapons and existing-save
+  proficiency behavior remain intact.
+- Validates the exact installed Favored Class and Tweak or Treat Heirloom
+  contracts. When traits and Eastern Weapons are enabled, publishes one
+  save-stable KMG **Heirloom Weapon: Nodachi** choice with the installed
+  three-option proficiency, attack-of-opportunity, and wielded-CMB structure.
+- Preserves the canonical Call of the Wild Aid Another resolver, combat and
+  halfling Helpful replacement semantics, variable Bodyguard AC contributions,
+  native AC attribution, In Harm's Way delivery, and Shield Other ordering.
+
+## 0.0.92-helpful-aid-another (qualification candidate)
+
+- Adds the KMG combat **Helpful** trait to compatible Favored Class Combat
+  Traits and shares one canonical Call of the Wild Aid Another grant resolver
+  with ordinary Aid Another and Bodyguard.
+- Resolves combat Helpful as +3, Favored Class halfling Helpful as +4, and
+  invalid dual ownership as the better +4 replacement while preserving
+  independent canonical contributors such as Benevolent.
+- Keeps both optional integrations late-bound, transactional, idempotent, and
+  fail-closed; KMG remains fully standalone when either external mod is absent.
+
 ## 0.0.91-bodyguard-ac-breakdown (qualification candidate)
 
 - Preserves the qualified Bodyguard and In Harm's Way mechanics while adding

@@ -57,6 +57,7 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
             MethodInfo loadMethod, bool traitsEnabled,
             BlueprintFeatureSelection combatTraits,
             BlueprintFeatureSelection raceTraits,
+            BlueprintFeatureSelection equipmentTraits,
             BlueprintFeatureSelection firstTrait,
             BlueprintFeatureSelection secondTrait,
             BlueprintFeatureSelection adopted,
@@ -69,6 +70,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
             CombatTraits = combatTraits ??
                 throw new ArgumentNullException("combatTraits");
             RaceTraits = raceTraits ?? throw new ArgumentNullException("raceTraits");
+            EquipmentTraits = equipmentTraits ??
+                throw new ArgumentNullException("equipmentTraits");
             FirstTrait = firstTrait ?? throw new ArgumentNullException("firstTrait");
             SecondTrait = secondTrait ?? throw new ArgumentNullException("secondTrait");
             Adopted = adopted ?? throw new ArgumentNullException("adopted");
@@ -84,6 +87,7 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
         internal bool TraitsEnabled { get; private set; }
         internal BlueprintFeatureSelection CombatTraits { get; private set; }
         internal BlueprintFeatureSelection RaceTraits { get; private set; }
+        internal BlueprintFeatureSelection EquipmentTraits { get; private set; }
         internal BlueprintFeatureSelection FirstTrait { get; private set; }
         internal BlueprintFeatureSelection SecondTrait { get; private set; }
         internal BlueprintFeatureSelection Adopted { get; private set; }

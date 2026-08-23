@@ -42,9 +42,11 @@
     <Compile Include="ElvenBranchedSpearCatalogTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Assets\WeaponVisualVariantCatalog.cs"><Link>Assets\WeaponVisualVariantCatalog.cs</Link></Compile>
     <Compile Include="EasternWeaponFoundationTests.cs" />
+    <Compile Include="EasternFavoredCompatibilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\CustomWeapons\CustomWeaponCategoryDefinition.cs"><Link>CustomWeapons\CustomWeaponCategoryDefinition.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\CustomWeapons\CustomWeaponCategoryRegistry.cs"><Link>CustomWeapons\CustomWeaponCategoryRegistry.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\EasternWeapons\EasternWeaponCatalog.cs"><Link>EasternWeapons\EasternWeaponCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\EasternWeapons\EasternWeaponMartialPublicationPolicy.cs"><Link>EasternWeapons\EasternWeaponMartialPublicationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />

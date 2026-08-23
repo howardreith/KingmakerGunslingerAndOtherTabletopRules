@@ -12,19 +12,36 @@ foreach ($profile in $profiles.profiles) {
     $results += $result
 }
 $runtime = @($results | Where-Object runtimeCapable)
-if ($runtime.Count -ne 7) { throw "Expected seven runtime-capable profiles, observed $($runtime.Count)." }
-$favoredBlocked = @($results | Where-Object {
+if ($runtime.Count -ne 10) { throw "Expected ten runtime-capable profiles, observed $($runtime.Count)." }
+$favoredProfiles = @($results | Where-Object {
     $_.profileId -in @(
         'gunslinger-call-of-the-wild-favored-class',
         'gunslinger-call-of-the-wild-favored-class-traits-disabled',
         'gunslinger-high-risk-combined-favored-class')
 })
-if ($favoredBlocked.Count -ne 3 -or @($favoredBlocked | Where-Object runtimeCapable).Count -ne 0) {
-    throw 'All three Favored Class profiles must remain unavailable until an exact compiled artifact is supplied.'
+if ($favoredProfiles.Count -ne 3 -or
+    @($favoredProfiles | Where-Object runtimeCapable).Count -ne 3) {
+    throw 'All three exact Favored Class profiles must be runtime capable.'
+}
+$favored = $favoredProfiles | Where-Object {
+    $_.profileId -ceq 'gunslinger-call-of-the-wild-favored-class'
+}
+$favoredDisabled = $favoredProfiles | Where-Object {
+    $_.profileId -ceq 'gunslinger-call-of-the-wild-favored-class-traits-disabled'
+}
+$favoredCombined = $favoredProfiles | Where-Object {
+    $_.profileId -ceq 'gunslinger-high-risk-combined-favored-class'
+}
+if (@($favored.runtimeMods | Where-Object key -ceq 'favored-class').Count -ne 1 -or
+    @($favoredDisabled.runtimeMods | Where-Object key -ceq 'favored-class').Count -ne 1 -or
+    @($favoredCombined.runtimeMods | Where-Object key -ceq 'favored-class').Count -ne 1 -or
+    @($favoredCombined.runtimeMods | Where-Object key -ceq 'tweak-or-treat').Count -ne 1 -or
+    @($favoredCombined.runtimeMods | Where-Object key -ceq 'races-unleashed').Count -ne 1) {
+    throw 'Favored Class profile resolution did not preserve the exact required mod graph.'
 }
 $craft = $results | Where-Object profileId -ceq 'gunslinger-craft-magic-items'
 if ($craft.runtimeCapable -or $craft.staticOnlyReferences.Count -ne 1) { throw 'Craft Magic Items dry-run must remain static-only.' }
 $all = $results | Where-Object profileId -ceq 'gunslinger-all-loadable-local'
 if (@($all.runtimeMods | Where-Object key -eq 'kaz-asset-references').Count -ne 0) { throw 'KAZ references entered runtime staging.' }
 if (@($all.expectedUmmIds | Where-Object { $_ -like 'KAZ_*' }).Count -ne 0) { throw 'KAZ UMM IDs entered all-loadable profile.' }
-Write-Host 'All twelve compatibility profile dry-runs passed; Favored Class remains explicitly unavailable and KAZ references remain non-runtime.'
+Write-Host 'All twelve compatibility profile dry-runs passed; three exact Favored Class profiles are runtime capable and KAZ references remain non-runtime.'

@@ -23,6 +23,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
             "43d763957f364315b5fff85f9e91ca51";
         internal const string RaceTraitsGuid =
             "331ed3c4a988415785f71a37b826d0f1";
+        internal const string EquipmentTraitsGuid =
+            "af37d78d7bc5451d943b63356f438949";
         internal const string FirstTraitGuid =
             "34e2812e0f8241bb9e1bee5240c9eb2e";
         internal const string SecondTraitGuid =
@@ -80,6 +82,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                     BlueprintFeatureSelection>(traits, "combat_traits");
                 BlueprintFeatureSelection race = ReadStatic<
                     BlueprintFeatureSelection>(traits, "racial_traits");
+                BlueprintFeatureSelection equipment = ReadStatic<
+                    BlueprintFeatureSelection>(traits, "equipment_traits");
                 BlueprintFeatureSelection first = ReadStatic<
                     BlueprintFeatureSelection>(traits, "traits_selection");
                 BlueprintFeatureSelection second = ReadStatic<
@@ -90,7 +94,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                     traits, "additional_traits");
                 BlueprintFeature helpful = ReadStatic<BlueprintFeature>(traits,
                     "helpful");
-                if (combat == null || race == null || first == null ||
+                if (combat == null || race == null || equipment == null ||
+                    first == null ||
                     second == null || adopted == null || additional == null ||
                     helpful == null)
                     return Result(OptionalAidAnotherAvailability.Pending,
@@ -98,6 +103,7 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
 
                 if (!Exact(combat, CombatTraitsGuid, "CombatTrait") ||
                     !Exact(race, RaceTraitsGuid, "RacialTrait") ||
+                    !Exact(equipment, EquipmentTraitsGuid, "EquipmentTrait") ||
                     !Exact(first, FirstTraitGuid, "TraitsSelection") ||
                     !Exact(second, SecondTraitGuid, "TraitSelection2Feature") ||
                     !Exact(adopted, AdoptedGuid, "AdoptedTraitSelection") ||
@@ -146,10 +152,24 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                         "favored-class-race-membership", null);
                 if (!Contains(first.AllFeatures, combat) ||
                     !Contains(first.AllFeatures, race) ||
+                    !Contains(first.AllFeatures, equipment) ||
                     !Contains(second.AllFeatures, combat) ||
-                    !Contains(second.AllFeatures, race))
+                    !Contains(second.AllFeatures, race) ||
+                    !Contains(second.AllFeatures, equipment))
                     return Result(OptionalAidAnotherAvailability.Blocked,
                         "favored-class-top-level-routes", null);
+                BlueprintFeatureSelection[] heirloomChoices =
+                    (equipment.AllFeatures ?? new BlueprintFeature[0])
+                    .OfType<BlueprintFeatureSelection>().ToArray();
+                if (equipment.Groups == null ||
+                    !equipment.Groups.Contains(FeatureGroup.Trait) ||
+                    !equipment.HideInCharacterSheetAndLevelUp ||
+                    heirloomChoices.Length < 20 || heirloomChoices.Any(value =>
+                        value.AllFeatures == null ||
+                        value.AllFeatures.Length != 3 || value.Groups == null ||
+                        !value.Groups.Contains(FeatureGroup.Trait)))
+                    return Result(OptionalAidAnotherAvailability.Blocked,
+                        "favored-class-equipment-traits-structure", null);
                 BlueprintFeatureSelection[] additionalRoutes =
                     (additional.ComponentsArray ?? new BlueprintComponent[0])
                     .Where(value => value != null && string.Equals(
@@ -174,6 +194,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                     ";enable_traits=" + traitsEnabled +
                     ";combat=" + combat.AssetGuid +
                     ";race=" + race.AssetGuid +
+                    ";equipment=" + equipment.AssetGuid +
+                    ";heirloomChoices=" + heirloomChoices.Length +
                     ";helpful=" + helpful.AssetGuid +
                     ";top1=" + first.AssetGuid +
                     ";top2=" + second.AssetGuid +
@@ -182,7 +204,7 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                         adopted.IgnorePrerequisites;
                 return Result(OptionalAidAnotherAvailability.Compatible,
                     string.Empty, new FavoredClassTraitContract(assembly, load,
-                        traitsEnabled, combat, race, first, second, adopted,
+                        traitsEnabled, combat, race, equipment, first, second, adopted,
                         additional, helpful, fingerprint));
             }
             catch (Exception exception)

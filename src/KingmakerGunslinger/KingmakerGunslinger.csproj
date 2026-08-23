@@ -74,7 +74,13 @@
     <Compile Include="EasternWeapons\EasternWeaponCategoryRuntime.cs" />
     <Compile Include="EasternWeapons\EasternWeaponProficiencyRuntime.cs" />
     <Compile Include="EasternWeapons\EasternWeaponSelectorPublication.cs" />
+    <Compile Include="EasternWeapons\EasternWeaponMartialPublicationPolicy.cs" />
+    <Compile Include="EasternWeapons\EasternWeaponMartialPublication.cs" />
+    <Compile Include="EasternWeapons\EasternWeaponLatePublicationCoordinator.cs" />
+    <Compile Include="EasternWeapons\HeirloomNodachiEffects.cs" />
+    <Compile Include="EasternWeapons\TweakOrTreatHeirloomResolver.cs" />
     <Compile Include="Blueprints\EasternWeaponBlueprints.cs" />
+    <Compile Include="Blueprints\HeirloomNodachiBlueprints.cs" />
     <Compile Include="Blueprints\EasternWeaponCampaignBlueprints.cs" />
     <Compile Include="Blueprints\EasternWeaponNamedBlueprints.cs" />
     <Compile Include="Assets\ElvenBranchedSpearAssetRuntime.cs" />

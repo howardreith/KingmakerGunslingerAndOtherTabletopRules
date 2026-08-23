@@ -25,11 +25,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             JObject manifest = JObject.Parse(Read("blueprints", "blueprints.json"));
             JToken[] entries = manifest["entries"].ToArray();
-            Assertions.Equal(1623, entries.Length,
-                "Bodyguard milestone blueprint ledger count changed.");
-            Assertions.Equal(1622, entries.Count(value => string.Equals(
+            Assertions.Equal(1628, entries.Length,
+                "Current blueprint ledger count changed.");
+            Assertions.Equal(1627, entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
-                "Bodyguard milestone active identity count changed.");
+                "Current active identity count changed.");
             Assertions.Equal(entries.Length, entries.Select(value =>
                 (string)value["symbol"]).Distinct(StringComparer.Ordinal).Count(),
                 "Blueprint symbols are not globally unique.");

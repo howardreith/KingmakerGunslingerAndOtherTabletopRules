@@ -20,6 +20,7 @@ using KingmakerGunslinger.AidAnotherCompatibility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.BodyguardFeats;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.EasternWeapons;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -78,6 +79,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             public string HarmonyContract { get; set; }
             [JsonProperty("fixtureCleaned", Order = 12)]
             public bool FixtureCleaned { get; set; }
+            [JsonProperty("easternLatePublication", Order = 13)]
+            public string EasternLatePublication { get; set; }
+            [JsonProperty("equipmentTraits", Order = 14)]
+            public string EquipmentTraits { get; set; }
+            [JsonProperty("tweakOrTreatFingerprint", Order = 15)]
+            public string TweakOrTreatFingerprint { get; set; }
+            [JsonProperty("heirloomNodachiPublication", Order = 16)]
+            public string HeirloomNodachiPublication { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -105,6 +114,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value => string.Equals(value.GetName().Name,
                     FavoredClassTraitResolver.AssemblyName,
                     StringComparison.Ordinal));
+            bool tweakLoaded = AppDomain.CurrentDomain.GetAssemblies().Any(
+                value => string.Equals(value.GetName().Name,
+                    TweakOrTreatHeirloomResolver.AssemblyName,
+                    StringComparison.Ordinal));
+            EasternWeaponMartialPublication martial =
+                EasternWeaponLatePublicationCoordinator.Publication;
+            TweakOrTreatHeirloomContract tweak =
+                EasternWeaponLatePublicationCoordinator.TweakOrTreatContract;
+            EasternWeaponBlueprintSet eastern =
+                BlueprintBootstrap.EasternWeapons;
+            int nodachiNative = BlueprintBootstrap.Library == null ? -1 :
+                EasternWeaponMartialPublication.CountNodachiOnNative(
+                    BlueprintBootstrap.Library);
 
             var evidence = new Evidence {
                 CotwStatus = status.CotwStatus,
@@ -121,8 +143,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .PublicationEvidence,
                 GrantValues = new GrantEvidence[0],
                 HarmonyContract = DescribeHarmony(context, cotw),
-                FixtureCleaned = true
+                FixtureCleaned = true,
+                EasternLatePublication = "attempted=" +
+                    EasternWeaponLatePublicationCoordinator.Attempted +
+                    ";published=" +
+                    EasternWeaponLatePublicationCoordinator.Published +
+                    ";earlyNodachi=" +
+                    EasternWeaponLatePublicationCoordinator.EarlyNodachiCount +
+                    ";nativeNodachi=" + nodachiNative + ";broadFacts=" +
+                    (martial == null ? 0 : martial.BroadFacts.Length) +
+                    ";failedCheck=" +
+                    EasternWeaponLatePublicationCoordinator.FailedCheck,
+                EquipmentTraits = DescribeEquipment(favored),
+                TweakOrTreatFingerprint = tweak == null ? string.Empty :
+                    tweak.Fingerprint,
+                HeirloomNodachiPublication = "published=" +
+                    EasternWeaponLatePublicationCoordinator.HeirloomPublished +
+                    ";count=" + CountHeirloom(favored, eastern) +
+                    ";failedCheck=" +
+                    EasternWeaponLatePublicationCoordinator
+                        .HeirloomFailedCheck
             };
+
+            Add(assertions, "eastern-late-martial-publication",
+                "first-update publication observed zero early Nodachi and leaves exactly one on every broad martial fact",
+                evidence.EasternLatePublication,
+                EasternWeaponLatePublicationCoordinator.Attempted &&
+                    EasternWeaponLatePublicationCoordinator.Published &&
+                    EasternWeaponLatePublicationCoordinator.EarlyNodachiCount ==
+                        0 && nodachiNative == 1 && martial != null &&
+                    martial.BroadFacts.Length > 0 &&
+                    string.IsNullOrEmpty(
+                        EasternWeaponLatePublicationCoordinator.FailedCheck),
+                "live native AddProficiencies arrays and late publication transaction");
 
             Add(assertions, "aid-another-kmg-identity",
                 "registered KMG combat Helpful identity",
@@ -157,6 +210,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ObserveCompatible(context, cotw, favored, bodyguard, evidence,
                     assertions, diagnostics);
+            }
+
+            if (favored != null)
+            {
+                bool shouldPublish = favored.TraitsEnabled &&
+                    context.FeatureModules.Active.EasternWeapons;
+                Add(assertions, "favored-full-trait-construction",
+                    "Combat, Race, Equipment, two top-level Trait choices, Additional Traits, and halfling Helpful are fully constructed",
+                    evidence.EquipmentTraits,
+                    favored.EquipmentTraits.AllFeatures != null &&
+                    favored.EquipmentTraits.AllFeatures.Length >= 20 &&
+                    favored.FirstTrait.AllFeatures.Count(value =>
+                        ReferenceEquals(value, favored.EquipmentTraits)) == 1 &&
+                    favored.SecondTrait.AllFeatures.Count(value =>
+                        ReferenceEquals(value, favored.EquipmentTraits)) == 1 &&
+                    favored.RaceTraits.AllFeatures.Count(value =>
+                        ReferenceEquals(value,
+                            favored.HalflingHelpful)) == 1,
+                    "exact installed ZFavoredClass static blueprint graph");
+                Add(assertions, "heirloom-nodachi-publication",
+                    shouldPublish ?
+                        "one KMG Nodachi choice in Equipment Traits" :
+                        "no new Nodachi choice while traits/module publication is disabled",
+                    evidence.HeirloomNodachiPublication,
+                    EasternWeaponLatePublicationCoordinator
+                        .HeirloomPublished == shouldPublish &&
+                    CountHeirloom(favored, eastern) ==
+                        (shouldPublish ? 1 : 0),
+                    "live foreign Equipment Trait array by reference and AssetGuid");
+                Add(assertions, "tweak-or-treat-heirloom-contract",
+                    tweakLoaded ?
+                        "Tweak or Treat Heirloom reconciliation completed before KMG append" :
+                        "Tweak or Treat absent without blocking Favored/KMG",
+                    "loaded=" + tweakLoaded + ";" +
+                        evidence.TweakOrTreatFingerprint,
+                    tweakLoaded ? tweak != null &&
+                        tweak.TransformedRacialChoices == 5 : tweak == null,
+                    "live UMM assembly and transformed Favored Equipment Trait prerequisites");
             }
 
             Add(assertions, "aid-another-save-free",
@@ -447,6 +538,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owned[0].patch.DeclaringType.FullName) +
                 ";exactConfig=" + (contract != null && ReferenceEquals(
                     AidAnotherGrantRuntime.CanonicalContract, contract));
+        }
+
+        private static string DescribeEquipment(
+            FavoredClassTraitContract favored)
+        {
+            if (favored == null) return "favored=<absent>";
+            return "equipmentGuid=" + favored.EquipmentTraits.AssetGuid +
+                ";equipmentChoices=" +
+                (favored.EquipmentTraits.AllFeatures == null ? 0 :
+                    favored.EquipmentTraits.AllFeatures.Length) +
+                ";top1Equipment=" + favored.FirstTrait.AllFeatures.Count(
+                    value => ReferenceEquals(value,
+                        favored.EquipmentTraits)) + ";top2Equipment=" +
+                favored.SecondTrait.AllFeatures.Count(value =>
+                    ReferenceEquals(value, favored.EquipmentTraits)) +
+                ";combatChoices=" + (favored.CombatTraits.AllFeatures == null ?
+                    0 : favored.CombatTraits.AllFeatures.Length) +
+                ";raceChoices=" + (favored.RaceTraits.AllFeatures == null ? 0 :
+                    favored.RaceTraits.AllFeatures.Length) +
+                ";traitsEnabled=" + favored.TraitsEnabled;
+        }
+
+        private static int CountHeirloom(FavoredClassTraitContract favored,
+            EasternWeaponBlueprintSet eastern)
+        {
+            if (favored == null || eastern == null ||
+                eastern.HeirloomNodachi == null ||
+                favored.EquipmentTraits.AllFeatures == null) return 0;
+            return favored.EquipmentTraits.AllFeatures.Count(value =>
+                ReferenceEquals(value,
+                    eastern.HeirloomNodachi.Selection) || value != null &&
+                string.Equals(value.AssetGuid,
+                    eastern.HeirloomNodachi.Selection.AssetGuid,
+                    StringComparison.Ordinal));
         }
 
         private static string Hash(string path)

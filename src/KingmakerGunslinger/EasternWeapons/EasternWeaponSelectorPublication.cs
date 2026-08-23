@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Enums;
-using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.CustomWeapons;
 
@@ -20,8 +18,6 @@ namespace KingmakerGunslinger.EasternWeapons
         private readonly BlueprintFeature[] _ewpAllBefore;
         private readonly BlueprintFeature[] _finesseFeaturesBefore;
         private readonly BlueprintFeature[] _finesseAllBefore;
-        private readonly Dictionary<BlueprintFeature, BlueprintComponent[]>
-            _martialBefore;
         private bool _rolledBack;
 
         private EasternWeaponSelectorPublication(
@@ -34,8 +30,6 @@ namespace KingmakerGunslinger.EasternWeapons
             _ewpAllBefore = ewpSelection.AllFeatures;
             _finesseFeaturesBefore = finesseSelection.Features;
             _finesseAllBefore = finesseSelection.AllFeatures;
-            _martialBefore = new Dictionary<BlueprintFeature,
-                BlueprintComponent[]>();
         }
 
         internal static EasternWeaponSelectorPublication Publish(
@@ -69,19 +63,10 @@ namespace KingmakerGunslinger.EasternWeapons
                     Blueprints.EasternWeaponBlueprints
                         .ElvenBranchedSpearProficiencyGuid,
                     "KMG Elven Branched Spear proficiency ordering anchor");
-            BlueprintFeature nativeMartial = BlueprintLibraryLookup
-                .RequireExact<BlueprintFeature>(library,
-                    Blueprints.EasternWeaponBlueprints
-                        .NativeMartialWeaponProficiencyGuid,
-                    "native Martial Weapon Proficiency feature");
-
             var publication = new EasternWeaponSelectorPublication(
                 ewpSelection, finesseSelection);
             try
             {
-                BlueprintFeature[] broadMartial = publication.PublishMartial(
-                    library, nativeMartial);
-                EasternWeaponProficiencyRuntime.Configure(broadMartial);
                 if (publishSelectors)
                 {
                     ewpSelection.Features = Remove(ewpSelection.Features,
@@ -113,7 +98,7 @@ namespace KingmakerGunslinger.EasternWeapons
                             value.Presentation.Acronym)).ToArray(),
                     publishSelectors);
                 publication.Validate(wakizashiEwp, katanaEwp,
-                    wakizashiFinesse, curveAnchor, spearAnchor, broadMartial,
+                    wakizashiFinesse, curveAnchor, spearAnchor,
                     publishSelectors);
                 return publication;
             }
@@ -131,86 +116,14 @@ namespace KingmakerGunslinger.EasternWeapons
             _ewpSelection.AllFeatures = _ewpAllBefore;
             _finesseSelection.Features = _finesseFeaturesBefore;
             _finesseSelection.AllFeatures = _finesseAllBefore;
-            foreach (KeyValuePair<BlueprintFeature, BlueprintComponent[]> entry in
-                _martialBefore) entry.Key.ComponentsArray = entry.Value;
-            EasternWeaponProficiencyRuntime.Rollback();
             CustomWeaponSelectorRuntime.Rollback(SourceKey);
             _rolledBack = true;
-        }
-
-        private BlueprintFeature[] PublishMartial(
-            LibraryScriptableObject library, BlueprintFeature nativeMartial)
-        {
-            AddProficiencies[] nativeGrants = (nativeMartial.ComponentsArray ??
-                Array.Empty<BlueprintComponent>()).OfType<AddProficiencies>()
-                .Where(value => (value.WeaponProficiencies ??
-                    Array.Empty<WeaponCategory>()).Distinct().Count() >= 20)
-                .OrderByDescending(value => (value.WeaponProficiencies ??
-                    Array.Empty<WeaponCategory>()).Distinct().Count())
-                .ToArray();
-            if (nativeGrants.Length == 0)
-                throw new InvalidOperationException(
-                    "Native Martial Weapon Proficiency has no broad weapon grant.");
-            int largestGrant = (nativeGrants[0].WeaponProficiencies ??
-                Array.Empty<WeaponCategory>()).Distinct().Count();
-            AddProficiencies[] largest = nativeGrants.Where(value =>
-                (value.WeaponProficiencies ?? Array.Empty<WeaponCategory>())
-                    .Distinct().Count() == largestGrant).ToArray();
-            if (largest.Length != 1)
-                throw new InvalidOperationException(
-                    "Native Martial Weapon Proficiency broad grant is ambiguous.");
-            AddProficiencies nativeGrant = largest[0];
-            WeaponCategory[] authority = (nativeGrant.WeaponProficiencies ??
-                Array.Empty<WeaponCategory>()).Distinct().ToArray();
-            if (authority.Length < 20)
-                throw new InvalidOperationException(
-                    "Native Martial Weapon Proficiency category authority changed.");
-            WeaponCategory nodachi = EasternWeaponCategoryRuntime.Category(
-                EasternWeaponFamily.Nodachi);
-            var broad = new List<BlueprintFeature>();
-            foreach (BlueprintFeature feature in library.GetAllBlueprints()
-                .OfType<BlueprintFeature>().Where(value => value != null))
-            {
-                BlueprintComponent[] components = feature.ComponentsArray ??
-                    Array.Empty<BlueprintComponent>();
-                AddProficiencies[] grants = components.OfType<AddProficiencies>()
-                    .Where(value => authority.All(category =>
-                        (value.WeaponProficiencies ??
-                            Array.Empty<WeaponCategory>()).Contains(category)))
-                    .ToArray();
-                if (grants.Length == 0) continue;
-                broad.Add(feature);
-                BlueprintComponent[] next =
-                    (BlueprintComponent[])components.Clone();
-                bool changed = false;
-                foreach (AddProficiencies grant in grants)
-                {
-                    WeaponCategory[] categories = grant.WeaponProficiencies ??
-                        Array.Empty<WeaponCategory>();
-                    if (categories.Contains(nodachi)) continue;
-                    var replacement = (AddProficiencies)
-                        UnityEngine.Object.Instantiate(grant);
-                    replacement.WeaponProficiencies = categories
-                        .Concat(new[] { nodachi }).ToArray();
-                    next[Array.IndexOf(components, grant)] = replacement;
-                    changed = true;
-                }
-                if (changed)
-                {
-                    _martialBefore.Add(feature, components);
-                    feature.ComponentsArray = next;
-                }
-            }
-            if (!broad.Contains(nativeMartial))
-                throw new InvalidOperationException(
-                    "Native Martial Weapon Proficiency was not classified as broad.");
-            return broad.Distinct().ToArray();
         }
 
         private void Validate(BlueprintFeature wakizashiEwp,
             BlueprintFeature katanaEwp, BlueprintFeature wakizashiFinesse,
             BlueprintFeature curveAnchor, BlueprintFeature spearAnchor,
-            BlueprintFeature[] broadMartial, bool publishSelectors)
+            bool publishSelectors)
         {
             int expected = publishSelectors ? 1 : 0;
             if (Count(_ewpSelection.Features, wakizashiEwp) != 0 ||
@@ -234,16 +147,6 @@ namespace KingmakerGunslinger.EasternWeapons
                     katanaEwp)))
                 throw new InvalidOperationException(
                     "Eastern proficiencies are not in the merged native order.");
-            WeaponCategory nodachi = EasternWeaponCategoryRuntime.Category(
-                EasternWeaponFamily.Nodachi);
-            if (broadMartial.Length == 0 || broadMartial.Any(feature =>
-                !(feature.ComponentsArray ?? Array.Empty<BlueprintComponent>())
-                    .OfType<AddProficiencies>().Any(grant =>
-                        (grant.WeaponProficiencies ??
-                            Array.Empty<WeaponCategory>()).Count(value =>
-                                value.Equals(nodachi)) == 1)))
-                throw new InvalidOperationException(
-                    "Broad martial grants did not receive exactly one Nodachi category.");
         }
 
         private static BlueprintFeature[] InsertOrderedAfter(
