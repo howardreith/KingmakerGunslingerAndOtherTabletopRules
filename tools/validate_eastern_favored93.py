@@ -142,7 +142,7 @@ def validate(root: Path) -> None:
         "lateMartialPublicationRequired": True,
         "favoredClassTraitsMustComplete": True,
         "tweakOrTreatHeirloomMustComplete": True,
-        "runtimeQualificationPending": True,
+        "runtimeQualificationPending": False,
     }
     for key, value in expected_static.items():
         if contract.get(key) != value:

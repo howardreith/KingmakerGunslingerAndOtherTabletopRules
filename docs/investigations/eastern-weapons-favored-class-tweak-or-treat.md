@@ -189,10 +189,128 @@ Class as compatible. This rejects the exact partial-initialization failure.
 
 ## Runtime qualification
 
-Guarded profile run IDs, package identity, exact pre/post restoration hashes,
-and mechanical outcomes are appended during 0.0.93 qualification. Runtime
-proof must include the zero-before/one-after Nodachi array observation,
-`Enabling Traits`, complete top-level/Combat/Race/Equipment/Additional graph,
-one Helpful per correct category, Tweak or Treat's completed racial Heirloom
-transformations, one KMG Nodachi Heirloom choice where eligible, and the shared
-ordinary Aid Another/Bodyguard grant matrix.
+Qualification used the immutable 0.0.93 candidate built from
+`01d7932ab20c3d8837aaa05c4a5ccd1a5eed55c3`:
+
+- package: `KingmakerGunslinger-0.0.93-bodyguard-in-harms-way.zip`;
+- size: 22,533,452 bytes;
+- package SHA-256:
+  `0f9d12f16c9e95848ecb54b74b3d57342e41c6915581cf06ab06f8b92118df85`;
+- DLL SHA-256:
+  `b9d2e035e9231e15d3d0b07d13f04935a665aba3682ac6e37c4abf215de0f4eb`;
+- DLL MVID: `3a6f2729-3d96-4cc0-bf93-182d57f7cc1f`;
+- blueprint ledger SHA-256:
+  `87aa30180a51f22e4095af4756844c47612546570748d265eb950d00545b4f25`;
+- build-local manifest SHA-256:
+  `eff6d656fb050491ffbfff2bb0e6b280348fb35c19fd2f5d04ec98eddd92160c`.
+
+The pre-change Release baseline was 1,201 passing tests. The final Release
+suite passed 1,211 tests. Repository validation, blueprint/manifest validation,
+the clean Release build, strict package validation, deployment tests, and all
+136 runtime-preflight assertions passed. The exact package was installed in the
+live UMM `KingmakerGunslinger` folder through the guarded deployment flow.
+
+### Guarded profile results
+
+All launches used Steam App ID 640820 and save-free request-local fixtures
+unless explicitly identified as the final working-save smoke. Each profile
+transaction reported `restorationVerified=True`. The canonical serialized
+original Mods manifest contained 922 entries and had SHA-256
+`8d62e9ec2a7d496b5319c9eb547d7739c987bed0ddf4ec32e61ab86910e9768a`;
+this hashes the exact compact JSON manifest used by the transaction, including
+each file's length, timestamp, and SHA-256.
+
+| Profile | Transaction | Guarded PASS evidence |
+| --- | --- | --- |
+| A: KMG standalone | `compat-20260823T045511Z-20dcb55c0104` | observer `20260823T0455257976466Z-22e3c5cbaefd4ecdbf6f20891f1c0bfd`; combat `20260823T0456325136638Z-21b91cbc5b6a494397b71d4c67562fcc` |
+| B: KMG + CotW | `compat-20260823T045750Z-cd7c32d9173e` | observer `20260823T0458100339328Z-eb2cea31ed384677abb35322ab3ad1cc`; combat `20260823T0459548950689Z-404c74d71f724b1daaec4085812b26af` |
+| C: CotW + Favored, traits enabled | `compat-20260823T050153Z-2f0d791d95bd` | load `20260823T0502142194889Z-b02227a157284b969a5b4a15c829d480`; observer `20260823T0504004346135Z-f5c603db795a40a5a4f42607e1a9563a`; combat `20260823T0505482916021Z-f7a8f1556f5747079f8a1da4d6d6cfdb` |
+| D: CotW + Favored, traits disabled | `compat-20260823T050747Z-b5b8c2188522` | observer `20260823T0508082675759Z-1262afee36394c7ab260c1896cd06e0d`; combat `20260823T0510104936722Z-493918c23b0348cfa4d9046603654ab4` |
+| E: CotW + Favored + Tweak or Treat + Races Unleashed | `compat-20260823T051229Z-71ddbd5ee1ab` | load `20260823T0513043172983Z-4176e91ee9894ef6b35bf7b8927307ca`; observer `20260823T0515151364408Z-0cfca441cbe741cb8266b42e015ab040`; combat `20260823T0517233346444Z-dedfd252ee2a44ee8006fa7d0074ae5d` |
+| F: Eastern Weapons disabled + Favored | `compat-20260823T051946Z-416b1eee0092` | module `20260823T0520127052117Z-9196671155e54a48810c55b4b7ead707`; observer `20260823T0522198334264Z-5022490891984321a60078e2fc4a67d2`; combat `20260823T0524076796428Z-70c6e08f40f543b1942c5bf79a0c1b7c` |
+| G: Bodyguard disabled + Favored | `compat-20260823T052609Z-6d39e7e9fe11` | module `20260823T0526297693777Z-7f55759ad31a4766bf21d096956f7d1d`; observer `20260823T0528172953006Z-fad949e272f546f1be7901322196f681`; disabled combat `20260823T0530039096065Z-da5c397969994663ab39f00992cb50e1` |
+
+An additional exact high-risk startup run
+`20260823T0540141173227Z-4561ef57997e4aeba104e5312e5e800d`
+under restored transaction `compat-20260823T053947Z-ca841bc74771` passed.
+Its startup log contains `Enabling Traits`, Tweak or Treat's
+`Favored class mod found`, and a successful Master Chymist data load. It has no
+`Missing AssetId` occurrence. The four Favored Class `KeyNotFoundException`
+messages are its pre-existing handled failures for absent unrelated custom
+targets (Charmed Life, Panache, Arcane Archer, and Deadeye Devotee); none comes
+from `Traits.createEquipmentTraits` or `TweakOrTreat.HeirloomWeapon.load`, and
+trait construction continues immediately afterward.
+
+### Runtime contracts proven
+
+The exact live ordering was CotW postfix, KMG postfix, two Races Unleashed
+postfixes, two Tweak or Treat postfixes, then Favored Class. Runtime evidence
+recorded zero Nodachi entries while foreign builders ran, followed by exactly
+one Nodachi entry in every verified broad-Martial grant on the first UMM update.
+The late pass was idempotent. Profile F retained this save-compatibility grant
+while suppressing Eastern selector content and the optional Nodachi Heirloom
+choice.
+
+With traits enabled, Favored Class produced both top-level Trait selections,
+Combat Traits (15 choices after KMG), Race Traits (22), Equipment Traits (50
+after KMG), Additional Traits, Adopted, and exactly one foreign halfling
+Helpful. KMG combat Helpful appeared exactly once in Combat Traits. Both
+top-level choices referenced Equipment Traits once. KMG appended exactly one
+Heirloom Weapon: Nodachi choice after the 49 foreign choices. In the high-risk
+profile, Tweak or Treat had already transformed all five intended racial
+Heirloom choices: zero foreign race prerequisites remained and five exact native
+feature prerequisites were present. No Tweak or Treat content was duplicated or
+removed.
+
+The canonical CotW rank and both ordinary buffs returned the same live matrix:
+
+| Helper ownership | Ordinary attack / ordinary AC / canonical rank | Bodyguard |
+| --- | --- | --- |
+| none | `2 / 2 / 2` | `+2` |
+| combat Helpful | `3 / 3 / 3` | `+3` |
+| halfling Helpful | `4 / 4 / 4` | `+4` (same resolver contract) |
+| both Helpful variants | `4 / 4 / 4` | `+4` (same resolver contract) |
+| Benevolent-style contributor | `4 / 4 / 4` | `+4` |
+| combat Helpful + Benevolent | `5 / 5 / 5` | `+5` |
+| halfling Helpful + Benevolent | `6 / 6 / 6` | `+6` (same resolver contract) |
+| both Helpful + Benevolent | `6 / 6 / 6` | `+6` (same resolver contract) |
+
+The disposable combat fixture directly exercised Bodyguard `+2`, combat
+Helpful `+3`, Benevolent `+4`, combat Helpful plus Benevolent `+5`, and two
+protectors stacking `+2 + +3 = +5`. In each case AoO expenditure remained one
+per attempt and the Aid d20/attack bonus did not change. Failed Aid spent the
+AoO, contributed zero, and created no AC source. In Harm's Way after `+3` and
+`+5` spent one native immediate action, moved 11 HP damage plus the saving-throw
+rider to the interceptor, left the original ally at zero loss, and completed
+one frame with no duplicates or leaks. Existing Shield Other isolation passed.
+Profile G published neither Bodyguard feat, spent no AoO or immediate action,
+created no AC source/frame/interception/log, delivered the original attack to
+the original target, and left Shield Other operational.
+
+Profile D proved that `enable_traits=false` suppresses KMG Helpful and Nodachi
+Heirloom publication while stable identities and request-local existing-owner
+ordinary/Bodyguard grants still resolve. Profile B proved CotW-only contributor
+support; profile A proved the standalone `+2` fallback and unchanged In Harm's
+Way behavior.
+
+### Human-visible acceptance boundary
+
+Runtime graph evidence suitable for a supervised new-character check is in
+`20260823T0533311839250Z-0ef9a5073b254f5ab88474e65a307b79`.
+It resolves the native Fighter level-one bonus-feat selection
+`41c8486641f7d6d4283ca9dae4147a9f`; the native general feat selection is
+`247a4068296e8be42890143f451b4b45`. The Favored observer independently proves
+both top-level Trait choices (`34e2812e0f8241bb9e1bee5240c9eb2e` and
+`5253dcee502a49249bdd8bfdfe525e9f`) and their complete category routes. Thus a
+supervised Human Fighter check should enumerate five independent choice rows:
+normal feat, Human bonus feat, Fighter bonus feat, Trait one, and Trait two;
+Combat Traits must contain one Helpful. This is structural/mechanical evidence,
+not a claim of screenshot-based visual acceptance.
+
+Finally, guarded `working-save-smoke` run
+`20260823T0544417890158Z-53e94003d66848b48930aaa9e7624dc7`
+passed against the exact `KMG_AUTOMATION_WORKING` descriptor. It correlated one
+catalog object through the native load path, observed a stable post-load
+fingerprint, and recorded `saveWritingApiObserved=false`; the previously seen
+native `Player.PostLoad` failure did not reproduce. `KMG_AUTOMATION_BASELINE`
+was neither selected nor mutated.

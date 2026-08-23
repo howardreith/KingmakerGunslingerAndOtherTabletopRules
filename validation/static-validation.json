@@ -134,6 +134,6 @@
     "lateMartialPublicationRequired": true,
     "favoredClassTraitsMustComplete": true,
     "tweakOrTreatHeirloomMustComplete": true,
-    "runtimeQualificationPending": true
+    "runtimeQualificationPending": false
   }
 }

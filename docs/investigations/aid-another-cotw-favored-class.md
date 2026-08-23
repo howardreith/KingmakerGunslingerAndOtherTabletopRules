@@ -200,6 +200,10 @@ Rejected approaches:
 
 Exact installed CotW 1.14.4c-2.1, Favored Class 1.3.1, Tweak or Treat 1.1.0,
 and Races Unleashed 1.0.11 artifacts are available to the guarded compatibility
-profile machinery. Final pass/fail results and restoration hashes are recorded
-with the immutable 0.0.93 runtime candidate rather than inferred from source or
-build success.
+profile machinery. The immutable 0.0.93 candidate passed standalone, CotW-only,
+Favored-traits-enabled, Favored-traits-disabled, highest-risk Tweak or Treat,
+Eastern-module-off, and Bodyguard-module-off profiles. Exact run IDs, restored
+manifest identity, the ordinary `2/3/4/4/5/6` matrix, variable Bodyguard
+contributions, In Harm's Way delivery, and Shield Other isolation are recorded
+in `eastern-weapons-favored-class-tweak-or-treat.md`. These claims derive from
+live rule/config/frame evidence, not build success or tooltip text.
