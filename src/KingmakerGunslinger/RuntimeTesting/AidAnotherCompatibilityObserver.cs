@@ -18,6 +18,7 @@ using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using KingmakerGunslinger.AidAnotherCompatibility;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.BodyguardFeats;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -44,6 +45,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             public int AttackBonus { get; set; }
             [JsonProperty("armorClass", Order = 4)]
             public int ArmorClass { get; set; }
+        }
+
+        private sealed class AttackEvidence
+        {
+            internal int AttackBonus { get; set; }
+            internal int ArmorClass { get; set; }
         }
 
         private sealed class Evidence
@@ -334,31 +341,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             int rank = cotw.Configuration.GetValue(context);
             ItemEntityWeapon weapon = fixture.ProtectorTwo.Body.PrimaryHand
                 .Weapon;
-            int attackBefore = AttackBonus(fixture.ProtectorTwo,
-                fixture.Attacker, weapon);
+            AttackEvidence before = ResolveMeleeAttack(fixture.ProtectorTwo,
+                fixture.Target, weapon);
             Buff attackBuff = fixture.ProtectorTwo.Descriptor.Buffs.AddBuff(
                 cotw.Buffs[0], context, null);
             if (attackBuff == null) throw new InvalidOperationException(
                 "CotW attack Aid Another buff was rejected.");
-            attackBuff.Context.RecalculateRanks();
-            int attackAfter;
-            try { attackAfter = AttackBonus(fixture.ProtectorTwo,
-                fixture.Attacker, weapon); }
-            finally { attackBuff.Remove(); }
 
-            int armorBefore = ArmorClass(fixture.Target, fixture.Attacker);
             var armorContext = new MechanicsContext(helper, helper.Descriptor,
                 cotw.OrdinaryAbility, null, new TargetWrapper(fixture.Target));
             Buff armorBuff = fixture.Target.Descriptor.Buffs.AddBuff(
                 cotw.Buffs[1], armorContext, null);
             if (armorBuff == null) throw new InvalidOperationException(
                 "CotW AC Aid Another buff was rejected.");
-            armorBuff.Context.RecalculateRanks();
-            int armorAfter;
-            try { armorAfter = ArmorClass(fixture.Target, fixture.Attacker); }
-            finally { armorBuff.Remove(); }
-            int attackGrant = attackAfter - attackBefore;
-            int armorGrant = armorAfter - armorBefore;
+            AttackEvidence after;
+            try
+            {
+                after = ResolveMeleeAttack(fixture.ProtectorTwo,
+                    fixture.Target, weapon);
+            }
+            finally
+            {
+                if (fixture.ProtectorTwo.Descriptor.Buffs.RawFacts.Contains(
+                    attackBuff)) attackBuff.Remove();
+                if (fixture.Target.Descriptor.Buffs.RawFacts.Contains(
+                    armorBuff)) armorBuff.Remove();
+            }
+            int attackGrant = after.AttackBonus - before.AttackBonus;
+            int armorGrant = after.ArmorClass - before.ArmorClass;
             if (rank != expected || attackGrant != expected ||
                 armorGrant != expected)
                 throw new InvalidOperationException("CotW Aid Another case '" +
@@ -369,20 +379,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AttackBonus = attackGrant, ArmorClass = armorGrant };
         }
 
-        private static int AttackBonus(UnitEntityData initiator,
-            UnitEntityData target, ItemEntityWeapon weapon)
+        private static AttackEvidence ResolveMeleeAttack(
+            UnitEntityData initiator, UnitEntityData target,
+            ItemEntityWeapon weapon)
         {
-            var rule = new RuleCalculateAttackBonus(initiator, target, weapon,
-                0);
-            Rulebook.Trigger(rule);
-            return rule.Result;
-        }
-
-        private static int ArmorClass(UnitEntityData defender,
-            UnitEntityData attacker)
-        {
-            return Rulebook.Trigger(new RuleCalculateAC(attacker, defender,
-                AttackType.Melee)).TargetAC;
+            var attack = new RuleAttackWithWeapon(initiator, target, weapon,
+                -1000);
+            string control;
+            BodyguardQualificationControl.Arm(2);
+            try { Rulebook.Trigger(attack); }
+            finally { control = BodyguardQualificationControl
+                .DescribeAndClear(); }
+            if (attack.AttackRoll == null || !control.Contains(
+                    "incomingConsumed=1") || attack.AttackRoll.IsHit)
+                throw new InvalidOperationException(
+                    "CotW Aid Another probe did not resolve as one forced-miss " +
+                    "native melee attack: " + control + ".");
+            return new AttackEvidence {
+                AttackBonus = attack.AttackRoll.AttackBonus,
+                ArmorClass = attack.AttackRoll.TargetAC
+            };
         }
 
         private static int Count(IEnumerable<BlueprintFeature> values,

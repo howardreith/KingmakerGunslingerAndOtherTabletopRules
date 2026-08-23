@@ -291,8 +291,10 @@ namespace KingmakerGunslinger.DomainTests
                 "combat-helpful-plus-benevolent",
                 "dual-helpful-plus-benevolent",
                 "AttackTypeAttackBonus and ACBonusAgainstAttacks",
-                "attackBuff.Context.RecalculateRanks()",
-                "armorBuff.Context.RecalculateRanks()",
+                "new RuleAttackWithWeapon(initiator, target, weapon",
+                "AttackBonus = attack.AttackRoll.AttackBonus",
+                "ArmorClass = attack.AttackRoll.TargetAC",
+                "BodyguardQualificationControl.Arm(2)",
                 "fixture.Cleaned" })
                 Assertions.True(observer.Contains(token),
                     "Guarded Aid Another observer lacks: " + token);
