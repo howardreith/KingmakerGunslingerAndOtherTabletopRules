@@ -391,3 +391,230 @@ Reflection/assembly contract tests must validate every readonly target field,
 method signature, event-parent relationship, and delivery setter. Any missing
 contract disables the interception path and emits one diagnostic rather than
 shipping a mechanically partial fallback.
+
+## 0.0.94 human-regression investigation
+
+Date: 2026-08-23
+
+### Source and preserved intake
+
+This investigation continued on `codex/bodyguard-in-harms-way` from the clean,
+remote-equal commit
+`2683b06fedf1eac4cd4fdb97ad6be14fb9c04698`. The pre-change Release suite
+passed 1,211 tests.
+
+The active 0.0.93 human-session log was copied before another Kingmaker launch:
+
+- source evidence directory:
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260823T1250159827166Z-human-in-harms-way-regression`
+- copied file: `output_log-human-0.0.93.txt`
+- size: 676,357 bytes
+- modification time: `2026-08-23T12:31:37.6321241Z`
+- SHA-256:
+  `855CE57C81B5D5A07A1CFAB928C79BE8CED8AEADA54EAC357DDB722FE4A0AEE6`
+
+The relevant confirmed-critical frame is `bodyguard-attack-8`:
+
+- attacker: `007a489e-d797-4555-ab6c-0c27cd6431ee/Kobold`
+- original target:
+  `533a5084-8aa1-4aa0-a8f6-b8eac959368f/VictimTest`
+- protector:
+  `5b6aa62a-e6fb-42c3-ba78-9cd3549505c1/HelpfulDefenderTest`
+- Aid Another: d20 8 + 9 = 17, success
+- canonical grant: halfling Helpful, base 2 + Helpful increment 2 = +4
+- AC: native 13, Bodyguard source +4, final 17
+- incoming attack: natural 20 + 2 against 17, hit
+- terminal KMG record: `stage=immediate-unavailable`, empty arbitration,
+  `swiftBefore=NaN`, `swiftAfter=NaN`, no interceptor
+
+This proves that the observed damage was not caused by a committed redirection
+being restored too early. The 0.0.93 code rejected the only successful
+Bodyguard user before arbitration and never mutated either target. It does not
+prove which input caused that rejection: the old implementation collapsed a
+missing feat, missing marker, mode off, or unavailable native swift action into
+the same empty eligible set and terminal label.
+
+The exact human save was protected as
+`Quick_3_HelpfulDefenderTest.protected-intake.zks` with SHA-256
+`3414D67CB2E5F8C4F18A952D23247DC6DD9D9F5579066EA64CA7FF29E61B8F01`.
+Offline archive inspection found the exact Bodyguard and In Harm's Way facts,
+both activatables enabled/running, and both hidden marker identities in the
+serialized unit. That establishes saved state, not the temporal live state at
+the failing attack. Swift cooldown is not serialized in a form that can prove
+the attack-time native budget.
+
+The stable project identities involved are:
+
+- Bodyguard feat: `b2baa3384b4d4328848cc07933b513be`
+- Use Bodyguard: `ac31a9d5d34140978b7e778dc8d1e226`
+- Bodyguard marker: `a78147a3655f429883ad88e761ff9438`
+- In Harm's Way feat: `e481f30c8b6940e1b596e121443aa01e`
+- Use In Harm's Way: `ca1e74f0e60747209a8b7cf3737243ea`
+- In Harm's Way marker: `57603d0b215e4ac6862bcdf9b5583568`
+
+### Historical and source bisection
+
+Comparisons across the immutable milestones showed:
+
+- 0.0.90 / `1be221ff`: original Bodyguard/In Harm's Way production runtime
+- 0.0.91 / `f3608b12`: AC-breakdown attribution only
+- 0.0.92 / `a736e25e`: variable canonical Aid Another grants only
+- 0.0.93 / `2683b06f`: late Eastern/Favored publication only
+
+The weapon target-redirection and immediate-action implementation did not
+change across those milestones. No source milestone can truthfully be named as
+the first delivery regression. The human failure exercised a pre-existing
+eligibility-observability gap that the earlier fixture had hidden, while the
+AC and compatibility changes merely made that older edge visible in a new
+human scenario.
+
+### Previous fixture discrepancy
+
+The existing fixture did execute a real `RuleAttackWithWeapon`, real damage,
+real rider delivery, and asserted both units' HP. Its delivery evidence was not
+synthetic. However, it directly granted the hidden mode marker, set the shared
+swift cooldown to zero, and used a broad critical-result control. It therefore
+proved the delivery seam only after manufacturing every eligibility gate and
+could pass without proving the player-facing activatable/marker lifecycle or
+an ordinary native confirmation roll.
+
+The repaired fixture now:
+
+- grants the real feats and switches the real activatables on;
+- verifies exact activatable `IsOn`/`IsRunning` and marker agreement;
+- observes every pre-filter gate and the native swift cooldown;
+- drives a main natural 20 and a separate native confirmation d20 through a
+  request-local, exact-`RuleAttackRoll` dice hook;
+- observes the actual `RuleAttackWithWeaponResolve` and `RuleDealDamage`
+  recipients, both units' HP, native riders, completion count, and restoration;
+- contains explicit mode-off and positive-swift-cooldown negative controls.
+
+### Confirmed-critical event contract
+
+Exact installed IL shows that `RuleAttackRoll.OnTrigger` performs the main AC
+calculation and d20, then performs the critical AC calculation and confirmation
+d20 inside the same `RuleAttackRoll`. Confirmation is not a nested hostile
+`RuleAttackRoll`; it must not push another Bodyguard frame or spend another
+AoO. The shared postfix runs only after the main hit, concealment, critical
+threat, and confirmation state are final, and before the enclosing
+`RuleAttackWithWeapon` constructs its damage bundle.
+
+Runtime evidence confirmed this order: one frame and one Bodyguard attempt,
+two AC observations on the same roll, one confirmation consumption, one
+immediate-action spend, then one native critical delivery. The roll target is
+restored at roll pop while the enclosing weapon target remains redirected
+through damage and attack-linked `Did` consumers; the weapon target restores
+at weapon completion. No confirmation child frame exists to pop or corrupt the
+parent.
+
+### Gate repair and player-state synchronization
+
+`InHarmsWayCandidateGate` now receives a complete immutable snapshot before
+filtering. Its stable outcomes distinguish module state, hit state, Bodyguard
+attempt/success, exact feat ownership, activatable ownership and `IsOn`, marker
+presence, activatable/marker divergence, alive/conscious/CanAct, already-used
+interception, delivery contract, native `SwiftAction` cooldown,
+`HasSwiftAction()`, and policy/redirection failures. Runtime diagnostics also
+record turn owner, round, acted state where exposed, party order, all exact
+blueprint GUIDs, and target/delivery observations.
+
+The native action contract remains authoritative. In 2.1.7b,
+`HasSwiftAction()` is exactly the predicate
+`CombatState.Cooldown.SwiftAction <= 0`; successful immediate use adds the
+native six-second quantum and verifies the budget became unavailable. A
+positive cooldown yields `swift-cooldown-active`; a false native predicate at
+zero yields `has-swift-action-false`. No custom round counter was added.
+
+Both reaction activatables now set `DeactivateImmediately = true`. Exact
+activatable IL showed that leaving this false can make `IsOn` false while
+`IsRunning` and the marker persist until a later turn boundary. Immediate
+deactivation keeps player consent and the hidden marker synchronized in RTWP
+and turn-based play. It does not change free activation, off-by-default state,
+cross-combat persistence, or save serialization. Feat ownership never
+substitutes for mode consent.
+
+If an otherwise qualified, mode-on protector has no native immediate action,
+one concise combat-log message now explains that fact. Mode-off attacks remain
+silent.
+
+### Runtime qualification
+
+All results below used Steam App ID 640820 and the guarded request mechanism.
+The source-tested artifact at commit `464ffbe302f348e5b1d2de238bef08fae2d93144`
+had package SHA-256
+`0623230F8DA32B9BE21B8EF1A7E11BE709EEBF017FD222F64BCC993B758A1565`,
+DLL SHA-256
+`14CA336A522BA28257564917C8BF23ECA0B3BCECEABB8268FEC17981E799AA42`,
+and MVID `730588cc-2b88-4dab-9956-6a3c8f0752c3`.
+
+Core real-delivery runs:
+
+- `disposable-helpful-bodyguard`, run
+  `20260823T1416222099584Z-f4cdc36db5d14a348240b78d6756cc34`, PASS,
+  evidence directory
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260823T1416221807923Z-disposable-helpful-bodyguard`.
+  Halfling Helpful supplied +4. The ordinary hit moved 11 HP damage to the
+  protector. The confirmed critical preserved main d20 20 and confirmation
+  20/28, moved 24 HP damage to the protector once, left victim HP unchanged,
+  advanced swift 0 to 6 once, consumed one AoO, and reported zero faults and
+  duplicates.
+- `disposable-bodyguard-feats`, run
+  `20260823T1419130297700Z-28227dbdfd944f9f993dafe9f42bcd74`, PASS,
+  evidence directory
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260823T1419130035149Z-disposable-bodyguard-feats`.
+  A native confirmed critical preserved main d20 20 and confirmation 20/23,
+  redirected 24 HP plus physical, fire, save, and condition delivery once,
+  and restored both targets. The unavailable-action control retained swift 6,
+  damaged only the original target, recorded `swift-cooldown-active`, and
+  emitted the explanatory message. Mode-off damaged only the original target,
+  spent no swift action, recorded `in-harms-way-mode-off`, and emitted no
+  unavailable-action message. Zero-damage riders and both Shield Other orderings
+  passed.
+- `observe-bodyguard-native-contracts`, run
+  `20260823T1421551498137Z-0468330966c04fdca58c287bc53f95dc`, PASS.
+
+Compatibility profiles all restored their prior Mods/settings state exactly:
+
+- standalone transaction `compat-20260823T142618Z-a6ab27db75d3`, PASS
+- Call of the Wild transaction `compat-20260823T142756Z-57085ab24e38`, PASS
+- CotW + Favored Class, traits enabled:
+  `compat-20260823T143019Z-d049108650f6`, observer and combat PASS
+- CotW + Favored Class, traits disabled:
+  `compat-20260823T143433Z-638feca41a71`, observer and combat PASS
+- CotW + Favored Class + Tweak or Treat + Races Unleashed:
+  `compat-20260823T143857Z-8f350a96bc95`, observer and combat PASS
+- Eastern Weapons disabled with Favored Class:
+  `compat-20260823T144344Z-0e0f05f14ff4`, module observer and combat PASS
+- Bodyguard module disabled with Favored Class:
+  `compat-20260823T144833Z-7dc439bbf710`, module observer and inert combat PASS
+
+The canonical `working-save-smoke` run
+`20260823T1454518705298Z-be7c00b628624552949ad9b7c4ef8551` passed at
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260823T1454518578721Z-working-save-smoke`.
+No save-writing API was observed and `KMG_AUTOMATION_BASELINE` was not used as
+the working save.
+
+The protected human-save copy was attempted twice, most recently as run
+`20260823T1459343495247Z-778bafaa29ea4afbaa5b1c7661092801` at
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260823T1459343282896Z-disposable-in-harms-way-human-repro`.
+It found exactly one named save among 109 descriptors, correlated the exact
+descriptor through the native load entry, and observed the after-load callback,
+but timed out at `post-load-fingerprint` before any attack scenario ran. It
+observed no save-writing API. The wrapper removed its named copy and sidecars
+and reverified the original SHA-256 unchanged. This is an exact-save runtime
+limitation, not positive or negative In Harm's Way mechanics evidence.
+
+### Honest conclusion
+
+The original 0.0.93 damage recipient is fully explained at the event level:
+In Harm's Way never passed candidate filtering, spent no immediate action, and
+never redirected the attack. The legacy evidence cannot honestly distinguish
+whether the attack-time blocker was feat/mode/marker state or native swift
+availability. The exact save cannot currently reach a stable post-load
+fingerprint to recover that temporal fact.
+
+The repaired player path no longer hides that ambiguity: every gate has one
+exact reason, activatable and marker opt-out state cannot lag, and a genuinely
+available +4 Helpful confirmed-critical attack is proven to deliver all damage
+and riders to the protector once. A genuine unavailable native immediate
+action remains a non-interception, now with an explicit player explanation.

@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.0.94-in-harms-way-runtime-repair (qualification candidate)
+
+- Replaces the former aggregate `immediate-unavailable` outcome with a bounded,
+  per-protector In Harm's Way gate snapshot covering exact feat, activatable,
+  marker, ability-state, native swift cooldown, action availability, delivery
+  contract, arbitration, and target-redirection decisions.
+- Makes both persistent reaction modes deactivate immediately, preventing an
+  activatable that is visibly off from retaining its hidden consent marker
+  until a later turn boundary. Activation remains free, off by default,
+  save-stable, and independent for Bodyguard and In Harm's Way.
+- Adds a concise combat-log explanation when an enabled In Harm's Way reaction
+  is rejected specifically because the native shared swift/immediate budget is
+  unavailable; mode-off attacks remain silent.
+- Qualifies real native normal and confirmed-critical weapon delivery after a
+  Helpful +4 Bodyguard contribution. The original roll and confirmation remain
+  unchanged, the native swift cooldown advances once, the victim loses no HP,
+  the interceptor receives physical damage and attack-linked riders once, and
+  both target fields restore after delivery.
+- Preserves the complete 0.0.93 Eastern Weapons, Favored Class, Tweak or Treat,
+  Call of the Wild Aid Another, Helpful, AC-attribution, In Harm's Way, and
+  Shield Other contracts.
+
 ## 0.0.93-eastern-favored-compatibility (qualification candidate)
 
 - Defers Nodachi publication into broad Martial Weapon Proficiency facts until
