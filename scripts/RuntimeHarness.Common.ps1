@@ -41,7 +41,8 @@ function Assert-KmgReusableDeployment {
         [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
         [Parameter(Mandatory = $true)][string]$PackagePath,
         [Parameter(Mandatory = $true)][string]$RepositoryRoot,
-        [Parameter(Mandatory = $true)][string]$ExpectedVersion
+        [Parameter(Mandatory = $true)][string]$ExpectedVersion,
+        [switch]$AllowDirtyGit
     )
     $deploymentPath = (Resolve-Path -LiteralPath $DeploymentManifestPath).Path
     $requiredRoot = [IO.Path]::GetFullPath(
@@ -55,16 +56,20 @@ function Assert-KmgReusableDeployment {
     $build = Get-Content -LiteralPath $buildPath -Raw | ConvertFrom-Json
     $deployment = Get-Content -LiteralPath $deploymentPath -Raw | ConvertFrom-Json
     $git = Get-KmgGitState -RepositoryRoot $RepositoryRoot
-    if ($git.Status.Count -ne 0) {
+    if ($git.Status.Count -ne 0 -and -not $AllowDirtyGit) {
         throw 'Reusable runtime execution requires an exactly clean Git state.'
     }
+    $sourceStateSha256 = Get-KmgSourceStateFingerprint `
+        -RepositoryRoot $RepositoryRoot
     if ($build.schemaVersion -ne 1 -or $build.validated -ne $true -or
         $build.generator -ne 'scripts/Build-Local.ps1' -or
         $build.packagePath -ne $package -or $build.commit -ne $git.Commit -or
         $build.version -ne $ExpectedVersion -or
+        $build.sourceStateSha256 -cnotmatch '^[0-9a-f]{64}$' -or
+        $build.sourceStateSha256 -cne $sourceStateSha256 -or
         [string]::IsNullOrWhiteSpace([string]$build.firearmManifestSha256) -or
         [string]::IsNullOrWhiteSpace([string]$build.firearmSoundBankSha256)) {
-        throw 'Reusable build identity does not match the clean current commit/version.'
+        throw 'Reusable build identity does not match the exact current source state/commit/version.'
     }
     if ((Get-KmgSha256 -Path $package) -ne $build.packageSha256) {
         throw 'Reusable package SHA-256 no longer matches its immutable build manifest.'
@@ -73,6 +78,7 @@ function Assert-KmgReusableDeployment {
         $deployment.packagePath -ne $package -or
         $deployment.packageSha256 -ne $build.packageSha256 -or
         $deployment.commit -ne $build.commit -or
+        $deployment.sourceStateSha256 -ne $build.sourceStateSha256 -or
         $deployment.version -ne $ExpectedVersion -or
         $deployment.dllSha256 -ne $build.dllSha256 -or
         $deployment.dllMvid -ne $build.dllMvid -or
@@ -107,8 +113,9 @@ function Assert-KmgReusableDeployment {
     $settings = Join-Path $live 'FeatureModules.json'
     $settingsExists = Test-Path -LiteralPath $settings -PathType Leaf
     $settingsHash = if ($settingsExists) { Get-KmgSha256 -Path $settings } else { '<absent>' }
-    Write-Host ('Reusable artifact verified: commit={0};version={1};package={2};dll={3};mvid={4};installedDll={5};bundle={6};manifest={7};bank={8};settings={9}' -f
-        $git.Commit, $ExpectedVersion, $build.packageSha256, $build.dllSha256,
+    Write-Host ('Reusable artifact verified: commit={0};sourceState={1};version={2};package={3};dll={4};mvid={5};installedDll={6};bundle={7};manifest={8};bank={9};settings={10}' -f
+        $git.Commit, $sourceStateSha256, $ExpectedVersion,
+        $build.packageSha256, $build.dllSha256,
         $build.dllMvid, (Get-KmgSha256 -Path $dll),
         $deployment.firearmBundleSha256, $build.firearmManifestSha256,
         $build.firearmSoundBankSha256, $settingsHash)
@@ -137,6 +144,7 @@ function Read-KmgBuildLocalManifest {
     if ($manifest.schemaVersion -ne 1 -or $manifest.packagePath -ne $package -or
         $manifest.generator -ne 'scripts/Build-Local.ps1' -or
         $manifest.validated -ne $true -or
+        $manifest.sourceStateSha256 -cnotmatch '^[0-9a-f]{64}$' -or
         [string]::IsNullOrWhiteSpace([string]$manifest.dllMvid) -or
         [string]::IsNullOrWhiteSpace([string]$manifest.firearmManifestSha256) -or
         [string]::IsNullOrWhiteSpace([string]$manifest.firearmSoundBankSha256)) {
@@ -164,6 +172,43 @@ function Get-KmgGitState {
     $status = @(& git -C $RepositoryRoot status --porcelain)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git status.' }
     return [ordered]@{ Commit = $commit; Branch = $branch; Status = @($status) }
+}
+
+function Get-KmgSourceStateFingerprint {
+    param([Parameter(Mandatory = $true)][string]$RepositoryRoot)
+    $root = (Resolve-Path -LiteralPath $RepositoryRoot).Path
+    $git = Get-KmgGitState -RepositoryRoot $root
+    $diff = @(& git -C $root -c core.safecrlf=false diff --no-ext-diff `
+        --binary HEAD --)
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to read the tracked Git diff.' }
+    $untracked = @(& git -C $root -c core.quotepath=false ls-files `
+        --others --exclude-standard | Sort-Object)
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to enumerate untracked files.' }
+    $payload = New-Object Text.StringBuilder
+    [void]$payload.Append($git.Commit).Append("`nstatus`n")
+    foreach ($line in $git.Status) {
+        [void]$payload.Append($line).Append("`n")
+    }
+    [void]$payload.Append("tracked-diff`n")
+    foreach ($line in $diff) {
+        [void]$payload.Append($line).Append("`n")
+    }
+    [void]$payload.Append("untracked`n")
+    foreach ($relativePath in $untracked) {
+        $path = Join-Path $root $relativePath
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            throw "Untracked source-state file is missing: $relativePath"
+        }
+        [void]$payload.Append($relativePath).Append('|').Append(
+            (Get-KmgSha256 -Path $path)).Append("`n")
+    }
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try {
+        $bytes = [Text.Encoding]::UTF8.GetBytes($payload.ToString())
+        return ([BitConverter]::ToString($sha.ComputeHash($bytes)) `
+            -replace '-', '').ToLowerInvariant()
+    }
+    finally { $sha.Dispose() }
 }
 
 function Test-KmgDirectoryWritableByAcl {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using KingmakerGunslinger.Compatibility;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -363,6 +364,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters["bodyguardFeats"].Type !=
                         JTokenType.Boolean)
                     return "module-states-required";
+            }
+            else if (request.Scenario == RuntimeTestScenarioCatalog
+                .ObserveKmgCompatibilityAssetAttribution)
+            {
+                if (request.MainMenuTimeoutSeconds != 0 ||
+                    request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 ||
+                    request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 ||
+                    request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (request.Parameters == null || request.Parameters.Count != 1 ||
+                    request.Parameters.Property("assetConfiguration") == null ||
+                    request.Parameters["assetConfiguration"].Type !=
+                        JTokenType.String)
+                    return "asset-configuration-required";
+                CompatibilityAssetAttributionPlan plan;
+                if (!CompatibilityAssetAttributionPlan.TryResolve(
+                    (string)request.Parameters["assetConfiguration"], out plan))
+                    return "asset-configuration-not-allowed";
             }
             else
             {

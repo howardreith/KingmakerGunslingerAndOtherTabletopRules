@@ -11,6 +11,7 @@ namespace KingmakerGunslinger.Assets
 {
     internal static class FirearmAssetRuntime
     {
+        internal const string BundleName = "kingmakergunslinger.firearms";
         private static readonly object Sync = new object();
         private static AssetBundle _bundle;
         private static readonly Dictionary<FirearmKind, GameObject> Prefabs = new Dictionary<FirearmKind, GameObject>();
@@ -33,7 +34,7 @@ namespace KingmakerGunslinger.Assets
         {
             if (context == null) throw new ArgumentNullException("context");
             string path = Path.Combine(context.ModEntry.Path, "assets", "bundles",
-                "kingmakergunslinger.firearms");
+                BundleName);
             if (!File.Exists(path))
             {
                 context.Logger.Warning("assets", "bundle.missing",
@@ -644,6 +645,11 @@ namespace KingmakerGunslinger.Assets
                     ItemVariantPrefabs.TryGetValue(variant, out prefab) &&
                     prefab != null;
             }
+        }
+
+        internal static AssetBundle GetLoadedBundleForGuardedAttribution()
+        {
+            lock (Sync) return _bundle;
         }
     }
 

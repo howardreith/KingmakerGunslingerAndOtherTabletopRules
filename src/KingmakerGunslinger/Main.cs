@@ -71,15 +71,34 @@ namespace KingmakerGunslinger
 
                 context = ModContext.Create(modEntry, assembly, logger);
                 ModContext.Publish(context);
-                Assets.FirearmAssetRuntime.Configure(context);
-                Assets.ElvenBranchedSpearAssetRuntime.Configure(context);
-                Assets.EasternWeaponAssetRuntime.Configure(context);
+                // Commit guarded binary identity before request parsing,
+                // patches, blueprint work, UI attachment, or asset loading.
+                RuntimeTestRunner.RecordEarlyIdentity(context);
+                CompatibilityAttributionRuntimeControl.TryActivateEarly(context);
+                if (CompatibilityAttributionRuntimeControl.IsAssetFamilyEnabled(
+                    Compatibility.CompatibilityAssetFamily.Firearms))
+                    Assets.FirearmAssetRuntime.Configure(context);
+                else
+                    logger.Info("compatibility-attribution",
+                        "asset-family.suppressed",
+                        "family=firearms;nativeFallback=true;saveState=false");
+                if (CompatibilityAttributionRuntimeControl.IsAssetFamilyEnabled(
+                    Compatibility.CompatibilityAssetFamily.ElvenBranchedSpears))
+                    Assets.ElvenBranchedSpearAssetRuntime.Configure(context);
+                else
+                    logger.Info("compatibility-attribution",
+                        "asset-family.suppressed",
+                        "family=elven-branched-spears;nativeFallback=true;saveState=false");
+                if (CompatibilityAttributionRuntimeControl.IsAssetFamilyEnabled(
+                    Compatibility.CompatibilityAssetFamily.EasternWeapons))
+                    Assets.EasternWeaponAssetRuntime.Configure(context);
+                else
+                    logger.Info("compatibility-attribution",
+                        "asset-family.suppressed",
+                        "family=eastern-weapons;nativeFallback=true;saveState=false");
                 // Native firearm audio is an optional, fail-soft capability.
                 // A missing/invalid bank must never disable firearm mechanics.
                 Audio.FirearmSoundRuntime.Configure(context);
-                // Commit guarded binary identity before patches, blueprint work,
-                // UI attachment, or runtime-request parsing.
-                RuntimeTestRunner.RecordEarlyIdentity(context);
                 context.InstallPatches();
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);
                 BrownFurOptionalExtensionCoordinator.Install(context);

@@ -43,10 +43,13 @@ param(
         'observe-aid-another-compatibility-contracts',
         'disposable-helpful-bodyguard',
         'disposable-bodyguard-feats-disabled',
+        'working-save-smoke',
+        'disposable-brown-fur-native-cast',
         'observe-elven-branched-spear-contracts',
         'observe-eastern-weapon-contracts',
         'disposable-elven-branched-spear-combat',
         'disposable-eastern-weapons-combat',
+        'observe-kmg-compatibility-asset-attribution',
         'working-save-eastern-weapons-prepare',
         'working-save-eastern-weapons-verify-cleanup',
         'working-save-eastern-weapons-verify-absent',
@@ -92,6 +95,16 @@ $favoredSettingsPath = Join-Path $KingmakerInstallDir `
     'Mods\ZFavoredClass\settings.json'
 $favoredSettingsStagedBeforeSha = $null
 $favoredSettingsStagedAfterSha = $null
+$featureSettingsPath = Join-Path $KingmakerInstallDir `
+    'Mods\KingmakerGunslinger\FeatureModules.json'
+$featureSettingsOriginalExists = Test-Path -LiteralPath $featureSettingsPath `
+    -PathType Leaf
+$featureSettingsOriginalBytes = if ($featureSettingsOriginalExists) {
+    [IO.File]::ReadAllBytes($featureSettingsPath)
+} else { $null }
+$featureSettingsOriginalSha = if ($featureSettingsOriginalExists) {
+    (Get-FileHash -LiteralPath $featureSettingsPath -Algorithm SHA256).Hash
+} else { '<absent>' }
 $favoredTraitsMode = if ($ProfileId -ceq
     'gunslinger-call-of-the-wild-favored-class-traits-disabled') {
     'disabled'
@@ -120,6 +133,11 @@ $moduleScenario = @($Scenario | Where-Object { $_ -ceq
     (@($Scenario | Where-Object { $_ -ceq
         'observe-vendor-table-contracts' }).Count -gt 0 -and
         $Parameters.Count -gt 0)
+$assetAttributionScenario = @($Scenario | Where-Object { $_ -ceq
+    'observe-kmg-compatibility-asset-attribution' }).Count -gt 0
+if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
+    throw 'Asset attribution must run as one fresh-process profile scenario.'
+}
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
     if ($keys.Count -ne 9 -or $keys[0] -cne 'acadamaeGraduate' -or
@@ -140,8 +158,16 @@ if ($moduleScenario) {
         $Parameters.bodyguardFeats -isnot [bool]) {
         throw 'Feature-module profile observation requires exactly nine Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, and bodyguardFeats.'
     }
+} elseif ($assetAttributionScenario) {
+    $keys = @($Parameters.Keys)
+    if ($keys.Count -ne 1 -or $keys[0] -cne 'assetConfiguration' -or
+        $Parameters.assetConfiguration -isnot [string] -or
+        $Parameters.assetConfiguration -cnotin @('all-suppressed',
+            'firearms-only', 'spears-only', 'eastern-only', 'all-enabled')) {
+        throw 'Asset attribution requires exactly one allowlisted assetConfiguration parameter.'
+    }
 } elseif ($Parameters.Count -ne 0) {
-    throw 'Compatibility profile parameters are supported only for observe-feature-module-settings or module-state vendor-table observation.'
+    throw 'Compatibility profile parameters are supported only for feature-module, module-state vendor, or asset-attribution observations.'
 }
 
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
@@ -256,6 +282,9 @@ try {
         if ($name -ceq 'observe-feature-module-settings') {
             $arguments.Parameters = $Parameters
         }
+        if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
+            $arguments.Parameters = $Parameters
+        }
         if ($ReuseInstalledArtifact) {
             if ([string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
                 [string]::IsNullOrWhiteSpace($PackagePath)) {
@@ -265,7 +294,8 @@ try {
             $arguments.DeploymentManifestPath = $DeploymentManifestPath
             $arguments.PackagePath = $PackagePath
         }
-        if ($name -ceq 'musket-master-mechanics-and-starter') {
+        if ($name -in @('musket-master-mechanics-and-starter',
+            'working-save-smoke', 'disposable-brown-fur-native-cast')) {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments
@@ -281,14 +311,28 @@ try {
         if ($result.scenario -cne $name -or $result.status -cne 'PASS') {
             throw "Runtime scenario result mismatch: expected $name PASS."
         }
-        $results.Add([ordered]@{ scenario = $name; runId = $result.runId
-            status = $result.status; evidenceDirectory = $evidence.FullName })
         $exitDeadline = [DateTime]::UtcNow.AddSeconds(60)
         while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
             [DateTime]::UtcNow -lt $exitDeadline) { Start-Sleep -Milliseconds 500 }
         if (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0) {
             throw "Kingmaker did not complete guarded automatic exit after scenario: $name"
         }
+        $configurationId = $ProfileId + '-' + $name
+        if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
+            $configurationId += '-' + [string]$Parameters.assetConfiguration
+        }
+        $collection = & (Join-Path $PSScriptRoot `
+            'Collect-KmgCompatibilityAttributionLog.ps1') `
+            -EvidenceDirectory $evidence.FullName `
+            -ConfigurationId $configurationId `
+            -KingmakerInstallDir $KingmakerInstallDir
+        $results.Add([ordered]@{ scenario = $name; runId = $result.runId
+            status = $result.status; evidenceDirectory = $evidence.FullName
+            runtimeResultSha256 = (Get-FileHash -LiteralPath (Join-Path `
+                $evidence.FullName 'runtime-result.json') -Algorithm SHA256).Hash
+            outputLogSha256 = $collection.rawLogSha256
+            logSummaryPath = $collection.summaryPath
+            logSummarySha256 = $collection.summarySha256 })
     }
 }
 catch {
@@ -317,6 +361,33 @@ $state = Get-Content -LiteralPath (Join-Path $StateRoot "$runId\transaction.json
 if (-not $state.restorationVerified -or $state.status -cne 'Restored') {
     throw "Profile completed but exact restoration was not verified: $runId"
 }
+$featureSettingsRestoredExists = Test-Path -LiteralPath $featureSettingsPath `
+    -PathType Leaf
+$featureSettingsRestoredSha = if ($featureSettingsRestoredExists) {
+    (Get-FileHash -LiteralPath $featureSettingsPath -Algorithm SHA256).Hash
+} else { '<absent>' }
+$featureSettingsBytesRestored =
+    $featureSettingsRestoredExists -eq $featureSettingsOriginalExists
+if ($featureSettingsBytesRestored -and $featureSettingsOriginalExists) {
+    $featureSettingsRestoredBytes = [IO.File]::ReadAllBytes($featureSettingsPath)
+    $featureSettingsBytesRestored =
+        [Convert]::ToBase64String($featureSettingsRestoredBytes) -ceq
+        [Convert]::ToBase64String($featureSettingsOriginalBytes)
+}
+if (-not $featureSettingsBytesRestored) {
+    throw "FeatureModules.json bytes were not restored exactly: $runId"
+}
+$featureSettingsEvidencePath = Join-Path $StateRoot `
+    "$runId\feature-modules-restoration.json"
+[ordered]@{
+    schemaVersion = 1
+    originalExists = $featureSettingsOriginalExists
+    originalSha256 = $featureSettingsOriginalSha
+    restoredExists = $featureSettingsRestoredExists
+    restoredSha256 = $featureSettingsRestoredSha
+    exactBytesRestored = $featureSettingsBytesRestored
+} | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath `
+    $featureSettingsEvidencePath -Encoding UTF8
 $cotwSettingsRestoredExists = Test-Path -LiteralPath $cotwSettingsPath `
     -PathType Leaf
 $cotwSettingsRestoredSha = if ($cotwSettingsRestoredExists) {
@@ -378,5 +449,9 @@ $favoredSettingsEvidencePath = Join-Path $StateRoot `
     favoredSettingsStagedBeforeSha256 = $favoredSettingsStagedBeforeSha
     favoredSettingsStagedAfterSha256 = $favoredSettingsStagedAfterSha
     favoredSettingsEvidencePath = $favoredSettingsEvidencePath
+    featureSettingsOriginalSha256 = $featureSettingsOriginalSha
+    featureSettingsRestoredSha256 = $featureSettingsRestoredSha
+    featureSettingsExactBytesRestored = $featureSettingsBytesRestored
+    featureSettingsEvidencePath = $featureSettingsEvidencePath
     runtimeResults = @($results)
 }

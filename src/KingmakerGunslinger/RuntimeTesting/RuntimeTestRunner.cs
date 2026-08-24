@@ -648,6 +648,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunModLoadSmoke());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveKmgCompatibilityAssetAttribution)
+                {
+                    Complete(CompatibilityAssetAttributionScenario.Run(
+                        _context, _request));
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveFeatureModuleSettings)
                 {

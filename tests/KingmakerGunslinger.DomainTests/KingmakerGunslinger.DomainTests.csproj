@@ -39,6 +39,8 @@
     <Compile Include="ExpandedSummoningPresentationTests.cs" />
     <Compile Include="ElvenBranchedSpearInvestigationTests.cs" />
     <Compile Include="EasternWeaponsInvestigationTests.cs" />
+    <Compile Include="CompatibilityAttributionTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Compatibility\CompatibilityAssetAttributionPlan.cs"><Link>Compatibility\CompatibilityAssetAttributionPlan.cs</Link></Compile>
     <Compile Include="ElvenBranchedSpearCatalogTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Assets\WeaponVisualVariantCatalog.cs"><Link>Assets\WeaponVisualVariantCatalog.cs</Link></Compile>
     <Compile Include="EasternWeaponFoundationTests.cs" />

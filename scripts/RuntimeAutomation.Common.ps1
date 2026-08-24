@@ -8,6 +8,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-kmg-compatibility-asset-attribution' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-optional-mod-compatibility' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1061,6 +1067,16 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, and bodyguardFeats parameters."
         }
     }
+    elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
+        $allowedConfigurations = @('all-suppressed', 'firearms-only',
+            'spears-only', 'eastern-only', 'all-enabled')
+        if ($Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('assetConfiguration') -or
+            $Parameters.assetConfiguration -isnot [string] -or
+            $Parameters.assetConfiguration -cnotin $allowedConfigurations) {
+            throw "$Scenario requires exactly one allowlisted assetConfiguration."
+        }
+    }
     elseif ($Parameters.Count -ne 0) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
@@ -1168,6 +1184,11 @@ function New-KmgRuntimeRequest {
                 brownFurTransmuter = [bool]$Parameters.brownFurTransmuter
                 urbanBarbarian = [bool]$Parameters.urbanBarbarian
                 bodyguardFeats = [bool]$Parameters.bodyguardFeats
+            }
+        } elseif ($Scenario -ceq
+            'observe-kmg-compatibility-asset-attribution') {
+            [ordered]@{
+                assetConfiguration = [string]$Parameters.assetConfiguration
             }
         } else { [ordered]@{} }
     }

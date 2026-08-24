@@ -25,6 +25,10 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("compat-attribution.asset-plans", CompatibilityAttributionTests.AssetPlansAreExact),
+            Case("compat-attribution.asset-plan-fail-closed", CompatibilityAttributionTests.AssetPlansFailClosed),
+            Case("compat-attribution.guarded-runtime-boundary", CompatibilityAttributionTests.GuardedRuntimeBoundaryIsExact),
+            Case("compat-attribution.bounded-inventory-and-logs", CompatibilityAttributionTests.AssetInventoryAndLogCollectionAreBounded),
             Case("brown-fur.progression-normal", BrownFurContractTests.NormalProgressionIsExact),
             Case("brown-fur.progression-balance", BrownFurContractTests.BalanceProgressionIsExact),
             Case("brown-fur.progression-unknown", BrownFurContractTests.UnknownProgressionsFailClosed),

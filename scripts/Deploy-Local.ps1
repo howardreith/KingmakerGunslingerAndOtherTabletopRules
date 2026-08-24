@@ -122,6 +122,7 @@ New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
     packageSha256 = $manifest.packageSha256
     commit = $manifest.commit
     branch = $manifest.branch
+    sourceStateSha256 = $manifest.sourceStateSha256
     version = $manifest.version
     dllSha256 = $manifest.dllSha256
     dllMvid = $manifest.dllMvid

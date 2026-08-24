@@ -166,7 +166,7 @@ if ($ReuseInstalledArtifact) {
     $reuse = Assert-KmgReusableDeployment `
         -DeploymentManifestPath $DeploymentManifestPath `
         -PackagePath $PackagePath -RepositoryRoot $root `
-        -ExpectedVersion $ExpectedVersion
+        -ExpectedVersion $ExpectedVersion -AllowDirtyGit:$AllowDirtyGit
     $package = $reuse.PackagePath
     $deploymentManifestPath = $reuse.DeploymentManifestPath
 } else {

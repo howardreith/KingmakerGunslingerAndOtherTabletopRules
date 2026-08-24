@@ -70,6 +70,9 @@ namespace KingmakerGunslinger.Assets
         internal static string Status
         { get { lock (Sync) return _status; } }
 
+        internal static AssetBundle GetLoadedBundleForGuardedAttribution()
+        { lock (Sync) return _bundle; }
+
         internal static void Configure(ModContext context)
         {
             if (context == null) throw new ArgumentNullException("context");

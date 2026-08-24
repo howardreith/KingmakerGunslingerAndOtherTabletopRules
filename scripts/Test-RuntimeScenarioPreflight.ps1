@@ -6,12 +6,17 @@ $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 $commonPath = Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1'
+$harnessPath = Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1'
 $orchestratorPath = Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1'
 $catalogPath = Join-Path $root `
     'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestScenarioCatalog.cs'
 $runnerPath = Join-Path $root `
     'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs'
+. $harnessPath
 . $commonPath
+
+$sourceStateFirst = Get-KmgSourceStateFingerprint -RepositoryRoot $root
+$sourceStateSecond = Get-KmgSourceStateFingerprint -RepositoryRoot $root
 
 $runnerSource = Get-Content -Raw -LiteralPath $runnerPath
 if (-not $runnerSource.Contains('State.Units.All.Add(first)') -or
@@ -30,9 +35,13 @@ function Assert-Throws([scriptblock]$Action, [string]$Name) {
     $script:checks++
     try { & $Action; $script:failures.Add($Name) } catch { }
 }
+Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
+    $sourceStateFirst -ceq $sourceStateSecond) `
+    'source-state-attestation-is-stable-and-sha256'
 
 $expected = @(
     'mod-load-smoke',
+    'observe-kmg-compatibility-asset-attribution',
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
     'disposable-urban-barbarian-focused',
@@ -197,6 +206,28 @@ Assert-True (($csharpNames -join "`n") -ceq ($powershellNames -join "`n")) `
     'csharp-powershell-catalog-sync'
 Assert-True (($expected | Sort-Object) -join "`n" -ceq
     ($powershellNames -join "`n")) 'documented-scenarios-retained'
+$assetAttribution = Get-KmgRuntimeScenarioMetadata `
+    'observe-kmg-compatibility-asset-attribution'
+Assert-True (-not $assetAttribution.RequiresManualInteraction -and
+    -not $assetAttribution.RequiresSaveName) `
+    'compatibility-asset-attribution-is-autonomous-save-free'
+$assetRequest = New-KmgRuntimeRequest `
+    -Scenario 'observe-kmg-compatibility-asset-attribution' `
+    -ExpectedVersion '0.0.96' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
+        'kmg-attribution-request-test') `
+    -Parameters @{ assetConfiguration = 'firearms-only' }
+Assert-True ($assetRequest.parameters.assetConfiguration -ceq 'firearms-only') `
+    'compatibility-asset-attribution-parameter-round-trips'
+Assert-Throws {
+    New-KmgRuntimeRequest `
+        -Scenario 'observe-kmg-compatibility-asset-attribution' `
+        -ExpectedVersion '0.0.96' -TimeoutSeconds 120 `
+        -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
+            'kmg-attribution-request-test') `
+        -Parameters @{ assetConfiguration = 'unsupported' }
+} 'compatibility-asset-attribution-configuration-fails-closed'
 $presentation = Get-KmgRuntimeScenarioMetadata 'observe-gunslinger-presentation'
 Assert-True (-not $presentation.RequiresManualInteraction) `
     'presentation-is-autonomous'

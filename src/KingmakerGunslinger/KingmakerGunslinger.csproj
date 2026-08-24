@@ -87,6 +87,7 @@
     <Compile Include="Assets\WeaponPresentationSemanticFrame.cs" />
     <Compile Include="Assets\WeaponVisualVariantCatalog.cs" />
     <Compile Include="Assets\EasternWeaponAssetRuntime.cs" />
+    <Compile Include="Compatibility\CompatibilityAssetAttributionPlan.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearBlueprints.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearNamedBlueprints.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearCampaignBlueprints.cs" />
@@ -864,6 +865,8 @@
     <Compile Include="RuntimeTesting\WeaponPresentationEvidenceScenario.cs" />
     <Compile Include="RuntimeTesting\RuntimeBuildIdentity.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
+    <Compile Include="RuntimeTesting\CompatibilityAttributionRuntimeControl.cs" />
+    <Compile Include="RuntimeTesting\CompatibilityAssetAttributionScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianRageInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianFocusedScenario.cs" />

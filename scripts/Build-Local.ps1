@@ -16,6 +16,7 @@ if ($info.Version -ne '0.0.96') { throw "Build-Local supports only active versio
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
+$sourceStateSha256 = Get-KmgSourceStateFingerprint -RepositoryRoot $root
 
 if (-not $ReferenceBundleDir) {
     $cursor = [IO.DirectoryInfo]$root
@@ -116,6 +117,7 @@ $manifest = [ordered]@{
     repositoryRoot = $root
     commit = $git.Commit
     branch = $git.Branch
+    sourceStateSha256 = $sourceStateSha256
     version = $info.Version
     packagePath = $packagePath
     packageSha256 = Get-KmgSha256 -Path $packagePath

@@ -6,6 +6,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string ObserveKmgCompatibilityAssetAttribution =
+            "observe-kmg-compatibility-asset-attribution";
         internal const string ObserveFeatureModuleSettings =
             "observe-feature-module-settings";
         internal const string ObserveUrbanBarbarianRageInventory =
@@ -320,6 +322,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new HashSet<string>(StringComparer.Ordinal)
             {
                 ModLoadSmoke,
+                ObserveKmgCompatibilityAssetAttribution,
                 ObserveFeatureModuleSettings,
                 ObserveUrbanBarbarianRageInventory,
                 DisposableUrbanBarbarianFocused,
