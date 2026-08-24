@@ -30,6 +30,16 @@ $runningIndex = $deployment.IndexOf('Assert-KmgNotRunning', [StringComparison]::
 $liveDirectoryIndex = $deployment.IndexOf(
     'Test-Path -LiteralPath $LiveModDirectory',
     [StringComparison]::Ordinal)
+$whatIfCaptureIndex = $deployment.IndexOf(
+    '$deploymentWhatIfRequested = [bool]$WhatIfPreference',
+    [StringComparison]::Ordinal)
+$whatIfDisableIndex = $deployment.IndexOf(
+    '$WhatIfPreference = $false',
+    $whatIfCaptureIndex,
+    [StringComparison]::Ordinal)
+$whatIfRestoreIndex = $deployment.IndexOf(
+    '$WhatIfPreference = $deploymentWhatIfRequested',
+    [StringComparison]::Ordinal)
 
 Assert-True ($orchestratorBackupCalls.Count -eq 0) 'orchestrator-must-not-back-up'
 Assert-True ($deploymentBackupCalls.Count -eq 1) 'deployment-must-own-one-backup'
@@ -42,6 +52,12 @@ Assert-True ($liveDirectoryIndex -ge 0 -and $liveDirectoryIndex -lt $shouldProce
 Assert-True ($shouldProcessIndex -ge 0 -and $dryReturnIndex -gt $shouldProcessIndex) `
     'dry-run-return-is-guarded'
 Assert-True ($backupIndex -gt $dryReturnIndex) 'backup-only-after-dry-run-return'
+Assert-True ($whatIfCaptureIndex -ge 0 -and
+    $whatIfDisableIndex -gt $whatIfCaptureIndex -and
+    $whatIfDisableIndex -lt $manifestIndex -and
+    $whatIfRestoreIndex -gt $liveDirectoryIndex -and
+    $whatIfRestoreIndex -lt $shouldProcessIndex) `
+    'whatif-is-suppressed-only-for-read-only-preflight'
 Assert-True (-not $deployment.Substring(
     $shouldProcessIndex,
     $dryReturnIndex - $shouldProcessIndex).Contains('Backup-Live-Mod.ps1')) `
@@ -100,4 +116,4 @@ Assert-True ($deployment.Contains('[switch]$AllowEmptyFirstInstall') -and
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 21'
+Write-Host 'Runtime deployment safety tests passed: 22'

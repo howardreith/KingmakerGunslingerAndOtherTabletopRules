@@ -10,6 +10,8 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$deploymentWhatIfRequested = [bool]$WhatIfPreference
+$WhatIfPreference = $false
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
@@ -34,10 +36,12 @@ if ($AllowEmptyFirstInstall -and $liveFiles.Count -ne 0) {
 
 Write-Host "Validated Build-Local package: $($manifest.packagePath)"
 Write-Host "Target directory: $live"
+$WhatIfPreference = $deploymentWhatIfRequested
 if (-not $PSCmdlet.ShouldProcess($live, "Back up and deploy version $($manifest.version)")) {
     Write-Host 'Dry run only; package and target were validated and no deployment manifest was written.'
     return
 }
+$WhatIfPreference = $false
 
 $backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
     -LiveModDirectory $live -BackupRoot $BackupRoot `

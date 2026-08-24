@@ -295,6 +295,7 @@ namespace KingmakerGunslinger.DomainTests
 
             Assertions.True(
                 package.Contains("--validate-firearm-artifact") &&
+                package.Contains("$productionValidationOutput=@(& $productionValidator") &&
                 package.Contains("Source and packaged firearm manifests differ") &&
                 package.Contains("Package contains forbidden Init.bnk") &&
                 package.Contains("Package contains forbidden or unexpected Wwise artifacts"),

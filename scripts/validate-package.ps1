@@ -94,9 +94,12 @@ try {
         if(-not (Test-Path -LiteralPath $productionValidator -PathType Leaf)){
             throw "Production C# manifest validator is missing: $productionValidator"
         }
-        & $productionValidator '--validate-firearm-artifact' $packagedManifest $packagedBank
-        if($LASTEXITCODE -ne 0){
-            throw "Packaged firearm artifacts failed production C# validation with exit code $LASTEXITCODE."
+        $productionValidationOutput=@(& $productionValidator `
+            '--validate-firearm-artifact' $packagedManifest $packagedBank)
+        $productionValidationExitCode=$LASTEXITCODE
+        foreach($line in $productionValidationOutput){Write-Host $line}
+        if($productionValidationExitCode -ne 0){
+            throw "Packaged firearm artifacts failed production C# validation with exit code $productionValidationExitCode."
         }
     } elseif(-not $AllowMissingFirearmSoundBank){throw 'Release package is missing authentic KMG_Firearms.bnk.'}
     $actual = @(
