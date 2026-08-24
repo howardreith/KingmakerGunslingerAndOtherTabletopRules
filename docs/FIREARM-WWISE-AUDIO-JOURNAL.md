@@ -321,3 +321,70 @@ The new human report that Pistol and possibly other firearm sounds are absent ov
 Published `d8fd4ad1836f3ad4d9b54dec908d7818725c64d1`: staging now validates BKHD, DIDX, DATA, HIRC, five unique media IDs, nonzero sizes, and in-bounds payloads; the guarded preview supports all five exact firearm kinds. All 1,158 tests and authoring/source/bank/repository/build/output/package/strict-package gates passed.
 
 Fresh Steam run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` passed 6/6, with exact family IDs 2-6, live Blunderbuss ID 7, committed Blunderbuss ID 8, and no forced-misfire post. Automated routing is qualified; audible output and inherited crossbow-layer absence remain a consolidated human check.
+
+## 2026-08-24 - firearm-audio restoration
+
+Started from fetched `origin/master` commit
+`7ba3654306ee9990baafd5ba6e4172b85093e782` on the required
+`codex/firearm-audio-restoration` branch. The tracked worktree was clean and
+local master equaled fully fetched `origin/master`. No historical audio branch
+was reused.
+
+Phase-1 byte tracing found no content, encoding, package, deployment, stale
+file, or alternate-path defect. Every manifest representation was 610 bytes,
+UTF-8 without BOM, and SHA-256
+`BF57981AD5EC2CBF3149ECAFC3EF737D87BC9035B14BCCC7D254DCA8F991C62E`.
+Its raw schema token was JSON Integer 1 and production fields were
+`KMG_Firearms`, `KMG_Firearms.bnk`, `Windows`, `2016.2.6.6153`, uppercase bank
+hash `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`,
+`mediaEmbedded=true`, and five canonical Events. Every bank representation was
+999,390 bytes with that same bank hash.
+
+Reflection against the old installed 0.0.95 loader proved the root cause. The
+canonical manifest parsed normally with neutral global settings. A hostile but
+valid process-global contract resolver made the old
+`JsonConvert.DeserializeObject` call produce schema zero and defaulted members,
+then reproduce the exact `Unsupported manifest schema.` failure. The retained
+full-stack logs did not preserve the responsible setter, so the causal defect
+is the KMG loader's global-state dependency, not an attributed third-party mod.
+
+Implementation commit `819490b4c511a201d73c0c1d98803267d4406870`
+introduced deterministic strict production parsing, stage-specific errors and
+startup diagnostics, state-machine/load/PostEvent coverage, production JSON
+and hostile-default regressions, strict failures, package parity, transactional
+deployment checks, and the expanded focused runtime scenario. Commit
+`32678b71547bbd2ed286069eaf0ee77c06b57d32` kept `-WhatIf` from suppressing
+read-only preflight and kept production-validator stdout out of returned
+manifest objects.
+
+The first guarded run on that candidate failed only because the new miss
+fixture's target-Dexterity mutation did not actually force a native miss; its
+custom accepted-post count still advanced exactly once and every audio/config
+assertion passed. Commit `ea51bd3732fd7313e92bcc2edac9560008f6c9ac`
+changed only the request-local fixture to a temporary -100 base attack bonus,
+restored in `finally`, and added focused contract coverage.
+
+All 1,224 tests, repository validation, authored-project validation,
+deterministic source/polish validation, production bank validation, clean
+Release/output/package validation, production-loader package parsing,
+transactional deployment dry run and deployment, and diff checks passed. The
+validated runtime package/DLL hashes were
+`9D2569E4F5F2238947DC1B6F63F171FA95AF791B59C651564458D9A79FD59325`
+and `6028FE4B4D20688D0C7E8E44C1AB4EF9B024DA7F385A46C54278EBAF95A10A40`.
+Feature-module settings were preserved.
+
+Fresh guarded Steam run
+`20260824T0444147375477Z-849bb57337ad44538df0c8582d5038f7` passed. The result
+file SHA-256 is
+`55E251B7BFEE529917DB869B0421C79F5DD76BE3D66D9C668217F5720942311B`.
+Startup logged one read, one validation, one skipped-but-hash-equal stage, one
+load, and no `configuration.disabled`. Five global Event IDs were 2-6; live
+unit Blunderbuss was 7; ordinary committed Blunderbuss was 8; and native miss
+was 10. Misfire/rejected/canceled/crossbow paths stayed at eight accepted
+custom posts. Scatter and shared deed discharge boundaries passed.
+
+The guarded publication helper was invoked after every coherent commit but
+refused the exact required branch because its external allowlist does not
+contain `codex/firearm-audio-restoration`. It was not modified or bypassed and
+no raw push was used. Automated routing is qualified; human auditory acceptance
+remains pending.

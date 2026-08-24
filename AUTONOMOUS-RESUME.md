@@ -3152,3 +3152,32 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Human acceptance: Howie tested the exact installed 0.0.88 candidate in ordinary gameplay and explicitly confirmed that Acadamae Graduate is working.
 - External state: Kingmaker stopped; no Mods transaction/staging/restore markers; exact accepted candidate remains installed without modification.
 - Status: human-accepted and regression-frozen. The Acadamae gate is closed. Tenebrous completion remains the overall release blocker; version remains `0.0.88` and no `0.0.89` release is authorized. Long-gun presentation/aiming and firearm Weapon Focus icons remain cosmetically rejected; Rapid Reload remains close but not final; BTSL remains accepted; acquisition remains structurally accepted with materialization/accessibility separate. No cosmetic work is authorized in this operation.
+
+## Firearm-audio restoration checkpoint - 2026-08-24
+
+- Branch: `codex/firearm-audio-restoration`; starting master:
+  `7ba3654306ee9990baafd5ba6e4172b85093e782`.
+- Implementation/runtime checkpoint:
+  `ea51bd3732fd7313e92bcc2edac9560008f6c9ac`; version remains `0.0.95`.
+- Root cause: the old loader inherited process-global
+  `JsonConvert.DefaultSettings`. A hostile valid contract resolver reproduced
+  schema zero and the exact `Unsupported manifest schema.` failure against the
+  canonical installed JSON. Source/package/live bytes and encoding were equal.
+- Repair: exact private `JsonTextReader` contract, strict required/type/
+  duplicate/unknown/schema checks, stage-specific errors and startup evidence,
+  production-loader artifact validation, and transactional deployment parity.
+- Gates: repository PASS; 1,224/1,224 tests PASS; Wwise authoring, deterministic
+  sources, unchanged production bank, clean Release/output/package/strict
+  package, deployment dry run/deployment, and diff checks PASS.
+- Guarded run:
+  `20260824T0444147375477Z-849bb57337ad44538df0c8582d5038f7`, all focused
+  assertions PASS. Five global IDs 2-6, live-unit ID 7, ordinary committed ID
+  8, native miss ID 10; misfire/rejected/crossbow boundaries silent; Scatter
+  and deed attempt boundaries exact.
+- Bank preserved: 999,390 bytes,
+  `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+- Remaining gates: final documentation-successor artifact rerun and repository
+  owner twelve-step listening pass. Audible acceptance is not claimed.
+- Publication blocker: the mandated guarded helper rejects the exact required
+  branch because its external allowlist omits it. No bypass or raw push is
+  authorized.

@@ -125,3 +125,58 @@ Fresh playtest evidence reports Pistol and possibly other firearm reports absent
 Commit `d8fd4ad1836f3ad4d9b54dec908d7818725c64d1` expanded the guarded preview from Pistol-only to all five exact firearm Event families. Fresh-process run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` passed 6/6, accepting Pistol/Musket/Blunderbuss/Revolver/Rifle as playing IDs 2-6, live Blunderbuss preview as ID 7, ordinary committed Blunderbuss as ID 8, and no additional normal post for forced misfire.
 
 This excludes the currently representable bank/package/load/routing failures; it does not prove audio reached the listener. No bank or source-audio bytes were changed without evidence. Fresh five-family auditory acceptance remains required on the final integrated candidate.
+
+## 2026-08-24 manifest-boundary restoration
+
+The 0.0.95 full-stack warning was reproduced without changing the canonical
+manifest or bank. Source, Release staging, standalone package, and live manifest
+copies were byte-identical: 610-byte UTF-8 without BOM, SHA-256
+`BF57981AD5EC2CBF3149ECAFC3EF737D87BC9035B14BCCC7D254DCA8F991C62E`,
+integer `schemaVersion` 1, and the exact five-Event catalog. Source, package,
+live, and game-staged `KMG_Firearms.bnk` copies were also byte-identical at
+999,390 bytes and SHA-256
+`0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
+
+The old production `JsonConvert.DeserializeObject` path parsed correctly under
+neutral defaults, but a deliberately hostile valid
+`JsonConvert.DefaultSettings` contract resolver caused the exact installed
+manifest to deserialize as `SchemaVersion=0` with defaulted members and then
+throw `Unsupported manifest schema.` This proves the defect was the loader's
+dependence on process-global Json.NET state. Available retained logs do not
+identify which loaded component set that state, so no third-party attribution
+is claimed.
+
+The production loader now uses its own exact `JsonTextReader` boundary. It binds
+only canonical case-sensitive names, verifies token types, rejects unknown or
+duplicate properties, requires every field, and retains the exact schema,
+identity, platform, Wwise, hash, embedded-media, and Event-catalog validators.
+Failures identify JSON parsing, schema extraction, semantic validation, bank
+validation, staging, loading, or PostEvent rejection. Startup emits exactly one
+concise `manifest.read`, `manifest.validated`, `bank.staged`, and `bank.ready`
+record on the successful path.
+
+Commit `ea51bd3732fd7313e92bcc2edac9560008f6c9ac` passed repository
+validation, all 1,224 dependency-free tests, Wwise authored-object validation,
+deterministic audio-source/polish validation, production SoundBank validation,
+clean Release build, build-output validation, strict packaging, production C#
+artifact parsing, transactional deployment, and `git diff --check`. Its
+runtime package SHA-256 was
+`9D2569E4F5F2238947DC1B6F63F171FA95AF791B59C651564458D9A79FD59325`;
+DLL SHA-256 was
+`6028FE4B4D20688D0C7E8E44C1AB4EF9B024DA7F385A46C54278EBAF95A10A40`.
+
+Guarded Steam run
+`20260824T0444147375477Z-849bb57337ad44538df0c8582d5038f7`
+passed every focused assertion. State reached `Ready`; configuration, staging,
+and load attempts were each exactly one. Global Pistol, Musket, Blunderbuss,
+Revolver, and Rifle previews returned playing IDs 2, 3, 4, 5, and 6. The live
+Blunderbuss unit emitter returned 7; an ordinary committed shot returned 8;
+and a deterministic native miss returned 10. Misfire, Empty, Wrecked,
+canceled, and native-crossbow paths did not increment the accepted custom-post
+count. Scatter posted once per committed volley, and the existing Dead Shot,
+Startling Shot, Menacing Shot, and Stop Bleeding discharge contracts retained
+their exact attempt counts.
+
+No SoundBank or source-audio bytes changed. A nonzero playing ID proves Wwise
+Event acceptance, not speaker output. The focused twelve-step human listening
+pass remains mandatory.

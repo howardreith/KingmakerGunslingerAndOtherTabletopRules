@@ -17,6 +17,21 @@
   second-interception denial, next-turn swift denial, post-turn refresh, and a
   confirmed critical while preserving Bodyguard, Helpful, full-delivery
   redirection, Shield Other, and the 0.0.93 compatibility work.
+- Restores firearm-audio configuration by parsing the canonical schema-1
+  manifest with an exact, private `JsonTextReader` contract that is isolated
+  from process-global `JsonConvert.DefaultSettings`. Missing, duplicate,
+  malformed, mistyped, unknown, and unsupported manifest fields fail closed
+  with stage-specific diagnostics.
+- Adds production-loader coverage for the checked-in and copied manifest,
+  hostile global serializer defaults, strict failure cases, source/package/live
+  parity, bank/package allowlists, retry behavior, and process-lifetime Wwise
+  readiness. The complete suite now contains 1,224 passing tests.
+- Adds concise `manifest.read`, `manifest.validated`, `bank.staged`, and
+  `bank.ready` startup evidence and extends the save-free guarded audio scenario
+  across all five Event families, live and global emitters, committed hit/miss,
+  misfire/rejection, Scatter, deed, and native-crossbow boundaries. The existing
+  `KMG_Firearms.bnk` remains byte-identical; fresh human listening is still
+  required before claiming audible acceptance.
 
 ## 0.0.94-in-harms-way-runtime-repair (qualification candidate)
 

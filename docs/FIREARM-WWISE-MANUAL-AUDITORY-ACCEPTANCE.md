@@ -34,3 +34,33 @@ A nonzero Wwise playing ID is not evidence that any checklist item was heard.
 ## 2026-08-20 integrated regression status
 
 Fresh human playtest evidence reports Pistol and possibly other firearm sounds absent. Treat every checked historical listening item above as stale for the current integrated candidate. Automated run `20260820T0635323959656Z-88cfa04a0deb4595bfbc2ee8d4284e31` proves the exact bank loaded and all five Events returned nonzero playing IDs; it does not resolve the audible failure. Repeat the complete checklist on the final overnight candidate and record the exact commit, package, bank hash, audio device, and observed weapon/action for any silent or layered result.
+
+## 2026-08-24 restoration listening gate
+
+The repaired production manifest boundary and focused audio routing passed on
+commit `ea51bd3732fd7313e92bcc2edac9560008f6c9ac`. The five global previews
+returned Pistol/Musket/Blunderbuss/Revolver/Rifle playing IDs 2/3/4/5/6 and a
+live-unit Blunderbuss preview returned 7. These are technical acceptance IDs,
+not evidence of audible output. Record the exact final installed commit,
+package hash, audio device, observer, and result for every item below.
+
+1. [ ] Fire one ordinary Pistol shot.
+2. [ ] Fire one ordinary Musket shot.
+3. [ ] Fire one ordinary Blunderbuss shot.
+4. [ ] Fire one ordinary Revolver shot.
+5. [ ] Fire one ordinary Rifle shot.
+6. [ ] Confirm each produces exactly one clearly audible and correctly
+   differentiated firearm report.
+7. [ ] Confirm a normal miss still produces exactly one report.
+8. [ ] Confirm a true misfire does not produce the ordinary shot report.
+9. [ ] Confirm an Empty or Wrecked firearm does not produce the ordinary
+   report.
+10. [ ] Confirm Scatter produces one Blunderbuss report per volley, not per
+    target.
+11. [ ] Listen for and record any inherited crossbow release/twang or duplicate
+    report.
+12. [ ] Confirm Master and SFX/effects volume controls affect the firearm
+    report.
+
+Current status: pending repository-owner listening. Do not mark audible
+acceptance complete from logs or nonzero playing IDs.
