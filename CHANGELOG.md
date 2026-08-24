@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.0.97-compatibility-attribution-audit
+
+- Completes controlled attribution matrices for Favored Class/Helpful,
+  polymorph and view teardown, and KMG's firearm, Elven Branched Spear, and
+  Eastern Weapons AssetBundles. No KMG production defect was found, so this
+  release contains no speculative compatibility repair or asset rebuild.
+- Classifies the four observed Favored Class JSON startup failures and all
+  reproduced shader, particle-mesh/read-write, missing-script, lightmap, and
+  missing-material-property warning fingerprints as external to the tested
+  KMG behavior or bundles. The reported level-up, polymorph/view, zero-area
+  mesh, and `UnitFxVisibilityManager` failures were not reproduced.
+- Retains a guarded, request-only, process-local asset-family suppression and
+  inventory scenario. It is unavailable during ordinary gameplay, writes no
+  save or module state, and leaves normal asset behavior unchanged on the next
+  launch.
+- Adds four focused attribution contract tests. The complete dependency-free
+  suite contains 1,228 passing tests, with all established blueprint identities
+  and firearm SoundBank bytes preserved.
+
 ## 0.0.96-firearm-audio-restoration
 
 - Restores custom firearm reports by parsing the canonical schema-1 manifest

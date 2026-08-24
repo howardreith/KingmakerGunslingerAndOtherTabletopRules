@@ -85,13 +85,15 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
+    release_suffix = ("compatibility-attribution-audit"
+        if VERSION == "0.0.97" else "firearm-audio-restoration")
     require_tokens(
-        root / "docs/RELEASE-NOTES-0.0.96.md",
-        "Kingmaker Gunslinger 0.0.96", "firearm-audio-restoration.zip",
+        root / f"docs/RELEASE-NOTES-{VERSION}.md",
+        f"Kingmaker Gunslinger {VERSION}", f"{release_suffix}.zip",
         BANK_SHA256)
     require_tokens(
         root / "scripts/Publish-Release.ps1",
-        "docs\\RELEASE-NOTES-0.0.96.md", "ConfirmReleaseReady")
+        f"docs\\RELEASE-NOTES-{VERSION}.md", "ConfirmReleaseReady")
 
     manifest_path = root / "assets/soundbanks/firearm-soundbank-manifest.json"
     bank_path = root / "assets/soundbanks/KMG_Firearms.bnk"

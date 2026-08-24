@@ -130,7 +130,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("firearm-audio-restoration"
+    package_suffix = ("compatibility-attribution-audit"
+        if VERSION == "0.0.97" else "firearm-audio-restoration"
         if VERSION == "0.0.96" else "bodyguard-in-harms-way")
     require_tokens(root / "scripts/package.ps1",
         f"$($info.Id)-$($info.Version)-{package_suffix}.zip")

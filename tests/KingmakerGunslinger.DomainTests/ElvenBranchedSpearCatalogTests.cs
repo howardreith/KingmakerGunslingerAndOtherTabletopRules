@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.96\"") &&
-                props.Contains("<KmgVersion>0.0.96</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.96-firearm-audio-restoration</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.96\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.96\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.96-firearm-audio-restoration\")"),
-                "Release and assembly identity are not transactionally pinned to the firearm-audio restoration.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.97\"") &&
+                props.Contains("<KmgVersion>0.0.97</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.97-compatibility-attribution-audit</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.97\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.97\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.97-compatibility-attribution-audit\")"),
+                "Release and assembly identity are not transactionally pinned to the compatibility-attribution audit.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-firearm-audio-restoration.zip") &&
+                "$($info.Id)-$($info.Version)-compatibility-attribution-audit.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the firearm-audio restoration archive.");
-            Assertions.True(runtime.Contains("active version 0.0.96") &&
-                localBuild.Contains("active version 0.0.96") &&
-                localBuild.Contains("local-runtime\\0.0.96"),
+                "Package identity is not pinned to the compatibility-attribution audit archive.");
+            Assertions.True(runtime.Contains("active version 0.0.97") &&
+                localBuild.Contains("active version 0.0.97") &&
+                localBuild.Contains("local-runtime\\0.0.97"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

@@ -3,8 +3,10 @@
 ## Result
 
 This audit found no KMG production defect in any assigned track. No
-compatibility repair, blueprint identity change, asset rebuild, balance change,
-or public version change was made.
+compatibility repair, blueprint identity change, asset rebuild, or balance
+change was made. After the audit handoff, the repository owner separately
+authorized release `0.0.97`, promoting this report and the already-qualified
+guarded diagnostics without changing the audit classifications.
 
 | Track | Final classification | Result |
 |---|---|---|

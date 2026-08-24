@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.96-firearm-audio-restoration",
-  "version": "0.0.96",
+  "milestone": "0.0.97-compatibility-attribution-audit",
+  "version": "0.0.97",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -172,8 +172,8 @@
     "nextActualTurnSwiftDebtRequired": true,
     "runtimeQualificationPending": true
   },
-  "firearmAudio96": {
-    "deterministicTestCount": 1224,
+  "compatibilityAttribution97": {
+    "deterministicTestCount": 1228,
     "featureModuleCount": 9,
     "featureModuleSchemaVersion": 8,
     "featureModuleExhaustiveCount": 512,
@@ -193,6 +193,12 @@
     "productionManifestLoaderIsolated": true,
     "runtimeAudioRoutingQualified": true,
     "ownerAuditoryAcceptance": true,
-    "soundBankBytesPreserved": true
+    "soundBankBytesPreserved": true,
+    "guardedAssetSuppressionOnly": true,
+    "assetInventoryQualified": true,
+    "favoredClassAttributionComplete": true,
+    "polymorphAttributionComplete": true,
+    "assetWarningAttributionComplete": true,
+    "noKmgProductionRepair": true
   }
 }

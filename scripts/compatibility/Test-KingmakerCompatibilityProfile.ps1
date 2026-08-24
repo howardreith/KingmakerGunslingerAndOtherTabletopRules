@@ -33,9 +33,9 @@ function New-Fixture([string]$Name, [bool]$OriginalExists = $true, [bool]$BankEx
     if ($BankExists) { New-Item -ItemType Directory -Path (Split-Path -Parent $bank) -Force | Out-Null; Set-Content -LiteralPath $bank -Value 'original-bank' -Encoding Ascii }
     $packageSource = Join-Path $root 'package-source\KingmakerGunslinger'
     New-Item -ItemType Directory -Path $packageSource -Force | Out-Null
-    Set-Content -LiteralPath (Join-Path $packageSource 'Info.json') -Value '{"Id":"KingmakerGunslinger","Version":"0.0.96"}' -Encoding UTF8
+    Set-Content -LiteralPath (Join-Path $packageSource 'Info.json') -Value '{"Id":"KingmakerGunslinger","Version":"0.0.97"}' -Encoding UTF8
     Set-Content -LiteralPath (Join-Path $packageSource 'KingmakerGunslinger.dll') -Value 'gunslinger-fixture' -Encoding Ascii
-    $zip = Join-Path $root 'KingmakerGunslinger-0.0.96-local-runtime.zip'
+    $zip = Join-Path $root 'KingmakerGunslinger-0.0.97-local-runtime.zip'
     Compress-Archive -LiteralPath $packageSource -DestinationPath $zip
     $third = Join-Path $root 'references\ThirdMod'
     New-Item -ItemType Directory -Path $third -Force | Out-Null
