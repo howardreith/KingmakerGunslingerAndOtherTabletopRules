@@ -5410,19 +5410,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmRuntimeState.Service.Set(weapon,new FirearmState(
                     FirearmState.CurrentSchemaVersion,1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,FirearmCondition.Normal));
-                target.Descriptor.Stats.Dexterity.BaseValue=100;
-                FirearmMisfireRuntime.QueueForcedNaturalRoll(3);
+                int originalBaseAttackBonus=
+                    attacker.Descriptor.Stats.BaseAttackBonus.BaseValue;
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue=-100;
                 var missedAttack=new RuleAttackWithWeapon(
                     attacker,target,weapon,0);
-                try { Rulebook.Trigger(missedAttack); }
-                finally { FirearmMisfireRuntime.CancelForcedNaturalRoll(); }
-                ordinaryMiss=missedAttack.AttackRoll!=null&&
-                    !missedAttack.AttackRoll.IsHit;
-                afterMiss=Audio.FirearmSoundRuntime.AcceptedPosts;
-                missPlayingId=Audio.FirearmSoundRuntime.LastPlayingId;
-                missEventName=Audio.FirearmSoundRuntime.LastEventName;
-                missDiagnostics=Audio.FirearmSoundRuntime.Describe();
-                target.Descriptor.Stats.Dexterity.BaseValue=10;
+                try
+                {
+                    FirearmMisfireRuntime.QueueForcedNaturalRoll(3);
+                    try { Rulebook.Trigger(missedAttack); }
+                    finally { FirearmMisfireRuntime.CancelForcedNaturalRoll(); }
+                    ordinaryMiss=missedAttack.AttackRoll!=null&&
+                        !missedAttack.AttackRoll.IsHit;
+                    afterMiss=Audio.FirearmSoundRuntime.AcceptedPosts;
+                    missPlayingId=Audio.FirearmSoundRuntime.LastPlayingId;
+                    missEventName=Audio.FirearmSoundRuntime.LastEventName;
+                    missDiagnostics=Audio.FirearmSoundRuntime.Describe()+
+                        ";attackRollIsHit="+(missedAttack.AttackRoll==null?
+                            "<null>":missedAttack.AttackRoll.IsHit.ToString())+
+                        ";fixtureBaseAttackBonus=-100";
+                }
+                finally
+                {
+                    attacker.Descriptor.Stats.BaseAttackBonus.BaseValue=
+                        originalBaseAttackBonus;
+                }
 
                 FirearmRuntimeState.Service.Set(weapon,new FirearmState(
                     FirearmState.CurrentSchemaVersion,1,
@@ -5575,7 +5587,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "AkSoundEngine.PostEvent global technical previews"),
                 Assertion("unit-emitter-blunderbuss-event-accepted","one valid nonzero playing ID from live disposable unit view",selectedDiagnostics,selectedPreview!=null&&selectedPreview.Accepted&&selectedPreview.PlayingId!=0&&afterSelected==afterGlobal+1&&selectedPreview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&selectedPreview.Source=="development-selected-preview","AkSoundEngine.PostEvent live unit emitter preview"),
                 Assertion("ordinary-discharge-event-accepted","accepted count +1; exact Blunderbuss event; ordinary-attack",ordinaryDiagnostics,afterOrdinary==afterSelected+1&&ordinaryPlayingId!=0&&ordinaryEventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&ordinaryDiagnostics.Contains("lastSource=ordinary-attack"),"RuleAttackWithWeapon committed non-misfire discharge"),
-                Assertion("ordinary-miss-event-accepted","native miss still accepts exactly one exact Blunderbuss event",missDiagnostics,ordinaryMiss&&afterMiss==afterOrdinary+1&&missPlayingId!=0&&missEventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&missDiagnostics.Contains("lastSource=ordinary-attack"),"forced non-misfire natural 3 against high Dexterity touch AC"),
+                Assertion("ordinary-miss-event-accepted","native miss still accepts exactly one exact Blunderbuss event",missDiagnostics,ordinaryMiss&&afterMiss==afterOrdinary+1&&missPlayingId!=0&&missEventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&missDiagnostics.Contains("lastSource=ordinary-attack"),"forced non-misfire natural 3 with request-local -100 base attack bonus"),
                 Assertion("blunderbuss-misfire-no-normal-event","accepted count and committed notification count unchanged",misfireDiagnostics,afterMisfire==afterMiss&&ordinaryAttemptsAfter==ordinaryAttemptsBefore+2,"forced Blunderbuss natural 1 through RuleAttackWithWeapon"),
                 Assertion("rejected-and-uncommitted-attacks-silent","empty, Wrecked, and constructed-but-untriggered attacks preserve accepted count and the canceled chamber",rejectionDiagnostics,afterEmpty==afterMisfire&&afterWrecked==afterEmpty&&afterCanceled==afterWrecked&&canceledAttackConstructed&&canceledStatePreserved,"production discharge gate plus untriggered RuleAttackWithWeapon"),
                 Assertion("native-crossbow-audio-isolation","no custom firearm notification or accepted post",rejectionDiagnostics,afterCrossbow==afterCanceled&&ordinaryAttemptsAfter==ordinaryAttemptsBefore+2,"native heavy-crossbow RuleAttackWithWeapon and exact firearm marker boundary"),

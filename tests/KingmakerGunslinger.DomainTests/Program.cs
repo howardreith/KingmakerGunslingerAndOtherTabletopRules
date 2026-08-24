@@ -1951,6 +1951,8 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains("production-manifest-runtime-boundary") &&
                 runner.Contains("firearm-bank-stage-and-ready") &&
                 runner.Contains("ordinary-miss-event-accepted") &&
+                runner.Contains("Stats.BaseAttackBonus.BaseValue=-100") &&
+                runner.Contains("fixtureBaseAttackBonus=-100") &&
                 runner.Contains("rejected-and-uncommitted-attacks-silent") &&
                 runner.Contains("native-crossbow-audio-isolation") &&
                 runner.Contains("scatter-audio-once-per-volley") &&
