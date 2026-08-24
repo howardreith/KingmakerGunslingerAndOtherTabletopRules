@@ -84,8 +84,14 @@ Assert-True ($orchestrator.Contains('[switch]$ReuseInstalledArtifact') -and
 Assert-True ($deployment.Contains('schemaVersion = 2') -and
     $deployment.Contains('commit = $manifest.commit') -and
     $deployment.Contains('dllMvid = $manifest.dllMvid') -and
-    $deployment.Contains('firearmBundleSha256 = Get-KmgSha256')) `
+    $deployment.Contains('firearmBundleSha256 = Get-KmgSha256') -and
+    $deployment.Contains('deployedFirearmManifestSha256 = $deployedFirearmManifestSha256') -and
+    $deployment.Contains('deployedFirearmSoundBankSha256 = $deployedFirearmSoundBankSha256')) `
     'deployment-manifest-captures-immutable-artifact-identity'
+Assert-True ($deployment.Contains('Packaged and deployed firearm audio files differ.') -and
+    $deployment.Contains('$packagedFirearmManifestSha256 -ne $deployedFirearmManifestSha256') -and
+    $deployment.Contains('$packagedFirearmSoundBankSha256 -ne $deployedFirearmSoundBankSha256')) `
+    'deployment-verifies-packaged-firearm-audio-parity'
 Assert-True ($deployment.Contains('[switch]$AllowEmptyFirstInstall') -and
     $deployment.Contains('-AllowEmptySource:$AllowEmptyFirstInstall') -and
     $deployment.Contains('backupWasEmpty = [bool]$backup.EmptySource')) `
@@ -94,4 +100,4 @@ Assert-True ($deployment.Contains('[switch]$AllowEmptyFirstInstall') -and
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 20'
+Write-Host 'Runtime deployment safety tests passed: 21'

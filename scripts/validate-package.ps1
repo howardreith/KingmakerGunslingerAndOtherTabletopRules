@@ -2,6 +2,8 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$PackagePath,
+    [ValidateSet('Debug', 'Release')]
+    [string]$Configuration = 'Release',
     [switch]$AllowMissingFirearmSoundBank
 )
 
@@ -72,11 +74,30 @@ try {
             throw "Expanded Summoning packaged icon hash mismatch: $($icon.key)."
         }
     }
+    $sourceManifest=Join-Path $repositoryRoot 'assets\soundbanks\firearm-soundbank-manifest.json'
+    $sourceBank=Join-Path $repositoryRoot 'assets\soundbanks\KMG_Firearms.bnk'
+    $packagedManifest=Join-Path $modDirectory 'assets\soundbanks\firearm-soundbank-manifest.json'
     $packagedBank=Join-Path $modDirectory 'assets\soundbanks\KMG_Firearms.bnk'
     if(Test-Path -LiteralPath $packagedBank -PathType Leaf){
         $expected += @('assets\soundbanks\KMG_Firearms.bnk','assets\soundbanks\firearm-soundbank-manifest.json')
-        $manifest=Get-Content -LiteralPath (Join-Path $modDirectory 'assets\soundbanks\firearm-soundbank-manifest.json') -Raw | ConvertFrom-Json
+        if(-not (Test-Path -LiteralPath $packagedManifest -PathType Leaf)){
+            throw 'Release package is missing the firearm SoundBank manifest.'
+        }
+        if((Get-KmgSha256 -Path $sourceManifest) -cne (Get-KmgSha256 -Path $packagedManifest)){
+            throw 'Source and packaged firearm manifests differ.'
+        }
+        $manifest=Get-Content -LiteralPath $packagedManifest -Raw | ConvertFrom-Json
+        if((Get-KmgSha256 -Path $sourceBank).ToUpperInvariant() -cne $manifest.sha256){throw 'Source firearm SoundBank hash mismatch.'}
         if((Get-KmgSha256 -Path $packagedBank).ToUpperInvariant() -cne $manifest.sha256){throw 'Packaged firearm SoundBank hash mismatch.'}
+        $productionValidator=Join-Path $repositoryRoot `
+            "artifacts\tests\$Configuration\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe"
+        if(-not (Test-Path -LiteralPath $productionValidator -PathType Leaf)){
+            throw "Production C# manifest validator is missing: $productionValidator"
+        }
+        & $productionValidator '--validate-firearm-artifact' $packagedManifest $packagedBank
+        if($LASTEXITCODE -ne 0){
+            throw "Packaged firearm artifacts failed production C# validation with exit code $LASTEXITCODE."
+        }
     } elseif(-not $AllowMissingFirearmSoundBank){throw 'Release package is missing authentic KMG_Firearms.bnk.'}
     $actual = @(
         Get-ChildItem -LiteralPath $modDirectory -Recurse -File |

@@ -58,9 +58,23 @@ $source = Join-Path $stagingRoot 'KingmakerGunslinger'
 if (-not (Test-Path -LiteralPath (Join-Path $source 'Info.json') -PathType Leaf)) {
     throw 'Validated package did not extract to the expected single mod root.'
 }
+$packagedFirearmManifest = Join-Path $source `
+    'assets\soundbanks\firearm-soundbank-manifest.json'
+$packagedFirearmSoundBank = Join-Path $source `
+    'assets\soundbanks\KMG_Firearms.bnk'
+$packagedFirearmManifestSha256 = Get-KmgSha256 -Path $packagedFirearmManifest
+$packagedFirearmSoundBankSha256 = Get-KmgSha256 -Path $packagedFirearmSoundBank
+if ($packagedFirearmManifestSha256 -ne $manifest.firearmManifestSha256 -or
+    $packagedFirearmSoundBankSha256 -ne $manifest.firearmSoundBankSha256) {
+    throw 'Extracted package firearm audio differs from its immutable build manifest.'
+}
 
 $deployedDll = Join-Path $live 'KingmakerGunslinger.dll'
 $deployedFirearmBundle = Join-Path $live 'assets\bundles\kingmakergunslinger.firearms'
+$deployedFirearmManifest = Join-Path $live `
+    'assets\soundbanks\firearm-soundbank-manifest.json'
+$deployedFirearmSoundBank = Join-Path $live `
+    'assets\soundbanks\KMG_Firearms.bnk'
 try {
     foreach ($child in Get-ChildItem -LiteralPath $live -Force) {
         $target = Assert-KmgPathWithin -Path $child.FullName -Root $live
@@ -79,6 +93,12 @@ try {
         ForEach-Object { $_.FullName.Substring($live.Length).TrimStart('\') } | Sort-Object)
     if (($expectedFiles -join "`n") -ne ($actualFiles -join "`n")) {
         throw 'Deployed filename verification failed.'
+    }
+    $deployedFirearmManifestSha256 = Get-KmgSha256 -Path $deployedFirearmManifest
+    $deployedFirearmSoundBankSha256 = Get-KmgSha256 -Path $deployedFirearmSoundBank
+    if ($packagedFirearmManifestSha256 -ne $deployedFirearmManifestSha256 -or
+        $packagedFirearmSoundBankSha256 -ne $deployedFirearmSoundBankSha256) {
+        throw 'Packaged and deployed firearm audio files differ.'
     }
 }
 finally {
@@ -103,6 +123,10 @@ New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
     dllMvid = $manifest.dllMvid
     deployedDllSha256 = Get-KmgSha256 -Path $deployedDll
     firearmBundleSha256 = Get-KmgSha256 -Path $deployedFirearmBundle
+    firearmManifestSha256 = $packagedFirearmManifestSha256
+    firearmSoundBankSha256 = $packagedFirearmSoundBankSha256
+    deployedFirearmManifestSha256 = $deployedFirearmManifestSha256
+    deployedFirearmSoundBankSha256 = $deployedFirearmSoundBankSha256
     featureModuleSettingsPreserved = $featureSettingsExisted
     featureModuleSettingsSha256 = if ($featureSettingsExisted) {
         Get-KmgSha256 -Path $featureSettingsPath

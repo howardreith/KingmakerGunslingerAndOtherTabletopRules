@@ -93,7 +93,9 @@ $expectedPackageFileCount = if ($hasFirearmSoundBank) { 137 } else { 135 }
 if ($LASTEXITCODE -ne 0) {
     throw 'Deterministic standalone package creation failed.'
 }
-& (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -AllowMissingFirearmSoundBank:$AllowMissingFirearmSoundBank
+& (Join-Path $PSScriptRoot 'validate-package.ps1') `
+    -PackagePath $packagePath -Configuration $Configuration `
+    -AllowMissingFirearmSoundBank:$AllowMissingFirearmSoundBank
 
 $checksum = Get-KmgSha256 -Path $packagePath
 Set-Content -LiteralPath $checksumPath -Value "$checksum  $([IO.Path]::GetFileName($packagePath))" -Encoding ASCII

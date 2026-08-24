@@ -61,7 +61,9 @@ function Assert-KmgReusableDeployment {
     if ($build.schemaVersion -ne 1 -or $build.validated -ne $true -or
         $build.generator -ne 'scripts/Build-Local.ps1' -or
         $build.packagePath -ne $package -or $build.commit -ne $git.Commit -or
-        $build.version -ne $ExpectedVersion) {
+        $build.version -ne $ExpectedVersion -or
+        [string]::IsNullOrWhiteSpace([string]$build.firearmManifestSha256) -or
+        [string]::IsNullOrWhiteSpace([string]$build.firearmSoundBankSha256)) {
         throw 'Reusable build identity does not match the clean current commit/version.'
     }
     if ((Get-KmgSha256 -Path $package) -ne $build.packageSha256) {
@@ -73,7 +75,11 @@ function Assert-KmgReusableDeployment {
         $deployment.commit -ne $build.commit -or
         $deployment.version -ne $ExpectedVersion -or
         $deployment.dllSha256 -ne $build.dllSha256 -or
-        $deployment.dllMvid -ne $build.dllMvid) {
+        $deployment.dllMvid -ne $build.dllMvid -or
+        $deployment.firearmManifestSha256 -ne $build.firearmManifestSha256 -or
+        $deployment.firearmSoundBankSha256 -ne $build.firearmSoundBankSha256 -or
+        $deployment.deployedFirearmManifestSha256 -ne $build.firearmManifestSha256 -or
+        $deployment.deployedFirearmSoundBankSha256 -ne $build.firearmSoundBankSha256) {
         throw 'Reusable deployment identity does not match its immutable package/build identity.'
     }
     $live = [IO.Path]::GetFullPath($deployment.liveModDirectory)
@@ -84,21 +90,28 @@ function Assert-KmgReusableDeployment {
     }
     $dll = Join-Path $live 'KingmakerGunslinger.dll'
     $bundle = Join-Path $live 'assets\bundles\kingmakergunslinger.firearms'
+    $firearmManifest = Join-Path $live `
+        'assets\soundbanks\firearm-soundbank-manifest.json'
+    $firearmSoundBank = Join-Path $live `
+        'assets\soundbanks\KMG_Firearms.bnk'
     $info = Get-Content -LiteralPath (Join-Path $live 'Info.json') -Raw |
         ConvertFrom-Json
     if ($info.Version -ne $ExpectedVersion -or
         (Get-KmgSha256 -Path $dll) -ne $build.dllSha256 -or
         (Get-KmgDllMvid -Path $dll) -ne $build.dllMvid -or
-        (Get-KmgSha256 -Path $bundle) -ne $deployment.firearmBundleSha256) {
-        throw 'Installed version, DLL SHA/MVID, or firearm bundle differs from the reusable deployment.'
+        (Get-KmgSha256 -Path $bundle) -ne $deployment.firearmBundleSha256 -or
+        (Get-KmgSha256 -Path $firearmManifest) -ne $build.firearmManifestSha256 -or
+        (Get-KmgSha256 -Path $firearmSoundBank) -ne $build.firearmSoundBankSha256) {
+        throw 'Installed version, DLL SHA/MVID, firearm bundle, or firearm audio differs from the reusable deployment.'
     }
     $settings = Join-Path $live 'FeatureModules.json'
     $settingsExists = Test-Path -LiteralPath $settings -PathType Leaf
     $settingsHash = if ($settingsExists) { Get-KmgSha256 -Path $settings } else { '<absent>' }
-    Write-Host ('Reusable artifact verified: commit={0};version={1};package={2};dll={3};mvid={4};installedDll={5};bundle={6};settings={7}' -f
+    Write-Host ('Reusable artifact verified: commit={0};version={1};package={2};dll={3};mvid={4};installedDll={5};bundle={6};manifest={7};bank={8};settings={9}' -f
         $git.Commit, $ExpectedVersion, $build.packageSha256, $build.dllSha256,
         $build.dllMvid, (Get-KmgSha256 -Path $dll),
-        $deployment.firearmBundleSha256, $settingsHash)
+        $deployment.firearmBundleSha256, $build.firearmManifestSha256,
+        $build.firearmSoundBankSha256, $settingsHash)
     return [pscustomobject]@{
         Build = $build
         Deployment = $deployment
@@ -124,7 +137,9 @@ function Read-KmgBuildLocalManifest {
     if ($manifest.schemaVersion -ne 1 -or $manifest.packagePath -ne $package -or
         $manifest.generator -ne 'scripts/Build-Local.ps1' -or
         $manifest.validated -ne $true -or
-        [string]::IsNullOrWhiteSpace([string]$manifest.dllMvid)) {
+        [string]::IsNullOrWhiteSpace([string]$manifest.dllMvid) -or
+        [string]::IsNullOrWhiteSpace([string]$manifest.firearmManifestSha256) -or
+        [string]::IsNullOrWhiteSpace([string]$manifest.firearmSoundBankSha256)) {
         throw 'Build-Local manifest has an invalid schema or package path.'
     }
     $allowedPackageRoot = Join-Path $RepositoryRoot 'artifacts\local-runtime'

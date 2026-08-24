@@ -327,10 +327,16 @@ namespace KingmakerGunslinger.DomainTests
             Case("archetype-musket-master.native-starter-skeleton", MusketMasterStarterSkeleton),
             Case("archetype-pistolero.replacement-skeleton", PistoleroReplacementSkeleton),
             Case("audio.catalog-exact", FirearmAudioTests.CatalogExact),
+            Case("audio.production-manifest", FirearmAudioTests.ProductionManifestParsing),
+            Case("audio.copied-manifest", FirearmAudioTests.CopiedManifestRepresentationParsing),
+            Case("audio.serializer-isolation", FirearmAudioTests.ProcessGlobalSerializerIsolation),
+            Case("audio.strict-manifest-failures", FirearmAudioTests.StrictManifestParsingFailures),
             Case("audio.manifest-validation", FirearmAudioTests.ManifestValidation),
             Case("audio.bank-binary-validation", FirearmAudioTests.BankBinaryValidation),
             Case("audio.staging-lifecycle", FirearmAudioTests.StagingLifecycle),
             Case("audio.state-machine", FirearmAudioTests.StateMachineLifecycle),
+            Case("audio.retry-production-parser", FirearmAudioTests.RetryParserAfterActualFault),
+            Case("audio.package-deployment-contracts", FirearmAudioTests.PackageAndDeploymentContracts),
             Case("audio.discharge-route-shape", FirearmAudioDischargeRouteShape),
             Case("vendor-publication.append", VendorPublicationAppendsExactReferences),
             Case("vendor-publication.idempotent", VendorPublicationIsIdempotent),
@@ -1245,8 +1251,11 @@ namespace KingmakerGunslinger.DomainTests
             Case("reload-profile.ammunition-identity", ReloadProfileAmmunitionIdentity)
         };
 
-        private static int Main()
+        private static int Main(string[] args)
         {
+            if (args != null && args.Length != 0)
+                return RunUtility(args);
+
             int failures = 0;
             Console.WriteLine("Kingmaker Gunslinger domain, firearm-state, and combat-rule tests");
 
@@ -1271,6 +1280,33 @@ namespace KingmakerGunslinger.DomainTests
                     Cases.Length,
                     failures));
             return failures == 0 ? 0 : 1;
+        }
+
+        private static int RunUtility(string[] args)
+        {
+            if (args.Length == 3 && string.Equals(
+                args[0],
+                "--validate-firearm-artifact",
+                StringComparison.Ordinal))
+            {
+                try
+                {
+                    FirearmAudioTests.ValidateExternalArtifact(args[1],args[2]);
+                    Console.WriteLine(
+                        "PASS production firearm manifest and SoundBank artifact validation.");
+                    return 0;
+                }
+                catch (Exception exception)
+                {
+                    Console.Error.WriteLine(
+                        "FAIL production firearm manifest and SoundBank artifact validation: " +
+                        exception);
+                    return 1;
+                }
+            }
+
+            Console.Error.WriteLine("Unknown domain-test utility arguments.");
+            return 2;
         }
 
         private static string ThirdPlaytestSource(string relative)
@@ -1892,6 +1928,7 @@ namespace KingmakerGunslinger.DomainTests
             string startling=ThirdPlaytestSource("src/KingmakerGunslinger/Deeds/StartlingShotRuntime.cs");
             string menacing=ThirdPlaytestSource("src/KingmakerGunslinger/Deeds/MenacingShotAbilityLogic.cs");
             string bleeding=ThirdPlaytestSource("src/KingmakerGunslinger/Deeds/StopBleedingRuntime.cs");
+            string runner=ThirdPlaytestSource("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
             Assertions.True(ordinary.Contains("ordinary-attack") && ordinary.Contains("if (!decision.IsMisfire)") &&
                 scatter.Contains("scatter-shot") && scatter.Contains("if (volley.AllRollsMisfire)") &&
                 dead.Contains("if (!outcome.Misfires)") && dead.Contains("\"dead-shot\"") &&
@@ -1899,6 +1936,27 @@ namespace KingmakerGunslinger.DomainTests
                 menacing.Contains("completed = true;") && menacing.Contains("\"menacing-shot\"") &&
                 bleeding.Contains("RecordApplied();") && bleeding.Contains("\"stop-bleeding\""),
                 "A committed physical discharge route is missing its post-commit Wwise notification gate.");
+            const string Notification="TryPostCommittedDischarge(";
+            Assertions.Equal(1,scatter.Split(new[]{Notification},StringSplitOptions.None).Length-1,
+                "Scatter owns more than one committed-discharge notification seam.");
+            Assertions.Equal(1,dead.Split(new[]{Notification},StringSplitOptions.None).Length-1,
+                "Dead Shot owns more than one committed-discharge notification seam.");
+            Assertions.Equal(1,startling.Split(new[]{Notification},StringSplitOptions.None).Length-1,
+                "Startling Shot owns more than one committed-discharge notification seam.");
+            Assertions.Equal(1,menacing.Split(new[]{Notification},StringSplitOptions.None).Length-1,
+                "Menacing Shot owns more than one committed-discharge notification seam.");
+            Assertions.Equal(1,bleeding.Split(new[]{Notification},StringSplitOptions.None).Length-1,
+                "Stop Bleeding owns more than one committed-discharge notification seam.");
+            Assertions.True(
+                runner.Contains("production-manifest-runtime-boundary") &&
+                runner.Contains("firearm-bank-stage-and-ready") &&
+                runner.Contains("ordinary-miss-event-accepted") &&
+                runner.Contains("rejected-and-uncommitted-attacks-silent") &&
+                runner.Contains("native-crossbow-audio-isolation") &&
+                runner.Contains("scatter-audio-once-per-volley") &&
+                runner.Contains("deed-audio-commit-boundaries") &&
+                runner.Contains("GetCommittedDischargeAttempts"),
+                "The focused guarded audio scenario lacks a required production boundary.");
         }
 
         private static TestCase Case(string name, Action body)

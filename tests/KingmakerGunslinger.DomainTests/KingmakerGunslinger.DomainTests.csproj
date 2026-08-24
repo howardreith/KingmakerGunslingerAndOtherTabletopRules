@@ -192,6 +192,7 @@
     <Compile Include="FirearmFeatIconTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundEventCatalog.cs"><Link>Audio\FirearmSoundEventCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifest.cs"><Link>Audio\FirearmSoundBankManifest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifestLoader.cs"><Link>Audio\FirearmSoundBankManifestLoader.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifestValidator.cs"><Link>Audio\FirearmSoundBankManifestValidator.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankStager.cs"><Link>Audio\FirearmSoundBankStager.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundStateMachine.cs"><Link>Audio\FirearmSoundStateMachine.cs</Link></Compile>

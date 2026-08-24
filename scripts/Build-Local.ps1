@@ -92,7 +92,7 @@ Copy-Item -LiteralPath $spearBundle -Destination (Join-Path $buildOutput 'assets
 Copy-Item -LiteralPath $easternBundle -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 & (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration Release
-& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -AllowMissingFirearmSoundBank
+& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release
 
 $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
@@ -101,9 +101,14 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soun
 $expectedPackageFileCount = if ($hasFirearmSoundBank) { 137 } else { 135 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
-& (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -AllowMissingFirearmSoundBank
+& (Join-Path $PSScriptRoot 'validate-package.ps1') `
+    -PackagePath $packagePath -Configuration Release
 
 $dllPath = Join-Path $buildOutput 'KingmakerGunslinger.dll'
+$firearmManifestPath = Join-Path $stagedMod `
+    'assets\soundbanks\firearm-soundbank-manifest.json'
+$firearmSoundBankPath = Join-Path $stagedMod `
+    'assets\soundbanks\KMG_Firearms.bnk'
 $manifest = [ordered]@{
     schemaVersion = 1
     generatedAtUtc = [DateTime]::UtcNow.ToString('o')
@@ -116,6 +121,8 @@ $manifest = [ordered]@{
     packageSha256 = Get-KmgSha256 -Path $packagePath
     dllSha256 = Get-KmgSha256 -Path $dllPath
     dllMvid = Get-KmgDllMvid -Path $dllPath
+    firearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
+    firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
     validated = $true
 }
 $manifestPath = Get-KmgPackageManifestPath -PackagePath $packagePath

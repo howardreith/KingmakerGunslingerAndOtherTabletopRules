@@ -5335,7 +5335,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunFirearmWwiseAudio()
         {
+            const string ManifestHash =
+                "BF57981AD5EC2CBF3149ECAFC3EF737D87BC9035B14BCCC7D254DCA8F991C62E";
+            const string BankHash =
+                "0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18";
             int before=Audio.FirearmSoundRuntime.AcceptedPosts;
+            int ordinaryAttemptsBefore=
+                Audio.FirearmSoundRuntime.GetCommittedDischargeAttempts(
+                    "ordinary-attack");
             FirearmKind[] previewKinds={FirearmKind.Pistol,FirearmKind.Musket,
                 FirearmKind.Blunderbuss,FirearmKind.Revolver,FirearmKind.Rifle};
             Audio.FirearmSoundPostResult[] previews=previewKinds.Select(
@@ -5352,14 +5359,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData attacker=null;
             Kingmaker.EntitySystem.Entities.UnitEntityData target=null;
             Kingmaker.EntitySystem.SceneEntitiesState disposableScene=null;
-            ItemEntityWeapon weapon=null;
+            ItemEntityWeapon weapon=null,crossbow=null;
             Audio.FirearmSoundPostResult selectedPreview=null;
-            int afterSelected=-1,afterOrdinary=-1,afterMisfire=-1;
-            uint ordinaryPlayingId=0;
+            int afterSelected=-1,afterOrdinary=-1,afterMiss=-1,
+                afterMisfire=-1,afterEmpty=-1,afterWrecked=-1,
+                afterCanceled=-1,afterCrossbow=-1,ordinaryAttemptsAfter=-1;
+            uint ordinaryPlayingId=0,missPlayingId=0;
+            string ordinaryEventName=null,missEventName=null;
             string selectedDiagnostics="<not-run>",ordinaryDiagnostics="<not-run>",
-                misfireDiagnostics="<not-run>", ordinaryMisfireDiagnostics="<not-run>",
-                forcedMisfireDiagnostics="<not-run>";
-            bool cleaned=false;
+                missDiagnostics="<not-run>",misfireDiagnostics="<not-run>",
+                ordinaryMisfireDiagnostics="<not-run>",
+                forcedMisfireDiagnostics="<not-run>",
+                rejectionDiagnostics="<not-run>";
+            bool ordinaryMiss=false,canceledAttackConstructed=false,
+                canceledStatePreserved=false,cleaned=false;
             try
             {
                 disposableScene=new Kingmaker.EntitySystem.SceneEntitiesState(
@@ -5382,24 +5395,97 @@ namespace KingmakerGunslinger.RuntimeTesting
                 selectedDiagnostics=Audio.FirearmSoundRuntime.Describe();
 
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(19);
-                Rulebook.Trigger(new RuleAttackWithWeapon(attacker,target,weapon,0));
+                try
+                {
+                    Rulebook.Trigger(new RuleAttackWithWeapon(
+                        attacker,target,weapon,0));
+                }
+                finally { FirearmMisfireRuntime.CancelForcedNaturalRoll(); }
                 afterOrdinary=Audio.FirearmSoundRuntime.AcceptedPosts;
                 ordinaryPlayingId=Audio.FirearmSoundRuntime.LastPlayingId;
+                ordinaryEventName=Audio.FirearmSoundRuntime.LastEventName;
                 ordinaryDiagnostics=Audio.FirearmSoundRuntime.Describe();
                 ordinaryMisfireDiagnostics=FirearmMisfireRuntime.Describe();
 
                 FirearmRuntimeState.Service.Set(weapon,new FirearmState(
                     FirearmState.CurrentSchemaVersion,1,
                     FirearmStateTokenCatalog.DiagnosticLeadBall,FirearmCondition.Normal));
+                target.Descriptor.Stats.Dexterity.BaseValue=100;
+                FirearmMisfireRuntime.QueueForcedNaturalRoll(3);
+                var missedAttack=new RuleAttackWithWeapon(
+                    attacker,target,weapon,0);
+                try { Rulebook.Trigger(missedAttack); }
+                finally { FirearmMisfireRuntime.CancelForcedNaturalRoll(); }
+                ordinaryMiss=missedAttack.AttackRoll!=null&&
+                    !missedAttack.AttackRoll.IsHit;
+                afterMiss=Audio.FirearmSoundRuntime.AcceptedPosts;
+                missPlayingId=Audio.FirearmSoundRuntime.LastPlayingId;
+                missEventName=Audio.FirearmSoundRuntime.LastEventName;
+                missDiagnostics=Audio.FirearmSoundRuntime.Describe();
+                target.Descriptor.Stats.Dexterity.BaseValue=10;
+
+                FirearmRuntimeState.Service.Set(weapon,new FirearmState(
+                    FirearmState.CurrentSchemaVersion,1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,FirearmCondition.Normal));
                 FirearmMisfireRuntime.QueueForcedNaturalRoll(1);
-                Rulebook.Trigger(new RuleAttackWithWeapon(attacker,target,weapon,0));
+                try
+                {
+                    Rulebook.Trigger(new RuleAttackWithWeapon(
+                        attacker,target,weapon,0));
+                }
+                finally { FirearmMisfireRuntime.CancelForcedNaturalRoll(); }
                 afterMisfire=Audio.FirearmSoundRuntime.AcceptedPosts;
                 misfireDiagnostics=Audio.FirearmSoundRuntime.Describe();
                 forcedMisfireDiagnostics=FirearmMisfireRuntime.Describe();
+
+                FirearmRuntimeState.Service.Set(
+                    weapon,FirearmState.CreateEmpty());
+                Rulebook.Trigger(new RuleAttackWithWeapon(
+                    attacker,target,weapon,0));
+                afterEmpty=Audio.FirearmSoundRuntime.AcceptedPosts;
+
+                FirearmRuntimeState.Service.Set(weapon,new FirearmState(
+                    FirearmState.CurrentSchemaVersion,0,null,
+                    FirearmCondition.Wrecked));
+                Rulebook.Trigger(new RuleAttackWithWeapon(
+                    attacker,target,weapon,0));
+                afterWrecked=Audio.FirearmSoundRuntime.AcceptedPosts;
+
+                FirearmRuntimeState.Service.Set(weapon,new FirearmState(
+                    FirearmState.CurrentSchemaVersion,1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                var canceledAttack=new RuleAttackWithWeapon(
+                    attacker,target,weapon,0);
+                canceledAttackConstructed=canceledAttack!=null;
+                canceledStatePreserved=FirearmRuntimeState.Service.GetOrCreate(
+                    weapon).Repository.State.LoadedRounds==1;
+                afterCanceled=Audio.FirearmSoundRuntime.AcceptedPosts;
+
+                BlueprintItemWeapon nativeCrossbow=
+                    BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                        BlueprintBootstrap.Library,
+                        TestMusketBlueprints.NativeStandardHeavyCrossbowItemGuid,
+                        "native heavy crossbow audio-isolation fixture");
+                crossbow=new ItemEntityWeapon(nativeCrossbow);
+                Rulebook.Trigger(new RuleAttackWithWeapon(
+                    attacker,target,crossbow,0));
+                afterCrossbow=Audio.FirearmSoundRuntime.AcceptedPosts;
+                ordinaryAttemptsAfter=
+                    Audio.FirearmSoundRuntime.GetCommittedDischargeAttempts(
+                        "ordinary-attack");
+                rejectionDiagnostics="empty="+afterEmpty+
+                    ";wrecked="+afterWrecked+
+                    ";canceled="+afterCanceled+
+                    ";crossbow="+afterCrossbow+
+                    ";ordinaryAttempts="+ordinaryAttemptsBefore+"->"+
+                    ordinaryAttemptsAfter+
+                    ";canceledStatePreserved="+canceledStatePreserved;
             }
             finally
             {
                 FirearmMisfireRuntime.CancelForcedNaturalRoll();
+                if(crossbow!=null)crossbow.Dispose();
                 if(weapon!=null)
                 {
                     FirearmRuntimeState.Service.Forget(weapon);
@@ -5414,9 +5500,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (attacker==null||!ContainsReference(allUnits,attacker))&&
                     (target==null||!ContainsReference(allUnits,target));
             }
+
+            int deadBefore=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("dead-shot");
+            RuntimeTestResult dead=RunDisposableGunslingerDeadShot();
+            int deadAfter=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("dead-shot");
+            int scatterBefore=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("scatter-shot");
+            RuntimeTestResult scatter=RunDisposableGunslingerScatterShot();
+            int scatterAfter=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("scatter-shot");
+            int startlingBefore=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("startling-shot");
+            RuntimeTestResult startling=RunDisposableGunslingerStartlingShot();
+            int startlingAfter=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("startling-shot");
+            int menacingBefore=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("menacing-shot");
+            RuntimeTestResult menacing=RunDisposableGunslingerMenacingShot();
+            int menacingAfter=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("menacing-shot");
+            int bleedingBefore=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("stop-bleeding");
+            RuntimeTestResult bleeding=RunDisposableGunslingerStopBleeding();
+            int bleedingAfter=Audio.FirearmSoundRuntime
+                .GetCommittedDischargeAttempts("stop-bleeding");
+            string routeDiagnostics="dead="+dead.Status+":"+
+                (deadAfter-deadBefore)+";scatter="+scatter.Status+":"+
+                (scatterAfter-scatterBefore)+";startling="+startling.Status+":"+
+                (startlingAfter-startlingBefore)+";menacing="+menacing.Status+":"+
+                (menacingAfter-menacingBefore)+";stopBleeding="+
+                bleeding.Status+":"+(bleedingAfter-bleedingBefore);
+
+            string expectedManifestPath=Path.GetFullPath(Path.Combine(
+                _context.ModEntry.Path,"assets","soundbanks",
+                "firearm-soundbank-manifest.json"));
             var assertions=new List<RuntimeTestAssertion>
             {
-                Assertion("firearm-wwise-ready","state=Ready",globalDiagnostics,globalDiagnostics.Contains("state=Ready"),"FirearmSoundRuntime state machine"),
+                Assertion("loaded-mod-version",_request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion==_context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version"),
+                Assertion("production-manifest-runtime-boundary",
+                    "canonical live path; 610 bytes; exact manifest hash; UTF-8 without BOM; Integer schemaVersion=1",
+                    globalDiagnostics,
+                    globalDiagnostics.Contains("manifestPath="+expectedManifestPath)&&
+                    globalDiagnostics.Contains("manifestByteLength=610")&&
+                    globalDiagnostics.Contains("manifestSha256="+ManifestHash)&&
+                    globalDiagnostics.Contains("rawSchemaToken=1")&&
+                    globalDiagnostics.Contains("schemaTokenType=Integer")&&
+                    globalDiagnostics.Contains("schemaVersion=1")&&
+                    globalDiagnostics.Contains("encoding=UTF-8")&&
+                    globalDiagnostics.Contains("bom=None"),
+                    "FirearmSoundBankManifestLoader production document diagnostics"),
+                Assertion("firearm-bank-stage-and-ready",
+                    "one configuration, one stage, one load; exact source/destination bank hash; Ready; no fault",
+                    globalDiagnostics,
+                    globalDiagnostics.Contains("state=Ready")&&
+                    globalDiagnostics.Contains("configurationAttempts=1")&&
+                    globalDiagnostics.Contains("stageAttempts=1")&&
+                    globalDiagnostics.Contains("expectedHash="+BankHash)&&
+                    globalDiagnostics.Contains("observedHash="+BankHash)&&
+                    globalDiagnostics.Contains("destinationHash="+BankHash)&&
+                    globalDiagnostics.Contains("loadAttempts=1")&&
+                    globalDiagnostics.Contains("failureStage=<none>")&&
+                    globalDiagnostics.Contains("fault=<none>"),
+                    "FirearmSoundRuntime and process-lifetime SoundBank state machine"),
                 Assertion("all-firearm-events-accepted","five valid nonzero playing IDs with exact family mapping",previewDiagnostics,
                     afterGlobal==before+previewKinds.Length&&previews.Length==previewKinds.Length&&
                     previews.Select((value,index)=>value.Accepted&&value.PlayingId!=0&&
@@ -5424,8 +5574,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Audio.FirearmSoundEventCatalog.Resolve(previewKinds[index])).All(value=>value),
                     "AkSoundEngine.PostEvent global technical previews"),
                 Assertion("unit-emitter-blunderbuss-event-accepted","one valid nonzero playing ID from live disposable unit view",selectedDiagnostics,selectedPreview!=null&&selectedPreview.Accepted&&selectedPreview.PlayingId!=0&&afterSelected==afterGlobal+1&&selectedPreview.EventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&selectedPreview.Source=="development-selected-preview","AkSoundEngine.PostEvent live unit emitter preview"),
-                Assertion("ordinary-discharge-event-accepted","accepted count +1; exact Blunderbuss event; ordinary-attack",ordinaryDiagnostics,afterOrdinary==afterSelected+1&&ordinaryPlayingId!=0&&Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)==Audio.FirearmSoundRuntime.LastEventName&&ordinaryDiagnostics.Contains("lastSource=ordinary-attack"),"RuleAttackWithWeapon committed non-misfire discharge"),
-                Assertion("blunderbuss-misfire-no-normal-event","accepted count unchanged; live misfire available for inherited-release listening",misfireDiagnostics,afterMisfire==afterOrdinary,"forced Blunderbuss natural 1 through RuleAttackWithWeapon"),
+                Assertion("ordinary-discharge-event-accepted","accepted count +1; exact Blunderbuss event; ordinary-attack",ordinaryDiagnostics,afterOrdinary==afterSelected+1&&ordinaryPlayingId!=0&&ordinaryEventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&ordinaryDiagnostics.Contains("lastSource=ordinary-attack"),"RuleAttackWithWeapon committed non-misfire discharge"),
+                Assertion("ordinary-miss-event-accepted","native miss still accepts exactly one exact Blunderbuss event",missDiagnostics,ordinaryMiss&&afterMiss==afterOrdinary+1&&missPlayingId!=0&&missEventName==Audio.FirearmSoundEventCatalog.Resolve(FirearmKind.Blunderbuss)&&missDiagnostics.Contains("lastSource=ordinary-attack"),"forced non-misfire natural 3 against high Dexterity touch AC"),
+                Assertion("blunderbuss-misfire-no-normal-event","accepted count and committed notification count unchanged",misfireDiagnostics,afterMisfire==afterMiss&&ordinaryAttemptsAfter==ordinaryAttemptsBefore+2,"forced Blunderbuss natural 1 through RuleAttackWithWeapon"),
+                Assertion("rejected-and-uncommitted-attacks-silent","empty, Wrecked, and constructed-but-untriggered attacks preserve accepted count and the canceled chamber",rejectionDiagnostics,afterEmpty==afterMisfire&&afterWrecked==afterEmpty&&afterCanceled==afterWrecked&&canceledAttackConstructed&&canceledStatePreserved,"production discharge gate plus untriggered RuleAttackWithWeapon"),
+                Assertion("native-crossbow-audio-isolation","no custom firearm notification or accepted post",rejectionDiagnostics,afterCrossbow==afterCanceled&&ordinaryAttemptsAfter==ordinaryAttemptsBefore+2,"native heavy-crossbow RuleAttackWithWeapon and exact firearm marker boundary"),
+                Assertion("scatter-audio-once-per-volley","one committed notification across two targets; all-misfire volley silent",routeDiagnostics,scatter.Status==RuntimeTestStatuses.Pass&&scatterAfter==scatterBefore+1,"production two-target Scatter transaction and all-misfire branch"),
+                Assertion("deed-audio-commit-boundaries","Dead Shot +1, Startling Shot +1, Menacing Shot +2, Stop Bleeding two commits +2 with rejected branch silent",routeDiagnostics,dead.Status==RuntimeTestStatuses.Pass&&startling.Status==RuntimeTestStatuses.Pass&&menacing.Status==RuntimeTestStatuses.Pass&&bleeding.Status==RuntimeTestStatuses.Pass&&deadAfter==deadBefore+1&&startlingAfter==startlingBefore+1&&menacingAfter==menacingBefore+2&&bleedingAfter==bleedingBefore+2,"existing production deed transactions and source-specific committed-discharge counters"),
                 Assertion("save-free-audio-scenario","no save/inventory mutation and detached fixtures cleaned","cleaned="+cleaned,cleaned,"disposable SceneEntitiesState and exact global-unit snapshot")
             };
             bool pass=assertions.TrueForAll(value=>value.Status=="PASS");
@@ -5434,9 +5589,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.Diagnostics.Add(globalDiagnostics);
             result.Diagnostics.Add(selectedDiagnostics);
             result.Diagnostics.Add(ordinaryDiagnostics);
+            result.Diagnostics.Add(missDiagnostics);
             result.Diagnostics.Add(ordinaryMisfireDiagnostics);
             result.Diagnostics.Add(misfireDiagnostics);
             result.Diagnostics.Add(forcedMisfireDiagnostics);
+            result.Diagnostics.Add(rejectionDiagnostics);
+            result.Diagnostics.Add(routeDiagnostics);
             result.Warnings.Add("A valid Wwise playing ID proves event acceptance, not audible speaker output.");
             return result;
         }
