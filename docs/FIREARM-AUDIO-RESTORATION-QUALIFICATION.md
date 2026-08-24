@@ -2,9 +2,10 @@
 
 Date: 2026-08-24
 
-Status: automated implementation and routing qualified on the implementation
-checkpoint; human auditory acceptance pending. This record does not claim that
-audio reached the speakers.
+Status: automated implementation and routing qualified on the final installed
+candidate. The repository owner subsequently reported that the sound effect was
+working and explicitly approved commit, merge, and release. That human report,
+not the technical playing IDs, closes the auditory release gate.
 
 ## Proven root cause
 
@@ -88,8 +89,8 @@ failure, source/package/bank parity, package allowlists, transactional installed
 parity, one stage/load, idempotent readiness, nonzero/zero PostEvent handling,
 fault state, and production-parser retry.
 
-Results at implementation checkpoint
-`ea51bd3732fd7313e92bcc2edac9560008f6c9ac`:
+Results at final implementation commit
+`d9a51132a39369d6393b7fe90b7a6ffc3ee243bf`:
 
 - Repository validation: PASS.
 - Complete domain/reflection suite: 1,224/1,224 PASS.
@@ -103,23 +104,23 @@ Results at implementation checkpoint
 - `git diff --check`: PASS.
 - Bank/source-audio disposition: preserved byte-for-byte.
 
-Checkpoint artifact identity:
+Installed candidate identity:
 
 | Artifact | Identity |
 | --- | --- |
-| Source commit | `ea51bd3732fd7313e92bcc2edac9560008f6c9ac` |
-| Package SHA-256 | `9D2569E4F5F2238947DC1B6F63F171FA95AF791B59C651564458D9A79FD59325` |
-| DLL SHA-256 | `6028FE4B4D20688D0C7E8E44C1AB4EF9B024DA7F385A46C54278EBAF95A10A40` |
-| DLL MVID | `4fe2a77e-7be7-4744-9b6f-2076ba22987b` |
-| Deployment evidence | `20260824T0444034836709Z/deployment.json` |
+| Source commit | `d9a51132a39369d6393b7fe90b7a6ffc3ee243bf` |
+| Package SHA-256 | `DFBEDB0CB3CF7ADDB38E5D794D49555B7CEF141F17139922DC8A08F65B163A51` |
+| DLL SHA-256 | `E93B7BC51558E9D141B6E516EE7B3D93F1AC26A87E7169495F74FBB4CCF9CD43` |
+| DLL MVID | `29aa9f64-4fd8-4716-b0c5-abf484ea45d4` |
+| Deployment evidence | `20260824T0452286831396Z/deployment.json` |
 
 ## Guarded runtime qualification
 
 The repository-owned harness launched through Steam App ID 640820 and ran only
-`disposable-firearm-wwise-audio`. Run
-`20260824T0444147375477Z-849bb57337ad44538df0c8582d5038f7` passed all focused
-assertions and exited automatically. Result SHA-256:
-`55E251B7BFEE529917DB869B0421C79F5DD76BE3D66D9C668217F5720942311B`.
+`disposable-firearm-wwise-audio`. Final run
+`20260824T0452404103662Z-eb0f3eb1afc8403ea015951c45bdc0cf` passed all 13
+focused assertions and exited automatically. Result SHA-256:
+`32FAB2E279F9DB9C5C12EF9897BCD8E51D98113DBDF07949E10771EC659C7729`.
 
 | Route | Observed result |
 | --- | --- |
@@ -137,14 +138,17 @@ assertions and exited automatically. Result SHA-256:
 | Scatter | one notification per committed volley; all-misfire volley silent |
 | Existing deed routes | Dead Shot +1, Startling Shot +1, Menacing Shot +2, Stop Bleeding +2 |
 
-A valid playing ID establishes Event acceptance only. The twelve-step owner
-listening gate in `FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md` remains open.
+A valid playing ID establishes Event acceptance only. On 2026-08-24, after the
+exact candidate above was installed, the repository owner reported, "Sound
+effect sounds working to me," and explicitly requested release. The owner did
+not provide separate observations for every checklist line, audio-device
+identity, or mixer setting; this record does not fabricate those details.
 
-## Boundaries and remaining blocker
+## Boundaries and release authorization
 
-No third-party mod, proprietary game binary, `Init.bnk`, unrelated feature,
-blueprint GUID, save-owned content, release version, master branch, tag, pull
-request, or public release was changed. The mandated guarded push helper was
-used after each coherent commit, but its external allowlist omits the exact
-required `codex/firearm-audio-restoration` branch. The helper was not modified
-or bypassed and no raw push was used.
+The implementation changed no third-party mod, proprietary game binary,
+`Init.bnk`, unrelated feature, blueprint GUID, or save-owned content. The owner
+authorized advancing the release identity to `0.0.96`, merging the qualified
+branch, and publishing a new immutable release after the release pipeline
+passes. The guarded publication helper remains authoritative; it must not be
+bypassed if its external allowlist still rejects the exact branch.

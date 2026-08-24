@@ -3181,3 +3181,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Publication blocker: the mandated guarded helper rejects the exact required
   branch because its external allowlist omits it. No bypass or raw push is
   authorized.
+
+## Firearm-audio owner acceptance and release authorization - 2026-08-24
+
+- Exact listened implementation: commit
+  `d9a51132a39369d6393b7fe90b7a6ffc3ee243bf`, package SHA-256
+  `DFBEDB0CB3CF7ADDB38E5D794D49555B7CEF141F17139922DC8A08F65B163A51`.
+- Owner result: "Sound effect sounds working to me." The owner explicitly
+  authorized commit, merge to `master`, and a new release.
+- Release identity advances to `0.0.96-firearm-audio-restoration`; immutable
+  `v0.0.95` bytes and history are not replaced.
+- Next action: qualify the versioned release package, publish the feature branch
+  through the guarded helper, merge only as authorized, and run the guarded
+  immutable release publisher. Do not bypass an external policy rejection.

@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.95-immediate-action-economy",
-  "version": "0.0.95",
+  "milestone": "0.0.96-firearm-audio-restoration",
+  "version": "0.0.96",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -171,5 +171,28 @@
     "offTurnImmediateActionRequired": true,
     "nextActualTurnSwiftDebtRequired": true,
     "runtimeQualificationPending": true
+  },
+  "firearmAudio96": {
+    "deterministicTestCount": 1224,
+    "featureModuleCount": 9,
+    "featureModuleSchemaVersion": 8,
+    "featureModuleExhaustiveCount": 512,
+    "featureModuleBoundaryCount": 20,
+    "projectBlueprintCount": 14,
+    "nativeCombatReflexesGuid": "0f8939ae6f220984e8fb568abbdfba95",
+    "fullDeliveryRedirectionRequired": true,
+    "nativeAcBreakdownAttributionRequired": true,
+    "cotwAidAnotherOptional": true,
+    "favoredClassHelpfulOptional": true,
+    "lateMartialPublicationRequired": true,
+    "favoredClassTraitsMustComplete": true,
+    "tweakOrTreatHeirloomMustComplete": true,
+    "offTurnImmediateActionRequired": true,
+    "nextActualTurnSwiftDebtRequired": true,
+    "runtimeQualificationPending": true,
+    "productionManifestLoaderIsolated": true,
+    "runtimeAudioRoutingQualified": true,
+    "ownerAuditoryAcceptance": true,
+    "soundBankBytesPreserved": true
   }
 }

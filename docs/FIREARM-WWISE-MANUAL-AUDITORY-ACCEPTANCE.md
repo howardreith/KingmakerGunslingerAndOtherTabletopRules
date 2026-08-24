@@ -62,5 +62,16 @@ package hash, audio device, observer, and result for every item below.
 12. [ ] Confirm Master and SFX/effects volume controls affect the firearm
     report.
 
-Current status: pending repository-owner listening. Do not mark audible
-acceptance complete from logs or nonzero playing IDs.
+## 2026-08-24 repository-owner result
+
+The repository owner listened to the exact installed implementation at commit
+`d9a51132a39369d6393b7fe90b7a6ffc3ee243bf`, package SHA-256
+`DFBEDB0CB3CF7ADDB38E5D794D49555B7CEF141F17139922DC8A08F65B163A51`,
+and reported: "Sound effect sounds working to me." The owner then explicitly
+approved commit, merge, and creation of a new release.
+
+Status: owner auditory release gate accepted. The response did not separately
+enumerate every checklist line, identify the audio device, or provide an
+independent mixer-control result, so those individual observations remain
+unrecorded rather than inferred. Automated playing IDs were not used as the
+audible result.
