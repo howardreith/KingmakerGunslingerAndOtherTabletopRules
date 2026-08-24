@@ -31,12 +31,12 @@ transient action debt; it does not alter either feat or automation mode.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.97-compatibility-attribution-audit.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.98-craft-magic-items-compatibility.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.97 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.98 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -198,9 +198,9 @@ not require an exhaustive game-launch release matrix.
   exact ON/ON and Gunslinger-OFF/Acadamae-ON catalog publication plus full
   Acadamae/Cord mechanics. This is targeted exact compatibility evidence, not a
   claim that every older comprehensive or human selector scenario was rerun.
-- Craft Magic Items is `STATIC-AUDITED-ONLY`; no compiled local root was
-  supplied. Eddic Respec and Bag of Tricks are
-  `UNAVAILABLE-LOCAL-REFERENCE`. No claim is made for them.
+- Craft Magic Items 2.1.0 has an optional reflection-only integration described
+  below. Eddic Respec and Bag of Tricks remain
+  `UNAVAILABLE-LOCAL-REFERENCE`; no claim is made for them.
 - The approved asset bundle was built with the locally installed, licensed Unity
   2018.4.10f1 editor. Missing or corrupt bundle data falls back safely and does
   not change firearm rules identity, save schema, or reload action economy.
@@ -211,6 +211,82 @@ not require an exhaustive game-launch release matrix.
 When diagnosing a conflict, reproduce it first on a copied save with only
 Unity Mod Manager and Kingmaker Gunslinger enabled. A clean mod load does not
 by itself prove campaign or cross-mod compatibility.
+
+## Optional Craft Magic Items integration
+
+When the Unity Mod Manager entry with ID `CraftMagicItems` is installed and
+active, Gunslinger 0.0.98 probes `CraftMagicItems.Main` and enables the bridge
+only if the required 2.1.0 data-loading, recipe, indexing, crafting, and Harmony
+surfaces match. There is no required assembly reference: Gunslinger continues
+normally when CMI is absent or disabled, and an incompatible external contract
+disables only this bridge. The Gunslinger UMM panel reports `active`, `not
+installed`, `installed but disabled`, or `incompatible, see log`.
+
+The tested external authority is CMI 2.1.0 built without source changes from
+bfennema/OwlcatKingmakerModCraftMagicItems commit
+`72f87523d0a116f5dfc92c91893d4955fa1eb303`. Its `CraftMagicItems.dll` has
+SHA-256 `4AE2DA61470350B31BEEF162717A604C9CCD322F66193917944EA4A9596E392D`
+and MVID `0044a45b-3bca-439e-86c5-a6aa4d42855e`. This was a reproducible local
+build of the exact upstream source, not a downloaded official release binary.
+Neither that DLL nor CMI data, localization, icons, or source are included in
+the Gunslinger package.
+
+With both mods active, CMI gains dedicated **Firearms** mundane and magic item
+types. Their from-scratch bases are the currently player-authorized Pistol,
+Musket, Blunderbuss, Advanced Rifle, and Advanced Revolver. Wakizashi and
+Katana enter CMI's Exotic Weapons bases, Nodachi enters Martial Weapons, and
+Elven Branched Spear enters Exotic Weapons. Only canonical mundane generic
+bases are added for creation; authored masterwork, material, and +1 variants
+remain exact upgrade targets. Named campaign weapons may be upgraded only when
+already owned and never become from-scratch bases.
+
+The **Firearm Ammunition** category makes the exact inventory identities used
+by Gunslinger in batches of 20. At CMI's ordinary 1.0 price scale, Black Powder
+Charge has batch value 200 gp, progress 50, and crafting cost 34 gp; Lead Ball
+has value 20 gp, progress 5, and cost 4 gp; Paper Cartridge has value 240 gp,
+progress 60, and cost 40 gp. The recipes do not create loaded-state markers or
+change Gunslinger's rest crafting, reload, or Paper mode rules.
+
+CMI's magic **Firearms** category also exposes the existing Gunslinger
+`Reliable` enchantment. It remains the exact KMG enchantment with +1 equivalent
+bonus and caster level 8 and is restricted at the final creation boundary to a
+weapon type containing exactly one canonical firearm-definition marker. That
+includes CMI-generated firearm clones and excludes bows, crossbows, Eastern
+weapons, Elven Branched Spears, and arbitrary non-firearms. The tabletop
+prerequisite is *mending*; Kingmaker 2.1.7b has no usable Mending blueprint, so
+the CMI recipe records no spell prerequisite rather than substituting an
+invented spell. The ordinary Craft Magic Arms and Armor feat remains required.
+
+New creation follows the owning feature-module state: disabling Gunslinger
+suppresses new firearms and ammunition, disabling Eastern Weapons suppresses
+its new bases, and disabling Elven Branched Spears suppresses its base.
+Registered-but-unavailable firearms are never admitted. Stable already-owned
+items remain eligible for CMI's normal upgrade recognition under Gunslinger's
+existing save policy.
+
+CMI custom items follow CMI's own generated-blueprint persistence. A campaign
+containing a CMI-crafted Gunslinger item may require both mods to remain
+installed. Back up the save before crafting, upgrading, removing either mod, or
+changing module state.
+
+Human CMI UI acceptance checklist:
+
+1. Confirm one Firearms entry in mundane crafting, one Firearms entry in magic
+   weapon crafting, and one Firearm Ammunition entry, with no raw localization
+   keys or duplicate entries.
+2. Craft one canonical base firearm and upgrade one already-owned custom or
+   named weapon.
+3. Apply Reliable to a firearm and confirm it is absent or rejected for a bow,
+   crossbow, Katana/Wakizashi/Nodachi, and Elven Branched Spear.
+4. Craft one 20-unit batch each of Black Powder Charge, Lead Ball, and Paper
+   Cartridge and verify the inventory identities and quantities.
+5. Craft or upgrade one Eastern weapon and one Elven Branched Spear.
+6. Save to an authorized disposable save, exit, reload through the normal UI,
+   and verify the representative crafted items and firearm loaded state.
+
+The guarded mechanical qualification is recorded in
+`docs/CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md`. Visual category placement and
+the checklist above require human evidence and are not inferred from logs.
 # Custom firearm SoundBank
 
 The release audio asset is copied only to

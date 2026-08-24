@@ -77,6 +77,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string DisposableShieldOther = "disposable-shield-other";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
+        internal const string ObserveCraftMagicItemsCompatibility =
+            "observe-craft-magic-items-compatibility";
         internal const string DisposableFirearmWwiseAudio = "disposable-firearm-wwise-audio";
         internal const string ObserveClassBlueprintContracts =
             "observe-class-blueprint-contracts";
@@ -358,6 +360,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveExpandedSummoningVerifyAbsent,
                 DisposableShieldOther,
                 ObserveOptionalModCompatibility,
+                ObserveCraftMagicItemsCompatibility,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
                 ObserveNativeWeaponFeatContracts,

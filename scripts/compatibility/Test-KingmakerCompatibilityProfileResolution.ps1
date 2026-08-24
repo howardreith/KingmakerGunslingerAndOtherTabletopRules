@@ -40,8 +40,8 @@ if (@($favored.runtimeMods | Where-Object key -ceq 'favored-class').Count -ne 1 
     throw 'Favored Class profile resolution did not preserve the exact required mod graph.'
 }
 $craft = $results | Where-Object profileId -ceq 'gunslinger-craft-magic-items'
-if ($craft.runtimeCapable -or $craft.staticOnlyReferences.Count -ne 1) { throw 'Craft Magic Items dry-run must remain static-only.' }
+if ($craft.runtimeCapable -or $craft.staticOnlyReferences.Count -ne 1) { throw 'The generic Craft Magic Items transaction must remain nonstageable.' }
 $all = $results | Where-Object profileId -ceq 'gunslinger-all-loadable-local'
 if (@($all.runtimeMods | Where-Object key -eq 'kaz-asset-references').Count -ne 0) { throw 'KAZ references entered runtime staging.' }
 if (@($all.expectedUmmIds | Where-Object { $_ -like 'KAZ_*' }).Count -ne 0) { throw 'KAZ UMM IDs entered all-loadable profile.' }
-Write-Host 'All twelve compatibility profile dry-runs passed; three exact Favored Class profiles are runtime capable and KAZ references remain non-runtime.'
+Write-Host 'All twelve compatibility profile dry-runs passed; the dedicated CMI authority remains separate from generic staging, three exact Favored Class profiles are runtime capable, and KAZ references remain non-runtime.'

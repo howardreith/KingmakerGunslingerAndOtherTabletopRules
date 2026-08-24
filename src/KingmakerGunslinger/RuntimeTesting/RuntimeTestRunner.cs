@@ -817,6 +817,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(OptionalModCompatibilityObserver.Run(_context, _request));
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveCraftMagicItemsCompatibility)
+                {
+                    Complete(CraftMagicItemsCompatibilityObserver.Run(
+                        _context, _request));
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableFirearmWwiseAudio)
                 {
                     Complete(RunFirearmWwiseAudio());

@@ -35,6 +35,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="CraftMagicItemsCompatibilityTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityPolicy.cs"><Link>CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityStatus.cs"><Link>CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityStatus.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\CraftMagicItemsCompatibility\CraftMagicItemsContractProbe.cs"><Link>CraftMagicItemsCompatibility\CraftMagicItemsContractProbe.cs</Link></Compile>
     <Compile Include="ExpandedSummoningCatalogTests.cs" />
     <Compile Include="ExpandedSummoningPresentationTests.cs" />
     <Compile Include="ElvenBranchedSpearInvestigationTests.cs" />

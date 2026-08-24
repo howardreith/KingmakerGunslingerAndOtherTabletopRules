@@ -48,32 +48,32 @@ namespace KingmakerGunslinger.Blueprints
             MagicFirearmItemSpec[] specs =
             {
                 new MagicFirearmItemSpec(PistolPlus1Symbol, "KMG_PistolPlus1_Item",
-                    "Pistol +1", FirearmKind.Pistol, 3300, 1,
+                    "Pistol +1", FirearmKind.Pistol, 3300, 1, false,
                     "This masterwork pistol bears a +1 enhancement bonus.", "", plus1),
                 new MagicFirearmItemSpec(MusketPlus1Symbol, "KMG_MusketPlus1_Item",
-                    "Musket +1", FirearmKind.Musket, 3800, 1,
+                    "Musket +1", FirearmKind.Musket, 3800, 1, false,
                     "This masterwork musket bears a +1 enhancement bonus.", "", plus1),
                 new MagicFirearmItemSpec(BlunderbussPlus1Symbol, "KMG_BlunderbussPlus1_Item",
-                    "Blunderbuss +1", FirearmKind.Blunderbuss, 4300, 1,
+                    "Blunderbuss +1", FirearmKind.Blunderbuss, 4300, 1, false,
                     "This masterwork blunderbuss bears a +1 enhancement bonus.", "", plus1),
                 new MagicFirearmItemSpec(DuelistsRebuttalSymbol, "KMG_DuelistsRebuttal_Item",
-                    "Duelist's Rebuttal", FirearmKind.Pistol, 19300, 3,
+                    "Duelist's Rebuttal", FirearmKind.Pistol, 19300, 3, true,
                     "+2 Reliable pistol. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss.",
                     "Fashioned for a foreign duelist who considered a drawn sword an unnecessarily long reply.", plus2, reliable),
                 new MagicFirearmItemSpec(RiverKingsMeasureSymbol, "KMG_RiverKingsMeasure_Item",
-                    "The River King's Measure", FirearmKind.Musket, 51800, 5,
+                    "The River King's Measure", FirearmKind.Musket, 51800, 5, true,
                     "+4 Reliable musket. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss.",
                     "Irovetti commissioned the weapon to prove that everything within sight was already within his reach.", plus4, reliable),
                 new MagicFirearmItemSpec(IrovettisOvationSymbol, "KMG_IrovettisOvation_Item",
-                    "Irovetti's Ovation", FirearmKind.Blunderbuss, 52300, 5,
+                    "Irovetti's Ovation", FirearmKind.Blunderbuss, 52300, 5, true,
                     "+4 Reliable blunderbuss. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss.",
                     "The king demanded applause after every performance. This was the instrument used when the audience proved reluctant.", plus4, reliable),
                 new MagicFirearmItemSpec(TheLastWordSymbol, "KMG_TheLastWord_Item",
-                    "The Last Word", FirearmKind.Pistol, 99300, 7,
+                    "The Last Word", FirearmKind.Pistol, 99300, 7, true,
                     "+5 Reliable Seeking pistol. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss. Seeking ignores concealment miss chances without revealing unseen creatures or bypassing other defenses.",
                     "A weapon made for the end of negotiations—and found at the end of a kingdom.", plus5, reliable, seeking),
                 new MagicFirearmItemSpec(WatchAtWorldsEndSymbol, "KMG_WatchAtWorldsEnd_Item",
-                    "Watch at the World's End", FirearmKind.Musket, 99800, 7,
+                    "Watch at the World's End", FirearmKind.Musket, 99800, 7, true,
                     "+5 Reliable Fey Bane musket. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss. Fey Bane uses the native bane property against Fey creatures.",
                     "Its first bearer kept vigil at a place where the world grew thin. The watch ended. The weapon remained.", plus5, reliable, feyBane)
             };
@@ -190,11 +190,12 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal MagicFirearmItemSpec(string symbol, string internalName,
             string displayName, FirearmKind kind, int cost, int equivalentBonus,
-            string description, string flavor,
+            bool isNamedCampaignUnique, string description, string flavor,
             params BlueprintWeaponEnchantment[] enchantments)
         {
             Symbol = symbol; InternalName = internalName; DisplayName = displayName;
             Kind = kind; Cost = cost; EquivalentBonus = equivalentBonus;
+            IsNamedCampaignUnique = isNamedCampaignUnique;
             Description = description; Flavor = flavor;
             Enchantments = enchantments == null ? new BlueprintWeaponEnchantment[0] :
                 enchantments.ToArray();
@@ -205,6 +206,7 @@ namespace KingmakerGunslinger.Blueprints
         internal FirearmKind Kind { get; private set; }
         internal int Cost { get; private set; }
         internal int EquivalentBonus { get; private set; }
+        internal bool IsNamedCampaignUnique { get; private set; }
         internal string Description { get; private set; }
         internal string Flavor { get; private set; }
         internal BlueprintWeaponEnchantment[] Enchantments { get; private set; }
@@ -228,6 +230,10 @@ namespace KingmakerGunslinger.Blueprints
         internal MagicFirearmBlueprintEntry[] Entries { get; private set; }
         internal BlueprintWeaponEnchantment Reliable { get; private set; }
         internal BlueprintWeaponEnchantment Seeking { get; private set; }
+        internal MagicFirearmBlueprintEntry[] GenericEntries
+        { get { return Entries.Where(value => !value.Spec.IsNamedCampaignUnique).ToArray(); } }
+        internal MagicFirearmBlueprintEntry[] NamedEntries
+        { get { return Entries.Where(value => value.Spec.IsNamedCampaignUnique).ToArray(); } }
         internal MagicFirearmBlueprintEntry Require(string symbol)
         {
             return Entries.Single(value => value.Spec.Symbol == symbol);

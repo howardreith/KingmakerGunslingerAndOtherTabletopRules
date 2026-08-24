@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.98-craft-magic-items-compatibility
+
+- Adds an automatic optional reflection/Harmony bridge for active Craft Magic
+  Items 2.1.0 installations without a static or packaged CMI dependency.
+- Publishes dedicated CMI Firearms and Firearm Ammunition categories, all five
+  authorized production firearm bases, the canonical Eastern and Elven
+  Branched Spear bases, exact 20-unit ammunition recipes, and the existing KMG
+  Reliable enchantment.
+- Keeps named campaign weapons upgrade-only, observes every owning module and
+  firearm availability gate, restricts Reliable by the canonical firearm
+  marker at final creation, and transfers item-owned firearm state across CMI
+  upgrades.
+- Adds capability probing, both-load-order lifecycle integration, exact-once
+  registration, transactional rollback, bounded diagnostics, a read-only UMM
+  status, ten deterministic tests, and a guarded real-CMI qualification
+  scenario.
+
 ## 0.0.97-compatibility-attribution-audit
 
 - Completes controlled attribution matrices for Favored Class/Helpful,

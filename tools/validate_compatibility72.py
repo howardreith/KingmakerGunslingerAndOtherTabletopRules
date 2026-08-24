@@ -61,8 +61,10 @@ def validate(root: Path) -> None:
             len(profile_ids) != expected_profile_count):
         raise AssertionError("compatibility profile IDs must be unique and match the release contract")
     craft = next(profile for profile in profiles if profile["id"] == "gunslinger-craft-magic-items")
-    if craft["disposition"] != "STATIC-AUDITED-ONLY" or craft["runtimeLoadableRequired"]:
-        raise AssertionError("source-only Craft Magic Items profile is not static-only")
+    expected_craft_disposition = ("STATIC-AUDITED-ONLY" if VERSION == "0.0.72"
+                                  else "RUNTIME-QUALIFIED-EXACT")
+    if craft["disposition"] != expected_craft_disposition or craft["runtimeLoadableRequired"]:
+        raise AssertionError("Craft Magic Items profile disposition or nonstageable boundary changed")
     catalog_by_key = {entry["key"]: entry for entry in catalog["references"]}
     if catalog_by_key["kaz-asset-references"]["runtimeStagingAllowed"]:
         raise AssertionError("KAZ asset references must not be runtime staged")
