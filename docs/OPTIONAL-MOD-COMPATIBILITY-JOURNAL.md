@@ -1,5 +1,11 @@
 # Optional-mod compatibility journal
 
+> Current-state note (2026-08-24): the Craft Magic Items source-only/static-only
+> checkpoints below are historical. The dedicated CMI 2.1.0 adapter and exact
+> guarded runtime results are recorded in
+> `CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md` and supersede those CMI
+> dispositions without changing the other optional-mod profile results.
+
 ## 2026-08-07 - Mission start and unchanged baseline
 
 - Repository root: `C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger`.

@@ -1,6 +1,23 @@
 # Kingmaker Gunslinger
 
-The `0.0.93` compatibility candidate preserves Bodyguard, In Harm's Way, and
+Version `0.0.101` releases the owner-accepted optional Craft Magic Items 2.1.0 integration
+without linking or packaging `CraftMagicItems.dll`. The qualified 0.0.99 inner
+ammunition UI seam remains: CMI owns its complete top-level mundane selector on
+every IMGUI event, while KMG intercepts only the exact finalized Firearm
+Ammunition data object before CMI's equipment-only body. Exact 20-unit
+ammunition projects now all use timed target 5 while retaining scale-1.0 prices
+of 34/4/40 gp. From-scratch Firearms contains Pistol, Musket, and Blunderbuss;
+Advanced Rifle and Advanced Revolver remain recognized for owned-item upgrades
+but are no longer creation bases. Eastern and Elven weapons use CMI's existing
+Martial/Exotic mundane categories followed by ordinary Arms and Armor upgrades,
+and KMG's internal firearm state/origin enchantments no longer leak `<null>`
+tooltip blocks. Named campaign weapons remain upgrade-only, feature-module
+gates remain authoritative, and an absent, disabled, or incompatible CMI
+installation leaves ordinary Gunslinger behavior unchanged. See
+`INSTALLATION-COMPATIBILITY.md` for the tested assembly fingerprint,
+persistence warning, and required fresh-process human checklist.
+
+The retained `0.0.93` compatibility work preserves Bodyguard, In Harm's Way, and
 the canonical Call of the Wild Aid Another integration while repairing the
 exact Favored Class 1.3.1 and Tweak or Treat 1.1.0 startup conflict caused by
 Nodachi's runtime-only martial weapon category. Broad-martial proficiency is

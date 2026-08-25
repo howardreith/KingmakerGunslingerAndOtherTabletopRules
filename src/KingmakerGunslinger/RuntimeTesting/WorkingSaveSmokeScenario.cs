@@ -1370,13 +1370,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Leaf(Read(value, "FileName")) == BaselineFile;
         }
 
-        private bool IsExactWorkingFileIdentity(object value)
+        private static bool IsExactWorkingFileIdentity(object value)
         {
-            if (value == null || value.GetType().FullName != DescriptorType ||
-                Read(value, "Name") != _identity.Name) return false;
+            if (value == null || value.GetType().FullName != DescriptorType)
+                return false;
+            bool expectedName = Read(value, "Name") == ExpectedName;
+            if (!expectedName) return false;
             string folder = Leaf(Read(value, "FolderName"));
             string file = Leaf(Read(value, "FileName"));
-            return folder == _identity.File && file == _identity.File;
+            const string prefix = "Manual_";
+            string suffix = "_" + ExpectedName + ".zks";
+            if (folder != file || !file.StartsWith(prefix,
+                StringComparison.Ordinal) || !file.EndsWith(suffix,
+                StringComparison.Ordinal)) return false;
+            string sequence = file.Substring(prefix.Length,
+                file.Length - prefix.Length - suffix.Length);
+            return sequence.Length != 0 && sequence.All(char.IsDigit);
         }
 
         private void RegisterCompletionCallback()

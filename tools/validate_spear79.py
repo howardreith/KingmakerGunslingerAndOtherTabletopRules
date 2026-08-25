@@ -22,7 +22,11 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("bodyguard-in-harms-way" if VERSION in {"0.0.90", "0.0.91", "0.0.92", "0.0.93", "0.0.94", "0.0.95"}
+    effective_suffix = ("craft-magic-items-compatibility" if VERSION == "0.0.101"
+        else "craft-magic-items-post-human-refinement" if VERSION == "0.0.100"
+        else "craft-magic-items-ammunition-ui-repair" if VERSION == "0.0.99"
+        else "craft-magic-items-compatibility" if VERSION == "0.0.98"
+        else "bodyguard-in-harms-way" if VERSION in {"0.0.90", "0.0.91", "0.0.92", "0.0.93", "0.0.94", "0.0.95"}
         else "compatibility-attribution-audit" if VERSION == "0.0.97"
         else "firearm-audio-restoration" if VERSION == "0.0.96"
         else PACKAGE_SUFFIX)

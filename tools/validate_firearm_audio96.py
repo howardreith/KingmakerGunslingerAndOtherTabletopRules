@@ -85,7 +85,11 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
-    release_suffix = ("compatibility-attribution-audit"
+    release_suffix = ("craft-magic-items-compatibility"
+        if VERSION == "0.0.101" else "craft-magic-items-post-human-refinement"
+        if VERSION == "0.0.100" else "craft-magic-items-ammunition-ui-repair"
+        if VERSION == "0.0.99" else "craft-magic-items-compatibility"
+        if VERSION == "0.0.98" else "compatibility-attribution-audit"
         if VERSION == "0.0.97" else "firearm-audio-restoration")
     require_tokens(
         root / f"docs/RELEASE-NOTES-{VERSION}.md",

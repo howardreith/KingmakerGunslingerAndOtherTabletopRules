@@ -10,6 +10,7 @@ using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.BrownFur;
 using KingmakerGunslinger.AidAnotherCompatibility;
 using KingmakerGunslinger.EasternWeapons;
+using KingmakerGunslinger.CraftMagicItemsCompatibility;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger
@@ -113,6 +114,7 @@ namespace KingmakerGunslinger
                         "Blueprint lifecycle initialization failed during bootstrap.",
                         context.Failure);
                 }
+                CraftMagicItemsOptionalExtensionCoordinator.Install(context);
 
                 logger.Info(
                     "firearms",

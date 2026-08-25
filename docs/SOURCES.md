@@ -178,13 +178,20 @@ These references guide the design but do not substitute for inspecting the insta
 
 ## Sprint 12 persistence references
 
-34. **Craft Magic Items for Kingmaker — source repository**
-    Kingmaker precedent for custom item/blueprint recovery, the `Kingmaker.Blueprints.Items.Ecnchantments` namespace, and treating custom item references as save-sensitive content.
-    https://github.com/RobRendell/OwlcatKingmakerModCraftMagicItems
+34. **Craft Magic Items for Kingmaker — exact compatibility source**
+    Accessed 2026-08-24 from the user-specified bfennema repository at commit
+    `72f87523d0a116f5dfc92c91893d4955fa1eb303`. The source is explanatory
+    authority for CMI's 2.1.0 data-loading, recipe/index construction, mundane
+    UI, custom blueprint recovery, and crafting seams. The exact unchanged
+    source was also built locally for real-assembly qualification; neither the
+    checkout nor its output is copied into this repository or release package.
+    https://github.com/bfennema/OwlcatKingmakerModCraftMagicItems/tree/72f87523d0a116f5dfc92c91893d4955fa1eb303
 
-35. **Craft Magic Items `Main.cs`**
-    Shows the Kingmaker mod's Harmony recovery hooks around blueprint lookup/load and its explicit warning that custom items and feats affect save behavior. This is supporting precedent, not proof that the Sprint 12 dynamic token carrier serializes correctly.
-    https://raw.githubusercontent.com/RobRendell/OwlcatKingmakerModCraftMagicItems/master/CraftMagicItems/Main.cs
+35. **Craft Magic Items `Main.cs`, pinned revision**
+    Shows `MainMenuStartPatch.InitialiseCraftingData`, JSON graph loading,
+    `AddAllCraftingFeats`, mundane item rendering, recipe selection, complete
+    enchantment indexing, and CMI-generated custom item persistence.
+    https://github.com/bfennema/OwlcatKingmakerModCraftMagicItems/blob/72f87523d0a116f5dfc92c91893d4955fa1eb303/CraftMagicItems/Main.cs
 
 36. **Kingmaker save-editing format discussion**
     Secondary evidence that Kingmaker saves are ZIP archives containing JSON such as `player.json` and `party.json`. The project does not rely on manual save editing for persistence; actual game save/load remains the authoritative test.
