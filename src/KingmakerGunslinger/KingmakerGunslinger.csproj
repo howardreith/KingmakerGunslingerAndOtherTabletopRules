@@ -520,6 +520,7 @@
     <Compile Include="Firearms\FirearmConditionCombatLog.cs" />
     <Compile Include="Firearms\FirearmConditionTooltipPatch.cs" />
     <Compile Include="Firearms\FirearmQualitiesTooltipPatch.cs" />
+    <Compile Include="Firearms\FirearmInternalEnchantmentPresentation.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmUseDecision.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOriginComponent.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOriginRuntime.cs" />
@@ -869,6 +870,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\OptionalModCompatibilityObserver.cs" />
     <Compile Include="RuntimeTesting\CraftMagicItemsCompatibilityObserver.cs" />
+    <Compile Include="RuntimeTesting\CraftMagicItemsTooltipInspection.cs" />
     <Compile Include="RuntimeTesting\CraftMagicItemsAmmunitionUiObserver.cs" />
     <Compile Include="RuntimeTesting\ElvenBranchedSpearContractObserver.cs" />
     <Compile Include="RuntimeTesting\EasternWeaponContractObserver.cs" />

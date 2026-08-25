@@ -132,7 +132,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _adapter.UnrelatedStatePreserved;
                     RecordPhase(_phase);
                     if (_phase >= 9)
-                        CaptureCraft(_phase == 12);
+                        CaptureCraft(_phase == 12 || _phase == 13,
+                            _phase == 13);
                     if (_phase == 7) _invalidCrafterSafe = true;
                     if (_phase == 8)
                         _insufficientFundsSafe =
@@ -140,8 +141,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             SameInventory(_inventoryBefore,
                                 SnapshotInventory());
                     if (_phase == 12)
-                    {
                         VerifyReloadConsumption();
+                    if (_phase == 13)
+                    {
                         Finish(null);
                         return;
                     }
@@ -220,6 +222,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BeginCraft(phase == 12 ? 2 : phase - 9,
                             phase != 12);
                         break;
+                    case 13:
+                        BeginCraft(0, false);
+                        break;
                     default:
                         throw new InvalidOperationException(
                             "Unknown CMI ammunition UI observer phase.");
@@ -272,7 +277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _adapter.ArmCraft(recipeIndex, takesNoTime);
             }
 
-            private void CaptureCraft(bool timed)
+            private void CaptureCraft(bool timed, bool cancel)
             {
                 CraftMagicItemsAmmunitionCraftObservation observation =
                     _adapter.ObserveCraft(_craftRecipeIndex,
@@ -280,7 +285,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (timed)
                 {
                     _host.RenderEnabled = false;
-                    _adapter.CompleteTimedProject(_firstCrafter, observation);
+                    if (cancel) _adapter.CancelTimedProject(observation);
+                    else _adapter.CompleteTimedProject(_firstCrafter,
+                        observation);
                 }
                 _craftObservations.Add(observation);
                 _phaseEvidence.Add("craft=" + observation.ItemGuid +
@@ -294,7 +301,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation.ProjectGold + ";projectResult=" +
                     observation.ProjectResultGuid + ":" +
                     observation.ProjectResultCount + ";completed=" +
-                    observation.ProjectCompleted);
+                    observation.ProjectCompleted + ";cancelled=" +
+                    observation.ProjectCancelled);
             }
 
             private void VerifyReloadConsumption()
@@ -534,7 +542,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DescribeCrafts(immediate), immediateExact,
                     "actual CMI RenderRecipeBasedCraftItemControl button path with Crafting Takes No Time");
                 CraftMagicItemsAmmunitionCraftObservation timed =
-                    _craftObservations.SingleOrDefault(value => value.Timed);
+                    _craftObservations.SingleOrDefault(value => value.Timed &&
+                        value.ProjectCompleted);
                 bool timedExact = timed != null && timed.ButtonTriggered &&
                     timed.ProjectCreated && timed.ProjectTarget ==
                         timed.ExpectedProgress && timed.ProjectGold ==
@@ -545,10 +554,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         timed.ExpectedCount && timed.MoneyAfter ==
                         timed.MoneyBefore - timed.ExpectedGold;
                 Add(assertions, "timed-ammunition-project",
-                    "Paper Cartridge project target=60, gold=40, result count=20, then normal completion",
+                    "Paper Cartridge project target=5, gold=40, result count=20, then normal completion",
                     timed == null ? "missing" : DescribeCrafts(new[] { timed }),
                     timedExact,
                     "actual CMI project constructor, timer component, WorkOnProjects, and CraftItem lifecycle");
+                CraftMagicItemsAmmunitionCraftObservation cancelled =
+                    _craftObservations.SingleOrDefault(value => value.Timed &&
+                        value.ProjectCancelled);
+                bool cancellationExact = cancelled != null &&
+                    cancelled.ProjectTarget == 5 &&
+                    cancelled.ProjectGold == cancelled.ExpectedGold &&
+                    cancelled.MoneyAfter == cancelled.MoneyBefore &&
+                    cancelled.InventoryAfter == cancelled.InventoryBefore &&
+                    !cancelled.ProjectCompleted;
+                Add(assertions, "timed-ammunition-cancellation",
+                    "one target-5 project refunds its exact original GoldSpent and creates no result",
+                    cancelled == null ? "missing" : DescribeCrafts(new[] {
+                        cancelled }), cancellationExact,
+                    "actual CMI CancelCraftingProject lifecycle after KMG target normalization");
                 Add(assertions, "crafted-ammunition-consumption",
                     "KMG reload consumes exact crafted powder/ball and Paper mode consumes exact crafted cartridge",
                     "loose=" + _looseReloadConsumed + ";paper=" +
@@ -565,9 +588,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _uiBefore.GraphRollbackCount,
                     "Unity log callback, host exception capture, and bridge lifecycle counters");
                 Add(assertions, "graph-unchanged",
-                    "generation/counts unchanged and four item types remain unique",
+                    "generation/counts unchanged and three item types remain unique",
                     DescribeGraph(graphAfter), graphSame &&
-                        graphAfter.ItemTypes == 4,
+                        graphAfter.ItemTypes == 3,
                     "before/after exact CMI graph snapshot");
                 Add(assertions, "request-local-cleanup",
                     "money and inventory unchanged; disposable crafters and patch removed",
@@ -688,7 +711,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.MoneyBefore + "->" + value.MoneyAfter +
                     ":expectedGold=" + value.ExpectedGold + ":target=" +
                     value.ProjectTarget + ":completed=" +
-                    value.ProjectCompleted).ToArray());
+                    value.ProjectCompleted + ":cancelled=" +
+                    value.ProjectCancelled).ToArray());
             }
 
             private static bool SameInventory(
@@ -737,15 +761,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return left != null && right != null &&
                     left.Generation == right.Generation &&
                     left.ItemTypes == right.ItemTypes &&
-                    left.FirearmBases == right.FirearmBases &&
-                    left.CustomWeaponBases == right.CustomWeaponBases &&
+                    left.FirearmCreationBases ==
+                        right.FirearmCreationBases &&
+                    left.FirearmRecognitionIdentities ==
+                        right.FirearmRecognitionIdentities &&
+                    left.MartialBases == right.MartialBases &&
+                    left.ExoticBases == right.ExoticBases &&
+                    left.CustomFamilyMagicItemTypes ==
+                        right.CustomFamilyMagicItemTypes &&
+                    left.CustomFamilyRecognitionIdentities ==
+                        right.CustomFamilyRecognitionIdentities &&
                     left.AmmunitionRecipes == right.AmmunitionRecipes &&
                     left.ReliableRecipes == right.ReliableRecipes &&
                     left.OrdinaryWeaponRecipes == right.OrdinaryWeaponRecipes &&
-                    left.FirearmBaseGuids.SequenceEqual(
-                        right.FirearmBaseGuids) &&
-                    left.CustomWeaponBaseGuids.SequenceEqual(
-                        right.CustomWeaponBaseGuids);
+                    left.FirearmCreationBaseGuids.SequenceEqual(
+                        right.FirearmCreationBaseGuids) &&
+                    left.FirearmRecognitionGuids.SequenceEqual(
+                        right.FirearmRecognitionGuids) &&
+                    left.MartialBaseGuids.SequenceEqual(
+                        right.MartialBaseGuids) &&
+                    left.ExoticBaseGuids.SequenceEqual(
+                        right.ExoticBaseGuids) &&
+                    left.CustomFamilyRecognitionGuids.SequenceEqual(
+                        right.CustomFamilyRecognitionGuids);
             }
 
             private static string DescribeGraph(
@@ -753,8 +791,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return value == null ? "missing" : "generation=" +
                     value.Generation + ";itemTypes=" + value.ItemTypes +
-                    ";firearmBases=" + value.FirearmBases +
-                    ";customWeaponBases=" + value.CustomWeaponBases +
+                    ";firearmCreationBases=" +
+                    value.FirearmCreationBases +
+                    ";firearmRecognitionIdentities=" +
+                    value.FirearmRecognitionIdentities +
+                    ";martialBases=" + value.MartialBases +
+                    ";exoticBases=" + value.ExoticBases +
+                    ";customFamilyMagicItemTypes=" +
+                    value.CustomFamilyMagicItemTypes +
+                    ";customFamilyRecognitionIdentities=" +
+                    value.CustomFamilyRecognitionIdentities +
                     ";ordinaryWeaponRecipes=" +
                     value.OrdinaryWeaponRecipes + ";reliableRecipes=" +
                     value.ReliableRecipes + ";ammunitionRecipes=" +

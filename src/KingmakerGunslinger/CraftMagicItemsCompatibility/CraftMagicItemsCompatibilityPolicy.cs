@@ -19,7 +19,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         CanonicalCreationBase = 0,
         AuthoredGenericTarget = 1,
         NamedUpgradeOnly = 2,
-        Unavailable = 3
+        Unavailable = 3,
+        SupportedRecognitionOnly = 4
     }
 
     internal enum CraftMagicItemsOwningModule
@@ -87,22 +88,31 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
     internal sealed class CraftMagicItemsCatalogDecision
     {
         internal CraftMagicItemsCatalogDecision(
-            CraftMagicItemsCatalogEntry[] firearmBases,
+            CraftMagicItemsCatalogEntry[] firearmCreationBases,
+            CraftMagicItemsCatalogEntry[] firearmRecognitionBases,
             CraftMagicItemsCatalogEntry[] martialBases,
             CraftMagicItemsCatalogEntry[] exoticBases,
+            CraftMagicItemsCatalogEntry[] customFamilyRecognitionBases,
             CraftMagicItemsCatalogEntry[] authoredTargets,
             CraftMagicItemsCatalogEntry[] namedUpgradeOnly)
         {
-            FirearmBases = firearmBases;
+            FirearmCreationBases = firearmCreationBases;
+            FirearmRecognitionBases = firearmRecognitionBases;
             MartialBases = martialBases;
             ExoticBases = exoticBases;
+            CustomFamilyRecognitionBases = customFamilyRecognitionBases;
             AuthoredTargets = authoredTargets;
             NamedUpgradeOnly = namedUpgradeOnly;
         }
 
-        internal CraftMagicItemsCatalogEntry[] FirearmBases { get; private set; }
+        internal CraftMagicItemsCatalogEntry[] FirearmCreationBases
+        { get; private set; }
+        internal CraftMagicItemsCatalogEntry[] FirearmRecognitionBases
+        { get; private set; }
         internal CraftMagicItemsCatalogEntry[] MartialBases { get; private set; }
         internal CraftMagicItemsCatalogEntry[] ExoticBases { get; private set; }
+        internal CraftMagicItemsCatalogEntry[] CustomFamilyRecognitionBases
+        { get; private set; }
         internal CraftMagicItemsCatalogEntry[] AuthoredTargets { get; private set; }
         internal CraftMagicItemsCatalogEntry[] NamedUpgradeOnly
         { get; private set; }
@@ -111,7 +121,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         {
             get
             {
-                return FirearmBases.Concat(MartialBases).Concat(ExoticBases)
+                return FirearmCreationBases.Concat(MartialBases)
+                    .Concat(ExoticBases)
                     .ToArray();
             }
         }
@@ -140,15 +151,19 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal int Count { get; private set; }
         internal int BatchValue { get { return checked(UnitCost * Count); } }
 
-        internal int RequiredProgress
+        internal int ValueDerivedTarget
         { get { return Math.Max(1, BatchValue / 4); } }
+
+        internal int TimedProjectTarget
+        { get { return CraftMagicItemsCompatibilityPolicy
+            .AmmunitionTimedProjectTarget; } }
 
         internal int GoldCost(float craftingPriceScale)
         {
             if (craftingPriceScale < 0f || float.IsNaN(craftingPriceScale) ||
                 float.IsInfinity(craftingPriceScale))
                 throw new ArgumentOutOfRangeException("craftingPriceScale");
-            int scaled = (int)Math.Round(RequiredProgress *
+            int scaled = (int)Math.Round(ValueDerivedTarget *
                 (double)craftingPriceScale, MidpointRounding.ToEven);
             return Math.Max(1, (scaled * 2 + 2) / 3);
         }
@@ -210,6 +225,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
     internal static class CraftMagicItemsCompatibilityPolicy
     {
         internal const int AmmunitionBatchCount = 20;
+        internal const int AmmunitionTimedProjectTarget = 5;
         internal const int FirearmMundaneBaseDc = 18;
         internal const int AmmunitionMundaneBaseDc = 15;
         internal const int ReliableEquivalentBonus = 1;
@@ -257,12 +273,45 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 throw new InvalidOperationException(
                     "A canonical creation base has no supported CMI mundane classification.");
 
-            return new CraftMagicItemsCatalogDecision(firearms, martial,
-                exotic, entries.Where(value => value.Role ==
+            CraftMagicItemsCatalogEntry[] firearmRecognition = entries.Where(
+                    value => value.Family ==
+                        CraftMagicItemsCatalogFamily.Firearm &&
+                    value.PlayerAuthorized && !value.Unavailable &&
+                    (value.Role == CraftMagicItemsCatalogRole
+                        .CanonicalCreationBase || value.Role ==
+                        CraftMagicItemsCatalogRole
+                            .SupportedRecognitionOnly))
+                .ToArray();
+            CraftMagicItemsCatalogEntry[] customRecognition = entries.Where(
+                    value => value.Family !=
+                        CraftMagicItemsCatalogFamily.Firearm &&
+                    value.Family !=
+                        CraftMagicItemsCatalogFamily.Diagnostic &&
+                    value.Role == CraftMagicItemsCatalogRole
+                        .CanonicalCreationBase && value.PlayerAuthorized &&
+                    !value.Unavailable)
+                .ToArray();
+
+            return new CraftMagicItemsCatalogDecision(firearms,
+                firearmRecognition, martial, exotic, customRecognition,
+                entries.Where(value => value.Role ==
                     CraftMagicItemsCatalogRole.AuthoredGenericTarget).ToArray(),
                 entries.Where(value => value.Role ==
                     CraftMagicItemsCatalogRole.NamedUpgradeOnly).ToArray());
         }
+
+        internal static int NormalizeAmmunitionProjectTarget(
+            int currentTarget, int valueDerivedTarget,
+            bool exactAmmunitionProject)
+        {
+            return exactAmmunitionProject && currentTarget ==
+                valueDerivedTarget ? AmmunitionTimedProjectTarget :
+                currentTarget;
+        }
+
+        internal static bool IsInternalEnchantmentPresentationMarker(
+            bool hasStateTokenMarker, bool hasBatteredOriginMarker)
+        { return hasStateTokenMarker || hasBatteredOriginMarker; }
 
         internal static bool ReliableApplies(int firearmMarkerCount)
         { return firearmMarkerCount == 1; }

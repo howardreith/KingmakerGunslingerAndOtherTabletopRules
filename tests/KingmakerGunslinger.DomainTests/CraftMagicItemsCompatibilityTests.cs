@@ -58,6 +58,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("HarmonyLib.Harmony",
                 result.Contract.HarmonyInstanceField.FieldType.FullName,
                 "The exact external Harmony generation was not resolved.");
+            Assertions.Equal(13, result.Contract.CraftingProjectConstructor
+                    .GetParameters().Length,
+                "The supported project constructor shape changed.");
+            Assertions.True(result.Contract.TimerProjectsField.FieldType
+                    .GetGenericArguments()[0] ==
+                        result.Contract.CraftingProjectDataType &&
+                result.Contract.GetCraftingTimer.ReturnType ==
+                    result.Contract.CraftingTimerComponentType,
+                "The exact project migration lifecycle seam changed.");
         }
 
         internal static void ContractProbeRejectsMissingMembers()
@@ -67,7 +76,7 @@ namespace KingmakerGunslinger.DomainTests
                 CraftMagicItemsContractProbe.Probe(broken, false);
             Assertions.False(result.IsCompatible,
                 "A CMI-shaped assembly missing required fields was accepted.");
-            Assertions.Equal("main-static-fields", result.FailedCheck,
+            Assertions.Equal("required-types", result.FailedCheck,
                 "The contract failure was not one bounded capability check.");
             string coordinator = Read("src", "KingmakerGunslinger",
                 "CraftMagicItemsCompatibility",
@@ -305,8 +314,15 @@ namespace KingmakerGunslinger.DomainTests
             CraftMagicItemsCatalogDecision decision =
                 CraftMagicItemsCompatibilityPolicy.BuildCatalog(source,
                     new CraftMagicItemsModuleState(true, true, true));
-            Assertions.Equal(5, decision.FirearmBases.Length,
-                "Every authorized production firearm must be a base.");
+            Assertions.True(decision.FirearmCreationBases.Select(value =>
+                    value.Identity).SequenceEqual(new[] { "pistol", "musket",
+                    "blunderbuss" }),
+                "Only the three ordinary-campaign firearms may be creation bases.");
+            Assertions.True(decision.FirearmRecognitionBases.Select(value =>
+                    value.Identity).SequenceEqual(new[] { "pistol", "musket",
+                    "blunderbuss", "advanced-rifle",
+                    "advanced-revolver" }),
+                "All five mechanically supported firearms must remain recognized.");
             Assertions.Equal("nodachi", decision.MartialBases.Single().Identity,
                 "Nodachi must use CMI Martial Weapons.");
             Assertions.True(decision.ExoticBases.Select(value =>
@@ -317,6 +333,9 @@ namespace KingmakerGunslinger.DomainTests
                 "Authored generic variants must remain target-only.");
             Assertions.Equal(1, decision.NamedUpgradeOnly.Length,
                 "Named campaign items must remain upgrade-only.");
+            Assertions.Equal(4,
+                decision.CustomFamilyRecognitionBases.Length,
+                "All four mundane custom-family identities must remain recognized for owned upgrades.");
             Assertions.False(decision.AllCreationBases.Any(value =>
                     value.Role != CraftMagicItemsCatalogRole
                         .CanonicalCreationBase || value.Unavailable ||
@@ -329,7 +348,8 @@ namespace KingmakerGunslinger.DomainTests
                 "CraftMagicItemsRegistrationCatalog.cs");
             foreach (string token in new[] {
                 "BlueprintBootstrap.ProductionFirearms",
-                "value.Spec.IsPlayerFireable", "GenericEntries",
+                "value.Spec.IsPlayerFireable", "value.Spec.AcquisitionRole",
+                "SupportedRecognitionOnly", "GenericEntries",
                 "NamedEntries", "BlueprintBootstrap.EasternWeapons",
                 "BlueprintBootstrap.ElvenBranchedSpears",
                 "BlueprintBootstrap.BasicAmmunition",
@@ -375,9 +395,9 @@ namespace KingmakerGunslinger.DomainTests
             AssertCreationCounts(source, new CraftMagicItemsModuleState(
                 false, true, true), 0, 1, 3);
             AssertCreationCounts(source, new CraftMagicItemsModuleState(
-                true, false, true), 5, 0, 1);
+                true, false, true), 3, 0, 1);
             AssertCreationCounts(source, new CraftMagicItemsModuleState(
-                true, true, false), 5, 1, 2);
+                true, true, false), 3, 1, 2);
             AssertCreationCounts(source, new CraftMagicItemsModuleState(
                 false, false, false), 0, 0, 0);
             CraftMagicItemsCatalogDecision disabled =
@@ -387,6 +407,11 @@ namespace KingmakerGunslinger.DomainTests
                 "Disabled modules must preserve owned stable upgrade identity.");
             Assertions.Equal(1, disabled.AuthoredTargets.Length,
                 "Disabled modules must preserve recognition of authored targets.");
+            Assertions.Equal(5, disabled.FirearmRecognitionBases.Length,
+                "A disabled Gunslinger module must preserve owned firearm recognition.");
+            Assertions.Equal(4,
+                disabled.CustomFamilyRecognitionBases.Length,
+                "Disabled custom-family modules must preserve owned-item recognition.");
         }
 
         internal static void ReliableApplicabilityIsMarkerExact()
@@ -429,10 +454,10 @@ namespace KingmakerGunslinger.DomainTests
         internal static void AmmunitionBatchEconomicsAreExact()
         {
             AssertAmmo("black-powder", "Black Powder Charge", 10, 200,
-                50, 34);
-            AssertAmmo("lead-ball", "Lead Ball", 1, 20, 5, 4);
+                50, 5, 34);
+            AssertAmmo("lead-ball", "Lead Ball", 1, 20, 5, 5, 4);
             AssertAmmo("paper-cartridge", "Paper Cartridge", 12, 240,
-                60, 40);
+                60, 5, 40);
             string bridge = Read("src", "KingmakerGunslinger",
                 "CraftMagicItemsCompatibility",
                 "CraftMagicItemsReflectionBridge.cs");
@@ -442,6 +467,61 @@ namespace KingmakerGunslinger.DomainTests
                 "Ammunition does not use exact result items and CMI's mundane control.");
             Assertions.False(bridge.Contains("NewItemBaseIDs = ammunition"),
                 "Plain ammunition was forced into CMI equipment base arrays.");
+        }
+
+        internal static void AmmunitionProjectMigrationIsExact()
+        {
+            Assertions.Equal(5, CraftMagicItemsCompatibilityPolicy
+                .NormalizeAmmunitionProjectTarget(50, 50, true),
+                "A legacy Black Powder target was not normalized.");
+            Assertions.Equal(5, CraftMagicItemsCompatibilityPolicy
+                .NormalizeAmmunitionProjectTarget(60, 60, true),
+                "A legacy Paper Cartridge target was not normalized.");
+            Assertions.Equal(5, CraftMagicItemsCompatibilityPolicy
+                .NormalizeAmmunitionProjectTarget(5, 5, true),
+                "An already-normalized Lead Ball target changed.");
+            Assertions.Equal(50, CraftMagicItemsCompatibilityPolicy
+                .NormalizeAmmunitionProjectTarget(50, 50, false),
+                "An unrelated CMI project was modified.");
+            Assertions.Equal(37, CraftMagicItemsCompatibilityPolicy
+                .NormalizeAmmunitionProjectTarget(37, 50, true),
+                "A non-authoritative project target was guessed at.");
+            string bridge = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsReflectionBridge.cs");
+            string contract = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsContractProbe.cs");
+            foreach (string token in new[] { "ProjectGoldSpentField",
+                "ProjectResultItemField", "ProjectUpgradeItemField",
+                "ProjectRecipeNameField", "result.Count !=",
+                "progressPreserved=true", "goldSpentPreserved=true" })
+                Assertions.True(bridge.Contains(token) ||
+                    contract.Contains(token),
+                    "The exact project migration boundary lacks: " + token);
+        }
+
+        internal static void InternalTooltipMarkersAreExact()
+        {
+            Assertions.True(CraftMagicItemsCompatibilityPolicy
+                    .IsInternalEnchantmentPresentationMarker(true, false) &&
+                CraftMagicItemsCompatibilityPolicy
+                    .IsInternalEnchantmentPresentationMarker(false, true),
+                "A required internal firearm marker was not hidden.");
+            Assertions.False(CraftMagicItemsCompatibilityPolicy
+                .IsInternalEnchantmentPresentationMarker(false, false),
+                "A real weapon quality would be hidden.");
+            string source = Read("src", "KingmakerGunslinger", "Firearms",
+                "FirearmInternalEnchantmentPresentation.cs");
+            foreach (string token in new[] { "FillWeaponQualities",
+                "GetQualities", "FirearmStateTokenComponent",
+                "BatteredFirearmOriginComponent", "ShouldRender",
+                "Brfalse" })
+                Assertions.True(source.Contains(token),
+                    "The native tooltip marker filter lacks: " + token);
+            Assertions.False(source.Contains("Replace(\"<null>\"") ||
+                source.Contains("string.IsNullOrEmpty(enchantment"),
+                "The tooltip repair suppresses text globally instead of exact markers.");
         }
 
         internal static void CustomBlueprintIntegrityBoundaryIsExact()
@@ -492,7 +572,8 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "BuildQualificationClone",
                 "FirearmRuntimeState.ReadStateTokenIds",
                 "RestoreMissingStateToken", "BatteredFirearmOriginRuntime",
-                "value.Item.Type", "weapon.Type" })
+                "FirearmRecognitionBases",
+                "CustomFamilyRecognitionBases", "weapon.Type" })
                 Assertions.True(bridge.Contains(token),
                     "Custom blueprint integrity contract lacks: " + token);
             Assertions.True(bridge.Contains("BuildCustomRecipeGuid") &&
@@ -514,7 +595,7 @@ namespace KingmakerGunslinger.DomainTests
                 "BeforeEquipmentIndexes", "RebuildCompleteGraph",
                 "ExternalDisabled", "HarmonyLib.Harmony",
                 "first-update-after-umm-load", "late-attachment",
-                "patches=11", "RollbackCompatibilityGraph",
+                "patches=13", "RollbackCompatibilityGraph",
                 "TryRestoreNewItemBaseState", "object[] __args",
                 "BlueprintBootstrap.IsInitialized", "blueprints.pending",
                 "SynchronizeMundaneIndexes", "UnpatchAll",
@@ -527,6 +608,13 @@ namespace KingmakerGunslinger.DomainTests
                 bridge.Contains("AmmunitionIdentity") &&
                 bridge.Contains("ReliableRecipeIdentity"),
                 "Dedicated stable registration identities are incomplete.");
+            Assertions.False(bridge.Contains(
+                    "KMGMagicEasternAndElvenWeapons") ||
+                bridge.Contains("Eastern and Elven Weapons") ||
+                bridge.Contains("MagicCustomWeaponsIdentity") ||
+                bridge.Contains("_magicCustomWeapons") ||
+                bridge.Contains("CategoryScope.CustomWeapons"),
+                "The obsolete standalone Eastern/Elven magic category remains.");
             string scenarioCatalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -535,22 +623,38 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTesting", "CraftMagicItemsCompatibilityObserver.cs");
             string uiObserver = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "CraftMagicItemsAmmunitionUiObserver.cs");
+            string tooltipObserver = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "CraftMagicItemsTooltipInspection.cs");
+            string workingSave = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "WorkingSaveSmokeScenario.cs");
             string automation = Read("scripts",
                 "RuntimeAutomation.Common.ps1");
+            string persistence = Read("scripts",
+                "Invoke-CraftMagicItemsWorkingSavePersistence.ps1");
             Assertions.True(scenarioCatalog.Contains(
                     "ObserveCraftMagicItemsCompatibility") &&
                 scenarioCatalog.Contains(
                     "observe-craft-magic-items-compatibility") &&
                 scenarioCatalog.Contains(
                     "observe-craft-magic-items-ammunition-ui") &&
+                scenarioCatalog.Contains(
+                    "WorkingSaveCraftMagicItemsPrepare") &&
+                scenarioCatalog.Contains(
+                    "working-save-craft-magic-items-verify-cleanup") &&
                 runner.Contains(
                     "CraftMagicItemsCompatibilityObserver.Run") &&
                 runner.Contains(
                     "CraftMagicItemsAmmunitionUiObserver.Begin") &&
+                runner.Contains("StartCraftMagicItemsPersistence") &&
+                runner.Contains("ArmExactWorkingSaveWrite") &&
                 automation.Contains(
                     "'observe-craft-magic-items-compatibility'") &&
                 automation.Contains(
                     "'observe-craft-magic-items-ammunition-ui'") &&
+                automation.Contains(
+                    "'working-save-craft-magic-items-prepare'") &&
+                automation.Contains("PermittedSaveName = " +
+                    "'KMG_AUTOMATION_WORKING'") &&
                 observer.Contains("RunGuardedQualification") &&
                 observer.Contains("exact-live-cmi-entry") &&
                 observer.Contains("save-free-disposable-boundary") &&
@@ -561,11 +665,32 @@ namespace KingmakerGunslinger.DomainTests
                     "Game.Instance.Player.Inventory.Remove(weapon)")).Count == 2 &&
                 uiObserver.Contains("no GUI/TargetInvocation exception, deferred failure, or graph rollback"),
                 "The guarded real-CMI qualification scenario is incomplete.");
+            Assertions.True(tooltipObserver.Contains(
+                    "BuildPersistentFixtureBlueprint") &&
+                tooltipObserver.Contains("CapturePersistent") &&
+                tooltipObserver.Contains("Anarchic/+5/Reliable") &&
+                tooltipObserver.Contains("observation.NullCount == 0") &&
+                persistence.Contains(
+                    "working-save-craft-magic-items-prepare") &&
+                persistence.Contains(
+                     "working-save-craft-magic-items-verify-cleanup") &&
+                persistence.Contains("ValidateSet('KMG_AUTOMATION_WORKING')") &&
+                workingSave.Contains(
+                    "_expectedWorkingSaveInProgress &&") &&
+                workingSave.Contains(
+                    "Read(value, \"Name\") == ExpectedName") &&
+                workingSave.Contains(
+                    "string suffix = \"_\" + ExpectedName + \".zks\";") &&
+                workingSave.Contains("sequence.All(char.IsDigit)") &&
+                workingSave.Contains(
+                    "ReferenceEquals(descriptor, _workingDescriptor)"),
+                "The guarded CMI save/reload/cleanup qualification is incomplete.");
             AssertNoStaticDependency();
         }
 
         private static void AssertAmmo(string identity, string name,
-            int unitCost, int value, int progress, int gold)
+            int unitCost, int value, int valueTarget, int timedTarget,
+            int gold)
         {
             var plan = new CraftMagicItemsAmmunitionRecipePlan(identity,
                 name, unitCost,
@@ -574,8 +699,10 @@ namespace KingmakerGunslinger.DomainTests
                 name + " batch count changed.");
             Assertions.Equal(value, plan.BatchValue,
                 name + " batch value changed.");
-            Assertions.Equal(progress, plan.RequiredProgress,
-                name + " required progress changed.");
+            Assertions.Equal(valueTarget, plan.ValueDerivedTarget,
+                name + " value-derived target changed.");
+            Assertions.Equal(timedTarget, plan.TimedProjectTarget,
+                name + " timed project target changed.");
             Assertions.Equal(gold, plan.GoldCost(1f),
                 name + " ordinary CMI gold cost changed.");
         }
@@ -597,7 +724,8 @@ namespace KingmakerGunslinger.DomainTests
             CraftMagicItemsCatalogDecision decision =
                 CraftMagicItemsCompatibilityPolicy.BuildCatalog(source,
                     modules);
-            Assertions.Equal(firearms, decision.FirearmBases.Length,
+            Assertions.Equal(firearms,
+                decision.FirearmCreationBases.Length,
                 "Firearm module gate changed.");
             Assertions.Equal(martial, decision.MartialBases.Length,
                 "Eastern Martial module gate changed.");
@@ -609,10 +737,16 @@ namespace KingmakerGunslinger.DomainTests
         {
             var result = new List<CraftMagicItemsCatalogEntry>();
             foreach (string firearm in new[] { "pistol", "musket",
-                "blunderbuss", "advanced-rifle", "advanced-revolver" })
+                "blunderbuss" })
                 result.Add(Entry(firearm,
                     CraftMagicItemsCatalogFamily.Firearm,
                     CraftMagicItemsCatalogRole.CanonicalCreationBase,
+                    CraftMagicItemsOwningModule.Gunslinger, true, false));
+            foreach (string firearm in new[] { "advanced-rifle",
+                "advanced-revolver" })
+                result.Add(Entry(firearm,
+                    CraftMagicItemsCatalogFamily.Firearm,
+                    CraftMagicItemsCatalogRole.SupportedRecognitionOnly,
                     CraftMagicItemsOwningModule.Gunslinger, true, false));
             result.Add(Entry("wakizashi",
                 CraftMagicItemsCatalogFamily.Wakizashi,
@@ -747,6 +881,56 @@ namespace CraftMagicItems
     internal enum Slot { Weapon, Usable }
     internal enum Restriction { Weapon }
     internal enum RecipeCostType { Flat, EnhancementLevelSquared }
+    internal enum CrafterPrerequisiteType { Any }
+
+    internal sealed class CraftingProjectData
+    {
+        internal object Crafter;
+        internal int Progress;
+        internal int TargetCost;
+        internal int GoldSpent;
+        internal int CasterLevel;
+        internal object[] SpellPrerequisites;
+        internal object[] FeatPrerequisites;
+        internal bool PrerequisitesMandatory;
+        internal CrafterPrerequisiteType[] CrafterPrerequisites;
+        internal bool AnyPrerequisite;
+        internal object ItemBlueprint;
+        internal object ResultItem;
+        internal string ItemType;
+        internal string RecipeName;
+        internal string LastMessage;
+        internal object UpgradeItem;
+
+        internal CraftingProjectData(object crafter, int targetCost,
+            int goldSpent, int casterLevel, object resultItem,
+            string itemType, string recipeName,
+            object[] spellPrerequisites, object[] featPrerequisites,
+            bool prerequisitesMandatory, bool anyPrerequisite,
+            object upgradeItem,
+            CrafterPrerequisiteType[] crafterPrerequisites)
+        {
+            Crafter = crafter;
+            TargetCost = targetCost;
+            GoldSpent = goldSpent;
+            CasterLevel = casterLevel;
+            ResultItem = resultItem;
+            ItemType = itemType;
+            RecipeName = recipeName;
+            SpellPrerequisites = spellPrerequisites;
+            FeatPrerequisites = featPrerequisites;
+            PrerequisitesMandatory = prerequisitesMandatory;
+            AnyPrerequisite = anyPrerequisite;
+            UpgradeItem = upgradeItem;
+            CrafterPrerequisites = crafterPrerequisites;
+        }
+    }
+
+    internal sealed class CraftingTimerComponent
+    {
+        internal List<CraftingProjectData> CraftingProjects =
+            new List<CraftingProjectData>();
+    }
 
     internal sealed class CraftingBlueprint<T>
     {
@@ -872,6 +1056,10 @@ namespace CraftMagicItems
         private static void AddRecipeForEnchantment(string id,
             RecipeData recipe) { }
         private static object GetSelectedCrafter(bool render) { return null; }
+        private static CraftingTimerComponent
+            GetCraftingTimerComponentForCaster(object caster,
+                bool create)
+        { return null; }
         private static int GetSelectionIndex(string label) { return 0; }
         public static int DrawSelectionUserInterfaceElements(string label,
             string[] values, int columns) { return 0; }

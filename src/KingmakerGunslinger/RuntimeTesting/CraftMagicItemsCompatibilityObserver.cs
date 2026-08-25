@@ -74,6 +74,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Evidence = check.Evidence
                 });
             diagnostics.AddRange(qualification.Diagnostics);
+            CraftMagicItemsTooltipInspectionResult tooltipInspection =
+                CraftMagicItemsTooltipInspection.Capture(true);
+            Add(assertions, "internal-tooltip-markers-hidden",
+                "exact state/origin markers remain mechanical while native tooltip text has no <null> block and retains real qualities",
+                "passed=" + tooltipInspection.Passed,
+                tooltipInspection.Passed,
+                "real CMI clone, item-owned KMG markers, and native UIUtilityItem tooltip builder");
+            diagnostics.AddRange(tooltipInspection.Diagnostics);
             Add(assertions, "save-free-disposable-boundary",
                 "no save, inventory, party, input, or campaign mutation",
                 "request-local item entities and CMI custom blueprints removed by the qualified full rebuild",

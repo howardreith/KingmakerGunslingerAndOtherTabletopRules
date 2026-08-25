@@ -3,7 +3,7 @@ param(
     [ValidateSet('disposable-in-harms-way-human-repro',
         'disposable-in-harms-way-off-turn-economy')]
     [string]$Scenario = 'disposable-in-harms-way-human-repro',
-    [string]$ExpectedVersion = '0.0.99',
+    [string]$ExpectedVersion = '0.0.100',
     [ValidateRange(120, 900)]
     [int]$TimeoutSeconds = 600,
     [switch]$AllowDirtyGit,

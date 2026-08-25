@@ -72,7 +72,9 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal CraftMagicItemsModuleState Modules { get; private set; }
 
         internal BlueprintItemWeapon[] FirearmCreationBases
-        { get { return Resolve(Decision.FirearmBases); } }
+        { get { return Resolve(Decision.FirearmCreationBases); } }
+        internal BlueprintItemWeapon[] FirearmRecognitionBases
+        { get { return Resolve(Decision.FirearmRecognitionBases); } }
         internal BlueprintItemWeapon[] MartialCreationBases
         { get { return Resolve(Decision.MartialBases); } }
         internal BlueprintItemWeapon[] ExoticCreationBases
@@ -82,13 +84,9 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal BlueprintItemWeapon[] AuthoredGenericTargets
         { get { return Resolve(Decision.AuthoredTargets); } }
 
-        internal BlueprintItemWeapon[] MagicMundaneCreationBases
+        internal BlueprintItemWeapon[] CustomFamilyRecognitionBases
         {
-            get
-            {
-                return MartialCreationBases.Concat(ExoticCreationBases)
-                    .ToArray();
-            }
+            get { return Resolve(Decision.CustomFamilyRecognitionBases); }
         }
 
         internal static CraftMagicItemsRegistrationCatalog Create(
@@ -118,10 +116,18 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 bool unavailable = value.Item.ComponentsArray.OfType<
                     UnavailableProductionFirearmRestriction>().Any();
                 bool authorized = value.Spec.IsPlayerFireable &&
-                    !unavailable && markerCount == 1;
+                    markerCount == 1;
+                CraftMagicItemsCatalogRole role = unavailable || !authorized
+                    ? CraftMagicItemsCatalogRole.Unavailable
+                    : value.Spec.AcquisitionRole ==
+                        ProductionFirearmAcquisitionRole
+                            .OrdinaryCampaignCraftingBase
+                        ? CraftMagicItemsCatalogRole.CanonicalCreationBase
+                        : CraftMagicItemsCatalogRole
+                            .SupportedRecognitionOnly;
                 Add(registrations, value.Item,
                     CraftMagicItemsCatalogFamily.Firearm,
-                    CraftMagicItemsCatalogRole.CanonicalCreationBase,
+                    role,
                     CraftMagicItemsOwningModule.Gunslinger, authorized,
                     unavailable);
             }
@@ -213,6 +219,9 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 Weapons.GroupBy(value => value.Item.AssetGuid,
                     StringComparer.Ordinal).Any(group => group.Count() != 1) ||
                 FirearmCreationBases.Any(value => !IsFirearm(value)) ||
+                FirearmRecognitionBases.Any(value => !IsFirearm(value)) ||
+                FirearmCreationBases.Any(value => !FirearmRecognitionBases
+                    .Contains(value)) ||
                 NamedUpgradeOnly.Any(value => Decision.AllCreationBases.Any(
                     candidate => string.Equals(candidate.Identity,
                         value.AssetGuid, StringComparison.Ordinal))) ||

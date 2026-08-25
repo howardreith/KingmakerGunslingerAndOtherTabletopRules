@@ -36,6 +36,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("craft-magic-items.feature-matrix", CraftMagicItemsCompatibilityTests.FeatureModuleMatrixIsExact),
             Case("craft-magic-items.reliable", CraftMagicItemsCompatibilityTests.ReliableApplicabilityIsMarkerExact),
             Case("craft-magic-items.ammunition", CraftMagicItemsCompatibilityTests.AmmunitionBatchEconomicsAreExact),
+            Case("craft-magic-items.ammunition-project-policy", CraftMagicItemsCompatibilityTests.AmmunitionProjectMigrationIsExact),
+            Case("craft-magic-items.tooltip-markers", CraftMagicItemsCompatibilityTests.InternalTooltipMarkersAreExact),
             Case("craft-magic-items.custom-integrity", CraftMagicItemsCompatibilityTests.CustomBlueprintIntegrityBoundaryIsExact),
             Case("craft-magic-items.lifecycle-package", CraftMagicItemsCompatibilityTests.LifecycleAndPackagingRemainOptional),
             Case("compat-attribution.asset-plans", CompatibilityAttributionTests.AssetPlansAreExact),

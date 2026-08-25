@@ -17,6 +17,7 @@ DETERMINISTIC_TEST_COUNT = 1238
 STATIC_KEY = "craftMagicItems98"
 FOCUSED_TEST_COUNT = 10
 PACKAGE_SUFFIX = "craft-magic-items-compatibility"
+HARMONY_PATCH_COUNT = 11
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
@@ -76,7 +77,7 @@ def validate(root: Path) -> None:
         "FirearmRuntimeState.ReadStateTokenIds")
     coordinator = require_tokens(root / required[5],
         "CraftMagicItems", "AfterDataRead", "AddItemIdForEnchantment",
-        "AddAllCraftingFeats", "patches=11",
+        "AddAllCraftingFeats", f"patches={HARMONY_PATCH_COUNT}",
         "__result = __result &&", "object[] __args", "UnpatchAll",
         "harmony.patch-install-rollback")
     require_tokens(root / required[7],

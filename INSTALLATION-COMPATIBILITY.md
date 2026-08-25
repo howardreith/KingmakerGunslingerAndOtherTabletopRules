@@ -31,12 +31,12 @@ transient action debt; it does not alter either feat or automation mode.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.99-craft-magic-items-ammunition-ui-repair.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.100-craft-magic-items-post-human-refinement.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.99 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.100 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -215,7 +215,7 @@ by itself prove campaign or cross-mod compatibility.
 ## Optional Craft Magic Items integration
 
 When the Unity Mod Manager entry with ID `CraftMagicItems` is installed and
-active, Gunslinger 0.0.99 probes `CraftMagicItems.Main` and enables the bridge
+active, Gunslinger 0.0.100 probes `CraftMagicItems.Main` and enables the bridge
 only if the required 2.1.0 data-loading, recipe, indexing, crafting, and Harmony
 surfaces match. There is no required assembly reference: Gunslinger continues
 normally when CMI is absent or disabled, and an incompatible external contract
@@ -228,7 +228,9 @@ Version 0.0.98 is rejected by its first human ammunition UI test. Its
 conditional whole-method prefix could let Layout/input use CMI's renderer and
 Repaint use KMG's renderer while a category selection changed, producing a
 `SelectionGrid` control-count exception and unbalanced GUILayout/GUIClip
-state. Version 0.0.99 removes that prefix. CMI always owns its top-level
+state. Version 0.0.99 removed that prefix and passed its first human ammunition
+UI interaction test: the category remained visible and crafting worked.
+Version 0.0.100 preserves that architecture. CMI always owns its top-level
 Mundane Crafting and parent/subtype selectors; the bridge branches only after
 CMI has finalized the exact selected data and immediately before its ordinary
 equipment-only `NewItemBaseIDs` path. The ammunition panel returns to CMI's
@@ -249,20 +251,39 @@ Neither that DLL nor CMI data, localization, icons, or source are included in
 the Gunslinger package.
 
 With both mods active, CMI gains dedicated **Firearms** mundane and magic item
-types. Their from-scratch bases are the currently player-authorized Pistol,
-Musket, Blunderbuss, Advanced Rifle, and Advanced Revolver. Wakizashi and
-Katana enter CMI's Exotic Weapons bases, Nodachi enters Martial Weapons, and
-Elven Branched Spear enters Exotic Weapons. Only canonical mundane generic
-bases are added for creation; authored masterwork, material, and +1 variants
-remain exact upgrade targets. Named campaign weapons may be upgraded only when
-already owned and never become from-scratch bases.
+types. Their from-scratch bases are exactly Pistol, Musket, and Blunderbuss.
+Advanced Rifle and Advanced Revolver remain registered, loadable,
+firearm-mechanical, Reliable-compatible, indexed for pricing/base recognition,
+and eligible for upgrades when already owned, but are not ordinary campaign
+creation bases. Wakizashi and Katana enter CMI's Exotic Weapons bases, Nodachi
+enters Martial Weapons, and Elven Branched Spear enters Exotic Weapons. There
+is no separate Eastern and Elven Weapons magic category: craft the canonical
+mundane base through Martial/Exotic, then enchant the owned item through CMI's
+ordinary Arms and Armor category. Authored masterwork, material, and +1
+variants remain exact owned-item upgrade targets. Named campaign weapons may
+be upgraded only when already owned and never become from-scratch bases.
 
 The **Firearm Ammunition** category makes the exact inventory identities used
-by Gunslinger in batches of 20. At CMI's ordinary 1.0 price scale, Black Powder
-Charge has batch value 200 gp, progress 50, and crafting cost 34 gp; Lead Ball
-has value 20 gp, progress 5, and cost 4 gp; Paper Cartridge has value 240 gp,
-progress 60, and cost 40 gp. The recipes do not create loaded-state markers or
-change Gunslinger's rest crafting, reload, or Paper mode rules.
+by Gunslinger in batches of 20. CMI's value calculation remains unchanged:
+Black Powder Charge has batch value 200 gp, Lead Ball has value 20 gp, and
+Paper Cartridge has value 240 gp. Those values previously produced timed
+targets 50/5/60 and human estimates of about 7/1/8 days somewhere safe. The
+consumable-specific policy now gives all three projects target 5 without
+changing item value or CMI's price calculation. At price scale 1.0, costs
+remain exactly 34/4/40 gp. Existing exact KMG ammunition projects with target
+50 or 60 are normalized once while preserving progress, `GoldSpent`, result,
+recipe, crafter, and ordering; cancellation refunds the original exact spend,
+and a project already at progress 5 or greater completes through CMI's normal
+processing. The recipes do not create loaded-state markers or change
+Gunslinger's rest crafting, reload, or Paper mode rules.
+
+KMG's item-owned firearm state-token and battered-origin enchantments remain
+mechanically present and save-stable. The native tooltip filter omits only
+enchantments containing the exact `FirearmStateTokenComponent` or
+`BatteredFirearmOriginComponent` markers, preventing their null localization
+from producing phantom qualities. Real qualities such as Anarchic,
+Enhancement +5, and Reliable remain visible, and firearm condition continues
+through KMG's dedicated presentation.
 
 CMI's magic **Firearms** category also exposes the existing Gunslinger
 `Reliable` enchantment. It remains the exact KMG enchantment with +1 equivalent
@@ -288,24 +309,31 @@ changing module state.
 
 Human CMI UI acceptance checklist for one fresh process:
 
-1. Open Craft Magic Items -> Craft Mundane Items.
-2. Begin on an ordinary category.
-3. Click Firearm Ammunition.
-4. Verify the category stays visible.
-5. Select Black Powder Charge.
-6. Select Lead Ball.
-7. Select Paper Cartridge.
-8. Switch back to an ordinary category.
-9. Switch to Firearm Ammunition again.
-10. Close and reopen the UMM window.
-11. Switch to another mod tab and return.
-12. Craft one 20-unit batch of each item.
-13. Confirm money, count, and project behavior.
-14. Confirm there is no KMG `bridge.incompatible` line.
-15. Confirm there is no CMI `Error rendering GUI` line.
-16. Confirm there is no `GUILayout`, `LayoutGroup`, `SelectionGrid`, or
-    `GUIClip` error.
-17. Save and reload only through an authorized disposable-save procedure.
+1. Confirm CMI reports Kingmaker Gunslinger 0.0.100.
+2. Open Craft Mundane Items.
+3. Confirm Firearms offers exactly Pistol, Musket, and Blunderbuss.
+4. Confirm Advanced Rifle and Advanced Revolver are absent.
+5. Confirm Nodachi appears under Martial.
+6. Confirm Wakizashi, Katana, and Elven Branched Spear appear under Exotic.
+7. Confirm no separate Eastern and Elven Weapons magic category exists.
+8. Craft one 20-unit batch of each ammunition item.
+9. Confirm each project estimate is approximately one safe crafting day with
+   the same crafter and settings.
+10. Confirm prices remain 34/4/40 gp at price scale 1.0.
+11. Confirm Work in Progress reports target/progress consistently.
+12. Enchant one owned Eastern or Elven weapon through Arms and Armor.
+13. Inspect a newly crafted magical Pistol.
+14. Inspect an upgraded battered starter Pistol while loaded.
+15. Confirm Anarchic, Enhancement +5, and Reliable text remains.
+16. Confirm no `<null>` text or phantom blank qualities appear.
+17. Save, exit, reload through an authorized disposable-save procedure, and
+    inspect the representative items again.
+18. Confirm firearm state and battered-origin behavior remain intact.
+19. Confirm no CMI GUI rendering error.
+20. Confirm no KMG bridge fault, layout mismatch, or graph rollback.
+
+Retain the fresh UMM output log from this candidate. Automated evidence does
+not replace this final visual and interaction acceptance.
 
 The guarded mechanical qualification is recorded in
 `docs/CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md`. Visual category placement and

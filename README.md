@@ -1,19 +1,21 @@
 # Kingmaker Gunslinger
 
-Version `0.0.99` repairs the optional Craft Magic Items 2.1.0 ammunition UI
-without linking or packaging `CraftMagicItems.dll`. CMI now owns its complete
-top-level mundane selector on every IMGUI event; KMG intercepts only the exact
-finalized Firearm Ammunition data object before CMI's equipment-only body.
-When both UMM entries are active and the reflected contract matches, CMI can
-create and upgrade all currently authorized production firearms, Wakizashi,
-Katana, Nodachi, and Elven Branched Spear; craft exact 20-unit batches of Black
-Powder Charge, Lead Ball, and Paper Cartridge; and apply the existing
-firearm-only Reliable enchantment. Named campaign weapons remain upgrade-only,
-feature-module gates remain authoritative, and an absent, disabled, or
-incompatible CMI installation leaves ordinary Gunslinger behavior unchanged.
-The 0.0.98 whole-method ammunition renderer is rejected. See
-`INSTALLATION-COMPATIBILITY.md` for the tested assembly fingerprint, persistence
-warning, and human CMI UI checklist.
+Version `0.0.100` refines the optional Craft Magic Items 2.1.0 integration
+without linking or packaging `CraftMagicItems.dll`. The qualified 0.0.99 inner
+ammunition UI seam remains: CMI owns its complete top-level mundane selector on
+every IMGUI event, while KMG intercepts only the exact finalized Firearm
+Ammunition data object before CMI's equipment-only body. Exact 20-unit
+ammunition projects now all use timed target 5 while retaining scale-1.0 prices
+of 34/4/40 gp. From-scratch Firearms contains Pistol, Musket, and Blunderbuss;
+Advanced Rifle and Advanced Revolver remain recognized for owned-item upgrades
+but are no longer creation bases. Eastern and Elven weapons use CMI's existing
+Martial/Exotic mundane categories followed by ordinary Arms and Armor upgrades,
+and KMG's internal firearm state/origin enchantments no longer leak `<null>`
+tooltip blocks. Named campaign weapons remain upgrade-only, feature-module
+gates remain authoritative, and an absent, disabled, or incompatible CMI
+installation leaves ordinary Gunslinger behavior unchanged. See
+`INSTALLATION-COMPATIBILITY.md` for the tested assembly fingerprint,
+persistence warning, and required fresh-process human checklist.
 
 The retained `0.0.93` compatibility work preserves Bodyguard, In Harm's Way, and
 the canonical Call of the Wild Aid Another integration while repairing the

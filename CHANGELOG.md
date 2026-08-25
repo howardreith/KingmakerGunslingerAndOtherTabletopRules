@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.0.100-craft-magic-items-post-human-refinement
+
+- Preserves the human-tested 0.0.99 inner ammunition UI interception while
+  setting every exact 20-unit KMG ammunition timed project to target 5.
+  Scale-1.0 prices remain 34/4/40 gp, and exact legacy target-50/60 projects
+  migrate idempotently without changing progress, gold, result, or ordering.
+- Separates firearm creation policy from mechanical recognition. Pistol,
+  Musket, and Blunderbuss remain from-scratch bases; Advanced Rifle and
+  Advanced Revolver remain loadable, upgradeable, indexed, and
+  Reliable-compatible but are not newly published campaign acquisition bases.
+- Removes the standalone Eastern and Elven Weapons magic category. Nodachi
+  remains in Martial, Wakizashi/Katana/Elven Branched Spear remain in Exotic,
+  and owned results use CMI's ordinary Arms and Armor upgrade workflow.
+- Filters only exact KMG state-token and battered-origin marker enchantments
+  from native player-facing weapon-quality text. The markers remain on the
+  item and real qualities such as Anarchic, Enhancement +5, and Reliable are
+  unaffected.
+- Expands deterministic and guarded real-CMI qualification for project
+  targets, migration, cancellation refunds, acquisition/recognition indexes,
+  owned custom-family upgrades, tooltip structure, UI routing, and package
+  isolation.
+
 ## 0.0.99-craft-magic-items-ammunition-ui-repair
 
 - Removes the rejected conditional whole-method CMI mundane renderer prefix.

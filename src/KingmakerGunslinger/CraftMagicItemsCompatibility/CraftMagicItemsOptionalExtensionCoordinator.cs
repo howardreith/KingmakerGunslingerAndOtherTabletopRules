@@ -286,6 +286,12 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 Apply("ammunition-ui-inner-seam", harmony, patch,
                     methodConstructor, contract.RenderMundane, null, null,
                     Callback("RenderMundaneTranspiler"));
+                Apply("ammunition-project-target", harmony, patch,
+                    methodConstructor, contract.CraftingProjectConstructor,
+                    null, Callback("CraftingProjectPostfix"));
+                Apply("ammunition-project-migration", harmony, patch,
+                    methodConstructor, contract.GetCraftingTimer, null,
+                    Callback("GetCraftingTimerPostfix"));
                 Apply("toggle-rebuild", harmony, patch, methodConstructor,
                     contract.OnToggle, null, Callback("OnTogglePostfix"));
             }
@@ -322,7 +328,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             }
             _context.Logger.Info("craft-magic-items",
                 "harmony.installed",
-                "owner=" + HarmonyOwner + ";patches=11;harmony=" +
+                "owner=" + HarmonyOwner + ";patches=13;harmony=" +
                 harmonyType.Assembly.GetName().Version + ";mundaneUiSeam=" +
                 contract.MundaneUiAnchor.Identity);
         }
@@ -413,7 +419,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             ref bool __result)
         {
             if (!__result && CraftMagicItemsReflectionBridge
-                    .ShouldAdmitMundaneFirearm(item))
+                    .ShouldAdmitOwnedWeapon(item))
                 __result = true;
         }
 
@@ -484,6 +490,18 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 contract.RecipeBasedType, contract.GetSelectedCrafter,
                 typeof(CraftMagicItemsReflectionBridge).GetMethod(
                     "TryRenderSelectedAmmunition", Static));
+        }
+
+        private static void CraftingProjectPostfix(object __instance)
+        {
+            CraftMagicItemsReflectionBridge.NormalizeNewAmmunitionProject(
+                __instance);
+        }
+
+        private static void GetCraftingTimerPostfix(object __result)
+        {
+            CraftMagicItemsReflectionBridge
+                .MigrateExistingAmmunitionProjects(__result);
         }
 
         private static void OnTogglePostfix(bool enabled)

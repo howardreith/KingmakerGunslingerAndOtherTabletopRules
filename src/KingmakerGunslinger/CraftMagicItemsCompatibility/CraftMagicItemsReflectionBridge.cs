@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Runtime.Serialization;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Ecnchantments;
@@ -24,32 +25,56 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
     internal sealed class CraftMagicItemsGraphSnapshot
     {
         internal CraftMagicItemsGraphSnapshot(int generation, int itemTypes,
-            int firearmBases, int customWeaponBases, int ammunitionRecipes,
-            int reliableRecipes, int ordinaryWeaponRecipes,
-            string[] firearmBaseGuids, string[] customWeaponBaseGuids,
+            int firearmCreationBases, int firearmRecognitionIdentities,
+            int martialBases, int exoticBases,
+            int customFamilyMagicItemTypes,
+            int customFamilyRecognitionIdentities,
+            int ammunitionRecipes, int reliableRecipes,
+            int ordinaryWeaponRecipes, string[] firearmCreationBaseGuids,
+            string[] firearmRecognitionGuids, string[] martialBaseGuids,
+            string[] exoticBaseGuids,
+            string[] customFamilyRecognitionGuids,
             string[] namedUpgradeOnlyGuids)
         {
             Generation = generation;
             ItemTypes = itemTypes;
-            FirearmBases = firearmBases;
-            CustomWeaponBases = customWeaponBases;
+            FirearmCreationBases = firearmCreationBases;
+            FirearmRecognitionIdentities = firearmRecognitionIdentities;
+            MartialBases = martialBases;
+            ExoticBases = exoticBases;
+            CustomFamilyMagicItemTypes = customFamilyMagicItemTypes;
+            CustomFamilyRecognitionIdentities =
+                customFamilyRecognitionIdentities;
             AmmunitionRecipes = ammunitionRecipes;
             ReliableRecipes = reliableRecipes;
             OrdinaryWeaponRecipes = ordinaryWeaponRecipes;
-            FirearmBaseGuids = firearmBaseGuids ?? new string[0];
-            CustomWeaponBaseGuids = customWeaponBaseGuids ?? new string[0];
+            FirearmCreationBaseGuids = firearmCreationBaseGuids ??
+                new string[0];
+            FirearmRecognitionGuids = firearmRecognitionGuids ??
+                new string[0];
+            MartialBaseGuids = martialBaseGuids ?? new string[0];
+            ExoticBaseGuids = exoticBaseGuids ?? new string[0];
+            CustomFamilyRecognitionGuids =
+                customFamilyRecognitionGuids ?? new string[0];
             NamedUpgradeOnlyGuids = namedUpgradeOnlyGuids ?? new string[0];
         }
 
         internal int Generation { get; private set; }
         internal int ItemTypes { get; private set; }
-        internal int FirearmBases { get; private set; }
-        internal int CustomWeaponBases { get; private set; }
+        internal int FirearmCreationBases { get; private set; }
+        internal int FirearmRecognitionIdentities { get; private set; }
+        internal int MartialBases { get; private set; }
+        internal int ExoticBases { get; private set; }
+        internal int CustomFamilyMagicItemTypes { get; private set; }
+        internal int CustomFamilyRecognitionIdentities { get; private set; }
         internal int AmmunitionRecipes { get; private set; }
         internal int ReliableRecipes { get; private set; }
         internal int OrdinaryWeaponRecipes { get; private set; }
-        internal string[] FirearmBaseGuids { get; private set; }
-        internal string[] CustomWeaponBaseGuids { get; private set; }
+        internal string[] FirearmCreationBaseGuids { get; private set; }
+        internal string[] FirearmRecognitionGuids { get; private set; }
+        internal string[] MartialBaseGuids { get; private set; }
+        internal string[] ExoticBaseGuids { get; private set; }
+        internal string[] CustomFamilyRecognitionGuids { get; private set; }
         internal string[] NamedUpgradeOnlyGuids { get; private set; }
     }
 
@@ -103,8 +128,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
     internal static class CraftMagicItemsReflectionBridge
     {
         internal const string MagicFirearmsIdentity = "KMGMagicFirearms";
-        internal const string MagicCustomWeaponsIdentity =
-            "KMGMagicEasternAndElvenWeapons";
         internal const string MundaneFirearmsIdentity =
             "CraftMundaneKMGFirearms";
         internal const string AmmunitionIdentity = "KMGFirearmAmmunition";
@@ -121,7 +144,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static Array _currentGraph;
         private static Array _rawGraph;
         private static object _magicFirearms;
-        private static object _magicCustomWeapons;
         private static object _mundaneFirearms;
         private static object _ammunition;
         private static object _reliableRecipe;
@@ -140,6 +162,9 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static bool _uiFailureLogged;
         private static int _uiFailureCount;
         private static bool _uiFaulted;
+        private static bool _projectPolicyFailureLogged;
+        private static int _newProjectNormalizationCount;
+        private static int _legacyProjectMigrationCount;
         private static int _lowerPanelRenderCount;
         private static int _ordinaryRouteCount;
         private static int _ordinaryBodyBypassCount;
@@ -153,8 +178,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static PropertyInfo _eventCurrentProperty;
         private static PropertyInfo _eventTypeProperty;
         private static CraftMagicItemsGraphSnapshot _snapshot =
-            new CraftMagicItemsGraphSnapshot(0, 0, 0, 0, 0, 0, 0, null,
-                null, null);
+            EmptySnapshot(0);
 
         [ThreadStatic] private static CategoryScope _categoryScope;
 
@@ -175,6 +199,12 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
 
         internal static bool IsUiFaulted
         { get { lock (Gate) return _uiFaulted; } }
+
+        internal static int NewProjectNormalizationCount
+        { get { lock (Gate) return _newProjectNormalizationCount; } }
+
+        internal static int LegacyProjectMigrationCount
+        { get { lock (Gate) return _legacyProjectMigrationCount; } }
 
         internal static CraftMagicItemsAmmunitionUiSnapshot AmmunitionUiSnapshot
         {
@@ -199,7 +229,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 _currentGraph = null;
                 _rawGraph = null;
                 _magicFirearms = null;
-                _magicCustomWeapons = null;
                 _mundaneFirearms = null;
                 _ammunition = null;
                 _reliableRecipe = null;
@@ -212,8 +241,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 _finalized = false;
                 _deferredUiFailure = null;
                 _categoryScope = CategoryScope.None;
-                _snapshot = new CraftMagicItemsGraphSnapshot(_generation,
-                    0, 0, 0, 0, 0, 0, null, null, null);
+                _snapshot = EmptySnapshot(_generation);
             }
         }
 
@@ -299,14 +327,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     ReadBool(arms, "PrerequisitesMandatory"),
                     catalog.Modules.Gunslinger ? catalog.FirearmCreationBases :
                         null, 0, 0, false, "Weapon");
-                object magicCustom = CreateRecipeBasedItemData(
-                    MagicCustomWeaponsIdentity,
-                    "KMG.CraftMagicItems.CustomWeapons.Name", null, null,
-                    ReadInt(arms, "MinimumCasterLevel"),
-                    ReadBool(arms, "PrerequisitesMandatory"),
-                    catalog.MagicMundaneCreationBases.Length == 0 ? null :
-                        catalog.MagicMundaneCreationBases, 0, 0, false,
-                    "Weapon");
                 object mundaneFirearms = catalog.Modules.Gunslinger ?
                     CreateRecipeBasedItemData(MundaneFirearmsIdentity,
                         "KMG.CraftMagicItems.Firearms.Name", weaponParent,
@@ -322,7 +342,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                         CraftMagicItemsCompatibilityPolicy
                             .AmmunitionMundaneBaseDc, false, "Usable");
 
-                var additions = new List<object> { magicFirearms, magicCustom };
+                var additions = new List<object> { magicFirearms };
                 if (mundaneFirearms != null) additions.Add(mundaneFirearms);
                 if (ammunition != null) additions.Add(ammunition);
                 Array augmented = AppendItemData(raw, additions.ToArray());
@@ -331,7 +351,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     _rawGraph = raw;
                     _currentGraph = augmented;
                     _magicFirearms = magicFirearms;
-                    _magicCustomWeapons = magicCustom;
                     _mundaneFirearms = mundaneFirearms;
                     _ammunition = ammunition;
                     _reliableRecipe = null;
@@ -386,7 +405,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             CraftMagicItemsRegistrationCatalog catalog;
             ModContext context;
             object magicFirearms;
-            object magicCustom;
             object mundaneFirearms;
             object ammunition;
             Array graph;
@@ -397,7 +415,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 catalog = _catalog;
                 context = _context;
                 magicFirearms = _magicFirearms;
-                magicCustom = _magicCustomWeapons;
                 mundaneFirearms = _mundaneFirearms;
                 ammunition = _ammunition;
                 graph = _currentGraph;
@@ -421,7 +438,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 object reliable = CreateReliableRecipe(catalog.Reliable);
                 SetRecipes(magicFirearms,
                     ordinaryWeaponRecipes.Concat(new[] { reliable }).ToArray());
-                SetRecipes(magicCustom, ordinaryWeaponRecipes);
                 if (mundaneFirearms != null)
                     SetRecipes(mundaneFirearms, ReadRecipes(exotic));
                 object[] ammunitionRecipes = catalog.Ammunition.Select(value =>
@@ -444,12 +460,21 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     _snapshot = new CraftMagicItemsGraphSnapshot(_generation,
                         CountAddedItemTypes(),
                         catalog.FirearmCreationBases.Length,
-                        catalog.MagicMundaneCreationBases.Length,
+                        catalog.FirearmRecognitionBases.Length,
+                        catalog.MartialCreationBases.Length,
+                        catalog.ExoticCreationBases.Length, 0,
+                        catalog.CustomFamilyRecognitionBases.Length,
                         ammunitionRecipes.Length, 1,
                         ordinaryWeaponRecipes.Length,
                         catalog.FirearmCreationBases.Select(value =>
                             value.AssetGuid).ToArray(),
-                        catalog.MagicMundaneCreationBases.Select(value =>
+                        catalog.FirearmRecognitionBases.Select(value =>
+                            value.AssetGuid).ToArray(),
+                        catalog.MartialCreationBases.Select(value =>
+                            value.AssetGuid).ToArray(),
+                        catalog.ExoticCreationBases.Select(value =>
+                            value.AssetGuid).ToArray(),
+                        catalog.CustomFamilyRecognitionBases.Select(value =>
                             value.AssetGuid).ToArray(),
                         catalog.NamedUpgradeOnly.Select(value =>
                             value.AssetGuid).ToArray());
@@ -461,17 +486,21 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                         "CMI graph generation " + _generation +
                         " finalized with synchronized public data and indexes.",
                         _snapshot.ItemTypes,
-                        _snapshot.FirearmBases +
-                            _snapshot.CustomWeaponBases,
+                        _snapshot.FirearmCreationBases +
+                            _snapshot.MartialBases +
+                            _snapshot.ExoticBases,
                         _snapshot.OrdinaryWeaponRecipes +
                             _snapshot.ReliableRecipes +
                             _snapshot.AmmunitionRecipes));
                 context.Logger.Info("craft-magic-items",
                     "graph.finalized", string.Format(
                         CultureInfo.InvariantCulture,
-                        "generation={0};itemTypes={1};firearmBases={2};customWeaponBases={3};ordinaryWeaponRecipes={4};reliableRecipes={5};ammunitionRecipes={6};namedCreationBases=0",
+                        "generation={0};itemTypes={1};firearmCreationBases={2};firearmRecognitionIdentities={3};martialBases={4};exoticBases={5};customFamilyMagicItemTypes=0;customFamilyRecognitionIdentities={6};ordinaryWeaponRecipes={7};reliableRecipes={8};ammunitionRecipes={9};namedCreationBases=0",
                         _snapshot.Generation, _snapshot.ItemTypes,
-                        _snapshot.FirearmBases, _snapshot.CustomWeaponBases,
+                        _snapshot.FirearmCreationBases,
+                        _snapshot.FirearmRecognitionIdentities,
+                        _snapshot.MartialBases, _snapshot.ExoticBases,
+                        _snapshot.CustomFamilyRecognitionIdentities,
                         _snapshot.OrdinaryWeaponRecipes,
                         _snapshot.ReliableRecipes,
                         _snapshot.AmmunitionRecipes));
@@ -483,33 +512,27 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         }
 
         // CMI publishes every non-null FeatGuid into every relevant feat
-        // selection. These two categories intentionally stay feat-less while
-        // that publication runs, then acquire the exact existing Arms and
+        // selection. This category intentionally stays feat-less while
+        // that publication runs, then acquires the exact existing Arms and
         // Armor feat for CMI's normal UI/crafting checks.
         internal static void ActivateMagicFeatCategories()
         {
             object firearms;
-            object customWeapons;
             string featGuid;
             lock (Gate)
             {
                 if (_failed || !_finalized) return;
                 firearms = _magicFirearms;
-                customWeapons = _magicCustomWeapons;
                 featGuid = _magicFeatGuid;
             }
-            if (firearms == null || customWeapons == null ||
-                string.IsNullOrWhiteSpace(featGuid))
+            if (firearms == null || string.IsNullOrWhiteSpace(featGuid))
                 throw new InvalidOperationException(
                     "CMI magic category feat activation is incomplete.");
             SetField(firearms, "FeatGuid", featGuid);
-            SetField(customWeapons, "FeatGuid", featGuid);
             if (!string.Equals(ReadString(firearms, "FeatGuid"), featGuid,
-                    StringComparison.Ordinal) ||
-                !string.Equals(ReadString(customWeapons, "FeatGuid"),
-                    featGuid, StringComparison.Ordinal))
+                    StringComparison.Ordinal))
                 throw new InvalidOperationException(
-                    "CMI magic categories did not acquire the exact Arms and Armor feat.");
+                    "CMI magic Firearms did not acquire the exact Arms and Armor feat.");
         }
 
         internal static void EnterRecipeCategory(object craftingData,
@@ -520,8 +543,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             {
                 if (ReferenceEquals(craftingData, _magicFirearms))
                     state = CategoryScope.Firearms;
-                else if (ReferenceEquals(craftingData, _magicCustomWeapons))
-                    state = CategoryScope.CustomWeapons;
             }
             _categoryScope = state;
         }
@@ -537,15 +558,17 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             BlueprintItemWeapon weapon = blueprint as BlueprintItemWeapon;
             if (_categoryScope == CategoryScope.Firearms)
                 return IsFirearm(weapon);
-            if (_categoryScope == CategoryScope.CustomWeapons)
-                return IsSupportedCustomWeapon(weapon);
             return true;
         }
 
-        internal static bool ShouldAdmitMundaneFirearm(ItemEntity item)
+        internal static bool ShouldAdmitOwnedWeapon(ItemEntity item)
         {
-            return _categoryScope == CategoryScope.Firearms && item != null &&
-                IsFirearm(item.Blueprint as BlueprintItemWeapon);
+            BlueprintItemWeapon weapon = item == null ? null :
+                item.Blueprint as BlueprintItemWeapon;
+            if (_categoryScope == CategoryScope.Firearms)
+                return IsFirearm(weapon);
+            return _categoryScope == CategoryScope.None &&
+                IsRecognizedCustomFamily(weapon);
         }
 
         internal static bool ShouldRejectMatchingItem(
@@ -627,6 +650,139 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     .SequenceEqual(sourceTokens))
                 throw new InvalidOperationException(
                     "CMI firearm upgrade did not preserve exact item-owned state.");
+        }
+
+        internal static void NormalizeNewAmmunitionProject(object project)
+        {
+            try
+            {
+                CraftMagicItemsAmmunitionRegistration registration;
+                CraftMagicItemsContract contract;
+                if (!TryResolveAmmunitionProject(project, out registration,
+                        out contract))
+                    return;
+                int current = (int)contract.ProjectTargetCostField.GetValue(
+                    project);
+                int normalized = CraftMagicItemsCompatibilityPolicy
+                    .NormalizeAmmunitionProjectTarget(current,
+                        registration.Plan.ValueDerivedTarget, true);
+                if (normalized == current) return;
+                contract.ProjectTargetCostField.SetValue(project, normalized);
+                lock (Gate) _newProjectNormalizationCount++;
+            }
+            catch (Exception exception)
+            {
+                ReportProjectPolicyFailure("new-project-target", exception);
+            }
+        }
+
+        internal static void MigrateExistingAmmunitionProjects(object timer)
+        {
+            if (timer == null) return;
+            try
+            {
+                CraftMagicItemsContract contract;
+                ModContext context;
+                lock (Gate)
+                {
+                    contract = _contract;
+                    context = _context;
+                }
+                if (contract == null || !contract.CraftingTimerComponentType
+                        .IsInstanceOfType(timer))
+                    return;
+                IList projects = contract.TimerProjectsField.GetValue(timer)
+                    as IList;
+                if (projects == null) return;
+                int migrated = 0;
+                foreach (object project in projects)
+                {
+                    CraftMagicItemsAmmunitionRegistration registration;
+                    CraftMagicItemsContract resolved;
+                    if (!TryResolveAmmunitionProject(project,
+                            out registration, out resolved))
+                        continue;
+                    int current = (int)resolved.ProjectTargetCostField
+                        .GetValue(project);
+                    int normalized = CraftMagicItemsCompatibilityPolicy
+                        .NormalizeAmmunitionProjectTarget(current,
+                            registration.Plan.ValueDerivedTarget, true);
+                    if (normalized == current) continue;
+                    resolved.ProjectTargetCostField.SetValue(project,
+                        normalized);
+                    migrated++;
+                }
+                if (migrated == 0) return;
+                int total;
+                lock (Gate)
+                {
+                    _legacyProjectMigrationCount += migrated;
+                    total = _legacyProjectMigrationCount;
+                }
+                if (context != null) context.Logger.Info(
+                    "craft-magic-items", "ammunition-projects.migrated",
+                    "count=" + migrated + ";total=" + total +
+                    ";target=5;goldSpentPreserved=true;progressPreserved=true");
+            }
+            catch (Exception exception)
+            {
+                ReportProjectPolicyFailure("legacy-project-migration",
+                    exception);
+            }
+        }
+
+        private static bool TryResolveAmmunitionProject(object project,
+            out CraftMagicItemsAmmunitionRegistration registration,
+            out CraftMagicItemsContract contract)
+        {
+            registration = null;
+            CraftMagicItemsRegistrationCatalog catalog;
+            lock (Gate)
+            {
+                contract = _contract;
+                catalog = _catalog;
+            }
+            if (project == null || contract == null || catalog == null ||
+                !contract.CraftingProjectDataType.IsInstanceOfType(project) ||
+                !string.Equals(contract.ProjectItemTypeField.GetValue(project)
+                    as string, AmmunitionIdentity, StringComparison.Ordinal) ||
+                contract.ProjectUpgradeItemField.GetValue(project) != null)
+                return false;
+            ItemEntity result = contract.ProjectResultItemField.GetValue(
+                project) as ItemEntity;
+            if (result == null || result.Blueprint == null || result.Count !=
+                    CraftMagicItemsCompatibilityPolicy.AmmunitionBatchCount)
+                return false;
+            registration = catalog.Ammunition.SingleOrDefault(value =>
+                ReferenceEquals(value.Item, result.Blueprint));
+            if (registration == null || !string.Equals(
+                    contract.ProjectRecipeNameField.GetValue(project) as
+                        string,
+                    "KMGAmmunition." + registration.Item.AssetGuid,
+                    StringComparison.Ordinal))
+            {
+                registration = null;
+                return false;
+            }
+            return true;
+        }
+
+        private static void ReportProjectPolicyFailure(string phase,
+            Exception exception)
+        {
+            ModContext context;
+            bool log;
+            lock (Gate)
+            {
+                context = _context;
+                log = !_projectPolicyFailureLogged;
+                _projectPolicyFailureLogged = true;
+            }
+            if (log && context != null) context.Logger.Failure(
+                "craft-magic-items", "ammunition-project-policy.failed",
+                "phase=" + phase +
+                ";graphMutation=false;originalProjectPreserved=true",
+                exception);
         }
 
         // Injected only after CMI has rendered and finalized its own outer and
@@ -754,7 +910,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 CraftMagicItemsRegistrationCatalog catalog;
                 Array graph;
                 object firearms;
-                object customWeapons;
                 object ammunition;
                 object reliableRecipe;
                 lock (Gate)
@@ -763,14 +918,12 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     catalog = _catalog;
                     graph = _currentGraph;
                     firearms = _magicFirearms;
-                    customWeapons = _magicCustomWeapons;
                     ammunition = _ammunition;
                     reliableRecipe = _reliableRecipe;
                     initialGeneration = _snapshot.Generation;
                 }
                 if (contract == null || catalog == null || graph == null ||
-                    firearms == null || customWeapons == null ||
-                    reliableRecipe == null || !IsFinalized)
+                    firearms == null || reliableRecipe == null || !IsFinalized)
                     throw new InvalidOperationException(
                         "CMI qualification requires one finalized compatibility graph.");
 
@@ -786,7 +939,9 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     "live CMI contract fields and finalized KMG graph state");
 
                 AddGraphQualificationChecks(checks, contract, catalog, graph,
-                    firearms, customWeapons, ammunition, reliableRecipe);
+                    firearms, ammunition, reliableRecipe);
+                AddAmmunitionProjectQualificationCheck(checks, contract,
+                    catalog);
 
                 object arms = RequireItemData(graph, ArmsAndArmorIdentity);
                 object ordinaryRecipe = ReadRecipes(arms).FirstOrDefault(
@@ -795,15 +950,13 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     null ? null : ReadRecipeEnchantments(ordinaryRecipe)
                         .OfType<BlueprintWeaponEnchantment>().FirstOrDefault();
                 AddQualificationCheck(checks, "ordinary-weapon-recipes-reused",
-                    "one initialized CMI +1 weapon recipe shared by both KMG magic categories",
+                    "one initialized CMI +1 weapon recipe reused by KMG magic Firearms while ordinary Arms and Armor remains authoritative",
                     ordinaryRecipe == null || ordinaryPlusOne == null ?
                         "missing" :
                         "recipe=" + ReadString(ordinaryRecipe, "Name") +
                         ";enchantment=" + ordinaryPlusOne.AssetGuid,
                     ordinaryRecipe != null && ordinaryPlusOne != null &&
                     ReadRecipes(firearms).Count(value => ReferenceEquals(
-                        value, ordinaryRecipe)) == 1 &&
-                    ReadRecipes(customWeapons).Count(value => ReferenceEquals(
                         value, ordinaryRecipe)) == 1,
                     "reference equality against CMI's initialized ArmsAndArmor recipe graph");
                 if (ordinaryPlusOne == null)
@@ -851,6 +1004,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     reliablePistol);
                 AddOwnedStateQualificationCheck(checks, pistol,
                     reliablePistol);
+                AddOwnedCustomFamilyUpgradeCheck(checks, contract, catalog,
+                    ordinaryRecipe, ordinaryPlusOne, customGuids);
 
                 CraftMagicItemsGraphSnapshot before = Snapshot;
                 CraftMagicItemsOptionalExtensionCoordinator
@@ -888,7 +1043,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             CraftMagicItemsRegistrationCatalog catalog;
             object reliable;
             object magicFirearms;
-            object magicCustom;
             object ammunition;
             lock (Gate)
             {
@@ -896,21 +1050,16 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 catalog = _catalog;
                 reliable = _reliableRecipe;
                 magicFirearms = _magicFirearms;
-                magicCustom = _magicCustomWeapons;
                 ammunition = _ammunition;
             }
             if (contract == null || catalog == null || reliable == null ||
                 ReadRecipes(magicFirearms).Count(value =>
                     ReferenceEquals(value, reliable)) != 1 ||
-                ReadRecipes(magicCustom).Any(value =>
-                    ReferenceEquals(value, reliable)) ||
                 ReadRecipeEnchantments(reliable).Length != 1 ||
                 !ReferenceEquals(ReadRecipeEnchantments(reliable)[0],
                     catalog.Reliable) ||
                 ReadNewItemBases(magicFirearms).Any(value =>
                     !IsFirearm(value as BlueprintItemWeapon)) ||
-                ReadNewItemBases(magicCustom).Any(value =>
-                    !IsSupportedCustomWeapon(value as BlueprintItemWeapon)) ||
                 (ammunition != null && ReadRecipes(ammunition).Length !=
                     catalog.Ammunition.Length))
                 throw new InvalidOperationException(
@@ -929,26 +1078,32 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             ICollection<CraftMagicItemsQualificationCheck> checks,
             CraftMagicItemsContract contract,
             CraftMagicItemsRegistrationCatalog catalog, Array graph,
-            object firearms, object customWeapons, object ammunition,
-            object reliableRecipe)
+            object firearms, object ammunition, object reliableRecipe)
         {
             CraftMagicItemsGraphSnapshot snapshot = Snapshot;
-            int expectedItemTypes = 2 +
+            int expectedItemTypes = 1 +
                 (catalog.Modules.Gunslinger ? 1 : 0) +
                 (catalog.Ammunition.Length == 0 ? 0 : 1);
             AddQualificationCheck(checks, "registration-counts",
                 "exact item types, bases, ordinary recipes, Reliable, and ammunition",
                 DescribeSnapshot(snapshot), snapshot.ItemTypes ==
-                    expectedItemTypes && snapshot.FirearmBases ==
+                    expectedItemTypes && snapshot.FirearmCreationBases ==
                     catalog.FirearmCreationBases.Length &&
-                    snapshot.CustomWeaponBases ==
-                    catalog.MagicMundaneCreationBases.Length &&
+                    snapshot.FirearmRecognitionIdentities ==
+                    catalog.FirearmRecognitionBases.Length &&
+                    snapshot.MartialBases ==
+                    catalog.MartialCreationBases.Length &&
+                    snapshot.ExoticBases ==
+                    catalog.ExoticCreationBases.Length &&
+                    snapshot.CustomFamilyMagicItemTypes == 0 &&
+                    snapshot.CustomFamilyRecognitionIdentities ==
+                    catalog.CustomFamilyRecognitionBases.Length &&
                     snapshot.ReliableRecipes == 1 &&
                     snapshot.AmmunitionRecipes == catalog.Ammunition.Length,
                 "project-owned graph snapshot populated at CMI's pre-index boundary");
 
             string[] stableIdentities = { MagicFirearmsIdentity,
-                MagicCustomWeaponsIdentity, MundaneFirearmsIdentity,
+                MundaneFirearmsIdentity,
                 AmmunitionIdentity };
             bool identitiesExact = stableIdentities.All(identity =>
                 graph.Cast<object>().Count(value => string.Equals(
@@ -974,27 +1129,45 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             string[] firearmActual = ReadNewItemBases(firearms).Select(value =>
                 value.AssetGuid).OrderBy(value => value,
                     StringComparer.Ordinal).ToArray();
-            string[] customExpected = catalog.MagicMundaneCreationBases.Select(
-                value => value.AssetGuid).OrderBy(value => value,
-                    StringComparer.Ordinal).ToArray();
-            string[] customActual = ReadNewItemBases(customWeapons).Select(
-                value => value.AssetGuid).OrderBy(value => value,
-                    StringComparer.Ordinal).ToArray();
             AddQualificationCheck(checks, "creation-base-inventory",
-                "only exact authorized canonical firearm/Eastern/Elven bases",
+                "only exact ordinary-campaign firearm bases; no KMG custom-family magic creation category",
                 "firearms=" + string.Join(",", firearmActual) +
-                    ";custom=" + string.Join(",", customActual),
+                    ";customMagicTypes=" +
+                    snapshot.CustomFamilyMagicItemTypes,
                 firearmExpected.SequenceEqual(firearmActual,
-                    StringComparer.Ordinal) && customExpected.SequenceEqual(
-                    customActual, StringComparer.Ordinal) &&
+                    StringComparer.Ordinal) &&
                     firearmActual.Distinct(StringComparer.Ordinal).Count() ==
                         firearmActual.Length &&
-                    customActual.Distinct(StringComparer.Ordinal).Count() ==
-                        customActual.Length,
+                    snapshot.CustomFamilyMagicItemTypes == 0,
                 "live CMI NewItemBaseIDs compared to the finalized KMG catalogs");
 
-            BlueprintItemEquipment[] everyBase = graph.Cast<object>()
+            BlueprintItemWeapon[] recognitionOnly = catalog
+                .FirearmRecognitionBases.Except(catalog.FirearmCreationBases)
+                .ToArray();
+            BlueprintItemEquipment[] graphBases = graph.Cast<object>()
                 .SelectMany(ReadNewItemBases).ToArray();
+            IDictionary recognitionIndex = contract.TypeToItemField
+                .GetValue(null) as IDictionary;
+            bool recognitionOnlyExact = recognitionOnly.Length == 2 &&
+                recognitionOnly.Select(value => value.Name).OrderBy(value =>
+                    value, StringComparer.Ordinal).SequenceEqual(new[] {
+                        "Advanced Revolver", "Advanced Rifle" },
+                    StringComparer.Ordinal) && recognitionOnly.All(value =>
+                    graphBases.All(candidate => !ReferenceEquals(candidate,
+                        value)) && value.Type != null && recognitionIndex !=
+                        null && recognitionIndex.Contains(
+                            value.Type.AssetGuid) && ReferenceEquals(
+                                recognitionIndex[value.Type.AssetGuid],
+                                value));
+            AddQualificationCheck(checks,
+                "advanced-firearms-recognition-only",
+                "Advanced Rifle and Advanced Revolver absent from every creation base and present in owned-item type recognition",
+                "recognitionOnly=" + string.Join(",", recognitionOnly
+                    .Select(value => value.AssetGuid).ToArray()),
+                recognitionOnlyExact,
+                "all live NewItemBaseIDs plus exact CMI TypeToItem references");
+
+            BlueprintItemEquipment[] everyBase = graphBases;
             string[] namedInBases = everyBase.Where(value =>
                 catalog.NamedUpgradeOnly.Any(named =>
                     IsSameOrCustomIdentity(value.AssetGuid,
@@ -1024,15 +1197,22 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             IDictionary typeIndex = contract.TypeToItemField.GetValue(null) as
                 IDictionary;
             bool typeIndexExact = typeIndex != null &&
-                catalog.FirearmCreationBases.All(value => value.Type != null &&
+                catalog.FirearmRecognitionBases.Concat(catalog
+                    .CustomFamilyRecognitionBases).All(value =>
+                    value.Type != null &&
                     typeIndex.Contains(value.Type.AssetGuid) &&
                     ReferenceEquals(typeIndex[value.Type.AssetGuid], value));
-            AddQualificationCheck(checks, "firearm-mundane-index",
-                "each authorized firearm base is the exact CMI type-index value",
-                "expected=" + catalog.FirearmCreationBases.Length +
+            AddQualificationCheck(checks, "owned-weapon-recognition-index",
+                "all five firearm and four custom-family identities are exact CMI type-index values",
+                "firearmsExpected=" +
+                    catalog.FirearmRecognitionBases.Length +
+                    ";customFamiliesExpected=" +
+                    catalog.CustomFamilyRecognitionBases.Length +
                     ";indexed=" + (typeIndex == null ? 0 :
-                    catalog.FirearmCreationBases.Count(value => value.Type !=
-                        null && typeIndex.Contains(value.Type.AssetGuid))),
+                    catalog.FirearmRecognitionBases.Concat(catalog
+                        .CustomFamilyRecognitionBases).Count(value =>
+                        value.Type != null && typeIndex.Contains(
+                            value.Type.AssetGuid))),
                 typeIndexExact,
                 "CMI TypeToItem after its complete mundane index build");
 
@@ -1149,12 +1329,15 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 exact &= matches.Length == 1 &&
                     registration.Plan.BatchValue ==
                         registration.Plan.UnitCost * 20 &&
-                    registration.Plan.RequiredProgress == Math.Max(1,
-                        registration.Plan.BatchValue / 4);
+                    registration.Plan.ValueDerivedTarget == Math.Max(1,
+                        registration.Plan.BatchValue / 4) &&
+                    registration.Plan.TimedProjectTarget == 5;
                 observations.Add(registration.Item.Name + ":guid=" +
                     registration.Item.AssetGuid + ":count=20:value=" +
-                    registration.Plan.BatchValue + ":progress=" +
-                    registration.Plan.RequiredProgress + ":gold=" +
+                    registration.Plan.BatchValue + ":valueTarget=" +
+                    registration.Plan.ValueDerivedTarget +
+                    ":timedTarget=" +
+                    registration.Plan.TimedProjectTarget + ":gold=" +
                     registration.Plan.GoldCost(1f));
             }
             AddQualificationCheck(checks, "ammunition-result-recipes",
@@ -1163,13 +1346,125 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 "live RecipeData.ResultItem references plus project-owned unit costs and CMI formula");
         }
 
+        private static void AddAmmunitionProjectQualificationCheck(
+            ICollection<CraftMagicItemsQualificationCheck> checks,
+            CraftMagicItemsContract contract,
+            CraftMagicItemsRegistrationCatalog catalog)
+        {
+            if (catalog.Ammunition.Length == 0) return;
+            var results = new List<ItemEntity>();
+            int normalizationBefore = NewProjectNormalizationCount;
+            int migrationBefore = LegacyProjectMigrationCount;
+            try
+            {
+                var projects = new List<object>();
+                foreach (CraftMagicItemsAmmunitionRegistration registration in
+                    catalog.Ammunition)
+                {
+                    ItemEntity result = registration.Item.CreateEntity();
+                    result.SetCount(registration.Plan.Count);
+                    results.Add(result);
+                    object project = CreateQualificationProject(contract,
+                        registration, result);
+                    projects.Add(project);
+                    if ((int)contract.ProjectTargetCostField.GetValue(project)
+                            != registration.Plan.TimedProjectTarget ||
+                        (int)contract.ProjectGoldSpentField.GetValue(project)
+                            != registration.Plan.GoldCost(1f) ||
+                        !ReferenceEquals(contract.ProjectResultItemField
+                            .GetValue(project), result))
+                        throw new InvalidOperationException(
+                            "A request-local ammunition project did not preserve target, gold, or result identity.");
+                }
+
+                object legacy = projects[2];
+                CraftMagicItemsAmmunitionRegistration legacyRegistration =
+                    catalog.Ammunition[2];
+                contract.ProjectTargetCostField.SetValue(legacy,
+                    legacyRegistration.Plan.ValueDerivedTarget);
+                contract.ProjectProgressField.SetValue(legacy, 7);
+                int legacyGold = (int)contract.ProjectGoldSpentField
+                    .GetValue(legacy);
+                object timer = FormatterServices.GetUninitializedObject(
+                    contract.CraftingTimerComponentType);
+                IList timerProjects = Activator.CreateInstance(
+                    contract.TimerProjectsField.FieldType) as IList;
+                timerProjects.Add(legacy);
+                contract.TimerProjectsField.SetValue(timer, timerProjects);
+                MigrateExistingAmmunitionProjects(timer);
+                int migrationAfterFirst = LegacyProjectMigrationCount;
+                MigrateExistingAmmunitionProjects(timer);
+                int migrationAfterSecond = LegacyProjectMigrationCount;
+
+                bool exact = projects.All(project =>
+                        (int)contract.ProjectTargetCostField.GetValue(project)
+                            == 5) &&
+                    (int)contract.ProjectTargetCostField.GetValue(legacy) ==
+                        5 &&
+                    (int)contract.ProjectProgressField.GetValue(legacy) ==
+                        7 &&
+                    (int)contract.ProjectGoldSpentField.GetValue(legacy) ==
+                        legacyGold &&
+                    migrationAfterFirst == migrationBefore + 1 &&
+                    migrationAfterSecond == migrationAfterFirst &&
+                    NewProjectNormalizationCount == normalizationBefore + 2;
+                AddQualificationCheck(checks,
+                    "ammunition-project-target-and-migration",
+                    "all three new timed targets 5 with gold 34/4/40; one target-60 legacy project migrates once while preserving progress, gold, result, and order",
+                    "targets=" + string.Join(",", projects.Select(value =>
+                        contract.ProjectTargetCostField.GetValue(value)
+                            .ToString()).ToArray()) + ";gold=" +
+                    string.Join(",", projects.Select(value => contract
+                        .ProjectGoldSpentField.GetValue(value).ToString())
+                        .ToArray()) + ";legacyProgress=" + contract
+                        .ProjectProgressField.GetValue(legacy) +
+                    ";migrationDelta=" + (migrationAfterSecond -
+                        migrationBefore), exact,
+                    "real patched installed-CMI constructor plus exact timer-project reconciliation boundary");
+            }
+            finally
+            {
+                foreach (ItemEntity result in results) result.Dispose();
+            }
+        }
+
+        private static object CreateQualificationProject(
+            CraftMagicItemsContract contract,
+            CraftMagicItemsAmmunitionRegistration registration,
+            ItemEntity result)
+        {
+            ParameterInfo[] parameters = contract.CraftingProjectConstructor
+                .GetParameters();
+            object[] arguments = { null,
+                registration.Plan.ValueDerivedTarget,
+                registration.Plan.GoldCost(1f), 0, result,
+                AmmunitionIdentity,
+                "KMGAmmunition." + registration.Item.AssetGuid,
+                Array.CreateInstance(parameters[7].ParameterType
+                    .GetElementType(), 0),
+                Array.CreateInstance(parameters[8].ParameterType
+                    .GetElementType(), 0), false, false, null,
+                Array.CreateInstance(parameters[12].ParameterType
+                    .GetElementType(), 0) };
+            try
+            {
+                return contract.CraftingProjectConstructor.Invoke(arguments);
+            }
+            catch (TargetInvocationException exception)
+            {
+                ExceptionDispatchInfo.Capture(exception.InnerException ??
+                    exception).Throw();
+                throw;
+            }
+        }
+
         private static void AddReliableQualificationChecks(
             ICollection<CraftMagicItemsQualificationCheck> checks,
             CraftMagicItemsContract contract,
             CraftMagicItemsRegistrationCatalog catalog,
             BlueprintItemWeapon reliableClone)
         {
-            bool firearmsExact = catalog.FirearmCreationBases.All(value =>
+            bool firearmsExact = catalog.FirearmRecognitionBases.All(value =>
                 InvokeRecipeApplies(contract, _reliableRecipe, value));
             BlueprintItemWeapon katana = FindWeapon(catalog,
                 CraftMagicItemsCatalogFamily.Katana);
@@ -1203,7 +1498,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 InvokeRecipeApplies(contract, _reliableRecipe, reliableClone);
             AddQualificationCheck(checks, "reliable-applicability-matrix",
                 "all five firearms and a CMI clone true; bow, crossbow, Eastern, spear, and arbitrary weapon false",
-                "firearms=" + catalog.FirearmCreationBases.Length +
+                "firearms=" + catalog.FirearmRecognitionBases.Length +
                     ";clone=" + cloneExact + ";rejectedResolved=" +
                     rejected.Count(value => value != null),
                 firearmsExact && cloneExact && rejectedExact,
@@ -1237,6 +1532,75 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 "plus=" + plusEquivalent + ";rulesCost=" + rulesCost +
                     ";expected=" + expectedCost, exactCost,
                 "live CMI ItemPlusEquivalent and RulesRecipeItemCost");
+        }
+
+        private static void AddOwnedCustomFamilyUpgradeCheck(
+            ICollection<CraftMagicItemsQualificationCheck> checks,
+            CraftMagicItemsContract contract,
+            CraftMagicItemsRegistrationCatalog catalog,
+            object ordinaryRecipe,
+            BlueprintWeaponEnchantment ordinaryPlusOne,
+            ICollection<string> customGuids)
+        {
+            CraftMagicItemsWeaponRegistration[] owned = catalog.Weapons
+                .Where(value => value.Policy.Family !=
+                        CraftMagicItemsCatalogFamily.Firearm &&
+                    value.Policy.Family !=
+                        CraftMagicItemsCatalogFamily.Diagnostic &&
+                    (value.Policy.Role == CraftMagicItemsCatalogRole
+                        .CanonicalCreationBase || value.Policy.Role ==
+                        CraftMagicItemsCatalogRole.AuthoredGenericTarget ||
+                     value.Policy.Role == CraftMagicItemsCatalogRole
+                        .NamedUpgradeOnly))
+                .ToArray();
+            BlueprintItemWeapon[] custom = catalog
+                .CustomFamilyRecognitionBases.Select(value =>
+                    BuildQualificationClone(value, ordinaryPlusOne))
+                .ToArray();
+            foreach (BlueprintItemWeapon value in custom)
+                customGuids.Add(value.AssetGuid);
+            BlueprintItemWeapon[] candidates = owned.Select(value =>
+                    value.Item).Concat(custom).ToArray();
+            bool exact = candidates.Length > 4 && candidates.All(value =>
+                CanUpgradeThroughOrdinaryArms(contract, ordinaryRecipe,
+                    value));
+            string roles = string.Join(",", owned.GroupBy(value =>
+                    value.Policy.Role).OrderBy(value => value.Key)
+                .Select(value => value.Key + "=" + value.Count()).ToArray());
+            AddQualificationCheck(checks,
+                "ordinary-arms-owned-custom-family-upgrades",
+                "ordinary Arms and Armor accepts canonical, authored, named, and prior CMI custom representatives across all four custom families",
+                "owned=" + owned.Length + ";customClones=" +
+                    custom.Length + ";roles=" + roles,
+                exact && catalog.CustomFamilyRecognitionBases.Length == 4,
+                "real patched CMI CanEnchant plus initialized Arms and Armor +1 recipe applicability");
+        }
+
+        private static bool CanUpgradeThroughOrdinaryArms(
+            CraftMagicItemsContract contract, object recipe,
+            BlueprintItemWeapon blueprint)
+        {
+            ItemEntity entity = blueprint == null ? null :
+                blueprint.CreateEntity();
+            if (entity == null) return false;
+            try
+            {
+                entity.Identify();
+                bool candidate = (bool)contract.CanEnchant.Invoke(null,
+                    new object[] { entity });
+                return candidate && InvokeRecipeApplies(contract, recipe,
+                    blueprint);
+            }
+            catch (TargetInvocationException exception)
+            {
+                ExceptionDispatchInfo.Capture(exception.InnerException ??
+                    exception).Throw();
+                throw;
+            }
+            finally
+            {
+                entity.Dispose();
+            }
         }
 
         private static void AddOwnedStateQualificationCheck(
@@ -1436,15 +1800,32 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         {
             return first != null && second != null &&
                 first.ItemTypes == second.ItemTypes &&
-                first.FirearmBases == second.FirearmBases &&
-                first.CustomWeaponBases == second.CustomWeaponBases &&
+                first.FirearmCreationBases ==
+                    second.FirearmCreationBases &&
+                first.FirearmRecognitionIdentities ==
+                    second.FirearmRecognitionIdentities &&
+                first.MartialBases == second.MartialBases &&
+                first.ExoticBases == second.ExoticBases &&
+                first.CustomFamilyMagicItemTypes ==
+                    second.CustomFamilyMagicItemTypes &&
+                first.CustomFamilyRecognitionIdentities ==
+                    second.CustomFamilyRecognitionIdentities &&
                 first.AmmunitionRecipes == second.AmmunitionRecipes &&
                 first.ReliableRecipes == second.ReliableRecipes &&
                 first.OrdinaryWeaponRecipes == second.OrdinaryWeaponRecipes &&
-                first.FirearmBaseGuids.SequenceEqual(second.FirearmBaseGuids,
+                first.FirearmCreationBaseGuids.SequenceEqual(
+                    second.FirearmCreationBaseGuids,
                     StringComparer.Ordinal) &&
-                first.CustomWeaponBaseGuids.SequenceEqual(
-                    second.CustomWeaponBaseGuids, StringComparer.Ordinal) &&
+                first.FirearmRecognitionGuids.SequenceEqual(
+                    second.FirearmRecognitionGuids,
+                    StringComparer.Ordinal) &&
+                first.MartialBaseGuids.SequenceEqual(second.MartialBaseGuids,
+                    StringComparer.Ordinal) &&
+                first.ExoticBaseGuids.SequenceEqual(second.ExoticBaseGuids,
+                    StringComparer.Ordinal) &&
+                first.CustomFamilyRecognitionGuids.SequenceEqual(
+                    second.CustomFamilyRecognitionGuids,
+                    StringComparer.Ordinal) &&
                 first.NamedUpgradeOnlyGuids.SequenceEqual(
                     second.NamedUpgradeOnlyGuids, StringComparer.Ordinal);
         }
@@ -1454,10 +1835,14 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         {
             return value == null ? "<null>" : string.Format(
                 CultureInfo.InvariantCulture,
-                "generation={0};itemTypes={1};firearmBases={2};customBases={3};ordinaryRecipes={4};reliable={5};ammunition={6}",
-                value.Generation, value.ItemTypes, value.FirearmBases,
-                value.CustomWeaponBases, value.OrdinaryWeaponRecipes,
-                value.ReliableRecipes, value.AmmunitionRecipes);
+                "generation={0};itemTypes={1};firearmCreation={2};firearmRecognition={3};martial={4};exotic={5};customMagicTypes={6};customRecognition={7};ordinaryRecipes={8};reliable={9};ammunition={10}",
+                value.Generation, value.ItemTypes,
+                value.FirearmCreationBases,
+                value.FirearmRecognitionIdentities, value.MartialBases,
+                value.ExoticBases, value.CustomFamilyMagicItemTypes,
+                value.CustomFamilyRecognitionIdentities,
+                value.OrdinaryWeaponRecipes, value.ReliableRecipes,
+                value.AmmunitionRecipes);
         }
 
         private static void AddQualificationCheck(
@@ -1797,8 +2182,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             if (typeIndex == null) throw new InvalidOperationException(
                 "CMI TypeToItem was not initialized before its equipment index.");
             foreach (BlueprintItemWeapon weapon in catalog
-                .FirearmCreationBases.Concat(catalog
-                    .MagicMundaneCreationBases))
+                .FirearmRecognitionBases.Concat(catalog
+                    .CustomFamilyRecognitionBases))
             {
                 string typeGuid = weapon.Type == null ? null :
                     weapon.Type.AssetGuid;
@@ -1925,18 +2310,15 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static bool IsFirearm(BlueprintItemWeapon weapon)
         { return CraftMagicItemsRegistrationCatalog.IsFirearm(weapon); }
 
-        private static bool IsSupportedCustomWeapon(BlueprintItemWeapon weapon)
+        private static bool IsRecognizedCustomFamily(
+            BlueprintItemWeapon weapon)
         {
             CraftMagicItemsRegistrationCatalog catalog;
             lock (Gate) catalog = _catalog;
-            return weapon != null && catalog != null && catalog.Weapons.Any(
-                value => value.Policy.Family !=
-                    CraftMagicItemsCatalogFamily.Firearm &&
-                    value.Policy.Family !=
-                    CraftMagicItemsCatalogFamily.Diagnostic &&
-                    (ReferenceEquals(value.Item, weapon) ||
-                     (value.Item.Type != null && ReferenceEquals(
-                         value.Item.Type, weapon.Type))));
+            return weapon != null && weapon.Type != null &&
+                catalog != null && catalog.CustomFamilyRecognitionBases.Any(
+                    value => value.Type != null && ReferenceEquals(
+                        value.Type, weapon.Type));
         }
 
         private static void RegisterLocalization()
@@ -1944,19 +2326,24 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             LocalizationService.Create(
                 "KMG.CraftMagicItems.Firearms.Name", "Firearms");
             LocalizationService.Create(
-                "KMG.CraftMagicItems.CustomWeapons.Name",
-                "Eastern and Elven Weapons");
-            LocalizationService.Create(
                 "KMG.CraftMagicItems.Ammunition.Name",
                 "Firearm Ammunition");
         }
 
         private static int CountAddedItemTypes()
         {
-            int result = 2;
+            int result = 1;
             if (_mundaneFirearms != null) result++;
             if (_ammunition != null) result++;
             return result;
+        }
+
+        private static CraftMagicItemsGraphSnapshot EmptySnapshot(
+            int generation)
+        {
+            return new CraftMagicItemsGraphSnapshot(generation, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, null, null, null, null, null,
+                null);
         }
 
         private static void SetField(object target, string name, object value)
@@ -2207,8 +2594,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     as IDictionary;
                 if (typeIndex != null && catalog != null)
                     foreach (BlueprintItemWeapon weapon in catalog
-                        .FirearmCreationBases.Concat(catalog
-                            .MagicMundaneCreationBases))
+                        .FirearmRecognitionBases.Concat(catalog
+                            .CustomFamilyRecognitionBases))
                         if (weapon.Type != null &&
                             typeIndex.Contains(weapon.Type.AssetGuid) &&
                             ReferenceEquals(typeIndex[weapon.Type.AssetGuid],
@@ -2244,7 +2631,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     _currentGraph = null;
                     _rawGraph = null;
                     _magicFirearms = null;
-                    _magicCustomWeapons = null;
                     _mundaneFirearms = null;
                     _ammunition = null;
                     _reliableRecipe = null;
@@ -2255,8 +2641,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     _martialState = null;
                     _exoticState = null;
                     _categoryScope = CategoryScope.None;
-                    _snapshot = new CraftMagicItemsGraphSnapshot(_generation,
-                        0, 0, 0, 0, 0, 0, null, null, null);
+                    _snapshot = EmptySnapshot(_generation);
                 }
             }
         }
@@ -2264,8 +2649,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal enum CategoryScope
         {
             None = 0,
-            Firearms = 1,
-            CustomWeapons = 2
+            Firearms = 1
         }
 
         private sealed class AmmunitionRenderPlan

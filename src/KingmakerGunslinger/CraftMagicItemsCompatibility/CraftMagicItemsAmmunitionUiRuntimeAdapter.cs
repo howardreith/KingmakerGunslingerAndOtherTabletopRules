@@ -31,6 +31,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal int ProjectResultCount { get; set; }
         internal string ProjectResultGuid { get; set; }
         internal bool ProjectCompleted { get; set; }
+        internal bool ProjectCancelled { get; set; }
     }
 
     /// <summary>
@@ -304,7 +305,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             {
                 ItemGuid = registration.Item.AssetGuid,
                 ExpectedCount = registration.Plan.Count,
-                ExpectedProgress = registration.Plan.RequiredProgress,
+                ExpectedProgress = registration.Plan.TimedProjectTarget,
                 ExpectedGold = registration.Plan.GoldCost(1f),
                 InventoryBefore = inventoryBefore,
                 InventoryAfter = Game.Instance.Player.Inventory.Count(
@@ -373,6 +374,24 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             observation.ProjectCompleted = !NewCreationProjects().Any() &&
                 !timerProjects.Cast<object>().Any(value => ReferenceEquals(
                     value, projects[0]));
+        }
+
+        internal void CancelTimedProject(
+            CraftMagicItemsAmmunitionCraftObservation observation)
+        {
+            RequireActive();
+            if (observation == null || !observation.Timed)
+                throw new ArgumentNullException("timed cancellation input");
+            object[] projects = NewCreationProjects();
+            if (projects.Length != 1)
+                throw new InvalidOperationException(
+                    "The guarded cancellation fixture did not create exactly one CMI project.");
+            _cancelProject.Invoke(null, new[] { projects[0] });
+            observation.MoneyAfter = Game.Instance.Player.Money;
+            observation.InventoryAfter = Game.Instance.Player.Inventory.Count(
+                CraftMagicItemsReflectionBridge.Catalog.Ammunition.Single(
+                    value => value.Item.AssetGuid == observation.ItemGuid).Item);
+            observation.ProjectCancelled = !NewCreationProjects().Any();
         }
 
         internal bool UnrelatedStatePreserved

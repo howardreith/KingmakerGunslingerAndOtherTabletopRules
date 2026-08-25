@@ -54,6 +54,7 @@ using KingmakerGunslinger.EasternWeapons;
 using KingmakerGunslinger.BrownFur;
 using KingmakerGunslinger.FeatureModules;
 using KingmakerGunslinger.UrbanBarbarian;
+using KingmakerGunslinger.CraftMagicItemsCompatibility;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -117,6 +118,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             _weaponPresentationBodyMatrixEvidence;
         private CraftMagicItemsAmmunitionUiObserver.Session
             _craftMagicItemsAmmunitionUiObserver;
+        private bool _craftMagicItemsPersistenceSaveStarted;
+        private bool _craftMagicItemsPersistenceSaveCompleted;
+        private Stopwatch _craftMagicItemsPersistenceSaveElapsed;
+        private bool _craftMagicItemsPersistenceGraphValid;
+        private bool _craftMagicItemsPersistenceFixtureValid;
+        private bool _craftMagicItemsPersistenceCleanupValid;
+        private string _craftMagicItemsPersistenceDetail = "";
+        private string[] _craftMagicItemsPersistenceDiagnostics =
+            new string[0];
         private Stopwatch _catalogElapsed;
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
@@ -561,6 +571,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !IsExpandedSummoningPersistenceScenario() &&
                     !IsElvenBranchedSpearPersistenceScenario() &&
                     !IsEasternWeaponsPersistenceScenario() &&
+                    !IsCraftMagicItemsPersistenceScenario() &&
                     !IsBrownFurPersistenceScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
@@ -1395,6 +1406,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
+                    IsCraftMagicItemsPersistenceScenario() ||
                     IsBrownFurPersistenceScenario() ||
                     IsUrbanBarbarianPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
@@ -1447,6 +1459,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
+                    IsCraftMagicItemsPersistenceScenario() ||
                     IsBrownFurPersistenceScenario() ||
                     IsUrbanBarbarianPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
@@ -1520,6 +1533,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_craftMagicItemsPersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteCraftMagicItemsPersistence(
+                        RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_craftMagicItemsPersistenceSaveCompleted)
+                {
+                    CompleteCraftMagicItemsPersistence(
+                        RuntimeTestStatuses.Pass, "");
+                    return;
+                }
+                if (_craftMagicItemsPersistenceSaveElapsed != null &&
+                    _craftMagicItemsPersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteCraftMagicItemsPersistence(
+                        RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
             if (_easternWeaponsPersistenceSaveStarted)
             {
                 if (_workingSaveSmoke.WriteObserved)
@@ -1800,6 +1836,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     StartExpandedSummoningPersistence();
                 }
+                else if (IsCraftMagicItemsPersistenceScenario())
+                {
+                    StartCraftMagicItemsPersistence();
+                }
                 else if (IsElvenBranchedSpearPersistenceScenario())
                 {
                     StartElvenBranchedSpearPersistence();
@@ -2030,6 +2070,190 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .WorkingSaveEasternWeaponsVerifyCleanup ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .WorkingSaveEasternWeaponsVerifyAbsent;
+        }
+
+        private bool IsCraftMagicItemsPersistenceScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveCraftMagicItemsPrepare ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveCraftMagicItemsVerifyCleanup;
+        }
+
+        private void StartCraftMagicItemsPersistence()
+        {
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.Descriptor != null).ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before CMI persistence qualification.");
+            if (!_context.FeatureModules.Active.Gunslinger)
+                throw new InvalidOperationException(
+                    "CMI persistence qualification requires Gunslinger to be active.");
+
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveCraftMagicItemsPrepare;
+            BlueprintItemWeapon blueprint = CraftMagicItemsTooltipInspection
+                .BuildPersistentFixtureBlueprint();
+            CraftMagicItemsGraphSnapshot graph =
+                CraftMagicItemsReflectionBridge.Snapshot;
+            _craftMagicItemsPersistenceGraphValid =
+                CraftMagicItemsReflectionBridge.IsFinalized &&
+                graph.ItemTypes == 3 && graph.FirearmCreationBases == 3 &&
+                graph.FirearmRecognitionIdentities == 5 &&
+                graph.CustomFamilyMagicItemTypes == 0 &&
+                graph.AmmunitionRecipes == 3 && graph.ReliableRecipes == 1;
+
+            ItemEntityWeapon[] before = EnumerateRuntimeInventory(
+                    Game.Instance.Player.Inventory)
+                .OfType<ItemEntityWeapon>().Where(value => value.Blueprint !=
+                    null && string.Equals(value.Blueprint.AssetGuid,
+                        blueprint.AssetGuid, StringComparison.Ordinal))
+                .ToArray();
+            if (prepare)
+            {
+                if (before.Length != 0)
+                    throw new InvalidOperationException(
+                        "The disposable working save already contains the exact CMI persistence fixture; prepare refused to duplicate it.");
+                Game.Instance.Player.Inventory.Add(blueprint, 1);
+            }
+            else if (before.Length != 1)
+                throw new InvalidOperationException(
+                    "Fresh-load CMI persistence verification requires exactly one prepared fixture; observed " +
+                    before.Length + ".");
+
+            ItemEntityWeapon[] observed = EnumerateRuntimeInventory(
+                    Game.Instance.Player.Inventory)
+                .OfType<ItemEntityWeapon>().Where(value => value.Blueprint !=
+                    null && string.Equals(value.Blueprint.AssetGuid,
+                        blueprint.AssetGuid, StringComparison.Ordinal))
+                .ToArray();
+            if (observed.Length != 1)
+                throw new InvalidOperationException(
+                    "CMI persistence phase did not expose exactly one fixture; observed " +
+                    observed.Length + ".");
+            ItemEntityWeapon item = observed[0];
+            item.Identify();
+            if (prepare)
+            {
+                BatteredFirearmOriginRuntime.Bind(item, party[0]);
+                FirearmRuntimeState.SeedLegacyTokenForDebug(item,
+                    new FirearmState(FirearmState.CurrentSchemaVersion, 1,
+                        FirearmStateTokenCatalog.DiagnosticLeadBall,
+                        FirearmCondition.Normal));
+            }
+
+            CraftMagicItemsTooltipInspectionResult inspection =
+                CraftMagicItemsTooltipInspection.CapturePersistent(item,
+                    party[0]);
+            _craftMagicItemsPersistenceFixtureValid = inspection.Passed;
+            _craftMagicItemsPersistenceDiagnostics = inspection.Diagnostics;
+            if (!prepare)
+                Game.Instance.Player.Inventory.Remove(item);
+            int after = EnumerateRuntimeInventory(
+                    Game.Instance.Player.Inventory)
+                .OfType<ItemEntityWeapon>().Count(value => value.Blueprint !=
+                    null && string.Equals(value.Blueprint.AssetGuid,
+                        blueprint.AssetGuid, StringComparison.Ordinal));
+            _craftMagicItemsPersistenceCleanupValid = prepare ? after == 1 :
+                after == 0;
+            _craftMagicItemsPersistenceDetail = "phase=" +
+                (prepare ? "prepare" : "verify-cleanup") + ";guid=" +
+                blueprint.AssetGuid + ";before=" + before.Length +
+                ";observed=" + observed.Length + ";after=" + after +
+                ";graph=" + _craftMagicItemsPersistenceGraphValid +
+                ";fixture=" + _craftMagicItemsPersistenceFixtureValid +
+                ";cleanup=" + _craftMagicItemsPersistenceCleanupValid;
+            if (!_craftMagicItemsPersistenceGraphValid ||
+                !_craftMagicItemsPersistenceFixtureValid ||
+                !_craftMagicItemsPersistenceCleanupValid)
+                throw new InvalidOperationException(
+                    "CMI working-save persistence phase assertions failed: " +
+                    _craftMagicItemsPersistenceDetail);
+
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Game).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" &&
+                    value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _craftMagicItemsPersistenceSaveStarted = true;
+            _craftMagicItemsPersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() =>
+                    _craftMagicItemsPersistenceSaveCompleted = true)
+            });
+        }
+
+        private void CompleteCraftMagicItemsPersistence(string status,
+            string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveCraftMagicItemsPrepare;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load",
+                    "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("cmi-persistence-graph",
+                    "itemTypes=3;firearmCreation=3;recognition=5;customMagic=0;ammo=3;Reliable=1",
+                    _craftMagicItemsPersistenceDetail,
+                    _craftMagicItemsPersistenceGraphValid,
+                    "fresh-process finalized real-CMI graph"),
+                Assertion("cmi-custom-firearm-persistence",
+                    "one exact loaded battered Anarchic/+5/Reliable Pistol with hidden internal markers",
+                    _craftMagicItemsPersistenceDetail,
+                    _craftMagicItemsPersistenceFixtureValid,
+                    prepare ? "pre-save CMI custom blueprint and item graph" :
+                        "freshly deserialized CMI custom blueprint and item graph"),
+                Assertion(prepare ? "cmi-persistence-prepared" :
+                        "cmi-persistence-cleaned",
+                    prepare ? "one exact fixture remains for fresh-load verification" :
+                        "the exact fixture is absent before cleanup save",
+                    _craftMagicItemsPersistenceDetail,
+                    _craftMagicItemsPersistenceCleanupValid,
+                    "exact custom-blueprint inventory cardinality"),
+                Assertion("exact-working-save-write",
+                    "one SaveRoutine on exact captured SaveInfo",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" +
+                        evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                        evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                        !evidence.SaveWritingApiObserved,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version ==
+                        _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            if (status == RuntimeTestStatuses.Pass &&
+                assertions.Any(value => value.Status != "PASS"))
+                status = RuntimeTestStatuses.Fail;
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            result.Diagnostics.Add(_craftMagicItemsPersistenceDetail);
+            foreach (string diagnostic in
+                _craftMagicItemsPersistenceDiagnostics)
+                result.Diagnostics.Add(diagnostic);
+            if (!string.IsNullOrWhiteSpace(warning))
+                result.Warnings.Add(warning);
+            Complete(result);
         }
 
         private void StartElvenBranchedSpearPersistence()

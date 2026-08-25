@@ -10,14 +10,25 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
     {
         internal CraftMagicItemsContract(Assembly assembly, Type mainType,
             Type itemDataType, Type recipeDataType, Type recipeBasedType,
-            Type blueprintPatcherType, FieldInfo itemDataField,
+            Type blueprintPatcherType, Type craftingProjectDataType,
+            Type craftingTimerComponentType, FieldInfo itemDataField,
             FieldInfo enabledField, FieldInfo harmonyInstanceField,
             FieldInfo blueprintPatcherField,
             FieldInfo selectedIndexField, FieldInfo upgradingBlueprintField,
             FieldInfo selectedCustomNameField, FieldInfo subCraftingDataField,
             FieldInfo typeToItemField, FieldInfo enchantmentToItemField,
             FieldInfo enchantmentToRecipeField,
-            FieldInfo enchantmentToCostField, MethodInfo initializeData,
+            FieldInfo enchantmentToCostField,
+            FieldInfo projectProgressField,
+            FieldInfo projectTargetCostField,
+            FieldInfo projectGoldSpentField,
+            FieldInfo projectResultItemField,
+            FieldInfo projectItemTypeField,
+            FieldInfo projectRecipeNameField,
+            FieldInfo projectUpgradeItemField,
+            FieldInfo timerProjectsField,
+            ConstructorInfo craftingProjectConstructor,
+            MethodInfo getCraftingTimer, MethodInfo initializeData,
             MethodInfo addAllCraftingFeats, MethodInfo onToggle,
             MethodInfo canEnchant,
             MethodInfo recipeApplies, MethodInfo blueprintMatchesSlot,
@@ -37,6 +48,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             RecipeDataType = recipeDataType;
             RecipeBasedType = recipeBasedType;
             BlueprintPatcherType = blueprintPatcherType;
+            CraftingProjectDataType = craftingProjectDataType;
+            CraftingTimerComponentType = craftingTimerComponentType;
             ItemDataField = itemDataField;
             EnabledField = enabledField;
             HarmonyInstanceField = harmonyInstanceField;
@@ -49,6 +62,16 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             EnchantmentToItemField = enchantmentToItemField;
             EnchantmentToRecipeField = enchantmentToRecipeField;
             EnchantmentToCostField = enchantmentToCostField;
+            ProjectProgressField = projectProgressField;
+            ProjectTargetCostField = projectTargetCostField;
+            ProjectGoldSpentField = projectGoldSpentField;
+            ProjectResultItemField = projectResultItemField;
+            ProjectItemTypeField = projectItemTypeField;
+            ProjectRecipeNameField = projectRecipeNameField;
+            ProjectUpgradeItemField = projectUpgradeItemField;
+            TimerProjectsField = timerProjectsField;
+            CraftingProjectConstructor = craftingProjectConstructor;
+            GetCraftingTimer = getCraftingTimer;
             InitializeData = initializeData;
             AddAllCraftingFeats = addAllCraftingFeats;
             OnToggle = onToggle;
@@ -78,6 +101,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal Type RecipeDataType { get; private set; }
         internal Type RecipeBasedType { get; private set; }
         internal Type BlueprintPatcherType { get; private set; }
+        internal Type CraftingProjectDataType { get; private set; }
+        internal Type CraftingTimerComponentType { get; private set; }
         internal FieldInfo ItemDataField { get; private set; }
         internal FieldInfo EnabledField { get; private set; }
         internal FieldInfo HarmonyInstanceField { get; private set; }
@@ -90,6 +115,17 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal FieldInfo EnchantmentToItemField { get; private set; }
         internal FieldInfo EnchantmentToRecipeField { get; private set; }
         internal FieldInfo EnchantmentToCostField { get; private set; }
+        internal FieldInfo ProjectProgressField { get; private set; }
+        internal FieldInfo ProjectTargetCostField { get; private set; }
+        internal FieldInfo ProjectGoldSpentField { get; private set; }
+        internal FieldInfo ProjectResultItemField { get; private set; }
+        internal FieldInfo ProjectItemTypeField { get; private set; }
+        internal FieldInfo ProjectRecipeNameField { get; private set; }
+        internal FieldInfo ProjectUpgradeItemField { get; private set; }
+        internal FieldInfo TimerProjectsField { get; private set; }
+        internal ConstructorInfo CraftingProjectConstructor
+        { get; private set; }
+        internal MethodInfo GetCraftingTimer { get; private set; }
         internal MethodInfo InitializeData { get; private set; }
         internal MethodInfo AddAllCraftingFeats { get; private set; }
         internal MethodInfo OnToggle { get; private set; }
@@ -160,8 +196,13 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 Type blueprintPatcher = assembly.GetType(
                     "CraftMagicItems.CraftMagicItemsBlueprintPatcher", false,
                     false);
+                Type craftingProject = assembly.GetType(
+                    "CraftMagicItems.CraftingProjectData", false, false);
+                Type craftingTimer = assembly.GetType(
+                    "CraftMagicItems.CraftingTimerComponent", false, false);
                 if (main == null || itemData == null || recipeData == null ||
                     recipeBased == null || blueprintPatcher == null ||
+                    craftingProject == null || craftingTimer == null ||
                     !itemData.IsAssignableFrom(recipeBased))
                     return Fail("required-types");
 
@@ -212,6 +253,51 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 if (!ValidateItemDataShape(itemData, recipeBased,
                         recipeData))
                     return Fail("crafting-data-shape");
+
+                FieldInfo projectProgress = Field(craftingProject,
+                    "Progress", false);
+                FieldInfo projectTarget = Field(craftingProject,
+                    "TargetCost", false);
+                FieldInfo projectGold = Field(craftingProject,
+                    "GoldSpent", false);
+                FieldInfo projectResult = Field(craftingProject,
+                    "ResultItem", false);
+                FieldInfo projectItemType = Field(craftingProject,
+                    "ItemType", false);
+                FieldInfo projectRecipe = Field(craftingProject,
+                    "RecipeName", false);
+                FieldInfo projectUpgrade = Field(craftingProject,
+                    "UpgradeItem", false);
+                FieldInfo projectCrafter = Field(craftingProject,
+                    "Crafter", false);
+                FieldInfo spellPrerequisites = Field(craftingProject,
+                    "SpellPrerequisites", false);
+                FieldInfo featPrerequisites = Field(craftingProject,
+                    "FeatPrerequisites", false);
+                FieldInfo prerequisitesMandatory = Field(craftingProject,
+                    "PrerequisitesMandatory", false);
+                FieldInfo anyPrerequisite = Field(craftingProject,
+                    "AnyPrerequisite", false);
+                FieldInfo crafterPrerequisites = Field(craftingProject,
+                    "CrafterPrerequisites", false);
+                FieldInfo timerProjects = Field(craftingTimer,
+                    "CraftingProjects", false);
+                ConstructorInfo[] projectConstructors = craftingProject
+                    .GetConstructors(Instance);
+                ConstructorInfo projectConstructor = projectConstructors
+                    .Length == 1 ? projectConstructors[0] : null;
+                MethodInfo getCraftingTimer = Method(main,
+                    "GetCraftingTimerComponentForCaster", true, 2,
+                    craftingTimer);
+                if (!ValidateProjectShape(craftingProject, projectCrafter,
+                        projectProgress, projectTarget, projectGold,
+                        projectResult, projectItemType, projectRecipe,
+                        projectUpgrade, spellPrerequisites,
+                        featPrerequisites, prerequisitesMandatory,
+                        anyPrerequisite, crafterPrerequisites,
+                        craftingTimer, timerProjects, projectConstructor,
+                        getCraftingTimer))
+                    return Fail("crafting-project-shape");
 
                 Type lifecycle = main.GetNestedType("MainMenuStartPatch",
                     BindingFlags.NonPublic | BindingFlags.Public);
@@ -301,12 +387,17 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 return new CraftMagicItemsContractResolution(
                     new CraftMagicItemsContract(assembly, main, itemData,
                         recipeData, recipeBased, blueprintPatcher,
+                        craftingProject, craftingTimer,
                         itemDataField, enabledField, harmonyInstanceField,
                         blueprintPatcherField,
                         selectedIndexField, upgradingBlueprintField,
                         selectedCustomNameField, subCraftingDataField,
                         typeToItemField, enchantmentToItemField,
                         enchantmentToRecipeField, enchantmentToCostField,
+                        projectProgress, projectTarget, projectGold,
+                        projectResult, projectItemType, projectRecipe,
+                        projectUpgrade, timerProjects, projectConstructor,
+                        getCraftingTimer,
                         initializeData, addAllCraftingFeats, onToggle,
                         canEnchant, recipeApplies,
                         blueprintMatchesSlot, itemMatchesEnchantments,
@@ -400,6 +491,58 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     FieldShape.Of<bool>("CanApplyToMundaneItem")) &&
                 IsEnumWith(costEnum, "Flat", "EnhancementLevelSquared") &&
                 IsEnumWith(restrictionEnum, "Weapon");
+        }
+
+        private static bool ValidateProjectShape(Type project,
+            FieldInfo crafter, FieldInfo progress, FieldInfo target,
+            FieldInfo gold, FieldInfo result, FieldInfo itemType,
+            FieldInfo recipeName, FieldInfo upgrade,
+            FieldInfo spellPrerequisites, FieldInfo featPrerequisites,
+            FieldInfo prerequisitesMandatory, FieldInfo anyPrerequisite,
+            FieldInfo crafterPrerequisites, Type timer,
+            FieldInfo timerProjects, ConstructorInfo constructor,
+            MethodInfo getTimer)
+        {
+            if (project == null || timer == null || crafter == null ||
+                crafter.FieldType.IsValueType || progress == null ||
+                progress.FieldType != typeof(int) || target == null ||
+                target.FieldType != typeof(int) || gold == null ||
+                gold.FieldType != typeof(int) || result == null ||
+                result.FieldType.IsValueType || itemType == null ||
+                itemType.FieldType != typeof(string) || recipeName == null ||
+                recipeName.FieldType != typeof(string) || upgrade == null ||
+                upgrade.FieldType != result.FieldType ||
+                spellPrerequisites == null ||
+                !spellPrerequisites.FieldType.IsArray ||
+                featPrerequisites == null ||
+                !featPrerequisites.FieldType.IsArray ||
+                prerequisitesMandatory == null ||
+                prerequisitesMandatory.FieldType != typeof(bool) ||
+                anyPrerequisite == null ||
+                anyPrerequisite.FieldType != typeof(bool) ||
+                crafterPrerequisites == null ||
+                !crafterPrerequisites.FieldType.IsArray ||
+                timerProjects == null ||
+                !timerProjects.FieldType.IsGenericType ||
+                timerProjects.FieldType.GetGenericTypeDefinition() !=
+                    typeof(List<>) || timerProjects.FieldType
+                    .GetGenericArguments()[0] != project ||
+                constructor == null || getTimer == null ||
+                getTimer.ReturnType != timer)
+                return false;
+
+            Type[] constructorTypes = constructor.GetParameters().Select(
+                    value => value.ParameterType).ToArray();
+            Type[] expected = { crafter.FieldType, typeof(int), typeof(int),
+                typeof(int), result.FieldType, typeof(string),
+                typeof(string), spellPrerequisites.FieldType,
+                featPrerequisites.FieldType, typeof(bool), typeof(bool),
+                upgrade.FieldType, crafterPrerequisites.FieldType };
+            ParameterInfo[] timerParameters = getTimer.GetParameters();
+            return constructorTypes.SequenceEqual(expected) &&
+                timerParameters.Length == 2 &&
+                !timerParameters[0].ParameterType.IsValueType &&
+                timerParameters[1].ParameterType == typeof(bool);
         }
 
         private static bool ValidateHarmonyShape(Type harmony)

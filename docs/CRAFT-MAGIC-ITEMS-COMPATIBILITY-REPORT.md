@@ -2,200 +2,195 @@
 
 ## Result
 
-Kingmaker Gunslinger 0.0.98 is rejected. Its compatibility graph initialized
-correctly, but the first human use of **Firearm Ammunition** exposed a
-conditional Unity IMGUI control-tree mismatch. The bridge then rolled back the
-whole compatibility graph during `OnGUI`, so the category disappeared.
+Kingmaker Gunslinger (KMG) 0.0.100 is the post-human-test Craft Magic Items
+(CMI) refinement candidate. It preserves the 0.0.99 ammunition renderer repair
+and addresses the four findings from that candidate's first human interaction:
 
-Version 0.0.99 replaces that renderer architecture with one capability-probed
-Harmony 2 inner seam. Craft Magic Items (CMI) always renders and owns the
-top-level **Mundane Crafting:** selector. KMG handles only the lower panel when
-the already-resolved `selectedCraftingData` is the exact bridge-owned ammunition
-object, then branches to CMI's common footer.
+- all exact 20-unit KMG ammunition projects now use timed target 5 without
+  changing price or item value;
+- Advanced Rifle and Advanced Revolver remain supported/upgradeable but are no
+  longer offered as new campaign crafting bases;
+- KMG state and battered-origin policy enchantments remain mechanical but are
+  omitted from native player-facing quality text;
+- the standalone **Eastern and Elven Weapons** magic category is removed.
 
-The repaired candidate passed 1,241/1,241 deterministic tests, the complete
-source/build/package gates, a 12/12 real-CMI patched-renderer observer, a 23/23
-real-CMI graph observer, and the canonical 11/11 working-save smoke. Human
-visual/interaction acceptance of 0.0.99 remains pending and is not claimed.
+Version 0.0.99 passed its first human ammunition interaction: the category
+remained available and crafting completed. Its value-derived project durations,
+advanced-firearm acquisition, four `<null>` tooltip lines, and extra magic
+category were nevertheless rejected as final behavior. Version 0.0.98 remains
+rejected for its Unity IMGUI control-tree failure.
+
+The 0.0.100 candidate passed 1,243/1,243 deterministic tests, all source/build/
+package gates, a 27/27 real-CMI graph observer, a 13/13 actual ammunition UI
+route observer, a two-launch 6/6 + 6/6 save/reload/cleanup qualification, and the
+canonical 11/11 working-save smoke. Human visual and interaction acceptance of
+0.0.100 remains pending and is not claimed.
 
 ## Baseline and external authority
 
 | Field | Exact value |
 |---|---|
 | Original compatibility starting commit | `290c63a9d51955ae5e692e51ffbee343e211b208` |
-| Rejected human-test baseline | `d7178d6ae77b79624917f955658231ae67894c51` |
+| Rejected 0.0.98 human-test baseline | `d7178d6ae77b79624917f955658231ae67894c51` |
+| Accepted 0.0.100 cleanup starting commit | `2100a881e057d77829a7b60ab85caa973c6ea25b` |
 | Working branch | `codex/craft-magic-items-compatibility` |
 | Rejected release | `0.0.98-craft-magic-items-compatibility` |
-| Repaired candidate | `0.0.99-craft-magic-items-ammunition-ui-repair` |
+| First crash-repair candidate | `0.0.99-craft-magic-items-ammunition-ui-repair` |
+| Current candidate | `0.0.100-craft-magic-items-post-human-refinement` |
 | CMI UMM ID / entry type / Info version | `CraftMagicItems` / `CraftMagicItems.Main` / `2.1.0` |
 | Explanatory source | `bfennema/OwlcatKingmakerModCraftMagicItems` commit `72f87523d0a116f5dfc92c91893d4955fa1eb303` |
 | Installed assembly authority | exact unchanged upstream source-built `CraftMagicItems.dll`; not an official downloaded release binary |
 | Assembly/File version | `1.0.0.0` / `1.0.0.0` |
-| DLL SHA-256 | `4AE2DA61470350B31BEEF162717A604C9CCD322F66193917944EA4A9596E392D` |
-| DLL MVID / bytes | `0044a45b-3bca-439e-86c5-a6aa4d42855e` / `231424` |
+| CMI DLL SHA-256 | `4AE2DA61470350B31BEEF162717A604C9CCD322F66193917944EA4A9596E392D` |
+| CMI DLL MVID / bytes | `0044a45b-3bca-439e-86c5-a6aa4d42855e` / `231424` |
 
-The installed DLL is runtime authority. The linked source is explanatory only.
-Neither it nor CMI source, Data, L10n, Icons, or installed-mod copies enter the
-KMG repository or package. Production KMG has no static CMI type or assembly
-reference.
+The installed DLL is runtime authority and the linked source is explanatory.
+Neither enters the KMG repository or package. Production KMG has no static CMI
+type or assembly reference and fails closed when the reflected capability shape
+is absent or incompatible.
 
-## Rejected 0.0.98 evidence and confirmed root cause
+## Historical 0.0.98 failure and preserved 0.0.99 repair
 
-The rejected graph was otherwise exact:
-
-`generation=1; itemTypes=4; firearmBases=5; customWeaponBases=4;
-ordinaryWeaponRecipes=46; reliableRecipes=1; ammunitionRecipes=3;
+The rejected 0.0.98 graph initialized as
+`generation=1;itemTypes=4;firearmBases=5;customWeaponBases=4;
+ordinaryWeaponRecipes=46;reliableRecipes=1;ammunitionRecipes=3;
 namedCreationBases=0`.
 
 On the first human click of **Firearm Ammunition**, KMG logged
-`bridge.incompatible phase=ammunition-ui` with a
-`System.Reflection.TargetInvocationException`. CMI then logged
+`bridge.incompatible phase=ammunition-ui` with a recursively wrapped
+`System.Reflection.TargetInvocationException`. CMI logged
 `System.ArgumentException: Getting control 1's position in a group with only 1
 controls when doing repaint` through `GUILayout.SelectionGrid`,
-`UmmUiRenderer.RenderSelection`,
-`Main.DrawSelectionUserInterfaceElements`, and
-`Main.RenderCraftMundaneItemsSection`. Unity followed with
-`GUILayout: Mismatched LayoutGroup.repaint` and an unbalanced `GUIClip` error.
+`UmmUiRenderer.RenderSelection`, `Main.DrawSelectionUserInterfaceElements`, and
+`Main.RenderCraftMundaneItemsSection`. Unity then reported mismatched
+`LayoutGroup.repaint` and `GUIClip` state.
 
-Source, installed IL, and the supplied live log agree on the sequence:
+Source, installed IL, and the supplied log confirmed that the old conditional
+whole-method prefix let Layout/input and Repaint select different control trees,
+redrew CMI's selector, and synchronously rolled back the graph inside `OnGUI`.
+That prefix, selection-index ownership decision, duplicate selector, partial
+fallback, and synchronous GUI rollback remain absent.
 
-1. The old `RenderMundanePrefix` conditionally owned CMI's entire mundane
-   renderer by reading mutable `SelectedIndex["Mundane Crafting: "]`.
-2. Its ammunition route invoked CMI's top-level
-   `DrawSelectionUserInterfaceElements` a second time, emitted lower controls,
-   and suppressed the original method.
-3. A Layout/input pass could run CMI's original tree and mutate the selection,
-   while Repaint ran KMG's different tree. Unity therefore saw different
-   controls and layout groups between event passes.
-4. The catch path synchronously called the bridge incompatibility/rollback
-   path inside `OnGUI`, then allowed CMI's original renderer after KMG could
-   already have emitted controls. This both compounded the GUI mismatch and
-   removed the category during repaint.
-
-The whole-method prefix, selection-index ownership decision, duplicated outer
-selector, synchronous GUI rollback, and partial-render fallback have all been
-removed.
-
-During repair qualification, one additional same-class hazard was found before
-human handoff: KMG's lazy `ImmediateModeGui.Label` resolved its reflected label
-method only after evaluating the first argument. Its first Layout could emit no
-label while Repaint emitted one. The final route instead capability-probes and
-prebinds CMI's own `RenderLabelRow` before any custom control is emitted. This
-finding does not alter the original 0.0.98 diagnosis; it prevented a second
-mixed-pass control count in the repaired implementation.
-
-## Repaired architecture
-
-The bridge still attaches at CMI's non-generic pre-index data seam, after KMG
-blueprints exist and before CMI finalizes its indexes. Registration remains one
-transaction per finalized CMI graph, with a complete validated off/on rebuild
-for safe late attachment. Stable identities, exact AssetGuids, localization,
-recipes, indexes, and Harmony ownership remain idempotent.
-
-For mundane UI, the exact installed method body is probed before patching. The
-accepted seam is:
+CMI still owns the top-level **Mundane Crafting:** selector, subtype selector,
+ordinary mundane body, and common money footer. KMG intercepts only the already
+resolved exact ammunition `ItemCraftingData` at the capability-probed seam:
 
 `post-selected-crafting-data:ordinary=IL_014d;new-item-bases=IL_0186;
 footer=IL_0774;locals=crafter:1,selected:4,recipe:5`.
 
-The probe requires exactly one ordinary-body anchor, exactly one
-`NewItemBaseIDs` equipment-assumption anchor, one safe common-footer target,
-the expected crafter/selected/recipe locals, and the exact CMI lower-panel
-methods and fields, including `RenderLabelRow`. Missing or ambiguous anchors
-reject the contract before UI use; no partially matched transpiler is installed.
+The Harmony 2 transpiler requires exactly one ordinary-body anchor, one
+`NewItemBaseIDs` equipment anchor, one footer target, the expected locals, and
+all prebound lower-panel methods. A non-ammunition object follows CMI's original
+body unchanged. Exact-reference ammunition selection renders only the lower
+panel and branches to the footer. Layout and Repaint therefore take the same
+route. No reflected contract discovery occurs after the first custom control.
 
-The injected helper receives CMI's resolved crafter and
-`selectedCraftingData`:
+A rendering fault is logged as a KMG UI fault, not an external-contract
+incompatibility. Nested invocation exceptions are unwrapped completely. No
+catch runs CMI's original body after partial rendering, and any disable or graph
+rollback is deferred to a safe non-GUI lifecycle boundary.
 
-- a non-ammunition object, including an equal-looking but distinct object,
-  returns to the untouched ordinary CMI body;
-- the exact bridge-owned ammunition object renders only the preflighted lower
-  panel and branches to CMI's common **Current Money** footer;
-- no KMG route redraws or replaces the outer selector or parent/subtype
-  selector;
-- the route never consults `SelectedIndex` to decide renderer ownership;
-- Layout, input, and Repaint therefore traverse the same control tree for a
-  selected object.
+## 0.0.100 refinements
 
-All reflection discovery, method binding, recipe-array validation, result-item
-validation, and argument-shape validation complete before the first
-ammunition-specific control. The lower panel uses CMI's normal item selector,
-description row, Knowledge (World) information, and recipe-based craft control.
-It preserves CMI project, timer, money, inventory, vendor, and sound behavior.
+### Ammunition quantity, price, time, and migration
 
-### Failure and rollback semantics
+CMI's ordinary mundane price calculation is still authoritative. The previous
+timing used `batch value / 4`, producing targets 50, 5, and 60. With the human's
+crafter/settings powder appeared as roughly 25 adventuring days or seven safe
+days, balls as one safe day, and cartridges as roughly eight safe days. That
+calculation was internally consistent but unsuitable for consumable ammunition.
 
-A UI implementation error is now distinct from an incompatible external
-contract. Nested `TargetInvocationException` wrappers are recursively unwrapped;
-diagnostics retain every exception type, message, and relevant inner stack. A
-failure after the custom route is selected is not swallowed and never runs CMI's
-ordinary body after a partial render.
+| Exact result | AssetGuid | Count | Batch value | Old value target | Timed target | Gold at scale 1.0 |
+|---|---|---:|---:|---:|---:|---:|
+| Black Powder Charge | `ea966bf998a647cf97b0ed92f71c4b7d` | 20 | 200 | 50 | 5 | 34 |
+| Lead Ball | `55c29771445947d685dba9e1ead46a42` | 20 | 20 | 5 | 5 | 4 |
+| Paper Cartridge | `fea7337cfd06417a853546af9d950f77` | 20 | 240 | 60 | 5 | 40 |
 
-No graph mutation or rollback occurs inside `OnGUI`. A render failure marks the
-bridge fault and queues any bridge disable/rollback for the next KMG `OnUpdate`
-safe lifecycle boundary. Transactional graph rollback remains available for
-initialization, index, patch-installation, and genuine contract failures.
-Consequently, an ammunition rendering defect cannot remove CMI item types in
-the middle of Layout or Repaint.
+One postfix targets the exact supported 13-parameter
+`CraftMagicItems.CraftingProjectData` constructor. It changes only `TargetCost`
+and only when the project is a new, non-upgrade KMG ammunition project whose
+item type is the exact bridge-owned category and whose result blueprint is one
+of the three GUIDs above. `GoldSpent`, result identity/count, value, global
+crafting rate, other CMI projects, and Crafting Takes No Time behavior are not
+changed.
 
-## Registration inventory
+Legacy reconciliation examines existing CMI timer data only at safe project
+lifecycle boundaries. It requires exact item-type identity and exact result
+GUID, changes target 50 or 60 to 5, preserves `GoldSpent`, `Progress`, result,
+crafter, recipe, prerequisites, and ordering, and is idempotent. Progress is not
+reset; a project already at target completes through CMI's normal processing.
+No project is cancelled, refunded, recharged, or duplicated. The real observer
+migrated one target-60 project with progress 7 exactly once.
 
-The finalized graph contains these four stable item types exactly once:
+### Firearm creation versus recognition
 
-- `KMGMagicFirearms`
-- `KMGMagicEasternAndElvenWeapons`
-- `CraftMundaneKMGFirearms`
-- `KMGFirearmAmmunition`
+`IsPlayerFireable` remains a mechanical capability gate, not the campaign
+acquisition policy. The production catalog now classifies ordinary creation
+bases separately from mechanically supported recognition identities.
 
-### Firearm creation bases
+| Weapon | AssetGuid | New mundane/magic Firearms base | Owned-item recognition, upgrade, Reliable, persistence |
+|---|---|---|---|
+| Pistol | `a303d71d244640959827e9464df5a867` | yes | yes |
+| Musket | `6c9cdfa2d47e4894847fa85d5319fbd2` | yes | yes |
+| Blunderbuss | `236f3e167f5542bcac22bca72046fb1f` | yes | yes |
+| Advanced Rifle | `a267e7bbc10e425f8adb87844d572b29` | no | yes |
+| Advanced Revolver | `8ed461fbcc154c51b07e5549211e9f5e` | no | yes |
 
-| Weapon | AssetGuid |
-|---|---|
-| Pistol | `a303d71d244640959827e9464df5a867` |
-| Musket | `6c9cdfa2d47e4894847fa85d5319fbd2` |
-| Blunderbuss | `236f3e167f5542bcac22bca72046fb1f` |
-| Advanced Rifle | `a267e7bbc10e425f8adb87844d572b29` |
-| Advanced Revolver | `8ed461fbcc154c51b07e5549211e9f5e` |
+Advanced firearms remain registered, loadable, mechanically functional,
+indexed for price/base recognition, legal existing-item upgrade targets, valid
+for Reliable, and valid results for pre-existing 0.0.99 custom blueprints or
+projects. They are absent from every future new-item base array.
 
-These five canonical bases enter both dedicated CMI Firearms types only while
-Gunslinger is active and each production entry remains `IsPlayerFireable`.
-Diagnostic, unavailable, and gated identities remain excluded. Pistol +1
-(`d0145d0410a34df08d68a67367c1dfc9`), Musket +1
-(`3402fe01de1648b187c192500e370f01`), and Blunderbuss +1
-(`1dc7efe0792040f187a18adfdc54c6e0`) remain authored targets rather than
-additional from-scratch bases.
+### Category organization
 
-### Mundane custom-family bases
+The finalized graph adds exactly three item types:
+
+- `KMGMagicFirearms`;
+- `CraftMundaneKMGFirearms`;
+- `KMGFirearmAmmunition`.
+
+`KMGMagicEasternAndElvenWeapons`, its state/localization, and its duplicated
+ordinary recipe collection are removed. The exact mundane additions remain:
 
 | CMI category | Canonical base | AssetGuid |
 |---|---|---|
+| Martial Weapons | Nodachi | `35b7082d98ff45ba51dce536a1bc68a1` |
 | Exotic Weapons | Wakizashi | `b61ee7e62bc9288004eb0121c8f5d37e` |
 | Exotic Weapons | Katana | `aba40a9e8302b31e4daa2acf6ab48a46` |
-| Martial Weapons | Nodachi | `35b7082d98ff45ba51dce536a1bc68a1` |
 | Exotic Weapons | Elven Branched Spear | `6edc216d68810960f85417237748b042` |
 
-Current KMG weapon metadata confirms these classifications. Authored
-masterwork/material/+1 forms remain exact index targets. Eastern Weapons and
-Elven Branched Spear module state independently gates new creation.
+The intended workflow is mundane Martial/Exotic creation followed by CMI's
+ordinary **Arms and Armor** existing-item upgrade route. No custom family base
+was appended to Arms and Armor's from-scratch list. Runtime qualification proved
+owned canonical, authored generic, named unique, and 0.0.99-style CMI custom
+representatives across all four families remain indexed and upgradeable.
 
-### Ammunition
+### Internal enchantment tooltip presentation
 
-| Exact result | AssetGuid | Count | Unit value | Batch value | Progress target | Gold at scale 1.0 |
-|---|---|---:|---:|---:|---:|---:|
-| Black Powder Charge | `ea966bf998a647cf97b0ed92f71c4b7d` | 20 | 10 | 200 | 50 | 34 |
-| Lead Ball | `55c29771445947d685dba9e1ead46a42` | 20 | 1 | 20 | 5 | 4 |
-| Paper Cartridge | `fea7337cfd06417a853546af9d950f77` | 20 | 12 | 240 | 60 | 40 |
+Runtime enumeration confirmed the two `<null>` qualities on the representative
+loaded battered CMI-upgraded Pistol:
 
-Each recipe returns the existing plain `BlueprintItem`; none is forced into
-`NewItemBaseIDs` or an equipment wrapper. The output remains stackable and is
-the exact identity consumed by KMG reload/Paper mechanics. The UI observer
-proved both Crafting Takes No Time and normal timed-project paths without
-changing these already-authorized economics.
+| Role | AssetGuid | Internal name | Marker component |
+|---|---|---|---|
+| Battered origin | `2c01fc0e7f7c4f3bb8f493875cb489a0` | `KMG_BatteredFirearm_Origin` | `BatteredFirearmOriginComponent` |
+| Loaded state | `c11a8965dbdd43f08080f4dc51a29113` | `KMG_StateToken_LoadedNormal_LeadBall` | `FirearmStateTokenComponent` |
 
-### Named upgrade-only exclusions
+The same audit confirmed broken-empty (`5513972dd2624c9f86bc29c850dac736`)
+and wrecked (`877f65ca3a404f2e98af528b7fb1a2fb`) state variants use the same internal
+state-token marker. KMG patches only native `UIUtilityItem.FillWeaponQualities`
+and `UIUtilityItem.GetQualities` enumeration. The shared predicate hides an
+enchantment only when it contains one of those exact KMG marker component types.
+It does not suppress arbitrary null-named or third-party enchantments.
 
-These campaign uniques are indexed for upgrade when already owned and remain
-absent from every from-scratch creation array:
+The enchantments and components remain on the item. KMG's dedicated firearm
+condition presentation remains authoritative. Runtime tooltip data retained
+Anarchic, Enhancement +5, and Reliable while reporting zero `<null>` entries,
+zero phantom quality blocks, and no internal marker names.
+
+## Named upgrade-only inventory
+
+These campaign uniques remain recognized for upgrade when already owned and are
+absent from every from-scratch list:
 
 - Firearms: Duelist's Rebuttal, The River King's Measure, Irovetti's Ovation,
   The Last Word, Watch at the World's End.
@@ -210,55 +205,54 @@ absent from every from-scratch creation array:
 
 ## Reliable authority and applicability
 
-CMI receives one recipe for the existing KMG
-`BlueprintWeaponEnchantment` `ea10817126e14703878d00e84329244e`.
-No enchantment or misfire mechanic is cloned. Repository/tabletop authority
-supplies +1 equivalent, caster level 8, existing name/description, normal Craft
-Magic Arms and Armor feat behavior, and CMI's ordinary cost/index paths. The
-tabletop prerequisite is *mending*; Kingmaker 2.1.7b has no usable Mending
-blueprint, so the recipe deliberately has no prerequisite-spell blueprint
-rather than inventing one.
+CMI receives one recipe for the existing KMG `BlueprintWeaponEnchantment`
+`ea10817126e14703878d00e84329244e`. No enchantment or misfire mechanic is
+cloned. Repository/tabletop authority supplies +1 equivalent, caster level 8,
+existing name/description, normal Craft Magic Arms and Armor feat behavior, and
+CMI's ordinary cost/index paths. The tabletop prerequisite is *mending*;
+Kingmaker 2.1.7b has no usable Mending blueprint, so no substitute spell
+blueprint is invented.
 
-The final CMI `RecipeAppliesToBlueprint` boundary and custom-GUID creation
-boundary require a `BlueprintItemWeapon` whose actual weapon type has exactly
-one canonical `FirearmDefinitionComponent`. This accepts all five current
-firearms and CMI clones by marker, while rejecting bows, crossbows, all Eastern
-weapons, Elven Branched Spears, arbitrary weapons, and ambiguous duplicate
-markers. The recipe participates in every CMI recognition, replacement,
-removal, description, plus-equivalent, and pricing index. The real observer
-proved a +1/Reliable Pistol at plus-equivalent 2 and exact CMI rules cost 9,300.
+The final CMI recipe and custom-GUID boundaries require exactly one canonical
+`FirearmDefinitionComponent` on the actual weapon type. All five recognized
+firearms and CMI firearm clones pass. Bows, crossbows, Wakizashi, Katana,
+Nodachi, Elven Branched Spears, arbitrary weapons, and ambiguous duplicate
+markers fail. The real observer proved +1/Reliable equals plus 2 and exact CMI
+rules cost 9,300.
 
-## Custom blueprints, state, and module policy
+## Module, persistence, and mechanical policy
 
-The real CMI observer resolved ordinary +1 and +1/Reliable Pistol clones, a +1
-Katana clone, and a +1 Elven Branched Spear clone. Weapon type, exactly one
-firearm marker, proficiency, presentation, reload/capacity state, family
-category, finesse/reach/grip mechanics, and project-owned zero-cost policy
-enchantments remained intact as applicable. Each original base was unchanged.
-Owned firearm loaded/condition token identity transferred to the replacement
-item exactly once.
-
-New firearm/ammunition creation remains off when Gunslinger is off; Eastern and
-spear creation follow their own module gates; unpublished firearms remain
-excluded. Already-owned stable items retain the repository's existing policy.
-CMI installed but disabled keeps the bridge inactive.
+New firearm/ammunition creation remains off when Gunslinger is off. Eastern and
+Elven base additions independently follow their owning modules. Unpublished and
+unavailable content remains excluded. CMI installed but disabled keeps the
+bridge inactive. Already-owned stable items retain KMG's established policy.
 
 CMI remains the sole owner of generated-blueprint persistence. KMG adds no
-second persistence system. CMI-crafted KMG custom items may therefore require
-both mods to remain installed.
+second persistence format, so CMI-crafted KMG items may require both mods to
+remain installed.
 
-## Deterministic, build, and package qualification
+The guarded two-launch fixture used an exact CMI custom Pistol with Anarchic
+`57315bc1e1f62a741be0efde688087e9`, Enhancement +5
+`bdba267e951851449af552aa9f9e3992`, and Reliable. Before and after a fresh
+process/save load it retained exactly one firearm marker, one loaded-normal lead
+ball state token, one battered-origin token bound to the same owner, condition
+Normal, one loaded round, all three real enchantments, and zero null tooltip
+text. Cleanup removed exactly that fixture and saved the disposable working save
+clean. No base blueprint was mutated.
 
-The repaired source passed:
+## Deterministic, build, profile, and package qualification
+
+Commands run included:
 
 ```powershell
 python .\tools\validate_repository.py --root .
 .\scripts\test-domain.ps1 -Configuration Release
 .\scripts\Build-Local.ps1
+.\scripts\build.ps1 -Configuration Release -Clean -Package
 .\scripts\validate-build-output.ps1 -Configuration Release
 .\scripts\Validate-FirearmSoundBank.ps1
 .\scripts\validate-package.ps1 `
-  -PackagePath .\artifacts\packages\KingmakerGunslinger-0.0.99-craft-magic-items-ammunition-ui-repair.zip `
+  -PackagePath .\artifacts\packages\KingmakerGunslinger-0.0.100-craft-magic-items-post-human-refinement.zip `
   -Configuration Release
 .\scripts\Test-RuntimeScenarioPreflight.ps1
 .\scripts\compatibility\Test-KingmakerCompatibilityProfile.ps1
@@ -268,163 +262,125 @@ python .\tools\validate_repository.py --root .
 .\scripts\compatibility\Test-ExpandedSummoningCompatibilityProfiles.ps1
 ```
 
-Results: repository validation PASS; 1,241/1,241 complete domain/reflection
-tests PASS; 13/13 focused CMI cases PASS; clean exact-reference Release build
-PASS; build-output, firearm SoundBank, deterministic package, and strict
-standalone UMM validation PASS; runtime preflight 142/142 PASS; all 12 profile
-resolution fixtures PASS; all five Expanded Summoning compatibility profiles
-PASS; optional-mod reference and observer contracts PASS.
+Results: repository validation PASS; 1,243/1,243 complete domain/reflection
+tests PASS, including 15 focused CMI cases; clean exact-reference Release build
+PASS; build-output, SoundBank, deterministic package, and strict standalone UMM
+validation PASS; runtime preflight 143/143 PASS; all 12 compatibility-profile
+dry runs PASS; all five Expanded Summoning profile checks PASS; optional-mod
+reference inventory and observer contracts PASS.
 
-Focused cases cover absent CMI, accepted/rejected contract shapes, exact and
-ambiguous IL anchors, unchanged ordinary routing, exact-reference ownership,
-Layout/Repaint route transitions, deferred failure semantics and recursive
-exception logging, catalog/module state, Reliable, ammunition economics,
-custom graph integrity, load order/idempotence, and package isolation.
-
-| Runtime-qualified package field | Exact value |
+| Runtime-qualified artifact field | Exact value |
 |---|---|
-| Runtime-deployed source-state SHA-256 | `E045220F6BB9F2D172D56BE12D22FB9940677B659846400722F12BE6F36E434E` |
-| KMG DLL SHA-256 | `30FA3C5B93D5611BCC9E19E99859141ADB39E7D323A7A74B69C2F1031BD593A8` |
-| KMG DLL MVID / bytes | `de2cf811-b9b2-4a14-94f4-5cec51891e1b` / `4242944` |
-| Release/local-runtime package SHA-256 | `80875B5CDC7E18B188CC091C948EE82623B3069B8D86591A86ACA6D6101C1275` |
-| Package bytes | `22651866` |
+| Runtime-deployed source-state SHA-256 | `2B7C37AF91F18FD8C1A6066EE4DB4E3FE0CB6443D6ADFF5567BB122341CA6D0A` |
+| KMG DLL SHA-256 | `08DC2910EE1D5FC4E2775D33786B9D7612C7817409C65F1D5C0AD71D1D6E8669` |
+| KMG DLL MVID / bytes | `e3f72b04-ab83-4447-b281-005b30be2e46` / `4286976` |
+| Release/local-runtime package SHA-256 | `C8D98E0282AE8EFE310477C9194A43601AE6B10A2A9F9A913C7CEE741A83FA52` |
+| Package bytes | `22663146` |
 
-Package path:
-`artifacts/packages/KingmakerGunslinger-0.0.99-craft-magic-items-ammunition-ui-repair.zip`.
-The package contains no CMI DLL/source/Data/L10n/Icons, game or Unity
-assemblies, saves, raw runtime evidence, credentials, or machine-local config.
+The final clean deterministic rebuild was byte-identical to the package and DLL
+used by every 0.0.100 runtime observer listed below.
+
+Final package path:
+`artifacts/packages/KingmakerGunslinger-0.0.100-craft-magic-items-post-human-refinement.zip`.
+It contains no CMI DLL/source/Data/L10n/Icons, Kingmaker or Unity assemblies,
+saves, raw runtime evidence, credentials, or machine-local configuration.
 
 ## Guarded runtime qualification
 
-All launches used the guarded request mechanism and Steam App ID 640820. No
-Computer Use, OCR, screenshots, mouse-coordinate automation, or direct
-`Kingmaker.exe` launch supplied mechanical evidence.
+Every launch used the repository guard and Steam App ID 640820. No direct game
+executable launch, Computer Use, OCR, screenshots, or coordinate input supplied
+mechanical evidence.
 
-### Focused ammunition UI observer — PASS 12/12
+### Real CMI graph/refinement observer — PASS 27/27
 
-Command:
+- Evidence: `runtime-evidence/20260825T1410209452802Z-observe-craft-magic-items-compatibility`
+- Run ID: `20260825T1410209704928Z-3ab6b7739b83433d8d19ede3f2d4964b`
+- Live CMI 2.1.0 was loaded, active, and capability-compatible.
+- Generation 1 and forced generation 2 each reported
+  `itemTypes=3;firearmCreation=3;firearmRecognition=5;martial=1;exotic=3;
+  customMagicTypes=0;customRecognition=4;ordinaryRecipes=46;reliable=1;
+  ammunition=3`.
+- It proved advanced firearms recognition-only, zero named creation bases, all
+  four custom families through Arms and Armor, target/gold/migration policy,
+  Reliable identity/applicability/price, custom clone integrity, state transfer,
+  tooltip suppression, base immutability, and complete rebuild idempotence.
 
-```powershell
-.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
-  -Scenario observe-craft-magic-items-ammunition-ui `
-  -ExpectedVersion 0.0.99 `
-  -TimeoutSeconds 240 `
-  -ExitAfterCompletion:$true `
-  -Confirm:$false `
-  -AllowDirtyGit
-```
+### Actual ammunition UI observer — PASS 13/13
 
-- Evidence directory:
-  `runtime-evidence/20260825T0430374441447Z-observe-craft-magic-items-ammunition-ui`
-- Run ID:
-  `20260825T0430374625241Z-bc2c674153aa42a2a06299923d2f9091`
-- Patched target: `CraftMagicItems.Main.RenderCraftMundaneItemsSection`;
-  transpiler applications `1`; outer selector owner `CraftMagicItems`.
-- Routes: ordinary `4`; ammunition ordinary-body bypass `22`; lower panel
-  renders `22`; events `Layout,repaint`; zero GUI failures, UI failures, or
-  rollbacks.
-- All three exact result GUIDs remained selectable. Invalid crafter and zero
-  funds completed balanced Layout/Repaint routes without throwing.
-- Immediate crafts created 20 exact units and spent 34/4/40 gold. Timed Paper
-  crafting created target 60 / gold 40 / result count 20, completed through
-  CMI's normal project lifecycle, and restored state exactly.
-- KMG loose reload consumed crafted powder and ball; Paper mode consumed the
-  exact crafted cartridge. Inventory/money cleanup was exact.
-- Before/after graph remained
-  `generation=1;itemTypes=4;firearmBases=5;customWeaponBases=4;
-  ordinaryWeaponRecipes=46;reliableRecipes=1;ammunitionRecipes=3`.
+- Evidence: `runtime-evidence/20260825T1412357504949Z-observe-craft-magic-items-ammunition-ui`
+- Run ID: `20260825T1412357754594Z-2f8b8263235048aeb358355328361396`
+- Transpiler applications `1`; exact seam as recorded above; outer owner CMI.
+- Ordinary routes `4`; ammunition body bypasses/lower renders `24/24`; events
+  `Layout,repaint`; zero GUI failures, UI failures, or rollbacks.
+- All recipes were selectable. Immediate paths spent 34/4/40 and produced 20
+  exact units. A normal Paper Cartridge project used target 5 and completed via
+  CMI. A powder cancellation refunded exact `GoldSpent` and created no result.
+- Crafted powder/ball were consumed by loose reload and the exact cartridge by
+  Paper mode. Request-local inventory and money cleanup was exact.
 
-This is mechanical evidence from the actual patched CMI renderer hosted under
-Unity `OnGUI`; it is not a claim about visual presentation.
+### Two-launch custom-firearm persistence — PASS 6/6 + 6/6
 
-### Real CMI graph observer — PASS 23/23
+- Prepare evidence: `runtime-evidence/20260825T1404297559483Z-working-save-craft-magic-items-prepare`
+- Prepare run ID: `20260825T1404297828378Z-bf9ac5cfeabe443a9f62ad48dfb7591c`
+- Verify/cleanup evidence: `runtime-evidence/20260825T1406592978062Z-working-save-craft-magic-items-verify-cleanup`
+- Verify run ID: `20260825T1406592978062Z-ab48f8c916b44a12bc7cfc71366facd7`
+- Prepare observed `before=0;observed=1;after=1`; fresh-load cleanup observed
+  `before=1;observed=1;after=0` for the exact custom GUID.
+- Each launch authorized one exact captured `SaveRoutine`, observed two native
+  numbered working-save `SaveStashedArea` clones, and rejected no write.
 
-Command:
-
-```powershell
-.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
-  -Scenario observe-craft-magic-items-compatibility `
-  -ExpectedVersion 0.0.99 `
-  -TimeoutSeconds 240 `
-  -ExitAfterCompletion:$true `
-  -Confirm:$false `
-  -AllowDirtyGit
-```
-
-- Evidence directory:
-  `runtime-evidence/20260825T0433473521309Z-observe-craft-magic-items-compatibility`
-- Run ID:
-  `20260825T0433473724454Z-d7415250d8a041eebca7a65e33d54352`
-- Live CMI `2.1.0` entry was loaded, active, and contract-compatible.
-- Generation 1 and forced generation 2 each contained exactly four item types,
-  five firearm bases, four custom-family bases, 46 ordinary recipes, one
-  Reliable recipe, three ammunition recipes, and zero named creation bases.
-- Exact category placement, indexes, Reliable authority/applicability/cost,
-  representative clones, base immutability, owned-state transfer, and complete
-  rebuild idempotence passed.
+An earlier cleanup-only PASS (`20260825T1401357448503Z-f915056098604cd1b7089f88e3c894fe`)
+removed the fixture left by the initial sentinel-development run. That run had
+correctly saved the item but rejected Kingmaker's new numbered native save clone;
+the guard was narrowed to the exact `Manual_<digits>_KMG_AUTOMATION_WORKING.zks`
+identity while still requiring the one armed exact-reference `SaveRoutine`.
 
 ### Canonical working-save smoke — PASS 11/11
 
-Command:
+- Evidence: `runtime-evidence/20260825T1414437489624Z-working-save-smoke`
+- Run ID: `20260825T1414437755365Z-42963c31170848c9848c4a9898688247`
+- Complete catalog count 111; unique working/baseline descriptors; exact ordered
+  receiver-bound action, load callback, and stable three-party fingerprint;
+  loaded KMG 0.0.100; no save-writing API.
 
-```powershell
-.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
-  -Scenario working-save-smoke `
-  -ExpectedVersion 0.0.99 `
-  -SaveName KMG_AUTOMATION_WORKING `
-  -ExitAfterCompletion:$true `
-  -Confirm:$false `
-  -AllowDirtyGit
-```
+## Mandatory human acceptance checklist for 0.0.100
 
-- Evidence directory:
-  `runtime-evidence/20260825T0436539145682Z-working-save-smoke`
-- Run ID:
-  `20260825T0436539425049Z-4c42f59e054f4bf98e5381056bfe9d6f`
-- Complete catalog count `111`; unique working and baseline descriptors;
-  exact receiver/descriptor correlation and ordered slot/window/load/callback/
-  fingerprint sequence; loaded KMG `0.0.99`; stable three-party fingerprint;
-  no save-writing API; status PASS.
+Use this candidate and a fresh UMM output log. Perform all steps in one fresh
+process:
 
-Failed development runs remain rejected evidence. They exposed the lowercase
-Unity `repaint` spelling, a request-harness phase boundary, the lazy label
-control mismatch, an unskilled disposable crafter that made external CMI
-progress/day zero, and two request-local Pistols returned to inventory during
-observer cleanup. Each was fixed and rerun; only the three PASS runs above are
-qualification claims.
+1. Confirm CMI reports KMG 0.0.100.
+2. Open **Craft Mundane Items**.
+3. Confirm **Firearms** offers exactly Pistol, Musket, and Blunderbuss.
+4. Confirm Advanced Rifle and Advanced Revolver are absent.
+5. Confirm Nodachi appears under Martial Weapons.
+6. Confirm Wakizashi, Katana, and Elven Branched Spear appear under Exotic Weapons.
+7. Confirm no separate **Eastern and Elven Weapons** magic category exists.
+8. Craft one 20-unit batch of each ammunition item.
+9. Confirm each project estimate is approximately one safe crafting day with the same crafter/settings.
+10. Confirm prices remain 34, 4, and 40 gold at price scale 1.0.
+11. Confirm Work in Progress reports target/progress consistently.
+12. Enchant one owned Eastern or Elven weapon through Arms and Armor.
+13. Inspect a newly crafted magical Pistol.
+14. Inspect an upgraded battered starter Pistol while loaded.
+15. Confirm Anarchic, Enhancement +5, and Reliable text remains.
+16. Confirm no `<null>` text or phantom blank qualities appear.
+17. Save, exit, reload, and inspect the representative items again using only an authorized disposable save.
+18. Confirm firearm state and battered-origin behavior remain intact.
+19. Confirm no CMI GUI rendering error.
+20. Confirm no KMG bridge fault, layout mismatch, or graph rollback.
 
-## Mandatory human checklist for 0.0.99
-
-Perform all steps in one fresh process:
-
-1. Open Craft Magic Items -> Craft Mundane Items.
-2. Begin on an ordinary category.
-3. Click Firearm Ammunition.
-4. Verify the category stays visible.
-5. Select Black Powder Charge.
-6. Select Lead Ball.
-7. Select Paper Cartridge.
-8. Switch back to an ordinary category.
-9. Switch to Firearm Ammunition again.
-10. Close and reopen the UMM window.
-11. Switch to another mod tab and return.
-12. Craft one 20-unit batch of each item.
-13. Confirm money/count/project behavior.
-14. Confirm no KMG `bridge.incompatible` line.
-15. Confirm no CMI `Error rendering GUI` line.
-16. Confirm no `GUILayout`, `LayoutGroup`, `SelectionGrid`, or `GUIClip` error.
-17. Save and reload only through an authorized disposable-save procedure.
-
-Human acceptance status: **pending**. The first human UI test rejected 0.0.98;
-no human has yet accepted the repaired 0.0.99 interface.
+Human acceptance status: **pending**. The 0.0.99 first interaction established
+that the repaired ammunition category stayed available and crafting worked; no
+human has yet accepted the 0.0.100 timing, acquisition, category, tooltip, and
+fresh-process save/reload refinements.
 
 ## Remaining uncertainty
 
-The structured observer proves the actual patched renderer route and craft
-mechanics, but not visual layout, legibility, or a person's complete UMM
-interaction. The checklist above remains required. Save/reload of a
-player-crafted CMI/KMG item also remains a human acceptance item. No official
-downloaded CMI 2.1.0 binary was available; compatibility is claimed only for
-the exact installed authority above and compatible capability shapes. A changed
-shape fails closed. The runs used the installed mod stack, including Call of
-the Wild, but were not a separately restored profile-isolation runtime test.
+Structured runtime evidence proves the actual patched renderer route, project
+data, inventory identities, native tooltip data, and a guarded fresh-process
+save/reload. It does not prove visual spacing, legibility, perceived estimates,
+or the complete human UMM workflow. The checklist above remains required. No
+official downloaded CMI 2.1.0 binary was available; support is qualified for the
+exact installed authority above and compatible capability shapes. A changed
+shape fails closed. CMI-crafted KMG custom items retain CMI's ordinary
+both-mods-required persistence limitation.
