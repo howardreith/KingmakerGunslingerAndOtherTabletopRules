@@ -17,6 +17,7 @@ DETERMINISTIC_TEST_COUNT = 1243
 STATIC_KEY = "craftMagicItems100"
 FOCUSED_TEST_COUNT = 15
 PACKAGE_SUFFIX = "craft-magic-items-post-human-refinement"
+HUMAN_ACCEPTANCE_PENDING = True
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
@@ -158,8 +159,9 @@ def validate(root: Path) -> None:
                 "Completed refinement lacks exact guarded runtime evidence")
     else:
         raise AssertionError("Refinement runtime qualification state is missing")
-    if state.get("humanAcceptancePending") is not True:
-        raise AssertionError("CMI refinement must not claim unperformed human acceptance")
+    if state.get("humanAcceptancePending") is not HUMAN_ACCEPTANCE_PENDING:
+        raise AssertionError(
+            "CMI refinement human-acceptance state does not match the version contract")
 
 
 def main() -> int:

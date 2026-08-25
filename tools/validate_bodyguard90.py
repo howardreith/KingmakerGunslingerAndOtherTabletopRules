@@ -130,7 +130,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("craft-magic-items-post-human-refinement"
+    package_suffix = ("craft-magic-items-compatibility"
+        if VERSION == "0.0.101" else "craft-magic-items-post-human-refinement"
         if VERSION == "0.0.100" else "craft-magic-items-ammunition-ui-repair"
         if VERSION == "0.0.99" else "craft-magic-items-compatibility"
         if VERSION == "0.0.98" else "compatibility-attribution-audit"

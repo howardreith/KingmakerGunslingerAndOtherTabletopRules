@@ -1,6 +1,6 @@
 # Kingmaker Gunslinger
 
-Version `0.0.100` refines the optional Craft Magic Items 2.1.0 integration
+Version `0.0.101` releases the owner-accepted optional Craft Magic Items 2.1.0 integration
 without linking or packaging `CraftMagicItems.dll`. The qualified 0.0.99 inner
 ammunition UI seam remains: CMI owns its complete top-level mundane selector on
 every IMGUI event, while KMG intercepts only the exact finalized Firearm

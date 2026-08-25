@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.101-craft-magic-items-compatibility
+
+- Promotes the owner-accepted 0.0.100 Craft Magic Items candidate to a public
+  release without changing its qualified gameplay, crafting, persistence,
+  optional-dependency, or IMGUI architecture.
+- Retains exact 20-unit ammunition batches with target 5 and scale-1.0 prices
+  34/4/40 gp; exactly three firearm creation bases and five recognition
+  identities; ordinary Martial/Exotic then Arms and Armor workflow; and exact
+  marker-only tooltip suppression.
+- Records final human acceptance and advances all active version, runtime,
+  package, validation, and publication contracts to 0.0.101.
+
 ## 0.0.100-craft-magic-items-post-human-refinement
 
 - Preserves the human-tested 0.0.99 inner ammunition UI interception while

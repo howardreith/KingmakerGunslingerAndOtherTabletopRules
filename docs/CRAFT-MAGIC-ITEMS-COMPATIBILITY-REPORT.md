@@ -2,9 +2,10 @@
 
 ## Result
 
-Kingmaker Gunslinger (KMG) 0.0.100 is the post-human-test Craft Magic Items
-(CMI) refinement candidate. It preserves the 0.0.99 ammunition renderer repair
-and addresses the four findings from that candidate's first human interaction:
+Kingmaker Gunslinger (KMG) 0.0.101 is the released Craft Magic Items (CMI)
+compatibility build promoted from the owner-accepted 0.0.100 refinement. It
+preserves the 0.0.99 ammunition renderer repair and addresses the four findings
+from that candidate's first human interaction:
 
 - all exact 20-unit KMG ammunition projects now use timed target 5 without
   changing price or item value;
@@ -23,8 +24,10 @@ rejected for its Unity IMGUI control-tree failure.
 The 0.0.100 candidate passed 1,243/1,243 deterministic tests, all source/build/
 package gates, a 27/27 real-CMI graph observer, a 13/13 actual ammunition UI
 route observer, a two-launch 6/6 + 6/6 save/reload/cleanup qualification, and the
-canonical 11/11 working-save smoke. Human visual and interaction acceptance of
-0.0.100 remains pending and is not claimed.
+canonical 11/11 working-save smoke. The repository owner then explicitly
+accepted the installed 0.0.100 candidate on 2026-08-25 and authorized
+finalization, merge, publication, and an incremented release. Version 0.0.101
+is the metadata-promoted release and repeats the automated gates below.
 
 ## Baseline and external authority
 
@@ -36,7 +39,8 @@ canonical 11/11 working-save smoke. Human visual and interaction acceptance of
 | Working branch | `codex/craft-magic-items-compatibility` |
 | Rejected release | `0.0.98-craft-magic-items-compatibility` |
 | First crash-repair candidate | `0.0.99-craft-magic-items-ammunition-ui-repair` |
-| Current candidate | `0.0.100-craft-magic-items-post-human-refinement` |
+| Accepted candidate | `0.0.100-craft-magic-items-post-human-refinement` |
+| Current release | `0.0.101-craft-magic-items-compatibility` |
 | CMI UMM ID / entry type / Info version | `CraftMagicItems` / `CraftMagicItems.Main` / `2.1.0` |
 | Explanatory source | `bfennema/OwlcatKingmakerModCraftMagicItems` commit `72f87523d0a116f5dfc92c91893d4955fa1eb303` |
 | Installed assembly authority | exact unchanged upstream source-built `CraftMagicItems.dll`; not an official downloaded release binary |
@@ -343,12 +347,60 @@ identity while still requiring the one armed exact-reference `SaveRoutine`.
   receiver-bound action, load callback, and stable three-party fingerprint;
   loaded KMG 0.0.100; no save-writing API.
 
-## Mandatory human acceptance checklist for 0.0.100
+## 0.0.101 release-promotion qualification
 
-Use this candidate and a fresh UMM output log. Perform all steps in one fresh
-process:
+The metadata-promoted 0.0.101 source state repeated every release-critical
+mechanical check before its release commit. The guarded reusable-artifact
+identity was
+`sourceState=a099311ac5f2af4d65971837aedd140ddd12ecb3e48ecb4dda402f6d46948ea5`;
+its pre-commit Git base was `02f717dc3dd14243387581e4e9b6f45e0d01ec7f`.
+The standalone and local-runtime ZIPs were byte-identical.
 
-1. Confirm CMI reports KMG 0.0.100.
+| 0.0.101 promotion artifact field | Exact value |
+|---|---|
+| Package | `artifacts/packages/KingmakerGunslinger-0.0.101-craft-magic-items-compatibility.zip` |
+| Package SHA-256 / bytes | `950F393B51DBDA313D2185D43F651FCF2B07FDCCAE4107D2CE206F2D8D03E756` / `22663364` |
+| DLL SHA-256 / bytes | `C576C53B9D9195EB5A1FDC267DBE09A973AAC9CA42D3472C7E2BA11966D4548E` / `4286976` |
+| DLL MVID | `7b6b215a-d530-45f4-89b6-d82b4e92b9bd` |
+
+- Repository validation and all 1,243 domain/reflection tests passed, including
+  all 15 focused CMI cases. Clean Release compilation, build-output,
+  SoundBank, deterministic package, and strict standalone package validation
+  passed. Runtime preflight passed 143/143; all 12 compatibility-profile dry
+  runs and all five Expanded Summoning profile checks passed.
+- Real CMI graph/refinement observer: PASS 27/27; evidence
+  `runtime-evidence/20260825T1558087916302Z-observe-craft-magic-items-compatibility`;
+  run ID `20260825T1558088217294Z-bd05754a23fc4f05adefb9f21a66422b`.
+- Actual ammunition UI observer: PASS 13/13; evidence
+  `runtime-evidence/20260825T1600409567792Z-observe-craft-magic-items-ammunition-ui`;
+  run ID `20260825T1600409869241Z-79c2787125c64dbfa341c4fc953b494d`.
+  It retained one transpiler application, the exact inner seam, CMI outer
+  ownership, Layout/Repaint route stability, 24/24 lower-panel renders, zero
+  GUI faults, and zero rollbacks.
+- Two-launch CMI persistence: PASS 6/6 prepare plus 6/6 verify/cleanup; evidence
+  `runtime-evidence/20260825T1602570715700Z-working-save-craft-magic-items-prepare`
+  and
+  `runtime-evidence/20260825T1605292417607Z-working-save-craft-magic-items-verify-cleanup`;
+  run IDs `20260825T1602570995398Z-51520668bfd24971bebf7c6ed15acef8`
+  and `20260825T1605292417607Z-915e55444b314104ba3784c71a5765a5`.
+  The exact fixture persisted across a fresh process and cleanup left the
+  disposable save with zero fixtures.
+- Canonical working-save smoke: PASS 11/11; evidence
+  `runtime-evidence/20260825T1608057120336Z-working-save-smoke`; run ID
+  `20260825T1608057420923Z-4aa684664b6342a8b58803cd0803829a`.
+
+All real launches used the guarded mechanism and Steam App ID 640820. The
+release publisher performs two further clean deterministic builds from the
+final release commit and records the final public hashes in
+`release-manifest.json` and `SHA256SUMS.txt`.
+
+## Completed human acceptance and 0.0.101 regression checklist
+
+The accepted 0.0.100 checklist is retained as the post-install regression
+checklist for 0.0.101. Perform all steps in one fresh process and retain a fresh
+UMM output log:
+
+1. Confirm CMI reports KMG 0.0.101.
 2. Open **Craft Mundane Items**.
 3. Confirm **Firearms** offers exactly Pistol, Musket, and Blunderbuss.
 4. Confirm Advanced Rifle and Advanced Revolver are absent.
@@ -369,18 +421,20 @@ process:
 19. Confirm no CMI GUI rendering error.
 20. Confirm no KMG bridge fault, layout mismatch, or graph rollback.
 
-Human acceptance status: **pending**. The 0.0.99 first interaction established
-that the repaired ammunition category stayed available and crafting worked; no
-human has yet accepted the 0.0.100 timing, acquisition, category, tooltip, and
-fresh-process save/reload refinements.
+Human acceptance status: **accepted**. The repository owner explicitly accepted the installed 0.0.100 candidate
+on 2026-08-25 and directed its
+finalization, merge, push, and publication under an incremented version. The
+0.0.101 promotion changes release/version metadata, not the accepted gameplay
+or UI architecture.
 
 ## Remaining uncertainty
 
 Structured runtime evidence proves the actual patched renderer route, project
 data, inventory identities, native tooltip data, and a guarded fresh-process
-save/reload. It does not prove visual spacing, legibility, perceived estimates,
-or the complete human UMM workflow. The checklist above remains required. No
-official downloaded CMI 2.1.0 binary was available; support is qualified for the
-exact installed authority above and compatible capability shapes. A changed
-shape fails closed. CMI-crafted KMG custom items retain CMI's ordinary
-both-mods-required persistence limitation.
+save/reload. Human acceptance supplies the distinct visual/interaction
+evidence for the accepted 0.0.100 behavior; the checklist remains useful for
+installation-specific regression review. No official downloaded CMI 2.1.0
+binary was available; support is qualified for the exact installed authority
+above and compatible capability shapes. A changed shape fails closed.
+CMI-crafted KMG custom items retain CMI's ordinary both-mods-required
+persistence limitation.

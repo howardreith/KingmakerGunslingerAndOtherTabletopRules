@@ -31,12 +31,12 @@ transient action debt; it does not alter either feat or automation mode.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.100-craft-magic-items-post-human-refinement.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.101-craft-magic-items-compatibility.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.100 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.101 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -215,7 +215,7 @@ by itself prove campaign or cross-mod compatibility.
 ## Optional Craft Magic Items integration
 
 When the Unity Mod Manager entry with ID `CraftMagicItems` is installed and
-active, Gunslinger 0.0.100 probes `CraftMagicItems.Main` and enables the bridge
+active, Gunslinger 0.0.101 probes `CraftMagicItems.Main` and enables the bridge
 only if the required 2.1.0 data-loading, recipe, indexing, crafting, and Harmony
 surfaces match. There is no required assembly reference: Gunslinger continues
 normally when CMI is absent or disabled, and an incompatible external contract
@@ -230,7 +230,8 @@ Repaint use KMG's renderer while a category selection changed, producing a
 `SelectionGrid` control-count exception and unbalanced GUILayout/GUIClip
 state. Version 0.0.99 removed that prefix and passed its first human ammunition
 UI interaction test: the category remained visible and crafting worked.
-Version 0.0.100 preserves that architecture. CMI always owns its top-level
+Version 0.0.100 preserved that architecture through final human acceptance;
+the released 0.0.101 behavior is unchanged. CMI always owns its top-level
 Mundane Crafting and parent/subtype selectors; the bridge branches only after
 CMI has finalized the exact selected data and immediately before its ordinary
 equipment-only `NewItemBaseIDs` path. The ammunition panel returns to CMI's
@@ -307,9 +308,9 @@ containing a CMI-crafted Gunslinger item may require both mods to remain
 installed. Back up the save before crafting, upgrading, removing either mod, or
 changing module state.
 
-Human CMI UI acceptance checklist for one fresh process:
+CMI UI release-regression checklist for one fresh process:
 
-1. Confirm CMI reports Kingmaker Gunslinger 0.0.100.
+1. Confirm CMI reports Kingmaker Gunslinger 0.0.101.
 2. Open Craft Mundane Items.
 3. Confirm Firearms offers exactly Pistol, Musket, and Blunderbuss.
 4. Confirm Advanced Rifle and Advanced Revolver are absent.
@@ -332,12 +333,15 @@ Human CMI UI acceptance checklist for one fresh process:
 19. Confirm no CMI GUI rendering error.
 20. Confirm no KMG bridge fault, layout mismatch, or graph rollback.
 
-Retain the fresh UMM output log from this candidate. Automated evidence does
-not replace this final visual and interaction acceptance.
+The repository owner completed and explicitly accepted the installed 0.0.100
+candidate before authorizing the metadata-only 0.0.101 promotion. Retain a
+fresh UMM output log when repeating this checklist after installation;
+automated evidence does not replace visual and interaction review.
 
 The guarded mechanical qualification is recorded in
-`docs/CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md`. Visual category placement and
-the checklist above require human evidence and are not inferred from logs.
+`docs/CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md`. The original acceptance is
+human evidence; future regression results must likewise not be inferred from
+mechanical logs alone.
 # Custom firearm SoundBank
 
 The release audio asset is copied only to
