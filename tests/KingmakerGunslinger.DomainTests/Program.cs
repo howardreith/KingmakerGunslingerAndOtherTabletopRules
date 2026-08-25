@@ -288,6 +288,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("acadamae.invocation-correlation", AcadamaeCordPolicyTests.AcadamaeInvocationCorrelation),
             Case("acadamae.mode-fatigue-source-contracts", AcadamaeCordPolicyTests.AcadamaeModeAndFatigueSourceContracts),
             Case("acadamae.mode-identity-contracts", AcadamaeCordPolicyTests.AcadamaeModeIdentityContracts),
+            Case("mission.acadamae-effective-mode-matrix", MissionRegressionTests.AcadamaeEffectiveModeMatrix),
+            Case("mission.acadamae-tracker-clears-stale-command", MissionRegressionTests.AcadamaeTrackerClearsStaleActiveCommand),
             Case("cord.project-icon-contract", AcadamaeCordPolicyTests.CordProjectIconContract),
             Case("cord.campaign-acquisition", AcadamaeCordPolicyTests.CordCampaignAcquisitionContract),
             Case("cord.fatigue-and-exhaustion", AcadamaeCordPolicyTests.CordFatigueAndExhaustion),
@@ -315,6 +317,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("vendors.oleg-maintenance-stock", PaperCartridgeFoundationTests.OlegMaintenanceStockContract),
             Case("vendors.bokken-acquisition-forensics", PaperCartridgeFoundationTests.BokkenAcquisitionForensicsContract),
             Case("vendors.bokken-ammunition-stock", PaperCartridgeFoundationTests.BokkenAmmunitionStockContract),
+            Case("mission.vendor-six-row-transaction", MissionRegressionTests.VendorSixRowsPreserveOrderAndRollback),
             Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
             Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
             Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),
@@ -337,6 +340,11 @@ namespace KingmakerGunslinger.DomainTests
             Case("weapon-visual-audit.variant-vocabulary", WeaponVisualMappingAuditTests.VariantVocabularyIsBoundedAndFamilySafe),
             Case("archetype-starter.precedence", ArchetypeFoundationTests.StartingFirearmPrecedence),
             Case("archetype-starter.exact-kind", ArchetypeFoundationTests.StartingFirearmExactKind),
+            Case("mission.starter-transition-matrix", MissionRegressionTests.StarterTransitionMatrix),
+            Case("mission.starter-durable-receipt", MissionRegressionTests.StarterReceiptSurvivesItemAbsence),
+            Case("mission.combat-log-publication", MissionRegressionTests.CombatLogPublicationAndFailureIsolation),
+            Case("mission.combat-log-player-facing", MissionRegressionTests.CombatLogMessagesArePlayerFacing),
+            Case("mission.combat-log-no-warning-overlay", MissionRegressionTests.ProductionAvoidsWarningOverlay),
             Case("archetype-training.thresholds-and-families", ArchetypeFoundationTests.TrainingThresholdsAndFamilies),
             Case("archetype-training.overlap-and-negative-dex", ArchetypeFoundationTests.TrainingOverlapAndNegativeDexterity),
             Case("archetype-reload.fast-musket-matrix", ArchetypeFoundationTests.FastMusketReloadMatrix),
@@ -1628,9 +1636,10 @@ namespace KingmakerGunslinger.DomainTests
             string overhaul = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs");
             Assertions.True(combatLog.Contains(
-                    "EventBus.RaiseEvent<IWarningNotificationUIHandler>") &&
-                combatLog.Contains("handler.HandleWarning(message, false)") &&
-                combatLog.Contains("condition: {1} -> {2} ({3}).") &&
+                    "NativeCombatLog.Publish(\"firearm\"") &&
+                !combatLog.Contains("IWarningNotificationUIHandler") &&
+                !combatLog.Contains("HandleWarning") &&
+                combatLog.Contains("{0}: {1} ({2}).") &&
                 misfire.Contains("FirearmConditionCombatLog.Publish") &&
                 deadShot.Contains("FirearmConditionCombatLog.Publish") &&
                 scatter.Contains("FirearmConditionCombatLog.Publish") &&
@@ -8193,7 +8202,6 @@ namespace KingmakerGunslinger.DomainTests
                 20d * FirearmArmorClassService.MetersPerFoot, 20d, true,
                 "touch-ac-first-range-increment");
             Assertions.True(log.Contains("20 ft.") &&
-                log.Contains("penetration range 20 ft.") &&
                 log.Contains("Touch AC"),
                 "Player-facing firearm AC resolution message is incomplete.");
         }

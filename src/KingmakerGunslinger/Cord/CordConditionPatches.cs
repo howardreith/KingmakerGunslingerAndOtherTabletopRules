@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Harmony12;
-using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
@@ -14,6 +13,7 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Diagnostics;
 
 namespace KingmakerGunslinger.Cord
 {
@@ -178,22 +178,12 @@ namespace KingmakerGunslinger.Cord
             string source = condition == UnitCondition.Exhausted ? "exhaustion" :
                 "fatigue";
             string message = string.Format(CultureInfo.InvariantCulture,
-                "Cord of Stubborn Resolve converts {0} into {1} nonlethal-equivalent damage{2}.",
+                "Cord of Stubborn Resolve: {0} becomes {1} nonlethal damage{2}.",
                 source, damage, damage == 0 ? " (1 HP floor)" : string.Empty);
-            try
-            {
-                EventBus.RaiseEvent<IWarningNotificationUIHandler>(
-                    handler => handler.HandleWarning(message, false));
+            if (NativeCombatLog.Publish("cord", "substitution-log.failed",
+                    message,
+                    "Cord substitution committed, but its native combat-log entry failed."))
                 Interlocked.Increment(ref _publishedLogs);
-            }
-            catch (Exception exception)
-            {
-                ModContext context;
-                if (ModContext.TryGet(out context))
-                    context.Logger.Failure("cord", "substitution-log.failed",
-                        "Cord substitution committed, but its player-facing notification failed.",
-                        exception);
-            }
         }
     }
 

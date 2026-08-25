@@ -276,7 +276,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             float swiftBefore = protector.CombatState.Cooldown.SwiftAction;
             int victimBefore = victim.HPLeft;
             int protectorBefore = protector.HPLeft;
-            long logBefore = BodyguardCombatLog.Published;
+            long logBefore = BodyguardCombatLog.Attempts;
             RuleAttackWithWeapon attack = null;
             string control;
             if (confirmation.HasValue)
@@ -340,7 +340,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BodyguardRuntimeDiagnostics.DuplicateCallbacks +
                     ";completed=" + BodyguardRuntimeDiagnostics.Completed,
                 Observations = observations,
-                CombatLogLast = BodyguardCombatLog.Published == logBefore ?
+                CombatLogLast = BodyguardCombatLog.Attempts == logBefore ?
                     string.Empty : BodyguardCombatLog.LastMessage ?? string.Empty
             };
         }

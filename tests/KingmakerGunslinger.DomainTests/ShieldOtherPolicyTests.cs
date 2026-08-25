@@ -296,14 +296,14 @@ namespace KingmakerGunslinger.DomainTests
                 "close range constrains initial targeting only",
                 "rangePreserved && rangedSubject == 1 && rangedCaster == 1",
                 "shield-other-transfer-log", "\"13 entries\"",
-                "ShieldOtherCombatLog.Published == logsBefore + 13",
+                "ShieldOtherCombatLog.Attempts == logsBefore + 13",
                 "caster-death-termination",
                 "shield-other-caster-death-termination" })
                 Assertions.True(runner.Contains(token),
                     "Runtime Shield Other observer contract is missing: " + token);
             foreach (string stale in new[] { "shield-other-range-termination",
                 "caster-level close range round revalidation",
-                "ShieldOtherCombatLog.Published == logsBefore + 12" })
+                "ShieldOtherCombatLog.Attempts == logsBefore + 12" })
                 Assertions.False(runner.Contains(stale),
                     "Stale post-cast distance termination remains in the runtime contract: " +
                     stale);

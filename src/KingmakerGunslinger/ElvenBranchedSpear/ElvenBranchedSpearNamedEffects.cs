@@ -20,6 +20,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
+using KingmakerGunslinger.Diagnostics;
 
 namespace KingmakerGunslinger.ElvenBranchedSpear
 {
@@ -397,21 +398,13 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         internal static bool Publish(string target, int dc, int roll, bool passed)
         {
             string message = string.Format(CultureInfo.InvariantCulture,
-                "First Branch's Reprisal: {0} rolls Fortitude {1} against DC {2} and {3} ({4}).",
-                string.IsNullOrWhiteSpace(target) ? "target" : target, roll, dc,
-                passed ? "succeeds" : "fails",
-                passed ? "speed reduced for 1 round" :
-                    "Entangled for 1 round");
-            try
-            {
-                EventBus.RaiseEvent<IWarningNotificationUIHandler>(
-                    handler => handler.HandleWarning(message, false));
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+                "First Branch's Reprisal: {0} Fortitude {1} vs DC {2} - {3}; {4}.",
+                string.IsNullOrWhiteSpace(target) ? "target" : target.Trim(),
+                roll, dc, passed ? "success" : "failed",
+                passed ? "speed reduced" : "Entangled");
+            return NativeCombatLog.Publish("elven-branched-spear",
+                "first-branch-log.failed", message,
+                "First Branch's Reprisal resolved, but its native combat-log entry failed.");
         }
     }
 }

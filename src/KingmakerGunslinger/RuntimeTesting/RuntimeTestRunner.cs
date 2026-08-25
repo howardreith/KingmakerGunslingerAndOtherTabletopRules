@@ -55,6 +55,7 @@ using KingmakerGunslinger.BrownFur;
 using KingmakerGunslinger.FeatureModules;
 using KingmakerGunslinger.UrbanBarbarian;
 using KingmakerGunslinger.CraftMagicItemsCompatibility;
+using KingmakerGunslinger.Diagnostics;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -368,6 +369,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 commit.Invoke(Controller, null);
                 Controller = null;
             }
+        }
+
+        private sealed class MulticlassStarterCaseResult
+        {
+            internal bool Passed;
+            internal string Observed;
         }
 
         private RuntimeTestRunner(RuntimeTestRequest request, ModContext context)
@@ -7223,7 +7230,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 repairCompletion = false, cleaned = false;
             int staticBefore = -1, staticAfterOverhaul = -1,
                 staticAfterRepair = -1;
-            long conditionLogsBefore = FirearmConditionCombatLog.Published;
+            long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
             string overhaulLog = null, repairLog = null;
             try
             {
@@ -7339,7 +7346,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";static=" + staticBefore + "," + staticAfterOverhaul + "," +
                 staticAfterRepair +
                 ";conditionLogs=" +
-                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                (FirearmConditionCombatLog.Attempts - conditionLogsBefore) +
                 ";overhaulLog=" + overhaulLog + ";repairLog=" + repairLog;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -7360,19 +7367,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         staticAfterRepair == 3,
                     "exact runtime static-enchantment identities across state-token replacement"),
                 Assertion("overhaul-condition-combat-log",
-                    "one native player log only after completed Wrecked -> Broken",
+                    "one concise combat-log attempt only after completed Wrecked -> Broken",
                     observed,
                     overhaulLog != null && overhaulLog.Contains(
-                        "Wrecked -> Broken (Overhaul Firearm)"),
-                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                        ": Broken (Overhaul Firearm)."),
+                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
                 Assertion("repair-condition-combat-log",
                     "completed Broken -> Normal consumes second kit and logs once",
                     observed,
                     repairCompletion &&
-                    FirearmConditionCombatLog.Published == conditionLogsBefore + 2 &&
+                    FirearmConditionCombatLog.Attempts == conditionLogsBefore + 2 &&
                     repairLog != null && repairLog.Contains(
-                        "Broken -> Normal (Repair Firearm)"),
-                    "exact repair transaction and native warning/log event"),
+                        ": Normal (Repair Firearm)."),
+                    "exact repair transaction and native combat-log attempt"),
                 Assertion("request-local-cleanup", "repair-kit inventory and fixture restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -7408,10 +7415,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             int btslTables = 0, btslEntries = 0, invalidBtslCounts = 0;
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             int olegRepairRows = -1, olegRepairCount = -1,
-                olegOverhaulRows = -1, olegOverhaulCount = -1;
+                olegOverhaulRows = -1, olegOverhaulCount = -1,
+                olegOwnedSupplyRows = -1;
             int bokkenPowderRows = -1, bokkenPowderCount = -1,
                 bokkenBallRows = -1, bokkenBallCount = -1,
-                bokkenPaperRows = -1, bokkenPaperCount = -1;
+                bokkenPaperRows = -1, bokkenPaperCount = -1,
+                bokkenRepairRows = -1, bokkenRepairCount = -1,
+                bokkenOverhaulRows = -1, bokkenOverhaulCount = -1,
+                bokkenGunsmithRows = -1, bokkenGunsmithCount = -1;
             bool olegOwnerContracts = false, bokkenOwnerContracts = false;
             ProductionFirearmBlueprintCatalog production =
                 BlueprintBootstrap.ProductionFirearms;
@@ -7468,7 +7479,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }).ToArray();
             BlueprintUnitLoot bokkenTable = allBlueprints.OfType<BlueprintUnitLoot>()
                 .SingleOrDefault(value => string.Equals(value.AssetGuid,
-                    BokkenAmmunitionVendorBlueprints.TableGuid,
+                    BokkenFirearmSupplyVendorBlueprints.TableGuid,
                     StringComparison.Ordinal));
             Dictionary<string, List<string>> bokkenTableReferences =
                 BuildDirectBlueprintReferenceIndex(allBlueprints,
@@ -7480,11 +7491,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out bokkenReferenceList) ? bokkenReferenceList.ToArray() :
                 Array.Empty<string>();
             string expectedBokkenOwner = typeof(BlueprintUnit).FullName + ":" +
-                BokkenAmmunitionVendorBlueprints.BokkenOwnerName + ":" +
-                BokkenAmmunitionVendorBlueprints.BokkenOwnerGuid + "*1";
+                BokkenFirearmSupplyVendorBlueprints.BokkenOwnerName + ":" +
+                BokkenFirearmSupplyVendorBlueprints.BokkenOwnerGuid + "*1";
             string expectedZeroStateOwner = typeof(BlueprintUnit).FullName + ":" +
-                BokkenAmmunitionVendorBlueprints.ZeroStateOwnerName + ":" +
-                BokkenAmmunitionVendorBlueprints.ZeroStateOwnerGuid + "*1";
+                BokkenFirearmSupplyVendorBlueprints.ZeroStateOwnerName + ":" +
+                BokkenFirearmSupplyVendorBlueprints.ZeroStateOwnerGuid + "*1";
             bokkenOwnerContracts = bokkenReferences.Length == 2 &&
                 bokkenReferences.Contains(expectedBokkenOwner) &&
                 bokkenReferences.Contains(expectedZeroStateOwner);
@@ -7502,6 +7513,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 LootItemsPackFixed[] paperRows = fixedRows.Where(value =>
                     ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
                         BlueprintBootstrap.BasicAmmunition.PaperCartridge)).ToArray();
+                LootItemsPackFixed[] repairRows = fixedRows.Where(value =>
+                    ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                        BlueprintBootstrap.FirearmRepairKit)).ToArray();
+                LootItemsPackFixed[] overhaulRows = fixedRows.Where(value =>
+                    ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                        BlueprintBootstrap.GunsmithingSupplies.OverhaulKit)).ToArray();
+                LootItemsPackFixed[] gunsmithRows = fixedRows.Where(value =>
+                    ReferenceEquals(CapitalVendorBlueprints.ReadItem(value),
+                        BlueprintBootstrap.GunsmithingSupplies.GunsmithKit)).ToArray();
                 bokkenPowderRows = powderRows.Length;
                 bokkenPowderCount = powderRows.Length == 1 ?
                     CapitalVendorBlueprints.ReadCount(powderRows[0]) : -1;
@@ -7511,6 +7531,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bokkenPaperRows = paperRows.Length;
                 bokkenPaperCount = paperRows.Length == 1 ?
                     CapitalVendorBlueprints.ReadCount(paperRows[0]) : -1;
+                bokkenRepairRows = repairRows.Length;
+                bokkenRepairCount = repairRows.Length == 1 ?
+                    CapitalVendorBlueprints.ReadCount(repairRows[0]) : -1;
+                bokkenOverhaulRows = overhaulRows.Length;
+                bokkenOverhaulCount = overhaulRows.Length == 1 ?
+                    CapitalVendorBlueprints.ReadCount(overhaulRows[0]) : -1;
+                bokkenGunsmithRows = gunsmithRows.Length;
+                bokkenGunsmithCount = gunsmithRows.Length == 1 ?
+                    CapitalVendorBlueprints.ReadCount(gunsmithRows[0]) : -1;
             }
             BlueprintWeaponEnchantment[] nativeEnchantments = allBlueprints
                 .OfType<BlueprintWeaponEnchantment>()
@@ -7549,19 +7578,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BuildDirectBlueprintReferenceIndex(allBlueprints, tables);
             BlueprintSharedVendorTable olegTable = tables.SingleOrDefault(value =>
                 string.Equals(value.AssetGuid,
-                    OlegMaintenanceVendorBlueprints.TableGuid,
+                    OlegFirearmSupplyCleanupBlueprints.TableGuid,
                     StringComparison.Ordinal));
             List<string> olegReferenceList;
             string[] olegReferences = vendorReferences.TryGetValue(
-                OlegMaintenanceVendorBlueprints.TableGuid,
+                OlegFirearmSupplyCleanupBlueprints.TableGuid,
                 out olegReferenceList) ? olegReferenceList.ToArray() :
                 Array.Empty<string>();
             string expectedOlegOwner = typeof(BlueprintUnit).FullName + ":" +
-                OlegMaintenanceVendorBlueprints.OlegOwnerName + ":" +
-                OlegMaintenanceVendorBlueprints.OlegOwnerGuid + "*1";
+                OlegFirearmSupplyCleanupBlueprints.OlegOwnerName + ":" +
+                OlegFirearmSupplyCleanupBlueprints.OlegOwnerGuid + "*1";
             string expectedFirstVisitOwner = typeof(BlueprintUnit).FullName + ":" +
-                OlegMaintenanceVendorBlueprints.FirstVisitOwnerName + ":" +
-                OlegMaintenanceVendorBlueprints.FirstVisitOwnerGuid + "*1";
+                OlegFirearmSupplyCleanupBlueprints.FirstVisitOwnerName + ":" +
+                OlegFirearmSupplyCleanupBlueprints.FirstVisitOwnerGuid + "*1";
             olegOwnerContracts = olegReferences.Length == 2 &&
                 olegReferences.Contains(expectedOlegOwner) &&
                 olegReferences.Contains(expectedFirstVisitOwner);
@@ -7582,6 +7611,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 olegOverhaulRows = overhaulRows.Length;
                 olegOverhaulCount = overhaulRows.Length == 1 ?
                     CapitalVendorBlueprints.ReadCount(overhaulRows[0]) : -1;
+                BlueprintItem[] ownedSupplies =
+                    OlegFirearmSupplyCleanupBlueprints.Owned(
+                        BlueprintBootstrap.BasicAmmunition,
+                        BlueprintBootstrap.FirearmRepairKit,
+                        BlueprintBootstrap.GunsmithingSupplies);
+                olegOwnedSupplyRows = olegFixed.Count(value =>
+                    ownedSupplies.Contains(
+                        CapitalVendorBlueprints.ReadItem(value)));
             }
             foreach (BlueprintScriptableObject candidate in lootCandidates)
             {
@@ -7922,7 +7959,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         CapitalVendorBlueprints.ReadItem(value), borderSentinel)));
             BlueprintSharedVendorTable easternOleg = tables.SingleOrDefault(value =>
                 string.Equals(value.AssetGuid,
-                    OlegMaintenanceVendorBlueprints.TableGuid,
+                    OlegFirearmSupplyCleanupBlueprints.TableGuid,
                     StringComparison.Ordinal));
             int borderSentinelOlegRows = easternOleg == null ? -1 :
                 (easternOleg.ComponentsArray ?? Array.Empty<BlueprintComponent>())
@@ -8048,6 +8085,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";olegRepairCount=" + olegRepairCount +
                 ";olegOverhaulRows=" + olegOverhaulRows +
                 ";olegOverhaulCount=" + olegOverhaulCount +
+                ";olegOwnedSupplyRows=" + olegOwnedSupplyRows +
                 ";olegOwners=" + string.Join(",", olegReferences) +
                 ";btslTables=" + btslTables + ";btslEntries=" + btslEntries +
                     ";invalidBtslCounts=" + invalidBtslCounts +
@@ -8099,6 +8137,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bokkenPowderCount + ";bokkenBalls=" + bokkenBallRows +
                     "/" + bokkenBallCount + ";bokkenPaper=" +
                     bokkenPaperRows + "/" + bokkenPaperCount +
+                    ";bokkenRepair=" + bokkenRepairRows + "/" +
+                    bokkenRepairCount + ";bokkenOverhaul=" +
+                    bokkenOverhaulRows + "/" + bokkenOverhaulCount +
+                    ";bokkenGunsmith=" + bokkenGunsmithRows + "/" +
+                    bokkenGunsmithCount +
                     ";bokkenOwners=" + string.Join(",", bokkenReferences) +
                     ";bokkenContents=" + (bokkenTable == null ? "<missing>" :
                         DescribeFixedLootComponents(bokkenTable)) +
@@ -8140,30 +8183,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, projectEntries == 12 && invalidProjectCounts == 0 &&
                         blunderbussEntries == 1,
                     "registered early and +1 firearms, ammunition, and supplies"),
-                Assertion("oleg-maintenance-stock",
-                    "exact Oleg table contains one Repair Kit row at 5 and one Overhaul Kit row at 2",
+                Assertion("oleg-firearm-supplies-absent",
+                    "exact Oleg table contains zero project-owned firearm-supply rows",
                     observed, olegTable != null && string.Equals(olegTable.name,
-                        OlegMaintenanceVendorBlueprints.ExpectedTableName,
-                        StringComparison.Ordinal) && olegRepairRows == 1 &&
-                        olegRepairCount == OlegMaintenanceVendorBlueprints.RepairKitCount &&
-                        olegOverhaulRows == 1 && olegOverhaulCount ==
-                            OlegMaintenanceVendorBlueprints.OverhaulKitCount,
+                        OlegFirearmSupplyCleanupBlueprints.ExpectedTableName,
+                        StringComparison.Ordinal) && olegRepairRows == 0 &&
+                        olegOverhaulRows == 0 && olegOwnedSupplyRows == 0,
                     "exact BlueprintSharedVendorTable and project-owned item references"),
                 Assertion("oleg-vendor-owners",
                     "OTP_Oleg and OTP_Oleg_FirstVisit are the two exact direct table owners",
                     observed, olegOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
-                Assertion("bokken-ammunition-stock",
-                    "exact Bokken unit-loot table contains one Black Powder, Lead Ball, and Paper Cartridge row at 100 each",
+                Assertion("bokken-firearm-supply-stock",
+                    "exact Bokken unit-loot table contains the six required fixed firearm-supply rows",
                     observed, bokkenTable != null && string.Equals(bokkenTable.name,
-                        BokkenAmmunitionVendorBlueprints.ExpectedTableName,
+                        BokkenFirearmSupplyVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && bokkenPowderRows == 1 &&
                         bokkenPowderCount ==
-                            BokkenAmmunitionVendorBlueprints.AmmunitionCount &&
+                            BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
                         bokkenBallRows == 1 && bokkenBallCount ==
-                            BokkenAmmunitionVendorBlueprints.AmmunitionCount &&
+                            BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
                         bokkenPaperRows == 1 && bokkenPaperCount ==
-                            BokkenAmmunitionVendorBlueprints.AmmunitionCount,
+                            BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
+                        bokkenRepairRows == 1 && bokkenRepairCount ==
+                            BokkenFirearmSupplyVendorBlueprints.RepairKitCount &&
+                        bokkenOverhaulRows == 1 && bokkenOverhaulCount ==
+                            BokkenFirearmSupplyVendorBlueprints.OverhaulKitCount &&
+                        bokkenGunsmithRows == 1 && bokkenGunsmithCount ==
+                            BokkenFirearmSupplyVendorBlueprints.GunsmithKitCount,
                     "exact BlueprintUnitLoot and project-owned item references"),
                 Assertion("bokken-vendor-owners",
                     "OTP_Bokken and OTP_Bokken_ZeroState are the two exact direct loot-table owners",
@@ -16271,7 +16318,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int subjectTempConsumed = -1, subjectTempHpLoss = -1,
                 subjectTempCasterLoss = -1, casterTempConsumed = -1,
                 casterTempSubjectLoss = -1, casterTempHpLoss = -1;
-            long logsBefore = ShieldOtherCombatLog.Published;
+            long logsBefore = ShieldOtherCombatLog.Attempts;
             string stage = "construct";
             try
             {
@@ -16740,7 +16787,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";mitigatedEnergy=" + mitigatedEnergySubject + "/" +
                 mitigatedEnergyCaster + ";immuneEnergy=" + immuneEnergySubject +
                 "/" + immuneEnergyCaster + ";logs=" +
-                (ShieldOtherCombatLog.Published - logsBefore) +
+                (ShieldOtherCombatLog.Attempts - logsBefore) +
                 ";replacement=" + replacementOwned + "/" + replacementSubject +
                 "/" + replacementFirstCaster + "/" + replacementSecondCaster +
                 ";multiple=" + multiSubjectOwned + "/" + multipleSubject + "/" +
@@ -16845,8 +16892,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "dead caster removes link on native round tick", observed,
                     deathRemoved, "ITickEachRound lifecycle revalidation"),
                 Assertion("shield-other-transfer-log", "13 entries", observed,
-                    ShieldOtherCombatLog.Published == logsBefore + 13,
-                    "native IWarningNotificationUIHandler combat-log event"),
+                    ShieldOtherCombatLog.Attempts == logsBefore + 13,
+                    "native BattleLogView Combat-channel attempts; presentation faults are contained"),
                 Assertion("external-isolation", "disposable units removed", observed,
                     cleaned, "live unit registry cleanup"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -17075,10 +17122,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData target = null;
             ItemEntityWeapon weapon = null;
             bool boundaries = true, nativeEvents = true, feedback = true,
-                effectiveModifier = false, cleaned = false;
+                feedbackDeduplicated = true, effectiveModifier = false,
+                feedbackFailureContained = true, cleaned = false;
             int observedBoundaries = 0;
             string stage = "setup";
             var observations = new List<string>();
+            long feedbackAttemptsAtStart = FirearmArmorClassCombatLog.Attempts;
+            long feedbackPublishedAtStart = FirearmArmorClassCombatLog.Published;
+            long feedbackFaultsAtStart = FirearmArmorClassCombatLog.Faults;
             try
             {
                 BlueprintUnit source = BlueprintRoot.Instance.DefaultPlayerCharacter;
@@ -17110,12 +17161,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var attack = new RuleAttackRoll(attacker, target, weapon, 0);
                         long touchBefore = FirearmArmorClassRuntime.AppliedCount;
                         long ordinaryBefore = FirearmArmorClassRuntime.OrdinaryCount;
-                        long logBefore = FirearmArmorClassCombatLog.Published;
+                        long logBefore = FirearmArmorClassCombatLog.Attempts;
+                        long logFaultsBefore = FirearmArmorClassCombatLog.Faults;
+                        long nativeLogBefore = NativeCombatLog.Attempts;
+                        long nativeFaultsBefore = NativeCombatLog.Faults;
+                        var armorClassRule = new RuleCalculateAC(attacker, target,
+                            AttackType.Ranged);
                         try
                         {
                             FirearmArmorClassRuntime.BeforeAttackRoll(attack);
-                            Rulebook.Trigger(new RuleCalculateAC(attacker, target,
-                                AttackType.Ranged));
+                            Rulebook.Trigger(armorClassRule);
+                            Rulebook.Trigger(armorClassRule);
                         }
                         finally
                         {
@@ -17127,10 +17183,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ordinaryBefore + 1;
                         string message = FirearmArmorClassCombatLog.LastMessage ??
                             string.Empty;
-                        bool line = FirearmArmorClassCombatLog.Published ==
-                            logBefore + 1 && message.Contains(expectedTouch[index]
-                                ? "Touch AC" : "Normal AC") &&
-                            message.Contains("penetration range");
+                        bool line = FirearmArmorClassCombatLog.Attempts ==
+                            logBefore + 1 && NativeCombatLog.Attempts ==
+                            nativeLogBefore + 1 &&
+                            PlayerCombatLogMessagePolicy.IsPreferredLength(message) &&
+                            message.StartsWith(expectedTouch[index]
+                                ? "Firearm: Touch AC" : "Firearm: Normal AC",
+                                StringComparison.Ordinal);
+                        feedbackDeduplicated = feedbackDeduplicated &&
+                            FirearmArmorClassCombatLog.Attempts == logBefore + 1 &&
+                            NativeCombatLog.Attempts == nativeLogBefore + 1;
+                        feedbackFailureContained = feedbackFailureContained &&
+                            (FirearmArmorClassCombatLog.Faults == logFaultsBefore ||
+                                touch || ordinary) &&
+                            (NativeCombatLog.Faults == nativeFaultsBefore ||
+                                touch || ordinary);
                         boundaries = boundaries && touch == expectedTouch[index];
                         nativeEvents = nativeEvents && (touch || ordinary);
                         feedback = feedback && line;
@@ -17155,6 +17222,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var modifiedAttack = new RuleAttackRoll(attacker, target, weapon, 0);
                 EffectiveFirearmRangeRuntime.Register(modifiedAttack, 10);
                 long modifiedBefore = FirearmArmorClassRuntime.AppliedCount;
+                long modifiedLogBefore = FirearmArmorClassCombatLog.Attempts;
+                long modifiedNativeLogBefore = NativeCombatLog.Attempts;
                 try
                 {
                     FirearmArmorClassRuntime.BeforeAttackRoll(modifiedAttack);
@@ -17167,8 +17236,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 effectiveModifier = FirearmArmorClassRuntime.AppliedCount ==
                     modifiedBefore + 1 &&
+                    FirearmArmorClassCombatLog.Attempts == modifiedLogBefore + 1 &&
+                    NativeCombatLog.Attempts == modifiedNativeLogBefore + 1 &&
                     (FirearmArmorClassCombatLog.LastMessage ?? string.Empty)
-                        .Contains("penetration range 50 ft.");
+                        .Contains("Touch AC (50 ft.)");
                 observations.Add("musket+10=" + modifiedActual.ToString("0.####",
                     System.Globalization.CultureInfo.InvariantCulture) + "m");
             }
@@ -17187,6 +17258,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cleaned = true;
             }
             string observed = string.Join(";", observations.ToArray());
+            string feedbackObserved = "attempts=" +
+                (FirearmArmorClassCombatLog.Attempts - feedbackAttemptsAtStart) +
+                ";published=" + (FirearmArmorClassCombatLog.Published -
+                    feedbackPublishedAtStart) + ";faults=" +
+                (FirearmArmorClassCombatLog.Faults - feedbackFaultsAtStart) +
+                ";last=" + FirearmArmorClassCombatLog.LastMessage;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("firearm-penetration-production-boundaries",
@@ -17199,10 +17276,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, nativeEvents,
                     "Harmony RuleCalculateAC event boundary"),
                 Assertion("firearm-penetration-player-feedback",
-                    "one Touch/Normal annotation per resolution",
-                    "published=" + FirearmArmorClassCombatLog.Published +
-                        ";last=" + FirearmArmorClassCombatLog.LastMessage,
-                    feedback, "native warning/battle-log event"),
+                    "one concise Touch/Normal combat-log attempt per resolution",
+                    feedbackObserved,
+                    feedback && feedbackDeduplicated && feedbackFailureContained &&
+                        FirearmArmorClassCombatLog.Attempts ==
+                            feedbackAttemptsAtStart + 16,
+                    "native BattleLogView Combat-channel API, repeated native trigger, and contained save-free sink failure"),
                 Assertion("firearm-penetration-effective-range",
                     "Steady Aim-style +10 ft. makes 50 ft. Musket boundary touch",
                     observed, effectiveModifier,
@@ -17296,12 +17375,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool prepared = false, modeGranted = false, modeOffObserved = false,
                 prerequisitePresentation = false, presentation = false,
                 successObserved = false,
+                offAfterOnObserved = false,
                 nativeFailureObserved = false,
                 failureObserved = false, cancellationObserved = false,
                 snapshotObserved = false, fatigueIndependent = false,
                 fatigueSurvivedContextCleanup = false, restRemoved = false,
                 modeViewLifecycle = false, cordObserved = false,
-                cordBuffRetained = false, cleaned = false;
+                cordBuffRetained = false, feedbackPublicationObserved = false,
+                cleaned = false;
             bool fatigueEndFieldFound = false, fatigueEndIsNull = false,
                 fatigueContextPresent = false, fatigueParentAbsent = false,
                 fatigueContextDistinct = false, fatigueRemoveOnRest = false;
@@ -17317,9 +17398,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             string nativeFailureDisposition = "<none>",
                 successResolution = "<none>", eligibilityTrace = "<none>",
                 spellBlueprintContract = "<none>";
-            long successResolutionCount = -1;
+            long successResolutionCount = -1, finalResolutionAttemptCount = -1;
             bool realSuccessCommand = false, realFailureCommand = false,
-                realSuccessSlotSpent = false, realFailureSlotSpent = false;
+                realSuccessSlotSpent = false, realFailureSlotSpent = false,
+                realOffAfterOnCommand = false,
+                realOffAfterOnSlotSpent = false;
+            bool markerLingeringAfterOff = false;
+            string offAfterOnEligibility = "<none>";
+            long nativeCombatLogBefore = -1, nativeCombatLogAfterSuccess = -1,
+                nativeCombatLogAfterOff = -1;
             try
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -17412,6 +17499,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BlueprintBootstrap.AcadamaeGraduateMode.Marker) == null;
 
                 AcadamaeCastingRuntime.ResetDiagnostics();
+                nativeCombatLogBefore = NativeCombatLog.Attempts;
                 AbilityData modeOff = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
                 bool nativeFullRound = AcadamaeCastingRuntime.InspectPreAcadamae(modeOff) &&
                     modeOff.RequireFullRoundAction;
@@ -17458,15 +17546,59 @@ namespace KingmakerGunslinger.RuntimeTesting
                 successTotal = AcadamaeCastingRuntime.LastSaveTotal;
                 successResolution = AcadamaeCastingRuntime.LastResolutionMessage;
                 successResolutionCount =
-                    AcadamaeCastingRuntime.PublishedResolutionCount;
+                    AcadamaeCastingRuntime.ResolutionPublicationAttemptCount;
+                nativeCombatLogAfterSuccess = NativeCombatLog.Attempts;
                 successObserved = realSuccessCommand && realSuccessSlotSpent &&
                     successCount == 1 &&
                     AcadamaeCastingRuntime.LastSavePassed &&
                     successNatural == 20 && successModifier >= 100 &&
                     successTotal == successNatural + successModifier &&
                     successResolutionCount == 1 &&
-                    successResolution.Contains("to Standard") &&
+                    nativeCombatLogAfterSuccess == nativeCombatLogBefore + 1 &&
+                    PlayerCombatLogMessagePolicy.IsPreferredLength(
+                        successResolution) &&
+                    successResolution.StartsWith(
+                        "Acadamae Graduate: Fortitude ",
+                        StringComparison.Ordinal) &&
+                    successResolution.Contains(" vs DC ") &&
+                    successResolution.Contains("success") &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                // Reproduce the reported lifecycle exactly: turn the native
+                // activatable off, then construct and execute a fresh command
+                // immediately. A marker that has not finished deactivating is
+                // observed but is never authority for the new command.
+                acadamaeMode.IsOn = false;
+                markerLingeringAfterOff = unit.Descriptor.Buffs.GetBuff(
+                    BlueprintBootstrap.AcadamaeGraduateMode.Marker) != null;
+                AbilityData offAfterOn = PrepareAcadamaeSpell(spellbook,
+                    spell, spellLevel);
+                offAfterOnEligibility = AcadamaeCastingRuntime
+                    .InspectEligibility(offAfterOn);
+                bool offAfterOnFullRound = AcadamaeCastingRuntime
+                    .InspectPreAcadamae(offAfterOn) &&
+                    offAfterOn.RequireFullRoundAction;
+                int completedBeforeOffAfterOn =
+                    AcadamaeCastingRuntime.CompletedCount;
+                long publishedBeforeOffAfterOn =
+                    AcadamaeCastingRuntime.ResolutionPublicationAttemptCount;
+                realOffAfterOnCommand = ExecuteAcadamaePlayerCommand(unit,
+                    offAfterOn);
+                realOffAfterOnSlotSpent = offAfterOn.ParamSpellSlot != null &&
+                    !offAfterOn.ParamSpellSlot.Available;
+                nativeCombatLogAfterOff = NativeCombatLog.Attempts;
+                offAfterOnObserved = !acadamaeMode.IsOn &&
+                    offAfterOnFullRound && realOffAfterOnCommand &&
+                    realOffAfterOnSlotSpent &&
+                    AcadamaeCastingRuntime.CompletedCount ==
+                        completedBeforeOffAfterOn &&
+                    AcadamaeCastingRuntime.ResolutionPublicationAttemptCount ==
+                        publishedBeforeOffAfterOn &&
+                    nativeCombatLogAfterOff == nativeCombatLogAfterSuccess &&
+                    AcadamaeCastingRuntime.InvocationCount == 0 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+
+                acadamaeMode.IsOn = true;
                 unit.Descriptor.Stats.GetStat(
                     StatType.SaveFortitude).BaseValue = -100;
                 AcadamaeSavingThrowTestControl.Queue(1);
@@ -17493,7 +17625,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     nativeFailureTotal < 15 + spellLevel &&
                     nativeFailureDisposition == "fatigued-permanent" &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
-                    AcadamaeCastingRuntime.PublishedResolutionCount == 2;
+                    AcadamaeCastingRuntime.ResolutionPublicationAttemptCount == 2 &&
+                    NativeCombatLog.Attempts == nativeCombatLogBefore + 2;
                 unit.Descriptor.RemoveFact(fatiguedBlueprint);
 
                 AbilityData snapOn = PrepareAcadamaeSpell(spellbook, spell, spellLevel);
@@ -17535,8 +17668,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new TargetWrapper(unit));
                 Rulebook.Trigger(cancelledRule);
                 cancellationCount = AcadamaeCastingRuntime.CompletedCount;
+                acadamaeMode.IsOn = false;
+                AbilityData reselectedAfterCancel = PrepareAcadamaeSpell(
+                    spellbook, spell, spellLevel);
+                bool reselectedFullRound = AcadamaeCastingRuntime
+                    .InspectPreAcadamae(reselectedAfterCancel) &&
+                    reselectedAfterCancel.RequireFullRoundAction;
+                bool reselectedExecuted = ExecuteAcadamaePlayerCommand(unit,
+                    reselectedAfterCancel);
                 cancellationObserved = cancellationCount == 3 &&
+                    reselectedFullRound && reselectedExecuted &&
+                    AcadamaeCastingRuntime.CompletedCount == cancellationCount &&
+                    AcadamaeCastingRuntime.InvocationCount == 0 &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                acadamaeMode.IsOn = true;
 
                 unit.Descriptor.RemoveFact(fatiguedBlueprint);
 
@@ -17626,6 +17771,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Kingmaker.Controllers.Rest.RestController.ApplyRest(unit.Descriptor);
                 restRemoved = unit.Descriptor.Buffs.GetBuff(fatiguedBlueprint) == null &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued);
+                finalResolutionAttemptCount = AcadamaeCastingRuntime
+                    .ResolutionPublicationAttemptCount;
+                feedbackPublicationObserved = finalResolutionAttemptCount ==
+                    AcadamaeCastingRuntime.CompletedCount &&
+                    PlayerCombatLogMessagePolicy.IsPreferredLength(
+                        AcadamaeCastingRuntime.LastResolutionMessage) &&
+                    AcadamaeCastingRuntime.LastResolutionMessage.StartsWith(
+                        "Acadamae Graduate: Fortitude ", StringComparison.Ordinal);
 
                 viewScene = new Kingmaker.EntitySystem.SceneEntitiesState(
                     "KMG_Acadamae_Mode_View_Lifecycle");
@@ -17688,12 +17841,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";prepared=" + prepared + ";prerequisitePresentation=" +
                 prerequisitePresentation + ";modeGranted=" + modeGranted +
                 ";modeOff=" + modeOffObserved + ";offCount=" + offCount +
+                ";offAfterOn=" + offAfterOnObserved +
+                ";markerLingeringAfterOff=" + markerLingeringAfterOff +
+                ";offAfterOnCommand=" + realOffAfterOnCommand +
+                ";offAfterOnSlotSpent=" + realOffAfterOnSlotSpent +
+                ";offAfterOnEligibility=" + offAfterOnEligibility +
                 ";presentation=" + presentation +
                 ";successCount=" + successCount + ";failureCount=" + failureCount +
                 ";successNatural=" + successNatural +
                 ";successModifier=" + successModifier +
                 ";successTotal=" + successTotal +
                 ";successResolutionCount=" + successResolutionCount +
+                ";finalResolutionAttempts=" + finalResolutionAttemptCount +
+                ";nativeCombatLog=" + nativeCombatLogBefore + "->" +
+                    nativeCombatLogAfterSuccess + "->" + nativeCombatLogAfterOff +
                 ";nativeFailure=" + nativeFailureObserved +
                 ";nativeFailureNatural=" + nativeFailureNatural +
                 ";nativeFailureModifier=" + nativeFailureModifier +
@@ -17740,11 +17901,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("acadamae-mode-off-native-cast",
                     "mode OFF remains Full-Round and causes no save or fatigue", observed,
                     modeOffObserved, "native action and unarmed command correlation"),
+                Assertion("acadamae-off-on-off-player-command",
+                    "a new player command created immediately after turning the mode OFF is Full-Round and unarmed",
+                    observed, offAfterOnObserved,
+                    "native activatable IsOn, native UnitUseAbility path, and combat-log counters"),
                 Assertion("acadamae-action-parity", "Full-Round becomes Standard in UI/runtime",
                     observed, presentation, "AbilityData full-round and runtime action surfaces"),
                 Assertion("acadamae-save-success", "one Fortitude save succeeds; no fatigue",
                     observed, successObserved && observedDc == 15 + spellLevel,
                     "native RuleCastSpell and RuleSavingThrow"),
+                Assertion("acadamae-combat-log-feedback",
+                    "one concise native combat-log attempt per terminal Acadamae resolution",
+                    observed, feedbackPublicationObserved,
+                    "native BattleLogView Combat-channel API; save-free sink failure is presentation-only"),
                 Assertion("acadamae-native-command-failure",
                     "real UnitUseAbility.OnAction spends one slot, fails one Fortitude save, and applies permanent fatigue",
                     observed, nativeFailureObserved,
@@ -19456,7 +19625,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintCharacterClass fighter = BlueprintRoot.Instance.Progression.CharacterClasses
                 .Single(value => value != null && value.AssetGuid ==
                     "48ac8db94d5de7645906c7d0ad3bcfbd");
-            object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
+            Player runtimePlayer = Kingmaker.Game.Instance.Player;
+            object player = runtimePlayer;
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
             object allUnits = ReadExactMember(state, "AllUnits");
@@ -19596,9 +19766,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private RuntimeTestResult RunDisposableGunslingerMulticlassCommit()
         {
             BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
-            BlueprintCharacterClass fighter = BlueprintRoot.Instance.Progression.CharacterClasses
+            BlueprintCharacterClass bard = BlueprintRoot.Instance.Progression.CharacterClasses
                 .Single(value => value != null && value.AssetGuid ==
-                    "48ac8db94d5de7645906c7d0ad3bcfbd");
+                    "772c83a25e2268e448e841dcd548235f");
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
             object party = ReadExactMember(player, "Party");
@@ -19607,17 +19777,36 @@ namespace KingmakerGunslinger.RuntimeTesting
             object cross = ReadExactMember(ReadExactMember(player, "CrossSceneState"),
                 "AllEntityData");
             object inventory = ReadExactMember(player, "Inventory");
+            Player runtimePlayer = player as Player;
+            if (runtimePlayer == null)
+                throw new InvalidOperationException(
+                    "The native Player object is unavailable for the multiclass fixture.");
+            List<Kingmaker.EntitySystem.Entities.UnitEntityData> allCharacters =
+                runtimePlayer.AllCharacters;
             object[] partyBefore = SnapshotReferences(party);
             object[] unitsBefore = SnapshotReferences(allUnits);
             object[] remoteBefore = SnapshotReferences(remote);
             object[] crossBefore = SnapshotReferences(cross);
             object[] inventoryBefore = SnapshotReferences(inventory);
+            object[] allCharactersBefore = SnapshotReferences(allCharacters);
+            int powderInitial = runtimePlayer.Inventory.Count(
+                BlueprintBootstrap.BasicAmmunition.BlackPowder);
+            int ballInitial = runtimePlayer.Inventory.Count(
+                BlueprintBootstrap.BasicAmmunition.LeadBall);
+            int kitInitial = runtimePlayer.Inventory.Count(
+                BlueprintBootstrap.GunsmithingSupplies.GunsmithKit);
             Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            ItemEntityWeapon unrelated = null, granted = null;
             object seed = null, multiclass = null;
-            int fighterSeeded = -1, previewFighter = -1, previewGunslinger = -1;
-            int committedFighter = -1, committedGunslinger = -1;
+            int bardSeeded = -1, previewBard = -1, previewGunslinger = -1;
+            int committedBard = -1, committedGunslinger = -1;
             bool selected = false, callback = false, proficiencies = false,
-                grit = false, cleaned = false;
+                grit = false, registered = false, exactStarter = false,
+                repeatedSafe = false, receiptRemoved = false, cleaned = false;
+            int pistolBeforeCommit = -1, pistolAfterCommit = -1,
+                powderDelta = -1, ballDelta = -1, kitDelta = -1;
+            MulticlassStarterCaseResult pistoleroCase = null,
+                musketMasterCase = null;
             try
             {
                 entity = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -19651,13 +19840,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "CharGen", false);
                 seed = start.Invoke(null,
                     new object[] { descriptor, false, null, null, charGen });
-                if (!(bool)selectClass.Invoke(seed, new object[] { fighter, false }))
-                    throw new InvalidOperationException("Fighter seed selection was rejected.");
+                if (!(bool)selectClass.Invoke(seed, new object[] { bard, false }))
+                    throw new InvalidOperationException("Bard seed selection was rejected.");
                 mechanics.Invoke(seed, null);
                 apply.Invoke(seed, new object[] { descriptor });
                 cancel.Invoke(seed, null);
                 seed = null;
-                fighterSeeded = descriptor.Progression.GetClassLevel(fighter);
+                bardSeeded = descriptor.Progression.GetClassLevel(bard);
+
+                registered = !allCharacters.Any(value => ReferenceEquals(
+                    value, entity));
+                if (registered) allCharacters.Add(entity);
+                unrelated = runtimePlayer.Inventory.Add(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item) as
+                    ItemEntityWeapon;
+                if (unrelated == null)
+                    throw new InvalidOperationException(
+                        "The unrelated firearm control could not be created.");
+                HashSet<object> beforeCommit = new HashSet<object>(
+                    EnumerateRuntimeInventory(runtimePlayer.Inventory),
+                    ReferenceIdentityComparer.Instance);
+                pistolBeforeCommit = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                int powderBeforeCommit = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                int ballBeforeCommit = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall);
+                int kitBeforeCommit = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit);
 
                 object levelUp = Enum.Parse(start.GetParameters()[4].ParameterType,
                     "LevelUp", false);
@@ -19669,17 +19879,68 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mechanics.Invoke(multiclass, null);
                 var preview = ReadExactMember(multiclass, "Preview") as
                     Kingmaker.UnitLogic.UnitDescriptor;
-                previewFighter = preview == null ? -1 :
-                    preview.Progression.GetClassLevel(fighter);
+                previewBard = preview == null ? -1 :
+                    preview.Progression.GetClassLevel(bard);
                 previewGunslinger = preview == null ? -1 :
                     preview.Progression.GetClassLevel(gunslinger);
                 commit.Invoke(multiclass, null);
                 multiclass = null;
-                committedFighter = descriptor.Progression.GetClassLevel(fighter);
+                committedBard = descriptor.Progression.GetClassLevel(bard);
                 committedGunslinger = descriptor.Progression.GetClassLevel(gunslinger);
                 proficiencies = descriptor.HasFact(
                     BlueprintBootstrap.GunslingerClass.Proficiencies);
                 grit = descriptor.HasFact(BlueprintBootstrap.GunslingerClass.Grit.Feature);
+                ItemEntityWeapon[] addedFirearms = EnumerateRuntimeInventory(
+                    runtimePlayer.Inventory).Where(item =>
+                        !beforeCommit.Contains(item)).OfType<ItemEntityWeapon>()
+                    .Where(item => BlueprintBootstrap.ProductionFirearms.Entries
+                        .Any(entry => ReferenceEquals(entry.Item,
+                            item.Blueprint))).ToArray();
+                granted = addedFirearms.Length == 1 ? addedFirearms[0] : null;
+                pistolAfterCommit = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                powderDelta = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder) -
+                        powderBeforeCommit;
+                ballDelta = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall) -
+                        ballBeforeCommit;
+                kitDelta = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit) -
+                        kitBeforeCommit;
+                UnitEntityData owner;
+                exactStarter = granted != null && ReferenceEquals(granted.Blueprint,
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item) &&
+                    BatteredFirearmOriginRuntime.TryGetOwner(granted, out owner) &&
+                    BatteredFirearmOriginRuntime.SameStableOwner(owner, entity) &&
+                    FirearmRuntimeState.ReadStateTokenIds(granted).Count == 0;
+
+                long grantsBeforeRepeat =
+                    GunslingerStartingFirearmGrantTransaction.Grants;
+                bool repeated = GunslingerStartingFirearmGrantTransaction
+                    .CompleteTransition(new GunslingerLevelTransitionSnapshot(
+                        descriptor, 0), descriptor);
+                repeatedSafe = !repeated &&
+                    GunslingerStartingFirearmGrantTransaction.Grants ==
+                        grantsBeforeRepeat &&
+                    runtimePlayer.Inventory.Count(
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item) ==
+                        pistolAfterCommit &&
+                    runtimePlayer.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) -
+                        powderBeforeCommit == 20 &&
+                    runtimePlayer.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.LeadBall) -
+                        ballBeforeCommit == 20;
+
+                pistoleroCase = RunDisposableMulticlassStarterArchetypeCase(
+                    bard, BlueprintBootstrap.GunslingerClass.Pistolero.Archetype,
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item,
+                    "Bard 1/Pistolero 1");
+                musketMasterCase = RunDisposableMulticlassStarterArchetypeCase(
+                    bard, BlueprintBootstrap.GunslingerClass.MusketMaster.Archetype,
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item,
+                    "Bard 1/Musket Master 1");
             }
             finally
             {
@@ -19687,31 +19948,81 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
                 if (multiclass != null && cancel != null) cancel.Invoke(multiclass, null);
                 if (seed != null && cancel != null) cancel.Invoke(seed, null);
+                if (granted != null)
+                {
+                    receiptRemoved = GunslingerStartingFirearmGrantTransaction
+                        .RemoveReceiptForRuntimeTest(granted, entity);
+                    runtimePlayer.Inventory.Remove(granted);
+                    granted.Dispose();
+                }
+                if (unrelated != null)
+                {
+                    runtimePlayer.Inventory.Remove(unrelated);
+                    unrelated.Dispose();
+                }
+                int powderExcess = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder) - powderInitial;
+                if (powderExcess > 0) runtimePlayer.Inventory.Remove(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder, powderExcess);
+                int ballExcess = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall) - ballInitial;
+                if (ballExcess > 0) runtimePlayer.Inventory.Remove(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall, ballExcess);
+                int kitExcess = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit) - kitInitial;
+                if (kitExcess > 0) runtimePlayer.Inventory.Remove(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, kitExcess);
+                if (registered) allCharacters.Remove(entity);
                 if (entity != null) entity.Dispose();
                 cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
                     SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
                     SameReferences(remoteBefore, SnapshotReferences(remote)) &&
                     SameReferences(crossBefore, SnapshotReferences(cross)) &&
                     SameReferences(inventoryBefore, SnapshotReferences(inventory)) &&
-                    (entity == null || !ContainsReference(cross, entity));
+                    SameReferences(allCharactersBefore,
+                        SnapshotReferences(allCharacters)) &&
+                    (entity == null || !ContainsReference(cross, entity)) &&
+                    (granted == null || receiptRemoved);
             }
-            string observed = "seedFighter=" + fighterSeeded + ";selected=" + selected +
-                ";preview=" + previewFighter + "/" + previewGunslinger +
-                ";committed=" + committedFighter + "/" + committedGunslinger +
+            string observed = "seedBard=" + bardSeeded + ";selected=" + selected +
+                ";preview=" + previewBard + "/" + previewGunslinger +
+                ";committed=" + committedBard + "/" + committedGunslinger +
                 ";callback=" + callback + ";proficiencies=" + proficiencies +
-                ";grit=" + grit;
+                ";grit=" + grit + ";pistol=" + pistolBeforeCommit + "->" +
+                pistolAfterCommit + ";ammo=" + powderDelta + "/" + ballDelta +
+                ";kit=" + kitDelta + ";bound=" + exactStarter +
+                ";repeat=" + repeatedSafe + ";receiptCleanup=" + receiptRemoved +
+                ";pistolero=[" + (pistoleroCase == null ? "<none>" :
+                    pistoleroCase.Observed) + "];musketMaster=[" +
+                    (musketMasterCase == null ? "<none>" :
+                        musketMasterCase.Observed) + "]";
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("native-multiclass-commit",
-                    "Fighter 1/Gunslinger 0 -> Fighter 1/Gunslinger 1", observed,
-                    fighterSeeded == 1 && selected && previewFighter == 1 &&
-                        previewGunslinger == 1 && committedFighter == 1 &&
+                    "Bard 1/Gunslinger 0 -> Bard 1/Gunslinger 1", observed,
+                    bardSeeded == 1 && selected && previewBard == 1 &&
+                        previewGunslinger == 1 && committedBard == 1 &&
                         committedGunslinger == 1 && callback,
                     "LevelUp-mode native Commit and success callback"),
                 Assertion("multiclass-level-one-facts",
                     "Gunslinger proficiencies and grit installed", observed,
                     proficiencies && grit,
                     "exact descriptor HasFact after native multiclass commit"),
+                Assertion("multiclass-starter-inventory-transaction",
+                    "one new production Pistol, 20 Black Powder, 20 Lead Ball, one Gunsmith's Kit, and exact owner binding",
+                    observed, exactStarter && pistolAfterCommit ==
+                        pistolBeforeCommit + 1 && powderDelta == 20 &&
+                        ballDelta == 20 && kitDelta == 1,
+                    "committed first-Gunslinger-level transaction over shared inventory"),
+                Assertion("multiclass-starter-idempotence",
+                    "unrelated Pistol does not suppress the grant and repeated observation adds nothing",
+                    observed, unrelated != null && repeatedSafe,
+                    "durable per-unit receipt and exact reference delta"),
+                Assertion("multiclass-archetype-starters",
+                    "Bard/Pistolero receives only a Pistol; Bard/Musket Master receives only a Musket",
+                    observed, pistoleroCase != null && pistoleroCase.Passed &&
+                        musketMasterCase != null && musketMasterCase.Passed,
+                    "finalized native archetype state and independent atomic transactions"),
                 Assertion("external-isolation",
                     "unchanged party, units, cross-scene, companions, and inventory",
                     "cleaned=" + cleaned, cleaned,
@@ -19724,6 +20035,247 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private MulticlassStarterCaseResult
+            RunDisposableMulticlassStarterArchetypeCase(
+                BlueprintCharacterClass bard, BlueprintArchetype archetype,
+                BlueprintItemWeapon expectedFirearm, string label)
+        {
+            BlueprintCharacterClass gunslinger =
+                BlueprintBootstrap.GunslingerClass.CharacterClass;
+            Player player = Game.Instance.Player;
+            List<UnitEntityData> allCharacters = player.AllCharacters;
+            object[] inventoryBefore = SnapshotReferences(player.Inventory);
+            object[] allCharactersBefore = SnapshotReferences(allCharacters);
+            int pistolBefore = player.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item),
+                musketBefore = player.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item),
+                powderBefore = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder),
+                ballBefore = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall),
+                kitBefore = player.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit);
+            UnitEntityData entity = null;
+            object seed = null, controller = null;
+            bool selected = false, archetypeSelected = false,
+                previewExact = false, finalizedExact = false,
+                callback = false, exactTransaction = false,
+                repeatedSafe = false, registered = false,
+                receiptCleanup = true, cleaned = false;
+            int bardLevel = -1, gunslingerLevel = -1,
+                pistolDelta = -1, musketDelta = -1,
+                powderDelta = -1, ballDelta = -1, kitDelta = -1;
+            try
+            {
+                entity = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                UnitDescriptor descriptor = entity == null ? null :
+                    entity.Descriptor;
+                if (descriptor == null)
+                    throw new InvalidOperationException(label +
+                        " has no disposable descriptor.");
+                Type controllerType = typeof(
+                    Kingmaker.UnitLogic.Class.LevelUp.LevelUpController);
+                MethodInfo start = controllerType.GetMethods(
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.Static).Single(value =>
+                        value.Name == "StartWithoutAssigningStaticInstance" &&
+                        value.GetParameters().Length == 5);
+                MethodInfo selectClass = controllerType.GetMethod("SelectClass",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintCharacterClass), typeof(bool) }, null);
+                MethodInfo addArchetype = controllerType.GetMethod("AddArchetype",
+                    BindingFlags.Public | BindingFlags.Instance, null,
+                    new[] { typeof(BlueprintArchetype) }, null);
+                MethodInfo mechanics = controllerType.GetMethod(
+                    "ApplyClassMechanics", BindingFlags.Public |
+                    BindingFlags.Instance);
+                MethodInfo apply = controllerType.GetMethod("ApplyLevelup",
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.Instance);
+                MethodInfo cancel = controllerType.GetMethod("Cancel",
+                    BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo commit = controllerType.GetMethod("Commit",
+                    BindingFlags.Public | BindingFlags.Instance);
+                if (selectClass == null || addArchetype == null ||
+                    mechanics == null || apply == null || cancel == null ||
+                    commit == null)
+                    throw new MissingMethodException(label +
+                        " native level-up contract is incomplete.");
+
+                object charGen = Enum.Parse(start.GetParameters()[4]
+                    .ParameterType, "CharGen", false);
+                seed = start.Invoke(null, new object[] {
+                    descriptor, false, null, null, charGen });
+                if (!(bool)selectClass.Invoke(seed,
+                        new object[] { bard, false }))
+                    throw new InvalidOperationException(label +
+                        " Bard seed selection was rejected.");
+                mechanics.Invoke(seed, null);
+                apply.Invoke(seed, new object[] { descriptor });
+                cancel.Invoke(seed, null);
+                seed = null;
+
+                registered = !allCharacters.Any(value => ReferenceEquals(
+                    value, entity));
+                if (registered) allCharacters.Add(entity);
+                object levelUp = Enum.Parse(start.GetParameters()[4]
+                    .ParameterType, "LevelUp", false);
+                Action onSuccess = () => callback = true;
+                controller = start.Invoke(null, new object[] {
+                    descriptor, false, null, onSuccess, levelUp });
+                selected = (bool)selectClass.Invoke(controller,
+                    new object[] { gunslinger, false });
+                archetypeSelected = selected && (bool)addArchetype.Invoke(
+                    controller, new object[] { archetype });
+                mechanics.Invoke(controller, null);
+                UnitDescriptor preview = ReadExactMember(controller,
+                    "Preview") as UnitDescriptor;
+                ClassData previewData = preview == null ? null :
+                    preview.Progression.GetClassData(gunslinger);
+                previewExact = previewData != null &&
+                    previewData.Archetypes.Count(value => ReferenceEquals(
+                        value, archetype)) == 1;
+                commit.Invoke(controller, null);
+                controller = null;
+
+                bardLevel = descriptor.Progression.GetClassLevel(bard);
+                gunslingerLevel = descriptor.Progression.GetClassLevel(gunslinger);
+                ClassData finalized = descriptor.Progression.GetClassData(
+                    gunslinger);
+                finalizedExact = finalized != null &&
+                    finalized.Archetypes.Count(value => ReferenceEquals(
+                        value, archetype)) == 1;
+                ItemEntityWeapon[] addedFirearms =
+                    EnumerateRuntimeInventory(player.Inventory)
+                    .Where(item => !inventoryBefore.Any(existing =>
+                        ReferenceEquals(existing, item)))
+                    .OfType<ItemEntityWeapon>().Where(item =>
+                        BlueprintBootstrap.ProductionFirearms.Entries.Any(entry =>
+                            ReferenceEquals(entry.Item, item.Blueprint)))
+                    .ToArray();
+                ItemEntityWeapon granted = addedFirearms.Length == 1 ?
+                    addedFirearms[0] : null;
+                pistolDelta = player.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item) -
+                    pistolBefore;
+                musketDelta = player.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item) -
+                    musketBefore;
+                powderDelta = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder) -
+                    powderBefore;
+                ballDelta = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall) - ballBefore;
+                kitDelta = player.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit) -
+                    kitBefore;
+                UnitEntityData owner;
+                bool expectsPistol = ReferenceEquals(expectedFirearm,
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                exactTransaction = granted != null &&
+                    ReferenceEquals(granted.Blueprint, expectedFirearm) &&
+                    BatteredFirearmOriginRuntime.TryGetOwner(granted,
+                        out owner) &&
+                    BatteredFirearmOriginRuntime.SameStableOwner(owner,
+                        entity) &&
+                    FirearmRuntimeState.ReadStateTokenIds(granted).Count == 0 &&
+                    pistolDelta == (expectsPistol ? 1 : 0) &&
+                    musketDelta == (expectsPistol ? 0 : 1) &&
+                    powderDelta == 20 && ballDelta == 20 && kitDelta == 1;
+
+                long grantsBeforeRepeat =
+                    GunslingerStartingFirearmGrantTransaction.Grants;
+                bool repeated = GunslingerStartingFirearmGrantTransaction
+                    .CompleteTransition(new GunslingerLevelTransitionSnapshot(
+                        descriptor, 0), descriptor);
+                repeatedSafe = !repeated &&
+                    GunslingerStartingFirearmGrantTransaction.Grants ==
+                        grantsBeforeRepeat &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item) -
+                        pistolBefore == pistolDelta &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.ProductionFirearms.Musket.Item) -
+                        musketBefore == musketDelta &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) -
+                        powderBefore == 20 &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.LeadBall) -
+                        ballBefore == 20;
+            }
+            finally
+            {
+                MethodInfo cancel = typeof(Kingmaker.UnitLogic.Class.LevelUp.
+                    LevelUpController).GetMethod("Cancel",
+                        BindingFlags.Public | BindingFlags.Instance);
+                if (controller != null && cancel != null)
+                    cancel.Invoke(controller, null);
+                if (seed != null && cancel != null) cancel.Invoke(seed, null);
+                ItemEntityWeapon[] cleanupFirearms =
+                    EnumerateRuntimeInventory(player.Inventory)
+                    .Where(item => !inventoryBefore.Any(existing =>
+                        ReferenceEquals(existing, item)))
+                    .OfType<ItemEntityWeapon>().Where(item =>
+                        BlueprintBootstrap.ProductionFirearms.Entries.Any(entry =>
+                            ReferenceEquals(entry.Item, item.Blueprint)))
+                    .ToArray();
+                foreach (ItemEntityWeapon firearm in cleanupFirearms)
+                {
+                    UnitEntityData owner;
+                    if (entity != null &&
+                        BatteredFirearmOriginRuntime.TryGetOwner(firearm,
+                            out owner) &&
+                        BatteredFirearmOriginRuntime.SameStableOwner(owner,
+                            entity))
+                        receiptCleanup =
+                            GunslingerStartingFirearmGrantTransaction
+                                .RemoveReceiptForRuntimeTest(firearm, entity) &&
+                            receiptCleanup;
+                    player.Inventory.Remove(firearm);
+                    firearm.Dispose();
+                }
+                int powderExcess = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder) -
+                    powderBefore;
+                if (powderExcess > 0) player.Inventory.Remove(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder,
+                    powderExcess);
+                int ballExcess = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall) - ballBefore;
+                if (ballExcess > 0) player.Inventory.Remove(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall, ballExcess);
+                int kitExcess = player.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit) -
+                    kitBefore;
+                if (kitExcess > 0) player.Inventory.Remove(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit,
+                    kitExcess);
+                if (registered) allCharacters.Remove(entity);
+                if (entity != null) entity.Dispose();
+                cleaned = SameReferences(inventoryBefore,
+                        SnapshotReferences(player.Inventory)) &&
+                    SameReferences(allCharactersBefore,
+                        SnapshotReferences(allCharacters)) && receiptCleanup;
+            }
+            return new MulticlassStarterCaseResult
+            {
+                Passed = selected && archetypeSelected && previewExact &&
+                    finalizedExact && callback && bardLevel == 1 &&
+                    gunslingerLevel == 1 && exactTransaction && repeatedSafe &&
+                    cleaned,
+                Observed = label + ":selected=" + selected + "/" +
+                    archetypeSelected + ";preview=" + previewExact +
+                    ";final=" + bardLevel + "/" + gunslingerLevel + "/" +
+                    finalizedExact + ";delta=" + pistolDelta + "/" +
+                    musketDelta + "/" + powderDelta + "/" + ballDelta +
+                    "/" + kitDelta + ";bound=" + exactTransaction +
+                    ";repeat=" + repeatedSafe + ";cleaned=" + cleaned
+            };
         }
 
         private RuntimeTestResult RunDisposableGunslingerRespecPreview()
@@ -19906,6 +20458,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] inventoryBefore = SnapshotReferences(inventory);
             Player runtimePlayer = player as Player;
             Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
+            ItemEntityWeapon starter = null;
             object controller = null;
             BlueprintItem[] startingItems = null;
             int[] startingCounts = null;
@@ -19914,7 +20467,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             int previewLevel = -1, committedLevel = -1;
             bool selected = false, callback = false, proficiencies = false,
                 fullProficiency = false, actionFactsExact = false,
-                proficiencyGrantExact = false, grit = false, cleaned = false;
+                proficiencyGrantExact = false, grit = false,
+                exactStarterGrant = false, repeatedStarterStable = false,
+                receiptRemoved = false, cleaned = false;
+            int pistolBefore = -1, powderBefore = -1, ballBefore = -1,
+                kitBefore = -1, pistolDelta = -1, powderDelta = -1,
+                ballDelta = -1, kitDelta = -1;
             var addedInventory = new List<object>();
             try
             {
@@ -19931,6 +20489,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 startingItems = gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
                 startingCounts = startingItems.Select(item =>
                     runtimePlayer.Inventory.Count(item)).ToArray();
+                pistolBefore = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                powderBefore = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                ballBefore = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall);
+                kitBefore = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit);
                 originalStartingGold = gunslinger.StartingGold;
                 moneyBefore = runtimePlayer.Money;
                 gunslinger.StartingGold = 0;
@@ -19971,6 +20537,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                 addedInventory.AddRange(EnumerateRuntimeInventory(runtimePlayer.Inventory)
                     .Where(item => !inventoryBefore.Any(existing =>
                         ReferenceEquals(existing, item))));
+                ItemEntityWeapon[] newFirearms = addedInventory
+                    .OfType<ItemEntityWeapon>().Where(item =>
+                        BlueprintBootstrap.ProductionFirearms.Entries.Any(entry =>
+                            ReferenceEquals(entry.Item, item.Blueprint)))
+                    .ToArray();
+                starter = newFirearms.Length == 1 ? newFirearms[0] : null;
+                pistolDelta = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item) -
+                    pistolBefore;
+                powderDelta = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder) -
+                    powderBefore;
+                ballDelta = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall) - ballBefore;
+                kitDelta = runtimePlayer.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit) -
+                    kitBefore;
+                UnitEntityData owner;
+                exactStarterGrant = starter != null &&
+                    ReferenceEquals(starter.Blueprint,
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item) &&
+                    pistolDelta == 1 && powderDelta == 20 &&
+                    ballDelta == 20 && kitDelta == 1 &&
+                    BatteredFirearmOriginRuntime.TryGetOwner(starter,
+                        out owner) &&
+                    BatteredFirearmOriginRuntime.SameStableOwner(owner,
+                        entity) &&
+                    FirearmRuntimeState.ReadStateTokenIds(starter).Count == 0;
+                object[] inventoryAfterFirst = SnapshotReferences(
+                    runtimePlayer.Inventory);
+                LevelUpHelper.AddStartingItems(descriptor);
+                repeatedStarterStable = SameReferences(inventoryAfterFirst,
+                        SnapshotReferences(runtimePlayer.Inventory)) &&
+                    runtimePlayer.Inventory.Count(
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item) -
+                        pistolBefore == 1 &&
+                    runtimePlayer.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) -
+                        powderBefore == 20 &&
+                    runtimePlayer.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.LeadBall) -
+                        ballBefore == 20 &&
+                    runtimePlayer.Inventory.Count(
+                        BlueprintBootstrap.GunsmithingSupplies.GunsmithKit) -
+                        kitBefore == 1;
                 committedLevel = descriptor.Progression.GetClassLevel(gunslinger);
                 proficiencies = descriptor.HasFact(
                     BlueprintBootstrap.GunslingerClass.Proficiencies);
@@ -19998,6 +20609,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GetMethod("Cancel", BindingFlags.Public | BindingFlags.Instance);
                 if (controller != null && cancel != null) cancel.Invoke(controller, null);
                 gunslinger.StartingGold = originalStartingGold;
+                if (starter != null)
+                    receiptRemoved = GunslingerStartingFirearmGrantTransaction
+                        .RemoveReceiptForRuntimeTest(starter, entity);
                 if (runtimePlayer != null && runtimePlayer.Inventory != null)
                 {
                     foreach (object item in addedInventory)
@@ -20026,14 +20640,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SameReferences(crossBefore, SnapshotReferences(cross)) &&
                     SameReferences(inventoryBefore, SnapshotReferences(inventory)) &&
                     (runtimePlayer == null || runtimePlayer.Money == moneyBefore) &&
-                    (entity == null || !ContainsReference(cross, entity));
+                    (entity == null || !ContainsReference(cross, entity)) &&
+                    (starter == null || receiptRemoved);
             }
             string observed = "selected=" + selected + ";preview=" + previewLevel +
                 ";committed=" + committedLevel + ";callback=" + callback +
                 ";proficiencies=" + proficiencies +
                 ";fullProficiency=" + fullProficiency +
                 ";proficiencyGrantExact=" + proficiencyGrantExact +
-                ";actionFactsExact=" + actionFactsExact + ";grit=" + grit;
+                ";actionFactsExact=" + actionFactsExact + ";grit=" + grit +
+                ";starter=" + exactStarterGrant + ";delta=" + pistolDelta +
+                "/" + powderDelta + "/" + ballDelta + "/" + kitDelta +
+                ";repeat=" + repeatedStarterStable +
+                ";receiptCleanup=" + receiptRemoved;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("native-character-creation-commit",
@@ -20045,6 +20664,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, proficiencies && fullProficiency &&
                         proficiencyGrantExact && actionFactsExact && grit,
                     "exact committed descriptor facts and AddFacts identities after native Commit"),
+                Assertion("creation-starter-transaction",
+                    "one owner-bound production Pistol, 20 Black Powder, 20 Lead Ball, and one Gunsmith's Kit with no repeated native duplicate",
+                    observed, exactStarterGrant && repeatedStarterStable,
+                    "native AddStartingItems plus durable owner receipt"),
                 Assertion("external-isolation",
                     "unchanged party, units, cross-scene, companions, inventory, and money",
                     "cleaned=" + cleaned, cleaned,
@@ -20260,6 +20883,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>();
             foreach (RuntimeTestResult result in new[]
             {
+                RunDisposableGunslingerBroadRespecTransition(null, null,
+                    "base-to-base"),
                 RunDisposableGunslingerBroadRespecTransition(null, pistolero,
                     "base-to-pistolero"),
                 RunDisposableGunslingerBroadRespecTransition(null, musketMaster,
@@ -20302,6 +20927,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] remoteBefore = SnapshotReferences(remote);
             object[] crossBefore = SnapshotReferences(cross);
             object[] inventoryBefore = SnapshotReferences(player.Inventory);
+            object[] respecInventoryBefore = inventoryBefore;
+            List<UnitEntityData> allCharacters = player.AllCharacters;
+            object[] allCharactersBefore = SnapshotReferences(allCharacters);
             long moneyBefore = player.Money;
             BlueprintItem[] startingItems = gunslinger.StartingItems ?? Array.Empty<BlueprintItem>();
             int[] startingCounts = startingItems.Select(item =>
@@ -20310,13 +20938,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             var addedInventory = new List<object>();
             Kingmaker.EntitySystem.Entities.UnitEntityData source = null;
             Kingmaker.EntitySystem.Entities.UnitEntityData replacementEntity = null;
+            ItemEntityWeapon starter = null;
             object seed = null;
             var handler = new BroadRespecInitiationHandler
             {
                 SelectedClass = gunslinger
             };
             bool subscribed = false, callback = false, facts = false,
-                descriptorsAlias = false, cleaned = false;
+                descriptorsAlias = false, registered = false,
+                starterTransaction = false, receiptRemoved = false,
+                cleaned = false;
             bool expectedVisible = false, gritPresent = false,
                 archetypeReconciledObserved = false, exactScopeObserved = false,
                 exactActionsObserved = false, hasFull = false,
@@ -20325,6 +20956,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             string replacementArchetypeNames = "<unavailable>";
             int sourceFighter = -1, sourceGunslinger = -1,
                 replacementFighter = -1, replacementGunslinger = -1;
+            int pistolBefore = player.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item),
+                musketBefore = player.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item),
+                powderBefore = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder),
+                ballBefore = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall),
+                kitBefore = player.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit);
+            int pistolBeforeRespec = pistolBefore,
+                musketBeforeRespec = musketBefore,
+                powderBeforeRespec = powderBefore,
+                ballBeforeRespec = ballBefore,
+                kitBeforeRespec = kitBefore;
             try
             {
                 source = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -20375,7 +21021,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cancel.Invoke(seed, null);
                 seed = null;
 
+                respecInventoryBefore = SnapshotReferences(player.Inventory);
+                pistolBeforeRespec = player.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                musketBeforeRespec = player.Inventory.Count(
+                    BlueprintBootstrap.ProductionFirearms.Musket.Item);
+                powderBeforeRespec = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                ballBeforeRespec = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall);
+                kitBeforeRespec = player.Inventory.Count(
+                    BlueprintBootstrap.GunsmithingSupplies.GunsmithKit);
+
                 gunslinger.StartingGold = 0;
+                registered = !allCharacters.Any(value => ReferenceEquals(
+                    value, source));
+                if (registered) allCharacters.Add(source);
                 handler.SelectedArchetype = targetArchetype;
                 EventBus.Subscribe(handler);
                 subscribed = true;
@@ -20391,6 +21052,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                     handler.Replacement.Progression.GetClassLevel(fighter);
                 replacementGunslinger = handler.Replacement == null ? -1 :
                     handler.Replacement.Progression.GetClassLevel(gunslinger);
+                ItemEntityWeapon[] newFirearms = addedInventory
+                    .OfType<ItemEntityWeapon>().Where(item =>
+                        BlueprintBootstrap.ProductionFirearms.Entries.Any(entry =>
+                            ReferenceEquals(entry.Item, item.Blueprint)))
+                    .ToArray();
+                ItemEntityWeapon[] respecFirearms = EnumerateRuntimeInventory(
+                        player.Inventory).Where(item => !respecInventoryBefore.Any(
+                            existing => ReferenceEquals(existing, item)))
+                    .OfType<ItemEntityWeapon>().Where(item =>
+                        BlueprintBootstrap.ProductionFirearms.Entries.Any(entry =>
+                            ReferenceEquals(entry.Item, item.Blueprint)))
+                    .ToArray();
+                starter = newFirearms.Length == 1 ? newFirearms[0] : null;
+                bool expectsStarter = transition == "fighter-to-base";
+                UnitEntityData starterOwner;
+                starterTransaction = expectsStarter ?
+                    respecFirearms.Length == 1 &&
+                    ReferenceEquals(respecFirearms[0].Blueprint,
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item) &&
+                    BatteredFirearmOriginRuntime.TryGetOwner(respecFirearms[0],
+                        out starterOwner) &&
+                    BatteredFirearmOriginRuntime.SameStableOwner(starterOwner,
+                        source) &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item) ==
+                        pistolBeforeRespec + 1 &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.ProductionFirearms.Musket.Item) ==
+                        musketBeforeRespec &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                        powderBeforeRespec + 20 &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.LeadBall) ==
+                        ballBeforeRespec + 20 &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.GunsmithingSupplies.GunsmithKit) ==
+                        kitBeforeRespec + 1 :
+                    respecFirearms.Length == 0 &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.ProductionFirearms.Pistol.Item) ==
+                        pistolBeforeRespec &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.ProductionFirearms.Musket.Item) ==
+                        musketBeforeRespec &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                        powderBeforeRespec &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.LeadBall) ==
+                        ballBeforeRespec &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.GunsmithingSupplies.GunsmithKit) ==
+                        kitBeforeRespec;
                 descriptorsAlias = handler.Replacement != null &&
                     ReferenceEquals(source.Descriptor, handler.Replacement);
                 bool targetPistolero = ReferenceEquals(targetArchetype,
@@ -20482,6 +21197,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cancel.Invoke(handler.Controller, null);
                 if (seed != null && cancel != null) cancel.Invoke(seed, null);
                 gunslinger.StartingGold = originalStartingGold;
+                if (starter != null)
+                    receiptRemoved = GunslingerStartingFirearmGrantTransaction
+                        .RemoveReceiptForRuntimeTest(starter, source);
                 foreach (object item in addedInventory)
                 {
                     object ignored;
@@ -20499,6 +21217,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (excess > 0)
                         player.Inventory.Remove(startingItems[index], excess);
                 }
+                if (registered) allCharacters.Remove(source);
                 if (replacementEntity != null &&
                     !ReferenceEquals(replacementEntity, source) &&
                     !replacementEntity.Destroyed &&
@@ -20511,7 +21230,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SameReferences(remoteBefore, SnapshotReferences(remote)) &&
                     SameReferences(crossBefore, SnapshotReferences(cross)) &&
                     SameReferences(inventoryBefore, SnapshotReferences(player.Inventory)) &&
-                    player.Money == moneyBefore;
+                    SameReferences(allCharactersBefore,
+                        SnapshotReferences(allCharacters)) &&
+                    player.Money == moneyBefore &&
+                    (starter == null || receiptRemoved);
             }
             string observed = "transition=" + transition + ";handler=" +
                 handler.Invoked + ";selected=" +
@@ -20525,18 +21247,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 replacementArchetypeNames + ";scope=" + exactScopeObserved +
                 ";full/one/two=" + hasFull + "/" + hasOneHanded + "/" +
                 hasTwoHanded + ";actions=" + exactActionsObserved + "/" +
-                presentActionCount + "/" + expectedActionCount;
+                presentActionCount + "/" + expectedActionCount +
+                ";starter=" + starterTransaction +
+                ";receiptCleanup=" + receiptRemoved;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion(transition + "-native-replacement",
                     "handler/callback and replacement Gunslinger 1",
                     observed, handler.Invoked && handler.Selected && callback &&
+                        sourceFighter == 0 && sourceGunslinger == 1 &&
                         replacementFighter == 0 && replacementGunslinger == 1,
                     "Player.RespecCompanion plus exact initiation handler and Commit"),
                 Assertion(transition + "-replacement-facts",
                     "only the intended full or scoped proficiency, its distinct action facts, and grit installed",
                     observed, facts,
                     "replacement descriptor exact visible/internal proficiency and action facts"),
+                Assertion(transition + "-starter-transaction",
+                    transition == "fighter-to-base" ?
+                        "first Gunslinger level grants one bound Pistol and the exact starter supplies" :
+                        "respec at existing Gunslinger level one grants no additional starter",
+                    observed, starterTransaction,
+                    "Player.RespecCompanion finalized success callback and exact inventory delta"),
                 Assertion(transition + "-external-isolation",
                     "party, units, companions, cross-scene, inventory, and money restored",
                     "cleaned=" + cleaned, cleaned,
@@ -21419,7 +22150,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Deeds.DeadShotExecutionResult mixed = null;
             Deeds.DeadShotExecutionResult allMisfire = null;
             int gritBefore = -1, gritAfterMixed = -1, gritAfterMisfire = -1;
-            long conditionLogsBefore = FirearmConditionCombatLog.Published;
+            long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
             bool cleaned = false;
             int targetDamageBefore = 0;
             string stage = "blueprint-contract";
@@ -21497,7 +22228,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";misfireCondition=" + allMisfire.After.Condition +
                 ";grit=" + gritBefore + "->" + gritAfterMixed +
                 "->" + gritAfterMisfire + ";conditionLogs=" +
-                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                (FirearmConditionCombatLog.Attempts - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             bool mixedContract = mixed != null && mixed.Probes.Length == 3 &&
                 mixed.Decision.AttackBonuses.SequenceEqual(new[] { 11, 6, 1 }) &&
@@ -21530,13 +22261,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, misfireContract,
                     "aggregate misfire and exact item-state transition"),
                 Assertion("dead-shot-condition-combat-log",
-                    "one native player log: Normal -> Broken (Dead Shot misfire)",
+                    "one concise combat-log attempt: Normal -> Broken (Dead Shot misfire)",
                     observed,
-                    FirearmConditionCombatLog.Published == conditionLogsBefore + 1 &&
+                    FirearmConditionCombatLog.Attempts == conditionLogsBefore + 1 &&
                     FirearmConditionCombatLog.LastMessage != null &&
                     FirearmConditionCombatLog.LastMessage.Contains(
-                        "Normal -> Broken (Dead Shot misfire)"),
-                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                        ": Broken (misfire)."),
+                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
                 Assertion("dead-shot-cost", "one grit per accepted delivery",
                     observed, gritBefore > 0 && gritAfterMixed == gritBefore - 1 &&
                     gritAfterMisfire == gritAfterMixed,
@@ -21574,7 +22305,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int targetCount = -1, registeredCount = -1;
             bool firstRegistered = false, secondRegistered = false,
                 cleaned = false, commandConstructed = false;
-            long conditionLogsBefore = FirearmConditionCombatLog.Published;
+            long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
             try
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
@@ -21690,7 +22421,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";allMisfires=" + allMisfire.Volley.MisfireRollCount +
                 ";allCondition=" + allMisfire.After.Condition +
                 ";conditionLogs=" +
-                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                (FirearmConditionCombatLog.Attempts - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             bool transaction = registeredCount == 2 && commandConstructed &&
                 mixed != null &&
@@ -21723,13 +22454,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, transaction,
                     "command construction is not delivery evidence; direct transaction remains mechanics-only"),
                 Assertion("scatter-condition-combat-log",
-                    "one native player log: Normal -> Broken (scatter misfire)",
+                    "one concise combat-log attempt: Normal -> Broken (scatter misfire)",
                     observed,
-                    FirearmConditionCombatLog.Published >= conditionLogsBefore + 1 &&
+                    FirearmConditionCombatLog.Attempts >= conditionLogsBefore + 1 &&
                     FirearmConditionCombatLog.LastMessage != null &&
                     FirearmConditionCombatLog.LastMessage.Contains(
-                        "Normal -> Broken (scatter misfire)"),
-                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                        ": Broken (misfire)."),
+                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
                 Assertion("scatter-thundering-fallback",
                     "authorized fallback is exactly +4 Reliable, excludes native Thundering, and still hits",
                     "static=" + (fallbackEnchantments == null ? "<null>" :
@@ -22070,7 +22801,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             FirearmCondition ordinaryCondition = FirearmCondition.Normal;
             long scheduledBefore = -1, scheduledSuppressed = -1,
                 scheduledAfter = -1;
-            long conditionLogsBefore = FirearmConditionCombatLog.Published;
+            long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
             bool markerConsumed = false, cleaned = false;
             string stage = "blueprint-contract";
             bool blueprintContract = gunslinger.Progression.LevelEntries[10]
@@ -22160,7 +22891,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "," + ordinaryRounds + ";scheduled=" + scheduledBefore +
                 "->" + scheduledSuppressed + "->" + scheduledAfter +
                 ";markerConsumed=" + markerConsumed + ";conditionLogs=" +
-                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                (FirearmConditionCombatLog.Attempts - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -22181,13 +22912,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         scheduledAfter == scheduledSuppressed + 1,
                     "ordinary Broken-to-Wrecked explosion pipeline"),
                 Assertion("misfire-condition-combat-log",
-                    "suppressed attempt logs nothing; ordinary Broken -> Wrecked logs once",
+                    "suppressed event logs nothing; ordinary Broken -> Wrecked attempts once",
                     observed,
-                    FirearmConditionCombatLog.Published == conditionLogsBefore + 1 &&
+                    FirearmConditionCombatLog.Attempts == conditionLogsBefore + 1 &&
                     FirearmConditionCombatLog.LastMessage != null &&
                     FirearmConditionCombatLog.LastMessage.Contains(
-                        "Broken -> Wrecked (misfire)"),
-                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                        ": Wrecked (misfire)."),
+                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
                 Assertion("external-isolation",
                     "unchanged party and global-unit snapshots", "cleaned=" + cleaned,
                     cleaned, "item state forgotten and disposables disposed"),
@@ -25050,7 +25781,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 moveCondition = FirearmCondition.Wrecked,
                 rejectedCondition = FirearmCondition.Wrecked;
             bool cleaned = false; string stage = "construct-disposable";
-            long conditionLogsBefore = FirearmConditionCombatLog.Published;
+            long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
             bool nativePresentation = false, brokenAvailable = false,
                 wreckedRejected = false, zeroGritRejected = false;
             int staticBefore = -1, staticAfterStandard = -1,
@@ -25185,7 +25916,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 zeroGritRejected + ";static=" + staticBefore + "," +
                 staticAfterStandard + "," + staticAfterMove + "," +
                 staticAfterRejected + ";conditionLogs=" +
-                (FirearmConditionCombatLog.Published - conditionLogsBefore) +
+                (FirearmConditionCombatLog.Attempts - conditionLogsBefore) +
                 ";lastConditionLog=" + FirearmConditionCombatLog.LastMessage;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -25213,13 +25944,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     QuickClearRuntimeDiagnostics.Faults == 0,
                     "production deed diagnostics"),
                 Assertion("quick-clear-condition-combat-log",
-                    "two native player logs; rejected attempt logs nothing",
+                    "two concise combat-log attempts; rejected action logs nothing",
                     observed,
-                    FirearmConditionCombatLog.Published == conditionLogsBefore + 2 &&
+                    FirearmConditionCombatLog.Attempts == conditionLogsBefore + 2 &&
                     FirearmConditionCombatLog.LastMessage != null &&
                     FirearmConditionCombatLog.LastMessage.Contains(
-                        "Broken -> Normal (Quick Clear)"),
-                    "IWarningNotificationUIHandler event consumed by BattleLogManager"),
+                        ": Normal (Quick Clear)."),
+                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
                 Assertion("magic-static-quick-clear-lifecycle",
                     "The Last Word retains +5, Reliable, and Seeking through both Quick Clear paths and rejection",
                     observed, staticBefore == 3 && staticAfterStandard == 3 &&

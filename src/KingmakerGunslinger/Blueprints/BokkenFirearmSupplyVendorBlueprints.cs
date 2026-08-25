@@ -9,7 +9,7 @@ using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Blueprints
 {
-    internal static class BokkenAmmunitionVendorBlueprints
+    internal static class BokkenFirearmSupplyVendorBlueprints
     {
         internal const string TableGuid = "4778ecb5df5d48742b9be5a204ed4657";
         internal const string ExpectedTableName = "C11_BokkenVendorTable";
@@ -20,14 +20,20 @@ namespace KingmakerGunslinger.Blueprints
             "57f84fdde3cc2994284fb3acc4a3cb97";
         internal const string ZeroStateOwnerName = "OTP_Bokken_ZeroState";
         internal const int AmmunitionCount = 100;
+        internal const int RepairKitCount = 5;
+        internal const int OverhaulKitCount = 2;
+        internal const int GunsmithKitCount = 1;
 
         internal static BokkenVendorPublication Publish(
             LibraryScriptableObject library,
-            BasicAmmunitionBlueprintSet ammunition, bool publish,
+            BasicAmmunitionBlueprintSet ammunition, BlueprintItem repairKit,
+            GunsmithingSupplyBlueprintSet supplies, bool publish,
             ModLogger logger)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (ammunition == null) throw new ArgumentNullException("ammunition");
+            if (repairKit == null) throw new ArgumentNullException("repairKit");
+            if (supplies == null) throw new ArgumentNullException("supplies");
             if (logger == null) throw new ArgumentNullException("logger");
 
             BlueprintUnitLoot table =
@@ -43,12 +49,21 @@ namespace KingmakerGunslinger.Blueprints
             {
                 ammunition.BlackPowder,
                 ammunition.LeadBall,
-                ammunition.PaperCartridge
+                ammunition.PaperCartridge,
+                repairKit,
+                supplies.OverhaulKit,
+                supplies.GunsmithKit
             };
-            BlueprintItem[] items = publish ? owned : Array.Empty<BlueprintItem>();
+            BlueprintItem[] items = publish ? owned :
+                Array.Empty<BlueprintItem>();
             int[] counts = publish ? new[]
             {
-                AmmunitionCount, AmmunitionCount, AmmunitionCount
+                AmmunitionCount,
+                AmmunitionCount,
+                AmmunitionCount,
+                RepairKitCount,
+                OverhaulKitCount,
+                GunsmithKitCount
             } : Array.Empty<int>();
             BlueprintComponent[] existing = table.ComponentsArray ??
                 Array.Empty<BlueprintComponent>();
@@ -62,8 +77,12 @@ namespace KingmakerGunslinger.Blueprints
                     CapitalVendorBlueprints.ReadCount(found[0]) == counts[index])
                 .All(value => value);
             if (!obsolete && exactCounts)
-                return BokkenVendorPublication.Unchanged(table, existing, items,
-                    counts);
+            {
+                var unchanged = BokkenVendorPublication.Unchanged(table,
+                    existing, owned, items, counts);
+                unchanged.Validate();
+                return unchanged;
+            }
 
             BlueprintComponent[] retained = existing.Where(component =>
             {
@@ -75,7 +94,7 @@ namespace KingmakerGunslinger.Blueprints
             {
                 LootItemsPackFixed entry = CapitalVendorBlueprints.CreateFixedEntry(
                     item, counts[index]);
-                entry.name = "$KMG_BokkenAmmunition_" + item.name;
+                entry.name = "$KMG_BokkenFirearmSupply_" + item.name;
                 return (BlueprintComponent)entry;
             }).ToArray();
             VendorCatalogPublication<BlueprintComponent> transaction =
@@ -83,14 +102,25 @@ namespace KingmakerGunslinger.Blueprints
                     additions);
             table.ComponentsArray = transaction.Published;
             var publication = new BokkenVendorPublication(table, transaction,
-                items, counts, true, existing);
-            publication.Validate();
-            logger.Info("acquisition", "bokken-ammunition.published",
-                string.Format(CultureInfo.InvariantCulture,
-                    "Normalized {0} exact ammunition rows on {1} ({2}); enabled={3}; each count={4}.",
-                    items.Length, table.name, TableGuid, publish,
-                    publish ? AmmunitionCount : 0));
-            return publication;
+                owned, items, counts, true, existing);
+            try
+            {
+                publication.Validate();
+                logger.Info("acquisition", "bokken-firearm-supplies.published",
+                    string.Format(CultureInfo.InvariantCulture,
+                        "Normalized {0} exact firearm-supply rows on {1} ({2}); enabled={3}; ammunition={4}; repair={5}; overhaul={6}; gunsmith={7}.",
+                        items.Length, table.name, TableGuid, publish,
+                        publish ? AmmunitionCount : 0,
+                        publish ? RepairKitCount : 0,
+                        publish ? OverhaulKitCount : 0,
+                        publish ? GunsmithKitCount : 0));
+                return publication;
+            }
+            catch
+            {
+                table.ComponentsArray = existing;
+                throw;
+            }
         }
     }
 
@@ -98,18 +128,20 @@ namespace KingmakerGunslinger.Blueprints
     {
         private readonly BlueprintUnitLoot _table;
         private readonly VendorCatalogPublication<BlueprintComponent> _transaction;
+        private readonly BlueprintItem[] _owned;
         private readonly BlueprintItem[] _items;
         private readonly int[] _counts;
         private readonly BlueprintComponent[] _rollbackSnapshot;
 
         internal BokkenVendorPublication(BlueprintUnitLoot table,
             VendorCatalogPublication<BlueprintComponent> transaction,
-            BlueprintItem[] items, int[] counts, bool changed,
-            BlueprintComponent[] rollbackSnapshot = null)
+            BlueprintItem[] owned, BlueprintItem[] items, int[] counts,
+            bool changed, BlueprintComponent[] rollbackSnapshot = null)
         {
             _table = table ?? throw new ArgumentNullException("table");
             _transaction = transaction ?? throw new ArgumentNullException(
                 "transaction");
+            _owned = owned ?? throw new ArgumentNullException("owned");
             _items = items ?? throw new ArgumentNullException("items");
             _counts = counts ?? throw new ArgumentNullException("counts");
             _rollbackSnapshot = rollbackSnapshot ?? transaction.Rollback();
@@ -119,27 +151,38 @@ namespace KingmakerGunslinger.Blueprints
         internal bool Changed { get; private set; }
 
         internal static BokkenVendorPublication Unchanged(BlueprintUnitLoot table,
-            BlueprintComponent[] existing, BlueprintItem[] items, int[] counts)
+            BlueprintComponent[] existing, BlueprintItem[] owned,
+            BlueprintItem[] items, int[] counts)
         {
             return new BokkenVendorPublication(table,
                 VendorCatalogPublication<BlueprintComponent>.Create(existing,
-                    Array.Empty<BlueprintComponent>()), items, counts, false);
+                    Array.Empty<BlueprintComponent>()), owned, items, counts,
+                    false);
         }
 
         internal void Validate()
         {
             BlueprintComponent[] components = _table.ComponentsArray ??
                 Array.Empty<BlueprintComponent>();
-            for (int index = 0; index < _items.Length; index++)
+            foreach (BlueprintItem owned in _owned)
             {
+                int index = Array.FindIndex(_items, value =>
+                    ReferenceEquals(value, owned));
                 LootItemsPackFixed[] matches = components
                     .OfType<LootItemsPackFixed>().Where(value => ReferenceEquals(
-                        CapitalVendorBlueprints.ReadItem(value), _items[index]))
+                        CapitalVendorBlueprints.ReadItem(value), owned))
                     .ToArray();
+                if (index < 0)
+                {
+                    if (matches.Length != 0)
+                        throw new InvalidOperationException(
+                            "The disabled Bokken publication retained a project-owned row.");
+                    continue;
+                }
                 if (matches.Length != 1 || CapitalVendorBlueprints.ReadCount(
                         matches[0]) != _counts[index])
                     throw new InvalidOperationException(
-                        "The Bokken vendor publication failed exact validation.");
+                        "The Bokken firearm-supply publication failed exact validation.");
             }
         }
 

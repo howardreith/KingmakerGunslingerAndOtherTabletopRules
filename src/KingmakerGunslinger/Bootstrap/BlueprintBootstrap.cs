@@ -647,8 +647,8 @@ namespace KingmakerGunslinger.Bootstrap
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
             CordCampaignLootPublication cordCampaignLootPublication = null;
-            CapitalVendorPublication olegMaintenancePublication = null;
-            BokkenVendorPublication bokkenAmmunitionPublication = null;
+            OlegVendorCleanupPublication olegSupplyCleanupPublication = null;
+            BokkenVendorPublication bokkenSupplyPublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
             RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
@@ -939,13 +939,14 @@ namespace KingmakerGunslinger.Bootstrap
                 cordCampaignLootPublication = CordOfStubbornResolveBlueprints
                     .PublishCampaignLoot(library, cordOfStubbornResolve,
                         publicationPlan.CordCampaignLoot, context.Logger);
-                olegMaintenancePublication = OlegMaintenanceVendorBlueprints.Publish(
-                    library, firearmRepairKit, gunsmithingSupplies,
-                    publicationPlan.CapitalGunslingerStock, context.Logger);
-                bokkenAmmunitionPublication =
-                    BokkenAmmunitionVendorBlueprints.Publish(library,
-                        basicAmmunition,
+                olegSupplyCleanupPublication =
+                    OlegFirearmSupplyCleanupBlueprints.Normalize(library,
+                        basicAmmunition, firearmRepairKit, gunsmithingSupplies,
                         publicationPlan.CapitalGunslingerStock, context.Logger);
+                bokkenSupplyPublication =
+                    BokkenFirearmSupplyVendorBlueprints.Publish(library,
+                        basicAmmunition, firearmRepairKit, gunsmithingSupplies,
+                    publicationPlan.CapitalGunslingerStock, context.Logger);
                 if (publicationPlan.BeneathStolenLandsStock)
                     btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
                         library, productionFirearms, magicFirearms, basicAmmunition,
@@ -1105,25 +1106,25 @@ namespace KingmakerGunslinger.Bootstrap
                             lootRollbackException);
                     }
                 }
-                if (olegMaintenancePublication != null)
+                if (bokkenSupplyPublication != null)
                 {
-                    if (bokkenAmmunitionPublication != null)
-                    {
-                        try { bokkenAmmunitionPublication.Rollback(); }
-                        catch (Exception vendorRollbackException)
-                        {
-                            context.Logger.Failure("blueprints",
-                                "bokken-ammunition.rollback-failed",
-                                "Blueprint initialization failed and Bokken ammunition-stock rollback was refused.",
-                                vendorRollbackException);
-                        }
-                    }
-                    try { olegMaintenancePublication.Rollback(); }
+                    try { bokkenSupplyPublication.Rollback(); }
                     catch (Exception vendorRollbackException)
                     {
                         context.Logger.Failure("blueprints",
-                            "oleg-maintenance.rollback-failed",
-                            "Blueprint initialization failed and Oleg maintenance-stock rollback was refused.",
+                            "bokken-firearm-supplies.rollback-failed",
+                            "Blueprint initialization failed and Bokken firearm-supply rollback was refused.",
+                            vendorRollbackException);
+                    }
+                }
+                if (olegSupplyCleanupPublication != null)
+                {
+                    try { olegSupplyCleanupPublication.Rollback(); }
+                    catch (Exception vendorRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "oleg-firearm-supplies.rollback-failed",
+                            "Blueprint initialization failed and Oleg firearm-supply cleanup rollback was refused.",
                             vendorRollbackException);
                     }
                 }

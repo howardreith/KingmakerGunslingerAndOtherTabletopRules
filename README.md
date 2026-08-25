@@ -1,7 +1,12 @@
 # Kingmaker Gunslinger
 
-Version `0.0.101` releases the owner-accepted optional Craft Magic Items 2.1.0 integration
-without linking or packaging `CraftMagicItems.dll`. The qualified 0.0.99 inner
+Version `0.0.102` grants the owner-bound battered starter package on an exact
+committed Gunslinger 0-to-1 multiclass transition, consolidates the six early
+firearm supplies at Bokken, routes routine KMG feedback through Kingmaker's
+native combat log, and makes each newly constructed Acadamae Graduate summon
+obey the activatable's current `IsOn` state. It retains the owner-accepted
+optional Craft Magic Items 2.1.0 integration without linking or packaging
+`CraftMagicItems.dll`. The qualified 0.0.99 inner
 ammunition UI seam remains: CMI owns its complete top-level mundane selector on
 every IMGUI event, while KMG intercepts only the exact finalized Firearm
 Ammunition data object before CMI's equipment-only body. Exact 20-unit

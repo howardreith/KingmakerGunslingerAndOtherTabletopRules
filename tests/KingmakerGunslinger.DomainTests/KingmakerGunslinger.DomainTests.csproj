@@ -214,6 +214,7 @@
     <Compile Include="Sprint83Tests.cs" />
     <Compile Include="Sprint104Tests.cs" />
     <Compile Include="Sprint105Tests.cs" />
+    <Compile Include="MissionRegressionTests.cs" />
     <Compile Include="MysteriousStrangerTests.cs" />
     <Compile Include="FocusedAimSaveCompatibilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Archetypes\MysteriousStrangerPolicy.cs"><Link>Archetypes\MysteriousStrangerPolicy.cs</Link></Compile>
@@ -228,6 +229,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOwnershipRecord.cs"><Link>Gunsmithing\BatteredFirearmOwnershipRecord.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOwnershipLedger.cs"><Link>Gunsmithing\BatteredFirearmOwnershipLedger.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\StartingFirearmPolicy.cs"><Link>Gunsmithing\StartingFirearmPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\StartingFirearmGrantPolicy.cs"><Link>Gunsmithing\StartingFirearmGrantPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeModeStatePolicy.cs"><Link>Acadamae\AcadamaeModeStatePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Diagnostics\PlayerCombatLogMessagePolicy.cs"><Link>Diagnostics\PlayerCombatLogMessagePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\VendorCatalogPublication.cs"><Link>Acquisition\VendorCatalogPublication.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotStatus.cs"><Link>Deeds\StunningShotStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\StunningShotRequest.cs"><Link>Deeds\StunningShotRequest.cs</Link></Compile>

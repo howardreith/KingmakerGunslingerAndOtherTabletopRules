@@ -39,6 +39,13 @@ namespace KingmakerGunslinger.Gunsmithing
             return existing != null;
         }
 
+        internal bool HasReceipt(OriginatingUnitId ownerId)
+        {
+            if (ownerId == null) throw new ArgumentNullException("ownerId");
+            return _records.Any(record => string.Equals(record.OwnerId,
+                ownerId.Value, StringComparison.Ordinal));
+        }
+
         internal bool Remove(FirearmItemId itemId, OriginatingUnitId ownerId)
         {
             Require(itemId, ownerId);

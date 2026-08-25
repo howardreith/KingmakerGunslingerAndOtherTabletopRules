@@ -21,7 +21,8 @@ namespace KingmakerGunslinger.Gunsmithing
                 throw new InvalidOperationException(
                     "A battered firearm user exposes no stable Kingmaker unit identity.");
             return BatteredFirearmUsePolicy.Evaluate(true,
-                ReferenceEquals(owner, user), actualCondition,
+                BatteredFirearmOriginRuntime.SameStableOwner(owner, user),
+                actualCondition,
                 ordinarySaleValueGold);
         }
     }

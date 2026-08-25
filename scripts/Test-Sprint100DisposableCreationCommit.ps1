@@ -7,6 +7,7 @@ $catalog = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunsling
 $runner = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs')
 $common = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 $binder = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Gunsmithing\GunslingerStartingFirearmOwnershipPatch.cs')
+$transaction = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\Gunsmithing\GunslingerStartingFirearmGrantTransaction.cs')
 $start = $runner.IndexOf('private RuntimeTestResult RunDisposableGunslingerCreationCommit()')
 $end = $runner.IndexOf('private RuntimeTestResult RunDisposableGunslingerRespecCommit()', $start)
 if ($start -lt 0 -or $end -le $start) { throw 'Creation commit method is unavailable.' }
@@ -19,7 +20,11 @@ $checks = [ordered]@{
     'exact-chargen-commit' = $method.Contains('"CharGen", false') -and
         $method.Contains('commit.Invoke(controller, null)')
     'level-and-facts' = $method.Contains('committedLevel == 1') -and
-        $method.Contains('proficiencies && grit')
+        $method.Contains('proficiencies && fullProficiency') -and
+        $method.Contains('actionFactsExact && grit')
+    'exact-starter-transaction' = $method.Contains('exactStarterGrant && repeatedStarterStable') -and
+        $method.Contains('pistolDelta == 1') -and $method.Contains('powderDelta == 20') -and
+        $method.Contains('ballDelta == 20') -and $method.Contains('kitDelta == 1')
     'starting-grant-rollback' = $method.Contains('addedInventory.AddRange') -and
         $method.Contains('runtimePlayer.Inventory.Remove(startingItems[index], excess)') -and
         $method.Contains('gunslinger.StartingGold = originalStartingGold')
@@ -29,8 +34,14 @@ $checks = [ordered]@{
     'no-save-or-ui' = -not $method.Contains('SaveGame') -and
         -not $method.Contains('Game.Instance.SaveGame') -and
         -not $method.Contains('StartNewGame')
-    'absent-detached-grant-safe' = $binder.Contains('if (addedFirearms.Length == 0) return;') -and
-        $binder.Contains('if (addedFirearms.Length != 1 || !ReferenceEquals(')
+    'commit-scoped-detached-grant-safe' =
+        $transaction.Contains('observation.CommittedCharacterCreation') -and
+        $transaction.Contains('IsCommittedCharacterCreation(') -and
+        $binder.Contains('BeginCommit(__state') -and
+        $binder.Contains('State.Mode == LevelUpState.CharBuildMode.CharGen') -and
+        $binder.Contains('EndCommit(__state)') -and
+        $binder.Contains('private static Exception Finalizer(') -and
+        $transaction.Contains('if (current.Length != 1 || !ReferenceEquals(')
 }
 $failed = @($checks.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
 if ($failed.Count) { throw "Sprint 100 creation commit tests failed: $($failed -join ', ')" }
