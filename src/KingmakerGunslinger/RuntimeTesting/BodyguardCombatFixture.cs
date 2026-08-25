@@ -407,7 +407,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .AttackOfOpportunityCount).ToArray();
             float[] swiftBefore = Protectors.Select(value => value.CombatState
                 .Cooldown.SwiftAction).ToArray();
-            long combatLogsBefore = BodyguardCombatLog.Published;
+            long combatLogsBefore = BodyguardCombatLog.Attempts;
             int[] hpBefore = new[] { Target, ProtectorOne, ProtectorTwo }
                 .Select(value => value.HPLeft).ToArray();
             RuleAttackWithWeapon attack = null;
@@ -489,8 +489,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             value.Source.GetType().FullName + ":" +
                             value.FinalValue).ToArray(),
                 Rider = BodyguardQualificationRiderComponent.Describe(),
-                CombatLogCount = BodyguardCombatLog.Published - combatLogsBefore,
-                CombatLogLastMessage = BodyguardCombatLog.Published ==
+                CombatLogCount = BodyguardCombatLog.Attempts - combatLogsBefore,
+                CombatLogLastMessage = BodyguardCombatLog.Attempts ==
                     combatLogsBefore ? string.Empty :
                     BodyguardCombatLog.LastMessage ?? string.Empty,
                 NativeAcBeforeBodyguard = checked(

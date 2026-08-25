@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.Acadamae
 
         internal bool Begin(TCommand command)
         {
+            _active = null;
             if (command == null || !_commands.ContainsKey(command)) return false;
             _active = command;
             return true;
@@ -78,6 +79,13 @@ namespace KingmakerGunslinger.Acadamae
             EndAction(command);
             Release(entry);
             return true;
+        }
+
+        internal void Clear()
+        {
+            _commands.Clear();
+            _rules.Clear();
+            _active = null;
         }
 
         private void Release(Entry entry)

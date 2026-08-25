@@ -452,7 +452,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .AttackOfOpportunityCount;
                 int victimBefore = _victim.HPLeft;
                 int protectorBefore = _protector.HPLeft;
-                long logBefore = BodyguardCombatLog.Published;
+                long logBefore = BodyguardCombatLog.Attempts;
                 RuleAttackWithWeapon attack = null;
                 string control;
                 if (confirmation.HasValue)
@@ -516,7 +516,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";faults=" + BodyguardRuntimeDiagnostics.Faults +
                         ";duplicates=" +
                         BodyguardRuntimeDiagnostics.DuplicateCallbacks,
-                    CombatLog = BodyguardCombatLog.Published == logBefore ?
+                    CombatLog = BodyguardCombatLog.Attempts == logBefore ?
                         string.Empty : BodyguardCombatLog.LastMessage ??
                         string.Empty,
                     Observations = observations

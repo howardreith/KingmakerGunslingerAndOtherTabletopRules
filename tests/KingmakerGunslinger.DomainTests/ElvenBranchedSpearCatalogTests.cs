@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.101\"") &&
-                props.Contains("<KmgVersion>0.0.101</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.101-craft-magic-items-compatibility</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.101\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.101\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.101-craft-magic-items-compatibility\")"),
-                "Release and assembly identity are not transactionally pinned to the Craft Magic Items post-human refinement release.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.102\"") &&
+                props.Contains("<KmgVersion>0.0.102</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.102-starter-bokken-combat-log-acadamae-toggle</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.102\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.102\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.102-starter-bokken-combat-log-acadamae-toggle\")"),
+                "Release and assembly identity are not transactionally pinned to the Gunslinger fixes release.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-craft-magic-items-compatibility.zip") &&
+                "$($info.Id)-$($info.Version)-starter-bokken-combat-log-acadamae-toggle.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Craft Magic Items post-human refinement archive.");
-            Assertions.True(runtime.Contains("active version 0.0.101") &&
-                localBuild.Contains("active version 0.0.101") &&
-                localBuild.Contains("local-runtime\\0.0.101"),
+                "Package identity is not pinned to the Gunslinger fixes archive.");
+            Assertions.True(runtime.Contains("active version 0.0.102") &&
+                localBuild.Contains("active version 0.0.102") &&
+                localBuild.Contains("local-runtime\\0.0.102"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

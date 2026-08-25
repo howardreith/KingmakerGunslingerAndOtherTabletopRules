@@ -17,15 +17,13 @@ namespace KingmakerGunslinger.Rules
                 double.IsInfinity(penetrationRangeFeet) ||
                 penetrationRangeFeet <= 0d)
                 throw new ArgumentOutOfRangeException("penetrationRangeFeet");
-            string qualification = string.Equals(reason, "touch-ac-deadeye",
-                StringComparison.Ordinal) ? " (Deadeye)" : string.Empty;
+            if (string.Equals(reason, "touch-ac-deadeye",
+                    StringComparison.Ordinal))
+                return "Firearm: Touch AC (Deadeye).";
             return string.Format(CultureInfo.InvariantCulture,
-                "{0} attack: {1:0.#} ft.; penetration range {2:0.#} ft.; {3} AC{4}.",
-                definition.Kind,
-                distanceMeters / FirearmArmorClassService.MetersPerFoot,
-                penetrationRangeFeet,
+                "Firearm: {0} AC ({1:0.#} ft.).",
                 usesTouchArmorClass ? "Touch" : "Normal",
-                qualification);
+                distanceMeters / FirearmArmorClassService.MetersPerFoot);
         }
     }
 }

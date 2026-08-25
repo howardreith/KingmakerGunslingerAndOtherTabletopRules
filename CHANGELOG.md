@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.102-starter-bokken-combat-log-acadamae-toggle
+
+- Grants the exact owner-bound battered Pistol or Musket plus the established
+  starter supplies after a committed first Gunslinger multiclass level, with a
+  durable per-unit receipt, exact rollback, and native chargen/respec
+  idempotence.
+- Consolidates Black Powder, Lead Ball, Paper Cartridge, Repair Kits, Overhaul
+  Kits, and one exact Gunsmith's Kit at Bokken while removing every exact
+  project-owned firearm-supply row from Oleg.
+- Replaces routine warning overlays with concise native combat-log entries and
+  retains detailed event diagnostics in the mod log.
+- Makes Acadamae Graduate command construction authoritative on the native
+  activatable's current `IsOn` state while preserving already-armed command
+  snapshots through later deactivation.
+- Adds focused transaction/policy tests and guarded native lifecycle coverage;
+  the complete dependency-free suite contains 1,251 passing tests.
+
 ## 0.0.101-craft-magic-items-compatibility
 
 - Promotes the owner-accepted 0.0.100 Craft Magic Items candidate to a public
