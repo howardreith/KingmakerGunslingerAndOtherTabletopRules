@@ -1,7 +1,27 @@
 # Changelog
 
+## 0.0.99-craft-magic-items-ammunition-ui-repair
+
+- Removes the rejected conditional whole-method CMI mundane renderer prefix.
+  CMI retains its outer category and parent/subtype selection; a
+  capability-probed Harmony 2 transpiler intercepts only the finalized exact
+  Firearm Ammunition data object before `NewItemBaseIDs` and returns to CMI's
+  common money footer.
+- Preflights an immutable lower-panel plan, recursively unwraps reflected UI
+  failures, rethrows without invoking the ordinary body after partial custom
+  rendering, and defers bridge disable/graph rollback to `OnUpdate`.
+- Adds deterministic patch-shape, event-route, and deferred-failure coverage,
+  plus a guarded real-CMI observer for Layout/Repaint routing, immediate and
+  timed ammunition crafting, exact costs/counts/projects, KMG consumption, and
+  request-local state restoration.
+- Retains every qualified 0.0.98 graph, Reliable, weapon, module-state,
+  persistence, optional-dependency, SoundBank, and packaging contract.
+
 ## 0.0.98-craft-magic-items-compatibility
 
+- Rejected by first human ammunition UI testing: switching to Firearm
+  Ammunition alternated whole-method ownership across IMGUI passes and caused
+  `SelectionGrid`, layout-group, and GUIClip failures. Superseded by 0.0.99.
 - Adds an automatic optional reflection/Harmony bridge for active Craft Magic
   Items 2.1.0 installations without a static or packaged CMI dependency.
 - Publishes dedicated CMI Firearms and Firearm Ammunition categories, all five

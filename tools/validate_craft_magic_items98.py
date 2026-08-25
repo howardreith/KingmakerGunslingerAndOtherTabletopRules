@@ -15,6 +15,8 @@ INFORMATIONAL_VERSION = "0.0.98-craft-magic-items-compatibility"
 PACKAGE = "KingmakerGunslinger-0.0.98-local-runtime.zip"
 DETERMINISTIC_TEST_COUNT = 1238
 STATIC_KEY = "craftMagicItems98"
+FOCUSED_TEST_COUNT = 10
+PACKAGE_SUFFIX = "craft-magic-items-compatibility"
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
@@ -56,7 +58,7 @@ def validate(root: Path) -> None:
         "tests/KingmakerGunslinger.DomainTests/"
         "CraftMagicItemsCompatibilityTests.cs",
         "docs/CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md",
-        "docs/RELEASE-NOTES-0.0.98.md",
+        f"docs/RELEASE-NOTES-{VERSION}.md",
     )
     for relative in required:
         if not (root / relative).is_file():
@@ -94,8 +96,8 @@ def validate(root: Path) -> None:
         "Black Powder Charge", "KMG_AUTOMATION_WORKING",
         "Remaining uncertainty")
     require_tokens(root / required[10],
-        "Kingmaker Gunslinger 0.0.98",
-        "craft-magic-items-compatibility.zip",
+        f"Kingmaker Gunslinger {VERSION}",
+        f"{PACKAGE_SUFFIX}.zip",
         "CraftMagicItems.dll")
 
     project = (root / "src/KingmakerGunslinger/"
@@ -116,12 +118,13 @@ def validate(root: Path) -> None:
     runner = (root / "tests/KingmakerGunslinger.DomainTests/"
         "Program.cs").read_text(encoding="utf-8")
     if "CraftMagicItemsCompatibilityTests.cs" not in test_project or \
-            runner.count("craft-magic-items.") != 10:
-        raise AssertionError("Ten focused CMI compatibility tests are not registered")
+            runner.count("craft-magic-items.") != FOCUSED_TEST_COUNT:
+        raise AssertionError(
+            f"{FOCUSED_TEST_COUNT} focused CMI compatibility tests are not registered")
 
     package = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    if "craft-magic-items-compatibility.zip" not in package:
-        raise AssertionError("0.0.98 package identity is missing")
+    if f"{PACKAGE_SUFFIX}.zip" not in package:
+        raise AssertionError(f"{VERSION} package identity is missing")
     forbidden = ("CraftMagicItems.dll", "OwlcatKingmakerModCraftMagicItems",
         "external-cmi")
     if any(value in package for value in forbidden):

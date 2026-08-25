@@ -6,7 +6,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Security.Cryptography;
+using Harmony12;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.Items;
@@ -33,6 +35,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static bool _installed;
         private static bool _patched;
         private static bool _firstUpdateAttached;
+        private static bool _safeUpdateAttached;
         private static bool _rebuilding;
         private static bool _incompatibleLogged;
 
@@ -56,6 +59,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     CraftMagicItemsCompatibilityAvailability.Pending,
                     "Awaiting the exact live CraftMagicItems UMM entry.",
                     0, 0, 0));
+            AttachSafeUpdate(context);
             TryResolveAndPatch("package-load");
             AttachFirstUpdate(context);
         }
@@ -81,6 +85,22 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 _firstUpdateAttached = true;
             }
             context.ModEntry.OnUpdate += FirstUpdate;
+        }
+
+        private static void AttachSafeUpdate(ModContext context)
+        {
+            lock (Gate)
+            {
+                if (_safeUpdateAttached) return;
+                _safeUpdateAttached = true;
+            }
+            context.ModEntry.OnUpdate += SafeUpdate;
+        }
+
+        private static void SafeUpdate(UnityModManager.ModEntry entry,
+            float delta)
+        {
+            CraftMagicItemsReflectionBridge.ProcessDeferredUiFailure();
         }
 
         private static void TryResolveAndPatch(string checkpoint)
@@ -263,9 +283,9 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 Apply("owned-state-transfer", harmony, patch,
                     methodConstructor, contract.CraftItem,
                     Callback("CraftItemPrefix"), null);
-                Apply("ammunition-ui", harmony, patch, methodConstructor,
-                    contract.RenderMundane,
-                    Callback("RenderMundanePrefix"), null);
+                Apply("ammunition-ui-inner-seam", harmony, patch,
+                    methodConstructor, contract.RenderMundane, null, null,
+                    Callback("RenderMundaneTranspiler"));
                 Apply("toggle-rebuild", harmony, patch, methodConstructor,
                     contract.OnToggle, null, Callback("OnTogglePostfix"));
             }
@@ -303,12 +323,14 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             _context.Logger.Info("craft-magic-items",
                 "harmony.installed",
                 "owner=" + HarmonyOwner + ";patches=11;harmony=" +
-                harmonyType.Assembly.GetName().Version);
+                harmonyType.Assembly.GetName().Version + ";mundaneUiSeam=" +
+                contract.MundaneUiAnchor.Identity);
         }
 
         private static void Apply(string identity, object harmony,
             MethodInfo patch, ConstructorInfo harmonyMethodConstructor,
-            MethodBase target, MethodInfo prefix, MethodInfo postfix)
+            MethodBase target, MethodInfo prefix, MethodInfo postfix,
+            MethodInfo transpiler = null)
         {
             if (target == null) throw new ArgumentNullException("target");
             try
@@ -317,8 +339,11 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     harmonyMethodConstructor.Invoke(new object[] { prefix });
                 object postfixValue = postfix == null ? null :
                     harmonyMethodConstructor.Invoke(new object[] { postfix });
+                object transpilerValue = transpiler == null ? null :
+                    harmonyMethodConstructor.Invoke(new object[] {
+                        transpiler });
                 patch.Invoke(harmony, new[] { target, prefixValue,
-                    postfixValue, null, null });
+                    postfixValue, transpilerValue, null });
             }
             catch (Exception exception)
             {
@@ -448,18 +473,17 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             }
         }
 
-        private static bool RenderMundanePrefix()
+        private static IEnumerable<CodeInstruction> RenderMundaneTranspiler(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            try
-            {
-                return !CraftMagicItemsReflectionBridge.TryRenderAmmunition();
-            }
-            catch (Exception exception)
-            {
-                CraftMagicItemsReflectionBridge.ReportBoundaryFailure(
-                    "ammunition-ui", exception);
-                return true;
-            }
+            CraftMagicItemsContract contract = Contract;
+            if (contract == null) throw new InvalidOperationException(
+                "CMI mundane UI contract was unavailable during patching.");
+            return CraftMagicItemsMundaneUiTranspiler.Transpile(instructions,
+                generator, contract.MundaneUiAnchor,
+                contract.RecipeBasedType, contract.GetSelectedCrafter,
+                typeof(CraftMagicItemsReflectionBridge).GetMethod(
+                    "TryRenderSelectedAmmunition", Static));
         }
 
         private static void OnTogglePostfix(bool enabled)
@@ -478,9 +502,12 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 if (CraftMagicItemsReflectionBridge.IsFailed)
                     CraftMagicItemsCompatibilityStatusRegistry.Update(
                         new CraftMagicItemsCompatibilityStatus(
-                            CraftMagicItemsCompatibilityAvailability
-                                .Incompatible,
-                            "The CMI bridge failed closed earlier in this process.",
+                            CraftMagicItemsReflectionBridge.IsUiFaulted ?
+                                CraftMagicItemsCompatibilityAvailability
+                                    .BridgeFaulted :
+                                CraftMagicItemsCompatibilityAvailability
+                                    .Incompatible,
+                            "The KMG compatibility bridge failed closed earlier in this process.",
                             0, 0, 0));
                 else
                     CraftMagicItemsCompatibilityStatusRegistry.Update(

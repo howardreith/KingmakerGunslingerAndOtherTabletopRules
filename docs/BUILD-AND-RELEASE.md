@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.98` targets:
+Kingmaker Gunslinger `0.0.99` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -116,10 +116,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.98 `
+gh release download v0.0.99 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.98-craft-magic-items-compatibility.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.98"
+  --pattern 'KingmakerGunslinger-0.0.99-craft-magic-items-ammunition-ui-repair.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.99"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The

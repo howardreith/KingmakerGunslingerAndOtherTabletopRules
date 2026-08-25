@@ -8,7 +8,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         InstalledDisabled = 1,
         Incompatible = 2,
         Active = 3,
-        Pending = 4
+        Pending = 4,
+        BridgeFaulted = 5
     }
 
     internal sealed class CraftMagicItemsCompatibilityStatus
@@ -42,7 +43,10 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     Availability == CraftMagicItemsCompatibilityAvailability
                     .InstalledDisabled ? "installed but disabled" :
                     Availability == CraftMagicItemsCompatibilityAvailability
-                    .Pending ? "initializing" : "incompatible, see log";
+                    .Pending ? "initializing" :
+                    Availability == CraftMagicItemsCompatibilityAvailability
+                    .BridgeFaulted ? "KMG compatibility UI fault, see log" :
+                    "incompatible, see log";
             }
         }
     }

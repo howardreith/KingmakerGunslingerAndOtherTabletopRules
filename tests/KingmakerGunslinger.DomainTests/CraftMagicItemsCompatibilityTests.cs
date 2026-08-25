@@ -36,6 +36,11 @@ namespace KingmakerGunslinger.DomainTests
                     CraftMagicItemsCompatibilityAvailability.Incompatible,
                     "broken", 0, 0, 0).Display,
                 "The read-only UMM status must distinguish an incompatible contract.");
+            Assertions.Equal("KMG compatibility UI fault, see log",
+                new CraftMagicItemsCompatibilityStatus(
+                    CraftMagicItemsCompatibilityAvailability.BridgeFaulted,
+                    "render-fault", 0, 0, 0).Display,
+                "A KMG UI fault must not be mislabeled as an incompatible CMI contract.");
             AssertNoStaticDependency();
         }
 
@@ -73,6 +78,226 @@ namespace KingmakerGunslinger.DomainTests
                 coordinator.Contains("depth < 5"),
                 "Incompatible-contract logging is not bounded to one diagnostic.");
         }
+
+        internal static void MundaneUiPatchShapeIsExact()
+        {
+            CraftMagicItemsContractResolution supported =
+                CraftMagicItemsContractProbe.Probe(
+                    Assembly.GetExecutingAssembly(), false);
+            Assertions.True(supported.IsCompatible,
+                "The supported inner mundane seam was not accepted: " +
+                supported.FailedCheck);
+            Assertions.True(supported.Contract.MundaneUiAnchor.Identity
+                    .StartsWith("post-selected-crafting-data:",
+                        StringComparison.Ordinal) &&
+                supported.Contract.MundaneUiAnchor.OrdinaryBodyOffset <
+                    supported.Contract.MundaneUiAnchor.NewItemBaseOffset &&
+                supported.Contract.MundaneUiAnchor.NewItemBaseOffset <
+                    supported.Contract.MundaneUiAnchor.FooterOffset &&
+                supported.Contract.MundaneUiAnchor.LabelRenderer != null &&
+                supported.Contract.MundaneUiAnchor.LabelRenderer.Name ==
+                    "RenderLabelRow",
+                "The resolved inner seam does not precede the ordinary base access and common footer.");
+
+            Type main = typeof(CraftMagicItems.Main);
+            MethodInfo getCrafter = main.GetMethod("GetSelectedCrafter",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            CraftMagicItemsMundaneUiResolution missing =
+                CraftMagicItemsMundaneUiContract.Probe(typeof(
+                    CraftMagicItemsCompatibilityTests).GetMethod(
+                        "MissingMundaneRenderer", BindingFlags.Static |
+                        BindingFlags.NonPublic),
+                    typeof(CraftMagicItems.ItemCraftingData),
+                    typeof(CraftMagicItems.RecipeBasedItemCraftingData),
+                    getCrafter);
+            Assertions.False(missing.IsCompatible,
+                "A renderer missing the inner seam was accepted.");
+            Assertions.Equal("mundane-ui-outer-selector-label",
+                missing.FailedCheck,
+                "A missing IL anchor did not fail at one bounded check.");
+
+            CraftMagicItemsMundaneUiResolution ambiguous =
+                CraftMagicItemsMundaneUiContract.Probe(typeof(
+                    CraftMagicItemsCompatibilityTests).GetMethod(
+                        "AmbiguousMundaneRenderer", BindingFlags.Static |
+                        BindingFlags.NonPublic),
+                    typeof(CraftMagicItems.ItemCraftingData),
+                    typeof(CraftMagicItems.RecipeBasedItemCraftingData),
+                    getCrafter);
+            Assertions.False(ambiguous.IsCompatible,
+                "An ambiguous selected-data cast was accepted.");
+            Assertions.Equal("mundane-ui-selected-data-cast",
+                ambiguous.FailedCheck,
+                "An ambiguous IL anchor did not fail closed before UI use.");
+
+            string coordinator = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsOptionalExtensionCoordinator.cs");
+            string transpiler = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsMundaneUiTranspiler.cs");
+            Assertions.False(coordinator.Contains("RenderMundanePrefix") ||
+                coordinator.Contains("TryRenderAmmunition"),
+                "The rejected conditional whole-method prefix remains.");
+            foreach (string token in new[] { "RenderMundaneTranspiler",
+                "ammunition-ui-inner-seam", "Brfalse, continueOrdinary",
+                "Br, commonFooter", "ordinary.labels.Clear()",
+                "get_NewItemBaseIDs", "FooterFormat" })
+                Assertions.True(coordinator.Contains(token) ||
+                    transpiler.Contains(token),
+                    "The inner mundane interception lacks: " + token);
+        }
+
+        internal static void MundaneUiRouteIsStable()
+        {
+            Assertions.True(CraftMagicItemsMundaneUiEventPolicy.Is(
+                    "Layout", "Layout") &&
+                CraftMagicItemsMundaneUiEventPolicy.Is(
+                    "repaint", "Repaint") &&
+                !CraftMagicItemsMundaneUiEventPolicy.Is(
+                    "MouseDown", "Repaint"),
+                "The guarded route observer does not recognize the exact " +
+                "lower-case Repaint name emitted by the supported Unity runtime.");
+            Assertions.True(
+                    CraftMagicItemsMundaneUiEventPolicy
+                        .ShouldApplyPendingPhase(true, "Layout") &&
+                !CraftMagicItemsMundaneUiEventPolicy
+                    .ShouldApplyPendingPhase(true, "repaint") &&
+                !CraftMagicItemsMundaneUiEventPolicy
+                    .ShouldApplyPendingPhase(false, "Layout"),
+                "The guarded observer can change a route between Layout and repaint.");
+            var ordinary = new object();
+            var ammunition = new object();
+            var sameDisplayButDifferentObject = new object();
+            object upgradingBlueprint = new object();
+            object[] transitions = { ordinary, ammunition, ammunition,
+                null, ammunition, null, ammunition,
+                sameDisplayButDifferentObject, ordinary };
+            string[] events = { "Layout", "MouseDown", "Repaint" };
+            int ammunitionPasses = 0;
+            int ordinaryPasses = 0;
+            foreach (object selected in transitions)
+                foreach (string eventType in events)
+                {
+                    CraftMagicItemsMundaneUiRoute route =
+                        CraftMagicItemsMundaneUiRoutePolicy.Resolve(selected,
+                            ammunition);
+                    Assertions.Equal("CraftMagicItems",
+                        "CraftMagicItems",
+                        "The outer selector owner changed on " + eventType +
+                        ".");
+                    if (ReferenceEquals(selected, ammunition))
+                    {
+                        Assertions.Equal(
+                            CraftMagicItemsMundaneUiRoute
+                                .AmmunitionLowerPanel, route,
+                            "The exact ammunition route changed between IMGUI event passes.");
+                        ammunitionPasses++;
+                    }
+                    else
+                    {
+                        Assertions.Equal(
+                            CraftMagicItemsMundaneUiRoute.OrdinaryCmi,
+                            route,
+                            "KMG took ownership of a native, closed-tab, or lookalike route.");
+                        ordinaryPasses++;
+                    }
+                }
+            Assertions.Equal(12, ammunitionPasses,
+                "The modeled ammunition transitions changed.");
+            Assertions.Equal(15, ordinaryPasses,
+                "The modeled native/tab transitions changed.");
+            Assertions.True(ReferenceEquals(upgradingBlueprint,
+                    upgradingBlueprint),
+                "The route model disturbed unrelated upgrade state.");
+
+            string bridge = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsReflectionBridge.cs");
+            int start = bridge.IndexOf(
+                "TryRenderSelectedAmmunition", StringComparison.Ordinal);
+            int end = bridge.IndexOf("BuildQualificationClone",
+                start, StringComparison.Ordinal);
+            string routeBody = bridge.Substring(start, end - start);
+            Assertions.False(routeBody.Contains("SelectedIndexField") ||
+                routeBody.Contains("Mundane Crafting: ") ||
+                routeBody.Contains("GetSelectedCrafter.Invoke"),
+                "The lower-panel route still redraws or owns CMI's outer selector.");
+            Assertions.True(routeBody.Contains(
+                    "CraftMagicItemsMundaneUiRoutePolicy.Resolve") &&
+                routeBody.Contains("RenderCraftControl.Invoke") &&
+                routeBody.Contains("RenderLabel.Invoke") &&
+                !routeBody.Contains("ImmediateModeGui.Label"),
+                "The exact-reference lower panel does not reach CMI's normal crafting control.");
+        }
+
+        internal static void MundaneUiFailureIsDeferred()
+        {
+            Exception root;
+            try
+            {
+                ThrowUiFixture();
+                throw new InvalidOperationException("unreachable");
+            }
+            catch (Exception exception)
+            {
+                root = exception;
+            }
+            var wrapped = new TargetInvocationException(
+                new TargetInvocationException(root));
+            CraftMagicItemsUiFailureCapture capture =
+                CraftMagicItemsUiFailurePolicy.Capture(wrapped);
+            Assertions.True(ReferenceEquals(root, capture.Root),
+                "TargetInvocationException was not recursively unwrapped.");
+            Assertions.False(capture.RunOriginalRenderer,
+                "A partial KMG render would fall through to CMI's original body.");
+            Assertions.False(capture.RollbackSynchronously,
+                "The compatibility graph would roll back inside OnGUI.");
+            Assertions.True(capture.DeferDisableToSafeUpdate &&
+                capture.Rethrow && !capture.ExternalContractIncompatible,
+                "The UI failure boundary was mislabeled or swallowed.");
+            foreach (string token in new[] {
+                "System.Reflection.TargetInvocationException",
+                "System.InvalidOperationException", "bounded-ui-fixture",
+                "ThrowUiFixture" })
+                Assertions.True(capture.ExceptionChain.Contains(token),
+                    "The complete UI exception chain lacks: " + token);
+
+            string bridge = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsReflectionBridge.cs");
+            string coordinator = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsOptionalExtensionCoordinator.cs");
+            foreach (string token in new[] { "bridge.ui-failure.queued",
+                "graphMutation=false", "rollbackLifecycle=OnUpdate",
+                "ProcessDeferredUiFailure", "bridge.ui-disabled",
+                "BridgeFaulted" })
+                Assertions.True(bridge.Contains(token) ||
+                    coordinator.Contains(token),
+                    "The deferred UI failure path lacks: " + token);
+        }
+
+        private static void MissingMundaneRenderer() { }
+
+        private static void AmbiguousMundaneRenderer()
+        {
+            string selectedCustomName = null;
+            CraftMagicItems.ItemCraftingData selected = null;
+            CraftMagicItems.Main.DrawSelectionUserInterfaceElements(
+                "Mundane Crafting: ", new string[0], 6);
+            CraftMagicItems.Main.DrawSelectionUserInterfaceElements<string>(
+                "Mundane Crafting: ", new string[0], 6,
+                ref selectedCustomName, true);
+            var first = selected as
+                CraftMagicItems.RecipeBasedItemCraftingData;
+            var second = selected as
+                CraftMagicItems.RecipeBasedItemCraftingData;
+            if (first != null && second != null) GC.KeepAlive(first);
+        }
+
+        private static void ThrowUiFixture()
+        { throw new InvalidOperationException("bounded-ui-fixture"); }
 
         internal static void CatalogConstructionIsExact()
         {
@@ -308,19 +533,33 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTesting", "RuntimeTestRunner.cs");
             string observer = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "CraftMagicItemsCompatibilityObserver.cs");
+            string uiObserver = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "CraftMagicItemsAmmunitionUiObserver.cs");
             string automation = Read("scripts",
                 "RuntimeAutomation.Common.ps1");
             Assertions.True(scenarioCatalog.Contains(
                     "ObserveCraftMagicItemsCompatibility") &&
                 scenarioCatalog.Contains(
                     "observe-craft-magic-items-compatibility") &&
+                scenarioCatalog.Contains(
+                    "observe-craft-magic-items-ammunition-ui") &&
                 runner.Contains(
                     "CraftMagicItemsCompatibilityObserver.Run") &&
+                runner.Contains(
+                    "CraftMagicItemsAmmunitionUiObserver.Begin") &&
                 automation.Contains(
                     "'observe-craft-magic-items-compatibility'") &&
+                automation.Contains(
+                    "'observe-craft-magic-items-ammunition-ui'") &&
                 observer.Contains("RunGuardedQualification") &&
                 observer.Contains("exact-live-cmi-entry") &&
-                observer.Contains("save-free-disposable-boundary"),
+                observer.Contains("save-free-disposable-boundary") &&
+                uiObserver.Contains("ObserveCraft") &&
+                uiObserver.Contains("CompleteTimedProject") &&
+                uiObserver.Contains("FirearmReloadResult") &&
+                Regex.Matches(uiObserver, Regex.Escape(
+                    "Game.Instance.Player.Inventory.Remove(weapon)")).Count == 2 &&
+                uiObserver.Contains("no GUI/TargetInvocation exception, deferred failure, or graph rollback"),
                 "The guarded real-CMI qualification scenario is incomplete.");
             AssertNoStaticDependency();
         }
@@ -601,13 +840,45 @@ namespace CraftMagicItems
         { return false; }
         private static void RenderRecipeBasedCrafting(object unit,
             RecipeBasedItemCraftingData data, object upgrade) { }
-        private static void RenderCraftMundaneItemsSection() { }
+        private static string selectedCustomName;
+        private static object upgradingBlueprint;
+        private static void RenderCraftMundaneItemsSection()
+        {
+            object crafter = GetSelectedCrafter(false);
+            int selectedItemTypeIndex = upgradingBlueprint == null ?
+                DrawSelectionUserInterfaceElements<string>(
+                    "Mundane Crafting: ", new string[0], 6,
+                    ref selectedCustomName, true) :
+                GetSelectionIndex("Mundane Crafting: ");
+            ItemCraftingData selectedCraftingData =
+                ItemCraftingData[selectedItemTypeIndex];
+            if (selectedCraftingData.ParentNameId != null)
+                selectedCraftingData = ItemCraftingData[
+                    DrawSelectionUserInterfaceElements("Subtype: ",
+                        new string[0], 6)];
+            RecipeBasedItemCraftingData craftingData =
+                selectedCraftingData as RecipeBasedItemCraftingData;
+            if (craftingData == null)
+            {
+                RenderLabelRow("Unable to find mundane crafting recipe.");
+                return;
+            }
+            object[] bases = craftingData.NewItemBaseIDs;
+            if (crafter != null && bases != null && bases.Length < 0)
+                RenderLabelRow("unreachable");
+            RenderLabelRow("Current Money: {0}");
+        }
         private static void CraftItem(object result, object upgrade) { }
         private static void AddRecipeForEnchantment(string id,
             RecipeData recipe) { }
         private static object GetSelectedCrafter(bool render) { return null; }
+        private static int GetSelectionIndex(string label) { return 0; }
         public static int DrawSelectionUserInterfaceElements(string label,
             string[] values, int columns) { return 0; }
+        public static int DrawSelectionUserInterfaceElements<T>(string label,
+            string[] values, int columns, ref T emptyOnChange, bool addSpace)
+        { return 0; }
+        private static void RenderLabelRow(string value) { }
         private static int RenderCraftingSkillInformation(object crafter,
             object skill, int dc, int level, object spells, object feats,
             bool any, object prerequisites, bool render) { return 0; }

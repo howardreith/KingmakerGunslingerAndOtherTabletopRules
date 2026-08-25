@@ -115,6 +115,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _weaponPresentationReloadEvidence;
         private WeaponPresentationEvidenceScenario.BodyMatrixSession
             _weaponPresentationBodyMatrixEvidence;
+        private CraftMagicItemsAmmunitionUiObserver.Session
+            _craftMagicItemsAmmunitionUiObserver;
         private Stopwatch _catalogElapsed;
         private Stopwatch _selectionElapsed;
         private Stopwatch _completionElapsed;
@@ -822,6 +824,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Complete(CraftMagicItemsCompatibilityObserver.Run(
                         _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveCraftMagicItemsAmmunitionUi)
+                {
+                    if (_craftMagicItemsAmmunitionUiObserver == null)
+                        _craftMagicItemsAmmunitionUiObserver =
+                            CraftMagicItemsAmmunitionUiObserver.Begin(
+                                _context, _request);
+                    _craftMagicItemsAmmunitionUiObserver.Poll();
+                    if (_craftMagicItemsAmmunitionUiObserver.Complete)
+                        Complete(_craftMagicItemsAmmunitionUiObserver.Result);
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableFirearmWwiseAudio)

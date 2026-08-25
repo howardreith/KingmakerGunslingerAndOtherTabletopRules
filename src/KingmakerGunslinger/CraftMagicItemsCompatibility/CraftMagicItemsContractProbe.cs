@@ -13,7 +13,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             Type blueprintPatcherType, FieldInfo itemDataField,
             FieldInfo enabledField, FieldInfo harmonyInstanceField,
             FieldInfo blueprintPatcherField,
-            FieldInfo selectedIndexField, FieldInfo subCraftingDataField,
+            FieldInfo selectedIndexField, FieldInfo upgradingBlueprintField,
+            FieldInfo selectedCustomNameField, FieldInfo subCraftingDataField,
             FieldInfo typeToItemField, FieldInfo enchantmentToItemField,
             FieldInfo enchantmentToRecipeField,
             FieldInfo enchantmentToCostField, MethodInfo initializeData,
@@ -27,7 +28,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             MethodInfo renderCraftingSkill, MethodInfo renderCraftControl,
             MethodInfo buildCustomRecipeGuid, MethodInfo readJsonFile,
             MethodInfo addItemIdForEnchantment,
-            MethodInfo itemPlusEquivalent, MethodInfo rulesRecipeItemCost)
+            MethodInfo itemPlusEquivalent, MethodInfo rulesRecipeItemCost,
+            CraftMagicItemsMundaneUiAnchor mundaneUiAnchor)
         {
             Assembly = assembly;
             MainType = mainType;
@@ -40,6 +42,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             HarmonyInstanceField = harmonyInstanceField;
             BlueprintPatcherField = blueprintPatcherField;
             SelectedIndexField = selectedIndexField;
+            UpgradingBlueprintField = upgradingBlueprintField;
+            SelectedCustomNameField = selectedCustomNameField;
             SubCraftingDataField = subCraftingDataField;
             TypeToItemField = typeToItemField;
             EnchantmentToItemField = enchantmentToItemField;
@@ -65,6 +69,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             AddItemIdForEnchantment = addItemIdForEnchantment;
             ItemPlusEquivalent = itemPlusEquivalent;
             RulesRecipeItemCost = rulesRecipeItemCost;
+            MundaneUiAnchor = mundaneUiAnchor;
         }
 
         internal Assembly Assembly { get; private set; }
@@ -78,6 +83,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal FieldInfo HarmonyInstanceField { get; private set; }
         internal FieldInfo BlueprintPatcherField { get; private set; }
         internal FieldInfo SelectedIndexField { get; private set; }
+        internal FieldInfo UpgradingBlueprintField { get; private set; }
+        internal FieldInfo SelectedCustomNameField { get; private set; }
         internal FieldInfo SubCraftingDataField { get; private set; }
         internal FieldInfo TypeToItemField { get; private set; }
         internal FieldInfo EnchantmentToItemField { get; private set; }
@@ -103,6 +110,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal MethodInfo AddItemIdForEnchantment { get; private set; }
         internal MethodInfo ItemPlusEquivalent { get; private set; }
         internal MethodInfo RulesRecipeItemCost { get; private set; }
+        internal CraftMagicItemsMundaneUiAnchor MundaneUiAnchor
+        { get; private set; }
     }
 
     internal sealed class CraftMagicItemsContractResolution
@@ -165,6 +174,10 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     "blueprintPatcher", true);
                 FieldInfo selectedIndexField = Field(main, "SelectedIndex",
                     true);
+                FieldInfo upgradingBlueprintField = Field(main,
+                    "upgradingBlueprint", true);
+                FieldInfo selectedCustomNameField = Field(main,
+                    "selectedCustomName", true);
                 FieldInfo subCraftingDataField = Field(main,
                     "SubCraftingData", true);
                 FieldInfo typeToItemField = Field(main, "TypeToItem", true);
@@ -184,7 +197,10 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     blueprintPatcherField == null ||
                     blueprintPatcherField.FieldType != blueprintPatcher ||
                     !IsDictionary(selectedIndexField, typeof(string),
-                        typeof(int)) ||
+                        typeof(int)) || upgradingBlueprintField == null ||
+                    upgradingBlueprintField.FieldType.IsValueType ||
+                    selectedCustomNameField == null ||
+                    selectedCustomNameField.FieldType != typeof(string) ||
                     !IsDictionaryWithStringKey(subCraftingDataField) ||
                     !IsDictionaryWithStringKey(typeToItemField) ||
                     !IsDictionaryWithStringKey(enchantmentToItemField) ||
@@ -276,12 +292,19 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     rulesCost == null)
                     return Fail("required-methods");
 
+                CraftMagicItemsMundaneUiResolution mundaneUi =
+                    CraftMagicItemsMundaneUiContract.Probe(renderMundane,
+                        itemData, recipeBased, getCrafter);
+                if (!mundaneUi.IsCompatible)
+                    return Fail(mundaneUi.FailedCheck);
+
                 return new CraftMagicItemsContractResolution(
                     new CraftMagicItemsContract(assembly, main, itemData,
                         recipeData, recipeBased, blueprintPatcher,
                         itemDataField, enabledField, harmonyInstanceField,
                         blueprintPatcherField,
-                        selectedIndexField, subCraftingDataField,
+                        selectedIndexField, upgradingBlueprintField,
+                        selectedCustomNameField, subCraftingDataField,
                         typeToItemField, enchantmentToItemField,
                         enchantmentToRecipeField, enchantmentToCostField,
                         initializeData, addAllCraftingFeats, onToggle,
@@ -289,7 +312,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                         blueprintMatchesSlot, itemMatchesEnchantments,
                         renderRecipeBased, renderMundane, craftItem, addRecipe,
                         getCrafter, drawSelection, renderSkill, renderControl,
-                        buildGuid, readJson, addItemId, itemPlus, rulesCost),
+                        buildGuid, readJson, addItemId, itemPlus, rulesCost,
+                        mundaneUi.Anchor),
                     string.Empty);
             }
             catch (Exception exception)

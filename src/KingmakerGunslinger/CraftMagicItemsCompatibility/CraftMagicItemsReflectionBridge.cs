@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Ecnchantments;
@@ -17,7 +18,6 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
-using KingmakerGunslinger.Development;
 
 namespace KingmakerGunslinger.CraftMagicItemsCompatibility
 {
@@ -53,6 +53,49 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal string[] NamedUpgradeOnlyGuids { get; private set; }
     }
 
+    internal sealed class CraftMagicItemsAmmunitionUiSnapshot
+    {
+        internal CraftMagicItemsAmmunitionUiSnapshot(string patchSeam,
+            int lowerPanelRenderCount, int ordinaryRouteCount,
+            int ordinaryBodyBypassCount, int graphRollbackCount,
+            int uiFailureCount, bool deferredFailurePending,
+            string[] eventTypes, string[] selectedRecipeGuids,
+            string[] routeObservations)
+        {
+            PatchSeam = patchSeam ?? string.Empty;
+            LowerPanelRenderCount = lowerPanelRenderCount;
+            OrdinaryRouteCount = ordinaryRouteCount;
+            OrdinaryBodyBypassCount = ordinaryBodyBypassCount;
+            GraphRollbackCount = graphRollbackCount;
+            UiFailureCount = uiFailureCount;
+            DeferredFailurePending = deferredFailurePending;
+            EventTypes = eventTypes ?? new string[0];
+            SelectedRecipeGuids = selectedRecipeGuids ?? new string[0];
+            RouteObservations = routeObservations ?? new string[0];
+        }
+
+        internal string OuterSelectorOwner { get { return "CraftMagicItems"; } }
+        internal string PatchSeam { get; private set; }
+        internal int LowerPanelRenderCount { get; private set; }
+        internal int OrdinaryRouteCount { get; private set; }
+        internal int OrdinaryBodyBypassCount { get; private set; }
+        internal int GraphRollbackCount { get; private set; }
+        internal int UiFailureCount { get; private set; }
+        internal bool DeferredFailurePending { get; private set; }
+        internal string[] EventTypes { get; private set; }
+        internal string[] SelectedRecipeGuids { get; private set; }
+        internal string[] RouteObservations { get; private set; }
+        internal string SelectedCategoryIdentity
+        {
+            get
+            {
+                return RouteObservations.Length == 0 ? string.Empty :
+                    RouteObservations[RouteObservations.Length - 1]
+                        .Split(':')[0];
+            }
+        }
+    }
+
     /// <summary>
     /// The only runtime boundary that reads or writes Craft Magic Items objects.
     /// All inputs and outputs on the KMG side remain normal project/game types.
@@ -69,7 +112,6 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private const string ArmsAndArmorIdentity = "ArmsAndArmor";
         private const string MartialIdentity = "CraftMundaneMartialWeapons";
         private const string ExoticIdentity = "CraftMundaneExoticWeapons";
-        private const string MundaneSelectionLabel = "Mundane Crafting: ";
         private const BindingFlags Fields = BindingFlags.Instance |
             BindingFlags.Public | BindingFlags.NonPublic;
         private static readonly object Gate = new object();
@@ -83,6 +125,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static object _mundaneFirearms;
         private static object _ammunition;
         private static object _reliableRecipe;
+        private static AmmunitionRenderPlan _ammunitionUiPlan;
         private static string _magicFeatGuid;
         private static object _martialData;
         private static object _exoticData;
@@ -93,6 +136,22 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static int _generation;
         private static bool _boundaryWarningLogged;
         private static bool _bridgeFailureLogged;
+        private static DeferredUiFailure _deferredUiFailure;
+        private static bool _uiFailureLogged;
+        private static int _uiFailureCount;
+        private static bool _uiFaulted;
+        private static int _lowerPanelRenderCount;
+        private static int _ordinaryRouteCount;
+        private static int _ordinaryBodyBypassCount;
+        private static int _graphRollbackCount;
+        private static readonly HashSet<string> UiEventTypes =
+            new HashSet<string>(StringComparer.Ordinal);
+        private static readonly HashSet<string> SelectedAmmunitionGuids =
+            new HashSet<string>(StringComparer.Ordinal);
+        private static readonly List<string> UiRouteObservations =
+            new List<string>();
+        private static PropertyInfo _eventCurrentProperty;
+        private static PropertyInfo _eventTypeProperty;
         private static CraftMagicItemsGraphSnapshot _snapshot =
             new CraftMagicItemsGraphSnapshot(0, 0, 0, 0, 0, 0, 0, null,
                 null, null);
@@ -111,6 +170,28 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal static bool IsFailed
         { get { lock (Gate) return _failed; } }
 
+        internal static bool HasDeferredUiFailure
+        { get { lock (Gate) return _deferredUiFailure != null; } }
+
+        internal static bool IsUiFaulted
+        { get { lock (Gate) return _uiFaulted; } }
+
+        internal static CraftMagicItemsAmmunitionUiSnapshot AmmunitionUiSnapshot
+        {
+            get
+            {
+                lock (Gate)
+                    return new CraftMagicItemsAmmunitionUiSnapshot(
+                        CraftMagicItemsMundaneUiTranspiler.AppliedSeam,
+                        _lowerPanelRenderCount, _ordinaryRouteCount,
+                        _ordinaryBodyBypassCount, _graphRollbackCount,
+                        _uiFailureCount, _deferredUiFailure != null,
+                        UiEventTypes.OrderBy(value => value).ToArray(),
+                        SelectedAmmunitionGuids.OrderBy(value => value)
+                            .ToArray(), UiRouteObservations.ToArray());
+            }
+        }
+
         internal static void ExternalDisabled()
         {
             lock (Gate)
@@ -122,12 +203,14 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 _mundaneFirearms = null;
                 _ammunition = null;
                 _reliableRecipe = null;
+                _ammunitionUiPlan = null;
                 _magicFeatGuid = null;
                 _martialData = null;
                 _exoticData = null;
                 _martialState = null;
                 _exoticState = null;
                 _finalized = false;
+                _deferredUiFailure = null;
                 _categoryScope = CategoryScope.None;
                 _snapshot = new CraftMagicItemsGraphSnapshot(_generation,
                     0, 0, 0, 0, 0, 0, null, null, null);
@@ -145,6 +228,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             if (context == null || contract == null || catalog == null)
                 throw new ArgumentNullException(
                     "CMI reflection bridge inputs are incomplete.");
+            InitializeUiEventObservation();
             lock (Gate)
             {
                 if (_contract != null && !ReferenceEquals(_contract.Assembly,
@@ -251,6 +335,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     _mundaneFirearms = mundaneFirearms;
                     _ammunition = ammunition;
                     _reliableRecipe = null;
+                    _ammunitionUiPlan = null;
                     _magicFeatGuid = magicFeatGuid;
                     _martialData = martial;
                     _exoticData = exotic;
@@ -343,6 +428,9 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     CreateAmmunitionRecipe(value.Item)).ToArray();
                 if (ammunition != null) SetRecipes(ammunition,
                     ammunitionRecipes);
+                AmmunitionRenderPlan ammunitionUiPlan = ammunition == null ?
+                    null : CreateAmmunitionRenderPlan(contract, ammunition,
+                        ammunitionRecipes, catalog);
 
                 contract.AddRecipeForEnchantment.Invoke(null, new object[] {
                     catalog.Reliable.AssetGuid, reliable });
@@ -351,6 +439,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 lock (Gate)
                 {
                     _reliableRecipe = reliable;
+                    _ammunitionUiPlan = ammunitionUiPlan;
                     _finalized = true;
                     _snapshot = new CraftMagicItemsGraphSnapshot(_generation,
                         CountAddedItemTypes(),
@@ -540,54 +629,71 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     "CMI firearm upgrade did not preserve exact item-owned state.");
         }
 
-        internal static bool TryRenderAmmunition()
+        // Injected only after CMI has rendered and finalized its own outer and
+        // parent/subtype selectors. Exact object identity controls this inner
+        // route; SelectedIndex never controls renderer ownership.
+        internal static bool TryRenderSelectedAmmunition(
+            UnitEntityData crafter, object selectedCraftingData)
         {
-            CraftMagicItemsContract contract;
             object ammunition;
+            AmmunitionRenderPlan plan;
+            bool available;
             lock (Gate)
             {
-                contract = _contract;
                 ammunition = _ammunition;
-                if (!_finalized || _failed || ammunition == null) return false;
+                if (CraftMagicItemsMundaneUiRoutePolicy.Resolve(
+                        selectedCraftingData, ammunition) !=
+                    CraftMagicItemsMundaneUiRoute.AmmunitionLowerPanel)
+                {
+                    _ordinaryRouteCount++;
+                    ObserveUiEventNoLock("ordinary-cmi");
+                    return false;
+                }
+                plan = _ammunitionUiPlan;
+                available = _finalized && !_failed;
+                _ordinaryBodyBypassCount++;
+                ObserveUiEventNoLock(AmmunitionIdentity);
             }
-            Array graph = contract.ItemDataField.GetValue(null) as Array;
-            if (graph == null) return false;
-            object[] topLevel = TopLevelMundane(graph, contract).ToArray();
-            IDictionary selections = contract.SelectedIndexField.GetValue(null)
-                as IDictionary;
-            int index = selections != null &&
-                selections.Contains(MundaneSelectionLabel) ?
-                (int)selections[MundaneSelectionLabel] : 0;
-            if (index < 0 || index >= topLevel.Length ||
-                !ReferenceEquals(topLevel[index], ammunition)) return false;
 
-            string[] itemTypeNames = topLevel.Select(value =>
-                ResolveLocalizedText(ReadString(value, "NameId"))).ToArray();
-            int selectedType = (int)contract.DrawSelection.Invoke(null,
-                new object[] { MundaneSelectionLabel, itemTypeNames, 6 });
-            if (selectedType != index) return false;
+            try
+            {
+                if (plan == null || !available)
+                    throw new InvalidOperationException(
+                        "The selected KMG ammunition data has no finalized immutable UI plan.");
+                plan.Preflight(crafter, selectedCraftingData);
+                lock (Gate) _lowerPanelRenderCount++;
+                if (crafter == null || crafter.Descriptor == null)
+                {
+                    plan.RenderLabel.Invoke(null, new object[] {
+                        "No valid crafter is available for firearm ammunition." });
+                    return true;
+                }
 
-            UnitEntityData crafter = contract.GetSelectedCrafter.Invoke(null,
-                new object[] { false }) as UnitEntityData;
-            if (crafter == null) return true;
-            object[] recipes = ReadRecipes(ammunition);
-            string[] names = recipes.Select(value => ReadString(value,
-                "NameId")).ToArray();
-            int selected = (int)contract.DrawSelection.Invoke(null,
-                new object[] { "Item: ", names, 5 });
-            if (selected < 0 || selected >= recipes.Length) selected = 0;
-            object recipe = recipes[selected];
-            BlueprintItem item = ReadRecipeResult(recipe);
-            if (item == null) throw new InvalidOperationException(
-                "CMI ammunition UI selected a recipe with no exact result item.");
-            ImmediateModeGui.Label(item.Description);
-            contract.RenderCraftingSkill.Invoke(null, new object[] {
-                crafter, StatType.SkillKnowledgeWorld,
-                CraftMagicItemsCompatibilityPolicy.AmmunitionMundaneBaseDc,
-                0, null, null, false, null, true });
-            contract.RenderCraftControl.Invoke(null, new object[] {
-                crafter, ammunition, recipe, 0, item, null });
-            return true;
+                int selected = (int)plan.DrawSelection.Invoke(null,
+                    new object[] { "Item: ", plan.Names, 5 });
+                if (selected < 0 || selected >= plan.Recipes.Length)
+                    selected = 0;
+                object recipe = plan.Recipes[selected];
+                BlueprintItem item = plan.Results[selected];
+                plan.RenderLabel.Invoke(null, new object[] {
+                    plan.Descriptions[selected] });
+                plan.RenderCraftingSkill.Invoke(null, new object[] {
+                    crafter, StatType.SkillKnowledgeWorld,
+                    CraftMagicItemsCompatibilityPolicy.AmmunitionMundaneBaseDc,
+                    0, null, null, false, null, true });
+                plan.RenderCraftControl.Invoke(null, new object[] {
+                    crafter, plan.CraftingData, recipe, 0, item, null });
+                lock (Gate) SelectedAmmunitionGuids.Add(item.AssetGuid);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                ReportUiBoundaryFailure("ammunition-ui", exception);
+                CraftMagicItemsUiFailureCapture failure =
+                    CraftMagicItemsUiFailurePolicy.Capture(exception);
+                ExceptionDispatchInfo.Capture(failure.Root).Throw();
+                throw;
+            }
         }
 
         internal static BlueprintItemWeapon BuildQualificationClone(
@@ -1428,6 +1534,72 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             return recipe;
         }
 
+        private static AmmunitionRenderPlan CreateAmmunitionRenderPlan(
+            CraftMagicItemsContract contract, object ammunition,
+            object[] recipes, CraftMagicItemsRegistrationCatalog catalog)
+        {
+            if (contract == null || ammunition == null || recipes == null ||
+                catalog == null || !contract.RecipeBasedType.IsInstanceOfType(
+                    ammunition) || recipes.Length != catalog.Ammunition.Length ||
+                recipes.Length != 3 || ReadInt(ammunition, "Count") !=
+                    CraftMagicItemsCompatibilityPolicy.AmmunitionBatchCount)
+                throw new InvalidOperationException(
+                    "CMI ammunition UI plan inputs changed.");
+
+            var results = new BlueprintItem[recipes.Length];
+            var names = new string[recipes.Length];
+            var descriptions = new string[recipes.Length];
+            for (int index = 0; index < recipes.Length; index++)
+            {
+                if (!contract.RecipeDataType.IsInstanceOfType(recipes[index]))
+                    throw new InvalidOperationException(
+                        "CMI ammunition UI recipe type changed.");
+                BlueprintItem item = ReadRecipeResult(recipes[index]);
+                BlueprintItem expected = catalog.Ammunition[index].Item;
+                if (item == null || !ReferenceEquals(item, expected) ||
+                    item is BlueprintItemEquipment ||
+                    string.IsNullOrWhiteSpace(item.Name))
+                    throw new InvalidOperationException(
+                        "CMI ammunition UI recipe lost its exact plain BlueprintItem result.");
+                results[index] = item;
+                names[index] = item.Name;
+                descriptions[index] = item.Description ?? string.Empty;
+            }
+            if (results.Select(value => value.AssetGuid).Distinct(
+                    StringComparer.Ordinal).Count() != results.Length)
+                throw new InvalidOperationException(
+                    "CMI ammunition UI result identities are not unique.");
+
+            ParameterInfo[] skill = contract.RenderCraftingSkill
+                .GetParameters();
+            ParameterInfo[] control = contract.RenderCraftControl
+                .GetParameters();
+            if (skill.Length != 9 ||
+                !skill[0].ParameterType.IsAssignableFrom(
+                    typeof(UnitEntityData)) ||
+                skill[1].ParameterType != typeof(StatType) ||
+                skill[2].ParameterType != typeof(int) ||
+                skill[3].ParameterType != typeof(int) ||
+                skill[6].ParameterType != typeof(bool) ||
+                skill[8].ParameterType != typeof(bool) ||
+                control.Length != 6 ||
+                !control[0].ParameterType.IsAssignableFrom(
+                    typeof(UnitEntityData)) ||
+                !control[1].ParameterType.IsInstanceOfType(ammunition) ||
+                !control[2].ParameterType.IsInstanceOfType(recipes[0]) ||
+                control[3].ParameterType != typeof(int) ||
+                !control[4].ParameterType.IsAssignableFrom(
+                    typeof(BlueprintItem)))
+                throw new InvalidOperationException(
+                    "CMI ammunition lower-panel method arguments changed.");
+
+            return new AmmunitionRenderPlan(ammunition, recipes, results,
+                names, descriptions, contract.DrawSelection,
+                contract.RenderCraftingSkill, contract.RenderCraftControl,
+                contract.MundaneUiAnchor.LabelRenderer,
+                contract.RecipeBasedType, contract.RecipeDataType);
+        }
+
         private static Array AppendItemData(Array source, object[] additions)
         {
             var values = source.Cast<object>().ToList();
@@ -1865,6 +2037,101 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static object Default(Type type)
         { return type.IsValueType ? Activator.CreateInstance(type) : null; }
 
+        internal static bool ProcessDeferredUiFailure()
+        {
+            DeferredUiFailure failure;
+            ModContext context;
+            lock (Gate)
+            {
+                failure = _deferredUiFailure;
+                if (failure == null) return false;
+                _deferredUiFailure = null;
+                _failed = true;
+                _finalized = false;
+                _uiFaulted = true;
+                context = _context;
+            }
+            RollbackCompatibilityGraph();
+            CraftMagicItemsCompatibilityStatusRegistry.Update(
+                new CraftMagicItemsCompatibilityStatus(
+                    CraftMagicItemsCompatibilityAvailability.BridgeFaulted,
+                    failure.Phase + ":" + failure.Root.GetType().FullName,
+                    0, 0, 0));
+            if (context != null) context.Logger.Warning("craft-magic-items",
+                "bridge.ui-disabled", "phase=" + failure.Phase +
+                ";lifecycle=OnUpdate;graphRollback=true;cause=" +
+                failure.Chain);
+            return true;
+        }
+
+        private static void ReportUiBoundaryFailure(string phase,
+            Exception exception)
+        {
+            CraftMagicItemsUiFailureCapture failure =
+                CraftMagicItemsUiFailurePolicy.Capture(exception);
+            Exception root = failure.Root;
+            string chain = failure.ExceptionChain;
+            ModContext context;
+            bool log;
+            lock (Gate)
+            {
+                context = _context;
+                _uiFailureCount++;
+                if (_deferredUiFailure == null)
+                    _deferredUiFailure = new DeferredUiFailure(phase, root,
+                        chain);
+                log = !_uiFailureLogged;
+                _uiFailureLogged = true;
+            }
+            if (log && context != null) context.Logger.Failure(
+                "craft-magic-items", "bridge.ui-failure.queued",
+                "phase=" + phase +
+                ";graphMutation=false;rollbackLifecycle=OnUpdate;" +
+                "exceptionChain=" + chain, root);
+        }
+
+        private static void ObserveUiEventNoLock(string route)
+        {
+            string observed;
+            try
+            {
+                object value = _eventCurrentProperty == null ? null :
+                    _eventCurrentProperty.GetValue(null, null);
+                object eventType = value == null || _eventTypeProperty == null ?
+                    null : _eventTypeProperty.GetValue(value, null);
+                observed = eventType == null ? "unavailable" :
+                    eventType.ToString();
+            }
+            catch
+            {
+                observed = "unavailable";
+            }
+            UiEventTypes.Add(observed);
+            if (UiRouteObservations.Count == 256)
+                UiRouteObservations.RemoveAt(0);
+            UiRouteObservations.Add((route ?? "unknown") + ":" + observed);
+        }
+
+        private static void InitializeUiEventObservation()
+        {
+            Type eventType = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(value => string.Equals(value.GetName().Name,
+                    "UnityEngine.IMGUIModule", StringComparison.Ordinal))
+                .Select(value => value.GetType("UnityEngine.Event", false,
+                    false)).SingleOrDefault(value => value != null);
+            PropertyInfo current = eventType == null ? null :
+                eventType.GetProperty("current", BindingFlags.Static |
+                    BindingFlags.Public);
+            PropertyInfo type = eventType == null ? null :
+                eventType.GetProperty("type", BindingFlags.Instance |
+                    BindingFlags.Public);
+            lock (Gate)
+            {
+                _eventCurrentProperty = current;
+                _eventTypeProperty = type;
+            }
+        }
+
         private static void Fail(string phase, Exception exception)
         {
             ModContext context;
@@ -1902,6 +2169,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             NewItemBaseState exoticState;
             lock (Gate)
             {
+                _graphRollbackCount++;
                 contract = _contract;
                 catalog = _catalog;
                 current = _currentGraph;
@@ -1980,6 +2248,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     _mundaneFirearms = null;
                     _ammunition = null;
                     _reliableRecipe = null;
+                    _ammunitionUiPlan = null;
                     _magicFeatGuid = null;
                     _martialData = null;
                     _exoticData = null;
@@ -1997,6 +2266,78 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             None = 0,
             Firearms = 1,
             CustomWeapons = 2
+        }
+
+        private sealed class AmmunitionRenderPlan
+        {
+            internal AmmunitionRenderPlan(object craftingData,
+                object[] recipes, BlueprintItem[] results, string[] names,
+                string[] descriptions, MethodInfo drawSelection,
+                MethodInfo renderCraftingSkill, MethodInfo renderCraftControl,
+                MethodInfo renderLabel, Type craftingDataType,
+                Type recipeType)
+            {
+                CraftingData = craftingData;
+                Recipes = recipes;
+                Results = results;
+                Names = names;
+                Descriptions = descriptions;
+                DrawSelection = drawSelection;
+                RenderCraftingSkill = renderCraftingSkill;
+                RenderCraftControl = renderCraftControl;
+                RenderLabel = renderLabel;
+                CraftingDataType = craftingDataType;
+                RecipeType = recipeType;
+            }
+
+            internal object CraftingData { get; private set; }
+            internal object[] Recipes { get; private set; }
+            internal BlueprintItem[] Results { get; private set; }
+            internal string[] Names { get; private set; }
+            internal string[] Descriptions { get; private set; }
+            internal MethodInfo DrawSelection { get; private set; }
+            internal MethodInfo RenderCraftingSkill { get; private set; }
+            internal MethodInfo RenderCraftControl { get; private set; }
+            internal MethodInfo RenderLabel { get; private set; }
+            private Type CraftingDataType { get; set; }
+            private Type RecipeType { get; set; }
+
+            internal void Preflight(UnitEntityData crafter, object selected)
+            {
+                if (!ReferenceEquals(selected, CraftingData) ||
+                    !CraftingDataType.IsInstanceOfType(CraftingData) ||
+                    Recipes == null || Results == null || Names == null ||
+                    Descriptions == null || Recipes.Length != 3 ||
+                    Results.Length != Recipes.Length || Names.Length !=
+                    Recipes.Length || Descriptions.Length != Recipes.Length ||
+                    DrawSelection == null || RenderCraftingSkill == null ||
+                    RenderCraftControl == null || RenderLabel == null)
+                    throw new InvalidOperationException(
+                        "The immutable CMI ammunition UI plan is invalid.");
+                for (int index = 0; index < Recipes.Length; index++)
+                    if (!RecipeType.IsInstanceOfType(Recipes[index]) ||
+                        Results[index] == null ||
+                        string.IsNullOrWhiteSpace(Names[index]) ||
+                        Descriptions[index] == null)
+                        throw new InvalidOperationException(
+                            "The immutable CMI ammunition UI entry is invalid.");
+            }
+        }
+
+        private sealed class DeferredUiFailure
+        {
+            internal DeferredUiFailure(string phase, Exception root,
+                string chain)
+            {
+                Phase = phase ?? "ammunition-ui";
+                Root = root ?? new InvalidOperationException(
+                    "Unknown CMI ammunition UI failure.");
+                Chain = chain ?? string.Empty;
+            }
+
+            internal string Phase { get; private set; }
+            internal Exception Root { get; private set; }
+            internal string Chain { get; private set; }
         }
 
         private sealed class NewItemBaseState

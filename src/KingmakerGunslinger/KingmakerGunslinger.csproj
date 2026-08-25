@@ -44,6 +44,9 @@
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityStatus.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsRuntimeQualification.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsContractProbe.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsMundaneUiContract.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsMundaneUiTranspiler.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsAmmunitionUiRuntimeAdapter.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsRegistrationCatalog.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsReflectionBridge.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsOptionalExtensionCoordinator.cs" />
@@ -866,6 +869,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\OptionalModCompatibilityObserver.cs" />
     <Compile Include="RuntimeTesting\CraftMagicItemsCompatibilityObserver.cs" />
+    <Compile Include="RuntimeTesting\CraftMagicItemsAmmunitionUiObserver.cs" />
     <Compile Include="RuntimeTesting\ElvenBranchedSpearContractObserver.cs" />
     <Compile Include="RuntimeTesting\EasternWeaponContractObserver.cs" />
     <Compile Include="RuntimeTesting\ElvenBranchedSpearCombatScenario.cs" />

@@ -1,14 +1,17 @@
 # Kingmaker Gunslinger
 
-Version `0.0.98` adds automatic, optional Craft Magic Items 2.1.0 integration
-without linking or packaging `CraftMagicItems.dll`. When both UMM entries are
-active and the reflected CMI contract matches, CMI can create and upgrade all
-currently authorized production firearms, Wakizashi, Katana, Nodachi, and
-Elven Branched Spear; craft exact 20-unit batches of Black Powder Charge, Lead
-Ball, and Paper Cartridge; and apply the existing firearm-only Reliable
-enchantment. Named campaign weapons remain upgrade-only, feature-module gates
-remain authoritative, and an absent, disabled, or incompatible CMI installation
-leaves ordinary Gunslinger behavior unchanged. See
+Version `0.0.99` repairs the optional Craft Magic Items 2.1.0 ammunition UI
+without linking or packaging `CraftMagicItems.dll`. CMI now owns its complete
+top-level mundane selector on every IMGUI event; KMG intercepts only the exact
+finalized Firearm Ammunition data object before CMI's equipment-only body.
+When both UMM entries are active and the reflected contract matches, CMI can
+create and upgrade all currently authorized production firearms, Wakizashi,
+Katana, Nodachi, and Elven Branched Spear; craft exact 20-unit batches of Black
+Powder Charge, Lead Ball, and Paper Cartridge; and apply the existing
+firearm-only Reliable enchantment. Named campaign weapons remain upgrade-only,
+feature-module gates remain authoritative, and an absent, disabled, or
+incompatible CMI installation leaves ordinary Gunslinger behavior unchanged.
+The 0.0.98 whole-method ammunition renderer is rejected. See
 `INSTALLATION-COMPATIBILITY.md` for the tested assembly fingerprint, persistence
 warning, and human CMI UI checklist.
 

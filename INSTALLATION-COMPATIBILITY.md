@@ -31,12 +31,12 @@ transient action debt; it does not alter either feat or automation mode.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.98-craft-magic-items-compatibility.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.99-craft-magic-items-ammunition-ui-repair.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.98 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.99 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -215,12 +215,29 @@ by itself prove campaign or cross-mod compatibility.
 ## Optional Craft Magic Items integration
 
 When the Unity Mod Manager entry with ID `CraftMagicItems` is installed and
-active, Gunslinger 0.0.98 probes `CraftMagicItems.Main` and enables the bridge
+active, Gunslinger 0.0.99 probes `CraftMagicItems.Main` and enables the bridge
 only if the required 2.1.0 data-loading, recipe, indexing, crafting, and Harmony
 surfaces match. There is no required assembly reference: Gunslinger continues
 normally when CMI is absent or disabled, and an incompatible external contract
 disables only this bridge. The Gunslinger UMM panel reports `active`, `not
-installed`, `installed but disabled`, or `incompatible, see log`.
+installed`, `installed but disabled`, or `incompatible, see log`; a KMG lower
+panel implementation failure is separately reported as `KMG compatibility UI
+fault, see log`.
+
+Version 0.0.98 is rejected by its first human ammunition UI test. Its
+conditional whole-method prefix could let Layout/input use CMI's renderer and
+Repaint use KMG's renderer while a category selection changed, producing a
+`SelectionGrid` control-count exception and unbalanced GUILayout/GUIClip
+state. Version 0.0.99 removes that prefix. CMI always owns its top-level
+Mundane Crafting and parent/subtype selectors; the bridge branches only after
+CMI has finalized the exact selected data and immediately before its ordinary
+equipment-only `NewItemBaseIDs` path. The ammunition panel returns to CMI's
+common Current Money footer.
+
+If KMG's lower panel throws, the exception is fully unwrapped and rethrown.
+The original ordinary renderer is not run after partial custom output, and no
+compatibility graph mutation occurs inside `OnGUI`. Any bridge disable and
+rollback is deferred to the safe update lifecycle.
 
 The tested external authority is CMI 2.1.0 built without source changes from
 bfennema/OwlcatKingmakerModCraftMagicItems commit
@@ -269,20 +286,26 @@ containing a CMI-crafted Gunslinger item may require both mods to remain
 installed. Back up the save before crafting, upgrading, removing either mod, or
 changing module state.
 
-Human CMI UI acceptance checklist:
+Human CMI UI acceptance checklist for one fresh process:
 
-1. Confirm one Firearms entry in mundane crafting, one Firearms entry in magic
-   weapon crafting, and one Firearm Ammunition entry, with no raw localization
-   keys or duplicate entries.
-2. Craft one canonical base firearm and upgrade one already-owned custom or
-   named weapon.
-3. Apply Reliable to a firearm and confirm it is absent or rejected for a bow,
-   crossbow, Katana/Wakizashi/Nodachi, and Elven Branched Spear.
-4. Craft one 20-unit batch each of Black Powder Charge, Lead Ball, and Paper
-   Cartridge and verify the inventory identities and quantities.
-5. Craft or upgrade one Eastern weapon and one Elven Branched Spear.
-6. Save to an authorized disposable save, exit, reload through the normal UI,
-   and verify the representative crafted items and firearm loaded state.
+1. Open Craft Magic Items -> Craft Mundane Items.
+2. Begin on an ordinary category.
+3. Click Firearm Ammunition.
+4. Verify the category stays visible.
+5. Select Black Powder Charge.
+6. Select Lead Ball.
+7. Select Paper Cartridge.
+8. Switch back to an ordinary category.
+9. Switch to Firearm Ammunition again.
+10. Close and reopen the UMM window.
+11. Switch to another mod tab and return.
+12. Craft one 20-unit batch of each item.
+13. Confirm money, count, and project behavior.
+14. Confirm there is no KMG `bridge.incompatible` line.
+15. Confirm there is no CMI `Error rendering GUI` line.
+16. Confirm there is no `GUILayout`, `LayoutGroup`, `SelectionGrid`, or
+    `GUIClip` error.
+17. Save and reload only through an authorized disposable-save procedure.
 
 The guarded mechanical qualification is recorded in
 `docs/CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md`. Visual category placement and
