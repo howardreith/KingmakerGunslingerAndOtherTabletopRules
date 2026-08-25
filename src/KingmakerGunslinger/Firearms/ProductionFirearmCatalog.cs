@@ -17,7 +17,9 @@ namespace KingmakerGunslinger.Firearms
                 false,
                 1000,
                 4f,
-                true);
+                true,
+                ProductionFirearmAcquisitionRole
+                    .OrdinaryCampaignCraftingBase);
         }
 
         internal static ProductionFirearmWeaponSpec CreateMusket()
@@ -32,7 +34,9 @@ namespace KingmakerGunslinger.Firearms
                 true,
                 1500,
                 9f,
-                true);
+                true,
+                ProductionFirearmAcquisitionRole
+                    .OrdinaryCampaignCraftingBase);
         }
 
         internal static ProductionFirearmWeaponSpec CreateBlunderbuss()
@@ -47,19 +51,25 @@ namespace KingmakerGunslinger.Firearms
                 true,
                 2000,
                 8f,
-                true);
+                true,
+                ProductionFirearmAcquisitionRole
+                    .OrdinaryCampaignCraftingBase);
         }
 
         internal static ProductionFirearmWeaponSpec CreateAdvancedRifle()
         {
             return new ProductionFirearmWeaponSpec("advanced-rifle", "Advanced Rifle",
-                FirearmDefinitions.CreateAdvancedRifle(), 1, 10, 4, true, 5000, 12f, true);
+                FirearmDefinitions.CreateAdvancedRifle(), 1, 10, 4, true,
+                5000, 12f, true, ProductionFirearmAcquisitionRole
+                    .SupportedRecognitionOnly);
         }
 
         internal static ProductionFirearmWeaponSpec CreateAdvancedRevolver()
         {
             return new ProductionFirearmWeaponSpec("advanced-revolver", "Advanced Revolver",
-                FirearmDefinitions.CreateAdvancedRevolver(), 1, 8, 4, false, 4000, 4f, true);
+                FirearmDefinitions.CreateAdvancedRevolver(), 1, 8, 4,
+                false, 4000, 4f, true, ProductionFirearmAcquisitionRole
+                    .SupportedRecognitionOnly);
         }
     }
 }

@@ -178,6 +178,10 @@ $expected = @(
     'disposable-pistolero-deeds',
     'musket-master-mechanics-and-starter',
     'observe-optional-mod-compatibility',
+    'observe-craft-magic-items-compatibility',
+    'observe-craft-magic-items-ammunition-ui',
+    'working-save-craft-magic-items-prepare',
+    'working-save-craft-magic-items-verify-cleanup',
     'observe-manual-save-load',
     'observe-save-catalog-and-selection',
     'observe-save-catalog-provider',
@@ -211,9 +215,20 @@ $assetAttribution = Get-KmgRuntimeScenarioMetadata `
 Assert-True (-not $assetAttribution.RequiresManualInteraction -and
     -not $assetAttribution.RequiresSaveName) `
     'compatibility-asset-attribution-is-autonomous-save-free'
+$cmiUi = Get-KmgRuntimeScenarioMetadata `
+    'observe-craft-magic-items-ammunition-ui'
+Assert-True (-not $cmiUi.RequiresManualInteraction -and
+    -not $cmiUi.RequiresSaveName) `
+    'craft-magic-items-ammunition-ui-is-autonomous-save-free'
+$cmiPersistence = Get-KmgRuntimeScenarioMetadata `
+    'working-save-craft-magic-items-prepare'
+Assert-True (-not $cmiPersistence.RequiresManualInteraction -and
+    $cmiPersistence.RequiresSaveName -and
+    $cmiPersistence.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') `
+    'craft-magic-items-persistence-is-guarded-working-save-only'
 $assetRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-kmg-compatibility-asset-attribution' `
-    -ExpectedVersion '0.0.97' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.101' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
         'kmg-attribution-request-test') `
     -Parameters @{ assetConfiguration = 'firearms-only' }
@@ -222,7 +237,7 @@ Assert-True ($assetRequest.parameters.assetConfiguration -ceq 'firearms-only') `
 Assert-Throws {
     New-KmgRuntimeRequest `
         -Scenario 'observe-kmg-compatibility-asset-attribution' `
-        -ExpectedVersion '0.0.97' -TimeoutSeconds 120 `
+        -ExpectedVersion '0.0.101' -TimeoutSeconds 120 `
         -ExitAfterCompletion $true `
         -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
             'kmg-attribution-request-test') `
@@ -549,7 +564,7 @@ Assert-True (-not $humanRepro.RequiresManualInteraction -and
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.97'
+    ExpectedVersion = '0.0.101'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -582,7 +597,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.97' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.101' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -642,7 +657,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.97' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.101' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

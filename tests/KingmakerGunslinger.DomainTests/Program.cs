@@ -25,6 +25,21 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("craft-magic-items.absent", CraftMagicItemsCompatibilityTests.AbsentDependencyIsInert),
+            Case("craft-magic-items.contract-supported", CraftMagicItemsCompatibilityTests.ContractProbeAcceptsExactShape),
+            Case("craft-magic-items.contract-rejected", CraftMagicItemsCompatibilityTests.ContractProbeRejectsMissingMembers),
+            Case("craft-magic-items.mundane-ui-patch-shape", CraftMagicItemsCompatibilityTests.MundaneUiPatchShapeIsExact),
+            Case("craft-magic-items.mundane-ui-route", CraftMagicItemsCompatibilityTests.MundaneUiRouteIsStable),
+            Case("craft-magic-items.mundane-ui-failure", CraftMagicItemsCompatibilityTests.MundaneUiFailureIsDeferred),
+            Case("craft-magic-items.catalog", CraftMagicItemsCompatibilityTests.CatalogConstructionIsExact),
+            Case("craft-magic-items.idempotence", CraftMagicItemsCompatibilityTests.RegistrationPolicyIsIdempotent),
+            Case("craft-magic-items.feature-matrix", CraftMagicItemsCompatibilityTests.FeatureModuleMatrixIsExact),
+            Case("craft-magic-items.reliable", CraftMagicItemsCompatibilityTests.ReliableApplicabilityIsMarkerExact),
+            Case("craft-magic-items.ammunition", CraftMagicItemsCompatibilityTests.AmmunitionBatchEconomicsAreExact),
+            Case("craft-magic-items.ammunition-project-policy", CraftMagicItemsCompatibilityTests.AmmunitionProjectMigrationIsExact),
+            Case("craft-magic-items.tooltip-markers", CraftMagicItemsCompatibilityTests.InternalTooltipMarkersAreExact),
+            Case("craft-magic-items.custom-integrity", CraftMagicItemsCompatibilityTests.CustomBlueprintIntegrityBoundaryIsExact),
+            Case("craft-magic-items.lifecycle-package", CraftMagicItemsCompatibilityTests.LifecycleAndPackagingRemainOptional),
             Case("compat-attribution.asset-plans", CompatibilityAttributionTests.AssetPlansAreExact),
             Case("compat-attribution.asset-plan-fail-closed", CompatibilityAttributionTests.AssetPlansFailClosed),
             Case("compat-attribution.guarded-runtime-boundary", CompatibilityAttributionTests.GuardedRuntimeBoundaryIsExact),

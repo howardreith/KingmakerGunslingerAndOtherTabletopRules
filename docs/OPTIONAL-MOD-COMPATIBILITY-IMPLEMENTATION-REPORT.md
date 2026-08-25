@@ -1,5 +1,11 @@
 # Optional-mod compatibility implementation report
 
+> Historical-scope note (2026-08-24): this report describes the 0.0.71
+> optional-mod framework checkpoint. Craft Magic Items is no longer merely a
+> source-only/static profile; the separate 0.0.98 implementation and exact
+> guarded qualification are documented in
+> `CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md`.
+
 ## Status
 
 Framework implementation is in progress on

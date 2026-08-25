@@ -248,6 +248,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveEasternWeaponsPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveEasternWeaponsVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveEasternWeaponsVerifyAbsent ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCraftMagicItemsPrepare ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCraftMagicItemsVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveShieldOtherVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveUrbanBarbarianPrepare ||

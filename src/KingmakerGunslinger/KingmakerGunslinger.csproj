@@ -40,6 +40,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityPolicy.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityStatus.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsRuntimeQualification.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsContractProbe.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsMundaneUiContract.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsMundaneUiTranspiler.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsAmmunitionUiRuntimeAdapter.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsRegistrationCatalog.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsReflectionBridge.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsOptionalExtensionCoordinator.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageAllocation.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageAllocationPolicy.cs" />
     <Compile Include="UrbanBarbarian\ControlledRageIconPolicy.cs" />
@@ -510,6 +520,7 @@
     <Compile Include="Firearms\FirearmConditionCombatLog.cs" />
     <Compile Include="Firearms\FirearmConditionTooltipPatch.cs" />
     <Compile Include="Firearms\FirearmQualitiesTooltipPatch.cs" />
+    <Compile Include="Firearms\FirearmInternalEnchantmentPresentation.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmUseDecision.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOriginComponent.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmOriginRuntime.cs" />
@@ -858,6 +869,9 @@
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\OptionalModCompatibilityObserver.cs" />
+    <Compile Include="RuntimeTesting\CraftMagicItemsCompatibilityObserver.cs" />
+    <Compile Include="RuntimeTesting\CraftMagicItemsTooltipInspection.cs" />
+    <Compile Include="RuntimeTesting\CraftMagicItemsAmmunitionUiObserver.cs" />
     <Compile Include="RuntimeTesting\ElvenBranchedSpearContractObserver.cs" />
     <Compile Include="RuntimeTesting\EasternWeaponContractObserver.cs" />
     <Compile Include="RuntimeTesting\ElvenBranchedSpearCombatScenario.cs" />

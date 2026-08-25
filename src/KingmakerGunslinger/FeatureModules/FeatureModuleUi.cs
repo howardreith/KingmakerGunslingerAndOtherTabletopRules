@@ -2,6 +2,7 @@ using System;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.UrbanBarbarian;
 using KingmakerGunslinger.AidAnotherCompatibility;
+using KingmakerGunslinger.CraftMagicItemsCompatibility;
 using UnityModManagerNet;
 
 namespace KingmakerGunslinger.FeatureModules
@@ -68,6 +69,8 @@ namespace KingmakerGunslinger.FeatureModules
             ImmediateModeGui.Label("Helpful publication: " +
                 aidAnother.PublicationStatus);
             ImmediateModeGui.Label("Aid Another detail: " + aidAnother.Detail);
+            ImmediateModeGui.Label("Craft Magic Items compatibility: " +
+                CraftMagicItemsCompatibilityStatusRegistry.Current.Display);
             ImmediateModeGui.Label("Active this process: " + _state.Active);
             ImmediateModeGui.Label("Saved for next restart: " + _state.Pending);
             if (_state.RestartRequired)

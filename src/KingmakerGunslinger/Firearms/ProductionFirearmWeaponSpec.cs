@@ -3,6 +3,12 @@ using System.Globalization;
 
 namespace KingmakerGunslinger.Firearms
 {
+    internal enum ProductionFirearmAcquisitionRole
+    {
+        OrdinaryCampaignCraftingBase = 0,
+        SupportedRecognitionOnly = 1
+    }
+
     /// <summary>
     /// Immutable, engine-independent weapon statistics for one production firearm.
     /// This keeps tabletop damage, critical, handedness, cost, and weight explicit
@@ -20,7 +26,8 @@ namespace KingmakerGunslinger.Firearms
             bool isTwoHanded,
             int costGold,
             float weightPounds,
-            bool isPlayerFireable)
+            bool isPlayerFireable,
+            ProductionFirearmAcquisitionRole acquisitionRole)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -91,6 +98,7 @@ namespace KingmakerGunslinger.Firearms
             CostGold = costGold;
             WeightPounds = weightPounds;
             IsPlayerFireable = isPlayerFireable;
+            AcquisitionRole = acquisitionRole;
         }
 
         internal string Key { get; private set; }
@@ -103,6 +111,8 @@ namespace KingmakerGunslinger.Firearms
         internal int CostGold { get; private set; }
         internal float WeightPounds { get; private set; }
         internal bool IsPlayerFireable { get; private set; }
+        internal ProductionFirearmAcquisitionRole AcquisitionRole
+        { get; private set; }
 
         public bool Equals(ProductionFirearmWeaponSpec other)
         {
@@ -116,7 +126,8 @@ namespace KingmakerGunslinger.Firearms
                 IsTwoHanded == other.IsTwoHanded &&
                 CostGold == other.CostGold &&
                 WeightPounds.Equals(other.WeightPounds) &&
-                IsPlayerFireable == other.IsPlayerFireable;
+                IsPlayerFireable == other.IsPlayerFireable &&
+                AcquisitionRole == other.AcquisitionRole;
         }
 
         public override bool Equals(object obj)
@@ -138,6 +149,7 @@ namespace KingmakerGunslinger.Firearms
                 hash = (hash * 31) + CostGold;
                 hash = (hash * 31) + WeightPounds.GetHashCode();
                 hash = (hash * 31) + (IsPlayerFireable ? 1 : 0);
+                hash = (hash * 31) + (int)AcquisitionRole;
                 return hash;
             }
         }

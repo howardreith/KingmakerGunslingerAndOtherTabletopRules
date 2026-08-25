@@ -1,5 +1,76 @@
 # Changelog
 
+## 0.0.101-craft-magic-items-compatibility
+
+- Promotes the owner-accepted 0.0.100 Craft Magic Items candidate to a public
+  release without changing its qualified gameplay, crafting, persistence,
+  optional-dependency, or IMGUI architecture.
+- Retains exact 20-unit ammunition batches with target 5 and scale-1.0 prices
+  34/4/40 gp; exactly three firearm creation bases and five recognition
+  identities; ordinary Martial/Exotic then Arms and Armor workflow; and exact
+  marker-only tooltip suppression.
+- Records final human acceptance and advances all active version, runtime,
+  package, validation, and publication contracts to 0.0.101.
+
+## 0.0.100-craft-magic-items-post-human-refinement
+
+- Preserves the human-tested 0.0.99 inner ammunition UI interception while
+  setting every exact 20-unit KMG ammunition timed project to target 5.
+  Scale-1.0 prices remain 34/4/40 gp, and exact legacy target-50/60 projects
+  migrate idempotently without changing progress, gold, result, or ordering.
+- Separates firearm creation policy from mechanical recognition. Pistol,
+  Musket, and Blunderbuss remain from-scratch bases; Advanced Rifle and
+  Advanced Revolver remain loadable, upgradeable, indexed, and
+  Reliable-compatible but are not newly published campaign acquisition bases.
+- Removes the standalone Eastern and Elven Weapons magic category. Nodachi
+  remains in Martial, Wakizashi/Katana/Elven Branched Spear remain in Exotic,
+  and owned results use CMI's ordinary Arms and Armor upgrade workflow.
+- Filters only exact KMG state-token and battered-origin marker enchantments
+  from native player-facing weapon-quality text. The markers remain on the
+  item and real qualities such as Anarchic, Enhancement +5, and Reliable are
+  unaffected.
+- Expands deterministic and guarded real-CMI qualification for project
+  targets, migration, cancellation refunds, acquisition/recognition indexes,
+  owned custom-family upgrades, tooltip structure, UI routing, and package
+  isolation.
+
+## 0.0.99-craft-magic-items-ammunition-ui-repair
+
+- Removes the rejected conditional whole-method CMI mundane renderer prefix.
+  CMI retains its outer category and parent/subtype selection; a
+  capability-probed Harmony 2 transpiler intercepts only the finalized exact
+  Firearm Ammunition data object before `NewItemBaseIDs` and returns to CMI's
+  common money footer.
+- Preflights an immutable lower-panel plan, recursively unwraps reflected UI
+  failures, rethrows without invoking the ordinary body after partial custom
+  rendering, and defers bridge disable/graph rollback to `OnUpdate`.
+- Adds deterministic patch-shape, event-route, and deferred-failure coverage,
+  plus a guarded real-CMI observer for Layout/Repaint routing, immediate and
+  timed ammunition crafting, exact costs/counts/projects, KMG consumption, and
+  request-local state restoration.
+- Retains every qualified 0.0.98 graph, Reliable, weapon, module-state,
+  persistence, optional-dependency, SoundBank, and packaging contract.
+
+## 0.0.98-craft-magic-items-compatibility
+
+- Rejected by first human ammunition UI testing: switching to Firearm
+  Ammunition alternated whole-method ownership across IMGUI passes and caused
+  `SelectionGrid`, layout-group, and GUIClip failures. Superseded by 0.0.99.
+- Adds an automatic optional reflection/Harmony bridge for active Craft Magic
+  Items 2.1.0 installations without a static or packaged CMI dependency.
+- Publishes dedicated CMI Firearms and Firearm Ammunition categories, all five
+  authorized production firearm bases, the canonical Eastern and Elven
+  Branched Spear bases, exact 20-unit ammunition recipes, and the existing KMG
+  Reliable enchantment.
+- Keeps named campaign weapons upgrade-only, observes every owning module and
+  firearm availability gate, restricts Reliable by the canonical firearm
+  marker at final creation, and transfers item-owned firearm state across CMI
+  upgrades.
+- Adds capability probing, both-load-order lifecycle integration, exact-once
+  registration, transactional rollback, bounded diagnostics, a read-only UMM
+  status, ten deterministic tests, and a guarded real-CMI qualification
+  scenario.
+
 ## 0.0.97-compatibility-attribution-audit
 
 - Completes controlled attribution matrices for Favored Class/Helpful,

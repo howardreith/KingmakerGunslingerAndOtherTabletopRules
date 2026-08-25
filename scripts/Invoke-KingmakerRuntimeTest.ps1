@@ -491,6 +491,8 @@ try {
         'working-save-eastern-weapons-prepare',
         'working-save-eastern-weapons-verify-cleanup',
         'working-save-eastern-weapons-verify-absent',
+        'working-save-craft-magic-items-prepare',
+        'working-save-craft-magic-items-verify-cleanup',
         'advanced-capacity',
         'gunslinger-starting-items',
         'observe-working-save-entry-action',

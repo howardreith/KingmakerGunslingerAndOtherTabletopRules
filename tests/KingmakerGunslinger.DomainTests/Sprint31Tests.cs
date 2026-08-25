@@ -9,6 +9,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             ProductionFirearmWeaponSpec spec = ProductionFirearmCatalog.CreatePistol();
             AssertWeaponSpec(spec, "pistol", "Pistol", FirearmKind.Pistol, 1, 8, 4, false, 1000, 4f, true);
+            Assertions.Equal(ProductionFirearmAcquisitionRole
+                    .OrdinaryCampaignCraftingBase, spec.AcquisitionRole,
+                "Pistol acquisition policy changed.");
             Assertions.Equal(20, spec.Definition.RangeIncrementFeet, "Pistol range mismatch.");
         }
 
@@ -35,6 +38,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ReferenceEquals(first.Definition, second.Definition),
                 "Catalog factory reused a definition instance.");
             Assertions.Equal(first, second, "Fresh canonical specs must compare equal.");
+            Assertions.Equal(ProductionFirearmAcquisitionRole
+                    .SupportedRecognitionOnly,
+                ProductionFirearmCatalog.CreateAdvancedRifle()
+                    .AcquisitionRole,
+                "Advanced Rifle became an ordinary campaign crafting base.");
+            Assertions.Equal(ProductionFirearmAcquisitionRole
+                    .SupportedRecognitionOnly,
+                ProductionFirearmCatalog.CreateAdvancedRevolver()
+                    .AcquisitionRole,
+                "Advanced Revolver became an ordinary campaign crafting base.");
         }
 
         private static void CatalogBlunderbussDualModeFireable()
@@ -51,7 +64,8 @@ namespace KingmakerGunslinger.DomainTests
                     blunderbuss.IsTwoHanded,
                     blunderbuss.CostGold,
                     blunderbuss.WeightPounds,
-                    true);
+                    true,
+                    blunderbuss.AcquisitionRole);
             Assertions.True(qualified.IsPlayerFireable && qualified.Definition.IsScatter &&
                 qualified.Definition.RangeIncrementFeet == 10,
                 "The dual-mode Blunderbuss must remain player-fireable.");
@@ -70,7 +84,9 @@ namespace KingmakerGunslinger.DomainTests
                     false,
                     1500,
                     9f,
-                    true),
+                    true,
+                    ProductionFirearmAcquisitionRole
+                        .OrdinaryCampaignCraftingBase),
                 "A two-handed firearm kind accepted one-handed presentation.");
         }
 

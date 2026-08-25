@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.97',
+    [string]$ExpectedVersion = '0.0.101',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
     [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
     [Parameter(Mandatory = $true)][string]$PackagePath,
