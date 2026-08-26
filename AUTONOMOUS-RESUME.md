@@ -3194,3 +3194,19 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Next action: qualify the versioned release package, publish the feature branch
   through the guarded helper, merge only as authorized, and run the guarded
   immutable release publisher. Do not bypass an external policy rejection.
+
+## Summon same-turn activation mission — 2026-08-26
+
+- Branch: `codex/summon-same-turn-activation` from exact clean qualified
+  `master`/`origin/master`
+  `cf1ca7aedf34ee76690f8864daedc9319a8e21a6` (`v0.0.103`).
+- Durable contract:
+  `planning/SUMMON-SAME-TURN-ACTIVATION-MISSION.md`; matrix:
+  `planning/SUMMON-SAME-TURN-ACTIVATION-MATRIX.md`.
+- Current status: baseline proved; investigation active; no repair or version
+  bump; runtime failure not yet reproduced.
+- Frozen constraints: accepted 0.0.103 summon menu, Expanded Summoning,
+  Acadamae/fatigue/Cord, duration, ordinary scheduling, and unrelated systems.
+- Next concrete action: inspect current source and exact installed 2.1.7b
+  summon/turn contracts, then build the failing guarded real-player-path
+  accelerated-summon diagnostic before modifying production behavior.
