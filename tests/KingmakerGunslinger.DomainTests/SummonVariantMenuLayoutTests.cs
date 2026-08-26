@@ -115,6 +115,21 @@ namespace KingmakerGunslinger.DomainTests
                 Close(169f, decision.DeltaY) &&
                 decision.ApplyTo(rendered).Equals(target),
                 "Rendered-bounds placement still depended on a RectTransform pivot or anchor origin.");
+
+            SummonVariantMenuLayoutDecision topClamped = Decide(
+                Rect(14f, 824f, 58f, 58f), 340f, 1020f,
+                Rect(0f, 0f, 1600f, 900f), 9f,
+                SummonVariantMenuOpeningDirection.Up);
+            var roundedRender = Rect(468f, -30f, 340.25f, 881.75f);
+            SummonVariantMenuPlacementDecision roundedDecision =
+                SummonVariantMenuPlacementPolicy.Decide(roundedRender,
+                    topClamped);
+            SummonVariantMenuRect roundedResult =
+                roundedDecision.ApplyTo(roundedRender);
+            Assertions.True(Close(topClamped.SafeRect.YMax,
+                    roundedResult.YMax) &&
+                topClamped.SafeRect.Contains(roundedResult, 0.5f),
+                "Sub-pixel rendered-size drift rejected or lost the authoritative top-edge clamp.");
         }
 
         internal static void NarrowResolutionRespectsHorizontalBounds()
@@ -258,7 +273,7 @@ namespace KingmakerGunslinger.DomainTests
                 "_scroll.verticalNormalizedPosition = 1f",
                 "TopAligned(source.childAlignment)",
                 "GridLayoutGroup.Corner.UpperLeft",
-                "SummonVariantMenuPlacementPolicy.Decide(rendered, finalRect)",
+                "SummonVariantMenuPlacementPolicy.Decide(rendered, decision)",
                 "snapshot.RenderedPopupRect",
                 "variant-menu.layout-applied",
                 "state.RestoreNative()" })

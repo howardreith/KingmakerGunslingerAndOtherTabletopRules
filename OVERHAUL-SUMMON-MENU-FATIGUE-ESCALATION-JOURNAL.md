@@ -225,3 +225,20 @@ actual-popup observation and human presentation/navigation check.
   `20260826T1232570621893Z-60132354b52f422dadfd8eb6f79dc61f` (11).
 - No automatic popup open or menu selection was attempted. The candidate is
   stopped at the requested renewed human placement/navigation acceptance gate.
+
+## 2026-08-26 final timeboxed popup attempt
+
+- Start: `2026-08-26T08:56:26.4684139-04:00`; hard deadline:
+  `2026-08-26T09:26:26.4684139-04:00`.
+- Verified clean local/remote feature equality at
+  `7436c1fa145c3ac98e3045a90f2466da743df111` before editing.
+- The human-run output log supplied the missing runtime proof: every expanded
+  popup open reached the exact Harmony adapter, then failed before placement
+  with `Rendered popup size must match the target before translation`; the
+  catch restored native off-screen layout.
+- Replaced strict requested-size equality with rendered-size-aware placement.
+  Fractional Unity sizing drift now preserves the authoritative top/bottom
+  safe edge, while genuinely oversized rendered roots still fail closed.
+- Extended the focused rendered-translation test with the exact fractional
+  drift/top-clamp case. Repository validation, 1,288/1,288 tests, clean Release,
+  build-output, asset, SoundBank, package, and strict package gates pass.

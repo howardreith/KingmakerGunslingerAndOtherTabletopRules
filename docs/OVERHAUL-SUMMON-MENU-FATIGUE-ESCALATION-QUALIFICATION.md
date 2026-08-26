@@ -228,3 +228,25 @@ Its installed DLL SHA-256 is
 byte-equal to the qualified build. The summon popup is not visually accepted
 by automation; renewed human review of this exact installed candidate remains
 required.
+
+## Final timeboxed popup acceptance attempt
+
+The renewed human check again displayed native overflow. The corresponding
+installed-candidate log proves that source-slot capture and the exact Toggle
+patch both ran, but `SummonVariantMenuPlacementPolicy` rejected the rendered
+root before translating it because its post-Unity dimensions were not equal to
+the requested dimensions within 0.01 canvas units. The exception was repeated
+for each open and the intentional failure cleanup restored native layout,
+explaining the apparent reversion.
+
+The final adapter uses actual rendered dimensions when calculating the
+translation. A top-clamped decision aligns the rendered top edge exactly to the
+safe top; a bottom-clamped decision aligns the rendered bottom edge; ordinary
+placement remains nearest-edge clamped. The adapter continues to fail closed
+if the rendered root is materially larger than the complete safe rectangle,
+and it verifies the resulting rendered rectangle remains within that safe
+rectangle. The existing focused rendered-bounds test now reproduces
+fractional size drift that previously threw. Repository validation and the
+complete 1,288-test suite pass, as do clean Release, output, asset, SoundBank,
+package, and strict-package validation. Final in-game appearance remains a
+human acceptance boundary.
