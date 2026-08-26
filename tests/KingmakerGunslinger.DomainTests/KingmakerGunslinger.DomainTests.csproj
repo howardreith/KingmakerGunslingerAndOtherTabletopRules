@@ -58,6 +58,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonVariantMenuLayoutTests.cs" />
+    <Compile Include="SummonSameTurnActivationTests.cs" />
     <Compile Include="FirearmConditionDevelopmentControlTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Development\FirearmConditionFixturePolicy.cs"><Link>Development\FirearmConditionFixturePolicy.cs</Link></Compile>
     <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateBandPolicy.cs"><Link>Summoning\SummonTemplateBandPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateSmitePolicy.cs"><Link>Summoning\SummonTemplateSmitePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonAlignmentRuntimePolicy.cs"><Link>Summoning\SummonAlignmentRuntimePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonSameTurnActivationPolicy.cs"><Link>Summoning\SummonSameTurnActivationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplateSelectionPolicy.cs"><Link>Summoning\SummonTemplateSelectionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningDonorCatalog.cs"><Link>Summoning\ExpandedSummoningDonorCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningSpecialProfiles.cs"><Link>Summoning\ExpandedSummoningSpecialProfiles.cs</Link></Compile>

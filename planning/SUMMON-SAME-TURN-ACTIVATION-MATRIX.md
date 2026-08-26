@@ -1,18 +1,18 @@
 # Summon Same-Turn Activation Matrix
 
-Status: NOT YET QUALIFIED
+Status: CORE REPAIR QUALIFIED; COMPLETE MATRIX PENDING
 
 | Case | Required evidence | Current disposition |
 | --- | --- | --- |
 | Ordinary unaccelerated native summon | Existing accepted scheduling and duration unchanged | Pending control |
 | Acadamae OFF | Native Full-Round timing; no Acadamae save/consequence | Pending control |
 | Acadamae ON | Standard action, one slot, one save/consequence, correct current-round summon opportunity | Pending reproduction |
-| Legitimate Quickened summon | Swift action, caster retains Standard/Move, correct current-round summon opportunity | Reproduced pre-fix: real path/resources PASS; current-round opportunity FAIL |
-| KMG Expanded Summoning | Real KMG choice follows the same general summon mechanism | Pending |
+| Legitimate Quickened summon | Swift action, caster retains Standard/Move, correct current-round summon opportunity | Initial fixed PASS: real path; Swift only; exact cast-round attack and normal next round |
+| KMG Expanded Summoning | Real KMG choice follows the same general summon mechanism | Initial fixed PASS used actual KMG native-choice spell graph; non-native creature control pending |
 | `1d3` or `1d4+1` | Every successful spawned unit receives exactly one initial opportunity | Pending |
-| Duplicate callback | Same unit/opportunity correlation becomes a no-op | Pending |
-| Following round | Native scheduling; no duplicate initiative, command, or activation | Pre-fix control: same summon first becomes lawful in following round |
-| Duration | Same-turn opportunity neither shortens nor extends native lifecycle | Pre-fix FAIL: blueprint branch adds erroneous 6s (126 vs 120) |
+| Duplicate callback | Same unit/opportunity correlation becomes a no-op | Initial fixed PASS: `AlreadyEligible`, exact buff state unchanged |
+| Following round | Native scheduling; no duplicate initiative, command, or activation | Initial fixed PASS: one lawful turn, one native command sequence |
+| Duration | Same-turn opportunity neither shortens nor extends native lifecycle | Initial fixed PASS: exact 120s; expiration/dismissal controls pending |
 | RTwP | Native immediate AI behavior; no artificial turn state | Pending control |
 | Cancelled/failed summon | No spawned unit and no activation state | Pending control |
 | Non-summon spawn | Completely unaffected | Pending control |
@@ -20,6 +20,11 @@ Status: NOT YET QUALIFIED
 | Standalone profile | Full guarded behavior | Pending |
 | Call of the Wild profile | Exact supported profile passes and restores | Pending |
 | Highest-risk combined profile | Exact supported combined profile passes and restores | Pending |
+
+Initial fixed evidence is guarded run
+`20260826T1534299629829Z-686e0463d5254e4b871d5f7a7fec1827` in
+`20260826T1534299473030Z-summon-same-turn-activation`. Rows marked initial
+remain subject to the frozen final-candidate fresh-process repetitions.
 
 ## Required lifecycle fields
 

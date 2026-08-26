@@ -3203,10 +3203,16 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Durable contract:
   `planning/SUMMON-SAME-TURN-ACTIVATION-MISSION.md`; matrix:
   `planning/SUMMON-SAME-TURN-ACTIVATION-MATRIX.md`.
-- Current status: baseline proved; investigation active; no repair or version
-  bump; runtime failure not yet reproduced.
+- Current status: exact failure reproduced; narrow RuleSummonUnit repair is
+  source-qualified and has one standalone real-player-path Quickened PASS;
+  complete matrix and version bump remain pending.
 - Frozen constraints: accepted 0.0.103 summon menu, Expanded Summoning,
   Acadamae/fatigue/Cord, duration, ordinary scheduling, and unrelated systems.
-- Next concrete action: inspect current source and exact installed 2.1.7b
-  summon/turn contracts, then build the failing guarded real-player-path
-  accelerated-summon diagnostic before modifying production behavior.
+- Pre-fix FAIL: `20260826T1445424590411Z-3b96e766c8b144449164781c019dcc51`.
+  Initial fixed PASS:
+  `20260826T1534299629829Z-686e0463d5254e4b871d5f7a7fec1827`, 11/11 with
+  exact cast-round attack, normal next round, native 120-second duration, and
+  duplicate no-op; full deterministic suite is 1,303/1,303.
+- Next concrete action: commit/push the coherent repair, then qualify ordinary,
+  Acadamae, KMG non-native, multi-creature, RTwP, negative/lifecycle, and
+  optional-mod profiles before final 0.0.104 sealing.
