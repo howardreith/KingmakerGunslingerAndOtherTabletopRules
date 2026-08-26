@@ -210,3 +210,13 @@ rosters, spell mechanics, firearm balance, prompt Overhaul delivery, fatigue,
 Acadamae, or Cord behavior. Final popup presentation remains intentionally
 human-gated after installation; automated geometry and read-only observation
 can establish bounds and reachability but cannot accept the visual result.
+
+The final runtime-qualified code commit is
+`a1f9e5e26ce6b8c0bc00625ff337181a25e30fe6`. Its complete suite passes
+1,288/1,288; exact-reference Release, output, asset, SoundBank, deterministic
+reconstruction, and strict package gates pass. Six guarded final launches pass:
+the expanded 16-assertion overhaul/development-control fixture, all four
+applicable Expanded Summoning inventory/mechanics/player/visual-contract
+surfaces, and working-save smoke. The installed package and built DLL are
+identified in the qualification report; the installed DLL is byte-equal to the
+qualified DLL. Only renewed human popup placement/navigation acceptance remains.
