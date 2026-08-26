@@ -242,3 +242,15 @@ actual-popup observation and human presentation/navigation check.
 - Extended the focused rendered-translation test with the exact fractional
   drift/top-clamp case. Repository validation, 1,288/1,288 tests, clean Release,
   build-output, asset, SoundBank, package, and strict package gates pass.
+
+## 2026-08-26 final human acceptance and release authorization
+
+- Installed exact 0.0.103 candidate commit
+  `6e2ca58b0542115dd28616c46750c6b4ccda4800`; installed DLL SHA-256
+  `70342D53CA720BB46ED9BA0D8329F5631DB4D0B3FFA319E6F2D42F1926B5CFA9`
+  matched the qualified build.
+- The owner reported the final candidate successful and explicitly authorized
+  commit, merge to `master`, remote push, and creation of the new release.
+- Final human popup acceptance is therefore complete. The accepted overhaul,
+  firearm diagnostics, fatigue, Acadamae Graduate, Cord, summon roster, and
+  summon mechanics remain unchanged.

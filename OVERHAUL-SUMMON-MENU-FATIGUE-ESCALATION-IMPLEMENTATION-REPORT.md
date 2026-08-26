@@ -231,3 +231,14 @@ constructs the translation target from the measured rendered size, aligns its
 top or bottom to the already-selected safe edge, clamps the remaining axis,
 and verifies the actual result against the safe rectangle. No blueprint,
 roster, spell, firearm, maintenance, or condition code changed.
+
+## Final human acceptance and release approval
+
+The owner tested the exact 0.0.103 UMM installation from commit
+`6e2ca58b0542115dd28616c46750c6b4ccda4800` after the rendered-size repair and
+reported success. The previously accepted Overhaul Firearm behavior remained
+correct, and the Expanded Summoning popup no longer blocked release approval.
+The owner then explicitly authorized committing, merging to `master`, pushing,
+and publishing 0.0.103. This acceptance closes the remaining visual boundary;
+it does not reopen or alter the qualified firearm, maintenance, fatigue,
+Acadamae Graduate, Cord, or summon-mechanics behavior.
