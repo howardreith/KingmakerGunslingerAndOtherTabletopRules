@@ -5943,15 +5943,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningVariantMenuObservation.
                         LargestPublishedVariantCount;
             bool bounded = snapshot != null &&
-                snapshot.SafeRect.Contains(snapshot.FinalRect,
+                snapshot.SafeRect.Contains(snapshot.RenderedPopupRect,
                     SummonVariantMenuLayoutPolicy.Epsilon);
             bool viewport = snapshot != null &&
                 (snapshot.DesiredHeight <= snapshot.SafeRect.Height +
                     SummonVariantMenuLayoutPolicy.Epsilon ||
-                 snapshot.ScrollingRequired &&
+                    snapshot.ScrollingRequired &&
                     snapshot.VerticalScrolling &&
                     snapshot.ScrollRectCount == 1 &&
-                    snapshot.ViewportMarkerCount == 1);
+                    snapshot.ViewportMarkerCount == 1 &&
+                    snapshot.HasViewportRect &&
+                    Math.Abs(snapshot.ViewportRect.YMin -
+                        snapshot.SafeRect.YMin) <= 0.5f &&
+                    Math.Abs(snapshot.ViewportRect.YMax -
+                        snapshot.SafeRect.YMax) <= 0.5f);
             bool navigation = snapshot != null &&
                 snapshot.NavigationVerified &&
                 snapshot.FirstEntryReachable &&
@@ -5972,9 +5977,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, largest,
                     "exact source BlueprintAbility and native m_Slots"),
                 Assertion("top-left-menu-bounds",
-                    "largest top-left menu rectangle lies inside active canvas safe rectangle",
-                    observed, bounded,
-                    "rendered RectTransform corners in root-canvas space"),
+                    "largest top-left menu uses the exact clicked slot and rendered rectangle lies inside the active canvas safe rectangle",
+                    observed, bounded && snapshot != null &&
+                        snapshot.ExactSourceSlotCaptured,
+                    "ActionBarGroupSlot caller capture and rendered RectTransform corners in root-canvas space"),
                 Assertion("bounded-scroll-viewport",
                     "oversized content uses exactly one reusable native-input ScrollRect viewport",
                     observed, viewport,
@@ -7754,6 +7760,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
             Player player = Game.Instance.Player;
+            Kingmaker.UI.Selection.SelectionManager selection = null;
+            UnitEntityData[] selectionBefore = null;
+            UnitEntityData[] partyBefore = null;
             int kitsBefore = player.Inventory.Count(repairKit);
             int overhaulKitsBefore = player.Inventory.Count(overhaulKit);
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
@@ -7763,13 +7772,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 noWorldTimeMutation = false, noLingeringDelivery = false,
                 changedContextAtomic = false, repeatedIdempotent = false,
                 combatBlocked = false, exactCompletion = false,
-                repairCompletion = false, cleaned = false;
+                repairCompletion = false, diagnosticBreak = false,
+                diagnosticWreck = false, diagnosticRepeatRejected = false,
+                diagnosticOverhaulRecognized = false,
+                selectionRestored = false, partyRestored = false,
+                cleaned = false;
             TimeSpan gameTimeBefore = default(TimeSpan);
             TimeSpan gameTimeAfter = default(TimeSpan);
             int staticBefore = -1, staticAfterOverhaul = -1,
                 staticAfterRepair = -1;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
-            string overhaulLog = null, repairLog = null;
+            string overhaulLog = null, repairLog = null,
+                diagnosticBreakResult = null, diagnosticWreckResult = null;
             try
             {
                 object ignored;
@@ -7788,9 +7802,85 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
                 unit.Body.PrimaryHand.InsertItem(weapon);
-                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
-                    FirearmState.CurrentSchemaVersion, 0, null,
-                    FirearmCondition.Wrecked));
+                FirearmRuntimeState.Service.Set(weapon,
+                    FirearmState.CreateEmpty());
+                partyBefore = player.Party.ToArray();
+                if (!player.Party.Any(value => ReferenceEquals(value, unit)))
+                    player.Party.Add(unit);
+                selection = Kingmaker.UI.Selection.SelectionManager.Instance;
+                if (selection == null)
+                    throw new InvalidOperationException(
+                        "The exact PC SelectionManager was unavailable for the UMM development-control fixture.");
+                selectionBefore = selection.SelectedUnits.ToArray();
+                selection.SelectedUnits.Clear();
+                selection.SelectedUnits.Add(unit);
+
+                FirearmItemStateSnapshot diagnosticBefore =
+                    FirearmRuntimeState.Service.GetOrCreate(weapon);
+                int diagnosticOverhaulKits = player.Inventory.Count(
+                    overhaulKit);
+                int diagnosticRepairKits = player.Inventory.Count(repairKit);
+                int diagnosticPowder = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                int diagnosticLead = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall);
+                DevelopmentActionResult breakResult = DevelopmentControls
+                    .BreakSelectedEquippedFirearmForDebug();
+                FirearmItemStateSnapshot diagnosticBroken =
+                    FirearmRuntimeState.Service.GetOrCreate(weapon);
+                DevelopmentActionResult wreckResult = DevelopmentControls
+                    .WreckSelectedEquippedFirearmForDebug();
+                FirearmItemStateSnapshot diagnosticWrecked =
+                    FirearmRuntimeState.Service.GetOrCreate(weapon);
+                int wreckedRevision = diagnosticWrecked.Repository.Revision;
+                DevelopmentActionResult repeatedWreck = DevelopmentControls
+                    .WreckSelectedEquippedFirearmForDebug();
+                FirearmItemStateSnapshot diagnosticRepeated =
+                    FirearmRuntimeState.Service.GetOrCreate(weapon);
+                diagnosticBreakResult = breakResult.Message;
+                diagnosticWreckResult = wreckResult.Message;
+                diagnosticBreak = breakResult.Succeeded &&
+                    ReferenceEquals(unit.Body.PrimaryHand.MaybeWeapon, weapon) &&
+                    diagnosticBroken.Repository.State.Condition ==
+                        FirearmCondition.Broken &&
+                    diagnosticBroken.Repository.State.LoadedRounds ==
+                        diagnosticBefore.Repository.State.LoadedRounds &&
+                    diagnosticBroken.ItemRuntimeId ==
+                        diagnosticBefore.ItemRuntimeId &&
+                    diagnosticBroken.Repository.RepositoryIdentity ==
+                        diagnosticBefore.Repository.RepositoryIdentity &&
+                    diagnosticBroken.Repository.RuntimeReferenceHash ==
+                        diagnosticBefore.Repository.RuntimeReferenceHash &&
+                    breakResult.Message.Contains(
+                        "before=Normal; after=Broken");
+                diagnosticWreck = wreckResult.Succeeded &&
+                    ReferenceEquals(unit.Body.PrimaryHand.MaybeWeapon, weapon) &&
+                    diagnosticWrecked.Repository.State.Condition ==
+                        FirearmCondition.Wrecked &&
+                    diagnosticWrecked.Repository.State.IsEmpty &&
+                    diagnosticWrecked.ItemRuntimeId ==
+                        diagnosticBefore.ItemRuntimeId &&
+                    diagnosticWrecked.Repository.RepositoryIdentity ==
+                        diagnosticBefore.Repository.RepositoryIdentity &&
+                    diagnosticWrecked.Repository.RuntimeReferenceHash ==
+                        diagnosticBefore.Repository.RuntimeReferenceHash &&
+                    wreckResult.Message.Contains(
+                        "before=Broken; after=Wrecked") &&
+                    player.Inventory.Count(overhaulKit) ==
+                        diagnosticOverhaulKits &&
+                    player.Inventory.Count(repairKit) == diagnosticRepairKits &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                            diagnosticPowder &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.LeadBall) ==
+                            diagnosticLead;
+                diagnosticRepeatRejected = !repeatedWreck.Succeeded &&
+                    diagnosticRepeated.Repository.Revision == wreckedRevision &&
+                    diagnosticRepeated.Repository.State.Condition ==
+                        FirearmCondition.Wrecked &&
+                    repeatedWreck.Message.IndexOf("already Wrecked",
+                        StringComparison.OrdinalIgnoreCase) >= 0;
                 unit.Descriptor.AddFact(blueprint);
                 Kingmaker.UnitLogic.Abilities.Ability granted =
                     unit.Descriptor.Abilities.GetAbility(blueprint);
@@ -7805,6 +7895,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int overhaulKitsAtStart = player.Inventory.Count(overhaulKit);
 
                 availableOutOfCombat = !unit.IsInCombat && logic.IsAvailableFor(data);
+                diagnosticOverhaulRecognized = diagnosticBreak &&
+                    diagnosticWreck && diagnosticRepeatRejected &&
+                    availableOutOfCombat;
 
                 delivery = logic.Deliver(context, new TargetWrapper(unit));
                 unit.Body.PrimaryHand.RemoveItem(false);
@@ -7920,6 +8013,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         unit.Body.PrimaryHand.RemoveItem(false);
                     weapon.Dispose();
                 }
+                if (selection != null && selectionBefore != null)
+                {
+                    selection.SelectedUnits.Clear();
+                    selection.SelectedUnits.AddRange(selectionBefore);
+                    selectionRestored = selection.SelectedUnits.Count ==
+                            selectionBefore.Length &&
+                        selection.SelectedUnits.SequenceEqual(selectionBefore);
+                }
+                if (partyBefore != null)
+                {
+                    player.Party.Clear();
+                    player.Party.AddRange(partyBefore);
+                    partyRestored = player.Party.Count ==
+                            partyBefore.Length &&
+                        player.Party.SequenceEqual(partyBefore);
+                }
                 int excess = player.Inventory.Count(repairKit) - kitsBefore;
                 if (excess > 0) player.Inventory.Remove(repairKit, excess);
                 int overhaulExcess = player.Inventory.Count(overhaulKit) -
@@ -7928,7 +8037,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     player.Inventory.Remove(overhaulKit, overhaulExcess);
                 if (unit != null) unit.Dispose();
                 cleaned = player.Inventory.Count(repairKit) == kitsBefore &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsBefore;
+                    player.Inventory.Count(overhaulKit) == overhaulKitsBefore &&
+                    selectionRestored && partyRestored;
             }
             string observed = "duration=" + blueprint.LocalizedDuration +
                 ";available=" + availableOutOfCombat +
@@ -7938,6 +8048,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";changedContextAtomic=" + changedContextAtomic +
                 ";repeatIdempotent=" + repeatedIdempotent +
                 ";combatBlocked=" + combatBlocked + ";completed=" + exactCompletion +
+                ";diagnosticBreak=" + diagnosticBreak +
+                ";diagnosticWreck=" + diagnosticWreck +
+                ";diagnosticRepeatRejected=" + diagnosticRepeatRejected +
+                ";diagnosticOverhaulRecognized=" +
+                diagnosticOverhaulRecognized +
+                ";diagnosticBreakResult=" + diagnosticBreakResult +
+                ";diagnosticWreckResult=" + diagnosticWreckResult +
+                ";selectionRestored=" + selectionRestored +
+                ";partyRestored=" + partyRestored +
                 ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
                 ";static=" + staticBefore + "," + staticAfterOverhaul + "," +
                 staticAfterRepair +
@@ -7950,6 +8069,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "production ability is available with one exact equipped empty Wrecked firearm and a kit",
                     observed, availableOutOfCombat,
                     "production IAbilityAvailabilityProvider with exact runtime fixtures"),
+                Assertion("development-control-break",
+                    "the UMM bridge breaks the exact selected equipped Normal firearm and reports before/after",
+                    observed, diagnosticBreak,
+                    "DevelopmentControls.BreakSelectedEquippedFirearmForDebug and exact item repository"),
+                Assertion("development-control-wreck",
+                    "the UMM bridge wrecks and empties the same Broken firearm without inventory mutation",
+                    observed, diagnosticWreck,
+                    "DevelopmentControls.WreckSelectedEquippedFirearmForDebug and exact item repository"),
+                Assertion("development-control-repeat-rejected",
+                    "a repeated Wreck diagnostic is rejected without another revision",
+                    observed, diagnosticRepeatRejected,
+                    "fixture policy precondition before repository transition"),
+                Assertion("development-fixture-player-overhaul",
+                    "the production Overhaul ability recognizes the exact Wrecked item produced by the UMM bridge",
+                    observed, diagnosticOverhaulRecognized &&
+                        promptCompletion,
+                    "same runtime item flows from DevelopmentControls through production ability delivery"),
                 Assertion("overhaul-prompt-delivery",
                     "one production delivery completes immediately with no pending iterator",
                     observed, blueprint.LocalizedDuration.ToString() == "Instantaneous" &&

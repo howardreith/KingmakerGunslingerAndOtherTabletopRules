@@ -131,13 +131,17 @@ namespace KingmakerGunslinger.Summoning
             SummonVariantMenuRect finalRect,
             SummonVariantMenuOpeningDirection openingDirection,
             float desiredWidth,
-            float desiredHeight)
+            float desiredHeight,
+            bool topClamped,
+            bool bottomClamped)
         {
             SafeRect = safeRect;
             FinalRect = finalRect;
             OpeningDirection = openingDirection;
             DesiredWidth = desiredWidth;
             DesiredHeight = desiredHeight;
+            TopClamped = topClamped;
+            BottomClamped = bottomClamped;
         }
 
         internal SummonVariantMenuRect SafeRect { get; private set; }
@@ -146,6 +150,8 @@ namespace KingmakerGunslinger.Summoning
         { get; private set; }
         internal float DesiredWidth { get; private set; }
         internal float DesiredHeight { get; private set; }
+        internal bool TopClamped { get; private set; }
+        internal bool BottomClamped { get; private set; }
         internal float ViewportHeight { get { return FinalRect.Height; } }
         internal float VerticalScrollExtent
         { get { return Math.Max(0f, DesiredHeight - FinalRect.Height); } }
@@ -171,6 +177,52 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    internal sealed class SummonVariantMenuPlacementDecision
+    {
+        internal SummonVariantMenuPlacementDecision(float deltaX, float deltaY)
+        {
+            DeltaX = deltaX;
+            DeltaY = deltaY;
+        }
+
+        internal float DeltaX { get; private set; }
+        internal float DeltaY { get; private set; }
+
+        internal SummonVariantMenuRect ApplyTo(
+            SummonVariantMenuRect renderedRect)
+        {
+            return new SummonVariantMenuRect(renderedRect.X + DeltaX,
+                renderedRect.Y + DeltaY, renderedRect.Width,
+                renderedRect.Height);
+        }
+    }
+
+    /// <summary>
+    /// Converts a target canvas rectangle into a translation from the rectangle that
+    /// Unity actually rendered. Measuring first makes the placement independent of
+    /// the popup RectTransform's pivot, anchors, and parent-space origin.
+    /// </summary>
+    internal static class SummonVariantMenuPlacementPolicy
+    {
+        internal static SummonVariantMenuPlacementDecision Decide(
+            SummonVariantMenuRect renderedRect,
+            SummonVariantMenuRect targetRect)
+        {
+            if (Math.Abs(renderedRect.Width - targetRect.Width) >
+                    SummonVariantMenuLayoutPolicy.Epsilon ||
+                Math.Abs(renderedRect.Height - targetRect.Height) >
+                    SummonVariantMenuLayoutPolicy.Epsilon)
+            {
+                throw new InvalidOperationException(
+                    "Rendered popup size must match the target before translation.");
+            }
+
+            return new SummonVariantMenuPlacementDecision(
+                targetRect.X - renderedRect.X,
+                targetRect.Y - renderedRect.Y);
+        }
+    }
+
     /// <summary>
     /// Pure canvas-space geometry for the native PC action-bar variant menu. It uses
     /// the rendered anchor, content, and safe rectangle supplied by the UI adapter;
@@ -189,10 +241,8 @@ namespace KingmakerGunslinger.Summoning
                 request.MinimumMargin);
             float width = Math.Min(request.DesiredWidth, safe.Width);
             float height = Math.Min(request.DesiredHeight, safe.Height);
-            float spaceUp = Math.Max(0f, safe.YMax - request.Anchor.YMax);
-            float spaceDown = Math.Max(0f, request.Anchor.YMin - safe.YMin);
-            SummonVariantMenuOpeningDirection direction = ChooseDirection(
-                request.PreferredDirection, height, spaceUp, spaceDown);
+            SummonVariantMenuOpeningDirection direction =
+                request.PreferredDirection;
 
             float x;
             if (request.Anchor.XMax + width <= safe.XMax + Epsilon)
@@ -206,6 +256,10 @@ namespace KingmakerGunslinger.Summoning
                 ? request.Anchor.YMin - height
                 : request.Anchor.YMax;
             float y = Clamp(preferredY, safe.YMin, safe.YMax - height);
+            bool topClamped = preferredY + height > safe.YMax + Epsilon &&
+                Math.Abs(y + height - safe.YMax) <= Epsilon;
+            bool bottomClamped = preferredY < safe.YMin - Epsilon &&
+                Math.Abs(y - safe.YMin) <= Epsilon;
             var finalRect = new SummonVariantMenuRect(x, y, width, height);
             if (!safe.Contains(finalRect, Epsilon))
             {
@@ -214,31 +268,8 @@ namespace KingmakerGunslinger.Summoning
             }
 
             return new SummonVariantMenuLayoutDecision(safe, finalRect,
-                direction, request.DesiredWidth, request.DesiredHeight);
-        }
-
-        private static SummonVariantMenuOpeningDirection ChooseDirection(
-            SummonVariantMenuOpeningDirection preferred,
-            float menuHeight,
-            float spaceUp,
-            float spaceDown)
-        {
-            float preferredSpace = preferred ==
-                SummonVariantMenuOpeningDirection.Down ? spaceDown : spaceUp;
-            float alternateSpace = preferred ==
-                SummonVariantMenuOpeningDirection.Down ? spaceUp : spaceDown;
-            if (preferredSpace + Epsilon >= menuHeight) return preferred;
-            if (alternateSpace + Epsilon >= menuHeight)
-            {
-                return preferred == SummonVariantMenuOpeningDirection.Down
-                    ? SummonVariantMenuOpeningDirection.Up
-                    : SummonVariantMenuOpeningDirection.Down;
-            }
-
-            if (preferredSpace >= alternateSpace) return preferred;
-            return preferred == SummonVariantMenuOpeningDirection.Down
-                ? SummonVariantMenuOpeningDirection.Up
-                : SummonVariantMenuOpeningDirection.Down;
+                direction, request.DesiredWidth, request.DesiredHeight,
+                topClamped, bottomClamped);
         }
 
         private static SummonVariantMenuRect Inset(

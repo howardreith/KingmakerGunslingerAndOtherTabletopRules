@@ -442,9 +442,16 @@ namespace KingmakerGunslinger.Development
                 Run(DevelopmentControls.LoadFirstEquippedFirearmForDebug);
             }
 
-            if (ImmediateModeGui.Button("Apply misfire damage to first equipped firearm"))
+            if (ImmediateModeGui.Button(
+                    "Break selected equipped firearm (diagnostic)"))
             {
-                Run(DevelopmentControls.DamageFirstEquippedFirearmForDebug);
+                Run(DevelopmentControls.BreakSelectedEquippedFirearmForDebug);
+            }
+
+            if (ImmediateModeGui.Button(
+                    "Wreck selected equipped firearm (diagnostic)"))
+            {
+                Run(DevelopmentControls.WreckSelectedEquippedFirearmForDebug);
             }
 
             if (ImmediateModeGui.Button("Repair first equipped Broken firearm to Normal (diagnostic)"))

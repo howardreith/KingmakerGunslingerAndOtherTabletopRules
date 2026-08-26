@@ -141,3 +141,37 @@ mouse-wheel behavior, and controller focus remain the only uncertainty.
     Exhausted.
 15. Repeat the relevant fatigue cases while wearing the Cord of Stubborn
     Resolve and confirm its established substitution occurs exactly once.
+
+## 0.0.103 acceptance-repair cycle
+
+The installed candidate at branch HEAD
+`7f7f4fbba27bea03ecccfd0badda1267aec44bfe` failed the first human popup
+presentation check: at 1600x900, a largest-list parent in the first left
+sidebar slot opened a bounded popup several slots lower around mid-sidebar.
+Human testing also found the legacy UMM misfire button no longer reliably
+created Broken and then Wrecked state on the visibly equipped production
+firearm. These failures do not invalidate the earlier overhaul, summon
+mechanics, fatigue, persistence, module, or optional-mod results above; this
+section records the additive acceptance repair.
+
+The popup adapter now captures the exact `ActionBarGroupSlot` that invoked the
+shared native Toggle, preserves native opening direction, clamps only the
+nearest crossed vertical edge, and applies the target by translating measured
+rendered bounds rather than assuming a pivot-space origin. Oversized scroll
+content is top-aligned and spans the complete safe vertical range. The observer
+now records actual source slot, safe area, rendered popup, viewport, first/final
+slot, scroll state, and top/bottom clamp state.
+
+The UMM panel now uses separate deterministic Break and Wreck controls. They
+require exactly one selected party unit and one current-hand production
+firearm, reject combat and ambiguous targeting, invoke canonical transitions,
+and verify the same item/repository identity plus the real before/after state.
+The updated guarded overhaul fixture calls the exact same development-control
+bridge before handing the resulting Wrecked item to the production Overhaul
+ability.
+
+Source qualification for this repair is PASS at 1,288/1,288 tests. Final
+immutable commit identity, package/DLL hashes, corrected guarded run IDs, and
+installed-DLL equality are recorded below after the candidate gates complete.
+The summon popup is not visually accepted by automation; renewed human review
+of the exact installed candidate remains required.

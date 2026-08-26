@@ -36,10 +36,32 @@ namespace KingmakerGunslinger.Summoning
         internal bool LastEntryReachable { get; set; }
         internal bool ScrollInputEnabled { get; set; }
         internal int SelectableEntryCount { get; set; }
+        internal string SourceSpellIdentity { get; set; }
+        internal string SourceSlotIdentity { get; set; }
+        internal string SourceSlotHierarchyPath { get; set; }
+        internal bool ExactSourceSlotCaptured { get; set; }
+        internal SummonVariantMenuRect SourceSlotRect { get; set; }
+        internal bool HasFallbackAnchor { get; set; }
+        internal SummonVariantMenuRect FallbackAnchorRect { get; set; }
+        internal SummonVariantMenuRect NativePopupRect { get; set; }
+        internal SummonVariantMenuRect SlotContentRect { get; set; }
+        internal SummonVariantMenuRect RenderedPopupRect { get; set; }
+        internal bool HasViewportRect { get; set; }
+        internal SummonVariantMenuRect ViewportRect { get; set; }
+        internal SummonVariantMenuRect FirstSlotRect { get; set; }
+        internal SummonVariantMenuRect FinalSlotRect { get; set; }
+        internal string RootPivot { get; set; }
+        internal string RootAnchors { get; set; }
+        internal string CanvasRenderMode { get; set; }
+        internal bool ScrollingInstalled { get; set; }
+        internal bool TopClamped { get; set; }
+        internal bool BottomClamped { get; set; }
+        internal SummonVariantMenuOpeningDirection OpeningDirection
+        { get; set; }
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture,
+            string summary = string.Format(CultureInfo.InvariantCulture,
                 "parent={0}:{1};variants={2};slots={3};scrollRects={4};viewports={5};native={6};scroll={7};vertical={8};horizontal={9};normalizedY={10:0.###};desired={11:0.###}x{12:0.###};final={13:0.###},{14:0.###},{15:0.###},{16:0.###};navigation={17}/{18}/{19};selectable={20}",
                 ParentName, ParentGuid, ParentVariantCount, SlotCount,
                 ScrollRectCount, ViewportMarkerCount,
@@ -49,6 +71,25 @@ namespace KingmakerGunslinger.Summoning
                 FinalRect.Height, FirstEntryReachable,
                 MiddleEntryReachable, LastEntryReachable,
                 SelectableEntryCount);
+            return summary + string.Format(CultureInfo.InvariantCulture,
+                ";sourceSpell={0};sourceSlot={1};sourcePath={2};exactSource={3};sourceRect={4};fallback={5}:{6};nativeRect={7};slotRect={8};renderedRect={9};viewport={10}:{11};firstRect={12};lastRect={13};pivot={14};anchors={15};canvas={16};scrollInstalled={17};topClamped={18};bottomClamped={19};safeRect={20};opening={21}",
+                SourceSpellIdentity, SourceSlotIdentity,
+                SourceSlotHierarchyPath, ExactSourceSlotCaptured,
+                FormatRect(SourceSlotRect), HasFallbackAnchor,
+                FormatRect(FallbackAnchorRect), FormatRect(NativePopupRect),
+                FormatRect(SlotContentRect), FormatRect(RenderedPopupRect),
+                HasViewportRect, FormatRect(ViewportRect),
+                FormatRect(FirstSlotRect), FormatRect(FinalSlotRect),
+                RootPivot, RootAnchors, CanvasRenderMode,
+                ScrollingInstalled, TopClamped, BottomClamped,
+                FormatRect(SafeRect), OpeningDirection);
+        }
+
+        private static string FormatRect(SummonVariantMenuRect rect)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "{0:0.###},{1:0.###},{2:0.###},{3:0.###}",
+                rect.X, rect.Y, rect.Width, rect.Height);
         }
     }
 
@@ -68,6 +109,10 @@ namespace KingmakerGunslinger.Summoning
         private static readonly ConditionalWeakTable<ActionBarSpellsGroup,
             LayoutState> States = new ConditionalWeakTable<ActionBarSpellsGroup,
                 LayoutState>();
+        private static readonly ConditionalWeakTable<ActionBarSpellsGroup,
+            SourceSlotCapture> SourceSlots =
+                new ConditionalWeakTable<ActionBarSpellsGroup,
+                    SourceSlotCapture>();
         private static readonly object StateGate = new object();
         private static long _attempts;
         private static long _applied;
@@ -84,6 +129,30 @@ namespace KingmakerGunslinger.Summoning
         internal static string LastResult
         {
             get { lock (StateGate) return _lastResult; }
+        }
+
+        internal static void CaptureSourceSlot(ActionBarSpellsGroup group,
+            ActionBarGroupSlot sourceSlot)
+        {
+            if (group == null || sourceSlot == null) return;
+            lock (SourceSlots)
+            {
+                SourceSlots.Remove(group);
+                SourceSlots.Add(group, new SourceSlotCapture(sourceSlot));
+            }
+        }
+
+        internal static ActionBarGroupSlot ConsumeSourceSlot(
+            ActionBarSpellsGroup group)
+        {
+            if (group == null) return null;
+            SourceSlotCapture capture;
+            lock (SourceSlots)
+            {
+                if (!SourceSlots.TryGetValue(group, out capture)) return null;
+                SourceSlots.Remove(group);
+            }
+            return capture.SourceSlot;
         }
 
         internal static void PrepareForNativeFill(ActionBarSpellsGroup group)
@@ -105,12 +174,15 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Apply(ActionBarSpellsGroup group,
             IList<ActionBarSpontaneousConvertedSlot> slots,
-            AbilityData sourceSpell)
+            AbilityData sourceSpell, ActionBarGroupSlot sourceSlot)
         {
             if (group == null) throw new ArgumentNullException("group");
             if (slots == null) throw new ArgumentNullException("slots");
             if (sourceSpell == null || sourceSpell.Blueprint == null)
                 throw new ArgumentNullException("sourceSpell");
+            if (sourceSlot == null)
+                throw new InvalidOperationException(
+                    "The expanded variant menu was not opened by an exact ActionBarGroupSlot caller.");
             Interlocked.Increment(ref _attempts);
 
             RectTransform root = group.transform as RectTransform;
@@ -126,6 +198,12 @@ namespace KingmakerGunslinger.Summoning
             if (canvasRect == null)
                 throw new InvalidOperationException(
                     "The active action-bar canvas has no RectTransform.");
+            RectTransform sourceSlotTransform = sourceSlot.transform as
+                RectTransform;
+            if (sourceSlotTransform == null || sourceSlot.gameObject == null ||
+                !sourceSlot.gameObject.activeInHierarchy)
+                throw new InvalidOperationException(
+                    "The captured source ActionBarGroupSlot is not an active RectTransform.");
 
             ActionBarSpontaneousConvertedSlot[] liveSlots = slots
                 .Where(value => value != null && value.gameObject != null)
@@ -148,25 +226,24 @@ namespace KingmakerGunslinger.Summoning
             Canvas.ForceUpdateCanvases();
 
             SummonVariantMenuRect safe = MeasureSafeRect(canvas, canvasRect);
-            SummonVariantMenuRect anchor = MeasureAnchor(group, canvasRect);
+            SummonVariantMenuRect anchor = MeasureRect(sourceSlotTransform,
+                canvasRect);
+            SummonVariantMenuRect fallbackAnchor;
+            bool hasFallbackAnchor = TryMeasureFallbackAnchor(group,
+                canvasRect, out fallbackAnchor);
             SummonVariantMenuRect nativeRect = MeasureRect(root, canvasRect);
             SummonVariantMenuRect slotRect = MeasureSlots(liveSlots,
                 canvasRect);
             float preferredWidth = LayoutUtility.GetPreferredWidth(root);
             float preferredHeight = LayoutUtility.GetPreferredHeight(root);
-            float desiredWidth = Math.Max(nativeRect.Width,
-                Math.Max(slotRect.Width, preferredWidth));
-            float desiredHeight = Math.Max(nativeRect.Height,
-                Math.Max(slotRect.Height, preferredHeight));
+            float desiredWidth = Math.Max(slotRect.Width, preferredWidth);
+            float desiredHeight = Math.Max(slotRect.Height, preferredHeight);
             if (!FinitePositive(desiredWidth) || !FinitePositive(desiredHeight))
                 throw new InvalidOperationException(
                     "The expanded variant menu reported invalid rendered dimensions.");
 
             SummonVariantMenuOpeningDirection preferredDirection =
-                nativeRect.Y + (nativeRect.Height / 2f) >=
-                anchor.Y + (anchor.Height / 2f)
-                    ? SummonVariantMenuOpeningDirection.Up
-                    : SummonVariantMenuOpeningDirection.Down;
+                InferNativeOpeningDirection(nativeRect, anchor);
             float margin = Math.Max(2f,
                 Math.Min(anchor.Width, anchor.Height) * 0.1f);
             SummonVariantMenuLayoutDecision decision =
@@ -182,7 +259,9 @@ namespace KingmakerGunslinger.Summoning
             if (nativeFits)
             {
                 RecordSuccess(group, sourceSpell, liveSlots.Length, state,
-                    decision, anchor, true);
+                    decision, sourceSlot, anchor, hasFallbackAnchor,
+                    fallbackAnchor, nativeRect, slotRect, canvas, canvasRect,
+                    root, liveSlots, true);
                 return;
             }
 
@@ -198,7 +277,9 @@ namespace KingmakerGunslinger.Summoning
             if (decision.RequiresScrolling)
                 Interlocked.Increment(ref _scrolling);
             RecordSuccess(group, sourceSpell, liveSlots.Length, state,
-                decision, anchor, false);
+                decision, sourceSlot, anchor, hasFallbackAnchor,
+                fallbackAnchor, nativeRect, slotRect, canvas, canvasRect,
+                root, liveSlots, false);
         }
 
         internal static bool TryGetSnapshot(ActionBarSpellsGroup group,
@@ -254,8 +335,29 @@ namespace KingmakerGunslinger.Summoning
         private static void RecordSuccess(ActionBarSpellsGroup group,
             AbilityData sourceSpell, int slotCount, LayoutState state,
             SummonVariantMenuLayoutDecision decision,
-            SummonVariantMenuRect anchor, bool nativeRetained)
+            ActionBarGroupSlot sourceSlot,
+            SummonVariantMenuRect anchor,
+            bool hasFallbackAnchor,
+            SummonVariantMenuRect fallbackAnchor,
+            SummonVariantMenuRect nativeRect,
+            SummonVariantMenuRect slotRect,
+            Canvas canvas,
+            RectTransform canvasRect,
+            RectTransform root,
+            ActionBarSpontaneousConvertedSlot[] slots,
+            bool nativeRetained)
         {
+            SummonVariantMenuRect renderedRect = MeasureRect(root, canvasRect);
+            if (!decision.SafeRect.Contains(renderedRect, 0.5f))
+                throw new InvalidOperationException(
+                    "The rendered variant-menu rectangle escaped the canvas-safe rectangle after placement.");
+            SummonVariantMenuRect viewportRect;
+            bool hasViewport = state.TryMeasureViewport(out viewportRect);
+            SummonVariantMenuRect firstRect = MeasureRect(
+                slots[0].transform as RectTransform, canvasRect);
+            SummonVariantMenuRect finalSlotRect = MeasureRect(
+                slots[slots.Length - 1].transform as RectTransform,
+                canvasRect);
             var snapshot = new ExpandedSummoningVariantMenuSnapshot
             {
                 ParentGuid = sourceSpell.Blueprint.AssetGuid,
@@ -275,10 +377,39 @@ namespace KingmakerGunslinger.Summoning
                 FinalRect = decision.FinalRect,
                 DesiredWidth = decision.DesiredWidth,
                 DesiredHeight = decision.DesiredHeight,
-                AnchorRect = anchor
+                AnchorRect = anchor,
+                SourceSpellIdentity = sourceSpell.Blueprint.name + ":" +
+                    sourceSpell.Blueprint.AssetGuid,
+                SourceSlotIdentity = sourceSlot.GetType().FullName + "#" +
+                    sourceSlot.GetInstanceID().ToString(
+                        CultureInfo.InvariantCulture),
+                SourceSlotHierarchyPath = HierarchyPath(sourceSlot.transform),
+                ExactSourceSlotCaptured = true,
+                SourceSlotRect = anchor,
+                HasFallbackAnchor = hasFallbackAnchor,
+                FallbackAnchorRect = fallbackAnchor,
+                NativePopupRect = nativeRect,
+                SlotContentRect = slotRect,
+                RenderedPopupRect = renderedRect,
+                HasViewportRect = hasViewport,
+                ViewportRect = viewportRect,
+                FirstSlotRect = firstRect,
+                FinalSlotRect = finalSlotRect,
+                RootPivot = FormatVector(root.pivot),
+                RootAnchors = FormatVector(root.anchorMin) + "->" +
+                    FormatVector(root.anchorMax),
+                CanvasRenderMode = canvas.renderMode.ToString(),
+                ScrollingInstalled = state.ViewportApplied,
+                TopClamped = decision.TopClamped,
+                BottomClamped = decision.BottomClamped,
+                OpeningDirection = decision.OpeningDirection
             };
             state.LastSnapshot = snapshot;
             lock (StateGate) _lastResult = snapshot.ToString();
+            ModContext context;
+            if (ModContext.TryGet(out context))
+                context.Logger.Info("summoning", "variant-menu.layout-applied",
+                    snapshot.ToString());
         }
 
         private static SummonVariantMenuRect MeasureSafeRect(Canvas canvas,
@@ -320,8 +451,9 @@ namespace KingmakerGunslinger.Summoning
                 Math.Abs(localMax.y - localMin.y));
         }
 
-        private static SummonVariantMenuRect MeasureAnchor(
-            ActionBarSpellsGroup group, RectTransform canvasRect)
+        private static bool TryMeasureFallbackAnchor(
+            ActionBarSpellsGroup group, RectTransform canvasRect,
+            out SummonVariantMenuRect measured)
         {
             ActionBarGroupSlot owner = group.GetComponentInParent<
                 ActionBarGroupSlot>();
@@ -330,9 +462,23 @@ namespace KingmakerGunslinger.Summoning
             if (anchor == null && group.transform.parent != null)
                 anchor = group.transform.parent as RectTransform;
             if (anchor == null)
-                throw new InvalidOperationException(
-                    "The variant menu has no concrete action-bar anchor RectTransform.");
-            return MeasureRect(anchor, canvasRect);
+            {
+                measured = default(SummonVariantMenuRect);
+                return false;
+            }
+            measured = MeasureRect(anchor, canvasRect);
+            return true;
+        }
+
+        private static SummonVariantMenuOpeningDirection
+            InferNativeOpeningDirection(SummonVariantMenuRect nativeRect,
+                SummonVariantMenuRect anchor)
+        {
+            float upEdgeDistance = Math.Abs(nativeRect.YMin - anchor.YMax);
+            float downEdgeDistance = Math.Abs(anchor.YMin - nativeRect.YMax);
+            return upEdgeDistance <= downEdgeDistance
+                ? SummonVariantMenuOpeningDirection.Up
+                : SummonVariantMenuOpeningDirection.Down;
         }
 
         private static SummonVariantMenuRect MeasureSlots(
@@ -389,16 +535,82 @@ namespace KingmakerGunslinger.Summoning
                 finalRect.Width);
             root.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                 finalRect.Height);
-            Vector3 pivotLocal = new Vector3(
-                finalRect.X + (finalRect.Width * root.pivot.x),
-                finalRect.Y + (finalRect.Height * root.pivot.y), 0f);
-            root.position = canvasRect.TransformPoint(pivotLocal);
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                Canvas.ForceUpdateCanvases();
+                SummonVariantMenuRect sized = MeasureRect(root, canvasRect);
+                if (Math.Abs(sized.Width - finalRect.Width) <=
+                        SummonVariantMenuLayoutPolicy.Epsilon &&
+                    Math.Abs(sized.Height - finalRect.Height) <=
+                        SummonVariantMenuLayoutPolicy.Epsilon)
+                    break;
+                if (!FinitePositive(sized.Width) ||
+                    !FinitePositive(sized.Height) ||
+                    !FinitePositive(root.rect.width) ||
+                    !FinitePositive(root.rect.height))
+                    throw new InvalidOperationException(
+                        "The native variant-menu RectTransform could not be sized in canvas space.");
+                root.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
+                    root.rect.width * finalRect.Width / sized.Width);
+                root.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                    root.rect.height * finalRect.Height / sized.Height);
+            }
+
+            Canvas.ForceUpdateCanvases();
+            SummonVariantMenuRect rendered = MeasureRect(root, canvasRect);
+            SummonVariantMenuPlacementDecision placement =
+                SummonVariantMenuPlacementPolicy.Decide(rendered, finalRect);
+            Vector3 origin = canvasRect.TransformPoint(Vector3.zero);
+            Vector3 translated = canvasRect.TransformPoint(new Vector3(
+                placement.DeltaX, placement.DeltaY, 0f));
+            root.position += translated - origin;
+            Canvas.ForceUpdateCanvases();
+            SummonVariantMenuRect verified = MeasureRect(root, canvasRect);
+            if (!Close(verified.X, finalRect.X, 0.5f) ||
+                !Close(verified.Y, finalRect.Y, 0.5f) ||
+                !Close(verified.Width, finalRect.Width, 0.5f) ||
+                !Close(verified.Height, finalRect.Height, 0.5f))
+                throw new InvalidOperationException(
+                    "The native variant-menu rendered bounds did not match the canvas-space layout decision.");
+        }
+
+        private static bool Close(float left, float right, float tolerance)
+        {
+            return Math.Abs(left - right) <= tolerance;
+        }
+
+        private static string HierarchyPath(Transform transform)
+        {
+            var parts = new List<string>();
+            for (Transform current = transform; current != null;
+                current = current.parent)
+                parts.Add(current.name + "#" + current.GetInstanceID().ToString(
+                    CultureInfo.InvariantCulture));
+            parts.Reverse();
+            return string.Join("/", parts.ToArray());
+        }
+
+        private static string FormatVector(Vector2 vector)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "{0:0.###},{1:0.###}", vector.x, vector.y);
         }
 
         private static bool FinitePositive(float value)
         {
             return value > 0f && !float.IsNaN(value) &&
                 !float.IsInfinity(value);
+        }
+
+        private sealed class SourceSlotCapture
+        {
+            internal SourceSlotCapture(ActionBarGroupSlot sourceSlot)
+            {
+                SourceSlot = sourceSlot ??
+                    throw new ArgumentNullException("sourceSlot");
+            }
+
+            internal ActionBarGroupSlot SourceSlot { get; private set; }
         }
 
         private sealed class LayoutState
@@ -441,6 +653,29 @@ namespace KingmakerGunslinger.Summoning
             {
                 get { return _scroll == null ? 1f :
                     _scroll.verticalNormalizedPosition; }
+            }
+
+            internal bool ViewportApplied
+            {
+                get
+                {
+                    return _viewportApplied && _scroll != null &&
+                        _scroll.enabled && _viewport != null &&
+                        _viewportObject != null &&
+                        _viewportObject.activeInHierarchy;
+                }
+            }
+
+            internal bool TryMeasureViewport(
+                out SummonVariantMenuRect measured)
+            {
+                if (!ViewportApplied || _canvasRect == null)
+                {
+                    measured = default(SummonVariantMenuRect);
+                    return false;
+                }
+                measured = MeasureRect(_viewport, _canvasRect);
+                return true;
             }
 
             internal void CaptureNative(RectTransform root)
@@ -536,6 +771,16 @@ namespace KingmakerGunslinger.Summoning
                     snapshot.SelectableEntryCount == live.Length;
                 snapshot.VerticalNormalizedPosition =
                     VerticalNormalizedPosition;
+                snapshot.RenderedPopupRect = MeasureRect(_root,
+                    _canvasRect);
+                snapshot.FirstSlotRect = MeasureRect(
+                    live[0].transform as RectTransform, _canvasRect);
+                snapshot.FinalSlotRect = MeasureRect(
+                    live[live.Length - 1].transform as RectTransform,
+                    _canvasRect);
+                SummonVariantMenuRect viewport;
+                snapshot.HasViewportRect = TryMeasureViewport(out viewport);
+                snapshot.ViewportRect = viewport;
             }
 
             private void SetScrollPosition(float normalized)
@@ -615,6 +860,14 @@ namespace KingmakerGunslinger.Summoning
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
                 _scroll.horizontalNormalizedPosition = 0f;
                 _scroll.verticalNormalizedPosition = 1f;
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
+                if (_lastSlots.Length > 0 && _lastSlots[0] != null &&
+                    !Intersects(MeasureRect(_lastSlots[0].transform as
+                            RectTransform, _canvasRect),
+                        MeasureRect(_viewport, _canvasRect)))
+                    throw new InvalidOperationException(
+                        "The scroll viewport did not begin with the first variant option visible.");
             }
 
             internal void RestoreNative()
@@ -712,7 +965,11 @@ namespace KingmakerGunslinger.Summoning
                     CopyCommon(grid, _contentGrid);
                     _contentGrid.cellSize = grid.cellSize;
                     _contentGrid.spacing = grid.spacing;
-                    _contentGrid.startCorner = grid.startCorner;
+                    _contentGrid.startCorner =
+                        grid.startCorner == GridLayoutGroup.Corner.UpperRight ||
+                        grid.startCorner == GridLayoutGroup.Corner.LowerRight
+                            ? GridLayoutGroup.Corner.UpperRight
+                            : GridLayoutGroup.Corner.UpperLeft;
                     _contentGrid.startAxis = grid.startAxis;
                     _contentGrid.constraint = grid.constraint;
                     _contentGrid.constraintCount = grid.constraintCount;
@@ -769,7 +1026,24 @@ namespace KingmakerGunslinger.Summoning
                 target.padding = padding == null ? new RectOffset() :
                     new RectOffset(padding.left, padding.right, padding.top,
                         padding.bottom);
-                target.childAlignment = source.childAlignment;
+                target.childAlignment = TopAligned(source.childAlignment);
+            }
+
+            private static TextAnchor TopAligned(TextAnchor alignment)
+            {
+                switch (alignment)
+                {
+                    case TextAnchor.UpperCenter:
+                    case TextAnchor.MiddleCenter:
+                    case TextAnchor.LowerCenter:
+                        return TextAnchor.UpperCenter;
+                    case TextAnchor.UpperRight:
+                    case TextAnchor.MiddleRight:
+                    case TextAnchor.LowerRight:
+                        return TextAnchor.UpperRight;
+                    default:
+                        return TextAnchor.UpperLeft;
+                }
             }
 
             private static void Stretch(RectTransform rect)

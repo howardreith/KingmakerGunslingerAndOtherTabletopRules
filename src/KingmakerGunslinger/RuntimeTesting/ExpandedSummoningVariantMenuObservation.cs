@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return new List<string>
                 {
+                    "Kingmaker.UI.ActionBar.ActionBarGroupSlot.OnToggleGroupClick()",
                     "Kingmaker.UI.ActionBar.ActionBarSpellsGroup.Toggle(UnitEntityData,IEnumerable<AbilityData>,AbilityData)",
                     "Kingmaker.UI.ActionBar.ActionBarSpellsGroup.Hide(Boolean)",
                     "UnityEngine.Resources.FindObjectsOfTypeAll<ActionBarSpellsGroup>()"
@@ -83,7 +84,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "opened published menu is not the largest runtime list");
                     continue;
                 }
-                if (!NearTopLeft(snapshot.AnchorRect, snapshot.SafeRect))
+                if (!snapshot.ExactSourceSlotCaptured ||
+                    !NearTopLeft(snapshot.SourceSlotRect, snapshot.SafeRect))
                 {
                     ObserveCandidate(snapshot,
                         "largest menu anchor is not near the top-left sidebar boundary");
@@ -92,7 +94,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 bool navigation = ExpandedSummoningVariantMenuRuntime
                     .TryValidateNavigation(group, out snapshot);
-                bool bounded = snapshot.SafeRect.Contains(snapshot.FinalRect,
+                bool bounded = snapshot.SafeRect.Contains(
+                    snapshot.RenderedPopupRect,
                     SummonVariantMenuLayoutPolicy.Epsilon);
                 bool needsVerticalViewport = snapshot.DesiredHeight >
                     snapshot.SafeRect.Height +
@@ -101,15 +104,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     snapshot.ScrollingRequired &&
                     snapshot.VerticalScrolling &&
                     snapshot.ScrollRectCount == 1 &&
-                    snapshot.ViewportMarkerCount == 1;
-                bool valid = bounded && viewportExact && navigation &&
+                    snapshot.ViewportMarkerCount == 1 &&
+                    snapshot.HasViewportRect &&
+                    Close(snapshot.ViewportRect.YMin,
+                        snapshot.SafeRect.YMin, 0.5f) &&
+                    Close(snapshot.ViewportRect.YMax,
+                        snapshot.SafeRect.YMax, 0.5f);
+                SummonVariantMenuRect visibleRect = snapshot.HasViewportRect
+                    ? snapshot.ViewportRect : snapshot.RenderedPopupRect;
+                bool firstStartsVisible = Intersects(snapshot.FirstSlotRect,
+                    visibleRect) && snapshot.FirstSlotRect.YMax <=
+                        visibleRect.YMax + 0.5f;
+                bool clampedAtNearestEdge = !snapshot.TopClamped ||
+                    Close(snapshot.RenderedPopupRect.YMax,
+                        snapshot.SafeRect.YMax, 0.5f);
+                bool valid = bounded && viewportExact && firstStartsVisible &&
+                    clampedAtNearestEdge && navigation &&
                     snapshot.NavigationVerified &&
                     snapshot.FirstEntryReachable &&
                     snapshot.MiddleEntryReachable &&
                     snapshot.LastEntryReachable;
                 string reason = valid ?
-                    "largest top-left menu is bounded and fully navigable" :
-                    "stable largest top-left menu failed bounds, viewport, or navigation checks";
+                    "largest top-left menu uses the exact clicked slot, nearest-edge clamp, and fully navigable bounds" :
+                    "stable largest top-left menu failed clicked-slot, rendered-bounds, viewport-start, or navigation checks";
                 ObserveCandidate(snapshot, reason);
                 if (_candidateSamples < StableSamplesRequired) continue;
                 Completed = true;
@@ -151,6 +168,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             float topBand = safe.YMax - safe.Height * 0.3f;
             float leftBand = safe.XMin + safe.Width * 0.3f;
             return anchor.YMax >= topBand && anchor.XMin <= leftBand;
+        }
+
+        private static bool Intersects(SummonVariantMenuRect first,
+            SummonVariantMenuRect second)
+        {
+            return first.XMax > second.XMin && first.XMin < second.XMax &&
+                first.YMax > second.YMin && first.YMin < second.YMax;
+        }
+
+        private static bool Close(float first, float second, float tolerance)
+        {
+            return Math.Abs(first - second) <= tolerance;
         }
     }
 }

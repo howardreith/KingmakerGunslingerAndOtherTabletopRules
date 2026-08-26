@@ -146,3 +146,34 @@ actual-popup observation and human presentation/navigation check.
 - The supervised `observe-expanded-summoning-variant-menu` run was not started
   because its contract requires a human to place and open the actual menu. No
   coordinate, OCR, mouse, keyboard, or uncontrolled UI automation was used.
+
+## 2026-08-26 first human-acceptance repair
+
+- Continued from the published feature HEAD
+  `7f7f4fbba27bea03ecccfd0badda1267aec44bfe` without creating a branch,
+  resetting to master, changing version 0.0.103, or disturbing the earlier
+  qualification record.
+- Human screenshot evidence at 1600x900 showed the first-slot expanded summon
+  popup beginning around mid-sidebar. Installed call-site inspection confirmed
+  the clicked `ActionBarGroupSlot.OnToggleGroupClick` and its `SubGroup` are the
+  authoritative anchor. The prior adapter instead rediscovered a shared parent,
+  applied the canvas rectangle through pivot assumptions, and retained
+  middle/lower child alignment after making scroll content full-height.
+- Captured the exact clicked slot request-locally, rejected stale/missing
+  captures, preserved native direction, implemented nearest-edge top/bottom
+  clamping, translated actual rendered bounds independent of anchors/pivot, and
+  top-aligned oversized content. Added one structured diagnostic record per
+  open and expanded the supervised observer to actual rendered/viewport and
+  endpoint-slot rectangles.
+- Reproduced the UMM firearm failure from the real output log: the legacy
+  reflection/first-candidate path emitted `The selected unit has no exact
+  firearm item equipped. Equip a Test Musket and retry.` for a production
+  equipped firearm. Replaced it with explicit Break/Wreck controls using the
+  exact selected party unit and the production current-hand firearm resolver,
+  canonical transitions, commit-boundary revalidation, identity/static-state
+  verification, rollback, and useful before/after Last Result text.
+- Extended `disposable-overhaul-maintenance` through the same bridge methods
+  used by UMM. The suite now has 19 focused layout cases and five focused
+  development-control cases; the complete dependency-free run passes
+  1,288/1,288. Final immutable package/runtime evidence and renewed human popup
+  acceptance remain to be recorded.

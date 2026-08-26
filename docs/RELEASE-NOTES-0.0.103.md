@@ -13,10 +13,22 @@ equipment, missing resources, and ambiguous firearms still fail closed.
 
 Expanded Summoning's exact native PC action-bar variant menu now measures the
 rendered runtime list and active canvas-safe rectangle. Lists that fit keep
-their native presentation. Larger lists choose the better side, clamp to the
-canvas, and use one bounded scrolling viewport without deleting, reordering,
-or cloning native options. Geometry is resolution-, aspect-, safe-area-, and
-UI-scale-aware, and third-party additions are measured from the runtime list.
+their native presentation. Larger lists preserve their native opening
+direction and adjacent horizontal placement, then clamp the nearest crossing
+edge to the canvas instead of jumping toward the center. A menu taller than
+the safe viewport fills the usable height from top margin to bottom margin and
+uses one bounded scrolling viewport whose first option starts visible. The
+clicked action-bar slot—not a shared popup ancestor—is the anchor. Geometry is
+resolution-, aspect-, safe-area-, and UI-scale-aware, and third-party additions
+are measured from the runtime list.
+
+The development UMM panel now exposes deterministic **Break selected equipped
+firearm (diagnostic)** and **Wreck selected equipped firearm (diagnostic)**
+controls. They require exactly one selected party unit and exactly one equipped
+supported firearm, reject combat and invalid state order, use the canonical
+Normal-to-Broken and Broken-to-empty/Wrecked transitions, and report verified
+before/after state for the same runtime item. They do not consume ammunition or
+repair kits, grant inventory, or choose an ambiguous firearm.
 
 Exact canonical Fatigued applications now follow the deterministic native
 condition table: fresh targets become Fatigued, already-Fatigued targets become
@@ -26,7 +38,7 @@ duration/context and immunity behavior, and is exact-GUID scoped. Acadamae
 Graduate uses this shared path. Cord substitution still resolves once per
 accepted incoming effect with its established damage and 1-HP floor.
 
-The complete dependency-free regression suite contains 1,278 passing tests.
+The complete dependency-free regression suite contains 1,288 passing tests.
 The source commit does not include game assemblies, Unity assemblies,
 `CraftMagicItems.dll` or other optional-mod binaries, saves, raw runtime logs,
 credentials, or generated packages. The

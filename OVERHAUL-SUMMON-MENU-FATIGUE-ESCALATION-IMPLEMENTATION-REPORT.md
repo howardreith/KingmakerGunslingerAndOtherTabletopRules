@@ -111,8 +111,8 @@ the 1-HP floor, and cannot recursively re-enter the canonical coordinator.
 
 ## Regression coverage
 
-The complete dependency-free suite currently passes 1,278/1,278. New focused
-coverage includes 14 menu-layout cases, 13 canonical fatigue policy/contract
+The complete dependency-free suite currently passes 1,288/1,288. New focused
+coverage includes 19 menu-layout cases, 13 canonical fatigue policy/contract
 cases, prompt overhaul delivery and source guards, and extended Acadamae, Cord,
 Expanded Summoning, maintenance, and guarded-scenario contracts. Runtime
 fixtures exercise the actual production ability, exact action-bar view, exact
@@ -150,3 +150,63 @@ automation was used.
 Qualification evidence, immutable commit identity, runtime run IDs, and final
 hashes are maintained in
 `docs/OVERHAUL-SUMMON-MENU-FATIGUE-ESCALATION-QUALIFICATION.md`.
+
+## 0.0.103 human-acceptance repair
+
+The first installed-candidate human check retained the successful prompt
+overhaul and fatigue behavior but rejected two presentation/fixture surfaces.
+At 1600x900, with the expanded summon parent in the first left-sidebar slot,
+the popup began several slots lower around mid-sidebar instead of at the top
+safe margin. The existing UMM misfire button also stopped reliably producing
+the Normal-to-Broken-to-Wrecked fixture sequence.
+
+Installed 2.1.7b contracts and call sites identified the exact menu source as
+the private zero-argument `ActionBarGroupSlot.OnToggleGroupClick`, which
+synchronously calls the shared `ActionBarSpellsGroup.Toggle` instance through
+that slot's `SubGroup`. The first adapter instead rediscovered
+`group.GetComponentInParent<ActionBarGroupSlot>()`; that can identify the
+shared popup hierarchy rather than the clicked visible slot. It also applied a
+canvas-space target by guessing the root pivot position and copied the native
+middle/lower child alignment into newly full-height scroll content. Those
+three adapter assumptions explain why a mathematically clamped policy result
+could still render halfway down the sidebar.
+
+The correction captures and consumes the exact clicked source slot around the
+native Toggle call, rejects a missing/stale source instead of guessing, keeps
+the native opening direction, and performs nearest-edge clamping. A top
+crossing clamps its top edge to the safe top; a bottom crossing clamps its
+bottom edge to the safe bottom. Oversized content spans the complete safe
+vertical range and begins at its first option. Root placement now translates
+the measured rendered bounds after sizing, so arbitrary pivots, anchors,
+parent transforms, safe areas, and canvas scale do not change the requested
+rectangle. One structured record per open includes source spell/slot identity
+and hierarchy, exact and fallback anchor rectangles, native/content/safe/final
+and rendered rectangles, viewport and endpoint-slot rectangles, root
+pivot/anchors, canvas mode, scrolling state, direction, and clamped edge.
+
+The firearm failure was reproduced in the real UMM output log. The legacy
+`DamageFirstEquippedFirearmForDebug` path repeatedly reported that the selected
+unit had no exact firearm equipped even while a production firearm was visibly
+equipped. That path mixed reflection-based selected-or-main fallback, broad
+multi-equipment-set discovery, and a first-candidate choice with an error still
+worded specifically for Test Musket. It therefore neither enforced the actual
+selected unit/current hands nor provided an unambiguous production-firearm
+target.
+
+The replacement UMM controls use `SelectionManager.GetSingleSelectedUnit`,
+require current party membership and no active selected-unit/party combat, and
+delegate current-hand resolution to the production
+`ExactEquippedFirearmResolver`. They fail closed for zero or two supported
+firearms. A focused policy permits only canonical Normal-to-Broken and
+Broken-to-empty/Wrecked transitions. The bridge revalidates at commit, verifies
+the same runtime reference, item ID, blueprint/type, repository identity and
+reference hash, revision, loaded-state rule, and static blueprint enchantments,
+and restores the prior repository state if post-verification fails. The same
+bridge methods now run inside `disposable-overhaul-maintenance`, whose resulting
+Wrecked production item then feeds the actual player-facing Overhaul ability.
+
+These corrections retain version 0.0.103 and do not alter summon blueprints,
+rosters, spell mechanics, firearm balance, prompt Overhaul delivery, fatigue,
+Acadamae, or Cord behavior. Final popup presentation remains intentionally
+human-gated after installation; automated geometry and read-only observation
+can establish bounds and reachability but cannot accept the visual result.

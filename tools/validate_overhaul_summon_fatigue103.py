@@ -14,7 +14,7 @@ INFORMATIONAL_VERSION = (
     "0.0.103-overhaul-summon-menu-fatigue-escalation")
 PACKAGE = "KingmakerGunslinger-0.0.103-local-runtime.zip"
 PACKAGE_SUFFIX = "overhaul-summon-menu-fatigue-escalation"
-DETERMINISTIC_TEST_COUNT = 1278
+DETERMINISTIC_TEST_COUNT = 1288
 STATIC_KEY = "overhaulSummonFatigue103"
 
 
@@ -65,12 +65,15 @@ def validate(root: Path) -> None:
     require_tokens(root / (
         "src/KingmakerGunslinger/Summoning/"
         "SummonVariantMenuLayoutPolicy.cs"),
-        "SummonVariantMenuLayoutRequest", "ChooseDirection(",
+        "SummonVariantMenuLayoutRequest", "TopClamped",
+        "SummonVariantMenuPlacementPolicy",
         "CanvasSafeRect", "RequiresVerticalScrolling",
         "RequiresHorizontalScrolling", "safe.Contains(finalRect")
     require_tokens(root / (
         "src/KingmakerGunslinger/Summoning/"
         "ExpandedSummoningVariantMenuPatch.cs"),
+        "typeof(ActionBarGroupSlot), \"OnToggleGroupClick\"",
+        "CaptureSourceSlot",
         "typeof(ActionBarSpellsGroup), \"Toggle\"",
         "IsPublishedExpandedParent", "PrepareForNativeFill",
         "ExpandedSummoningVariantMenuRuntime.Apply")
@@ -114,8 +117,8 @@ def validate(root: Path) -> None:
         "expanded-summoning.menu-layout-navigation",
         "fatigue.repeated-fatigue", "fatigue.same-sequence",
         "fatigue.cord-order")
-    if runner.count('Case("expanded-summoning.menu-layout-') != 14:
-        raise AssertionError("Expected 14 focused summon-menu layout tests")
+    if runner.count('Case("expanded-summoning.menu-layout-') != 19:
+        raise AssertionError("Expected 19 focused summon-menu layout tests")
     if runner.count('Case("fatigue.') != 13:
         raise AssertionError("Expected 13 focused canonical fatigue tests")
     require_tokens(root / (
@@ -152,10 +155,21 @@ def validate(root: Path) -> None:
         "ExpandedSummoningVariantMenuObservation.cs"),
         "TryValidateNavigation", "NearTopLeft", "StableSamplesRequired",
         "opened published menu is not the largest runtime list")
+    require_tokens(root / (
+        "src/KingmakerGunslinger/Development/DevelopmentUi.cs"),
+        "Break selected equipped firearm (diagnostic)",
+        "Wreck selected equipped firearm (diagnostic)")
+    require_tokens(root / (
+        "src/KingmakerGunslinger/Development/"
+        "KingmakerDevelopmentBridge.cs"),
+        "ResolveExactSelectedRuntime", "GetSingleSelectedUnit",
+        "ExactEquippedFirearmResolver.TryResolve",
+        "FirearmConditionFixturePolicy.Decide",
+        "ReferenceEquals(item, verified.Weapon)")
 
     require_tokens(root / f"docs/RELEASE-NOTES-{VERSION}.md",
         f"Kingmaker Gunslinger {VERSION}", f"{PACKAGE_SUFFIX}.zip",
-        "1,278")
+        "1,288")
     require_tokens(root / (
         "OVERHAUL-SUMMON-MENU-FATIGUE-ESCALATION-"
         "IMPLEMENTATION-REPORT.md"),
@@ -163,7 +177,7 @@ def validate(root: Path) -> None:
         "canonical Fatigued")
     require_tokens(root / (
         "docs/OVERHAUL-SUMMON-MENU-FATIGUE-ESCALATION-QUALIFICATION.md"),
-        "1278", "Guarded runtime", "Human acceptance")
+        "1,288", "Guarded runtime", "Human acceptance")
 
     static = json.loads((root / "validation/static-validation.json")
         .read_text(encoding="utf-8"))

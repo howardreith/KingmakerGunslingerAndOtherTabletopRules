@@ -9,29 +9,54 @@ namespace KingmakerGunslinger.DomainTests
         internal static void TopLeftLargeListIsBounded()
         {
             SummonVariantMenuLayoutDecision decision = Decide(
-                Rect(20f, 900f, 64f, 64f), 320f, 800f,
-                Rect(0f, 0f, 1920f, 1080f), 20f);
+                Rect(20f, 820f, 64f, 64f), 320f, 520f,
+                Rect(0f, 0f, 1600f, 900f), 10f,
+                SummonVariantMenuOpeningDirection.Up);
             Assertions.True(decision.SafeRect.Contains(decision.FinalRect, 0.01f) &&
-                decision.OpeningDirection == SummonVariantMenuOpeningDirection.Down,
-                "A large top-left variant list escaped the safe viewport.");
+                decision.OpeningDirection == SummonVariantMenuOpeningDirection.Up &&
+                decision.TopClamped && !decision.BottomClamped &&
+                Close(decision.SafeRect.YMax, decision.FinalRect.YMax) &&
+                Close(84f, decision.FinalRect.X),
+                "A slightly tall top-left list was centered or moved away from the sidebar instead of top-clamped.");
         }
 
-        internal static void BottomLeftChoosesUp()
+        internal static void TopLeftOversizedListUsesFullSafeHeight()
+        {
+            SummonVariantMenuLayoutDecision decision = Decide(
+                Rect(20f, 820f, 64f, 64f), 320f, 1400f,
+                Rect(0f, 0f, 1600f, 900f), 10f,
+                SummonVariantMenuOpeningDirection.Up);
+            Assertions.True(decision.RequiresVerticalScrolling &&
+                decision.TopClamped &&
+                Close(decision.SafeRect.YMin, decision.FinalRect.YMin) &&
+                Close(decision.SafeRect.YMax, decision.FinalRect.YMax) &&
+                Close(decision.SafeRect.Height, decision.ViewportHeight) &&
+                Close(0f, decision.VerticalContentOffset(1f)) &&
+                Close(decision.VerticalScrollExtent,
+                    decision.VerticalContentOffset(0f)),
+                "An oversized top-left list did not occupy the full safe vertical range with every scroll offset reachable.");
+        }
+
+        internal static void BottomLeftClampsWithoutDirectionFlip()
         {
             SummonVariantMenuLayoutDecision decision = Decide(
                 Rect(20f, 30f, 64f, 64f), 320f, 600f,
-                Rect(0f, 0f, 1920f, 1080f), 20f);
+                Rect(0f, 0f, 1920f, 1080f), 20f,
+                SummonVariantMenuOpeningDirection.Down);
             Assertions.True(decision.OpeningDirection ==
-                    SummonVariantMenuOpeningDirection.Up &&
-                decision.FinalRect.YMin >= decision.AnchorlessSafeYMin(),
-                "A bottom-left variant list did not use the available upper space.");
+                    SummonVariantMenuOpeningDirection.Down &&
+                decision.BottomClamped && !decision.TopClamped &&
+                Close(decision.SafeRect.YMin, decision.FinalRect.YMin) &&
+                decision.FinalRect.YMax < decision.SafeRect.YMax,
+                "A bottom-left list flipped or jumped to the top instead of clamping its bottom edge.");
         }
 
         internal static void MiddlePlacementRemainsStable()
         {
             SummonVariantMenuLayoutDecision decision = Decide(
                 Rect(20f, 500f, 64f, 64f), 320f, 300f,
-                Rect(0f, 0f, 1920f, 1080f), 20f);
+                Rect(0f, 0f, 1920f, 1080f), 20f,
+                SummonVariantMenuOpeningDirection.Down);
             Assertions.True(decision.OpeningDirection ==
                     SummonVariantMenuOpeningDirection.Down &&
                 Close(200f, decision.FinalRect.Y) &&
@@ -60,6 +85,36 @@ namespace KingmakerGunslinger.DomainTests
                 Close(960f, decision.VerticalScrollExtent) &&
                 decision.SafeRect.Contains(decision.FinalRect, 0.01f),
                 "Content taller than the safe viewport was not bounded and scrollable.");
+        }
+
+        internal static void ScreenshotEquivalentGeometryTopClamps()
+        {
+            SummonVariantMenuLayoutDecision decision = Decide(
+                Rect(14f, 824f, 58f, 58f), 340f, 1020f,
+                Rect(0f, 0f, 1600f, 900f), 9f,
+                SummonVariantMenuOpeningDirection.Up);
+            Assertions.True(Close(9f, decision.SafeRect.YMin) &&
+                Close(891f, decision.SafeRect.YMax) &&
+                Close(72f, decision.FinalRect.X) &&
+                Close(9f, decision.FinalRect.YMin) &&
+                Close(891f, decision.FinalRect.YMax) &&
+                decision.TopClamped && decision.RequiresVerticalScrolling,
+                "The 1600x900 first-sidebar-slot geometry did not top-clamp beside the source icon.");
+        }
+
+        internal static void RenderedBoundsTranslationIgnoresPivotAndAnchors()
+        {
+            // The measured rectangle already incorporates arbitrary Unity pivot,
+            // anchor, and parent transforms. Placement therefore translates its
+            // rendered bounds, not a guessed pivot position.
+            SummonVariantMenuRect rendered = Rect(468f, 211f, 320f, 500f);
+            SummonVariantMenuRect target = Rect(84f, 380f, 320f, 500f);
+            SummonVariantMenuPlacementDecision decision =
+                SummonVariantMenuPlacementPolicy.Decide(rendered, target);
+            Assertions.True(Close(-384f, decision.DeltaX) &&
+                Close(169f, decision.DeltaY) &&
+                decision.ApplyTo(rendered).Equals(target),
+                "Rendered-bounds placement still depended on a RectTransform pivot or anchor origin.");
         }
 
         internal static void NarrowResolutionRespectsHorizontalBounds()
@@ -166,6 +221,9 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Summoning", "ExpandedSummoningVariantMenuPatch.cs"));
             foreach (string token in new[] {
+                "typeof(ActionBarGroupSlot), \"OnToggleGroupClick\"",
+                "CaptureSourceSlot(",
+                "ConsumeSourceSlot(",
                 "typeof(ActionBarSpellsGroup), \"Toggle\"",
                 "typeof(IEnumerable<AbilityData>)",
                 "typeof(AbilityData)",
@@ -187,6 +245,9 @@ namespace KingmakerGunslinger.DomainTests
                 "canvas.pixelRect",
                 "RectTransformUtility.ScreenPointToLocalPointInRectangle",
                 "MeasureSlots(liveSlots",
+                "MeasureRect(sourceSlotTransform",
+                "TryMeasureFallbackAnchor(group",
+                "InferNativeOpeningDirection(nativeRect, anchor)",
                 "ConditionalWeakTable<ActionBarSpellsGroup",
                 "new LayoutState(value)",
                 "new GameObject(\n                    \"KMG Expanded Summoning Variant Viewport\"",
@@ -195,12 +256,52 @@ namespace KingmakerGunslinger.DomainTests
                 "slot.transform.SetParent(_content, false)",
                 "slot.transform.SetSiblingIndex(index)",
                 "_scroll.verticalNormalizedPosition = 1f",
+                "TopAligned(source.childAlignment)",
+                "GridLayoutGroup.Corner.UpperLeft",
+                "SummonVariantMenuPlacementPolicy.Decide(rendered, finalRect)",
+                "snapshot.RenderedPopupRect",
+                "variant-menu.layout-applied",
                 "state.RestoreNative()" })
                 Assertions.True(runtime.Contains(token),
                     "Variant-menu adapter lacks rendered-layout contract: " + token);
             Assertions.False(runtime.Contains("1920") ||
                 runtime.Contains("1080") || runtime.Contains("Screen.height -"),
                 "Variant-menu adapter must not assume one physical resolution.");
+            Assertions.False(runtime.Contains(
+                    "SummonVariantMenuRect anchor = MeasureAnchor(group"),
+                "The adapter rediscovered the shared popup parent instead of using the exact clicked source slot.");
+        }
+
+        internal static void SourceSlotCaptureDoesNotRetainStaleParents()
+        {
+            string patch = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningVariantMenuPatch.cs"));
+            string runtime = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningVariantMenuRuntime.cs"));
+            Assertions.True(patch.Contains(
+                    "ActionBarGroupSlot __state") &&
+                patch.Contains("sourceSpell, __state") &&
+                runtime.Contains("SourceSlots.Remove(group);") &&
+                runtime.Contains("return capture.SourceSlot;") &&
+                runtime.Contains("sourceSlot.GetInstanceID()") &&
+                runtime.Contains("SourceSlotHierarchyPath"),
+                "Opening different expanded parents could retain a prior source-slot anchor.");
+        }
+
+        internal static void RepeatedOpenUsesOneReusableViewport()
+        {
+            string runtime = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningVariantMenuRuntime.cs"));
+            Assertions.True(runtime.Contains("if (_scroll != null) return;") &&
+                runtime.Contains("AddComponent<ScrollRect>()") &&
+                runtime.Contains("AddComponent<RectMask2D>()") &&
+                runtime.Contains("ExpandedSummoningVariantMenuViewportMarker") &&
+                runtime.Contains("_viewportObject.SetActive(false)") &&
+                runtime.Contains("state.RestoreNative();"),
+                "Repeated popup opens can accumulate a viewport, mask, or scroll component.");
         }
 
         internal static void GuardedRenderedMenuObservationIsReadOnly()
@@ -214,12 +315,15 @@ namespace KingmakerGunslinger.DomainTests
                 "ActionBarSpellsGroup>()",
                 "TryGetSnapshot(group",
                 "TryValidateNavigation(group",
-                "snapshot.SafeRect.Contains(snapshot.FinalRect",
+                "snapshot.SafeRect.Contains(\n                    snapshot.RenderedPopupRect",
                 "snapshot.ScrollRectCount == 1",
                 "snapshot.ViewportMarkerCount == 1",
                 "snapshot.FirstEntryReachable",
                 "snapshot.LastEntryReachable",
-                "NearTopLeft(snapshot.AnchorRect, snapshot.SafeRect)" })
+                "NearTopLeft(snapshot.SourceSlotRect, snapshot.SafeRect)",
+                "snapshot.ExactSourceSlotCaptured",
+                "snapshot.ViewportRect.YMin",
+                "snapshot.FirstSlotRect" })
                 Assertions.True(observer.Contains(token),
                     "Rendered menu observer lacks exact read-only check: " +
                     token);
@@ -257,9 +361,18 @@ namespace KingmakerGunslinger.DomainTests
             SummonVariantMenuRect anchor, float width, float height,
             SummonVariantMenuRect safe, float margin)
         {
+            return Decide(anchor, width, height, safe, margin,
+                SummonVariantMenuOpeningDirection.Down);
+        }
+
+        private static SummonVariantMenuLayoutDecision Decide(
+            SummonVariantMenuRect anchor, float width, float height,
+            SummonVariantMenuRect safe, float margin,
+            SummonVariantMenuOpeningDirection direction)
+        {
             return SummonVariantMenuLayoutPolicy.Decide(
                 new SummonVariantMenuLayoutRequest(anchor, width, height,
-                    safe, margin, SummonVariantMenuOpeningDirection.Down));
+                    safe, margin, direction));
         }
 
         private static SummonVariantMenuRect Rect(float x, float y,
@@ -273,10 +386,5 @@ namespace KingmakerGunslinger.DomainTests
             return Math.Abs(expected - actual) <= 0.01f;
         }
 
-        private static float AnchorlessSafeYMin(
-            this SummonVariantMenuLayoutDecision decision)
-        {
-            return decision.SafeRect.YMin;
-        }
     }
 }
