@@ -15,9 +15,22 @@ namespace KingmakerGunslinger.Gunsmithing
         private List<BatteredFirearmOwnershipData> _records =
             new List<BatteredFirearmOwnershipData>();
 
+        // Kingmaker 2.1.7b ItemEntity has no persistent item identifier.  Keep
+        // the first-level starter receipt independently of the legacy
+        // item-identity ledger rather than fabricating an item identity.
+        [JsonProperty]
+        private List<string> _starterReceipts = new List<string>();
+
         internal int Count
         {
-            get { lock (this) { EnsureValid(); return _records.Count; } }
+            get
+            {
+                lock (this)
+                {
+                    EnsureValid();
+                    return _records.Count + _starterReceipts.Count;
+                }
+            }
         }
 
         internal bool Bind(FirearmItemId itemId, OriginatingUnitId ownerId)
@@ -59,6 +72,53 @@ namespace KingmakerGunslinger.Gunsmithing
             }
         }
 
+        internal bool HasReceipt(OriginatingUnitId ownerId)
+        {
+            if (ownerId == null) throw new ArgumentNullException("ownerId");
+            lock (this)
+            {
+                EnsureValid();
+                return _starterReceipts.Contains(ownerId.Value,
+                        StringComparer.Ordinal) ||
+                    _records.Any(record => string.Equals(record.OwnerId,
+                        ownerId.Value, StringComparison.Ordinal));
+            }
+        }
+
+        internal bool AddStarterReceipt(OriginatingUnitId ownerId)
+        {
+            if (ownerId == null) throw new ArgumentNullException("ownerId");
+            lock (this)
+            {
+                EnsureValid();
+                if (HasReceipt(ownerId)) return false;
+                var target = new List<string>(_starterReceipts)
+                {
+                    ownerId.Value
+                };
+                ValidateReceipts(target);
+                _starterReceipts = target;
+                return true;
+            }
+        }
+
+        internal bool RemoveStarterReceipt(OriginatingUnitId ownerId)
+        {
+            if (ownerId == null) throw new ArgumentNullException("ownerId");
+            lock (this)
+            {
+                EnsureValid();
+                int index = _starterReceipts.FindIndex(value => string.Equals(
+                    value, ownerId.Value, StringComparison.Ordinal));
+                if (index < 0) return false;
+                var target = new List<string>(_starterReceipts);
+                target.RemoveAt(index);
+                ValidateReceipts(target);
+                _starterReceipts = target;
+                return true;
+            }
+        }
+
         internal bool Remove(FirearmItemId itemId, OriginatingUnitId ownerId)
         {
             if (itemId == null) throw new ArgumentNullException("itemId");
@@ -89,7 +149,21 @@ namespace KingmakerGunslinger.Gunsmithing
         private void EnsureValid()
         {
             if (_records == null) _records = new List<BatteredFirearmOwnershipData>();
+            if (_starterReceipts == null) _starterReceipts = new List<string>();
             Validate(_records);
+            ValidateReceipts(_starterReceipts);
+        }
+
+        private static void ValidateReceipts(IList<string> receipts)
+        {
+            var owners = new HashSet<string>(StringComparer.Ordinal);
+            foreach (string receipt in receipts)
+            {
+                string owner = new OriginatingUnitId(receipt).Value;
+                if (!owners.Add(owner))
+                    throw new InvalidOperationException(
+                        "The battered firearm ownership carrier contains duplicate starter receipts.");
+            }
         }
 
         private static void Validate(IList<BatteredFirearmOwnershipData> records)

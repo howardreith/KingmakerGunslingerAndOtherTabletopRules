@@ -11,13 +11,14 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Abilities;
-using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Diagnostics;
 
 namespace KingmakerGunslinger.Acadamae
 {
@@ -38,6 +39,7 @@ namespace KingmakerGunslinger.Acadamae
         private static string _lastFatigueDisposition;
         private static string _lastResolutionMessage;
         private static string _lastEligibilityTrace;
+        private static long _resolutionPublicationAttemptCount;
         private static long _publishedResolutionCount;
         private static readonly object PresentationTraceGate = new object();
         private static readonly HashSet<string> PresentationTraceKeys =
@@ -72,6 +74,9 @@ namespace KingmakerGunslinger.Acadamae
         { get { return _lastEligibilityTrace; } }
         internal static long PublishedResolutionCount
         { get { return Interlocked.Read(ref _publishedResolutionCount); } }
+        internal static long ResolutionPublicationAttemptCount
+        { get { return Interlocked.Read(ref _resolutionPublicationAttemptCount); } }
+        internal static int InvocationCount { get { return Invocations.Count; } }
         internal static void ResetDiagnostics()
         {
             _completedCount = 0;
@@ -83,7 +88,9 @@ namespace KingmakerGunslinger.Acadamae
             _lastFatigueDisposition = null;
             _lastResolutionMessage = null;
             _lastEligibilityTrace = null;
+            Interlocked.Exchange(ref _resolutionPublicationAttemptCount, 0);
             Interlocked.Exchange(ref _publishedResolutionCount, 0);
+            Invocations.Clear();
         }
 
         internal static bool IsEligible(AbilityData ability, bool longerThanStandard)
@@ -91,6 +98,13 @@ namespace KingmakerGunslinger.Acadamae
 
         private static AcadamaeCastDecision Evaluate(AbilityData ability,
             bool longerThanStandard)
+        {
+            return Evaluate(ability, longerThanStandard,
+                ResolveEffectiveModeState(ability));
+        }
+
+        private static AcadamaeCastDecision Evaluate(AbilityData ability,
+            bool longerThanStandard, AcadamaeEffectiveModeState mode)
         {
             CanonicalInvocation invocation = ResolveCanonicalInvocation(ability);
             if (ability == null || ability.Caster == null ||
@@ -110,9 +124,7 @@ namespace KingmakerGunslinger.Acadamae
                     HasFeat = BlueprintBootstrap.AcadamaeGraduate != null &&
                         ability.Caster.Progression.Features.GetRank(
                             BlueprintBootstrap.AcadamaeGraduate) > 0,
-                    AccelerationModeActive = BlueprintBootstrap.AcadamaeGraduateMode != null &&
-                        ability.Caster.Buffs.GetBuff(
-                            BlueprintBootstrap.AcadamaeGraduateMode.Marker) != null,
+                    AccelerationModeActive = mode.Active,
                     IsRealSpell = blueprint.IsSpell,
                     HasSpellbook = spellbook != null,
                     IsPreparedInvocation = invocation.IsPrepared,
@@ -214,16 +226,19 @@ namespace KingmakerGunslinger.Acadamae
             UnitCommand.CommandType commandType)
         {
             CanonicalInvocation invocation = ResolveCanonicalInvocation(ability);
-            if (HasAcadamaeModeOwner(ability) &&
+            AcadamaeEffectiveModeState mode =
+                ResolveEffectiveModeState(ability);
+            if (mode.Active &&
                 ability.ParamSpellSlot == null &&
                 invocation.IsPrepared)
                 ability.ParamSpellSlot = invocation.Slot;
             bool preRequireFullRound = InspectPreAcadamae(ability);
-            AcadamaeCastDecision decision = Evaluate(ability, preRequireFullRound);
-            if (HasAcadamaeModeOwner(ability))
+            AcadamaeCastDecision decision = Evaluate(ability,
+                preRequireFullRound, mode);
+            if (mode.HasFeat)
             {
                 _lastEligibilityTrace = DescribeEligibility(ability, command,
-                    commandType, preRequireFullRound, decision);
+                    commandType, preRequireFullRound, decision, mode);
                 ModContext context;
                 if (ModContext.TryGet(out context))
                     context.Logger.Info("acadamae", "eligibility.decision",
@@ -235,10 +250,13 @@ namespace KingmakerGunslinger.Acadamae
         internal static string InspectEligibility(AbilityData ability)
         {
             bool preRequireFullRound = InspectPreAcadamae(ability);
+            AcadamaeEffectiveModeState mode =
+                ResolveEffectiveModeState(ability);
             return DescribeEligibility(ability, null,
                 ability == null ? UnitCommand.CommandType.Standard :
                     ability.RuntimeActionType,
-                preRequireFullRound, Evaluate(ability, preRequireFullRound));
+                preRequireFullRound, Evaluate(ability, preRequireFullRound,
+                    mode), mode);
         }
 
         internal static void ApplyPresentation(AbilityData ability,
@@ -247,12 +265,14 @@ namespace KingmakerGunslinger.Acadamae
             if (IsInspecting) return;
             bool before = requireFullRound;
             CanonicalInvocation invocation = ResolveCanonicalInvocation(ability);
-            AcadamaeCastDecision decision = Evaluate(ability, before);
+            AcadamaeEffectiveModeState mode =
+                ResolveEffectiveModeState(ability);
+            AcadamaeCastDecision decision = Evaluate(ability, before, mode);
             if (before && decision.Eligible) requireFullRound = false;
             if (!HasAcadamaeFeatOwner(ability) || !invocation.IsPrepared ||
                 !invocation.IsSummoning) return;
             string trace = DescribeEligibility(ability, null,
-                ability.RuntimeActionType, before, decision) +
+                ability.RuntimeActionType, before, decision, mode) +
                 ";boundary=get_RequireFullRoundAction;resultBefore=" + before +
                 ";resultAfter=" + requireFullRound;
             string key = RuntimeHelpers.GetHashCode(ability.Caster) + ":" +
@@ -277,17 +297,54 @@ namespace KingmakerGunslinger.Acadamae
                     BlueprintBootstrap.AcadamaeGraduate) > 0;
         }
 
-        private static bool HasAcadamaeModeOwner(AbilityData ability)
+        private static AcadamaeEffectiveModeState ResolveEffectiveModeState(
+            AbilityData ability)
         {
-            return HasAcadamaeFeatOwner(ability) &&
+            bool hasFeat = HasAcadamaeFeatOwner(ability);
+            bool markerPresent = ability != null && ability.Caster != null &&
                 BlueprintBootstrap.AcadamaeGraduateMode != null &&
                 ability.Caster.Buffs.GetBuff(
                     BlueprintBootstrap.AcadamaeGraduateMode.Marker) != null;
+            ActivatableAbility[] matches = ability == null ||
+                ability.Caster == null ||
+                ability.Caster.ActivatableAbilities == null ||
+                BlueprintBootstrap.AcadamaeGraduateMode == null ?
+                    new ActivatableAbility[0] :
+                    ability.Caster.ActivatableAbilities.Enumerable.Where(value =>
+                        value != null && ReferenceEquals(value.Blueprint,
+                            BlueprintBootstrap.AcadamaeGraduateMode.Ability))
+                    .ToArray();
+            bool hasActivatable = matches.Length == 1;
+            bool isOn = hasActivatable && matches[0].IsOn;
+            AcadamaeEffectiveModeState state = AcadamaeModeStatePolicy.Decide(
+                hasFeat, hasActivatable, isOn, markerPresent);
+            if (matches.Length > 1 ||
+                (hasFeat && hasActivatable && isOn != markerPresent))
+            {
+                string trace = string.Format(CultureInfo.InvariantCulture,
+                    "status={0};activatableCount={1};isOn={2};marker={3}",
+                    state.Status, matches.Length, isOn, markerPresent);
+                string key = ability == null || ability.Caster == null ? trace :
+                    RuntimeHelpers.GetHashCode(ability.Caster) + ":" + trace;
+                lock (PresentationTraceGate)
+                {
+                    if (PresentationTraceKeys.Count < 64 &&
+                        PresentationTraceKeys.Add(key))
+                    {
+                        ModContext context;
+                        if (ModContext.TryGet(out context))
+                            context.Logger.Warning("acadamae",
+                                "mode.state-divergence", trace);
+                    }
+                }
+            }
+            return state;
         }
 
         private static string DescribeEligibility(AbilityData ability,
             UnitUseAbility command, UnitCommand.CommandType commandType,
-            bool preRequireFullRound, AcadamaeCastDecision decision)
+            bool preRequireFullRound, AcadamaeCastDecision decision,
+            AcadamaeEffectiveModeState modeState)
         {
             if (ability == null) return "constructor=three-argument-authoritative;status=invalid-ability";
             CanonicalInvocation invocation = ResolveCanonicalInvocation(ability);
@@ -303,15 +360,13 @@ namespace KingmakerGunslinger.Acadamae
                 ability.Caster == null || ability.Caster.Progression == null ? 0 :
                 ability.Caster.Progression.Features.GetRank(
                     BlueprintBootstrap.AcadamaeGraduate);
-            bool mode = BlueprintBootstrap.AcadamaeGraduateMode != null &&
-                ability.Caster != null && ability.Caster.Buffs.GetBuff(
-                    BlueprintBootstrap.AcadamaeGraduateMode.Marker) != null;
             bool canSpend = spellbook != null && spellbook.CanSpend(ability, false);
             return string.Format(CultureInfo.InvariantCulture,
-                "constructor=three-argument-authoritative;command={0};commandId={1};caster={2};featRank={3};mode={4};spell={5}:{6};isSpell={7};school={8};descriptor={9}({10});level={11};spellbook={12}:{13};arcane={14};spontaneous={15};prepared={16};canSpend={17};slot={18};slotAvailable={19};slotSpell={20};paramSpellSlot={21};convertedFrom={22};preRequireFullRound={23};actionType={24};runtimeActionType={25};status={26};eligible={27};canonicalSpell={28}:{29};canonicalLevel={30};slotResolution={31}",
+                "constructor=three-argument-authoritative;command={0};commandId={1};caster={2};featRank={3};mode={4};modeState={5};marker={6};spell={7}:{8};isSpell={9};school={10};descriptor={11}({12});level={13};spellbook={14}:{15};arcane={16};spontaneous={17};prepared={18};canSpend={19};slot={20};slotAvailable={21};slotSpell={22};paramSpellSlot={23};convertedFrom={24};preRequireFullRound={25};actionType={26};runtimeActionType={27};status={28};eligible={29};canonicalSpell={30}:{31};canonicalLevel={32};slotResolution={33}",
                 commandType, command == null ? 0 : RuntimeHelpers.GetHashCode(command),
                 ability.Caster == null ? "<null>" : ability.Caster.CharacterName,
-                featRank, mode,
+                featRank, modeState.Active, modeState.Status,
+                modeState.MarkerPresent,
                 ability.Blueprint == null ? "<null>" : ability.Blueprint.name,
                 ability.Blueprint == null ? "<null>" : ability.Blueprint.AssetGuid.ToString(),
                 ability.Blueprint != null && ability.Blueprint.IsSpell,
@@ -394,30 +449,28 @@ namespace KingmakerGunslinger.Acadamae
                 "The caster" : rule.Initiator.CharacterName.Trim();
             string spell = rule.Spell.Blueprint == null ?
                 "<unknown spell>" : rule.Spell.Blueprint.name;
-            string message = string.Format(CultureInfo.InvariantCulture,
+            string detail = string.Format(CultureInfo.InvariantCulture,
                 "Acadamae Graduate: {0} accelerated {1} to Standard; Fortitude d20 {2} {3:+#;-#;+0} conditional {4:+#;-#;+0} = {5} vs DC {6}: {7}; fatigue={8}.",
                 caster, spell, natural, fortitudeModifier, conditionalBonus,
                 saving.RollResult,
                 saving.DifficultyClass, saving.IsPassed ? "success" : "failure",
                 fatigueDisposition);
+            string message = string.Format(CultureInfo.InvariantCulture,
+                "Acadamae Graduate: Fortitude {0} vs DC {1} - {2}{3}.",
+                saving.RollResult, saving.DifficultyClass,
+                saving.IsPassed ? "success" : "failed",
+                !saving.IsPassed && string.Equals(fatigueDisposition,
+                    "fatigued-permanent", StringComparison.Ordinal) ?
+                        "; Fatigued" : string.Empty);
             _lastResolutionMessage = message;
             ModContext context;
             if (ModContext.TryGet(out context))
-                context.Logger.Info("acadamae", "accelerated-cast.resolved", message);
-            try
-            {
-                EventBus.RaiseEvent<IWarningNotificationUIHandler>(
-                    handler => handler.HandleWarning(message, false));
+                context.Logger.Info("acadamae", "accelerated-cast.resolved", detail);
+            Interlocked.Increment(ref _resolutionPublicationAttemptCount);
+            if (NativeCombatLog.Publish("acadamae",
+                    "accelerated-cast.combat-log-failed", message,
+                    "Acadamae mechanics resolved, but the native combat-log entry failed."))
                 Interlocked.Increment(ref _publishedResolutionCount);
-            }
-            catch (Exception exception)
-            {
-                if (ModContext.TryGet(out context))
-                    context.Logger.Failure("acadamae",
-                        "accelerated-cast.notification-failed",
-                        "Acadamae mechanics resolved, but its player-facing resolution notification failed.",
-                        exception);
-            }
         }
     }
 

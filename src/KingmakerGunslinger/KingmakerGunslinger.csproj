@@ -270,8 +270,8 @@
     <Compile Include="Blueprints\PaperCartridgeModeBlueprints.cs" />
     <Compile Include="Blueprints\FirearmWeaponPresentation.cs" />
     <Compile Include="Blueprints\CapitalVendorBlueprints.cs" />
-    <Compile Include="Blueprints\OlegMaintenanceVendorBlueprints.cs" />
-    <Compile Include="Blueprints\BokkenAmmunitionVendorBlueprints.cs" />
+    <Compile Include="Blueprints\OlegFirearmSupplyCleanupBlueprints.cs" />
+    <Compile Include="Blueprints\BokkenFirearmSupplyVendorBlueprints.cs" />
     <Compile Include="Blueprints\BeneathStolenLandsVendorBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintItemAccess.cs" />
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
@@ -279,6 +279,7 @@
     <Compile Include="Blueprints\AcadamaeGraduateBlueprints.cs" />
     <Compile Include="Blueprints\BrownFurBlueprints.cs" />
     <Compile Include="Blueprints\AcadamaeGraduateModeBlueprints.cs" />
+    <Compile Include="Acadamae\AcadamaeModeStatePolicy.cs" />
     <Compile Include="Blueprints\AcadamaeFeatCatalogPublication.cs" />
     <Compile Include="Blueprints\BodyguardFeatBlueprints.cs" />
     <Compile Include="Blueprints\HelpfulCombatBlueprints.cs" />
@@ -508,6 +509,8 @@
     <Compile Include="Diagnostics\CombatTraceSnapshot.cs" />
     <Compile Include="Diagnostics\CombatTraceStage.cs" />
     <Compile Include="Diagnostics\FirearmMarkerLookup.cs" />
+    <Compile Include="Diagnostics\PlayerCombatLogMessagePolicy.cs" />
+    <Compile Include="Diagnostics\NativeCombatLog.cs" />
     <Compile Include="Diagnostics\FirearmMarkerSnapshot.cs" />
     <Compile Include="Diagnostics\FirearmRangeMath.cs" />
     <Compile Include="Diagnostics\RuleEventPatchContract.cs" />
@@ -531,8 +534,10 @@
     <Compile Include="Gunsmithing\UnitPartBatteredFirearmOwnership.cs" />
     <Compile Include="Gunsmithing\KingmakerBatteredFirearmOwnershipPartProvider.cs" />
     <Compile Include="Gunsmithing\GunslingerStartingFirearmOwnershipPatch.cs" />
+    <Compile Include="Gunsmithing\GunslingerStartingFirearmGrantTransaction.cs" />
     <Compile Include="Gunsmithing\GunslingerStartingFirearmResolver.cs" />
     <Compile Include="Gunsmithing\StartingFirearmPolicy.cs" />
+    <Compile Include="Gunsmithing\StartingFirearmGrantPolicy.cs" />
     <Compile Include="Gunsmithing\CraftBasicAmmunitionAbilityLogic.cs" />
     <Compile Include="Gunsmithing\CraftPaperCartridgesAbilityLogic.cs" />
     <Compile Include="Gunsmithing\FirearmCraftingTransactionService.cs" />

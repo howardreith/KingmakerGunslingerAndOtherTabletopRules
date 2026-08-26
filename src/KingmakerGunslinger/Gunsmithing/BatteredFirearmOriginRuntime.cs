@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.Gunsmithing
                     "owner");
             if (TryGetOwner(item, out UnitEntityData existing))
             {
-                if (ReferenceEquals(existing, owner)) return;
+                if (SameStableOwner(existing, owner)) return;
                 throw new InvalidOperationException(
                     "A battered firearm cannot be rebound to another origin.");
             }
@@ -60,6 +60,15 @@ namespace KingmakerGunslinger.Gunsmithing
             if (weapon == null) return false;
             UnitEntityData ignored;
             return TryGetOwner(weapon, out ignored);
+        }
+
+        internal static bool SameStableOwner(UnitEntityData left,
+            UnitEntityData right)
+        {
+            return left != null && right != null &&
+                !string.IsNullOrWhiteSpace(left.UniqueId) &&
+                string.Equals(left.UniqueId, right.UniqueId,
+                    StringComparison.Ordinal);
         }
 
         private static void RequireSingle(ItemEntityWeapon item)
