@@ -7,9 +7,9 @@
   `970aeb7972dcb155d5789a636ba156e68d1c0d0a`
 - Candidate commit: pending immutable source-qualified commit
 - Source-qualified package SHA-256:
-  `75BBB30989F871EFD19E937C5B14BFEB6D5BCA6AC99C61750400D8283FF93412`
+  `54C3C382DA502FFD1D0F3703D7B40551CCA476B381EFD191F8AC98BC9D80842C`
 - Source-qualified DLL SHA-256:
-  `2A9FDEAFA5679073C783A011495479BC58D600A672B73CBBB472BEBAF328526D`
+  `A3D67D1FEBA183973D1B280A9E5A01F2A675A7B982171488C7509DE508B59AE6`
 
 Generated packages, deployment files, saves, and raw runtime logs are excluded
 from the source commit.
@@ -22,15 +22,19 @@ from the source commit.
 - Complete dependency-free domain/reflection suite: PASS, 1278/1278.
 - Clean exact-reference Release, output, SoundBank, deterministic package, and
   strict package validation: PASS, with zero compile warnings/errors.
-- Runtime-scenario preflight safety suite: PASS, 145 checks.
+- Runtime-scenario preflight safety suite: PASS, 147 checks.
 - Identical-input package reconstruction: PASS; both archives have the package
   hash recorded above.
 
 ## Guarded runtime
 
-Every real launch must use the guarded request mechanism through Steam App ID
-640820. Automatic changed-surface scenarios and working-save smoke are pending
-the immutable candidate. The menu scenario
+Every real launch uses the guarded request mechanism through Steam App ID
+640820. Before the immutable commit, a dirty-source build of the exact source
+tree passed the focused canonical matrix plus a real three-launch persistence
+sequence on `KMG_AUTOMATION_WORKING`: prepare/save, reload/verify/cleanup/save,
+and reload/verify-absent with no write. These runs are engineering evidence;
+all final changed-surface runs and working-save smoke remain pending the clean
+immutable candidate. The menu scenario
 `observe-expanded-summoning-variant-menu` is deliberately supervised and
 read-only: a human must load `KMG_AUTOMATION_WORKING`, place the largest list
 near the top-left sidebar, and open it. The observer never sends input, selects

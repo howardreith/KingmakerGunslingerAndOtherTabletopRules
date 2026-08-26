@@ -159,6 +159,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _brownFurPersistenceModuleStateValid;
         private bool _brownFurPersistenceCleanupValid;
         private string _brownFurPersistenceDetail = "";
+        private bool _fatiguePersistenceSaveStarted;
+        private bool _fatiguePersistenceSaveCompleted;
+        private Stopwatch _fatiguePersistenceSaveElapsed;
+        private bool _fatiguePersistenceStateValid;
+        private bool _fatiguePersistenceDurationValid;
+        private bool _fatiguePersistenceContextValid;
+        private bool _fatiguePersistenceCleanupValid;
+        private string _fatiguePersistenceDetail = "";
         private bool _urbanBarbarianPersistenceSaveStarted;
         private bool _urbanBarbarianPersistenceSaveCompleted;
         private Stopwatch _urbanBarbarianPersistenceSaveElapsed;
@@ -587,6 +595,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !IsEasternWeaponsPersistenceScenario() &&
                     !IsCraftMagicItemsPersistenceScenario() &&
                     !IsBrownFurPersistenceScenario() &&
+                    !IsFatiguePersistenceScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GenericFirearmActions &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ProductionFirearmCatalog &&
                     _request.Scenario != RuntimeTestScenarioCatalog.AdvancedCapacity &&
@@ -1434,6 +1443,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsEasternWeaponsPersistenceScenario() ||
                     IsCraftMagicItemsPersistenceScenario() ||
                     IsBrownFurPersistenceScenario() ||
+                    IsFatiguePersistenceScenario() ||
                     IsUrbanBarbarianPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
@@ -1487,6 +1497,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsEasternWeaponsPersistenceScenario() ||
                     IsCraftMagicItemsPersistenceScenario() ||
                     IsBrownFurPersistenceScenario() ||
+                    IsFatiguePersistenceScenario() ||
                     IsUrbanBarbarianPersistenceScenario() ||
                     IsShieldOtherPersistenceScenario() ||
                     _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
@@ -1664,6 +1675,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _brownFurPersistenceSaveElapsed.Elapsed.TotalSeconds >=
                         _request.CompletionTimeoutSeconds)
                     CompleteBrownFurPersistence(RuntimeTestStatuses.Timeout,
+                        "The exact working-save completion callback did not arrive before timeout.");
+                return;
+            }
+            if (_fatiguePersistenceSaveStarted)
+            {
+                if (_workingSaveSmoke.WriteObserved)
+                {
+                    CompleteFatiguePersistence(RuntimeTestStatuses.Fail,
+                        "An unarmed, non-working, destructive, migration, or extra save boundary was observed.");
+                    return;
+                }
+                if (_fatiguePersistenceSaveCompleted)
+                {
+                    CompleteFatiguePersistence(RuntimeTestStatuses.Pass, "");
+                    return;
+                }
+                if (_fatiguePersistenceSaveElapsed != null &&
+                    _fatiguePersistenceSaveElapsed.Elapsed.TotalSeconds >=
+                        _request.CompletionTimeoutSeconds)
+                    CompleteFatiguePersistence(RuntimeTestStatuses.Timeout,
                         "The exact working-save completion callback did not arrive before timeout.");
                 return;
             }
@@ -1878,6 +1909,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     StartBrownFurPersistence();
                 }
+                else if (IsFatiguePersistenceScenario())
+                {
+                    StartFatiguePersistence();
+                }
                 else if (IsUrbanBarbarianPersistenceScenario())
                 {
                     StartUrbanBarbarianPersistence();
@@ -2058,6 +2093,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .WorkingSaveBrownFurVerifyCleanup ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .WorkingSaveBrownFurOffVerifyCleanup;
+        }
+
+        private bool IsFatiguePersistenceScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveFatiguePrepare ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveFatigueVerifyCleanup ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveFatigueVerifyAbsent;
         }
 
         private bool IsUrbanBarbarianPersistenceScenario()
@@ -3587,6 +3632,256 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(status, assertions, null);
             result.WorkingSaveSmoke = evidence;
             result.Diagnostics.Add(_brownFurPersistenceDetail);
+            if (!string.IsNullOrWhiteSpace(warning))
+                result.Warnings.Add(warning);
+            Complete(result);
+        }
+
+        private void StartFatiguePersistence()
+        {
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.Descriptor != null).ToArray();
+            if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
+                throw new InvalidOperationException(
+                    "The loaded working-save party fingerprint changed before fatigue persistence qualification.");
+
+            // The canonical working fixture intentionally preserves party[0]'s
+            // pre-existing Fatigued condition. party[1] is the fixed,
+            // save-backed clean subject established by the guarded archive and
+            // runtime preflight.
+            UnitEntityData target = party[1];
+            BlueprintBuff fatigued = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(BlueprintBootstrap.Library,
+                    CanonicalFatigueApplicationRuntime.FatiguedGuid,
+                    "canonical Fatigued condition");
+            BlueprintBuff exhausted = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(BlueprintBootstrap.Library,
+                    CanonicalFatigueApplicationRuntime.ExhaustedGuid,
+                    "canonical Exhausted condition");
+            CanonicalFatigueApplicationRuntime.Configure(fatigued, exhausted);
+
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveFatiguePrepare;
+            bool verifyCleanup = _request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveFatigueVerifyCleanup;
+            bool verifyAbsent = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveFatigueVerifyAbsent;
+            int fatigueBefore = CountExactBuffFacts(target, fatigued);
+            int exhaustionBefore = CountExactBuffFacts(target, exhausted);
+            bool applicationValid = !prepare;
+            string applicationDetail = "deserialized";
+
+            if (prepare)
+            {
+                if (fatigueBefore != 0 || exhaustionBefore != 0 ||
+                    target.Descriptor.State.HasCondition(
+                        UnitCondition.Fatigued) ||
+                    target.Descriptor.State.HasCondition(
+                        UnitCondition.Exhausted))
+                    throw new InvalidOperationException(
+                        "The fixed party[1] fatigue persistence subject is not clean; no fixture was applied or saved.");
+
+                long attemptsBefore =
+                    CanonicalFatigueApplicationRuntime.Attempts;
+                long successfulBefore =
+                    CanonicalFatigueApplicationRuntime.Successful;
+                long escalatedBefore =
+                    CanonicalFatigueApplicationRuntime.Escalated;
+                CanonicalFatigueApplicationResult first =
+                    CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(
+                        target.Descriptor.Buffs, fatigued, target);
+                CanonicalFatigueApplicationResult second =
+                    CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(
+                        target.Descriptor.Buffs, fatigued, target);
+                applicationValid = first.ApplicationSucceeded &&
+                    first.State == CanonicalFatigueState.Fatigued &&
+                    second.ApplicationSucceeded &&
+                    second.State == CanonicalFatigueState.Exhausted &&
+                    CanonicalFatigueApplicationRuntime.Attempts ==
+                        attemptsBefore + 2 &&
+                    CanonicalFatigueApplicationRuntime.Successful ==
+                        successfulBefore + 2 &&
+                    CanonicalFatigueApplicationRuntime.Escalated ==
+                        escalatedBefore + 1;
+                applicationDetail = "first=" + first.Status + "/" +
+                    first.State + ";second=" + second.Status + "/" +
+                    second.State + ";attemptDelta=" +
+                    (CanonicalFatigueApplicationRuntime.Attempts -
+                        attemptsBefore) + ";successDelta=" +
+                    (CanonicalFatigueApplicationRuntime.Successful -
+                        successfulBefore) + ";escalationDelta=" +
+                    (CanonicalFatigueApplicationRuntime.Escalated -
+                        escalatedBefore);
+            }
+
+            int fatigueCount = CountExactBuffFacts(target, fatigued);
+            int exhaustionCount = CountExactBuffFacts(target, exhausted);
+            Buff condition = target.Descriptor.Buffs.GetBuff(exhausted);
+            int contextDepth;
+            MechanicsContext root = FindRootMechanicsContext(
+                condition == null ? null : condition.Context,
+                out contextDepth);
+            _fatiguePersistenceStateValid = !verifyAbsent &&
+                applicationValid && fatigueCount == 0 &&
+                exhaustionCount == 1 && condition != null &&
+                !target.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                target.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+            _fatiguePersistenceDurationValid = !verifyAbsent &&
+                condition != null && condition.IsPermanent &&
+                exhausted.RemoveOnRest;
+            _fatiguePersistenceContextValid = !verifyAbsent &&
+                condition != null && condition.Context != null &&
+                root != null && root.ParentContext == null &&
+                root.MaybeCaster == target && root.SourceAbility == null;
+
+            if (verifyCleanup)
+            {
+                ClearCanonicalFatigueFixture(target, fatigued, exhausted);
+                _fatiguePersistenceCleanupValid =
+                    CountExactBuffFacts(target, fatigued) == 0 &&
+                    CountExactBuffFacts(target, exhausted) == 0 &&
+                    !target.Descriptor.State.HasCondition(
+                        UnitCondition.Fatigued) &&
+                    !target.Descriptor.State.HasCondition(
+                        UnitCondition.Exhausted);
+            }
+            else if (verifyAbsent)
+            {
+                _fatiguePersistenceCleanupValid = fatigueCount == 0 &&
+                    exhaustionCount == 0 &&
+                    !target.Descriptor.State.HasCondition(
+                        UnitCondition.Fatigued) &&
+                    !target.Descriptor.State.HasCondition(
+                        UnitCondition.Exhausted);
+                _fatiguePersistenceDurationValid = true;
+                _fatiguePersistenceContextValid = true;
+            }
+
+            _fatiguePersistenceDetail = "phase=" +
+                (prepare ? "prepare" : verifyCleanup ?
+                    "verify-cleanup" : "verify-absent") +
+                ";before=" + fatigueBefore + "/" + exhaustionBefore +
+                ";observed=" + fatigueCount + "/" + exhaustionCount +
+                ";state=" + _fatiguePersistenceStateValid +
+                ";permanent=" + (condition != null &&
+                    condition.IsPermanent) + ";removeOnRest=" +
+                exhausted.RemoveOnRest + ";context=" +
+                _fatiguePersistenceContextValid + ";contextDepth=" +
+                contextDepth + ";cleanup=" +
+                _fatiguePersistenceCleanupValid + ";application=" +
+                applicationDetail;
+
+            if (verifyAbsent)
+            {
+                CompleteFatiguePersistence(RuntimeTestStatuses.Pass, "");
+                return;
+            }
+
+            _workingSaveSmoke.ArmExactWorkingSaveWrite();
+            MethodInfo saveGame = typeof(Game).GetMethods(
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic).Single(value =>
+                    value.Name == "SaveGame" &&
+                    value.ReturnType == typeof(void) &&
+                    value.GetParameters().Length == 2 &&
+                    value.GetParameters()[0].ParameterType.FullName ==
+                        "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                    value.GetParameters()[1].ParameterType == typeof(Action));
+            _fatiguePersistenceSaveStarted = true;
+            _fatiguePersistenceSaveElapsed = Stopwatch.StartNew();
+            saveGame.Invoke(Game.Instance, new object[]
+            {
+                _workingSaveSmoke.WorkingDescriptor,
+                new Action(() => _fatiguePersistenceSaveCompleted = true)
+            });
+        }
+
+        private void CompleteFatiguePersistence(string status,
+            string warning)
+        {
+            WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveFatiguePrepare;
+            bool verifyCleanup = _request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveFatigueVerifyCleanup;
+            bool verifyAbsent = _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveFatigueVerifyAbsent;
+            bool stateValid = verifyAbsent ?
+                _fatiguePersistenceCleanupValid :
+                _fatiguePersistenceStateValid &&
+                _fatiguePersistenceDurationValid &&
+                _fatiguePersistenceContextValid;
+            bool phaseValid = stateValid &&
+                (!verifyCleanup || _fatiguePersistenceCleanupValid);
+            bool saveValid = verifyAbsent ?
+                evidence.ExpectedWorkingSaveRoutineCount == 0 &&
+                evidence.ExpectedWorkingStashedAreaCount == 0 &&
+                !evidence.SaveWritingApiObserved :
+                evidence.ExpectedWorkingSaveRoutineCount == 1 &&
+                evidence.ExpectedWorkingStashedAreaCount >= 1 &&
+                !evidence.SaveWritingApiObserved;
+            if (status == RuntimeTestStatuses.Pass &&
+                (!phaseValid || !saveValid))
+                status = RuntimeTestStatuses.Fail;
+
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("exact-working-load",
+                    "one correlated working descriptor; baseline distinct",
+                    "working=" + evidence.WorkingMatchCount + ";baseline=" +
+                        evidence.BaselineMatchCount + ";correlated=" +
+                        evidence.DescriptorReferenceCorrelated,
+                    evidence.WorkingMatchCount == 1 &&
+                        evidence.BaselineMatchCount == 1 &&
+                        evidence.DescriptorReferenceCorrelated,
+                    "object-reference-correlated guarded load path"),
+                Assertion("fatigue-persistence-state",
+                    verifyAbsent ?
+                        "no canonical Fatigued or Exhausted fact after cleanup reload" :
+                        "one canonical Exhausted fact and no Fatigued fact",
+                    _fatiguePersistenceDetail,
+                    verifyAbsent ? _fatiguePersistenceCleanupValid :
+                        _fatiguePersistenceStateValid,
+                    prepare ? "actual canonical adapter and RuleApplyBuff path" :
+                        "freshly deserialized native BuffCollection"),
+                Assertion("fatigue-persistence-duration",
+                    verifyAbsent ? "not-applicable" :
+                        "permanent and native rest-removable",
+                    _fatiguePersistenceDetail,
+                    _fatiguePersistenceDurationValid,
+                    "live canonical Buff.IsPermanent and BlueprintBuff.RemoveOnRest"),
+                Assertion("fatigue-persistence-context",
+                    verifyAbsent ? "not-applicable" :
+                        "rooted independent context with no source spell",
+                    _fatiguePersistenceDetail,
+                    _fatiguePersistenceContextValid,
+                    "live MechanicsContext ancestry"),
+                Assertion("fatigue-persistence-cleanup",
+                    verifyCleanup || verifyAbsent ?
+                        "both canonical facts and condition states absent" :
+                        "not-applicable",
+                    _fatiguePersistenceDetail,
+                    prepare || _fatiguePersistenceCleanupValid,
+                    verifyAbsent ? "fresh cleanup-save reload" :
+                        "exact fixture removal before cleanup save"),
+                Assertion("exact-working-save-write",
+                    verifyAbsent ? "none" :
+                        "one SaveRoutine on exact captured SaveInfo",
+                    "count=" + evidence.ExpectedWorkingSaveRoutineCount +
+                        ";stashedAreas=" +
+                        evidence.ExpectedWorkingStashedAreaCount +
+                        ";unexpected=" + evidence.SaveWritingApiObserved,
+                    saveValid,
+                    "request-scoped exact native save sentinel"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _context.ModEntry.Info.Version ==
+                        _request.ExpectedModVersion,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            RuntimeTestResult result = CreateResult(status, assertions, null);
+            result.WorkingSaveSmoke = evidence;
+            result.Diagnostics.Add(_fatiguePersistenceDetail);
             if (!string.IsNullOrWhiteSpace(warning))
                 result.Warnings.Add(warning);
             Complete(result);
@@ -18498,8 +18793,6 @@ namespace KingmakerGunslinger.RuntimeTesting
         private RuntimeTestResult RunDisposableFatigueEscalation()
         {
             UnitEntityData unit = null;
-            UnitEntityData serializedUnit = null;
-            UnitDescriptor serializedDescriptor = null;
             BlueprintBuff fatigued = null;
             BlueprintBuff exhausted = null;
             bool immunityAdded = false;
@@ -18509,12 +18802,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 repeatedExhaustion = false, sameFrame = false,
                 temporaryPreserved = false, shorterDidNotShorten = false,
                 immunityBlocked = false, permanentIndependent = false,
-                restRemoved = false, serializationRoundTrip = false,
-                exactPenalties = false, diagnosticsExact = false,
+                restRemoved = false, exactPenalties = false,
+                diagnosticsExact = false,
                 cleaned = false;
             int baselineStrength = -1, fatiguedStrength = -1,
                 exhaustedStrength = -1, explicitApplications = 0;
-            string serialization = string.Empty;
+            int permanentContextDepth = 0;
             TimeSpan sequenceTimeBefore = TimeSpan.Zero,
                 sequenceTimeAfter = TimeSpan.Zero,
                 longFatigueEnd = TimeSpan.Zero,
@@ -18650,6 +18943,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         unit.Descriptor.Buffs, fatigued, unit);
                 Buff permanentExhaustion = unit.Descriptor.Buffs.GetBuff(
                     exhausted);
+                MechanicsContext permanentRoot = FindRootMechanicsContext(
+                    permanentExhaustion == null ? null :
+                        permanentExhaustion.Context,
+                    out permanentContextDepth);
                 permanentIndependent = permanentFirst.ApplicationSucceeded &&
                     permanentFirst.State == CanonicalFatigueState.Fatigued &&
                     permanentSecond.ApplicationSucceeded &&
@@ -18657,38 +18954,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     permanentExhaustion != null &&
                     permanentExhaustion.IsPermanent &&
                     permanentExhaustion.Context != null &&
-                    permanentExhaustion.Context.ParentContext == null &&
+                    permanentRoot != null &&
+                    permanentRoot.ParentContext == null &&
+                    permanentRoot.MaybeCaster == unit &&
+                    permanentRoot.SourceAbility == null &&
                     exhausted.RemoveOnRest &&
                     CountExactBuffFacts(unit, fatigued) == 0 &&
                     CountExactBuffFacts(unit, exhausted) == 1;
-
-                Newtonsoft.Json.Linq.JToken serializedToken =
-                    Kingmaker.EntitySystem.Persistence.JsonUtility.
-                        UnitSerialization.Serialize(unit.Descriptor);
-                serialization = serializedToken.ToString(Formatting.None);
-                serializedDescriptor = serializedToken.ToObject<
-                    UnitDescriptor>();
-                if (serializedDescriptor != null)
-                {
-                    serializedDescriptor.Buffs.SetupPreview(
-                        serializedDescriptor);
-                    serializedDescriptor.PostLoad();
-                    serializedDescriptor.TurnOn();
-                    serializedUnit = serializedDescriptor.Unit;
-                }
-                Buff serializedClone = serializedDescriptor == null ? null :
-                    serializedDescriptor.Buffs.GetBuff(exhausted);
-                serializationRoundTrip = serializedUnit != null &&
-                    serializedClone != null &&
-                    !ReferenceEquals(serializedClone, permanentExhaustion) &&
-                    ReferenceEquals(serializedClone.Blueprint, exhausted) &&
-                    serializedClone.IsPermanent &&
-                    CountExactBuffFacts(serializedUnit, fatigued) == 0 &&
-                    CountExactBuffFacts(serializedUnit, exhausted) == 1 &&
-                    !serializedUnit.Descriptor.State.HasCondition(
-                        UnitCondition.Fatigued) &&
-                    serializedUnit.Descriptor.State.HasCondition(
-                        UnitCondition.Exhausted);
 
                 Kingmaker.Controllers.Rest.RestController.ApplyRest(
                     unit.Descriptor);
@@ -18708,7 +18980,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (serializedUnit != null) serializedUnit.Dispose();
                 if (unit != null)
                 {
                     if (immunityAdded)
@@ -18739,8 +19010,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 temporaryPreserved + ";end=" + longFatigueEnd + "->" +
                 resultingExhaustionEnd + ";immunity=" + immunityBlocked +
                 ";permanent=" + permanentIndependent + ";rest=" +
-                restRemoved + ";serialized=" + serializationRoundTrip +
-                ";jsonLength=" + serialization.Length + ";applications=" +
+                restRemoved + ";contextDepth=" + permanentContextDepth +
+                ";applications=" +
                 explicitApplications + ";attempts=" +
                 CanonicalFatigueApplicationRuntime.Attempts +
                 ";successful=" +
@@ -18784,11 +19055,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("canonical-fatigue-independent-rest",
                     "independent permanent escalation remains exact and rest-removable",
                     observed, permanentIndependent && restRemoved,
-                    "canonical adapter, root MechanicsContext, and RestController.ApplyRest"),
-                Assertion("canonical-fatigue-serialization",
-                    "one permanent canonical Exhausted fact round-trips exact identity",
-                    observed, serializationRoundTrip,
-                    "native UnitSerialization descriptor round trip"),
+                    "canonical adapter, rooted independent MechanicsContext, and RestController.ApplyRest"),
                 Assertion("canonical-fatigue-coordination",
                     "one coordinator resolution per explicit effect; no recursion or fault",
                     observed, diagnosticsExact,
@@ -18804,6 +19071,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             return CreateResult(assertions.All(value => value.Status == "PASS")
                 ? "PASS" : "FAIL", assertions, null);
+        }
+
+        private static MechanicsContext FindRootMechanicsContext(
+            MechanicsContext context, out int depth)
+        {
+            depth = 0;
+            var visited = new HashSet<MechanicsContext>();
+            MechanicsContext current = context;
+            while (current != null && visited.Add(current))
+            {
+                depth++;
+                if (current.ParentContext == null) return current;
+                current = current.ParentContext;
+            }
+            return null;
         }
 
         private static int CountExactBuffFacts(UnitEntityData unit,

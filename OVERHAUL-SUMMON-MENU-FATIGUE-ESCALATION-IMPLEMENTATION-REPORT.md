@@ -116,9 +116,20 @@ coverage includes 14 menu-layout cases, 13 canonical fatigue policy/contract
 cases, prompt overhaul delivery and source guards, and extended Acadamae, Cord,
 Expanded Summoning, maintenance, and guarded-scenario contracts. Runtime
 fixtures exercise the actual production ability, exact action-bar view, exact
-canonical blueprint facts, native rule application, serialization/rest, and
+canonical blueprint facts, native rule application, real guarded save/load,
+rest, and
 the established Cord damage path rather than treating pure policy calls as
 mechanical proof.
+
+Kingmaker's `UnitSerialization` preview copier is explicitly not used as save
+evidence because installed 2.1.7b activates `UnitStripConverter`, which strips
+`BuffCollection`. The persistence proof instead performs exact native
+`Game.SaveGame` writes on the correlated `KMG_AUTOMATION_WORKING` descriptor,
+reloads in fresh Steam launches, verifies one permanent canonical Exhausted
+fact with its independent rooted context, cleans it, saves, and verifies absence
+on a third no-write launch. The fixed subject is `party[1]`; a pre-existing
+canonical Fatigued fact on `party[0]` is preserved and never treated as fixture
+state.
 
 Qualification evidence, immutable commit identity, runtime run IDs, and final
 hashes are maintained in

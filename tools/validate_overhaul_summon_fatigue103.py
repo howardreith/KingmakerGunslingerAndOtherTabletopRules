@@ -135,9 +135,18 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs"),
         '"disposable-overhaul-maintenance"',
         '"disposable-fatigue-escalation"',
+        '"working-save-fatigue-prepare"',
+        '"working-save-fatigue-verify-cleanup"',
+        '"working-save-fatigue-verify-absent"',
         '"disposable-acadamae-graduate"',
         '"disposable-cord-of-stubborn-resolve"',
         '"observe-expanded-summoning-variant-menu"')
+    require_tokens(root / (
+        "scripts/Invoke-FatigueWorkingSavePersistence.ps1"),
+        "[ValidateSet('KMG_AUTOMATION_WORKING')]",
+        "working-save-fatigue-prepare",
+        "working-save-fatigue-verify-cleanup",
+        "working-save-fatigue-verify-absent")
     require_tokens(root / (
         "src/KingmakerGunslinger/RuntimeTesting/"
         "ExpandedSummoningVariantMenuObservation.cs"),
