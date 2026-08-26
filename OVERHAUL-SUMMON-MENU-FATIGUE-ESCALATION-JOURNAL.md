@@ -191,3 +191,37 @@ actual-popup observation and human presentation/navigation check.
   `SelectedUnits` collection, and destroys the component after restoring the
   original selection. This is request-local qualification infrastructure; it
   neither changes player selection fallback nor survives the scenario.
+
+## 2026-08-26 final acceptance-repair qualification and installation
+
+- Runtime-qualified code commit:
+  `a1f9e5e26ce6b8c0bc00625ff337181a25e30fe6` (implementation commit
+  `ca0eedb5ef79aa81ffcb03026827fbf35f1636aa`). Both were published through
+  the required non-force branch wrapper.
+- Repository validation, all 1,288 tests, clean exact-reference Release,
+  build-output, firearm asset, SoundBank, deterministic reconstruction, and
+  strict package gates pass. The stable runtime-preflight rerun passed 147/147;
+  the supervised popup observer `-WhatIf` readiness check passed without a
+  launch or input.
+- Final package SHA-256:
+  `CCE8DB03CDDADAED7BE5E8B34502C0031233CC7C3BF2F61193B22AC7A1609E9B`.
+  Built and installed DLL SHA-256:
+  `888C50711F0605C94BD84CF76B0E2467C0D95A0DD41EACFCE5448348541A5EC9`.
+  The exact candidate is installed in the production UMM
+  `Mods\KingmakerGunslinger` directory; deployment preserved the existing
+  feature-settings bytes and wrote a recoverable live-mod backup.
+- Guarded PASS runs on the exact installed candidate:
+  `disposable-overhaul-maintenance`
+  `20260826T1209541091175Z-0913defa04e34613a8e656e80aadcda8` (16),
+  `disposable-expanded-summoning`
+  `20260826T1212352963057Z-aded88f462f14c7ebc545992e18501f4` (12),
+  `disposable-expanded-summoning-player-path`
+  `20260826T1215494490608Z-2b64a72c89dd4410b7185748f85d0f40` (10),
+  `disposable-expanded-summoning-visual-contracts`
+  `20260826T1225404869508Z-011811f4df3747438fd15b3f7aa5447f` (13),
+  `observe-expanded-summoning-inventory`
+  `20260826T1228429573111Z-b98236aae6e54f29a92be0e8aadb0283` (38), and
+  `working-save-smoke`
+  `20260826T1232570621893Z-60132354b52f422dadfd8eb6f79dc61f` (11).
+- No automatic popup open or menu selection was attempted. The candidate is
+  stopped at the requested renewed human placement/navigation acceptance gate.

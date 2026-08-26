@@ -170,8 +170,61 @@ The updated guarded overhaul fixture calls the exact same development-control
 bridge before handing the resulting Wrecked item to the production Overhaul
 ability.
 
-Source qualification for this repair is PASS at 1,288/1,288 tests. Final
-immutable commit identity, package/DLL hashes, corrected guarded run IDs, and
-installed-DLL equality are recorded below after the candidate gates complete.
-The summon popup is not visually accepted by automation; renewed human review
-of the exact installed candidate remains required.
+Source qualification for this repair is PASS at 1,288/1,288 tests. The
+implementation commit is
+`ca0eedb5ef79aa81ffcb03026827fbf35f1636aa`; the request-local runtime-fixture
+correction and final runtime-qualified code commit is
+`a1f9e5e26ce6b8c0bc00625ff337181a25e30fe6`.
+
+The final clean exact-reference Release candidate has source-state SHA-256
+`02CC8D8AD9243D6A557020A17054598B5A21D7782AD0297C7463F92CCC64D79C`,
+DLL MVID `d7448fb4-023c-4ba3-85de-ddcd0f13fd9a`, deterministic package
+SHA-256
+`CCE8DB03CDDADAED7BE5E8B34502C0031233CC7C3BF2F61193B22AC7A1609E9B`,
+and DLL SHA-256
+`888C50711F0605C94BD84CF76B0E2467C0D95A0DD41EACFCE5448348541A5EC9`.
+An identical-input reconstruction produced the same package hash and passed
+strict validation. Repository validation, clean Release, exact installed
+reference compilation, build-output validation, firearm asset and SoundBank
+validation, deterministic packaging, and strict standalone-package validation
+all pass. Runtime-scenario preflight passes 147/147, and the supervised menu
+observer's `-WhatIf` readiness check passes without deployment, launch, input,
+or save access.
+
+| Acceptance-repair scenario | Guarded run ID | Assertions | Result |
+| --- | --- | ---: | --- |
+| `disposable-overhaul-maintenance` | `20260826T1209541091175Z-0913defa04e34613a8e656e80aadcda8` | 16 | PASS |
+| `disposable-expanded-summoning` | `20260826T1212352963057Z-aded88f462f14c7ebc545992e18501f4` | 12 | PASS |
+| `disposable-expanded-summoning-player-path` | `20260826T1215494490608Z-2b64a72c89dd4410b7185748f85d0f40` | 10 | PASS |
+| `disposable-expanded-summoning-visual-contracts` | `20260826T1225404869508Z-011811f4df3747438fd15b3f7aa5447f` | 13 | PASS |
+| `observe-expanded-summoning-inventory` | `20260826T1228429573111Z-b98236aae6e54f29a92be0e8aadb0283` | 38 | PASS |
+| `working-save-smoke` | `20260826T1232570621893Z-60132354b52f422dadfd8eb6f79dc61f` | 11 | PASS |
+
+Every real launch used the guarded request mechanism through Steam App ID
+640820 and reverified the final commit, source state, package, DLL, MVID, and
+installed DLL before launch. Save-backed scenarios named only
+`KMG_AUTOMATION_WORKING`. The 16-assertion overhaul run proves the real UMM
+Break/Wreck bridge, same-item/repository identity, invalid-repeat rejection,
+zero ammunition/kit consumption by the diagnostic transitions, production
+Overhaul recognition, prompt completion, unchanged `GameTime`, combat
+rejection, and exact cleanup. The four Expanded Summoning runs retain the
+previous inventory, mechanics, player-path, option-order, and visual-contract
+proof on the corrected adapter.
+
+The first attempted final overhaul run
+`20260826T1202534929483Z-8394b35448304dacbb21ead16101dbe9` is not counted: it
+failed before assertions or mutation because the disposable main-menu fixture
+had no native PC `SelectionManager`. The final scenario creates one hidden,
+non-saved exact native component request-locally and destroys it after restoring
+selection; production selection behavior was not relaxed. An immediate first
+147-check preflight invocation also observed artifact-tree drift while the last
+runtime cycle was finishing and was not accepted; the stable no-process rerun
+passed all 147 checks.
+
+The exact package is installed at
+`C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger`.
+Its installed DLL SHA-256 is
+`888C50711F0605C94BD84CF76B0E2467C0D95A0DD41EACFCE5448348541A5EC9`,
+byte-equal to the qualified build. The summon popup is not visually accepted
+by automation; renewed human review of this exact installed candidate remains
+required.
