@@ -3203,16 +3203,25 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Durable contract:
   `planning/SUMMON-SAME-TURN-ACTIVATION-MISSION.md`; matrix:
   `planning/SUMMON-SAME-TURN-ACTIVATION-MATRIX.md`.
-- Current status: exact failure reproduced; narrow RuleSummonUnit repair is
-  source-qualified and has one standalone real-player-path Quickened PASS;
-  complete matrix and version bump remain pending.
+- Current status: exact failure reproduced; narrow RuleSummonUnit repair and
+  the complete standalone runtime matrix are qualified; optional profiles and
+  the one-time version bump remain pending.
 - Frozen constraints: accepted 0.0.103 summon menu, Expanded Summoning,
   Acadamae/fatigue/Cord, duration, ordinary scheduling, and unrelated systems.
 - Pre-fix FAIL: `20260826T1445424590411Z-3b96e766c8b144449164781c019dcc51`.
-  Initial fixed PASS:
-  `20260826T1534299629829Z-686e0463d5254e4b871d5f7a7fec1827`, 11/11 with
-  exact cast-round attack, normal next round, native 120-second duration, and
-  duplicate no-op; full deterministic suite is 1,303/1,303.
-- Next concrete action: commit/push the coherent repair, then qualify ordinary,
-  Acadamae, KMG non-native, multi-creature, RTwP, negative/lifecycle, and
-  optional-mod profiles before final 0.0.104 sealing.
+  Standalone PASS runs: Quickened
+  `20260826T1729361837486Z-690d0e2c18d9463bbd16232d6d070ab0`, Acadamae
+  `20260826T1631499603377Z-713c7efcecab4c98963f8ca5a72b6650`, four KMG
+  Eagles `20260826T1701469324812Z-78e74018a3c4426194e6ebae8fc9632a`, native
+  and negative controls
+  `20260826T1717124156319Z-44e2710f9b4042e0a7b46c6a9a64c668`, and RTwP
+  `20260826T1725541089257Z-fb0b13a2dfab4e3a95e33571bf99925c`.
+- Cleanup-adjusted frozen-source Quickened repeat:
+  `20260826T1738486014413Z-aa53964345fa417da346a60852014684`,
+  package/DLL `747C2EA31528125994300E6B2769E9E38789A68194A66D90A92FEE9568F16F55` /
+  `CDA404CAA5C5916C067CD0AD609399060B668E306026220E9FCD6454387CFE90`.
+- Current gates: runtime preflight 154/154 and complete deterministic suite
+  1,305/1,305 PASS. No result is described as human acceptance.
+- Next concrete action: clean exact-reference build/package validation,
+  commit/push the matrix tranche, qualify supported optional profiles, advance
+  once to 0.0.104, then run the frozen final accelerated repeats and seals.

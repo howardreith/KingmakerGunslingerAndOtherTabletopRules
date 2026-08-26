@@ -30,6 +30,7 @@ namespace KingmakerGunslinger.Summoning
         internal bool HasLiveSummon { get; set; }
         internal bool CasterMatchesInvocation { get; set; }
         internal bool CasterOwnsCurrentTurn { get; set; }
+        internal bool AcceleratedCommandCorrelated { get; set; }
         internal bool ActualRequiresFullRound { get; set; }
         internal bool BlueprintRequiresFullRound { get; set; }
         internal bool SummonAlreadyActed { get; set; }
@@ -92,8 +93,6 @@ namespace KingmakerGunslinger.Summoning
                 return No(SummonSameTurnActivationDisposition.CasterMismatch);
             if (!request.CasterOwnsCurrentTurn)
                 return No(SummonSameTurnActivationDisposition.OutsideCasterTurn);
-            if (request.ActualRequiresFullRound)
-                return No(SummonSameTurnActivationDisposition.NativeFullRoundInvocation);
             if (!request.BlueprintRequiresFullRound)
                 return No(SummonSameTurnActivationDisposition.NativeAlreadyImmediate);
             if (request.SummonAlreadyActed)
@@ -119,6 +118,9 @@ namespace KingmakerGunslinger.Summoning
             bool removeGrace = lifecycleHasGrace;
             if (!removeAppearance && !removeGrace)
                 return No(SummonSameTurnActivationDisposition.AlreadyEligible);
+            if (request.ActualRequiresFullRound &&
+                !request.AcceleratedCommandCorrelated)
+                return No(SummonSameTurnActivationDisposition.NativeFullRoundInvocation);
             return new SummonSameTurnActivationDecision(
                 SummonSameTurnActivationDisposition.Repair,
                 removeAppearance, removeGrace);

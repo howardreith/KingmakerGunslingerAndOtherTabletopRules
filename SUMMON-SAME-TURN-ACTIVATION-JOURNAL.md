@@ -132,3 +132,71 @@
   PASS, not the completed runtime matrix and not human acceptance. Next action:
   checkpoint the repair, then qualify native, Acadamae, multi-creature, RTwP,
   cancellation/non-summon, lifecycle, and optional-mod controls.
+
+## 2026-08-26 - exact accelerated-command correlation and standalone matrix
+
+- The real Acadamae player path exposed a second installed-engine boundary.
+  Its command is correctly constructed and executed as Standard, but after the
+  prepared slot is spent a later query of the same `AbilityData` can return
+  `RequireFullRoundAction=true`. Treating that post-spend getter as historical
+  command truth therefore rejected an actual accelerated cast.
+- Added an ephemeral exact-reference correlation from the authoritative
+  three-argument `UnitUseAbility` constructor through its exact
+  `RuleCastSpell` and deferred summon graph. It accepts only real spellbook
+  summoning spells whose immutable blueprint is Full-Round and whose command
+  was actually constructed as Standard or Swift with a non-Full-Round live
+  invocation. Entries end with `UnitUseAbility.OnEnded`, clear on scene
+  disposal/load transition and runtime reset, are never serialized, and cannot
+  match a different ability, caster, rule, or arbitrary spawned entity.
+- Acadamae PASS
+  `20260826T1631499603377Z-713c7efcecab4c98963f8ca5a72b6650`:
+  the real prepared spell consumed one slot, stayed Standard, produced one
+  summon rule and one Fortitude save/publication, retained the accepted native
+  `Swift/Standard/Move = available/unavailable/unavailable` post-cast economy,
+  and the summon received one lawful opportunity in each of the cast and next
+  rounds. Its 12-second lifecycle expired exactly at cast round + 2.
+- KMG multiple PASS
+  `20260826T1701469324812Z-78e74018a3c4426194e6ebae8fc9632a`:
+  one legitimate Quickened KMG `1d4+1` spell created four distinct Eagles.
+  Every unit independently received exactly one lawful cast-round opportunity,
+  one normal next-round opportunity, one idempotent duplicate no-op, the same
+  native initiative, and exact 120-second lifecycle state.
+- Ordinary/Acadamae-OFF/negative-control PASS
+  `20260826T1717124156319Z-44e2710f9b4042e0a7b46c6a9a64c668`:
+  the native Full-Round control was untouched. Installed accepted behavior is
+  a six-second appearance/lifecycle grace, a locked next-round scheduled entry,
+  and the first lawful opportunity at cast round + 2. The out-of-range real
+  command spent no slot and emitted no summon rule; a live non-summon combat
+  entity received no lifecycle, appearance buff, or special callback.
+- RTwP PASS
+  `20260826T1725541089257Z-fb0b13a2dfab4e3a95e33571bf99925c`:
+  the shared summon callback returned `RealTimeWithPause`, left native
+  two-second appearance behavior and exact 120-second duration intact, created
+  no turn/order/forced-turn state, and allowed native summon AI to issue its
+  command.
+- Fresh Quickened repeat PASS
+  `20260826T1729361837486Z-690d0e2c18d9463bbd16232d6d070ab0`:
+  Swift alone was spent, Standard/Move remained available, the dog received
+  exactly one lawful opportunity and native AI action in each observed round,
+  duration remained 120 seconds, duplicate observation was `AlreadyEligible`,
+  and cleanup was exact.
+- After adding explicit scene-dispose/runtime-reset cleanup, clean Release,
+  package, strict-package, and a second fresh Quickened run all passed. Run
+  `20260826T1738486014413Z-aa53964345fa417da346a60852014684`
+  repeated the exact Swift-only, current-round, next-round, duration,
+  idempotence, and cleanup results against package SHA-256
+  `747C2EA31528125994300E6B2769E9E38789A68194A66D90A92FEE9568F16F55`
+  and DLL SHA-256
+  `CDA404CAA5C5916C067CD0AD609399060B668E306026220E9FCD6454387CFE90`.
+- Diagnostic attempts that failed before these qualifying runs were retained
+  as investigation evidence. They proved the post-slot-spend Acadamae getter,
+  the deferred `RuleCastSpell` spawn boundary, ordinary native two-round
+  appearance timing, and RTwP's distinct two-second appearance behavior; no
+  failed attempt is counted as acceptance evidence.
+- Runtime preflight now passes 154 assertions. The complete deterministic
+  domain/reflection suite passes 1,305/1,305, including exact installed-type
+  source contracts and correlated/idempotent policy cases.
+- Standalone matrix qualification is automated evidence, not human
+  acceptance. Next action: checkpoint and push this tranche, run the supported
+  compatibility profiles, advance once to 0.0.104, and repeat the principal
+  accelerated cases from fresh processes against the frozen versioned build.

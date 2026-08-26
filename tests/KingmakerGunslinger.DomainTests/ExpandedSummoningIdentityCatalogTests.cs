@@ -124,7 +124,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ContextActionSpawnMonster",
                 "RuleSummonUnit",
                 "SourceAbilityContext",
-                "ReferenceEquals(_summonRule.Context.SourceAbilityContext",
+                "ReferenceEquals(rule.Context.SourceAbilityContext",
                 "CombatController.SortedUnits",
                 "CurrentTurn.ForceToEnd(true)",
                 "accelerated-summon-current-round-opportunity",
@@ -135,11 +135,39 @@ namespace KingmakerGunslinger.DomainTests
                     automation.Contains(token),
                     "Same-turn reproduction contract is missing: " + token);
             Assertions.True(request.Contains(
-                    "RuntimeTestScenarioCatalog.SummonSameTurnActivation") &&
+                    "RuntimeTestScenarioCatalog.IsSummonSameTurnScenario") &&
+                catalog.Contains("SummonSameTurnActivation") &&
                 automation.Contains("'summon-same-turn-activation'") &&
                 automation.Contains("PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
                 automation.Contains("RequiresManualInteraction = $false"),
                 "Same-turn reproduction must remain guarded, autonomous, and working-save-only.");
+            foreach (string token in new[] {
+                "summon-same-turn-acadamae",
+                "summon-same-turn-multiple",
+                "summon-same-turn-native-control",
+                "summon-same-turn-rtwp-control",
+                "ExpandedEagleMultipleName",
+                "AcadamaeSavingThrowTestControl.Queue(20)",
+                "AllUnitsHave(_sameLawfulByUnit, 1)",
+                "AllUnitsHave(_followingLawfulByUnit, 1)",
+                "NativeFullRoundInvocation",
+                "RealTimeWithPause",
+                "RtwpNativeAppearanceCleared",
+                "CancelledControlPassed",
+                "NonSummonControlPassed",
+                "ExpiredAtExpectedBoundary" })
+                Assertions.True(scenario.Contains(token) ||
+                    catalog.Contains(token) || request.Contains(token) ||
+                    automation.Contains(token),
+                "Same-turn runtime matrix contract is missing: " + token);
+            int cleanupStart = scenario.IndexOf("private void Cleanup()",
+                StringComparison.Ordinal);
+            int nonSummonDispose = scenario.IndexOf(
+                "DisposeUnit(_nonSummonControlUnit)",
+                StringComparison.Ordinal);
+            Assertions.True(cleanupStart >= 0 &&
+                nonSummonDispose > cleanupStart,
+                "The live non-summon control must survive until authoritative combat cleanup.");
             Assertions.True(!scenario.Contains(
                     "new RuleSummonUnit(") &&
                 !scenario.Contains(".RunAction();"),

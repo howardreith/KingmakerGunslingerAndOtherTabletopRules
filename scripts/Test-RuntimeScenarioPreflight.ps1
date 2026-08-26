@@ -68,6 +68,10 @@ $expected = @(
     'disposable-expanded-summoning',
     'disposable-expanded-summoning-player-path',
     'summon-same-turn-activation',
+    'summon-same-turn-acadamae',
+    'summon-same-turn-multiple',
+    'summon-same-turn-native-control',
+    'summon-same-turn-rtwp-control',
     'disposable-expanded-summoning-visual-contracts',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
@@ -415,6 +419,19 @@ Assert-True $summonSameTurnActivation.RequiresSaveName `
 Assert-True ($summonSameTurnActivation.PermittedSaveName -ceq `
     'KMG_AUTOMATION_WORKING') `
     'summon-same-turn-activation-only-permits-working-save'
+foreach ($summonMatrixScenario in @(
+    'summon-same-turn-acadamae',
+    'summon-same-turn-multiple',
+    'summon-same-turn-native-control',
+    'summon-same-turn-rtwp-control')) {
+    $summonMatrixMetadata = Get-KmgRuntimeScenarioMetadata `
+        $summonMatrixScenario
+    Assert-True (-not $summonMatrixMetadata.RequiresManualInteraction -and
+        $summonMatrixMetadata.RequiresSaveName -and
+        $summonMatrixMetadata.PermittedSaveName -ceq `
+            'KMG_AUTOMATION_WORKING') `
+        ($summonMatrixScenario + '-is-autonomous-working-save-only')
+}
 $brownFurNativeCast = Get-KmgRuntimeScenarioMetadata `
     'disposable-brown-fur-native-cast'
 Assert-True (-not $brownFurNativeCast.RequiresManualInteraction) `

@@ -64,6 +64,30 @@ namespace KingmakerGunslinger.DomainTests
                 SummonSameTurnActivationDisposition.AlreadyEligible);
         }
 
+        internal static void CorrelatedAcceleratedCommandOverridesStaleGetter()
+        {
+            SummonSameTurnActivationRequest request = Repairable();
+            request.ActualRequiresFullRound = true;
+            request.AcceleratedCommandCorrelated = true;
+            SummonSameTurnActivationDecision decision =
+                SummonSameTurnActivationPolicy.Evaluate(request);
+            Assertions.True(decision.ShouldRepair &&
+                decision.RemoveAppearanceLock &&
+                decision.RemoveLifecycleGrace,
+                "An exact accelerated UnitUseAbility correlation did not " +
+                "override the post-spend full-round getter value.");
+        }
+
+        internal static void NormalizedAcceleratedCommandRemainsIdempotent()
+        {
+            SummonSameTurnActivationRequest request = Repairable();
+            request.ActualRequiresFullRound = true;
+            request.AcceleratedCommandCorrelated = false;
+            Normalize(request);
+            AssertNoRepair(request,
+                SummonSameTurnActivationDisposition.AlreadyEligible);
+        }
+
         internal static void MissingOpportunityIsRepairedExactly()
         {
             SummonSameTurnActivationDecision decision =
@@ -184,6 +208,14 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals(ability.Caster.Unit, caster)",
                 "ReferenceEquals(rule.Context.MaybeCaster, caster)",
                 "ReferenceEquals(turn.Unit, caster)",
+                "SummonAcceleratedInvocationRuntime",
+                "UnitUseAbility",
+                "RuleCastSpell",
+                "[ThreadStatic]",
+                "ReferenceEquals(entry.Ability, ability)",
+                "AcceleratedCommandCorrelated",
+                "SceneEntitiesState",
+                "SummonAcceleratedInvocationRuntime.Clear()",
                 "ability.RequireFullRoundAction",
                 "ability.Blueprint.IsFullRoundAction",
                 "SummonedUnitAppearBuff",
@@ -221,6 +253,7 @@ namespace KingmakerGunslinger.DomainTests
                 HasLiveSummon = true,
                 CasterMatchesInvocation = true,
                 CasterOwnsCurrentTurn = true,
+                AcceleratedCommandCorrelated = false,
                 ActualRequiresFullRound = false,
                 BlueprintRequiresFullRound = true,
                 SummonAlreadyActed = false,
