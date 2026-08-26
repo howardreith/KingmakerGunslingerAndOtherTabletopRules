@@ -62,6 +62,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-shield-other-inventory";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
+        internal const string ObserveExpandedSummoningVariantMenu =
+            "observe-expanded-summoning-variant-menu";
         internal const string DisposableExpandedSummoning =
             "disposable-expanded-summoning";
         internal const string DisposableExpandedSummoningPlayerPath =
@@ -140,6 +142,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-cord-of-stubborn-resolve";
         internal const string DisposableAcadamaeGraduate =
             "disposable-acadamae-graduate";
+        internal const string DisposableFatigueEscalation =
+            "disposable-fatigue-escalation";
         internal const string DisposableFocusedAim =
             "disposable-focused-aim";
         internal const string DisposableFirearmPenetration =
@@ -358,6 +362,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveBrownFurOffVerifyCleanup,
                 ObserveShieldOtherInventory,
                 ObserveExpandedSummoningInventory,
+                ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningPlayerPath,
                 DisposableExpandedSummoningVisualContracts,
@@ -397,6 +402,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveCapitalCordVendor,
                 DisposableCordOfStubbornResolve,
                 DisposableAcadamaeGraduate,
+                DisposableFatigueEscalation,
                 DisposableFocusedAim,
                 DisposableFirearmPenetration,
                 ObserveRareFirearmAcquisition,

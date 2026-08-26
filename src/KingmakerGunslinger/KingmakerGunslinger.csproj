@@ -111,12 +111,15 @@
     <Compile Include="Summoning\ExpandedSummoningSpecialProfiles.cs" />
     <Compile Include="Summoning\ExpandedSummoningNaturalProfiles.cs" />
     <Compile Include="Summoning\SummonVariantMergePolicy.cs" />
+    <Compile Include="Summoning\SummonVariantMenuLayoutPolicy.cs" />
     <Compile Include="Summoning\SummonDisplayOrderPolicy.cs" />
     <Compile Include="Summoning\SummonNativeOptionCatalog.cs" />
     <Compile Include="Summoning\SummonNativeExpansionCatalog.cs" />
     <Compile Include="Summoning\SummonVisibilityCatalog.cs" />
     <Compile Include="Summoning\SummonViewScaleCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningViewScalePatch.cs" />
+    <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />
+    <Compile Include="Summoning\ExpandedSummoningVariantMenuRuntime.cs" />
     <Compile Include="Summoning\SummonIconCatalog.cs" />
     <Compile Include="Summoning\SummonPublicationTransaction.cs" />
     <Compile Include="Summoning\SummonUnitSanitizationPolicy.cs" />
@@ -169,6 +172,8 @@
     <Compile Include="Cord\CordSubstitutionDecision.cs" />
     <Compile Include="Cord\CordSubstitutionPolicy.cs" />
     <Compile Include="Cord\CordConditionPatches.cs" />
+    <Compile Include="Fatigue\CanonicalFatigueStatePolicy.cs" />
+    <Compile Include="Fatigue\CanonicalFatigueApplicationRuntime.cs" />
     <Compile Include="Archetypes\MysteriousStrangerMechanics.cs" />
     <Compile Include="Archetypes\MysteriousStrangerPolicy.cs" />
     <Compile Include="Archetypes\SteadyAimMechanics.cs" />
@@ -232,6 +237,14 @@
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(KingmakerManagedDir)\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityModManager">
@@ -873,6 +886,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRequest.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
+    <Compile Include="RuntimeTesting\ExpandedSummoningVariantMenuObservation.cs" />
     <Compile Include="RuntimeTesting\OptionalModCompatibilityObserver.cs" />
     <Compile Include="RuntimeTesting\CraftMagicItemsCompatibilityObserver.cs" />
     <Compile Include="RuntimeTesting\CraftMagicItemsTooltipInspection.cs" />
@@ -931,6 +945,10 @@
       <Link>assets\icons\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\assets\bundles\kingmakergunslinger.firearms">
+      <Link>assets\bundles\kingmakergunslinger.firearms</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\assets\bundles\kingmakergunslinger.elvenbranchedspear">
       <Link>assets\bundles\kingmakergunslinger.elvenbranchedspear</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -962,6 +980,8 @@
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.CoreModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.UI.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.UIModule.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.TextRenderingModule.dll" />
     <RequiredKingmakerAssembly Include="$(UnityModManagerDir)\UnityModManager.dll" />
     <RequiredKingmakerAssembly Include="$(UnityModManagerDir)\0Harmony12.dll" />
   </ItemGroup>

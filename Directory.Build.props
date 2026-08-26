@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <KmgVersion>0.0.102</KmgVersion>
-    <KmgInformationalVersion>0.0.102-starter-bokken-combat-log-acadamae-toggle</KmgInformationalVersion>
+    <KmgVersion>0.0.103</KmgVersion>
+    <KmgInformationalVersion>0.0.103-overhaul-summon-menu-fatigue-escalation</KmgInformationalVersion>
     <LangVersion>7.3</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>

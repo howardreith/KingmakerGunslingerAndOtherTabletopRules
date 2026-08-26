@@ -39,6 +39,9 @@ namespace KingmakerGunslinger.Blueprints
 
     internal static class ExpandedSummoningPublisher
     {
+        internal const string PublishedVariantsComponentName =
+            "$KMG_ExpandedSummoning_Variants";
+
         private static readonly string[] MonsterParents = {
             "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7",
             "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef",
@@ -97,6 +100,23 @@ namespace KingmakerGunslinger.Blueprints
                 new ExpandedSummoningPublication(records).Rollback();
                 throw;
             }
+        }
+
+        internal static bool IsPublishedExpandedParent(BlueprintAbility ability)
+        {
+            if (ability == null ||
+                (!MonsterParents.Contains(ability.AssetGuid,
+                    StringComparer.Ordinal) &&
+                !AllyParents.Contains(ability.AssetGuid,
+                    StringComparer.Ordinal)))
+            {
+                return false;
+            }
+
+            return (ability.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<AbilityVariants>().Any(value => value != null &&
+                    string.Equals(value.name, PublishedVariantsComponentName,
+                        StringComparison.Ordinal));
         }
 
         internal static bool RequiredBasePublicationIsExact(
@@ -199,7 +219,7 @@ namespace KingmakerGunslinger.Blueprints
                     additionSpecs[value.AssetGuid].Multiplicity :
                     nativeAdditionSpecs[value.AssetGuid].Multiplicity);
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();
-            variants.name = "$KMG_ExpandedSummoning_Variants";
+            variants.name = PublishedVariantsComponentName;
             variants.Variants = merged.ToArray();
             BlueprintComponent[] after = existing == null ?
                 before.Concat(new BlueprintComponent[] { variants }).ToArray() :

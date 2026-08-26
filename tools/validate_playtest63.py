@@ -38,17 +38,20 @@ def validate(root: Path) -> None:
             "AbilityResourceLogic", "RequiredResource = grit", "IsSpendResource = true",
             "GritAbilityResourceUiLogic", "public override void Spend")
     require(root / "src/KingmakerGunslinger/Recovery/OverhaulTestMusketAbilityLogic.cs",
-            "WorkDurationSeconds = 60f", "TimeController.GameTime < completion",
+            "DeliverPromptly",
             "ReferenceEquals(completed.Weapon, start.Weapon)")
+    logic = (root / "src/KingmakerGunslinger/Recovery/OverhaulTestMusketAbilityLogic.cs").read_text(encoding="utf-8")
+    if "WorkDurationSeconds" in logic or "TimeController.GameTime" in logic or "yield return null" in logic:
+        raise AssertionError("Overhaul Firearm still contains a background or game-time wait")
     require(root / "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs",
-            "caster.Unit.IsInCombat", "one uninterrupted minute out of combat")
+            "caster.Unit.IsInCombat", "unavailable during active combat")
     require(root / "src/KingmakerGunslinger/Firearms/FirearmConditionTooltipPatch.cs",
             "DescriptionTemplatesItem", "ItemHeader", "data.Item",
             "TryGetOrCreate", "DescriptionTemplatesBase.Bricks.CursiveText")
     require(root / "src/KingmakerGunslinger/Firearms/FirearmConditionPresentation.cs",
             "Firearm condition: Normal", "Firearm condition: Broken",
             "misfire value increases by 4", "Firearm condition: Wrecked",
-            "one uninterrupted minute out of combat")
+            "outside active combat")
     require(root / "src/KingmakerGunslinger/Deeds/QuickClearAbilityLogic.cs",
             "exactly one Broken firearm", "at least 1 Grit",
             "Wrecked firearms require Overhaul Firearm")
