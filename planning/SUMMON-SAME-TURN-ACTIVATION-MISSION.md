@@ -1,6 +1,6 @@
 # Summon Same-Turn Activation Mission
 
-Status: ACTIVE — investigation and failing runtime reproduction
+Status: ACTIVE - standalone matrix qualified; compatibility and final version pending
 
 ## Identity
 

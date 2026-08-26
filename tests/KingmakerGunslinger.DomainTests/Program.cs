@@ -210,6 +210,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("summon-same-turn.outside-caster-turn", SummonSameTurnActivationTests.OutsideCasterTurnIsNative),
             Case("summon-same-turn.native-paths", SummonSameTurnActivationTests.NativeFullRoundAndImmediatePathsAreNative),
             Case("summon-same-turn.already-eligible", SummonSameTurnActivationTests.AlreadyEligibleSummonIsNotDuplicated),
+            Case("summon-same-turn.correlated-acceleration", SummonSameTurnActivationTests.CorrelatedAcceleratedCommandOverridesStaleGetter),
+            Case("summon-same-turn.correlated-idempotence", SummonSameTurnActivationTests.NormalizedAcceleratedCommandRemainsIdempotent),
             Case("summon-same-turn.repair", SummonSameTurnActivationTests.MissingOpportunityIsRepairedExactly),
             Case("summon-same-turn.already-acted", SummonSameTurnActivationTests.AlreadyActedSummonIsNotReactivated),
             Case("summon-same-turn.duplicate-callback", SummonSameTurnActivationTests.DuplicateCallbackIsANoOp),

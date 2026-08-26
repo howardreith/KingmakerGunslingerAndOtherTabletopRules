@@ -1,19 +1,220 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using KingmakerGunslinger.Bootstrap;
 using TurnBased.Controllers;
 
 namespace KingmakerGunslinger.Summoning
 {
+    /// <summary>
+    /// Carries the exact action-economy decision made when a live
+    /// UnitUseAbility starts into the exact RuleCastSpell it constructs. The
+    /// entry survives only until the authoritative command-end callback. This
+    /// spans Owlcat's deferred spawn graph and all members of one multi-summon.
+    /// It is needed because spending a prepared slot can make a later
+    /// RequireFullRoundAction query describe the now-unavailable spell rather
+    /// than the command that is already resolving.
+    /// </summary>
+    internal static class SummonAcceleratedInvocationRuntime
+    {
+        private sealed class Entry
+        {
+            internal UnitUseAbility Command;
+            internal AbilityData Ability;
+            internal RuleCastSpell Rule;
+        }
+
+        private static readonly Dictionary<UnitUseAbility, Entry> Commands =
+            new Dictionary<UnitUseAbility, Entry>(
+                ReferenceComparer<UnitUseAbility>.Instance);
+        private static readonly Dictionary<RuleCastSpell, Entry> Rules =
+            new Dictionary<RuleCastSpell, Entry>(
+                ReferenceComparer<RuleCastSpell>.Instance);
+        [ThreadStatic] private static Entry _activeCommand;
+        [ThreadStatic] private static Entry _activeRule;
+        private static string _diagnosticTrace = string.Empty;
+
+        internal static string DiagnosticTrace
+        { get { return _diagnosticTrace; } }
+
+        internal static void ResetDiagnostics()
+        {
+            Clear();
+            _diagnosticTrace = string.Empty;
+        }
+
+        internal static void Clear()
+        {
+            Commands.Clear();
+            Rules.Clear();
+            _activeCommand = null;
+            _activeRule = null;
+        }
+
+        internal static void Arm(UnitUseAbility command, AbilityData ability,
+            UnitCommand.CommandType commandType)
+        {
+            if (command == null || ability == null ||
+                ability.Blueprint == null)
+            {
+                Record("arm=invalid");
+                return;
+            }
+            bool actualFullRound = ability.RequireFullRoundAction;
+            bool accepted = ability.Spellbook != null &&
+                ability.Blueprint.Type == AbilityType.Spell &&
+                (ability.Blueprint.SpellDescriptor &
+                    SpellDescriptor.Summoning) != 0 &&
+                ability.Blueprint.IsFullRoundAction &&
+                !actualFullRound &&
+                (commandType == UnitCommand.CommandType.Standard ||
+                    commandType == UnitCommand.CommandType.Swift);
+            Record("arm=spellbook:" + (ability.Spellbook != null) +
+                ",type:" + ability.Blueprint.Type +
+                ",summoning:" + ((ability.Blueprint.SpellDescriptor &
+                    SpellDescriptor.Summoning) != 0) +
+                ",blueprintFull:" + ability.Blueprint.IsFullRoundAction +
+                ",actualFull:" + actualFullRound +
+                ",command:" + commandType + ",accepted:" + accepted);
+            if (!accepted ||
+                commandType != UnitCommand.CommandType.Standard &&
+                    commandType != UnitCommand.CommandType.Swift)
+                return;
+            if (!Commands.ContainsKey(command))
+                Commands.Add(command, new Entry {
+                    Command = command, Ability = ability
+                });
+        }
+
+        internal static void BeginCommand(UnitUseAbility command)
+        {
+            _activeCommand = null;
+            Entry entry;
+            if (command != null && Commands.TryGetValue(command, out entry))
+                _activeCommand = entry;
+            Record("begin-command=found:" + (_activeCommand != null));
+        }
+
+        internal static void AttachRule(RuleCastSpell rule)
+        {
+            Entry entry = _activeCommand;
+            bool spellMatches = entry != null && rule != null &&
+                ReferenceEquals(rule.Spell, entry.Ability);
+            Record("attach-rule=active:" + (entry != null) +
+                ",spellMatch:" + spellMatches);
+            if (entry == null || rule == null || entry.Rule != null ||
+                Rules.ContainsKey(rule) ||
+                !ReferenceEquals(rule.Spell, entry.Ability)) return;
+            entry.Rule = rule;
+            Rules.Add(rule, entry);
+        }
+
+        internal static void BeginRule(RuleCastSpell rule)
+        {
+            _activeRule = null;
+            Entry entry = null;
+            bool found = rule != null && Rules.TryGetValue(rule, out entry);
+            bool exact = found &&
+                ReferenceEquals(rule.Spell, entry.Ability) &&
+                ReferenceEquals(rule.Initiator, entry.Command.Executor);
+            Record("begin-rule=found:" + found + ",exact:" + exact);
+            if (!found ||
+                !ReferenceEquals(rule.Spell, entry.Ability) ||
+                !ReferenceEquals(rule.Initiator, entry.Command.Executor))
+                return;
+            _activeRule = entry;
+        }
+
+        internal static bool IsExactAcceleratedCast(AbilityData ability,
+            UnitEntityData caster)
+        {
+            int matches = 0;
+            foreach (Entry entry in Rules.Values)
+            {
+                if (entry == null || ability == null || caster == null ||
+                    !ReferenceEquals(entry.Ability, ability) ||
+                    !ReferenceEquals(entry.Command.Spell, ability) ||
+                    !ReferenceEquals(entry.Command.Executor, caster) ||
+                    !ReferenceEquals(entry.Rule.Spell, ability) ||
+                    !ReferenceEquals(entry.Rule.Initiator, caster))
+                    continue;
+                matches++;
+            }
+            bool result = matches == 1;
+            Record("inspect=pendingMatches:" + matches +
+                ",exact:" + result);
+            return result;
+        }
+
+        internal static void EndRule(RuleCastSpell rule)
+        {
+            Entry entry;
+            if (rule == null || !Rules.TryGetValue(rule, out entry)) return;
+            if (ReferenceEquals(_activeRule, entry)) _activeRule = null;
+            Record("end-rule=retained-until-command-end");
+        }
+
+        internal static void EndCommand(UnitUseAbility command)
+        {
+            if (_activeCommand != null &&
+                ReferenceEquals(_activeCommand.Command, command))
+                _activeCommand = null;
+        }
+
+        internal static void CancelCommand(UnitUseAbility command)
+        {
+            Entry entry;
+            if (command != null && Commands.TryGetValue(command, out entry))
+            {
+                Release(entry);
+                Record("command-end=released");
+            }
+        }
+
+        private static void Release(Entry entry)
+        {
+            if (entry == null) return;
+            Commands.Remove(entry.Command);
+            if (entry.Rule != null) Rules.Remove(entry.Rule);
+            if (ReferenceEquals(_activeCommand, entry))
+                _activeCommand = null;
+            if (ReferenceEquals(_activeRule, entry)) _activeRule = null;
+        }
+
+        private static void Record(string value)
+        {
+            string next = string.IsNullOrEmpty(_diagnosticTrace) ? value :
+                _diagnosticTrace + "|" + value;
+            _diagnosticTrace = next.Length <= 4096 ? next :
+                next.Substring(next.Length - 4096);
+        }
+
+        private sealed class ReferenceComparer<T> : IEqualityComparer<T>
+            where T : class
+        {
+            internal static readonly ReferenceComparer<T> Instance =
+                new ReferenceComparer<T>();
+            public bool Equals(T left, T right)
+            { return ReferenceEquals(left, right); }
+            public int GetHashCode(T value)
+            { return RuntimeHelpers.GetHashCode(value); }
+        }
+    }
+
     /// <summary>
     /// Corrects the one-round appearance grace that RuleSummonUnit derives
     /// from the immutable blueprint when the exact live invocation has been
@@ -129,6 +330,9 @@ namespace KingmakerGunslinger.Summoning
                     CasterOwnsCurrentTurn = turn != null &&
                         !turn.IsEnding &&
                         ReferenceEquals(turn.Unit, caster),
+                    AcceleratedCommandCorrelated =
+                        SummonAcceleratedInvocationRuntime
+                            .IsExactAcceleratedCast(ability, caster),
                     ActualRequiresFullRound = ability == null ||
                         ability.RequireFullRoundAction,
                     BlueprintRequiresFullRound = ability != null &&
@@ -168,6 +372,62 @@ namespace KingmakerGunslinger.Summoning
             internal Buff Appearance { get; set; }
             internal SummonSameTurnActivationRequest Request { get; set; }
         }
+    }
+
+    [HarmonyPatch(typeof(UnitUseAbility), MethodType.Constructor,
+        typeof(UnitCommand.CommandType), typeof(AbilityData),
+        typeof(Kingmaker.Utility.TargetWrapper))]
+    internal static class SummonAcceleratedInvocationCommandConstructorPatch
+    {
+        private static void Postfix(UnitUseAbility __instance,
+            UnitCommand.CommandType __0, AbilityData __1)
+        {
+            SummonAcceleratedInvocationRuntime.Arm(__instance, __1, __0);
+        }
+    }
+
+    [HarmonyPatch(typeof(UnitUseAbility), "OnAction", new Type[0])]
+    internal static class SummonAcceleratedInvocationCommandPatch
+    {
+        private static void Prefix(UnitUseAbility __instance)
+        { SummonAcceleratedInvocationRuntime.BeginCommand(__instance); }
+
+        private static void Postfix(UnitUseAbility __instance)
+        { SummonAcceleratedInvocationRuntime.EndCommand(__instance); }
+    }
+
+    [HarmonyPatch(typeof(RuleCastSpell), MethodType.Constructor,
+        typeof(AbilityData), typeof(Kingmaker.Utility.TargetWrapper))]
+    internal static class SummonAcceleratedInvocationRuleConstructorPatch
+    {
+        private static void Postfix(RuleCastSpell __instance)
+        { SummonAcceleratedInvocationRuntime.AttachRule(__instance); }
+    }
+
+    [HarmonyPatch(typeof(RuleCastSpell), "OnTrigger",
+        new Type[] { typeof(RulebookEventContext) })]
+    internal static class SummonAcceleratedInvocationRulePatch
+    {
+        private static void Prefix(RuleCastSpell __instance)
+        { SummonAcceleratedInvocationRuntime.BeginRule(__instance); }
+
+        private static void Postfix(RuleCastSpell __instance)
+        { SummonAcceleratedInvocationRuntime.EndRule(__instance); }
+    }
+
+    [HarmonyPatch(typeof(UnitUseAbility), "OnEnded",
+        new Type[] { typeof(bool) })]
+    internal static class SummonAcceleratedInvocationCleanupPatch
+    {
+        private static void Postfix(UnitUseAbility __instance)
+        { SummonAcceleratedInvocationRuntime.CancelCommand(__instance); }
+    }
+
+    [HarmonyPatch(typeof(SceneEntitiesState), "Dispose", new Type[0])]
+    internal static class SummonAcceleratedInvocationSceneCleanupPatch
+    {
+        private static void Prefix()
+        { SummonAcceleratedInvocationRuntime.Clear(); }
     }
 
     [HarmonyPatch(typeof(RuleSummonUnit), "OnTrigger",

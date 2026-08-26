@@ -70,6 +70,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-player-path";
         internal const string SummonSameTurnActivation =
             "summon-same-turn-activation";
+        internal const string SummonSameTurnAcadamae =
+            "summon-same-turn-acadamae";
+        internal const string SummonSameTurnMultiple =
+            "summon-same-turn-multiple";
+        internal const string SummonSameTurnNativeControl =
+            "summon-same-turn-native-control";
+        internal const string SummonSameTurnRtwpControl =
+            "summon-same-turn-rtwp-control";
         internal const string DisposableExpandedSummoningVisualContracts =
             "disposable-expanded-summoning-visual-contracts";
         internal const string WorkingSaveExpandedSummoningPrepare =
@@ -374,6 +382,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningPlayerPath,
                 SummonSameTurnActivation,
+                SummonSameTurnAcadamae,
+                SummonSameTurnMultiple,
+                SummonSameTurnNativeControl,
+                SummonSameTurnRtwpControl,
                 DisposableExpandedSummoningVisualContracts,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,
@@ -513,6 +525,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool IsAllowed(string scenario)
         {
             return scenario != null && Allowed.Contains(scenario);
+        }
+
+        internal static bool IsSummonSameTurnScenario(string scenario)
+        {
+            return scenario == SummonSameTurnActivation ||
+                scenario == SummonSameTurnAcadamae ||
+                scenario == SummonSameTurnMultiple ||
+                scenario == SummonSameTurnNativeControl ||
+                scenario == SummonSameTurnRtwpControl;
         }
 
         internal static string[] Names()
