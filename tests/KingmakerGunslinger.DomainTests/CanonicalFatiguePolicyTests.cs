@@ -176,7 +176,10 @@ namespace KingmakerGunslinger.DomainTests
                 "unit.Descriptor.Buffs.AddBuff(fatigued",
                 "unit.Descriptor.Buffs.AddBuff(exhausted",
                 "AddConditionImmunity(\n                    UnitCondition.Fatigued)",
-                "DefaultJsonSettings.DefaultSettings",
+                "UnitSerialization.Serialize(unit.Descriptor)",
+                "ToObject<\n                    UnitDescriptor>()",
+                "Buffs.SetupPreview(\n                        serializedDescriptor)",
+                "serializedUnit.Dispose()",
                 "RestController.ApplyRest",
                 "secondFailureEscalated",
                 "exhaustedRepeatStable",
@@ -185,6 +188,9 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(runner.Contains(token),
                     "Guarded fatigue qualification lacks actual-path token: " +
                     token);
+            Assertions.False(runner.Contains(
+                    "JsonConvert.SerializeObject(\n                    permanentExhaustion"),
+                "A live Buff cannot be serialized as a standalone native save root.");
             string catalog = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs"));

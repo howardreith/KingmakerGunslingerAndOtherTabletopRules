@@ -18498,6 +18498,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private RuntimeTestResult RunDisposableFatigueEscalation()
         {
             UnitEntityData unit = null;
+            UnitEntityData serializedUnit = null;
+            UnitDescriptor serializedDescriptor = null;
             BlueprintBuff fatigued = null;
             BlueprintBuff exhausted = null;
             bool immunityAdded = false;
@@ -18660,18 +18662,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CountExactBuffFacts(unit, fatigued) == 0 &&
                     CountExactBuffFacts(unit, exhausted) == 1;
 
-                serialization = JsonConvert.SerializeObject(
-                    permanentExhaustion, Formatting.None,
+                Newtonsoft.Json.Linq.JToken serializedToken =
                     Kingmaker.EntitySystem.Persistence.JsonUtility.
-                        DefaultJsonSettings.DefaultSettings);
-                Buff serializedClone = JsonConvert.DeserializeObject<Buff>(
-                    serialization,
-                    Kingmaker.EntitySystem.Persistence.JsonUtility.
-                        DefaultJsonSettings.DefaultSettings);
-                serializationRoundTrip = serializedClone != null &&
+                        UnitSerialization.Serialize(unit.Descriptor);
+                serialization = serializedToken.ToString(Formatting.None);
+                serializedDescriptor = serializedToken.ToObject<
+                    UnitDescriptor>();
+                if (serializedDescriptor != null)
+                {
+                    serializedDescriptor.Buffs.SetupPreview(
+                        serializedDescriptor);
+                    serializedDescriptor.PostLoad();
+                    serializedDescriptor.TurnOn();
+                    serializedUnit = serializedDescriptor.Unit;
+                }
+                Buff serializedClone = serializedDescriptor == null ? null :
+                    serializedDescriptor.Buffs.GetBuff(exhausted);
+                serializationRoundTrip = serializedUnit != null &&
+                    serializedClone != null &&
                     !ReferenceEquals(serializedClone, permanentExhaustion) &&
                     ReferenceEquals(serializedClone.Blueprint, exhausted) &&
-                    serializedClone.IsPermanent;
+                    serializedClone.IsPermanent &&
+                    CountExactBuffFacts(serializedUnit, fatigued) == 0 &&
+                    CountExactBuffFacts(serializedUnit, exhausted) == 1 &&
+                    !serializedUnit.Descriptor.State.HasCondition(
+                        UnitCondition.Fatigued) &&
+                    serializedUnit.Descriptor.State.HasCondition(
+                        UnitCondition.Exhausted);
 
                 Kingmaker.Controllers.Rest.RestController.ApplyRest(
                     unit.Descriptor);
@@ -18691,6 +18708,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (serializedUnit != null) serializedUnit.Dispose();
                 if (unit != null)
                 {
                     if (immunityAdded)
@@ -18770,7 +18788,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("canonical-fatigue-serialization",
                     "one permanent canonical Exhausted fact round-trips exact identity",
                     observed, serializationRoundTrip,
-                    "native DefaultJsonSettings Buff round trip"),
+                    "native UnitSerialization descriptor round trip"),
                 Assertion("canonical-fatigue-coordination",
                     "one coordinator resolution per explicit effect; no recursion or fault",
                     observed, diagnosticsExact,
