@@ -204,6 +204,37 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     internal static class SummonVariantMenuPlacementPolicy
     {
+        private const float RenderedTolerance = 0.5f;
+
+        internal static SummonVariantMenuPlacementDecision Decide(
+            SummonVariantMenuRect renderedRect,
+            SummonVariantMenuLayoutDecision layout)
+        {
+            if (layout == null) throw new ArgumentNullException("layout");
+            if (renderedRect.Width > layout.SafeRect.Width +
+                    RenderedTolerance ||
+                renderedRect.Height > layout.SafeRect.Height +
+                    RenderedTolerance)
+            {
+                throw new InvalidOperationException(
+                    "The rendered popup remains larger than the canvas-safe rectangle after sizing.");
+            }
+
+            float x = Clamp(layout.FinalRect.X, layout.SafeRect.XMin,
+                layout.SafeRect.XMax - renderedRect.Width);
+            float y;
+            if (layout.TopClamped)
+                y = layout.SafeRect.YMax - renderedRect.Height;
+            else if (layout.BottomClamped)
+                y = layout.SafeRect.YMin;
+            else
+                y = Clamp(layout.FinalRect.Y, layout.SafeRect.YMin,
+                    layout.SafeRect.YMax - renderedRect.Height);
+
+            return Decide(renderedRect, new SummonVariantMenuRect(x, y,
+                renderedRect.Width, renderedRect.Height));
+        }
+
         internal static SummonVariantMenuPlacementDecision Decide(
             SummonVariantMenuRect renderedRect,
             SummonVariantMenuRect targetRect)
@@ -220,6 +251,12 @@ namespace KingmakerGunslinger.Summoning
             return new SummonVariantMenuPlacementDecision(
                 targetRect.X - renderedRect.X,
                 targetRect.Y - renderedRect.Y);
+        }
+
+        private static float Clamp(float value, float minimum, float maximum)
+        {
+            if (maximum < minimum) return minimum;
+            return Math.Max(minimum, Math.Min(maximum, value));
         }
     }
 

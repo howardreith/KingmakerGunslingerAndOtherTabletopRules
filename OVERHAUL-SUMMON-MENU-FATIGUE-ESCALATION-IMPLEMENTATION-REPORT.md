@@ -220,3 +220,14 @@ applicable Expanded Summoning inventory/mechanics/player/visual-contract
 surfaces, and working-save smoke. The installed package and built DLL are
 identified in the qualification report; the installed DLL is byte-equal to the
 qualified DLL. Only renewed human popup placement/navigation acceptance remains.
+
+The renewed human check showed native off-screen placement again. The matching
+game log conclusively recorded `variant-menu.layout-failed` on every open with
+`Rendered popup size must match the target before translation`. The adapter's
+three sizing passes had left ordinary fractional rendered-size drift; a strict
+0.01-canvas-unit equality guard then threw before translation, and the guarded
+failure path correctly restored the native hierarchy. The final correction
+constructs the translation target from the measured rendered size, aligns its
+top or bottom to the already-selected safe edge, clamps the remaining axis,
+and verifies the actual result against the safe rectangle. No blueprint,
+roster, spell, firearm, maintenance, or condition code changed.

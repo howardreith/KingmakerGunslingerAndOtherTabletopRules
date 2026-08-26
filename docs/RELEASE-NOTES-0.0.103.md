@@ -47,3 +47,11 @@ The unchanged SoundBank SHA-256 is
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 The exact automated and supervised evidence boundary is recorded in the
 0.0.103 qualification report.
+
+The final popup acceptance repair removes a runtime-only failure exposed by
+the human test log. Unity's rendered popup dimensions can differ fractionally
+from the requested canvas rectangle after `RectTransform` sizing. The previous
+adapter rejected that harmless drift before translation and restored the
+original off-screen native layout. Placement now uses the measured rendered
+dimensions, preserves the selected safe top or bottom edge, and still rejects
+a popup that genuinely cannot fit the canvas-safe rectangle.

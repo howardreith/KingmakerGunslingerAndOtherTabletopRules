@@ -268,7 +268,7 @@ namespace KingmakerGunslinger.Summoning
             if (decision.RequiresScrolling)
                 state.EnableViewport(liveSlots, decision, desiredWidth,
                     desiredHeight);
-            ApplyRect(root, canvasRect, decision.FinalRect);
+            ApplyRect(root, canvasRect, decision);
             if (decision.RequiresScrolling)
                 state.FinalizeViewport(decision, desiredWidth, desiredHeight);
             Canvas.ForceUpdateCanvases();
@@ -529,8 +529,10 @@ namespace KingmakerGunslinger.Summoning
         }
 
         private static void ApplyRect(RectTransform root,
-            RectTransform canvasRect, SummonVariantMenuRect finalRect)
+            RectTransform canvasRect,
+            SummonVariantMenuLayoutDecision decision)
         {
+            SummonVariantMenuRect finalRect = decision.FinalRect;
             root.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
                 finalRect.Width);
             root.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
@@ -559,17 +561,19 @@ namespace KingmakerGunslinger.Summoning
             Canvas.ForceUpdateCanvases();
             SummonVariantMenuRect rendered = MeasureRect(root, canvasRect);
             SummonVariantMenuPlacementDecision placement =
-                SummonVariantMenuPlacementPolicy.Decide(rendered, finalRect);
+                SummonVariantMenuPlacementPolicy.Decide(rendered, decision);
+            SummonVariantMenuRect expected = placement.ApplyTo(rendered);
             Vector3 origin = canvasRect.TransformPoint(Vector3.zero);
             Vector3 translated = canvasRect.TransformPoint(new Vector3(
                 placement.DeltaX, placement.DeltaY, 0f));
             root.position += translated - origin;
             Canvas.ForceUpdateCanvases();
             SummonVariantMenuRect verified = MeasureRect(root, canvasRect);
-            if (!Close(verified.X, finalRect.X, 0.5f) ||
-                !Close(verified.Y, finalRect.Y, 0.5f) ||
-                !Close(verified.Width, finalRect.Width, 0.5f) ||
-                !Close(verified.Height, finalRect.Height, 0.5f))
+            if (!Close(verified.X, expected.X, 0.5f) ||
+                !Close(verified.Y, expected.Y, 0.5f) ||
+                !Close(verified.Width, expected.Width, 0.5f) ||
+                !Close(verified.Height, expected.Height, 0.5f) ||
+                !decision.SafeRect.Contains(verified, 0.5f))
                 throw new InvalidOperationException(
                     "The native variant-menu rendered bounds did not match the canvas-space layout decision.");
         }
