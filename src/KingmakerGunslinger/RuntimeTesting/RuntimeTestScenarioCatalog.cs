@@ -68,6 +68,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning";
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
+        internal const string SummonSameTurnActivation =
+            "summon-same-turn-activation";
         internal const string DisposableExpandedSummoningVisualContracts =
             "disposable-expanded-summoning-visual-contracts";
         internal const string WorkingSaveExpandedSummoningPrepare =
@@ -371,6 +373,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningPlayerPath,
+                SummonSameTurnActivation,
                 DisposableExpandedSummoningVisualContracts,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,

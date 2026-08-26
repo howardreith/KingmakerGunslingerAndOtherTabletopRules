@@ -203,6 +203,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.unit-component-isolation", ExpandedSummoningIdentityCatalogTests.RuntimeUnitComponentsAreReferenceIsolated),
             Case("expanded-summoning.template-blueprints", ExpandedSummoningIdentityCatalogTests.TemplateBlueprintsUseNativeBoundedMechanics),
             Case("expanded-summoning.player-path-harness", ExpandedSummoningIdentityCatalogTests.PlayerPathHarnessUsesRealSpellbookParents),
+            Case("expanded-summoning.same-turn-real-player-reproduction", ExpandedSummoningIdentityCatalogTests.SameTurnReproductionUsesTheRealAcceleratedPath),
             Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
             Case("urban-barbarian.rage-inventory-contract", UrbanBarbarianInventoryContractTests.GuardedInventoryIsReadOnlyAndComplete),
             Case("feature-settings.five-hundred-twelve-combinations", FeatureModuleSettingsTests.FiveHundredTwelveCombinationsRoundTrip),

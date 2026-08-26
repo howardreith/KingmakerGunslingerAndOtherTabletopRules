@@ -97,6 +97,55 @@ namespace KingmakerGunslinger.DomainTests
                 "Player-path evidence must distinguish spellbook slot spend from direct-child controls.");
         }
 
+        internal static void SameTurnReproductionUsesTheRealAcceleratedPath()
+        {
+            string root = Environment.CurrentDirectory;
+            string scenario = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "SummonSameTurnActivationScenario.cs"));
+            string catalog = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestScenarioCatalog.cs"));
+            string request = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRequest.cs"));
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            foreach (string token in new[] {
+                "summon-same-turn-activation",
+                "PrepareQuickenedSummon",
+                "Metamagic.Quicken",
+                "metamagic.SpellLevelCost = Metamagic.Quicken.DefaultCost()",
+                "spellbook.Memorize(prepared, null)",
+                "value.Spell.HasMetamagic(Metamagic.Quicken)",
+                "new AbilityData(slot.Spell, selected)",
+                "new UnitUseAbility(_castAbility, target)",
+                "RuleCastSpell",
+                "ContextActionSpawnMonster",
+                "RuleSummonUnit",
+                "SourceAbilityContext",
+                "ReferenceEquals(_summonRule.Context.SourceAbilityContext",
+                "CombatController.SortedUnits",
+                "CurrentTurn.ForceToEnd(true)",
+                "accelerated-summon-current-round-opportunity",
+                "caster intentionally ended the turn",
+                "KMG_AUTOMATION_WORKING" })
+                Assertions.True(scenario.Contains(token) ||
+                    catalog.Contains(token) || request.Contains(token) ||
+                    automation.Contains(token),
+                    "Same-turn reproduction contract is missing: " + token);
+            Assertions.True(request.Contains(
+                    "RuntimeTestScenarioCatalog.SummonSameTurnActivation") &&
+                automation.Contains("'summon-same-turn-activation'") &&
+                automation.Contains("PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                automation.Contains("RequiresManualInteraction = $false"),
+                "Same-turn reproduction must remain guarded, autonomous, and working-save-only.");
+            Assertions.True(!scenario.Contains(
+                    "new RuleSummonUnit(") &&
+                !scenario.Contains(".RunAction();"),
+                "The acceptance reproduction must not bypass the actual spell by directly summoning a unit.");
+        }
+
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();

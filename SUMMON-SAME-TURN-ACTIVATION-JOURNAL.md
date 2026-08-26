@@ -33,3 +33,52 @@
 - Next concrete action: inventory current summon/Acadamae/runtime-test source
   and installed turn-based APIs, then add a guarded real-player-path diagnostic
   that reproduces the accelerated summon lost-turn boundary before any repair.
+
+## 2026-08-26 - installed API investigation and failing reproduction
+
+- The installed game and private reference copies of `Assembly-CSharp.dll` are
+  byte-identical, SHA-256
+  `3B6450FFEC440E296E586F71C711B195AED144B28D53E1CBB29406D18FEF5AFB`.
+- Bounded Kingmaker 2.1.7b IL proves `RuleSummonUnit.OnTrigger` decides its
+  turn-based appearance branch from
+  `Context.SourceAbility.IsFullRoundAction`, the immutable blueprint flag.
+  That branch leaves `SummonedUnitAppearBuff` for six seconds and adds six
+  seconds to `SummonedUnitBuff` lifecycle duration.
+- Installed `AbilityData` is the actual invocation authority: legitimate
+  Quicken produces `ActionType=Swift`, `RuntimeActionType=Swift`, and
+  `RequireFullRoundAction=false`, while native Summon Monster I's blueprint
+  remains `IsFullRoundAction=true`. `AbilityExecutionContext.Ability` survives
+  unchanged through `RuleCastSpell`, `ContextActionSpawnMonster`, and every
+  genuine `RuleSummonUnit` in that invocation.
+- Added guarded scenario `summon-same-turn-activation`. It is autonomous,
+  explicitly working-save-only, and creates a disposable level-20 Wizard via
+  native level-up APIs. It prepares a real level-five Quickened native Summon
+  Monster I slot and uses the actual `UnitUseAbility -> RuleCastSpell ->
+  ContextActionSpawnMonster -> RuleSummonUnit` path. It never directly creates
+  a summon rule or runs a spawn action.
+- Definitive pre-fix run ID:
+  `20260826T1445424590411Z-3b96e766c8b144449164781c019dcc51`;
+  evidence directory:
+  `20260826T1445424287989Z-summon-same-turn-activation`; expected status FAIL.
+- The real command was Swift and changed only the caster's native Swift
+  cooldown (`0 -> 6`); Standard and Move remained zero and the caster retained
+  current-turn ownership. Exact context reference correlation and all three
+  real spell/summon boundaries passed.
+- At spawn in cast round 1, the genuine summoned dog was live but not yet
+  combat-enrolled, carried `SummonedUnitAppearBuff=6s`, and carried lifecycle
+  `126s` although `RuleSummonUnit.Duration + BonusDuration` was `120s`.
+- At the exact first `TurnController.Prepare` in cast round 1, the summon was
+  enrolled, had Standard/Move/Swift available, and had
+  `CanActInCombat=true`, but `IsAbleToAct=false` while the appearance lock was
+  present. It received no lawful opportunity. At round 2 `Prepare`, the same
+  unit had the same resources, the lock was absent, and `IsAbleToAct=true`.
+  This is the first proven divergent boundary.
+- Scenario cleanup restored the exact 259-unit and three-party-member reference
+  snapshots and `Player.IsInCombat=false`; it did not write a save.
+- Focused source contract, runtime preflight (150 assertions), repository
+  validation, clean Release compilation, and the complete 1,289-test domain
+  suite passed while establishing the expected runtime failure.
+- No production behavior has been changed yet. Next action: add a pure,
+  fail-closed decision policy and a summon-rule postfix that corrects only a
+  genuine invocation whose live `AbilityData` is accelerated during its
+  caster's current turn.
