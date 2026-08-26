@@ -29,3 +29,22 @@
 This section will be updated with the immutable commit, package and DLL hashes,
 guarded run IDs, and any remaining human-only UI boundary after the applicable
 gates complete.
+
+## 2026-08-26 exact-reference pre-launch correction
+
+- The first guarded overhaul request stopped before deployment or game launch.
+  The runtime harness's exact-reference compiler correctly rejected the new
+  direct `Canvas` use because its private compiler list did not yet include the
+  installed `UnityEngine.UIModule.dll` forwarding target.
+- The project already declared the UI and text-rendering forwarding modules,
+  but the private-reference builder, exporter, provenance comparison, and
+  environment fingerprint were inconsistent. The exporter also omitted the
+  already-required `UnityEngine.AudioModule.dll` from its own source list.
+- Aligned those exact installed-engine reference surfaces and added active
+  repository validation for the three module names. No proprietary assembly is
+  committed or redistributed; the machine-local private bundle contains exact
+  hash-matched copies only.
+- Re-exported a private local reference bundle and reran repository validation,
+  all 1,278 domain/reflection tests, the exact-reference compiler, output,
+  SoundBank, and strict package gates successfully. Runtime qualification still
+  awaits a clean immutable commit.

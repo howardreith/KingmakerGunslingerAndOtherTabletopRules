@@ -123,6 +123,14 @@ def validate(root: Path) -> None:
         '<Content Include="..\\..\\assets\\bundles\\kingmakergunslinger.firearms">',
         '<Link>assets\\bundles\\kingmakergunslinger.firearms</Link>',
         "UnityEngine.UIModule.dll", "UnityEngine.TextRenderingModule.dll")
+    for exact_reference_surface in (
+            "tools/build_mod_from_private_references.py",
+            "scripts/ReferenceProvenance.Common.ps1",
+            "scripts/export-private-build-references.ps1",
+            "scripts/fingerprint-environment.ps1"):
+        require_tokens(root / exact_reference_surface,
+            "UnityEngine.AudioModule.dll", "UnityEngine.UIModule.dll",
+            "UnityEngine.TextRenderingModule.dll")
     require_tokens(root / (
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs"),
         '"disposable-overhaul-maintenance"',
