@@ -608,13 +608,21 @@
     "acadamaeFreshProcessPersistenceHumanGated": true,
     "overhaulPromptDeliveryRequired": true,
     "overhaulGameTimeMutationAllowed": false,
-    "overhaulRuntimeQualificationPending": true,
+    "overhaulRuntimeQualificationPending": false,
+    "overhaulRuntimeQualified": true,
     "summonMenuCanvasSafeBoundsRequired": true,
     "summonMenuOversizeScrollingRequired": true,
     "summonMenuObservationPending": true,
     "summonMenuHumanPresentationPending": true,
+    "expandedSummoningRuntimeQualified": true,
+    "expandedSummoningPersistenceQualified": true,
     "canonicalFatigueEscalationRequired": true,
-    "fatigueRuntimeQualificationPending": true,
-    "cordSingleSubstitutionRequired": true
+    "fatigueRuntimeQualificationPending": false,
+    "fatigueRuntimeQualified": true,
+    "fatiguePersistenceQualified": true,
+    "cordSingleSubstitutionRequired": true,
+    "featureModuleRestartQualified": true,
+    "cotwPresentAbsentQualified": true,
+    "changedSurfaceRuntimeScenarioPassCount": 19
   }
 }

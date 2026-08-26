@@ -26,9 +26,22 @@
 
 ## Qualification record
 
-This section will be updated with the immutable commit, package and DLL hashes,
-guarded run IDs, and any remaining human-only UI boundary after the applicable
-gates complete.
+The runtime-qualified code commit is
+`4d60cc4b8f968072f7becfacf1657f5b44a1bb20`. Its deterministic package and DLL
+SHA-256 values are
+`7D104DD2454E9158FF8DC39DFC2731A5619CFDC55192194CBA22A03F2B1F51A9`
+and `7C5AAC8EBCF040F9937878150204DAA1ABC5F5C18D788579939ACF86EC0A01B6`;
+the DLL MVID is `87208f20-6452-4018-ad2d-b0612e3b144b`. Repository validation,
+all 1,278 tests, the 147-check runtime preflight, clean Release, output,
+SoundBank, deterministic reconstruction, and strict package gates pass.
+
+Nineteen final guarded launches passed on that exact candidate: production
+overhaul; canonical fatigue; Acadamae; Cord; four broad/player/visual Expanded
+Summoning surfaces; three-launch Expanded Summoning persistence; three-launch
+fatigue persistence; working-save smoke; two feature-module restart states;
+and Call of the Wild present/absent isolated profiles. Exact run IDs are in the
+qualification report. The only remaining gate is the intentionally supervised
+actual-popup observation and human presentation/navigation check.
 
 ## 2026-08-26 exact-reference pre-launch correction
 
@@ -91,3 +104,45 @@ gates complete.
   output validation, SoundBank validation, deterministic packaging, strict
   package validation, and the expanded 147-check runtime preflight pass. Every
   applicable guarded surface will be rerun on the final immutable DLL.
+
+## 2026-08-26 native summon-duration qualification correction
+
+- The first exact final-source Expanded Summoning run failed only the stale
+  `<=121`-second runtime assertion while all 152 other assertions passed.
+- An untouched worktree at baseline
+  `970aeb7972dcb155d5789a636ba156e68d1c0d0a` reproduced the same failure under
+  run `20260826T0640593621603Z-3a3148e71d9e49f2b33681d594a68f87`, proving the
+  production change had not regressed summon duration.
+- Installed 2.1.7b IL showed `RuleSummonUnit.OnTrigger` applying the requested
+  `Duration + BonusDuration` and then adding a native six-second lifecycle
+  grace to `SummonedUnitBuff`. The old assertion also risked selecting an
+  appearance buff by name rather than the exact canonical fact.
+- The fixture now captures the rule's base and bonus duration at the native
+  boundary and validates the exact canonical `SummonedUnitBuff`: base 120,
+  bonus 0 in the CL20 case, native grace 6, remaining duration 126. A dirty
+  proof passed as
+  `20260826T0657543481748Z-e86f1110a88f4162bb3d582dcc7ea155`;
+  immutable-candidate run
+  `20260826T0725027650723Z-f68df60a65e3420f9f758eecf404009f`
+  passed all final assertions.
+
+## 2026-08-26 immutable guarded qualification
+
+- Overhaul, fatigue, Acadamae, Cord, Expanded Summoning inventory/mechanics,
+  player path, visual contracts, both three-launch persistence sequences,
+  working-save smoke, module settings, and optional-mod profiles all passed on
+  commit `4d60cc4b8f968072f7becfacf1657f5b44a1bb20`.
+- The first final inventory observer exceeded its inherited 120-second wrapper
+  bound but remained responsive and wrote a late PASS at 206.7 seconds. That
+  orchestration ERROR was not accepted. An evidence-supported 300-second rerun
+  passed as `20260826T0721073348067Z-c24d0cfd7da944ceb89443d07f786789`.
+- The two module configurations were all-on and
+  `off-off-on-off-on-on-on-on-on`, disabling only Gunslinger, Acadamae/Cord,
+  and Expanded Summoning. Both restarts passed and restored the original
+  feature settings byte-for-byte.
+- Isolated `gunslinger-call-of-the-wild` and `gunslinger-only` profiles passed,
+  and both transactions restored the original installed mod set, Call of the
+  Wild settings, and feature settings exactly.
+- The supervised `observe-expanded-summoning-variant-menu` run was not started
+  because its contract requires a human to place and open the actual menu. No
+  coordinate, OCR, mouse, keyboard, or uncontrolled UI automation was used.

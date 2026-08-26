@@ -5,50 +5,121 @@
 - Branch: `codex/overhaul-summon-menu-fatigue-escalation`
 - Authoritative baseline:
   `970aeb7972dcb155d5789a636ba156e68d1c0d0a`
-- Candidate commit: pending immutable source-qualified commit
-- Source-qualified package SHA-256:
-  `54C3C382DA502FFD1D0F3703D7B40551CCA476B381EFD191F8AC98BC9D80842C`
-- Source-qualified DLL SHA-256:
-  `A3D67D1FEBA183973D1B280A9E5A01F2A675A7B982171488C7509DE508B59AE6`
+- Runtime-qualified code commit:
+  `4d60cc4b8f968072f7becfacf1657f5b44a1bb20`
+- Version: `0.0.103`
+- Source-state SHA-256:
+  `7D04CB53CAFCBE7D719AF021DBBC0AC1C26A8202D226DECD92A0F1D04D9F1F29`
+- Deterministic package SHA-256:
+  `7D104DD2454E9158FF8DC39DFC2731A5619CFDC55192194CBA22A03F2B1F51A9`
+- DLL SHA-256:
+  `7C5AAC8EBCF040F9937878150204DAA1ABC5F5C18D788579939ACF86EC0A01B6`
+- DLL MVID: `87208f20-6452-4018-ad2d-b0612e3b144b`
 
-Generated packages, deployment files, saves, and raw runtime logs are excluded
-from the source commit.
+Generated packages, deployment files, saves, compatibility snapshots, and raw
+runtime logs are excluded from the source commit.
 
 ## Automated source and package gates
 
 - Focused overhaul, summon-menu, fatigue, Acadamae, Cord, Expanded Summoning,
-  and maintenance tests: PASS as part of the complete suite.
+  maintenance, persistence, compatibility, and runtime-safety tests: PASS as
+  part of the complete suite.
 - Version-aware repository validation: PASS.
-- Complete dependency-free domain/reflection suite: PASS, 1278/1278.
-- Clean exact-reference Release, output, SoundBank, deterministic package, and
-  strict package validation: PASS, with zero compile warnings/errors.
+- Complete dependency-free domain/reflection suite: PASS, 1,278/1,278
+  (derived deterministic test count `1278`).
+- Clean exact-reference Release, build-output, firearm asset, SoundBank,
+  deterministic package, and strict standalone-package validation: PASS with
+  zero compile warnings or errors.
 - Runtime-scenario preflight safety suite: PASS, 147 checks.
-- Identical-input package reconstruction: PASS; both archives have the package
-  hash recorded above.
+- Identical-input package reconstruction: PASS; both archives produced the
+  package hash recorded above.
 
 ## Guarded runtime
 
-Every real launch uses the guarded request mechanism through Steam App ID
-640820. Before the immutable commit, a dirty-source build of the exact source
-tree passed the focused canonical matrix plus a real three-launch persistence
-sequence on `KMG_AUTOMATION_WORKING`: prepare/save, reload/verify/cleanup/save,
-and reload/verify-absent with no write. These runs are engineering evidence;
-all final changed-surface runs and working-save smoke remain pending the clean
-immutable candidate. The menu scenario
-`observe-expanded-summoning-variant-menu` is deliberately supervised and
-read-only: a human must load `KMG_AUTOMATION_WORKING`, place the largest list
-near the top-left sidebar, and open it. The observer never sends input, selects
-an option, casts, or writes the save.
+Every real launch used the repository's guarded `-kmgRuntimeTestRequest`
+mechanism through Steam App ID 640820. Every final run reverified the exact
+`4d60cc4b8f968072f7becfacf1657f5b44a1bb20` deployment, package hash, DLL
+hash, MVID, and version before launch. Save-backed runs named only
+`KMG_AUTOMATION_WORKING`; none targeted `KMG_AUTOMATION_BASELINE`.
+
+| Scenario or configuration | Guarded run ID | Assertions | Result |
+| --- | --- | ---: | --- |
+| `disposable-overhaul-maintenance` | `20260826T0707415039849Z-b371696252aa420685c394c5440ae3c4` | 12 | PASS |
+| `disposable-fatigue-escalation` | `20260826T0710113137823Z-ca644ff4389b46c7b7e698ea0dc9dcad` | 11 | PASS |
+| `disposable-acadamae-graduate` | `20260826T0712222091136Z-3097f8ec4c864df9ac6edaeddca7e9de` | 20 | PASS |
+| `disposable-cord-of-stubborn-resolve` | `20260826T0714556893117Z-3f749c4f35894eaeae3424ca1a5f3ff2` | 12 | PASS |
+| `observe-expanded-summoning-inventory` | `20260826T0721073348067Z-c24d0cfd7da944ceb89443d07f786789` | 38 | PASS |
+| `disposable-expanded-summoning` | `20260826T0725027650723Z-f68df60a65e3420f9f758eecf404009f` | 12 | PASS |
+| `disposable-expanded-summoning-player-path` | `20260826T0728018151151Z-3828b2f5758440b2926794a4f88b6cbd` | 10 | PASS |
+| `disposable-expanded-summoning-visual-contracts` | `20260826T0738032502508Z-6c50f1be0a6b449795e02495da565681` | 13 | PASS |
+| `working-save-expanded-summoning-prepare` | `20260826T0740481657597Z-86a305d98efd4691a9ab8c592e87b92d` | 9 | PASS |
+| `working-save-expanded-summoning-verify-cleanup` | `20260826T0743288809663Z-ff29cd504c26421e8136e46dd573395e` | 9 | PASS |
+| `working-save-expanded-summoning-verify-absent` | `20260826T0746077068028Z-e06e6ed351e7476e9ff157150b5f97fb` | 9 | PASS |
+| `working-save-fatigue-prepare` | `20260826T0748458413126Z-0fe17a8af7f64089b4bbc25f70e0c2f8` | 7 | PASS |
+| `working-save-fatigue-verify-cleanup` | `20260826T0751167060504Z-06b7a5b9ad644c9c8d198adcfdd15356` | 7 | PASS |
+| `working-save-fatigue-verify-absent` | `20260826T0753485399175Z-4e42697af04a4d5592a08497daebc1b2` | 7 | PASS |
+| `working-save-smoke` | `20260826T0756232268147Z-c075a85e75124737a706085e78a61075` | 11 | PASS |
+| feature modules all enabled | `20260826T0759125719847Z-eff0d0e0fe054f05a58fbe70557468fe` | 13 | PASS |
+| Gunslinger, Acadamae/Cord, and Expanded Summoning disabled | `20260826T0801230569689Z-b653985794264bd199a436288451d208` | 13 | PASS |
+| Call of the Wild present | `20260826T0804232568857Z-fd1453b37a2947f3a1da29f9c473eb52` | 17 | PASS |
+| Call of the Wild absent (`gunslinger-only`) | `20260826T0806514821546Z-362c2e0aa1d84c868f2564d7186dea16` | 16 | PASS |
+
+The overhaul run used the production ability and proved availability out of
+combat, one prompt delivery with no pending iterator, unchanged `GameTime`,
+the same runtime firearm changing Wrecked to Broken, one kit consumed, no
+ammunition change, changed-context failure, idempotence, combat rejection, and
+one concise combat-log result.
+
+The canonical fatigue, Acadamae, and Cord runs proved fresh Fatigued, repeated
+Fatigued to one Exhausted fact, already-Exhausted stability, same-frame
+determinism, immunity and cancellation boundaries, duration preservation,
+independent/rest-removable Acadamae context, one Cord substitution and damage
+event, no recursion, no double penalties, and the 1-HP floor. The three-launch
+fatigue sequence then proved exact save/load persistence, native rest cleanup,
+and absence on a final no-write reload.
+
+Expanded Summoning runs proved all 153 production commands, converted-ability
+and spell-slot behavior, exact option publication/order, alignment/template
+contracts, actual creatures and effects, and native summon duration. Installed
+2.1.7b adds a six-second lifecycle grace to the requested 120-second duration;
+the final harness captures `RuleSummonUnit.Duration` and `BonusDuration`, then
+verifies that exact canonical `SummonedUnitBuff` rather than an appearance
+buff. The three-launch sequence proved the exact canonical fact persists,
+cleans up, and remains absent.
+
+The module matrix restored the original `FeatureModules.json` bytes and SHA-256
+`28B9589DB49EF977D2A033AA563052930A1D0E37E920689DB746BD0AF9108B59`
+after each restart. Both optional-mod profiles restored the installed mod set,
+Call of the Wild settings, and feature settings exactly.
+
+## Diagnostic outcomes not counted as qualification
+
+The first final inventory observation used the older default 120-second
+orchestration timeout. The game remained responsive and committed a late PASS
+after 206.7 seconds, but the orchestration result was ERROR and is not counted.
+The evidence-supported rerun used a 300-second bound and passed normally under
+run `20260826T0721073348067Z-c24d0cfd7da944ceb89443d07f786789`.
+
+An untouched-baseline run
+`20260826T0640593621603Z-3a3148e71d9e49f2b33681d594a68f87`
+reproduced the stale runtime assertion that expected the summoned-unit fact to
+expire within 121 seconds. Exact installed IL and the feature run showed that
+native `RuleSummonUnit.OnTrigger` adds six seconds to the canonical lifecycle;
+the assertion, not production summon mechanics, was corrected. A pre-commit
+proof run `20260826T0657543481748Z-e86f1110a88f4162bb3d582dcc7ea155`
+and the final immutable run both passed the corrected exact-fact contract.
 
 ## Evidence boundary
 
-Pure geometry tests cover top, middle, bottom, narrow, ultrawide, scale,
-oversize, short-native, repeat, third-party-height, and navigation policies.
-They are not a substitute for the actual rendered-view measurement. Until the
-supervised observer completes, final menu presentation and controller focus in
-the real player UI remain human-gated. This is the only expected manual
-mechanical/UI boundary; automatic guarded scenarios will qualify overhaul and
-canonical condition behavior.
+Pure geometry tests cover top, middle, bottom, narrow, ultrawide, UI scale,
+oversize, short-native, repeat-open, third-party-height, and navigation policy.
+The adapter and supervised observer are source- and build-qualified, but no
+autonomous test may place an icon and open the actual player popup. Therefore
+`observe-expanded-summoning-variant-menu` remains a deliberate supervised,
+read-only gate: a human must load `KMG_AUTOMATION_WORKING`, place the largest
+list near the top-left sidebar, and open it. The observer never sends input,
+selects an option, casts, or writes the save. Actual rendered bounds,
+mouse-wheel behavior, and controller focus remain the only uncertainty.
 
 ## Human acceptance
 

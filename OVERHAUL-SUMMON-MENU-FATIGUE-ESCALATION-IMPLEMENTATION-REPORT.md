@@ -131,6 +131,22 @@ on a third no-write launch. The fixed subject is `party[1]`; a pre-existing
 canonical Fatigued fact on `party[0]` is preserved and never treated as fixture
 state.
 
+Expanded Summoning duration qualification also follows the exact installed
+contract. Installed `RuleSummonUnit.OnTrigger` applies its requested `Duration`
+plus `BonusDuration`, then adds a six-second native lifecycle grace to the
+canonical `SummonedUnitBuff`. The guarded fixture captures those rule values
+and matches that exact blueprint fact; it does not infer duration from a buff
+name or treat the native grace as a KMG mechanics regression. An untouched
+0.0.102 baseline run reproduced the former stale 121-second assertion, while
+the corrected contract passed on the immutable 0.0.103 candidate.
+
+The immutable code commit passed 19 guarded Steam launches covering the three
+changed production surfaces, both save/load persistence loops, working-save
+smoke, enabled/disabled module restarts, and Call of the Wild present/absent
+profiles. The only remaining boundary is the supervised actual-popup
+presentation and navigation check; no autonomous coordinate or input
+automation was used.
+
 Qualification evidence, immutable commit identity, runtime run IDs, and final
 hashes are maintained in
 `docs/OVERHAUL-SUMMON-MENU-FATIGUE-ESCALATION-QUALIFICATION.md`.
