@@ -522,6 +522,7 @@ try {
         'disposable-in-harms-way-human-repro',
         'disposable-expanded-summoning',
         'disposable-expanded-summoning-player-path',
+        'summon-same-turn-activation',
         'disposable-expanded-summoning-visual-contracts',
         'disposable-brown-fur-native-cast',
         'weapon-presentation-motion-evidence',

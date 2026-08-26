@@ -67,6 +67,7 @@ $expected = @(
     'observe-expanded-summoning-variant-menu',
     'disposable-expanded-summoning',
     'disposable-expanded-summoning-player-path',
+    'summon-same-turn-activation',
     'disposable-expanded-summoning-visual-contracts',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
@@ -405,6 +406,15 @@ Assert-True $expandedSummoningPlayerPath.RequiresSaveName `
 Assert-True ($expandedSummoningPlayerPath.PermittedSaveName -ceq `
     'KMG_AUTOMATION_WORKING') `
     'expanded-summoning-player-path-only-permits-working-save'
+$summonSameTurnActivation = Get-KmgRuntimeScenarioMetadata `
+    'summon-same-turn-activation'
+Assert-True (-not $summonSameTurnActivation.RequiresManualInteraction) `
+    'summon-same-turn-activation-is-autonomous'
+Assert-True $summonSameTurnActivation.RequiresSaveName `
+    'summon-same-turn-activation-requires-save-name'
+Assert-True ($summonSameTurnActivation.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'summon-same-turn-activation-only-permits-working-save'
 $brownFurNativeCast = Get-KmgRuntimeScenarioMetadata `
     'disposable-brown-fur-native-cast'
 Assert-True (-not $brownFurNativeCast.RequiresManualInteraction) `

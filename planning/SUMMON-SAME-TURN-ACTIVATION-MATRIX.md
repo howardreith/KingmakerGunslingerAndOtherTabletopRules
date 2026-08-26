@@ -7,12 +7,12 @@ Status: NOT YET QUALIFIED
 | Ordinary unaccelerated native summon | Existing accepted scheduling and duration unchanged | Pending control |
 | Acadamae OFF | Native Full-Round timing; no Acadamae save/consequence | Pending control |
 | Acadamae ON | Standard action, one slot, one save/consequence, correct current-round summon opportunity | Pending reproduction |
-| Legitimate Quickened summon | Swift action, caster retains Standard/Move, correct current-round summon opportunity | Pending fixture proof |
+| Legitimate Quickened summon | Swift action, caster retains Standard/Move, correct current-round summon opportunity | Reproduced pre-fix: real path/resources PASS; current-round opportunity FAIL |
 | KMG Expanded Summoning | Real KMG choice follows the same general summon mechanism | Pending |
 | `1d3` or `1d4+1` | Every successful spawned unit receives exactly one initial opportunity | Pending |
 | Duplicate callback | Same unit/opportunity correlation becomes a no-op | Pending |
-| Following round | Native scheduling; no duplicate initiative, command, or activation | Pending |
-| Duration | Same-turn opportunity neither shortens nor extends native lifecycle | Pending |
+| Following round | Native scheduling; no duplicate initiative, command, or activation | Pre-fix control: same summon first becomes lawful in following round |
+| Duration | Same-turn opportunity neither shortens nor extends native lifecycle | Pre-fix FAIL: blueprint branch adds erroneous 6s (126 vs 120) |
 | RTwP | Native immediate AI behavior; no artificial turn state | Pending control |
 | Cancelled/failed summon | No spawned unit and no activation state | Pending control |
 | Non-summon spawn | Completely unaffected | Pending control |
@@ -32,6 +32,17 @@ first-action round, caster resources after spawn, and next-round scheduling.
 
 Exact installed equivalents replace guessed field names. A row cannot pass on
 visible behavior alone when native mechanical state is available.
+
+## Proven pre-fix boundary
+
+Guarded run `20260826T1445424590411Z-3b96e766c8b144449164781c019dcc51`
+used a real prepared Quickened Summon Monster I and exact invocation-context
+identity. Cast-round `TurnController.Prepare` observed
+`CanActInCombat=true`, all three action resources available,
+`SummonedUnitAppearBuff=true`, and `IsAbleToAct=false`. The same unit's next
+round `Prepare` observed the appearance lock absent and `IsAbleToAct=true`.
+Thus spawn, context, enrollment, initiative, and resource initialization all
+succeed; the blueprint-derived appearance lock is the first failing state.
 
 ## Pure policy cases
 
