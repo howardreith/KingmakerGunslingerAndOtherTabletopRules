@@ -177,3 +177,17 @@ actual-popup observation and human presentation/navigation check.
   development-control cases; the complete dependency-free run passes
   1,288/1,288. Final immutable package/runtime evidence and renewed human popup
   acceptance remain to be recorded.
+
+## 2026-08-26 acceptance-repair runtime fixture correction
+
+- The first immutable guarded `disposable-overhaul-maintenance` launch
+  `20260826T1202534929483Z-8394b35448304dacbb21ead16101dbe9` failed closed
+  before assertions or mutation because disposable main-menu scenarios run
+  before Kingmaker creates its PC `SelectionManager` singleton. The strict UMM
+  bridge correctly refused to invent a selected unit.
+- Kept the production bridge unchanged. The disposable scenario now creates
+  one hidden, non-saved exact native `SelectionManager` component only when the
+  singleton is absent, selects the temporary party fixture through its real
+  `SelectedUnits` collection, and destroys the component after restoring the
+  original selection. This is request-local qualification infrastructure; it
+  neither changes player selection fallback nor survives the scenario.

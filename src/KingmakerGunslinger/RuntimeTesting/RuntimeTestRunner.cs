@@ -7761,6 +7761,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
             Player player = Game.Instance.Player;
             Kingmaker.UI.Selection.SelectionManager selection = null;
+            GameObject selectionFixtureObject = null;
             UnitEntityData[] selectionBefore = null;
             UnitEntityData[] partyBefore = null;
             int kitsBefore = player.Inventory.Count(repairKit);
@@ -7809,8 +7810,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     player.Party.Add(unit);
                 selection = Kingmaker.UI.Selection.SelectionManager.Instance;
                 if (selection == null)
-                    throw new InvalidOperationException(
-                        "The exact PC SelectionManager was unavailable for the UMM development-control fixture.");
+                {
+                    selectionFixtureObject = new GameObject(
+                        "KMG Disposable SelectionManager Fixture");
+                    selectionFixtureObject.hideFlags =
+                        HideFlags.HideAndDontSave;
+                    selection = selectionFixtureObject.AddComponent<
+                        Kingmaker.UI.Selection.SelectionManager>();
+                    if (selection == null || !ReferenceEquals(selection,
+                            Kingmaker.UI.Selection.SelectionManager.Instance))
+                        throw new InvalidOperationException(
+                            "The disposable fixture could not establish the exact PC SelectionManager singleton.");
+                }
                 selectionBefore = selection.SelectedUnits.ToArray();
                 selection.SelectedUnits.Clear();
                 selection.SelectedUnits.Add(unit);
@@ -8020,6 +8031,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     selectionRestored = selection.SelectedUnits.Count ==
                             selectionBefore.Length &&
                         selection.SelectedUnits.SequenceEqual(selectionBefore);
+                }
+                if (selectionFixtureObject != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(
+                        selectionFixtureObject);
+                    selectionRestored = selectionRestored &&
+                        Kingmaker.UI.Selection.SelectionManager.Instance ==
+                            null;
                 }
                 if (partyBefore != null)
                 {

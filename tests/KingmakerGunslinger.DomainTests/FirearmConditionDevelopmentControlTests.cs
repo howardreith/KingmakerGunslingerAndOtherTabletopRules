@@ -193,6 +193,9 @@ namespace KingmakerGunslinger.DomainTests
                 "DevelopmentControls\n                    .WreckSelectedEquippedFirearmForDebug()",
                 "diagnosticOverhaulRecognized",
                 "development-control-repeat-rejected",
+                "new GameObject(\n                        \"KMG Disposable SelectionManager Fixture\")",
+                "AddComponent<\n                        Kingmaker.UI.Selection.SelectionManager>()",
+                "UnityEngine.Object.DestroyImmediate(\n                        selectionFixtureObject)",
                 "selection.SelectedUnits.AddRange(selectionBefore)",
                 "player.Party.AddRange(partyBefore)" })
                 Assertions.True(runner.Contains(token),
