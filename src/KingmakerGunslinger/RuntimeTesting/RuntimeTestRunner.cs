@@ -222,6 +222,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             new List<string>();
         private static readonly List<UnitEntityData>
             ExpandedSummoningRuleCapture = new List<UnitEntityData>();
+        private static readonly List<ExpandedSummoningDurationCapture>
+            ExpandedSummoningRuleDurationCapture =
+                new List<ExpandedSummoningDurationCapture>();
+
+        private sealed class ExpandedSummoningDurationCapture
+        {
+            internal UnitEntityData Unit;
+            internal TimeSpan BaseDuration;
+            internal TimeSpan BonusDuration;
+
+            internal TimeSpan TotalDuration
+            {
+                get { return BaseDuration + BonusDuration; }
+            }
+        }
 
         private sealed class ExpandedSummoningPlayerPathCase
         {
@@ -3136,16 +3151,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (UnitEntityData unit in units)
             {
                 Buff[] lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
-                    .Where(value => value.MaybeContext != null &&
+                    .Where(value => ReferenceEquals(value.Blueprint,
+                            BlueprintRoot.Instance.SystemMechanics
+                                .SummonedUnitBuff) &&
+                        value.MaybeContext != null &&
                         value.MaybeContext.MaybeCaster == caster &&
                         !value.IsPermanent && value.TimeLeft > TimeSpan.Zero &&
-                        value.TimeLeft <= TimeSpan.FromSeconds(121d)).ToArray();
+                        value.TimeLeft <= TimeSpan.FromSeconds(127d)).ToArray();
                 Buff[] durationLifecycle = lifecycle.Where(value =>
                     value.TimeLeft >= TimeSpan.FromSeconds(30d)).ToArray();
                 context = context && lifecycle.Length >= 1;
                 duration = duration && durationLifecycle.Any(value =>
                     value.TimeLeft.TotalSeconds > 0d &&
-                    value.TimeLeft.TotalSeconds <= 121d);
+                    value.TimeLeft.TotalSeconds <= 127d);
                 durations.AddRange(lifecycle.Select(value =>
                     value.TimeLeft.TotalSeconds));
             }
@@ -14086,6 +14104,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 durationExact = 0, legalPlacement = 0,
                 illegalPlacementRejected = 0;
             var observedCounts = new List<string>();
+            var durationObservations = new List<string>();
+            var durationProfiles = new HashSet<string>(StringComparer.Ordinal);
             ExpandedSummoningMechanicalEvidence mechanics = null;
             bool cleaned = false;
             string stage = "construct-fixture";
@@ -14283,14 +14303,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         oneD3Legal++;
                     else oneD4PlusOneLegal++;
                     if (exactKind) sameKind++;
-                    bool exactDuration = spawned.All(value => value.Descriptor
-                        .Buffs.RawFacts.OfType<Buff>().Any(buff =>
-                            ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance
-                                .SystemMechanics.SummonedUnitBuff) &&
-                            buff.MaybeContext != null &&
-                            buff.MaybeContext.MaybeCaster == caster &&
-                            !buff.IsPermanent && buff.TimeLeft > TimeSpan.Zero &&
-                            buff.TimeLeft <= TimeSpan.FromSeconds(121d)));
+                    bool exactDuration = true;
+                    foreach (UnitEntityData value in spawned)
+                    {
+                        string durationObservation;
+                        bool unitDurationExact =
+                            ExpandedSummoningDurationExact(value, caster,
+                                out durationObservation);
+                        exactDuration = exactDuration && unitDurationExact;
+                        durationProfiles.Add(durationObservation);
+                        if (!unitDurationExact &&
+                            durationObservations.Count < 12)
+                            durationObservations.Add(variant.StableKey + ":" +
+                                durationObservation);
+                    }
                     if (exactDuration) durationExact++;
                     observedCounts.Add(variant.StableKey + "=" + count);
                     foreach (UnitEntityData unit in spawned)
@@ -14346,7 +14372,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";d3=" + oneD3Legal + "/" + oneD3.Length + ";d4plus1=" +
                 oneD4PlusOneLegal + "/" + oneD4PlusOne.Length +
                 ";sameKind=" + sameKind + ";spawned=" + spawnedTotal +
-                ";duration=" + durationExact + ";legalPlacement=" +
+                ";duration=" + durationExact + ";durationProfiles=" +
+                string.Join("|", durationProfiles.OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray()) + ";legalPlacement=" +
                 legalPlacement + ";illegalPlacement=" +
                 illegalPlacementRejected + ";mechanicalCasts=" +
                 (mechanics == null ? 0 : mechanics.AdditionalCasts) +
@@ -14374,7 +14402,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-caster-level-duration", "153/153",
                     durationExact + "/" + casts.Length,
                     durationExact == casts.Length,
-                    "exact native SummonedUnitBuff context with CL20 duration bounded to 120 seconds"),
+                    "exact canonical lifecycle fact matched each native RuleSummonUnit CL20 base duration, BonusDuration, and six-second summon lifecycle grace"),
                 Assertion("expanded-summoning-placement-validation", "153 legal and 153 far points require approach",
                     "legal=" + legalPlacement + ";farRequiresApproach=" +
                         illegalPlacementRejected,
@@ -14415,6 +14443,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
             result.Diagnostics.Add(observed);
             result.Diagnostics.Add("counts=" + string.Join(",", observedCounts.ToArray()));
+            foreach (string observation in durationObservations)
+                result.Diagnostics.Add("duration=" + observation);
             if (mechanics != null)
                 foreach (string diagnostic in mechanics.Diagnostics)
                     result.Diagnostics.Add("mechanics=" + diagnostic);
@@ -15035,7 +15065,71 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (!_expandedSummoningRuleCaptureActive || __instance == null ||
                 __instance.SummonedUnit == null) return;
+            if (ExpandedSummoningRuleCapture.Count == 0)
+                ExpandedSummoningRuleDurationCapture.Clear();
             ExpandedSummoningRuleCapture.Add(__instance.SummonedUnit);
+            ExpandedSummoningRuleDurationCapture.Add(
+                new ExpandedSummoningDurationCapture
+                {
+                    Unit = __instance.SummonedUnit,
+                    BaseDuration = __instance.Duration.Seconds,
+                    BonusDuration = __instance.BonusDuration.Seconds
+                });
+        }
+
+        private static bool ExpandedSummoningDurationExact(
+            UnitEntityData unit, UnitEntityData caster,
+            out string observation)
+        {
+            ExpandedSummoningDurationCapture[] captures =
+                ExpandedSummoningRuleDurationCapture.Where(value =>
+                    ReferenceEquals(value.Unit, unit)).ToArray();
+            BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
+                .SummonedUnitBuff;
+            Buff[] lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint, summoned))
+                .ToArray();
+            ExpandedSummoningDurationCapture capture = captures.Length == 1 ?
+                captures[0] : null;
+            Buff buff = lifecycle.Length == 1 ? lifecycle[0] : null;
+            TimeSpan baseDuration = capture == null ? TimeSpan.Zero :
+                capture.BaseDuration;
+            TimeSpan bonusDuration = capture == null ? TimeSpan.Zero :
+                capture.BonusDuration;
+            TimeSpan expected = capture == null ? TimeSpan.Zero :
+                capture.TotalDuration;
+            TimeSpan remaining = buff == null ? TimeSpan.Zero : buff.TimeLeft;
+            TimeSpan nativeLifecycleGrace = remaining - expected;
+            bool exact = capture != null && buff != null &&
+                baseDuration >= TimeSpan.FromSeconds(119d) &&
+                baseDuration <= TimeSpan.FromSeconds(121d) &&
+                bonusDuration >= TimeSpan.Zero &&
+                buff.MaybeContext != null &&
+                buff.MaybeContext.MaybeCaster == caster &&
+                buff.MaybeContext.Params.CasterLevel == 20 &&
+                !buff.IsPermanent && remaining > TimeSpan.Zero &&
+                nativeLifecycleGrace >= TimeSpan.FromSeconds(5d) &&
+                nativeLifecycleGrace <= TimeSpan.FromSeconds(7d);
+            observation = "captures=" + captures.Length + ",facts=" +
+                lifecycle.Length + ",base=" + baseDuration.TotalSeconds
+                    .ToString("0.###", System.Globalization.CultureInfo
+                        .InvariantCulture) + ",bonus=" +
+                bonusDuration.TotalSeconds.ToString("0.###",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ",expected=" + expected.TotalSeconds.ToString("0.###",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ",nativeGrace=" + nativeLifecycleGrace.TotalSeconds.ToString(
+                    "0.###", System.Globalization.CultureInfo
+                        .InvariantCulture) +
+                ",remaining=" + remaining.TotalSeconds.ToString("0.###",
+                    System.Globalization.CultureInfo.InvariantCulture) +
+                ",context=" + (buff != null && buff.MaybeContext != null) +
+                ",caster=" + (buff != null && buff.MaybeContext != null &&
+                    buff.MaybeContext.MaybeCaster == caster) + ",cl=" +
+                (buff == null || buff.MaybeContext == null ? -1 :
+                    buff.MaybeContext.Params.CasterLevel) + ",permanent=" +
+                (buff != null && buff.IsPermanent);
+            return exact;
         }
 
         private static string DescribeExpandedSummoningReferences(
