@@ -520,7 +520,7 @@
     "acadamaeFreshProcessPersistenceHumanGated": true
   },
   "overhaulSummonFatigue103": {
-    "deterministicTestCount": 1278,
+    "deterministicTestCount": 1288,
     "featureModuleCount": 9,
     "featureModuleSchemaVersion": 8,
     "featureModuleExhaustiveCount": 512,

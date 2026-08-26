@@ -58,6 +58,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />
     <Compile Include="SummonVariantMenuLayoutTests.cs" />
+    <Compile Include="FirearmConditionDevelopmentControlTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Development\FirearmConditionFixturePolicy.cs"><Link>Development\FirearmConditionFixturePolicy.cs</Link></Compile>
     <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
     <Compile Include="ExpandedSummoningIdentityCatalogTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
