@@ -13,7 +13,7 @@
   becomes one Exhausted condition, Acadamae uses the shared path, and Cord
   substitution remains once per resolved incoming effect.
 - Adds focused geometry, condition-policy, installed-contract, and guarded
-  actual-path coverage; the complete dependency-free suite contains 1,278
+  actual-path coverage; the complete dependency-free suite contains 1,288
   passing tests.
 
 ## 0.0.102-starter-bokken-combat-log-acadamae-toggle

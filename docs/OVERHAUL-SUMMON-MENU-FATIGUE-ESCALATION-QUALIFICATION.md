@@ -250,3 +250,12 @@ fractional size drift that previously threw. Repository validation and the
 complete 1,288-test suite pass, as do clean Release, output, asset, SoundBank,
 package, and strict-package validation. Final in-game appearance remains a
 human acceptance boundary.
+
+## Final human acceptance
+
+The owner tested the installed 0.0.103 candidate from commit
+`6e2ca58b0542115dd28616c46750c6b4ccda4800`, whose installed DLL SHA-256 was
+`70342D53CA720BB46ED9BA0D8329F5631DB4D0B3FFA319E6F2D42F1926B5CFA9`, and
+reported success. The owner then explicitly approved merge and release. This
+closes the remaining Expanded Summoning popup presentation boundary. All prior
+automated and guarded evidence remains unchanged and additive.
