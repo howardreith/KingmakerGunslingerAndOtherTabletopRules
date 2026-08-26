@@ -9,11 +9,17 @@ $common = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'RuntimeAutomat
 $checks = [ordered]@{
     'scenario-save-free' = $catalog.Contains('DisposableGunslingerMulticlassCommit') -and
         $common.Contains("'disposable-gunslinger-multiclass-commit'")
-    'fighter-seed' = $runner.Contains('new object[] { fighter, false }') -and
-        $runner.Contains('fighterSeeded == 1')
+    'bard-seed' = $runner.Contains('new object[] { bard, false }') -and
+        $runner.Contains('bardSeeded == 1')
     'native-commit' = $runner.Contains('commit.Invoke(multiclass, null)') -and
         $runner.Contains('committedGunslinger == 1 && callback')
     'level-one-facts' = $runner.Contains('proficiencies && grit')
+    'starter-transaction' = $runner.Contains('multiclass-starter-inventory-transaction') -and
+        $runner.Contains('pistolAfterCommit ==') -and $runner.Contains('powderDelta == 20') -and
+        $runner.Contains('ballDelta == 20') -and $runner.Contains('kitDelta == 1')
+    'archetype-starters' = $runner.Contains('Bard 1/Pistolero 1') -and
+        $runner.Contains('Bard 1/Musket Master 1') -and
+        $runner.Contains('multiclass-archetype-starters')
     'expanded-isolation' = $runner.Contains('SameReferences(remoteBefore') -and
         $runner.Contains('SameReferences(crossBefore') -and
         $runner.Contains('SameReferences(inventoryBefore')

@@ -66,9 +66,12 @@ namespace KingmakerGunslinger.DomainTests
                 "AcadamaeCastingPatches.cs"));
             Assertions.True(casting.Contains("AccelerationModeActive =") &&
                 casting.Contains("AcadamaeGraduateMode.Marker") &&
+                casting.Contains("ResolveEffectiveModeState(ability)") &&
+                casting.Contains("matches[0].IsOn") &&
+                casting.Contains("AccelerationModeActive = mode.Active") &&
                 casting.Contains("eligibility.decision") &&
                 casting.Contains("constructor=three-argument-authoritative") &&
-                casting.Contains("preRequireFullRound={23}") &&
+                casting.Contains("preRequireFullRound={") &&
                 casting.Contains("Buffs.AddBuff(\n                    _fatigued, rule.Initiator, null)") &&
                 casting.Contains("fatigue.MakePermanent()") &&
                 casting.Contains("AcadamaeSavingThrowTestCompletionPatch") &&
@@ -89,7 +92,7 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("spellBlueprintContract"),
                 "Acadamae qualification must reproduce the UI-detached canonical node, exercise the real player command, and record the exact spell contract.");
             Assertions.True(casting.Contains("ResolveCanonicalInvocation") &&
-                casting.Contains("if (HasAcadamaeModeOwner(ability) &&") &&
+                casting.Contains("if (mode.Active &&") &&
                 casting.Contains("memorized-blueprint-identity") &&
                 casting.Contains("GetMemorizedSpellSlots(level)") &&
                 casting.Contains("ability.ParamSpellSlot = invocation.Slot") &&
@@ -425,7 +428,7 @@ namespace KingmakerGunslinger.DomainTests
                 "state.Owner.Unit.HPLeft - 1",
                 "new DiceFormula(0, DiceType.D6), amount",
                 "IgnoreDamageReduction = true",
-                "IWarningNotificationUIHandler",
+                "NativeCombatLog.Publish(\"cord\"",
                 "[HarmonyPatch(typeof(BuffCollection), \"TriggerRuleApplyBuff\"",
                 ".OfType<AddCondition>()",
                 "component.Condition",
@@ -440,6 +443,9 @@ namespace KingmakerGunslinger.DomainTests
                 "state.AddCondition(UnitCondition.Fatigued, source)" })
                 Assertions.True(source.Contains(token),
                     "Cord native condition hook lacks exact token: " + token);
+            Assertions.False(source.Contains("IWarningNotificationUIHandler") ||
+                source.Contains("HandleWarning"),
+                "Routine Cord outcomes must not use the warning overlay.");
         }
 
         private static AcadamaeCastRequest Valid()

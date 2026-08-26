@@ -1,8 +1,8 @@
 using System;
 using System.Globalization;
 using System.Threading;
-using Kingmaker.PubSubSystem;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Diagnostics;
 
 namespace KingmakerGunslinger.Spells.ShieldOther
 {
@@ -14,6 +14,7 @@ namespace KingmakerGunslinger.Spells.ShieldOther
 
         internal static long Published { get { return Interlocked.Read(ref _published); } }
         internal static long Faults { get { return Interlocked.Read(ref _faults); } }
+        internal static long Attempts { get { return Published + Faults; } }
         internal static string LastMessage { get { return _lastMessage; } }
 
         internal static bool Publish(string subjectName, string casterName, int amount)
@@ -22,24 +23,16 @@ namespace KingmakerGunslinger.Spells.ShieldOther
                 "Shield Other transfers {0} damage from {1} to {2}.",
                 amount, Normalize(subjectName, "the protected ally"),
                 Normalize(casterName, "the caster"));
-            try
+            _lastMessage = message;
+            if (NativeCombatLog.Publish("shield-other", "transfer-log.failed",
+                    message,
+                    "Shield Other transferred damage, but its native combat-log entry failed."))
             {
-                EventBus.RaiseEvent<IWarningNotificationUIHandler>(
-                    handler => handler.HandleWarning(message, false));
-                _lastMessage = message;
                 Interlocked.Increment(ref _published);
                 return true;
             }
-            catch (Exception exception)
-            {
-                Interlocked.Increment(ref _faults);
-                ModContext context;
-                if (ModContext.TryGet(out context))
-                    context.Logger.Failure("shield-other", "transfer-log.failed",
-                        "Shield Other transferred damage, but its combat-log notification failed.",
-                        exception);
-                return false;
-            }
+            Interlocked.Increment(ref _faults);
+            return false;
         }
 
         private static string Normalize(string value, string fallback)

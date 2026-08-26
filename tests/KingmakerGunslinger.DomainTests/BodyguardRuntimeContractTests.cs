@@ -506,7 +506,7 @@ namespace KingmakerGunslinger.DomainTests
                 probe.Contains("new RuleSavingThrow(") &&
                 probe.Contains("Rulebook.Trigger(saving)") &&
                 probe.Contains("BodyguardQualificationDamageProbe") &&
-                fixture.Contains("BodyguardCombatLog.Published") &&
+                fixture.Contains("BodyguardCombatLog.Attempts") &&
                 scenario.Contains("CombatLogLastMessage") &&
                 scenario.Contains("DamageKinds.Any") &&
                 scenario.Contains("DamageEvents.Length == 1") &&

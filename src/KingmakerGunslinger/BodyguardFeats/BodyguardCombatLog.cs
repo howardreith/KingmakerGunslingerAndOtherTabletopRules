@@ -1,8 +1,8 @@
 using System;
 using System.Globalization;
 using System.Threading;
-using Kingmaker.PubSubSystem;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Diagnostics;
 
 namespace KingmakerGunslinger.BodyguardFeats
 {
@@ -14,6 +14,7 @@ namespace KingmakerGunslinger.BodyguardFeats
 
         internal static long Published { get { return Interlocked.Read(ref _published); } }
         internal static long Faults { get { return Interlocked.Read(ref _faults); } }
+        internal static long Attempts { get { return Published + Faults; } }
         internal static string LastMessage { get { return _lastMessage; } }
 
         internal static bool PublishAttempt(string protector, string ally,
@@ -21,13 +22,13 @@ namespace KingmakerGunslinger.BodyguardFeats
             int armorClassContribution)
         {
             string message = string.Format(CultureInfo.InvariantCulture,
-                "{0} spends an attack of opportunity to Bodyguard {1} against {2}: {3} + {4} = {5} vs AC 10 ({6}{7}).",
+                "Bodyguard: {0} aids {1} against {2}. {3} + {4} = {5} vs AC 10 - {6}{7}.",
                 Normalize(protector, "The protector"),
                 Normalize(ally, "the ally"), Normalize(attacker, "the attacker"),
                 naturalRoll, attackBonus, naturalRoll + attackBonus,
-                success ? "success" : "failure", success ? "; +" +
+                success ? "success" : "failed", success ? " (+" +
                     armorClassContribution.ToString(CultureInfo.InvariantCulture) +
-                    " AC" : "");
+                    " AC)" : "");
             return Publish(message, "attempt-log.failed");
         }
 
@@ -35,11 +36,11 @@ namespace KingmakerGunslinger.BodyguardFeats
             string attacker, bool nextTurnSwiftDebt)
         {
             string message = string.Format(CultureInfo.InvariantCulture,
-                "{0} spends an immediate action for In Harm's Way: {1}'s attack remains a hit, and its complete delivery moves from {2} to {0}.{3}",
+                "In Harm's Way: {0} intercepts {1}'s attack on {2}.{3}",
                 Normalize(protector, "The protector"),
                 Normalize(attacker, "The attacker"),
                 Normalize(ally, "the protected ally"), nextTurnSwiftDebt ?
-                    " The next actual turn's swift action is consumed." :
+                    " Swift action owed." :
                     string.Empty);
             return Publish(message, "interception-log.failed");
         }
@@ -48,7 +49,7 @@ namespace KingmakerGunslinger.BodyguardFeats
             string reason)
         {
             string message = string.Format(CultureInfo.InvariantCulture,
-                "{0} cannot use In Harm's Way: {1}",
+                "In Harm's Way unavailable for {0}: {1}",
                 Normalize(protector, "The protector"),
                 Explain(reason));
             return Publish(message, "immediate-unavailable-log.failed");
@@ -56,24 +57,15 @@ namespace KingmakerGunslinger.BodyguardFeats
 
         private static bool Publish(string message, string faultCode)
         {
-            try
+            _lastMessage = message;
+            if (NativeCombatLog.Publish("bodyguard", faultCode, message,
+                    "The combat reaction committed, but its native combat-log entry failed."))
             {
-                EventBus.RaiseEvent<IWarningNotificationUIHandler>(
-                    handler => handler.HandleWarning(message, true));
-                _lastMessage = message;
                 Interlocked.Increment(ref _published);
                 return true;
             }
-            catch (Exception exception)
-            {
-                Interlocked.Increment(ref _faults);
-                ModContext context;
-                if (ModContext.TryGet(out context))
-                    context.Logger.Failure("bodyguard", faultCode,
-                        "The combat reaction committed, but its player-facing log failed.",
-                        exception);
-                return false;
-            }
+            Interlocked.Increment(ref _faults);
+            return false;
         }
 
         private static string Normalize(string value, string fallback)
@@ -86,13 +78,13 @@ namespace KingmakerGunslinger.BodyguardFeats
                 case "protector-flat-footed":
                     return "it is flat-footed.";
                 case "immediate-debt-pending-next-turn":
-                    return "an immediate action was already used and its next actual turn's swift action is charged.";
+                    return "its next turn's swift action is already owed.";
                 case "immediate-debt-charged-turn":
-                    return "an immediate action was already used and this turn's swift action is unavailable.";
+                    return "this turn's swift action is unavailable.";
                 case "swift-action-spent-this-turn":
-                    return "its swift action for this turn has already been spent.";
+                    return "its swift action was already spent.";
                 case "swift-cooldown-active":
-                    return "the shared swift/immediate-action cooldown is active.";
+                    return "the swift-action cooldown is active.";
                 case "protector-dead":
                     return "it is dead.";
                 case "protector-unconscious":
@@ -101,8 +93,7 @@ namespace KingmakerGunslinger.BodyguardFeats
                 case "protector-unable-to-act":
                     return "it is incapacitated.";
                 default:
-                    return "the immediate-action contract is unavailable (" +
-                        Normalize(reason, "unknown reason") + ").";
+                    return "the immediate action is unavailable.";
             }
         }
     }

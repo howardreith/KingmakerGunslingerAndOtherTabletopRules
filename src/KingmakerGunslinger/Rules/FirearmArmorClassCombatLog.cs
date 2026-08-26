@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
-using Kingmaker.PubSubSystem;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Diagnostics;
 using KingmakerGunslinger.Firearms;
 
 namespace KingmakerGunslinger.Rules
@@ -14,6 +14,7 @@ namespace KingmakerGunslinger.Rules
 
         internal static long Published { get { return Interlocked.Read(ref _published); } }
         internal static long Faults { get { return Interlocked.Read(ref _faults); } }
+        internal static long Attempts { get { return Published + Faults; } }
         internal static string LastMessage { get { return _lastMessage; } }
 
         internal static bool Publish(FirearmDefinition definition,
@@ -24,24 +25,16 @@ namespace KingmakerGunslinger.Rules
                 definition, distanceMeters,
                 decision.EffectivePenetrationRangeFeet,
                 decision.UsesTouchArmorClass, decision.Reason);
-            try
+            _lastMessage = message;
+            if (NativeCombatLog.Publish("firearms", "ac-player-log.failed",
+                    message,
+                    "The firearm AC branch committed, but its native combat-log annotation failed."))
             {
-                EventBus.RaiseEvent<IWarningNotificationUIHandler>(
-                    handler => handler.HandleWarning(message, false));
-                _lastMessage = message;
                 Interlocked.Increment(ref _published);
                 return true;
             }
-            catch (Exception exception)
-            {
-                Interlocked.Increment(ref _faults);
-                ModContext context;
-                if (ModContext.TryGet(out context))
-                    context.Logger.Failure("firearms", "ac-player-log.failed",
-                        "The firearm AC branch committed, but its player-facing battle-log annotation failed.",
-                        exception);
-                return false;
-            }
+            Interlocked.Increment(ref _faults);
+            return false;
         }
     }
 }

@@ -7,6 +7,14 @@ $root = Split-Path -Parent $PSScriptRoot
 $catalog = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestScenarioCatalog.cs')
 $runner = Get-Content -Raw -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs')
 $common = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
+$start = $runner.IndexOf(
+    'private RuntimeTestResult RunDisposableGunslingerRespecPreview()')
+$end = $runner.IndexOf(
+    'private RuntimeTestResult RunDisposableGunslingerCreationCommit()', $start)
+if ($start -lt 0 -or $end -le $start) {
+    throw 'Respec preview method is unavailable.'
+}
+$method = $runner.Substring($start, $end - $start)
 $checks = [ordered]@{
     'scenario-allowlisted' = $catalog.Contains('DisposableGunslingerRespecPreview') -and
         $common.Contains("'disposable-gunslinger-respec-preview'")
@@ -18,13 +26,9 @@ $checks = [ordered]@{
     'gunslinger-respec-preview' = $runner.Contains('previewFighterBefore == 0') -and
         $runner.Contains('previewGunslingerAfter == 1') -and
         $runner.Contains('sourceFighterAfter == 1 && sourceGunslingerAfter == 0')
-    'no-commit' = -not $runner.Substring($runner.IndexOf(
-        'private RuntimeTestResult RunDisposableGunslingerRespecPreview()')).Contains(
-        'GetMethod("Commit"')
+    'no-commit' = -not $method.Contains('GetMethod("Commit"')
     'body-preserved' = $runner.Contains('ReferenceEquals(originalBody, respecDescriptor.Body)') -and
-        -not $runner.Substring($runner.IndexOf(
-            'private RuntimeTestResult RunDisposableGunslingerRespecPreview()')).Contains(
-                'entity.PrepareRespec()')
+        -not $method.Contains('entity.PrepareRespec()')
     'external-isolation' = $runner.Contains('Exact isolated Respec preview is unavailable.') -and
         $runner.Contains('controllers canceled and both disposable entities disposed')
 }
