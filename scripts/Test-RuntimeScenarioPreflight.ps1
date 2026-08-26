@@ -73,6 +73,9 @@ $expected = @(
     'disposable-cord-of-stubborn-resolve',
     'disposable-acadamae-graduate',
     'disposable-fatigue-escalation',
+    'working-save-fatigue-prepare',
+    'working-save-fatigue-verify-cleanup',
+    'working-save-fatigue-verify-absent',
     'disposable-focused-aim',
     'disposable-firearm-penetration',
     'disposable-firearm-wwise-audio',
@@ -386,6 +389,13 @@ $fatigueEscalation = Get-KmgRuntimeScenarioMetadata `
 Assert-True (-not $fatigueEscalation.RequiresManualInteraction -and
     -not $fatigueEscalation.RequiresSaveName) `
     'fatigue-escalation-is-autonomous-save-free'
+$fatiguePersistence = Get-KmgRuntimeScenarioMetadata `
+    'working-save-fatigue-prepare'
+Assert-True (-not $fatiguePersistence.RequiresManualInteraction -and
+    $fatiguePersistence.RequiresSaveName -and
+    $fatiguePersistence.PermittedSaveName -ceq `
+        'KMG_AUTOMATION_WORKING') `
+    'fatigue-persistence-is-guarded-working-save-only'
 $expandedSummoningPlayerPath = Get-KmgRuntimeScenarioMetadata `
     'disposable-expanded-summoning-player-path'
 Assert-True (-not $expandedSummoningPlayerPath.RequiresManualInteraction) `
@@ -644,6 +654,10 @@ Assert-True ($orchestrator.Contains("'disposable-brown-fur-native-cast',")) `
 Assert-True ($orchestrator.Contains("'working-save-brown-fur-prepare',") -and
     $orchestrator.Contains("'working-save-brown-fur-verify-cleanup',")) `
     'brown-fur-persistence-uses-working-save-result-deadline'
+Assert-True ($orchestrator.Contains("'working-save-fatigue-prepare',") -and
+    $orchestrator.Contains("'working-save-fatigue-verify-cleanup',") -and
+    $orchestrator.Contains("'working-save-fatigue-verify-absent',")) `
+    'fatigue-persistence-uses-working-save-result-deadline'
 
 $artifactRoot = Join-Path $root 'artifacts'
 $backupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod'

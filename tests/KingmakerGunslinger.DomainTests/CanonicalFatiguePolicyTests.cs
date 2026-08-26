@@ -176,11 +176,14 @@ namespace KingmakerGunslinger.DomainTests
                 "unit.Descriptor.Buffs.AddBuff(fatigued",
                 "unit.Descriptor.Buffs.AddBuff(exhausted",
                 "AddConditionImmunity(\n                    UnitCondition.Fatigued)",
-                "UnitSerialization.Serialize(unit.Descriptor)",
-                "ToObject<\n                    UnitDescriptor>()",
-                "Buffs.SetupPreview(\n                        serializedDescriptor)",
-                "serializedUnit.Dispose()",
                 "RestController.ApplyRest",
+                "StartFatiguePersistence()",
+                "WorkingSaveFatiguePrepare",
+                "WorkingSaveFatigueVerifyCleanup",
+                "WorkingSaveFatigueVerifyAbsent",
+                "CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(\n                        target.Descriptor.Buffs, fatigued, target)",
+                "_workingSaveSmoke.ArmExactWorkingSaveWrite()",
+                "freshly deserialized native BuffCollection",
                 "secondFailureEscalated",
                 "exhaustedRepeatStable",
                 "canonicalRepeated",
@@ -191,6 +194,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(runner.Contains(
                     "JsonConvert.SerializeObject(\n                    permanentExhaustion"),
                 "A live Buff cannot be serialized as a standalone native save root.");
+            Assertions.False(runner.Contains(
+                    "UnitSerialization.Serialize(unit.Descriptor)"),
+                "Kingmaker's preview UnitSerialization strips BuffCollection and cannot prove save persistence.");
             string catalog = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs"));
@@ -199,10 +205,33 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeAutomation.Common.ps1"));
             Assertions.True(catalog.Contains(
                     "\"disposable-fatigue-escalation\"") &&
+                catalog.Contains("\"working-save-fatigue-prepare\"") &&
+                catalog.Contains(
+                    "\"working-save-fatigue-verify-cleanup\"") &&
+                catalog.Contains(
+                    "\"working-save-fatigue-verify-absent\"") &&
                 automation.Contains(
                     "'disposable-fatigue-escalation' = [pscustomobject]@{") &&
+                automation.Contains(
+                    "'working-save-fatigue-prepare' = [pscustomobject]@{") &&
                 automation.Contains("RequiresManualInteraction = $false"),
                 "The focused fatigue scenario is not safely guarded and cataloged.");
+            string orchestrator = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "scripts",
+                "Invoke-FatigueWorkingSavePersistence.ps1"));
+            foreach (string token in new[] {
+                "[ValidateSet('KMG_AUTOMATION_WORKING')]",
+                "working-save-fatigue-prepare",
+                "working-save-fatigue-verify-cleanup",
+                "working-save-fatigue-verify-absent",
+                "-ReuseInstalledArtifact",
+                "Wait-ForGuardedKingmakerExit" })
+                Assertions.True(orchestrator.Contains(token),
+                    "Fatigue persistence orchestrator lacks guarded token: " +
+                    token);
+            Assertions.False(orchestrator.Contains("Kingmaker.exe") ||
+                orchestrator.Contains("KMG_AUTOMATION_BASELINE"),
+                "Fatigue persistence orchestration must preserve the guarded Steam working-save boundary.");
         }
 
         private static void Assert(CanonicalFatigueState before,

@@ -144,6 +144,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-acadamae-graduate";
         internal const string DisposableFatigueEscalation =
             "disposable-fatigue-escalation";
+        internal const string WorkingSaveFatiguePrepare =
+            "working-save-fatigue-prepare";
+        internal const string WorkingSaveFatigueVerifyCleanup =
+            "working-save-fatigue-verify-cleanup";
+        internal const string WorkingSaveFatigueVerifyAbsent =
+            "working-save-fatigue-verify-absent";
         internal const string DisposableFocusedAim =
             "disposable-focused-aim";
         internal const string DisposableFirearmPenetration =
@@ -403,6 +409,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableCordOfStubbornResolve,
                 DisposableAcadamaeGraduate,
                 DisposableFatigueEscalation,
+                WorkingSaveFatiguePrepare,
+                WorkingSaveFatigueVerifyCleanup,
+                WorkingSaveFatigueVerifyAbsent,
                 DisposableFocusedAim,
                 DisposableFirearmPenetration,
                 ObserveRareFirearmAcquisition,
