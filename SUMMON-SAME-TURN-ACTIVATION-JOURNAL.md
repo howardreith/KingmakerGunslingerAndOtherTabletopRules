@@ -82,3 +82,53 @@
   fail-closed decision policy and a summon-rule postfix that corrects only a
   genuine invocation whose live `AbilityData` is accelerated during its
   caster's current turn.
+
+## 2026-08-26 - narrow repair and first fixed player-path PASS
+
+- Added a stateless, fail-closed policy plus a Harmony 1.2 postfix on the exact
+  installed `RuleSummonUnit.OnTrigger(RulebookEventContext)` boundary. The
+  runtime requires a real summoning spell with a spellbook, exact invocation
+  caster/context identity, turn-based combat, the caster's still-active turn,
+  a live invocation that is no longer Full-Round, an immutable blueprint that
+  remains Full-Round, and the canonical summon lifecycle/context chain.
+- The repair does not insert a turn, assign initiative, run a command, advance
+  combat, or mutate caster cooldowns. It removes the exact canonical
+  `SummonedUnitAppearBuff` and subtracts only the exact native six-second grace
+  from `SummonedUnitBuff`. Owlcat's existing combat enrollment, initiative,
+  `TurnController`, action resources, and AI then provide the lawful turn.
+- A first diagnostic attempt returned `CasterMismatch`: installed
+  `AbilityData.Caster` is the caster descriptor, while `RuleSummonUnit.Initiator`
+  is the unit. A second bounded trace proved summon buff contexts are child
+  `MechanicsContext` instances rooted in the same exact
+  `SourceAbilityContext`, not the raw rule context. The final guards use those
+  exact Kingmaker 2.1.7b equivalents; neither guard was weakened.
+- Added fourteen focused policy/source-contract cases covering combat/mode and
+  provenance exclusions, native timing, missing opportunity, acted state,
+  duplicate callbacks, multiple distinct units, following-round state,
+  partial compatible state, and ambiguous context/lifecycle failure.
+- Complete deterministic domain/reflection suite: PASS 1,303/1,303. Repository
+  validation, clean exact-reference Release compilation, output validation,
+  firearm asset/SoundBank checks, deterministic package construction, strict
+  package validation, runtime preflight, and `git diff --check` all pass for
+  this source state.
+- First fixed real-player-path PASS run:
+  `20260826T1534299629829Z-686e0463d5254e4b871d5f7a7fec1827` in evidence
+  directory `20260826T1534299473030Z-summon-same-turn-activation`.
+- The legitimate Quickened Summon Monster I remained Swift (`0 -> 6` cooldown),
+  Standard and Move remained unspent (`0 -> 0`), and the caster retained turn
+  ownership. The exact KMG selection used the real spellbook,
+  `UnitUseAbility`, `RuleCastSpell`, spawn action, and one `RuleSummonUnit`.
+- The summoned dog received exactly one lawful `TurnController.Prepare` in the
+  cast round and issued exactly one authoritative `RuleAttackWithWeapon`
+  (`Bite1d4`). It received exactly one normal opportunity in the following
+  round. Owlcat queued/replaced two internal `UnitAttack` commands in the cast
+  round and one next round; the rule-level action count proves there was no
+  duplicate action.
+- Canonical lifecycle was exactly 120 seconds, not the failing 126 seconds.
+  Re-invoking the production repair returned `AlreadyEligible` and changed no
+  buff. Cleanup restored the exact unit/party snapshots, ended combat, and
+  wrote no save.
+- This is a source-qualified repair and an initial standalone automated runtime
+  PASS, not the completed runtime matrix and not human acceptance. Next action:
+  checkpoint the repair, then qualify native, Acadamae, multi-creature, RTwP,
+  cancellation/non-summon, lifecycle, and optional-mod controls.

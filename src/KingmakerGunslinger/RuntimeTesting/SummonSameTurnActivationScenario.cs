@@ -28,6 +28,7 @@ using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using TurnBased.Controllers;
 using UnityEngine;
@@ -125,6 +126,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _firstSummonCommandRound;
             private int _sameRoundSummonCommands;
             private int _nextRoundSummonCommands;
+            private int _firstSummonAttackRound;
+            private int _sameRoundSummonAttacks;
+            private int _nextRoundSummonAttacks;
             private bool _castCaptureActive;
             private TurnController _lastTurn;
             private TurnController _lastForcedTurn;
@@ -253,7 +257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 _enemy = ElvenBranchedSpearCombatScenario
                     .SpawnHostileTarget(_caster, _casterBlueprint,
-                        _caster.Position + new Vector3(8f, 0f, 0f),
+                        _caster.Position + new Vector3(3f, 0f, 0f),
                         _caster.HoldingState, out _enemyBlueprint);
                 Game.Instance.EntityCreator.Tick();
                 if (_enemy == null || !_enemy.IsInState ||
@@ -397,6 +401,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _evidence.ExpectedLifecycleSeconds =
                     (_summonRule.Duration.Seconds +
                         _summonRule.BonusDuration.Seconds).TotalSeconds;
+                SummonSameTurnActivationRequest activationRequest;
+                SummonSameTurnActivationDecision activationDecision =
+                    SummonSameTurnActivationRuntime.Inspect(_summonRule,
+                        out activationRequest);
+                _evidence.ActivationDisposition =
+                    activationDecision.Disposition.ToString();
+                _evidence.ActivationPolicy = DescribeActivationPolicy(
+                    activationRequest, activationDecision);
+                _diagnostics.Add("activation-policy=" +
+                    _evidence.ActivationPolicy + ";abilityType=" +
+                    _castAbility.Blueprint.Type + ";descriptor=" +
+                    _castAbility.Blueprint.SpellDescriptor + ";spellbook=" +
+                    (_castAbility.Spellbook != null));
+                bool duplicateAppearBefore = summon.Descriptor.Buffs.GetBuff(
+                    BlueprintRoot.Instance.SystemMechanics
+                        .SummonedUnitAppearBuff) != null;
+                Buff duplicateLifecycle = summon.Descriptor.Buffs.GetBuff(
+                    BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
+                double duplicateDurationBefore = duplicateLifecycle == null ?
+                    -1d : duplicateLifecycle.TimeLeft.TotalSeconds;
+                SummonSameTurnActivationDecision duplicateDecision =
+                    SummonSameTurnActivationRuntime.TryRepair(_summonRule);
+                bool duplicateAppearAfter = summon.Descriptor.Buffs.GetBuff(
+                    BlueprintRoot.Instance.SystemMechanics
+                        .SummonedUnitAppearBuff) != null;
+                duplicateLifecycle = summon.Descriptor.Buffs.GetBuff(
+                    BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff);
+                double duplicateDurationAfter = duplicateLifecycle == null ?
+                    -1d : duplicateLifecycle.TimeLeft.TotalSeconds;
+                _evidence.DuplicateDisposition =
+                    duplicateDecision.Disposition.ToString();
+                _evidence.DuplicateNoOp = !duplicateDecision.ShouldRepair &&
+                    duplicateAppearBefore == duplicateAppearAfter &&
+                    Math.Abs(duplicateDurationBefore -
+                        duplicateDurationAfter) <= 0.001d;
                 CaptureSummonState("post-spawn", summon);
                 CaptureCasterActions(false);
                 _evidence.CurrentActorAfter = controller.CurrentTurn == null ?
@@ -425,7 +464,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RecordTurn(turn);
                 UnitEntityData summon = _summons.Single();
                 bool nextRoundSettled = _nextRoundLawfulSummonTurns > 0 &&
-                    (_firstSummonCommandRound > 0 || turn.IsEnding ||
+                    (_sameRoundSummonAttacks > 0 || turn.IsEnding ||
                         !ReferenceEquals(turn.Unit, summon));
                 if (nextRoundSettled ||
                     controller.RoundNumber > _castRound + 1)
@@ -444,6 +483,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _sameRoundSummonCommands;
                     _evidence.NextRoundSummonCommands =
                         _nextRoundSummonCommands;
+                    _evidence.FirstSummonAttackRound =
+                        _firstSummonAttackRound;
+                    _evidence.SameRoundSummonAttacks =
+                        _sameRoundSummonAttacks;
+                    _evidence.NextRoundSummonAttacks =
+                        _nextRoundSummonAttacks;
                     _evidence.Turns = _turns.ToArray();
                     CaptureSummonState("observation-end", summon);
                     AddAssertions();
@@ -517,6 +562,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     command.Type + ";command=" + command.GetType().FullName;
                 _evidence.SummonCommands.Add(observation);
                 _diagnostics.Add("summon-command=" + observation);
+            }
+
+            internal void ObserveSummonAttack(RuleAttackWithWeapon attack)
+            {
+                if (attack == null || attack.Initiator == null ||
+                    !_summons.Contains(attack.Initiator)) return;
+                CombatController controller = Game.Instance == null ? null :
+                    Game.Instance.TurnBasedCombatController;
+                if (controller == null || controller.CurrentTurn == null ||
+                    !ReferenceEquals(controller.CurrentTurn.Unit,
+                        attack.Initiator)) return;
+                int round = controller.RoundNumber;
+                if (_firstSummonAttackRound == 0)
+                    _firstSummonAttackRound = round;
+                if (round == _castRound) _sameRoundSummonAttacks++;
+                else if (round == _castRound + 1)
+                    _nextRoundSummonAttacks++;
+                _diagnostics.Add("summon-attack=round=" + round +
+                    ";target=" + Identity(attack.Target) +
+                    ";weapon=" + (attack.Weapon == null ? "<none>" :
+                        attack.Weapon.Blueprint.name));
             }
 
             private void ForceTurnOnce(TurnController turn)
@@ -672,15 +738,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _nextRoundLawfulSummonTurns == 1,
                     "same spawned-unit identity in castRound+1");
                 Add("accelerated-summon-first-command",
-                    "the summon issues its first native command in the cast round",
+                    "native summon AI issues UnitAttack commands in both the cast-round and following-round lawful turns",
                     "firstRound=" + (_firstSummonCommandRound == 0 ?
                         "none" : _firstSummonCommandRound.ToString(
                             CultureInfo.InvariantCulture)) + ";current=" +
                         _sameRoundSummonCommands + ";next=" +
                         _nextRoundSummonCommands,
                     _firstSummonCommandRound == _castRound &&
-                    _sameRoundSummonCommands > 0,
+                    _sameRoundSummonCommands > 0 &&
+                    _nextRoundSummonCommands > 0 &&
+                    _evidence.SummonCommands.All(value => value.IndexOf(
+                        typeof(UnitAttack).FullName,
+                        StringComparison.Ordinal) >= 0),
                     "UnitCommands.Run from the summoned unit during its native CurrentTurn");
+                Add("accelerated-summon-single-action",
+                    "the tier-one dog resolves exactly one RuleAttackWithWeapon during its one lawful cast-round opportunity",
+                    "firstRound=" + (_firstSummonAttackRound == 0 ?
+                        "none" : _firstSummonAttackRound.ToString(
+                            CultureInfo.InvariantCulture)) + ";current=" +
+                        _sameRoundSummonAttacks + ";next=" +
+                        _nextRoundSummonAttacks,
+                    _firstSummonAttackRound == _castRound &&
+                    _sameRoundSummonAttacks == 1,
+                    "RuleAttackWithWeapon.OnTrigger correlated to summoned-unit identity and CurrentTurn");
                 Add("accelerated-summon-duration",
                     "lifecycle equals RuleSummonUnit Duration plus BonusDuration without full-round grace",
                     "expected=" + _evidence.ExpectedLifecycleSeconds
@@ -690,6 +770,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Math.Abs(_evidence.LifecycleSecondsAfterSpawn -
                         _evidence.ExpectedLifecycleSeconds) <= 1d,
                     "canonical SummonedUnitBuff and exact RuleSummonUnit durations");
+                Add("accelerated-summon-duplicate-callback",
+                    "a repeated exact-unit callback is AlreadyEligible and changes neither canonical buff",
+                    "decision=" + _evidence.DuplicateDisposition +
+                        ";noOp=" + _evidence.DuplicateNoOp,
+                    _evidence.DuplicateDisposition ==
+                        SummonSameTurnActivationDisposition.AlreadyEligible
+                            .ToString() && _evidence.DuplicateNoOp,
+                    "stateless canonical-state normalization on the same RuleSummonUnit result");
                 Add("runtime-cleanup-pending", "evaluated during finally",
                     "pending", true,
                     "request-local unit and game-state snapshots");
@@ -783,7 +871,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Formatting = Formatting.Indented,
                         PreserveReferencesHandling =
                             PreserveReferencesHandling.None,
-                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        ContractResolver = new Newtonsoft.Json.Serialization
+                            .DefaultContractResolver()
                     };
                     File.WriteAllText(path, JsonConvert.SerializeObject(
                         _evidence, settings));
@@ -1033,6 +1123,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         CultureInfo.InvariantCulture);
             }
 
+            private static string DescribeActivationPolicy(
+                SummonSameTurnActivationRequest request,
+                SummonSameTurnActivationDecision decision)
+            {
+                return "decision=" + decision.Disposition +
+                    ";inCombat=" + request.InCombat +
+                    ";turnBased=" + request.TurnBased +
+                    ";genuine=" + request.GenuineSummonRule +
+                    ";summoningSpell=" + request.SummoningSpell +
+                    ";live=" + request.HasLiveSummon +
+                    ";casterMatch=" + request.CasterMatchesInvocation +
+                    ";casterTurn=" + request.CasterOwnsCurrentTurn +
+                    ";actualFullRound=" +
+                    request.ActualRequiresFullRound +
+                    ";blueprintFullRound=" +
+                    request.BlueprintRequiresFullRound +
+                    ";acted=" + request.SummonAlreadyActed +
+                    ";lifecycle=" + request.HasLifecycle + "/" +
+                    request.LifecycleContextMatches +
+                    ";appearance=" + request.HasAppearanceLock + "/" +
+                    request.AppearanceContextMatches +
+                    ";duration=" + request.ObservedLifecycleSeconds
+                        .ToString("R", CultureInfo.InvariantCulture) + "/" +
+                    request.ExpectedLifecycleSeconds.ToString("R",
+                        CultureInfo.InvariantCulture);
+            }
+
             private void Add(string name, string expected, string observed,
                 bool passed, string evidence)
             {
@@ -1082,7 +1199,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private sealed class Evidence
+        [JsonObject(MemberSerialization.OptOut)]
+        public sealed class Evidence
         {
             public Evidence()
             {
@@ -1113,6 +1231,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             public int RuleSummonCount { get; set; }
             public string Summon { get; set; }
             public bool ContextAbilityReferenceExact { get; set; }
+            public string ActivationDisposition { get; set; }
+            public string ActivationPolicy { get; set; }
+            public string DuplicateDisposition { get; set; }
+            public bool DuplicateNoOp { get; set; }
             public float CasterSwiftBefore { get; set; }
             public float CasterStandardBefore { get; set; }
             public float CasterMoveBefore { get; set; }
@@ -1136,6 +1258,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             public int FirstSummonCommandRound { get; set; }
             public int SameRoundSummonCommands { get; set; }
             public int NextRoundSummonCommands { get; set; }
+            public int FirstSummonAttackRound { get; set; }
+            public int SameRoundSummonAttacks { get; set; }
+            public int NextRoundSummonAttacks { get; set; }
             public int ForcedTurnCount { get; set; }
             public string[] Turns { get; set; }
             public List<string> SummonStates { get; private set; }
@@ -1203,13 +1328,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { typeof(UnitCommand) })]
         private static class SummonCommandObserverPatch
         {
-            private static void Prefix(UnitCommand cmd)
+            private static void Postfix(UnitCommand cmd)
             {
                 Session session = Active;
                 if (session == null) return;
                 try { session.ObserveSummonCommand(cmd); }
                 catch (Exception exception)
                 { session.ObserveFailure("UnitCommands.Run", exception); }
+            }
+        }
+
+        [HarmonyPatch(typeof(RuleAttackWithWeapon), "OnTrigger",
+            new[] { typeof(RulebookEventContext) })]
+        private static class SummonAttackObserverPatch
+        {
+            private static void Postfix(RuleAttackWithWeapon __instance)
+            {
+                Session session = Active;
+                if (session == null) return;
+                try { session.ObserveSummonAttack(__instance); }
+                catch (Exception exception)
+                { session.ObserveFailure("RuleAttackWithWeapon", exception); }
             }
         }
     }
