@@ -48,3 +48,24 @@ gates complete.
   all 1,278 domain/reflection tests, the exact-reference compiler, output,
   SoundBank, and strict package gates successfully. Runtime qualification still
   awaits a clean immutable commit.
+
+## 2026-08-26 fatigue persistence-fixture correction
+
+- Guarded overhaul run `20260826T0507368976150Z-39c16f004d244c00894d7dda93437633`
+  passed all 12 assertions against commit `006ecf10da76f5ca4f7a73b8b6c61b490eeaf505`.
+- The first guarded `disposable-fatigue-escalation` run
+  `20260826T0510130072269Z-e5e82051bd594961952b95fa9c853d77`
+  returned structured `ERROR` before assertions. Its qualification fixture had
+  attempted to serialize a live `Buff` as a standalone root; Kingmaker's native
+  persistence converters require the owning unit graph and rejected that
+  unsupported shape in `DictionaryConverter.WriteJson`.
+- Replaced only the invalid probe with installed 2.1.7b's native
+  `UnitSerialization.Serialize(UnitDescriptor)` path and the same
+  `SetupPreview` / `PostLoad` / `TurnOn` descriptor reconstruction lifecycle
+  used by `LevelUpPlanUnitHolder`. The clone is independently disposed, and the
+  test still requires one exact canonical permanent Exhausted fact, no Fatigued
+  fact, and live Exhausted state after reconstruction.
+- Repository validation, all 1,278 tests, exact-reference Release compilation,
+  output validation, SoundBank validation, and strict package construction pass
+  after the correction. Because this changes the candidate commit, every
+  applicable guarded runtime surface will be rerun on the final immutable DLL.
