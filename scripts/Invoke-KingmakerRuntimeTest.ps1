@@ -456,6 +456,11 @@ try {
             Write-Host 'CLICK LOAD ON KMG_AUTOMATION_WORKING ONCE NOW' -ForegroundColor Yellow
             Write-Host 'DO NOT CLICK KMG_AUTOMATION_BASELINE' -ForegroundColor Red
         }
+        elseif ($Scenario -eq 'observe-expanded-summoning-variant-menu') {
+            Write-Host 'MANUALLY LOAD KMG_AUTOMATION_WORKING NOW' -ForegroundColor Yellow
+            Write-Host 'DO NOT LOAD OR OVERWRITE KMG_AUTOMATION_BASELINE' -ForegroundColor Red
+            Write-Host 'WAIT FOR THE SECOND INSTRUCTION BEFORE OPENING A SPELL MENU' -ForegroundColor Yellow
+        }
         else {
             Write-Host 'MANUALLY LOAD KMG_AUTOMATION_WORKING NOW' -ForegroundColor Yellow
             Write-Host 'DO NOT LOAD OR OVERWRITE KMG_AUTOMATION_BASELINE' -ForegroundColor Red
@@ -463,6 +468,53 @@ try {
         Write-Host 'No keyboard or mouse input will be sent by this script.' -ForegroundColor Yellow
         Write-Host '============================================================' -ForegroundColor Yellow
         Write-Host ''
+
+        if ($Scenario -eq 'observe-expanded-summoning-variant-menu') {
+            $menuReadyPath = Join-Path $evidence `
+                'runtime-expanded-summoning-menu-ready.json'
+            $menuReadyDeadline = [DateTime]::UtcNow.AddSeconds(
+                $TimeoutSeconds + 15)
+            $menuReady = $null
+            while (-not $menuReady -and $null -eq $result) {
+                $result = Get-KmgCurrentRuntimeResult `
+                    -ResultPath $resultPath -EvidenceDirectory $evidence `
+                    -RunId $request.runId -Scenario $Scenario `
+                    -ExpectedVersion $ExpectedVersion `
+                    -RequestWrittenUtc $requestWrittenUtc
+                if ($null -ne $result) { break }
+                $process.Refresh()
+                if ($process.HasExited) {
+                    throw 'Kingmaker exited before expanded summon menu readiness.'
+                }
+                if ([DateTime]::UtcNow -ge $menuReadyDeadline) {
+                    throw 'Expanded summon menu readiness timed out after the supervised working-save load.'
+                }
+                if (Test-Path -LiteralPath $menuReadyPath -PathType Leaf) {
+                    $candidate = Get-Content -LiteralPath $menuReadyPath -Raw |
+                        ConvertFrom-Json
+                    if (-not (Test-KmgRuntimeStageMarker -Marker $candidate `
+                        -RunId $request.runId -Scenario $Scenario `
+                        -Stage 'expanded-summoning-menu-ready' `
+                        -ExpectedVersion $ExpectedVersion `
+                        -ProcessId $process.Id `
+                        -RequestWrittenUtc $requestWrittenUtc)) {
+                        throw 'Expanded summon menu ready marker is stale or mismatched.'
+                    }
+                    $menuReady = $candidate
+                }
+                if (-not $menuReady) { Start-Sleep -Milliseconds 250 }
+            }
+            if ($menuReady) {
+                Write-Host ''
+                Write-Host '============================================================' -ForegroundColor Yellow
+                Write-Host 'PLACE THE LARGEST HIGH-TIER SUMMON MONSTER OR SUMMON NATURES ALLY SPELL NEAR THE TOP OF THE LEFT SIDEBAR' -ForegroundColor Yellow
+                Write-Host 'OPEN ITS VARIANT LIST ONCE' -ForegroundColor Yellow
+                Write-Host 'DO NOT CLICK AN OPTION OR CAST THE SPELL' -ForegroundColor Red
+                Write-Host 'The observer only measures rendered bounds and scroll reachability.' -ForegroundColor Yellow
+                Write-Host '============================================================' -ForegroundColor Yellow
+                Write-Host ''
+            }
+        }
     }
 
     if ($Scenario -in @('working-save-smoke', 'generic-firearm-actions',
@@ -482,6 +534,9 @@ try {
         'working-save-brown-fur-prepare',
         'working-save-brown-fur-verify-cleanup',
         'working-save-brown-fur-off-verify-cleanup',
+        'working-save-fatigue-prepare',
+        'working-save-fatigue-verify-cleanup',
+        'working-save-fatigue-verify-absent',
         'working-save-expanded-summoning-prepare',
         'working-save-expanded-summoning-verify-cleanup',
         'working-save-expanded-summoning-verify-absent',

@@ -290,9 +290,16 @@ namespace KingmakerGunslinger.Development
             return Execute("load-first-equipped-firearm", bridge => bridge.LoadFirstEquippedFirearmForDebug());
         }
 
-        internal static DevelopmentActionResult DamageFirstEquippedFirearmForDebug()
+        internal static DevelopmentActionResult BreakSelectedEquippedFirearmForDebug()
         {
-            return Execute("damage-first-equipped-firearm", bridge => bridge.DamageFirstEquippedFirearmForDebug());
+            return Execute("break-selected-equipped-firearm",
+                bridge => bridge.BreakSelectedEquippedFirearmForDebug());
+        }
+
+        internal static DevelopmentActionResult WreckSelectedEquippedFirearmForDebug()
+        {
+            return Execute("wreck-selected-equipped-firearm",
+                bridge => bridge.WreckSelectedEquippedFirearmForDebug());
         }
 
         internal static DevelopmentActionResult RepairFirstEquippedFirearmForDebug()

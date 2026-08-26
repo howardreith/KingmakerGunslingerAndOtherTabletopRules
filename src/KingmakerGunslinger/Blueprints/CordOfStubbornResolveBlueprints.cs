@@ -6,6 +6,7 @@ using Kingmaker.Blueprints.Loot;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Cord;
+using KingmakerGunslinger.Fatigue;
 
 namespace KingmakerGunslinger.Blueprints
 {
@@ -17,6 +18,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string AcquisitionName = "RichHuman_treasure_chest_2";
         internal const string AcquisitionArea = "CapitalSquareVillage";
         private const string FatiguedBuffGuid = "e6f2fc5d73d88064583cb828801212f4";
+        private const string ExhaustedBuffGuid = "46d1b9cc3d0fd36469a471b047d773a2";
 
         internal static BlueprintItemEquipmentBelt Register(
             LibraryScriptableObject library, BlueprintRegistry registry)
@@ -25,7 +27,9 @@ namespace KingmakerGunslinger.Blueprints
             if (registry == null) throw new ArgumentNullException("registry");
             BlueprintBuff fatigued = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
                 library, FatiguedBuffGuid, "native Fatigued buff for Cord interception");
-            CordConditionRuntime.Configure(fatigued);
+            BlueprintBuff exhausted = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, ExhaustedBuffGuid, "native Exhausted buff for Cord interception");
+            CanonicalFatigueApplicationRuntime.Configure(fatigued, exhausted);
             BlueprintItemEquipmentBelt[] allBelts = library.GetAllBlueprints()
                 .OfType<BlueprintItemEquipmentBelt>().ToArray();
             BlueprintItemEquipmentBelt[] donors = allBelts

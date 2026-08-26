@@ -83,6 +83,8 @@ def main() -> int:
         managed / "UnityEngine.AssetBundleModule.dll",
         managed / "UnityEngine.CoreModule.dll",
         managed / "UnityEngine.UI.dll",
+        managed / "UnityEngine.UIModule.dll",
+        managed / "UnityEngine.TextRenderingModule.dll",
         managed / "UnityModManager" / "UnityModManager.dll",
         managed / "UnityModManager" / "0Harmony12.dll",
     ]

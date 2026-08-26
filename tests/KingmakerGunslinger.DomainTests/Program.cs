@@ -152,6 +152,30 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.native-reconciliation", SummonPublicationPolicyTests.NativeDuplicateCatalogIsExact),
             Case("expanded-summoning.display-order", SummonPublicationPolicyTests.DisplayOrderGroupsSinglesBeforeQuantities),
             Case("expanded-summoning.icon-catalog", SummonPublicationPolicyTests.IconCatalogCoversEveryCreature),
+            Case("expanded-summoning.menu-layout-top", SummonVariantMenuLayoutTests.TopLeftLargeListIsBounded),
+            Case("expanded-summoning.menu-layout-top-oversized", SummonVariantMenuLayoutTests.TopLeftOversizedListUsesFullSafeHeight),
+            Case("expanded-summoning.menu-layout-bottom", SummonVariantMenuLayoutTests.BottomLeftClampsWithoutDirectionFlip),
+            Case("expanded-summoning.menu-layout-middle", SummonVariantMenuLayoutTests.MiddlePlacementRemainsStable),
+            Case("expanded-summoning.menu-layout-short", SummonVariantMenuLayoutTests.ShortContentRetainsNativeSize),
+            Case("expanded-summoning.menu-layout-scroll", SummonVariantMenuLayoutTests.OversizedContentUsesScrollableViewport),
+            Case("expanded-summoning.menu-layout-1600x900", SummonVariantMenuLayoutTests.ScreenshotEquivalentGeometryTopClamps),
+            Case("expanded-summoning.menu-layout-rendered-translation", SummonVariantMenuLayoutTests.RenderedBoundsTranslationIgnoresPivotAndAnchors),
+            Case("expanded-summoning.menu-layout-narrow", SummonVariantMenuLayoutTests.NarrowResolutionRespectsHorizontalBounds),
+            Case("expanded-summoning.menu-layout-ultrawide", SummonVariantMenuLayoutTests.UltrawideUsesActualSafeRectangle),
+            Case("expanded-summoning.menu-layout-scale", SummonVariantMenuLayoutTests.CanvasScaleIsCoordinateInvariant),
+            Case("expanded-summoning.menu-layout-repeat", SummonVariantMenuLayoutTests.RepeatedDecisionIsIdempotent),
+            Case("expanded-summoning.menu-layout-third-party", SummonVariantMenuLayoutTests.ThirdPartyHeightUsesRenderedContent),
+            Case("expanded-summoning.menu-layout-native-short", SummonVariantMenuLayoutTests.ShortNativeListNeedsNoCorrection),
+            Case("expanded-summoning.menu-layout-navigation", SummonVariantMenuLayoutTests.FirstMiddleAndLastOffsetsAreReachable),
+            Case("expanded-summoning.menu-layout-native-adapter", SummonVariantMenuLayoutTests.ExactNativeViewAdapterIsNarrowAndReusable),
+            Case("expanded-summoning.menu-layout-source-slot-refresh", SummonVariantMenuLayoutTests.SourceSlotCaptureDoesNotRetainStaleParents),
+            Case("expanded-summoning.menu-layout-reusable-viewport", SummonVariantMenuLayoutTests.RepeatedOpenUsesOneReusableViewport),
+            Case("expanded-summoning.menu-layout-guarded-observer", SummonVariantMenuLayoutTests.GuardedRenderedMenuObservationIsReadOnly),
+            Case("development-firearm.canonical-break-wreck", FirearmConditionDevelopmentControlTests.CanonicalBreakThenWreckPreservesExactItem),
+            Case("development-firearm.invalid-order", FirearmConditionDevelopmentControlTests.InvalidTransitionOrderRejectsWithoutMutation),
+            Case("development-firearm.production-kinds", FirearmConditionDevelopmentControlTests.ProductionKindsShareTheCanonicalPolicy),
+            Case("development-firearm.token-persistence", FirearmConditionDevelopmentControlTests.WreckedTokenSurvivesRepositoryReconstruction),
+            Case("development-firearm.umm-exact-bridge", FirearmConditionDevelopmentControlTests.UmmBridgeIsSelectedExactAndFailClosed),
             Case("expanded-summoning.icon-manifest-files", ExpandedSummoningPresentationTests.OriginalIconManifestMatchesFiles),
             Case("expanded-summoning.icon-exclusive-source", ExpandedSummoningPresentationTests.OriginalIconSourceContractIsExclusive),
             Case("expanded-summoning.icon-cache-package", ExpandedSummoningPresentationTests.RuntimeIconCacheAndPackagePathsAreExact),
@@ -295,6 +319,19 @@ namespace KingmakerGunslinger.DomainTests
             Case("cord.fatigue-and-exhaustion", AcadamaeCordPolicyTests.CordFatigueAndExhaustion),
             Case("cord.damage-boundaries", AcadamaeCordPolicyTests.CordDamageBoundaries),
             Case("cord.native-condition-source-contract", AcadamaeCordPolicyTests.CordNativeConditionSourceContract),
+            Case("fatigue.fresh-fatigue", CanonicalFatiguePolicyTests.FreshFatigueAppliesFatigued),
+            Case("fatigue.repeated-fatigue", CanonicalFatiguePolicyTests.RepeatedFatigueEscalates),
+            Case("fatigue.exhausted-fatigue", CanonicalFatiguePolicyTests.ExhaustedFatigueNeverDowngrades),
+            Case("fatigue.fresh-exhaustion", CanonicalFatiguePolicyTests.FreshExhaustionAppliesExhausted),
+            Case("fatigue.fatigued-exhaustion", CanonicalFatiguePolicyTests.FatiguedExhaustionReplacesFatigue),
+            Case("fatigue.exhausted-exhaustion", CanonicalFatiguePolicyTests.ExhaustedExhaustionIsIdempotent),
+            Case("fatigue.same-sequence", CanonicalFatiguePolicyTests.SameSequenceFatigueIsDeterministic),
+            Case("fatigue.blocked", CanonicalFatiguePolicyTests.BlockedApplicationsPreserveState),
+            Case("fatigue.duration-longest", CanonicalFatiguePolicyTests.ShorterDurationCannotShortenCondition),
+            Case("fatigue.duration-permanent", CanonicalFatiguePolicyTests.PermanentDurationDominatesTemporary),
+            Case("fatigue.cord-order", CanonicalFatiguePolicyTests.CordReceivesEffectiveIncomingCondition),
+            Case("fatigue.runtime-coordinator", CanonicalFatiguePolicyTests.RuntimeCoordinatorUsesExactPostSuccessBoundary),
+            Case("fatigue.guarded-actual-path", CanonicalFatiguePolicyTests.GuardedScenariosUseActualCanonicalFacts),
             Case("paper-foundation.profiles-exact", PaperCartridgeFoundationTests.ProfilesAreExact),
             Case("paper-foundation.compatibility-definition-driven", PaperCartridgeFoundationTests.CompatibilityIsDefinitionDriven),
             Case("paper-foundation.unknown-fails-closed", PaperCartridgeFoundationTests.UnknownIdentityFailsClosed),
@@ -1568,13 +1605,15 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs");
             string blueprint = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Blueprints/OverhaulTestMusketAbilityBlueprints.cs");
-            Assertions.True(logic.Contains("WorkDurationSeconds = 60f") &&
-                logic.Contains("TimeController.GameTime < completion") &&
+            Assertions.True(logic.Contains("DeliverPromptly") &&
+                !logic.Contains("WorkDurationSeconds") &&
+                !logic.Contains("TimeController.GameTime") &&
+                !logic.Contains("yield return null") &&
                 logic.Contains("ReferenceEquals(completed.Weapon, start.Weapon)") &&
                 runtime.Contains("caster.Unit.IsInCombat") &&
-                blueprint.Contains("one uninterrupted minute out of combat") &&
-                blueprint.Contains("\"1 minute\""),
-                "Overhaul is not a one-minute, out-of-combat, exact-item atomic action.");
+                blueprint.Contains("Outside active combat") &&
+                blueprint.Contains("\"Instantaneous\""),
+                "Overhaul is not a prompt, out-of-combat, exact-item atomic action.");
         }
 
         private static void FourthPlaytestConditionPresentation()
@@ -1588,7 +1627,8 @@ namespace KingmakerGunslinger.DomainTests
                 broken.Contains("Quick Clear") && broken.Contains("Repair Firearm"),
                 "Broken firearm condition presentation omits mechanical recovery guidance.");
             Assertions.True(wrecked.Contains("Wrecked") && wrecked.Contains("cannot fire or reload") &&
-                wrecked.Contains("one uninterrupted minute") && wrecked.Contains("out of combat"),
+                wrecked.Contains("outside active combat") &&
+                !wrecked.Contains("minute"),
                 "Wrecked firearm condition presentation omits restrictions or Overhaul guidance.");
             Assertions.Throws<ArgumentOutOfRangeException>(
                 () => FirearmConditionPresentation.Describe((FirearmCondition)99),

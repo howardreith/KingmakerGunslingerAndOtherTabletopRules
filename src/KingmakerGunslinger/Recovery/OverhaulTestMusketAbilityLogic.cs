@@ -12,16 +12,15 @@ namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
     /// Player-facing availability and delivery component for exact-item Wrecked-to-Broken
-    /// recovery. Mutation occurs only in Deliver after the full-round command completes,
-    /// so cancellation or interruption before delivery consumes no repair kit and changes no state.
+    /// recovery. Mutation occurs only at the ordinary ability-delivery boundary after the
+    /// full-round command completes, so cancellation before delivery consumes no repair kit
+    /// and changes no state. Delivery itself performs no background or game-time wait.
     /// </summary>
     [Serializable]
     public sealed class OverhaulTestMusketAbilityLogic :
         AbilityCustomLogic,
         IAbilityAvailabilityProvider
     {
-        internal const float WorkDurationSeconds = 60f;
-
         [SerializeField]
         private BlueprintItemWeapon m_TestMusket;
 
@@ -70,39 +69,33 @@ namespace KingmakerGunslinger.Recovery
 
         public string GetReason()
         {
-            return "Requires exactly one equipped Wrecked firearm, one Firearm Repair Kit, and one uninterrupted minute out of combat.";
+            return "Requires exactly one equipped empty Wrecked firearm, one Firearm Repair Kit, and no active combat.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
             AbilityExecutionContext context,
             TargetWrapper target)
         {
-            return DeliverTimed(context, target);
+            return DeliverPromptly(context, target);
         }
 
-        private IEnumerator<AbilityDeliveryTarget> DeliverTimed(
+        private IEnumerator<AbilityDeliveryTarget> DeliverPromptly(
             AbilityExecutionContext context, TargetWrapper target)
         {
             FirearmOverhaulAvailability start;
-            TimeSpan completion;
-            if (!TryPrepare(context, out start, out completion))
+            if (!TryPrepare(context, out start))
             {
                 yield return new AbilityDeliveryTarget(target);
                 yield break;
             }
-            while (Kingmaker.Game.Instance != null &&
-                Kingmaker.Game.Instance.TimeController != null &&
-                Kingmaker.Game.Instance.TimeController.GameTime < completion)
-                yield return null;
             Complete(context, start);
             yield return new AbilityDeliveryTarget(target);
         }
 
         private bool TryPrepare(AbilityExecutionContext context,
-            out FirearmOverhaulAvailability start, out TimeSpan completion)
+            out FirearmOverhaulAvailability start)
         {
             start = null;
-            completion = default(TimeSpan);
             try
             {
                 ValidateConfiguration();
@@ -120,12 +113,6 @@ namespace KingmakerGunslinger.Recovery
                     m_RepairKit);
                 if (!start.IsAvailable || start.Weapon == null)
                     throw new InvalidOperationException(start.Reason);
-                if (Kingmaker.Game.Instance == null ||
-                    Kingmaker.Game.Instance.TimeController == null)
-                    throw new InvalidOperationException(
-                        "The overhaul work timer is unavailable.");
-                completion = Kingmaker.Game.Instance.TimeController.GameTime +
-                    TimeSpan.FromSeconds(WorkDurationSeconds);
                 return true;
             }
             catch (Exception exception)
