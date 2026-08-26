@@ -38,9 +38,12 @@ $relativeAssemblyPaths = @(
     'Newtonsoft.Json.dll',
     'UnityEngine.dll',
     'UnityEngine.AnimationModule.dll',
+    'UnityEngine.AudioModule.dll',
     'UnityEngine.AssetBundleModule.dll',
     'UnityEngine.CoreModule.dll',
     'UnityEngine.UI.dll',
+    'UnityEngine.UIModule.dll',
+    'UnityEngine.TextRenderingModule.dll',
     'UnityModManager\UnityModManager.dll',
     'UnityModManager\0Harmony12.dll',
     'UnityModManager\0Harmony.dll'
