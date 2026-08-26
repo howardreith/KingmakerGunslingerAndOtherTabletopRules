@@ -7,6 +7,7 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using KingmakerGunslinger.Acadamae;
+using KingmakerGunslinger.Fatigue;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -21,6 +22,7 @@ namespace KingmakerGunslinger.Blueprints
         private const string OppositionSelectionGuid = "6c29030e9fea36949877c43a6f94ff31";
         private const string UniversalistGuid = "0933849149cfc9244ac05d6a5b57fd80";
         private const string FatiguedBuffGuid = "e6f2fc5d73d88064583cb828801212f4";
+        private const string ExhaustedBuffGuid = "46d1b9cc3d0fd36469a471b047d773a2";
         internal const string ModeGrantComponentName = "$KMG_GrantUseAcadamaeGraduate";
 
         internal static BlueprintFeature Register(LibraryScriptableObject library,
@@ -41,6 +43,9 @@ namespace KingmakerGunslinger.Blueprints
                 library, UniversalistGuid, "native Universalist progression");
             BlueprintBuff fatigued = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
                 library, FatiguedBuffGuid, "native Fatigued buff");
+            BlueprintBuff exhausted = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, ExhaustedBuffGuid, "native Exhausted buff");
+            CanonicalFatigueApplicationRuntime.Configure(fatigued, exhausted);
             AcadamaeCastingRuntime.Configure(fatigued);
             return registry.Register<BlueprintFeature>(Symbol,
                 () => Create(iconDonor, wizard, schools, opposition, universalist));
@@ -83,7 +88,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.Feat.AcadamaeGraduate.Name",
                     "Acadamae Graduate"),
                 LocalizationService.Create("KMG.Feat.AcadamaeGraduate.Description",
-                    "Activate Use Acadamae Graduate to reduce an eligible prepared arcane Conjuration (Summoning) spell's casting time by one round, to a minimum of one standard action. After an accelerated spell is successfully cast, attempt a Fortitude save (DC 15 + spell level); failure causes fatigue. Leave the mode off to cast normally without this save or fatigue risk."),
+                    "Activate Use Acadamae Graduate to reduce an eligible prepared arcane Conjuration (Summoning) spell's casting time by one round, to a minimum of one standard action. After an accelerated spell is successfully cast, attempt a Fortitude save (DC 15 + spell level); failure causes Fatigued, or Exhausted if already Fatigued. Leave the mode off to cast normally without this save or fatigue risk."),
                 iconDonor.Icon);
             return feature;
         }

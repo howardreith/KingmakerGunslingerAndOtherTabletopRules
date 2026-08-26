@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.103-overhaul-summon-menu-fatigue-escalation
+
+- Removes Overhaul Firearm's explicit 60-second `GameTime` delivery loop. The
+  full-round command now revalidates and commits the existing exact-item atomic
+  transaction promptly at ordinary delivery, without advancing world time.
+- Bounds exact published Expanded Summoning action-bar variant menus in the
+  rendered canvas-safe rectangle. Oversized runtime lists retain every native
+  slot in one reusable scroll viewport; short lists keep native presentation.
+- Coordinates exact canonical Fatigued and Exhausted applications only after
+  Kingmaker's native rule accepts the incoming buff. Repeated Fatigued now
+  becomes one Exhausted condition, Acadamae uses the shared path, and Cord
+  substitution remains once per resolved incoming effect.
+- Adds focused geometry, condition-policy, installed-contract, and guarded
+  actual-path coverage; the complete dependency-free suite contains 1,278
+  passing tests.
+
 ## 0.0.102-starter-bokken-combat-log-acadamae-toggle
 
 - Grants the exact owner-bound battered Pistol or Musket plus the established

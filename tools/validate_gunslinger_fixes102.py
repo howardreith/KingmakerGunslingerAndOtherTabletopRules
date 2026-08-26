@@ -123,7 +123,7 @@ def validate(root: Path) -> None:
         "disposable-acadamae-graduate")
     require_tokens(root / f"docs/RELEASE-NOTES-{VERSION}.md",
         f"Kingmaker Gunslinger {VERSION}", f"{PACKAGE_SUFFIX}.zip",
-        "CraftMagicItems.dll", "1,251")
+        "CraftMagicItems.dll", f"{DETERMINISTIC_TEST_COUNT:,}")
 
     static = json.loads((root / "validation/static-validation.json")
         .read_text(encoding="utf-8"))

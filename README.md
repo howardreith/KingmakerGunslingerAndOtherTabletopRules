@@ -1,10 +1,13 @@
 # Kingmaker Gunslinger
 
-Version `0.0.102` grants the owner-bound battered starter package on an exact
-committed Gunslinger 0-to-1 multiclass transition, consolidates the six early
-firearm supplies at Bokken, routes routine KMG feedback through Kingmaker's
-native combat log, and makes each newly constructed Acadamae Graduate summon
-obey the activatable's current `IsOn` state. It retains the owner-accepted
+Version `0.0.103` makes Overhaul Firearm commit at its ordinary out-of-combat
+delivery boundary instead of waiting one game minute, bounds Expanded
+Summoning's largest native action-bar variant menus to the active canvas with
+scrolling when needed, and applies the canonical Fatigued-to-Exhausted rule
+after Kingmaker accepts an exact Fatigued effect. Acadamae Graduate uses that
+general condition path, while Cord of Stubborn Resolve retains its established
+single replacement and 1-HP-floor behavior. It also retains the owner-accepted
+0.0.102 starter, Bokken, combat-log, and Acadamae toggle corrections and the
 optional Craft Magic Items 2.1.0 integration without linking or packaging
 `CraftMagicItems.dll`. The qualified 0.0.99 inner
 ammunition UI seam remains: CMI owns its complete top-level mundane selector on

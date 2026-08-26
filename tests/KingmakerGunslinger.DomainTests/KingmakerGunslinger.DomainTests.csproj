@@ -57,6 +57,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs"><Link>ElvenBranchedSpear\ElvenBranchedSpearNamedCatalog.cs</Link></Compile>
     <Compile Include="SummonPublicationPolicyTests.cs" />
+    <Compile Include="SummonVariantMenuLayoutTests.cs" />
     <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
     <Compile Include="ExpandedSummoningIdentityCatalogTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
@@ -66,6 +67,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantSpec.cs"><Link>Summoning\SummonVariantSpec.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCatalog.cs"><Link>Summoning\ExpandedSummoningCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMenuLayoutPolicy.cs"><Link>Summoning\SummonVariantMenuLayoutPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonDisplayOrderPolicy.cs"><Link>Summoning\SummonDisplayOrderPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeOptionCatalog.cs"><Link>Summoning\SummonNativeOptionCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonNativeExpansionCatalog.cs"><Link>Summoning\SummonNativeExpansionCatalog.cs</Link></Compile>
@@ -155,6 +157,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurBonusAdapterPlan.cs"><Link>BrownFur\BrownFurBonusAdapterPlan.cs</Link></Compile>
     <Compile Include="ShieldOtherPolicyTests.cs" />
     <Compile Include="AcadamaeCordPolicyTests.cs" />
+    <Compile Include="CanonicalFatiguePolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Fatigue\CanonicalFatigueStatePolicy.cs"><Link>Fatigue\CanonicalFatigueStatePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingTime.cs"><Link>Acadamae\AcadamaeCastingTime.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastRequest.cs"><Link>Acadamae\AcadamaeCastRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastDecision.cs"><Link>Acadamae\AcadamaeCastDecision.cs</Link></Compile>

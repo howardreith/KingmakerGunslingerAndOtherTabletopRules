@@ -130,7 +130,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("starter-bokken-combat-log-acadamae-toggle"
+    package_suffix = ("overhaul-summon-menu-fatigue-escalation"
+        if VERSION == "0.0.103" else "starter-bokken-combat-log-acadamae-toggle"
         if VERSION == "0.0.102" else "craft-magic-items-compatibility"
         if VERSION == "0.0.101" else "craft-magic-items-post-human-refinement"
         if VERSION == "0.0.100" else "craft-magic-items-ammunition-ui-repair"
