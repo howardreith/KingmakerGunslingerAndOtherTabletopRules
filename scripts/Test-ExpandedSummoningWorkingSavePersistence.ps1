@@ -41,15 +41,16 @@ $checks = [ordered]@{
         $runner.Contains('ReferenceEquals(value.HoldingState, caster.HoldingState)')
     'fresh-load-identity-context-duration' =
         $runner.Contains('ReferenceEquals(unit.Blueprint, blueprint)') -and
+        $runner.Contains('.SummonedUnitBuff)') -and
         $runner.Contains('value.MaybeContext.MaybeCaster == caster') -and
-        $runner.Contains('value.TimeLeft <= TimeSpan.FromSeconds(121d)')
+        $runner.Contains('value.TimeLeft <= TimeSpan.FromSeconds(127d)')
     'native-control-contract' =
         $runner.Contains('value.Commands != null') -and
         $runner.Contains('value.View.Data == value') -and
         $runner.Contains('ReferenceEquals(faction, ExpandedSummoningFields(')
     'enabled-disabled-publication-exact' =
         $publication.Contains('RequiredBasePublicationIsExact') -and
-        $publication.Contains('count != (expectedEnabled ? 1 : 0)') -and
+        $publication.Contains('if (count != expected) exact = false;') -and
         $runner.Contains('_context.FeatureModules.Active.ExpandedSummoning')
     'cleanup-and-final-absence' =
         $runner.Contains('.SystemMechanics.SummonedUnitBuff') -and

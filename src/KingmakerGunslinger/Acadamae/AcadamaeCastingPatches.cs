@@ -19,6 +19,7 @@ using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Diagnostics;
+using KingmakerGunslinger.Fatigue;
 
 namespace KingmakerGunslinger.Acadamae
 {
@@ -419,20 +420,28 @@ namespace KingmakerGunslinger.Acadamae
             _lastFatigueDisposition = "none-save-passed";
             if (!saving.IsPassed)
             {
-                var fatigue = rule.Initiator.Descriptor.Buffs.AddBuff(
-                    _fatigued, rule.Initiator, null);
-                // AddBuff's null duration initially normalizes to the current
-                // game time. The native permanent transition clears that end
-                // time while retaining the independent caster context and the
-                // ordinary RemoveOnRest blueprint lifecycle.
-                if (fatigue != null)
-                {
-                    fatigue.MakePermanent();
-                    _lastFatigueDisposition = fatigue.IsPermanent ?
-                        "fatigued-permanent" : "fatigued-not-permanent";
-                }
+                CanonicalFatigueApplicationResult fatigue =
+                    CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(
+                        rule.Initiator.Descriptor.Buffs, _fatigued,
+                        rule.Initiator);
+                if (!fatigue.ApplicationSucceeded)
+                    _lastFatigueDisposition =
+                        "fatigue-application-suppressed";
+                else if (fatigue.CordSubstituted &&
+                    fatigue.State == CanonicalFatigueState.Neither)
+                    _lastFatigueDisposition = "cord-substituted-fatigue";
+                else if (fatigue.State == CanonicalFatigueState.Exhausted)
+                    _lastFatigueDisposition = fatigue.Condition != null &&
+                        fatigue.Condition.IsPermanent ?
+                            "exhausted-permanent" :
+                            "exhausted-not-permanent";
+                else if (fatigue.State == CanonicalFatigueState.Fatigued)
+                    _lastFatigueDisposition = fatigue.Condition != null &&
+                        fatigue.Condition.IsPermanent ?
+                            "fatigued-permanent" :
+                            "fatigued-not-permanent";
                 else
-                    _lastFatigueDisposition = "fatigue-application-suppressed";
+                    _lastFatigueDisposition = fatigue.Status;
             }
             PublishResolution(rule, saving, _lastFatigueDisposition);
             return true;
@@ -459,9 +468,8 @@ namespace KingmakerGunslinger.Acadamae
                 "Acadamae Graduate: Fortitude {0} vs DC {1} - {2}{3}.",
                 saving.RollResult, saving.DifficultyClass,
                 saving.IsPassed ? "success" : "failed",
-                !saving.IsPassed && string.Equals(fatigueDisposition,
-                    "fatigued-permanent", StringComparison.Ordinal) ?
-                        "; Fatigued" : string.Empty);
+                !saving.IsPassed ? ConditionSuffix(fatigueDisposition) :
+                    string.Empty);
             _lastResolutionMessage = message;
             ModContext context;
             if (ModContext.TryGet(out context))
@@ -471,6 +479,22 @@ namespace KingmakerGunslinger.Acadamae
                     "accelerated-cast.combat-log-failed", message,
                     "Acadamae mechanics resolved, but the native combat-log entry failed."))
                 Interlocked.Increment(ref _publishedResolutionCount);
+        }
+
+        private static string ConditionSuffix(string disposition)
+        {
+            if (string.Equals(disposition, "fatigued-permanent",
+                    StringComparison.Ordinal))
+                return "; Fatigued";
+            if (string.Equals(disposition, "exhausted-permanent",
+                    StringComparison.Ordinal))
+                return "; Exhausted";
+            if (string.Equals(disposition, "cord-substituted-fatigue",
+                    StringComparison.Ordinal) ||
+                string.Equals(disposition, "cord-substituted-exhaustion",
+                    StringComparison.Ordinal))
+                return "; Cord substituted the condition";
+            return string.Empty;
         }
     }
 

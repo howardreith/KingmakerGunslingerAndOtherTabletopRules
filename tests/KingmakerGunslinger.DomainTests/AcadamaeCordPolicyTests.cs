@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Cord;
+using KingmakerGunslinger.Fatigue;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -72,8 +73,9 @@ namespace KingmakerGunslinger.DomainTests
                 casting.Contains("eligibility.decision") &&
                 casting.Contains("constructor=three-argument-authoritative") &&
                 casting.Contains("preRequireFullRound={") &&
-                casting.Contains("Buffs.AddBuff(\n                    _fatigued, rule.Initiator, null)") &&
-                casting.Contains("fatigue.MakePermanent()") &&
+                casting.Contains("CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue") &&
+                casting.Contains("exhausted-permanent") &&
+                !casting.Contains("Buffs.AddBuff(\n                    _fatigued") &&
                 casting.Contains("AcadamaeSavingThrowTestCompletionPatch") &&
                 !casting.Contains("__instance.BaseRollResult = naturalRoll;") &&
                 casting.Contains("if (naturalRoll == 20) __instance.AutoPass = true") &&
@@ -321,10 +323,13 @@ namespace KingmakerGunslinger.DomainTests
                 StringComparison.Ordinal);
             Assertions.True(forcedFailure >= 0 && cordCast > forcedFailure,
                 "The clean-first Cord integration phase must force a failed Fortitude save before casting.");
-            Assertions.True(runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(20)" },
-                    StringSplitOptions.None).Length == 3 &&
-                runtime.Split(new[] { "AcadamaeSavingThrowTestControl.Queue(1)" },
-                    StringSplitOptions.None).Length == 4,
+            int forcedSuccesses = runtime.Split(new[] {
+                    "AcadamaeSavingThrowTestControl.Queue(20)" },
+                    StringSplitOptions.None).Length - 1;
+            int forcedFailures = runtime.Split(new[] {
+                    "AcadamaeSavingThrowTestControl.Queue(1)" },
+                    StringSplitOptions.None).Length - 1;
+            Assertions.True(forcedSuccesses >= 3 && forcedFailures >= 5,
                 "The guarded scenario must force native automatic success and failure boundaries.");
             foreach (string token in new[] {
                 "internal static class AcadamaeRuleConstructorPatch",
@@ -426,23 +431,41 @@ namespace KingmakerGunslinger.DomainTests
                 "BlueprintBootstrap.CordOfStubbornResolve",
                 "new RuleRollDice(state.Owner.Unit",
                 "state.Owner.Unit.HPLeft - 1",
-                "new DiceFormula(0, DiceType.D6), amount",
+                "new DirectDamage(new DiceFormula(0, DiceType.D6)",
                 "IgnoreDamageReduction = true",
                 "NativeCombatLog.Publish(\"cord\"",
-                "[HarmonyPatch(typeof(BuffCollection), \"TriggerRuleApplyBuff\"",
-                ".OfType<AddCondition>()",
-                "component.Condition",
-                "CordConditionRuntime.BeginBuff(__instance, __0,",
-                "return !skipOriginal",
-                "CordConditionRuntime.EndBuff(__state)",
-                "ReferenceEquals(blueprint, _fatiguedBlueprint)",
-                "skipOriginal = true",
-                "[System.ThreadStatic] private static UnitState _fatigueBypass",
-                "[System.ThreadStatic] private static UnitState _buffSubstitutionState",
-                "ConditionalWeakTable<Buff, object> ExhaustionSources",
+                "[ThreadStatic] private static UnitState _fatigueBypass",
+                "ConditionalWeakTable<Buff, object>",
+                "ExhaustionSources = new ConditionalWeakTable<Buff, object>()",
                 "state.AddCondition(UnitCondition.Fatigued, source)" })
                 Assertions.True(source.Contains(token),
                     "Cord native condition hook lacks exact token: " + token);
+            Assertions.False(source.Contains("TriggerRuleApplyBuff") ||
+                source.Contains("skipOriginal"),
+                "Cord must not preempt the native RuleApplyBuff result.");
+
+            string coordinator = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Fatigue", "CanonicalFatigueApplicationRuntime.cs"));
+            foreach (string token in new[] {
+                "[HarmonyPatch(typeof(BuffCollection), \"TriggerRuleApplyBuff\"",
+                "ReferenceEquals(blueprint, fatigued)",
+                "ReferenceEquals(blueprint, exhausted)",
+                "if (result == null)",
+                "blocked-by-native-rule",
+                "CanonicalFatigueStatePolicy.Decide",
+                "decision.EffectiveIncoming",
+                "CordConditionRuntime.ResolveCanonical",
+                "IsCanonicalApplication",
+                "_replacementDepth",
+                "ApplyRelated(scope.Buffs, exhausted, source)",
+                "private static Exception Finalizer",
+                "CanonicalFatigueApplicationRuntime.End(__state)" })
+                Assertions.True(coordinator.Contains(token),
+                    "Canonical fatigue coordinator lacks exact token: " + token);
+            Assertions.False(coordinator.Contains("return false") &&
+                coordinator.Contains("skipOriginal"),
+                "Canonical coordination must observe, not skip, the native rule.");
             Assertions.False(source.Contains("IWarningNotificationUIHandler") ||
                 source.Contains("HandleWarning"),
                 "Routine Cord outcomes must not use the warning overlay.");

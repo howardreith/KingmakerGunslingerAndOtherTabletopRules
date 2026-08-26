@@ -74,7 +74,7 @@ try {
     }
     $matched = @(Assert-KmgReferenceBundleMatchesInstall `
         -ReferenceBundleDir $bundle -KingmakerInstallDir $install)
-    Assert-True ($matched.Count -eq 10) 'all-explicit-references-match'
+    Assert-True ($matched.Count -eq 13) 'all-explicit-references-match'
     [IO.File]::AppendAllText(
         (Join-Path $bundle 'Managed\Assembly-CSharp.dll'),
         'mismatch')

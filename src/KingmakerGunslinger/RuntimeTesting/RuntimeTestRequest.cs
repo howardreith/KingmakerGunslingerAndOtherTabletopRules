@@ -236,6 +236,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatiguePrepare ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatigueVerifyCleanup ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatigueVerifyAbsent ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveBrownFurPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveBrownFurVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveBrownFurOffVerifyCleanup ||

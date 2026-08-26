@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.Recovery
             if (caster.Unit != null && caster.Unit.IsInCombat)
             {
                 return Unavailable(
-                    "Overhaul Firearm requires one uninterrupted minute out of combat.");
+                    "Overhaul Firearm is unavailable during active combat.");
             }
 
             ExactEquippedFirearmContext context;

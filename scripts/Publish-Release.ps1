@@ -4,7 +4,7 @@ param(
 
     [string]$MSBuildPath,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.102.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.103.md',
 
     [string]$ReleaseBranch = 'master',
 

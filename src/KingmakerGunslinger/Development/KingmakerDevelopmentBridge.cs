@@ -13,6 +13,7 @@ using Kingmaker.UI.Selection;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Reloading;
@@ -985,20 +986,16 @@ namespace KingmakerGunslinger.Development
                     updated));
         }
 
-        internal DevelopmentActionResult DamageFirstEquippedFirearmForDebug()
+        internal DevelopmentActionResult BreakSelectedEquippedFirearmForDebug()
         {
-            RuntimeContext runtime = ResolveRuntime(requireUnit: true);
-            object item;
-            RequireFirstEquippedFirearm(runtime, out item);
-            FirearmItemStateSnapshot updated = _stateService.Transition(
-                item,
-                FirearmStateMachine.ApplyMisfireDamage);
-            return DevelopmentActionResult.Success(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "Applied one development-only misfire-damage transition to {0}'s first equipped firearm: {1}.",
-                    runtime.UnitName,
-                    updated));
+            return SetSelectedEquippedFirearmCondition(
+                FirearmConditionFixtureOperation.Break);
+        }
+
+        internal DevelopmentActionResult WreckSelectedEquippedFirearmForDebug()
+        {
+            return SetSelectedEquippedFirearmCondition(
+                FirearmConditionFixtureOperation.Wreck);
         }
 
         internal DevelopmentActionResult RepairFirstEquippedFirearmForDebug()
@@ -1153,20 +1150,146 @@ namespace KingmakerGunslinger.Development
             RuntimeContext runtime,
             out object item)
         {
-            foreach (object candidate in CollectEquippedRuntimeWeaponItems(runtime))
+            UnitDescriptor descriptor = runtime.UnitDescriptor as UnitDescriptor;
+            if (descriptor == null)
+                throw new InvalidOperationException(
+                    "The selected unit has no concrete UnitDescriptor.");
+            ExactEquippedFirearmContext context;
+            string reason;
+            if (!ExactEquippedFirearmResolver.TryResolve(descriptor,
+                    out context, out reason))
+                throw new InvalidOperationException(reason);
+            item = context.Weapon;
+            return context.Firearm;
+        }
+
+        private DevelopmentActionResult SetSelectedEquippedFirearmCondition(
+            FirearmConditionFixtureOperation operation)
+        {
+            RuntimeContext runtime = ResolveExactSelectedRuntime();
+            UnitEntityData unit = runtime.UnitEntity as UnitEntityData;
+            Player player = runtime.Player as Player;
+            UnitDescriptor descriptor = runtime.UnitDescriptor as UnitDescriptor;
+            if (unit == null || player == null || descriptor == null)
+                throw new InvalidOperationException(
+                    "The exact selected-unit runtime contract was unavailable.");
+            if (unit.IsInCombat || player.IsInCombat)
+                return DevelopmentActionResult.Failure(
+                    "Firearm condition diagnostics require the selected unit and party to be out of combat.");
+
+            ExactEquippedFirearmContext selected;
+            string rejection;
+            if (!ExactEquippedFirearmResolver.TryResolve(descriptor,
+                    out selected, out rejection))
+                return DevelopmentActionResult.Failure(rejection);
+
+            ItemEntityWeapon item = selected.Weapon;
+            FirearmItemStateSnapshot before = selected.Firearm;
+            FirearmConditionFixtureDecision preview =
+                FirearmConditionFixturePolicy.Decide(operation,
+                    before.Repository.State);
+            if (!preview.Accepted)
+                return DevelopmentActionResult.Failure(preview.Reason +
+                    " before=" + before.Repository.State.Condition + ".");
+
+            BlueprintItemWeapon blueprintBefore = item.Blueprint;
+            string staticEnchantmentsBefore =
+                StaticEnchantmentFingerprint(blueprintBefore);
+            FirearmItemStateSnapshot after = null;
+            try
             {
-                FirearmItemStateSnapshot snapshot;
-                string reason;
-                if (_stateService.TryGetOrCreate(candidate, out snapshot, out reason))
+                after = _stateService.Transition(item, current =>
                 {
-                    item = candidate;
-                    return snapshot;
-                }
+                    FirearmConditionFixtureDecision commit =
+                        FirearmConditionFixturePolicy.Decide(operation,
+                            current);
+                    if (!commit.Accepted)
+                        throw new InvalidOperationException(
+                            "The firearm condition changed before the diagnostic commit: " +
+                            commit.Reason);
+                    return commit.After;
+                });
+
+                ExactEquippedFirearmContext verified;
+                string verifyReason;
+                if (!ExactEquippedFirearmResolver.TryResolve(descriptor,
+                        out verified, out verifyReason))
+                    throw new InvalidOperationException(
+                        "The selected firearm could not be re-resolved after the transition: " +
+                        verifyReason);
+                VerifyConditionFixtureTransition(operation, item,
+                    blueprintBefore, staticEnchantmentsBefore, before, after,
+                    verified);
+            }
+            catch
+            {
+                if (after != null)
+                    _stateService.Set(item, before.Repository.State);
+                throw;
             }
 
-            item = null;
-            throw new InvalidOperationException(
-                "The selected unit has no exact firearm item equipped. Equip a Test Musket and retry.");
+            return DevelopmentActionResult.Success(string.Format(
+                CultureInfo.InvariantCulture,
+                "{0} selected equipped firearm (diagnostic): unit={1}; before={2}; after={3}; runtimeId={4}; repositoryIdentity={5}; referenceHash=0x{6:x8}; revision={7}->{8}; sameItem=True; staticEnchantments={9}.",
+                operation == FirearmConditionFixtureOperation.Break
+                    ? "Broke" : "Wrecked",
+                runtime.UnitName,
+                before.Repository.State.Condition,
+                after.Repository.State.Condition,
+                after.ItemRuntimeId,
+                after.Repository.RepositoryIdentity,
+                after.Repository.RuntimeReferenceHash,
+                before.Repository.Revision,
+                after.Repository.Revision,
+                staticEnchantmentsBefore));
+        }
+
+        private static void VerifyConditionFixtureTransition(
+            FirearmConditionFixtureOperation operation,
+            ItemEntityWeapon item,
+            BlueprintItemWeapon blueprintBefore,
+            string staticEnchantmentsBefore,
+            FirearmItemStateSnapshot before,
+            FirearmItemStateSnapshot after,
+            ExactEquippedFirearmContext verified)
+        {
+            FirearmCondition expected = operation ==
+                FirearmConditionFixtureOperation.Break
+                    ? FirearmCondition.Broken
+                    : FirearmCondition.Wrecked;
+            bool stateExact = after.Repository.State.Condition == expected &&
+                (operation == FirearmConditionFixtureOperation.Break
+                    ? after.Repository.State.LoadedRounds ==
+                            before.Repository.State.LoadedRounds &&
+                        Equals(after.Repository.State.LoadedAmmunition,
+                            before.Repository.State.LoadedAmmunition)
+                    : after.Repository.State.IsEmpty);
+            bool identityExact = ReferenceEquals(item, verified.Weapon) &&
+                ReferenceEquals(item.Blueprint, blueprintBefore) &&
+                before.Repository.RepositoryIdentity ==
+                    after.Repository.RepositoryIdentity &&
+                before.Repository.RuntimeReferenceHash ==
+                    after.Repository.RuntimeReferenceHash &&
+                before.ItemRuntimeId == after.ItemRuntimeId &&
+                before.ItemBlueprintId == after.ItemBlueprintId &&
+                before.WeaponTypeId == after.WeaponTypeId &&
+                after.Repository.Revision == before.Repository.Revision + 1;
+            bool staticExact = staticEnchantmentsBefore ==
+                StaticEnchantmentFingerprint(item.Blueprint);
+            if (!stateExact || !identityExact || !staticExact)
+                throw new InvalidOperationException(
+                    "The diagnostic condition transition did not preserve the exact equipped item, repository identity, loaded-state rule, or static enchantments.");
+        }
+
+        private static string StaticEnchantmentFingerprint(
+            BlueprintItemWeapon blueprint)
+        {
+            if (blueprint == null) return "<null-blueprint>";
+            if (blueprint.Enchantments == null) return string.Empty;
+            return string.Join(",", blueprint.Enchantments
+                .Where(value => value != null)
+                .Select(value => value.name + ":" + value.AssetGuid)
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray());
         }
 
         private static FirearmStateRules CreateDebugRules(FirearmDefinition definition)
@@ -1312,6 +1435,29 @@ namespace KingmakerGunslinger.Development
                 unit,
                 descriptor,
                 ResolveUnitName(unit, descriptor));
+        }
+
+        private static RuntimeContext ResolveExactSelectedRuntime()
+        {
+            Game game = Game.Instance;
+            if (game == null || game.Player == null)
+                throw new InvalidOperationException(
+                    "Load an authorized disposable campaign before using firearm condition diagnostics.");
+            SelectionManager selection = SelectionManager.Instance;
+            UnitEntityData unit = selection == null ? null :
+                selection.GetSingleSelectedUnit();
+            if (unit == null)
+                throw new InvalidOperationException(
+                    "Select exactly one party unit before using firearm condition diagnostics.");
+            if (game.Player.Party == null || !game.Player.Party.Any(value =>
+                    ReferenceEquals(value, unit)))
+                throw new InvalidOperationException(
+                    "The single selected unit is not a current party member.");
+            if (unit.Descriptor == null)
+                throw new InvalidOperationException(
+                    "The selected Kingmaker unit has no UnitDescriptor.");
+            return new RuntimeContext(game, game.Player, unit,
+                unit.Descriptor, ResolveUnitName(unit, unit.Descriptor));
         }
 
         private static UnitEntityData ResolveSelectedOrMainUnit(Player player)
