@@ -3225,3 +3225,24 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Next concrete action: clean exact-reference build/package validation,
   commit/push the matrix tranche, qualify supported optional profiles, advance
   once to 0.0.104, then run the frozen final accelerated repeats and seals.
+
+## Summon same-turn compatibility checkpoint - 2026-08-26
+
+- Branch/implementation checkpoint:
+  `codex/summon-same-turn-activation` at published predecessor
+  `633edf362c560255275105571551bac15400acad`; version remains `0.0.103` until
+  final integrated qualification.
+- Added a guarded save-free real-spellbook fixture for optional profiles. It
+  uses exact installed combat, turn, command cooldown, buff, spawn, and summon
+  APIs and restores the request-local scene/party/camera/time state.
+- Quickened compatibility PASS:
+  `20260826T2349511570360Z-0c51eb14a6254b69b7e1077a7aa59768`, 10/10.
+  Acadamae compatibility PASS:
+  `20260827T0002413227046Z-fc68de28803847d0a23e7548a73fb65a`, 12/12.
+- Full suite remains 1,305/1,305 PASS; exact-reference Release compilation and
+  source validation pass. Failed diagnostic attempts are not acceptance
+  evidence.
+- Next action: commit and publish this compatibility-harness tranche, advance
+  exactly once to 0.0.104 across all repository pins, then run exact
+  `gunslinger-call-of-the-wild` and `gunslinger-high-risk-combined`
+  transactions plus the final frozen standalone repeats and package seals.

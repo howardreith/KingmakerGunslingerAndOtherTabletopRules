@@ -51,6 +51,9 @@ namespace KingmakerGunslinger.Summoning
         internal static string DiagnosticTrace
         { get { return _diagnosticTrace; } }
 
+        internal static void RecordDiagnostic(string value)
+        { Record(value); }
+
         internal static void ResetDiagnostics()
         {
             Clear();
@@ -438,10 +441,18 @@ namespace KingmakerGunslinger.Summoning
         {
             try
             {
-                SummonSameTurnActivationRuntime.TryRepair(__instance);
+                SummonAcceleratedInvocationRuntime.RecordDiagnostic(
+                    "repair-postfix=enter");
+                SummonSameTurnActivationDecision decision =
+                    SummonSameTurnActivationRuntime.TryRepair(__instance);
+                SummonAcceleratedInvocationRuntime.RecordDiagnostic(
+                    "repair-postfix=" + decision.Disposition);
             }
             catch (Exception exception)
             {
+                SummonAcceleratedInvocationRuntime.RecordDiagnostic(
+                    "repair-postfix=exception:" +
+                    exception.GetType().Name);
                 ModContext context;
                 if (ModContext.TryGet(out context))
                     context.Logger.Warning("summoning",

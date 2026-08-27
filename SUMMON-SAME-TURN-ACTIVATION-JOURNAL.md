@@ -200,3 +200,46 @@
   acceptance. Next action: checkpoint and push this tranche, run the supported
   compatibility profiles, advance once to 0.0.104, and repeat the principal
   accelerated cases from fresh processes against the frozen versioned build.
+
+## 2026-08-26 - save-free optional-mod compatibility fixture
+
+- Added two guarded, save-free compatibility scenarios. They construct a
+  request-local scene and disposable player caster, but retain the real
+  spellbook, prepared/metamagic `AbilityData`, `UnitUseAbility`,
+  `RuleCastSpell`, `ContextActionSpawnMonster`, `RuleSummonUnit`, and installed
+  turn-based controller. This avoids the unrelated optional-mod working-save
+  callback while preserving the production path under test.
+- The fixture supplies only services unavailable before an area is loaded:
+  deterministic target projection, visibility metadata, synchronous
+  Default-mode controller ticks, and exact combat enrollment. Every temporary
+  area, camera, party, time, unit, and game-mode reference is restored.
+- Exact installed controller inspection showed that direct-control
+  `TurnController.Prepare()` ends in `Preparing`; the first command promotes it
+  to `Acting`. The fixture therefore accepts both native states rather than
+  inventing a turn status.
+- A diagnostic run proved that direct command ticking had bypassed the public
+  `UnitActionController.UpdateCooldowns` boundary. The corrected fixture calls
+  that exact method once at the not-acted-to-acted transition. Another
+  diagnostic proved the save-free clock needed the exact
+  `UnitBuffsController.TickOnUnit` path for lifecycle callbacks.
+- Quickened compatibility PASS:
+  `20260826T2349511570360Z-0c51eb14a6254b69b7e1077a7aa59768`.
+  The real Swift command changed Swift `0 -> 6`, preserved Standard/Move
+  `0 -> 0`, produced one complete summon graph, repaired the exact lifecycle,
+  granted one lawful opportunity in each observed round, and restored all
+  state. The installed Call of the Wild summon postfix and KMG production
+  postfix were both audited at the real `RuleSummonUnit.OnTrigger` method.
+- Acadamae compatibility PASS:
+  `20260827T0002413227046Z-fc68de28803847d0a23e7548a73fb65a`.
+  The real Standard command produced one slot spend, one save/publication
+  (`20` vs DC `16`), cooldowns `Swift/Standard/Move = 0/6/3`, one lawful turn
+  in each of rounds 1 and 2, exact 12-second lifecycle removal, native
+  `ShouldBeDestroyed` at round 3, and complete cleanup.
+- The save-free fixture defers `EntityDestroyer.Tick` only because no loaded
+  `AreaPersistentState` exists at the main menu. It proves canonical buff
+  removal plus the native destruction queue; the already-qualified save-backed
+  Acadamae run proves physical entity removal in a loaded area.
+- Current gates remain repository/build PASS and 1,305/1,305 tests PASS. Exact
+  profile transactions, version advancement, and frozen final repeats remain
+  pending; no compatibility-profile PASS is claimed from the harness runs
+  alone.

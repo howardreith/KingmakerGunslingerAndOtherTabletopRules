@@ -17,7 +17,7 @@ Status: STANDALONE RUNTIME MATRIX QUALIFIED; OPTIONAL PROFILES AND FINAL VERSION
 | Cancelled/failed summon | No spawned unit and no activation state | PASS: out-of-range real command preserves slot and produces zero summon rules |
 | Non-summon spawn | Completely unaffected | PASS: live combat control has no summon lifecycle/appearance or summon callback |
 | Save/load/reset | No stale project-owned activation marker | PASS by construction/source contract: command-end and scene-dispose cleanup; no serialized state |
-| Standalone profile | Full guarded behavior | Pending |
+| Standalone profile | Full guarded behavior | PASS: complete save-backed matrix and two fresh Quickened processes |
 | Call of the Wild profile | Exact supported profile passes and restores | Pending |
 | Highest-risk combined profile | Exact supported combined profile passes and restores | Pending |
 
@@ -36,6 +36,17 @@ Status: STANDALONE RUNTIME MATRIX QUALIFIED; OPTIONAL PROFILES AND FINAL VERSION
 These runs qualify the standalone 0.0.103 investigation candidate. The final
 0.0.104 source freeze still requires optional-profile qualification and the
 mandated fresh-process accelerated repeats.
+
+## Save-free compatibility harness evidence
+
+| Scenario | Run ID | Result |
+| --- | --- | --- |
+| Current installed optional-mod collection, Quickened | `20260826T2349511570360Z-0c51eb14a6254b69b7e1077a7aa59768` | PASS, 10/10 |
+| Current installed optional-mod collection, Acadamae | `20260827T0002413227046Z-fc68de28803847d0a23e7548a73fb65a` | PASS, 12/12 |
+
+These runs validate the save-free real-player-path fixture and the installed
+Call of the Wild summon postfix interaction. They do not replace the exact
+repository-owned profile transactions still marked pending above.
 
 ## Required lifecycle fields
 

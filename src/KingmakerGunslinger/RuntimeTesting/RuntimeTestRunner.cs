@@ -698,6 +698,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (!_context.IsReady) return;
+                if (RuntimeTestScenarioCatalog
+                    .IsSummonSameTurnCompatibilityScenario(
+                        _request.Scenario))
+                {
+                    RunSummonSameTurnCompatibility();
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
                 {
                     Complete(RunModLoadSmoke());
@@ -1455,7 +1462,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
-                    RuntimeTestScenarioCatalog.IsSummonSameTurnScenario(
+                    RuntimeTestScenarioCatalog
+                        .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
@@ -1511,7 +1519,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
-                    RuntimeTestScenarioCatalog.IsSummonSameTurnScenario(
+                    RuntimeTestScenarioCatalog
+                        .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
@@ -1542,6 +1551,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? _workingSaveSmoke.ObserverArmingSubstage
                             : _workingStartupStage, exception);
             }
+        }
+
+        private void RunSummonSameTurnCompatibility()
+        {
+            if (_summonSameTurnActivation == null)
+            {
+                _manualElapsed = Stopwatch.StartNew();
+                _workingStartupStage = "request-local-summon-fixture";
+                WriteLifecycleStage(_workingStartupStage);
+                _trace.Record("scenario-activated",
+                    _request.Scenario + ";fixture=request-local");
+                _summonSameTurnActivation =
+                    SummonSameTurnActivationScenario.Begin(
+                        _context, _request);
+            }
+            _summonSameTurnActivation.Poll();
+            if (_summonSameTurnActivation.Complete)
+                Complete(_summonSameTurnActivation.Result);
         }
 
         private void RunWorkingSaveSmoke()
@@ -1976,8 +2003,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Complete(RunDisposableExpandedSummoningPlayerPath());
                 }
-                else if (RuntimeTestScenarioCatalog.IsSummonSameTurnScenario(
-                    _request.Scenario))
+                else if (RuntimeTestScenarioCatalog
+                    .IsSummonSameTurnWorkingSaveScenario(_request.Scenario))
                 {
                     if (_summonSameTurnActivation == null)
                         _summonSameTurnActivation =
@@ -4503,7 +4530,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableInHarmsWayOffTurnEconomy ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
-                RuntimeTestScenarioCatalog.IsSummonSameTurnScenario(
+                RuntimeTestScenarioCatalog
+                    .IsSummonSameTurnWorkingSaveScenario(
                     _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||

@@ -78,6 +78,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "summon-same-turn-native-control";
         internal const string SummonSameTurnRtwpControl =
             "summon-same-turn-rtwp-control";
+        internal const string SummonSameTurnCompatibilityQuickened =
+            "summon-same-turn-compatibility-quickened";
+        internal const string SummonSameTurnCompatibilityAcadamae =
+            "summon-same-turn-compatibility-acadamae";
         internal const string DisposableExpandedSummoningVisualContracts =
             "disposable-expanded-summoning-visual-contracts";
         internal const string WorkingSaveExpandedSummoningPrepare =
@@ -386,6 +390,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonSameTurnMultiple,
                 SummonSameTurnNativeControl,
                 SummonSameTurnRtwpControl,
+                SummonSameTurnCompatibilityQuickened,
+                SummonSameTurnCompatibilityAcadamae,
                 DisposableExpandedSummoningVisualContracts,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,
@@ -529,11 +535,25 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal static bool IsSummonSameTurnScenario(string scenario)
         {
+            return IsSummonSameTurnWorkingSaveScenario(scenario) ||
+                IsSummonSameTurnCompatibilityScenario(scenario);
+        }
+
+        internal static bool IsSummonSameTurnWorkingSaveScenario(
+            string scenario)
+        {
             return scenario == SummonSameTurnActivation ||
                 scenario == SummonSameTurnAcadamae ||
                 scenario == SummonSameTurnMultiple ||
                 scenario == SummonSameTurnNativeControl ||
                 scenario == SummonSameTurnRtwpControl;
+        }
+
+        internal static bool IsSummonSameTurnCompatibilityScenario(
+            string scenario)
+        {
+            return scenario == SummonSameTurnCompatibilityQuickened ||
+                scenario == SummonSameTurnCompatibilityAcadamae;
         }
 
         internal static string[] Names()

@@ -111,6 +111,9 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTestRequest.cs"));
             string automation = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
+            string compatibility = File.ReadAllText(Path.Combine(root,
+                "scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1"));
             foreach (string token in new[] {
                 "summon-same-turn-activation",
                 "PrepareQuickenedSummon",
@@ -126,16 +129,16 @@ namespace KingmakerGunslinger.DomainTests
                 "SourceAbilityContext",
                 "ReferenceEquals(rule.Context.SourceAbilityContext",
                 "CombatController.SortedUnits",
-                "CurrentTurn.ForceToEnd(true)",
+                "turn.ForceToEnd(true)",
                 "accelerated-summon-current-round-opportunity",
                 "caster intentionally ended the turn",
                 "KMG_AUTOMATION_WORKING" })
                 Assertions.True(scenario.Contains(token) ||
                     catalog.Contains(token) || request.Contains(token) ||
-                    automation.Contains(token),
+                    automation.Contains(token) || compatibility.Contains(token),
                     "Same-turn reproduction contract is missing: " + token);
             Assertions.True(request.Contains(
-                    "RuntimeTestScenarioCatalog.IsSummonSameTurnScenario") &&
+                    "RuntimeTestScenarioCatalog.IsSummonSameTurnWorkingSaveScenario") &&
                 catalog.Contains("SummonSameTurnActivation") &&
                 automation.Contains("'summon-same-turn-activation'") &&
                 automation.Contains("PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
@@ -158,8 +161,129 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpiredAtExpectedBoundary" })
                 Assertions.True(scenario.Contains(token) ||
                     catalog.Contains(token) || request.Contains(token) ||
-                    automation.Contains(token),
+                    automation.Contains(token) || compatibility.Contains(token),
                 "Same-turn runtime matrix contract is missing: " + token);
+            foreach (string scenarioName in new[] {
+                "summon-same-turn-activation",
+                "summon-same-turn-acadamae",
+                "summon-same-turn-multiple",
+                "summon-same-turn-native-control",
+                "summon-same-turn-rtwp-control" })
+                Assertions.True(compatibility.Contains("'" + scenarioName + "'"),
+                    "Compatibility profile launcher is missing: " +
+                    scenarioName);
+            foreach (string scenarioName in new[] {
+                "summon-same-turn-compatibility-quickened",
+                "summon-same-turn-compatibility-acadamae" })
+                Assertions.True(catalog.Contains(scenarioName) &&
+                    automation.Contains("'" + scenarioName + "'") &&
+                    compatibility.Contains("'" + scenarioName + "'"),
+                    "Request-local compatibility scenario is missing: " +
+                    scenarioName);
+            Assertions.True(scenario.Contains(
+                    "new SceneEntitiesState(") &&
+                scenario.Contains("RegisterRequestLocalUnit") &&
+                scenario.Contains("Player.PartyCharacters.Add") &&
+                scenario.Contains("Player.InvalidateCharacterLists()") &&
+                scenario.Contains("RestoreRequestLocalPartyCharacters") &&
+                scenario.Contains("RequestLocalNavigationGridPatch") &&
+                scenario.Contains("UpdateNavigationGridTags") &&
+                scenario.Contains("SuppressRequestLocalNavigationGridUpdate") &&
+                scenario.Contains("RequestLocalSpawnNearestNodePatch") &&
+                scenario.Contains("ObstacleAnalyzer") &&
+                scenario.Contains("TrySupplyRequestLocalNearestNode") &&
+                scenario.Contains("RequestLocalSpawnPlacesPatch") &&
+                scenario.Contains("FreePlaceSelector") &&
+                scenario.Contains("TryPrepareRequestLocalSpawnPlaces") &&
+                scenario.Contains("RequestLocalSpawnGroundProjectionPatch") &&
+                scenario.Contains("TryGetRequestLocalSpawnPosition") &&
+                scenario.Contains("compatibility-request-local-spawn-placement") &&
+                scenario.Contains("scope=guarded-compatibility-fixture-only") &&
+                scenario.Contains("AuditRequestLocalSummonPatchOrder") &&
+                scenario.Contains("typeof(SummonSameTurnActivationPatch)") &&
+                scenario.Contains("typeof(SummonRuleObserverPatch)") &&
+                scenario.Contains("observer.priority < production.priority") &&
+                scenario.Contains("HarmonyPriority(Priority.Last)") &&
+                scenario.Contains("PrepareRequestLocalTurn") &&
+                scenario.Contains("RunInRequestLocalDefaultMode(turn.Prepare)") &&
+                scenario.Contains("request-local-turn-prepare=") &&
+                scenario.Contains("SelectionManager-for-Start") &&
+                scenario.Contains("TurnController.TurnStatus.Preparing") &&
+                scenario.Contains("turn.Status != TurnController.TurnStatus.Acting") &&
+                scenario.Contains("native-direct-control-boundary=Preparing-until-first-") &&
+                scenario.Contains("rule.SummonedUnit.JoinCombat()") &&
+                scenario.Contains("request-local-summon-combat-join=") &&
+                scenario.Contains("InstallRequestLocalAreaContext") &&
+                scenario.Contains("BlueprintRoot.Instance.NewGamePreset.Area") &&
+                scenario.Contains("GetSetMethod(true)") &&
+                scenario.Contains("RestoreRequestLocalAreaContext") &&
+                scenario.Contains("areaContextRestored") &&
+                scenario.Contains("CaptureRequestLocalCameraContext") &&
+                scenario.Contains("InstallRequestLocalCameraContext") &&
+                scenario.Contains("new CameraController(") &&
+                scenario.Contains("CameraScrollToCurrentUnit.CurrentValue") &&
+                scenario.Contains("RestoreRequestLocalCameraContext") &&
+                scenario.Contains("cameraContextRestored") &&
+                scenario.Contains("unit.View.AgentASP.AvoidanceDisabled = true") &&
+                scenario.Contains("RunInRequestLocalDefaultMode") &&
+                scenario.Contains("typeof(Game).GetField(\"m_GameModes\"") &&
+                scenario.Contains("new GameMode(") &&
+                scenario.Contains("GameModeType.Default") &&
+                scenario.Contains("controller.Tick()") &&
+                scenario.Contains("controller.TickTime()") &&
+                scenario.Contains("RequestLocalCooldownController") &&
+                scenario.Contains("base.TickOnUnit(unit)") &&
+                scenario.Contains("RequestLocalBuffsController") &&
+                scenario.Contains("UnitBuffsController") &&
+                scenario.Contains("UnitActionController") &&
+                scenario.Contains(
+                    "UnitActionController.UpdateCooldowns at single ") &&
+                scenario.Contains("_requestLocalCastCooldownApplied") &&
+                scenario.Contains("_castCommand.Start()") &&
+                scenario.Contains("_castCommand.Tick()") &&
+                scenario.Contains("value.ShouldBeDestroyed") &&
+                scenario.Contains(
+                    "request-local-summon-expiration=") &&
+                scenario.Contains(
+                    "reason=no-loaded-area-persistent-state") &&
+                scenario.Contains("time.SetDeltaTime(0.25f)") &&
+                scenario.Contains("time.SetGameDeltaTime(0.25f)") &&
+                scenario.Contains("_requestLocalPlayerGameTimeBefore") &&
+                scenario.Contains("RestoreRequestLocalPlayerGameTime") &&
+                scenario.Contains("playerGameTimeRestored") &&
+                scenario.Contains(
+                    "controller.HandleUnitJoinCombat(rule.SummonedUnit)") &&
+                scenario.Contains(
+                    "request-local-summon-turn-enrollment=") &&
+                scenario.Contains("unit.View.SetVisible(true, true)") &&
+                scenario.Contains("unit.IsInFogOfWar = false") &&
+                scenario.Contains("SortedUnits.Contains(_caster)") &&
+                scenario.Contains("_postCommandEntityTicks > 64") &&
+                scenario.Contains("_stableSummonEntityTicks < 2") &&
+                scenario.Contains("request-local-entity-creator=") &&
+                scenario.Contains("CompleteRequestLocalTurnEnd") &&
+                scenario.Contains("method.Name == \"End\"") &&
+                scenario.Contains("TurnController.TurnStatus.Ended") &&
+                scenario.Contains("CombatController remains actor/round owner") &&
+                scenario.Contains("DriveRequestLocalCastCommand") &&
+                scenario.Contains("compatibility-native-turn-driver") &&
+                scenario.Contains("if (!_requestLocalFixture)") &&
+                scenario.Contains("Game.Instance.EntityDestroyer.Tick()") &&
+                scenario.Contains("_request.TimeoutSeconds") &&
+                catalog.Contains(
+                    "IsSummonSameTurnCompatibilityScenario") &&
+                automation.Contains("RequiresSaveName = $false") &&
+                request.Contains(
+                    "IsSummonSameTurnWorkingSaveScenario"),
+                "Compatibility qualification must use a bounded, save-free " +
+                "request-local scene while preserving working-save guards.");
+            Assertions.True(compatibility.Contains(
+                    "$arguments.SaveName = 'KMG_AUTOMATION_WORKING'"),
+                "Compatibility matrix scenarios must remain working-save-only.");
+            Assertions.True(compatibility.Contains(
+                    "CompletionTimeoutSeconds = $RuntimeTimeoutSeconds"),
+                "Compatibility save-backed runs must propagate their bounded " +
+                "profile timeout through load completion.");
             int cleanupStart = scenario.IndexOf("private void Cleanup()",
                 StringComparison.Ordinal);
             int nonSummonDispose = scenario.IndexOf(
