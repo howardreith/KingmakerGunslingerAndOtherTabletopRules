@@ -3289,3 +3289,19 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
 - Current classification: source-qualified and automated-runtime-qualified;
   human-accepted remains false. Remaining work is the documentation-only
   commit/push, final clean-tree seal, and concise human review handoff.
+
+## Summon same-turn release authorization - 2026-08-27
+
+- Owner authorization received to finalize, merge the qualified feature
+  branch into `master`, push remote `master`, and publish the next patch
+  release.
+- The latest published tag is `v0.0.103`; the already-qualified mission version
+  `0.0.104` is therefore the required single patch increment. No additional
+  `0.0.105` bump is warranted.
+- Publication authorization does not claim that the remaining concise manual
+  Acadamae/Quickened observation occurred. Source-qualified,
+  automated-runtime-qualified, and human-accepted remain separate statuses.
+- Required release path: validate this release-status documentation, commit and
+  push the feature branch through the approved helper, merge without rewriting
+  history, push `master`, then use the guarded deterministic publisher with
+  `-Publish -ConfirmReleaseReady`.

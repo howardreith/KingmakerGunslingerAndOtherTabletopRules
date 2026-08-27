@@ -203,8 +203,13 @@ branch is handed off.
 - Source-qualified: **yes**.
 - Automated runtime-qualified: **yes**.
 - Human-accepted: **no**.
+- Release disposition: **owner-approved for merge and public publication on
+  2026-08-27**.
 
 The remaining human-only check is a concise in-game observation of one
 Acadamae Standard summon and one legitimately Quickened summon in turn-based
 combat, including caster remaining actions and the following round. It is not
 needed to establish the automated evidence above and has not been claimed.
+
+Public release authorization does not reclassify automated evidence as human
+acceptance; the two statuses remain deliberately separate.
