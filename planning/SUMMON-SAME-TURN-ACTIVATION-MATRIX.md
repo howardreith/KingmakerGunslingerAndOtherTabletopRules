@@ -1,85 +1,77 @@
 # Summon Same-Turn Activation Matrix
 
-Status: STANDALONE RUNTIME MATRIX QUALIFIED; OPTIONAL PROFILES AND FINAL VERSION PENDING
+Status: SOURCE-QUALIFIED AND AUTOMATED-RUNTIME-QUALIFIED; HUMAN ACCEPTANCE PENDING
 
-| Case | Required evidence | Current disposition |
+- Starting master: `cf1ca7aedf34ee76690f8864daedc9319a8e21a6`
+- Branch: `codex/summon-same-turn-activation`
+- Candidate version: `0.0.104`
+- Deterministic suite: 1,307/1,307 PASS
+- Focused policy/installed-boundary cases: 18 PASS
+
+| Case | Qualified result | Authoritative evidence |
 | --- | --- | --- |
-| Ordinary unaccelerated native summon | Existing accepted scheduling and duration unchanged | PASS: Full-Round control retains both native six-second buffs; first lawful opportunity is cast round + 2 |
-| Acadamae OFF | Native Full-Round timing; no Acadamae save/consequence | PASS in ordinary control |
-| Acadamae ON | Standard action, one slot, one save/consequence, correct current-round summon opportunity | PASS: real prepared spell; one save/publication; exact current-round and next-round opportunities |
-| Legitimate Quickened summon | Swift action, caster retains Standard/Move, correct current-round summon opportunity | PASS twice: real path; Swift only; exact cast-round attack and normal next round |
-| KMG Expanded Summoning | Real KMG choice follows the same general summon mechanism | PASS: four actual KMG Eagles through the real `1d4+1` spell option |
-| `1d3` or `1d4+1` | Every successful spawned unit receives exactly one initial opportunity | PASS: four distinct Eagles, each exactly once in both observed rounds |
-| Duplicate callback | Same unit/opportunity correlation becomes a no-op | PASS per spawned unit: `AlreadyEligible`, canonical state unchanged |
-| Following round | Native scheduling; no duplicate initiative, command, or activation | PASS: one normal next-round opportunity per accelerated summon |
-| Duration | Same-turn opportunity neither shortens nor extends native lifecycle | PASS: accelerated 120s; Acadamae 12s expires exactly at cast round + 2; ordinary native 18s including grace |
-| RTwP | Native immediate AI behavior; no artificial turn state | PASS: native two-second appearance clears; native AI acts; no current turn/order/forced turn |
-| Cancelled/failed summon | No spawned unit and no activation state | PASS: out-of-range real command preserves slot and produces zero summon rules |
-| Non-summon spawn | Completely unaffected | PASS: live combat control has no summon lifecycle/appearance or summon callback |
-| Save/load/reset | No stale project-owned activation marker | PASS by construction/source contract: command-end and scene-dispose cleanup; no serialized state |
-| Standalone profile | Full guarded behavior | PASS: complete save-backed matrix and two fresh Quickened processes |
-| Call of the Wild profile | Exact supported profile passes and restores | Pending |
-| Highest-risk combined profile | Exact supported combined profile passes and restores | Pending |
+| Ordinary unaccelerated native summon | Unchanged. Full-Round control retains Owlcat's appearance lock and lifecycle grace; first accepted opportunity remains cast round + 2. | `20260827T0207285929281Z-7a4390604a714979a0868bccd0494fd9` |
+| Acadamae OFF | Native Full-Round timing; no Acadamae consequence. | Native-control run above |
+| Acadamae ON, Standard | One prepared slot, Standard command, one save/publication, one cast-round opportunity, one normal following-round opportunity. | `20260827T0221563245711Z-a37e5f1796b147079fd344abdee13f1d`; repeat `20260827T0224255962019Z-2d12360517174bb6809f8852ad09bae5` |
+| Legitimate Quickened summon | Swift command; caster retains Standard/Move and current-turn ownership; summon acts once in cast round and once normally next round. | `20260827T0216535483324Z-b013fe01b1f24d2abba2d245c40fd2da`; repeat `20260827T0219263194513Z-20ace7f093fd494995f2594b832c1fae` |
+| KMG Expanded Summoning | Actual KMG choice uses the same generic summon path. | Multiple-summon run below |
+| `1d3` summon | Three distinct KMG Eagles each join, receive initiative, and act exactly once in the cast and following rounds. | `20260827T0204341245023Z-6cee4a5f585b4108b98323109152b607` |
+| Duplicate callback | Exact unit/current opportunity is idempotent; no second join, initiative entry, or action. | Focused tests plus all accelerated runtime runs |
+| Following round | Native scheduling resumes; exactly one opportunity, no stale gate or duplicate entry. | Quickened, Acadamae, and multiple runs |
+| Duration | Native duration retained; same-turn activation neither decrements twice nor adds a round. Acadamae expires at its qualified boundary. | Quickened/Acadamae/multiple/native-control runs |
+| RTwP | No turn gate, artificial order, or duplicate command; native immediate AI remains active. | `20260827T0209540539692Z-667023d9194a45009557fbf8016b6c9b` |
+| Cancelled/failed summon | No summon rule/unit/enrollment and no consequence. | Native-control run |
+| Non-summon spawn | No summon lifecycle correlation or special enrollment. | Native-control run and focused policy tests |
+| Save/load/reset | No serialized marker; exact transient windows clear at command/scene/combat/mode/reset boundaries. | Source/assembly-backed tests and cleanup assertions |
+| Standalone profile | Full guarded matrix and two fresh-process runs for each principal accelerated path. | Runs above |
+| Call of the Wild | Exact supported profile PASS and configuration restored byte-for-byte. | Quickened `20260827T0256056248286Z-07e13e9b019e4c3899bb3ff4d30c56d9`; Acadamae `20260827T0320286346830Z-770c3086d3cd440cabc36eec86ecf482` |
+| Highest-risk combined | `gunslinger-high-risk-combined` PASS and configuration restored byte-for-byte. | Quickened `20260827T0335035677836Z-f55fb935816d4b999940684c3912c606`; Acadamae `20260827T0338217323762Z-d1517bbda5a44cc0968c8c28631ccd7b` |
 
-## Standalone guarded evidence
+## Proven engine divergence
 
-| Scenario | Run ID | Result |
-| --- | --- | --- |
-| Initial fixed Quickened | `20260826T1534299629829Z-686e0463d5254e4b871d5f7a7fec1827` | PASS |
-| Acadamae Standard | `20260826T1631499603377Z-713c7efcecab4c98963f8ca5a72b6650` | PASS |
-| KMG `1d4+1` multiple | `20260826T1701469324812Z-78e74018a3c4426194e6ebae8fc9632a` | PASS |
-| Ordinary/Acadamae-OFF/negative controls | `20260826T1717124156319Z-44e2710f9b4042e0a7b46c6a9a64c668` | PASS |
-| RTwP control | `20260826T1725541089257Z-fb0b13a2dfab4e3a95e33571bf99925c` | PASS |
-| Fresh Quickened repeat | `20260826T1729361837486Z-690d0e2c18d9463bbd16232d6d070ab0` | PASS |
-| Cleanup-adjusted Quickened repeat | `20260826T1738486014413Z-aa53964345fa417da346a60852014684` | PASS |
+The real player path is:
 
-These runs qualify the standalone 0.0.103 investigation candidate. The final
-0.0.104 source freeze still requires optional-profile qualification and the
-mandated fresh-process accelerated repeats.
+`UnitUseAbility` -> `RuleCastSpell` -> `ContextActionSpawnMonster` ->
+`RuleSummonUnit` -> `EntityCreator.Tick` -> live `UnitEntityData` -> native
+combat enrollment and initiative controllers.
 
-## Save-free compatibility harness evidence
+The comparison proved two consecutive divergences:
 
-| Scenario | Run ID | Result |
-| --- | --- | --- |
-| Current installed optional-mod collection, Quickened | `20260826T2349511570360Z-0c51eb14a6254b69b7e1077a7aa59768` | PASS, 10/10 |
-| Current installed optional-mod collection, Acadamae | `20260827T0002413227046Z-fc68de28803847d0a23e7548a73fb65a` | PASS, 12/12 |
+1. `RuleSummonUnit.OnTrigger` reads immutable
+   `Context.SourceAbility.IsFullRoundAction`, not the live accelerated command.
+   A Standard/Swift summon therefore receives `SummonedUnitAppearBuff` and six
+   seconds of lifecycle grace even though its caster lawfully spent only that
+   accelerated action.
+2. After that state is normalized, `UnitCombatJoinController.Tick` still
+   returns early during turn-based combat whenever
+   `!CombatController.IsPassing()`. A summon created inside the caster's
+   unfinished turn is consequently omitted from combat enrollment before
+   `CombatController.ChooseNextUnit` may advance the actor or round.
 
-These runs validate the save-free real-player-path fixture and the installed
-Call of the Wild summon postfix interaction. They do not replace the exact
-repository-owned profile transactions still marked pending above.
+The ordinary Full-Round control reaches those boundaries at Owlcat's native
+accepted time and is not correlated as accelerated. The fixed Standard/Swift
+paths retain the caster turn only until every exact spawned unit has passed
+native `JoinCombat`, order membership, and initiative preparation.
 
-## Required lifecycle fields
+## Repair invariants
 
-Each relevant cast must correlate combat/cycle identity, current actor, caster
-identity and initiative, action resources, spell/slot/metamagic/Acadamae mode,
-command action type, spell completion, summon rule and pool, spawned unit
-identity, entity-tick survival, live/combat registration, initiative and turn
-membership, acted state, summon resources/controller/AI, first issued command,
-first-action round, caster resources after spawn, and next-round scheduling.
+- Only a genuine `RuleSummonUnit` rooted in the exact accelerated spellbook
+  invocation can arm a window.
+- `UnitEntityData.JoinCombat()` is invoked once per exact correlated summon;
+  Owlcat's own join, preparation, initiative, and turn-order handlers do the
+  authoritative work.
+- `TurnController.Tick` is held only while the same caster/controller/round is
+  current and enrollment is incomplete; 240 attempts is the fail-open bound.
+- No production code writes initiative, order collections, cooldowns, caster
+  resources, AI commands, or current-turn ownership.
+- Each spawned unit is keyed independently, so one `1d3`/`1d4+1` invocation
+  cannot suppress or duplicate another member.
+- RTwP, ordinary Full-Round summons, summons outside the active caster turn,
+  and arbitrary unit creation fail closed to native behavior.
 
-Exact installed equivalents replace guessed field names. A row cannot pass on
-visible behavior alone when native mechanical state is available.
+## Evidence classification
 
-## Proven pre-fix boundary
-
-Guarded run `20260826T1445424590411Z-3b96e766c8b144449164781c019dcc51`
-used a real prepared Quickened Summon Monster I and exact invocation-context
-identity. Cast-round `TurnController.Prepare` observed
-`CanActInCombat=true`, all three action resources available,
-`SummonedUnitAppearBuff=true`, and `IsAbleToAct=false`. The same unit's next
-round `Prepare` observed the appearance lock absent and `IsAbleToAct=true`.
-Thus spawn, context, enrollment, initiative, and resource initialization all
-succeed; the blueprint-derived appearance lock is the first failing state.
-
-## Pure policy cases
-
-- not in combat;
-- RTwP;
-- not a summon;
-- summon outside the caster's active turn;
-- already eligible summon;
-- missing opportunity;
-- already acted;
-- duplicate callback;
-- distinct units from one multi-summon cast;
-- next-round token mismatch.
+- Source-qualified: yes.
+- Automated runtime-qualified: yes, including standalone, Call of the Wild,
+  and highest-risk combined profiles.
+- Human-accepted: no; the concise in-game review sequence remains outstanding.
