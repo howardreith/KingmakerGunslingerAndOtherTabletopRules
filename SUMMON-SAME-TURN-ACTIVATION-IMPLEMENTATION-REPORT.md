@@ -7,7 +7,7 @@ Status: SOURCE-QUALIFIED AND AUTOMATED-RUNTIME-QUALIFIED; HUMAN ACCEPTANCE PENDI
 - Starting qualified master: `cf1ca7aedf34ee76690f8864daedc9319a8e21a6`
 - Working branch: `codex/summon-same-turn-activation`
 - Starting version: `0.0.103`
-- Candidate version: `0.0.104`
+- Release version: `0.0.104`
 - Production source freeze: `39e282eaed4a2f74393350867272d060ad87e75e`
 - Final compatibility-harness predecessor: `9d847e714c4965eb8866bb5163088384bbef6546`
 
@@ -143,5 +143,6 @@ Qualified 0.0.104 artifact hashes before the documentation-only seal are:
   `1467A767AF9FF16CE34A2ADB6120216F93438667B27EE8F93B8FF7AB45CD1444`
 
 The guarded runtime evidence is automated mechanical qualification, not human
-acceptance. The only outstanding review is the documented Acadamae and
-legitimate Quickened in-game observation.
+acceptance. The documented Acadamae and legitimate Quickened in-game
+observation remains available as a post-release human check. Merge and public
+publication were owner-approved on 2026-08-27.

@@ -14,7 +14,7 @@
 - Adds guarded save-backed and save-free real-player-path coverage for
   Quickened, Acadamae, KMG multiple, native, RTwP, negative, duration, and
   exact optional-mod compatibility profiles. The deterministic suite contains
-  1,305 passing tests.
+  1,307 passing tests.
 
 ## 0.0.103-overhaul-summon-menu-fatigue-escalation
 
