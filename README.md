@@ -1,7 +1,10 @@
 # Kingmaker Gunslinger
 
-Version `0.0.103` makes Overhaul Firearm commit at its ordinary out-of-combat
-delivery boundary instead of waiting one game minute, bounds Expanded
+Version `0.0.104` lets a genuine summon created by a Standard- or Swift-action
+spell act in its lawful current round without changing the caster's remaining
+actions, ordinary Full-Round summons, later rounds, or RTwP. It also retains
+the 0.0.103 repairs that make Overhaul Firearm commit at its ordinary
+out-of-combat delivery boundary instead of waiting one game minute and bound Expanded
 Summoning's largest native action-bar variant menus to the active canvas with
 scrolling when needed, and applies the canonical Fatigued-to-Exhausted rule
 after Kingmaker accepts an exact Fatigued effect. Acadamae Graduate uses that

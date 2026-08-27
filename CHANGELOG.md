@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.104-summon-same-turn-activation
+
+- Corrects accelerated summoning in turn-based combat so a genuine summon
+  created during its caster's active turn receives its lawful current-round
+  opportunity instead of remaining locked by Full-Round appearance state.
+- Correlates the exact real `UnitUseAbility`, `RuleCastSpell`, and
+  `RuleSummonUnit` invocation without changing initiative, turn order, summon
+  AI, caster resources, ordinary Full-Round timing, RTwP, or non-summon spawns.
+- Preserves native duration by removing only the six-second Full-Round grace
+  misapplied to Standard/Swift invocations; duplicate callbacks are idempotent
+  per summoned unit, including multi-creature KMG summons.
+- Adds guarded save-backed and save-free real-player-path coverage for
+  Quickened, Acadamae, KMG multiple, native, RTwP, negative, duration, and
+  exact optional-mod compatibility profiles. The deterministic suite contains
+  1,305 passing tests.
+
 ## 0.0.103-overhaul-summon-menu-fatigue-escalation
 
 - Removes Overhaul Firearm's explicit 60-second `GameTime` delivery loop. The
