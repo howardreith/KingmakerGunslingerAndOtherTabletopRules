@@ -22,7 +22,9 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("overhaul-summon-menu-fatigue-escalation"
+    effective_suffix = ("summon-same-turn-activation"
+        if VERSION == "0.0.104"
+        else "overhaul-summon-menu-fatigue-escalation"
         if VERSION == "0.0.103"
         else "starter-bokken-combat-log-acadamae-toggle"
         if VERSION == "0.0.102"

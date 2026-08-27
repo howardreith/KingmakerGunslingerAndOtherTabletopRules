@@ -1099,8 +1099,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         [switch]$ManualInteractionRequired
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.103') {
-        throw 'ExpectedVersion must be exactly the active version 0.0.103.'
+    if ($ExpectedVersion -cne '0.0.104') {
+        throw 'ExpectedVersion must be exactly the active version 0.0.104.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'

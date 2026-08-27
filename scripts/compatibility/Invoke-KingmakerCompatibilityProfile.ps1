@@ -276,7 +276,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.103'
+            ExpectedVersion = '0.0.104'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
