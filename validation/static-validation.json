@@ -626,8 +626,8 @@
     "changedSurfaceRuntimeScenarioPassCount": 19
   },
   "summonSameTurn104": {
-    "deterministicTestCount": 1305,
-    "focusedPolicyCaseCount": 16,
+    "deterministicTestCount": 1307,
+    "focusedPolicyCaseCount": 18,
     "realPlayerSpellPathRequired": true,
     "ruleSummonUnitPostfixRequired": true,
     "genuineSummonProvenanceRequired": true,
@@ -637,6 +637,8 @@
     "ordinarySummonTimingMutationAllowed": false,
     "rtwpMutationAllowed": false,
     "perSummonedUnitIdempotenceRequired": true,
+    "nativeCombatJoinRequired": true,
+    "nativeInitiativePreparationRequired": true,
     "standaloneRuntimeQualified": true,
     "cotwProfileQualified": true,
     "highestRiskProfileQualified": true,

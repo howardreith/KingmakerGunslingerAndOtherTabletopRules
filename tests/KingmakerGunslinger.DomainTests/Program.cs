@@ -218,6 +218,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("summon-same-turn.multiple-units", SummonSameTurnActivationTests.EverySpawnedUnitIsIndependentlyEligible),
             Case("summon-same-turn.next-round", SummonSameTurnActivationTests.FollowingRoundHasNoStaleActivation),
             Case("summon-same-turn.fail-closed", SummonSameTurnActivationTests.AmbiguousStateFailsClosed),
+            Case("summon-same-turn.enrollment-stages", SummonSameTurnActivationTests.DeferredEnrollmentStagesHoldCasterEnd),
+            Case("summon-same-turn.enrollment-timeout", SummonSameTurnActivationTests.EnrollmentTimeoutFailsOpen),
             Case("summon-same-turn.partial-state", SummonSameTurnActivationTests.PartialNativeStateIsNormalizedOnlyAsNeeded),
             Case("summon-same-turn.runtime-boundary", SummonSameTurnActivationTests.RuntimeSourceUsesExactNativeBoundary),
             Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
