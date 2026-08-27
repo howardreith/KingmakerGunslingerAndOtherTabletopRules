@@ -19,6 +19,7 @@ using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.GameModes;
+using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Abilities;
@@ -218,6 +219,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private Vector3[] _requestLocalSpawnPositions;
             private bool _summonPatchAuditPassed;
             private bool _requestLocalSummonCombatJoinObserved;
+            private bool _requestLocalCombatControllerSubscribed;
+            private bool _requestLocalCombatControllerUnsubscribed;
             private bool _requestLocalTurnStartObserved;
             private bool _requestLocalTurnDriverObserved;
             private bool _requestLocalCommandDriverObserved;
@@ -229,6 +232,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _requestLocalCooldownController;
             private RequestLocalBuffsController _requestLocalBuffsController;
             private UnitActionController _requestLocalActionController;
+            private UnitCombatJoinController
+                _requestLocalCombatJoinController;
+            private UnitCombatPrepareController
+                _requestLocalCombatPrepareController;
             private bool _requestLocalCastCooldownApplied;
             private int _stage;
             private int _forcedTurns;
@@ -444,6 +451,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (_requestLocalBuffsController == null)
                             _requestLocalBuffsController =
                                 new RequestLocalBuffsController();
+                        if (_requestLocalCombatJoinController == null)
+                            _requestLocalCombatJoinController =
+                                new UnitCombatJoinController();
+                        if (_requestLocalCombatPrepareController == null)
+                            _requestLocalCombatPrepareController =
+                                new UnitCombatPrepareController();
                         TimeController time = Game.Instance.TimeController;
                         float deltaBefore = time.DeltaTime;
                         float gameDeltaBefore = time.GameDeltaTime;
@@ -451,6 +464,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         time.SetGameDeltaTime(0.25f);
                         try
                         {
+                            _requestLocalCombatJoinController.Tick();
+                            _requestLocalCombatPrepareController.Tick();
                             controller.Tick();
                             controller.TickTime();
                             foreach (UnitEntityData unit in
@@ -463,6 +478,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         .TickExact(unit);
                                     _requestLocalBuffsController.TickExact(unit);
                                 }
+                            if (!_requestLocalSummonCombatJoinObserved &&
+                                _summons.Count > 0 && _summons.All(value =>
+                                    value != null && !value.Destroyed &&
+                                    value.CombatState != null &&
+                                    value.CombatState.IsInCombat &&
+                                    value.CombatState.Prepared &&
+                                    controller.SortedUnits.Contains(value)))
+                            {
+                                _requestLocalSummonCombatJoinObserved = true;
+                                _diagnostics.Add(
+                                    "request-local-summon-enrollment=" +
+                                    "UnitCombatJoinController.Tick->" +
+                                    "UnitEntityData.JoinCombat->" +
+                                    "UnitCombatPrepareController.Tick;" +
+                                    "units=" + _summons.Count +
+                                    ";nativeReady=True");
+                            }
                         }
                         finally
                         {
@@ -483,13 +515,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_requestLocalTurnDriverObserved) return;
                 _requestLocalTurnDriverObserved = true;
                 _diagnostics.Add("request-local-turn-driver=" +
-                    "exact CombatController.Tick/TickTime + " +
+                    "exact UnitCombatJoinController.Tick -> " +
+                    "UnitCombatPrepareController.Tick -> " +
+                    "CombatController.Tick/TickTime + " +
                     "UnitCombatCooldownsController.TickOnUnit + " +
                     "UnitBuffsController.TickOnUnit;" +
                     "controlledDelta=0.25;timeRestoredPerTick=True;" +
                     "playerGameTime=native-combat-progression-restored-at-" +
                     "fixture-cleanup;" +
                     "ephemeralMode=Default;" +
+                    "controllerInstances=request-local-exact-native-types;" +
                     "restoredMode=" + Game.Instance.CurrentMode);
             }
 
@@ -787,6 +822,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (turnBased)
                     Game.Instance.TurnBasedCombatController
                         .HandlePartyCombatStateChanged(true);
+                if (_requestLocalFixture && turnBased)
+                {
+                    EventBus.Subscribe(Game.Instance.TurnBasedCombatController);
+                    _requestLocalCombatControllerSubscribed = true;
+                    _diagnostics.Add(
+                        "request-local-combat-controller-subscription=" +
+                        "EventBus.Subscribe(CombatController);" +
+                        "reason=main-menu-Default-mode-has-no-global-" +
+                        "controller-subscription");
+                }
                 if (CombatController.IsInTurnBasedCombat() != turnBased)
                     throw new InvalidOperationException(
                         "The exact combat mode did not match the requested " +
@@ -1908,10 +1953,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "enrollment-turn-tick=TimedOut") &&
                         !_evidence.AccelerationCorrelationTrace.Contains(
                             "enrollment-native-join=failed-open") &&
-                        (_requestLocalFixture || CountOccurrences(
+                        CountOccurrences(
                             _evidence.AccelerationCorrelationTrace,
                             "enrollment-native-join=joined:True") ==
-                            _summons.Count),
+                            _summons.Count,
                         "RuleSummonUnit, UnitEntityData.JoinCombat, UnitCombatPrepareController, and SortedUnits");
                     Add("accelerated-summon-current-round-opportunity",
                         "every spawned unit receives exactly one lawful cast-round opportunity",
@@ -1938,6 +1983,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _requestLocalTurnDriverObserved &&
                             _requestLocalCommandDriverObserved &&
                             _summonPatchAuditPassed &&
+                            _requestLocalCombatControllerSubscribed &&
                             _requestLocalSummonCombatJoinObserved &&
                             _requestLocalTurnStartObserved,
                             "CombatController.Tick, UnitCommands.Run, UnitUseAbility, and AbilityExecutionProcess");
@@ -2125,37 +2171,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ReferenceEquals(rule.Initiator, _caster) ||
                     rule.SummonedUnit == null) return;
                 RegisterRequestLocalUnit(rule.SummonedUnit);
-                if (_requestLocalFixture &&
-                    !rule.SummonedUnit.CombatState.IsInCombat)
-                {
-                    rule.SummonedUnit.JoinCombat();
-                    Game.Instance.Player.UpdateIsInCombat();
-                    _requestLocalSummonCombatJoinObserved =
-                        rule.SummonedUnit.CombatState.IsInCombat;
-                    if (!_requestLocalSummonCombatJoinObserved)
-                        throw new InvalidOperationException(
-                            "The genuine request-local summoned unit did not " +
-                            "join combat through UnitEntityData.JoinCombat.");
-                    _diagnostics.Add("request-local-summon-combat-join=" +
-                        Identity(rule.SummonedUnit) +
-                        ";api=UnitEntityData.JoinCombat;" +
-                        "ruleStillActive=True");
-                }
-                if (_requestLocalFixture)
-                {
-                    CombatController controller = Game.Instance
-                        .TurnBasedCombatController;
-                    if (!controller.SortedUnits.Contains(rule.SummonedUnit))
-                        controller.HandleUnitJoinCombat(rule.SummonedUnit);
-                    if (!controller.SortedUnits.Contains(rule.SummonedUnit))
-                        throw new InvalidOperationException(
-                            "The exact turn-based combat join handler did not " +
-                            "enroll the genuine request-local summon.");
-                    _diagnostics.Add("request-local-summon-turn-enrollment=" +
-                        Identity(rule.SummonedUnit) +
-                        ";api=CombatController.HandleUnitJoinCombat;" +
-                        "ruleStillActive=True");
-                }
                 if (_summonRule == null) _summonRule = rule;
                 _summonRules[rule.SummonedUnit] = rule;
                 if (!_summons.Contains(rule.SummonedUnit))
@@ -2198,6 +2213,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _requestLocalPlayerGameTimeRestored &&
                         Game.Instance.Player.GameTime ==
                             _requestLocalPlayerGameTimeBefore;
+                    bool combatSubscriptionRestored =
+                        !_requestLocalCombatControllerSubscribed ||
+                        _requestLocalCombatControllerUnsubscribed;
                     _evidence.CleanupDetails = "units=" +
                         DescribeReferenceDifference(_unitsBefore, unitsAfter) +
                         ";party=" + DescribeReferenceDifference(_partyBefore,
@@ -2205,7 +2223,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         partyCharactersRestored + ";areaContextRestored=" +
                         areaContextRestored + ";cameraContextRestored=" +
                         cameraContextRestored + ";playerGameTimeRestored=" +
-                        playerGameTimeRestored + ";playerCombat=" +
+                        playerGameTimeRestored +
+                        ";combatSubscriptionRestored=" +
+                        combatSubscriptionRestored + ";playerCombat=" +
                         Game.Instance.Player.IsInCombat;
                     _diagnostics.Add("cleanup-state=" +
                         _evidence.CleanupDetails);
@@ -2213,6 +2233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SameReferences(_partyBefore, partyAfter) &&
                         partyCharactersRestored && areaContextRestored &&
                         cameraContextRestored && playerGameTimeRestored &&
+                        combatSubscriptionRestored &&
                         !Game.Instance.Player.IsInCombat;
                     RuntimeTestAssertion cleanup = _assertions
                         .FirstOrDefault(value => value.Name ==
@@ -2452,6 +2473,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 AcadamaeSavingThrowTestControl.Cancel();
                 AcadamaeCastingRuntime.ResetDiagnostics();
+                if (_requestLocalCombatControllerSubscribed &&
+                    !_requestLocalCombatControllerUnsubscribed)
+                {
+                    EventBus.Unsubscribe(
+                        Game.Instance.TurnBasedCombatController);
+                    _requestLocalCombatControllerUnsubscribed = true;
+                    _diagnostics.Add(
+                        "request-local-combat-controller-subscription=" +
+                        "EventBus.Unsubscribe(CombatController);restored=True");
+                }
                 if (_fixtureJoinedCombat &&
                     _kind != ScenarioKind.RtwpControl)
                     Game.Instance.TurnBasedCombatController
