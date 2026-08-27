@@ -224,6 +224,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _requestLocalTurnStartObserved;
             private bool _requestLocalTurnDriverObserved;
             private bool _requestLocalCommandDriverObserved;
+            private bool _requestLocalPauseScopeObserved;
             private bool _requestLocalPlayerGameTimeCaptured;
             private bool _requestLocalPlayerGameTimeRestored;
             private TimeSpan _requestLocalPlayerGameTimeBefore;
@@ -435,13 +436,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
 
+            private void RunInRequestLocalUnpausedDefaultMode(Action action)
+            {
+                if (action == null) throw new ArgumentNullException("action");
+                if (!_requestLocalFixture)
+                {
+                    action();
+                    return;
+                }
+                bool pauseBefore = Game.Instance.IsPaused;
+                Game.Instance.IsPaused = false;
+                try
+                {
+                    RunInRequestLocalDefaultMode(action);
+                }
+                finally
+                {
+                    Game.Instance.IsPaused = pauseBefore;
+                    if (Game.Instance.IsPaused != pauseBefore)
+                        throw new InvalidOperationException(
+                            "The request-local native tick did not restore " +
+                            "the exact pre-existing pause state.");
+                }
+                if (_requestLocalPauseScopeObserved) return;
+                _requestLocalPauseScopeObserved = true;
+                _diagnostics.Add("request-local-pause-scope=" +
+                    "unpaused-per-native-tick;pauseBefore=" + pauseBefore +
+                    ";restored=True");
+            }
+
             private void DriveRequestLocalTurnController()
             {
                 if (!_requestLocalFixture) return;
                 InstallRequestLocalCameraContext();
                 try
                 {
-                    RunInRequestLocalDefaultMode(() =>
+                    RunInRequestLocalUnpausedDefaultMode(() =>
                     {
                         CombatController controller = Game.Instance
                             .TurnBasedCombatController;
@@ -535,7 +565,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InstallRequestLocalCameraContext();
                 try
                 {
-                    RunInRequestLocalDefaultMode(turn.Prepare);
+                    RunInRequestLocalUnpausedDefaultMode(turn.Prepare);
                 }
                 finally
                 {
@@ -574,7 +604,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void DriveRequestLocalCastCommand()
             {
                 if (!_requestLocalFixture || _castCommand == null) return;
-                RunInRequestLocalDefaultMode(() =>
+                RunInRequestLocalUnpausedDefaultMode(() =>
                 {
                     if (_requestLocalActionController == null)
                         _requestLocalActionController =
