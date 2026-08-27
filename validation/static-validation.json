@@ -642,7 +642,7 @@
     "standaloneRuntimeQualified": true,
     "cotwProfileQualified": true,
     "highestRiskProfileQualified": true,
-    "finalRuntimeQualificationPending": true,
+    "finalRuntimeQualificationPending": false,
     "humanAcceptancePending": true
   }
 }

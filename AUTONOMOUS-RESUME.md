@@ -3246,3 +3246,46 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   exactly once to 0.0.104 across all repository pins, then run exact
   `gunslinger-call-of-the-wild` and `gunslinger-high-risk-combined`
   transactions plus the final frozen standalone repeats and package seals.
+
+## Summon same-turn final automated qualification - 2026-08-27
+
+- Branch remains `codex/summon-same-turn-activation`; `master` remains at
+  starting SHA `cf1ca7aedf34ee76690f8864daedc9319a8e21a6`. Candidate version is
+  `0.0.104`; production source freeze is
+  `39e282eaed4a2f74393350867272d060ad87e75e` and the final compatibility
+  diagnostic predecessor is
+  `9d847e714c4965eb8866bb5163088384bbef6546`.
+- Final root cause has two boundaries: stale blueprint Full-Round state in
+  `RuleSummonUnit.OnTrigger` applied appearance/duration grace, and active-turn
+  early return in `UnitCombatJoinController.Tick` omitted the corrected summon
+  from combat/order before `CombatController.ChooseNextUnit` advanced.
+- Repair uses exact real-command/summon reference provenance, native
+  `UnitEntityData.JoinCombat`, native prepare/initiative/order handlers, and a
+  bounded caster-turn enrollment gate. It writes no initiative, order,
+  cooldown, current actor, AI command, or persistent state.
+- Final standalone PASS IDs: Quickened
+  `20260827T0216535483324Z-b013fe01b1f24d2abba2d245c40fd2da` and
+  `20260827T0219263194513Z-20ace7f093fd494995f2594b832c1fae`;
+  Acadamae `20260827T0221563245711Z-a37e5f1796b147079fd344abdee13f1d`
+  and `20260827T0224255962019Z-2d12360517174bb6809f8852ad09bae5`;
+  three KMG Eagles
+  `20260827T0204341245023Z-6cee4a5f585b4108b98323109152b607`;
+  native/negative controls
+  `20260827T0207285929281Z-7a4390604a714979a0868bccd0494fd9`;
+  RTwP `20260827T0209540539692Z-667023d9194a45009557fbf8016b6c9b`.
+- Exact Call of the Wild profile PASS IDs: Quickened
+  `20260827T0256056248286Z-07e13e9b019e4c3899bb3ff4d30c56d9`, Acadamae
+  `20260827T0320286346830Z-770c3086d3cd440cabc36eec86ecf482`.
+  Highest-risk combined PASS IDs: Quickened
+  `20260827T0335035677836Z-f55fb935816d4b999940684c3912c606`, Acadamae
+  `20260827T0338217323762Z-d1517bbda5a44cc0968c8c28631ccd7b`.
+  All accepted transactions restored exact prior optional-mod/config bytes.
+- Gates: 18 focused and 1,307/1,307 complete deterministic tests PASS;
+  repository/static, installed assembly, runtime preflight, clean Release,
+  output, SoundBank/asset, deterministic package, strict package, and profile
+  validation PASS. Qualified package/DLL SHA-256 values are
+  `6AC31F83253B4A616E274656F44955F3ABC575008A1D6457A75F700E74F4623A` /
+  `1467A767AF9FF16CE34A2ADB6120216F93438667B27EE8F93B8FF7AB45CD1444`.
+- Current classification: source-qualified and automated-runtime-qualified;
+  human-accepted remains false. Remaining work is the documentation-only
+  commit/push, final clean-tree seal, and concise human review handoff.

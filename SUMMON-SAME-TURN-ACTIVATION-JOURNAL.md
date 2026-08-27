@@ -243,3 +243,59 @@
   profile transactions, version advancement, and frozen final repeats remain
   pending; no compatibility-profile PASS is claimed from the harness runs
   alone.
+
+## 2026-08-27 - native enrollment repair and final automated qualification
+
+- The appearance-only repair exposed a second exact engine boundary. Guarded
+  real-player-path FAIL
+  `20260827T0128367929373Z-3e50f786ced445199af14907997fd094`
+  observed the dog live after spawn with `inCombat=false`, initiative zero,
+  and no order membership in round 1. It first enrolled and acted in round 2.
+- Installed Kingmaker 2.1.7b IL proved that
+  `UnitCombatJoinController.Tick` returns during an active TB turn when
+  `CombatController.IsPassing()` is false. `CombatController.ChooseNextUnit`
+  can advance the actor/round before disposing the caster turn, so the summon
+  misses its current-round enrollment window.
+- Production now correlates the exact `UnitUseAbility -> RuleCastSpell ->
+  RuleSummonUnit -> UnitEntityData` chain, holds only the still-current caster
+  turn while enrollment is incomplete, and passes each exact summon through
+  native `UnitEntityData.JoinCombat()` once. Native preparation, real
+  `RuleInitiativeRoll`, order handling, and AI remain authoritative. The gate
+  releases at native readiness, staleness, cleanup, or a 240-observation
+  fail-open bound.
+- Final standalone source freeze
+  `39e282eaed4a2f74393350867272d060ad87e75e` passed two fresh Quickened runs
+  (`20260827T0216535483324Z-b013fe01b1f24d2abba2d245c40fd2da`,
+  `20260827T0219263194513Z-20ace7f093fd494995f2594b832c1fae`)
+  and two fresh Acadamae runs
+  (`20260827T0221563245711Z-a37e5f1796b147079fd344abdee13f1d`,
+  `20260827T0224255962019Z-2d12360517174bb6809f8852ad09bae5`).
+- The real KMG `1d3` run
+  `20260827T0204341245023Z-6cee4a5f585b4108b98323109152b607`
+  created three Eagles; all three independently joined, received initiative,
+  and acted once in both observed rounds. Native/negative controls
+  `20260827T0207285929281Z-7a4390604a714979a0868bccd0494fd9`
+  and RTwP
+  `20260827T0209540539692Z-667023d9194a45009557fbf8016b6c9b`
+  passed.
+- Exact `gunslinger-call-of-the-wild` profile transactions passed Quickened
+  (`20260827T0256056248286Z-07e13e9b019e4c3899bb3ff4d30c56d9`)
+  and Acadamae
+  (`20260827T0320286346830Z-770c3086d3cd440cabc36eec86ecf482`).
+  The highest-risk combined profile passed Quickened
+  (`20260827T0335035677836Z-f55fb935816d4b999940684c3912c606`)
+  and Acadamae
+  (`20260827T0338217323762Z-d1517bbda5a44cc0968c8c28631ccd7b`).
+  Every accepted transaction restored exact optional-mod/configuration bytes.
+- The compatibility fixture was corrected to use the installed join and
+  prepare controllers under a scoped EventBus subscription and to restore the
+  request-local pause bit immediately. Failed diagnostic iterations remain
+  preserved but are not acceptance evidence.
+- Version advanced exactly once to `0.0.104`. Repository/static validation,
+  18 focused cases, the full 1,307/1,307 suite, clean Release/output,
+  SoundBank/asset, deterministic package, strict package, runtime preflight,
+  and compatibility profile gates pass. Qualified package/DLL SHA-256 values
+  are `6AC31F83253B4A616E274656F44955F3ABC575008A1D6457A75F700E74F4623A`
+  and `1467A767AF9FF16CE34A2ADB6120216F93438667B27EE8F93B8FF7AB45CD1444`.
+- Status is source-qualified and automated-runtime-qualified. Human acceptance
+  remains explicitly pending.
