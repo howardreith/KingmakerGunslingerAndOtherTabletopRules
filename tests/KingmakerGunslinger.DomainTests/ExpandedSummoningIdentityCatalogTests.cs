@@ -205,7 +205,8 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("observer.priority < production.priority") &&
                 scenario.Contains("HarmonyPriority(Priority.Last)") &&
                 scenario.Contains("PrepareRequestLocalTurn") &&
-                scenario.Contains("RunInRequestLocalDefaultMode(turn.Prepare)") &&
+                scenario.Contains(
+                    "RunInRequestLocalUnpausedDefaultMode(turn.Prepare)") &&
                 scenario.Contains("request-local-turn-prepare=") &&
                 scenario.Contains("SelectionManager-for-Start") &&
                 scenario.Contains("TurnController.TurnStatus.Preparing") &&
@@ -239,6 +240,12 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("cameraContextRestored") &&
                 scenario.Contains("unit.View.AgentASP.AvoidanceDisabled = true") &&
                 scenario.Contains("RunInRequestLocalDefaultMode") &&
+                scenario.Contains(
+                    "RunInRequestLocalUnpausedDefaultMode") &&
+                scenario.Contains("Game.Instance.IsPaused = false") &&
+                scenario.Contains("Game.Instance.IsPaused = pauseBefore") &&
+                scenario.Contains("request-local-pause-scope=") &&
+                scenario.Contains("restored=True") &&
                 scenario.Contains("typeof(Game).GetField(\"m_GameModes\"") &&
                 scenario.Contains("new GameMode(") &&
                 scenario.Contains("GameModeType.Default") &&
