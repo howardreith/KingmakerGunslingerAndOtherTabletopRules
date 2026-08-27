@@ -1641,6 +1641,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void FinalizeOpportunityObservations()
             {
+                _evidence.AccelerationCorrelationTrace =
+                    SummonAcceleratedInvocationRuntime.DiagnosticTrace;
+                _diagnostics.Add("acceleration-correlation-final=" +
+                    _evidence.AccelerationCorrelationTrace);
                 _evidence.FirstLawfulSummonTurnRound =
                     _firstLawfulSummonTurnRound;
                 _evidence.SameRoundSummonTurns = _sameRoundSummonTurns;
@@ -1707,6 +1711,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 int result;
                 return values.TryGetValue(unit, out result) ? result : 0;
+            }
+
+            private static int CountOccurrences(string value, string token)
+            {
+                if (string.IsNullOrEmpty(value) ||
+                    string.IsNullOrEmpty(token)) return 0;
+                int count = 0;
+                int offset = 0;
+                while ((offset = value.IndexOf(token, offset,
+                    StringComparison.Ordinal)) >= 0)
+                {
+                    count++;
+                    offset += token.Length;
+                }
+                return count;
             }
 
             private static void Increment(
@@ -1870,15 +1889,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _evidence.BlueprintFullRound,
                         "native UnitCombatState cooldowns and CurrentTurn");
                     Add("accelerated-summon-enrollment",
-                        "every genuine summon enters combat and turn order before its first scheduled turn",
+                        "every genuine summon reaches native combat, initiative, and turn-order readiness before the caster turn is released",
                         "postSpawn=" + _evidence.SummonInCombatAfterSpawn +
                             "/" + _evidence.SummonInTurnOrderAfterSpawn +
                             ";firstTurn=" +
                             _evidence.SummonInCombatAtFirstTurn + "/" +
-                            _evidence.SummonInTurnOrderAtFirstTurn,
+                            _evidence.SummonInTurnOrderAtFirstTurn +
+                            ";nativeJoin=" + CountOccurrences(
+                                _evidence.AccelerationCorrelationTrace,
+                                "enrollment-native-join=joined:True") +
+                            ";trace=" +
+                            _evidence.AccelerationCorrelationTrace,
                         _evidence.SummonInCombatAtFirstTurn &&
-                        _evidence.SummonInTurnOrderAtFirstTurn,
-                        "RuleSummonUnit, UnitCombatState, and SortedUnits");
+                        _evidence.SummonInTurnOrderAtFirstTurn &&
+                        _evidence.AccelerationCorrelationTrace.Contains(
+                            "enrollment-turn-tick=NativeReady") &&
+                        !_evidence.AccelerationCorrelationTrace.Contains(
+                            "enrollment-turn-tick=TimedOut") &&
+                        !_evidence.AccelerationCorrelationTrace.Contains(
+                            "enrollment-native-join=failed-open") &&
+                        (_requestLocalFixture || CountOccurrences(
+                            _evidence.AccelerationCorrelationTrace,
+                            "enrollment-native-join=joined:True") ==
+                            _summons.Count),
+                        "RuleSummonUnit, UnitEntityData.JoinCombat, UnitCombatPrepareController, and SortedUnits");
                     Add("accelerated-summon-current-round-opportunity",
                         "every spawned unit receives exactly one lawful cast-round opportunity",
                         OpportunitiesObserved(),

@@ -64,6 +64,148 @@ namespace KingmakerGunslinger.Summoning
         { get { return Disposition == SummonSameTurnActivationDisposition.Repair; } }
     }
 
+    internal enum SummonTurnEnrollmentDisposition
+    {
+        NativeReady,
+        AwaitInvocationCompletion,
+        AwaitSummonSpawn,
+        AwaitWorldRegistration,
+        AwaitCombatEnrollment,
+        AwaitTurnOrderEnrollment,
+        AwaitInitiativePreparation,
+        NotInCombat,
+        RealTimeWithPause,
+        NotGenuineSummon,
+        OutsideCasterTurn,
+        StaleCombatController,
+        StaleRound,
+        CasterTurnAdvanced,
+        AlreadyActed,
+        TimedOut,
+        AmbiguousCounts
+    }
+
+    internal sealed class SummonTurnEnrollmentRequest
+    {
+        internal bool InCombat { get; set; }
+        internal bool TurnBased { get; set; }
+        internal bool GenuineSummon { get; set; }
+        internal bool CreatedDuringCasterTurn { get; set; }
+        internal bool SameCombatController { get; set; }
+        internal bool SameRound { get; set; }
+        internal bool CasterTurnStillCurrent { get; set; }
+        internal bool InvocationSealed { get; set; }
+        internal int SuccessfulSummonCount { get; set; }
+        internal int LiveSummonCount { get; set; }
+        internal int CombatEnrolledCount { get; set; }
+        internal int TurnOrderMemberCount { get; set; }
+        internal int InitiativePreparedCount { get; set; }
+        internal int AlreadyActedCount { get; set; }
+        internal int HoldAttemptCount { get; set; }
+        internal int MaxHoldAttempts { get; set; }
+    }
+
+    internal sealed class SummonTurnEnrollmentDecision
+    {
+        internal SummonTurnEnrollmentDecision(
+            SummonTurnEnrollmentDisposition disposition,
+            bool holdCasterEnd)
+        {
+            Disposition = disposition;
+            HoldCasterEnd = holdCasterEnd;
+        }
+
+        internal SummonTurnEnrollmentDisposition Disposition
+        { get; private set; }
+
+        internal bool HoldCasterEnd { get; private set; }
+
+        internal bool NativeReady
+        { get { return Disposition == SummonTurnEnrollmentDisposition.NativeReady; } }
+    }
+
+    /// <summary>
+    /// Decides whether the caster's native turn processing should wait briefly
+    /// for deferred world registration, the exact summon-scoped native combat
+    /// join, and Owlcat's initiative controller. The policy never grants an
+    /// action or edits initiative; a ready result means native scheduling has
+    /// enough state to choose every summon normally.
+    /// </summary>
+    internal static class SummonTurnEnrollmentPolicy
+    {
+        internal static SummonTurnEnrollmentDecision Evaluate(
+            SummonTurnEnrollmentRequest request)
+        {
+            if (request == null) throw new ArgumentNullException("request");
+            if (!request.InCombat)
+                return No(SummonTurnEnrollmentDisposition.NotInCombat);
+            if (!request.TurnBased)
+                return No(SummonTurnEnrollmentDisposition.RealTimeWithPause);
+            if (!request.GenuineSummon)
+                return No(SummonTurnEnrollmentDisposition.NotGenuineSummon);
+            if (!request.CreatedDuringCasterTurn)
+                return No(SummonTurnEnrollmentDisposition.OutsideCasterTurn);
+            if (!request.SameCombatController)
+                return No(SummonTurnEnrollmentDisposition
+                    .StaleCombatController);
+            if (!request.SameRound)
+                return No(SummonTurnEnrollmentDisposition.StaleRound);
+            if (!request.CasterTurnStillCurrent)
+                return No(SummonTurnEnrollmentDisposition
+                    .CasterTurnAdvanced);
+            if (request.AlreadyActedCount > 0)
+                return No(SummonTurnEnrollmentDisposition.AlreadyActed);
+            if (!CountsAreCoherent(request))
+                return No(SummonTurnEnrollmentDisposition.AmbiguousCounts);
+            if (request.HoldAttemptCount >= request.MaxHoldAttempts)
+                return No(SummonTurnEnrollmentDisposition.TimedOut);
+            if (!request.InvocationSealed)
+                return Hold(SummonTurnEnrollmentDisposition
+                    .AwaitInvocationCompletion);
+            if (request.SuccessfulSummonCount == 0)
+                return Hold(SummonTurnEnrollmentDisposition
+                    .AwaitSummonSpawn);
+            if (request.LiveSummonCount < request.SuccessfulSummonCount)
+                return Hold(SummonTurnEnrollmentDisposition
+                    .AwaitWorldRegistration);
+            if (request.CombatEnrolledCount < request.SuccessfulSummonCount)
+                return Hold(SummonTurnEnrollmentDisposition
+                    .AwaitCombatEnrollment);
+            if (request.TurnOrderMemberCount < request.SuccessfulSummonCount)
+                return Hold(SummonTurnEnrollmentDisposition
+                    .AwaitTurnOrderEnrollment);
+            if (request.InitiativePreparedCount <
+                request.SuccessfulSummonCount)
+                return Hold(SummonTurnEnrollmentDisposition
+                    .AwaitInitiativePreparation);
+            return No(SummonTurnEnrollmentDisposition.NativeReady);
+        }
+
+        private static bool CountsAreCoherent(
+            SummonTurnEnrollmentRequest request)
+        {
+            int total = request.SuccessfulSummonCount;
+            return total >= 0 && request.MaxHoldAttempts > 0 &&
+                request.HoldAttemptCount >= 0 &&
+                IsCount(request.LiveSummonCount, total) &&
+                IsCount(request.CombatEnrolledCount, total) &&
+                IsCount(request.TurnOrderMemberCount, total) &&
+                IsCount(request.InitiativePreparedCount, total) &&
+                IsCount(request.AlreadyActedCount, total);
+        }
+
+        private static bool IsCount(int value, int maximum)
+        { return value >= 0 && value <= maximum; }
+
+        private static SummonTurnEnrollmentDecision Hold(
+            SummonTurnEnrollmentDisposition disposition)
+        { return new SummonTurnEnrollmentDecision(disposition, true); }
+
+        private static SummonTurnEnrollmentDecision No(
+            SummonTurnEnrollmentDisposition disposition)
+        { return new SummonTurnEnrollmentDecision(disposition, false); }
+    }
+
     /// <summary>
     /// Stateless fail-closed policy for correcting Owlcat's full-round summon
     /// grace when the exact live spell invocation is Standard or Swift. State

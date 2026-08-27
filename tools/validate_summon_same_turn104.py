@@ -13,7 +13,7 @@ VERSION = "0.0.104"
 INFORMATIONAL_VERSION = "0.0.104-summon-same-turn-activation"
 PACKAGE = "KingmakerGunslinger-0.0.104-local-runtime.zip"
 PACKAGE_SUFFIX = "summon-same-turn-activation"
-DETERMINISTIC_TEST_COUNT = 1305
+DETERMINISTIC_TEST_COUNT = 1307
 STATIC_KEY = "summonSameTurn104"
 
 
@@ -51,7 +51,10 @@ def validate(root: Path) -> None:
         "OutsideCasterTurn", "AlreadyActed", "AlreadyEligible", "Repair",
         "HasLifecycle", "HasAppearanceLock", "LifecycleContextMatches",
         "AppearanceContextMatches",
-        "NativeGraceSeconds")
+        "NativeGraceSeconds", "SummonTurnEnrollmentPolicy",
+        "AwaitWorldRegistration", "AwaitCombatEnrollment",
+        "AwaitTurnOrderEnrollment", "AwaitInitiativePreparation",
+        "TimedOut", "HoldCasterEnd")
 
     runtime = root / (
         "src/KingmakerGunslinger/Summoning/"
@@ -62,9 +65,15 @@ def validate(root: Path) -> None:
         "ReferenceEquals(rule.Initiator", "SummonedUnitAppearBuff",
         "SummonedUnitBuff", "TryRepair", "RemoveFact",
         '[HarmonyPatch(typeof(UnitUseAbility), "OnEnded"',
-        "SceneEntitiesState")
+        "SceneEntitiesState", "SummonCurrentTurnEnrollmentRuntime",
+        "SealInvocation", "enrollment-register=duplicate-unit",
+        "HandleUnitRollsInitiative", "CombatState.Prepared",
+        "controller.SortedUnits", "UnitCombatJoinController",
+        "JoinMissingSummons", "summon.JoinCombat()",
+        "window.JoinAttempted", "AllowTurnTick", "MaxHoldAttempts",
+        'HarmonyPatch(typeof(TurnController), "Tick"')
     reject_tokens(runtime, "SortedUnits.Add", ".CurrentTurn =",
-        "ForceToEnd", ".Initiative =")
+        "ForceToEnd", "HandleUnitJoinCombat", ".Initiative =")
 
     scenario = require_tokens(root / (
         "src/KingmakerGunslinger/RuntimeTesting/"
@@ -74,6 +83,9 @@ def validate(root: Path) -> None:
         "SummonSameTurnCompatibilityQuickened",
         "SummonSameTurnCompatibilityAcadamae", "UnitBuffsController",
         "UnitActionController.UpdateCooldowns", "ShouldBeDestroyed",
+        "enrollment-turn-tick=NativeReady",
+        "enrollment-turn-tick=TimedOut",
+        "enrollment-native-join=joined:True",
         "IsSummonSameTurnCompatibilityScenario")
     if "new RuleSummonUnit" in scenario:
         raise AssertionError(
@@ -100,13 +112,13 @@ def validate(root: Path) -> None:
         "summon-same-turn.multiple-units",
         "summon-same-turn.next-round",
         "summon-same-turn.runtime-boundary")
-    if program.count('Case("summon-same-turn.') != 16:
-        raise AssertionError("Expected 16 focused summon activation tests")
+    if program.count('Case("summon-same-turn.') != 18:
+        raise AssertionError("Expected 18 focused summon activation tests")
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.104.md",
         "Kingmaker Gunslinger 0.0.104",
         "KingmakerGunslinger-0.0.104-summon-same-turn-activation.zip",
-        "1,305")
+        "1,307")
     require_tokens(root / "SUMMON-SAME-TURN-ACTIVATION-JOURNAL.md",
         "pre-fix", "Quickened compatibility PASS",
         "Acadamae compatibility PASS")
@@ -119,7 +131,7 @@ def validate(root: Path) -> None:
     state = static.get(STATIC_KEY, {})
     expected = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "focusedPolicyCaseCount": 16,
+        "focusedPolicyCaseCount": 18,
         "realPlayerSpellPathRequired": True,
         "ruleSummonUnitPostfixRequired": True,
         "genuineSummonProvenanceRequired": True,
@@ -129,6 +141,8 @@ def validate(root: Path) -> None:
         "ordinarySummonTimingMutationAllowed": False,
         "rtwpMutationAllowed": False,
         "perSummonedUnitIdempotenceRequired": True,
+        "nativeCombatJoinRequired": True,
+        "nativeInitiativePreparationRequired": True,
         "standaloneRuntimeQualified": True,
         "cotwProfileQualified": True,
         "highestRiskProfileQualified": True,
