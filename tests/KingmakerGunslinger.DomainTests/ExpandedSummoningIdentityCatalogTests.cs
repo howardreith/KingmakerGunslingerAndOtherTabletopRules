@@ -211,8 +211,21 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("TurnController.TurnStatus.Preparing") &&
                 scenario.Contains("turn.Status != TurnController.TurnStatus.Acting") &&
                 scenario.Contains("native-direct-control-boundary=Preparing-until-first-") &&
-                scenario.Contains("rule.SummonedUnit.JoinCombat()") &&
-                scenario.Contains("request-local-summon-combat-join=") &&
+                scenario.Contains(
+                    "new UnitCombatJoinController()") &&
+                scenario.Contains(
+                    "new UnitCombatPrepareController()") &&
+                scenario.Contains(
+                    "_requestLocalCombatJoinController.Tick()") &&
+                scenario.Contains(
+                    "_requestLocalCombatPrepareController.Tick()") &&
+                scenario.Contains("request-local-summon-enrollment=") &&
+                scenario.Contains(
+                    "EventBus.Subscribe(Game.Instance.TurnBasedCombatController)") &&
+                scenario.Contains(
+                    "EventBus.Unsubscribe(") &&
+                scenario.Contains(
+                    "_requestLocalCombatControllerUnsubscribed") &&
                 scenario.Contains("InstallRequestLocalAreaContext") &&
                 scenario.Contains("BlueprintRoot.Instance.NewGamePreset.Area") &&
                 scenario.Contains("GetSetMethod(true)") &&
@@ -251,10 +264,6 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("_requestLocalPlayerGameTimeBefore") &&
                 scenario.Contains("RestoreRequestLocalPlayerGameTime") &&
                 scenario.Contains("playerGameTimeRestored") &&
-                scenario.Contains(
-                    "controller.HandleUnitJoinCombat(rule.SummonedUnit)") &&
-                scenario.Contains(
-                    "request-local-summon-turn-enrollment=") &&
                 scenario.Contains("unit.View.SetVisible(true, true)") &&
                 scenario.Contains("unit.IsInFogOfWar = false") &&
                 scenario.Contains("SortedUnits.Contains(_caster)") &&
@@ -277,6 +286,12 @@ namespace KingmakerGunslinger.DomainTests
                     "IsSummonSameTurnWorkingSaveScenario"),
                 "Compatibility qualification must use a bounded, save-free " +
                 "request-local scene while preserving working-save guards.");
+            Assertions.False(
+                scenario.Contains("rule.SummonedUnit.JoinCombat()") ||
+                scenario.Contains(
+                    "controller.HandleUnitJoinCombat(rule.SummonedUnit)"),
+                "The compatibility fixture must not bypass native join and " +
+                "initiative-preparation controllers.");
             Assertions.True(compatibility.Contains(
                     "$arguments.SaveName = 'KMG_AUTOMATION_WORKING'"),
                 "Compatibility matrix scenarios must remain working-save-only.");
