@@ -54,6 +54,13 @@ param(
         'working-save-eastern-weapons-verify-cleanup',
         'working-save-eastern-weapons-verify-absent',
         'observe-expanded-summoning-inventory',
+        'summon-same-turn-activation',
+        'summon-same-turn-acadamae',
+        'summon-same-turn-multiple',
+        'summon-same-turn-native-control',
+        'summon-same-turn-rtwp-control',
+        'summon-same-turn-compatibility-quickened',
+        'summon-same-turn-compatibility-acadamae',
         'disposable-shield-other',
         'disposable-acadamae-graduate',
         'disposable-gunslinger-comprehensive-acceptance')]
@@ -273,6 +280,7 @@ try {
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
+            CompletionTimeoutSeconds = $RuntimeTimeoutSeconds
             Confirm = $false
             AllowDirtyGit = [bool]$AllowDirtyGit
         }
@@ -295,7 +303,10 @@ try {
             $arguments.PackagePath = $PackagePath
         }
         if ($name -in @('musket-master-mechanics-and-starter',
-            'working-save-smoke', 'disposable-brown-fur-native-cast')) {
+            'working-save-smoke', 'disposable-brown-fur-native-cast',
+            'summon-same-turn-activation', 'summon-same-turn-acadamae',
+            'summon-same-turn-multiple', 'summon-same-turn-native-control',
+            'summon-same-turn-rtwp-control')) {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments

@@ -72,6 +72,8 @@ $expected = @(
     'summon-same-turn-multiple',
     'summon-same-turn-native-control',
     'summon-same-turn-rtwp-control',
+    'summon-same-turn-compatibility-quickened',
+    'summon-same-turn-compatibility-acadamae',
     'disposable-expanded-summoning-visual-contracts',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
@@ -431,6 +433,19 @@ foreach ($summonMatrixScenario in @(
         $summonMatrixMetadata.PermittedSaveName -ceq `
             'KMG_AUTOMATION_WORKING') `
         ($summonMatrixScenario + '-is-autonomous-working-save-only')
+}
+foreach ($summonCompatibilityScenario in @(
+    'summon-same-turn-compatibility-quickened',
+    'summon-same-turn-compatibility-acadamae')) {
+    $summonCompatibilityMetadata = Get-KmgRuntimeScenarioMetadata `
+        $summonCompatibilityScenario
+    Assert-True (-not $summonCompatibilityMetadata.RequiresManualInteraction -and
+        -not $summonCompatibilityMetadata.RequiresSaveName -and
+        $summonCompatibilityMetadata.ReadinessBehavior -ceq 'mod-load' -and
+        -not $summonCompatibilityMetadata.UsesCatalogTimeout -and
+        -not $summonCompatibilityMetadata.UsesSelectionTimeouts -and
+        -not $summonCompatibilityMetadata.UsesWorkingStageTimeouts) `
+        ($summonCompatibilityScenario + '-is-autonomous-request-local')
 }
 $brownFurNativeCast = Get-KmgRuntimeScenarioMetadata `
     'disposable-brown-fur-native-cast'

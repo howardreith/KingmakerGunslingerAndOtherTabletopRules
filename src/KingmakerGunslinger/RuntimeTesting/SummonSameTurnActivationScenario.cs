@@ -9,10 +9,16 @@ using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers;
+using Kingmaker.Controllers.Combat;
+using Kingmaker.Controllers.Rest;
+using Kingmaker.Controllers.Units;
+using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.GameModes;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Abilities;
@@ -27,6 +33,7 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
+using Kingmaker.View;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Acadamae;
@@ -38,11 +45,13 @@ using UnityEngine;
 namespace KingmakerGunslinger.RuntimeTesting
 {
     /// <summary>
-    /// Guarded save-backed real-spellbook reproduction for the accelerated
-    /// summon timing defect. The fixture owns only disposable units and never
-    /// invokes a direct spawn action; every observed summon must traverse the
-    /// native UnitUseAbility -> RuleCastSpell -> ContextActionSpawnMonster ->
-    /// RuleSummonUnit chain.
+    /// Guarded real-spellbook reproduction for the accelerated summon timing
+    /// defect. Working-save cases use the loaded-area anchor. Compatibility
+    /// cases use a request-local scene so an optional mod cannot block the
+    /// test at unrelated save deserialization. The fixture owns only
+    /// disposable units and never invokes a direct spawn action; every
+    /// observed summon must traverse the native UnitUseAbility ->
+    /// RuleCastSpell -> ContextActionSpawnMonster -> RuleSummonUnit chain.
     /// </summary>
     internal static class SummonSameTurnActivationScenario
     {
@@ -108,6 +117,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (scenario == RuntimeTestScenarioCatalog
                 .SummonSameTurnRtwpControl)
                 return ScenarioKind.RtwpControl;
+            if (scenario == RuntimeTestScenarioCatalog
+                .SummonSameTurnCompatibilityQuickened)
+                return ScenarioKind.Quickened;
+            if (scenario == RuntimeTestScenarioCatalog
+                .SummonSameTurnCompatibilityAcadamae)
+                return ScenarioKind.Acadamae;
             throw new ArgumentException("Unsupported summon activation scenario: " +
                 scenario, "scenario");
         }
@@ -117,6 +132,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly ModContext _context;
             private readonly RuntimeTestRequest _request;
             private readonly ScenarioKind _kind;
+            private readonly bool _requestLocalFixture;
             private readonly DateTime _started = DateTime.UtcNow;
             private readonly Stopwatch _elapsed = Stopwatch.StartNew();
             private readonly List<RuntimeTestAssertion> _assertions =
@@ -133,6 +149,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<string> _turns = new List<string>();
             private readonly HashSet<TurnController> _preparedSummonTurns =
                 new HashSet<TurnController>();
+            private readonly HashSet<TurnController>
+                _requestLocalStartedTurns = new HashSet<TurnController>();
             private readonly Dictionary<UnitEntityData, bool> _combatBefore =
                 new Dictionary<UnitEntityData, bool>();
             private readonly Dictionary<UnitEntityData, int> _sameTurnsByUnit =
@@ -155,7 +173,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new Dictionary<UnitEntityData, int>();
             private readonly Dictionary<UnitEntityData, int> _sameAttacksByUnit =
                 new Dictionary<UnitEntityData, int>();
+            private readonly List<UnitEntityData> _requestLocalCooldownUnits =
+                new List<UnitEntityData>();
             private UnitEntityData _areaAnchor;
+            private SceneEntitiesState _fixtureScene;
             private UnitEntityData _caster;
             private UnitEntityData _enemy;
             private BlueprintUnit _casterBlueprint;
@@ -171,10 +192,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             private object _levelController;
             private object[] _unitsBefore;
             private object[] _partyBefore;
+            private UnitReference[] _partyCharactersBefore;
+            private object _requestLocalSceneLoader;
+            private PropertyInfo _requestLocalAreaProperty;
+            private BlueprintArea _loadedAreaBefore;
+            private BlueprintArea _requestLocalArea;
+            private bool _requestLocalAreaContextCaptured;
+            private bool _requestLocalAreaContextRestored;
+            private PropertyInfo _requestLocalCameraProperty;
+            private CameraController _cameraControllerBefore;
+            private CameraController _requestLocalCameraController;
+            private bool _cameraScrollBefore;
+            private bool _requestLocalCameraContextCaptured;
+            private bool _requestLocalCameraContextRestored;
+            private bool _requestLocalCameraInstallObserved;
+            private bool _requestLocalEndCompletionObserved;
             private bool _initialPause;
             private bool _initialTurnBasedSetting;
             private bool _stateCaptured;
             private bool _fixtureJoinedCombat;
+            private bool _navigationGridBypassObserved;
+            private bool _spawnNearestNodeBypassObserved;
+            private bool _spawnPlacesBypassObserved;
+            private bool _spawnGroundProjectionBypassObserved;
+            private Vector3[] _requestLocalSpawnPositions;
+            private bool _summonPatchAuditPassed;
+            private bool _requestLocalSummonCombatJoinObserved;
+            private bool _requestLocalTurnStartObserved;
+            private bool _requestLocalTurnDriverObserved;
+            private bool _requestLocalCommandDriverObserved;
+            private bool _requestLocalPlayerGameTimeCaptured;
+            private bool _requestLocalPlayerGameTimeRestored;
+            private TimeSpan _requestLocalPlayerGameTimeBefore;
+            private GameMode _requestLocalTickMode;
+            private RequestLocalCooldownController
+                _requestLocalCooldownController;
+            private RequestLocalBuffsController _requestLocalBuffsController;
+            private UnitActionController _requestLocalActionController;
+            private bool _requestLocalCastCooldownApplied;
             private int _stage;
             private int _forcedTurns;
             private int _castRound;
@@ -185,6 +240,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _nextRoundLawfulSummonTurns;
             private int _followingRoundSummonTurns;
             private int _followingRoundLawfulSummonTurns;
+            private int _postCommandEntityTicks;
+            private int _lastObservedSummonCount = -1;
+            private int _stableSummonEntityTicks;
             private int _firstSummonCommandRound;
             private int _sameRoundSummonCommands;
             private int _nextRoundSummonCommands;
@@ -205,19 +263,348 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context = context;
                 _request = request;
                 _kind = ResolveKind(request.Scenario);
+                _requestLocalFixture = RuntimeTestScenarioCatalog
+                    .IsSummonSameTurnCompatibilityScenario(request.Scenario);
                 _evidence.Case = _kind.ToString();
             }
 
             internal bool Complete { get; private set; }
             internal RuntimeTestResult Result { get; private set; }
 
+            internal bool SuppressRequestLocalNavigationGridUpdate()
+            {
+                if (!_requestLocalFixture) return false;
+                if (!_navigationGridBypassObserved)
+                {
+                    _navigationGridBypassObserved = true;
+                    _diagnostics.Add("request-local-navigation-grid=" +
+                        "suppressed;reason=no-loaded-area-pathfinding");
+                }
+                return true;
+            }
+
+            internal bool TrySupplyRequestLocalNearestNode(Vector3 position,
+                out Pathfinding.NNInfo result)
+            {
+                result = default(Pathfinding.NNInfo);
+                if (!_requestLocalFixture) return false;
+                result = new Pathfinding.NNInfo(null) {
+                    clampedPosition = position,
+                    constClampedPosition = position
+                };
+                _spawnNearestNodeBypassObserved = true;
+                return true;
+            }
+
+            internal bool TryPrepareRequestLocalSpawnPlaces(int count,
+                float radius, Vector3 aroundPoint)
+            {
+                if (!_requestLocalFixture) return false;
+                if (count <= 0)
+                    throw new ArgumentOutOfRangeException("count", count,
+                        "A real summon spawn action requested no units.");
+                _requestLocalSpawnPositions = new Vector3[count];
+                float spacing = Math.Max(radius * 2f, 1f);
+                for (int index = 0; index < count; index++)
+                {
+                    if (index == 0)
+                    {
+                        _requestLocalSpawnPositions[index] = aroundPoint;
+                        continue;
+                    }
+                    int ringIndex = index - 1;
+                    float angle = ringIndex * 2f * Mathf.PI /
+                        Math.Max(1, count - 1);
+                    _requestLocalSpawnPositions[index] = aroundPoint +
+                        new Vector3(Mathf.Cos(angle) * spacing, 0f,
+                            Mathf.Sin(angle) * spacing);
+                }
+                _spawnPlacesBypassObserved = true;
+                _diagnostics.Add("request-local-spawn-placement=" +
+                    "exact spell target plus deterministic spacing;count=" +
+                    count + ";radius=" + radius.ToString("R",
+                        CultureInfo.InvariantCulture) +
+                    ";reason=no-loaded-area-Astar-graph;" +
+                    "scope=guarded-compatibility-fixture-only");
+                return true;
+            }
+
+            internal bool TryGetRequestLocalSpawnPosition(int index,
+                out Vector3 result)
+            {
+                result = default(Vector3);
+                if (!_requestLocalFixture) return false;
+                if (_requestLocalSpawnPositions == null || index < 0 ||
+                    index >= _requestLocalSpawnPositions.Length)
+                    throw new InvalidOperationException(
+                        "The real summon action requested a placement index " +
+                        "outside its request-local prepared positions: " +
+                        index + ".");
+                result = _requestLocalSpawnPositions[index];
+                _spawnGroundProjectionBypassObserved = true;
+                return true;
+            }
+
+            private void AuditRequestLocalSummonPatchOrder()
+            {
+                if (!_requestLocalFixture) return;
+                MethodInfo target = typeof(RuleSummonUnit).GetMethod(
+                    "OnTrigger", BindingFlags.Instance | BindingFlags.Public,
+                    null, new[] { typeof(RulebookEventContext) }, null);
+                if (target == null)
+                    throw new MissingMethodException(
+                        typeof(RuleSummonUnit).FullName,
+                        "OnTrigger(RulebookEventContext)");
+                Patches patches = _context.Harmony.GetPatchInfo(target);
+                Patch[] postfixes = patches == null ? new Patch[0] :
+                    patches.Postfixes.ToArray();
+                Patch production = postfixes.SingleOrDefault(value =>
+                    value.patch != null && value.patch.DeclaringType ==
+                        typeof(SummonSameTurnActivationPatch));
+                Patch observer = postfixes.SingleOrDefault(value =>
+                    value.patch != null && value.patch.DeclaringType ==
+                        typeof(SummonRuleObserverPatch));
+                _summonPatchAuditPassed = production != null &&
+                    observer != null && observer.priority < production.priority;
+                _diagnostics.Add("request-local-summon-patch-order=" +
+                    string.Join("|", postfixes.Select((value, index) =>
+                        index + ":" + value.owner + "/" + value.priority +
+                        "/" + (value.patch == null ||
+                            value.patch.DeclaringType == null ? "<missing>" :
+                            value.patch.DeclaringType.FullName + "." +
+                            value.patch.Name)).ToArray()));
+                if (!_summonPatchAuditPassed)
+                    throw new InvalidOperationException(
+                        "The request-local summon observer is not ordered " +
+                        "before the production same-turn activation postfix.");
+            }
+
+            private void RunInRequestLocalDefaultMode(Action action)
+            {
+                if (action == null) throw new ArgumentNullException("action");
+                if (!_requestLocalFixture)
+                {
+                    action();
+                    return;
+                }
+                FieldInfo field = typeof(Game).GetField("m_GameModes",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                var modes = field == null ? null : field.GetValue(
+                    Game.Instance) as Stack<GameMode>;
+                if (modes == null)
+                    throw new MissingFieldException(typeof(Game).FullName,
+                        "m_GameModes");
+                int countBefore = modes.Count;
+                GameMode topBefore = countBefore == 0 ? null : modes.Peek();
+                if (_requestLocalTickMode == null)
+                    _requestLocalTickMode = new GameMode(
+                        GameModeType.Default, new IController[0]);
+                if (modes.Contains(_requestLocalTickMode))
+                    throw new InvalidOperationException(
+                        "The request-local Default mode token was already " +
+                        "present before the synchronous native-controller tick.");
+                modes.Push(_requestLocalTickMode);
+                try
+                {
+                    if (Game.Instance.CurrentMode != GameModeType.Default)
+                        throw new InvalidOperationException(
+                            "The request-local Default mode scope did not become " +
+                            "the exact current mode.");
+                    action();
+                }
+                finally
+                {
+                    if (modes.Count != countBefore + 1 ||
+                        !ReferenceEquals(modes.Peek(), _requestLocalTickMode))
+                        throw new InvalidOperationException(
+                            "The native controller changed the game-mode stack " +
+                            "inside the request-local synchronous scope.");
+                    modes.Pop();
+                    if (modes.Count != countBefore || countBefore > 0 &&
+                        !ReferenceEquals(modes.Peek(), topBefore))
+                        throw new InvalidOperationException(
+                            "The request-local Default mode scope did not restore " +
+                            "the exact pre-existing game-mode stack.");
+                }
+            }
+
+            private void DriveRequestLocalTurnController()
+            {
+                if (!_requestLocalFixture) return;
+                InstallRequestLocalCameraContext();
+                try
+                {
+                    RunInRequestLocalDefaultMode(() =>
+                    {
+                        CombatController controller = Game.Instance
+                            .TurnBasedCombatController;
+                        if (_requestLocalCooldownController == null)
+                            _requestLocalCooldownController =
+                                new RequestLocalCooldownController();
+                        if (_requestLocalBuffsController == null)
+                            _requestLocalBuffsController =
+                                new RequestLocalBuffsController();
+                        TimeController time = Game.Instance.TimeController;
+                        float deltaBefore = time.DeltaTime;
+                        float gameDeltaBefore = time.GameDeltaTime;
+                        time.SetDeltaTime(0.25f);
+                        time.SetGameDeltaTime(0.25f);
+                        try
+                        {
+                            controller.Tick();
+                            controller.TickTime();
+                            foreach (UnitEntityData unit in
+                                _requestLocalCooldownUnits.ToArray())
+                                if (unit != null && !unit.Destroyed &&
+                                    unit.CombatState != null &&
+                                    unit.CombatState.IsInCombat)
+                                {
+                                    _requestLocalCooldownController
+                                        .TickExact(unit);
+                                    _requestLocalBuffsController.TickExact(unit);
+                                }
+                        }
+                        finally
+                        {
+                            time.SetDeltaTime(deltaBefore);
+                            time.SetGameDeltaTime(gameDeltaBefore);
+                            if (time.DeltaTime != deltaBefore ||
+                                time.GameDeltaTime != gameDeltaBefore)
+                                throw new InvalidOperationException(
+                                    "The request-local time scope did not " +
+                                    "restore its exact delta values.");
+                        }
+                    });
+                }
+                finally
+                {
+                    RestoreRequestLocalCameraContext();
+                }
+                if (_requestLocalTurnDriverObserved) return;
+                _requestLocalTurnDriverObserved = true;
+                _diagnostics.Add("request-local-turn-driver=" +
+                    "exact CombatController.Tick/TickTime + " +
+                    "UnitCombatCooldownsController.TickOnUnit + " +
+                    "UnitBuffsController.TickOnUnit;" +
+                    "controlledDelta=0.25;timeRestoredPerTick=True;" +
+                    "playerGameTime=native-combat-progression-restored-at-" +
+                    "fixture-cleanup;" +
+                    "ephemeralMode=Default;" +
+                    "restoredMode=" + Game.Instance.CurrentMode);
+            }
+
+            private void PrepareRequestLocalTurn(TurnController turn)
+            {
+                if (!_requestLocalFixture || turn == null ||
+                    !_requestLocalStartedTurns.Add(turn)) return;
+                InstallRequestLocalCameraContext();
+                try
+                {
+                    RunInRequestLocalDefaultMode(turn.Prepare);
+                }
+                finally
+                {
+                    RestoreRequestLocalCameraContext();
+                }
+                if (turn.Status == TurnController.TurnStatus.None)
+                    throw new InvalidOperationException(
+                        "The exact native TurnController.Prepare() did " +
+                        "not advance the request-local current turn.");
+                _requestLocalTurnStartObserved = true;
+                _diagnostics.Add("request-local-turn-prepare=" +
+                    "TurnController.Prepare();reason=main-menu-has-no-" +
+                    "SelectionManager-for-Start;status=" + turn.Status +
+                    ";native-direct-control-boundary=Preparing-until-first-" +
+                    "command-then-TurnController.Tick-promotes-to-Acting");
+            }
+
+            private sealed class RequestLocalCooldownController :
+                UnitCombatCooldownsController
+            {
+                internal void TickExact(UnitEntityData unit)
+                {
+                    base.TickOnUnit(unit);
+                }
+            }
+
+            private sealed class RequestLocalBuffsController :
+                UnitBuffsController
+            {
+                internal void TickExact(UnitEntityData unit)
+                {
+                    base.TickOnUnit(unit);
+                }
+            }
+
+            private void DriveRequestLocalCastCommand()
+            {
+                if (!_requestLocalFixture || _castCommand == null) return;
+                RunInRequestLocalDefaultMode(() =>
+                {
+                    if (_requestLocalActionController == null)
+                        _requestLocalActionController =
+                            new UnitActionController();
+                    if (!_castCommand.IsStarted)
+                        _castCommand.Start();
+                    bool actedBefore = _castCommand.IsActed;
+                    if (_castCommand.Animation != null &&
+                        !_castCommand.Animation.IsActed)
+                        _castCommand.Animation.IsActed = true;
+                    if (!_castCommand.IsActed ||
+                        _castCommand.ExecutionProcess == null)
+                        _castCommand.Tick();
+                    if (!actedBefore && _castCommand.IsActed)
+                    {
+                        if (_requestLocalCastCooldownApplied)
+                            throw new InvalidOperationException(
+                                "The request-local cast attempted to apply " +
+                                "native cooldowns more than once.");
+                        _requestLocalActionController.UpdateCooldowns(
+                            _castCommand);
+                        _requestLocalCastCooldownApplied = true;
+                    }
+                    if (_castCommand.ExecutionProcess != null)
+                        for (int tick = 0; tick < 5000 &&
+                            !_castCommand.ExecutionProcess.IsEnded; tick++)
+                            _castCommand.ExecutionProcess.Tick();
+                    if (_castCommand.ExecutionProcess != null &&
+                        _castCommand.ExecutionProcess.IsEnded &&
+                        _castCommand.Animation != null &&
+                        !_castCommand.Animation.IsFinished)
+                        FinishAnimation(_castCommand.Animation);
+                    if (_castCommand.ExecutionProcess != null &&
+                        _castCommand.ExecutionProcess.IsEnded &&
+                        (_castCommand.Animation == null ||
+                         _castCommand.Animation.IsFinished) &&
+                        !_castCommand.IsFinished)
+                        _castCommand.Tick();
+                });
+                if (_requestLocalCommandDriverObserved) return;
+                _requestLocalCommandDriverObserved = true;
+                _diagnostics.Add("request-local-command-driver=" +
+                    "UnitCommands.Run->UnitUseAbility.Start/Tick->" +
+                    "AbilityExecutionProcess.Tick;" +
+                    "cooldown=exact public " +
+                    "UnitActionController.UpdateCooldowns at single " +
+                    "not-acted-to-acted transition;reason=request-local " +
+                    "main-menu fixture has no gameplay UnitController");
+            }
+
+            private void SetScenarioPause(bool value)
+            {
+                if (!_requestLocalFixture) Game.Instance.IsPaused = value;
+            }
+
             internal void Poll()
             {
                 if (Complete) return;
                 try
                 {
+                    double timeoutSeconds = _requestLocalFixture ?
+                        _request.TimeoutSeconds :
+                        _request.CompletionTimeoutSeconds;
                     if (_elapsed.Elapsed.TotalSeconds > Math.Min(240,
-                            _request.CompletionTimeoutSeconds))
+                            timeoutSeconds))
                         throw new TimeoutException("Summon activation stage " +
                             _stage + " did not complete in time.");
                     switch (_stage)
@@ -262,11 +649,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Game.Instance == null || Game.Instance.Player == null ||
                     Game.Instance.State == null)
                     throw new InvalidOperationException(
-                        "No loaded Kingmaker game state is available.");
+                        "No initialized Kingmaker runtime state is available.");
+                AuditRequestLocalSummonPatchOrder();
                 _initialPause = Game.Instance.IsPaused;
                 _initialTurnBasedSetting = SettingsRoot.Instance
                     .EnableTurnBasedMode.CurrentValue;
                 _stateCaptured = true;
+                if (_requestLocalFixture)
+                {
+                    _requestLocalPlayerGameTimeBefore =
+                        Game.Instance.Player.GameTime;
+                    _requestLocalPlayerGameTimeCaptured = true;
+                }
                 if (Game.Instance.Player.IsInCombat)
                     throw new InvalidOperationException(
                         "The guarded working save unexpectedly began in combat.");
@@ -274,16 +668,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ToArray();
                 _partyBefore = Game.Instance.Player.Party.Cast<object>()
                     .ToArray();
+                _partyCharactersBefore = Game.Instance.Player.PartyCharacters
+                    .ToArray();
                 foreach (UnitEntityData unit in _unitsBefore
                     .OfType<UnitEntityData>())
                     _combatBefore[unit] = unit.CombatState != null &&
                         unit.CombatState.IsInCombat;
-                _areaAnchor = Game.Instance.Player.Party.FirstOrDefault(value =>
-                    value != null && value.HoldingState != null &&
-                    value.IsInState);
-                if (_areaAnchor == null)
-                    throw new InvalidOperationException(
-                        "The guarded working save has no live party area anchor.");
+                Vector3 casterPosition;
+                SceneEntitiesState holdingState;
+                if (_requestLocalFixture)
+                {
+                    _fixtureScene = new SceneEntitiesState(
+                        "KMG_Summon_Same_Turn_Compatibility_Fixture");
+                    InstallRequestLocalAreaContext();
+                    CaptureRequestLocalCameraContext();
+                    casterPosition = Vector3.zero;
+                    holdingState = _fixtureScene;
+                }
+                else
+                {
+                    _areaAnchor = Game.Instance.Player.Party.FirstOrDefault(
+                        value => value != null &&
+                            value.HoldingState != null && value.IsInState);
+                    if (_areaAnchor == null)
+                        throw new InvalidOperationException(
+                            "The guarded working save has no live party area " +
+                            "anchor.");
+                    casterPosition = _areaAnchor.Position;
+                    holdingState = _areaAnchor.HoldingState;
+                }
 
                 _casterBlueprint = UnityEngine.Object.Instantiate(
                     BlueprintRoot.Instance.DefaultPlayerCharacter);
@@ -291,15 +704,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "KMG_Runtime_SummonSameTurn_Caster";
                 _casterBlueprint.IsCheater = false;
                 _caster = Game.Instance.EntityCreator.SpawnUnit(
-                    _casterBlueprint, _areaAnchor.Position,
-                    Quaternion.identity, _areaAnchor.HoldingState);
+                    _casterBlueprint, casterPosition,
+                    Quaternion.identity, holdingState);
                 Game.Instance.EntityCreator.Tick();
+                RegisterRequestLocalUnit(_caster);
                 if (_caster == null || !_caster.IsInState ||
                     _caster.View == null || _caster.View.Data != _caster)
                     throw new InvalidOperationException(
                         "The disposable caster did not enter the live area.");
-                if (!Game.Instance.Player.Party.Contains(_caster))
+                if (_requestLocalFixture)
+                {
+                    UnitReference casterReference = _caster;
+                    if (!Game.Instance.Player.PartyCharacters.Contains(
+                            casterReference))
+                        Game.Instance.Player.PartyCharacters.Add(
+                            casterReference);
+                    Game.Instance.Player.InvalidateCharacterLists();
+                    Game.Instance.Player.UpdateCharacterLists();
+                    if (!Game.Instance.Player.Party.Contains(_caster) ||
+                        !Game.Instance.Player.ControllableCharacters.Contains(
+                            _caster))
+                        throw new InvalidOperationException(
+                            "The request-local caster did not enter the " +
+                            "authoritative party and controllable caches.");
+                }
+                else if (!Game.Instance.Player.Party.Contains(_caster))
+                {
                     Game.Instance.Player.Party.Add(_caster);
+                }
                 _caster.Descriptor.Stats.HitPoints.BaseValue = 10000;
                 _caster.Descriptor.Stats.Intelligence.BaseValue = 30;
                 _caster.Descriptor.State.Immortality.Retain();
@@ -333,6 +765,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _caster.Position + new Vector3(3f, 0f, 0f),
                         _caster.HoldingState, out _enemyBlueprint);
                 Game.Instance.EntityCreator.Tick();
+                RegisterRequestLocalUnit(_enemy);
                 if (_enemy == null || !_enemy.IsInState ||
                     !_enemy.IsEnemy(_caster))
                     throw new InvalidOperationException(
@@ -358,24 +791,194 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The exact combat mode did not match the requested " +
                         _kind + " control.");
+                if (turnBased && (!Game.Instance.TurnBasedCombatController
+                        .SortedUnits.Contains(_caster) ||
+                    !Game.Instance.TurnBasedCombatController.SortedUnits
+                        .Contains(_enemy)))
+                    throw new InvalidOperationException(
+                        "The native turn controller did not enroll both " +
+                        "request-local combatants.");
+                if (_requestLocalFixture)
+                    _diagnostics.Add("request-local-turn-enrollment=" +
+                        "caster=" + Game.Instance.TurnBasedCombatController
+                            .SortedUnits.Contains(_caster) +
+                        "/visible=" + _caster.IsVisibleForPlayer +
+                        ";enemy=" + Game.Instance.TurnBasedCombatController
+                            .SortedUnits.Contains(_enemy) +
+                        "/visible=" + _enemy.IsVisibleForPlayer);
                 if (_kind == ScenarioKind.NativeControl)
                     RunNativeNegativeControls();
-                Game.Instance.IsPaused = false;
+                SetScenarioPause(false);
                 _evidence.Caster = Identity(_caster);
                 _evidence.Enemy = Identity(_enemy);
                 _evidence.Spellbook = _spellbook.Blueprint.name + ":" +
                     _spellbook.Blueprint.AssetGuid;
                 _evidence.Spell = _castAbility.Blueprint.name + ":" +
                     _castAbility.Blueprint.AssetGuid;
-                _diagnostics.Add("fixture=caster=" + _evidence.Caster +
+                _diagnostics.Add("fixture=" + (_requestLocalFixture ?
+                    "request-local" : "working-save") + ";caster=" +
+                    _evidence.Caster +
                     ";enemy=" + _evidence.Enemy + ";spellbook=" +
                     _evidence.Spellbook + ";spell=" + _evidence.Spell);
                 _failureStage = turnBased ? "wait-caster-turn" :
                     "rtwp-cast-ready";
             }
 
+            private void InstallRequestLocalAreaContext()
+            {
+                FieldInfo field = typeof(Game).GetField("m_SceneLoader",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                if (field == null)
+                    throw new MissingFieldException(typeof(Game).FullName,
+                        "m_SceneLoader");
+                _requestLocalSceneLoader = field.GetValue(Game.Instance);
+                if (_requestLocalSceneLoader == null)
+                    throw new InvalidOperationException(
+                        "The request-local fixture has no SceneLoader.");
+                _requestLocalAreaProperty = _requestLocalSceneLoader.GetType()
+                    .GetProperty("CurrentlyLoadedArea",
+                        BindingFlags.Instance | BindingFlags.Public |
+                        BindingFlags.NonPublic);
+                MethodInfo setter = _requestLocalAreaProperty == null ? null :
+                    _requestLocalAreaProperty.GetSetMethod(true);
+                if (setter == null ||
+                    _requestLocalAreaProperty.PropertyType !=
+                        typeof(BlueprintArea))
+                    throw new MissingMethodException(
+                        "SceneLoader.CurrentlyLoadedArea exact setter");
+                _loadedAreaBefore = (BlueprintArea)_requestLocalAreaProperty
+                    .GetValue(_requestLocalSceneLoader, null);
+                _requestLocalArea = BlueprintRoot.Instance.NewGamePreset == null ?
+                    null : BlueprintRoot.Instance.NewGamePreset.Area;
+                if (_requestLocalArea == null || _requestLocalArea.IsCapital)
+                    throw new InvalidOperationException(
+                        "The request-local fixture has no exact non-capital " +
+                        "BlueprintRoot.NewGamePreset.Area metadata context.");
+                setter.Invoke(_requestLocalSceneLoader,
+                    new object[] { _requestLocalArea });
+                _requestLocalAreaContextCaptured = true;
+                if (!ReferenceEquals(Game.Instance.CurrentlyLoadedArea,
+                        _requestLocalArea))
+                    throw new InvalidOperationException(
+                        "The request-local area metadata context was not " +
+                        "installed through the exact SceneLoader property.");
+                _diagnostics.Add("request-local-area-context=" +
+                    _requestLocalArea.name + ":" +
+                    _requestLocalArea.AssetGuid +
+                    ";source=BlueprintRoot.NewGamePreset.Area;" +
+                    "restoration=pending");
+            }
+
+            private void RestoreRequestLocalAreaContext()
+            {
+                if (!_requestLocalAreaContextCaptured ||
+                    _requestLocalSceneLoader == null ||
+                    _requestLocalAreaProperty == null) return;
+                MethodInfo setter = _requestLocalAreaProperty.GetSetMethod(true);
+                if (setter == null)
+                    throw new MissingMethodException(
+                        "SceneLoader.CurrentlyLoadedArea exact setter");
+                setter.Invoke(_requestLocalSceneLoader,
+                    new object[] { _loadedAreaBefore });
+                _requestLocalAreaContextRestored = ReferenceEquals(
+                    Game.Instance.CurrentlyLoadedArea, _loadedAreaBefore);
+                if (!_requestLocalAreaContextRestored)
+                    throw new InvalidOperationException(
+                        "The request-local area metadata context did not " +
+                    "restore its exact prior reference.");
+            }
+
+            private void RestoreRequestLocalPlayerGameTime()
+            {
+                if (!_requestLocalPlayerGameTimeCaptured) return;
+                Game.Instance.Player.GameTime =
+                    _requestLocalPlayerGameTimeBefore;
+                _requestLocalPlayerGameTimeRestored =
+                    Game.Instance.Player.GameTime ==
+                        _requestLocalPlayerGameTimeBefore;
+                if (!_requestLocalPlayerGameTimeRestored)
+                    throw new InvalidOperationException(
+                        "The request-local fixture did not restore the exact " +
+                        "player game time.");
+            }
+
+            private void CaptureRequestLocalCameraContext()
+            {
+                _requestLocalCameraProperty = typeof(Game).GetProperty(
+                    "CameraController", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic);
+                MethodInfo setter = _requestLocalCameraProperty == null ? null :
+                    _requestLocalCameraProperty.GetSetMethod(true);
+                if (setter == null ||
+                    _requestLocalCameraProperty.PropertyType !=
+                        typeof(CameraController))
+                    throw new MissingMethodException(
+                        "Game.CameraController exact setter");
+                _cameraControllerBefore = (CameraController)
+                    _requestLocalCameraProperty.GetValue(Game.Instance, null);
+                _cameraScrollBefore = SettingsRoot.Instance
+                    .CameraScrollToCurrentUnit.CurrentValue;
+                _requestLocalCameraContextCaptured = true;
+            }
+
+            private void InstallRequestLocalCameraContext()
+            {
+                if (!_requestLocalCameraContextCaptured ||
+                    _requestLocalCameraProperty == null)
+                    throw new InvalidOperationException(
+                        "The request-local camera context was not captured.");
+                MethodInfo setter = _requestLocalCameraProperty.GetSetMethod(true);
+                if (setter == null)
+                    throw new MissingMethodException(
+                        "Game.CameraController exact setter");
+                _requestLocalCameraController = new CameraController(
+                    false, false, false);
+                setter.Invoke(Game.Instance, new object[] {
+                    _requestLocalCameraController });
+                SettingsRoot.Instance.CameraScrollToCurrentUnit.CurrentValue =
+                    false;
+                if (!ReferenceEquals(Game.Instance.CameraController,
+                        _requestLocalCameraController) ||
+                    _requestLocalCameraController.Follower == null ||
+                    SettingsRoot.Instance.CameraScrollToCurrentUnit.CurrentValue)
+                    throw new InvalidOperationException(
+                        "The request-local camera metadata context was not " +
+                        "installed for native TurnController.Start.");
+                if (!_requestLocalCameraInstallObserved)
+                {
+                    _requestLocalCameraInstallObserved = true;
+                    _diagnostics.Add("request-local-camera-context=" +
+                        "synchronous temporary " +
+                        "CameraController(false,false,false);" +
+                        "scrollToCurrentUnit=false;restored-after-each-tick");
+                }
+            }
+
+            private void RestoreRequestLocalCameraContext()
+            {
+                if (!_requestLocalCameraContextCaptured ||
+                    _requestLocalCameraProperty == null) return;
+                MethodInfo setter = _requestLocalCameraProperty.GetSetMethod(true);
+                if (setter == null)
+                    throw new MissingMethodException(
+                        "Game.CameraController exact setter");
+                setter.Invoke(Game.Instance,
+                    new object[] { _cameraControllerBefore });
+                SettingsRoot.Instance.CameraScrollToCurrentUnit.CurrentValue =
+                    _cameraScrollBefore;
+                _requestLocalCameraContextRestored = ReferenceEquals(
+                    Game.Instance.CameraController, _cameraControllerBefore) &&
+                    SettingsRoot.Instance.CameraScrollToCurrentUnit.CurrentValue ==
+                        _cameraScrollBefore;
+                if (!_requestLocalCameraContextRestored)
+                    throw new InvalidOperationException(
+                        "The request-local camera metadata context did not " +
+                        "restore its exact prior state.");
+            }
+
             private void PollUntilCasterTurn()
             {
+                DriveRequestLocalTurnController();
                 CombatController controller =
                     Game.Instance.TurnBasedCombatController;
                 if (_kind == ScenarioKind.RtwpControl)
@@ -383,7 +986,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (CombatController.IsInTurnBasedCombat())
                         throw new InvalidOperationException(
                             "The RTwP control unexpectedly entered turn-based combat.");
-                    Game.Instance.IsPaused = true;
+                    SetScenarioPause(true);
                     _stage = 2;
                     return;
                 }
@@ -394,8 +997,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RecordTurn(turn);
                 if (ReferenceEquals(turn.Unit, _caster))
                 {
+                    if (_requestLocalFixture &&
+                        turn.Status == TurnController.TurnStatus.None)
+                    {
+                        PrepareRequestLocalTurn(turn);
+                        return;
+                    }
+                    if (_requestLocalFixture &&
+                        turn.Status != TurnController.TurnStatus.Preparing &&
+                        turn.Status != TurnController.TurnStatus.Acting)
+                        return;
                     _lastForcedTurn = null;
-                    Game.Instance.IsPaused = true;
+                    SetScenarioPause(true);
                     _stage = 2;
                     return;
                 }
@@ -434,6 +1047,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _summons.Clear();
                 _summonRules.Clear();
                 _summonRule = null;
+                _postCommandEntityTicks = 0;
+                _lastObservedSummonCount = -1;
+                _stableSummonEntityTicks = 0;
                 _castCaptureActive = true;
                 var target = new TargetWrapper(_caster.Position +
                     new Vector3(1.5f, 0f, 0f));
@@ -458,7 +1074,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _castCommand.CanStart + ";reason=" +
                         _castAbility.GetUnavailableReason() + ".");
                 _caster.Commands.Run(_castCommand);
-                Game.Instance.IsPaused = false;
+                SetScenarioPause(false);
                 _failureStage = _kind.ToString().ToLowerInvariant() +
                     "-native-command-resolution";
             }
@@ -470,6 +1086,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_castCommand == null)
                     throw new InvalidOperationException(
                         "The native summon command was not retained.");
+                DriveRequestLocalCastCommand();
                 if (!_castCommand.IsStarted) return;
                 if (_castCommand.Animation != null &&
                     !_castCommand.Animation.IsActed)
@@ -488,7 +1105,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (!_castCommand.IsFinished) return;
                 Game.Instance.EntityCreator.Tick();
-                _castCaptureActive = false;
+                foreach (UnitEntityData summon in _summons)
+                    RegisterRequestLocalUnit(summon);
                 _evidence.CommandResult = _castCommand.Result.ToString();
                 if (!string.Equals(_evidence.CommandResult, "Success",
                         StringComparison.Ordinal))
@@ -500,6 +1118,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int expectedMaximum = _kind == ScenarioKind.Multiple ? 5 : 1;
                 _evidence.ExpectedSummonMinimum = expectedMinimum;
                 _evidence.ExpectedSummonMaximum = expectedMaximum;
+                if (_requestLocalFixture)
+                {
+                    _postCommandEntityTicks++;
+                    if (_summons.Count == _lastObservedSummonCount)
+                        _stableSummonEntityTicks++;
+                    else
+                    {
+                        _lastObservedSummonCount = _summons.Count;
+                        _stableSummonEntityTicks = 0;
+                    }
+                    if (_postCommandEntityTicks > 64)
+                        throw new InvalidOperationException(
+                            "The request-local EntityCreator did not produce a " +
+                            "stable real summon count within 64 native ticks; " +
+                            "observed=" + _summons.Count + ".");
+                    if (_summons.Count < expectedMinimum ||
+                        _stableSummonEntityTicks < 2) return;
+                    _diagnostics.Add("request-local-entity-creator=" +
+                        "ticks=" + _postCommandEntityTicks +
+                        ";stableTicks=" + _stableSummonEntityTicks +
+                        ";summons=" + _summons.Count);
+                }
+                _castCaptureActive = false;
                 if (_summons.Count < expectedMinimum ||
                     _summons.Count > expectedMaximum || _summonRule == null ||
                     _summonRules.Count != _summons.Count)
@@ -606,13 +1247,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The cast changed current-turn ownership before the " +
                         "caster intentionally ended the turn.");
-                Game.Instance.IsPaused = false;
+                SetScenarioPause(false);
                 if (_kind != ScenarioKind.RtwpControl)
-                {
-                    controller.CurrentTurn.ForceToEnd(true);
-                    _lastForcedTurn = controller.CurrentTurn;
-                    _forcedTurns++;
-                }
+                    ForceTurnOnce(controller.CurrentTurn);
                 _failureStage = _kind == ScenarioKind.RtwpControl ?
                     "observe-rtwp-native-activation" :
                     "observe-first-summon-turn";
@@ -621,6 +1258,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void PollSummonOpportunity()
             {
+                DriveRequestLocalTurnController();
                 CombatController controller =
                     Game.Instance.TurnBasedCombatController;
                 if (_kind == ScenarioKind.RtwpControl)
@@ -657,10 +1295,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     allNextLawful)
                 {
                     Game.Instance.EntityCreator.Tick();
-                    Game.Instance.EntityDestroyer.Tick();
-                    _evidence.ExpiredAtExpectedBoundary =
-                        controller.RoundNumber >= _castRound + 2 &&
-                        _summons.All(IsExpired);
+                    if (_requestLocalFixture)
+                    {
+                        bool queued = _summons.All(value =>
+                            value != null && value.ShouldBeDestroyed &&
+                            value.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
+                                .SystemMechanics.SummonedUnitBuff) == null);
+                        _evidence.ExpiredAtExpectedBoundary =
+                            controller.RoundNumber >= _castRound + 2 && queued;
+                        if (_evidence.ExpiredAtExpectedBoundary)
+                            _diagnostics.Add(
+                                "request-local-summon-expiration=" +
+                                "canonical-lifecycle-removed=True;" +
+                                "native-ShouldBeDestroyed=True;" +
+                                "EntityDestroyer.Tick=deferred-to-fixture-cleanup;" +
+                                "reason=no-loaded-area-persistent-state");
+                    }
+                    else
+                    {
+                        Game.Instance.EntityDestroyer.Tick();
+                        _evidence.ExpiredAtExpectedBoundary =
+                            controller.RoundNumber >= _castRound + 2 &&
+                            _summons.All(IsExpired);
+                    }
                     if (_evidence.ExpiredAtExpectedBoundary)
                     {
                         FinalizeOpportunityObservations();
@@ -696,7 +1353,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FinalizeOpportunityObservations();
                     return;
                 }
-                if (!summonOwnsTurn)
+                if (!summonOwnsTurn || _requestLocalFixture &&
+                    _preparedSummonTurns.Contains(turn))
                     ForceTurnOnce(turn);
             }
 
@@ -834,10 +1492,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The native turn loop did not reach the expected " +
                         "summon opportunity within 48 turns.");
-                Game.Instance.IsPaused = false;
+                SetScenarioPause(false);
                 turn.ForceToEnd(true);
+                if (_requestLocalFixture)
+                    CompleteRequestLocalTurnEnd(turn);
                 _lastForcedTurn = turn;
                 _forcedTurns++;
+            }
+
+            private void CompleteRequestLocalTurnEnd(TurnController turn)
+            {
+                MethodInfo end = typeof(TurnController).GetMethods(
+                        BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SingleOrDefault(method => method.Name == "End" &&
+                        method.ReturnType == typeof(void) &&
+                        method.GetParameters().Length == 0);
+                if (end == null)
+                    throw new MissingMethodException(
+                        "TurnController exact End() method");
+                string before = turn.Status.ToString();
+                end.Invoke(turn, null);
+                string after = turn.Status.ToString();
+                if (turn.Status != TurnController.TurnStatus.Ended)
+                    throw new InvalidOperationException(
+                        "The exact native TurnController.End method did not " +
+                        "finish the request-local turn; status=" + after + ".");
+                if (!_requestLocalEndCompletionObserved)
+                {
+                    _requestLocalEndCompletionObserved = true;
+                    _diagnostics.Add("request-local-end-completion=" +
+                        "native ForceToEnd then exact TurnController.End;" +
+                        "status=" + before + "->" + after + ";" +
+                        "CombatController remains actor/round owner");
+                }
             }
 
             private void RecordTurn(TurnController turn)
@@ -1205,21 +1892,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                         AllUnitsHave(_nextTurnsByUnit, 1) &&
                         AllUnitsHave(_nextLawfulByUnit, 1),
                         "same unit identities in castRound+1");
-                    Add("accelerated-summon-native-ai",
-                        "every summon issues native commands in current and following lawful turns",
-                        string.Join(" | ", _evidence.UnitOpportunities
-                            .ToArray()),
-                        AllUnitsAtLeast(_sameCommandsByUnit, 1) &&
-                        AllUnitsAtLeast(_nextCommandsByUnit, 1),
-                        "UnitCommands.Run correlated to exact summon and CurrentTurn");
-                    if (_kind == ScenarioKind.Quickened)
-                        Add("accelerated-summon-single-action",
-                            "tier-one dog resolves exactly one weapon rule in its one cast-round opportunity",
-                            "first=" + _firstSummonAttackRound +
-                                ";current=" + _sameRoundSummonAttacks,
-                            _firstSummonAttackRound == _castRound &&
-                            _sameRoundSummonAttacks == 1,
-                            "RuleAttackWithWeapon correlated to summon CurrentTurn");
+                    if (_requestLocalFixture)
+                        Add("compatibility-native-turn-driver",
+                            "save-free compatibility qualification drives only the exact native combat controller and spell command inside a synchronously restored Default-mode scope",
+                            "turnDriver=" +
+                                _requestLocalTurnDriverObserved +
+                                ";commandDriver=" +
+                                _requestLocalCommandDriverObserved +
+                                ";restoredMode=" +
+                                Game.Instance.CurrentMode,
+                            _requestLocalTurnDriverObserved &&
+                            _requestLocalCommandDriverObserved &&
+                            _summonPatchAuditPassed &&
+                            _requestLocalSummonCombatJoinObserved &&
+                            _requestLocalTurnStartObserved,
+                            "CombatController.Tick, UnitCommands.Run, UnitUseAbility, and AbilityExecutionProcess");
+                    if (_requestLocalFixture)
+                        Add("compatibility-request-local-spawn-placement",
+                            "only unavailable main-menu navigation and ground projection are supplied while the real summon graph remains native",
+                            "nearest=" +
+                                _spawnNearestNodeBypassObserved +
+                                ";places=" +
+                                _spawnPlacesBypassObserved +
+                                ";ground=" +
+                                _spawnGroundProjectionBypassObserved,
+                            _spawnNearestNodeBypassObserved &&
+                            _spawnPlacesBypassObserved &&
+                            _spawnGroundProjectionBypassObserved,
+                            "ObstacleAnalyzer and FreePlaceSelector request-local Harmony prefixes; ContextActionSpawnMonster and RuleSummonUnit remain native");
+                    else
+                    {
+                        Add("accelerated-summon-native-ai",
+                            "every summon issues native commands in current and following lawful turns",
+                            string.Join(" | ", _evidence.UnitOpportunities
+                                .ToArray()),
+                            AllUnitsAtLeast(_sameCommandsByUnit, 1) &&
+                            AllUnitsAtLeast(_nextCommandsByUnit, 1),
+                            "UnitCommands.Run correlated to exact summon and CurrentTurn");
+                        if (_kind == ScenarioKind.Quickened)
+                            Add("accelerated-summon-single-action",
+                                "tier-one dog resolves exactly one weapon rule in its one cast-round opportunity",
+                                "first=" + _firstSummonAttackRound +
+                                    ";current=" + _sameRoundSummonAttacks,
+                                _firstSummonAttackRound == _castRound &&
+                                _sameRoundSummonAttacks == 1,
+                                "RuleAttackWithWeapon correlated to summon CurrentTurn");
+                    }
                     Add("accelerated-summon-duration",
                         "lifecycle equals RuleSummonUnit duration without Full-Round grace",
                         DurationObserved(), AcceleratedDurationExact(),
@@ -1256,14 +1974,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !_evidence.CasterExhausted,
                             "existing Acadamae command/rule correlation and native save");
                         Add("accelerated-summon-expiration",
-                            "two-round caster-level duration grants current and next opportunities then expires at castRound+2",
+                            "two-round caster-level duration grants current and next opportunities then reaches native destruction at castRound+2",
                             "duration=" + DurationObserved() +
                                 ";expired=" +
                                 _evidence.ExpiredAtExpectedBoundary,
                             Math.Abs(_evidence.ExpectedLifecycleSeconds - 12d)
                                 <= 0.001d &&
                             _evidence.ExpiredAtExpectedBoundary,
-                            "canonical SummonedUnitBuff expiration and entity removal");
+                            _requestLocalFixture ?
+                                "canonical SummonedUnitBuff removal and native ShouldBeDestroyed queue; fixture-owned cleanup because no area persistence is loaded" :
+                                "canonical SummonedUnitBuff expiration and entity removal");
                     }
                     if (_kind == ScenarioKind.Multiple)
                         Add("multiple-kmg-summon-opportunities",
@@ -1370,6 +2090,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !_castCaptureActive ||
                     !ReferenceEquals(rule.Initiator, _caster) ||
                     rule.SummonedUnit == null) return;
+                RegisterRequestLocalUnit(rule.SummonedUnit);
+                if (_requestLocalFixture &&
+                    !rule.SummonedUnit.CombatState.IsInCombat)
+                {
+                    rule.SummonedUnit.JoinCombat();
+                    Game.Instance.Player.UpdateIsInCombat();
+                    _requestLocalSummonCombatJoinObserved =
+                        rule.SummonedUnit.CombatState.IsInCombat;
+                    if (!_requestLocalSummonCombatJoinObserved)
+                        throw new InvalidOperationException(
+                            "The genuine request-local summoned unit did not " +
+                            "join combat through UnitEntityData.JoinCombat.");
+                    _diagnostics.Add("request-local-summon-combat-join=" +
+                        Identity(rule.SummonedUnit) +
+                        ";api=UnitEntityData.JoinCombat;" +
+                        "ruleStillActive=True");
+                }
+                if (_requestLocalFixture)
+                {
+                    CombatController controller = Game.Instance
+                        .TurnBasedCombatController;
+                    if (!controller.SortedUnits.Contains(rule.SummonedUnit))
+                        controller.HandleUnitJoinCombat(rule.SummonedUnit);
+                    if (!controller.SortedUnits.Contains(rule.SummonedUnit))
+                        throw new InvalidOperationException(
+                            "The exact turn-based combat join handler did not " +
+                            "enroll the genuine request-local summon.");
+                    _diagnostics.Add("request-local-summon-turn-enrollment=" +
+                        Identity(rule.SummonedUnit) +
+                        ";api=CombatController.HandleUnitJoinCombat;" +
+                        "ruleStillActive=True");
+                }
                 if (_summonRule == null) _summonRule = rule;
                 _summonRules[rule.SummonedUnit] = rule;
                 if (!_summons.Contains(rule.SummonedUnit))
@@ -1393,15 +2145,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Cast<object>().ToArray();
                     object[] partyAfter = Game.Instance.Player.Party
                         .Cast<object>().ToArray();
+                    bool partyCharactersRestored = _partyCharactersBefore !=
+                        null && Game.Instance.Player.PartyCharacters
+                            .SequenceEqual(_partyCharactersBefore);
+                    bool areaContextRestored = !_requestLocalAreaContextCaptured ||
+                        _requestLocalAreaContextRestored && ReferenceEquals(
+                            Game.Instance.CurrentlyLoadedArea,
+                            _loadedAreaBefore);
+                    bool cameraContextRestored =
+                        !_requestLocalCameraContextCaptured ||
+                        _requestLocalCameraContextRestored && ReferenceEquals(
+                            Game.Instance.CameraController,
+                            _cameraControllerBefore) &&
+                        SettingsRoot.Instance.CameraScrollToCurrentUnit
+                            .CurrentValue == _cameraScrollBefore;
+                    bool playerGameTimeRestored =
+                        !_requestLocalPlayerGameTimeCaptured ||
+                        _requestLocalPlayerGameTimeRestored &&
+                        Game.Instance.Player.GameTime ==
+                            _requestLocalPlayerGameTimeBefore;
                     _evidence.CleanupDetails = "units=" +
                         DescribeReferenceDifference(_unitsBefore, unitsAfter) +
                         ";party=" + DescribeReferenceDifference(_partyBefore,
-                            partyAfter) + ";playerCombat=" +
+                            partyAfter) + ";partyCharactersRestored=" +
+                        partyCharactersRestored + ";areaContextRestored=" +
+                        areaContextRestored + ";cameraContextRestored=" +
+                        cameraContextRestored + ";playerGameTimeRestored=" +
+                        playerGameTimeRestored + ";playerCombat=" +
                         Game.Instance.Player.IsInCombat;
                     _diagnostics.Add("cleanup-state=" +
                         _evidence.CleanupDetails);
                     cleaned = SameReferences(_unitsBefore, unitsAfter) &&
                         SameReferences(_partyBefore, partyAfter) &&
+                        partyCharactersRestored && areaContextRestored &&
+                        cameraContextRestored && playerGameTimeRestored &&
                         !Game.Instance.Player.IsInCombat;
                     RuntimeTestAssertion cleanup = _assertions
                         .FirstOrDefault(value => value.Name ==
@@ -1422,6 +2199,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 catch (Exception exception)
                 {
+                    try { RestoreRequestLocalCameraContext(); }
+                    catch (Exception restorationException)
+                    {
+                        _diagnostics.Add("camera-restoration-exception=" +
+                            restorationException);
+                    }
+                    try { RestoreRequestLocalAreaContext(); }
+                    catch (Exception restorationException)
+                    {
+                        _diagnostics.Add("area-restoration-exception=" +
+                            restorationException);
+                    }
+                    try { RestoreRequestLocalPlayerGameTime(); }
+                    catch (Exception restorationException)
+                    {
+                        _diagnostics.Add("time-restoration-exception=" +
+                            restorationException);
+                    }
                     _diagnostics.Add("cleanup-exception=" + exception);
                     Add("summon-activation-cleanup",
                         "unit and party snapshots restored; no combat",
@@ -1607,7 +2402,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 _failureStage = "cleanup";
                 _castCaptureActive = false;
-                Game.Instance.IsPaused = true;
+                SetScenarioPause(true);
                 if (_levelController != null)
                 {
                     MethodInfo cancel = _levelController.GetType().GetMethod(
@@ -1643,12 +2438,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_enemy != null) DisposeUnit(_enemy);
                 if (_caster != null)
                 {
-                    Game.Instance.Player.Party.Remove(_caster);
+                    if (_requestLocalFixture)
+                        RestoreRequestLocalPartyCharacters();
+                    else
+                        Game.Instance.Player.Party.Remove(_caster);
                     DisposeUnit(_caster);
                 }
                 Game.Instance.EntityCreator.Tick();
-                Game.Instance.EntityDestroyer.Tick();
-                Game.Instance.EntityDestroyer.Tick();
+                if (!_requestLocalFixture)
+                {
+                    Game.Instance.EntityDestroyer.Tick();
+                    Game.Instance.EntityDestroyer.Tick();
+                }
                 if (_fixtureJoinedCombat)
                     Game.Instance.Player.UpdateIsInCombat();
                 if (_enemyBlueprint != null)
@@ -1657,12 +2458,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Object.DestroyImmediate(_nonSummonBlueprint);
                 if (_casterBlueprint != null)
                     UnityEngine.Object.DestroyImmediate(_casterBlueprint);
+                if (_fixtureScene != null)
+                {
+                    _fixtureScene.Dispose();
+                    _fixtureScene = null;
+                }
+                RestoreRequestLocalCameraContext();
+                RestoreRequestLocalAreaContext();
+                RestoreRequestLocalPlayerGameTime();
                 if (_stateCaptured)
                 {
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
                         _initialTurnBasedSetting;
                     Game.Instance.TurnBasedCombatController.Activate();
-                    Game.Instance.IsPaused = _initialPause;
+                    SetScenarioPause(_initialPause);
                 }
             }
 
@@ -1681,6 +2490,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 catch { }
                 try { unit.Dispose(); }
                 catch { }
+            }
+
+            private void RegisterRequestLocalUnit(UnitEntityData unit)
+            {
+                if (!_requestLocalFixture || unit == null) return;
+                if (!Game.Instance.State.Units.All.Contains(unit) &&
+                    !Game.Instance.State.Units.All.Add(unit))
+                    throw new InvalidOperationException(
+                        "The request-local summon fixture could not register " +
+                        Identity(unit) + " exactly once in live game state.");
+                if (!Game.Instance.State.Units.All.Contains(unit))
+                    throw new InvalidOperationException(
+                        "The request-local summon fixture unit is absent from " +
+                        "live game state: " + Identity(unit));
+                if (!_requestLocalCooldownUnits.Contains(unit))
+                    _requestLocalCooldownUnits.Add(unit);
+                unit.IsInGame = true;
+                unit.IsInFogOfWar = false;
+                if (unit.View != null) unit.View.SetVisible(true, true);
+                if (!unit.IsVisibleForPlayer)
+                    throw new InvalidOperationException(
+                        "The request-local summon fixture unit is not visible " +
+                        "to the native turn-order filter: " + Identity(unit));
+                if (unit.View != null && unit.View.AgentASP != null)
+                    unit.View.AgentASP.AvoidanceDisabled = true;
+            }
+
+            private void RestoreRequestLocalPartyCharacters()
+            {
+                if (!_requestLocalFixture ||
+                    _partyCharactersBefore == null) return;
+                Game.Instance.Player.PartyCharacters.Clear();
+                Game.Instance.Player.PartyCharacters.AddRange(
+                    _partyCharactersBefore);
+                Game.Instance.Player.InvalidateCharacterLists();
+                Game.Instance.Player.UpdateCharacterLists();
             }
 
             private static AbilityData PrepareQuickenedSummon(
@@ -2077,6 +2922,100 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        /// <summary>
+        /// A save-free compatibility fixture has no loaded area and therefore
+        /// no Astar grid. Keep Kingmaker's real turn controller active while
+        /// suppressing only its pathfinding-grid erosion call for the lifetime
+        /// of that guarded request. Normal play and working-save scenarios
+        /// always execute the native method.
+        /// </summary>
+        [HarmonyPatch]
+        private static class RequestLocalNavigationGridPatch
+        {
+            private static MethodBase TargetMethod()
+            {
+                return typeof(CombatController).GetMethods(
+                        BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Single(method => method.Name ==
+                        "UpdateNavigationGridTags" &&
+                        method.ReturnType == typeof(void) &&
+                        method.GetParameters().Length == 0);
+            }
+
+            private static bool Prefix()
+            {
+                Session session = Active;
+                return session == null ||
+                    !session.SuppressRequestLocalNavigationGridUpdate();
+            }
+        }
+
+        /// <summary>
+        /// The compatibility fixture intentionally runs before a save or area
+        /// is loaded, so the singleton Astar graph used only to clamp the
+        /// selected spell target does not exist. Supply that exact point only
+        /// for the guarded request; working-save and normal-play casts always
+        /// call the installed ObstacleAnalyzer implementation.
+        /// </summary>
+        [HarmonyPatch(typeof(ObstacleAnalyzer), "GetNearestNode",
+            new[] { typeof(Vector3) })]
+        private static class RequestLocalSpawnNearestNodePatch
+        {
+            private static bool Prefix(Vector3 pos,
+                ref Pathfinding.NNInfo __result)
+            {
+                Session session = Active;
+                Pathfinding.NNInfo supplied;
+                if (session == null ||
+                    !session.TrySupplyRequestLocalNearestNode(pos,
+                        out supplied)) return true;
+                __result = supplied;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Native FreePlaceSelector relaxation requires the same absent Astar
+        /// graph. Preserve the exact requested spawn point (and deterministic
+        /// spacing for completeness) only in the save-free compatibility
+        /// world. ContextActionSpawnMonster still constructs and triggers each
+        /// real RuleSummonUnit itself.
+        /// </summary>
+        [HarmonyPatch(typeof(FreePlaceSelector), "PlaceSpawnPlaces",
+            new[] { typeof(int), typeof(float), typeof(Vector3) })]
+        private static class RequestLocalSpawnPlacesPatch
+        {
+            private static bool Prefix(int count, float radius,
+                Vector3 aroundPoint)
+            {
+                Session session = Active;
+                return session == null ||
+                    !session.TryPrepareRequestLocalSpawnPlaces(count, radius,
+                        aroundPoint);
+            }
+        }
+
+        /// <summary>
+        /// Ground projection is scene physics rather than summon behavior.
+        /// Return the request-local deterministic point when no area scene is
+        /// loaded; all ordinary runtime casts retain native line casting.
+        /// </summary>
+        [HarmonyPatch(typeof(FreePlaceSelector), "GetRelaxedPosition",
+            new[] { typeof(int), typeof(bool) })]
+        private static class RequestLocalSpawnGroundProjectionPatch
+        {
+            private static bool Prefix(int index, ref Vector3 __result)
+            {
+                Session session = Active;
+                Vector3 supplied;
+                if (session == null ||
+                    !session.TryGetRequestLocalSpawnPosition(index,
+                        out supplied)) return true;
+                __result = supplied;
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(ContextActionSpawnMonster), "RunAction")]
         private static class SpawnActionObserverPatch
         {
@@ -2094,6 +3033,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { typeof(RulebookEventContext) })]
         private static class SummonRuleObserverPatch
         {
+            [HarmonyPriority(Priority.Last)]
             private static void Postfix(RuleSummonUnit __instance)
             {
                 Session session = Active;
