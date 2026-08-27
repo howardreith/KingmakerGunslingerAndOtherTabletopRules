@@ -262,6 +262,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private long _acadamaePublicationBefore;
             private TurnController _lastTurn;
             private TurnController _lastForcedTurn;
+            private string _lastRequestLocalTurnGate;
             private string _failureStage = "not-started";
 
             internal Session(ModContext context, RuntimeTestRequest request)
@@ -1056,6 +1057,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DriveRequestLocalTurnController();
                 CombatController controller =
                     Game.Instance.TurnBasedCombatController;
+                RecordRequestLocalTurnGate(controller);
                 if (_kind == ScenarioKind.RtwpControl)
                 {
                     if (CombatController.IsInTurnBasedCombat())
@@ -1088,6 +1090,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 ForceTurnOnce(turn);
+            }
+
+            private void RecordRequestLocalTurnGate(
+                CombatController controller)
+            {
+                if (!_requestLocalFixture || controller == null) return;
+                FieldInfo nextField = typeof(CombatController).GetField(
+                    "m_NextUnit", BindingFlags.Instance |
+                        BindingFlags.NonPublic);
+                UnitEntityData next = nextField == null ? null :
+                    nextField.GetValue(controller) as UnitEntityData;
+                TurnController turn = controller.CurrentTurn;
+                string state = "initialized=" + controller.Initialized +
+                    ";turnBased=" +
+                    CombatController.IsInTurnBasedCombat() +
+                    ";playerCombat=" + Game.Instance.Player.IsInCombat +
+                    ";paused=" + Game.Instance.IsPaused +
+                    ";mode=" + Game.Instance.CurrentMode +
+                    ";waiting=" + (controller.WaitingForUI == null ?
+                        "<null>" : controller.WaitingForUI.Value + "/" +
+                            controller.WaitingForUI.GuardCount) +
+                    ";passing=" + CombatController.IsPassing() +
+                    ";round=" + controller.RoundNumber +
+                    ";current=" + (turn == null ? "<null>" :
+                        Identity(turn.Unit) + "/" + turn.Status) +
+                    ";next=" + Identity(next) +
+                    ";order=" + controller.SortedUnits.Count() +
+                    ";caster=" + DescribeCombatGate(_caster) +
+                    ";enemy=" + DescribeCombatGate(_enemy);
+                if (string.Equals(state, _lastRequestLocalTurnGate,
+                        StringComparison.Ordinal)) return;
+                _lastRequestLocalTurnGate = state;
+                _diagnostics.Add("request-local-turn-gate=" + state);
+            }
+
+            private static string DescribeCombatGate(UnitEntityData unit)
+            {
+                if (unit == null) return "<null>";
+                return "combat:" + (unit.CombatState != null &&
+                    unit.CombatState.IsInCombat) + "/prepared:" +
+                    (unit.CombatState != null &&
+                        unit.CombatState.Prepared) + "/visible:" +
+                    unit.IsVisibleForPlayer;
             }
 
             private void CastSummon()

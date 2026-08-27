@@ -208,6 +208,9 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains(
                     "RunInRequestLocalUnpausedDefaultMode(turn.Prepare)") &&
                 scenario.Contains("request-local-turn-prepare=") &&
+                scenario.Contains("request-local-turn-gate=") &&
+                scenario.Contains("controller.WaitingForUI.GuardCount") &&
+                scenario.Contains("CombatController.IsPassing()") &&
                 scenario.Contains("SelectionManager-for-Start") &&
                 scenario.Contains("TurnController.TurnStatus.Preparing") &&
                 scenario.Contains("turn.Status != TurnController.TurnStatus.Acting") &&
