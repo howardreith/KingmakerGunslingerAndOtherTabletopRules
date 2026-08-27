@@ -68,6 +68,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning";
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
+        internal const string SummonSameTurnActivation =
+            "summon-same-turn-activation";
+        internal const string SummonSameTurnAcadamae =
+            "summon-same-turn-acadamae";
+        internal const string SummonSameTurnMultiple =
+            "summon-same-turn-multiple";
+        internal const string SummonSameTurnNativeControl =
+            "summon-same-turn-native-control";
+        internal const string SummonSameTurnRtwpControl =
+            "summon-same-turn-rtwp-control";
+        internal const string SummonSameTurnCompatibilityQuickened =
+            "summon-same-turn-compatibility-quickened";
+        internal const string SummonSameTurnCompatibilityAcadamae =
+            "summon-same-turn-compatibility-acadamae";
         internal const string DisposableExpandedSummoningVisualContracts =
             "disposable-expanded-summoning-visual-contracts";
         internal const string WorkingSaveExpandedSummoningPrepare =
@@ -371,6 +385,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningPlayerPath,
+                SummonSameTurnActivation,
+                SummonSameTurnAcadamae,
+                SummonSameTurnMultiple,
+                SummonSameTurnNativeControl,
+                SummonSameTurnRtwpControl,
+                SummonSameTurnCompatibilityQuickened,
+                SummonSameTurnCompatibilityAcadamae,
                 DisposableExpandedSummoningVisualContracts,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,
@@ -510,6 +531,29 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool IsAllowed(string scenario)
         {
             return scenario != null && Allowed.Contains(scenario);
+        }
+
+        internal static bool IsSummonSameTurnScenario(string scenario)
+        {
+            return IsSummonSameTurnWorkingSaveScenario(scenario) ||
+                IsSummonSameTurnCompatibilityScenario(scenario);
+        }
+
+        internal static bool IsSummonSameTurnWorkingSaveScenario(
+            string scenario)
+        {
+            return scenario == SummonSameTurnActivation ||
+                scenario == SummonSameTurnAcadamae ||
+                scenario == SummonSameTurnMultiple ||
+                scenario == SummonSameTurnNativeControl ||
+                scenario == SummonSameTurnRtwpControl;
+        }
+
+        internal static bool IsSummonSameTurnCompatibilityScenario(
+            string scenario)
+        {
+            return scenario == SummonSameTurnCompatibilityQuickened ||
+                scenario == SummonSameTurnCompatibilityAcadamae;
         }
 
         internal static string[] Names()

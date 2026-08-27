@@ -113,6 +113,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private WorkingSaveSmokeScenario _workingSaveSmoke;
         private InHarmsWayOffTurnEconomyScenario.Session
             _inHarmsWayOffTurnEconomy;
+        private SummonSameTurnActivationScenario.Session
+            _summonSameTurnActivation;
         private WeaponPresentationEvidenceScenario.Session
             _weaponPresentationEvidence;
         private WeaponPresentationEvidenceScenario.MotionSession
@@ -602,6 +604,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .DisposableInHarmsWayOffTurnEconomy &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoning &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath &&
+                    !RuntimeTestScenarioCatalog.IsSummonSameTurnScenario(
+                        _request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
@@ -694,6 +698,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (!_context.IsReady) return;
+                if (RuntimeTestScenarioCatalog
+                    .IsSummonSameTurnCompatibilityScenario(
+                        _request.Scenario))
+                {
+                    RunSummonSameTurnCompatibility();
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
                 {
                     Complete(RunModLoadSmoke());
@@ -1451,6 +1462,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                    RuntimeTestScenarioCatalog
+                        .IsSummonSameTurnWorkingSaveScenario(
+                        _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     IsExpandedSummoningPersistenceScenario() ||
@@ -1505,6 +1519,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                    RuntimeTestScenarioCatalog
+                        .IsSummonSameTurnWorkingSaveScenario(
+                        _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     IsExpandedSummoningPersistenceScenario() ||
@@ -1534,6 +1551,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? _workingSaveSmoke.ObserverArmingSubstage
                             : _workingStartupStage, exception);
             }
+        }
+
+        private void RunSummonSameTurnCompatibility()
+        {
+            if (_summonSameTurnActivation == null)
+            {
+                _manualElapsed = Stopwatch.StartNew();
+                _workingStartupStage = "request-local-summon-fixture";
+                WriteLifecycleStage(_workingStartupStage);
+                _trace.Record("scenario-activated",
+                    _request.Scenario + ";fixture=request-local");
+                _summonSameTurnActivation =
+                    SummonSameTurnActivationScenario.Begin(
+                        _context, _request);
+            }
+            _summonSameTurnActivation.Poll();
+            if (_summonSameTurnActivation.Complete)
+                Complete(_summonSameTurnActivation.Result);
         }
 
         private void RunWorkingSaveSmoke()
@@ -1967,6 +2002,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningPlayerPath)
                 {
                     Complete(RunDisposableExpandedSummoningPlayerPath());
+                }
+                else if (RuntimeTestScenarioCatalog
+                    .IsSummonSameTurnWorkingSaveScenario(_request.Scenario))
+                {
+                    if (_summonSameTurnActivation == null)
+                        _summonSameTurnActivation =
+                            SummonSameTurnActivationScenario.Begin(
+                                _context, _request);
+                    _summonSameTurnActivation.Poll();
+                    if (_summonSameTurnActivation.Complete)
+                        Complete(_summonSameTurnActivation.Result);
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningVisualContracts)
@@ -4484,6 +4530,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableInHarmsWayOffTurnEconomy ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                RuntimeTestScenarioCatalog
+                    .IsSummonSameTurnWorkingSaveScenario(
+                    _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||

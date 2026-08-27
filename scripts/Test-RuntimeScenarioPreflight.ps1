@@ -67,6 +67,13 @@ $expected = @(
     'observe-expanded-summoning-variant-menu',
     'disposable-expanded-summoning',
     'disposable-expanded-summoning-player-path',
+    'summon-same-turn-activation',
+    'summon-same-turn-acadamae',
+    'summon-same-turn-multiple',
+    'summon-same-turn-native-control',
+    'summon-same-turn-rtwp-control',
+    'summon-same-turn-compatibility-quickened',
+    'summon-same-turn-compatibility-acadamae',
     'disposable-expanded-summoning-visual-contracts',
     'disposable-shield-other',
     'observe-capital-cord-vendor',
@@ -233,7 +240,7 @@ Assert-True (-not $cmiPersistence.RequiresManualInteraction -and
     'craft-magic-items-persistence-is-guarded-working-save-only'
 $assetRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-kmg-compatibility-asset-attribution' `
-    -ExpectedVersion '0.0.103' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.104' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
         'kmg-attribution-request-test') `
     -Parameters @{ assetConfiguration = 'firearms-only' }
@@ -242,7 +249,7 @@ Assert-True ($assetRequest.parameters.assetConfiguration -ceq 'firearms-only') `
 Assert-Throws {
     New-KmgRuntimeRequest `
         -Scenario 'observe-kmg-compatibility-asset-attribution' `
-        -ExpectedVersion '0.0.103' -TimeoutSeconds 120 `
+        -ExpectedVersion '0.0.104' -TimeoutSeconds 120 `
         -ExitAfterCompletion $true `
         -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
             'kmg-attribution-request-test') `
@@ -405,6 +412,41 @@ Assert-True $expandedSummoningPlayerPath.RequiresSaveName `
 Assert-True ($expandedSummoningPlayerPath.PermittedSaveName -ceq `
     'KMG_AUTOMATION_WORKING') `
     'expanded-summoning-player-path-only-permits-working-save'
+$summonSameTurnActivation = Get-KmgRuntimeScenarioMetadata `
+    'summon-same-turn-activation'
+Assert-True (-not $summonSameTurnActivation.RequiresManualInteraction) `
+    'summon-same-turn-activation-is-autonomous'
+Assert-True $summonSameTurnActivation.RequiresSaveName `
+    'summon-same-turn-activation-requires-save-name'
+Assert-True ($summonSameTurnActivation.PermittedSaveName -ceq `
+    'KMG_AUTOMATION_WORKING') `
+    'summon-same-turn-activation-only-permits-working-save'
+foreach ($summonMatrixScenario in @(
+    'summon-same-turn-acadamae',
+    'summon-same-turn-multiple',
+    'summon-same-turn-native-control',
+    'summon-same-turn-rtwp-control')) {
+    $summonMatrixMetadata = Get-KmgRuntimeScenarioMetadata `
+        $summonMatrixScenario
+    Assert-True (-not $summonMatrixMetadata.RequiresManualInteraction -and
+        $summonMatrixMetadata.RequiresSaveName -and
+        $summonMatrixMetadata.PermittedSaveName -ceq `
+            'KMG_AUTOMATION_WORKING') `
+        ($summonMatrixScenario + '-is-autonomous-working-save-only')
+}
+foreach ($summonCompatibilityScenario in @(
+    'summon-same-turn-compatibility-quickened',
+    'summon-same-turn-compatibility-acadamae')) {
+    $summonCompatibilityMetadata = Get-KmgRuntimeScenarioMetadata `
+        $summonCompatibilityScenario
+    Assert-True (-not $summonCompatibilityMetadata.RequiresManualInteraction -and
+        -not $summonCompatibilityMetadata.RequiresSaveName -and
+        $summonCompatibilityMetadata.ReadinessBehavior -ceq 'mod-load' -and
+        -not $summonCompatibilityMetadata.UsesCatalogTimeout -and
+        -not $summonCompatibilityMetadata.UsesSelectionTimeouts -and
+        -not $summonCompatibilityMetadata.UsesWorkingStageTimeouts) `
+        ($summonCompatibilityScenario + '-is-autonomous-request-local')
+}
 $brownFurNativeCast = Get-KmgRuntimeScenarioMetadata `
     'disposable-brown-fur-native-cast'
 Assert-True (-not $brownFurNativeCast.RequiresManualInteraction) `
@@ -588,7 +630,7 @@ Assert-True (-not $humanRepro.RequiresManualInteraction -and
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.103'
+    ExpectedVersion = '0.0.104'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -621,7 +663,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.103' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.104' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -685,7 +727,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.103' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.104' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

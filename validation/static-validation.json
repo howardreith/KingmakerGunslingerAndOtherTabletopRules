@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.103-overhaul-summon-menu-fatigue-escalation",
-  "version": "0.0.103",
+  "milestone": "0.0.104-summon-same-turn-activation",
+  "version": "0.0.104",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -624,5 +624,25 @@
     "featureModuleRestartQualified": true,
     "cotwPresentAbsentQualified": true,
     "changedSurfaceRuntimeScenarioPassCount": 19
+  },
+  "summonSameTurn104": {
+    "deterministicTestCount": 1307,
+    "focusedPolicyCaseCount": 18,
+    "realPlayerSpellPathRequired": true,
+    "ruleSummonUnitPostfixRequired": true,
+    "genuineSummonProvenanceRequired": true,
+    "arbitrarySpawnMutationAllowed": false,
+    "turnOrderMutationAllowed": false,
+    "casterActionMutationAllowed": false,
+    "ordinarySummonTimingMutationAllowed": false,
+    "rtwpMutationAllowed": false,
+    "perSummonedUnitIdempotenceRequired": true,
+    "nativeCombatJoinRequired": true,
+    "nativeInitiativePreparationRequired": true,
+    "standaloneRuntimeQualified": true,
+    "cotwProfileQualified": true,
+    "highestRiskProfileQualified": true,
+    "finalRuntimeQualificationPending": false,
+    "humanAcceptancePending": true
   }
 }

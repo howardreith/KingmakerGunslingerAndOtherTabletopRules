@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.103` targets:
+Kingmaker Gunslinger `0.0.104` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -116,10 +116,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.103 `
+gh release download v0.0.104 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.103-overhaul-summon-menu-fatigue-escalation.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.103"
+  --pattern 'KingmakerGunslinger-0.0.104-summon-same-turn-activation.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.104"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The

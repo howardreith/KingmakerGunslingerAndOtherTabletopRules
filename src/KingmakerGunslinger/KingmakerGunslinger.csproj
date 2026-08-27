@@ -129,6 +129,8 @@
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
     <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
+    <Compile Include="Summoning\SummonSameTurnActivationPolicy.cs" />
+    <Compile Include="Summoning\SummonSameTurnActivationRuntime.cs" />
     <Compile Include="Summoning\SummonTemplateSelectionPolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningAlignmentModeRuntime.cs" />
     <Compile Include="Summoning\ContextActionSetSummonAlignment.cs" />
@@ -887,6 +889,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRequest.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
+    <Compile Include="RuntimeTesting\SummonSameTurnActivationScenario.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningVariantMenuObservation.cs" />
     <Compile Include="RuntimeTesting\OptionalModCompatibilityObserver.cs" />
     <Compile Include="RuntimeTesting\CraftMagicItemsCompatibilityObserver.cs" />
