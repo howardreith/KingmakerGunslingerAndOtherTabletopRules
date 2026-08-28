@@ -95,6 +95,8 @@ def validate(root: Path) -> None:
         '[HarmonyAfter("CallOfTheWild")]', "if (result == null)",
         "NativeConditionPresent(scope)", "ApplyRelated(scope.Buffs, exhausted",
         "PreserveLongestDuration", "CordConditionRuntime.ResolveCanonical",
+        "CanonicalFatigueApplicationIntentScope.Claim",
+        "ResolveNativePassthrough",
         "[ThreadStatic] private static ApplicationScope _activeScope",
         "private static Exception Finalizer")
     if ".name.Contains" in fatigue or "Description.Contains" in fatigue:
@@ -102,7 +104,8 @@ def validate(root: Path) -> None:
             "Canonical fatigue matching regressed to text classification")
     require_tokens(root / (
         "src/KingmakerGunslinger/Acadamae/AcadamaeCastingPatches.cs"),
-        "ApplyPermanentFatigue", "CanonicalFatigueState.Exhausted")
+        "ApplyPermanentAcadamaeFatigue",
+        "CanonicalFatigueState.Exhausted")
     cord = require_tokens(root / (
         "src/KingmakerGunslinger/Cord/CordConditionPatches.cs"),
         "IsCanonicalApplication", "ResolveCanonical",
@@ -115,12 +118,13 @@ def validate(root: Path) -> None:
         "tests/KingmakerGunslinger.DomainTests/Program.cs"),
         "expanded-summoning.menu-layout-top",
         "expanded-summoning.menu-layout-navigation",
-        "fatigue.repeated-fatigue", "fatigue.same-sequence",
+        "fatigue.native-repeat", "fatigue.native-same-sequence",
+        "fatigue.acadamae-repeat", "fatigue.intent-exception",
         "fatigue.cord-order")
     if runner.count('Case("expanded-summoning.menu-layout-') != 19:
         raise AssertionError("Expected 19 focused summon-menu layout tests")
-    if runner.count('Case("fatigue.') != 13:
-        raise AssertionError("Expected 13 focused canonical fatigue tests")
+    if runner.count('Case("fatigue.') != 21:
+        raise AssertionError("Expected 21 focused canonical fatigue tests")
     require_tokens(root / (
         "src/KingmakerGunslinger/KingmakerGunslinger.csproj"),
         '<Content Include="..\\..\\assets\\bundles\\kingmakergunslinger.firearms">',
@@ -137,7 +141,8 @@ def validate(root: Path) -> None:
     require_tokens(root / (
         "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs"),
         '"disposable-overhaul-maintenance"',
-        '"disposable-fatigue-escalation"',
+        '"disposable-native-fatigue-refresh"',
+        '"disposable-acadamae-fatigue-escalation"',
         '"working-save-fatigue-prepare"',
         '"working-save-fatigue-verify-cleanup"',
         '"working-save-fatigue-verify-absent"',

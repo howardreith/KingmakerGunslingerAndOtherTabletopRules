@@ -73,7 +73,7 @@ namespace KingmakerGunslinger.DomainTests
                 casting.Contains("eligibility.decision") &&
                 casting.Contains("constructor=three-argument-authoritative") &&
                 casting.Contains("preRequireFullRound={") &&
-                casting.Contains("CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue") &&
+                casting.Contains(".ApplyPermanentAcadamaeFatigue(") &&
                 casting.Contains("exhausted-permanent") &&
                 !casting.Contains("Buffs.AddBuff(\n                    _fatigued") &&
                 casting.Contains("AcadamaeSavingThrowTestCompletionPatch") &&
@@ -457,7 +457,9 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals(blueprint, exhausted)",
                 "if (result == null)",
                 "blocked-by-native-rule",
+                "CanonicalFatigueApplicationIntentScope.Claim",
                 "CanonicalFatigueStatePolicy.Decide",
+                "ResolveNativePassthrough",
                 "decision.EffectiveIncoming",
                 "CordConditionRuntime.ResolveCanonical",
                 "IsCanonicalApplication",

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.0.106-fatigue-authority-repair
+
+- Restores native authority for ordinary canonical fatigue: successful
+  Fatigued refreshes, merges, extensions, and reapplications remain Fatigued
+  instead of being globally reinterpreted as Exhausted by KMG.
+- Scopes the accepted Acadamae Graduate failed-save escalation to one exact,
+  synchronous `BuffCollection` and canonical Fatigued blueprint request using
+  a thread-local, nested-safe, one-shot intent that is always disposed.
+- Preserves rule-first immunity handling, native duration/reference behavior,
+  direct Exhausted idempotence and no-downgrade behavior, plus global Cord of
+  Stubborn Resolve substitution and exactly-once damage routing.
+- Replaces unconditional escalation tests and runtime fixtures with explicit
+  native-refresh, Acadamae, Cord, immunity, duration, persistence, rest, and
+  intent-leak coverage. The complete deterministic suite contains 1,323 tests.
+
 ## 0.0.105-player-facing-presentation-item-discoverability
 
 - Moves Brown-Fur Transmuter before the installed combined Arcanist

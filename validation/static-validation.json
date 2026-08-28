@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.105-player-facing-presentation-item-discoverability",
-  "version": "0.0.105",
+  "milestone": "0.0.106-fatigue-authority-repair",
+  "version": "0.0.106",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -646,7 +646,7 @@
     "humanAcceptancePending": true
   },
   "playerPresentation105": {
-    "deterministicTestCount": 1315,
+    "deterministicTestCount": 1323,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -660,5 +660,20 @@
     "obscureTargetNamesAllowed": false,
     "runtimeQualificationPending": false,
     "humanOrganicPacingAcceptancePending": true
+  },
+  "fatigueAuthority106": {
+    "deterministicTestCount": 1323,
+    "focusedFatigueCaseCount": 21,
+    "nativeDefaultIntent": "NativePassthrough",
+    "acadamaeEscalationRequestLocal": true,
+    "intentThreadLocal": true,
+    "intentExactBuffCollection": true,
+    "intentExactBlueprint": true,
+    "nativeRuleFirstRequired": true,
+    "nativeFatigueStacking": "Prolong",
+    "nativeRefreshPeriodHours": 1,
+    "travelSpecificPatchAllowed": false,
+    "workingSaveBaselineMutationAllowed": false,
+    "supervisedWorldMapAcceptancePending": true
   }
 }

@@ -1,72 +1,104 @@
 using System;
 using System.IO;
+using System.Threading;
 using KingmakerGunslinger.Fatigue;
 
 namespace KingmakerGunslinger.DomainTests
 {
     internal static class CanonicalFatiguePolicyTests
     {
-        internal static void FreshFatigueAppliesFatigued()
+        private const CanonicalFatigueApplicationIntent Native =
+            CanonicalFatigueApplicationIntent.NativePassthrough;
+        private const CanonicalFatigueApplicationIntent Acadamae =
+            CanonicalFatigueApplicationIntent.EscalateIfAlreadyFatigued;
+
+        internal static void FreshOrdinaryFatigueAppliesFatigued()
         {
             Assert(CanonicalFatigueState.Neither,
-                CanonicalConditionKind.Fatigued, true,
+                CanonicalConditionKind.Fatigued, true, Native,
                 CanonicalFatigueState.Fatigued,
                 CanonicalConditionKind.Fatigued, false);
         }
 
-        internal static void RepeatedFatigueEscalates()
+        internal static void RepeatedOrdinaryFatigueRemainsFatigued()
         {
             Assert(CanonicalFatigueState.Fatigued,
-                CanonicalConditionKind.Fatigued, true,
-                CanonicalFatigueState.Exhausted,
-                CanonicalConditionKind.Exhausted, true);
+                CanonicalConditionKind.Fatigued, true, Native,
+                CanonicalFatigueState.Fatigued,
+                CanonicalConditionKind.Fatigued, false);
         }
 
-        internal static void ExhaustedFatigueNeverDowngrades()
-        {
-            Assert(CanonicalFatigueState.Exhausted,
-                CanonicalConditionKind.Fatigued, true,
-                CanonicalFatigueState.Exhausted,
-                CanonicalConditionKind.Exhausted, false);
-        }
-
-        internal static void FreshExhaustionAppliesExhausted()
-        {
-            Assert(CanonicalFatigueState.Neither,
-                CanonicalConditionKind.Exhausted, true,
-                CanonicalFatigueState.Exhausted,
-                CanonicalConditionKind.Exhausted, false);
-        }
-
-        internal static void FatiguedExhaustionReplacesFatigue()
-        {
-            Assert(CanonicalFatigueState.Fatigued,
-                CanonicalConditionKind.Exhausted, true,
-                CanonicalFatigueState.Exhausted,
-                CanonicalConditionKind.Exhausted, false);
-        }
-
-        internal static void ExhaustedExhaustionIsIdempotent()
-        {
-            Assert(CanonicalFatigueState.Exhausted,
-                CanonicalConditionKind.Exhausted, true,
-                CanonicalFatigueState.Exhausted,
-                CanonicalConditionKind.Exhausted, false);
-        }
-
-        internal static void SameSequenceFatigueIsDeterministic()
+        internal static void SameSequenceOrdinaryFatigueRemainsFatigued()
         {
             CanonicalFatigueStateDecision first =
                 CanonicalFatigueStatePolicy.Decide(
                     CanonicalFatigueState.Neither,
-                    CanonicalConditionKind.Fatigued, true);
+                    CanonicalConditionKind.Fatigued, true, Native);
             CanonicalFatigueStateDecision second =
                 CanonicalFatigueStatePolicy.Decide(first.After,
-                    CanonicalConditionKind.Fatigued, true);
+                    CanonicalConditionKind.Fatigued, true, Native);
             Assertions.True(first.After == CanonicalFatigueState.Fatigued &&
-                second.After == CanonicalFatigueState.Exhausted &&
-                second.Escalated,
-                "Two same-sequence successful fatigue effects were not deterministic.");
+                second.After == CanonicalFatigueState.Fatigued &&
+                second.EffectiveIncoming ==
+                    CanonicalConditionKind.Fatigued &&
+                !second.Escalated,
+                "Synchronous ordinary fatigue was reinterpreted as exhaustion.");
+        }
+
+        internal static void ExhaustedOrdinaryFatigueNeverDowngrades()
+        {
+            Assert(CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Fatigued, true, Native,
+                CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Fatigued, false);
+        }
+
+        internal static void FreshNativeExhaustionAppliesExhausted()
+        {
+            Assert(CanonicalFatigueState.Neither,
+                CanonicalConditionKind.Exhausted, true, Native,
+                CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Exhausted, false);
+        }
+
+        internal static void FatiguedNativeExhaustionReplacesFatigue()
+        {
+            Assert(CanonicalFatigueState.Fatigued,
+                CanonicalConditionKind.Exhausted, true, Native,
+                CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Exhausted, false);
+        }
+
+        internal static void ExhaustedNativeExhaustionIsIdempotent()
+        {
+            Assert(CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Exhausted, true, Native,
+                CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Exhausted, false);
+        }
+
+        internal static void FreshAcadamaeFatigueAppliesFatigued()
+        {
+            Assert(CanonicalFatigueState.Neither,
+                CanonicalConditionKind.Fatigued, true, Acadamae,
+                CanonicalFatigueState.Fatigued,
+                CanonicalConditionKind.Fatigued, false);
+        }
+
+        internal static void RepeatedAcadamaeFatigueEscalates()
+        {
+            Assert(CanonicalFatigueState.Fatigued,
+                CanonicalConditionKind.Fatigued, true, Acadamae,
+                CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Exhausted, true);
+        }
+
+        internal static void ExhaustedAcadamaeFatigueRemainsExhausted()
+        {
+            Assert(CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Fatigued, true, Acadamae,
+                CanonicalFatigueState.Exhausted,
+                CanonicalConditionKind.Exhausted, false);
         }
 
         internal static void BlockedApplicationsPreserveState()
@@ -78,9 +110,12 @@ namespace KingmakerGunslinger.DomainTests
             foreach (CanonicalConditionKind incoming in new[] {
                 CanonicalConditionKind.Fatigued,
                 CanonicalConditionKind.Exhausted })
+            foreach (CanonicalFatigueApplicationIntent intent in new[] {
+                Native, Acadamae })
             {
                 CanonicalFatigueStateDecision decision =
-                    CanonicalFatigueStatePolicy.Decide(state, incoming, false);
+                    CanonicalFatigueStatePolicy.Decide(state, incoming,
+                        false, intent);
                 Assertions.True(!decision.ApplicationSucceeded &&
                     decision.After == state && !decision.Escalated,
                     "A blocked canonical condition changed state.");
@@ -110,58 +145,212 @@ namespace KingmakerGunslinger.DomainTests
                     permanent, temporary).Permanent &&
                 CanonicalConditionDuration.PreserveLongest(temporary,
                     permanent).Permanent,
-                "An independent permanent condition was shortened.");
+                "An explicit permanent condition was shortened.");
         }
 
-        internal static void CordReceivesEffectiveIncomingCondition()
+        internal static void CordReceivesIntentSpecificIncomingCondition()
         {
-            CanonicalFatigueStateDecision fresh =
-                CanonicalFatigueStatePolicy.Decide(
-                    CanonicalFatigueState.Neither,
-                    CanonicalConditionKind.Fatigued, true);
-            CanonicalFatigueStateDecision repeated =
+            CanonicalFatigueStateDecision ordinaryRepeated =
                 CanonicalFatigueStatePolicy.Decide(
                     CanonicalFatigueState.Fatigued,
-                    CanonicalConditionKind.Fatigued, true);
-            Assertions.True(fresh.EffectiveIncoming ==
+                    CanonicalConditionKind.Fatigued, true, Native);
+            CanonicalFatigueStateDecision acadamaeRepeated =
+                CanonicalFatigueStatePolicy.Decide(
+                    CanonicalFatigueState.Fatigued,
+                    CanonicalConditionKind.Fatigued, true, Acadamae);
+            CanonicalFatigueStateDecision nativeExhausted =
+                CanonicalFatigueStatePolicy.Decide(
+                    CanonicalFatigueState.Fatigued,
+                    CanonicalConditionKind.Exhausted, true, Native);
+            Assertions.True(ordinaryRepeated.EffectiveIncoming ==
                     CanonicalConditionKind.Fatigued &&
-                repeated.EffectiveIncoming ==
+                acadamaeRepeated.EffectiveIncoming ==
+                    CanonicalConditionKind.Exhausted &&
+                nativeExhausted.EffectiveIncoming ==
                     CanonicalConditionKind.Exhausted,
-                "Cord ordering did not receive the post-escalation condition kind.");
+                "Cord did not receive the request-specific incoming condition.");
+        }
+
+        internal static void IntentMatchesExactCollectionAndBlueprint()
+        {
+            object firstCollection = new object();
+            object secondCollection = new object();
+            object expectedBlueprint = new object();
+            object otherBlueprint = new object();
+            using (CanonicalFatigueApplicationIntentScope.Request request =
+                CanonicalFatigueApplicationIntentScope
+                    .EnterAcadamaeEscalation(firstCollection,
+                        expectedBlueprint))
+            {
+                Assertions.Equal(Native,
+                    CanonicalFatigueApplicationIntentScope.Claim(
+                        secondCollection, expectedBlueprint),
+                    "Acadamae intent leaked to a second unit collection.");
+                Assertions.Equal(Native,
+                    CanonicalFatigueApplicationIntentScope.Claim(
+                        firstCollection, otherBlueprint),
+                    "Acadamae intent leaked to another canonical blueprint.");
+                Assertions.Equal(Acadamae,
+                    CanonicalFatigueApplicationIntentScope.Claim(
+                        firstCollection, expectedBlueprint),
+                    "The exact Acadamae request was not claimed.");
+            }
+        }
+
+        internal static void IntentIsOneShotAndDoesNotLeakLater()
+        {
+            object collection = new object();
+            object blueprint = new object();
+            using (CanonicalFatigueApplicationIntentScope.Request request =
+                CanonicalFatigueApplicationIntentScope
+                    .EnterAcadamaeEscalation(collection, blueprint))
+            {
+                Assertions.Equal(Acadamae,
+                    CanonicalFatigueApplicationIntentScope.Claim(collection,
+                        blueprint),
+                    "The explicit request was not claimed.");
+                Assertions.Equal(Native,
+                    CanonicalFatigueApplicationIntentScope.Claim(collection,
+                        blueprint),
+                    "One explicit request affected a second application.");
+            }
+            Assertions.Equal(Native,
+                CanonicalFatigueApplicationIntentScope.Claim(collection,
+                    blueprint),
+                "Disposed Acadamae intent leaked to a later native request.");
+        }
+
+        internal static void NestedUnrelatedIntentCannotClaimOuterRequest()
+        {
+            object outerCollection = new object();
+            object innerCollection = new object();
+            object blueprint = new object();
+            using (CanonicalFatigueApplicationIntentScope.Request outer =
+                CanonicalFatigueApplicationIntentScope
+                    .EnterAcadamaeEscalation(outerCollection, blueprint))
+            {
+                using (CanonicalFatigueApplicationIntentScope.Request inner =
+                    CanonicalFatigueApplicationIntentScope
+                        .EnterAcadamaeEscalation(innerCollection, blueprint))
+                {
+                    Assertions.Equal(Native,
+                        CanonicalFatigueApplicationIntentScope.Claim(
+                            outerCollection, blueprint),
+                        "A nested unrelated request exposed outer intent.");
+                    Assertions.Equal(Acadamae,
+                        CanonicalFatigueApplicationIntentScope.Claim(
+                            innerCollection, blueprint),
+                        "The nested exact request was not claimed.");
+                }
+                Assertions.Equal(Acadamae,
+                    CanonicalFatigueApplicationIntentScope.Claim(
+                        outerCollection, blueprint),
+                    "Nested cleanup consumed the outer exact request.");
+            }
+        }
+
+        internal static void ExceptionalIntentScopeCannotLeak()
+        {
+            object collection = new object();
+            object blueprint = new object();
+            try
+            {
+                using (CanonicalFatigueApplicationIntentScope.Request request =
+                    CanonicalFatigueApplicationIntentScope
+                        .EnterAcadamaeEscalation(collection, blueprint))
+                {
+                    throw new InvalidOperationException("expected");
+                }
+            }
+            catch (InvalidOperationException exception)
+            {
+                Assertions.Equal("expected", exception.Message,
+                    "Unexpected exception escaped the intent cleanup test.");
+            }
+            Assertions.Equal(Native,
+                CanonicalFatigueApplicationIntentScope.Claim(collection,
+                    blueprint),
+                "Exceptional Acadamae application leaked intent.");
+        }
+
+        internal static void IntentIsThreadLocal()
+        {
+            object collection = new object();
+            object blueprint = new object();
+            CanonicalFatigueApplicationIntent otherThread = Acadamae;
+            using (CanonicalFatigueApplicationIntentScope.Request request =
+                CanonicalFatigueApplicationIntentScope
+                    .EnterAcadamaeEscalation(collection, blueprint))
+            {
+                var thread = new Thread(() =>
+                    otherThread =
+                        CanonicalFatigueApplicationIntentScope.Claim(
+                            collection, blueprint));
+                thread.Start();
+                thread.Join();
+                Assertions.Equal(Native, otherThread,
+                    "Acadamae intent crossed a managed thread boundary.");
+                Assertions.Equal(Acadamae,
+                    CanonicalFatigueApplicationIntentScope.Claim(collection,
+                        blueprint),
+                    "Other-thread probing consumed the owning thread request.");
+            }
         }
 
         internal static void RuntimeCoordinatorUsesExactPostSuccessBoundary()
         {
-            string source = File.ReadAllText(Path.Combine(
-                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
-                "Fatigue", "CanonicalFatigueApplicationRuntime.cs"));
+            string root = Environment.CurrentDirectory;
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Fatigue",
+                "CanonicalFatigueApplicationRuntime.cs"));
+            string intent = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Fatigue",
+                "CanonicalFatigueApplicationIntentScope.cs"));
+            string acadamae = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Acadamae",
+                "AcadamaeCastingPatches.cs"));
             foreach (string token in new[] {
                 "FatiguedGuid =",
                 "ExhaustedGuid =",
                 "[ThreadStatic] private static ApplicationScope _activeScope",
-                "[ThreadStatic] private static int _replacementDepth",
-                "[HarmonyPatch(typeof(BuffCollection), \"TriggerRuleApplyBuff\"",
-                "[HarmonyAfter(\"CallOfTheWild\")]",
+                @"[HarmonyPatch(typeof(BuffCollection), ""TriggerRuleApplyBuff""",
+                @"[HarmonyAfter(""CallOfTheWild"")]",
                 "if (result == null)",
                 "blocked-by-native-rule",
                 "if (!NativeConditionPresent(scope))",
                 "blocked-by-native-condition-immunity",
-                "CanonicalFatigueStatePolicy.Decide",
-                "SelectLongest(",
-                "PreserveLongestDuration(",
-                "ApplyRelated(scope.Buffs, exhausted, source)",
+                "CanonicalFatigueApplicationIntentScope.Claim",
+                "scope.Incoming, true, scope.Intent",
+                "ResolveNativePassthrough",
                 "CordConditionRuntime.ResolveCanonical",
-                "RemoveAll(scope.Buffs, fatigued, null)",
-                "Normalize(scope.Buffs, exhausted, replacement)",
                 "private static Exception Finalizer",
                 "CanonicalFatigueApplicationRuntime.End(__state)" })
-                Assertions.True(source.Contains(token),
+                Assertions.True(runtime.Contains(token),
                     "Canonical runtime lacks exact coordinator contract: " +
                     token);
-            Assertions.False(source.Contains(".name.Contains") ||
-                source.Contains("Description.Contains") ||
-                source.Contains("skipOriginal = true"),
-                "Canonical fatigue must use exact identities after native success.");
+            foreach (string token in new[] {
+                "[ThreadStatic] private static Request _active",
+                "EnterAcadamaeEscalation(",
+                "ReferenceEquals(request.BuffCollection, buffCollection)",
+                "ReferenceEquals(request.ExpectedBlueprint, blueprint)",
+                "request.Claimed = true",
+                "if (ReferenceEquals(_active, this))" })
+                Assertions.True(intent.Contains(token),
+                    "Request-local fatigue intent lacks safety contract: " +
+                    token);
+            Assertions.True(acadamae.Contains(
+                    ".ApplyPermanentAcadamaeFatigue(") &&
+                runtime.Contains("using (CanonicalFatigueApplicationIntentScope.Request") &&
+                runtime.Contains(".EnterAcadamaeEscalation(buffs, fatigued)"),
+                "Only the Acadamae adapter may enter escalating intent.");
+            Assertions.False(runtime.Contains(".name.Contains") ||
+                runtime.Contains("Description.Contains") ||
+                runtime.Contains("StackTrace") ||
+                runtime.Contains("UnitPartWeariness") ||
+                runtime.Contains("GlobalMap") ||
+                runtime.Contains("skipOriginal = true") ||
+                acadamae.Contains("ApplyPermanentFatigue"),
+                "Canonical fatigue intent must not use heuristics, travel patches, or the ambiguous old adapter.");
         }
 
         internal static void GuardedScenariosUseActualCanonicalFacts()
@@ -170,52 +359,57 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
             foreach (string token in new[] {
-                "RunDisposableFatigueEscalation()",
+                "RunDisposableNativeFatigueRefresh()",
+                "RunDisposableAcadamaeFatigueEscalation()",
                 "CanonicalFatigueApplicationRuntime.FatiguedGuid",
                 "CanonicalFatigueApplicationRuntime.ExhaustedGuid",
                 "unit.Descriptor.Buffs.AddBuff(fatigued",
                 "unit.Descriptor.Buffs.AddBuff(exhausted",
-                "AddConditionImmunity(\n                    UnitCondition.Fatigued)",
+                "AddConditionImmunity(",
+                "UnitCondition.Fatigued",
                 "RestController.ApplyRest",
+                "ApplyPermanentAcadamaeFatigue(",
                 "StartFatiguePersistence()",
                 "WorkingSaveFatiguePrepare",
                 "WorkingSaveFatigueVerifyCleanup",
                 "WorkingSaveFatigueVerifyAbsent",
-                "CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(\n                        target.Descriptor.Buffs, fatigued, target)",
                 "_workingSaveSmoke.ArmExactWorkingSaveWrite()",
                 "freshly deserialized native BuffCollection",
                 "secondFailureEscalated",
                 "exhaustedRepeatStable",
-                "canonicalRepeated",
-                "canonicalSameFrame" })
+                "nativeRepeated",
+                "nativeSameFrame",
+                "acadamaeEscalated" })
                 Assertions.True(runner.Contains(token),
                     "Guarded fatigue qualification lacks actual-path token: " +
                     token);
             Assertions.False(runner.Contains(
-                    "JsonConvert.SerializeObject(\n                    permanentExhaustion"),
-                "A live Buff cannot be serialized as a standalone native save root.");
-            Assertions.False(runner.Contains(
                     "UnitSerialization.Serialize(unit.Descriptor)"),
-                "Kingmaker's preview UnitSerialization strips BuffCollection and cannot prove save persistence.");
+                "Fatigue persistence must not use a descriptor-only surrogate save.");
+
             string catalog = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs"));
             string automation = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "scripts",
                 "RuntimeAutomation.Common.ps1"));
-            Assertions.True(catalog.Contains(
-                    "\"disposable-fatigue-escalation\"") &&
-                catalog.Contains("\"working-save-fatigue-prepare\"") &&
-                catalog.Contains(
-                    "\"working-save-fatigue-verify-cleanup\"") &&
-                catalog.Contains(
-                    "\"working-save-fatigue-verify-absent\"") &&
-                automation.Contains(
-                    "'disposable-fatigue-escalation' = [pscustomobject]@{") &&
-                automation.Contains(
-                    "'working-save-fatigue-prepare' = [pscustomobject]@{") &&
-                automation.Contains("RequiresManualInteraction = $false"),
-                "The focused fatigue scenario is not safely guarded and cataloged.");
+            string quote = ((char)34).ToString();
+            foreach (string scenario in new[] {
+                "disposable-native-fatigue-refresh",
+                "disposable-acadamae-fatigue-escalation",
+                "working-save-fatigue-prepare",
+                "working-save-fatigue-verify-cleanup",
+                "working-save-fatigue-verify-absent" })
+            {
+                Assertions.True(catalog.Contains(quote + scenario + quote) &&
+                    automation.Contains("'" + scenario +
+                        "' = [pscustomobject]@{"),
+                    "Focused fatigue scenario is not guarded: " + scenario);
+            }
+            Assertions.True(automation.Contains(
+                    "RequiresManualInteraction = $false"),
+                "Focused fatigue scenarios must be autonomous.");
+
             string orchestrator = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "scripts",
                 "Invoke-FatigueWorkingSavePersistence.ps1"));
@@ -231,25 +425,27 @@ namespace KingmakerGunslinger.DomainTests
                     token);
             Assertions.False(orchestrator.Contains("Kingmaker.exe") ||
                 orchestrator.Contains("KMG_AUTOMATION_BASELINE"),
-                "Fatigue persistence orchestration must preserve the guarded Steam working-save boundary.");
+                "Fatigue persistence must preserve the guarded Steam working-save boundary.");
         }
 
         private static void Assert(CanonicalFatigueState before,
             CanonicalConditionKind incoming, bool succeeded,
+            CanonicalFatigueApplicationIntent intent,
             CanonicalFatigueState after,
             CanonicalConditionKind effective, bool escalated)
         {
             CanonicalFatigueStateDecision decision =
                 CanonicalFatigueStatePolicy.Decide(before, incoming,
-                    succeeded);
+                    succeeded, intent);
             Assertions.True(decision.Before == before &&
                 decision.Incoming == incoming &&
                 decision.ApplicationSucceeded == succeeded &&
+                decision.Intent == intent &&
                 decision.After == after &&
                 decision.EffectiveIncoming == effective &&
                 decision.Escalated == escalated,
                 "Canonical fatigue transition mismatch for " + before +
-                " + " + incoming + ".");
+                " + " + incoming + " under " + intent + ".");
         }
     }
 }

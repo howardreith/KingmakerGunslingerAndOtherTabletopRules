@@ -130,7 +130,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("player-facing-presentation-item-discoverability"
+    package_suffix = ("fatigue-authority-repair"
+        if VERSION == "0.0.106" else "player-facing-presentation-item-discoverability"
         if VERSION == "0.0.105" else "summon-same-turn-activation"
         if VERSION == "0.0.104" else "overhaul-summon-menu-fatigue-escalation"
         if VERSION == "0.0.103" else "starter-bokken-combat-log-acadamae-toggle"

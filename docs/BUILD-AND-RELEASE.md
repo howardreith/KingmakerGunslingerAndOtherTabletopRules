@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.105` targets:
+Kingmaker Gunslinger `0.0.106` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -72,6 +72,10 @@ validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
 ## Guarded GitHub release publisher
+
+The 0.0.106 fatigue-authority repair is a local qualification candidate. This
+workflow does not authorize tagging, drafting, or publishing it; the download
+example below therefore remains the latest published 0.0.105 archive.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default
