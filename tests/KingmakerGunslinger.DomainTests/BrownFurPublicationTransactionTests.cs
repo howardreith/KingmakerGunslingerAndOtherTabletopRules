@@ -66,6 +66,82 @@ namespace KingmakerGunslinger.DomainTests
                 "Failed publication did not restore every earlier owned surface.");
         }
 
+        internal static void InsertsBeforeCombinedArchetypeBlock()
+        {
+            Fake[] singles = Enumerable.Range(0, 6)
+                .Select(index => new Fake("single-" + index)).ToArray();
+            Fake[] combined = BrownFurArchetypeOrdering
+                .KnownCombinedArchetypeGuids.Select(value =>
+                    new Fake(value)).ToArray();
+            var brownFur = new Fake("brown-fur");
+            IList<Fake> archetypes = singles.Concat(combined)
+                .Concat(new[] { brownFur }).ToList();
+            var transaction = new BrownFurPublicationTransaction()
+                .InsertBefore("cotw-arcanist-archetypes", () => archetypes,
+                    value => archetypes = value, new[] { brownFur },
+                    value => value.Id, value =>
+                        BrownFurArchetypeOrdering.IsKnownCombinedArchetype(
+                            value.Id));
+
+            transaction.Commit();
+            transaction.Commit();
+
+            Assertions.True(archetypes.Count == 12 &&
+                ReferenceEquals(archetypes[6], brownFur) &&
+                singles.SequenceEqual(archetypes.Take(6)) &&
+                combined.SequenceEqual(archetypes.Skip(7)),
+                "Brown-Fur was not moved before the combined block while preserving foreign order.");
+            Assertions.True(transaction.Evidence.Any(value =>
+                value.Contains("boundary=True;index=6")),
+                "Ordered publication evidence omitted the exact boundary index.");
+        }
+
+        internal static void OrderedPublicationAppendsWithoutBoundary()
+        {
+            var native = new Fake("native");
+            var brownFur = new Fake("brown-fur");
+            IList<Fake> archetypes = new List<Fake> { native };
+            var transaction = new BrownFurPublicationTransaction()
+                .InsertBefore("cotw-arcanist-archetypes", () => archetypes,
+                    value => archetypes = value, new[] { brownFur },
+                    value => value.Id, value =>
+                        BrownFurArchetypeOrdering.IsKnownCombinedArchetype(
+                            value.Id));
+
+            transaction.Commit();
+
+            Assertions.True(archetypes.SequenceEqual(new[] {
+                    native, brownFur }),
+                "Boundary-free Brown-Fur publication did not retain append behavior.");
+            Assertions.True(transaction.Evidence.Any(value =>
+                value.Contains("boundary=False;index=1")),
+                "Boundary-free publication evidence omitted append position.");
+        }
+
+        internal static void OrderedRollbackPreservesLaterAppend()
+        {
+            var native = new Fake("native");
+            var combined = new Fake(BrownFurArchetypeOrdering
+                .KnownCombinedArchetypeGuids[0]);
+            var brownFur = new Fake("brown-fur");
+            var later = new Fake("later");
+            IList<Fake> archetypes = new List<Fake> { native, combined };
+            var transaction = new BrownFurPublicationTransaction()
+                .InsertBefore("cotw-arcanist-archetypes", () => archetypes,
+                    value => archetypes = value, new[] { brownFur },
+                    value => value.Id, value =>
+                        BrownFurArchetypeOrdering.IsKnownCombinedArchetype(
+                            value.Id));
+            transaction.Commit();
+            archetypes = archetypes.Concat(new[] { later }).ToList();
+
+            transaction.Rollback();
+
+            Assertions.True(archetypes.SequenceEqual(new[] {
+                    native, combined, later }),
+                "Ordered rollback did not restore foreign order and preserve the proven later append.");
+        }
+
         internal static void RollbackPreservesProvenLaterAppend()
         {
             var native = new Fake("native");

@@ -1,16 +1,63 @@
 # Project Magic Item Acquisition Inventory
 
-Issue 12 audit for the `0.0.87` overnight bug-fix candidate. This inventory covers every project-owned named or unique magic item deliberately published to base-campaign vendors or fixed loot. Mundane firearms, ordinary +1 merchant firearms, ammunition, maintenance kits, and crafting supplies are out of scope.
+The current `0.0.105` audit covers every project-owned named or unique magic item deliberately published to base-campaign fixed loot. Mundane firearms, ordinary +1 merchant firearms, ammunition, maintenance kits, and crafting supplies are out of scope. The older Issue 12 inventory is retained below as superseded history.
 
 ## Contract
 
 - Scope: 30 stable item identities: five rare firearms, eighteen named Eastern weapons, six named Elven Branched Spears, and Cord of Stubborn Resolve.
-- Result: 30 distinct, deterministic base-campaign `BlueprintLoot` targets and zero recurring-vendor rows.
+- Result: 30 distinct, deterministic base-campaign `BlueprintLoot` targets across 29 exact areas and zero recurring-vendor rows.
 - Transactions remove only stale or duplicate project-owned references, append the intended exact reference once, preserve native and foreign entries and order, validate count one, and restore the exact snapshot if later bootstrap fails.
 - The development action `Print all project magic-item location audits` reports item GUID, target GUID, target and area names, current count, all live loot locations, and all live vendor locations without granting or moving items.
 - Static blueprint publication affects new campaigns and loot objects not yet materialized from the blueprint. It does not delete, move, or refresh items already instantiated in a save, including owned, stashed, dropped, sold, or previously opened-container items.
 
-## Exact acquisition inventory
+## 0.0.105 complete discoverability audit
+
+Every row was checked for exact base-campaign identity, persistent area ownership,
+ordinary loot interaction, campaign stage, power fit, target-name obscurity,
+clustering, and retired-row cleanup. `Retained` means the prior target survived
+the audit; `moved` means the old target is now an explicit cleanup target.
+
+| Stage | Item | Exact fixed target GUID and name | Exact area | Audit result |
+|---|---|---|---|---|
+| Late Act I | Border Sentinel | `e72cdc1e01c1eb144b6c29084dd111fb` `Forest_ChestWithMasterworkWeapons` | `StagLordOldCamp` | moved from the crowded Stag Lord fort to an ordinary weapon chest |
+| Late Act I | Paper Lantern | `59cb0ac65b4093440ad341b9a2f372cf` `Forest_BarrikadedChest1` | `StagLordFort` | retained; suitable early named weapon |
+| Act II | Boughkeeper | `40db074f21260344b95d0e9919c8e682` `Forest_PoorLoot01` | `CapitalRegionLair01` | moved from a treasure stone to an ordinary regional-lair container |
+| Act II | Wayfarer's Oath | `020246502ff864f4aab19e2fc00e63ee` `Forest_chest_close` | `TrollLair_Exterior` | retained; visible Troll Trouble loot |
+| Act II | Quiet Current | `a2d14c56093720947a6ca4978c6a5985` `Forest_OldDwarfChest` | `TrollLair_SecondLevel` | moved out of a hidden-room chest |
+| Act II | Winter Reed | `7208dc79fd87ca849babf696e62d4e93` `Forest_TrollhoundLairLoot02` | `TrollhoundLair` | moved out of a hidden poor box |
+| Act II | Cloud-Cleaver | `2bffac36ed3499f4f9a1e6456e96a0f6` `Forest_LockedLoot01` | `CandlemereTower` | retained; ordinary fixed tower chest |
+| Act II | Thornstep | `3322c56f38031eb4983b6f87c95081b7` `Forest_GoodLoot01` | `NorthNarlmarchesRegionLair01` | moved out of a generic cache and the Lonely Barrow cluster |
+| Act II | Cord of Stubborn Resolve | `9572baf3952095f41abda1fb25055cce` `RichHuman_treasure_chest_04 (1)` | `CapitalTavern_Indoor` | moved from a temporary square variant to the persistent capital inn |
+| Act III | Falling Petal | `df9ac89a7d8533a4e999bd267ae52b65` `Forest_UnhiddenLocked01` | `SilverstepGrotto_Cave` | moved out of a hidden chest |
+| Act III | Drawn Horizon | `5e302038ce8b06f418a327d4eeadb51d` `Forest_loot_box_02` | `SilverstepLake_Outdoor` | moved out of a temporary First World area |
+| Act III | Moonlit Fork | `2aa7aa5c2df96b143bd2fc62a8547c9c` `Forest_TH_GreatclubBarbarianMagic` | `MonsterLairHodag` | moved from the Candlemere cluster to ordinary monster-lair loot |
+| Act IV | Storm Over Stone | `2d95232e6fc0b594bb6e13e3d3ea0dc3` `Forest_Loot01` | `Varnhold` | retained; ordinary fixed Varnhold loot |
+| Act IV | Duelist's Rebuttal | `1f0bef6b8e540d644962171dc8810459` `Forest_Container_7_good` | `VarnholdStockade` | retained; separate stockade container |
+| Act IV | Foxfire Whisper | `a9bb1f714425c564aadee3cc712fb96a` `Forest_CyclopLootRoot` | `DunswardOutdoor` | moved from an obscure Vordakai cache |
+| Act IV | Viper's Reach | `8a850f7758cb77b498621a307445bb1e` `Forest_GoodLoot_withWeaponOrArmor` | `LoneCyclopCave` | moved from an obscure Vordakai cache |
+| Act IV | Thunder at the Gate | `399410bf927fb3349bad940394fd9abe` `Barbarians_LootRoot` | `ArmagsTomb` | retained; thematic ordinary loot |
+| Act IV | Mountain-Sunder | `462bf0e4476e8c7498b2462219d46d25` `Hills_chest_closed` | `BarbarianMainCamp` | moved off the second Armag's Tomb floor |
+| Act V | Empty Sleeve | `c0f1626bb1a0b3b47ad452ce75c7f0e2` `RichHuman_GoodLoot_Locked#1` | `PitaxTown` | moved out of the temporary Rushlight Festival camp |
+| Act V | Moonlit Crossing | `b4183a776ad4c0b44acbc04837630a2e` `RichHuman_treasure_chest_02` | `Brineheart` | retained; ordinary fixed Brineheart chest |
+| Act V | Unfixed Form | `2e5e8c271f5b1ff4ca42dea4f8d8fb37` `Plains_good_loot_1` | `GlenebonPlains` | moved out of a temporary Pitax horde area |
+| Act V | Briar-Crowned Spear | `decb6060ab534294eb6d35510e45d317` `RichHuman_NotHiddenLockedGood` | `BlakemoorHideout` | retained; explicitly non-hidden fixed loot |
+| Act V | River King's Measure | `b34367a637010f743815aed5875152bd` `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)` | `IrovettiPalace` | retained; ordinary palace chest |
+| Act V | Irovetti's Ovation | `c5adf784c614e4b4c8dc220111f64a54` `RichHuman_ConservatoryLoot` | `IrovettiPalace` | moved from a temporary First World palace variant to a separate ordinary palace chest |
+| Late | Night Without Moon | `b3344268950f27f4b840f216959f150e` `FirstWorld_GoodLoot_Trapped_1` | `CastleOfKnives` | retained; independent late-game cache |
+| Late | Heaven's Measure | `e3703cd9a6de2f24c80c1505e3c9784f` `FirstWorld_2ndFloorGoodLoot05` | `HouseAtTheEdgeOfTime_2ndFloor` | moved out of a hidden locked chest |
+| Late | Watch at World's End | `2df91222314044b4da37b7ee83841873` `FirstWorld_GoodLoot02` | `HouseAtTheEdgeOfTime` | moved out of a very-good hidden chest |
+| Final | World-Tree Severer | `7e6448d1d8a7e4f4d9cc340b8f15e732` `RichHuman_Loot_1` | `FinalDungeon` | retained; capstone on the first final-dungeon floor |
+| Final | Spear of the First Branch | `13e98ebc52714d34eb8e53f1099110fd` `RichHuman_Loot_5_2lvl` | `FinalDungeon2` | retained; capstone on the second final-dungeon floor |
+| Final | The Last Word | `559739642f21aaf40847f4ddcbe3db79` `RichHuman_Loot_2_3lvl` | `FinalDungeon3` | moved away from quest-coupled Castle of Knives loot to the third final-dungeon floor |
+
+The audit moved 18 items and retained 12. Exact-target density is one item per
+target. Exact-area density is one except for the two separate Irovetti Palace
+chests. Normalized final-sequence density is permitted at three only because the
+three capstones are split across `FinalDungeon`, `FinalDungeon2`, and
+`FinalDungeon3`. No named item was moved to a vendor or centralized in the
+capital.
+
+## Superseded 0.0.87 exact acquisition inventory
 
 All targets below are installed Kingmaker 2.1.7b `Kingmaker.Blueprints.Loot.BlueprintLoot` objects in the base campaign. `Fixed/unique` means an exact area-owned target rather than a random table, artisan reward, dialogue grant, DLC target, broad area hook, or shared generic table. Prices are blueprint gold-piece costs; power is the effective enhancement profile used for chapter placement.
 
@@ -48,6 +95,32 @@ All targets below are installed Kingmaker 2.1.7b `Kingmaker.Blueprints.Loot.Blue
 | Watch at World's End | `87c7baaaad504b7f8742f2dfcd79d067` | Rifle, equivalent +7, 99,800 | Distinct late fixed loot | `5a9b9e4b884ae064fa7caa5a13eab065` `FirstWorld_VeryGoodHiddenLoot02` | Late game, House at the Edge of Time | Forewarning Shield | unchanged |
 
 ## Qualification evidence
+
+### Current 0.0.105 qualification
+
+- Immutable guarded-runtime artifact: source-state SHA-256
+  `250ED285247113C33B39855609F6125C68652C7C744F06B967DD0EC7CD0981E7`,
+  package SHA-256
+  `6B6A85BD7642715841A4820B6DB9A443A69C4D9EB578E3C56A6FBC5912BCE8CE`,
+  DLL SHA-256
+  `2A06D93880E3716E29B30153A7E5B48FC53F6C363D1C1D53A0CB29819FBB457C`,
+  MVID `61589b34-b11d-43a2-9d06-f9fac46fcdf3`.
+- Complete campaign audit: evidence directory
+  `20260828T0237409495792Z-observe-rare-firearm-acquisition`, run ID
+  `20260828T0237409652002Z-da91ee23bd11461cb090f401c03dcde3`, PASS,
+  25/25 assertions. The live graph contains 30 items on 30 distinct targets
+  across 29 exact areas, one active row per item, no vendor rows, and no stale
+  copies. The shared discoverability policy returned PASS.
+- Focused Cord audit: evidence directory
+  `20260828T0240171423403Z-observe-capital-cord-vendor`, run ID
+  `20260828T0240171580108Z-c3515522e0db41bfbb6dfe7a482d8271`, PASS,
+  4/4 assertions. It proves the exact persistent capital-inn target, count one,
+  zero vendor rows, and zero retired Capital Square Village rows.
+- Automated gates: repository validation PASS; 1,315/1,315 dependency-free
+  domain/reflection tests PASS; clean Release build PASS; build-output,
+  SoundBank, and strict standalone package validation PASS.
+
+### Superseded 0.0.88 qualification history
 
 - Pre-change read-only catalog run: `20260820T0827266290275Z-observe-rare-firearm-acquisition`, PASS. It enumerated 436 fixed candidates and established exact area/type/reference evidence before mutation.
 - First repaired-candidate run: `20260820T0851451113499Z-5a2a08d9fdc6420d9c8dcef6ed5978eb`, FAIL only because a legacy Smith-table assertion retained its pre-distribution total. Its new `projectMagicDistribution` evidence already showed 30 items, 30 targets, one target row each, and zero vendor rows.

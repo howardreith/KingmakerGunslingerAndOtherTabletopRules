@@ -74,7 +74,7 @@ namespace KingmakerGunslinger.Blueprints
                     "A weapon made for the end of negotiations—and found at the end of a kingdom.", plus5, reliable, seeking),
                 new MagicFirearmItemSpec(WatchAtWorldsEndSymbol, "KMG_WatchAtWorldsEnd_Item",
                     "Watch at the World's End", FirearmKind.Musket, 99800, 7, true,
-                    "+5 Reliable Fey Bane musket. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss. Fey Bane uses the native bane property against Fey creatures.",
+                    "+5 Reliable Fey Bane musket. Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0; a natural 1 remains a miss. Fey Bane is especially effective against Fey creatures.",
                     "Its first bearer kept vigil at a place where the world grew thin. The watch ended. The weapon remained.", plus5, reliable, feyBane)
             };
             var entries = new List<MagicFirearmBlueprintEntry>();

@@ -406,7 +406,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(campaign.Contains("NamedKinds = new[]") &&
                 campaign.Contains("ordinary BTSL"),
                 "Named Eastern weapons must not enter ordinary BTSL stock.");
-            Assertions.Equal(29, campaign.Split(new[] {
+            Assertions.Equal(39, campaign.Split(new[] {
                 "new EasternLootSpec(" }, StringSplitOptions.None).Length - 1,
                 "Distinct Eastern placement plus cleanup target count changed.");
             foreach (string token in new[] {
@@ -468,8 +468,10 @@ namespace KingmakerGunslinger.DomainTests
                     "Eastern runtime commerce assertion is missing: " + token);
             Assertions.True(runtime.Contains(
                     "project-magic-item-distribution") &&
-                runtime.Contains("targets.Values.Distinct().Count() == 30") &&
-                runtime.Contains("maxDensity <= 2") &&
+                runtime.Contains(
+                    "ProjectMagicItemDiscoverabilityPolicy.Audit(observations)") &&
+                runtime.Contains("exact = audit.IsAcceptable") &&
+                runtime.Contains("targetAreas[entry.Key]") &&
                 runtime.Contains("vendorRows == 0"),
                 "Cross-system unique-item distribution is not live-qualified.");
             foreach (string areaTerm in new[] { "troll", "womb", "varnhold",
@@ -513,8 +515,9 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "c8b8159fb695be64883b609a7e77e75d",
                 "PoorHuman_treasure_chest_03", "StagLordFort",
-                "_loot.Count != 29", "LootRowCount != 18",
-                "Distinct().Count() != 29" })
+                "PublicationLootTargetCount",
+                "_loot.Count != expectedLoot", "LootRowCount != 18",
+                "Distinct().Count() !=", "expectedLoot" })
                 Assertions.True(campaign.Contains(token),
                     "Border Sentinel fixed-loot contract is missing: " + token);
 

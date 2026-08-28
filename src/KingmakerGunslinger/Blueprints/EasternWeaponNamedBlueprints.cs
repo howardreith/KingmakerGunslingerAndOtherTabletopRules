@@ -224,7 +224,7 @@ namespace KingmakerGunslinger.Blueprints
             return new EasternWeaponNamedEnchantmentSet(
                 EffectEnchantment(registry, FallingPetalEnchantmentSymbol,
                     "Falling Petal's Poise",
-                    "A confirmed critical hit grants +1 dodge AC for 1 round while this exact weapon remains active.",
+                    "A critical hit grants +1 dodge AC for 1 round, ending early if this weapon is no longer wielded.",
                     EasternNamedWeaponEffectKind.FallingPetal,
                     buffs.FallingPetal, null, null),
                 EffectEnchantment(registry, MountainSunderEnchantmentSymbol,
@@ -234,7 +234,7 @@ namespace KingmakerGunslinger.Blueprints
                     buffs.MountainSunderMarker, powerAttack),
                 EffectEnchantment(registry, UnfixedFormEnchantmentSymbol,
                     "Unfixed Form",
-                    "While polymorphed or changed from natural size, this weapon's base damage advances one native weapon-size step.",
+                    "While polymorphed or changed from natural size, this weapon deals base damage as if it were one size category larger.",
                     EasternNamedWeaponEffectKind.UnfixedForm, null, null,
                     null));
         }
@@ -339,17 +339,16 @@ namespace KingmakerGunslinger.Blueprints
             string effect = spec.Kind == EasternWeaponNamedKind.WayfarersOath
                 ? " While active, it grants +2 competence to Initiative."
                 : spec.Kind == EasternWeaponNamedKind.FallingPetal
-                ? " A confirmed critical hit grants +1 dodge AC for 1 round while this weapon remains active."
+                ? " A critical hit grants +1 dodge AC for 1 round, ending early if this weapon is no longer wielded."
                 : spec.Kind == EasternWeaponNamedKind.MoonlitCrossing
                 ? " One-handed use grants +1 dodge AC; two-handed use grants +2 weapon damage."
                 : spec.Kind == EasternWeaponNamedKind.MountainSunder
                 ? " Mighty Cleaving permits one additional Cleave attack. While Power Attack is active, its first hit each round deals 1d6 force damage."
                 : spec.Kind == EasternWeaponNamedKind.UnfixedForm
-                ? " While polymorphed or changed from natural size, its base damage advances one native weapon-size step."
+                ? " While polymorphed or changed from natural size, it deals base damage as if it were one size category larger."
                 : string.Empty;
             return string.Join(", ", properties.ToArray()) + " " +
-                spec.Family + "." + effect +
-                " It uses the family's single stable weapon type and category.";
+                spec.Family + "." + effect;
         }
 
         private static void AddEquipmentFact(BlueprintItemWeapon item,

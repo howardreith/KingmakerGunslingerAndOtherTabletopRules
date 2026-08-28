@@ -85,7 +85,8 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
-    release_suffix = ("summon-same-turn-activation"
+    release_suffix = ("player-facing-presentation-item-discoverability"
+        if VERSION == "0.0.105" else "summon-same-turn-activation"
         if VERSION == "0.0.104" else "overhaul-summon-menu-fatigue-escalation"
         if VERSION == "0.0.103" else "starter-bokken-combat-log-acadamae-toggle"
         if VERSION == "0.0.102" else "craft-magic-items-compatibility"

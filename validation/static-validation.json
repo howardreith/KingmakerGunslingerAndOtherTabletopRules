@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.104-summon-same-turn-activation",
-  "version": "0.0.104",
+  "milestone": "0.0.105-player-facing-presentation-item-discoverability",
+  "version": "0.0.105",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -644,5 +644,21 @@
     "highestRiskProfileQualified": true,
     "finalRuntimeQualificationPending": false,
     "humanAcceptancePending": true
+  },
+  "playerPresentation105": {
+    "deterministicTestCount": 1315,
+    "projectMagicItemCount": 30,
+    "distinctTargetCount": 30,
+    "distinctExactAreaCount": 29,
+    "projectWeaponCount": 55,
+    "playerFacingItemCount": 56,
+    "projectEnchantmentCount": 12,
+    "combinedArchetypeIdentityCount": 5,
+    "cordCapitalInnRequired": true,
+    "retiredCordTargetCleanupRequired": true,
+    "temporaryAreaTargetsAllowed": false,
+    "obscureTargetNamesAllowed": false,
+    "runtimeQualificationPending": false,
+    "humanOrganicPacingAcceptancePending": true
   }
 }

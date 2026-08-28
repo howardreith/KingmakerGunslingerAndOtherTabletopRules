@@ -1,5 +1,37 @@
 # Gunslinger Acquisition Rebalance
 
+## Superseding 2026-08-27 discoverability correction
+
+The 0.0.105 audit rechecked all 30 project-added discoverable items against the
+actual target GUID, name, area, area lifetime, apparent interaction type,
+campaign stage, item power, and project-item density. Eighteen locations moved;
+twelve survived. The authoritative row-by-row result is in
+`planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md`.
+
+Rejected target classes now fail a shared source and runtime policy:
+
+- temporary variants such as `CapitalSquareVillage`,
+  `SilverstepGrotto_FirstWorld`, `RushlightFestivalCamp`, `PitaxHorde`,
+  `IrovettiPalaceFW`, and any other `*FW` area;
+- target names containing hidden/cache/secret/puzzle/quest/artifact/memento/
+  diary/corpse/trash semantics, while explicitly allowing `NotHidden` and
+  `Unhidden` ordinary targets;
+- fewer than 30 distinct exact targets, fewer than 29 exact areas, more than two
+  project items in an ordinary area, or more than three across the final-dungeon
+  sequence.
+
+The corrected result is 30 count-one fixed-loot rows on 30 targets and 29 exact
+areas. The only same-area pair is in two separate Irovetti Palace chests. Final
+capstones use one container on each of `FinalDungeon`, `FinalDungeon2`, and
+`FinalDungeon3`. Lower-power items remain in Acts I-II, mid-power items remain
+distributed through Acts III-IV, and high-power items remain in Act V and the
+late/final sequence. No named item moved onto a recurring vendor.
+
+Cord of Stubborn Resolve now appears in the ordinary
+`RichHuman_treasure_chest_04 (1)` inside persistent `CapitalTavern_Indoor`.
+Publication removes the old `CapitalSquareVillage` row and transactionally
+restores both targets if later bootstrap fails.
+
 ## Superseded conclusion
 
 The `0.0.88` graph proved 30 project items on 30 exact loot blueprints. It did
@@ -39,7 +71,7 @@ Production firearm-family truth is `The Last Word = Pistol` and
 observers, fixtures, reports, and guides must be corrected without changing the
 production items or adding deliberate advanced-firearm acquisition.
 
-## Implemented 2026-08-20 correction
+## Superseded 2026-08-20 correction
 
 The expanded read-only census identified 1,177 exact candidate loot blueprints.
 Every selected replacement is base-campaign fixed `BlueprintLoot`, has zero

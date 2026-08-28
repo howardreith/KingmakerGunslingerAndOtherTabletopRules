@@ -202,9 +202,13 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "Blueprints",
                 "CordOfStubbornResolveBlueprints.cs"));
             foreach (string token in new[] {
+                "9572baf3952095f41abda1fb25055cce",
+                "RichHuman_treasure_chest_04 (1)",
+                "CapitalTavern_Indoor",
                 "e2add2e7254305b40aa1b9ae60ed2be0",
                 "RichHuman_treasure_chest_2", "CapitalSquareVillage",
                 "PublishCampaignLoot", "BlueprintLoot", "Count = 1",
+                "_mutations.Count != 2",
                 "Cord fixed-loot rollback refused after foreign mutation" })
                 Assertions.True(cord.Contains(token),
                     "Cord fixed campaign acquisition lacks: " + token);

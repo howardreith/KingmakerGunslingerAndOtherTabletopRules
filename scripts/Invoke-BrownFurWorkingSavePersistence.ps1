@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.104',
+    [string]$ExpectedVersion = '0.0.105',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
     [string]$SaveName = 'KMG_AUTOMATION_WORKING',
     [ValidateRange(120, 900)][int]$TimeoutSeconds = 300,

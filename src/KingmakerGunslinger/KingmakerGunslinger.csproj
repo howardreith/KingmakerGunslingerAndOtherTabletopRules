@@ -201,6 +201,8 @@
     <Compile Include="Ammunition\ReloadAmmunitionInventorySnapshot.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionTransactionService.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
+    <Compile Include="Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs" />
+    <Compile Include="Presentation\PlayerFacingTextPolicy.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -407,6 +409,7 @@
     <Compile Include="BrownFur\BrownFurPowerfulChangeSelectionLogic.cs" />
     <Compile Include="BrownFur\BrownFurActivatableGroupRuntime.cs" />
     <Compile Include="BrownFur\BrownFurPublicationTransaction.cs" />
+    <Compile Include="BrownFur\BrownFurArchetypeOrdering.cs" />
     <Compile Include="BrownFur\BrownFurCastRequest.cs" />
     <Compile Include="BrownFur\BrownFurShareTargetPolicy.cs" />
     <Compile Include="BrownFur\BrownFurShareRelationshipPolicy.cs" />

@@ -176,7 +176,7 @@ namespace KingmakerGunslinger.Blueprints
                     buffs.ThornMarker, null, null),
                 RegisterEnchantment(registry, VipersReachEnchantmentSymbol,
                     "Viper's Reach",
-                    "Once per round, genuine sneak attack damage imposes a -2 Reflex penalty for 1 round.",
+                    "Once per round, a sneak attack that deals damage imposes a -2 Reflex penalty for 1 round.",
                     NamedSpearKind.VipersReach, buffs.ViperPenalty,
                     buffs.ViperMarker, null, null),
                 RegisterEnchantment(registry, BriarCrownedEnchantmentSymbol,
@@ -186,7 +186,7 @@ namespace KingmakerGunslinger.Blueprints
                     null, null),
                 RegisterEnchantment(registry, FirstBranchEnchantmentSymbol,
                     "First Branch's Reprisal",
-                    "Once per round after an attack of opportunity hit or genuine sneak attack damage, the target attempts a Fortitude save; failure Entangles it and success reduces speed by 10 feet for 1 round.",
+                    "Once per round after an attack of opportunity hit or a sneak attack that deals damage, the target attempts a Fortitude save; failure Entangles it and success reduces speed by 10 feet for 1 round.",
                     NamedSpearKind.SpearOfTheFirstBranch, null,
                     buffs.FirstMarker, buffs.FirstPenalty, entangled));
         }
@@ -332,12 +332,12 @@ namespace KingmakerGunslinger.Blueprints
                 : spec.Kind == NamedSpearKind.Thornstep
                 ? "Once per round, a movement-provoked attack of opportunity hit reduces the target's speed by 10 feet for 1 round."
                 : spec.Kind == NamedSpearKind.VipersReach
-                ? "Once per round, genuine sneak attack damage imposes a -2 Reflex penalty for 1 round."
+                ? "Once per round, a sneak attack that deals damage imposes a -2 Reflex penalty for 1 round."
                 : spec.Kind == NamedSpearKind.BriarCrownedSpear
                 ? "Once per round after an attack of opportunity hit, the wielder may expend another attack of opportunity to attack that target at -5."
                 : spec.Kind == NamedSpearKind.SpearOfTheFirstBranch
-                ? "First Branch's Reprisal forces a once-per-round Fortitude save after an attack of opportunity hit or genuine sneak attack damage; failure Entangles for 1 round and success reduces speed by 10 feet for 1 round."
-                : "Its native Agile and cold iron properties work normally.";
+                ? "First Branch's Reprisal forces a once-per-round Fortitude save after an attack of opportunity hit or a sneak attack that deals damage; failure Entangles for 1 round and success reduces speed by 10 feet for 1 round."
+                : "It is Agile and made of cold iron.";
             return profile + " Elven Branched Spear. " + effect +
                 " It remains a two-handed reach weapon usable with Weapon Finesse and grants +2 on attacks of opportunity provoked by movement.";
         }

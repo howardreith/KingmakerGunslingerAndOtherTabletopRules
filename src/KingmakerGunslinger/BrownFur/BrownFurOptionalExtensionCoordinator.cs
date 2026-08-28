@@ -241,14 +241,16 @@ namespace KingmakerGunslinger.BrownFur
             var transaction = new BrownFurPublicationTransaction()
                 .Step("brown-fur-registered-identities", () => { },
                     RollbackRegisteredIdentities)
-                .Append("cotw-arcanist-archetypes",
+                .InsertBefore("cotw-arcanist-archetypes",
                     () => (IList<Kingmaker.Blueprints.Classes.BlueprintArchetype>)
                         (contract.ArcanistClass.Archetypes ??
                             new Kingmaker.Blueprints.Classes.BlueprintArchetype[0])
                         .ToList(),
                     values => contract.ArcanistClass.Archetypes =
                         values.ToArray(),
-                    new[] { blueprints.Archetype }, value => value.AssetGuid);
+                    new[] { blueprints.Archetype }, value => value.AssetGuid,
+                    value => BrownFurArchetypeOrdering.IsKnownCombinedArchetype(
+                        value.AssetGuid));
             lock (Gate) _publication = transaction;
             try
             {
@@ -287,6 +289,14 @@ namespace KingmakerGunslinger.BrownFur
                     StringComparison.Ordinal)) != 1)
                 throw new InvalidOperationException(
                     "Brown-Fur archetype publication was not retained exactly once by reference and GUID.");
+            int brownFurIndex = Array.FindIndex(archetypes, value =>
+                ReferenceEquals(value, blueprints.Archetype));
+            int combinedIndex = Array.FindIndex(archetypes, value =>
+                BrownFurArchetypeOrdering.IsKnownCombinedArchetype(
+                    value.AssetGuid));
+            if (combinedIndex >= 0 && brownFurIndex >= combinedIndex)
+                throw new InvalidOperationException(
+                    "Brown-Fur must appear before the installed combined Arcanist archetype block.");
         }
 
         private static void ValidateNotPublished(CotwArcanistContract contract)

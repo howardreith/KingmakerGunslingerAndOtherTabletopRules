@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.105-player-facing-presentation-item-discoverability
+
+- Moves Brown-Fur Transmuter before the installed combined Arcanist
+  archetypes while preserving all foreign order and rollback guarantees.
+- Replaces developer-facing item, enchantment, and Finesse Training text with
+  direct player rules, backed by a live 56-item/12-enchantment text census.
+- Moves Cord of Stubborn Resolve to a persistent capital-inn chest and
+  redistributes every project-added magic item across 30 exact containers in
+  29 persistent campaign areas, with explicit retired-target cleanup.
+- Adds focused policy/source tests and guarded runtime assertions for exact
+  archetype order, tooltip cleanliness, location safety, density, module
+  gating, and fixed-loot uniqueness.
+
 ## 0.0.104-summon-same-turn-activation
 
 - Corrects accelerated summoning in turn-based combat so a genuine summon

@@ -34,7 +34,12 @@ def validate(root: Path) -> None:
         "spears": ("_loot.Count < 6",
             "_loot.Select(value => value.Target).Distinct().Count()",
             "CleanupLoot"),
-        "runtime": ("project-magic-item-distribution", "targets.Values.Distinct().Count() == 30", "vendorRows == 0"),
+        "runtime": (
+            "project-magic-item-distribution",
+            "ProjectMagicItemDiscoverabilityPolicy.Audit(observations)",
+            "exact = audit.IsAcceptable",
+            "vendorRows == 0",
+        ),
         "development": ("DescribeProjectMagicItemAcquisition", "placements=", "countOneMatches="),
     }
     for name, tokens in required.items():

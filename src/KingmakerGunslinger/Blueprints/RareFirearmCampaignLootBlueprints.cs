@@ -20,14 +20,14 @@ namespace KingmakerGunslinger.Blueprints
                 "PoorHuman_IrovettiChambers_ChestHuge_Outline (3)",
                 "IrovettiPalace"),
             new TargetSpec(MagicFirearmBlueprints.IrovettisOvationSymbol,
-                "aeba7802ade083841935daf88d4652d3",
-                "RichHuman_GoodLoot", "IrovettiPalaceFW"),
+                "c5adf784c614e4b4c8dc220111f64a54",
+                "RichHuman_ConservatoryLoot", "IrovettiPalace"),
             new TargetSpec(MagicFirearmBlueprints.TheLastWordSymbol,
-                "3bc451b100283774a9e23699dd869f1a",
-                "FirstWorld_GoodLoot_Locked_2", "CastleOfKnives"),
+                "559739642f21aaf40847f4ddcbe3db79",
+                "RichHuman_Loot_2_3lvl", "FinalDungeon3"),
             new TargetSpec(MagicFirearmBlueprints.WatchAtWorldsEndSymbol,
-                "5a9b9e4b884ae064fa7caa5a13eab065",
-                "FirstWorld_VeryGoodHiddenLoot02", "HouseAtTheEdgeOfTime")
+                "2df91222314044b4da37b7ee83841873",
+                "FirstWorld_GoodLoot02", "HouseAtTheEdgeOfTime")
         };
 
         private static readonly CleanupSpec[] CleanupTargets =
@@ -37,7 +37,13 @@ namespace KingmakerGunslinger.Blueprints
             new CleanupSpec("485300a2036a763499aa77ebac1f83c6",
                 "Forest_PoorLoot_PuzzleItem3_Instrument", "IrovettiPalace"),
             new CleanupSpec("36d315a81b36980438e2ef1a866791d1",
-                "FirstWorld_BasementGoodLoot01", "HouseAtTheEdgeOfTime_Basement")
+                "FirstWorld_BasementGoodLoot01", "HouseAtTheEdgeOfTime_Basement"),
+            new CleanupSpec("aeba7802ade083841935daf88d4652d3",
+                "RichHuman_GoodLoot", "IrovettiPalaceFW"),
+            new CleanupSpec("3bc451b100283774a9e23699dd869f1a",
+                "FirstWorld_GoodLoot_Locked_2", "CastleOfKnives"),
+            new CleanupSpec("5a9b9e4b884ae064fa7caa5a13eab065",
+                "FirstWorld_VeryGoodHiddenLoot02", "HouseAtTheEdgeOfTime")
         };
 
         internal static TargetSpec[] TargetSpecs
@@ -163,7 +169,7 @@ namespace KingmakerGunslinger.Blueprints
                 .Distinct().Count() != 5)
                 throw new InvalidOperationException("Rare firearm loot publication count/identity mismatch.");
             foreach (RareFirearmLootMutation mutation in _mutations) mutation.Validate();
-            if (_cleanupMutations.Count != 3)
+            if (_cleanupMutations.Count != 6)
                 throw new InvalidOperationException("Rare firearm retired-loot cleanup count mismatch.");
             foreach (RareFirearmLootCleanupMutation mutation in _cleanupMutations)
                 mutation.Validate();

@@ -33,6 +33,17 @@ namespace KingmakerGunslinger.BrownFur
             return this;
         }
 
+        internal BrownFurPublicationTransaction InsertBefore<T>(string key,
+            Func<IList<T>> read, Action<IList<T>> write,
+            IEnumerable<T> additions, Func<T, string> identity,
+            Func<T, bool> boundary)
+            where T : class
+        {
+            Add(new InsertBeforeMutation<T>(key, read, write, additions,
+                identity, boundary, Record));
+            return this;
+        }
+
         internal BrownFurPublicationTransaction Configure<T>(string key,
             Func<T> read, Action<T> write, T configured,
             IEqualityComparer<T> comparer)
@@ -242,6 +253,166 @@ namespace KingmakerGunslinger.BrownFur
                 string id = _identity(value);
                 if (string.IsNullOrWhiteSpace(id)) throw new InvalidOperationException(
                     "Brown-Fur surface '" + Key + "' contains a blank identity.");
+                return id;
+            }
+        }
+
+        private sealed class InsertBeforeMutation<T> : IMutation
+            where T : class
+        {
+            private readonly Func<IList<T>> _read;
+            private readonly Action<IList<T>> _write;
+            private readonly T[] _additions;
+            private readonly Func<T, string> _identity;
+            private readonly Func<T, bool> _boundary;
+            private readonly Action<string> _record;
+            private IList<T> _before;
+            private IList<T> _after;
+            private bool _attempted;
+
+            internal InsertBeforeMutation(string key, Func<IList<T>> read,
+                Action<IList<T>> write, IEnumerable<T> additions,
+                Func<T, string> identity, Func<T, bool> boundary,
+                Action<string> record)
+            {
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new ArgumentException(
+                        "A publication surface key is required.", "key");
+                if (read == null || write == null || additions == null ||
+                    identity == null || boundary == null)
+                    throw new ArgumentNullException(
+                        "Ordered publication inputs are incomplete.");
+                Key = key;
+                _read = read;
+                _write = write;
+                _additions = additions.ToArray();
+                _identity = identity;
+                _boundary = boundary;
+                _record = record;
+            }
+
+            public string Key { get; private set; }
+
+            public void Apply()
+            {
+                _before = _read();
+                ValidateUnique(_before, "current");
+                ValidateUnique(_additions, "additions");
+                var additionsByIdentity = _additions.ToDictionary(Identity,
+                    StringComparer.Ordinal);
+                foreach (T current in _before)
+                {
+                    T addition;
+                    string currentIdentity = Identity(current);
+                    if (additionsByIdentity.TryGetValue(currentIdentity,
+                            out addition) && !ReferenceEquals(current, addition))
+                        throw new InvalidOperationException(
+                            "Brown-Fur surface '" + Key +
+                            "' contains a conflicting identity: " +
+                            currentIdentity);
+                }
+
+                var foreign = _before.Where(value =>
+                    !additionsByIdentity.ContainsKey(Identity(value))).ToList();
+                int insertion = foreign.FindIndex(value => _boundary(value));
+                if (insertion >= 0)
+                {
+                    foreign.InsertRange(insertion, _additions);
+                    PublishIfChanged(foreign, insertion, true);
+                    return;
+                }
+
+                var appendOnly = new List<T>(_before);
+                var present = new HashSet<string>(_before.Select(Identity),
+                    StringComparer.Ordinal);
+                foreach (T addition in _additions)
+                    if (present.Add(Identity(addition)))
+                        appendOnly.Add(addition);
+                PublishIfChanged(appendOnly, _before.Count, false);
+            }
+
+            public void Rollback()
+            {
+                if (!_attempted) return;
+                IList<T> current = _read();
+                if (SameReferences(current, _before))
+                {
+                    _attempted = false;
+                    return;
+                }
+                if (!StartsWithReferences(current, _after))
+                    throw new InvalidOperationException(
+                        "Rollback refused after an unrelated mutation: " + Key);
+                IList<T> restored;
+                if (SameReferences(current, _after)) restored = _before;
+                else
+                {
+                    var withLaterAppends = new List<T>(_before);
+                    for (int index = _after.Count; index < current.Count; index++)
+                        withLaterAppends.Add(current[index]);
+                    restored = withLaterAppends;
+                }
+                ValidateUnique(restored, "rollback");
+                _write(restored);
+                if (!SameReferences(_read(), restored))
+                    throw new InvalidOperationException(
+                        "Brown-Fur rollback write was not retained: " + Key);
+                _attempted = false;
+                _record("surface=" + Key + ";action=rolled-back;restored=" +
+                    _before.Count + ";preserved-later=" +
+                    (restored.Count - _before.Count));
+            }
+
+            private void PublishIfChanged(IList<T> next, int insertion,
+                bool boundaryFound)
+            {
+                if (SameReferences(_before, next))
+                {
+                    _record("surface=" + Key + ";action=unchanged;count=" +
+                        _before.Count + ";boundary=" + boundaryFound +
+                        ";index=" + insertion);
+                    return;
+                }
+                _after = next;
+                _attempted = true;
+                _write(_after);
+                if (!SameReferences(_read(), _after))
+                    throw new InvalidOperationException(
+                        "Brown-Fur publication write was not retained: " + Key);
+                _record("surface=" + Key + ";action=published;before=" +
+                    _before.Count + ";after=" + _after.Count + ";boundary=" +
+                    boundaryFound + ";index=" + insertion);
+            }
+
+            private void ValidateUnique(IEnumerable<T> values, string source)
+            {
+                if (values == null)
+                    throw new InvalidOperationException(
+                        "Brown-Fur surface '" + Key + "' has no " + source +
+                        " collection.");
+                var identities = new HashSet<string>(StringComparer.Ordinal);
+                var references = new HashSet<T>(ReferenceComparer<T>.Instance);
+                foreach (T value in values)
+                {
+                    string id = Identity(value);
+                    if (!identities.Add(id) || !references.Add(value))
+                        throw new InvalidOperationException(
+                            "Brown-Fur surface '" + Key +
+                            "' contains a duplicate " + source +
+                            " identity: " + id);
+                }
+            }
+
+            private string Identity(T value)
+            {
+                if (value == null)
+                    throw new InvalidOperationException(
+                        "Brown-Fur surface '" + Key + "' contains null.");
+                string id = _identity(value);
+                if (string.IsNullOrWhiteSpace(id))
+                    throw new InvalidOperationException(
+                        "Brown-Fur surface '" + Key +
+                        "' contains a blank identity.");
                 return id;
             }
         }
