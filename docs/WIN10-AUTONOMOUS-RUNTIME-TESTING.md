@@ -2,9 +2,10 @@
 
 ## Design status
 
-This document defines the guarded, source-controlled runtime-test channel for
-Kingmaker Gunslinger 0.0.30. It does not qualify any scenario in game. Source
-qualification and an actual Kingmaker run are separate gates.
+This document defines the guarded, source-controlled runtime-test channel
+introduced for Kingmaker Gunslinger 0.0.30 and retained by current candidates.
+It does not qualify any scenario in game. Source qualification and an actual
+Kingmaker run are separate gates.
 
 The autonomous save-backed route is `working-save-smoke`, documented in
 `WORKING-SAVE-SMOKE.md`. It uses the guarded request, Steam App ID 640820, the
@@ -135,8 +136,8 @@ Kingmaker unless a human explicitly supplies `-AllowForceTerminate`.
 
 `mod-load-smoke` is production-allowlisted. It runs without a campaign and
 asserts that the actual UMM entry point completed, the published context and
-patch state are ready, the loaded UMM version is the requested 0.0.30, and the
-runtime identity comes from the executing mod assembly and current process.
+patch state are ready, the loaded UMM version exactly matches the request, and
+the runtime identity comes from the executing mod assembly and current process.
 These are mechanical runtime assertions; a build or domain test cannot
 substitute for them.
 

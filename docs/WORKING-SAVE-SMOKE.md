@@ -1,8 +1,10 @@
 # Autonomous Working-Save Smoke
 
 `working-save-smoke` is the guarded, autonomous, non-mutating qualification
-scenario for `KMG_AUTOMATION_WORKING`. It is limited to mod version `0.0.30`
-and launches through Steam App ID 640820.
+scenario for `KMG_AUTOMATION_WORKING`. It requires the caller's exact active
+mod version and launches through Steam App ID 640820. The receiver-bound
+mechanism was introduced and first qualified in 0.0.30; the 0.0.106 fatigue
+authority candidate is requalified below.
 
 ## Authoritative contracts
 
@@ -79,7 +81,12 @@ only after the result flush succeeds.
 Canonical unattended command:
 
 ```powershell
-.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-smoke -ExpectedVersion 0.0.30 -SaveName KMG_AUTOMATION_WORKING -ExitAfterCompletion:$true -Confirm:$false
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario working-save-smoke `
+  -ExpectedVersion 0.0.106 `
+  -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true `
+  -Confirm:$false
 ```
 
 `-WhatIf` performs build/package validation but no backup, deployment, Steam
@@ -91,11 +98,16 @@ For non-PASS or early exit, preserve evidence and do not retry with a different
 save or direct executable. Restore only from the single backup recorded in the
 deployment manifest using the documented restore script. Never modify saves.
 
-These contracts are qualified only for the observed Kingmaker environment and
-mod 0.0.30. Qualification completed with consecutive fresh-launch unattended
-PASS runs `20260801T0343387209693Z-3170322e7e804cfeb9fe001042920d97` and
-`20260801T0345210049976Z-0ed3ada3dd4b4f3b962cde8cc272d1fc`. Source-only
-success is not proof of in-game correctness.
+These contracts are qualified only for the observed Kingmaker environment.
+The original 0.0.30 qualification completed with consecutive fresh-launch
+unattended PASS runs
+`20260801T0343387209693Z-3170322e7e804cfeb9fe001042920d97` and
+`20260801T0345210049976Z-0ed3ada3dd4b4f3b962cde8cc272d1fc`. The 0.0.106
+candidate requalified the same contract with PASS run
+`20260828T1304368014092Z-working-save-smoke`; see
+`FATIGUE-AUTHORITY-REPAIR-QUALIFICATION.md`. Source-only success is not proof
+of in-game correctness.
+
 ## Confirmation boundary
 
 The orchestrator owns one high-level confirmation boundary before its first
