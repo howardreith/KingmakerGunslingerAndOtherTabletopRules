@@ -104,7 +104,8 @@ forward under a new name.
 
 The version-aware repository validator, 1,323-case domain suite, clean Release
 build, strict package validation, package/DLL hashes, and guarded runtime result
-directories are recorded here after execution.
+directories are recorded here after execution. All six runtime qualifications
+completed with 86/86 assertions passing and no warnings.
 
 | Gate | Result | Evidence |
 |---|---|---|
@@ -112,29 +113,44 @@ directories are recorded here after execution.
 | Complete clean Release domain suite | PASS | 1,323/1,323; failures=0 |
 | Clean Release/local package | PASS | `scripts/Build-Local.ps1`; exact private-reference build |
 | Strict package validation | PASS | Official and local-runtime archives both accepted |
-| `disposable-native-fatigue-refresh` | Pending | Pending |
-| `disposable-acadamae-fatigue-escalation` | Pending | Pending |
-| `disposable-acadamae-graduate` | Pending | Pending |
-| `disposable-cord-of-stubborn-resolve` | Pending | Pending |
-| Three-launch working-save fatigue persistence | Pending | Pending |
-| `working-save-smoke` | Pending | Pending |
+| `disposable-native-fatigue-refresh` | PASS | 10/10; `20260828T1249048399379Z-disposable-native-fatigue-refresh` |
+| `disposable-acadamae-fatigue-escalation` | PASS | 10/10; `20260828T1251253456101Z-disposable-acadamae-fatigue-escalation` |
+| `disposable-acadamae-graduate` | PASS | 20/20; `20260828T1255307622173Z-disposable-acadamae-graduate` |
+| `disposable-cord-of-stubborn-resolve` | PASS | 14/14; `20260828T1253292879175Z-disposable-cord-of-stubborn-resolve` |
+| Three-launch working-save fatigue persistence | PASS | 7/7 each: `20260828T1257393331889Z-working-save-fatigue-prepare`; `20260828T1259486417089Z-working-save-fatigue-verify-cleanup`; `20260828T1301583102651Z-working-save-fatigue-verify-absent` |
+| `working-save-smoke` | PASS | 11/11; `20260828T1304368014092Z-working-save-smoke` |
 
-### Qualified pre-runtime artifacts
+### Qualified immutable artifacts and deployment
 
 - Official candidate archive:
   `artifacts/packages/KingmakerGunslinger-0.0.106-fatigue-authority-repair.zip`
 - Guarded local-runtime archive:
   `artifacts/local-runtime/0.0.106/KingmakerGunslinger-0.0.106-local-runtime.zip`
 - Both archive SHA-256 values:
-  `92C6DCC5DEF7DADD36C7E8DC0810B81F37E5E3D73384E563FA23367E75366F35`
+  `6FBD4ECC0DC025036E0E15677BCE74A112BBC6E4EFC979F8FC1C783AA5CEE507`
 - Release DLL SHA-256:
-  `2709023C7A224B4BD4830728C5B4D841EB450A3F77CB0205E3CDCB43AEA43D62`
-- Release DLL MVID: `cda089c1-a398-45db-950e-65b448c8038c`
+  `8EC54F3F5D8EDF55F04851AEA224807C08EF77F9F1870600B3EF989441E59393`
+- Release DLL MVID: `b5fcdf91-4f2d-4775-b009-b21e9cc63e33`
+- Candidate source commit:
+  `9cc702f3ebe6a86e047fa4c1e3b89cd19044f123`
+- Candidate branch: `codex/repair-global-fatigue-escalation`
+- Source-state SHA-256:
+  `b1c1db4c7331619657808f21bb5b9f59fa42c13568e98bd82c491ce5480466a3`
 - Guarded runtime preflight: 157/157 PASS.
+- Pre-deployment live-mod backup:
+  `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260828T1248349312809Z`
+- Verified deployment manifest:
+  `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260828T1248381692477Z\deployment.json`
+- The deployed DLL hash exactly matched the build manifest. The repository
+  workflow preserved `FeatureModules.json` with SHA-256
+  `28B9589DB49EF977D2A033AA563052930A1D0E37E920689DB746BD0AF9108B59`.
 
-All autonomous runtime rows must use the guarded `-kmgRuntimeTestRequest`
-mechanism through Steam App ID 640820. Only `KMG_AUTOMATION_WORKING` may be
-written. `KMG_AUTOMATION_BASELINE` is outside the mutation boundary.
+Every runtime row used the guarded `-kmgRuntimeTestRequest` mechanism through
+Steam App ID 640820 and reused the exact verified deployment above. The
+three-launch persistence sequence wrote only `KMG_AUTOMATION_WORKING`; its
+final launch proved the cleanup persisted. `working-save-smoke` separately
+proved no save-writing API ran. `KMG_AUTOMATION_BASELINE` was never selected,
+loaded, modified, overwritten, renamed, or deleted.
 
 ## Remaining supervised world-map acceptance
 
