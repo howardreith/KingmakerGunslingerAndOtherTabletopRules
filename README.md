@@ -9,7 +9,7 @@ still responds globally after native success, receives ordinary repeated
 Fatigued as Fatigue and explicit Acadamae escalation as Exhaustion, deals once,
 and retains its 1-HP floor and exhaustion-to-fatigue substitution.
 
-The candidate retains 0.0.105's Brown-Fur ordering, player-facing presentation,
+This release retains 0.0.105's Brown-Fur ordering, player-facing presentation,
 and 30-item fixed-loot distribution; the 0.0.104 same-turn summon correction;
 and the unrelated accepted 0.0.103 Overhaul Firearm and Expanded Summoning
 repairs. It also retains the owner-accepted

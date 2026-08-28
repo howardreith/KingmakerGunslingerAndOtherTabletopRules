@@ -1,6 +1,6 @@
 # Kingmaker Gunslinger 0.0.106
 
-Unpublished candidate archive:
+Release archive:
 `KingmakerGunslinger-0.0.106-fatigue-authority-repair.zip`.
 
 ## Fatigue authority repair
@@ -26,7 +26,7 @@ blueprint's `Prolong` stacking. Only a later native weariness stack selects
 canonical Exhausted. The prior global KMG escalation therefore converted a
 routine travel refresh into premature Exhausted.
 
-The candidate does not patch travel classes and does not change Overhaul
+This release does not patch travel classes and does not change Overhaul
 Firearm, Expanded Summoning, summon rosters/durations, Acadamae eligibility or
 action economy, firearm systems, blueprint identities, Cord acquisition, or
 Cord presentation.
@@ -34,7 +34,7 @@ Cord presentation.
 Optional Craft Magic Items compatibility remains reflection-only; the package
 does not link or include `CraftMagicItems.dll`.
 
-The candidate retains the 1,288-test 0.0.103 baseline, the 1,307-test 0.0.104
+This release retains the 1,288-test 0.0.103 baseline, the 1,307-test 0.0.104
 summon repair, and the 1,315-test 0.0.105 presentation baseline. The complete
 dependency-free deterministic suite contains 1,323 tests.
 Mechanical and guarded runtime evidence is recorded in

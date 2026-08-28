@@ -73,9 +73,9 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.106 fatigue-authority repair is a local qualification candidate. This
-workflow does not authorize tagging, drafting, or publishing it; the download
-example below therefore remains the latest published 0.0.105 archive.
+The 0.0.106 fatigue-authority repair completed source, package, and guarded
+runtime qualification and is owner-approved for publication through this
+workflow.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default
@@ -107,7 +107,8 @@ The publisher:
 5. validates the final release copy;
 6. creates `SHA256SUMS.txt` and `release-manifest.json`;
 7. creates and pushes annotated tag `v<Info.json Version>`;
-8. creates or refreshes a draft GitHub release; and
+8. creates or refreshes a GitHub release, remaining draft unless `-Publish`
+   is supplied; and
 9. uploads the actual UMM ZIP, checksum, and manifest.
 
 A published release is immutable project history. The script refuses to replace
@@ -120,10 +121,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.105 `
+gh release download v0.0.106 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.105-player-facing-presentation-item-discoverability.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.105"
+  --pattern 'KingmakerGunslinger-0.0.106-fatigue-authority-repair.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.106"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The
