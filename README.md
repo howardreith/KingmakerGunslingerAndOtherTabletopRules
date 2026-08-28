@@ -1,20 +1,18 @@
 # Kingmaker Gunslinger
 
-Version `0.0.105` moves Brown-Fur Transmuter ahead of installed combined
-Arcanist archetypes, removes implementation language from project weapon and
-Cord tooltips, and redistributes all 30 project-added magic items across 30
-fixed containers in 29 persistent campaign areas. Cord of Stubborn Resolve is
-now in an ordinary chest inside the capital inn. It retains the 0.0.104
-correction that lets a genuine summon created by a Standard- or Swift-action
-spell act in its lawful current round without changing the caster's remaining
-actions, ordinary Full-Round summons, later rounds, or RTwP, and the 0.0.103
-repairs that make Overhaul Firearm commit at its ordinary
-out-of-combat delivery boundary instead of waiting one game minute and bound Expanded
-Summoning's largest native action-bar variant menus to the active canvas with
-scrolling when needed, and applies the canonical Fatigued-to-Exhausted rule
-after Kingmaker accepts an exact Fatigued effect. Acadamae Graduate uses that
-general condition path, while Cord of Stubborn Resolve retains its established
-single replacement and 1-HP-floor behavior. It also retains the owner-accepted
+Version `0.0.106` restores Kingmaker's authority over ordinary fatigue. A
+native refresh, merge, extension, or reapplication of canonical Fatigued now
+remains Fatigued; KMG increases it to Exhausted only when Kingmaker explicitly
+applies canonical Exhausted or an exact Acadamae Graduate failed-save request
+is scoped to escalate an already Fatigued caster. Cord of Stubborn Resolve
+still responds globally after native success, receives ordinary repeated
+Fatigued as Fatigue and explicit Acadamae escalation as Exhaustion, deals once,
+and retains its 1-HP floor and exhaustion-to-fatigue substitution.
+
+The candidate retains 0.0.105's Brown-Fur ordering, player-facing presentation,
+and 30-item fixed-loot distribution; the 0.0.104 same-turn summon correction;
+and the unrelated accepted 0.0.103 Overhaul Firearm and Expanded Summoning
+repairs. It also retains the owner-accepted
 0.0.102 starter, Bokken, combat-log, and Acadamae toggle corrections and the
 optional Craft Magic Items 2.1.0 integration without linking or packaging
 `CraftMagicItems.dll`. The qualified 0.0.99 inner

@@ -156,8 +156,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-cord-of-stubborn-resolve";
         internal const string DisposableAcadamaeGraduate =
             "disposable-acadamae-graduate";
-        internal const string DisposableFatigueEscalation =
-            "disposable-fatigue-escalation";
+        internal const string DisposableNativeFatigueRefresh =
+            "disposable-native-fatigue-refresh";
+        internal const string DisposableAcadamaeFatigueEscalation =
+            "disposable-acadamae-fatigue-escalation";
         internal const string WorkingSaveFatiguePrepare =
             "working-save-fatigue-prepare";
         internal const string WorkingSaveFatigueVerifyCleanup =
@@ -429,7 +431,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveCapitalCordVendor,
                 DisposableCordOfStubbornResolve,
                 DisposableAcadamaeGraduate,
-                DisposableFatigueEscalation,
+                DisposableNativeFatigueRefresh,
+                DisposableAcadamaeFatigueEscalation,
                 WorkingSaveFatiguePrepare,
                 WorkingSaveFatigueVerifyCleanup,
                 WorkingSaveFatigueVerifyAbsent,

@@ -167,6 +167,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Presentation\PlayerFacingTextPolicy.cs"><Link>Presentation\PlayerFacingTextPolicy.cs</Link></Compile>
     <Compile Include="CanonicalFatiguePolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Fatigue\CanonicalFatigueStatePolicy.cs"><Link>Fatigue\CanonicalFatigueStatePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Fatigue\CanonicalFatigueApplicationIntentScope.cs"><Link>Fatigue\CanonicalFatigueApplicationIntentScope.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingTime.cs"><Link>Acadamae\AcadamaeCastingTime.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastRequest.cs"><Link>Acadamae\AcadamaeCastRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastDecision.cs"><Link>Acadamae\AcadamaeCastDecision.cs</Link></Compile>

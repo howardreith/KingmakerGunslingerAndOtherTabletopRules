@@ -421,15 +421,15 @@ namespace KingmakerGunslinger.Acadamae
             if (!saving.IsPassed)
             {
                 CanonicalFatigueApplicationResult fatigue =
-                    CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(
-                        rule.Initiator.Descriptor.Buffs, _fatigued,
-                        rule.Initiator);
+                    CanonicalFatigueApplicationRuntime
+                        .ApplyPermanentAcadamaeFatigue(
+                            rule.Initiator.Descriptor.Buffs, _fatigued,
+                            rule.Initiator);
                 if (!fatigue.ApplicationSucceeded)
                     _lastFatigueDisposition =
                         "fatigue-application-suppressed";
-                else if (fatigue.CordSubstituted &&
-                    fatigue.State == CanonicalFatigueState.Neither)
-                    _lastFatigueDisposition = "cord-substituted-fatigue";
+                else if (fatigue.CordSubstituted)
+                    _lastFatigueDisposition = fatigue.Status;
                 else if (fatigue.State == CanonicalFatigueState.Exhausted)
                     _lastFatigueDisposition = fatigue.Condition != null &&
                         fatigue.Condition.IsPermanent ?

@@ -15,16 +15,24 @@ namespace KingmakerGunslinger.Fatigue
         Exhausted = 2
     }
 
+    internal enum CanonicalFatigueApplicationIntent
+    {
+        NativePassthrough = 0,
+        EscalateIfAlreadyFatigued = 1
+    }
+
     internal sealed class CanonicalFatigueStateDecision
     {
         internal CanonicalFatigueStateDecision(CanonicalFatigueState before,
             CanonicalConditionKind incoming, bool applicationSucceeded,
+            CanonicalFatigueApplicationIntent intent,
             CanonicalConditionKind effectiveIncoming,
             CanonicalFatigueState after, bool escalated)
         {
             Before = before;
             Incoming = incoming;
             ApplicationSucceeded = applicationSucceeded;
+            Intent = intent;
             EffectiveIncoming = effectiveIncoming;
             After = after;
             Escalated = escalated;
@@ -33,6 +41,7 @@ namespace KingmakerGunslinger.Fatigue
         internal CanonicalFatigueState Before { get; private set; }
         internal CanonicalConditionKind Incoming { get; private set; }
         internal bool ApplicationSucceeded { get; private set; }
+        internal CanonicalFatigueApplicationIntent Intent { get; private set; }
         internal CanonicalConditionKind EffectiveIncoming { get; private set; }
         internal CanonicalFatigueState After { get; private set; }
         internal bool Escalated { get; private set; }
@@ -42,34 +51,48 @@ namespace KingmakerGunslinger.Fatigue
     {
         internal static CanonicalFatigueStateDecision Decide(
             CanonicalFatigueState before, CanonicalConditionKind incoming,
-            bool applicationSucceeded)
+            bool applicationSucceeded,
+            CanonicalFatigueApplicationIntent intent)
         {
             if (!Enum.IsDefined(typeof(CanonicalFatigueState), before))
                 throw new ArgumentOutOfRangeException("before");
             if (!Enum.IsDefined(typeof(CanonicalConditionKind), incoming))
                 throw new ArgumentOutOfRangeException("incoming");
+            if (!Enum.IsDefined(typeof(CanonicalFatigueApplicationIntent),
+                    intent))
+                throw new ArgumentOutOfRangeException("intent");
             if (!applicationSucceeded)
             {
                 return new CanonicalFatigueStateDecision(before, incoming,
-                    false, incoming, before, false);
+                    false, intent, incoming, before, false);
             }
 
             if (incoming == CanonicalConditionKind.Exhausted)
             {
                 return new CanonicalFatigueStateDecision(before, incoming,
-                    true, CanonicalConditionKind.Exhausted,
+                    true, intent, CanonicalConditionKind.Exhausted,
                     CanonicalFatigueState.Exhausted, false);
             }
 
             if (before == CanonicalFatigueState.Neither)
             {
                 return new CanonicalFatigueStateDecision(before, incoming,
-                    true, CanonicalConditionKind.Fatigued,
+                    true, intent, CanonicalConditionKind.Fatigued,
                     CanonicalFatigueState.Fatigued, false);
             }
 
+            if (intent == CanonicalFatigueApplicationIntent.NativePassthrough)
+            {
+                return new CanonicalFatigueStateDecision(before, incoming,
+                    true, intent, CanonicalConditionKind.Fatigued,
+                    before == CanonicalFatigueState.Exhausted
+                        ? CanonicalFatigueState.Exhausted
+                        : CanonicalFatigueState.Fatigued,
+                    false);
+            }
+
             return new CanonicalFatigueStateDecision(before, incoming, true,
-                CanonicalConditionKind.Exhausted,
+                intent, CanonicalConditionKind.Exhausted,
                 CanonicalFatigueState.Exhausted,
                 before == CanonicalFatigueState.Fatigued);
         }

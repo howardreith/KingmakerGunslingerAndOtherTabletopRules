@@ -38,9 +38,9 @@ namespace KingmakerGunslinger.Fatigue
 
     /// <summary>
     /// Coordinates exact canonical Fatigued and Exhausted applications at the
-    /// installed engine's RuleApplyBuff boundary. The native rule always decides
-    /// whether the incoming effect succeeds before this coordinator escalates or
-    /// invokes the Cord replacement.
+    /// installed engine's RuleApplyBuff boundary. Native requests retain native
+    /// condition semantics. Only a one-shot exact Acadamae request may escalate
+    /// Fatigued after the native rule accepts it; Cord remains post-success.
     /// </summary>
     internal static class CanonicalFatigueApplicationRuntime
     {
@@ -120,7 +120,8 @@ namespace KingmakerGunslinger.Fatigue
             }
         }
 
-        internal static CanonicalFatigueApplicationResult ApplyPermanentFatigue(
+        internal static CanonicalFatigueApplicationResult
+            ApplyPermanentAcadamaeFatigue(
             BuffCollection buffs, BlueprintBuff fatigued,
             UnitEntityData source)
         {
@@ -135,12 +136,20 @@ namespace KingmakerGunslinger.Fatigue
                     "A non-canonical fatigue blueprint reached the canonical adapter.");
 
             long beforeSequence = Interlocked.Read(ref _sequence);
-            Buff returned = buffs.AddBuff(fatigued, source, null);
+            Buff returned;
+            using (CanonicalFatigueApplicationIntentScope.Request request =
+                CanonicalFatigueApplicationIntentScope
+                    .EnterAcadamaeEscalation(buffs, fatigued))
+            {
+                returned = buffs.AddBuff(fatigued, source, null);
+            }
             Resolution resolution = _lastThreadResolution;
             bool correlated = resolution != null &&
                 resolution.Sequence > beforeSequence &&
                 ReferenceEquals(resolution.Buffs, buffs) &&
-                resolution.Incoming == CanonicalConditionKind.Fatigued;
+                resolution.Incoming == CanonicalConditionKind.Fatigued &&
+                resolution.Intent == CanonicalFatigueApplicationIntent
+                    .EscalateIfAlreadyFatigued;
             if (correlated && !resolution.ApplicationSucceeded)
             {
                 return new CanonicalFatigueApplicationResult(false,
@@ -192,6 +201,9 @@ namespace KingmakerGunslinger.Fatigue
             else
                 return null;
 
+            CanonicalFatigueApplicationIntent intent =
+                CanonicalFatigueApplicationIntentScope.Claim(buffs,
+                    blueprint);
             Interlocked.Increment(ref _attempts);
             Buff fatigueBefore = buffs.GetBuff(fatigued);
             Buff exhaustionBefore = buffs.GetBuff(exhausted);
@@ -225,6 +237,7 @@ namespace KingmakerGunslinger.Fatigue
                 ExhaustionSourceBefore = CaptureSource(exhaustionBefore,
                     buffs),
                 Before = StateOf(fatigueBefore, exhaustionBefore),
+                Intent = intent,
                 CordEquipped = cord,
                 Parent = _activeScope
             };
@@ -259,7 +272,7 @@ namespace KingmakerGunslinger.Fatigue
             Interlocked.Increment(ref _successful);
             CanonicalFatigueStateDecision decision =
                 CanonicalFatigueStatePolicy.Decide(scope.Before,
-                    scope.Incoming, true);
+                    scope.Incoming, true, scope.Intent);
             bool cordSubstituted = scope.CordEquipped;
             string status;
             if (scope.CordEquipped)
@@ -278,12 +291,24 @@ namespace KingmakerGunslinger.Fatigue
                 if (escalated)
                 {
                     Interlocked.Increment(ref _escalated);
-                    status = "fatigued-escalated-to-exhausted";
+                    status = "acadamae-fatigue-escalated-to-exhausted";
+                }
+                else if (scope.Intent == CanonicalFatigueApplicationIntent
+                    .NativePassthrough)
+                {
+                    status = scope.Incoming ==
+                        CanonicalConditionKind.Exhausted
+                            ? "native-exhaustion-passthrough"
+                            : scope.Before ==
+                                CanonicalFatigueState.Exhausted
+                                ? "native-fatigue-no-downgrade"
+                                : "native-fatigue-passthrough";
                 }
                 else
                 {
                     status = decision.After == CanonicalFatigueState.Exhausted
-                        ? "exhausted-retained" : "fatigued-applied";
+                        ? "acadamae-exhausted-retained"
+                        : "acadamae-fatigue-applied";
                 }
             }
 
@@ -311,6 +336,7 @@ namespace KingmakerGunslinger.Fatigue
                     Sequence = Interlocked.Increment(ref _sequence),
                     Buffs = scope.Buffs,
                     Incoming = scope.Incoming,
+                    Intent = scope.Intent,
                     ApplicationSucceeded = false,
                     CordSubstituted = false,
                     Status = "coordination-fault"
@@ -349,6 +375,13 @@ namespace KingmakerGunslinger.Fatigue
             CanonicalFatigueStateDecision decision, BlueprintBuff fatigued,
             BlueprintBuff exhausted, ref Buff result)
         {
+            if (decision.Intent == CanonicalFatigueApplicationIntent
+                .NativePassthrough)
+            {
+                return ResolveNativePassthrough(scope, fatigued, exhausted,
+                    ref result);
+            }
+
             Buff liveExhaustion = scope.Buffs.GetBuff(exhausted);
             ConditionSource incomingSource = CaptureSource(result,
                 scope.Buffs);
@@ -407,6 +440,33 @@ namespace KingmakerGunslinger.Fatigue
             Normalize(scope.Buffs, exhausted, replacement);
             result = replacement;
             return decision.Escalated;
+        }
+
+        private static bool ResolveNativePassthrough(ApplicationScope scope,
+            BlueprintBuff fatigued, BlueprintBuff exhausted, ref Buff result)
+        {
+            Buff liveExhaustion = scope.Buffs.GetBuff(exhausted);
+            if (scope.Incoming == CanonicalConditionKind.Fatigued)
+            {
+                if (liveExhaustion != null)
+                {
+                    // Preserve an already Exhausted unit without extending or
+                    // replacing its native exhaustion fact or duration.
+                    RemoveAll(scope.Buffs, fatigued, scope.FatigueBefore);
+                    result = liveExhaustion;
+                }
+                return false;
+            }
+
+            if (liveExhaustion != null)
+            {
+                // Canonical Exhausted is the stronger native condition. Remove
+                // only its exact weaker counterpart and exact duplicates.
+                RemoveAll(scope.Buffs, fatigued, null);
+                Normalize(scope.Buffs, exhausted, liveExhaustion);
+                result = liveExhaustion;
+            }
+            return false;
         }
 
         private static void ResolveCord(ApplicationScope scope,
@@ -632,6 +692,7 @@ namespace KingmakerGunslinger.Fatigue
                 Sequence = sequence,
                 Buffs = scope.Buffs,
                 Incoming = scope.Incoming,
+                Intent = scope.Intent,
                 ApplicationSucceeded = succeeded,
                 CordSubstituted = cordSubstituted,
                 Status = status
@@ -640,9 +701,9 @@ namespace KingmakerGunslinger.Fatigue
             lock (ConfigurationGate)
             {
                 _lastResult = string.Format(CultureInfo.InvariantCulture,
-                    "sequence={0};before={1};incoming={2};success={3};cord={4};after={5};status={6}",
-                    sequence, scope.Before, scope.Incoming, succeeded,
-                    cordSubstituted, after, status);
+                    "sequence={0};before={1};incoming={2};intent={3};success={4};cord={5};after={6};status={7}",
+                    sequence, scope.Before, scope.Incoming, scope.Intent,
+                    succeeded, cordSubstituted, after, status);
             }
         }
 
@@ -690,6 +751,7 @@ namespace KingmakerGunslinger.Fatigue
             internal ConditionSource FatigueSourceBefore;
             internal ConditionSource ExhaustionSourceBefore;
             internal CanonicalFatigueState Before;
+            internal CanonicalFatigueApplicationIntent Intent;
             internal bool CordEquipped;
             internal ApplicationScope Parent;
             internal bool Resolved;
@@ -713,6 +775,7 @@ namespace KingmakerGunslinger.Fatigue
             internal long Sequence;
             internal BuffCollection Buffs;
             internal CanonicalConditionKind Incoming;
+            internal CanonicalFatigueApplicationIntent Intent;
             internal bool ApplicationSucceeded;
             internal bool CordSubstituted;
             internal string Status;

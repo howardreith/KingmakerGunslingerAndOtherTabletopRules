@@ -865,9 +865,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
-                    DisposableFatigueEscalation)
+                    DisposableNativeFatigueRefresh)
                 {
-                    Complete(RunDisposableFatigueEscalation());
+                    Complete(RunDisposableNativeFatigueRefresh());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableAcadamaeFatigueEscalation)
+                {
+                    Complete(RunDisposableAcadamaeFatigueEscalation());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableFocusedAim)
@@ -3754,10 +3760,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 long escalatedBefore =
                     CanonicalFatigueApplicationRuntime.Escalated;
                 CanonicalFatigueApplicationResult first =
-                    CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(
+                    CanonicalFatigueApplicationRuntime.ApplyPermanentAcadamaeFatigue(
                         target.Descriptor.Buffs, fatigued, target);
                 CanonicalFatigueApplicationResult second =
-                    CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(
+                    CanonicalFatigueApplicationRuntime.ApplyPermanentAcadamaeFatigue(
                         target.Descriptor.Buffs, fatigued, target);
                 applicationValid = first.ApplicationSucceeded &&
                     first.State == CanonicalFatigueState.Fatigued &&
@@ -19235,24 +19241,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Select(value => value.GetType().FullName).ToArray());
         }
 
-        private RuntimeTestResult RunDisposableFatigueEscalation()
+        private RuntimeTestResult RunDisposableNativeFatigueRefresh()
         {
             UnitEntityData unit = null;
             BlueprintBuff fatigued = null;
             BlueprintBuff exhausted = null;
             bool immunityAdded = false;
-            bool freshFatigue = false, repeatedFatigue = false,
-                exhaustedStable = false, directExhaustion = false,
+            bool freshFatigue = false, nativeRepeated = false,
+                nativeRepeatStable = false, directExhaustion = false,
                 fatiguedThenExhausted = false,
-                repeatedExhaustion = false, sameFrame = false,
+                repeatedExhaustion = false, nativeSameFrame = false,
                 temporaryPreserved = false, shorterDidNotShorten = false,
-                immunityBlocked = false, permanentIndependent = false,
-                restRemoved = false, exactPenalties = false,
-                diagnosticsExact = false,
+                immunityBlocked = false, exactPenalties = false,
+                diagnosticsExact = false, nativeStackingExact = false,
+                nativeNoDowngrade = false,
                 cleaned = false;
             int baselineStrength = -1, fatiguedStrength = -1,
                 exhaustedStrength = -1, explicitApplications = 0;
-            int permanentContextDepth = 0;
             TimeSpan sequenceTimeBefore = TimeSpan.Zero,
                 sequenceTimeAfter = TimeSpan.Zero,
                 longFatigueEnd = TimeSpan.Zero,
@@ -19272,6 +19277,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CanonicalFatigueApplicationRuntime.Configure(fatigued,
                     exhausted);
                 CanonicalFatigueApplicationRuntime.ResetDiagnostics();
+                nativeStackingExact =
+                    fatigued.Stacking == StackingType.Prolong &&
+                    exhausted.Stacking == StackingType.Prolong;
                 baselineStrength = unit.Descriptor.Stats.Strength.ModifiedValue;
 
                 sequenceTimeBefore = Game.Instance.TimeController.GameTime;
@@ -19291,45 +19299,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                 explicitApplications++;
                 Buff second = unit.Descriptor.Buffs.AddBuff(fatigued, unit,
                     TimeSpan.FromMinutes(1d));
-                Buff escalated = unit.Descriptor.Buffs.GetBuff(exhausted);
-                exhaustedStrength = unit.Descriptor.Stats.Strength.ModifiedValue;
-                resultingExhaustionEnd = escalated == null ? TimeSpan.Zero :
-                    escalated.EndTime;
-                repeatedFatigue = second != null &&
-                    ReferenceEquals(second, escalated) &&
-                    CountExactBuffFacts(unit, fatigued) == 0 &&
-                    CountExactBuffFacts(unit, exhausted) == 1 &&
-                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
-                    unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
-                temporaryPreserved = escalated != null &&
-                    !escalated.IsPermanent &&
+                Buff refreshed = unit.Descriptor.Buffs.GetBuff(fatigued);
+                resultingExhaustionEnd = refreshed == null ? TimeSpan.Zero :
+                    refreshed.EndTime;
+                nativeRepeated = second != null &&
+                    ReferenceEquals(second, first) &&
+                    ReferenceEquals(second, refreshed) &&
+                    CountExactBuffFacts(unit, fatigued) == 1 &&
+                    CountExactBuffFacts(unit, exhausted) == 0 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+                temporaryPreserved = refreshed != null &&
+                    !refreshed.IsPermanent &&
                     resultingExhaustionEnd != TimeSpan.MaxValue;
-                shorterDidNotShorten = escalated != null &&
+                shorterDidNotShorten = refreshed != null &&
                     resultingExhaustionEnd >= longFatigueEnd;
-                exactPenalties = fatiguedStrength == baselineStrength - 2 &&
-                    exhaustedStrength == baselineStrength - 6;
 
                 explicitApplications++;
                 Buff third = unit.Descriptor.Buffs.AddBuff(fatigued, unit,
                     TimeSpan.FromSeconds(30d));
                 sequenceTimeAfter = Game.Instance.TimeController.GameTime;
-                exhaustedStable = third != null &&
+                nativeRepeatStable = third != null &&
                     ReferenceEquals(third,
-                        unit.Descriptor.Buffs.GetBuff(exhausted)) &&
-                    CountExactBuffFacts(unit, fatigued) == 0 &&
-                    CountExactBuffFacts(unit, exhausted) == 1 &&
-                    unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
-                sameFrame = sequenceTimeAfter == sequenceTimeBefore &&
-                    repeatedFatigue && exhaustedStable;
+                        unit.Descriptor.Buffs.GetBuff(fatigued)) &&
+                    CountExactBuffFacts(unit, fatigued) == 1 &&
+                    CountExactBuffFacts(unit, exhausted) == 0 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+                nativeSameFrame = sequenceTimeAfter == sequenceTimeBefore &&
+                    nativeRepeated && nativeRepeatStable;
 
                 ClearCanonicalFatigueFixture(unit, fatigued, exhausted);
                 explicitApplications++;
                 Buff freshExhaustion = unit.Descriptor.Buffs.AddBuff(exhausted,
                     unit, TimeSpan.FromMinutes(2d));
+                exhaustedStrength =
+                    unit.Descriptor.Stats.Strength.ModifiedValue;
                 directExhaustion = freshExhaustion != null &&
                     ReferenceEquals(freshExhaustion.Blueprint, exhausted) &&
                     CountExactBuffFacts(unit, fatigued) == 0 &&
                     CountExactBuffFacts(unit, exhausted) == 1 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+                exactPenalties = fatiguedStrength == baselineStrength - 2 &&
+                    exhaustedStrength == baselineStrength - 6;
+                TimeSpan nativeExhaustionEnd = freshExhaustion == null ?
+                    TimeSpan.Zero : freshExhaustion.EndTime;
+                explicitApplications++;
+                Buff weakerAfterExhaustion = unit.Descriptor.Buffs.AddBuff(
+                    fatigued, unit, TimeSpan.FromMinutes(1d));
+                nativeNoDowngrade = freshExhaustion != null &&
+                    ReferenceEquals(weakerAfterExhaustion, freshExhaustion) &&
+                    ReferenceEquals(unit.Descriptor.Buffs.GetBuff(exhausted),
+                        freshExhaustion) &&
+                    freshExhaustion.EndTime == nativeExhaustionEnd &&
+                    CountExactBuffFacts(unit, fatigued) == 0 &&
+                    CountExactBuffFacts(unit, exhausted) == 1 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
 
                 ClearCanonicalFatigueFixture(unit, fatigued, exhausted);
@@ -19354,6 +19379,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit, TimeSpan.FromMinutes(1d));
                 repeatedExhaustion = firstExhaustion != null &&
                     secondExhaustion != null &&
+                    ReferenceEquals(firstExhaustion, secondExhaustion) &&
                     CountExactBuffFacts(unit, fatigued) == 0 &&
                     CountExactBuffFacts(unit, exhausted) == 1 &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
@@ -19378,48 +19404,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitCondition.Fatigued);
                 immunityAdded = false;
 
-                explicitApplications++;
-                CanonicalFatigueApplicationResult permanentFirst =
-                    CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(
-                        unit.Descriptor.Buffs, fatigued, unit);
-                explicitApplications++;
-                CanonicalFatigueApplicationResult permanentSecond =
-                    CanonicalFatigueApplicationRuntime.ApplyPermanentFatigue(
-                        unit.Descriptor.Buffs, fatigued, unit);
-                Buff permanentExhaustion = unit.Descriptor.Buffs.GetBuff(
-                    exhausted);
-                MechanicsContext permanentRoot = FindRootMechanicsContext(
-                    permanentExhaustion == null ? null :
-                        permanentExhaustion.Context,
-                    out permanentContextDepth);
-                permanentIndependent = permanentFirst.ApplicationSucceeded &&
-                    permanentFirst.State == CanonicalFatigueState.Fatigued &&
-                    permanentSecond.ApplicationSucceeded &&
-                    permanentSecond.State == CanonicalFatigueState.Exhausted &&
-                    permanentExhaustion != null &&
-                    permanentExhaustion.IsPermanent &&
-                    permanentExhaustion.Context != null &&
-                    permanentRoot != null &&
-                    permanentRoot.ParentContext == null &&
-                    permanentRoot.MaybeCaster == unit &&
-                    permanentRoot.SourceAbility == null &&
-                    exhausted.RemoveOnRest &&
-                    CountExactBuffFacts(unit, fatigued) == 0 &&
-                    CountExactBuffFacts(unit, exhausted) == 1;
-
-                Kingmaker.Controllers.Rest.RestController.ApplyRest(
-                    unit.Descriptor);
-                restRemoved = CountExactBuffFacts(unit, fatigued) == 0 &&
-                    CountExactBuffFacts(unit, exhausted) == 0 &&
-                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
-                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
                 diagnosticsExact =
                     CanonicalFatigueApplicationRuntime.Attempts ==
                         explicitApplications &&
                     CanonicalFatigueApplicationRuntime.Successful ==
                         explicitApplications - 1 &&
                     CanonicalFatigueApplicationRuntime.Blocked == 1 &&
-                    CanonicalFatigueApplicationRuntime.Escalated == 2 &&
+                    CanonicalFatigueApplicationRuntime.Escalated == 0 &&
                     CanonicalFatigueApplicationRuntime.CordSubstitutions == 0 &&
                     CanonicalFatigueApplicationRuntime.Faults == 0;
             }
@@ -19445,17 +19436,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
 
-            string observed = "fresh=" + freshFatigue + ";repeated=" +
-                repeatedFatigue + ";stable=" + exhaustedStable +
+            string observed = "stacking=" + fatigued.Stacking + "/" +
+                exhausted.Stacking + ";fresh=" + freshFatigue +
+                ";nativeRepeated=" +
+                nativeRepeated + ";nativeStable=" + nativeRepeatStable +
                 ";direct=" + directExhaustion + ";fatiguedDirect=" +
-                fatiguedThenExhausted + ";repeatDirect=" +
-                repeatedExhaustion + ";sameFrame=" + sameFrame +
+                fatiguedThenExhausted + ";noDowngrade=" +
+                nativeNoDowngrade + ";repeatDirect=" +
+                repeatedExhaustion + ";nativeSameFrame=" + nativeSameFrame +
                 ";strength=" + baselineStrength + "->" + fatiguedStrength +
                 "->" + exhaustedStrength + ";temporary=" +
                 temporaryPreserved + ";end=" + longFatigueEnd + "->" +
                 resultingExhaustionEnd + ";immunity=" + immunityBlocked +
-                ";permanent=" + permanentIndependent + ";rest=" +
-                restRemoved + ";contextDepth=" + permanentContextDepth +
                 ";applications=" +
                 explicitApplications + ";attempts=" +
                 CanonicalFatigueApplicationRuntime.Attempts +
@@ -19473,40 +19465,271 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, freshFatigue,
                     "actual canonical BlueprintBuff through BuffCollection.AddBuff"),
                 Assertion("canonical-fatigue-repeat",
-                    "second successful Fatigued produces one Exhausted fact",
-                    observed, repeatedFatigue && exhaustedStable,
-                    "same synchronous native RuleApplyBuff sequence"),
+                    "native Fatigued refresh remains one Fatigued fact",
+                    observed, nativeStackingExact && nativeRepeated &&
+                        nativeRepeatStable,
+                    "canonical Prolong stacking through native RuleApplyBuff"),
                 Assertion("canonical-exhaustion-matrix",
                     "direct Exhausted is idempotent and replaces Fatigued",
                     observed, directExhaustion && fatiguedThenExhausted &&
-                        repeatedExhaustion,
+                        nativeNoDowngrade && repeatedExhaustion,
                     "actual canonical Exhausted BlueprintBuff"),
                 Assertion("canonical-fatigue-no-double-penalty",
                     "Fatigued is -2 Strength; Exhausted is -6, never both",
                     observed, exactPenalties,
                     "live native condition-driven ModifiedValue"),
                 Assertion("canonical-fatigue-same-frame",
-                    "two applications escalate without advancing GameTime",
-                    observed, sameFrame,
+                    "synchronous native Fatigued applications remain Fatigued",
+                    observed, nativeSameFrame,
                     "synchronous BuffCollection applications and TimeController.GameTime"),
                 Assertion("canonical-fatigue-duration",
-                    "temporary remains temporary; shorter second effect cannot shorten",
+                    "native Prolong refresh retains reference and longer duration",
                     observed, temporaryPreserved && shorterDidNotShorten,
-                    "live Buff.EndTime before and after escalation"),
+                    "canonical StackingType and live Buff reference/EndTime"),
                 Assertion("canonical-fatigue-immunity",
                     "native Fatigued condition immunity leaves neither condition",
                     observed, immunityBlocked,
                     "UnitState condition immunity plus post-native application boundary"),
-                Assertion("canonical-fatigue-independent-rest",
-                    "independent permanent escalation remains exact and rest-removable",
-                    observed, permanentIndependent && restRemoved,
-                    "canonical adapter, rooted independent MechanicsContext, and RestController.ApplyRest"),
                 Assertion("canonical-fatigue-coordination",
                     "one coordinator resolution per explicit effect; no recursion or fault",
                     observed, diagnosticsExact,
                     "request-local scope and exact runtime counters"),
                 Assertion("request-local-cleanup",
                     "disposable unit retains no condition fact or state",
+                    observed, cleaned, "finally cleanup; no save API"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion ==
+                        _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS")
+                ? "PASS" : "FAIL", assertions, null);
+        }
+
+        private RuntimeTestResult RunDisposableAcadamaeFatigueEscalation()
+        {
+            UnitEntityData unit = null;
+            UnitEntityData secondUnit = null;
+            BlueprintBuff fatigued = null;
+            BlueprintBuff exhausted = null;
+            bool immunityAdded = false;
+            bool acadamaeFresh = false, acadamaeEscalated = false,
+                acadamaeExhaustedStable = false,
+                permanentRestContract = false, restRemoved = false,
+                secondUnitNative = false, laterNative = false,
+                immunityBlocked = false, diagnosticsExact = false,
+                cleaned = false;
+            int contextDepth = 0;
+            try
+            {
+                unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                secondUnit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                fatigued = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                    BlueprintBootstrap.Library,
+                    CanonicalFatigueApplicationRuntime.FatiguedGuid,
+                    "canonical Fatigued condition");
+                exhausted = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                    BlueprintBootstrap.Library,
+                    CanonicalFatigueApplicationRuntime.ExhaustedGuid,
+                    "canonical Exhausted condition");
+                CanonicalFatigueApplicationRuntime.Configure(fatigued,
+                    exhausted);
+                CanonicalFatigueApplicationRuntime.ResetDiagnostics();
+
+                CanonicalFatigueApplicationResult first =
+                    CanonicalFatigueApplicationRuntime
+                        .ApplyPermanentAcadamaeFatigue(
+                            unit.Descriptor.Buffs, fatigued, unit);
+                acadamaeFresh = first.ApplicationSucceeded &&
+                    !first.CordSubstituted &&
+                    first.State == CanonicalFatigueState.Fatigued &&
+                    first.Condition != null && first.Condition.IsPermanent &&
+                    ReferenceEquals(first.Condition.Blueprint, fatigued) &&
+                    fatigued.RemoveOnRest &&
+                    CountExactBuffFacts(unit, fatigued) == 1 &&
+                    CountExactBuffFacts(unit, exhausted) == 0 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+
+                CanonicalFatigueApplicationResult second =
+                    CanonicalFatigueApplicationRuntime
+                        .ApplyPermanentAcadamaeFatigue(
+                            unit.Descriptor.Buffs, fatigued, unit);
+                Buff permanentExhaustion =
+                    unit.Descriptor.Buffs.GetBuff(exhausted);
+                MechanicsContext root = FindRootMechanicsContext(
+                    permanentExhaustion == null ? null :
+                        permanentExhaustion.Context, out contextDepth);
+                acadamaeEscalated = second.ApplicationSucceeded &&
+                    !second.CordSubstituted &&
+                    second.State == CanonicalFatigueState.Exhausted &&
+                    ReferenceEquals(second.Condition, permanentExhaustion) &&
+                    permanentExhaustion != null &&
+                    permanentExhaustion.IsPermanent &&
+                    CountExactBuffFacts(unit, fatigued) == 0 &&
+                    CountExactBuffFacts(unit, exhausted) == 1 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+                permanentRestContract = permanentExhaustion != null &&
+                    exhausted.RemoveOnRest &&
+                    permanentExhaustion.Context != null &&
+                    root != null && root.ParentContext == null &&
+                    root.MaybeCaster == unit &&
+                    root.SourceAbility == null;
+
+                CanonicalFatigueApplicationResult third =
+                    CanonicalFatigueApplicationRuntime
+                        .ApplyPermanentAcadamaeFatigue(
+                            unit.Descriptor.Buffs, fatigued, unit);
+                acadamaeExhaustedStable = third.ApplicationSucceeded &&
+                    third.State == CanonicalFatigueState.Exhausted &&
+                    ReferenceEquals(third.Condition, permanentExhaustion) &&
+                    CountExactBuffFacts(unit, fatigued) == 0 &&
+                    CountExactBuffFacts(unit, exhausted) == 1 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+
+                Kingmaker.Controllers.Rest.RestController.ApplyRest(
+                    unit.Descriptor);
+                restRemoved = CountExactBuffFacts(unit, fatigued) == 0 &&
+                    CountExactBuffFacts(unit, exhausted) == 0 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+
+                Buff secondUnitResult = secondUnit.Descriptor.Buffs.AddBuff(
+                    fatigued, secondUnit, TimeSpan.FromMinutes(2d));
+                secondUnitNative = secondUnitResult != null &&
+                    ReferenceEquals(secondUnitResult.Blueprint, fatigued) &&
+                    CountExactBuffFacts(secondUnit, fatigued) == 1 &&
+                    CountExactBuffFacts(secondUnit, exhausted) == 0 &&
+                    secondUnit.Descriptor.State.HasCondition(
+                        UnitCondition.Fatigued) &&
+                    !secondUnit.Descriptor.State.HasCondition(
+                        UnitCondition.Exhausted);
+
+                ClearCanonicalFatigueFixture(unit, fatigued, exhausted);
+                Buff laterNativeResult = unit.Descriptor.Buffs.AddBuff(
+                    fatigued, unit, TimeSpan.FromMinutes(2d));
+                laterNative = laterNativeResult != null &&
+                    ReferenceEquals(laterNativeResult.Blueprint, fatigued) &&
+                    CountExactBuffFacts(unit, fatigued) == 1 &&
+                    CountExactBuffFacts(unit, exhausted) == 0 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+
+                ClearCanonicalFatigueFixture(unit, fatigued, exhausted);
+                unit.Descriptor.State.AddConditionImmunity(
+                    UnitCondition.Fatigued);
+                immunityAdded = true;
+                CanonicalFatigueApplicationResult blocked =
+                    CanonicalFatigueApplicationRuntime
+                        .ApplyPermanentAcadamaeFatigue(
+                            unit.Descriptor.Buffs, fatigued, unit);
+                immunityBlocked = !blocked.ApplicationSucceeded &&
+                    blocked.State == CanonicalFatigueState.Neither &&
+                    blocked.Condition == null &&
+                    CountExactBuffFacts(unit, fatigued) == 0 &&
+                    CountExactBuffFacts(unit, exhausted) == 0 &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+                unit.Descriptor.State.RemoveConditionImmunity(
+                    UnitCondition.Fatigued);
+                immunityAdded = false;
+
+                diagnosticsExact =
+                    CanonicalFatigueApplicationRuntime.Attempts == 6 &&
+                    CanonicalFatigueApplicationRuntime.Successful == 5 &&
+                    CanonicalFatigueApplicationRuntime.Blocked == 1 &&
+                    CanonicalFatigueApplicationRuntime.Escalated == 1 &&
+                    CanonicalFatigueApplicationRuntime.CordSubstitutions == 0 &&
+                    CanonicalFatigueApplicationRuntime.Faults == 0;
+            }
+            finally
+            {
+                if (unit != null)
+                {
+                    if (immunityAdded)
+                        unit.Descriptor.State.RemoveConditionImmunity(
+                            UnitCondition.Fatigued);
+                    if (fatigued != null && exhausted != null)
+                        ClearCanonicalFatigueFixture(unit, fatigued,
+                            exhausted);
+                }
+                if (secondUnit != null && fatigued != null &&
+                    exhausted != null)
+                {
+                    ClearCanonicalFatigueFixture(secondUnit, fatigued,
+                        exhausted);
+                }
+                cleaned = (unit == null ||
+                        !unit.Descriptor.State.HasCondition(
+                            UnitCondition.Fatigued) &&
+                        !unit.Descriptor.State.HasCondition(
+                            UnitCondition.Exhausted)) &&
+                    (secondUnit == null ||
+                        !secondUnit.Descriptor.State.HasCondition(
+                            UnitCondition.Fatigued) &&
+                        !secondUnit.Descriptor.State.HasCondition(
+                            UnitCondition.Exhausted));
+                if (unit != null) unit.Dispose();
+                if (secondUnit != null) secondUnit.Dispose();
+            }
+
+            string observed = "fresh=" + acadamaeFresh +
+                ";acadamaeEscalated=" + acadamaeEscalated +
+                ";stable=" + acadamaeExhaustedStable +
+                ";permanentRest=" + permanentRestContract +
+                ";restRemoved=" + restRemoved +
+                ";secondUnitNative=" + secondUnitNative +
+                ";laterNative=" + laterNative +
+                ";immunity=" + immunityBlocked +
+                ";contextDepth=" + contextDepth +
+                ";attempts=" + CanonicalFatigueApplicationRuntime.Attempts +
+                ";successful=" +
+                CanonicalFatigueApplicationRuntime.Successful +
+                ";blocked=" + CanonicalFatigueApplicationRuntime.Blocked +
+                ";escalated=" +
+                CanonicalFatigueApplicationRuntime.Escalated +
+                ";faults=" + CanonicalFatigueApplicationRuntime.Faults +
+                ";cleaned=" + cleaned;
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("acadamae-fatigue-fresh",
+                    "explicit adapter produces one permanent Fatigued fact",
+                    observed, acadamaeFresh,
+                    "production ApplyPermanentAcadamaeFatigue adapter"),
+                Assertion("acadamae-fatigue-escalation",
+                    "explicit adapter while Fatigued produces one Exhausted fact",
+                    observed, acadamaeEscalated,
+                    "one-shot exact request intent plus native RuleApplyBuff"),
+                Assertion("acadamae-fatigue-exhausted-stable",
+                    "explicit adapter while Exhausted retains one Exhausted fact",
+                    observed, acadamaeExhaustedStable,
+                    "exact canonical fact counts and reference identity"),
+                Assertion("acadamae-fatigue-permanent-rest",
+                    "Exhausted is permanent, independently rooted, and rest-removable",
+                    observed, permanentRestContract && restRemoved,
+                    "live Buff, MechanicsContext, blueprint, and RestController"),
+                Assertion("acadamae-intent-second-unit",
+                    "a second unit receives ordinary native Fatigued",
+                    observed, secondUnitNative,
+                    "different BuffCollection after explicit request"),
+                Assertion("acadamae-intent-later-native",
+                    "a later native application remains Fatigued",
+                    observed, laterNative,
+                    "disposed one-shot request on the original collection"),
+                Assertion("acadamae-fatigue-immunity",
+                    "native immunity blocks explicit escalation",
+                    observed, immunityBlocked,
+                    "post-native condition-presence boundary"),
+                Assertion("acadamae-fatigue-coordination",
+                    "six exact requests resolve once with one explicit escalation",
+                    observed, diagnosticsExact,
+                    "coordinator counters; no Cord or recursion fault"),
+                Assertion("request-local-cleanup",
+                    "both disposable units retain no canonical condition",
                     observed, cleaned, "finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
@@ -19563,18 +19786,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff fatigued = null, exhausted = null;
             int constitutionBefore = 0, constitutionCord = 0;
             int fatigueDamage = -1, exhaustionDamage = -1, floorDamage = -1;
-            int canonicalFreshDamage = -1, canonicalRepeatedDamage = -1,
+            int canonicalFreshDamage = -1, ordinaryRepeatedDamage = -1,
                 canonicalExhaustionDamage = -1,
-                canonicalSameFrameDamage = -1,
-                canonicalFloorDamage = -1;
+                canonicalAcadamaeDamage = -1,
+                ordinarySameFrameDamage = -1,
+                canonicalFloorDamage = -1,
+                canonicalImmunityDamage = -1;
             bool fatigueSuppressed = false, exhaustionDowngraded = false,
                 inventoryInert = false, unequippedOrdinary = false,
                 projectIcon = false, canonicalFresh = false,
-                canonicalRepeated = false, canonicalExhaustion = false,
-                canonicalSameFrame = false, canonicalFloor = false,
-                cleaned = false;
-            TimeSpan canonicalSameFrameBefore = TimeSpan.Zero,
-                canonicalSameFrameAfter = TimeSpan.Zero;
+                ordinaryRepeated = false, canonicalExhaustion = false,
+                canonicalAcadamae = false, canonicalImmunity = false,
+                ordinarySameFrame = false, canonicalFloor = false,
+                fatigueImmunityAdded = false, cleaned = false;
+            TimeSpan ordinarySameFrameBefore = TimeSpan.Zero,
+                ordinarySameFrameAfter = TimeSpan.Zero;
             try
             {
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -19655,17 +19881,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                 before = unit.Damage;
                 Buff repeatedResult = unit.Descriptor.Buffs.AddBuff(fatigued,
                     unit, TimeSpan.FromMinutes(1d));
-                canonicalRepeatedDamage = unit.Damage - before;
-                canonicalRepeated = seededFatigue != null &&
+                ordinaryRepeatedDamage = unit.Damage - before;
+                ordinaryRepeated = seededFatigue != null &&
                     repeatedResult != null &&
                     ReferenceEquals(repeatedResult,
                         unit.Descriptor.Buffs.GetBuff(fatigued)) &&
-                    canonicalRepeatedDamage >= 1 &&
-                    canonicalRepeatedDamage <= 6 &&
+                    ordinaryRepeatedDamage >= 1 &&
+                    ordinaryRepeatedDamage <= 6 &&
                     Cord.CordConditionRuntime.ResolvedSubstitutions == 1 &&
                     CanonicalFatigueApplicationRuntime.Attempts == 1 &&
                     CanonicalFatigueApplicationRuntime.CordSubstitutions == 1 &&
                     CanonicalFatigueApplicationRuntime.Escalated == 0 &&
+                    CanonicalFatigueApplicationRuntime.Faults == 0 &&
+                    CanonicalFatigueApplicationRuntime.LastResult.Contains(
+                        "status=cord-substituted-fatigue") &&
+                    CountExactBuffFacts(unit, fatigued) == 1 &&
+                    CountExactBuffFacts(unit, exhausted) == 0 &&
+                    unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Exhausted);
+
+                unit.Damage = 0;
+                Cord.CordConditionRuntime.ResetDiagnostics();
+                CanonicalFatigueApplicationRuntime.ResetDiagnostics();
+                before = unit.Damage;
+                CanonicalFatigueApplicationResult acadamaeCord =
+                    CanonicalFatigueApplicationRuntime
+                        .ApplyPermanentAcadamaeFatigue(
+                            unit.Descriptor.Buffs, fatigued, unit);
+                canonicalAcadamaeDamage = unit.Damage - before;
+                canonicalAcadamae = acadamaeCord.ApplicationSucceeded &&
+                    acadamaeCord.CordSubstituted &&
+                    acadamaeCord.State == CanonicalFatigueState.Fatigued &&
+                    acadamaeCord.Status == "cord-substituted-exhaustion" &&
+                    acadamaeCord.Condition != null &&
+                    acadamaeCord.Condition.IsPermanent &&
+                    canonicalAcadamaeDamage >= 1 &&
+                    canonicalAcadamaeDamage <= 6 &&
+                    Cord.CordConditionRuntime.LastAppliedDamage ==
+                        canonicalAcadamaeDamage &&
+                    Cord.CordConditionRuntime.ResolvedSubstitutions == 1 &&
+                    CanonicalFatigueApplicationRuntime.Attempts == 1 &&
+                    CanonicalFatigueApplicationRuntime.Successful == 1 &&
+                    CanonicalFatigueApplicationRuntime.CordSubstitutions == 1 &&
                     CanonicalFatigueApplicationRuntime.Faults == 0 &&
                     CountExactBuffFacts(unit, fatigued) == 1 &&
                     CountExactBuffFacts(unit, exhausted) == 0 &&
@@ -19689,6 +19946,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CanonicalFatigueApplicationRuntime.Attempts == 1 &&
                     CanonicalFatigueApplicationRuntime.CordSubstitutions == 1 &&
                     CanonicalFatigueApplicationRuntime.Faults == 0 &&
+                    CanonicalFatigueApplicationRuntime.LastResult.Contains(
+                        "status=cord-substituted-exhaustion") &&
                     CountExactBuffFacts(unit, fatigued) == 1 &&
                     CountExactBuffFacts(unit, exhausted) == 0 &&
                     unit.Descriptor.State.HasCondition(UnitCondition.Fatigued) &&
@@ -19698,19 +19957,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Damage = 0;
                 Cord.CordConditionRuntime.ResetDiagnostics();
                 CanonicalFatigueApplicationRuntime.ResetDiagnostics();
-                canonicalSameFrameBefore = Game.Instance.TimeController.GameTime;
+                ordinarySameFrameBefore = Game.Instance.TimeController.GameTime;
                 before = unit.Damage;
                 Buff sameFrameFirst = unit.Descriptor.Buffs.AddBuff(fatigued,
                     unit, TimeSpan.FromMinutes(1d));
                 Buff sameFrameSecond = unit.Descriptor.Buffs.AddBuff(fatigued,
                     unit, TimeSpan.FromMinutes(1d));
-                canonicalSameFrameAfter = Game.Instance.TimeController.GameTime;
-                canonicalSameFrameDamage = unit.Damage - before;
-                canonicalSameFrame = sameFrameFirst == null &&
+                ordinarySameFrameAfter = Game.Instance.TimeController.GameTime;
+                ordinarySameFrameDamage = unit.Damage - before;
+                ordinarySameFrame = sameFrameFirst == null &&
                     sameFrameSecond == null &&
-                    canonicalSameFrameBefore == canonicalSameFrameAfter &&
-                    canonicalSameFrameDamage >= 2 &&
-                    canonicalSameFrameDamage <= 12 &&
+                    ordinarySameFrameBefore == ordinarySameFrameAfter &&
+                    ordinarySameFrameDamage >= 2 &&
+                    ordinarySameFrameDamage <= 12 &&
                     Cord.CordConditionRuntime.ResolvedSubstitutions == 2 &&
                     CanonicalFatigueApplicationRuntime.Attempts == 2 &&
                     CanonicalFatigueApplicationRuntime.Successful == 2 &&
@@ -19737,6 +19996,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CountExactBuffFacts(unit, fatigued) == 0 &&
                     CountExactBuffFacts(unit, exhausted) == 0;
 
+                ClearCanonicalFatigueFixture(unit, fatigued, exhausted);
+                unit.Damage = 0;
+                unit.Descriptor.State.AddConditionImmunity(
+                    UnitCondition.Fatigued);
+                fatigueImmunityAdded = true;
+                Cord.CordConditionRuntime.ResetDiagnostics();
+                CanonicalFatigueApplicationRuntime.ResetDiagnostics();
+                before = unit.Damage;
+                Buff immunityResult = unit.Descriptor.Buffs.AddBuff(fatigued,
+                    unit, TimeSpan.FromMinutes(1d));
+                canonicalImmunityDamage = unit.Damage - before;
+                canonicalImmunity = immunityResult == null &&
+                    canonicalImmunityDamage == 0 &&
+                    Cord.CordConditionRuntime.ResolvedSubstitutions == 0 &&
+                    CanonicalFatigueApplicationRuntime.Attempts == 1 &&
+                    CanonicalFatigueApplicationRuntime.Successful == 0 &&
+                    CanonicalFatigueApplicationRuntime.Blocked == 1 &&
+                    CanonicalFatigueApplicationRuntime.CordSubstitutions == 0 &&
+                    CountExactBuffFacts(unit, fatigued) == 0 &&
+                    CountExactBuffFacts(unit, exhausted) == 0;
+                unit.Descriptor.State.RemoveConditionImmunity(
+                    UnitCondition.Fatigued);
+                fatigueImmunityAdded = false;
+
                 unit.Body.Belt.RemoveItem(false);
                 unit.Damage = 0;
                 unit.Descriptor.State.AddCondition(UnitCondition.Fatigued, null);
@@ -19747,6 +20030,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (unit != null)
                 {
+                    if (fatigueImmunityAdded)
+                        unit.Descriptor.State.RemoveConditionImmunity(
+                            UnitCondition.Fatigued);
                     if (unit.Descriptor.State.HasCondition(UnitCondition.Fatigued))
                         unit.Descriptor.State.RemoveCondition(UnitCondition.Fatigued);
                     if (unit.Descriptor.State.HasCondition(UnitCondition.Exhausted))
@@ -19769,13 +20055,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";exhaustionDamage=" + exhaustionDamage + ";floorDamage=" +
                 floorDamage + ";inventoryInert=" + inventoryInert +
                 ";canonicalFresh=" + canonicalFresh + ":" +
-                canonicalFreshDamage + ";canonicalRepeated=" +
-                canonicalRepeated + ":" + canonicalRepeatedDamage +
+                canonicalFreshDamage + ";ordinaryRepeated=" +
+                ordinaryRepeated + ":" + ordinaryRepeatedDamage +
+                ";canonicalAcadamae=" + canonicalAcadamae + ":" +
+                canonicalAcadamaeDamage +
                 ";canonicalExhaustion=" + canonicalExhaustion + ":" +
-                canonicalExhaustionDamage + ";canonicalSameFrame=" +
-                canonicalSameFrame + ":" + canonicalSameFrameDamage +
+                canonicalExhaustionDamage + ";ordinarySameFrame=" +
+                ordinarySameFrame + ":" + ordinarySameFrameDamage +
                 ";canonicalFloor=" + canonicalFloor + ":" +
-                canonicalFloorDamage + ";unequippedOrdinary=" +
+                canonicalFloorDamage + ";canonicalImmunity=" +
+                canonicalImmunity + ":" + canonicalImmunityDamage +
+                ";unequippedOrdinary=" +
                 unequippedOrdinary + ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
@@ -19795,20 +20085,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, canonicalFresh,
                     "exact canonical BuffCollection.AddBuff path"),
                 Assertion("cord-canonical-repeat",
-                    "repeated Fatigued resolves as one exhaustion substitution and retains one Fatigued",
-                    observed, canonicalRepeated,
-                    "post-success canonical state policy then exact Cord replacement"),
+                    "ordinary repeated Fatigued is presented as Fatigue and damages once",
+                    observed, ordinaryRepeated,
+                    "native passthrough intent, coordinator status, and Cord counter"),
+                Assertion("cord-canonical-acadamae",
+                    "explicit Acadamae escalation is presented as Exhaustion and damages once",
+                    observed, canonicalAcadamae,
+                    "production explicit adapter, coordinator status, and Cord counter"),
                 Assertion("cord-canonical-exhaustion",
                     "direct canonical Exhausted deals once and leaves one Fatigued",
                     observed, canonicalExhaustion,
                     "exact Exhausted BlueprintBuff through native RuleApplyBuff"),
                 Assertion("cord-canonical-same-frame",
                     "two same-frame incoming effects each substitute exactly once without recursion",
-                    observed, canonicalSameFrame,
+                    observed, ordinarySameFrame,
                     "GameTime sample plus coordinator and Cord counters"),
                 Assertion("cord-one-hp-floor", "zero damage at exactly 1 HP",
                     observed, floorDamage == 0 && canonicalFloor,
                     "native RuleRollDice capped explicitly to HPLeft minus one"),
+                Assertion("cord-canonical-immunity",
+                    "rejected Fatigued causes no damage or substitution",
+                    observed, canonicalImmunity,
+                    "native condition immunity before post-success Cord handoff"),
                 Assertion("cord-equipped-scope", "inventory inert and unequipped behavior native",
                     observed, inventoryInert && unequippedOrdinary,
                     "exact belt-slot identity gate"),
