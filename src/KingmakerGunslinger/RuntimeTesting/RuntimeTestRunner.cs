@@ -57,6 +57,8 @@ using KingmakerGunslinger.FeatureModules;
 using KingmakerGunslinger.UrbanBarbarian;
 using KingmakerGunslinger.CraftMagicItemsCompatibility;
 using KingmakerGunslinger.Diagnostics;
+using KingmakerGunslinger.Acquisition;
+using KingmakerGunslinger.Presentation;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -6600,6 +6602,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !reload.Description.Contains("Test Musket") &&
                 !overhaul.Description.Contains("Test Musket") &&
                 !repair.Description.Contains("Test Musket");
+            bool itemPresentationExact;
+            string itemPresentation = ObserveProjectItemPresentation(
+                out itemPresentationExact);
             string observed = "levels=" + progression.LevelEntries.Length +
                 ";visible=" + visible + ";hidden=" + hidden +
                 ";topLevelVisible=" + topLevelVisible +
@@ -6611,6 +6616,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";semanticIcons=" + semanticIconCount + ";semanticMap=" + semanticMap +
                 ";rapidPresentation=" + rapidPresentation +
                 ";rapidIsolation=" + rapidKindIsolation +
+                ";itemPresentation=" + itemPresentation +
                 ";actions=" + (reload == null ? "<null>" : reload.Name) + "," +
                     (overhaul == null ? "<null>" : overhaul.Name) + "," +
                     (repair == null ? "<null>" : repair.Name);
@@ -6649,6 +6655,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Reload Firearm, Overhaul Firearm, Repair Firearm; no Test Musket descriptions",
                     observed, productionActions,
                     "Firearm Proficiency AddFacts reachable stable ability blueprints"),
+                Assertion("project-item-player-facing-presentation",
+                    "55 weapons and the Cord have complete clean player text; eleven visible custom enchantments are clean and the policy-only enchantment is blank",
+                    itemPresentation, itemPresentationExact,
+                    "live item/type/enchantment localized strings"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -6657,6 +6667,108 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        private static string ObserveProjectItemPresentation(out bool exact)
+        {
+            BlueprintItemWeapon[] weapons = BlueprintBootstrap
+                .ProductionFirearms.Entries.Select(value => value.Item)
+                .Concat(BlueprintBootstrap.MagicFirearms.Entries.Select(
+                    value => value.Item))
+                .Concat(BlueprintBootstrap.EasternWeapons.Entries.Select(
+                    value => value.Item))
+                .Concat(BlueprintBootstrap.EasternWeapons.Named.Entries.Select(
+                    value => value.Item))
+                .Concat(BlueprintBootstrap.ElvenBranchedSpears.Entries.Select(
+                    value => value.Item))
+                .Concat(BlueprintBootstrap.ElvenBranchedSpears.Named.Entries
+                    .Select(value => value.Item))
+                .Distinct().ToArray();
+            BlueprintItem[] items = weapons.Cast<BlueprintItem>().Concat(
+                new[] { (BlueprintItem)BlueprintBootstrap
+                    .CordOfStubbornResolve }).ToArray();
+            var optionalFlavor = new HashSet<BlueprintItem>(
+                BlueprintBootstrap.MagicFirearms.GenericEntries.Select(
+                    value => (BlueprintItem)value.Item));
+            var issues = new List<string>();
+            BlueprintItemAccess access = BlueprintItemAccess.Resolve();
+            foreach (BlueprintItem item in items)
+            {
+                BlueprintItemSnapshot snapshot = access.Capture(item);
+                string name = item.Name ?? string.Empty;
+                string description = item.Description ?? string.Empty;
+                string flavor = snapshot.Flavor == null ? string.Empty :
+                    snapshot.Flavor.ToString();
+                AppendPlayerTextIssue(issues, item.name, "name", name, true);
+                AppendPlayerTextIssue(issues, item.name, "description",
+                    description, true);
+                AppendPlayerTextIssue(issues, item.name, "flavor", flavor,
+                    !optionalFlavor.Contains(item));
+            }
+            exact = false;
+            return CompleteProjectItemPresentationAudit(weapons, items,
+                issues, out exact);
+        }
+
+        private static string CompleteProjectItemPresentationAudit(
+            BlueprintItemWeapon[] weapons, BlueprintItem[] items,
+            ICollection<string> issues, out bool exact)
+        {
+            FieldInfo field = typeof(BlueprintItemWeapon).GetField(
+                "m_Enchantments", BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic);
+            if (field == null)
+                throw new MissingFieldException(
+                    typeof(BlueprintItemWeapon).FullName, "m_Enchantments");
+            BlueprintWeaponEnchantment[] custom = weapons.SelectMany(value =>
+                    (BlueprintWeaponEnchantment[])field.GetValue(value) ??
+                        Array.Empty<BlueprintWeaponEnchantment>())
+                .Concat(weapons.Select(value => value.Type).Where(value =>
+                        value != null).Distinct().SelectMany(value =>
+                        (value.Enchantments ??
+                            Array.Empty<BlueprintItemEnchantment>())
+                        .OfType<BlueprintWeaponEnchantment>()))
+                .Where(value => value != null && value.name != null &&
+                    value.name.StartsWith("KMG_", StringComparison.Ordinal))
+                .Distinct().ToArray();
+            BlueprintWeaponEnchantment policy = BlueprintBootstrap
+                .EasternWeapons.ProficiencyPolicy;
+            foreach (BlueprintWeaponEnchantment enchantment in custom)
+            {
+                string name = enchantment.Name ?? string.Empty;
+                string description = enchantment.Description ?? string.Empty;
+                bool policyOnly = ReferenceEquals(enchantment, policy);
+                if (policyOnly)
+                {
+                    if (name.Length != 0 || description.Length != 0)
+                        issues.Add(enchantment.name + ":policy-text-visible");
+                    continue;
+                }
+                AppendPlayerTextIssue(issues, enchantment.name, "name", name,
+                    true);
+                AppendPlayerTextIssue(issues, enchantment.name, "description",
+                    description, true);
+            }
+            exact = weapons.Length == 55 && items.Length == 56 &&
+                custom.Length == 12 && custom.Contains(policy) &&
+                issues.Count == 0;
+            return "weapons=" + weapons.Length + ";items=" + items.Length +
+                ";customEnchantments=" + custom.Length + ";issues=" +
+                (issues.Count == 0 ? "<none>" :
+                    string.Join("|", issues.ToArray()));
+        }
+
+        private static void AppendPlayerTextIssue(ICollection<string> issues,
+            string owner, string field, string text, bool required)
+        {
+            if (required && string.IsNullOrWhiteSpace(text))
+            {
+                issues.Add(owner + ":" + field + "=blank");
+                return;
+            }
+            string issue = PlayerFacingTextPolicy.FindIssue(text);
+            if (issue != null)
+                issues.Add(owner + ":" + field + "=" + issue);
         }
 
         private RuntimeTestResult RunNativeWeaponFeatContractObservation()
@@ -9075,7 +9187,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact merchant specs plus BlueprintLoot name, area, item, and quantity contracts"),
                 Assertion("border-sentinel-later-placement",
                     expectedEasternCommerce ?
-                        "Border Sentinel is absent from every vendor and appears exactly once in the fixed Stag Lord Fort chest" :
+                        "Border Sentinel is absent from every vendor and appears exactly once in the fixed Stag Lord Old Camp weapon chest" :
                         "module OFF leaves Border Sentinel absent from vendor and fixed-loot publication",
                     "olegRows=" + borderSentinelOlegRows + ";vendorRows=" +
                         borderSentinelVendorRows + ";lootRows=" +
@@ -9093,7 +9205,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, validRareLoot == 5,
                     "installed live blueprint graph after transactional publication"),
                 Assertion("project-magic-item-distribution",
-                    "30 project-owned uniques on 30 distinct exact fixed targets, zero named vendor rows, and no stale loot copies",
+                    "30 project-owned uniques on 30 distinct exact fixed targets across 29 exact areas, zero named vendor rows, and no stale loot copies",
                     projectMagicDistribution, projectMagicDistributionExact,
                     "all installed BlueprintLoot and BlueprintSharedVendorTable rows by exact item reference"),
                 Assertion("production-critical-profiles",
@@ -9152,39 +9264,52 @@ namespace KingmakerGunslinger.RuntimeTesting
             out bool exact)
         {
             var targets = new Dictionary<BlueprintItem, string>();
-            var targetGroups = new Dictionary<BlueprintItem, string>();
+            var targetNames = new Dictionary<BlueprintItem, string>();
+            var targetAreas = new Dictionary<BlueprintItem, string>();
+            var itemKeys = new Dictionary<BlueprintItem, string>();
             var enabled = new Dictionary<BlueprintItem, bool>();
-            Action<BlueprintItem, string, string, bool> add = (item, target, area, active) =>
+            Action<BlueprintItem, string, string, string, string, bool> add =
+                (item, itemKey, target, targetName, area, active) =>
             {
                 targets.Add(item, target);
-                targetGroups.Add(item, NormalizeProjectAcquisitionArea(area));
+                targetNames.Add(item, targetName);
+                targetAreas.Add(item, area);
+                itemKeys.Add(item, itemKey);
                 enabled.Add(item, active);
             };
             foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
                 RareFirearmCampaignLootBlueprints.TargetSpecs)
                 add(BlueprintBootstrap.MagicFirearms.Require(spec.ItemSymbol).Item,
-                    spec.Guid, spec.AreaName, gunslingerEnabled);
+                    spec.ItemSymbol, spec.Guid, spec.Name, spec.AreaName,
+                    gunslingerEnabled);
             EasternWeaponBlueprintSet eastern = BlueprintBootstrap.EasternWeapons;
             foreach (EasternLootSpec spec in
                 EasternWeaponCampaignBlueprints.LootSpecs)
                 add(eastern.Named.Require(spec.NamedKinds.Single()).Item,
-                    spec.Guid, spec.AreaName, easternEnabled);
+                    "eastern:" + spec.NamedKinds.Single(), spec.Guid,
+                    spec.Name, spec.AreaName, easternEnabled);
             ElvenBranchedSpearBlueprintSet spears =
                 BlueprintBootstrap.ElvenBranchedSpears;
             foreach (ElvenBranchedSpearCampaignBlueprints.LootSpec spec in
                 ElvenBranchedSpearCampaignBlueprints.LootSpecs)
-                add(spears.Named.Require(spec.NamedKind).Item, spec.Guid,
+                add(spears.Named.Require(spec.NamedKind).Item,
+                    "spear:" + spec.NamedKind, spec.Guid, spec.Name,
                     spec.AreaName, spearEnabled);
             add(BlueprintBootstrap.CordOfStubbornResolve,
+                ProjectMagicItemDiscoverabilityPolicy.CordItemKey,
                 CordOfStubbornResolveBlueprints.AcquisitionGuid,
-                "CapitalSquareVillage", cordEnabled);
+                CordOfStubbornResolveBlueprints.AcquisitionName,
+                CordOfStubbornResolveBlueprints.AcquisitionArea, cordEnabled);
 
             BlueprintLoot[] loot = allBlueprints.OfType<BlueprintLoot>().ToArray();
-            var density = targetGroups.Values.GroupBy(value => value)
-                .ToDictionary(group => group.Key, group => group.Count());
-            int maxDensity = density.Values.Max();
-            exact = targets.Count == 30 && targets.Values.Distinct().Count() == 30 &&
-                maxDensity <= 2;
+            ProjectMagicItemLocation[] observations = targets.Select(entry =>
+                new ProjectMagicItemLocation(itemKeys[entry.Key], entry.Value,
+                    targetNames[entry.Key], targetAreas[entry.Key])).ToArray();
+            ProjectMagicItemDiscoverabilityAudit audit =
+                ProjectMagicItemDiscoverabilityPolicy.Audit(observations);
+            IDictionary<string, int> density = audit.CampaignAreaDensity;
+            int maxDensity = density.Count == 0 ? 0 : density.Values.Max();
+            exact = audit.IsAcceptable;
             var records = new List<string>();
             foreach (KeyValuePair<BlueprintItem, string> entry in targets
                 .OrderBy(value => value.Key.name, StringComparer.Ordinal))
@@ -9209,28 +9334,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     vendorRows == 0;
                 exact = exact && itemExact;
                 records.Add(entry.Key.name + ":" + entry.Key.AssetGuid +
-                    "=>" + entry.Value + ";active=" + active + ";loot=" +
+                    "=>" + entry.Value + ":" + targetNames[entry.Key] + ":" +
+                    targetAreas[entry.Key] + ";active=" + active + ";loot=" +
                     allLootRows + ";target=" + targetRows + ";vendor=" +
                     vendorRows);
             }
             return "items=" + targets.Count + ";targets=" +
-                targets.Values.Distinct().Count() + ";maxAreaDensity=" +
-                maxDensity + ";density=" + string.Join(",", density.OrderBy(value =>
+                targets.Values.Distinct().Count() + ";exactAreas=" +
+                audit.ExactAreaDensity.Count + ";campaignAreas=" +
+                density.Count + ";maxAreaDensity=" + maxDensity +
+                ";policy=" + (audit.IsAcceptable ? "PASS" :
+                    string.Join("|", audit.Issues)) + ";density=" +
+                string.Join(",", density.OrderBy(value =>
                     value.Key).Select(value => value.Key + "=" + value.Value).ToArray()) + ";" +
                 string.Join(" | ", records.ToArray());
-        }
-
-        private static string NormalizeProjectAcquisitionArea(string area)
-        {
-            if (area.StartsWith("TrollLair", StringComparison.Ordinal)) return "TrollLair";
-            if (area.StartsWith("Silverstep", StringComparison.Ordinal)) return "Silverstep";
-            if (area.StartsWith("Varnhold", StringComparison.Ordinal)) return "Varnhold";
-            if (area.StartsWith("ArmagsTomb", StringComparison.Ordinal)) return "ArmagsTomb";
-            if (area.StartsWith("Vordakai", StringComparison.Ordinal)) return "VordakaiTomb";
-            if (area.StartsWith("IrovettiPalace", StringComparison.Ordinal)) return "IrovettiPalace";
-            if (area.StartsWith("HouseAtTheEdgeOfTime", StringComparison.Ordinal)) return "HouseAtTheEdgeOfTime";
-            if (area.StartsWith("FinalDungeon", StringComparison.Ordinal)) return "FinalDungeon";
-            return area;
         }
 
         private RuntimeTestResult RunRareFirearmBlueprintContracts()
@@ -11723,6 +11840,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cotwArchetypes.Select(value => value.AssetGuid).Distinct(
                     StringComparer.Ordinal).Count() == cotwArchetypes.Length &&
                 cotwArchetypes.Distinct().Count() == cotwArchetypes.Length;
+            int brownFurIndex = !brownFurContractCompatible ? -1 :
+                Array.FindIndex(cotwArchetypes, value =>
+                    ReferenceEquals(value, brownFurBlueprints.Archetype));
+            int firstCombinedArchetypeIndex = !brownFurContractCompatible ? -1 :
+                Array.FindIndex(cotwArchetypes, value => value != null &&
+                    BrownFurArchetypeOrdering.IsKnownCombinedArchetype(
+                        value.AssetGuid));
+            int knownCombinedArchetypes = !brownFurContractCompatible ? 0 :
+                cotwArchetypes.Count(value => value != null &&
+                    BrownFurArchetypeOrdering.IsKnownCombinedArchetype(
+                        value.AssetGuid));
+            bool brownFurOrderingExact = !expectedBrownFurTransmuter
+                ? brownFurIndex < 0
+                : brownFurIndex >= 0 &&
+                    (firstCombinedArchetypeIndex < 0 ||
+                     brownFurIndex < firstCombinedArchetypeIndex);
             IReadOnlyList<string> brownFurPublicationEvidence =
                 BrownFurOptionalExtensionCoordinator.PublicationEvidence;
             int brownFurExpectedBefore = foreignCotwArchetypes;
@@ -11761,6 +11894,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             int cordRows = (cordLoot.Items ?? Array.Empty<LootEntry>()).Count(
                 value => value != null && ReferenceEquals(value.Item,
                     BlueprintBootstrap.CordOfStubbornResolve) && value.Count == 1);
+            BlueprintLoot legacyCordLoot = BlueprintLibraryLookup
+                .RequireExact<BlueprintLoot>(BlueprintBootstrap.Library,
+                    CordOfStubbornResolveBlueprints.LegacyAcquisitionGuid,
+                    "retired Cord campaign loot");
+            int legacyCordRows = (legacyCordLoot.Items ??
+                Array.Empty<LootEntry>()).Count(value => value != null &&
+                    ReferenceEquals(value.Item,
+                        BlueprintBootstrap.CordOfStubbornResolve));
             int paperRows = (smith.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
                     CapitalVendorBlueprints.ReadItem(value),
@@ -12103,12 +12244,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 brownFurSelectorReferences + "/selectorGuid:" +
                 brownFurGuidReferences + "/foreign:" +
                 foreignCotwArchetypes + "/unique:" +
-                cotwArchetypesUnique + "/transaction:" +
+                cotwArchetypesUnique + "/index:" + brownFurIndex +
+                "/firstCombined:" + firstCombinedArchetypeIndex +
+                "/knownCombined:" + knownCombinedArchetypes +
+                "/transaction:" +
                 string.Join("|", brownFurPublicationEvidence.ToArray()) +
                 ";registered=" +
                 BlueprintBootstrap.RegisteredBlueprintCount + ";class=" + classCount +
                 ";acadFeatures=" + acadFeatures + ";acadAll=" + acadAll +
-                ";cordRows=" + cordRows + ";paperRows=" + paperRows +
+                ";cordRows=" + cordRows + ";legacyCordRows=" +
+                legacyCordRows + ";paperRows=" + paperRows +
                 ";basicFirearm=" + basicFirearmFeatures + "/" + basicFirearmAll +
                 ";fighterFirearm=" + fighterFirearmFeatures + "/" + fighterFirearmAll +
                 ";bodyguardIdentities=" + bodyguardSet.Count +
@@ -12188,12 +12333,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         legacyFirearmCompatibility,
                     "all live feature selections plus exact legacy AddFacts contract"),
                 Assertion("feature-module-acadamae-publication",
-                    expectedAcadamae ? "feat arrays and Cord stock singular" :
-                        "feat arrays and Cord stock absent",
+                    expectedAcadamae ?
+                        "feat arrays and Cord fixed loot singular" :
+                        "feat arrays and Cord fixed loot absent",
                     observed, acadFeatures == (expectedAcadamae ? 1 : 0) &&
                         acadAll == (expectedAcadamae ? 1 : 0) &&
                         cordRows == (expectedAcadamae ? 1 : 0) &&
-                        cordVendorRows == 0,
+                        legacyCordRows == 0 && cordVendorRows == 0,
                     "basic feat selection, exact fixed loot, and capital exclusion"),
                 Assertion("feature-module-bodyguard-publication-gate",
                     expectedBodyguardFeats ?
@@ -12285,7 +12431,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("feature-module-brown-fur-publication-gate",
                     expectedBrownFurTransmuter ?
                         BrownFurIdentityCatalog.IdentityCount +
-                        " identities; available and published; exactly one CotW selector reference; all foreign archetypes preserved" :
+                        " identities; available and published exactly once before the installed combined archetypes; all foreign archetypes preserved" :
                         BrownFurIdentityCatalog.IdentityCount +
                         " identities; available and not published; zero CotW selector references; all foreign archetypes preserved",
                     observed,
@@ -12298,6 +12444,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     brownFurGuidReferences ==
                         (expectedBrownFurTransmuter ? 1 : 0) &&
                     foreignCotwArchetypes >= 6 && cotwArchetypesUnique &&
+                    brownFurOrderingExact &&
                     (expectedBrownFurTransmuter ?
                         brownFurPublicationEvidence.Any(value => value.Contains(
                             "transaction;action=committed")) &&
@@ -19692,12 +19839,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintBootstrap.Library,
                 CordOfStubbornResolveBlueprints.AcquisitionGuid,
                 "Cord fixed campaign loot");
+            BlueprintLoot legacy = BlueprintLibraryLookup.RequireExact<BlueprintLoot>(
+                BlueprintBootstrap.Library,
+                CordOfStubbornResolveBlueprints.LegacyAcquisitionGuid,
+                "retired Cord campaign loot");
             LootEntry[] lootRows = (target.Items ?? Array.Empty<LootEntry>())
+                .Where(value => value != null && ReferenceEquals(value.Item,
+                    cord)).ToArray();
+            LootEntry[] legacyRows = (legacy.Items ?? Array.Empty<LootEntry>())
                 .Where(value => value != null && ReferenceEquals(value.Item,
                     cord)).ToArray();
             bool rowsExact = rows.Length == 0 && (enabled ?
                 lootRows.Length == 1 && lootRows[0].Count == 1 :
-                lootRows.Length == 0);
+                lootRows.Length == 0) && legacyRows.Length == 0;
             bool metadataExact = cord.AssetGuid ==
                     "c4b804d9ebf941b4842b0a461a2b6b6d" &&
                 cord.Cost == 15000 && Math.Abs(cord.Weight - 1f) < 0.001f;
@@ -19706,10 +19860,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal) && target.Area != null &&
                 string.Equals(target.Area.name,
                     CordOfStubbornResolveBlueprints.AcquisitionArea,
-                    StringComparison.Ordinal);
+                    StringComparison.Ordinal) &&
+                string.Equals(legacy.name,
+                    CordOfStubbornResolveBlueprints.LegacyAcquisitionName,
+                    StringComparison.Ordinal) && legacy.Area != null &&
+                string.Equals(legacy.Area.name,
+                    CordOfStubbornResolveBlueprints.LegacyAcquisitionArea,
+                    StringComparison.Ordinal) && legacyRows.Length == 0;
             string observed = "active=" + enabled + ";rows=" + rows.Length +
                 ";lootRows=" + lootRows.Length + ";lootCount=" +
                 (lootRows.Length == 1 ? lootRows[0].Count : -1) +
+                ";legacyRows=" + legacyRows.Length +
                 ";cost=" + cord.Cost + ";weight=" + cord.Weight +
                 ";target=" + target.name + ":" + target.AssetGuid +
                 ";area=" + (target.Area == null ? "<none>" :
@@ -19725,7 +19886,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact Cord GUID, 15000 gp, and 1 lb.", observed,
                     metadataExact, "registered BlueprintItemEquipmentBelt"),
                 Assertion("cord-fixed-loot-target",
-                    "exact CapitalSquareVillage fixed container", observed,
+                    "exact persistent capital inn chest and zero rows in the retired capital-square container", observed,
                     targetExact, "exact BlueprintLoot GUID/name/area"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,

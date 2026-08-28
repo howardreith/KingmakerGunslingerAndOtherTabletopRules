@@ -104,10 +104,8 @@ namespace KingmakerGunslinger.Blueprints
                                 BlueprintWeaponEnchantment>();
                         value.name =
                             "KMG_EasternWeapons_ProficiencyPolicyEnchantment";
-                        ConfigureEnchantmentText(value,
-                            "Eastern Weapon Proficiency Policy",
-                            "Applies native-style proficiency rules for Eastern weapon categories.",
-                            0);
+                        ConfigureEnchantmentText(value, string.Empty,
+                            string.Empty, 0);
                         EasternWeaponProficiencyPenaltyComponent component =
                             EasternWeaponProficiencyPenaltyComponent.Create();
                         component.name =
@@ -317,7 +315,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Finesse Training (Wakizashi)"),
                 LocalizationService.Create(
                     "KMG.EasternWeapons.Wakizashi.FinesseTraining.Description",
-                    "Apply the native Finesse Training damage-stat replacement to Wakizashi."),
+                    "Use Dexterity instead of Strength for damage rolls with Wakizashis."),
                 nativeIcon);
         }
 
@@ -554,10 +552,10 @@ namespace KingmakerGunslinger.Blueprints
             CustomWeaponCategoryDefinition definition)
         {
             if (definition.Key == "wakizashi")
-                return "An exotic light melee weapon that deals piercing or slashing damage and works with native finesse rules.";
+                return "An exotic light melee weapon that deals piercing or slashing damage and can be used with Weapon Finesse.";
             if (definition.Key == "katana")
-                return "An exotic one-handed sword that may be wielded in two hands; martial proficiency is sufficient only while it is actually wielded in two hands.";
-            return "A martial two-handed sword that deals slashing or piercing damage. It is not a reach weapon and has no brace behavior.";
+                return "An exotic one-handed sword that can be wielded in two hands. Martial Weapon Proficiency is sufficient only when it is wielded in two hands.";
+            return "A martial two-handed sword that deals slashing or piercing damage. It is neither a reach weapon nor braced against charges.";
         }
 
         private static FieldInfo Require(string name)
@@ -591,9 +589,9 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintItemAccess.Resolve().ConfigureWeapon(item,
                 LocalizationService.Create(spec.Symbol + ".Name", spec.DisplayName),
                 LocalizationService.Create(spec.Symbol + ".Description",
-                    "This " + quality + material +
+                    "This is a " + quality + material +
                     definition.Presentation.DisplayName.ToLowerInvariant() +
-                    " uses the family's stable weapon category."),
+                    "."),
                 LocalizationService.Create(spec.Symbol + ".Flavor",
                     "A carefully proportioned curved blade imported through specialist trade."),
                 spec.Cost, definition.WeightPounds);

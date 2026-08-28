@@ -1,9 +1,14 @@
 # Kingmaker Gunslinger
 
-Version `0.0.104` lets a genuine summon created by a Standard- or Swift-action
+Version `0.0.105` moves Brown-Fur Transmuter ahead of installed combined
+Arcanist archetypes, removes implementation language from project weapon and
+Cord tooltips, and redistributes all 30 project-added magic items across 30
+fixed containers in 29 persistent campaign areas. Cord of Stubborn Resolve is
+now in an ordinary chest inside the capital inn. It retains the 0.0.104
+correction that lets a genuine summon created by a Standard- or Swift-action
 spell act in its lawful current round without changing the caster's remaining
-actions, ordinary Full-Round summons, later rounds, or RTwP. It also retains
-the 0.0.103 repairs that make Overhaul Firearm commit at its ordinary
+actions, ordinary Full-Round summons, later rounds, or RTwP, and the 0.0.103
+repairs that make Overhaul Firearm commit at its ordinary
 out-of-combat delivery boundary instead of waiting one game minute and bound Expanded
 Summoning's largest native action-bar variant menus to the active canvas with
 scrolling when needed, and applies the canonical Fatigued-to-Exhausted rule

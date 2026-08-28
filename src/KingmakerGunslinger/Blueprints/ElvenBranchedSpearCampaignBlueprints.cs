@@ -51,17 +51,17 @@ namespace KingmakerGunslinger.Blueprints
         private static readonly LootSpec[] Loot =
         {
             new LootSpec(NamedSpearKind.Boughkeeper,
-                "19c1920cf93076249b5c4f29488851f9",
-                "Forest_PriestGhost_TreasureStoneLoot", "BigNarlmarches"),
+                "40db074f21260344b95d0e9919c8e682",
+                "Forest_PoorLoot01", "CapitalRegionLair01"),
             new LootSpec(NamedSpearKind.Thornstep,
-                "364711342543d814eb95aa98a4c65e58",
-                "Forest_cache_1", "LonelyBarrow"),
+                "3322c56f38031eb4983b6f87c95081b7",
+                "Forest_GoodLoot01", "NorthNarlmarchesRegionLair01"),
             new LootSpec(NamedSpearKind.MoonlitFork,
-                "8a07f25d4083eb84c943bf95684f8e16",
-                "Forest_Loot01", "CandlemereTower"),
+                "2aa7aa5c2df96b143bd2fc62a8547c9c",
+                "Forest_TH_GreatclubBarbarianMagic", "MonsterLairHodag"),
             new LootSpec(NamedSpearKind.VipersReach,
-                "53d54ca50fccb8c4d9242904eba04d14",
-                "Forest_cache_1561", "VordakaiTombLevel2"),
+                "8a850f7758cb77b498621a307445bb1e",
+                "Forest_GoodLoot_withWeaponOrArmor", "LoneCyclopCave"),
             new LootSpec(NamedSpearKind.BriarCrownedSpear,
                 "decb6060ab534294eb6d35510e45d317",
                 "RichHuman_NotHiddenLockedGood", "BlakemoorHideout"),
@@ -85,7 +85,15 @@ namespace KingmakerGunslinger.Blueprints
             new CleanupSpec("1cf548dcd2a49a94d82be1df8efd26ef",
                 "Forest_cache_1_515", "LonelyBarrow"),
             new CleanupSpec("2179d0c774e6c034c83529fad2ba785c",
-                "RichHuman_Armory_ChestHuge_Outline (3)", "IrovettiPalace")
+                "RichHuman_Armory_ChestHuge_Outline (3)", "IrovettiPalace"),
+            new CleanupSpec("19c1920cf93076249b5c4f29488851f9",
+                "Forest_PriestGhost_TreasureStoneLoot", "BigNarlmarches"),
+            new CleanupSpec("364711342543d814eb95aa98a4c65e58",
+                "Forest_cache_1", "LonelyBarrow"),
+            new CleanupSpec("8a07f25d4083eb84c943bf95684f8e16",
+                "Forest_Loot01", "CandlemereTower"),
+            new CleanupSpec("53d54ca50fccb8c4d9242904eba04d14",
+                "Forest_cache_1561", "VordakaiTombLevel2")
         };
 
         internal static VendorSpec[] VendorSpecs { get { return Vendors.ToArray(); } }

@@ -311,7 +311,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Finesse Training (Elven Branched Spear)"),
                 LocalizationService.Create(
                     "KMG.ElvenBranchedSpear.FinesseTraining.Description",
-                    "Apply the native Finesse Training damage-stat replacement to Elven Branched Spears."),
+                    "Use Dexterity instead of Strength for damage rolls with Elven Branched Spears."),
                 nativeIcon);
         }
 

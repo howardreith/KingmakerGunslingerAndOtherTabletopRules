@@ -140,6 +140,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurArchetypePlan.cs"><Link>BrownFur\BrownFurArchetypePlan.cs</Link></Compile>
     <Compile Include="BrownFurPublicationTransactionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurPublicationTransaction.cs"><Link>BrownFur\BrownFurPublicationTransaction.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurArchetypeOrdering.cs"><Link>BrownFur\BrownFurArchetypeOrdering.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurAbilityScore.cs"><Link>BrownFur\BrownFurAbilityScore.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurIdentityCatalog.cs"><Link>BrownFur\BrownFurIdentityCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurCastRequest.cs"><Link>BrownFur\BrownFurCastRequest.cs</Link></Compile>
@@ -161,6 +162,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurBonusAdapterPlan.cs"><Link>BrownFur\BrownFurBonusAdapterPlan.cs</Link></Compile>
     <Compile Include="ShieldOtherPolicyTests.cs" />
     <Compile Include="AcadamaeCordPolicyTests.cs" />
+    <Compile Include="PlayerFacingPresentationAndDiscoverabilityTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs"><Link>Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Presentation\PlayerFacingTextPolicy.cs"><Link>Presentation\PlayerFacingTextPolicy.cs</Link></Compile>
     <Compile Include="CanonicalFatiguePolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Fatigue\CanonicalFatigueStatePolicy.cs"><Link>Fatigue\CanonicalFatigueStatePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acadamae\AcadamaeCastingTime.cs"><Link>Acadamae\AcadamaeCastingTime.cs</Link></Compile>
