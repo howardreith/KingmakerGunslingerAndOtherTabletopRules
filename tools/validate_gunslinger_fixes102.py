@@ -109,7 +109,7 @@ def validate(root: Path) -> None:
         "tests/KingmakerGunslinger.DomainTests/Program.cs"),
         "mission.starter-transition-matrix",
         "mission.vendor-six-row-transaction",
-        "mission.combat-log-no-warning-overlay",
+        "mission.native-warning-route",
         "mission.acadamae-effective-mode-matrix")
     if runner.count('Case("mission.') != MISSION_FOCUSED_TEST_COUNT:
         raise AssertionError(

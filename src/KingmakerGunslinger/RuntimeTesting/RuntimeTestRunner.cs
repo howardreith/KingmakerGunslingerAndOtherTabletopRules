@@ -7943,7 +7943,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 noWorldTimeMutation = false, noLingeringDelivery = false,
                 changedContextAtomic = false, repeatedIdempotent = false,
                 combatBlocked = false, exactCompletion = false,
-                repairCompletion = false, diagnosticBreak = false,
+                repairCompletion = false, repairAvailable = false,
+                repairDeliveryCompleted = false,
+                repairNoAmmunitionRefund = false,
+                diagnosticBreak = false,
                 diagnosticWreck = false, diagnosticRepeatRejected = false,
                 diagnosticOverhaulRecognized = false,
                 selectionRestored = false, partyRestored = false,
@@ -7951,10 +7954,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             TimeSpan gameTimeBefore = default(TimeSpan);
             TimeSpan gameTimeAfter = default(TimeSpan);
             int staticBefore = -1, staticAfterOverhaul = -1,
-                staticAfterRepair = -1;
+                staticAfterRepair = -1, repairRoundsBefore = -1,
+                repairRoundsAfter = -1;
+            string repairAmmunitionBefore = null,
+                repairAmmunitionAfter = null;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
             string overhaulLog = null, repairLog = null,
-                diagnosticBreakResult = null, diagnosticWreckResult = null;
+                diagnosticBreakResult = null, diagnosticWreckResult = null,
+                repairAvailabilityReason = null;
             try
             {
                 object ignored;
@@ -8170,15 +8177,89 @@ namespace KingmakerGunslinger.RuntimeTesting
                 staticAfterOverhaul = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 overhaulLog = FirearmConditionCombatLog.LastMessage;
-                FirearmRepairRuntimeResult repaired =
-                    RepairTestMusketRuntime.Execute(
+
+                AmmunitionId loadedIdentity =
+                    FirearmStateTokenCatalog.DiagnosticLeadBall;
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1, loadedIdentity,
+                    FirearmCondition.Broken));
+                FirearmItemStateSnapshot loadedBefore =
+                    FirearmRuntimeState.Service.GetOrCreate(weapon);
+                repairRoundsBefore =
+                    loadedBefore.Repository.State.LoadedRounds;
+                repairAmmunitionBefore =
+                    loadedBefore.Repository.State.LoadedAmmunition == null
+                        ? "<null>"
+                        : loadedBefore.Repository.State.LoadedAmmunition
+                            .ToString();
+                int powderAtRepair = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                int leadAtRepair = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.LeadBall);
+                FirearmRepairAvailability availability =
+                    RepairTestMusketRuntime.Evaluate(
                         unit.Descriptor, magicPistol, repairKit);
-                repairCompletion = repaired.Succeeded &&
-                    repaired.BeforeFirearm.Repository.State.Condition ==
+                repairAvailabilityReason = availability.Reason;
+
+                BlueprintAbility repairBlueprint =
+                    BlueprintBootstrap.RepairTestMusketAbility;
+                RepairTestMusketAbilityLogic repairLogic =
+                    repairBlueprint.ComponentsArray.OfType<
+                        RepairTestMusketAbilityLogic>().Single();
+                unit.Descriptor.AddFact(repairBlueprint);
+                Kingmaker.UnitLogic.Abilities.Ability repairGranted =
+                    unit.Descriptor.Abilities.GetAbility(repairBlueprint);
+                if (repairGranted == null)
+                    throw new InvalidOperationException(
+                        "Kingmaker did not retain the granted Repair Firearm fact.");
+                var repairData =
+                    new Kingmaker.UnitLogic.Abilities.AbilityData(
+                        repairGranted);
+                var repairContext =
+                    new Kingmaker.UnitLogic.Abilities
+                        .AbilityExecutionContext(
+                            repairData,
+                            new Kingmaker.UnitLogic.Abilities.AbilityParams(),
+                            new TargetWrapper(unit), null);
+                repairAvailable = availability.IsAvailable &&
+                    repairLogic.IsAvailableFor(repairData);
+                delivery = repairLogic.Deliver(
+                    repairContext, new TargetWrapper(unit));
+                bool repairTick = delivery.MoveNext();
+                AbilityDeliveryTarget repairTarget = delivery.Current;
+                bool repairEnded = !delivery.MoveNext();
+                delivery.Dispose();
+                delivery = null;
+                repairDeliveryCompleted = repairTick &&
+                    repairTarget != null && repairEnded;
+                FirearmItemStateSnapshot repaired =
+                    FirearmRuntimeState.Service.GetOrCreate(weapon);
+                repairRoundsAfter =
+                    repaired.Repository.State.LoadedRounds;
+                repairAmmunitionAfter =
+                    repaired.Repository.State.LoadedAmmunition == null
+                        ? "<null>"
+                        : repaired.Repository.State.LoadedAmmunition
+                            .ToString();
+                repairNoAmmunitionRefund =
+                    player.Inventory.Count(BlueprintBootstrap
+                        .BasicAmmunition.BlackPowder) == powderAtRepair &&
+                    player.Inventory.Count(BlueprintBootstrap
+                        .BasicAmmunition.LeadBall) == leadAtRepair;
+                repairCompletion = repairAvailable &&
+                    repairDeliveryCompleted &&
+                    loadedBefore.Repository.State.Condition ==
                         FirearmCondition.Broken &&
-                    repaired.AfterFirearm.Repository.State.Condition ==
+                    repairRoundsBefore == 1 &&
+                    loadedBefore.Repository.State.LoadedAmmunition != null &&
+                    loadedBefore.Repository.State.LoadedAmmunition.Equals(
+                        loadedIdentity) &&
+                    repaired.Repository.State.Condition ==
                         FirearmCondition.Normal &&
-                    player.Inventory.Count(repairKit) == kitsAtStart - 1;
+                    repairRoundsAfter == 0 &&
+                    repaired.Repository.State.LoadedAmmunition == null &&
+                    player.Inventory.Count(repairKit) == kitsAtStart - 1 &&
+                    repairNoAmmunitionRefund;
                 staticAfterRepair = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
@@ -8246,6 +8327,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";diagnosticWreckResult=" + diagnosticWreckResult +
                 ";selectionRestored=" + selectionRestored +
                 ";partyRestored=" + partyRestored +
+                ";repairAvailable=" + repairAvailable +
+                ";repairAvailabilityReason=" + repairAvailabilityReason +
+                ";repairDelivery=" + repairDeliveryCompleted +
+                ";repairRounds=" + repairRoundsBefore + "->" +
+                repairRoundsAfter + ";repairAmmo=" +
+                repairAmmunitionBefore + "->" +
+                repairAmmunitionAfter + ";repairNoRefund=" +
+                repairNoAmmunitionRefund +
                 ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
                 ";static=" + staticBefore + "," + staticAfterOverhaul + "," +
                 staticAfterRepair +
@@ -8298,8 +8387,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("overhaul-atomic-completion", "same item Wrecked->Broken; one kit; no ammunition",
                     observed, promptCompletion,
                     "production ability plus existing exact-item atomic transaction"),
+                Assertion("loaded-repair-ability-available",
+                    "the production Repair Firearm ability is available for one exact equipped loaded Broken firearm and one kit",
+                    observed, repairAvailable,
+                    "production IAbilityAvailabilityProvider and exact runtime item state"),
+                Assertion("loaded-repair-atomic-completion",
+                    "same item Broken with one loaded round -> Normal with zero rounds and no ammunition identity; one kit",
+                    observed, repairCompletion,
+                    "actual RepairTestMusketAbilityLogic delivery and exact item-owned repository"),
+                Assertion("loaded-repair-no-ammunition-refund",
+                    "destroyed loaded ammunition does not increase shared powder or lead-ball inventory",
+                    observed, repairNoAmmunitionRefund,
+                    "live player inventory counts sampled around committed delivery"),
                 Assertion("magic-static-maintenance-lifecycle",
-                    "The Last Word retains +5, Reliable, and Seeking through Overhaul and Repair",
+                    "The Last Word retains +5, Reliable, and Seeking through Overhaul and loaded Repair",
                     observed, staticBefore == 3 && staticAfterOverhaul == 3 &&
                         staticAfterRepair == 3,
                     "exact runtime static-enchantment identities across state-token replacement"),
@@ -8310,7 +8411,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ": Broken (Overhaul Firearm)."),
                     "native BattleLogView Combat-channel API; save-free sink failure is contained"),
                 Assertion("repair-condition-combat-log",
-                    "completed Broken -> Normal consumes second kit and logs once",
+                    "completed loaded Broken -> empty Normal consumes one repair kit and logs once",
                     observed,
                     repairCompletion &&
                     FirearmConditionCombatLog.Attempts == conditionLogsBefore + 3 &&
@@ -9647,22 +9748,92 @@ namespace KingmakerGunslinger.RuntimeTesting
                 control = new ItemEntityWeapon(
                     BlueprintBootstrap.ProductionFirearms.Musket.Item);
 
+                long topAttemptsBefore =
+                    FirearmConditionTopNotification.Attempts;
+                long topPublishedBefore =
+                    FirearmConditionTopNotification.Published;
+                long topFaultsBefore =
+                    FirearmConditionTopNotification.Faults;
+                long combatLogsBefore =
+                    FirearmConditionCombatLog.Attempts;
+
                 RuleAttackRoll pistolOne = TriggerReliableMatrixAttack(
                     attacker, target, pistol, 1, FirearmCondition.Normal);
                 FirearmState pistolAfter = FirearmRuntimeState.Service
                     .GetOrCreate(pistol).Repository.State;
+                long topAfterPistol =
+                    FirearmConditionTopNotification.Attempts;
                 RuleAttackRoll musketOne = TriggerReliableMatrixAttack(
                     attacker, target, musket, 1, FirearmCondition.Normal);
-                FirearmState musketOneAfter = FirearmRuntimeState.Service
-                    .GetOrCreate(musket).Repository.State;
+                FirearmItemStateSnapshot musketOneSnapshot =
+                    FirearmRuntimeState.Service.GetOrCreate(musket);
+                FirearmState musketOneAfter =
+                    musketOneSnapshot.Repository.State;
+                long topAfterMusketOne =
+                    FirearmConditionTopNotification.Attempts;
+                string brokenTopMessage =
+                    FirearmConditionTopNotification.LastMessage;
                 RuleAttackRoll musketTwo = TriggerReliableMatrixAttack(
                     attacker, target, musket, 2, FirearmCondition.Normal);
                 FirearmState musketTwoAfter = FirearmRuntimeState.Service
                     .GetOrCreate(musket).Repository.State;
+                long topAfterMusketTwo =
+                    FirearmConditionTopNotification.Attempts;
                 RuleAttackRoll controlTwo = TriggerReliableMatrixAttack(
                     attacker, target, control, 2, FirearmCondition.Normal);
                 FirearmState controlAfter = FirearmRuntimeState.Service
                     .GetOrCreate(control).Repository.State;
+                long topAfterControlTwo =
+                    FirearmConditionTopNotification.Attempts;
+                RuleAttackRoll controlOneBroken =
+                    TriggerReliableMatrixAttack(attacker, target, control, 1,
+                        FirearmCondition.Broken);
+                FirearmItemStateSnapshot controlWreckedSnapshot =
+                    FirearmRuntimeState.Service.GetOrCreate(control);
+                FirearmState controlWrecked =
+                    controlWreckedSnapshot.Repository.State;
+                long topAfterWreck =
+                    FirearmConditionTopNotification.Attempts;
+                string wreckedTopMessage =
+                    FirearmConditionTopNotification.LastMessage;
+                string wreckedCombatLog =
+                    FirearmConditionCombatLog.LastMessage;
+                long combatLogsBeforeUnchanged =
+                    FirearmConditionCombatLog.Attempts;
+                bool unchangedPublished =
+                    FirearmConditionTopNotification
+                        .PublishAfterCommittedDegradation(
+                            attacker.CharacterName,
+                            controlWreckedSnapshot.ItemDisplayName,
+                            FirearmCondition.Broken,
+                            FirearmCondition.Broken,
+                            "runtime diagnostic unchanged probe");
+                long topAfterUnchanged =
+                    FirearmConditionTopNotification.Attempts;
+                long combatLogsAfterUnchanged =
+                    FirearmConditionCombatLog.Attempts;
+
+                string expectedBrokenMessage;
+                FirearmConditionNotificationDispatcher.TryFormat(
+                    attacker.CharacterName,
+                    musketOneSnapshot.ItemDisplayName,
+                    FirearmCondition.Normal, FirearmCondition.Broken,
+                    out expectedBrokenMessage);
+                string expectedWreckedMessage;
+                FirearmConditionNotificationDispatcher.TryFormat(
+                    attacker.CharacterName,
+                    controlWreckedSnapshot.ItemDisplayName,
+                    FirearmCondition.Broken, FirearmCondition.Wrecked,
+                    out expectedWreckedMessage);
+                MethodInfo nativeWarningApi =
+                    typeof(Kingmaker.UI.Common.UIUtility).GetMethod(
+                        "SendWarning",
+                        BindingFlags.Public | BindingFlags.Static, null,
+                        new[] { typeof(string) }, null);
+                Type nativeWarningHandler =
+                    typeof(Kingmaker.UI.Common.UIUtility).Assembly.GetType(
+                        FirearmConditionTopNotification.NativeHandler,
+                        false, false);
 
                 int trainedBrokenPistol = EffectiveFirearmMisfirePolicy.Evaluate(
                     1, FirearmCondition.Broken, true, pistol);
@@ -9677,9 +9848,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ":" + musketOneAfter.Condition + ";musket2=" +
                     musketTwo.Result + ":" + musketTwoAfter.Condition +
                     ";control2=" + controlTwo.Result + ":" +
-                    controlAfter.Condition + ";broken=" +
+                    controlAfter.Condition + ";controlBroken1=" +
+                    controlOneBroken.Result + ":" +
+                    controlWrecked.Condition + ";unchangedPublished=" +
+                    unchangedPublished + ";broken=" +
                     trainedBrokenPistol + "," + untrainedBrokenPistol + "," +
                     trainedBrokenMusket + "," + untrainedBrokenMusket +
+                    ";topAttempts=" + topAttemptsBefore + "," +
+                    topAfterPistol + "," + topAfterMusketOne + "," +
+                    topAfterMusketTwo + "," + topAfterControlTwo + "," +
+                    topAfterWreck + "," + topAfterUnchanged +
+                    ";topPublished=" + topPublishedBefore + "->" +
+                    FirearmConditionTopNotification.Published +
+                    ";topFaults=" + topFaultsBefore + "->" +
+                    FirearmConditionTopNotification.Faults +
+                    ";brokenTop=" + brokenTopMessage +
+                    ";expectedBrokenTop=" + expectedBrokenMessage +
+                    ";wreckedTop=" + wreckedTopMessage +
+                    ";expectedWreckedTop=" + expectedWreckedMessage +
+                    ";combatLogs=" + combatLogsBefore + "->" +
+                    FirearmConditionCombatLog.Attempts +
+                    ";wreckedCombatLog=" + wreckedCombatLog +
                     ";diagnostics=" + FirearmMisfireRuntime.Describe();
                 assertions.Add(Assertion("reliable-zero-natural-one",
                     "Reliable Pistol threshold 0: natural 1 misses without misfire or condition damage",
@@ -9695,6 +9884,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "mundane Musket threshold 2: roll 2 misfires",
                     observed, controlAfter.Condition == FirearmCondition.Broken,
                     "non-Reliable exact-item control"));
+                assertions.Add(Assertion(
+                    "normal-to-broken-top-notification",
+                    expectedBrokenMessage,
+                    brokenTopMessage,
+                    musketOneAfter.Condition == FirearmCondition.Broken &&
+                        topAfterMusketOne == topAfterPistol + 1 &&
+                        string.Equals(brokenTopMessage,
+                            expectedBrokenMessage, StringComparison.Ordinal),
+                    "committed exact-item misfire plus native notification adapter counters"));
+                assertions.Add(Assertion(
+                    "broken-to-wrecked-top-notification",
+                    expectedWreckedMessage,
+                    wreckedTopMessage,
+                    controlWrecked.Condition ==
+                        FirearmCondition.Wrecked &&
+                        controlWrecked.IsEmpty &&
+                        topAfterWreck == topAfterControlTwo + 1 &&
+                        string.Equals(wreckedTopMessage,
+                            expectedWreckedMessage,
+                            StringComparison.Ordinal),
+                    "committed exact-item repeated misfire plus native notification adapter counters"));
+                assertions.Add(Assertion(
+                    "avoided-and-unchanged-notifications-silent",
+                    "Reliable Pistol natural 1, ordinary Reliable Musket roll 2, and an unchanged diagnostic boundary add zero notifications",
+                    observed,
+                    topAfterPistol == topAttemptsBefore &&
+                        topAfterMusketTwo == topAfterMusketOne &&
+                        !unchangedPublished &&
+                        topAfterUnchanged == topAfterWreck &&
+                        combatLogsAfterUnchanged ==
+                            combatLogsBeforeUnchanged,
+                    "real native attack rules and post-commit degradation boundary"));
+                assertions.Add(Assertion(
+                    "native-warning-dispatch-lifecycle",
+                    "three successful UIUtility.SendWarning(string) calls; zero faults; WarningsText type present",
+                    observed,
+                    nativeWarningApi != null &&
+                        nativeWarningApi.ReturnType == typeof(void) &&
+                        nativeWarningHandler != null &&
+                        FirearmConditionTopNotification.Attempts ==
+                            topAttemptsBefore + 3 &&
+                        FirearmConditionTopNotification.Published ==
+                            topPublishedBefore + 3 &&
+                        FirearmConditionTopNotification.Faults ==
+                            topFaultsBefore,
+                    FirearmConditionTopNotification.NativeApi + " -> " +
+                        FirearmConditionTopNotification.NativeHandler));
+                assertions.Add(Assertion(
+                    "degradation-combat-log-retained",
+                    "three committed degradation log entries; final Wrecked misfire message retained",
+                    observed,
+                    FirearmConditionCombatLog.Attempts ==
+                        combatLogsBefore + 3 &&
+                        wreckedCombatLog != null &&
+                        wreckedCombatLog.Contains(
+                            ": Wrecked (misfire)."),
+                    "native Combat log attempt counter sampled beside top dispatch"));
                 assertions.Add(Assertion("reliable-broken-training-order",
                     "trained/untrained Broken Pistol 2/4 and Musket 3/5",
                     observed, trainedBrokenPistol == 2 &&
@@ -9712,7 +9958,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmMisfireRuntime.CancelForcedNaturalRoll();
                 if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
                     attacker.Body.PrimaryHand.RemoveItem(false);
-                foreach (ItemEntityWeapon item in new[] { pistol, musket, control })
+                foreach (ItemEntityWeapon item in new[] {
+                    pistol, musket, control })
                     if (item != null) FirearmRuntimeState.Repository.Remove(item);
                 if (target != null) target.Descriptor.State.Immortality.ReleaseAll();
                 if (target != null) target.Dispose();
@@ -12316,8 +12563,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeUrbanBarbarian == expectedUrbanBarbarian &&
                     activeBodyguardFeats == expectedBodyguardFeats,
                     "immutable process snapshot"),
-                Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCount + " identities in every state",
-                    observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime + " identities in the current optional-mod state",
+                    observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "always-loaded identity registry"),
                 Assertion("feature-module-gunslinger-publication",
                     expectedGunslinger ? "class and Paper stock singular" :
@@ -13276,11 +13523,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact final-live Will-o'-Wisp, archon, light-ray, and aura candidates"),
                 Assertion("expanded-summoning-registered-identities",
                     "units=67;abilities=" + expectedKmgAbilities + ";registry=" +
-                        BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                        BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "units=" + kmgUnits + ";abilities=" + kmgAbilities +
                         ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
                     kmgUnits == 67 && kmgAbilities == expectedKmgAbilities &&
-                        BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                        BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "exact final-live KMG blueprint identity scan"),
                 Assertion("expanded-summoning-lantern-archon", "exact",
                     lanternExact ? "exact" : "mismatch", lanternExact,

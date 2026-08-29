@@ -25,6 +25,17 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("martial-performance.identity", MartialPerformanceCompatibilityTests.ExactOptionalIdentityContract),
+            Case("martial-performance.absent", MartialPerformanceCompatibilityTests.AbsentProviderIsInert),
+            Case("martial-performance.wrong-contract", MartialPerformanceCompatibilityTests.WrongProviderContractFailsClosed),
+            Case("martial-performance.rollback", MartialPerformanceCompatibilityTests.RollbackRestoresExactOriginalState),
+            Case("martial-performance.catalog", MartialPerformanceCompatibilityTests.ActiveCatalogIsExactAndOrdered),
+            Case("martial-performance.modules", MartialPerformanceCompatibilityTests.ModuleDisabledCategoriesAreAbsent),
+            Case("martial-performance.idempotence", MartialPerformanceCompatibilityTests.RepeatedPublicationIsIdempotent),
+            Case("martial-performance.proficiency", MartialPerformanceCompatibilityTests.AuthoritativeProficiencyPolicy),
+            Case("martial-performance.preview", MartialPerformanceCompatibilityTests.PreviewUnitProficiencyPathIsNative),
+            Case("martial-performance.effect-shape", MartialPerformanceCompatibilityTests.SelectedEffectMatchesNativeShape),
+            Case("martial-performance.transaction", MartialPerformanceCompatibilityTests.BootstrapAndManifestAreTransactional),
             Case("craft-magic-items.absent", CraftMagicItemsCompatibilityTests.AbsentDependencyIsInert),
             Case("craft-magic-items.contract-supported", CraftMagicItemsCompatibilityTests.ContractProbeAcceptsExactShape),
             Case("craft-magic-items.contract-rejected", CraftMagicItemsCompatibilityTests.ContractProbeRejectsMissingMembers),
@@ -416,7 +427,16 @@ namespace KingmakerGunslinger.DomainTests
             Case("mission.starter-durable-receipt", MissionRegressionTests.StarterReceiptSurvivesItemAbsence),
             Case("mission.combat-log-publication", MissionRegressionTests.CombatLogPublicationAndFailureIsolation),
             Case("mission.combat-log-player-facing", MissionRegressionTests.CombatLogMessagesArePlayerFacing),
-            Case("mission.combat-log-no-warning-overlay", MissionRegressionTests.ProductionAvoidsWarningOverlay),
+            Case("mission.native-warning-route", MissionRegressionTests.ProductionUsesNativeWarningHelperOnly),
+            Case("condition-notification.broken-format", FirearmConditionNotificationTests.BrokenMessageIsExact),
+            Case("condition-notification.wrecked-format", FirearmConditionNotificationTests.WreckedMessageIsExactAndConcise),
+            Case("condition-notification.missing-wielder", FirearmConditionNotificationTests.MissingWielderUsesItemFallback),
+            Case("condition-notification.normal-broken-once", FirearmConditionNotificationTests.NormalToBrokenDispatchesOnce),
+            Case("condition-notification.broken-wrecked-once", FirearmConditionNotificationTests.BrokenToWreckedDispatchesOnce),
+            Case("condition-notification.non-degradation-zero", FirearmConditionNotificationTests.UnchangedAndRecoveryTransitionsDoNotDispatch),
+            Case("condition-notification.combat-before-top", FirearmConditionNotificationTests.CombatLogPrecedesTopNotification),
+            Case("condition-notification.failure-isolated", FirearmConditionNotificationTests.SinkFailureDoesNotUndoCommittedState),
+            Case("condition-notification.production-boundary", FirearmConditionNotificationTests.ProductionBoundaryIsPostCommitAndExclusive),
             Case("archetype-training.thresholds-and-families", ArchetypeFoundationTests.TrainingThresholdsAndFamilies),
             Case("archetype-training.overlap-and-negative-dex", ArchetypeFoundationTests.TrainingOverlapAndNegativeDexterity),
             Case("archetype-reload.fast-musket-matrix", ArchetypeFoundationTests.FastMusketReloadMatrix),
@@ -857,19 +877,22 @@ namespace KingmakerGunslinger.DomainTests
             Case("repair.transaction.success", RepairTransactionSuccess),
             Case("repair.transaction.normal-rejected", RepairTransactionNormalRejected),
             Case("repair.transaction.wrecked-rejected", RepairTransactionWreckedRejected),
-            Case("repair.transaction.loaded-broken-rejected", RepairTransactionLoadedBrokenRejected),
+            Case("repair.transaction.loaded-single-shot-success", RepairTransactionLoadedSingleShotSuccess),
+            Case("repair.transaction.loaded-multi-round-success", RepairTransactionLoadedMultiRoundSuccess),
             Case("repair.transaction.missing-kit", RepairTransactionMissingKit),
             Case("repair.transaction.null-state-store", RepairTransactionNullStateStore),
             Case("repair.transaction.null-inventory", RepairTransactionNullInventory),
             Case("repair.transaction.null-state", RepairTransactionNullState),
             Case("repair.transaction.state-write-failure-restores-kit", RepairTransactionStateWriteFailureRestoresKit),
             Case("repair.transaction.post-state-mutation-failure-restores-both", RepairTransactionPostStateMutationFailureRestoresBoth),
+            Case("repair.transaction.verification-failure-restores-loaded-state", RepairTransactionVerificationFailureRestoresLoadedState),
             Case("repair.transaction.state-rollback-failure-surfaced", RepairTransactionStateRollbackFailureSurfaced),
             Case("repair.transaction.inventory-rollback-failure-surfaced", RepairTransactionInventoryRollbackFailureSurfaced),
             Case("repair.transaction.post-remove-failure-restores-kit", RepairTransactionPostRemoveFailureRestoresKit),
             Case("repair.result.success", RepairResultSuccess),
             Case("repair.result.rejected", RepairResultRejected),
             Case("repair.result.unknown-status", RepairResultUnknownStatus),
+            Case("repair.presentation.loaded-permitted", RepairPlayerFacingTextPermitsLoaded),
             Case("repair.runtime-result.success", RepairRuntimeResultSuccess),
             Case("repair.runtime-result.identity-mismatch", RepairRuntimeResultIdentityMismatch),
             Case("repair.runtime-result.revision-mismatch", RepairRuntimeResultRevisionMismatch),
@@ -1347,7 +1370,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("generic.overhaul-wrecked", GenericOverhaulWrecked),
             Case("generic.overhaul-broken-rejected", GenericOverhaulBrokenRejected),
             Case("generic.repair-broken", GenericRepairBroken),
-            Case("generic.repair-loaded-rejected", GenericRepairLoadedRejected),
+            Case("generic.repair-loaded-available", GenericRepairLoadedAvailable),
             Case("generic.repair-missing-kit", GenericRepairMissingKitRejected),
             Case("generic.unknown-action", GenericUnknownActionRejected),
             Case("reload-profile.ammunition-identity", ReloadProfileAmmunitionIdentity)
@@ -1701,6 +1724,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Quick Clear unavailable guidance is not player-readable.");
             string combatLog = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Firearms/FirearmConditionCombatLog.cs");
+            string degradationFeedback = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Firearms/FirearmConditionTopNotification.cs");
             string misfire = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Misfires/FirearmMisfireRuntime.cs");
             string deadShot = ThirdPlaytestSource(
@@ -1718,9 +1743,10 @@ namespace KingmakerGunslinger.DomainTests
                 !combatLog.Contains("IWarningNotificationUIHandler") &&
                 !combatLog.Contains("HandleWarning") &&
                 combatLog.Contains("{0}: {1} ({2}).") &&
-                misfire.Contains("FirearmConditionCombatLog.Publish") &&
-                deadShot.Contains("FirearmConditionCombatLog.Publish") &&
-                scatter.Contains("FirearmConditionCombatLog.Publish") &&
+                degradationFeedback.Contains("FirearmConditionCombatLog.Publish") &&
+                misfire.Contains("PublishAfterCommittedDegradation") &&
+                deadShot.Contains("PublishAfterCommittedDegradation") &&
+                scatter.Contains("PublishAfterCommittedDegradation") &&
                 quickClearRuntime.Contains("FirearmConditionCombatLog.Publish") &&
                 repair.Contains("FirearmConditionCombatLog.Publish") &&
                 overhaul.Contains("FirearmConditionCombatLog.Publish"),
@@ -5510,8 +5536,9 @@ namespace KingmakerGunslinger.DomainTests
             FirearmState repaired = FirearmStateMachine.Repair(original);
             Assertions.Equal(FirearmCondition.Broken, original.Condition, "Repair mutated original state.");
             Assertions.Equal(FirearmCondition.Normal, repaired.Condition, "Broken firearm did not become normal.");
-            Assertions.Equal(1, repaired.LoadedRounds, "Repair must preserve loaded rounds.");
-            Assertions.Equal(LeadBall(), repaired.LoadedAmmunition, "Repair must preserve loaded ammunition.");
+            Assertions.Equal(0, repaired.LoadedRounds, "Repair must discard every loaded round.");
+            Assertions.Equal<AmmunitionId>(null, repaired.LoadedAmmunition,
+                "Repair must clear loaded-ammunition identity.");
         }
 
         private static void StateRepairNormalRejected()

@@ -11,7 +11,7 @@ using UnityEngine;
 namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
-    /// Player-facing availability and delivery component for exact-item empty/Broken-to-
+    /// Player-facing availability and delivery component for exact-item Broken-to-
     /// empty/Normal repair. Mutation occurs only in Deliver after the full-round command
     /// completes, so cancellation or interruption before delivery consumes no repair kit.
     /// </summary>
@@ -68,7 +68,7 @@ namespace KingmakerGunslinger.Recovery
 
         public string GetReason()
         {
-            return "Requires exactly one equipped empty/Broken firearm and one Firearm Repair Kit.";
+            return "Requires exactly one equipped Broken firearm and one Firearm Repair Kit. Loaded ammunition is destroyed by a successful repair.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(

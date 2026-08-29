@@ -277,7 +277,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(request.Contains(token),
                     "Runtime module request contract is missing: " + token);
             foreach (string token in new[] { "Active.ShieldOther",
-                "RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCount",
+                "RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime",
                 "feature-module-shield-other-publication",
                 "typed-physical-damage", "new PhysicalDamage(",
                 "typed-energy-damage", "new EnergyDamage(",

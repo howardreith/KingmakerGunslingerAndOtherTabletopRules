@@ -57,6 +57,15 @@ def validate(root: Path) -> None:
         if entry["symbol"].startswith("KMG.EasternWeapons.")]
     focused_entries = [entry for entry in manifest["entries"]
         if entry["symbol"].startswith("KMG.CustomWeapons.FocusedWeapon.")]
+    martial_performance_entries = [entry for entry in manifest["entries"]
+        if entry["symbol"].startswith(
+            "KMG.CustomWeapons.MartialPerformance.")]
+    martial_performance_active = [entry
+        for entry in martial_performance_entries
+        if entry["status"] == "active"]
+    martial_performance_reserved = [entry
+        for entry in martial_performance_entries
+        if entry["status"] == "reserved"]
     brown_fur_entries = [entry for entry in manifest["entries"]
         if entry["symbol"].startswith("KMG.BrownFur.")]
     brown_fur_active = [entry for entry in brown_fur_entries
@@ -94,14 +103,17 @@ def validate(root: Path) -> None:
     heirloom_reserved = [entry for entry in heirloom_entries
         if entry["status"] == "reserved"]
     if (len(manifest["entries"]) != 1439 + len(spear_entries) +
-            len(eastern_entries) + len(focused_entries) + len(brown_fur_entries) +
+            len(eastern_entries) + len(focused_entries) +
+            len(martial_performance_entries) + len(brown_fur_entries) +
             len(urban_barbarian_entries) + len(bodyguard_entries) +
             len(helpful_entries) + len(heirloom_entries)
             or len(active) != 1438 + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
+            len(martial_performance_active) +
             len(brown_fur_active) + len(urban_barbarian_active) +
             len(bodyguard_active) + len(helpful_active) + len(heirloom_active)
-            or len(reserved) != 1 + len(brown_fur_reserved) +
+            or len(reserved) != 1 + len(martial_performance_reserved) +
+            len(brown_fur_reserved) +
             len(urban_barbarian_reserved) + len(bodyguard_reserved) +
             len(helpful_reserved) + len(heirloom_reserved)):
         raise AssertionError("Expanded Summoning blueprint ledger count mismatch")

@@ -10,11 +10,18 @@ using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Prerequisites;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Class.LevelUp;
+using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Compatibility;
+using KingmakerGunslinger.EasternWeapons;
+using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.Grit;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -99,6 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cls != null && referenceCount == 1 && guidCount == 1,
                 "Kingmaker 2.1.7b CharBPhaseClassInChargen.m_ClassesCollection exact getter reads Game.Instance.BlueprintRoot.Progression.CharacterClasses");
             AddCallOfTheWildCatalogAssertions(assertions, entries, classes);
+            AddMartialPerformanceAssertions(context, assertions, diagnostics,
+                entries);
             bool armsArmor = entries.Any(value => string.Equals(value.Info.Id,
                 "ArmsArmor", StringComparison.Ordinal));
             Add(assertions, "eastern-arms-armor-grip-bridge",
@@ -269,6 +278,315 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (missing.Length == 0 ? "none" : string.Join(",", missing)),
                 expected.Count > 0 && missing.Length == 0,
                 "exact loaded CallOfTheWild.dll Helpers.classes reflected without compile dependency");
+        }
+
+        private static void AddMartialPerformanceAssertions(ModContext context,
+            List<RuntimeTestAssertion> assertions, List<string> diagnostics,
+            IEnumerable<UnityModManager.ModEntry> entries)
+        {
+            UnityModManager.ModEntry entry = entries.FirstOrDefault(value =>
+                string.Equals(value.Info.Id, "CallOfTheWild",
+                    StringComparison.Ordinal));
+            if (entry == null) return;
+
+            BlueprintFeatureSelection selection = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeatureSelection>(
+                    BlueprintBootstrap.Library,
+                    CustomWeaponMartialPerformancePublication.SelectionGuid,
+                    "Call of the Wild Martial Performance selection");
+            CustomWeaponMartialPerformancePublication publication =
+                BlueprintBootstrap.MartialPerformancePublication;
+            BlueprintFeature[] registered = publication == null
+                ? new BlueprintFeature[0]
+                : publication.Registered;
+            string[] displayNames = {
+                "Pistol", "Musket", "Blunderbuss", "Elven Branched Spear",
+                "Wakizashi", "Katana", "Nodachi" };
+            bool[] enabled = {
+                context.FeatureModules.Active.Gunslinger,
+                context.FeatureModules.Active.Gunslinger,
+                context.FeatureModules.Active.Gunslinger,
+                context.FeatureModules.Active.ElvenBranchedSpears,
+                context.FeatureModules.Active.EasternWeapons,
+                context.FeatureModules.Active.EasternWeapons,
+                context.FeatureModules.Active.EasternWeapons };
+            BlueprintFeature[] all = selection.AllFeatures ??
+                new BlueprintFeature[0];
+            bool identity = string.Equals(selection.name,
+                    CustomWeaponMartialPerformancePublication
+                        .ExpectedSelectionName, StringComparison.Ordinal) &&
+                string.Equals(selection.GetType().FullName,
+                    CustomWeaponMartialPerformancePublication
+                        .ExpectedSelectionType, StringComparison.Ordinal) &&
+                publication != null && publication.OptionalModPresent &&
+                registered.Length ==
+                    CustomWeaponMartialPerformancePublication.BlueprintCount;
+            Add(assertions, "martial-performance-exact-contract",
+                "19d1ff4cf70845d094b0ec231473e97f/" +
+                    "BlueprintFeatureSelection/MartialPerformanceFeatureSelection",
+                selection.AssetGuid + "/" + selection.GetType().FullName +
+                    "/" + selection.name + ";registered=" +
+                    registered.Length,
+                identity,
+                "stable GUID plus live type/internal name and bootstrap publication");
+
+            BlueprintFeature[] expectedActive = registered
+                .Select((feature, index) => new {
+                    Feature = feature, Index = index })
+                .Where(value => enabled[value.Index])
+                .OrderBy(value => displayNames[value.Index],
+                    StringComparer.Ordinal)
+                .Select(value => value.Feature).ToArray();
+            BlueprintFeature[] observedActive = all.Where(value =>
+                    registered.Any(owned => SameBlueprint(value, owned)))
+                .ToArray();
+            bool exactCatalog = registered.Length == displayNames.Length &&
+                registered.Select((feature, index) => feature != null &&
+                    string.Equals(feature.Name,
+                        "Martial Performance (" + displayNames[index] + ")",
+                        StringComparison.Ordinal) &&
+                    all.Count(value => SameBlueprint(value, feature)) ==
+                        (enabled[index] ? 1 : 0)).All(value => value) &&
+                observedActive.SequenceEqual(expectedActive) &&
+                all.Skip(all.Length - observedActive.Length)
+                    .SequenceEqual(observedActive) &&
+                all.Count(value => value != null &&
+                    string.Equals(value.AssetGuid,
+                        CustomWeaponMartialPerformancePublication
+                            .DaggerDonorGuid, StringComparison.Ordinal)) == 1;
+            string catalogObserved = string.Join("|", observedActive.Select(
+                value => value.Name + ":" + value.AssetGuid).ToArray()) +
+                ";modules=" + context.FeatureModules.Active;
+            Add(assertions, "martial-performance-custom-catalog",
+                "each enabled firearm, spear, Wakizashi, Katana, and Nodachi once; native donor retained; deterministic tail order",
+                catalogObserved, exactCatalog,
+                "live BlueprintFeatureSelection.AllFeatures exact references");
+
+            BlueprintParametrizedFeature weaponFocus =
+                BlueprintLibraryLookup.RequireExact<
+                    BlueprintParametrizedFeature>(
+                        BlueprintBootstrap.Library,
+                        CustomWeaponMartialPerformancePublication
+                            .WeaponFocusGuid,
+                        "native Weapon Focus grant");
+            bool effectShape = observedActive.All(value =>
+                HasMartialPerformanceGrantShape(value, weaponFocus));
+            Add(assertions, "martial-performance-native-effect-shape",
+                "one native Weapon Focus AddParametrizedFeatures row and one authoritative proficiency prerequisite per custom choice",
+                "active=" + observedActive.Length +
+                    ";shape=" + effectShape,
+                observedActive.Length == enabled.Count(value => value) &&
+                    effectShape,
+                "live cloned child components and private native grant row");
+
+            QualifyMartialPerformanceSelection(assertions, diagnostics,
+                selection, registered, enabled, weaponFocus);
+        }
+
+        private static void QualifyMartialPerformanceSelection(
+            List<RuntimeTestAssertion> assertions, List<string> diagnostics,
+            BlueprintFeatureSelection selection, BlueprintFeature[] registered,
+            bool[] enabled, BlueprintParametrizedFeature weaponFocus)
+        {
+            var before = new Kingmaker.UI.LevelUp.ChargenUnit(
+                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            var preview = new Kingmaker.UI.LevelUp.ChargenUnit(
+                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            try
+            {
+                BlueprintFeature[] active = registered
+                    .Where((feature, index) => enabled[index]).ToArray();
+                IFeatureSelectionItem[] beforeItems =
+                    selection.ExtractSelectionItems(before.Descriptor,
+                        before.Descriptor).ToArray();
+                bool customRejected = active.All(feature =>
+                    !feature.MeetsPrerequisites(null, before.Descriptor, null));
+                BlueprintFeature nativeRejected =
+                    (selection.AllFeatures ?? new BlueprintFeature[0])
+                    .FirstOrDefault(feature => feature != null &&
+                        !registered.Any(owned => SameBlueprint(feature, owned)) &&
+                        (feature.ComponentsArray ?? new BlueprintComponent[0])
+                            .OfType<PrerequisiteProficiency>().Any() &&
+                        !feature.MeetsPrerequisites(
+                            null, before.Descriptor, null));
+                IFeatureSelectionItem nativeRejectedItem =
+                    beforeItems.FirstOrDefault(item => item != null &&
+                        SameBlueprint(item.Feature, nativeRejected));
+                var beforeState = new FeatureSelectionState(
+                    null, selection, selection, 0, 0);
+                bool nativeVisible = nativeRejectedItem != null;
+                bool nativeSelectable = nativeRejectedItem != null &&
+                    selection.CanSelect(before.Descriptor, null,
+                        beforeState, nativeRejectedItem);
+                bool nativeParity = nativeRejected != null &&
+                    active.All(feature =>
+                    {
+                        IFeatureSelectionItem item =
+                            beforeItems.FirstOrDefault(value =>
+                                value != null &&
+                                SameBlueprint(value.Feature, feature));
+                        bool visible = item != null;
+                        bool selectable = item != null &&
+                            selection.CanSelect(before.Descriptor, null,
+                                beforeState, item);
+                        return visible == nativeVisible &&
+                            selectable == nativeSelectable;
+                    });
+
+                if (enabled[0])
+                    preview.Descriptor.AddFact(
+                        BlueprintBootstrap.FirearmProficiency);
+                if (enabled[3])
+                    preview.Descriptor.AddFact(BlueprintBootstrap
+                        .ElvenBranchedSpears.ExoticWeaponProficiency);
+                if (enabled[4] || enabled[5] || enabled[6])
+                {
+                    preview.Descriptor.AddFact(BlueprintBootstrap
+                        .EasternWeapons.WakizashiProficiency);
+                    preview.Descriptor.AddFact(BlueprintBootstrap
+                        .EasternWeapons.KatanaProficiency);
+                    BlueprintFeature martial =
+                        BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                            BlueprintBootstrap.Library,
+                            EasternWeaponBlueprints
+                                .NativeMartialWeaponProficiencyGuid,
+                            "native Martial Weapon Proficiency");
+                    preview.Descriptor.AddFact(martial);
+                }
+
+                IFeatureSelectionItem[] previewItems =
+                    selection.ExtractSelectionItems(before.Descriptor,
+                        preview.Descriptor).ToArray();
+                var previewState = new FeatureSelectionState(
+                    null, selection, selection, 0, 0);
+                bool previewEligible = active.All(feature =>
+                {
+                    IFeatureSelectionItem item =
+                        previewItems.FirstOrDefault(value => value != null &&
+                            SameBlueprint(value.Feature, feature));
+                    return feature.MeetsPrerequisites(
+                            null, preview.Descriptor, null) &&
+                        previewItems.Count(value => value != null &&
+                            SameBlueprint(value.Feature, feature)) == 1 &&
+                        item != null && selection.CanSelect(
+                            preview.Descriptor, null, previewState, item);
+                });
+                bool committed = true;
+                foreach (BlueprintFeature feature in active)
+                {
+                    IFeatureSelectionItem item =
+                        previewItems.FirstOrDefault(value =>
+                        value != null &&
+                        SameBlueprint(value.Feature, feature));
+                    var state = new FeatureSelectionState(
+                        null, selection, selection, 0, 0);
+                    if (item == null || !selection.CanSelect(
+                            preview.Descriptor, null, state, item))
+                    {
+                        committed = false;
+                        continue;
+                    }
+                    state.Select(item, null);
+                    if (!ReferenceEquals(state.SelectedItem, item))
+                        committed = false;
+                }
+
+                bool focusAbsentBefore =
+                    !preview.Descriptor.HasFact(weaponFocus);
+                var performanceFact = preview.Descriptor.AddFact(
+                    registered[0]);
+                bool focusApplied = performanceFact != null &&
+                    preview.Descriptor.HasFact(weaponFocus);
+                if (performanceFact != null)
+                    preview.Descriptor.RemoveFact(performanceFact);
+                bool focusRemoved =
+                    !preview.Descriptor.HasFact(weaponFocus);
+
+                string observed = "nativeRejected=" +
+                    (nativeRejected == null ? "<missing>" :
+                        nativeRejected.name) + ";nativeVisible=" +
+                    nativeVisible + ";nativeSelectable=" +
+                    nativeSelectable + ";beforeCustom=" +
+                    string.Join(",", active.Select(feature =>
+                        feature.name + ":" +
+                        ContainsFeature(beforeItems, feature) + "/" +
+                        feature.MeetsPrerequisites(null,
+                            before.Descriptor, null)).ToArray()) +
+                    ";previewCustom=" + string.Join(",",
+                        active.Select(feature => feature.name + ":" +
+                            ContainsFeature(previewItems, feature) + "/" +
+                            feature.MeetsPrerequisites(null,
+                                preview.Descriptor, null)).ToArray()) +
+                    ";commit=" + committed + ";focus=" +
+                    focusAbsentBefore + "/" + focusApplied + "/" +
+                    focusRemoved;
+                Add(assertions,
+                    "martial-performance-proficiency-parity",
+                    "non-proficient custom rows match native visibility and remain ineligible",
+                    observed, customRejected && nativeParity,
+                    "native ExtractSelectionItems plus each live child prerequisite");
+                Add(assertions,
+                    "martial-performance-preview-and-commit",
+                    "same-level preview facts make every enabled custom row eligible and each native selection state commits it",
+                    observed, previewEligible && committed,
+                    "real proficiency AddFact, before/preview descriptors, and FeatureSelectionState.Select");
+                Add(assertions,
+                    "martial-performance-applied-effect",
+                    "Pistol child grants and removes the native Weapon Focus parametrized fact with its owner",
+                    observed, enabled[0] && focusAbsentBefore &&
+                        focusApplied && focusRemoved,
+                    "real BlueprintFeature AddFact/RemoveFact component lifecycle");
+                diagnostics.Add("martialPerformance{" + observed + "}");
+            }
+            finally
+            {
+                preview.Dispose();
+                before.Dispose();
+            }
+        }
+
+        private static bool HasMartialPerformanceGrantShape(
+            BlueprintFeature feature,
+            BlueprintParametrizedFeature weaponFocus)
+        {
+            BlueprintComponent[] components = feature == null
+                ? new BlueprintComponent[0]
+                : feature.ComponentsArray ?? new BlueprintComponent[0];
+            AddParametrizedFeatures[] grants =
+                components.OfType<AddParametrizedFeatures>().ToArray();
+            if (components.Length != 2 || grants.Length != 1 ||
+                components.OfType<Prerequisite>().Count() != 1)
+                return false;
+            FieldInfo field = typeof(AddParametrizedFeatures).GetField(
+                "m_Features", BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic);
+            Array rows = field == null ? null :
+                field.GetValue(grants[0]) as Array;
+            if (rows == null || rows.Length != 1 ||
+                rows.GetValue(0) == null)
+                return false;
+            FieldInfo featureField = rows.GetType().GetElementType().GetField(
+                "Feature", BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic);
+            return featureField != null && SameBlueprint(
+                featureField.GetValue(rows.GetValue(0)) as
+                    BlueprintScriptableObject, weaponFocus);
+        }
+
+        private static bool ContainsFeature(
+            IEnumerable<IFeatureSelectionItem> items,
+            BlueprintFeature feature)
+        {
+            return items != null && items.Any(value => value != null &&
+                SameBlueprint(value.Feature, feature));
+        }
+
+        private static bool SameBlueprint(BlueprintScriptableObject left,
+            BlueprintScriptableObject right)
+        {
+            return ReferenceEquals(left, right) || left != null &&
+                right != null && string.Equals(left.AssetGuid,
+                    right.AssetGuid, StringComparison.Ordinal);
         }
 
         private static bool Rows(LevelEntry[] actual, int[] levels, BlueprintFeatureBase[][] features)

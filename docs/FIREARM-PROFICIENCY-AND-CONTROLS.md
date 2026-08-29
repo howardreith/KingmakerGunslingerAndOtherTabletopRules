@@ -199,6 +199,6 @@ Firearm Proficiency grants three exact-firearm abilities through one missing-fac
 
 - **Reload Test Musket** — full-round, consumes one Black Powder Charge and one Lead Ball, and loads one round while preserving Normal or Broken condition.
 - **Overhaul Test Musket** — full-round, consumes one Firearm Repair Kit on completed delivery, and changes the same exact empty/Wrecked item to empty/Broken.
-- **Repair Test Musket** — full-round, consumes one Firearm Repair Kit on completed delivery, and changes the same exact empty/Broken item to empty/Normal.
+- **Repair Test Musket** — full-round, consumes one Firearm Repair Kit on completed delivery, and changes the same exact Broken item to empty/Normal. Loaded rounds are destroyed and never refunded.
 
 All three abilities fail closed when exact item selection is absent or ambiguous. Overhaul and Repair do not replace the item or create ammunition, and Reload does not change condition. Development controls remain available for disposable-save setup, immediate transaction regression, and diagnosis, but the action-bar abilities are the authoritative player-facing timing path.

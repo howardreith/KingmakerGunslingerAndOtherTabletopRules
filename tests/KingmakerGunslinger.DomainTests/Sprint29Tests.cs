@@ -23,11 +23,15 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void RepairTransactionNormalRejected()
         {
-            var stateStore = new FakeFirearmRepairStateStore(FirearmState.CreateEmpty());
+            FirearmState normal = LoadedState(2, LeadBall(),
+                FirearmCondition.Normal);
+            var stateStore = new FakeFirearmRepairStateStore(normal);
             var inventory = new FakeRepairKitInventory(2);
             FirearmRepairResult result = Repair(stateStore, inventory);
             Assertions.Equal(FirearmRepairStatus.NotBroken, result.Status, "Normal rejection status mismatch.");
             Assertions.Equal(0, stateStore.ReplaceCalls, "Normal rejection mutated state.");
+            Assertions.Equal(normal, stateStore.State,
+                "Normal rejection changed exact loaded state or ammunition identity.");
             Assertions.Equal(2, inventory.Kits, "Normal rejection consumed a kit.");
         }
 
@@ -41,24 +45,63 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(2, inventory.Kits, "Wrecked rejection consumed a kit.");
         }
 
-        private static void RepairTransactionLoadedBrokenRejected()
+        private static void RepairTransactionLoadedSingleShotSuccess()
         {
             FirearmState loaded = LoadedState(1, LeadBall(), FirearmCondition.Broken);
             var stateStore = new FakeFirearmRepairStateStore(loaded);
             var inventory = new FakeRepairKitInventory(2);
             FirearmRepairResult result = Repair(stateStore, inventory);
-            Assertions.Equal(FirearmRepairStatus.Loaded, result.Status, "Loaded rejection status mismatch.");
-            Assertions.Equal(0, stateStore.ReplaceCalls, "Loaded rejection mutated state.");
-            Assertions.Equal(2, inventory.Kits, "Loaded rejection consumed a kit.");
+            Assertions.Equal(FirearmRepairStatus.Repaired, result.Status,
+                "Loaded single-shot repair status mismatch.");
+            Assertions.Equal(FirearmCondition.Normal, stateStore.State.Condition,
+                "Loaded single-shot repair did not reach Normal.");
+            Assertions.Equal(0, stateStore.State.LoadedRounds,
+                "Loaded single-shot repair retained a round.");
+            Assertions.Equal<AmmunitionId>(null,
+                stateStore.State.LoadedAmmunition,
+                "Loaded single-shot repair retained ammunition identity.");
+            Assertions.Equal(1, inventory.Kits,
+                "Loaded single-shot repair did not consume exactly one kit.");
+            Assertions.Equal(0, inventory.AddCalls,
+                "Successful repair attempted an inventory refund.");
+        }
+
+        private static void RepairTransactionLoadedMultiRoundSuccess()
+        {
+            FirearmState loaded = LoadedState(6, LeadBall(),
+                FirearmCondition.Broken);
+            var stateStore = new FakeFirearmRepairStateStore(loaded);
+            var inventory = new FakeRepairKitInventory(3);
+            FirearmRepairResult result = Repair(stateStore, inventory);
+            Assertions.Equal(FirearmRepairStatus.Repaired, result.Status,
+                "Loaded multi-round repair status mismatch.");
+            Assertions.Equal(FirearmCondition.Normal, stateStore.State.Condition,
+                "Loaded multi-round repair did not reach Normal.");
+            Assertions.Equal(0, stateStore.State.LoadedRounds,
+                "Loaded multi-round repair retained rounds.");
+            Assertions.Equal<AmmunitionId>(null,
+                stateStore.State.LoadedAmmunition,
+                "Loaded multi-round repair retained ammunition identity.");
+            Assertions.Equal(2, inventory.Kits,
+                "Loaded multi-round repair did not consume exactly one kit.");
+            Assertions.Equal(0, inventory.AddCalls,
+                "Successful multi-round repair attempted an inventory refund.");
         }
 
         private static void RepairTransactionMissingKit()
         {
-            var stateStore = new FakeFirearmRepairStateStore(BrokenState());
+            FirearmState loaded = LoadedState(4, LeadBall(),
+                FirearmCondition.Broken);
+            var stateStore = new FakeFirearmRepairStateStore(loaded);
             var inventory = new FakeRepairKitInventory(0);
             FirearmRepairResult result = Repair(stateStore, inventory);
             Assertions.Equal(FirearmRepairStatus.InsufficientRepairKit, result.Status, "Missing-kit status mismatch.");
             Assertions.Equal(0, stateStore.ReplaceCalls, "Missing-kit rejection mutated state.");
+            Assertions.Equal(loaded, stateStore.State,
+                "Missing-kit rejection changed loaded rounds or ammunition identity.");
+            Assertions.True(FirearmRepairTransactionService.GetRejection(
+                    loaded, new RepairKitInventorySnapshot(1)) == null,
+                "Loaded ordinary repair still returns a rejection status.");
         }
 
         private static void RepairTransactionNullStateStore()
@@ -89,7 +132,8 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void RepairTransactionStateWriteFailureRestoresKit()
         {
-            FirearmState broken = BrokenState();
+            FirearmState broken = LoadedState(1, LeadBall(),
+                FirearmCondition.Broken);
             var store = new FakeFirearmRepairStateStore(broken) { ThrowOnReplaceCall = 1 };
             var inventory = new FakeRepairKitInventory(2);
             FirearmRepairTransactionException exception = Assertions.Throws<FirearmRepairTransactionException>(
@@ -102,7 +146,8 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void RepairTransactionPostStateMutationFailureRestoresBoth()
         {
-            FirearmState broken = BrokenState();
+            FirearmState broken = LoadedState(5, LeadBall(),
+                FirearmCondition.Broken);
             var store = new FakeFirearmRepairStateStore(broken)
             {
                 ThrowOnReplaceCall = 1,
@@ -115,6 +160,28 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(exception.RollbackSucceeded, "Post-mutation rollback should succeed.");
             Assertions.Equal(broken, store.State, "Post-mutation failure did not restore state.");
             Assertions.Equal(2, inventory.Kits, "Post-mutation failure did not restore kit.");
+        }
+
+        private static void RepairTransactionVerificationFailureRestoresLoadedState()
+        {
+            FirearmState loaded = LoadedState(5, LeadBall(),
+                FirearmCondition.Broken);
+            var store = new FakeFirearmRepairStateStore(loaded)
+            {
+                OverrideReadCall = 2,
+                OverrideReadState = loaded
+            };
+            var inventory = new FakeRepairKitInventory(2);
+            FirearmRepairTransactionException exception =
+                Assertions.Throws<FirearmRepairTransactionException>(
+                    () => Repair(store, inventory),
+                    "Post-write verification failure must surface a transaction exception.");
+            Assertions.True(exception.RollbackSucceeded,
+                "Post-write verification rollback should succeed.");
+            Assertions.Equal(loaded, store.State,
+                "Verification failure did not restore exact rounds and ammunition identity.");
+            Assertions.Equal(2, inventory.Kits,
+                "Verification failure did not restore the repair kit.");
         }
 
         private static void RepairTransactionStateRollbackFailureSurfaced()
@@ -145,21 +212,29 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void RepairTransactionPostRemoveFailureRestoresKit()
         {
+            FirearmState loaded = LoadedState(3, LeadBall(),
+                FirearmCondition.Broken);
             var inventory = new FakeRepairKitInventory(2)
             {
                 ThrowOnRemoveCall = 1,
                 MutateBeforeRemoveFailure = true
             };
+            var store = new FakeFirearmRepairStateStore(loaded);
             FirearmRepairTransactionException exception = Assertions.Throws<FirearmRepairTransactionException>(
-                () => Repair(new FakeFirearmRepairStateStore(BrokenState()), inventory),
+                () => Repair(store, inventory),
                 "Post-remove failure must surface transaction exception.");
             Assertions.True(exception.RollbackSucceeded, "Post-remove rollback should succeed.");
+            Assertions.Equal(loaded, store.State,
+                "Inventory failure changed the exact loaded firearm state.");
+            Assertions.Equal(0, store.ReplaceCalls,
+                "Inventory failure reached the firearm-state write.");
             Assertions.Equal(2, inventory.Kits, "Post-remove failure did not restore kit.");
         }
 
         private static void RepairResultSuccess()
         {
-            FirearmState broken = BrokenState();
+            FirearmState broken = LoadedState(4, LeadBall(),
+                FirearmCondition.Broken);
             FirearmState normal = FirearmStateMachine.Repair(broken);
             var result = new FirearmRepairResult(
                 FirearmRepairStatus.Repaired,
@@ -212,6 +287,30 @@ namespace KingmakerGunslinger.DomainTests
                     inventory,
                     inventory),
                 "Unknown repair status must be rejected.");
+        }
+
+        private static void RepairPlayerFacingTextPermitsLoaded()
+        {
+            string ability = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/RepairTestMusketAbilityBlueprints.cs");
+            string logic = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Recovery/RepairTestMusketAbilityLogic.cs");
+            string runtime = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Recovery/RepairTestMusketRuntime.cs");
+            string action = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Actions/FirearmActionPolicy.cs");
+            string playerText = (ability + logic + runtime + action).ToLowerInvariant();
+            foreach (string obsolete in new[] {
+                "must be unloaded", "unload the firearm",
+                "unload before repair", "repair requires an empty" })
+                Assertions.False(playerText.Contains(obsolete),
+                    "Player-facing repair text retains obsolete instruction: " +
+                    obsolete);
+            Assertions.True(ability.Contains(
+                    "All ammunition loaded in that firearm is destroyed") &&
+                runtime.Contains("Every loaded round will be destroyed") &&
+                action.Contains("any loaded ammunition will be destroyed"),
+                "Loaded-repair consequence is not stated consistently.");
         }
 
         private static void RepairRuntimeResultSuccess()
@@ -605,11 +704,16 @@ namespace KingmakerGunslinger.DomainTests
             internal bool MutateBeforeReplaceFailure { get; set; }
             internal bool ThrowOnSecondReplace { get; set; }
             internal bool ReturnNullOnRead { get; set; }
+            internal int OverrideReadCall { get; set; }
+            internal FirearmState OverrideReadState { get; set; }
 
             public FirearmState Read()
             {
                 ReadCalls++;
-                return ReturnNullOnRead ? null : _state;
+                if (ReturnNullOnRead) return null;
+                return ReadCalls == OverrideReadCall
+                    ? OverrideReadState
+                    : _state;
             }
 
             public void Replace(FirearmState expectedCurrent, FirearmState replacement)

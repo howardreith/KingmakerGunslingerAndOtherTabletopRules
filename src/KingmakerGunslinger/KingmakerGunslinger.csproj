@@ -78,6 +78,8 @@
     <Compile Include="CustomWeapons\CustomWeaponCategoryRegistry.cs" />
     <Compile Include="CustomWeapons\CustomWeaponSelectorRuntime.cs" />
     <Compile Include="Compatibility\CustomWeaponFocusedWeaponCompatibility.cs" />
+    <Compile Include="Compatibility\CustomWeaponMartialPerformancePolicy.cs" />
+    <Compile Include="Compatibility\CustomWeaponMartialPerformanceCompatibility.cs" />
     <Compile Include="EasternWeapons\EasternWeaponCatalog.cs" />
     <Compile Include="EasternWeapons\EasternWeaponNamedCatalog.cs" />
     <Compile Include="EasternWeapons\EasternWeaponNamedEffects.cs" />
@@ -541,6 +543,8 @@
     <Compile Include="Firearms\FirearmConditionPresentation.cs" />
     <Compile Include="Firearms\FirearmPenetrationPresentation.cs" />
     <Compile Include="Firearms\FirearmConditionCombatLog.cs" />
+    <Compile Include="Firearms\FirearmConditionNotificationDispatcher.cs" />
+    <Compile Include="Firearms\FirearmConditionTopNotification.cs" />
     <Compile Include="Firearms\FirearmConditionTooltipPatch.cs" />
     <Compile Include="Firearms\FirearmQualitiesTooltipPatch.cs" />
     <Compile Include="Firearms\FirearmInternalEnchantmentPresentation.cs" />

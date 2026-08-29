@@ -145,11 +145,6 @@ namespace KingmakerGunslinger.Recovery
                 return FirearmRepairStatus.NotBroken;
             }
 
-            if (!state.IsEmpty)
-            {
-                return FirearmRepairStatus.Loaded;
-            }
-
             if (!inventory.HasOneKit)
             {
                 return FirearmRepairStatus.InsufficientRepairKit;

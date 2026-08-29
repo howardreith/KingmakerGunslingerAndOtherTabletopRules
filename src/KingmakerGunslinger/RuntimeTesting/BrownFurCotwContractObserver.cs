@@ -231,7 +231,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "six independent modules active and exact core identity count",
                 observed, independentModulesActive &&
                     BlueprintBootstrap.RegisteredBlueprintCount ==
-                        BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                        BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                 "immutable feature snapshot and unconditional core BlueprintRegistry");
             Add(assertions, "brown-fur-saved-intent-preserved", "ON",
                 observed, brownFurIntentPreserved,

@@ -175,7 +175,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Structured runtime diagnostics were accepted in player feedback.");
         }
 
-        internal static void ProductionAvoidsWarningOverlay()
+        internal static void ProductionUsesNativeWarningHelperOnly()
         {
             string root = RepositoryRoot();
             string sourceRoot = Path.Combine(root, "src",
@@ -189,8 +189,18 @@ namespace KingmakerGunslinger.DomainTests
                         source.Contains("HandleWarning");
                 }).ToArray();
             Assertions.Equal(0, offenders.Length,
-                "Production still uses the warning overlay: " +
+                "Production bypasses the stable native warning helper: " +
                 string.Join(", ", offenders));
+
+            string[] helperCallers = Directory.GetFiles(sourceRoot, "*.cs",
+                    SearchOption.AllDirectories).Where(path =>
+                        File.ReadAllText(path).Contains(
+                            "UIUtility.SendWarning(message)")).ToArray();
+            Assertions.Equal(1, helperCallers.Length,
+                "The native warning helper must remain behind one firearm adapter.");
+            Assertions.Equal("FirearmConditionTopNotification.cs",
+                Path.GetFileName(helperCallers[0]),
+                "A production subsystem bypasses the firearm notification adapter.");
 
             string nativeSink = File.ReadAllText(Path.Combine(sourceRoot,
                 "Diagnostics", "NativeCombatLog.cs"));

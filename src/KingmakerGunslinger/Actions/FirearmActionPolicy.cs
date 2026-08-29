@@ -88,18 +88,12 @@ namespace KingmakerGunslinger.Actions
             {
                 return Rejected(
                     FirearmActionKind.Repair,
-                    "Only an empty Broken firearm can be repaired.");
-            }
-
-            if (!state.IsEmpty)
-            {
-                return Rejected(
-                    FirearmActionKind.Repair,
-                    "The Broken firearm must be empty before repair.");
+                    "Only a Broken firearm can be repaired.");
             }
 
             return hasResources
-                ? Available(FirearmActionKind.Repair, "The firearm is ready to repair.")
+                ? Available(FirearmActionKind.Repair,
+                    "The firearm is ready to repair; any loaded ammunition will be destroyed.")
                 : Rejected(FirearmActionKind.Repair, "A Firearm Repair Kit is required.");
         }
 

@@ -46,6 +46,8 @@
     <Compile Include="EasternWeaponsInvestigationTests.cs" />
     <Compile Include="CompatibilityAttributionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Compatibility\CompatibilityAssetAttributionPlan.cs"><Link>Compatibility\CompatibilityAssetAttributionPlan.cs</Link></Compile>
+    <Compile Include="MartialPerformanceCompatibilityTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Compatibility\CustomWeaponMartialPerformancePolicy.cs"><Link>Compatibility\CustomWeaponMartialPerformancePolicy.cs</Link></Compile>
     <Compile Include="ElvenBranchedSpearCatalogTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Assets\WeaponVisualVariantCatalog.cs"><Link>Assets\WeaponVisualVariantCatalog.cs</Link></Compile>
     <Compile Include="EasternWeaponFoundationTests.cs" />
@@ -60,7 +62,9 @@
     <Compile Include="SummonVariantMenuLayoutTests.cs" />
     <Compile Include="SummonSameTurnActivationTests.cs" />
     <Compile Include="FirearmConditionDevelopmentControlTests.cs" />
+    <Compile Include="FirearmConditionNotificationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Development\FirearmConditionFixturePolicy.cs"><Link>Development\FirearmConditionFixturePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmConditionNotificationDispatcher.cs"><Link>Domain\FirearmConditionNotificationDispatcher.cs</Link></Compile>
     <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
     <Compile Include="ExpandedSummoningIdentityCatalogTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>

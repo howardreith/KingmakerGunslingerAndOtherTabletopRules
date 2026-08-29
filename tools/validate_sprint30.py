@@ -165,7 +165,7 @@ def validate(
         [
             "GenericReloadWreckedRejected",
             "GenericOverhaulWrecked",
-            "GenericRepairLoadedRejected",
+            "GenericRepairLoadedAvailable",
             "ReloadProfileAmmunitionIdentity",
         ],
         "Sprint 30 tests",

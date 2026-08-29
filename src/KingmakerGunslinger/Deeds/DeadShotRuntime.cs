@@ -137,20 +137,16 @@ namespace KingmakerGunslinger.Deeds
                 }
                 DeadShotOutcome outcome = Outcomes.Evaluate(decision, observations);
                 FirearmMisfireConditionDecision condition = null;
+                FirearmItemStateSnapshot conditionCommit = null;
                 if (outcome.Misfires)
                 {
                     condition = Conditions.Evaluate(Misfires.Evaluate(1, threshold,
                         false), expectedCurrent, firearm.EffectiveCondition);
                     if (condition.ChangesCondition)
                     {
-                        FirearmItemStateSnapshot changed = Transition(firearm,
+                        conditionCommit = Transition(firearm,
                             expectedCurrent, condition.After);
-                        expectedCurrent = changed.Repository.State;
-                        FirearmConditionCombatLog.Publish(
-                            changed.ItemDisplayName,
-                            condition.Before.Condition,
-                            condition.After.Condition,
-                            "Dead Shot misfire");
+                        expectedCurrent = conditionCommit.Repository.State;
                     }
                 }
 
@@ -184,8 +180,17 @@ namespace KingmakerGunslinger.Deeds
                 if (!outcome.Misfires)
                     Audio.FirearmSoundRuntime.TryPostCommittedDischarge(
                         firearm.Definition.Kind, casterEntity, "dead-shot");
-                return new DeadShotExecutionResult(decision, outcome, probes,
+                var result = new DeadShotExecutionResult(decision, outcome, probes,
                     delivery, before, expectedCurrent);
+                if (conditionCommit != null)
+                    FirearmConditionTopNotification
+                        .PublishAfterCommittedDegradation(
+                            casterEntity.CharacterName,
+                            conditionCommit.ItemDisplayName,
+                            condition.Before.Condition,
+                            condition.After.Condition,
+                            "Dead Shot misfire");
+                return result;
             }
             catch
             {
