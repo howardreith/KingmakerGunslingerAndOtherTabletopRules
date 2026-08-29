@@ -15,7 +15,7 @@
                                   128,
                                   128
                               ],
-    "selectorStyle":  "full-square burgundy-brown gradient; original gold path monogram",
+    "selectorStyle":  "full-bleed burgundy-brown gradient; no baked frame; restrained original gold path monogram",
     "rapidReloadStyle":  "transparent canvas; muted #A6533F enlarged circular arrow and tool; no blue corners",
     "itemFit":  "alpha-bounds fit with 5px runtime safety margin",
     "records":  [
@@ -33,7 +33,7 @@
                                                   512,
                                                   512
                                               ],
-                        "sourceSha256":  "95944bad6c84c87ce6436518eb4590883b716bb6edec5e9b263ac41ce242022b",
+                        "sourceSha256":  "fc7312b5d33fffa337c277b89a7fa8479ed82e28eeea9014d40a59ea9162061c",
                         "finalPath":  "assets/game/icons/firearm-monogram-pistol.png",
                         "finalDimensions":  [
                                                 64,
@@ -51,7 +51,15 @@
                                             222,
                                             222
                                         ],
-                        "finalSha256":  "5343d062083ada98bf0aabdfc0eb3d538c0c8b9fd9cfbaaabbab2c8cc3a0df0d"
+                        "finalSha256":  "ec9ed32c71b137f8d8b65184b6e92e946d034a2ef329cd0f8fe7f52194e3f07d",
+                        "glyphAlphaBounds":  [
+                                                 17,
+                                                 17,
+                                                 31,
+                                                 31
+                                             ],
+                        "glyphWidthPercent":  48.44,
+                        "glyphHeightPercent":  48.44
                     },
                     {
                         "key":  "firearm-monogram-musket",
@@ -67,7 +75,7 @@
                                                   512,
                                                   512
                                               ],
-                        "sourceSha256":  "03b9e05195d2780c41a0c8a3d618fbb0f5e75c8042edc8e98a23fc013fea5ce9",
+                        "sourceSha256":  "c024fe3df9ef4ee09ecf037c8f928599d398b6a61530a3a67e5b804cbcc6d6e0",
                         "finalPath":  "assets/game/icons/firearm-monogram-musket.png",
                         "finalDimensions":  [
                                                 64,
@@ -85,7 +93,15 @@
                                             222,
                                             222
                                         ],
-                        "finalSha256":  "675d291d8ea7fc7955ab6468d9134a09619b727a1c789357d6fbd4a1485aa848"
+                        "finalSha256":  "7bb189ad50bc578217adeca1d280e31312053a13cddf112760a5611eb79a82ee",
+                        "glyphAlphaBounds":  [
+                                                 16,
+                                                 18,
+                                                 33,
+                                                 29
+                                             ],
+                        "glyphWidthPercent":  51.56,
+                        "glyphHeightPercent":  45.31
                     },
                     {
                         "key":  "firearm-monogram-blunderbuss",
@@ -101,7 +117,7 @@
                                                   512,
                                                   512
                                               ],
-                        "sourceSha256":  "af7eb40ce6a79836ed969ae1b30a75dfc315aeca7eabc897eb8534d0ed9e76bf",
+                        "sourceSha256":  "6ac0919821fe8d9e6f502cd6611360f389d2e0ffd4daa5d1582c3cc08a4007a3",
                         "finalPath":  "assets/game/icons/firearm-monogram-blunderbuss.png",
                         "finalDimensions":  [
                                                 64,
@@ -119,7 +135,15 @@
                                             222,
                                             222
                                         ],
-                        "finalSha256":  "08e4e9061ca76b26b778804da4436446382ec725f43096416ff0eae3b9bed4a9"
+                        "finalSha256":  "65272c2ccfca2c3a766e0b11767e44ea65b1e9b05038dcb7d07c97f3fdce89f7",
+                        "glyphAlphaBounds":  [
+                                                 17,
+                                                 17,
+                                                 31,
+                                                 31
+                                             ],
+                        "glyphWidthPercent":  48.44,
+                        "glyphHeightPercent":  48.44
                     },
                     {
                         "key":  "rapid-reload",
@@ -497,5 +521,5 @@
                     }
                 ],
     "previewPath":  "docs/reports/icon-overhaul-asset-preview.png",
-    "previewSha256":  "6dd1a526c5ba6acf54d42dd216ec5432b38e73b2dd8581f588d574f98cd82ae0"
+    "previewSha256":  "1ac2618c1c8eb4ccc949e9688ba8374558e5479b584c7d1a5e505483d4b88742"
 }

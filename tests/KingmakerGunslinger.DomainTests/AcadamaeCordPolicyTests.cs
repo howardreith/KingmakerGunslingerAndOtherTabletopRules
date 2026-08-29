@@ -134,11 +134,15 @@ namespace KingmakerGunslinger.DomainTests
         {
             string root = Environment.CurrentDirectory;
             string source = Path.Combine(root, "assets-source", "original-icons",
-                "cord-of-stubborn-resolve", "cord-of-stubborn-resolve-chroma-source.png");
+                "cord-of-stubborn-resolve", "cord-of-stubborn-resolve-oblique-source.png");
             string production = Path.Combine(root, "assets", "game", "icons",
                 "cord-of-stubborn-resolve.png");
-            Assertions.True(File.Exists(source) && File.Exists(production),
-                "Cord source and production icons must exist.");
+            string assetManifest = Path.Combine(root, "assets-source",
+                "original-icons", "cord-of-stubborn-resolve",
+                "cord-of-stubborn-resolve-assets.json");
+            Assertions.True(File.Exists(source) && File.Exists(production) &&
+                File.Exists(assetManifest),
+                "Cord source, production icon, and asset manifest must exist.");
             byte[] png = File.ReadAllBytes(production);
             Assertions.True(png.Length > 24 && png[12] == 0x49 && png[13] == 0x48 &&
                 png[14] == 0x44 && png[15] == 0x52 &&
@@ -149,8 +153,34 @@ namespace KingmakerGunslinger.DomainTests
             using (SHA256 sha = SHA256.Create())
                 hash = string.Concat(sha.ComputeHash(png).Select(value =>
                     value.ToString("x2")).ToArray());
-            Assertions.Equal("cf3f040eb22691b1e526eb32cc31d1151eafef7113cb0ebe55d0c2637d5d9928",
+            Assertions.Equal("101e1b2fbd7083c5db20be1a0ee40840bc8201520dff83be0acd9bae06f91a6a",
                 hash, "Cord production hash must match its provenance record.");
+            string sourceHash;
+            using (SHA256 sha = SHA256.Create())
+                sourceHash = string.Concat(sha.ComputeHash(
+                    File.ReadAllBytes(source)).Select(value =>
+                    value.ToString("x2")).ToArray());
+            Assertions.Equal(
+                "54bb3426f8cd651758c6bce733904045fb30a84dd7b452d72bdf111abeb481e1",
+                sourceHash, "Cord oblique source hash must match its provenance record.");
+            string manifestText = File.ReadAllText(assetManifest);
+            foreach (string token in new[] {
+                "\"schemaVersion\":  2",
+                "cord-of-stubborn-resolve-oblique-source.png",
+                "\"runtimeAlphaBounds\"",
+                "116",
+                "\"runtimeAspect\":  1.8125",
+                "\"cornerAlpha\"" })
+                Assertions.True(manifestText.Contains(token),
+                    "Cord Round 2 manifest lacks token: " + token);
+            string generator = File.ReadAllText(Path.Combine(root, "tools",
+                "New-CordOfStubbornResolveIcon.ps1"));
+            Assertions.True(generator.Contains(
+                    "cord-of-stubborn-resolve-oblique-source.png") &&
+                generator.Contains("$runtimeMargin = 6") &&
+                generator.Contains("Get-AlphaBounds") &&
+                !generator.Contains("cord-of-stubborn-resolve-chroma-source.png"),
+                "Cord generator must fit the active oblique alpha source only.");
             string[] duplicates = Directory.GetFiles(Path.Combine(root, "assets", "game", "icons"),
                 "*.png").Where(path => !string.Equals(path, production,
                     StringComparison.OrdinalIgnoreCase) &&

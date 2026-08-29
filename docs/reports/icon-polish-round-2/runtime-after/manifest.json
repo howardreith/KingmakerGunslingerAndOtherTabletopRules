@@ -1,0 +1,56 @@
+{
+    "schemaVersion":  1,
+    "evidenceRole":  "Supporting perceptual evidence from live in-game Unity sprites; structured runtime assertions are authoritative.",
+    "sourceRunId":  "20260829T1448004529783Z-1ff4ce92d77b429d9653ede63fece1b2",
+    "sourceScenario":  "icon-overhaul-visual-evidence",
+    "sourceStatus":  "PASS",
+    "loadedModVersion":  "0.0.107",
+    "gitCommitAtBuild":  "7e77a970b9e93de80dde0e22ef7ce80403dd39ce",
+    "packageSha256":  "858766f18844d9aae16036a1dba83386ebdbe21b396182a124ee8f9a1bda0c9d",
+    "dllSha256":  "9594d344da9cc77eb3c12d939a85cee04186c17918e6723a3acf5ece9e61a6a4",
+    "dllMvid":  "77555b48-a6b1-4633-961a-d57ba1c893d9",
+    "screenshots":  [
+                        {
+                            "file":  "icon-polish-round-2/runtime-after/after-06-round2-weapon-focus-b-comparison.png",
+                            "label":  "B beside Battle Axe and Bite",
+                            "width":  1920,
+                            "height":  1200,
+                            "sha256":  "7ae33944ae5de9c19ec1d04363d9e565ef10edfb8831d5a087fd3db2c31213bf"
+                        },
+                        {
+                            "file":  "icon-polish-round-2/runtime-after/after-07-round2-weapon-focus-mp-comparison.png",
+                            "label":  "M/P native neighborhood",
+                            "width":  1920,
+                            "height":  1200,
+                            "sha256":  "917476549407e1241812868f71f3c7a578983e40acb8d421a1c1500957207e40"
+                        },
+                        {
+                            "file":  "icon-polish-round-2/runtime-after/after-08-round2-rapid-reload-shared-icons.png",
+                            "label":  "Shared Rapid Reload B/M/P",
+                            "width":  1920,
+                            "height":  1200,
+                            "sha256":  "0cec7ad6dedc53830ed58cce70baaa978fb518b286c08d785b7a6ab960993d9e"
+                        },
+                        {
+                            "file":  "icon-polish-round-2/runtime-after/after-09-round2-cord-equipped.png",
+                            "label":  "Cord equipped",
+                            "width":  1920,
+                            "height":  1200,
+                            "sha256":  "2f396f3cd34414fb2e8c7d5832b8387632486d8213804f58e381bca046ebd7ce"
+                        },
+                        {
+                            "file":  "icon-polish-round-2/runtime-after/after-10-round2-cord-inventory.png",
+                            "label":  "Cord inventory comparison",
+                            "width":  1920,
+                            "height":  1200,
+                            "sha256":  "f95940c76dbce0d3ea31353c620016ab8542ddc48819925d81cc86c0dd873386"
+                        },
+                        {
+                            "file":  "icon-polish-round-2/runtime-after/after-11-round2-native-belt-equipped.png",
+                            "label":  "Native belt equipped",
+                            "width":  1920,
+                            "height":  1200,
+                            "sha256":  "1981724f8993e1506c3c9f99ad55da884327e48d8484622a69d9180ac15ef9c7"
+                        }
+                    ]
+}

@@ -1,0 +1,38 @@
+{
+    "schemaVersion":  2,
+    "generator":  "tools/New-CordOfStubbornResolveIcon.ps1",
+    "sourceKind":  "imagegen-original-oblique-braided-cord",
+    "sourcePath":  "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-oblique-source.png",
+    "sourceDimensions":  [
+                             1672,
+                             941
+                         ],
+    "sourceAlphaBounds":  [
+                              106,
+                              69,
+                              1460,
+                              809
+                          ],
+    "sourceAspect":  1.8047,
+    "sourceSha256":  "54bb3426f8cd651758c6bce733904045fb30a84dd7b452d72bdf111abeb481e1",
+    "runtimePath":  "assets/game/icons/cord-of-stubborn-resolve.png",
+    "runtimeDimensions":  [
+                              128,
+                              128
+                          ],
+    "runtimeAlphaBounds":  [
+                               6,
+                               32,
+                               116,
+                               64
+                           ],
+    "runtimeAspect":  1.8125,
+    "runtimeMargin":  6,
+    "cornerAlpha":  [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+    "runtimeSha256":  "101e1b2fbd7083c5db20be1a0ee40840bc8201520dff83be0acd9bae06f91a6a"
+}

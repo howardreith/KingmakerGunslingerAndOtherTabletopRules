@@ -156,10 +156,10 @@ foreach ($record in $records) {
 $specPath = Join-Path $root 'assets-source\original-icons\firearm-feats\icon-spec.json'
 $spec = Get-Content -LiteralPath $specPath -Raw | ConvertFrom-Json
 $specKeys = @($spec.monograms | ForEach-Object { [string]$_.key })
-if ($spec.schemaVersion -ne 3 -or $specKeys.Count -ne 3 -or
+if ($spec.schemaVersion -ne 4 -or $specKeys.Count -ne 3 -or
     ($specKeys -join ',') -cne ($selectorKeys -join ',') -or
     [string]$spec.palette.rapidReloadRed -cne '#A6533F') {
-    throw 'Firearm feat icon specification is not exact-three schema 3.'
+    throw 'Firearm feat icon specification is not exact-three schema 4.'
 }
 
 $iconSourcePath = Join-Path $root 'src\KingmakerGunslinger\Blueprints\ProjectAssetIcons.cs'
