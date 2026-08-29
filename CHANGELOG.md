@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.106-fatigue-authority-repair
+## 0.0.107-icon-art-overhaul
 
 - Makes the official firearm set exactly Blunderbuss, Musket, and Pistol across
   Rapid Reload, native weapon feats, Gun Training, starting access, vendors,
@@ -14,7 +14,11 @@
   textures plus the Elven Branched Spear used by 30 and 12 item variants.
 - Adds deterministic high-resolution art, downsampling, alpha/dimension
   validation, a guarded live-sprite visual-evidence scenario, five curated
-  1920x1200 frames, and a before/after contact sheet.
+  1920x1200 frames, and a before/after contact sheet. The complete deterministic
+  suite contains 1,325 tests.
+
+## 0.0.106-fatigue-authority-repair
+
 - Restores native authority for ordinary canonical fatigue: successful
   Fatigued refreshes, merges, extensions, and reapplications remain Fatigued
   instead of being globally reinterpreted as Exhausted by KMG.
@@ -26,7 +30,7 @@
   Stubborn Resolve substitution and exactly-once damage routing.
 - Replaces unconditional escalation tests and runtime fixtures with explicit
   native-refresh, Acadamae, Cord, immunity, duration, persistence, rest, and
-  intent-leak coverage. The complete deterministic suite contains 1,325 tests.
+  intent-leak coverage. The complete deterministic suite contains 1,323 tests.
 
 ## 0.0.105-player-facing-presentation-item-discoverability
 

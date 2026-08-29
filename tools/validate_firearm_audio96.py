@@ -85,7 +85,8 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
-    release_suffix = ("fatigue-authority-repair"
+    release_suffix = ("icon-art-overhaul"
+        if VERSION == "0.0.107" else "fatigue-authority-repair"
         if VERSION == "0.0.106" else "player-facing-presentation-item-discoverability"
         if VERSION == "0.0.105" else "summon-same-turn-activation"
         if VERSION == "0.0.104" else "overhaul-summon-menu-fatigue-escalation"

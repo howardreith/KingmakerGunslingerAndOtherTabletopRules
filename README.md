@@ -1,15 +1,14 @@
 # Kingmaker Gunslinger
 
-Version `0.0.106` restores Kingmaker's authority over ordinary fatigue. A
-native refresh, merge, extension, or reapplication of canonical Fatigued now
-remains Fatigued; KMG increases it to Exhausted only when Kingmaker explicitly
-applies canonical Exhausted or an exact Acadamae Graduate failed-save request
-is scoped to escalate an already Fatigued caster. Cord of Stubborn Resolve
-still responds globally after native success, receives ordinary repeated
-Fatigued as Fatigue and explicit Acadamae escalation as Exhaustion, deals once,
-and retains its 1-HP floor and exhaustion-to-fatigue substitution.
+Version `0.0.107` makes the official firearm set exactly Pistol, Musket, and
+Blunderbuss and delivers the native-style feat, selector, firearm, Eastern
+weapon, and Elven Branched Spear icon overhaul. Stable Rifle/Revolver identities
+remain hidden but readable for old saves and deliberate Toy Box use. The release
+retains 0.0.106's native fatigue-authority repair: ordinary canonical Fatigued
+refreshes remain Fatigued, exact Acadamae escalation remains request-local, and
+Cord of Stubborn Resolve retains its accepted post-success behavior.
 
-This release retains 0.0.105's Brown-Fur ordering, player-facing presentation,
+This release also retains 0.0.105's Brown-Fur ordering, player-facing presentation,
 and 30-item fixed-loot distribution; the 0.0.104 same-turn summon correction;
 and the unrelated accepted 0.0.103 Overhaul Firearm and Expanded Summoning
 repairs. It also retains the owner-accepted

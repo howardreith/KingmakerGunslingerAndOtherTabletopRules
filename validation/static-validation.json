@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.106-fatigue-authority-repair",
-  "version": "0.0.106",
+  "milestone": "0.0.107-icon-art-overhaul",
+  "version": "0.0.107",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -675,5 +675,17 @@
     "travelSpecificPatchAllowed": false,
     "workingSaveBaselineMutationAllowed": false,
     "supervisedWorldMapAcceptancePending": true
+  },
+  "iconOverhaul107": {
+    "deterministicTestCount": 1325,
+    "officialFirearmKindCount": 3,
+    "recognizedFirearmKindCount": 5,
+    "selectorIconCount": 3,
+    "finalAssetCount": 14,
+    "easternItemCount": 30,
+    "spearItemCount": 12,
+    "retiredSelectorIconCount": 2,
+    "guardedVisualEvidencePass": true,
+    "workingSaveSmokePass": true
   }
 }
