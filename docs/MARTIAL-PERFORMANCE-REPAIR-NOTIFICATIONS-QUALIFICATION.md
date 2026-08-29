@@ -7,10 +7,16 @@
   2a442a2516bf41f67b175f8e84e3b8e0768c265e
 - Mod/package version: 0.0.108 (the existing repository version was preserved)
 - Final standalone package SHA-256:
-  DFF3181CC39E036A5F5F9E2D27193669A10272E49C96C535E0CC2F2B5141BB81
+  24ADD06BB3E3E7BE8162367C087EB247A59B638F898D105D41A0536152327A53
 - Final mod DLL SHA-256:
-  9856C08342066FDD4651EEE3A4BCABE2A8B9508AB4B800005F79EA89EB747C2C
-- Final mod DLL MVID: 80e874f9-f5a8-4b92-97ba-d0f31b81d234
+  CC20B7FC7C3D8D7B51BF0DA01046AF49799236726811F949FF3F58FE752BEA51
+- Final mod DLL MVID: 80fb3300-1407-4dca-bf7b-e2b0b6697e36
+- Runtime-qualified implementation commit:
+  b82b5d6c71468d500585f6898456cbe687b9f470
+- Runtime source-state fingerprint:
+  99728DDF70B1079FA11B837C985346F3425A43FE73C230322306B7DD8A14F71E
+- Immutable deployment manifest:
+  runtime-evidence/deployments/20260829T1902279773898Z/deployment.json
 
 Generated packages, deployment manifests, compatibility transactions, saves,
 and raw runtime captures are not part of the source commit.
@@ -131,12 +137,12 @@ not select, load, or write a save.
 
 | Scenario | Structured result | Evidence directory |
 | --- | --- | --- |
-| disposable-overhaul-maintenance | PASS, 19/19 | 20260829T1809047282825Z-disposable-overhaul-maintenance |
-| reliable-firearm-misfire-matrix | PASS, 10/10 | 20260829T1822403502106Z-reliable-firearm-misfire-matrix |
-| observe-optional-mod-compatibility (Call of the Wild 1.14.4c-2.1) | PASS, 23/23; restoration verified | 20260829T1843344374454Z-observe-optional-mod-compatibility |
+| disposable-overhaul-maintenance | PASS, 19/19 | 20260829T1902428044215Z-disposable-overhaul-maintenance |
+| reliable-firearm-misfire-matrix | PASS, 10/10 | 20260829T1904370178694Z-reliable-firearm-misfire-matrix |
+| observe-optional-mod-compatibility (Call of the Wild 1.14.4c-2.1) | PASS, 23/23; restoration verified | 20260829T1906493731101Z-observe-optional-mod-compatibility |
 
 Loaded repair runtime result
-(run 20260829T1809047539737Z-0c5d9e81ccee45ff8fe0a427c9fc9059):
+(run 20260829T1902428224715Z-43e39dc2542a48baaab09d7a3ff61f0e):
 
 - The real Repair Firearm ability was available for a loaded Broken copy of
   The Last Word.
@@ -148,7 +154,7 @@ Loaded repair runtime result
 - The preceding Wrecked-to-Broken overhaul and subsequent cleanup both passed.
 
 Notification runtime result
-(run 20260829T1822403704388Z-3262595ca4a84991bdc70965c24fe545):
+(run 20260829T1904370506601Z-c94796bb714f487f943333de739acf6a):
 
 - A committed Normal-to-Broken misfire dispatched the exact concise Broken
   message once.
@@ -163,7 +169,7 @@ Notification runtime result
   WarningsText handler type was present.
 
 Martial Performance runtime result
-(run 20260829T1843344530779Z-45817740024c448da942b930c1b0ec7e):
+(run 20260829T1906493886745Z-212da8a5738440f18033c9bfc36d38e1):
 
 - The exact GUID/type/internal-name contract and seven registered children
   passed.
