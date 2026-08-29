@@ -1,14 +1,14 @@
 {
     "schemaVersion":  1,
     "evidenceRole":  "Supporting perceptual evidence from live in-game Unity sprites; structured runtime assertions are authoritative.",
-    "sourceRunId":  "20260829T1448004529783Z-1ff4ce92d77b429d9653ede63fece1b2",
+    "sourceRunId":  "20260829T1520495183372Z-2acc2b65981f492291343145b1bef7b6",
     "sourceScenario":  "icon-overhaul-visual-evidence",
     "sourceStatus":  "PASS",
-    "loadedModVersion":  "0.0.107",
-    "gitCommitAtBuild":  "7e77a970b9e93de80dde0e22ef7ce80403dd39ce",
-    "packageSha256":  "858766f18844d9aae16036a1dba83386ebdbe21b396182a124ee8f9a1bda0c9d",
-    "dllSha256":  "9594d344da9cc77eb3c12d939a85cee04186c17918e6723a3acf5ece9e61a6a4",
-    "dllMvid":  "77555b48-a6b1-4633-961a-d57ba1c893d9",
+    "loadedModVersion":  "0.0.108",
+    "gitCommitAtBuild":  "840d84e57a97ef8ed03a2a51ea479dcd6e41a7e7",
+    "packageSha256":  "9f01775bb5f8c4fa2ef0e96082ad3b409a141d427d752b9272a10393da4ce6a5",
+    "dllSha256":  "d5781ab745fced26df22e7684767cbffb1b04e7606447fcf8ddac912c5df42d2",
+    "dllMvid":  "b6315f40-6fcb-4f00-841b-6260f2da8e20",
     "screenshots":  [
                         {
                             "file":  "icon-polish-round-2/runtime-after/after-06-round2-weapon-focus-b-comparison.png",
