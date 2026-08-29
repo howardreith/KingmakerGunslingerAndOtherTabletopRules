@@ -1,0 +1,74 @@
+{
+  "files": [
+    {
+      "path": "CODEX_PROMPT.md",
+      "bytes": 15431,
+      "sha256": "d29035c4e4edbacde0f2fb9ea5ca2dbda8decd6e50db53ddad3ab923b707c814"
+    },
+    {
+      "path": "README.md",
+      "bytes": 917,
+      "sha256": "7dbc89559e4a0337e6ca6069aeb9b78c30f2f515bac0a9a09c077ce5f519f7f3"
+    },
+    {
+      "path": "VISUAL_NOTES.md",
+      "bytes": 2742,
+      "sha256": "3a3ff6f0abdc46e45b77d93aeeee2119eaed69a8769a44a7e069d332c4e34a45"
+    },
+    {
+      "path": "references/CONTACT_SHEET.png",
+      "bytes": 1651100,
+      "sha256": "7d9e04dea49a9256c03ac2210d0977282f165c5d8fa826d5e7f9e95a96c02d23"
+    },
+    {
+      "path": "references/crops/01_rapid_reload_and_neighboring_feat_icons.png",
+      "bytes": 603812,
+      "sha256": "1280446bb3dd3a692c737f21f5f753f1f186ba9806279ba0a007686cbf87b9a9"
+    },
+    {
+      "path": "references/crops/02_supported_and_unsupported_rapid_reload_choices.png",
+      "bytes": 601335,
+      "sha256": "5413a2d5975f657f4905236e3e2d60585218c70965306f88f23e3b576c7b5fe3"
+    },
+    {
+      "path": "references/crops/03_blunderbuss_weapon_focus_icon.png",
+      "bytes": 598975,
+      "sha256": "4dd1b1d11068fbeda85236f810cf48a6b2bdd4dc65836fa4c7162ebc63a60c51"
+    },
+    {
+      "path": "references/crops/04_musket_pistol_nodachi_icon_comparison.png",
+      "bytes": 617614,
+      "sha256": "0442299c9e3d2d9b2923313b46966ca5be24d4e8e092df15d60af5e56bf929c7"
+    },
+    {
+      "path": "references/crops/05_vendor_and_stash_weapon_icons.png",
+      "bytes": 1453756,
+      "sha256": "cbb39295118737b475ded6da34422ee8a7650390959c01aebdf5b63849aba4c1"
+    },
+    {
+      "path": "references/originals/01_rapid_reload_feat_list.png",
+      "bytes": 2906217,
+      "sha256": "0e2f4d2d7c587b71a131e84cd8523f7171b168fe8e113b03630f3f71785547cc"
+    },
+    {
+      "path": "references/originals/02_rapid_reload_weapon_choices.png",
+      "bytes": 2922672,
+      "sha256": "6bd623c1c893707b28668061282561dd89c40b3a9f89b939f84404dbf57672ed"
+    },
+    {
+      "path": "references/originals/03_weapon_focus_blunderbuss_reference.png",
+      "bytes": 3175194,
+      "sha256": "58e8340b19882a5606d6ecb41f7ea60a7e750d451fd0231b0c62df5c84becf66"
+    },
+    {
+      "path": "references/originals/04_weapon_focus_musket_pistol_nodachi_reference.png",
+      "bytes": 2985568,
+      "sha256": "1bca76063a4b23c369b726c06e552e80c28344753ab71929f1ad8b6693e0f0e7"
+    },
+    {
+      "path": "references/originals/05_inventory_weapon_icon_comparison.png",
+      "bytes": 2818915,
+      "sha256": "e3336e8850cd12f3100666157c1641146ef7c5e2907eb73d08d2bc64aaf767c3"
+    }
+  ]
+}
