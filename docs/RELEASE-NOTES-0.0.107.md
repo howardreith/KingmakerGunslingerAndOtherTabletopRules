@@ -1,5 +1,9 @@
 # Kingmaker Gunslinger 0.0.107
 
+> Historical release. Version 0.0.108 supersedes this package with the
+> conservative firearm-selector and Cord icon polish; this file retains the
+> exact 0.0.107 archive identity for provenance.
+
 Release archive:
 `KingmakerGunslinger-0.0.107-icon-art-overhaul.zip`.
 

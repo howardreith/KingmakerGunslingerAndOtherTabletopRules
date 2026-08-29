@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.0.108-icon-art-polish-round-2
+
+- Removes the baked inset frame from the shared Blunderbuss, Musket, and Pistol
+  parameter icons and reduces their decorative glyph mass to native-category
+  scale while preserving one centralized sprite per firearm kind.
+- Replaces the Cord of Stubborn Resolve's top-down circular silhouette with an
+  original, horizontally dominant oblique braided-cord belt with a visible
+  front/rear relationship, knot, and hanging ends.
+- Adds exact-size deterministic comparisons, protected-asset hash enforcement,
+  six curated 1920x1200 guarded live-sprite renders, and focused runtime
+  assertions for shared selector references and native-belt isolation.
+- Retains the accepted Rapid Reload, firearm item, Eastern weapon, and Elven
+  Branched Spear art byte-for-byte; Rifle and Revolver remain retired from
+  ordinary supported selections. The deterministic suite remains 1,325 tests.
+
 ## 0.0.107-icon-art-overhaul
 
 - Makes the official firearm set exactly Blunderbuss, Musket, and Pistol across
