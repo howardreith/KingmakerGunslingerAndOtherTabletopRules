@@ -32,5 +32,7 @@ if ($LASTEXITCODE -ne 0) {
 
 & (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
     -RepositoryRoot $repositoryRoot
+& (Join-Path $PSScriptRoot 'Test-IconPolishRound2Assets.ps1') `
+    -RepositoryRoot $repositoryRoot
 
 Write-Host 'Version-aware repository validation passed.'

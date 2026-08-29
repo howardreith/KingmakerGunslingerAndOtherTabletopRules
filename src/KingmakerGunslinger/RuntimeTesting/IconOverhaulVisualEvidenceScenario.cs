@@ -8,6 +8,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.Blueprints.Items.Weapons;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -71,7 +72,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             Entry[] rapidChoices = feats.RapidReloadChoices
                 .Select(value => FromFeature(value, "Rapid Reload choice"))
                 .OrderBy(value => value.Name, StringComparer.Ordinal).ToArray();
-            FeatureUIData[] firearmMenu = weaponFocus.GetFullSelectionItems()
+            FeatureUIData[] fullWeaponFocusMenu = weaponFocus
+                .GetFullSelectionItems()
+                .Where(value => value != null && value.Param != null &&
+                    !string.IsNullOrWhiteSpace(value.Name))
+                .ToArray();
+            FeatureUIData[] firearmMenu = fullWeaponFocusMenu
                 .Where(value => value != null && value.Param.Blueprint != null &&
                     value.Param.Blueprint.name.StartsWith("KMG_WeaponFocus_",
                         StringComparison.Ordinal))
@@ -80,6 +86,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Name, "Weapon Focus parameter", value.Icon,
                 value.Param.Blueprint.name + ":" +
                     value.Param.Blueprint.AssetGuid)).ToArray();
+            Entry[] blunderbussComparators = SelectParameterRows(
+                fullWeaponFocusMenu, "Battle Axe", "Bite", "Blunderbuss");
+            Entry[] musketPistolComparators = SelectParameterRows(
+                fullWeaponFocusMenu, "Long Bow", "Longspear", "Longsword",
+                "Musket", "Nodachi", "Pistol", "Punching Dagger");
 
             ProductionFirearmBlueprintEntry[] officialFirearms = {
                 BlueprintBootstrap.ProductionFirearms.Blunderbuss,
@@ -103,6 +114,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value => value.Item)).ToArray();
             Entry[] easternAndSpear = SelectEasternAndSpearRepresentatives(
                 easternAll, spearAll);
+            BlueprintItemEquipmentBelt cord =
+                BlueprintBootstrap.CordOfStubbornResolve;
+            BlueprintItemEquipmentBelt nativeBelt = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintItemEquipmentBelt>()
+                .Single(value => value.name == "BeltOfConstitution2" &&
+                    value.Cost == 4000);
+            Entry cordEntry = FromItem(cord, "Project belt");
+            Entry nativeBeltEntry = FromItem(nativeBelt,
+                "Native +2 Constitution belt");
 
             string[] expected = { "Blunderbuss", "Musket", "Pistol" };
             string[] expectedIcons = {
@@ -126,6 +146,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool easternExact = easternAll.Length == 30 && spearAll.Length == 12 &&
                 easternAll.Concat(spearAll).All(value => value != null &&
                     value.Icon != null);
+            bool sharedMonogramsExact =
+                feats.WeaponFocusChoices.Length == 3 &&
+                feats.RapidReloadChoices.Length == 3 &&
+                feats.DependentChoices.Length == 4 &&
+                feats.DependentChoices.All(family => family != null &&
+                    family.Length == 3) &&
+                Enumerable.Range(0, 3).All(iconIndex =>
+                    ReferenceEquals(feats.WeaponFocusChoices[iconIndex].Icon,
+                        feats.RapidReloadChoices[iconIndex].Icon) &&
+                    feats.DependentChoices.All(family =>
+                        ReferenceEquals(
+                            feats.WeaponFocusChoices[iconIndex].Icon,
+                            family[iconIndex].Icon)));
+            bool comparatorRowsExact =
+                blunderbussComparators.Length == 3 &&
+                musketPistolComparators.Length == 7 &&
+                blunderbussComparators.Concat(musketPistolComparators)
+                    .All(value => value.Icon != null);
+            bool beltIconsExact = cord != null && nativeBelt != null &&
+                cordEntry.Icon != null && nativeBeltEntry.Icon != null &&
+                string.Equals(IconName(cordEntry.Icon),
+                    "KMG_Icon_cord-of-stubborn-resolve",
+                    StringComparison.Ordinal) &&
+                !ReferenceEquals(cordEntry.Icon, nativeBeltEntry.Icon);
 
             var records = new JArray();
             Render(request, records, "after-01-rapid-reload-feat-list.png",
@@ -150,6 +194,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "after-05-eastern-and-spear-items.png",
                 "INVENTORY", "Eastern weapons and Elven Branched Spear representatives",
                 scene => DrawInventory(scene, easternAndSpear));
+            Render(request, records,
+                "after-06-round2-weapon-focus-b-comparison.png",
+                "WEAPON FOCUS", "Native B comparators and the polished Blunderbuss row",
+                scene => DrawParameterRows(scene, blunderbussComparators,
+                    "64 x 64 LIVE SPRITE CELLS  |  FULL-BLEED TILE  |  NO BAKED FRAME"));
+            Render(request, records,
+                "after-07-round2-weapon-focus-mp-comparison.png",
+                "WEAPON FOCUS", "Native comparators around polished Musket and Pistol rows",
+                scene => DrawParameterRows(scene, musketPistolComparators,
+                    "64 x 64 LIVE SPRITE CELLS  |  NATIVE-SCALE GLYPH MASS"));
+            Render(request, records,
+                "after-08-round2-rapid-reload-shared-icons.png",
+                "RAPID RELOAD", "The same live B, M, and P sprites used by every feat family",
+                scene => DrawParameterRows(scene, rapidChoices,
+                    "REFERENCE-EQUAL ACROSS WEAPON FOCUS + 4 DEPENDENT FAMILIES"));
+            Render(request, records,
+                "after-09-round2-cord-equipped.png",
+                "EQUIPMENT", "Cord of Stubborn Resolve in the belt slot",
+                scene => DrawEquippedBelt(scene, cordEntry,
+                    "PROJECT CORD  |  DISTINCT LIVE ITEM SPRITE"));
+            Render(request, records,
+                "after-10-round2-cord-inventory.png",
+                "INVENTORY", "Cord of Stubborn Resolve beside its native belt comparator",
+                scene => DrawBeltInventory(scene,
+                    new[] { cordEntry, nativeBeltEntry }));
+            Render(request, records,
+                "after-11-round2-native-belt-equipped.png",
+                "EQUIPMENT", "Ordinary native +2 Constitution belt comparator",
+                scene => DrawEquippedBelt(scene, nativeBeltEntry,
+                    "UNMODIFIED NATIVE BELT  |  LIVE BLUEPRINT SPRITE"));
 
             RuntimeBuildIdentity identity = RuntimeBuildIdentity.Capture(
                 context.Assembly, context.ModEntry.Info.Version);
@@ -165,8 +239,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "runtimeIdentity", JObject.FromObject(identity) },
                 { "rapidReloadChoices", EntriesJson(rapidChoices) },
                 { "weaponFocusFirearmParameters", EntriesJson(weaponFocusChoices) },
+                { "weaponFocusBlunderbussComparators",
+                    EntriesJson(blunderbussComparators) },
+                { "weaponFocusMusketPistolComparators",
+                    EntriesJson(musketPistolComparators) },
                 { "supportedFirearmItems", EntriesJson(firearmItems) },
                 { "easternAndSpearRepresentatives", EntriesJson(easternAndSpear) },
+                { "cordAndNativeBelt",
+                    EntriesJson(new[] { cordEntry, nativeBeltEntry }) },
                 { "easternItemCount", easternAll.Length },
                 { "spearItemCount", spearAll.Length },
                 { "screenshots", records }
@@ -191,11 +271,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "all 30 Eastern and all 12 spear variants have loaded icons",
                 "eastern=" + easternAll.Length + ";spear=" + spearAll.Length,
                 easternExact, "complete live item catalogs");
+            Add(assertions, "round2-native-comparator-rows",
+                "Battle Axe, Bite, B and seven M/P neighborhood rows have icons",
+                Describe(blunderbussComparators.Concat(
+                    musketPistolComparators)), comparatorRowsExact,
+                "live native Weapon Focus GetFullSelectionItems rows");
+            Add(assertions, "round2-shared-firearm-monograms",
+                "each B/M/P Sprite reference is shared by Weapon Focus, Rapid Reload, and four dependent families",
+                Describe(weaponFocusChoices), sharedMonogramsExact,
+                "live BlueprintFeature Sprite reference equality");
+            Add(assertions, "round2-cord-and-native-belt-icons",
+                "Cord has its distinct project sprite and native donor keeps its own sprite",
+                Describe(new[] { cordEntry, nativeBeltEntry }), beltIconsExact,
+                "live BlueprintItemEquipmentBelt icon references");
             Add(assertions, "full-resolution-visual-evidence",
-                "five exact 1920x1200 PNG renders and one indexed manifest",
+                "eleven exact 1920x1200 PNG renders and one indexed manifest",
                 string.Join("|", records.Select(value =>
                     (string)value["fileName"]).ToArray()),
-                records.Count == 5 && records.All(value =>
+                records.Count == 11 && records.All(value =>
                     (int)value["width"] == Width &&
                     (int)value["height"] == Height &&
                     (long)value["bytes"] > 0) && File.Exists(indexPath),
@@ -227,6 +320,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Diagnostics = new List<string> {
                     "visualIndex=" + indexPath,
                     "nativeFeatNeighbors=" + ordinary.Length,
+                    "weaponFocusComparatorRows=" +
+                        (blunderbussComparators.Length +
+                            musketPistolComparators.Length),
                     "screenshots=" + records.Count },
                 Warnings = new List<string> {
                     "The PNGs are deterministic in-game UI facsimiles from live sprites, not screenshots of automated native-menu navigation and not mechanical correctness evidence." },
@@ -266,6 +362,56 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             return selected.Take(5).Select(value => FromFeature(value,
                 "Native feat")).ToArray();
+        }
+
+        private static Entry[] SelectParameterRows(FeatureUIData[] menu,
+            params string[] requestedNames)
+        {
+            var selected = new List<Entry>();
+            foreach (string requestedName in requestedNames)
+            {
+                string normalized = NormalizeMenuName(requestedName);
+                FeatureUIData[] matches = menu.Where(value =>
+                    string.Equals(NormalizeMenuName(value.Name), normalized,
+                        StringComparison.Ordinal)).ToArray();
+                if (matches.Length != 1)
+                    throw new InvalidOperationException(
+                        "Expected exactly one Weapon Focus row for " +
+                        requestedName + "; observed=" + matches.Length +
+                        "; available=" + string.Join("|", menu.Select(value =>
+                            value.Name).OrderBy(value => value,
+                                StringComparer.Ordinal).ToArray()));
+                FeatureUIData match = matches[0];
+                FeatureUIData rendered = match.Icon == null
+                    ? new FeatureUIData(match.Feature, match.Param)
+                    : match;
+                if (rendered.Icon == null)
+                    throw new InvalidOperationException(
+                        "Weapon Focus row has no native parameter icon: " +
+                        requestedName + ";identity=" +
+                        ParameterIdentity(match));
+                selected.Add(new Entry(match.Name, "Weapon Focus category",
+                    rendered.Icon, ParameterIdentity(match)));
+            }
+            return selected.ToArray();
+        }
+
+        private static string ParameterIdentity(FeatureUIData value)
+        {
+            if (value.Param.Blueprint != null)
+                return value.Param.Blueprint.name + ":" +
+                    value.Param.Blueprint.AssetGuid;
+            if (value.Param.WeaponCategory.HasValue)
+                return "WeaponCategory:" +
+                    value.Param.WeaponCategory.Value;
+            return "FeatureParam:" + value.Param.Value;
+        }
+
+        private static string NormalizeMenuName(string value)
+        {
+            return new string((value ?? string.Empty)
+                .Where(char.IsLetterOrDigit)
+                .Select(char.ToUpperInvariant).ToArray());
         }
 
         private static Entry[] SelectEasternAndSpearRepresentatives(
@@ -393,6 +539,85 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             scene.Text(footer, new Rect(200f, 965f, 1520f, 54f), 28f,
                 EvidenceScene.Parchment, true);
+        }
+
+        private static void DrawParameterRows(EvidenceScene scene,
+            Entry[] entries, string footer)
+        {
+            scene.Panel(new Rect(110f, 180f, 1700f, 830f));
+            int columns = entries.Length > 4 ? 2 : 1;
+            int rows = (entries.Length + columns - 1) / columns;
+            const float rowWidth = 760f;
+            const float rowHeight = 152f;
+            const float gapX = 70f;
+            const float gapY = 18f;
+            float startX = columns == 1 ? 580f : 165f;
+            float startY = 225f;
+            for (int index = 0; index < entries.Length; index++)
+            {
+                int column = index / rows;
+                int row = index % rows;
+                float x = startX + column * (rowWidth + gapX);
+                float y = startY + row * (rowHeight + gapY);
+                scene.Row(new Rect(x, y, rowWidth, rowHeight), false);
+                scene.Icon(entries[index].Icon, new Rect(x + 32f, y + 44f,
+                    64f, 64f));
+                scene.Text(entries[index].Name, new Rect(x + 132f, y + 25f,
+                    560f, 48f), 35f, EvidenceScene.Gold, false);
+                scene.Text(entries[index].Detail, new Rect(x + 132f, y + 72f,
+                    560f, 34f), 23f, EvidenceScene.Parchment, false);
+                scene.Text(IconName(entries[index].Icon),
+                    new Rect(x + 132f, y + 108f, 560f, 25f), 16f,
+                    EvidenceScene.Muted, false);
+            }
+            scene.Text(footer, new Rect(180f, 960f, 1560f, 40f), 24f,
+                EvidenceScene.Parchment, true);
+        }
+
+        private static void DrawEquippedBelt(EvidenceScene scene, Entry belt,
+            string footer)
+        {
+            scene.Panel(new Rect(390f, 210f, 1140f, 790f));
+            scene.Text("BELT SLOT", new Rect(560f, 265f, 800f, 52f), 38f,
+                EvidenceScene.Gold, true);
+            scene.Row(new Rect(660f, 345f, 600f, 350f), true);
+            scene.Icon(belt.Icon, new Rect(896f, 390f, 128f, 128f));
+            scene.Text(belt.Name, new Rect(720f, 550f, 480f, 60f), 38f,
+                EvidenceScene.Gold, true);
+            scene.Text(belt.Detail, new Rect(720f, 620f, 480f, 38f), 23f,
+                EvidenceScene.Parchment, true);
+            scene.Text("LIVE SPRITE DRAWN IN AN EXACT 128 x 128 CELL",
+                new Rect(480f, 760f, 960f, 42f), 26f,
+                EvidenceScene.Parchment, true);
+            scene.Text(footer, new Rect(480f, 855f, 960f, 42f), 24f,
+                EvidenceScene.Muted, true);
+        }
+
+        private static void DrawBeltInventory(EvidenceScene scene,
+            Entry[] entries)
+        {
+            scene.Panel(new Rect(180f, 220f, 1560f, 720f));
+            const float cardWidth = 650f;
+            const float cardHeight = 430f;
+            const float gap = 80f;
+            float startX = (Width - (cardWidth * 2f + gap)) / 2f;
+            for (int index = 0; index < entries.Length; index++)
+            {
+                float x = startX + index * (cardWidth + gap);
+                scene.InventorySlot(new Rect(x, 315f, cardWidth, cardHeight));
+                scene.Icon(entries[index].Icon, new Rect(x + 52f, 370f,
+                    128f, 128f));
+                scene.Text(entries[index].Name, new Rect(x + 220f, 355f,
+                    380f, 80f), 34f, EvidenceScene.Gold, true);
+                scene.Text(entries[index].Detail, new Rect(x + 220f, 450f,
+                    380f, 56f), 22f, EvidenceScene.Parchment, true);
+                scene.Text(IconName(entries[index].Icon),
+                    new Rect(x + 40f, 565f, cardWidth - 80f, 34f), 18f,
+                    EvidenceScene.Muted, true);
+                scene.Text("EXACT 128 x 128 LIVE-SPRITE CELL",
+                    new Rect(x + 60f, 650f, cardWidth - 120f, 32f), 21f,
+                    EvidenceScene.Parchment, true);
+            }
         }
 
         private static void DrawInventory(EvidenceScene scene, Entry[] entries)

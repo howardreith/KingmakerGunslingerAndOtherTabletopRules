@@ -1,0 +1,82 @@
+{
+  "bundle": "kingmaker-icon-polish-round-2-codex-bundle",
+  "purpose": "Narrow second-pass polish for firearm category icons and Cord of Stubborn Resolve",
+  "branch_to_whitelist": "codex/icon-art-polish-round-2",
+  "files": [
+    {
+      "path": "CODEX_PROMPT.md",
+      "bytes": 14746,
+      "sha256": "2dbd1e34c3d892614f510f5c048478bd6ed138b7a5345d403bab8189e1f878d0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1310,
+      "sha256": "fd966a21799f1e896088e222da8106a9a4f9736808d5fcccda8d50d11698f20d"
+    },
+    {
+      "path": "VISUAL_NOTES.md",
+      "bytes": 2817,
+      "sha256": "189e81a1a1b780c932a766284ea6854733ab827c72b736283b14bc4aef2c1599"
+    },
+    {
+      "path": "references/CONTACT_SHEET.png",
+      "bytes": 784451,
+      "sha256": "a90fb44b3a754ac7ce59cafd456316fdf7fb68b6958b4c128ba67cffec07a2cd"
+    },
+    {
+      "path": "references/after/README.md",
+      "bytes": 140,
+      "sha256": "f1793f54d6a4d93ecb527af5d4c985bc4c92ecdaff641340a13a4fa1ca17cde6"
+    },
+    {
+      "path": "references/crops/01_cord_current_top_down_circle.png",
+      "bytes": 215854,
+      "sha256": "2c7699857daa09b998c845823b3d64e81777d89fb1a2e39f55de9495f31c335f"
+    },
+    {
+      "path": "references/crops/02_native_belt_reference_shallow_oblique.png",
+      "bytes": 208546,
+      "sha256": "9e8be0467ce6cdebf011f83b8a3763686a133609b14acb569930ea83b2f222a1"
+    },
+    {
+      "path": "references/crops/03_native_belt_reference_front_depth.png",
+      "bytes": 207617,
+      "sha256": "4ebb53c1dd0e574ff0af36aab1847dbdab4648fc544508f24a53c1dcb9fd917a"
+    },
+    {
+      "path": "references/crops/04_blunderbuss_vs_battle_axe_and_bite.png",
+      "bytes": 422596,
+      "sha256": "da02bc42a44b417a874a4b8b70e26268fae711a39bbfca004680748642af145d"
+    },
+    {
+      "path": "references/crops/05_musket_pistol_vs_native_category_icons.png",
+      "bytes": 573590,
+      "sha256": "c2ddc85626c8fd067c81f7ccd541bd48e9f6b24039a2ae2b914c508ff98d678e"
+    },
+    {
+      "path": "references/originals/01_cord_current_equipped.png",
+      "bytes": 3677649,
+      "sha256": "ef65c0d99d0f09f2e745ed5a394930576f14bd911562969c23a8fdc3415c9409"
+    },
+    {
+      "path": "references/originals/02_native_belt_reference_ornate.png",
+      "bytes": 3712599,
+      "sha256": "eda6572012c17b9e5c5ddbfcf1a0f7bb4cac6ce639d54883a4a304d3cc1520f8"
+    },
+    {
+      "path": "references/originals/03_native_belt_reference_buckle.png",
+      "bytes": 3648746,
+      "sha256": "6da84e3b811789a92fb3fa9118a1e1376a614fd300ae1569e1cdaa7f94c4d0f6"
+    },
+    {
+      "path": "references/originals/04_firearm_category_blunderbuss_reference.png",
+      "bytes": 2981074,
+      "sha256": "8b6ef3cd127d120f2f28c80eb94665112a7d0400844ac737635a521036331511"
+    },
+    {
+      "path": "references/originals/05_firearm_category_musket_pistol_reference.png",
+      "bytes": 2993069,
+      "sha256": "90893301e3bf82cb2b58849a57aa45c3b94976b7cb11b19fb76913b096f1ca1a"
+    }
+  ]
+}

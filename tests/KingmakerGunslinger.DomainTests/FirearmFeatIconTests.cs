@@ -88,8 +88,9 @@ namespace KingmakerGunslinger.DomainTests
                     "A retired player-facing selector icon returned: " + retired);
             string spec = File.ReadAllText(Path.Combine(root, "assets-source",
                 "original-icons", "firearm-feats", "icon-spec.json"));
-            foreach (string token in new[] { "\"schemaVersion\": 3",
-                "\"P\"", "\"M\"", "\"B\"", "full-square",
+            foreach (string token in new[] { "\"schemaVersion\": 4",
+                "\"P\"", "\"M\"", "\"B\"", "full-bleed",
+                "\"bakedFrame\": false", "no baked border",
                 "original System.Drawing vector paths", "#A6533F",
                 "no blue corners", "retiredPlayerFacingAssets" })
                 Assertions.True(spec.Contains(token),
@@ -107,13 +108,18 @@ namespace KingmakerGunslinger.DomainTests
                 "icon-art", "New-IconOverhaulAssets.ps1"));
             foreach (string token in new[] { "Draw-SelectorField",
                 "Draw-OriginalMonogram", "Draw-RapidReloadGlyph",
-                "firearm-feat-icon-map.png", "HighQualityBicubic" })
+                "Get-MonogramTransform", "Get-MonogramAlphaBounds",
+                "glyphAlphaBounds", "firearm-feat-icon-map.png",
+                "HighQualityBicubic" })
                 Assertions.True(generator.Contains(token),
                     "Deterministic icon-overhaul generator lacks: " + token);
             Assertions.False(generator.Contains("FillEllipse($badge") ||
                 generator.Contains("cornerBlue") || generator.Contains("Segoe Script") ||
-                generator.Contains("Draw-RapidReloadField"),
-                "Rejected badge, blue-corner, font, or Rapid Reload card construction returned.");
+                generator.Contains("Draw-RapidReloadField") ||
+                generator.Contains("$graphics.DrawRectangle($outer") ||
+                generator.Contains("$graphics.DrawRectangle($inner") ||
+                generator.Contains("$ornament = [Drawing.Pen]"),
+                "Rejected badge, frame, ornament, font, or Rapid Reload card construction returned.");
             Assertions.True(spec.Contains(
                 "transparent canvas matching neighboring vanilla feat glyphs"),
                 "Rapid Reload does not declare the live-verified transparent feat-glyph treatment.");
@@ -175,6 +181,23 @@ namespace KingmakerGunslinger.DomainTests
                 "after-03-weapon-focus-firearm-choices.png",
                 "after-04-supported-firearm-items.png",
                 "after-05-eastern-and-spear-items.png",
+                "after-06-round2-weapon-focus-b-comparison.png",
+                "after-07-round2-weapon-focus-mp-comparison.png",
+                "after-08-round2-rapid-reload-shared-icons.png",
+                "after-09-round2-cord-equipped.png",
+                "after-10-round2-cord-inventory.png",
+                "after-11-round2-native-belt-equipped.png",
+                "SelectParameterRows", "Battle Axe", "Bite", "Long Bow",
+                "Longspear", "Longsword", "Nodachi", "Punching Dagger",
+                "value.Param != null",
+                "BlueprintItemEquipmentBelt", "BeltOfConstitution2",
+                "KMG_Icon_cord-of-stubborn-resolve",
+                "new FeatureUIData(match.Feature, match.Param)",
+                "value.Param.WeaponCategory.HasValue",
+                "ReferenceEquals(",
+                "feats.WeaponFocusChoices[iconIndex].Icon",
+                "feats.DependentChoices.All", "64f, 64f", "128f, 128f",
+                "records.Count == 11",
                 "supporting visual evidence only", "Camera", "RenderTexture" })
                 Assertions.True(scenario.Contains(token),
                     "Runtime icon evidence lacks: " + token);
@@ -182,6 +205,30 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("Input.") || scenario.Contains("SendKeys") ||
                 scenario.Contains("SaveGame") || scenario.Contains("LoadGame"),
                 "Runtime visual evidence introduced UI input, screen navigation, or save access.");
+
+            string polishEvidence = File.ReadAllText(Path.Combine(root,
+                "tools", "icon-art", "New-IconPolishRound2Evidence.ps1"));
+            foreach (string token in new[] {
+                "originals\\01_cord_current_equipped.png",
+                "originals\\02_native_belt_reference_ornate.png",
+                "originals\\03_native_belt_reference_buckle.png",
+                "originals\\04_firearm_category_blunderbuss_reference.png",
+                "originals\\05_firearm_category_musket_pistol_reference.png",
+                "crops\\01_cord_current_top_down_circle.png",
+                "crops\\02_native_belt_reference_shallow_oblique.png",
+                "crops\\03_native_belt_reference_front_depth.png",
+                "crops\\04_blunderbuss_vs_battle_axe_and_bite.png",
+                "crops\\05_musket_pistol_vs_native_category_icons.png",
+                "selectorJudgmentSizes = @(64, 32)",
+                "cordJudgmentSizes = @(128, 64)",
+                "exact-size-preview.png",
+                "runtime-after", "Copy-Item -LiteralPath",
+                "sourceRecord.sha256" })
+                Assertions.True(polishEvidence.Contains(token),
+                    "Round 2 evidence pipeline lacks: " + token);
+            Assertions.False(polishEvidence.Contains("ScreenCapture") ||
+                polishEvidence.Contains("SendKeys"),
+                "Round 2 evidence curation must not navigate the native UI.");
 
             string catalog = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",

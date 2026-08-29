@@ -1,0 +1,131 @@
+{
+    "schemaVersion":  1,
+    "title":  "Kingmaker Gunslinger icon polish Round 2 exact-size preview",
+    "inputCount":  10,
+    "fullResolutionInputCount":  5,
+    "focusedCropInputCount":  5,
+    "selectorJudgmentSizes":  [
+                                  64,
+                                  32
+                              ],
+    "cordJudgmentSizes":  [
+                              128,
+                              64
+                          ],
+    "inputs":  [
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/originals/01_cord_current_equipped.png",
+                       "role":  "supplied-original",
+                       "width":  1920,
+                       "height":  1200,
+                       "sha256":  "ef65c0d99d0f09f2e745ed5a394930576f14bd911562969c23a8fdc3415c9409"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/originals/02_native_belt_reference_ornate.png",
+                       "role":  "supplied-original",
+                       "width":  1920,
+                       "height":  1200,
+                       "sha256":  "eda6572012c17b9e5c5ddbfcf1a0f7bb4cac6ce639d54883a4a304d3cc1520f8"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/originals/03_native_belt_reference_buckle.png",
+                       "role":  "supplied-original",
+                       "width":  1920,
+                       "height":  1200,
+                       "sha256":  "6da84e3b811789a92fb3fa9118a1e1376a614fd300ae1569e1cdaa7f94c4d0f6"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/originals/04_firearm_category_blunderbuss_reference.png",
+                       "role":  "supplied-original",
+                       "width":  1920,
+                       "height":  1200,
+                       "sha256":  "8b6ef3cd127d120f2f28c80eb94665112a7d0400844ac737635a521036331511"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/originals/05_firearm_category_musket_pistol_reference.png",
+                       "role":  "supplied-original",
+                       "width":  1920,
+                       "height":  1200,
+                       "sha256":  "90893301e3bf82cb2b58849a57aa45c3b94976b7cb11b19fb76913b096f1ca1a"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/crops/01_cord_current_top_down_circle.png",
+                       "role":  "supplied-crop",
+                       "width":  456,
+                       "height":  640,
+                       "sha256":  "2c7699857daa09b998c845823b3d64e81777d89fb1a2e39f55de9495f31c335f"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/crops/02_native_belt_reference_shallow_oblique.png",
+                       "role":  "supplied-crop",
+                       "width":  456,
+                       "height":  640,
+                       "sha256":  "9e8be0467ce6cdebf011f83b8a3763686a133609b14acb569930ea83b2f222a1"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/crops/03_native_belt_reference_front_depth.png",
+                       "role":  "supplied-crop",
+                       "width":  456,
+                       "height":  640,
+                       "sha256":  "4ebb53c1dd0e574ff0af36aab1847dbdab4648fc544508f24a53c1dcb9fd917a"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/crops/04_blunderbuss_vs_battle_axe_and_bite.png",
+                       "role":  "supplied-crop",
+                       "width":  900,
+                       "height":  849,
+                       "sha256":  "da02bc42a44b417a874a4b8b70e26268fae711a39bbfca004680748642af145d"
+                   },
+                   {
+                       "file":  "docs/reference/icon-polish-round-2/references/crops/05_musket_pistol_vs_native_category_icons.png",
+                       "role":  "supplied-crop",
+                       "width":  750,
+                       "height":  1157,
+                       "sha256":  "c2ddc85626c8fd067c81f7ccd541bd48e9f6b24039a2ae2b914c508ff98d678e"
+                   }
+               ],
+    "outputs":  [
+                    {
+                        "file":  "assets/game/icons/firearm-monogram-blunderbuss.png",
+                        "role":  "polished-selector-B",
+                        "width":  64,
+                        "height":  64,
+                        "sha256":  "65272c2ccfca2c3a766e0b11767e44ea65b1e9b05038dcb7d07c97f3fdce89f7"
+                    },
+                    {
+                        "file":  "assets/game/icons/firearm-monogram-musket.png",
+                        "role":  "polished-selector-M",
+                        "width":  64,
+                        "height":  64,
+                        "sha256":  "7bb189ad50bc578217adeca1d280e31312053a13cddf112760a5611eb79a82ee"
+                    },
+                    {
+                        "file":  "assets/game/icons/firearm-monogram-pistol.png",
+                        "role":  "polished-selector-P",
+                        "width":  64,
+                        "height":  64,
+                        "sha256":  "ec9ed32c71b137f8d8b65184b6e92e946d034a2ef329cd0f8fe7f52194e3f07d"
+                    },
+                    {
+                        "file":  "assets/game/icons/cord-of-stubborn-resolve.png",
+                        "role":  "polished-cord",
+                        "width":  128,
+                        "height":  128,
+                        "sha256":  "101e1b2fbd7083c5db20be1a0ee40840bc8201520dff83be0acd9bae06f91a6a"
+                    },
+                    {
+                        "file":  "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-oblique-source.png",
+                        "role":  "polished-cord-source",
+                        "width":  1672,
+                        "height":  941,
+                        "sha256":  "54bb3426f8cd651758c6bce733904045fb30a84dd7b452d72bdf111abeb481e1"
+                    }
+                ],
+    "preview":  {
+                    "file":  "docs/reports/icon-polish-round-2/exact-size-preview.png",
+                    "role":  "exact-size-preview",
+                    "width":  2800,
+                    "height":  1800,
+                    "sha256":  "74de22dfd3a010a9c1d0103069e08189e8aa387bcb24e763dd2af309b556a1f7"
+                }
+}

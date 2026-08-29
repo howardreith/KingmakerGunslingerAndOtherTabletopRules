@@ -143,41 +143,27 @@ function Draw-SelectorField([Drawing.Graphics]$graphics, [int]$seed) {
     $fill = [Drawing.Drawing2D.LinearGradientBrush]::new(
         [Drawing.PointF]::new(5, 3), [Drawing.PointF]::new(59, 61),
         (Convert-HexColor '#2B1716'), (Convert-HexColor '#754A32'))
-    $outer = [Drawing.Pen]::new((Convert-HexColor '#1A0F0D'), 2.2)
-    $inner = [Drawing.Pen]::new((Convert-HexColor '#B28B55'), 1.15)
     try {
         $graphics.FillRectangle($fill, 0, 0, 64, 64)
-        $graphics.DrawRectangle($outer, 1.1, 1.1, 61.8, 61.8)
-        $graphics.DrawRectangle($inner, 4.0, 4.0, 56.0, 56.0)
     }
-    finally { $fill.Dispose(); $outer.Dispose(); $inner.Dispose() }
+    finally { $fill.Dispose() }
 
     $random = [Random]::new($seed)
-    for ($index = 0; $index -lt 90; $index++) {
+    for ($index = 0; $index -lt 110; $index++) {
         $alpha = 5 + $random.Next(12)
         $tone = if (($index % 3) -eq 0) {
             [Drawing.Color]::FromArgb($alpha, 225, 181, 119)
         } else { [Drawing.Color]::FromArgb($alpha, 20, 9, 8) }
         $brush = [Drawing.SolidBrush]::new($tone)
         try {
-            $x = 5 + $random.NextDouble() * 54
-            $y = 5 + $random.NextDouble() * 54
+            $x = $random.NextDouble() * 64
+            $y = $random.NextDouble() * 64
             $radius = 0.25 + $random.NextDouble() * 0.8
             $graphics.FillEllipse($brush, $x, $y, $radius, $radius)
         }
         finally { $brush.Dispose() }
     }
 
-    $ornament = [Drawing.Pen]::new((Convert-HexColor '#D1AE72'), 1.15)
-    try {
-        $graphics.DrawLine($ornament, 7, 14, 7, 7)
-        $graphics.DrawLine($ornament, 7, 7, 14, 7)
-        $graphics.DrawLine($ornament, 50, 57, 57, 57)
-        $graphics.DrawLine($ornament, 57, 57, 57, 50)
-        $graphics.DrawBezier($ornament, 7, 50, 11, 57, 16, 57, 19, 56)
-        $graphics.DrawBezier($ornament, 45, 8, 50, 7, 55, 12, 57, 16)
-    }
-    finally { $ornament.Dispose() }
 }
 
 function New-MonogramPath([string]$letter) {
@@ -217,16 +203,42 @@ function New-MonogramPath([string]$letter) {
     return $path
 }
 
+function Get-MonogramTransform([string]$letter) {
+    switch ($letter) {
+        'P' { $scale = 0.66; $offsetX = -0.75; $offsetY = -0.5 }
+        'M' { $scale = 0.62; $offsetX = -0.75; $offsetY = -1.0 }
+        'B' { $scale = 0.66; $offsetX = -0.5; $offsetY = -0.5 }
+        default { throw 'Unsupported original monogram transform.' }
+    }
+    return [Drawing.Drawing2D.Matrix]::new(
+        [single]$scale, 0, 0, [single]$scale,
+        [single](32 - 32 * $scale + $offsetX),
+        [single](32 - 32 * $scale + $offsetY))
+}
+
+function New-MonogramFlourishPath {
+    $path = [Drawing.Drawing2D.GraphicsPath]::new()
+    $path.AddBezier(11, 52, 24, 58, 39, 44, 53, 49)
+    return $path
+}
+
 function Draw-OriginalMonogram(
     [Drawing.Graphics]$graphics, [string]$letter) {
     $path = New-MonogramPath $letter
+    $flourishPath = New-MonogramFlourishPath
+    $matrix = Get-MonogramTransform $letter
+    $path.Transform($matrix)
+    $flourishPath.Transform($matrix)
     $shadowPath = [Drawing.Drawing2D.GraphicsPath]$path.Clone()
-    $matrix = [Drawing.Drawing2D.Matrix]::new()
-    $matrix.Translate(1.0, 1.2)
-    $shadowPath.Transform($matrix)
-    $shadow = [Drawing.Pen]::new((Convert-HexColor '#170C0A'), 6.4)
-    $gold = [Drawing.Pen]::new((Convert-HexColor '#D2AE73'), 4.35)
-    $highlight = [Drawing.Pen]::new((Convert-HexColor '#F0D69B'), 1.15)
+    $flourishShadowPath =
+        [Drawing.Drawing2D.GraphicsPath]$flourishPath.Clone()
+    $shadowMatrix = [Drawing.Drawing2D.Matrix]::new()
+    $shadowMatrix.Translate(0.8, 0.9)
+    $shadowPath.Transform($shadowMatrix)
+    $flourishShadowPath.Transform($shadowMatrix)
+    $shadow = [Drawing.Pen]::new((Convert-HexColor '#170C0A'), 3.9)
+    $gold = [Drawing.Pen]::new((Convert-HexColor '#D2AE73'), 2.6)
+    $highlight = [Drawing.Pen]::new((Convert-HexColor '#F0D69B'), 0.75)
     foreach ($pen in @($shadow, $gold, $highlight)) {
         $pen.StartCap = [Drawing.Drawing2D.LineCap]::Round
         $pen.EndCap = [Drawing.Drawing2D.LineCap]::Round
@@ -237,19 +249,38 @@ function Draw-OriginalMonogram(
         $graphics.DrawPath($gold, $path)
         $graphics.DrawPath($highlight, $path)
         $flourishShadow = [Drawing.Pen]::new(
-            [Drawing.Color]::FromArgb(135, 20, 10, 8), 3.8)
-        $flourish = [Drawing.Pen]::new((Convert-HexColor '#C49B62'), 2.2)
+            [Drawing.Color]::FromArgb(135, 20, 10, 8), 2.6)
+        $flourish = [Drawing.Pen]::new((Convert-HexColor '#C49B62'), 1.5)
+        foreach ($pen in @($flourishShadow, $flourish)) {
+            $pen.StartCap = [Drawing.Drawing2D.LineCap]::Round
+            $pen.EndCap = [Drawing.Drawing2D.LineCap]::Round
+            $pen.LineJoin = [Drawing.Drawing2D.LineJoin]::Round
+        }
         try {
-            $graphics.DrawBezier($flourishShadow,
-                12, 53, 25, 59, 39, 45, 53, 50)
-            $graphics.DrawBezier($flourish,
-                11, 52, 24, 58, 39, 44, 53, 49)
+            $graphics.DrawPath($flourishShadow, $flourishShadowPath)
+            $graphics.DrawPath($flourish, $flourishPath)
         }
         finally { $flourishShadow.Dispose(); $flourish.Dispose() }
     }
     finally {
-        $path.Dispose(); $shadowPath.Dispose(); $matrix.Dispose()
+        $path.Dispose(); $flourishPath.Dispose()
+        $shadowPath.Dispose(); $flourishShadowPath.Dispose()
+        $matrix.Dispose(); $shadowMatrix.Dispose()
         $shadow.Dispose(); $gold.Dispose(); $highlight.Dispose()
+    }
+}
+
+function Get-MonogramAlphaBounds([string]$letter) {
+    $bitmap = [Drawing.Bitmap]::new(64, 64,
+        [Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    $graphics = New-Graphics $bitmap
+    try {
+        Draw-OriginalMonogram $graphics $letter
+        return Get-AlphaBounds $bitmap
+    }
+    finally {
+        $graphics.Dispose()
+        $bitmap.Dispose()
     }
 }
 
@@ -538,7 +569,20 @@ New-FirearmFeatMap
 
 $records = [Collections.Generic.List[object]]::new()
 foreach ($entry in $featEntries) {
-    $records.Add((Get-ImageRecord $entry.Key (Join-Path $featSource ('sources/' + $entry.Key + '-source.png')) 'original-vector-path' 64)) | Out-Null
+    $record = Get-ImageRecord $entry.Key (
+        Join-Path $featSource ('sources/' + $entry.Key + '-source.png')) (
+        'original-vector-path') 64
+    if (-not $entry.Rapid) {
+        $glyphBounds = Get-MonogramAlphaBounds $entry.Letter
+        $record['glyphAlphaBounds'] = @(
+            $glyphBounds.X, $glyphBounds.Y,
+            $glyphBounds.Width, $glyphBounds.Height)
+        $record['glyphWidthPercent'] =
+            [Math]::Round(100 * $glyphBounds.Width / 64.0, 2)
+        $record['glyphHeightPercent'] =
+            [Math]::Round(100 * $glyphBounds.Height / 64.0, 2)
+    }
+    $records.Add($record) | Out-Null
 }
 foreach ($entry in $itemEntries) {
     $records.Add((Get-ImageRecord $entry.Key (Join-Path $root $entry.Source) $entry.Kind 128)) | Out-Null
@@ -555,7 +599,8 @@ $manifest = [ordered]@{
     featSourceDimensions = @($sourceCanvas, $sourceCanvas)
     featRuntimeDimensions = @(64, 64)
     itemRuntimeDimensions = @(128, 128)
-    selectorStyle = 'full-square burgundy-brown gradient; original gold path monogram'
+    selectorStyle =
+        'full-bleed burgundy-brown gradient; no baked frame; restrained original gold path monogram'
     rapidReloadStyle =
         'transparent canvas; muted #A6533F enlarged circular arrow and tool; no blue corners'
     itemFit = 'alpha-bounds fit with 5px runtime safety margin'
