@@ -31,12 +31,12 @@ transient action debt; it does not alter either feat or automation mode.
 ## Clean installation
 
 1. Back up any saves you intend to keep outside the game's active save folder.
-2. Install the standalone `KingmakerGunslinger-0.0.107-icon-art-overhaul.zip`
+2. Install the standalone `KingmakerGunslinger-0.0.108-icon-art-overhaul.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.107 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.108 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -216,7 +216,7 @@ by itself prove campaign or cross-mod compatibility.
 ## Optional Craft Magic Items integration
 
 When the Unity Mod Manager entry with ID `CraftMagicItems` is installed and
-active, Gunslinger 0.0.107 probes `CraftMagicItems.Main` and enables the bridge
+active, Gunslinger 0.0.108 probes `CraftMagicItems.Main` and enables the bridge
 only if the required 2.1.0 data-loading, recipe, indexing, crafting, and Harmony
 surfaces match. There is no required assembly reference: Gunslinger continues
 normally when CMI is absent or disabled, and an incompatible external contract
@@ -232,7 +232,7 @@ Repaint use KMG's renderer while a category selection changed, producing a
 state. Version 0.0.99 removed that prefix and passed its first human ammunition
 UI interaction test: the category remained visible and crafting worked.
 Version 0.0.100 preserved that architecture through final human acceptance;
-the 0.0.107 release retains that accepted behavior. CMI always owns its top-level
+the 0.0.108 release retains that accepted behavior. CMI always owns its top-level
 Mundane Crafting and parent/subtype selectors; the bridge branches only after
 CMI has finalized the exact selected data and immediately before its ordinary
 equipment-only `NewItemBaseIDs` path. The ammunition panel returns to CMI's
@@ -311,7 +311,7 @@ changing module state.
 
 CMI UI release-regression checklist for one fresh process:
 
-1. Confirm CMI reports Kingmaker Gunslinger 0.0.107.
+1. Confirm CMI reports Kingmaker Gunslinger 0.0.108.
 2. Open Craft Mundane Items.
 3. Confirm Firearms offers exactly Pistol, Musket, and Blunderbuss.
 4. Confirm Advanced Rifle and Advanced Revolver are absent.

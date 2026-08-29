@@ -1,12 +1,14 @@
 # Kingmaker Gunslinger
 
-Version `0.0.107` makes the official firearm set exactly Pistol, Musket, and
-Blunderbuss and delivers the native-style feat, selector, firearm, Eastern
-weapon, and Elven Branched Spear icon overhaul. Stable Rifle/Revolver identities
-remain hidden but readable for old saves and deliberate Toy Box use. The release
-retains 0.0.106's native fatigue-authority repair: ordinary canonical Fatigued
-refreshes remain Fatigued, exact Acadamae escalation remains request-local, and
-Cord of Stubborn Resolve retains its accepted post-success behavior.
+Version `0.0.108` polishes the accepted icon overhaul: Blunderbuss, Musket, and
+Pistol selector monograms now match native category scale without a baked inset
+frame, and Cord of Stubborn Resolve now reads as an oblique braided belt rather
+than a top-down ring. The official firearm set remains exactly Pistol, Musket,
+and Blunderbuss; Stable Rifle/Revolver identities remain hidden but readable
+for old saves and deliberate Toy Box use. The release retains 0.0.106's native
+fatigue-authority repair: ordinary canonical Fatigued refreshes remain
+Fatigued, exact Acadamae escalation remains request-local, and Cord of Stubborn
+Resolve retains its accepted post-success behavior.
 
 This release also retains 0.0.105's Brown-Fur ordering, player-facing presentation,
 and 30-item fixed-loot distribution; the 0.0.104 same-turn summon correction;

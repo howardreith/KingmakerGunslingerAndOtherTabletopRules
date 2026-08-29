@@ -130,7 +130,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("icon-art-overhaul"
+    package_suffix = ("icon-art-polish-round-2"
+        if VERSION == "0.0.108" else "icon-art-overhaul"
         if VERSION == "0.0.107" else "fatigue-authority-repair"
         if VERSION == "0.0.106" else "player-facing-presentation-item-discoverability"
         if VERSION == "0.0.105" else "summon-same-turn-activation"

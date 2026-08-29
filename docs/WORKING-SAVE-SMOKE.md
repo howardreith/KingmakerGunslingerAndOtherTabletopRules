@@ -3,8 +3,8 @@
 `working-save-smoke` is the guarded, autonomous, non-mutating qualification
 scenario for `KMG_AUTOMATION_WORKING`. It requires the caller's exact active
 mod version and launches through Steam App ID 640820. The receiver-bound
-mechanism was introduced and first qualified in 0.0.30; the 0.0.107 icon-art
-release retains the same fail-closed contract.
+mechanism was introduced and first qualified in 0.0.30; the 0.0.108 icon-art
+polish release retains the same fail-closed contract.
 
 ## Authoritative contracts
 
@@ -83,7 +83,7 @@ Canonical unattended command:
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 `
   -Scenario working-save-smoke `
-  -ExpectedVersion 0.0.107 `
+  -ExpectedVersion 0.0.108 `
   -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true `
   -Confirm:$false

@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.107-icon-art-overhaul",
-  "version": "0.0.107",
+  "milestone": "0.0.108-icon-art-polish-round-2",
+  "version": "0.0.108",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -686,6 +686,19 @@
     "spearItemCount": 12,
     "retiredSelectorIconCount": 2,
     "guardedVisualEvidencePass": true,
+    "workingSaveSmokePass": true
+  },
+  "iconPolishRoundTwo108": {
+    "deterministicTestCount": 1325,
+    "protectedFileCount": 30,
+    "selectorIconCount": 3,
+    "suppliedOriginalCount": 5,
+    "suppliedCropCount": 5,
+    "curatedRuntimeFrameCount": 6,
+    "cordRuntimeAspect": 1.8125,
+    "guardedVisualEvidencePass": true,
+    "dependentFeatRuntimePass": true,
+    "cordRuntimePass": true,
     "workingSaveSmokePass": true
   }
 }

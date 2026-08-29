@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.107` targets:
+Kingmaker Gunslinger `0.0.108` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -73,7 +73,7 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.107 icon-art overhaul completed source, package, and guarded
+The 0.0.108 icon-art polish Round 2 completed source, package, and guarded
 runtime qualification and is owner-approved for publication through this
 workflow.
 
@@ -121,10 +121,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.107 `
+gh release download v0.0.108 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.107-icon-art-overhaul.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.107"
+  --pattern 'KingmakerGunslinger-0.0.108-icon-art-polish-round-2.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.108"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The
