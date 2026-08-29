@@ -6,7 +6,7 @@ namespace KingmakerGunslinger.Firearms
     internal enum ProductionFirearmAcquisitionRole
     {
         OrdinaryCampaignCraftingBase = 0,
-        SupportedRecognitionOnly = 1
+        LegacyRecognitionOnly = 1
     }
 
     /// <summary>

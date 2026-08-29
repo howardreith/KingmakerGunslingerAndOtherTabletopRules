@@ -45,7 +45,7 @@ def validate(root: Path) -> None:
     policy = require_tokens(root / (
         "src/KingmakerGunslinger/CraftMagicItemsCompatibility/"
         "CraftMagicItemsCompatibilityPolicy.cs"),
-        "SupportedRecognitionOnly", "AmmunitionTimedProjectTarget = 5",
+        "LegacyRecognitionOnly", "AmmunitionTimedProjectTarget = 5",
         "ValueDerivedTarget", "TimedProjectTarget",
         "NormalizeAmmunitionProjectTarget",
         "IsInternalEnchantmentPresentationMarker")

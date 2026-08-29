@@ -39,12 +39,12 @@ namespace KingmakerGunslinger.DomainTests
                 "Catalog factory reused a definition instance.");
             Assertions.Equal(first, second, "Fresh canonical specs must compare equal.");
             Assertions.Equal(ProductionFirearmAcquisitionRole
-                    .SupportedRecognitionOnly,
+                    .LegacyRecognitionOnly,
                 ProductionFirearmCatalog.CreateAdvancedRifle()
                     .AcquisitionRole,
                 "Advanced Rifle became an ordinary campaign crafting base.");
             Assertions.Equal(ProductionFirearmAcquisitionRole
-                    .SupportedRecognitionOnly,
+                    .LegacyRecognitionOnly,
                 ProductionFirearmCatalog.CreateAdvancedRevolver()
                     .AcquisitionRole,
                 "Advanced Revolver became an ordinary campaign crafting base.");

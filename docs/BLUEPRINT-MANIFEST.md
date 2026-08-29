@@ -165,10 +165,10 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Test.FirearmRepairKitItem` | `f2b564234b8a4b0d88a7a46128556bef` | `BlueprintItem` | Active | Firearm Repair Kit |
 | `KMG.Test.OverhaulAbility` | `8a0ba821382640b58ec9ff168ed778a5` | `BlueprintAbility` | Active | Full-round same-item Overhaul |
 | `KMG.Test.RepairAbility` | `c914b3c0786463b7a1e17e47447ee5b1` | `BlueprintAbility` | Active | Full-round same-item ordinary Repair |
-| `KMG.Firearms.AdvancedRifleWeaponType` | `df5e6a66bc494514a740b674ef84c5ba` | `BlueprintWeaponType` | Active | Advanced Rifle type |
-| `KMG.Firearms.AdvancedRifleItem` | `a267e7bbc10e425f8adb87844d572b29` | `BlueprintItemWeapon` | Active | Advanced Rifle item |
-| `KMG.Firearms.AdvancedRevolverWeaponType` | `a7d3b805c579488eaf91e840896f5d80` | `BlueprintWeaponType` | Active | Six-chamber Advanced Revolver type |
-| `KMG.Firearms.AdvancedRevolverItem` | `8ed461fbcc154c51b07e5549211e9f5e` | `BlueprintItemWeapon` | Active | Advanced Revolver item |
+| `KMG.Firearms.AdvancedRifleWeaponType` | `df5e6a66bc494514a740b674ef84c5ba` | `BlueprintWeaponType` | Active legacy | Hidden Rifle type retained for old-save/Toy Box recognition; not published or ordinarily acquired |
+| `KMG.Firearms.AdvancedRifleItem` | `a267e7bbc10e425f8adb87844d572b29` | `BlueprintItemWeapon` | Active legacy | Hidden Rifle item retained for old-save/Toy Box recognition; not published or ordinarily acquired |
+| `KMG.Firearms.AdvancedRevolverWeaponType` | `a7d3b805c579488eaf91e840896f5d80` | `BlueprintWeaponType` | Active legacy | Hidden Revolver type retained for old-save/Toy Box recognition; not published or ordinarily acquired |
+| `KMG.Firearms.AdvancedRevolverItem` | `8ed461fbcc154c51b07e5549211e9f5e` | `BlueprintItemWeapon` | Active legacy | Hidden Revolver item retained for old-save/Toy Box recognition; not published or ordinarily acquired |
 | `KMG.Deeds.PistolWhipFeature` | `aa94b21dcaa64fcaa0483c9774a5ee75` | `BlueprintFeature` | Active | Level-three deed grant |
 | `KMG.Deeds.PistolWhipAbility` | `9c011fb0a9d34a78b93f6bec673f8210` | `BlueprintAbility` | Active | Standard-action melee attack and Trip |
 | `KMG.Deeds.PistolWhipOneHandedType` | `b49cca444edd4c0998f2c9d744b15cfa` | `BlueprintWeaponType` | Active | Hidden 1d6 melee surrogate type |
@@ -179,8 +179,8 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Classes.GunTrainingPistol` | `58b90ab430a249a8a482eaf27b65d874` | `BlueprintFeature` | Active | Pistol Gun Training |
 | `KMG.Classes.GunTrainingMusket` | `970bdf4a11ea4f758f9e6ac3fd2ee716` | `BlueprintFeature` | Active | Musket Gun Training |
 | `KMG.Classes.GunTrainingBlunderbuss` | `dc258ec601b04745a5b613d2fc095894` | `BlueprintFeature` | Active | Blunderbuss Gun Training |
-| `KMG.Classes.GunTrainingRifle` | `144876ce59f847a39031e043fcd939d2` | `BlueprintFeature` | Active | Rifle Gun Training |
-| `KMG.Classes.GunTrainingRevolver` | `aa7e85bead1044018285c579b9417691` | `BlueprintFeature` | Active | Revolver Gun Training |
+| `KMG.Classes.GunTrainingRifle` | `144876ce59f847a39031e043fcd939d2` | `BlueprintFeature` | Active legacy | Hidden registered Rifle training retained only for existing owners; absent from the selection |
+| `KMG.Classes.GunTrainingRevolver` | `aa7e85bead1044018285c579b9417691` | `BlueprintFeature` | Active legacy | Hidden registered Revolver training retained only for existing owners; absent from the selection |
 | `KMG.Deeds.DeadShotFeature` | `4f3a81c6d2754ec6920b7d14aa2e6c39` | `BlueprintFeature` | Active | Level-seven Dead Shot feature |
 | `KMG.Deeds.DeadShotAbility` | `c6e2147ab3f84aa9812d37c9650be421` | `BlueprintAbility` | Active | Full-round BAB-iterative Dead Shot delivery |
 | `KMG.Deeds.BleedingWoundFeature` | `f8fc9e345ef243dd862bfaa07abccfeb` | `BlueprintFeature` | Active | Level-eleven four-choice deed grant |

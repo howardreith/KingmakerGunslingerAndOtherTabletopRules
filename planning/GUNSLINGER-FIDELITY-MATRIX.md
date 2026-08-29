@@ -143,3 +143,21 @@ BTSL responsibility amendment: Honest Guy is the permanent-equipment merchant an
 - Unknown or ambiguous spellbook/slot identities remain fail-closed.
 - Actual CotW Harmony owner is `CallOfTheWild`; live order confirms KMG executes after CotW at both overlapping seams.
 - Automated mechanical fidelity is runtime-qualified; ordinary player presentation remains human-gated.
+
+## Icon-overhaul fidelity supersession - 2026-08-29
+
+| Surface | Authoritative current treatment | Evidence | State |
+|---|---|---|---|
+| Official firearm support | Exactly Blunderbuss, Musket, and Pistol are published. Rifle/Revolver stable identities and existing-owner mechanics remain readable but hidden and ordinarily unobtainable. | Exact official/recognized domain boundary; guarded native level-up, selector, presentation, and vendor assertions | RUNTIME-QUALIFIED |
+| Rapid Reload icon | Original enlarged circular arrow and tool, muted `#A6533F` on transparency, no blue decorations or inset card | 512 px deterministic source, 64 px alpha validation, corrected 1920x1200 live-sprite comparison beside five vanilla feats | VISUALLY QUALIFIED |
+| Firearm selectors | Full-square burgundy/brown B/M/P monograms with gold frame and original path lettering, centralized across Rapid Reload, five native weapon feats, and Gun Training | Distinct icon-map tests plus exact guarded menu enumeration and level-up commit | RUNTIME-QUALIFIED |
+| Supported firearm item icons | Transparent painterly Pistol/Musket/Blunderbuss silhouettes, lower-left to upper-right, alpha-fitted with a five-pixel safety margin | Source/final hashes, corner-alpha and dimension checks, live blueprint inventory render | VISUALLY QUALIFIED |
+| Eastern item icons | Wakizashi, Katana, Nodachi, Night Without Moon, Heaven's Measure, and World-Tree Severer re-rendered from project FBX sources and reused by all 30 audited items | Complete catalog identity tests, alpha/dimension validation, guarded live count `30/30` | VISUALLY QUALIFIED |
+| Elven Branched Spear item icon | Re-rendered from the project FBX source to a readable diagonal while retaining head, branch, and pole silhouette; reused by all 12 variants | Complete catalog identity tests, alpha/dimension validation, guarded live count `12/12` | VISUALLY QUALIFIED |
+
+The 2026-08-20 five-monogram/pale-field firearm icon qualification is
+superseded. Its historical hashes and runtime observations remain evidence for
+that former artifact only; they do not describe current publication or art.
+The current curated evidence and complete manifest are in
+`docs/reports/icon-overhaul-report.md` and
+`docs/reports/icon-overhaul/runtime-after/`.

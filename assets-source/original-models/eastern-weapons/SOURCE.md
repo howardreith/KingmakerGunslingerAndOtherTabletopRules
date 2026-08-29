@@ -28,3 +28,17 @@ The calibrated FBXs used by bundle SHA-256
 `AE311993F683295D3DD996285D28385A20F593DF16903D909818EB4F25A0096B`
 are recorded in `eastern-weapons-build-report.json` and
 `assets/bundles/asset-bundle-manifest.json`.
+
+## Icon-overhaul render path
+
+The six family/capstone item-icon sources are now framed independently from
+the production FBXs by `tools/icon-art/render_weapon_icon_sources.py`. With
+`PYTHONHASHSEED=0` and Blender 4.5.10 LTS, that render-only tool computes each
+mesh's principal axis, presents it lower-left to upper-right at 42 degrees,
+fits it to a transparent 512 px canvas, and uses flat material-accurate
+workbench lighting for small-size legibility. It never rewrites an FBX or
+`.blend` file. `assets-source/original-icons/icon-overhaul-weapon-render-report.json`
+records input/output hashes, camera fit, material values, and observed angle.
+
+`tools/icon-art/New-IconOverhaulAssets.ps1 -Mode Items` then alpha-fits each
+source once to its 128 px runtime texture with a 5 px safety margin.

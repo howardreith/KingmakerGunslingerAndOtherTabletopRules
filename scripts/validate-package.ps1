@@ -49,8 +49,7 @@ try {
         'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
         'weapon-focus-firearm','deadeye','gunslingers-dodge','quick-clear','reload-firearm',
         'firearm-monogram-pistol','firearm-monogram-musket',
-        'firearm-monogram-blunderbuss','firearm-monogram-rifle',
-        'firearm-monogram-revolver',
+        'firearm-monogram-blunderbuss',
         'repair-firearm','overhaul-firearm','early-pistol','musket','blunderbuss',
         'rifle','revolver','lead-ball','black-powder','repair-kit',
         'gunsmith-kit','overhaul-kit','paper-cartridge','focused-aim',
@@ -58,6 +57,12 @@ try {
         'wakizashi','katana','nodachi','night-without-moon',
         'heavens-measure','world-tree-severer')
     $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })
+    foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
+        $retiredPath = Join-Path $modDirectory "assets\icons\$name.png"
+        if (Test-Path -LiteralPath $retiredPath) {
+            throw "Retired player-facing selector exists in package: $retiredPath"
+        }
+    }
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json

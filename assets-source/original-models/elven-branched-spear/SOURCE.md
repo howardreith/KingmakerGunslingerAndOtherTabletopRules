@@ -31,3 +31,16 @@ two clean runs on 2026-08-21. Blender's `.blend` container embeds session
 metadata and is semantically reproducible but not byte-identical. Exact hashes,
 mesh-grounded measurements, markers, and branch coordinates are recorded in
 `elven-branched-spear-build-report.json` schema 3.
+
+## Icon-overhaul render path
+
+`tools/icon-art/render_weapon_icon_sources.py` is a render-only consumer of
+the classic production FBX. With `PYTHONHASHSEED=0` and Blender 4.5.10 LTS, it
+computes the mesh principal axis, places the spear lower-left to upper-right at
+42 degrees, fits the complete branching head and pole to a transparent 512 px
+canvas, and uses flat material-accurate workbench lighting. It does not alter
+the FBX or `.blend` source. Exact hashes and fit measurements are written to
+`assets-source/original-icons/icon-overhaul-weapon-render-report.json`.
+
+`tools/icon-art/New-IconOverhaulAssets.ps1 -Mode Items` performs the single
+high-quality downsample to the 128 px runtime icon with a 5 px safety margin.

@@ -1,5 +1,10 @@
 # Overnight Gunslinger Bug-Fix Human Acceptance
 
+> Supersession note (2026-08-29): the icon-overhaul qualification makes
+> Blunderbuss, Musket, and Pistol the exact official set. Historical
+> Rifle/Revolver and five-icon steps in this record now apply only to deliberate
+> legacy-compatibility inspection and are not ordinary gameplay requirements.
+
 ## Issue 7 - Border Sentinel
 
 1. Use a new campaign or an unopened/not-yet-instantiated Stag Lord Fort state; do not use a previously opened chest as refresh evidence.

@@ -349,7 +349,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "BlueprintBootstrap.ProductionFirearms",
                 "value.Spec.IsPlayerFireable", "value.Spec.AcquisitionRole",
-                "SupportedRecognitionOnly", "GenericEntries",
+                "LegacyRecognitionOnly", "GenericEntries",
                 "NamedEntries", "BlueprintBootstrap.EasternWeapons",
                 "BlueprintBootstrap.ElvenBranchedSpears",
                 "BlueprintBootstrap.BasicAmmunition",
@@ -746,7 +746,7 @@ namespace KingmakerGunslinger.DomainTests
                 "advanced-revolver" })
                 result.Add(Entry(firearm,
                     CraftMagicItemsCatalogFamily.Firearm,
-                    CraftMagicItemsCatalogRole.SupportedRecognitionOnly,
+                    CraftMagicItemsCatalogRole.LegacyRecognitionOnly,
                     CraftMagicItemsOwningModule.Gunslinger, true, false));
             result.Add(Entry("wakizashi",
                 CraftMagicItemsCatalogFamily.Wakizashi,

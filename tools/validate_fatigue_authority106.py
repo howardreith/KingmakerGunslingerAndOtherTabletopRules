@@ -13,7 +13,7 @@ VERSION = "0.0.106"
 INFORMATIONAL_VERSION = "0.0.106-fatigue-authority-repair"
 PACKAGE = "KingmakerGunslinger-0.0.106-local-runtime.zip"
 PACKAGE_SUFFIX = "fatigue-authority-repair"
-DETERMINISTIC_TEST_COUNT = 1323
+DETERMINISTIC_TEST_COUNT = 1325
 FOCUSED_FATIGUE_CASE_COUNT = 21
 STATIC_KEY = "fatigueAuthority106"
 
@@ -148,7 +148,7 @@ def validate(root: Path) -> None:
     require_tokens(root / "docs/RELEASE-NOTES-0.0.106.md",
         "Kingmaker Gunslinger 0.0.106",
         "KingmakerGunslinger-0.0.106-fatigue-authority-repair.zip",
-        "1,323")
+        "1,325")
 
     static = json.loads((root / "validation/static-validation.json")
         .read_text(encoding="utf-8"))

@@ -1,9 +1,15 @@
 # Firearm Wwise manual auditory acceptance
 
+> Current-support note (2026-08-29): ordinary acceptance covers Blunderbuss,
+> Musket, and Pistol. Rifle/Revolver checks below are retained only as a
+> deliberate legacy-compatibility audit and require old-save or Toy Box setup;
+> they are not official acquisition or selection requirements.
+
 Run only after automated bank/runtime qualification. Record the exact commit,
 bank hash, game version, audio device, and observer.
 
-- [ ] All five firearm kinds are audible and mapped to the intended recording.
+- [ ] All three official firearm kinds are audible and mapped to the intended
+  recording.
 - [ ] Master and SFX/effects sliders control the reports.
 - [ ] Pause, camera distance, and spatial position behave sensibly.
 - [ ] Rapid reports overlap without unwanted cutoff.

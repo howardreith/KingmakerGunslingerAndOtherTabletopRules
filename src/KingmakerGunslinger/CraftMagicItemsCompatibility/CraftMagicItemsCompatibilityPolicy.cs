@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         AuthoredGenericTarget = 1,
         NamedUpgradeOnly = 2,
         Unavailable = 3,
-        SupportedRecognitionOnly = 4
+        LegacyRecognitionOnly = 4
     }
 
     internal enum CraftMagicItemsOwningModule
@@ -280,7 +280,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     (value.Role == CraftMagicItemsCatalogRole
                         .CanonicalCreationBase || value.Role ==
                         CraftMagicItemsCatalogRole
-                            .SupportedRecognitionOnly))
+                            .LegacyRecognitionOnly))
                 .ToArray();
             CraftMagicItemsCatalogEntry[] customRecognition = entries.Where(
                     value => value.Family !=

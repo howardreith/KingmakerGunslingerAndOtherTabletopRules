@@ -33,8 +33,7 @@ namespace KingmakerGunslinger.Blueprints
                 "gun-training", "true-grit", "rapid-reload",
                 "weapon-focus-firearm", "deadeye", "gunslingers-dodge",
                 "firearm-monogram-pistol", "firearm-monogram-musket",
-                "firearm-monogram-blunderbuss", "firearm-monogram-rifle",
-                "firearm-monogram-revolver",
+                "firearm-monogram-blunderbuss",
                 "quick-clear", "reload-firearm", "repair-firearm",
                 "overhaul-firearm", "early-pistol", "musket", "blunderbuss",
                 "rifle", "revolver", "lead-ball", "black-powder", "repair-kit",
@@ -90,8 +89,14 @@ namespace KingmakerGunslinger.Blueprints
             gunslinger.CharacterClass.m_Icon = Require("gunslinger-class");
             var visited = new HashSet<BlueprintUnitFact>();
             ApplyFact(gunslinger.Progression, visited);
-            foreach (BlueprintFeature choice in feats.WeaponFocusChoices) ApplyFact(choice, visited);
-            foreach (BlueprintFeature choice in feats.RapidReloadChoices) ApplyFact(choice, visited);
+            foreach (BlueprintFeature choice in
+                feats.RegisteredWeaponFocusChoices) ApplyFact(choice, visited);
+            foreach (BlueprintFeature choice in
+                feats.RegisteredRapidReloadChoices) ApplyFact(choice, visited);
+            foreach (BlueprintFeature[] family in
+                feats.RegisteredDependentChoices)
+                foreach (BlueprintFeature choice in family)
+                    ApplyFact(choice, visited);
             ApplyFact(feats.WeaponFocus, visited);
             ApplyFact(feats.RapidReload, visited);
             ApplyFirearmFeatIcons(feats);
@@ -279,8 +284,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static readonly string[] FirearmFeatIconKeys = {
             "firearm-monogram-pistol", "firearm-monogram-musket",
-            "firearm-monogram-blunderbuss", "firearm-monogram-rifle",
-            "firearm-monogram-revolver" };
+            "firearm-monogram-blunderbuss" };
 
         private static void ApplyFirearmFeatIcons(FirearmFeatBlueprintSet feats)
         {
@@ -304,7 +308,8 @@ namespace KingmakerGunslinger.Blueprints
             Sprite rapid = Require("rapid-reload");
             if (!ReferenceEquals(feats.RapidReload.Icon, rapid) ||
                 !string.Equals(rapid.name, "KMG_Icon_rapid-reload",
-                    StringComparison.Ordinal) || monograms.Distinct().Count() != 5 ||
+                    StringComparison.Ordinal) ||
+                monograms.Distinct().Count() != FirearmFeatIconKeys.Length ||
                 monograms.Any(icon => icon == null || ReferenceEquals(icon, rapid)) ||
                 Enumerable.Range(0, monograms.Length).Any(index =>
                     !ReferenceEquals(feats.WeaponFocusChoices[index].Icon, monograms[index]) ||

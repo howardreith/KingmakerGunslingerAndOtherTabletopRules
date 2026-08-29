@@ -30,4 +30,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Repository validation failed with exit code $LASTEXITCODE."
 }
 
+& (Join-Path $PSScriptRoot 'Test-IconOverhaulAssets.ps1') `
+    -RepositoryRoot $repositoryRoot
+
 Write-Host 'Version-aware repository validation passed.'

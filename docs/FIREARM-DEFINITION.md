@@ -22,6 +22,11 @@ The radius is passed to Kingmaker's native `Feet` value type and native target q
 
 A Heavy Crossbow display name, category, or animation does not make an item a firearm. The exact custom `FirearmDefinitionComponent` remains required. Native Heavy Crossbows therefore cannot enter reload, loaded-round, misfire, condition, or explosion logic.
 
+The official catalog is exactly Pistol, Musket, and Blunderbuss. Stable
+Advanced Rifle and Advanced Revolver definitions remain recognized only so an
+old save or deliberate Toy Box spawn cannot break these mechanics; recognition
+does not publish or ordinarily provide either legacy item.
+
 ## State boundary
 
 The definition is immutable blueprint policy. Loaded rounds and condition are per-item state stored only through item-owned inert `BlueprintWeaponEnchantment` tokens. The definition never stores mutable item state, and `ItemEntityWeapon.UniqueId` is not used as a persistence vault.

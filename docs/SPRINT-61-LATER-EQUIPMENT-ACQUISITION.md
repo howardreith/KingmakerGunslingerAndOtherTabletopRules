@@ -1,5 +1,10 @@
 # Sprint 61 later equipment acquisition qualification
 
+> Superseded publication record (2026-08-29): this file preserves Sprint 61's
+> historical evidence. Current ordinary firearm stock is limited to
+> Blunderbuss, Musket, and Pistol; Rifle/Revolver rows are actively suppressed
+> while their stable blueprints remain loadable for compatibility.
+
 Sprint 61 publishes the player-fireable Gunslinger equipment catalog through
 the exact installed capital Jhod shared-vendor table
 `afa2c7f292b8e1c4d9c835f0e8047dd3`. The route requires no shop invocation,
