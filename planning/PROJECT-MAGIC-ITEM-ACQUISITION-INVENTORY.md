@@ -92,7 +92,7 @@ All targets below are installed Kingmaker 2.1.7b `Kingmaker.Blueprints.Loot.Blue
 | River King's Measure | `a27c86b0d87c423d9ba8a05227bbf1e6` | Musket, equivalent +5, 51,800 | Distinct Pitax fixed loot | `b34367a637010f743815aed5875152bd` `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)` | Act V, Irovetti Palace | Gems, medallion, standard weapons, 632 gold | unchanged |
 | Irovetti's Ovation | `caf23b7555cd4524a7622eaa25266ea1` | Blunderbuss, equivalent +5, 52,300 | Puzzle-wrapper uncertainty | `aeba7802ade083841935daf88d4652d3` `RichHuman_GoodLoot` | Act V, Irovetti Palace First World | Calistria Rapier | moved to ordinary fixed loot |
 | The Last Word | `0d31f794ba294c1e834af44f918f6721` | Pistol, equivalent +7, 99,300 | Coupled to The End quest item | `3bc451b100283774a9e23699dd869f1a` `FirstWorld_GoodLoot_Locked_2` | Late game, Castle of Knives | Greater Empower metamagic rod | moved to independent fixed capstone cache |
-| Watch at World's End | `87c7baaaad504b7f8742f2dfcd79d067` | Rifle, equivalent +7, 99,800 | Distinct late fixed loot | `5a9b9e4b884ae064fa7caa5a13eab065` `FirstWorld_VeryGoodHiddenLoot02` | Late game, House at the Edge of Time | Forewarning Shield | unchanged |
+| Watch at World's End | `87c7baaaad504b7f8742f2dfcd79d067` | Musket (historical row formerly mislabeled Rifle), equivalent +7, 99,800 | Distinct late fixed loot | `5a9b9e4b884ae064fa7caa5a13eab065` `FirstWorld_VeryGoodHiddenLoot02` | Late game, House at the Edge of Time | Forewarning Shield | superseded placement; family corrected |
 
 ## Qualification evidence
 

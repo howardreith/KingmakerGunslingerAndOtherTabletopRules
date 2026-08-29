@@ -534,7 +534,7 @@ namespace KingmakerGunslinger.DomainTests
                 Sha256(Path.Combine(root, "assets", "bundles",
                     "kingmakergunslinger.elvenbranchedspear")),
                 "Dedicated spear bundle hash changed.");
-            Assertions.Equal("A4CAA5FED242BEE645AD4F9D1E5F201C372EDE4A066254EE6BD4003A6538AF99",
+            Assertions.Equal("5A8D3D10F95AF61C6AFD324C8791B37BB675D4A74D3DCD4ECA7CDB4D0464109A",
                 Sha256(Path.Combine(root, "assets", "game", "icons",
                     "elven-branched-spear.png")),
                 "Runtime spear icon hash changed.");

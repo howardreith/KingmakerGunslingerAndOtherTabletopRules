@@ -1,5 +1,11 @@
 # Rare Firearms and Campaign Integration Mission
 
+> Superseded support boundary (2026-08-29): this historical work order remains
+> the provenance for stable items and placement decisions, but the icon-overhaul
+> mission makes Blunderbuss, Musket, and Pistol the exact official firearm set.
+> Rifle/Revolver identities survive only as hidden old-save/Toy Box
+> compatibility and must not be republished by this document.
+
 This is the durable contract for the complete user-issued **Codex Autonomous
 Work Order: Rare Firearms and Campaign Integration** received 2026-08-08. The
 verbatim task record is incorporated by reference and remains authoritative.

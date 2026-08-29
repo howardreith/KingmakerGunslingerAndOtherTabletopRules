@@ -141,6 +141,16 @@ the runtime identity comes from the executing mod assembly and current process.
 These are mechanical runtime assertions; a build or domain test cannot
 substitute for them.
 
+`icon-overhaul-visual-evidence` is a save-free, read-only supporting-visual
+scenario. It resolves the live Rapid Reload children, native Weapon Focus
+parameters, supported firearm items, all 30 Eastern items, and all 12 Elven
+Branched Spear items from the loaded blueprint graph, then renders five exact
+1920x1200 PNG layouts through a Unity `Camera` and `RenderTexture`. Its
+structured exact-set/icon/count assertions are mechanical evidence. The PNGs
+are deliberately labeled in-game live-sprite facsimiles: they support human
+perceptual review but are not evidence that the scenario navigated native menus
+or inventory UI.
+
 `sprint30-runtime-selftest` is not production-allowlisted in this iteration.
 The existing typed Reload, Overhaul, and Repair adapters require a concrete
 `UnitDescriptor`, equipped `ItemEntityWeapon` instances, `Game.Instance.Player`

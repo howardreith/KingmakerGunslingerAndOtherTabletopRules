@@ -8,11 +8,9 @@ namespace KingmakerGunslinger.Classes
         internal const int UntrainedBrokenIncrease = 4;
         internal const int TrainedBrokenIncrease = 2;
 
-        internal static bool IsSupportedKind(FirearmKind kind)
+        internal static bool IsRecognizedKind(FirearmKind kind)
         {
-            return kind == FirearmKind.Pistol || kind == FirearmKind.Musket ||
-                kind == FirearmKind.Blunderbuss || kind == FirearmKind.Rifle ||
-                kind == FirearmKind.Revolver;
+            return OfficialFirearmSupport.IsRecognized(kind);
         }
 
         internal static int DamageBonus(FirearmKind selectedKind,
@@ -43,7 +41,7 @@ namespace KingmakerGunslinger.Classes
 
         private static void RequireSupported(FirearmKind kind, string parameter)
         {
-            if (!IsSupportedKind(kind))
+            if (!IsRecognizedKind(kind))
                 throw new ArgumentOutOfRangeException(parameter);
         }
     }

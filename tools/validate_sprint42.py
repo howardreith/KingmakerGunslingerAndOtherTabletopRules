@@ -41,7 +41,9 @@ def validate(root: Path, version: str = VERSION,
     require_tokens(read(root,
         "src/KingmakerGunslinger/Blueprints/GunTrainingBlueprints.cs"),
         ["BlueprintFeatureSelection", "GunTrainingDamage", "AllFeatures",
-         "FirearmKind.Revolver"], "Sprint 42 selection blueprints")
+         "OfficialFirearmSupport.Kinds",
+         "OfficialFirearmSupport.RecognizedKinds"],
+        "Sprint 42 selection blueprints")
     require_tokens(read(root,
         "src/KingmakerGunslinger/Misfires/FirearmMisfireRuntime.cs"),
         ["EffectiveFirearmMisfirePolicy.Evaluate", "FirearmTrainingRuntime.Resolve"],

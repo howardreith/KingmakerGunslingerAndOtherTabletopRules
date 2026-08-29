@@ -2,6 +2,19 @@
 
 ## 0.0.106-fatigue-authority-repair
 
+- Makes the official firearm set exactly Blunderbuss, Musket, and Pistol across
+  Rapid Reload, native weapon feats, Gun Training, starting access, vendors,
+  loot, and crafting. Stable Rifle/Revolver blueprints remain hidden and
+  recognized only for old-save and deliberate Toy Box compatibility.
+- Rebuilds Rapid Reload as a larger transparent muted-red native-style glyph
+  and replaces firearm parameter cards with full-square decorative B/M/P
+  monograms shared by every supported selector.
+- Replaces the three supported firearm item icons with transparent,
+  diagonal-fill artwork and re-renders all six Eastern category/capstone
+  textures plus the Elven Branched Spear used by 30 and 12 item variants.
+- Adds deterministic high-resolution art, downsampling, alpha/dimension
+  validation, a guarded live-sprite visual-evidence scenario, five curated
+  1920x1200 frames, and a before/after contact sheet.
 - Restores native authority for ordinary canonical fatigue: successful
   Fatigued refreshes, merges, extensions, and reapplications remain Fatigued
   instead of being globally reinterpreted as Exhausted by KMG.
@@ -13,7 +26,7 @@
   Stubborn Resolve substitution and exactly-once damage routing.
 - Replaces unconditional escalation tests and runtime fixtures with explicit
   native-refresh, Acadamae, Cord, immunity, duration, persistence, rest, and
-  intent-leak coverage. The complete deterministic suite contains 1,323 tests.
+  intent-leak coverage. The complete deterministic suite contains 1,325 tests.
 
 ## 0.0.105-player-facing-presentation-item-discoverability
 

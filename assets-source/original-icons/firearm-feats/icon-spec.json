@@ -1,16 +1,33 @@
 {
-  "schemaVersion": 2,
-  "template": "native-custom-weapon-selector-monogram",
-  "templateAuthority": "CustomWeaponSelectorRuntime FeatureUIData null-icon plus monogram contract used by Nodachi",
-  "canvas": 64,
-  "glyphConstruction": "original calligraphic text and vector flourish rendered from the Windows Segoe Script system font; no font file is packaged",
-  "palette": {"parchmentLight":"#F2E4BC","parchmentShade":"#C9A975","border":"#60452F","oxblood":"#813A35","cornerBlue":"#506B78"},
+  "schemaVersion": 3,
+  "generator": "tools/icon-art/New-IconOverhaulAssets.ps1 -Mode Feat",
+  "sourceCanvas": 512,
+  "runtimeCanvas": 64,
+  "glyphConstruction": "original System.Drawing vector paths; no font dependency",
+  "selectorStyle": "opaque full-square burgundy-brown gradient with gold frame and ornament",
+  "palette": {
+    "fieldDark": "#2B1716",
+    "fieldLight": "#754A32",
+    "frameDark": "#1A0F0D",
+    "frameGold": "#B28B55",
+    "glyphGold": "#D7B477",
+    "rapidReloadRed": "#A6533F",
+    "rapidReloadHighlight": "#C77B63",
+    "rapidReloadShadow": "rgba(64,31,26,0.47)"
+  },
   "monograms": [
-    {"key":"firearm-monogram-pistol","label":"Pistol","monogram":"P","seed":9101},
-    {"key":"firearm-monogram-musket","label":"Musket","monogram":"M","seed":9102},
-    {"key":"firearm-monogram-blunderbuss","label":"Blunderbuss","monogram":"B","seed":9103},
-    {"key":"firearm-monogram-rifle","label":"Rifle","monogram":"Ri","seed":9104},
-    {"key":"firearm-monogram-revolver","label":"Revolver","monogram":"Rv","seed":9105}
+    {"key": "firearm-monogram-pistol", "label": "Pistol", "monogram": "P", "seed": 9201},
+    {"key": "firearm-monogram-musket", "label": "Musket", "monogram": "M", "seed": 9202},
+    {"key": "firearm-monogram-blunderbuss", "label": "Blunderbuss", "monogram": "B", "seed": 9203}
   ],
-  "rapidReload":{"key":"rapid-reload","label":"Rapid Reload","motif":"oxblood circular return arrow with ramrod and cartridge-motion stroke on pale parchment with restrained blue corners","seed":9106}
+  "rapidReload": {
+    "key": "rapid-reload",
+    "label": "Rapid Reload",
+    "seed": 9204,
+    "motif": "enlarged muted-red circular reload arrow and ramrod/tool on a transparent canvas matching neighboring vanilla feat glyphs; no blue corners"
+  },
+  "retiredPlayerFacingAssets": [
+    "firearm-monogram-rifle.png",
+    "firearm-monogram-revolver.png"
+  ]
 }

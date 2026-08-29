@@ -904,6 +904,7 @@
     <Compile Include="RuntimeTesting\ElvenBranchedSpearCombatScenario.cs" />
     <Compile Include="RuntimeTesting\EasternWeaponCombatScenario.cs" />
     <Compile Include="RuntimeTesting\WeaponPresentationEvidenceScenario.cs" />
+    <Compile Include="RuntimeTesting\IconOverhaulVisualEvidenceScenario.cs" />
     <Compile Include="RuntimeTesting\RuntimeBuildIdentity.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
     <Compile Include="RuntimeTesting\CompatibilityAttributionRuntimeControl.cs" />

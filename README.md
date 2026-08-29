@@ -20,9 +20,11 @@ ammunition UI seam remains: CMI owns its complete top-level mundane selector on
 every IMGUI event, while KMG intercepts only the exact finalized Firearm
 Ammunition data object before CMI's equipment-only body. Exact 20-unit
 ammunition projects now all use timed target 5 while retaining scale-1.0 prices
-of 34/4/40 gp. From-scratch Firearms contains Pistol, Musket, and Blunderbuss;
-Advanced Rifle and Advanced Revolver remain recognized for owned-item upgrades
-but are no longer creation bases. Eastern and Elven weapons use CMI's existing
+of 34/4/40 gp. Official firearm support is exactly Pistol, Musket, and
+Blunderbuss. Advanced Rifle and Advanced Revolver are hidden legacy identities:
+they remain registered only so old-save or deliberately Toy Box-spawned items
+load and can be upgraded, but they have no normal selection, starting grant,
+vendor, loot, or crafting path. Eastern and Elven weapons use CMI's existing
 Martial/Exotic mundane categories followed by ordinary Arms and Armor upgrades,
 and KMG's internal firearm state/origin enchantments no longer leak `<null>`
 tooltip blocks. Named campaign weapons remain upgrade-only, feature-module
@@ -308,19 +310,19 @@ updates and do not remove the mod from a campaign that has used its content;
 there is no uninstall-safe-save claim. `SMOKE-TEST-GUIDE.md` remains the
 mechanical diagnostic guide.
 
-## Production equipment and fallback presentation
+## Production equipment and presentation
 
-The production Pistol, Musket, Advanced Rifle, and Advanced Revolver are
-available from the qualified capital vendor route alongside powder, lead balls,
-and repair kits. Blunderbuss remains unavailable until its numeric scatter-cone
-distance is authorized and runtime-qualified.
+Pistol, Musket, and Blunderbuss are the complete supported firearm set. Their
+mundane and +1 items are available through the qualified capital and Beneath
+the Stolen Lands merchant routes alongside ammunition and maintenance supplies;
+named firearm variants retain their documented fixed-loot paths. Gunslinger
+starting grants resolve only to Pistol or Musket.
 
-The core package intentionally uses installed crossbow-compatible fallback
-assets under ADR-0007. Pistol/Revolver use Light Crossbow presentation;
-Musket/Blunderbuss/Rifle use Heavy Crossbow presentation. Their icons, models,
-animations, sounds, equipment attachment behavior, and projectiles therefore
-look and sound like crossbows. No custom firearm art, audio, animation, model,
-or projectile asset is bundled.
+The package uses distinct project firearm models, audio, projectiles, and
+transparent 128 px item icons. Rapid Reload and every firearm-category selector
+share the corrected exact-three presentation described in
+`docs/FIREARM-FEAT-ICON-MAP.md`. Legacy Rifle/Revolver blueprint and rig data
+remain loadable for compatibility but are not published or normally acquired.
 
 ## Direction after Sprint 29
 

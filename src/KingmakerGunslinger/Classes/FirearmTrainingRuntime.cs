@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.Classes
                 return new FirearmTrainingEntitlement(false, 0, false);
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
             bool exact = gunslinger != null && gunslinger.GunTraining != null &&
-                GunTrainingPolicy.IsSupportedKind(kind) && owner.Descriptor.HasFact(
+                GunTrainingPolicy.IsRecognizedKind(kind) && owner.Descriptor.HasFact(
                     gunslinger.GunTraining.ChoiceFor(kind));
             int pistolRank = _pistolTraining == null ? 0 :
                 owner.Descriptor.Progression.Features.GetRank(_pistolTraining);

@@ -170,10 +170,11 @@ presentation and play review accepted that exact artifact on 2026-08-16. The
 revised runtime policy treats the 16-state boundary as authoritative and does
 not require an exhaustive game-launch release matrix.
 
-- This package includes approved Pistol, Musket, Blunderbuss, and Revolver models
-  and five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.
-  The quarantined advanced-rifle binary is not packaged; Advanced Rifle retains
-  the safe native visual fallback and its approved temporary long-gun sound map.
+- This package includes the approved Pistol, Musket, and Blunderbuss models and
+  five approved SSE Library CC0 firearm sounds in a Unity 2018.4.10f1 bundle.
+  Rifle/Revolver rig and sound entries remain in the bundle only so legacy or
+  deliberately Toy Box-spawned items remain mechanically safe; they are not
+  official content and have no ordinary selection or acquisition route.
 - The mod patches native attack, armor-class, damage, rest, initiative, save,
   skill, equipment, and level-up flows. Mods changing the same callbacks may
   conflict depending on patch order and behavior.
@@ -253,10 +254,10 @@ the Gunslinger package.
 
 With both mods active, CMI gains dedicated **Firearms** mundane and magic item
 types. Their from-scratch bases are exactly Pistol, Musket, and Blunderbuss.
-Advanced Rifle and Advanced Revolver remain registered, loadable,
+Legacy Advanced Rifle and Advanced Revolver remain registered, loadable,
 firearm-mechanical, Reliable-compatible, indexed for pricing/base recognition,
 and eligible for upgrades when already owned, but are not ordinary campaign
-creation bases. Wakizashi and Katana enter CMI's Exotic Weapons bases, Nodachi
+creation bases or official support. Wakizashi and Katana enter CMI's Exotic Weapons bases, Nodachi
 enters Martial Weapons, and Elven Branched Spear enters Exotic Weapons. There
 is no separate Eastern and Elven Weapons magic category: craft the canonical
 mundane base through Martial/Exotic, then enchant the owned item through CMI's

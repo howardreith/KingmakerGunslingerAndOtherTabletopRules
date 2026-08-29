@@ -61,7 +61,7 @@ namespace KingmakerGunslinger.Firearms
             return new ProductionFirearmWeaponSpec("advanced-rifle", "Advanced Rifle",
                 FirearmDefinitions.CreateAdvancedRifle(), 1, 10, 4, true,
                 5000, 12f, true, ProductionFirearmAcquisitionRole
-                    .SupportedRecognitionOnly);
+                    .LegacyRecognitionOnly);
         }
 
         internal static ProductionFirearmWeaponSpec CreateAdvancedRevolver()
@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.Firearms
             return new ProductionFirearmWeaponSpec("advanced-revolver", "Advanced Revolver",
                 FirearmDefinitions.CreateAdvancedRevolver(), 1, 8, 4,
                 false, 4000, 4f, true, ProductionFirearmAcquisitionRole
-                    .SupportedRecognitionOnly);
+                    .LegacyRecognitionOnly);
         }
     }
 }

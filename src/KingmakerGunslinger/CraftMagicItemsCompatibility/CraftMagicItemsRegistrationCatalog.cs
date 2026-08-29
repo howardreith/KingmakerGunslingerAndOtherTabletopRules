@@ -124,7 +124,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                             .OrdinaryCampaignCraftingBase
                         ? CraftMagicItemsCatalogRole.CanonicalCreationBase
                         : CraftMagicItemsCatalogRole
-                            .SupportedRecognitionOnly;
+                            .LegacyRecognitionOnly;
                 Add(registrations, value.Item,
                     CraftMagicItemsCatalogFamily.Firearm,
                     role,

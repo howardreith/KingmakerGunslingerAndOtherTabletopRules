@@ -1,0 +1,406 @@
+{
+  "blenderVersion": "4.5.10 LTS",
+  "generator": "tools/icon-art/render_weapon_icon_sources.py",
+  "license": "Project-owned FBX inputs; repository license applies",
+  "purpose": "render-only 2D icon reframing; no FBX or blend mutation",
+  "records": [
+    {
+      "background": "transparent RGBA",
+      "cameraRollDegrees": -60.38295,
+      "input": "assets-source/original-models/eastern-weapons/wakizashi.fbx",
+      "inputSha256": "a121c0bd1010b4083a29644d49ddd61020829afab5687e6d0249ac1ec80543d0",
+      "key": "wakizashi",
+      "materialPalette": [
+        {
+          "diffuseColor": [
+            0.32,
+            0.24,
+            0.1,
+            1.0
+          ],
+          "material": "WakizashiAccent"
+        },
+        {
+          "diffuseColor": [
+            0.6008,
+            0.6752,
+            0.7496,
+            1.0
+          ],
+          "material": "WakizashiCuttingEdge"
+        },
+        {
+          "diffuseColor": [
+            0.42,
+            0.48,
+            0.54,
+            1.0
+          ],
+          "material": "WakizashiSteel"
+        },
+        {
+          "diffuseColor": [
+            0.055,
+            0.075,
+            0.12,
+            1.0
+          ],
+          "material": "WakizashiWrap"
+        }
+      ],
+      "observedAngleDegrees": 41.998518,
+      "orthographicSafetyScale": 1.12,
+      "output": "assets-source/original-models/eastern-weapons/wakizashi-icon-source.png",
+      "outputBytes": 91245,
+      "outputSha256": "6a2c02473bc1f87e000d83f327244b5f450c7260dbbc3871025f86a7220f554c",
+      "projectedHeight": 0.324963,
+      "projectedWidth": 0.63749,
+      "sourceDimensions": [
+        512,
+        512
+      ],
+      "targetAngleDegrees": 42.0,
+      "workbenchLightMode": "FLAT"
+    },
+    {
+      "background": "transparent RGBA",
+      "cameraRollDegrees": -44.946623,
+      "input": "assets-source/original-models/eastern-weapons/katana.fbx",
+      "inputSha256": "cd9047823503cbe1367fd6667fc0835bf6a578376210e8b9cd48c1ecd02234b8",
+      "key": "katana",
+      "materialPalette": [
+        {
+          "diffuseColor": [
+            0.4,
+            0.26,
+            0.08,
+            1.0
+          ],
+          "material": "KatanaAccent"
+        },
+        {
+          "diffuseColor": [
+            0.6504,
+            0.7,
+            0.7496,
+            1.0
+          ],
+          "material": "KatanaCuttingEdge"
+        },
+        {
+          "diffuseColor": [
+            0.46,
+            0.5,
+            0.54,
+            1.0
+          ],
+          "material": "KatanaSteel"
+        },
+        {
+          "diffuseColor": [
+            0.17,
+            0.035,
+            0.035,
+            1.0
+          ],
+          "material": "KatanaWrap"
+        }
+      ],
+      "observedAngleDegrees": 42.000004,
+      "orthographicSafetyScale": 1.12,
+      "output": "assets-source/original-models/eastern-weapons/katana-icon-source.png",
+      "outputBytes": 97803,
+      "outputSha256": "1b97a26b4c7a3dfbd25df9d9e5f64c5b3e2ff7c9743e49df6906f58778ceec2f",
+      "projectedHeight": 0.644236,
+      "projectedWidth": 0.73781,
+      "sourceDimensions": [
+        512,
+        512
+      ],
+      "targetAngleDegrees": 42.0,
+      "workbenchLightMode": "FLAT"
+    },
+    {
+      "background": "transparent RGBA",
+      "cameraRollDegrees": -44.517846,
+      "input": "assets-source/original-models/eastern-weapons/nodachi.fbx",
+      "inputSha256": "87bdfbbe364865f3c9a824c9f74fd0e5823045328c096fae2edf5a105f211a3e",
+      "key": "nodachi",
+      "materialPalette": [
+        {
+          "diffuseColor": [
+            0.29,
+            0.2,
+            0.07,
+            1.0
+          ],
+          "material": "NodachiAccent"
+        },
+        {
+          "diffuseColor": [
+            0.576,
+            0.6628,
+            0.7,
+            1.0
+          ],
+          "material": "NodachiCuttingEdge"
+        },
+        {
+          "diffuseColor": [
+            0.4,
+            0.47,
+            0.5,
+            1.0
+          ],
+          "material": "NodachiSteel"
+        },
+        {
+          "diffuseColor": [
+            0.035,
+            0.12,
+            0.09,
+            1.0
+          ],
+          "material": "NodachiWrap"
+        }
+      ],
+      "observedAngleDegrees": 42.000009,
+      "orthographicSafetyScale": 1.12,
+      "output": "assets-source/original-models/eastern-weapons/nodachi-icon-source.png",
+      "outputBytes": 92287,
+      "outputSha256": "3c715265c312def544593bafa5f76bb48f778a68a013b747cd2e3b903abd2547",
+      "projectedHeight": 0.955617,
+      "projectedWidth": 1.09642,
+      "sourceDimensions": [
+        512,
+        512
+      ],
+      "targetAngleDegrees": 42.0,
+      "workbenchLightMode": "FLAT"
+    },
+    {
+      "background": "transparent RGBA",
+      "cameraRollDegrees": -44.150239,
+      "input": "assets-source/original-models/eastern-weapons/wakizashi-capstone.fbx",
+      "inputSha256": "5031d238e65d6d57a859e4fbf2deeb5aa800d0f58d0376e6ea1c31935db98233",
+      "key": "night-without-moon",
+      "materialPalette": [
+        {
+          "diffuseColor": [
+            0.3904,
+            0.2928,
+            0.122,
+            1.0
+          ],
+          "material": "WakizashiCapstoneAccent"
+        },
+        {
+          "diffuseColor": [
+            0.715376,
+            0.806144,
+            0.896912,
+            1.0
+          ],
+          "material": "WakizashiCapstoneCuttingEdge"
+        },
+        {
+          "diffuseColor": [
+            0.5124,
+            0.5856,
+            0.6588,
+            1.0
+          ],
+          "material": "WakizashiCapstoneSteel"
+        },
+        {
+          "diffuseColor": [
+            0.055,
+            0.075,
+            0.12,
+            1.0
+          ],
+          "material": "WakizashiCapstoneWrap"
+        }
+      ],
+      "observedAngleDegrees": 41.999987,
+      "orthographicSafetyScale": 1.12,
+      "output": "assets-source/original-models/eastern-weapons/night-without-moon-icon-source.png",
+      "outputBytes": 107287,
+      "outputSha256": "122c539c6ce002ff029a6b2e05bbb2bb17cb7a3d4d190d5d750184365fdd977a",
+      "projectedHeight": 0.503207,
+      "projectedWidth": 0.573787,
+      "sourceDimensions": [
+        512,
+        512
+      ],
+      "targetAngleDegrees": 42.0,
+      "workbenchLightMode": "FLAT"
+    },
+    {
+      "background": "transparent RGBA",
+      "cameraRollDegrees": -43.959025,
+      "input": "assets-source/original-models/eastern-weapons/katana-capstone.fbx",
+      "inputSha256": "4e58f7ab12fe45787ba0f3c4860e7f3e8eb759f4519a481ab2987fa6dbb0664e",
+      "key": "heavens-measure",
+      "materialPalette": [
+        {
+          "diffuseColor": [
+            0.488,
+            0.3172,
+            0.0976,
+            1.0
+          ],
+          "material": "KatanaCapstoneAccent"
+        },
+        {
+          "diffuseColor": [
+            0.775888,
+            0.8364,
+            0.896912,
+            1.0
+          ],
+          "material": "KatanaCapstoneCuttingEdge"
+        },
+        {
+          "diffuseColor": [
+            0.5612,
+            0.61,
+            0.6588,
+            1.0
+          ],
+          "material": "KatanaCapstoneSteel"
+        },
+        {
+          "diffuseColor": [
+            0.17,
+            0.035,
+            0.035,
+            1.0
+          ],
+          "material": "KatanaCapstoneWrap"
+        }
+      ],
+      "observedAngleDegrees": 41.999975,
+      "orthographicSafetyScale": 1.12,
+      "output": "assets-source/original-models/eastern-weapons/heavens-measure-icon-source.png",
+      "outputBytes": 102363,
+      "outputSha256": "c5a285ef03454eb5a64dd2dbdd2894951fd0d7702702b8238bcbd8f7b837a2bf",
+      "projectedHeight": 0.670871,
+      "projectedWidth": 0.77213,
+      "sourceDimensions": [
+        512,
+        512
+      ],
+      "targetAngleDegrees": 42.0,
+      "workbenchLightMode": "FLAT"
+    },
+    {
+      "background": "transparent RGBA",
+      "cameraRollDegrees": -43.749795,
+      "input": "assets-source/original-models/eastern-weapons/nodachi-capstone.fbx",
+      "inputSha256": "acfa2048e8a339aa3670a7cdf240a2e8a3f8e9187a9e3828eda9ed0e8d3cfb84",
+      "key": "world-tree-severer",
+      "materialPalette": [
+        {
+          "diffuseColor": [
+            0.3538,
+            0.244,
+            0.0854,
+            1.0
+          ],
+          "material": "NodachiCapstoneAccent"
+        },
+        {
+          "diffuseColor": [
+            0.68512,
+            0.791016,
+            0.8364,
+            1.0
+          ],
+          "material": "NodachiCapstoneCuttingEdge"
+        },
+        {
+          "diffuseColor": [
+            0.488,
+            0.5734,
+            0.61,
+            1.0
+          ],
+          "material": "NodachiCapstoneSteel"
+        },
+        {
+          "diffuseColor": [
+            0.035,
+            0.12,
+            0.09,
+            1.0
+          ],
+          "material": "NodachiCapstoneWrap"
+        }
+      ],
+      "observedAngleDegrees": 41.999995,
+      "orthographicSafetyScale": 1.12,
+      "output": "assets-source/original-models/eastern-weapons/world-tree-severer-icon-source.png",
+      "outputBytes": 97855,
+      "outputSha256": "cff3b5db26c709d15d47cd8af6cfe9da62c0c7c9ae7a681ce028a0efe85e3e33",
+      "projectedHeight": 0.981489,
+      "projectedWidth": 1.131285,
+      "sourceDimensions": [
+        512,
+        512
+      ],
+      "targetAngleDegrees": 42.0,
+      "workbenchLightMode": "FLAT"
+    },
+    {
+      "background": "transparent RGBA",
+      "cameraRollDegrees": -47.636578,
+      "input": "assets-source/original-models/elven-branched-spear/elven-branched-spear.fbx",
+      "inputSha256": "a7fe4dee53b18d1778d994f8b24a349b22c000e87660934b882d239a0f807e3a",
+      "key": "elven-branched-spear",
+      "materialPalette": [
+        {
+          "diffuseColor": [
+            0.105,
+            0.055,
+            0.026,
+            1.0
+          ],
+          "material": "ElvenBranchedSpearAsh"
+        },
+        {
+          "diffuseColor": [
+            0.025,
+            0.18,
+            0.24,
+            1.0
+          ],
+          "material": "ElvenBranchedSpearInlay"
+        },
+        {
+          "diffuseColor": [
+            0.42,
+            0.52,
+            0.58,
+            1.0
+          ],
+          "material": "ElvenBranchedSpearMoonSilver"
+        }
+      ],
+      "observedAngleDegrees": 41.999998,
+      "orthographicSafetyScale": 1.12,
+      "output": "assets-source/original-models/elven-branched-spear/elven-branched-spear-icon.png",
+      "outputBytes": 106987,
+      "outputSha256": "ece96570240e97ec009914f42a569415b622282689276b8beeee258e95846960",
+      "projectedHeight": 1.426912,
+      "projectedWidth": 1.562252,
+      "sourceDimensions": [
+        512,
+        512
+      ],
+      "targetAngleDegrees": 42.0,
+      "workbenchLightMode": "FLAT"
+    }
+  ],
+  "schemaVersion": 1
+}

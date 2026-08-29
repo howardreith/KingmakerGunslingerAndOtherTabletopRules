@@ -1,5 +1,10 @@
 # Firearm native weapon rigs manual acceptance
 
+> Current-support note (2026-08-29): Pistol, Musket, and Blunderbuss are the
+> complete official set. Any Rifle/Revolver observations retained below are
+> legacy-compatibility checks for deliberately supplied items, not ordinary
+> player-facing acceptance requirements.
+
 Human observation record: **Regular Pistol held appearance accepted on
 2026-08-07.** This narrow verdict covers the observed held model/pose only; it
 does not accept unobserved Pistol lifecycle/body/holster states and does not set

@@ -18,7 +18,10 @@ namespace KingmakerGunslinger.Feats
     {
         private static readonly object Sync = new object();
         private static BlueprintParametrizedFeature[] _native;
-        private static BlueprintFeature[] _parameters;
+        private static BlueprintFeature[] _publishedParameters;
+        private static FirearmKind[] _publishedKinds;
+        private static BlueprintFeature[] _recognizedParameters;
+        private static FirearmKind[] _recognizedKinds;
         private static BlueprintComponent[][] _originalComponents;
         private static BlueprintFeature _fullProficiency;
         private static BlueprintFeature _oneHandedProficiency;
@@ -27,15 +30,26 @@ namespace KingmakerGunslinger.Feats
 
         internal static void Configure(BlueprintParametrizedFeature weaponFocus,
             BlueprintParametrizedFeature[] dependent,
-            BlueprintFeature[] parameters, BlueprintFeature[][] legacyDependent,
+            BlueprintFeature[] publishedParameters,
+            FirearmKind[] publishedKinds,
+            BlueprintFeature[] recognizedParameters,
+            FirearmKind[] recognizedKinds,
             BlueprintFeature fullProficiency,
             BlueprintFeature oneHandedProficiency,
             BlueprintFeature twoHandedProficiency,
             bool publicationEnabled)
         {
             if (weaponFocus == null || dependent == null || dependent.Length != 4 ||
-                dependent.Any(value => value == null) || parameters == null ||
-                parameters.Length != 5 || parameters.Any(value => value == null) ||
+                dependent.Any(value => value == null) ||
+                publishedParameters == null || publishedKinds == null ||
+                publishedParameters.Length != publishedKinds.Length ||
+                publishedParameters.Any(value => value == null) ||
+                !publishedKinds.SequenceEqual(OfficialFirearmSupport.Kinds) ||
+                recognizedParameters == null || recognizedKinds == null ||
+                recognizedParameters.Length != recognizedKinds.Length ||
+                recognizedParameters.Any(value => value == null) ||
+                !recognizedKinds.SequenceEqual(
+                    OfficialFirearmSupport.RecognizedKinds) ||
                 fullProficiency == null || oneHandedProficiency == null ||
                 twoHandedProficiency == null)
                 throw new ArgumentException("Native firearm feat integration is incomplete.");
@@ -43,7 +57,12 @@ namespace KingmakerGunslinger.Feats
             {
                 RollbackLocked();
                 _native = new[] { weaponFocus }.Concat(dependent).ToArray();
-                _parameters = (BlueprintFeature[])parameters.Clone();
+                _publishedParameters =
+                    (BlueprintFeature[])publishedParameters.Clone();
+                _publishedKinds = (FirearmKind[])publishedKinds.Clone();
+                _recognizedParameters =
+                    (BlueprintFeature[])recognizedParameters.Clone();
+                _recognizedKinds = (FirearmKind[])recognizedKinds.Clone();
                 _fullProficiency = fullProficiency;
                 _oneHandedProficiency = oneHandedProficiency;
                 _twoHandedProficiency = twoHandedProficiency;
@@ -76,7 +95,10 @@ namespace KingmakerGunslinger.Feats
                         _native[index].ComponentsArray = _originalComponents[index];
             }
             _native = null;
-            _parameters = null;
+            _publishedParameters = null;
+            _publishedKinds = null;
+            _recognizedParameters = null;
+            _recognizedKinds = null;
             _originalComponents = null;
             _fullProficiency = null;
             _oneHandedProficiency = null;
@@ -109,22 +131,23 @@ namespace KingmakerGunslinger.Feats
             FeatureUIData[] existing = (source ?? Enumerable.Empty<FeatureUIData>())
                 .ToArray();
             BlueprintFeature[] parameters;
+            FirearmKind[] kinds;
             lock (Sync)
             {
                 if (!_publicationEnabled || _native == null ||
                     Array.IndexOf(_native, feature) < 0)
                     return existing;
-                parameters = (BlueprintFeature[])_parameters.Clone();
+                parameters = (BlueprintFeature[])_publishedParameters.Clone();
+                kinds = (FirearmKind[])_publishedKinds.Clone();
             }
             var result = new List<FeatureUIData>(existing);
             for (int index = 0; index < parameters.Length; index++)
             {
                 BlueprintFeature parameter = parameters[index];
-                if (unit != null && !CanUse(unit,
-                    FirearmFeatBlueprints.Kinds[index])) continue;
+                if (unit != null && !CanUse(unit, kinds[index])) continue;
                 if (existing.Any(value => value != null &&
                     ReferenceEquals(value.Param.Blueprint, parameter))) continue;
-                string displayName = DisplayName(FirearmFeatBlueprints.Kinds[index]);
+                string displayName = DisplayName(kinds[index]);
                 result.Add(new FeatureUIData(feature, new FeatureParam(parameter),
                     displayName, parameter.Description, parameter.Icon,
                     displayName));
@@ -161,10 +184,11 @@ namespace KingmakerGunslinger.Feats
             BlueprintScriptableObject blueprint = parameter.Blueprint;
             lock (Sync)
             {
-                if (_parameters == null) return false;
-                int index = Array.IndexOf(_parameters, blueprint);
-                if (index < 0 || index >= FirearmFeatBlueprints.Kinds.Length) return false;
-                kind = FirearmFeatBlueprints.Kinds[index];
+                if (_recognizedParameters == null || _recognizedKinds == null)
+                    return false;
+                int index = Array.IndexOf(_recognizedParameters, blueprint);
+                if (index < 0 || index >= _recognizedKinds.Length) return false;
+                kind = _recognizedKinds[index];
                 return true;
             }
         }

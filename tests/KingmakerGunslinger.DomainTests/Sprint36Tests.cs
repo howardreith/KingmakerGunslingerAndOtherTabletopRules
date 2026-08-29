@@ -94,8 +94,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(0, GunTrainingPolicy.DamageBonus(
                 FirearmKind.Pistol, FirearmKind.Musket, 4),
                 "Unselected musket received pistol training.");
-            Assertions.True(GunTrainingPolicy.IsSupportedKind(FirearmKind.Revolver),
-                "Production revolver kind was omitted.");
+            Assertions.True(GunTrainingPolicy.IsRecognizedKind(FirearmKind.Revolver),
+                "Legacy revolver recognition was omitted.");
         }
 
         private static void GunTrainingDamageModifiers()

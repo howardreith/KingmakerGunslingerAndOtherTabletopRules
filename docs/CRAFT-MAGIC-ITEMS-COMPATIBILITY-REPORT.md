@@ -9,8 +9,8 @@ from that candidate's first human interaction:
 
 - all exact 20-unit KMG ammunition projects now use timed target 5 without
   changing price or item value;
-- Advanced Rifle and Advanced Revolver remain supported/upgradeable but are no
-  longer offered as new campaign crafting bases;
+- legacy Advanced Rifle and Advanced Revolver remain loadable/upgradeable but
+  are not official support or new campaign crafting bases;
 - KMG state and battered-origin policy enchantments remain mechanical but are
   omitted from native player-facing quality text;
 - the standalone **Eastern and Elven Weapons** magic category is removed.
@@ -129,8 +129,8 @@ migrated one target-60 project with progress 7 exactly once.
 ### Firearm creation versus recognition
 
 `IsPlayerFireable` remains a mechanical capability gate, not the campaign
-acquisition policy. The production catalog now classifies ordinary creation
-bases separately from mechanically supported recognition identities.
+acquisition policy. The production catalog classifies official ordinary
+creation bases separately from legacy recognition identities.
 
 | Weapon | AssetGuid | New mundane/magic Firearms base | Owned-item recognition, upgrade, Reliable, persistence |
 |---|---|---|---|
@@ -140,10 +140,11 @@ bases separately from mechanically supported recognition identities.
 | Advanced Rifle | `a267e7bbc10e425f8adb87844d572b29` | no | yes |
 | Advanced Revolver | `8ed461fbcc154c51b07e5549211e9f5e` | no | yes |
 
-Advanced firearms remain registered, loadable, mechanically functional,
+Legacy advanced firearms remain registered, loadable, mechanically functional,
 indexed for price/base recognition, legal existing-item upgrade targets, valid
 for Reliable, and valid results for pre-existing 0.0.99 custom blueprints or
-projects. They are absent from every future new-item base array.
+projects. They are absent from every future new-item base array and every
+ordinary non-CMI acquisition or selector surface.
 
 ### Category organization
 
@@ -218,8 +219,8 @@ Kingmaker 2.1.7b has no usable Mending blueprint, so no substitute spell
 blueprint is invented.
 
 The final CMI recipe and custom-GUID boundaries require exactly one canonical
-`FirearmDefinitionComponent` on the actual weapon type. All five recognized
-firearms and CMI firearm clones pass. Bows, crossbows, Wakizashi, Katana,
+`FirearmDefinitionComponent` on the actual weapon type. The three official and
+two legacy-recognized firearms, plus CMI firearm clones, pass. Bows, crossbows, Wakizashi, Katana,
 Nodachi, Elven Branched Spears, arbitrary weapons, and ambiguous duplicate
 markers fail. The real observer proved +1/Reliable equals plus 2 and exact CMI
 rules cost 9,300.

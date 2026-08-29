@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.Classes
             int dexterityModifier, bool hasExactKindTraining,
             int pistolTrainingRank, int musketTrainingRank)
         {
-            if (!GunTrainingPolicy.IsSupportedKind(kind))
+            if (!GunTrainingPolicy.IsRecognizedKind(kind))
                 throw new ArgumentOutOfRangeException("kind");
             if (pistolTrainingRank < 0 || pistolTrainingRank > 4)
                 throw new ArgumentOutOfRangeException("pistolTrainingRank");
