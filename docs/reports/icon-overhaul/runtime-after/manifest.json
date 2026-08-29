@@ -1,0 +1,62 @@
+{
+    "schemaVersion":  1,
+    "title":  "Kingmaker Gunslinger icon-overhaul curated runtime visuals",
+    "sourceRunId":  "20260829T0840463526907Z-bb0b852157c04c47b6971c884fe630c3",
+    "sourceScenario":  "icon-overhaul-visual-evidence",
+    "sourceStatus":  "PASS",
+    "evidenceRole":  "Supporting perceptual evidence from in-game Unity rendering of live loaded blueprint sprites; mechanical claims use structured runtime assertions.",
+    "loadedModVersion":  "0.0.106",
+    "gitCommitAtBuild":  "7094003b63e67da8f5c2a6f0f5b14db3a49e4a3b",
+    "packageSha256":  "ed37dd4efd92dddd6f8e38b04f6f5131a21d8beaa207049d2c65839fed4fe3e4",
+    "dllSha256":  "185b4df4f7d2fad511244c3bf6507f5710a400cb0880c993e8e95ef60bec74f0",
+    "dllMvid":  "61692ec3-ad5f-4efd-adef-772712fbbc6e",
+    "easternItemCount":  30,
+    "spearItemCount":  12,
+    "screenshots":  [
+                        {
+                            "file":  "icon-overhaul/runtime-after/after-01-rapid-reload-feat-list.png",
+                            "label":  "1. Rapid Reload beside native feats",
+                            "width":  1920,
+                            "height":  1200,
+                            "sourceSha256":  "c674dbf5f6301f01417c0e94625ad1207bb9354e93139c53a0949e040ed9ef7f",
+                            "curatedSha256":  "be3e3d70a602581604ac8f91c4b28caaaaedc76f9786558880f7a0d8e4da57cb",
+                            "decodedPixelSha256":  "5e233631db50269fd60ad25eafc8157c8812cd9af176c99b90894e9c97b966a1"
+                        },
+                        {
+                            "file":  "icon-overhaul/runtime-after/after-02-rapid-reload-supported-choices.png",
+                            "label":  "2. Rapid Reload exact supported choices",
+                            "width":  1920,
+                            "height":  1200,
+                            "sourceSha256":  "633fc716e241ef1029b2c9d2060a242f16d4650dbf9b7c57ad087cd413081ccf",
+                            "curatedSha256":  "b28df5e045013c0a19cf582ce7ca5ecaa8149d5e26c40d1938778689b8de9ebd",
+                            "decodedPixelSha256":  "057014ab0ffbc2c0449a665f6713fdc0c2d6d34153d9fbdfa8df3a14bad36a65"
+                        },
+                        {
+                            "file":  "icon-overhaul/runtime-after/after-03-weapon-focus-firearm-choices.png",
+                            "label":  "3. Weapon Focus exact firearm parameters",
+                            "width":  1920,
+                            "height":  1200,
+                            "sourceSha256":  "1d6fda810b33ad5a3153c97097974a0ab6549ad90f4baa99c6bdb445c2dad680",
+                            "curatedSha256":  "c53f525024c0a991eb04aa9fcc1263adb066e301b3ead71d00bf3c1f66866800",
+                            "decodedPixelSha256":  "0c04bdeb75bfa16588bbf6ae39975ac08fce7df1018cbb133e7dbe6f278263e5"
+                        },
+                        {
+                            "file":  "icon-overhaul/runtime-after/after-04-supported-firearm-items.png",
+                            "label":  "4. Supported firearm item icons",
+                            "width":  1920,
+                            "height":  1200,
+                            "sourceSha256":  "f1581098d7ec47d2fa2927702479bb425306f67071bcfb833e2799448faa8a1c",
+                            "curatedSha256":  "410498fa142dd339672379ce3b622803e33160fce1e4d175501683e6b47144c8",
+                            "decodedPixelSha256":  "ca3b07e740062fa032e4fafdbc79ad4910401b45af7e74077b0fd0485268fbaf"
+                        },
+                        {
+                            "file":  "icon-overhaul/runtime-after/after-05-eastern-and-spear-items.png",
+                            "label":  "5. Eastern and spear item icons",
+                            "width":  1920,
+                            "height":  1200,
+                            "sourceSha256":  "ab7afc69bf2c7d3ce831f2cd87023adca207914577443611e59e2bda31f93178",
+                            "curatedSha256":  "7bebb7a4b469efbaf7b36a5e69270cb27779b94876e62b3edaddcf3269a1cf98",
+                            "decodedPixelSha256":  "450d7523cf0e19904709b1097623ed95585224f4ce7a5d505a60883352ee771b"
+                        }
+                    ]
+}
