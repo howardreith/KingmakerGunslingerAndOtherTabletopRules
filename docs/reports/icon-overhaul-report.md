@@ -378,7 +378,14 @@ Rapid Reload still read as a pale card. The assertion was corrected to the
 actual localized names, the art was rebuilt on transparency, and only the later
 PASS run above supplies final screenshots.
 
-### Final package and installed identity
+### Qualified 0.0.106 implementation candidate identity
+
+These hashes and guarded runs identify the exact pre-release implementation
+candidate used to qualify the art and mechanics. The owner subsequently
+authorized promotion as version `0.0.107-icon-art-overhaul`. The published
+0.0.107 release manifest is authoritative for the final release package, DLL,
+commit, and deterministic-build hashes; the 0.0.106 evidence remains immutable
+candidate provenance rather than being relabeled.
 
 - Installable package:
   `artifacts/packages/KingmakerGunslinger-0.0.106-fatigue-authority-repair.zip`
@@ -433,4 +440,5 @@ Rifle/Revolver files and stable blueprints intentionally remain in the package
 for compatibility; their presence is not official support. The accepted
 firearm-item primary sources are committed, but the external generative step
 that created them is not byte-reproducible. No remote Git operation was
-performed.
+performed during the original icon-overhaul mission. Remote publication began
+only after the owner's explicit follow-up authorization.

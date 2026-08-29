@@ -37,7 +37,7 @@ def validate(root: Path) -> None:
     baseline.STATIC_KEY = STATIC_KEY
     baseline.RUNTIME_QUALIFICATION_PENDING = VERSION not in {
         "0.0.98", "0.0.99", "0.0.100", "0.0.101", "0.0.102",
-        "0.0.103", "0.0.104", "0.0.105", "0.0.106"}
+        "0.0.103", "0.0.104", "0.0.105", "0.0.106", "0.0.107"}
     baseline.EXPECTED_LEDGER_ENTRIES = EXPECTED_LEDGER_ENTRIES
     baseline.EXPECTED_ACTIVE_BLUEPRINTS = EXPECTED_ACTIVE_BLUEPRINTS
     baseline.PROJECT_BLUEPRINT_COUNT = PROJECT_BLUEPRINT_COUNT

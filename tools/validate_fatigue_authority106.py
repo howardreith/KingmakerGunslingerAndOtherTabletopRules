@@ -16,6 +16,7 @@ PACKAGE_SUFFIX = "fatigue-authority-repair"
 DETERMINISTIC_TEST_COUNT = 1325
 FOCUSED_FATIGUE_CASE_COUNT = 21
 STATIC_KEY = "fatigueAuthority106"
+RELEASE_NOTES_VERSION = VERSION
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
@@ -131,7 +132,7 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "'disposable-native-fatigue-refresh'",
         "'disposable-acadamae-fatigue-escalation'",
-        "active version 0.0.106")
+        f"active version {VERSION}")
     require_tokens(root / "scripts/Invoke-FatigueWorkingSavePersistence.ps1",
         "[ValidateSet('KMG_AUTOMATION_WORKING')]",
         "working-save-fatigue-prepare",
@@ -145,10 +146,10 @@ def validate(root: Path) -> None:
         "0x06002188", "0x060091B4", "StackingType.Prolong",
         "one in-game hour", "does not issue a duplicate Fatigued request",
         "supervised world-map acceptance")
-    require_tokens(root / "docs/RELEASE-NOTES-0.0.106.md",
-        "Kingmaker Gunslinger 0.0.106",
-        "KingmakerGunslinger-0.0.106-fatigue-authority-repair.zip",
-        "1,325")
+    require_tokens(root / f"docs/RELEASE-NOTES-{RELEASE_NOTES_VERSION}.md",
+        f"Kingmaker Gunslinger {VERSION}",
+        f"KingmakerGunslinger-{VERSION}-{PACKAGE_SUFFIX}.zip",
+        f"{DETERMINISTIC_TEST_COUNT:,}")
 
     static = json.loads((root / "validation/static-validation.json")
         .read_text(encoding="utf-8"))
