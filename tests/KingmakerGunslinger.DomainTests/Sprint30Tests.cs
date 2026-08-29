@@ -46,9 +46,10 @@ namespace KingmakerGunslinger.DomainTests
             AssertAvailable(FirearmActionKind.Repair, Empty(FirearmCondition.Broken), true);
         }
 
-        private static void GenericRepairLoadedRejected()
+        private static void GenericRepairLoadedAvailable()
         {
-            AssertRejected(FirearmActionKind.Repair, Loaded(FirearmCondition.Broken), true);
+            AssertAvailable(FirearmActionKind.Repair,
+                Loaded(FirearmCondition.Broken), true);
         }
 
         private static void GenericRepairMissingKitRejected()

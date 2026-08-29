@@ -12122,6 +12122,55 @@
       "notes": "Persistent Call of the Wild Focused Weapon child for dual-group Nodachi; inert when the optional mod is absent."
     },
     {
+      "symbol": "KMG.CustomWeapons.MartialPerformance.Pistol",
+      "guid": "ae201a05ceca46ad91e1c1eeb6321563",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Martial Performance repair",
+      "notes": "Persistent optional Call of the Wild Martial Performance choice for proficient Pistol users; registered only when the exact optional selection is present."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.MartialPerformance.Musket",
+      "guid": "65ec2aa82f3847dc80e06e6b3d5c4436",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Martial Performance repair",
+      "notes": "Persistent optional Call of the Wild Martial Performance choice for proficient Musket users; registered only when the exact optional selection is present."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.MartialPerformance.Blunderbuss",
+      "guid": "db37b2a40889495c8754607357c36447",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Martial Performance repair",
+      "notes": "Persistent optional Call of the Wild Martial Performance choice for proficient Blunderbuss users; registered only when the exact optional selection is present."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.MartialPerformance.ElvenBranchedSpear",
+      "guid": "29820237e39f438ba649a0850b3734f4",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Martial Performance repair",
+      "notes": "Persistent optional Call of the Wild Martial Performance choice for proficient Elven Branched Spear users; registered only when the exact optional selection is present."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.MartialPerformance.Wakizashi",
+      "guid": "bf303f6dac264528ba3c97ce719e12d6",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Martial Performance repair",
+      "notes": "Persistent optional Call of the Wild Martial Performance choice for proficient Wakizashi users; registered only when the exact optional selection is present."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.MartialPerformance.Katana",
+      "guid": "13f2e7047e1b48638fe2939e98007ac2",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Martial Performance repair",
+      "notes": "Persistent optional Call of the Wild Martial Performance choice using the exact direct-or-two-handed-martial Katana proficiency rule."
+    },
+    {
+      "symbol": "KMG.CustomWeapons.MartialPerformance.Nodachi",
+      "guid": "72ec4ee09f44491aa3857b599fd206ef",
+      "plannedType": "BlueprintFeature",
+      "status": "active", "milestone": "Martial Performance repair",
+      "notes": "Persistent optional Call of the Wild Martial Performance choice for proficient Nodachi users; registered only when the exact optional selection is present."
+    },
+    {
       "symbol": "KMG.BrownFur.Archetype", "guid": "aafa6e62241bb14582de5f587c179329",
       "plannedType": "BlueprintArchetype", "status": "active", "milestone": "Brown-Fur Transmuter",
       "notes": "Permanent Brown-Fur Transmuter archetype identity; registered by the isolated optional extension while selector publication remains qualification-gated."

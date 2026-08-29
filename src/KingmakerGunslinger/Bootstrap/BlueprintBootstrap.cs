@@ -68,10 +68,14 @@ namespace KingmakerGunslinger.Bootstrap
         private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;
         private static EasternWeaponBlueprintSet _easternWeapons;
         private static UrbanBarbarianBlueprintSet _urbanBarbarian;
+        private static CustomWeaponMartialPerformancePublication
+            _martialPerformancePublication;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
         private static int _observationCount;
         private static int _initializationCount;
         private static int _registeredBlueprintCount;
+        private static int _expectedRegisteredBlueprintCount =
+            ExpectedRegisteredBlueprintCount;
 
         internal static LibraryScriptableObject Library
         {
@@ -436,6 +440,23 @@ namespace KingmakerGunslinger.Bootstrap
             }
         }
 
+        internal static int ExpectedRegisteredBlueprintCountForCurrentRuntime
+        {
+            get
+            {
+                lock (Gate) return _expectedRegisteredBlueprintCount;
+            }
+        }
+
+        internal static CustomWeaponMartialPerformancePublication
+            MartialPerformancePublication
+        {
+            get
+            {
+                lock (Gate) return _martialPerformancePublication;
+            }
+        }
+
         internal static void Observe(LibraryScriptableObject library)
         {
             if (library == null)
@@ -568,7 +589,11 @@ namespace KingmakerGunslinger.Bootstrap
                     _elvenBranchedSpears = result.ElvenBranchedSpears;
                     _easternWeapons = result.EasternWeapons;
                     _urbanBarbarian = result.UrbanBarbarian;
-                    _registeredBlueprintCount = ExpectedRegisteredBlueprintCount;
+                    _martialPerformancePublication =
+                        result.MartialPerformancePublication;
+                    _registeredBlueprintCount = result.RegisteredBlueprintCount;
+                    _expectedRegisteredBlueprintCount =
+                        result.ExpectedRegisteredBlueprintCount;
                     _initializationCount++;
                     _state = BootstrapState.Initialized;
                 }
@@ -661,6 +686,8 @@ namespace KingmakerGunslinger.Bootstrap
             EasternWeaponSelectorPublication easternSelectorPublication = null;
             EasternWeaponCampaignPublication easternCampaignPublication = null;
             CustomWeaponFocusedWeaponPublication focusedWeaponPublication = null;
+            CustomWeaponMartialPerformancePublication
+                martialPerformancePublication = null;
             UrbanBarbarianPublication urbanBarbarianPublication = null;
             try
             {
@@ -753,6 +780,16 @@ namespace KingmakerGunslinger.Bootstrap
                         publicationPlan.FirearmParameters);
                 if (publicationPlan.GunslingerFeats)
                     featPublication = FirearmFeatBlueprints.Publish(library, firearmFeats);
+
+                martialPerformancePublication =
+                    CustomWeaponMartialPerformancePublication
+                        .RegisterAndPublish(library, registry, firearmFeats,
+                            publicationPlan.FirearmParameters,
+                            publicationPlan.ElvenBranchedSpearSelectors,
+                            publicationPlan.EasternWeaponSelectors);
+                int expectedRegisteredBlueprintCount =
+                    ExpectedRegisteredBlueprintCount +
+                    martialPerformancePublication.RegisteredCount;
 
                 TestMusketBlueprintSet testMusket = TestMusketBlueprints.Register(
                     library,
@@ -967,13 +1004,13 @@ namespace KingmakerGunslinger.Bootstrap
                         gunsmithingCrafting, capitalVendorPublication,
                         btslVendorPublication, context.Logger);
 
-                if (registry.RegisteredCount != ExpectedRegisteredBlueprintCount)
+                if (registry.RegisteredCount != expectedRegisteredBlueprintCount)
                 {
                     throw new InvalidOperationException(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "The current milestone expected exactly {0} custom registrations, but observed {1}.",
-                            ExpectedRegisteredBlueprintCount,
+                            expectedRegisteredBlueprintCount,
                             registry.RegisteredCount));
                 }
 
@@ -1014,10 +1051,24 @@ namespace KingmakerGunslinger.Bootstrap
                     shieldOtherPublication,
                     elvenBranchedSpears,
                     easternWeapons,
-                    urbanBarbarian);
+                    urbanBarbarian,
+                    martialPerformancePublication,
+                    registry.RegisteredCount,
+                    expectedRegisteredBlueprintCount);
             }
             catch (Exception initializationException)
             {
+                if (martialPerformancePublication != null)
+                {
+                    try { martialPerformancePublication.Rollback(); }
+                    catch (Exception martialRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "martial-performance.rollback-failed",
+                            "Blueprint initialization failed and Martial Performance rollback was refused.",
+                            martialRollbackException);
+                    }
+                }
                 if (focusedWeaponPublication != null)
                 {
                     try { focusedWeaponPublication.Rollback(); }
@@ -1298,7 +1349,11 @@ namespace KingmakerGunslinger.Bootstrap
                 ShieldOtherSpellListPublication shieldOtherPublication,
                 ElvenBranchedSpearBlueprintSet elvenBranchedSpears,
                 EasternWeaponBlueprintSet easternWeapons,
-                UrbanBarbarianBlueprintSet urbanBarbarian)
+                UrbanBarbarianBlueprintSet urbanBarbarian,
+                CustomWeaponMartialPerformancePublication
+                    martialPerformancePublication,
+                int registeredBlueprintCount,
+                int expectedRegisteredBlueprintCount)
             {
                 DiagnosticFeature = diagnosticFeature ?? throw new ArgumentNullException("diagnosticFeature");
                 FirearmProficiency = firearmProficiency ?? throw new ArgumentNullException("firearmProficiency");
@@ -1339,6 +1394,17 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("easternWeapons");
                 UrbanBarbarian = urbanBarbarian ??
                     throw new ArgumentNullException("urbanBarbarian");
+                MartialPerformancePublication =
+                    martialPerformancePublication ??
+                    throw new ArgumentNullException(
+                        "martialPerformancePublication");
+                if (registeredBlueprintCount <= 0 ||
+                    expectedRegisteredBlueprintCount <= 0)
+                    throw new ArgumentOutOfRangeException(
+                        "Blueprint registration counts must be positive.");
+                RegisteredBlueprintCount = registeredBlueprintCount;
+                ExpectedRegisteredBlueprintCount =
+                    expectedRegisteredBlueprintCount;
             }
 
             internal BlueprintFeature DiagnosticFeature { get; private set; }
@@ -1391,6 +1457,10 @@ namespace KingmakerGunslinger.Bootstrap
             { get; private set; }
             internal UrbanBarbarianBlueprintSet UrbanBarbarian
             { get; private set; }
+            internal CustomWeaponMartialPerformancePublication
+                MartialPerformancePublication { get; private set; }
+            internal int RegisteredBlueprintCount { get; private set; }
+            internal int ExpectedRegisteredBlueprintCount { get; private set; }
         }
     }
 }

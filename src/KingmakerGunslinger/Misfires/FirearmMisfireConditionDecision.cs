@@ -54,7 +54,7 @@ namespace KingmakerGunslinger.Misfires
 
         internal bool ChangesCondition
         {
-            get { return Transition != FirearmMisfireConditionTransition.None; }
+            get { return Before.Condition != After.Condition; }
         }
 
         public override string ToString()

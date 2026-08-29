@@ -13,7 +13,7 @@ namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
     /// Typed Kingmaker adapter for player-facing ordinary repair. It resolves one exact
-    /// equipped firearm, requires empty/Broken state and one repair kit, and executes
+    /// equipped firearm, requires Broken state and one repair kit, and executes
     /// the atomic same-item Broken-to-Normal transaction only during ability delivery.
     /// </summary>
     internal static class RepairTestMusketRuntime
@@ -82,15 +82,6 @@ namespace KingmakerGunslinger.Recovery
                     inventory);
             }
 
-            if (!state.IsEmpty)
-            {
-                return Rejected(
-                    "Unload or fire the firearm before ordinary repair; Repair Firearm requires an empty Broken firearm.",
-                    weapon,
-                    firearm,
-                    inventory);
-            }
-
             if (inventory.RepairKits == 0)
             {
                 return Rejected(
@@ -102,7 +93,7 @@ namespace KingmakerGunslinger.Recovery
 
             return new FirearmRepairAvailability(
                 true,
-                "Ready to consume one Firearm Repair Kit and repair this exact empty/Broken firearm to empty/Normal. The item will not be replaced or loaded.",
+                "Ready to consume one Firearm Repair Kit and repair this exact Broken firearm to empty/Normal. Every loaded round will be destroyed; the item will not be replaced.",
                 weapon,
                 firearm,
                 inventory);
@@ -185,7 +176,7 @@ namespace KingmakerGunslinger.Recovery
                 .ToArray();
             if (matches.Length == 0)
             {
-                reason = "Equip exactly one empty/Broken firearm before repairing.";
+                reason = "Equip exactly one Broken firearm before repairing.";
                 return false;
             }
 

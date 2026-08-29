@@ -87,7 +87,7 @@ namespace KingmakerGunslinger.Development
                 bootstrapInitialized,
                 initializationCount,
                 registeredBlueprintCount,
-                BlueprintBootstrap.ExpectedRegisteredBlueprintCount,
+                BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                 bootstrapDetail,
                 identityInspectionSucceeded,
                 identityMemberCount,

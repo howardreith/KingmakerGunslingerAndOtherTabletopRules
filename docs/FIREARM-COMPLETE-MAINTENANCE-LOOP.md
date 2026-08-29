@@ -23,7 +23,7 @@ loaded/Normal
 Each stage has a different purpose and resource boundary:
 
 - **Overhaul** makes a Wrecked firearm serviceable enough for ordinary repair. It stops at Broken.
-- **Repair** restores an empty Broken firearm to empty Normal. It does not load ammunition.
+- **Repair** restores a Broken firearm to empty Normal. Any rounds loaded in that exact firearm are destroyed; they are not returned to inventory.
 - **Reload** places one round in an empty Normal or Broken firearm and consumes the ammunition components.
 
 The actions are intentionally not collapsed into one operation. A Wrecked firearm cannot skip Overhaul, and an ordinary Repair cannot implicitly reload.
@@ -36,7 +36,7 @@ The actions are intentionally not collapsed into one operation. A Wrecked firear
 2. the Test Musket and Firearm Repair Kit blueprints are initialized;
 3. exactly one distinct Test Musket is equipped between the primary and secondary hand slots;
 4. that exact runtime item resolves through the item-token repository;
-5. its state is empty/Broken; and
+5. its state is Broken; and
 6. shared inventory contains at least one Firearm Repair Kit.
 
 The following are rejected without mutation:
@@ -45,7 +45,6 @@ The following are rejected without mutation:
 - more than one distinct equipped Test Musket;
 - empty/Normal;
 - empty/Wrecked;
-- loaded/Broken;
 - missing Repair Kit; or
 - missing shared inventory.
 
@@ -60,8 +59,8 @@ Cancelling, interrupting, moving away from the command, or replacing it before d
 The dependency-free Repair transaction performs these steps:
 
 1. read the exact firearm state and Repair Kit count;
-2. reject without writes unless the state is empty/Broken and at least one kit exists;
-3. derive empty/Normal through `FirearmStateMachine.Repair`;
+2. reject without writes unless the state is Broken and at least one kit exists;
+3. derive empty/Normal through `FirearmStateMachine.Repair`, discarding every loaded round and its ammunition identity;
 4. remove exactly one Repair Kit;
 5. verify the expected kit count;
 6. replace the exact item's expected-current state;
@@ -78,7 +77,7 @@ A successful runtime result requires:
 - unchanged in-process runtime reference hash;
 - transaction states matching the repository snapshots;
 - exactly one repository revision increment;
-- empty/Broken before state;
+- Broken before state, which may contain one or more loaded rounds;
 - empty/Normal after state; and
 - exactly one Repair Kit consumed.
 

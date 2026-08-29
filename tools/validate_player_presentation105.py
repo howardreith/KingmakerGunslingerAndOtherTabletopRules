@@ -14,7 +14,7 @@ INFORMATIONAL_VERSION = (
     "0.0.105-player-facing-presentation-item-discoverability")
 PACKAGE = "KingmakerGunslinger-0.0.105-local-runtime.zip"
 PACKAGE_SUFFIX = "player-facing-presentation-item-discoverability"
-DETERMINISTIC_TEST_COUNT = 1325
+DETERMINISTIC_TEST_COUNT = 1348
 STATIC_KEY = "playerPresentation105"
 
 

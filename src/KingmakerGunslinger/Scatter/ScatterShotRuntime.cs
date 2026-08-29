@@ -185,10 +185,13 @@ namespace KingmakerGunslinger.Scatter
                     firearm.EffectiveCondition);
                 if (condition.ChangesCondition)
                 {
-                    Transition(firearm, expected, condition.After);
-                    expected = condition.After;
-                    FirearmConditionCombatLog.Publish(
-                        firearm.Firearm.ItemDisplayName,
+                    FirearmItemStateSnapshot conditionCommit =
+                        Transition(firearm, expected, condition.After);
+                    expected = conditionCommit.Repository.State;
+                    FirearmConditionTopNotification
+                        .PublishAfterCommittedDegradation(
+                        caster.CharacterName,
+                        conditionCommit.ItemDisplayName,
                         condition.Before.Condition,
                         condition.After.Condition,
                         "scatter misfire");
@@ -216,10 +219,11 @@ namespace KingmakerGunslinger.Scatter
                 attacks, condition, before, expected);
         }
 
-        private static void Transition(ExactEquippedFirearmContext firearm,
+        private static FirearmItemStateSnapshot Transition(
+            ExactEquippedFirearmContext firearm,
             FirearmState expected, FirearmState replacement)
         {
-            FirearmRuntimeState.Service.Transition(firearm.Weapon, current =>
+            return FirearmRuntimeState.Service.Transition(firearm.Weapon, current =>
             {
                 if (current != expected) throw new InvalidOperationException(
                     "Blunderbuss state changed during Scatter Shot delivery.");

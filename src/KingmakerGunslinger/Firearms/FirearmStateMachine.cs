@@ -146,8 +146,8 @@ namespace KingmakerGunslinger.Firearms
 
             return new FirearmState(
                 FirearmState.CurrentSchemaVersion,
-                state.LoadedRounds,
-                state.LoadedAmmunition,
+                0,
+                null,
                 FirearmCondition.Normal);
         }
 

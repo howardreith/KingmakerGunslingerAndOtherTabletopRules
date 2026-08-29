@@ -16,7 +16,7 @@ namespace KingmakerGunslinger.Blueprints
     /// <summary>
     /// Registers player-facing ordinary firearm maintenance: a personal, extraordinary,
     /// full-round same-item repair that consumes one repair kit only when delivery completes
-    /// and changes empty/Broken to empty/Normal.
+    /// and changes Broken to empty/Normal, destroying any loaded ammunition.
     /// </summary>
     internal static class RepairTestMusketAbilityBlueprints
     {
@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ComponentName = "$KMG_RepairTestMusketLogic";
 
         private const string Description =
-            "Spend a full-round action and consume one Firearm Repair Kit to repair the exact equipped empty Broken firearm to empty Normal. A Wrecked firearm must be Overhauled first; this action does not load ammunition or replace the item.";
+            "Spend a full-round action and consume one Firearm Repair Kit to repair the exact equipped Broken firearm to empty Normal. All ammunition loaded in that firearm is destroyed. A Wrecked firearm must be Overhauled first; this action does not replace the item.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,

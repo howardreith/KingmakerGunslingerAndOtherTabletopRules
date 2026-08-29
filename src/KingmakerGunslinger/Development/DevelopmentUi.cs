@@ -57,7 +57,7 @@ namespace KingmakerGunslinger.Development
             }
 
             ImmediateModeGui.Label(
-                "Sprint 28 is runtime-accepted. Version 0.0.29 completes the player-facing maintenance loop: Overhaul changes one exact empty/Wrecked Test Musket to empty/Broken, Repair changes that same exact empty/Broken item to empty/Normal, and Reload then consumes one powder-and-ball pair to load it. Overhaul and Repair are separate full-round actions and each consumes one Firearm Repair Kit only when delivery completes. The accelerated fixture below prints one concise identity, resource, fault, duplicate, and second-item PASS/FAIL matrix after every stage.");
+                "Sprint 28 is runtime-accepted. Version 0.0.29 completes the player-facing maintenance loop: Overhaul changes one exact empty/Wrecked Test Musket to empty/Broken, Repair changes that same exact Broken item to empty/Normal and destroys any loaded rounds, and Reload then consumes one powder-and-ball pair to load it. Overhaul and Repair are separate full-round actions and each consumes one Firearm Repair Kit only when delivery completes. The accelerated fixture below prints one concise identity, resource, fault, duplicate, and second-item PASS/FAIL matrix after every stage.");
 
             bool tracingWasEnabled = CombatTraceSettings.Enabled;
             bool tracingIsEnabled = ImmediateModeGui.Toggle(
@@ -285,7 +285,7 @@ namespace KingmakerGunslinger.Development
             ImmediateModeGui.Space(8f);
             ImmediateModeGui.Label("Player-facing Overhaul and Repair controls");
             ImmediateModeGui.Label(
-                "Granting Firearm Proficiency grants Reload Test Musket, Overhaul Test Musket, and Repair Test Musket. Overhaul is a full-round Wrecked-to-Broken action; Repair is a separate full-round Broken-to-Normal action. Each requires exactly one equipped empty Test Musket in the matching condition and consumes one Firearm Repair Kit only when delivery completes. Neither action loads ammunition or replaces the item. Immediate controls bypass action economy and are diagnostics only.");
+                "Granting Firearm Proficiency grants Reload Test Musket, Overhaul Test Musket, and Repair Test Musket. Overhaul is a full-round empty Wrecked-to-Broken action; Repair is a separate full-round Broken-to-empty Normal action that destroys every loaded round. Each consumes one Firearm Repair Kit only when delivery completes. Neither action loads ammunition or replaces the item. Immediate controls bypass action economy and are diagnostics only.");
 
             if (ImmediateModeGui.Button("Print Overhaul Test Musket readiness"))
             {

@@ -44,7 +44,7 @@ the runtime test runner remain orchestration-only.
 
 Version 0.0.29 retains the accepted token-backed runtime architecture, condition-preserving Broken reload, exact loaded-round enforcement, exact natural-d20 misfire classification, exact-item Normal → Broken → Wrecked transitions, native five-foot Reflex-half second-misfire burst, and same-item Wrecked → Broken Overhaul.
 
-Sprint 29 completes the first player-facing Test Musket maintenance loop with a separate full-round personal extraordinary Repair action. Completed Repair consumes exactly one Firearm Repair Kit and atomically changes the exact equipped empty/Broken item to empty/Normal. It verifies unchanged repository identity and in-process runtime reference, exactly one revision increment, exact one-kit consumption, and rollback of both resources after a fault. Reload remains a separate operation and the only stage that consumes Black Powder and a Lead Ball.
+Sprint 29 completes the first player-facing Test Musket maintenance loop with a separate full-round personal extraordinary Repair action. Completed Repair consumes exactly one Firearm Repair Kit and atomically changes the exact equipped Broken item to empty/Normal. Any loaded rounds and their ammunition identity are destroyed rather than returned to inventory. It verifies unchanged repository identity and in-process runtime reference, exactly one revision increment, exact one-kit consumption, and rollback of the exact pre-repair loaded state and kit count after a fault. Reload remains a separate operation and the only stage that consumes inventory ammunition.
 
 Sprint 29 also adds a deterministic two-item maintenance fixture, a pure process-local PASS/FAIL evaluator, and a one-command immediate transaction runner. These diagnostics accelerate regression checks but never participate in gameplay decisions or persistence; manual action-bar testing still proves full-round delivery and interruption behavior.
 
@@ -308,7 +308,7 @@ Firearms remain real `BlueprintItemWeapon`/`ItemEntityWeapon` instances and use 
 | `RuleAttackRoll.set_Roll(RollEntry)` / `IsSuccessRoll(int)` | Observe or deterministically force the exact eligible firearm natural d20, force configured misfires to miss, and apply one exact-item condition transition |
 | Reload ability delivery | Atomically consume one powder plus one Lead Ball and load the exact empty Normal or Broken firearm without changing condition; reject Wrecked |
 | Overhaul ability delivery | Atomically consume one Firearm Repair Kit and change the exact empty/Wrecked firearm to empty/Broken; preserve item identity; reject Normal/Broken/ambiguous targets |
-| Repair ability delivery | Atomically consume one Firearm Repair Kit and change the exact empty/Broken firearm to empty/Normal; preserve item identity; reject Normal/Wrecked/loaded/ambiguous targets |
+| Repair ability delivery | Atomically consume one Firearm Repair Kit and change the exact Broken firearm to empty/Normal; discard its loaded rounds without an inventory refund; preserve item identity; reject Normal/Wrecked/ambiguous targets |
 | Maintenance qualification | Observe exact target, second-item isolation, revisions, resources, completions, faults, and duplicates; never mutate gameplay or persistence state |
 | Later class systems | Gun Training, deeds, grit, and class progression |
 
@@ -491,7 +491,7 @@ the next exact firearm attack consumes the marker, and an eligible hit spends
 grit and applies a persistent native-descriptor Bleed fact whose per-round
 component dispatches native direct HP or stat damage.
 
-Availability remains read-only. Repair starts no transaction before `Deliver`, accepts only one exact equipped empty/Broken Test Musket, consumes one kit, writes empty/Normal once, verifies both resources, and restores the pre-operation values after a mutation-time failure when possible. `FirearmRepairRuntimeResult` requires unchanged process-local item identity and one revision increment.
+Availability remains read-only. Repair starts no transaction before `Deliver`, accepts only one exact equipped Broken Test Musket, consumes one kit, writes empty/Normal once, verifies both resources, and restores the exact pre-operation loaded state and kit count after a mutation-time failure when possible. `FirearmRepairRuntimeResult` requires unchanged process-local item identity and one revision increment.
 
 The qualification harness remains outside gameplay. `MaintenanceQualificationBaseline` captures one target, one independent second item, resources, completion counters, fault totals, and duplicate totals. `MaintenanceQualificationService` compares later observations and emits one of four checkpoints: `FixtureReady`, `OverhaulPassed`, `RepairPassed`, or `MaintenanceLoopPassed`. The one-command runner uses immediate runtime adapters only for fast transaction regression; actual action-bar delivery and interruption remain live-test obligations.
 
@@ -518,7 +518,7 @@ catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
 plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, extend the
-append-only ledger to 1630 stable IDs: 1629 active and one reserved. The two
+append-only ledger to 1637 stable IDs: 1636 active and one reserved. The two
 latest active identities are hidden, mechanically inert In Harm's Way
 immediate-action debt facts. They preserve an off-turn spend across save/load
 and tie it to the owner's next actual turn without using a global-round flag.

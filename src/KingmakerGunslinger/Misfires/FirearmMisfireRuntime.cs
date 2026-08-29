@@ -512,7 +512,8 @@ namespace KingmakerGunslinger.Misfires
                     "The misfire condition transition committed through a different repository identity than the discharged firearm.");
             }
 
-            FirearmConditionCombatLog.Publish(
+            FirearmConditionTopNotification.PublishAfterCommittedDegradation(
+                context.Wielder.CharacterName,
                 committed.ItemDisplayName,
                 condition.Before.Condition,
                 condition.After.Condition,

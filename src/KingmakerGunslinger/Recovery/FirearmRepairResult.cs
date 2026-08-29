@@ -34,13 +34,12 @@ namespace KingmakerGunslinger.Recovery
             if (status == FirearmRepairStatus.Repaired)
             {
                 if (BeforeState.Condition != FirearmCondition.Broken ||
-                    !BeforeState.IsEmpty ||
                     AfterState.Condition != FirearmCondition.Normal ||
                     !AfterState.IsEmpty ||
                     AfterInventory.RepairKits != BeforeInventory.RepairKits - 1)
                 {
                     throw new ArgumentException(
-                        "A successful ordinary repair must change an empty Broken firearm to empty Normal and consume exactly one Firearm Repair Kit.");
+                        "A successful ordinary repair must change a Broken firearm to empty Normal, discard its loaded ammunition, and consume exactly one Firearm Repair Kit.");
                 }
             }
             else if (BeforeState != AfterState ||
