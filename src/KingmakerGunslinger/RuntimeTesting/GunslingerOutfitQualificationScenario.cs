@@ -869,13 +869,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private bool RestoreAvatar()
             {
-                if (_avatar == null || _avatarBefore.Length == 0)
+                if (_avatar == null)
                 {
                     _lastRestorationDiagnostic = new JObject
                     {
-                        { "avatarPresent", _avatar != null },
+                        { "avatarPresent", false },
                         { "originalEntityCount", _avatarBefore.Length },
-                        { "reason", "missing-avatar-or-empty-snapshot" }
+                        { "reason", "missing-avatar" }
                     };
                     return false;
                 }
@@ -910,6 +910,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _lastRestorationDiagnostic = new JObject
                 {
                     { "originalEntityCount", _avatarBefore.Length },
+                    { "originalEmpty", _avatarBefore.Length == 0 },
                     { "currentEntityCount", current.Length },
                     { "exactOrder", exactOrder },
                     { "exactRamps", exactRamps },
@@ -942,7 +943,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     if (!_currentRestored && _avatar != null &&
-                        _avatarBefore.Length > 0 && !RestoreAvatar())
+                        !RestoreAvatar())
                         throw new InvalidOperationException(
                             "Fallback avatar restoration was not exact.");
                 }

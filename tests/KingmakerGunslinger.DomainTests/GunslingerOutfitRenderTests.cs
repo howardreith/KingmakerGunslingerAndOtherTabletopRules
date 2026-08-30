@@ -256,6 +256,7 @@ namespace KingmakerGunslinger.DomainTests
                 "donorRejections",
                 "donorAttemptIndex",
                 "initialRoundTripRestored",
+                "originalEmpty",
                 "gunslinger-outfit-finalist-donor-selection",
                 "MagusClassGuid",
                 "45a4607686d96a1498891b3286121780",
@@ -280,6 +281,11 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Finalist race matrix lacks exact guard/evidence token: " +
                     token);
+            Assertions.False(source.Contains(
+                    "_avatar == null || _avatarBefore.Length == 0") ||
+                source.Contains(
+                    "_avatarBefore.Length > 0 && !RestoreAvatar()"),
+                "A valid empty original avatar must be restored and verified as an exact empty sequence.");
             foreach (string id in new[]
             {
                 "6df8f61725a84294c8661bb9585eca97",

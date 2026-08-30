@@ -250,6 +250,27 @@ DLL SHA-256 is
 Full installed-game rerun and direct inspection remain open; the partial images
 make no aesthetic or compatibility acceptance claim.
 
+The clean published retry at
+`runtime-evidence/20260830T2257046480918Z-gunslinger-outfit-finalist-race-matrix`
+loaded commit `a27c4a7ecb061bf972df799ee096dc1b31e5e62d`, MVID
+`7b7c4298-4aa5-4689-b317-23f15ccbfbc5`, and DLL SHA-256
+`a4ffb80afa5a9574e5138bdd72b196708c23de9f7218cdb43322158f5ddbe1c7`.
+It safely exercised all six deterministic female Aasimar donors and recorded
+the same detail for each: avatar present, original entity count zero. The run
+then failed closed with donor exhaustion. Cleanup, no-save behavior,
+no-production mutation, and automatic exit passed.
+
+Zero entities is a legitimate exact ordered baseline. The corrected probe
+removes/re-adds it, requires the resulting sequence to remain empty, verifies
+saved links are unchanged, records `originalEmpty=true`, and still fails a
+null avatar. The exceptional cleanup path performs the same verification.
+Nonempty entity order and ramp requirements are unchanged. All 1365 tests and
+the clean strict package gate pass; pre-publication repair package SHA-256 is
+`3b7e2deb7b96dac8e62eba66d1628af2355e0ab2c4ff4259ab245e5710b3168a`
+and DLL SHA-256 is
+`8621f5402e652fbdc1b3eb7d0657d0450f3f5c00cfd861a02961c5563cb0e46f`.
+This remains instrumentation qualification, not race-grid acceptance.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

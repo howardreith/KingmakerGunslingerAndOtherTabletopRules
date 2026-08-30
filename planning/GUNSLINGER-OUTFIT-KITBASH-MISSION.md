@@ -207,3 +207,14 @@ donors are recorded with exact source and reason before the next is tried.
 Repository validation, installed-game compilation, all 1365 tests, clean
 Release/package validation, and the quiescent 163-check runtime preflight pass
 for this repair. A clean published rerun remains required.
+
+The published retry at
+`runtime-evidence/20260830T2257046480918Z-gunslinger-outfit-finalist-race-matrix`
+proved the donor retry path and canonical Halfling size, then safely exhausted
+six female Aasimar donors for one identical instrumentation reason: each valid
+avatar had an original entity count of zero. Empty is a legitimate ordered
+avatar state, not a missing avatar. The next narrow repair therefore accepts
+only an exact empty-to-empty round trip with unchanged saved links, continues
+to reject a null avatar, and applies the same restoration during fallback
+cleanup. All 1365 tests and clean package validation pass; a published rerun
+remains required before race-grid acceptance.
