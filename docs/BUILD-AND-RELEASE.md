@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.109` targets:
+Kingmaker Gunslinger `0.0.110` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -73,10 +73,10 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.109 Martial Performance, loaded-repair, and condition-notification
-release completed exact source, package, deterministic-build, and guarded
-runtime qualification and is owner-approved for publication through this
-workflow.
+The 0.0.110 Protection from Alignment control-immunity and player-description
+release is owner-approved for publication through this workflow. Its inherited
+mechanics, new description surfaces, complete tests, deterministic package,
+and guarded runtime inventory are validated before publication.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default
@@ -122,10 +122,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.109 `
+gh release download v0.0.110 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.109-martial-performance-repair-notifications.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.109"
+  --pattern 'KingmakerGunslinger-0.0.110-protection-from-alignment-control-immunity.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.110"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The

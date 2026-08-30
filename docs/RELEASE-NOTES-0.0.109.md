@@ -1,5 +1,8 @@
 # Kingmaker Gunslinger 0.0.109
 
+> Historical release. Version 0.0.110 supersedes this package with Protection
+> from Alignment control immunity and matching player-facing descriptions.
+
 Release archive:
 `KingmakerGunslinger-0.0.109-martial-performance-repair-notifications.zip`.
 

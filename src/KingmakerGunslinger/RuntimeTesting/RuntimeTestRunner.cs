@@ -12538,6 +12538,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 protectionObservation.ResolvedProtectionBuffs + "/" +
                 protectionObservation.PublishedComponents + "/" +
                 protectionObservation.InvalidComponents +
+                ";protectionDescriptions=" +
+                protectionObservation.ResolvedDescriptions + "/" +
+                protectionObservation.PublishedDescriptions + "/" +
+                protectionObservation.InvalidDescriptions +
                 ";spearRegistered=" +
                 spearRegisteredItems + ";spearParameters=" +
                 spearParameterizedOptions + ";spearStatic=" +
@@ -12594,7 +12598,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         basicFirearmAll == (expectedGunslinger ? 1 : 0) &&
                         fighterFirearmFeatures == (expectedGunslinger ? 1 : 0) &&
                         fighterFirearmAll == (expectedGunslinger ? 1 : 0) &&
-                        firearmParameterCount == (expectedGunslinger ? 25 : 0) &&
+                        firearmParameterCount == (expectedGunslinger ? 15 : 0) &&
                         capitalGunslingerRows == (expectedGunslinger ? 12 : 0) &&
                         btslGunslingerRows == (expectedGunslinger ?
                             installedBtslTables * 6 : 0) &&
@@ -12636,15 +12640,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion(
                     "feature-module-protection-from-alignment-control-immunity",
                     expectedProtectionFromAlignmentControlImmunity ?
-                        "five protection terminal buffs each patched exactly once" :
-                        "five protection terminal buffs resolved with no published components",
+                        "five protection terminal buffs and 15 player descriptions each published exactly once" :
+                        "five protection terminal buffs and 15 description targets resolved with no owned publications",
                     observed,
                     protectionObservation.ExpectedProtectionBuffs == 5 &&
                     protectionObservation.ResolvedProtectionBuffs == 5 &&
                     protectionObservation.PublishedComponents ==
                         (expectedProtectionFromAlignmentControlImmunity ? 5 : 0) &&
-                    protectionObservation.InvalidComponents == 0,
-                    "exact terminal-buff component inventory"),
+                    protectionObservation.InvalidComponents == 0 &&
+                    protectionObservation.ExpectedDescriptions == 15 &&
+                    protectionObservation.ResolvedDescriptions == 15 &&
+                    protectionObservation.PublishedDescriptions ==
+                        (expectedProtectionFromAlignmentControlImmunity ? 15 : 0) &&
+                    protectionObservation.InvalidDescriptions == 0,
+                    "exact terminal-buff component and player-description inventories"),
                 Assertion("feature-module-expanded-summoning-publication-gate",
                     expectedExpandedSummoning ? "enabled" : "disabled",
                     activeExpandedSummoning ? "enabled" : "disabled",

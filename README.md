@@ -1,14 +1,13 @@
 # Kingmaker Gunslinger
 
-Version `0.0.109` adds every active custom weapon category to Call of the
-Wild's exact Martial Performance selector while preserving its native
-proficiency and level-up preview rules. Loaded Broken firearms can now be
-repaired atomically: the firearm becomes Normal and empty, all loaded rounds
-are destroyed, and exactly one repair kit is consumed. Committed Broken and
-Wrecked degradation also produces one concise native transient warning after
-the existing combat-log entry. The official firearm set remains exactly
-Pistol, Musket, and Blunderbuss; stable Rifle/Revolver identities remain hidden
-but readable for old saves and deliberate Toy Box use.
+Version `0.0.110` gives Protection from Evil, Good, Law, and Chaos their
+Wrath-style defense against new registered domination, charm, and comparable
+mental-control effects from matching-alignment sources. The ten generic,
+individual, and communal spell cards plus the five active protection-buff
+tooltips now explain that behavior to players. Existing control effects remain
+active when protection is applied; this is intentionally not the complete
+tabletop rule. The feature has its own default-enabled, restart-applied Unity
+Mod Manager toggle.
 
 This release also retains 0.0.105's Brown-Fur ordering, player-facing presentation,
 and 30-item fixed-loot distribution; the 0.0.104 same-turn summon correction;
@@ -170,11 +169,12 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find nine checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find ten checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
-Transmuter -- requires Call of the Wild**, **Urban Barbarian**, and **Bodyguard
-and In Harms Way**. All default enabled. Older settings migrate to schema 8
+Transmuter -- requires Call of the Wild**, **Urban Barbarian**, **Bodyguard
+and In Harms Way**, and **Protection from Alignment: control immunity**. All
+default enabled. Older settings migrate to schema 9
 while preserving explicit existing values and enabling newly absent default-on
 modules.
 
@@ -182,11 +182,12 @@ The panel shows **Active this process** and **Saved for next restart**. Checkbox
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All nine modules
+items, summons, ammunition state, or equipment from a save. All ten modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other eight modules continue. Urban Barbarian remains
-available regardless of CotW compatibility. Keep the whole mod installed
+publication while the other nine modules continue. Urban Barbarian and
+Protection from Alignment remain available regardless of CotW compatibility.
+Keep the whole mod installed
 for any campaign that has used project content.
 
 ## Urban Barbarian

@@ -1,15 +1,20 @@
 # Changelog
 
-## Unreleased
+## 0.0.110-protection-from-alignment-control-immunity
 
 - Protection from Evil, Good, Law, and Chaos now prevent new registered
   domination and comparable mental-control effects from matching-alignment
   sources, following Wrath of the Righteous behavior. Existing control effects
   are not removed or suppressed when protection is applied. This is not a
   complete tabletop implementation.
+- Updates the ten generic, individual, and communal protection spell cards and
+  all five patched protection-buff tooltips so players can see the scoped
+  immunity and the existing-control limitation. Description publication is
+  feature-gated, transactional, and idempotent; disabling the independent UMM
+  module retains vanilla descriptions and mechanics after restart.
 - Adds focused policy, catalog, publication-idempotence, Kingmaker event-seam,
   wrapper-inventory, lifecycle-boundary, and optional-compatibility coverage.
-  The complete deterministic suite contains 1,357 tests.
+  The complete deterministic suite contains 1,359 tests.
 
 ## 0.0.109-martial-performance-repair-notifications
 

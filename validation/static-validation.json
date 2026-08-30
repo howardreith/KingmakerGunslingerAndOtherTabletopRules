@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.109-martial-performance-repair-notifications",
-  "version": "0.0.109",
+  "milestone": "0.0.110-protection-from-alignment-control-immunity",
+  "version": "0.0.110",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -646,7 +646,7 @@
     "humanAcceptancePending": true
   },
   "playerPresentation105": {
-    "deterministicTestCount": 1357,
+    "deterministicTestCount": 1359,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -662,7 +662,7 @@
     "humanOrganicPacingAcceptancePending": true
   },
   "fatigueAuthority106": {
-    "deterministicTestCount": 1357,
+    "deterministicTestCount": 1359,
     "focusedFatigueCaseCount": 21,
     "nativeDefaultIntent": "NativePassthrough",
     "acadamaeEscalationRequestLocal": true,
@@ -677,7 +677,7 @@
     "supervisedWorldMapAcceptancePending": true
   },
   "iconOverhaul107": {
-    "deterministicTestCount": 1357,
+    "deterministicTestCount": 1359,
     "officialFirearmKindCount": 3,
     "recognizedFirearmKindCount": 5,
     "selectorIconCount": 3,
@@ -689,7 +689,7 @@
     "workingSaveSmokePass": true
   },
   "iconPolishRoundTwo108": {
-    "deterministicTestCount": 1357,
+    "deterministicTestCount": 1359,
     "protectedFileCount": 30,
     "selectorIconCount": 3,
     "suppliedOriginalCount": 5,
@@ -702,7 +702,7 @@
     "workingSaveSmokePass": true
   },
   "martialPerformanceRepairNotifications109": {
-    "deterministicTestCount": 1357,
+    "deterministicTestCount": 1359,
     "martialPerformanceFocusedCaseCount": 11,
     "repairFocusedCaseCount": 22,
     "conditionNotificationFocusedCaseCount": 9,
@@ -727,5 +727,21 @@
     "supervisedNativeLevelUpPresentationPending": true,
     "supervisedTopScreenVisualPlacementPending": true,
     "supervisedLoadedMultiRoundInteractionPending": true
+  },
+  "protectionFromAlignment110": {
+    "deterministicTestCount": 1359,
+    "protectionBuffCount": 5,
+    "playerDescriptionTargetCount": 15,
+    "playerAbilityDescriptionCount": 10,
+    "playerBuffDescriptionCount": 5,
+    "registeredControlAbilityCount": 13,
+    "registeredControlBuffCount": 8,
+    "independentFeatureToggle": true,
+    "descriptionPublicationStartupGated": true,
+    "descriptionPublicationTransactional": true,
+    "existingControlEffectsRemainActive": true,
+    "broadDescriptorImmunityAllowed": false,
+    "guardedRuntimeDescriptionInventoryRequired": true,
+    "manualEncounterValidationOngoing": true
   }
 }

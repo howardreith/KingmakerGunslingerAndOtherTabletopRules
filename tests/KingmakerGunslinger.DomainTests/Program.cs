@@ -253,6 +253,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("protection-alignment.unknown-source", ProtectionFromAlignmentControlImmunityTests.UnknownSourcesFailOpenUnlessTrusted),
             Case("protection-alignment.catalog", ProtectionFromAlignmentControlImmunityTests.CatalogIsExplicitCompleteAndIdempotent),
             Case("protection-alignment.publication-idempotence", ProtectionFromAlignmentControlImmunityTests.ProtectionPublicationPolicyIsIdempotent),
+            Case("protection-alignment.player-descriptions", ProtectionFromAlignmentControlImmunityTests.PlayerFacingDescriptionsAreAccurateAndScoped),
+            Case("protection-alignment.description-publication", ProtectionFromAlignmentControlImmunityTests.DescriptionPublicationIsExactAndIdempotent),
             Case("protection-alignment.rule-apply-buff", ProtectionFromAlignmentControlImmunityTests.KingmakerEventAdapterUsesTheNativeTargetSideVeto),
             Case("protection-alignment.inventory-lifecycle", ProtectionFromAlignmentControlImmunityTests.ProtectionAndWrapperInventoryIsCompleteAndLifecycleScoped),
             Case("protection-alignment.optional-isolation", ProtectionFromAlignmentControlImmunityTests.OptionalCotwAndModuleIsolationContractsAreSafe),
