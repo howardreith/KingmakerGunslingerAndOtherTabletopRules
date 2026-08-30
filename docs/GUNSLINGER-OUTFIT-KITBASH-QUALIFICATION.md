@@ -98,6 +98,16 @@ because the harness requires a clean Git state. It is not visual evidence.
 Candidate-render gates remain pending until a clean published checkpoint is
 run and the images are directly inspected.
 
+The first clean published attempt is retained at
+runtime-evidence/20260830T2109519221444Z-gunslinger-outfit-candidate-render.
+It loaded commit 189ae46fa19552fa3b906740d9f30372c588f7f5 through
+Steam, then failed closed at request acceptance with
+scenario-timeouts-not-allowed. No hook, UI action, save action, render, or
+score occurred. The missing in-mod working-save predicate entry was repaired
+and covered by the focused guard test. After repair, all 1365 tests,
+Build-Local, strict package validation, and the quiescent 160-check runtime
+preflight pass. A new clean-commit runtime attempt remains required.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

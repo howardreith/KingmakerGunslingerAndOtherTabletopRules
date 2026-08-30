@@ -140,3 +140,37 @@
 Exact next action: commit and publish this reusable guarded-render checkpoint,
 verify all three feature refs, then run the renderer from that exact clean
 commit and directly inspect every generated candidate image.
+
+## 2026-08-30 - First renderer request rejection and repair
+
+- Published renderer checkpoint
+  189ae46fa19552fa3b906740d9f30372c588f7f5 and verified local HEAD,
+  the local feature ref, and the origin feature ref were identical.
+- Guarded evidence directory
+  20260830T2109519221444Z-gunslinger-outfit-candidate-render loaded that
+  exact commit and DLL SHA-256
+  49ca6f72b5ca5ad25611916bb5cb7b2eb7aa21b9dfc47f64cf4d1c7e217c2f30
+  through Steam App ID 640820.
+- The request failed closed at request acceptance with
+  sanitizedReason=scenario-timeouts-not-allowed. The request run ID was not
+  copied into the rejection result, so the outer orchestrator also rejected
+  the envelope. Structured evidence records hookInstalled=false,
+  uiActionOccurred=false, saveActionOccurred=false, and
+  guardedRequestAccepted=false. No candidate was rendered or scored.
+- Root cause: the renderer was correctly configured with the established
+  working-save timeouts in the PowerShell scenario catalog but was missing
+  from the in-mod workingSmoke predicate that permits those exact fields.
+- Added only GunslingerOutfitCandidateRender to that predicate and extended
+  the focused guard test to extract and verify the predicate itself.
+- Repository validation and all 1365/1365 tests pass. Build-Local passed
+  exact-reference Release construction and strict validation of byte-identical
+  standalone/local packages at SHA-256
+  fb40935682a9d74fb28d12e99d76c93f490848c2d29abec11079398bd52e5f72;
+  the DLL SHA-256 is
+  c32ca0ef557d09bbaf5f032001dddc843bc057dc346fa6185d6a0bed680d8eb8.
+- Runtime preflight first observed the known immediate post-build timestamp
+  guard, then passed all 160 checks unchanged once outputs were quiescent.
+
+Exact next action: commit and publish this narrow request-contract repair,
+verify the three feature refs, and rerun the renderer from the new clean
+commit.
