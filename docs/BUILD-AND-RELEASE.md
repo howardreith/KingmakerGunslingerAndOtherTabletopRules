@@ -74,9 +74,9 @@ package validation.
 ## Guarded GitHub release publisher
 
 The 0.0.109 Martial Performance, loaded-repair, and condition-notification
-release is the active owner-approved release candidate. Publication remains
-gated on its exact source, package, deterministic-build, and guarded runtime
-qualification through this workflow.
+release completed exact source, package, deterministic-build, and guarded
+runtime qualification and is owner-approved for publication through this
+workflow.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default

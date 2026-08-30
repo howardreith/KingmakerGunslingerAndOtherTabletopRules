@@ -1,6 +1,27 @@
 # Martial Performance, loaded repair, and condition-notification qualification
 
-## Candidate identity
+## 0.0.109 release-promotion identity
+
+- Release-candidate commit:
+  2e99bb82ad90d4cf84640cb23ec945a2190b394d
+- Mod/package version: 0.0.109
+- Informational version:
+  0.0.109-martial-performance-repair-notifications
+- Source-state fingerprint:
+  803DF3105EF08116FFDE2858914DAEDD940C2F1BEEF5430D9AAB9638DAB2FA0D
+- Runtime package SHA-256:
+  5AFBF228C916B5C17BFB16B25F3280F4802870E5CC2A4B8D2D5D7F126FB28F31
+- Runtime DLL SHA-256:
+  1CFF818811BF2B89FBD35BDB75D53CE79426C0350D97CEDFDCC6F14B6E77CED7
+- Runtime DLL MVID: a1824875-8468-44f9-b051-117329c91aa5
+- Immutable deployment manifest:
+  runtime-evidence/deployments/20260830T0141451717411Z/deployment.json
+
+The release promotion changes version/package/validation/documentation
+contracts only. The functional implementation remains commit
+b82b5d6c71468d500585f6898456cbe687b9f470.
+
+## Original implementation identity
 
 - Branch: codex/martial-performance-repair-notifications
 - Authoritative starting commit:
@@ -134,6 +155,39 @@ persistence suites are included in the complete run.
 Every game launch used the repository's guarded request mechanism through
 Steam App ID 640820. These request-local disposable or read-only observers did
 not select, load, or write a save.
+
+### Exact 0.0.109 release-candidate rerun
+
+All three scenarios reused the immutable deployment identified above.
+
+| Scenario | Structured result | Evidence directory |
+| --- | --- | --- |
+| disposable-overhaul-maintenance | PASS, 20/20 | 20260830T0141452393620Z-disposable-overhaul-maintenance |
+| reliable-firearm-misfire-matrix | PASS, 10/10 | 20260830T0144066808429Z-reliable-firearm-misfire-matrix |
+| observe-optional-mod-compatibility (Call of the Wild 1.14.4c-2.1) | PASS, 23/23; restoration verified | 20260830T0147110940751Z-observe-optional-mod-compatibility |
+
+- Loaded-repair run:
+  20260830T0141452550457Z-598679f1ee8043f588cd7f0b72be5ef9.
+  The real ability was available for a loaded Broken Last Word; delivery
+  changed one round / `kmg.debug.lead-ball` to zero / null, consumed one kit,
+  returned no ammunition, preserved all three static enchantments, and ended
+  Normal. Overhaul, combat logs, exact-item identity, and request cleanup also
+  passed.
+- Notification run:
+  20260830T0144067120928Z-5c842b16db0b4877982d26ee2c1a2f8a.
+  Committed Normal-to-Broken and Broken-to-Wrecked transitions produced the
+  exact concise messages. Native adapter attempts/published progressed
+  `0,0,1,1,2,3,3` / `0->3`, faults remained `0->0`, the unchanged
+  boundary was silent, and condition combat logs progressed `0->3`.
+- Martial Performance run:
+  20260830T0147111097156Z-741ca12feb7e453b9fa48bb433e2cf22.
+  The exact selection identity, seven singular custom rows, native donor/effect
+  shape, non-proficient native parity, preview proficiency, commit, and Weapon
+  Focus lifecycle all passed against Call of the Wild 1.14.4c-2.1.
+  Transaction `compat-20260830T014636Z-91fd74d0de47` restored the complete
+  Mods tree, Call of the Wild settings, and FeatureModules.json exactly.
+
+### Original 0.0.108 implementation rerun
 
 | Scenario | Structured result | Evidence directory |
 | --- | --- | --- |
