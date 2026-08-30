@@ -1,14 +1,14 @@
 # Kingmaker Gunslinger
 
-Version `0.0.108` polishes the accepted icon overhaul: Blunderbuss, Musket, and
-Pistol selector monograms now match native category scale without a baked inset
-frame, and Cord of Stubborn Resolve now reads as an oblique braided belt rather
-than a top-down ring. The official firearm set remains exactly Pistol, Musket,
-and Blunderbuss; Stable Rifle/Revolver identities remain hidden but readable
-for old saves and deliberate Toy Box use. The release retains 0.0.106's native
-fatigue-authority repair: ordinary canonical Fatigued refreshes remain
-Fatigued, exact Acadamae escalation remains request-local, and Cord of Stubborn
-Resolve retains its accepted post-success behavior.
+Version `0.0.109` adds every active custom weapon category to Call of the
+Wild's exact Martial Performance selector while preserving its native
+proficiency and level-up preview rules. Loaded Broken firearms can now be
+repaired atomically: the firearm becomes Normal and empty, all loaded rounds
+are destroyed, and exactly one repair kit is consumed. Committed Broken and
+Wrecked degradation also produces one concise native transient warning after
+the existing combat-log entry. The official firearm set remains exactly
+Pistol, Musket, and Blunderbuss; stable Rifle/Revolver identities remain hidden
+but readable for old saves and deliberate Toy Box use.
 
 This release also retains 0.0.105's Brown-Fur ordering, player-facing presentation,
 and 30-item fixed-loot distribution; the 0.0.104 same-turn summon correction;

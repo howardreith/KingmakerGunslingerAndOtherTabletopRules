@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.108` targets:
+Kingmaker Gunslinger `0.0.109` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -73,9 +73,10 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.108 icon-art polish Round 2 completed source, package, and guarded
-runtime qualification and is owner-approved for publication through this
-workflow.
+The 0.0.109 Martial Performance, loaded-repair, and condition-notification
+release is the active owner-approved release candidate. Publication remains
+gated on its exact source, package, deterministic-build, and guarded runtime
+qualification through this workflow.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default
@@ -121,10 +122,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.108 `
+gh release download v0.0.109 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.108-icon-art-polish-round-2.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.108"
+  --pattern 'KingmakerGunslinger-0.0.109-martial-performance-repair-notifications.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.109"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The

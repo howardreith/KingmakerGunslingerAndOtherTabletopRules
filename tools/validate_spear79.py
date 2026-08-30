@@ -22,8 +22,9 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("icon-art-polish-round-2"
-        if VERSION == "0.0.108"
+    effective_suffix = ("martial-performance-repair-notifications"
+        if VERSION == "0.0.109"
+        else "icon-art-polish-round-2" if VERSION == "0.0.108"
         else "icon-art-overhaul" if VERSION == "0.0.107"
         else "fatigue-authority-repair" if VERSION == "0.0.106"
         else "player-facing-presentation-item-discoverability"
