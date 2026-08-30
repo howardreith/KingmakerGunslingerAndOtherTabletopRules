@@ -182,3 +182,14 @@ party, save, and production boundaries stayed exact. The images remain
 unaccepted pending cleanup attribution. A diagnostic-only rerun will describe
 the precise missing/unexpected references before any ownership-scoped cleanup
 decision; the strict global criterion is unchanged for that run.
+
+The diagnostic rerun
+`20260830T2323563433313Z-gunslinger-outfit-finalist-race-matrix` again passed
+the complete render matrix and isolated the cleanup delta to one native
+`AnimalCompanionUnitLeopard`, with no missing global reference, exact party,
+and no remaining direct fixture actor. This is fixture-lifecycle evidence, not
+an outfit score change. The repair recognizes ownership only through the
+active donor actor's exact `UnitDescriptor.Pet` reference and retains strict
+whole-snapshot equality. `magus-complete` remains provisional at 81/100; its
+race-grid images remain unaccepted pending a clean published rerun and direct
+inspection.

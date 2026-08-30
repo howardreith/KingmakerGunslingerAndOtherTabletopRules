@@ -463,3 +463,47 @@ rerun the complete matrix without changing the finalist score.
 Exact next action: publish the diagnostic-only checkpoint, verify three refs,
 rebuild, pass quiescent preflight, and rerun once to obtain the exact cleanup
 delta before changing cleanup ownership semantics or accepting images.
+
+## 2026-08-30 - Exact dependent-unit cleanup attribution
+
+- Published diagnostic checkpoint
+  `051cab77cf30941e86a94d40aeac2cb4d619c5c5` was identical at HEAD,
+  local, and origin with a clean tree. Its commit-bound local-runtime package
+  SHA-256 was
+  `4bccb9e8ce5cf6f415eb97c117f01f6353e76dd5b74fa40989c70afeecb03ac9`;
+  DLL SHA-256 was
+  `38f89aaf7607ee39c899a4abcfd1e1d2732b4d0528163aa0d06fe9ae6c0d8179`.
+- Guarded diagnostic evidence is
+  `20260830T2323563433313Z-gunslinger-outfit-finalist-race-matrix`.
+  Steam App ID 640820, exact working-save boundary, installed-game identity,
+  no-save behavior, production non-mutation, final-result collection, and
+  automatic exit all passed.
+- All substantive matrix assertions again passed: 9 races/18 gender cells,
+  18 accepted donors, exact native links, 36 palette records, 72 PNGs/180
+  views, and 18/18 exact avatar restorations. Images remain unaccepted because
+  terminal status is still FAIL.
+- Cleanup evidence is now exact: initial `State.Units.All` count 265, final
+  count 266, no missing references, party 3/3 exact, and the disposable actor
+  cleared. The sole unexpected reference is runtime unit
+  `e8019935-e26e-4be8-a799-c00d8fb7a26f`, name `Leopard`, blueprint
+  `AnimalCompanionUnitLeopard`, GUID
+  `54cf380dee486ff42b803174d1b9da1b`. The matrix used native female-Elf donor
+  `StartGamePregenRangerUnit` (`29c3981ecfbfac6479cd3d0b2b2f3f4c`).
+- The repair does not delete arbitrary world deltas. It captures a dependent
+  only through the active disposable actor's installed-game
+  `UnitDescriptor.Pet` reference and only if that exact reference was absent
+  from the initial unit snapshot. It retires that exact request-owned unit,
+  records its lifecycle, and still requires the original complete global-unit
+  and party reference sets to be restored.
+- Repository validation, installed-reference compilation, all 1365/1365
+  tests, clean Release construction, and explicit strict package validation
+  pass. Pre-publication package SHA-256 is
+  `ddb92778082adc354b1e574abad9a467a10246c17cefa75ab61281f410feab62`;
+  DLL SHA-256 is
+  `af8262f6593053ceadf56af84c26e56e61d38964b816ed39896ce7b5f7885b39`.
+
+Exact next action: publish the relationship-scoped cleanup checkpoint, rebuild
+the commit-bound local-runtime package, pass quiescent preflight, and rerun the
+complete matrix. Acceptance requires structured proof that the unexpected
+Leopard is the exact disposable donor's `Descriptor.Pet`, that it is retired,
+and that the original strict snapshots are restored before direct image review.
