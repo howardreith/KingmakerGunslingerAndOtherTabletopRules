@@ -25,11 +25,11 @@ claim.
 | Equipment overrides | Pending | Light/heavy armor, headgear/hair, cloak, backpack, inactive weapon |
 | Preview/gameplay paths | Pending | Class-preview/API-equivalent and isometric evidence |
 | Save/load/rebuild | Pending | Guarded structured evidence |
-| Focused tests | Pending | Exact command/result |
-| Repository validation | Pending | Exact command/result |
-| Complete domain suite | Pending | Exact command/result |
-| Clean Release build | Pending | Exact command/result |
-| Installable package | Pending | Exact validation and forbidden-artifact scan |
+| Focused tests | Pass (render checkpoint; repeat final) | Renderer guard/catalog/matrix plus 160 runtime preflight checks |
+| Repository validation | Pass (render checkpoint; repeat final) | Build-Local.ps1, 2026-08-30 |
+| Complete domain suite | Pass (render checkpoint; repeat final) | 1365/1365, Release clean run |
+| Clean Release build | Pass (render checkpoint; repeat final) | Exact-reference Release construction |
+| Installable package | Pass (render checkpoint; repeat final) | Strict standalone UMM validation, SHA-256 693c0968...16ce8 |
 | Compatibility profiles | Pending | Exact applicable command/result |
 | Guarded runtime smoke | Pending | Exact request, result, build fingerprint |
 | Publication | Pending | Commit(s), helper output, identical local/remote SHAs |
@@ -74,6 +74,29 @@ The passing launch pipeline also recorded repository validation PASS, complete
 domain suite PASS (`1362/1362`), compilation PASS, and strict standalone package
 validation PASS. These are audit-checkpoint checks and must be repeated after
 production implementation.
+
+## Guarded renderer source qualification
+
+The first serious batch fixes six native class presentations and 32 exact
+gender-specific IDs: Bard, Alchemist, Magus, cap/cape-free Ranger,
+cap/cape-free Rogue, and cap-free Slayer. Investigation code excludes the
+structurally unsafe caps/capes, uses disposable Human actors, captures native
+and alternate valid ramps with no weapon/pistol/musket, restores exact avatar
+state, and verifies cleanup.
+
+At 2026-08-30T21:05:28Z, .\scripts\Build-Local.ps1 passed repository
+validation, all 1365/1365 tests, exact-reference Release construction,
+deterministic packaging, and strict validation. Standalone and local-runtime
+packages have SHA-256
+693c09684256fab77b4835b78eff12ab974c2bc460a63824f877768cd9c16ce8;
+the staged DLL SHA-256 is
+17bfe03b52e85cab627be425c680b1ccf6db88275ba4e253081065685304e377.
+Runtime preflight passes 160 checks.
+
+The initial runtime invocation was rejected before deployment or game launch
+because the harness requires a clean Git state. It is not visual evidence.
+Candidate-render gates remain pending until a clean published checkpoint is
+run and the images are directly inspected.
 
 ## Local evidence policy
 

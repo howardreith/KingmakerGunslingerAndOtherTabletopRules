@@ -105,7 +105,38 @@
   outputs became quiescent passed all 157 checks. Both outcomes are recorded;
   the passing quiescent result is the integration gate.
 
-Exact next action: commit and publish the coherent guarded-catalog checkpoint,
-then extend the audit with disposable-avatar apply, rebuild, valid-color
-sampling, deterministic capture, and exact state restoration for the serious
-native donor candidates.
+## 2026-08-30 - Guarded candidate-render checkpoint
+
+- Added the default-off gunslinger-outfit-candidate-render request. It is
+  restricted to the guarded autonomous harness and exactly
+  KMG_AUTOMATION_WORKING.
+- The renderer uses request-local disposable Human actors. For each gender it
+  snapshots exact avatar entity order, primary/secondary ramps, and saved
+  equipment links; removes the donor class clothing; applies only the audited
+  candidate IDs; captures native-default and alternate valid ramps in
+  no-weapon, production-pistol, and production-musket states; restores and
+  verifies the snapshot; then disposes actors, items, cameras, textures, and
+  request-local blueprints.
+- The first serious batch is exactly six coherent native presentations:
+  complete Bard, complete Alchemist, complete Magus, cap/cape-free Ranger,
+  cap/cape-free Rogue, and cap-free Slayer. The fixed matrix has 32
+  gender-specific audited links. Ranger/Rogue/Slayer caps and Ranger/Rogue
+  capes remain structurally excluded.
+- Focused guard/catalog/matrix tests and runtime preflight pass. The complete
+  dependency-free suite passes 1365/1365; exact-reference Release compilation
+  passes.
+- .\scripts\Build-Local.ps1 passed repository validation, a clean complete
+  domain run, exact-reference Release construction, deterministic packaging,
+  and strict standalone UMM validation at 2026-08-30T21:05:28Z.
+  The standalone and local-runtime packages are byte-identical at SHA-256
+  693c09684256fab77b4835b78eff12ab974c2bc460a63824f877768cd9c16ce8;
+  the staged DLL SHA-256 is
+  17bfe03b52e85cab627be425c680b1ccf6db88275ba4e253081065685304e377.
+- A launch attempt was rejected before build, deployment, or game start because
+  the guarded harness requires a clean Git state. This was a source-state gate,
+  not a runtime failure. The qualified renderer must therefore be committed and
+  published before its first installed-game run.
+
+Exact next action: commit and publish this reusable guarded-render checkpoint,
+verify all three feature refs, then run the renderer from that exact clean
+commit and directly inspect every generated candidate image.
