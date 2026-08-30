@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Protection from Evil, Good, Law, and Chaos now prevent new registered
+  domination and comparable mental-control effects from matching-alignment
+  sources, following Wrath of the Righteous behavior. Existing control effects
+  are not removed or suppressed when protection is applied. This is not a
+  complete tabletop implementation.
+- Adds focused policy, catalog, publication-idempotence, Kingmaker event-seam,
+  wrapper-inventory, lifecycle-boundary, and optional-compatibility coverage.
+  The complete deterministic suite contains 1,357 tests.
+
 ## 0.0.109-martial-performance-repair-notifications
 
 - Publishes all seven active custom weapon categories to Call of the Wild's

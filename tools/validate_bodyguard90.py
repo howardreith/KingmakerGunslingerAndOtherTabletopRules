@@ -109,7 +109,7 @@ def validate(root: Path) -> None:
             raise AssertionError(f"Bodyguard static validation mismatch: {key}")
 
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleSettingsStore.cs",
-        "CurrentSchemaVersion = 8", "BodyguardFeatsId")
+        "CurrentSchemaVersion = 9", "BodyguardFeatsId")
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleConfiguration.cs",
         'BodyguardFeatsId = "bodyguard-feats"', "BodyguardFeats ? 256 : 0",
         '";bodyguard-feats=" + BodyguardFeats')

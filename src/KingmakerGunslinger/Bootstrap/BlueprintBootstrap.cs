@@ -20,6 +20,7 @@ using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
 using KingmakerGunslinger.UrbanBarbarian;
+using KingmakerGunslinger.Spells.ProtectionFromAlignment;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -681,6 +682,8 @@ namespace KingmakerGunslinger.Bootstrap
             BodyguardFeatCatalogPublication bodyguardFeatPublication = null;
             ShieldOtherSpellListPublication shieldOtherPublication = null;
             ExpandedSummoningPublication expandedSummoningPublication = null;
+            ProtectionFromAlignmentPublication protectionFromAlignmentPublication =
+                null;
             ElvenBranchedSpearSelectorPublication spearSelectorPublication = null;
             ElvenBranchedSpearCampaignPublication spearCampaignPublication = null;
             EasternWeaponSelectorPublication easternSelectorPublication = null;
@@ -729,6 +732,21 @@ namespace KingmakerGunslinger.Bootstrap
                 if (publicationPlan.ExpandedSummoningParents)
                     expandedSummoningPublication = ExpandedSummoningPublisher
                         .Publish(library, expandedSummoning);
+
+                try
+                {
+                    protectionFromAlignmentPublication =
+                        ProtectionFromAlignmentPublication.Publish(library,
+                            context.Logger, publicationPlan
+                                .ProtectionFromAlignmentControlImmunity);
+                }
+                catch (Exception protectionPublicationException)
+                {
+                    context.Logger.Failure("protection-from-alignment",
+                        "publication.failed",
+                        "Required protection/control blueprint publication failed and was rolled back; this feature is disabled for the process and other modules will continue.",
+                        protectionPublicationException);
+                }
 
                 ShieldOtherBlueprintSet shieldOther =
                     ShieldOtherBlueprints.Register(library, registry);
@@ -1244,6 +1262,17 @@ namespace KingmakerGunslinger.Bootstrap
                             "shield-other.rollback-failed",
                             "Blueprint initialization failed and Shield Other list rollback was refused.",
                             spellRollbackException);
+                    }
+                }
+                if (protectionFromAlignmentPublication != null)
+                {
+                    try { protectionFromAlignmentPublication.Rollback(); }
+                    catch (Exception protectionRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "protection-from-alignment.rollback-failed",
+                            "Blueprint initialization failed and Protection from Alignment control-immunity rollback was refused.",
+                            protectionRollbackException);
                     }
                 }
                 if (expandedSummoningPublication != null)

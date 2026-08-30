@@ -13,7 +13,7 @@ VERSION = "0.0.107"
 INFORMATIONAL_VERSION = "0.0.107-icon-art-overhaul"
 PACKAGE = "KingmakerGunslinger-0.0.107-local-runtime.zip"
 PACKAGE_SUFFIX = "icon-art-overhaul"
-DETERMINISTIC_TEST_COUNT = 1348
+DETERMINISTIC_TEST_COUNT = 1357
 STATIC_KEY = "iconOverhaul107"
 
 EXPECTED_ASSET_KEYS = {

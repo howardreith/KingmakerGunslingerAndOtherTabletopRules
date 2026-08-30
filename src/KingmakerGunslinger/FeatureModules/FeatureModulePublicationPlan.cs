@@ -23,6 +23,8 @@ namespace KingmakerGunslinger.FeatureModules
             BrownFurPublicationRequested = active.BrownFurTransmuter;
             UrbanBarbarianArchetype = active.UrbanBarbarian;
             BodyguardFeats = active.BodyguardFeats;
+            ProtectionFromAlignmentControlImmunity =
+                active.ProtectionFromAlignmentControlImmunity;
         }
         internal bool GunslingerClass { get; private set; }
         internal bool GunslingerFeats { get; private set; }
@@ -43,5 +45,6 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool BrownFurPublicationRequested { get; private set; }
         internal bool UrbanBarbarianArchetype { get; private set; }
         internal bool BodyguardFeats { get; private set; }
+        internal bool ProtectionFromAlignmentControlImmunity { get; private set; }
     }
 }
