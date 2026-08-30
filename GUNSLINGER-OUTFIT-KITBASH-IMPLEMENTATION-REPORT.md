@@ -139,6 +139,27 @@ save API, no production mutation, and automatic process exit. Direct review
 of all accepted images preserved the Human-stage ranking. The Human renderer
 gate is closed; the exhaustive finalist matrix remains open.
 
+The finalist race/gender matrix is now implemented behind the exact guarded
+`gunslinger-outfit-finalist-race-matrix` request. It dynamically derives the
+installed player-race catalog, selects native same-race/same-gender body
+donors, validates the exact ordered Magus pair through native
+`BlueprintCharacterClass.LoadClothes`, samples two proven-valid palettes,
+captures both required framings without a weapon, and restores entity order,
+ramps, and saved links before disposing each actor. It is request-local,
+save-free, and production-mutation-free. It expects 18 fixtures, 36 records,
+72 images, and 18 restorations.
+
+Repository validation, installed-reference Release compilation, all 1365
+tests, clean Release construction, standalone/local package validation, and
+163 quiescent runtime-preflight checks pass. The current local-runtime package
+SHA-256 is
+`cdd85e981f9847b0259a965506db457af98818d25aaf7c87d619022eae9559dc`;
+the DLL SHA-256 is
+`36cf201fca3040c3a7b9a35f4253207d87b5480b3f13b1df14897860fdb02b7b`.
+This closes only the source/package gate. Installed-game race-grid rendering,
+direct image review, overlays, motion, production binding, and persistence
+remain open.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

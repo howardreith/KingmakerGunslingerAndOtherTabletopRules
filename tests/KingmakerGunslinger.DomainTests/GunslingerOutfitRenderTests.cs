@@ -179,12 +179,127 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(source.Contains(
                     "has no native equipment class"),
                 "An optional live EquipmentClass must not be required when the exact audited Fighter donor is available.");
+            FinalistRaceMatrixIsExactAndReversible();
+        }
+
+        internal static void FinalistRaceMatrixIsExactAndReversible()
+        {
+            string source = QualificationSource();
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            const string scenario =
+                "gunslinger-outfit-finalist-race-matrix";
+            Assertions.True(catalog.Contains(
+                    "internal const string GunslingerOutfitFinalistRaceMatrix") &&
+                catalog.Contains(scenario) &&
+                runner.Contains(
+                    "BeginFinalistRaceMatrix(_context, _request)") &&
+                runner.Contains(
+                    "_gunslingerOutfitFinalistRaceMatrix.Poll()") &&
+                WorkingSavePredicate(request).Contains(
+                    "GunslingerOutfitFinalistRaceMatrix") &&
+                automation.Contains("'" + scenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains(
+                    scenario + "-only-permits-working-save") &&
+                project.Contains(
+                    @"RuntimeTesting\GunslingerOutfitQualificationScenario.cs"),
+                "Finalist race matrix is not wired through every guarded working-save surface.");
+
+            string metadata = automation.Substring(
+                automation.IndexOf("'" + scenario +
+                    "' = [pscustomobject]", StringComparison.Ordinal), 500);
+            Assertions.True(metadata.Contains(
+                    "RequiresSaveName = $true") &&
+                metadata.Contains(
+                    "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                metadata.Contains(
+                    "RequiresManualInteraction = $false"),
+                "Finalist race matrix metadata must fail closed to the disposable working save.");
+            int collectorStart = orchestrator.IndexOf(
+                "elseif ($Scenario -eq '" + scenario + "')",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0,
+                "Finalist race matrix needs a bounded result collector.");
+            string collector = orchestrator.Substring(collectorStart,
+                Math.Min(500, orchestrator.Length - collectorStart));
+            Assertions.True(collector.Contains(
+                    "[Math]::Max($TimeoutSeconds, 1200) + 15"),
+                "Finalist race matrix collector must preserve its exact scenario-only ceiling.");
+
+            foreach (string token in new[]
+            {
+                "BlueprintRoot.Instance",
+                "Progression.CharacterRaces",
+                "GroupBy(value => value.RaceId)",
+                "Gender.Male, Gender.Female",
+                "GetBlueprints<BlueprintUnit>()",
+                "value.Race.RaceId == race.RaceId",
+                "MagusClassGuid",
+                "45a4607686d96a1498891b3286121780",
+                "magus.LoadClothes(",
+                "fixture.Gender, fixture.Race)",
+                "orderedPairExact",
+                "magus.PrimaryColor != _finalist.Primary",
+                "expectedFixtures = _races.Length * 2",
+                "expectedRecords = expectedFixtures * 2",
+                "ApplyQualificationPalette",
+                "CaptureContactSheet(",
+                "CaptureIsometric(",
+                "QualificationFeatureNodes",
+                "RemoveEquipmentEntities(_classEntities, false)",
+                "AddEquipmentEntities(_candidateEntities, false)",
+                "RemoveAllEquipmentEntities(false)",
+                "QualificationSavedLinks",
+                "productionBlueprintMutated",
+                "saveApiCalled",
+                "KMG_AUTOMATION_WORKING; no save API"
+            })
+                Assertions.True(source.Contains(token),
+                    "Finalist race matrix lacks exact guard/evidence token: " +
+                    token);
+            foreach (string id in new[]
+            {
+                "6df8f61725a84294c8661bb9585eca97",
+                "4c59d2b9740930145a27a4c693217d22",
+                "beba0e0c7dcd5c64d97d767be3e72995",
+                "a93ead19aae8afc4794c54f5bcf73168"
+            })
+                Assertions.True(RenderSource().Contains(id),
+                    "The exact audited finalist asset is absent: " + id);
+            foreach (string forbidden in new[]
+            {
+                "SaveGame", "QuickSave", "ScreenCapture",
+                "Input.", "Mouse.", "PlayerPrefs",
+                "Game.Instance.Player.Inventory"
+            })
+                Assertions.False(source.Contains(forbidden),
+                    "Finalist race matrix contains a forbidden save/UI/global-inventory token: " +
+                    forbidden);
         }
 
         private static string RenderSource()
         {
             return Read("src", "KingmakerGunslinger", "RuntimeTesting",
                 "GunslingerOutfitRenderScenario.cs");
+        }
+
+        private static string QualificationSource()
+        {
+            return Read("src", "KingmakerGunslinger", "RuntimeTesting",
+                "GunslingerOutfitQualificationScenario.cs");
         }
 
         private static string WorkingSavePredicate(string request)

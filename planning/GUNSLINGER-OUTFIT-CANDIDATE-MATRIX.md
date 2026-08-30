@@ -1,8 +1,10 @@
 # Gunslinger Outfit Candidate Matrix
 
 Status: Human candidate rendering and scoring complete; `magus-complete` is
-the provisional finalist, but no production asset identifier is approved until
-the full race, equipment, animation, and persistence qualification passes.
+the provisional finalist. The guarded 18-cell race/gender matrix is
+source/package-qualified and awaiting installed-game execution; no production
+asset identifier is approved until the equipment, animation, and persistence
+qualification passes.
 
 ## Scoring contract
 
@@ -123,3 +125,14 @@ base-plus-one-accessory presentation best matches the privateer/swashbuckler
 brief without a literal hat, baked weapon, or generic Fighter silhouette.
 Production remains unchanged pending exhaustive race, gender, color,
 animation, equipment-overlay, rebuild, and persistence evidence.
+
+The first finalist-only gate discovers player races from
+`BlueprintRoot.Instance.Progression.CharacterRaces`, selects deterministic
+native `BlueprintUnit` donors for both genders, and independently validates
+that native Magus `LoadClothes` returns the exact ordered pair above for every
+cell. It is bounded to 36 no-weapon records (native and alternate palette),
+72 PNGs (preview-like and ordinary isometric), and 18 exact restorations.
+Repository validation, game-reference compilation, all 1365 tests, clean
+Release packaging, strict package validation, and 163 runtime-preflight checks
+pass. This is instrumentation qualification, not race-grid visual acceptance;
+the guarded Steam-backed run and direct review remain open.
