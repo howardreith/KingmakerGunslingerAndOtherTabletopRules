@@ -43,9 +43,17 @@ Deterministic evidence identities:
 
 Installed class-link evidence makes Bard, Alchemist, Magus, Ranger, Rogue,
 Slayer, and Inquisitor concrete render donors. Ranger, Rogue, Slayer, and
-Inquisitor default cap links structurally hide hair and/or ears, so serious
-candidate sets will omit those cap links unless direct rendering disproves the
-risk. No asset identifier has been approved or hardcoded.
+Inquisitor default cap links structurally hide hair and/or ears. The guarded
+renderer freezes 32 audited, gender-specific links for six serious
+presentations while excluding Ranger/Rogue/Slayer caps and Ranger/Rogue capes.
+These are investigation-only IDs; no production asset identifier is approved.
+
+The renderer captures preview-like four-view contact sheets and elevated
+isometric views for male and female Humans in native-default/no-weapon,
+native-default/pistol, native-default/musket, and alternate-valid-ramp
+no-weapon cases. It snapshots, restores, and verifies entity order, both ramp
+arrays, and saved links around every candidate, then verifies request-local
+cleanup. It cannot write a save.
 
 ## Selected appearance
 
@@ -70,6 +78,16 @@ These checks prove the reusable audit and native catalog only. Candidate
 rendering, aesthetic scoring, production binding, full compatibility
 qualification, final clean build/package, and release runtime proof remain
 pending. A build or domain-test pass is not visual proof.
+
+The subsequent guarded-render checkpoint passes 160 runtime preflight checks,
+repository validation, all 1,365 domain/reflection tests, exact-reference
+Release compilation, deterministic package construction, and strict validation
+of both standalone and local-runtime packages. Both packages have SHA-256
+693c09684256fab77b4835b78eff12ab974c2bc460a63824f877768cd9c16ce8;
+the DLL SHA-256 is
+17bfe03b52e85cab627be425c680b1ccf6db88275ba4e253081065685304e377.
+The first launch request was rejected before game start solely because the
+harness requires a clean commit. Installed-game rendering remains pending.
 
 ## Uncertainty
 

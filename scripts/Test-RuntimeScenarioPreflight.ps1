@@ -114,6 +114,7 @@ $expected = @(
     'weapon-presentation-transition-motion-evidence',
     'weapon-presentation-reload-evidence',
     'weapon-presentation-body-matrix-evidence',
+    'gunslinger-outfit-candidate-render',
     'working-save-elven-branched-spear-prepare',
     'working-save-elven-branched-spear-verify-cleanup',
     'working-save-elven-branched-spear-verify-absent',
@@ -353,6 +354,15 @@ Assert-True $weaponPresentationBodyMatrix.RequiresSaveName `
 Assert-True ($weaponPresentationBodyMatrix.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'weapon-presentation-body-matrix-evidence-only-permits-working-save'
+$gunslingerOutfitCandidateRender = Get-KmgRuntimeScenarioMetadata `
+    'gunslinger-outfit-candidate-render'
+Assert-True (-not $gunslingerOutfitCandidateRender.RequiresManualInteraction) `
+    'gunslinger-outfit-candidate-render-is-autonomous'
+Assert-True $gunslingerOutfitCandidateRender.RequiresSaveName `
+    'gunslinger-outfit-candidate-render-requires-save-name'
+Assert-True ($gunslingerOutfitCandidateRender.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'gunslinger-outfit-candidate-render-only-permits-working-save'
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
     'vendor-contracts-is-autonomous'

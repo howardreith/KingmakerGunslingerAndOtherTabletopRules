@@ -46,6 +46,7 @@
     <Compile Include="EasternWeaponsInvestigationTests.cs" />
     <Compile Include="CompatibilityAttributionTests.cs" />
     <Compile Include="GunslingerOutfitAuditTests.cs" />
+    <Compile Include="GunslingerOutfitRenderTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Compatibility\CompatibilityAssetAttributionPlan.cs"><Link>Compatibility\CompatibilityAssetAttributionPlan.cs</Link></Compile>
     <Compile Include="MartialPerformanceCompatibilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Compatibility\CustomWeaponMartialPerformancePolicy.cs"><Link>Compatibility\CustomWeaponMartialPerformancePolicy.cs</Link></Compile>

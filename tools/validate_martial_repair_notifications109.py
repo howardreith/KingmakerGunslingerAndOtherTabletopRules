@@ -14,7 +14,7 @@ INFORMATIONAL_VERSION = (
     "0.0.109-martial-performance-repair-notifications")
 PACKAGE = "KingmakerGunslinger-0.0.109-local-runtime.zip"
 PACKAGE_SUFFIX = "martial-performance-repair-notifications"
-DETERMINISTIC_TEST_COUNT = 1362
+DETERMINISTIC_TEST_COUNT = 1365
 STATIC_KEY = "martialPerformanceRepairNotifications109"
 
 
