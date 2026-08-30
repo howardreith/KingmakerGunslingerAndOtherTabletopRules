@@ -66,8 +66,16 @@ It retains the 1,288-test 0.0.103 baseline, the 1,307-test 0.0.104 summon
 repair, the 1,315-test 0.0.105 presentation baseline, and the 1,323-test
 0.0.106 fatigue-authority baseline.
 
-The behavior passed guarded Steam runtime qualification on its implementation
-artifact. Exact 0.0.109 metadata-promotion requalification is pending before
-publication. Native level-up rendering, visually observed top-of-screen
-placement, and a live loaded multi-round repair interaction remain supervised
-presentation checks and are not represented as proven by automated tests.
+The exact 0.0.109 runtime candidate passed guarded Steam qualification on
+commit `2e99bb82ad90d4cf84640cb23ec945a2190b394d`: loaded repair 20/20,
+the notification matrix 10/10, and Call of the Wild Martial Performance 23/23.
+All three runs used package SHA-256
+`5AFBF228C916B5C17BFB16B25F3280F4802870E5CC2A4B8D2D5D7F126FB28F31`
+and DLL SHA-256
+`1CFF818811BF2B89FBD35BDB75D53CE79426C0350D97CEDFDCC6F14B6E77CED7`.
+The optional-mod transaction restored the complete Mods tree and feature
+settings exactly.
+
+Native level-up rendering, visually observed top-of-screen placement, and a
+live loaded multi-round repair interaction remain supervised presentation
+checks and are not represented as proven by automated tests.
