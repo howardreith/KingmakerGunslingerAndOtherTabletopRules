@@ -87,6 +87,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly JArray _nativeLinkRecords = new JArray();
             private readonly JArray _donorRejections = new JArray();
             private readonly JArray _restorationRecords = new JArray();
+            private readonly List<UnitEntityData> _ownedDependents =
+                new List<UnitEntityData>();
+            private readonly JArray _ownedDependentRecords = new JArray();
             private object _allUnits;
             private object _party;
             private object[] _unitsBefore = new object[0];
@@ -149,6 +152,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         PollCleanup();
                         return;
                     }
+                    CaptureActorOwnedDependents();
                     if (_phase == 0)
                     {
                         Initialize();
@@ -936,6 +940,71 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.AssetId ?? string.Empty).ToArray();
             }
 
+            private void CaptureActorOwnedDependents()
+            {
+                if (_actor == null || _actor.Descriptor == null) return;
+                UnitEntityData dependent = _actor.Descriptor.Pet;
+                if (dependent == null || ReferenceEquals(dependent, _actor) ||
+                    _unitsBefore.Any(value => ReferenceEquals(value,
+                        dependent)) ||
+                    _ownedDependents.Any(value => ReferenceEquals(value,
+                        dependent)))
+                    return;
+
+                _ownedDependents.Add(dependent);
+                _ownedDependentRecords.Add(new JObject
+                {
+                    { "fixture", _fixtureIndex < _fixtures.Length
+                        ? _fixtures[_fixtureIndex].Label : "<complete>" },
+                    { "relationship", "UnitDescriptor.Pet" },
+                    { "ownerUniqueId", _actor.UniqueId ?? string.Empty },
+                    { "dependent", DescribeRuntimeReference(dependent) },
+                    { "capturedInUnits",
+                        ContainsReference(_allUnits, dependent) },
+                    { "capturedInParty",
+                        ContainsReference(_party, dependent) },
+                    { "retired", false }
+                });
+            }
+
+            private void RetireActorOwnedDependents()
+            {
+                for (int index = _ownedDependents.Count - 1;
+                    index >= 0; index--)
+                {
+                    JObject record = (JObject)_ownedDependentRecords[index];
+                    if (record.Value<bool>("retired")) continue;
+                    UnitEntityData dependent = _ownedDependents[index];
+                    bool registeredInUnits =
+                        ContainsReference(_allUnits, dependent);
+                    bool registeredInParty =
+                        ContainsReference(_party, dependent);
+                    if (dependent != null)
+                    {
+                        dependent.Commands.InterruptAll(true);
+                        if (dependent.CombatState.IsInCombat)
+                            dependent.CombatState.LeaveCombat();
+                        if (dependent.Descriptor != null)
+                            dependent.Descriptor.State.Immortality.ReleaseAll();
+                        if (dependent.View != null)
+                            dependent.View.gameObject.SetActive(false);
+                        if (registeredInParty)
+                            Game.Instance.Player.Party.Remove(dependent);
+                        if (registeredInUnits)
+                            Game.Instance.State.Units.All.Remove(dependent);
+                        dependent.Dispose();
+                    }
+                    record["registeredInUnitsAtRetirement"] =
+                        registeredInUnits;
+                    record["registeredInPartyAtRetirement"] =
+                        registeredInParty;
+                    record["retired"] = true;
+                    record["absentAfterRetirement"] =
+                        !ContainsReference(_allUnits, dependent) &&
+                        !ContainsReference(_party, dependent);
+                }
+            }
+
             private void RetireActor()
             {
                 if (_actor == null && _actorBlueprint == null) return;
@@ -949,6 +1018,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    CaptureActorOwnedDependents();
+                    RetireActorOwnedDependents();
                     if (_actor != null)
                     {
                         _actor.Commands.InterruptAll(true);
@@ -1000,6 +1071,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }).ToArray()) },
                     { "nativeLinkMatrix", _nativeLinkRecords },
                     { "donorRejections", _donorRejections },
+                    { "ownedDependentUnits", _ownedDependentRecords },
                     { "fixtures", _fixtureRecords },
                     { "restorations", _restorationRecords },
                     { "records", _records },
@@ -1047,6 +1119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _diagnostics.Add("cleanupException=" + cleanupException);
                     try
                     {
+                        RetireActorOwnedDependents();
                         if (_actor != null &&
                             ContainsReference(_allUnits, _actor))
                             Game.Instance.State.Units.All.Remove(_actor);
@@ -1074,9 +1147,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.EntityCreator.Tick();
                 object[] unitsNow = Snapshot(_allUnits);
                 object[] partyNow = Snapshot(_party);
+                bool ownedDependentsCleared = _ownedDependents.All(value =>
+                    !ContainsReference(_allUnits, value) &&
+                    !ContainsReference(_party, value));
                 bool cleaned = SameReferences(_unitsBefore, unitsNow) &&
                     SameReferences(_partyBefore, partyNow) &&
-                    _actor == null;
+                    _actor == null && ownedDependentsCleared;
                 _settleUpdates++;
                 if (!cleaned && _settleUpdates < MaximumSettleUpdates) return;
                 JObject cleanup = CleanupSnapshotDiagnostic(unitsNow,
@@ -1110,6 +1186,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "unitsExact", SameReferences(_unitsBefore, unitsNow) },
                     { "partyExact", SameReferences(_partyBefore, partyNow) },
                     { "actorCleared", _actor == null },
+                    { "ownedDependentCount", _ownedDependents.Count },
+                    { "ownedDependentsCleared", _ownedDependents.All(value =>
+                        !ContainsReference(_allUnits, value) &&
+                        !ContainsReference(_party, value)) },
+                    { "ownedDependentUnits", _ownedDependentRecords.DeepClone() },
                     { "missingUnits", new JArray(missingUnits.Select(
                         DescribeRuntimeReference).ToArray()) },
                     { "unexpectedUnits", new JArray(unexpectedUnits.Select(
@@ -1297,8 +1378,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "gunslinger-outfit-finalist-race-cleanup",
                     "exact party/global-unit snapshots restored; no save call",
                     "cleaned=" + cleaned + ";updates=" +
-                        _settleUpdates, cleaned,
-                    "request-local actor, blueprint, camera, light, and textures");
+                        _settleUpdates + ";ownedDependents=" +
+                        _ownedDependents.Count, cleaned,
+                    "request-local actor, exact Descriptor.Pet dependents, blueprint, camera, light, and textures");
                 Add(_assertions, "loaded-mod-version",
                     _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,

@@ -292,6 +292,29 @@ pre-publication package SHA-256 is
 and DLL SHA-256 is
 `93edda11b82111e8a76c1c2298e7260ae142e8d1c68ba127e004b6cef7ea24aa`.
 
+The resulting published diagnostic evidence is
+`runtime-evidence/20260830T2323563433313Z-gunslinger-outfit-finalist-race-matrix`.
+All 18 fixtures, 36 records, 72 images/180 views, native links, palettes, and
+18 restorations passed again. The exact cleanup difference was one unexpected
+unit and no missing units: `Leopard`, blueprint
+`AnimalCompanionUnitLeopard` (`54cf380dee486ff42b803174d1b9da1b`), unique ID
+`e8019935-e26e-4be8-a799-c00d8fb7a26f`. The global count changed 265 to 266;
+the party remained exact at 3 and the disposable actor was absent. The run is
+still FAIL and no images from it are accepted.
+
+The next checkpoint retains whole-snapshot equality and adds no world-delta
+heuristic. A unit is eligible for request-owned cleanup only when reached by
+exact reference through the active disposable actor's native
+`UnitDescriptor.Pet` property and absent by reference from the initial unit
+snapshot. That exact dependent is recorded and retired before the actor; the
+gate still requires the original global-unit and party sets. Repository
+validation, installed-reference compilation, 1365/1365 tests, clean Release
+build, and strict installable-package validation pass. Pre-publication package
+SHA-256 is
+`ddb92778082adc354b1e574abad9a467a10246c17cefa75ab61281f410feab62`;
+DLL SHA-256 is
+`af8262f6593053ceadf56af84c26e56e61d38964b816ed39896ce7b5f7885b39`.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

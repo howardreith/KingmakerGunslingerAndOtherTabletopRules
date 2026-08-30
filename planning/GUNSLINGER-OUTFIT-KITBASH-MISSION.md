@@ -229,3 +229,15 @@ current evidence does not identify the missing or unexpected global reference,
 the gate remains failed. Diagnostic-only instrumentation now emits exact
 expected/actual counts and described missing/unexpected unit and party
 references without changing the strict cleanup criterion.
+
+The published diagnostic rerun at
+`runtime-evidence/20260830T2323563433313Z-gunslinger-outfit-finalist-race-matrix`
+identified the exact difference: no missing unit, one unexpected native
+`AnimalCompanionUnitLeopard` (`54cf380dee486ff42b803174d1b9da1b`), exact
+party, and no remaining disposable actor. The native female-Elf fixture was
+`StartGamePregenRangerUnit`. Cleanup is now narrowly instrumented to capture
+only the active disposable actor's exact `UnitDescriptor.Pet` reference when
+that reference was absent from the initial snapshot, retire only that proven
+request-owned dependent, and retain the original strict whole-unit/party
+equality gate. The next published runtime run must prove that relationship and
+exact cleanup before the 72-image matrix can be reviewed or accepted.

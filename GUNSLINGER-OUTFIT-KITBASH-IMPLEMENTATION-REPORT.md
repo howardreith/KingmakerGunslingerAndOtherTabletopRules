@@ -227,6 +227,28 @@ clean package validation pass. Pre-publication diagnostic package SHA-256 is
 DLL SHA-256 is
 `93edda11b82111e8a76c1c2298e7260ae142e8d1c68ba127e004b6cef7ea24aa`.
 
+The published diagnostic run at
+`20260830T2323563433313Z-gunslinger-outfit-finalist-race-matrix` resolved the
+delta without relaxing cleanup. It again passed all matrix work, then reported
+265 initial and 266 final global units, no missing unit, exact 3-member party,
+and a cleared actor. The sole unexpected unit was `Leopard`, blueprint
+`AnimalCompanionUnitLeopard` (`54cf380dee486ff42b803174d1b9da1b`), after the
+native female-Elf `StartGamePregenRangerUnit` donor had been exercised.
+
+The cleanup repair is relationship-scoped. It captures only the active
+disposable actor's exact installed-game `UnitDescriptor.Pet` reference, rejects
+any reference present in the pre-run snapshot, retires only the captured
+request-owned dependent, and records its before/after registration state. The
+unchanged acceptance condition still demands exact restoration of the full
+global-unit and party reference sets. Repository validation, all 1365 tests,
+clean Release construction, and strict package validation pass; the
+pre-publication package is
+`ddb92778082adc354b1e574abad9a467a10246c17cefa75ab61281f410feab62`
+and its DLL is
+`af8262f6593053ceadf56af84c26e56e61d38964b816ed39896ce7b5f7885b39`.
+The matrix and its images remain unaccepted until the published repair proves
+the exact pet relationship, retirement, and strict final snapshot in game.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
