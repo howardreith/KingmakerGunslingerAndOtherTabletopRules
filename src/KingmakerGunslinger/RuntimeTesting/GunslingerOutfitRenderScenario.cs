@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// Guarded visual comparison of audited native class-clothing candidates.
     /// It uses disposable Human actors and restores each avatar before disposal.
     /// </summary>
-    internal static class GunslingerOutfitRenderScenario
+    internal static partial class GunslingerOutfitRenderScenario
     {
         private const int EvidenceLayer = 31;
         private const int IsometricPanelSize = 512;

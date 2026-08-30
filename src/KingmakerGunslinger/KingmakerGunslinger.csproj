@@ -928,6 +928,7 @@
     <Compile Include="RuntimeTesting\CompatibilityAssetAttributionScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitAuditScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitRenderScenario.cs" />
+    <Compile Include="RuntimeTesting\GunslingerOutfitQualificationScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianRageInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianFocusedScenario.cs" />

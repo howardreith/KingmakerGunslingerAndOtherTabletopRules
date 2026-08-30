@@ -16,6 +16,15 @@ Intake baseline:
 - production version must remain derived from repository conventions until the
   transactional release checkpoint.
 
+Current checkpoint:
+
+- the deterministic audit and accepted Human shortlist render are complete;
+- `magus-complete` is the provisional 81/100 finalist;
+- the guarded, production-free finalist race/gender matrix is source-qualified
+  and package-qualified, with installed-game execution still pending;
+- production class clothing remains unchanged until the race, overlay, motion,
+  rebuild, and persistence gates pass.
+
 ## Objective
 
 Replace the Gunslinger's generic Fighter-derived class clothing with a

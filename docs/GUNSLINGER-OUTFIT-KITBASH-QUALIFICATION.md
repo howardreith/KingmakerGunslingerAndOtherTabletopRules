@@ -187,6 +187,31 @@ The candidate-set identity reproduced exactly and the scored order remained
 Magus, Rogue, Slayer. Zero preview images and eight ordinary-isometric images
 were tagged low density; the latter remain an explicit final-matrix concern.
 
+## Finalist race/gender source checkpoint
+
+Guarded scenario `gunslinger-outfit-finalist-race-matrix` is now
+source-qualified. It discovers supported races from the installed progression
+root rather than an assumed list, derives two gender cells per discovered
+race, and validates that native Magus `LoadClothes` produces the exact
+audited ordered entity pair in every cell. Each request-local native body is
+captured with native and alternate valid palettes, no visible weapon,
+preview-like four-view framing, elevated isometric framing, and exact
+entity/ramp/saved-link restoration. The bounded expected result is 18
+fixtures, 36 records, 72 images, 180 views, and 18 restorations.
+
+Repository validation, game-facing compilation, all 1365/1365 tests,
+`Build-Local.ps1`, deterministic packaging, and strict standalone and local
+package validation pass. Package SHA-256 is
+`cdd85e981f9847b0259a965506db457af98818d25aaf7c87d619022eae9559dc`;
+DLL SHA-256 is
+`36cf201fca3040c3a7b9a35f4253207d87b5480b3f13b1df14897860fdb02b7b`.
+The unchanged preflight passed 163 checks after the known immediate-post-build
+timestamp guard became quiescent.
+
+This checkpoint does not claim installed-game race visual acceptance.
+Steam-backed execution, direct image inspection, and separate equipment,
+animation, production, and persistence gates remain required.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

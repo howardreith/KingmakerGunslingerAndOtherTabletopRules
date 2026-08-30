@@ -304,3 +304,41 @@ Exact next action: implement the guarded finalist-only exhaustive matrix for
 the Magus pair across dynamically discovered races, both genders, systematic
 valid colors, required firearm/animation states, armor and overlay
 interactions, rebuild, and persistence boundaries.
+
+## 2026-08-30 - Finalist race/gender matrix source gate
+
+- Confirmed from guarded audit evidence that native Magus class clothing
+  resolves the same ordered two-entity pair for every one of the nine
+  installed player races: male
+  `6df8f61725a84294c8661bb9585eca97` /
+  `4c59d2b9740930145a27a4c693217d22`, female
+  `beba0e0c7dcd5c64d97d767be3e72995` /
+  `a93ead19aae8afc4794c54f5bcf73168`. Native defaults remain 2/22.
+- Added guarded scenario `gunslinger-outfit-finalist-race-matrix`. It
+  discovers the installed player-race list dynamically, discovers native
+  same-race/same-gender body donors deterministically, validates exact native
+  Magus `LoadClothes` order in all 18 cells, and fails closed if any donor,
+  rig, link, ramp, renderer, saved-link, or restoration contract is absent.
+- The request-local matrix is deliberately bounded: both valid palettes,
+  no-weapon readability, four-view preview-like plus elevated isometric
+  capture, and exact avatar restoration for every race/gender cell. It makes
+  no save call and does not mutate the Gunslinger or any production blueprint.
+  Equipment overlays and engine-driven animation remain separate finalist
+  gates so a sparse sample cannot masquerade as full Cartesian proof.
+- Focused source invariants execute within the existing outfit-matrix test
+  entry, preserving the fixed suite count. Repository validation, installed
+  game-reference Release compilation, and all 1365/1365 tests pass.
+- `Build-Local.ps1` passed clean Release construction, deterministic
+  packaging, strict standalone validation, and strict local-runtime
+  validation. Local-runtime package SHA-256 is
+  `cdd85e981f9847b0259a965506db457af98818d25aaf7c87d619022eae9559dc`;
+  DLL SHA-256 is
+  `36cf201fca3040c3a7b9a35f4253207d87b5480b3f13b1df14897860fdb02b7b`.
+- Runtime metadata preflight initially observed the known immediate-post-build
+  artifact timestamp race, then passed unchanged after quiescence: 163 checks,
+  with no process launch, deployment, backup, or evidence side effect from the
+  negative unsupported-scenario fixture.
+
+Exact next action: commit and publish this clean source-qualified matrix,
+verify all three feature refs, then run it through Steam App ID 640820 against
+exact save `KMG_AUTOMATION_WORKING` and directly inspect all ignored images.

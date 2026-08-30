@@ -220,6 +220,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitCandidateRender ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .GunslingerOutfitFinalistRaceMatrix ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence ||
