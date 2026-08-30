@@ -70,9 +70,10 @@ cases and 96 images from candidate set
 `ef38c5c841510df7f03bbf68a8ca9e7fbef3f3403369022505449cb038d347be`.
 Every case had an exact held-weapon state, usable preview framing, exact
 request-local restoration, no save-writing API, and no production-blueprint
-mutation. The in-game result passed all ten assertions. The outer collector
-expired before post-load rendering began, so an accepting rerun remains
-required after the scenario-only collector repair.
+mutation. The in-game result passed all ten assertions. Accepting rerun
+`20260830T2158516580621Z` reproduced the exact candidate-set identity, passed
+both in-game and outer orchestration, exited automatically, and preserved the
+same scored order after direct inspection of all 96 new images.
 
 | Rank | Candidate-set ID | Exact assets | M/F identity | Coverage | Compatibility | Colors | Score | Evidence | Decision |
 |---:|---|---|---|---|---|---|---:|---|---|
@@ -120,6 +121,5 @@ equipment compatibility.
 `magus-complete` is the provisional full-matrix finalist. Its coherent native
 base-plus-one-accessory presentation best matches the privateer/swashbuckler
 brief without a literal hat, baked weapon, or generic Fighter silhouette.
-Production remains unchanged pending an accepting guarded rerun and exhaustive
-race, gender, color, animation, equipment-overlay, rebuild, and persistence
-evidence.
+Production remains unchanged pending exhaustive race, gender, color,
+animation, equipment-overlay, rebuild, and persistence evidence.

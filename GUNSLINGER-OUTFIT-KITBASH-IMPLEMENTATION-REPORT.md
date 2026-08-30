@@ -130,11 +130,21 @@ the DLL SHA-256 is
 `7fb96cd42ed986241fa63f79a52e01633da7c8b7bc18e1ed68d0a1562e4d5aac`.
 Quiescent runtime preflight passes all 160 checks.
 
+The accepting rerun at
+`20260830T2158516580621Z-gunslinger-outfit-candidate-render` loaded exact
+commit `8f47f2db723fdfe6146ca30c352ea83ba7d3589f` and passed both outer
+orchestration and all 10 in-game assertions. It reproduced the exact candidate
+set with 48 records, 96 images, 48 exact held states, 12/12 restorations, no
+save API, no production mutation, and automatic process exit. Direct review
+of all accepted images preserved the Human-stage ranking. The Human renderer
+gate is closed; the exhaustive finalist matrix remains open.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
 manifest-matching pre-existing untracked package was inspected provisionally
 without modifying or publishing it. The path discrepancy remains explicit.
 Eleven ordinary-isometric images in the first batch were tagged low pixel
-density; paired preview-like images were directly usable, but final evidence
-must improve or explicitly retain that limitation.
+density; the accepted rerun reduced that to eight with zero low-density
+preview captures. Paired preview-like images were directly usable, but final
+evidence must improve or explicitly retain that limitation.
