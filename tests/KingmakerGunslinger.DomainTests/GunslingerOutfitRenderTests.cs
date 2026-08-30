@@ -50,6 +50,8 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
             string automation = Read("scripts",
                 "RuntimeAutomation.Common.ps1");
             string preflight = Read("scripts",
@@ -64,6 +66,8 @@ namespace KingmakerGunslinger.DomainTests
                     "GunslingerOutfitRenderScenario.Begin(") &&
                 runner.Contains(
                     "_gunslingerOutfitCandidateRender.Poll()") &&
+                WorkingSavePredicate(request).Contains(
+                    "GunslingerOutfitCandidateRender") &&
                 automation.Contains("'" + scenario +
                     "' = [pscustomobject]") &&
                 preflight.Contains(
@@ -160,6 +164,17 @@ namespace KingmakerGunslinger.DomainTests
         {
             return Read("src", "KingmakerGunslinger", "RuntimeTesting",
                 "GunslingerOutfitRenderScenario.cs");
+        }
+
+        private static string WorkingSavePredicate(string request)
+        {
+            int start = request.IndexOf("bool workingSmoke",
+                StringComparison.Ordinal);
+            int end = request.IndexOf("bool workingEntryObservation",
+                start, StringComparison.Ordinal);
+            Assertions.True(start >= 0 && end > start,
+                "Working-save request predicate boundaries are absent.");
+            return request.Substring(start, end - start);
         }
 
         private static string Read(params string[] parts)
