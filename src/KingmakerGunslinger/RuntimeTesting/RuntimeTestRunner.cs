@@ -671,6 +671,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableGunslingerTrueGrit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposablePistoleroDeeds &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveGunslingerPresentation &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitAudit &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveVendorTableContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveProductionFirearmFallbacks &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveNativeFirearmRigContracts &&
@@ -717,6 +718,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ObserveKmgCompatibilityAssetAttribution)
                 {
                     Complete(CompatibilityAssetAttributionScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .GunslingerOutfitAudit)
+                {
+                    Complete(GunslingerOutfitAuditScenario.Run(
                         _context, _request));
                     return;
                 }

@@ -30,6 +30,9 @@
 # Human playtest screenshots remain local evidence and are never packaged.
 /evidence/screenshots/
 
+# Mission reference packages are read-only local inputs and must never be committed.
+/docs/reference/gunslinger-outfit-kitbash/
+
 # OS files
 .DS_Store
 Thumbs.db

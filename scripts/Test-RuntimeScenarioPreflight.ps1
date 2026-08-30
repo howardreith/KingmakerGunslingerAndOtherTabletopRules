@@ -42,6 +42,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
 $expected = @(
     'mod-load-smoke',
     'observe-kmg-compatibility-asset-attribution',
+    'gunslinger-outfit-audit',
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
     'disposable-urban-barbarian-focused',

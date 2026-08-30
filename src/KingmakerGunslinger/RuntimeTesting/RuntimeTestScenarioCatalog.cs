@@ -106,6 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-class-blueprint-contracts";
         internal const string ObserveGunslingerPresentation =
             "observe-gunslinger-presentation";
+        internal const string GunslingerOutfitAudit =
+            "gunslinger-outfit-audit";
         internal const string IconOverhaulVisualEvidence =
             "icon-overhaul-visual-evidence";
         internal const string ObserveNativeWeaponFeatContracts =
@@ -408,6 +410,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveCraftMagicItemsVerifyCleanup,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
+                GunslingerOutfitAudit,
                 IconOverhaulVisualEvidence,
                 ObserveNativeWeaponFeatContracts,
                 ObserveElvenBranchedSpearContracts,

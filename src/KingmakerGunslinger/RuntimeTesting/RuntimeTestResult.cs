@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Threading;
@@ -447,6 +448,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (result == null) throw new ArgumentNullException("result");
             if (!RuntimeTestStatuses.IsValid(result.Status))
                 throw new InvalidOperationException("Unknown runtime-test status.");
+            List<string> scenarioEvidence = result.EvidenceFiles == null
+                ? new List<string>() : result.EvidenceFiles.ToList();
             string summaryPath = Path.Combine(evidenceDirectory, "runtime-summary.txt");
             string resultPath = Path.Combine(evidenceDirectory, "runtime-result.json");
             string readyPath = Path.Combine(evidenceDirectory, "runtime-ready.json");
@@ -459,6 +462,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UrbanBarbarianRageInventoryObserver.EvidenceFileName);
             WriteAtomic(summaryPath, BuildSummary(result));
             result.EvidenceFiles = new List<string> { summaryPath, resultPath };
+            foreach (string path in scenarioEvidence.Where(value =>
+                !string.IsNullOrWhiteSpace(value) && File.Exists(value)))
+                if (!result.EvidenceFiles.Contains(path,
+                    StringComparer.OrdinalIgnoreCase))
+                    result.EvidenceFiles.Add(path);
             if (File.Exists(readyPath)) result.EvidenceFiles.Add(readyPath);
             if (File.Exists(eventsPath)) result.EvidenceFiles.Add(eventsPath);
             if (File.Exists(catalogReadyPath)) result.EvidenceFiles.Add(catalogReadyPath);
