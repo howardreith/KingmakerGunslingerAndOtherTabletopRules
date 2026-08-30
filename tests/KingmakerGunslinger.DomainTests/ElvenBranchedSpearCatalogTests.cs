@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.109\"") &&
-                props.Contains("<KmgVersion>0.0.109</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.109-martial-performance-repair-notifications</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.109\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.109\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.109-martial-performance-repair-notifications\")"),
+            Assertions.True(info.Contains("\"Version\": \"0.0.110\"") &&
+                props.Contains("<KmgVersion>0.0.110</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.110-protection-from-alignment-control-immunity</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.110\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.110\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.110-protection-from-alignment-control-immunity\")"),
                 "Release and assembly identity are not transactionally pinned to the Gunslinger fixes release.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-martial-performance-repair-notifications.zip") &&
+                "$($info.Id)-$($info.Version)-protection-from-alignment-control-immunity.zip") &&
                 !package.Contains("expanded-summoning.zip"),
                 "Package identity is not pinned to the Gunslinger fixes archive.");
-            Assertions.True(runtime.Contains("active version 0.0.109") &&
-                localBuild.Contains("active version 0.0.109") &&
-                localBuild.Contains("local-runtime\\0.0.109"),
+            Assertions.True(runtime.Contains("active version 0.0.110") &&
+                localBuild.Contains("active version 0.0.110") &&
+                localBuild.Contains("local-runtime\\0.0.110"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

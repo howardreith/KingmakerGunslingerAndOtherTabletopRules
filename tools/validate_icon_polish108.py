@@ -14,7 +14,7 @@ VERSION = "0.0.108"
 INFORMATIONAL_VERSION = "0.0.108-icon-art-polish-round-2"
 PACKAGE = "KingmakerGunslinger-0.0.108-local-runtime.zip"
 PACKAGE_SUFFIX = "icon-art-polish-round-2"
-DETERMINISTIC_TEST_COUNT = 1357
+DETERMINISTIC_TEST_COUNT = 1359
 STATIC_KEY = "iconPolishRoundTwo108"
 
 SELECTOR_HASHES = {

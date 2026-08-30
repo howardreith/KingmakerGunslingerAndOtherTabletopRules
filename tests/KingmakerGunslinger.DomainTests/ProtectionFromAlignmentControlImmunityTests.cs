@@ -149,7 +149,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             MentalControlCatalog first = MentalControlCatalogDefaults.Create();
             MentalControlCatalog second = MentalControlCatalogDefaults.Create();
-            Assertions.Equal(14, first.AbilityCount,
+            Assertions.Equal(13, first.AbilityCount,
                 "Mental-control ability inventory changed unexpectedly.");
             Assertions.Equal(8, first.BuffCount,
                 "Mental-control terminal-buff inventory changed unexpectedly.");
@@ -157,7 +157,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Repeated catalog initialization duplicated abilities.");
             Assertions.Equal(first.BuffCount, second.BuffCount,
                 "Repeated catalog initialization duplicated buffs.");
-            Assertions.Equal(13, first.Entries.Count(value => value.ContentSource ==
+            Assertions.Equal(12, first.Entries.Count(value => value.ContentSource ==
                 MentalControlContentSource.VanillaKingmaker),
                 "Vanilla mental-control inventory changed unexpectedly.");
             Assertions.Equal(2, first.Entries.Count(value => value.ContentSource ==
@@ -174,7 +174,7 @@ namespace KingmakerGunslinger.DomainTests
             MentalControlCatalogEntry exact = MentalControlCatalogDefaults.All[0];
             Assertions.False(first.Register(exact),
                 "An exact repeated registration must be an idempotent no-op.");
-            Assertions.Equal(14, first.AbilityCount,
+            Assertions.Equal(13, first.AbilityCount,
                 "An exact repeated registration changed the ability count.");
             Assertions.Throws<InvalidOperationException>(() => first.Register(
                 new MentalControlCatalogEntry(exact.BlueprintName, exact.Guid,
@@ -197,6 +197,126 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 ProtectionComponentPublicationPolicy.Decide(-1),
                 "A negative component count must fail closed.");
+        }
+
+        internal static void PlayerFacingDescriptionsAreAccurateAndScoped()
+        {
+            var cases = new[] {
+                new { Alignment = ProtectionAlignment.Evil, Name = "Evil",
+                    Adjective = "evil" },
+                new { Alignment = ProtectionAlignment.Good, Name = "Good",
+                    Adjective = "good" },
+                new { Alignment = ProtectionAlignment.Law, Name = "Law",
+                    Adjective = "lawful" },
+                new { Alignment = ProtectionAlignment.Chaos, Name = "Chaos",
+                    Adjective = "chaotic" }
+            };
+            foreach (var value in cases)
+            {
+                string individual = ProtectionFromAlignmentDescriptions
+                    .SpecificSpell(value.Alignment, false);
+                string communal = ProtectionFromAlignmentDescriptions
+                    .SpecificSpell(value.Alignment, true);
+                string buff = ProtectionFromAlignmentDescriptions.Buff(
+                    value.Alignment);
+                Assertions.True(individual.StartsWith(
+                        "Protection from " + value.Name + " wards ",
+                        StringComparison.Ordinal),
+                    "Individual spell title changed for " + value.Name + ".");
+                Assertions.True(communal.StartsWith(
+                        "Protection from " + value.Name +
+                        ", Communal wards allies ", StringComparison.Ordinal),
+                    "Communal spell title changed for " + value.Name + ".");
+                foreach (string text in new[] { individual, communal, buff })
+                {
+                    Assertions.True(text.Contains("+2 deflection bonus") &&
+                        text.Contains("+2 resistance bonus") &&
+                        text.Contains("domination") && text.Contains("charm") &&
+                        text.Contains(value.Adjective) &&
+                        text.EndsWith(ProtectionFromAlignmentDescriptions
+                            .ExistingControlLimitation,
+                            StringComparison.Ordinal),
+                        value.Name +
+                        " player text does not describe the exact protection and existing-effect limit.");
+                }
+                Assertions.True(communal.Contains("Each affected ally"),
+                    value.Name + " communal text must identify every recipient.");
+            }
+
+            string generic = ProtectionFromAlignmentDescriptions.GenericSpell(false);
+            string genericCommunal = ProtectionFromAlignmentDescriptions
+                .GenericSpell(true);
+            Assertions.True(generic.StartsWith("Protection from Alignment ",
+                    StringComparison.Ordinal) &&
+                generic.Contains("choose evil, good, law, or chaos") &&
+                generic.Contains("recognized by this mod") &&
+                generic.EndsWith(ProtectionFromAlignmentDescriptions
+                    .ExistingControlLimitation, StringComparison.Ordinal),
+                "Generic protection text does not expose the selectable alignment and scoped immunity.");
+            Assertions.True(genericCommunal.StartsWith(
+                    "Protection from Alignment, Communal ",
+                    StringComparison.Ordinal) &&
+                genericCommunal.Contains("Each affected ally"),
+                "Generic communal protection text does not expose its recipients.");
+        }
+
+        internal static void DescriptionPublicationIsExactAndIdempotent()
+        {
+            const string expected =
+                "KMG.ProtectionFromAlignment.Ability.Evil.Description";
+            Assertions.Equal(ProtectionDescriptionPublicationDecision.Publish,
+                ProtectionDescriptionPublicationPolicy.Decide(null, expected),
+                "A vanilla description must be replaced when the module is enabled.");
+            Assertions.Equal(ProtectionDescriptionPublicationDecision.Publish,
+                ProtectionDescriptionPublicationPolicy.Decide(
+                    "Vanilla.ProtectionFromEvil.Description", expected),
+                "A non-owned description must remain a valid publication input.");
+            Assertions.Equal(
+                ProtectionDescriptionPublicationDecision.AlreadyPublished,
+                ProtectionDescriptionPublicationPolicy.Decide(expected, expected),
+                "Repeated description publication must be an idempotent no-op.");
+            Assertions.Throws<InvalidOperationException>(() =>
+                ProtectionDescriptionPublicationPolicy.Decide(
+                    "KMG.ProtectionFromAlignment.Unexpected.Description",
+                    expected),
+                "A conflicting owned description must fail closed.");
+            Assertions.Throws<ArgumentException>(() =>
+                ProtectionDescriptionPublicationPolicy.Decide(expected,
+                    "Foreign.Description"),
+                "A non-owned expected key must be rejected.");
+
+            string publication = File.ReadAllText(Path.Combine(SourceRoot(),
+                "ProtectionFromAlignmentPublication.cs"));
+            string[] descriptions = {
+                "433b1faf4d02cc34abb0ade5ceda47c4",
+                "eee384c813b6d74498d1b9cc720d61f4",
+                "2ac7637daeb2aa143a3bae860095b63e",
+                "c3aafbbb6e8fc754fb8c82ede3280051",
+                "1eaf1020e82028d4db55e6e464269e00",
+                "2cadf6c6350e4684baa109d067277a45",
+                "93f391b0c5a99e04e83bbfbe3bb6db64",
+                "5bfd4cce1557d5744914f8f6d85959a4",
+                "8b8ccc9763e3cc74bbf5acc9c98557b9",
+                "0ec75ec95d9e39d47a23610123ba1bad",
+                "4a6911969911ce9499bf27dde9bfcedc",
+                "b19e788487556aa4397080ef3dbb3619",
+                "744bec63273df53438c6b76aaaa78382",
+                "a4742d7afde0f4f47b380abed025b219",
+                "8deb9d5cef3472646ac5199eb9edfb87"
+            };
+            Assertions.Equal(15, publication.Split(new[] {
+                    "new ProtectionDescriptionSpec(" },
+                    StringSplitOptions.None).Length - 1,
+                "The player-description publication inventory must remain exact.");
+            foreach (string guid in descriptions)
+                Assertions.True(publication.Contains(guid),
+                    "Description publication inventory lacks " + guid + ".");
+            foreach (string token in new[] { "LocalizationService.Create(",
+                "factAccess.SetDescription(",
+                "RollbackAll(componentMutations, descriptionMutations)",
+                "DescriptionTargets.Length", "if (enabled)" })
+                Assertions.True(publication.Contains(token),
+                    "Description publication contract is missing: " + token);
         }
 
         internal static void KingmakerEventAdapterUsesTheNativeTargetSideVeto()
@@ -233,7 +353,7 @@ namespace KingmakerGunslinger.DomainTests
                 "4a6911969911ce9499bf27dde9bfcedc",
                 "b19e788487556aa4397080ef3dbb3619",
                 "744bec63273df53438c6b76aaaa78382",
-                "92150879041b1fb48acfbcf7034e8b33",
+                "a4742d7afde0f4f47b380abed025b219",
                 "8deb9d5cef3472646ac5199eb9edfb87" })
                 Assertions.True(publication.Contains(guid),
                     "Protection terminal-buff publication inventory lacks " + guid + ".");

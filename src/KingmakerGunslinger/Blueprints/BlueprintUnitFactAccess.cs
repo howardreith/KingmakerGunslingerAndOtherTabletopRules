@@ -83,6 +83,25 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException("The unit-fact icon assignment did not verify.");
         }
 
+        internal LocalizedString GetDescription(BlueprintUnitFact fact)
+        {
+            if (fact == null) throw new ArgumentNullException("fact");
+            return (LocalizedString)_description.GetValue(fact);
+        }
+
+        internal void SetDescription(BlueprintUnitFact fact,
+            LocalizedString description)
+        {
+            if (fact == null) throw new ArgumentNullException("fact");
+            if (description == null)
+                throw new ArgumentNullException("description");
+            _description.SetValue(fact, description);
+            if (!ReferenceEquals(_description.GetValue(fact), description) ||
+                string.IsNullOrWhiteSpace(fact.Description))
+                throw new InvalidOperationException(
+                    "The unit-fact description assignment did not verify.");
+        }
+
         private static FieldInfo Require(
             Type type,
             string name,

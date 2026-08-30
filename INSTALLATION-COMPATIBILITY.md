@@ -32,12 +32,12 @@ transient action debt; it does not alter either feat or automation mode.
 
 1. Back up any saves you intend to keep outside the game's active save folder.
 2. Install the standalone
-   `KingmakerGunslinger-0.0.109-martial-performance-repair-notifications.zip`
+   `KingmakerGunslinger-0.0.110-protection-from-alignment-control-immunity.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.109 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.110 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -69,10 +69,11 @@ Weapon Focus remains an exact negative control.
 
 The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,
 Expanded Summoning, Elven Branched Spears, Eastern Weapons, `Brown-Fur
-Transmuter -- requires Call of the Wild`, Urban Barbarian, and Bodyguard and In
-Harms Way checkboxes. All default ON. A change is
+Transmuter -- requires Call of the Wild`, Urban Barbarian, Bodyguard and In
+Harms Way, and `Protection from Alignment: control immunity` checkboxes. All
+default ON. A change is
 saved for the next complete game restart; the panel reports active and saved
-next-restart state separately. Older settings migrate to schema 8 while
+next-restart state separately. Older settings migrate to schema 9 while
 preserving every explicit prior value and defaulting absent module keys ON.
 
 Brown-Fur is the only module that requires Call of the Wild. Its adjacent
@@ -80,9 +81,9 @@ status reports Available, Unavailable, or Blocked independently from saved user
 intent, effective publication, and restart-required state. Saved ON intent is
 preserved when CotW is absent, but Brown-Fur is not registered or published.
 Structurally incompatible CotW installations also fail closed without disabling
-the package's eight independent modules. Urban Barbarian and Bodyguard/In Harm's
-Way are native-core content and remain available when CotW is absent, unknown,
-or ambiguous.
+the package's nine independent modules. Urban Barbarian, Bodyguard/In Harm's
+Way, and Protection from Alignment are native-core features and remain
+available when CotW is absent, unknown, or ambiguous.
 
 Turning a module OFF removes its content only from new public choices and
 acquisition paths. It does not unregister identities, strip an existing
@@ -93,6 +94,12 @@ CotW still installed, Brown-Fur OFF likewise hides the archetype from new
 character creation and respec while retaining its stable identities and the
 features and effects of existing Brown-Fur owners. Do not remove the entire mod
 from a campaign that has used any module.
+
+The Protection from Alignment module is a startup-only rules publication rather
+than new save-bearing content. Turning it OFF and restarting retains Kingmaker's
+vanilla protection descriptions and allows new control effects under vanilla
+rules; it does not scan for, remove, or otherwise change any control buff that
+was already active.
 
 ## Removal warning
 
@@ -217,7 +224,7 @@ by itself prove campaign or cross-mod compatibility.
 ## Optional Craft Magic Items integration
 
 When the Unity Mod Manager entry with ID `CraftMagicItems` is installed and
-active, Gunslinger 0.0.109 probes `CraftMagicItems.Main` and enables the bridge
+active, Gunslinger 0.0.110 probes `CraftMagicItems.Main` and enables the bridge
 only if the required 2.1.0 data-loading, recipe, indexing, crafting, and Harmony
 surfaces match. There is no required assembly reference: Gunslinger continues
 normally when CMI is absent or disabled, and an incompatible external contract
@@ -233,7 +240,7 @@ Repaint use KMG's renderer while a category selection changed, producing a
 state. Version 0.0.99 removed that prefix and passed its first human ammunition
 UI interaction test: the category remained visible and crafting worked.
 Version 0.0.100 preserved that architecture through final human acceptance;
-the 0.0.109 release retains that accepted behavior. CMI always owns its top-level
+the 0.0.110 release retains that accepted behavior. CMI always owns its top-level
 Mundane Crafting and parent/subtype selectors; the bridge branches only after
 CMI has finalized the exact selected data and immediately before its ordinary
 equipment-only `NewItemBaseIDs` path. The ammunition panel returns to CMI's
@@ -312,7 +319,7 @@ changing module state.
 
 CMI UI release-regression checklist for one fresh process:
 
-1. Confirm CMI reports Kingmaker Gunslinger 0.0.109.
+1. Confirm CMI reports Kingmaker Gunslinger 0.0.110.
 2. Open Craft Mundane Items.
 3. Confirm Firearms offers exactly Pistol, Musket, and Blunderbuss.
 4. Confirm Advanced Rifle and Advanced Revolver are absent.

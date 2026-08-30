@@ -472,6 +472,7 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.cs"));
             foreach (string token in new[] {
+                "firearmParameterCount == (expectedGunslinger ? 15 : 0)",
                 "spearRegisteredItems == 12",
                 "spearParameterizedOptions ==",
                 "(expectedElvenBranchedSpears ? 7 : 0)",

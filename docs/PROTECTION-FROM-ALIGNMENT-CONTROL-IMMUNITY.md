@@ -59,7 +59,7 @@ exact type, and a nonempty internal name before any mutation.
 | `ProtectionFromEvilBuff` | `4a6911969911ce9499bf27dde9bfcedc` | Evil | Yes |
 | `ProtectionFromGoodBuff` | `b19e788487556aa4397080ef3dbb3619` | Good | Yes |
 | `ProtectionFromLawBuff` | `744bec63273df53438c6b76aaaa78382` | Law | Yes |
-| `ProtectionFromChaosBuff` | `92150879041b1fb48acfbcf7034e8b33` | Chaos | Yes |
+| `ProtectionFromChaosBuff` | `a4742d7afde0f4f47b380abed025b219` | Chaos | Yes |
 | `AuraOfProtectionFromEvilEffectBuff` | `8deb9d5cef3472646ac5199eb9edfb87` | Evil | Yes |
 
 The Paladin aura's source buff (`c8876df41a13f9243b3bfdb15b84b129`),
@@ -118,6 +118,36 @@ The base-game item enchantment named `ProtectionFromEvil`
 other distinct item-only protection terminal buff was found. Any item that
 applies one of the five patched buffs inherits the behavior automatically.
 
+## Player-facing description publication
+
+When this feature is enabled at startup, it publishes owned localization for
+the ten core player-facing spell abilities in the wrapper table: the generic
+selector and its communal form, the four individual alignment spells, and the
+four communal alignment spells. It also publishes matching tooltips on the
+four shared terminal protection buffs and the Paladin aura effect buff, for 15
+exact description targets in total.
+
+Each specific description names the protected-against alignment, retains the
+ordinary +2 deflection Armor Class and +2 resistance saving-throw benefits,
+and explains that a new domination, charm, or comparable mental-control effect
+recognized by this mod cannot take hold from a matching-alignment source. The
+generic descriptions explain the evil, good, law, or chaos selection. Every
+description states the deliberate lifecycle boundary exactly: an existing
+control effect is neither removed nor suppressed when protection is applied.
+
+Scrolls, potions, special deliveries, and items are not assigned unrelated
+replacement item text. They inherit the mechanic through the shared terminal
+buff, and the active buff tooltip displays the protection after delivery.
+Disabling the independent UMM feature at startup leaves both the vanilla
+descriptions and vanilla application behavior intact.
+
+Description publication follows the same feature-local transaction as the
+runtime components. Exact owned localization keys are idempotent; conflicting
+owned keys fail closed; a later failure restores the prior description objects
+and component arrays when no foreign mutation intervened. The live feature-
+module observer verifies all 15 exact descriptions in enabled and disabled
+startup states.
+
 ## Explicit mental-control catalog
 
 An entry qualifies because it meaningfully transfers control, possession, or
@@ -140,7 +170,6 @@ immune.
 | `DominateMonster` | `3c17035ec4717674cae2e841a190e757` | Ability | Vanilla | Creature-wide native domination | Yes | Yes |
 | `DominateAnimal` | `754c478a2aa9bb54d809e648c3f7ac0e` | Ability | Vanilla | Native animal domination | Yes | Yes |
 | `C61_NyrissaDominateMonster` | `e349d48d79783d24aba78006f3e84b8c` | Ability | Vanilla | Alternate encounter domination | Yes | Yes |
-| `EnchantmentDominateAbility` | `e2754ae5185031e45b853da434ee9c6f` | Ability | Vanilla | Alternate faction-changing domination | Yes | Yes |
 | `EnchantmentDominateSpell` | `0f368511a1f73ba4b8b3fd204e751572` | Ability | Vanilla | Alternate domination spell delivery | Yes | Yes |
 | `CharmAnimal` | `08df458bd00ba704dab32dd493c61518` | Ability | Vanilla | Faction-converts an animal | Yes | Yes |
 | `CharmPerson` | `1af9d5995090e5a4185a30decf0959ad` | Ability | Vanilla | Faction-converts a humanoid | Yes | Yes |
@@ -158,6 +187,15 @@ immune.
 | `WitchAnimalServantHexAbility` | `583e661fe4244a319672bc6ccdc51294` | Ability | Call of the Wild | Removes free will and changes faction | No | Yes locally; optional runtime |
 | `WitchAnimalServantHexBuff` | `32b4b11964724f59a9034e61014dbb3c` | Buff | Call of the Wild | Animal Servant terminal | No | Yes locally; optional runtime |
 | `SwayingWordAbility` | `e5096e16c9cb46cf9460a9c84dea699b` | Ability | Call of the Wild | Applies bounded native domination | No | Yes locally; optional runtime |
+
+The live Kingmaker 2.1.7b audit also resolved
+`EnchantmentDominateAbility` (`e2754ae5185031e45b853da434ee9c6f`)
+as a `BlueprintFeature`, not a delivery ability. Its `AuraFeatureComponent`
+applies the owner-side carrier `EnchantmentDominateBuff`
+(`80cdafc554c06094cb761e0c0f18c385`), which references
+`EnchantmentDominateArea` (`6c25cb2038a4a324ebca2dff2b58bbbf`).
+Those carrier identities are deliberately excluded; the actual delivery spell
+and victim-side `EnchantmentDominatePersonBuff` terminal remain registered.
 
 No trusted source-alignment override is assigned to a production entry. A null
 or unclassifiable source therefore fails open today. The registration API does
@@ -182,20 +220,21 @@ control terminals.
 ## Initialization diagnostics
 
 One structured summary records resolved, newly patched, and already-patched
-protection buffs; registered ability and buff counts; missing required and
-optional assets; and whether all optional Call of the Wild identities were
-available at that initialization point. Required failures are logged and
-rolled back inside the feature boundary so Shield Other, Expanded Summoning,
-and other modules continue. Optional misses neither throw nor disable base-game
-coverage.
+protection buffs and player descriptions; registered ability and buff counts;
+missing required and optional assets; and whether all optional Call of the Wild
+identities were available at that initialization point. Required failures are
+logged and rolled back inside the feature boundary so Shield Other, Expanded
+Summoning, and other modules continue. Optional misses neither throw nor
+disable base-game coverage.
 
 ## Automated coverage boundary
 
 The deterministic harness exercises the qualification/alignment policy,
 ability and terminal-buff paths, the mod Succubus identities, descriptor
 regressions, trusted and fail-open null-source behavior, catalog and component
-idempotence, settings independence, optional-content isolation, wrapper
-inventory, and source contracts for the exact Kingmaker event adapter. The
+idempotence, exact player description text and publication, settings
+independence, optional-content isolation, wrapper inventory, and source
+contracts for the exact Kingmaker event adapter. The
 normal test harness cannot instantiate a complete live `RuleApplyBuff`
 rulebook graph, so actual event dispatch and gameplay behavior remain subject
 to the manual in-game validation below. Automated policy success must not be

@@ -315,6 +315,8 @@
     <Compile Include="Spells\ProtectionFromAlignment\MentalControlCatalogDefaults.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\ProtectionControlImmunityPolicy.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\ProtectionComponentPublicationPolicy.cs" />
+    <Compile Include="Spells\ProtectionFromAlignment\ProtectionFromAlignmentDescriptions.cs" />
+    <Compile Include="Spells\ProtectionFromAlignment\ProtectionDescriptionPublicationPolicy.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\ProtectionFromAlignmentRuntime.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\ProtectionFromAlignmentControlImmunityComponent.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\ProtectionFromAlignmentPublication.cs" />
