@@ -171,3 +171,14 @@ avatar still fails. The pre-publication repaired package is
 `3b7e2deb7b96dac8e62eba66d1628af2355e0ab2c4ff4259ab245e5710b3168a`
 (DLL `8621f5402e652fbdc1b3eb7d0657d0450f3f5c00cfd861a02961c5563cb0e46f`).
 No score or ranking changes from this nonvisual failure.
+
+The next published run,
+`20260830T2309022972406Z-gunslinger-outfit-finalist-race-matrix`, produced
+the complete intended matrix: all 9 installed races, both genders, exact
+native Magus links, 36 palette records, 72 images, 180 views, and 18/18 exact
+restorations passed with zero donor rejection. Final cleanup alone timed out
+because the global unit reference set differed from its initial snapshot;
+party, save, and production boundaries stayed exact. The images remain
+unaccepted pending cleanup attribution. A diagnostic-only rerun will describe
+the precise missing/unexpected references before any ownership-scoped cleanup
+decision; the strict global criterion is unchanged for that run.

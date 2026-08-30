@@ -271,6 +271,27 @@ and DLL SHA-256 is
 `8621f5402e652fbdc1b3eb7d0657d0450f3f5c00cfd861a02961c5563cb0e46f`.
 This remains instrumentation qualification, not race-grid acceptance.
 
+The next clean published run at
+`runtime-evidence/20260830T2309022972406Z-gunslinger-outfit-finalist-race-matrix`
+loaded commit `5116a127d92ca09ea13e5822439e6b833b47c7e7`, MVID
+`79cd33b7-76d0-4240-bd20-6bc51d4a5729`, and DLL SHA-256
+`4fb8ef472bf4ac602b1861a0d1d42094d0995cdd3090bc7e8fee457ce04f26bb`.
+It passed every mechanical matrix assertion except cleanup: 18 dynamic
+race/gender fixtures, 18 exact donor probes, exact native links, 36 palette
+records, 72 PNGs, 180 views, and 18/18 restorations. No exception, save call,
+production mutation, or party delta was recorded.
+
+The global unit set alone remained nonidentical after 360 cleanup updates.
+Because the evidence did not yet identify the differing reference, the run is
+FAIL and its images are not accepted. A diagnostic-only checkpoint now emits
+expected/current counts and described missing/unexpected unit and party
+references while retaining the exact cleanup condition. Compilation, all
+1365 tests, clean Release/package construction, and strict validation pass;
+pre-publication package SHA-256 is
+`368140973c5e42aacf420168159b30b4a48fe26c7476984a282f621b529721f2`
+and DLL SHA-256 is
+`93edda11b82111e8a76c1c2298e7260ae142e8d1c68ba127e004b6cef7ea24aa`.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

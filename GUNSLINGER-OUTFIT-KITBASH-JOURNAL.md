@@ -424,3 +424,42 @@ rerun the full guarded race matrix before inspecting any accepted images.
 Exact next action: publish this focused empty-baseline correction, verify the
 three refs, rebuild its commit-bound package, pass quiescent preflight, and
 rerun the complete matrix without changing the finalist score.
+
+## 2026-08-30 - Complete matrix with unresolved cleanup delta
+
+- Published empty-baseline commit
+  `5116a127d92ca09ea13e5822439e6b833b47c7e7` was identical at HEAD,
+  local, and origin with a clean tree. Commit-bound package SHA-256 was
+  `d91a16126416a349e2fab9520eef1cd1febfc5a68361e4511c6d70b4eff06500`;
+  DLL SHA-256 was
+  `4fb8ef472bf4ac602b1861a0d1d42094d0995cdd3090bc7e8fee457ce04f26bb`.
+- Guarded evidence:
+  `20260830T2309022972406Z-gunslinger-outfit-finalist-race-matrix`.
+  Loaded MVID `79cd33b7-76d0-4240-bd20-6bc51d4a5729`; Steam App ID,
+  working-save identity, no-save behavior, and automatic exit passed.
+- The substantive matrix completed without exception: 9 dynamic races, 18
+  gender cells, 18 exact native link pairs, 18 accepted donors, zero donor
+  rejections, 36 palette applications/records, 72 PNGs, 180 views, and 18/18
+  exact avatar restorations. This closes no visual gate because terminal
+  status remained FAIL.
+- The sole failed assertion was final cleanup. Party references and actor-null
+  state were intact, but the whole `State.Units.All` reference set did not
+  equal its initial snapshot after 360 updates. Current evidence did not
+  identify missing versus unexpected units. The game log showed third-party
+  level-up errors and pet enumeration during disposable-body activity, but
+  that is a clue rather than attribution.
+- Added diagnostic-only cleanup evidence: initial/current unit and party
+  counts, exactness booleans, and safe descriptions of every missing and
+  unexpected reference. The strict whole-world cleanup condition is unchanged
+  until installed-game evidence distinguishes a leaked scenario actor from
+  ambient or third-party population churn.
+- Repository validation, installed-game compilation, all 1365/1365 tests,
+  clean Release construction, and strict standalone/local package validation
+  pass. Pre-publication diagnostic package SHA-256 is
+  `368140973c5e42aacf420168159b30b4a48fe26c7476984a282f621b529721f2`;
+  DLL SHA-256 is
+  `93edda11b82111e8a76c1c2298e7260ae142e8d1c68ba127e004b6cef7ea24aa`.
+
+Exact next action: publish the diagnostic-only checkpoint, verify three refs,
+rebuild, pass quiescent preflight, and rerun once to obtain the exact cleanup
+delta before changing cleanup ownership semantics or accepting images.

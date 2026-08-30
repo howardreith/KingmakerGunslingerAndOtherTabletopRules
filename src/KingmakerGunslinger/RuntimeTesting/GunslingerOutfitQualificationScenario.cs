@@ -1072,13 +1072,84 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void PollCleanup()
             {
                 Game.Instance.EntityCreator.Tick();
-                bool cleaned = SameReferences(_unitsBefore,
-                        Snapshot(_allUnits)) &&
-                    SameReferences(_partyBefore, Snapshot(_party)) &&
+                object[] unitsNow = Snapshot(_allUnits);
+                object[] partyNow = Snapshot(_party);
+                bool cleaned = SameReferences(_unitsBefore, unitsNow) &&
+                    SameReferences(_partyBefore, partyNow) &&
                     _actor == null;
                 _settleUpdates++;
                 if (!cleaned && _settleUpdates < MaximumSettleUpdates) return;
+                JObject cleanup = CleanupSnapshotDiagnostic(unitsNow,
+                    partyNow);
+                _diagnostics.Add("cleanupSnapshot=" + cleanup.ToString(
+                    Newtonsoft.Json.Formatting.None));
                 Finish(cleaned);
+            }
+
+            private JObject CleanupSnapshotDiagnostic(object[] unitsNow,
+                object[] partyNow)
+            {
+                object[] missingUnits = _unitsBefore.Where(expected =>
+                    !unitsNow.Any(actual => ReferenceEquals(expected,
+                        actual))).ToArray();
+                object[] unexpectedUnits = unitsNow.Where(actual =>
+                    !_unitsBefore.Any(expected => ReferenceEquals(expected,
+                        actual))).ToArray();
+                object[] missingParty = _partyBefore.Where(expected =>
+                    !partyNow.Any(actual => ReferenceEquals(expected,
+                        actual))).ToArray();
+                object[] unexpectedParty = partyNow.Where(actual =>
+                    !_partyBefore.Any(expected => ReferenceEquals(expected,
+                        actual))).ToArray();
+                return new JObject
+                {
+                    { "expectedUnitCount", _unitsBefore.Length },
+                    { "actualUnitCount", unitsNow.Length },
+                    { "expectedPartyCount", _partyBefore.Length },
+                    { "actualPartyCount", partyNow.Length },
+                    { "unitsExact", SameReferences(_unitsBefore, unitsNow) },
+                    { "partyExact", SameReferences(_partyBefore, partyNow) },
+                    { "actorCleared", _actor == null },
+                    { "missingUnits", new JArray(missingUnits.Select(
+                        DescribeRuntimeReference).ToArray()) },
+                    { "unexpectedUnits", new JArray(unexpectedUnits.Select(
+                        DescribeRuntimeReference).ToArray()) },
+                    { "missingParty", new JArray(missingParty.Select(
+                        DescribeRuntimeReference).ToArray()) },
+                    { "unexpectedParty", new JArray(unexpectedParty.Select(
+                        DescribeRuntimeReference).ToArray()) }
+                };
+            }
+
+            private static JObject DescribeRuntimeReference(object value)
+            {
+                var description = new JObject
+                {
+                    { "runtimeType", value == null ? "<null>" :
+                        value.GetType().FullName }
+                };
+                UnitEntityData unit = value as UnitEntityData;
+                if (unit == null) return description;
+                try
+                {
+                    BlueprintUnit blueprint = unit.Blueprint;
+                    description["uniqueId"] = unit.UniqueId ?? string.Empty;
+                    description["characterName"] =
+                        unit.CharacterName ?? string.Empty;
+                    description["blueprintName"] = blueprint == null ?
+                        string.Empty : blueprint.name ?? string.Empty;
+                    description["blueprintGuid"] = blueprint == null ?
+                        string.Empty : blueprint.AssetGuid;
+                    description["viewPresent"] = unit.View != null;
+                    description["descriptorPresent"] =
+                        unit.Descriptor != null;
+                }
+                catch (Exception exception)
+                {
+                    description["descriptionException"] =
+                        exception.GetType().FullName + ":" + exception.Message;
+                }
+                return description;
             }
 
             private void Finish(bool cleaned)
