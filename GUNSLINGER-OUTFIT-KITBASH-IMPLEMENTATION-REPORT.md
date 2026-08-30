@@ -1,7 +1,7 @@
 # Gunslinger Outfit Kitbash Implementation Report
 
-Status: active investigation; production implementation is intentionally
-unchanged.
+Status: provisional native finalist selected; production implementation is
+intentionally unchanged pending exhaustive qualification.
 
 ## Intake
 
@@ -59,11 +59,33 @@ present and otherwise resolves the exact audited native Fighter class already
 used by production; both the source and the actual avatar/link intersection
 are recorded.
 
+The first complete installed-game batch rendered all 48 Human cases and 96
+images for the six coherent native presentations. Direct inspection places
+Magus complete first at 81/100, Rogue capless/capeless second at 75/100, and
+Slayer capless third at 70/100. Bard, Alchemist, and Ranger remain outside the
+shortlist because their dominant pack/apron/bedroll silhouettes do not satisfy
+the Gunslinger brief. These are visual findings from native renders, not
+resource-name inference.
+
 ## Selected appearance
 
-Pending. This section will record exact shared/male/female asset IDs, resource
-names, donor classification, default colors, ramp behavior, score, runners-up,
-fallbacks, and rationale only after installed-game proof.
+Provisional finalist: coherent native Magus base plus its one native accessory.
+
+- male: `EE_Magus_M_Any_Colorize`
+  (`6df8f61725a84294c8661bb9585eca97`) plus
+  `EE_MagusAccesories_M_Colorize`
+  (`4c59d2b9740930145a27a4c693217d22`);
+- female: `EE_Magus_F_Any_Colorize`
+  (`beba0e0c7dcd5c64d97d767be3e72995`) plus
+  `EE_MagusAccesories_F_Colorize`
+  (`a93ead19aae8afc4794c54f5bcf73168`);
+- guarded native defaults: primary 2, secondary 22; both entities expose
+  35 primary and 35 secondary ramps.
+
+The fitted torso, split waist tails, layered belts, bracers, and boots read as
+a Golarion swashbuckler/privateer without a literal cowboy or pirate hat. The
+small arcane color accents and pending full compatibility matrix account for
+withheld points. This is not yet a production binding.
 
 ## Production changes
 
@@ -90,11 +112,29 @@ of both standalone and local-runtime packages. Both packages have SHA-256
 693c09684256fab77b4835b78eff12ab974c2bc460a63824f877768cd9c16ce8;
 the DLL SHA-256 is
 17bfe03b52e85cab627be425c680b1ccf6db88275ba4e253081065685304e377.
-The first launch request was rejected before game start solely because the
-harness requires a clean commit. Installed-game rendering remains pending.
+The complete Human render at
+`20260830T2130124467293Z-gunslinger-outfit-candidate-render` passed its
+in-game result with 48 exact records, 96 images, 12/12 restorations, no save
+API, and no production mutation. Its generic outer 120-second collector
+expired before rendering began, although the safe live scenario later passed
+and exited automatically. A scenario-only 600-second collector ceiling and
+focused regression assertion now prevent that orchestration mismatch. All
+1365/1365 Release domain tests pass after the repair. An accepting rerun, full
+finalist matrix, production binding, and final clean validation remain
+required.
+The subsequent full local gate passed repository validation, all 1365 tests,
+exact-reference Release construction, deterministic packaging, and strict
+standalone/local validation. Both packages have SHA-256
+`2f515302e2d0263adccb837b4e4f079d1120fcb0074054fae9ba4093aef76849`;
+the DLL SHA-256 is
+`7fb96cd42ed986241fa63f79a52e01633da7c8b7bc18e1ed68d0a1562e4d5aac`.
+Quiescent runtime preflight passes all 160 checks.
 
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
 manifest-matching pre-existing untracked package was inspected provisionally
 without modifying or publishing it. The path discrepancy remains explicit.
+Eleven ordinary-isometric images in the first batch were tagged low pixel
+density; paired preview-like images were directly usable, but final evidence
+must improve or explicitly retain that limitation.

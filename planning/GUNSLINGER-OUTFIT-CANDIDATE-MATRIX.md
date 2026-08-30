@@ -1,6 +1,8 @@
 # Gunslinger Outfit Candidate Matrix
 
-Status: discovery in progress; no production asset identifier is approved.
+Status: Human candidate rendering and scoring complete; `magus-complete` is
+the provisional finalist, but no production asset identifier is approved until
+the full race, equipment, animation, and persistence qualification passes.
 
 ## Scoring contract
 
@@ -32,10 +34,10 @@ exist.
 
 | Stream | Base hypothesis | Accent hypothesis | API inventory | Rendered M/F | Race grid | Weapon states | Equipment override | Provisional score | Disposition |
 |---|---|---|---|---|---|---|---|---:|---|
-| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Pending | 9 race IDs inventoried | Pending | Pending | - | Render Magus and capless Inquisitor |
-| B | Ranger or Slayer practical leather | Native class accessory set | Loaded exact M/F links; cap/cape separable | Pending | 9 race IDs inventoried | Pending | Pending | - | Render without hair-hiding caps |
-| C | Bard coat/waistcoat hypothesis | Native Bard accessory set | Loaded exact M/F links | Pending | 9 race IDs inventoried | Pending | Pending | - | Render |
-| D | Alchemist or other strong single class outfit | Native same-class accessories | Loaded exact M/F links | Pending | 9 race IDs inventoried | Pending | Pending | - | Render Alchemist |
+| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | 81 | Advance coherent Magus pair |
+| B | Ranger or Slayer practical leather | Native class accessory set | Loaded exact M/F links; cap/cape separable | Ranger and Slayer pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | 70 (Slayer) | Retain Slayer as reserve |
+| C | Bard coat/waistcoat hypothesis | Native Bard accessory set | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant traveler pack/commoner identity |
+| D | Alchemist or other strong single class outfit | Native same-class accessories | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant Alchemist tank/apron identity |
 | E | Item-linked compatible base | At most one item-linked accent | 163 live item sources inventoried | Pending | Exact matrix inventoried | Pending | Pending | - | Defer until class renders |
 | F | NPC/raw/orphaned entity | At most one proven accent | 361 bounded live raw sources inventoried | Pending | Direct proof required | Pending | Pending | - | Last resort |
 
@@ -63,20 +65,61 @@ No visual score is assigned from names or metadata.
 
 ## Serious candidate ranking
 
-No candidate is eligible yet. Deterministic installed-resource discovery is
-complete; exact audit-only IDs will accompany each render sidecar. Eligibility
-still requires successful guarded rendering and direct image inspection.
+Guarded run `20260830T2130124467293Z` rendered and directly inspected all 48
+cases and 96 images from candidate set
+`ef38c5c841510df7f03bbf68a8ca9e7fbef3f3403369022505449cb038d347be`.
+Every case had an exact held-weapon state, usable preview framing, exact
+request-local restoration, no save-writing API, and no production-blueprint
+mutation. The in-game result passed all ten assertions. The outer collector
+expired before post-load rendering began, so an accepting rerun remains
+required after the scenario-only collector repair.
 
 | Rank | Candidate-set ID | Exact assets | M/F identity | Coverage | Compatibility | Colors | Score | Evidence | Decision |
 |---:|---|---|---|---|---|---|---:|---|---|
-| 1 | Pending | Pending | Pending | Pending | Pending | Pending | - | Pending | Pending |
-| 2 | Pending | Pending | Pending | Pending | Pending | Pending | - | Pending | Pending |
-| 3 | Pending | Pending | Pending | Pending | Pending | Pending | - | Pending | Pending |
+| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F rendered; 9x2 grid inventoried | No missing geometry/material defect across Human weapon/ramp cases; animation/equipment pending | 35x35 valid ramps; native 2/22 and alternate rendered | 81 (26/23/15/8/9) | Preview-like four-view and ordinary isometric, all four cases per gender | Provisional finalist; run full matrix |
+| 2 | `rogue-capless-capeless` | 2 M / 2 F below | Clean fitted dark coat/tunic, diagonal straps, restrained burgundy; less distinctive | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 35x35 base ramps; native 31/22 and alternate rendered | 75 (23/20/16/8/8) | Same guarded matrix | Runner-up if Magus fails |
+| 3 | `slayer-capless` | 3 M / 3 F below | Long layered garment and asymmetric shoulder; heavier and more armored than desired | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 37x37 ramps; native 35/36 and alternate rendered | 70 (21/17/15/8/9) | Same guarded matrix | Reserve; below production threshold |
+
+Score components are recorded in rubric order: silhouette, thematic
+coherence, compatibility, race/gender coverage, and color quality. Coverage
+and compatibility points remain deliberately withheld for unrendered races,
+animations, and equipment overlays.
+
+Exact provisional-finalist assets:
+
+- Magus male base `6df8f61725a84294c8661bb9585eca97` and accessory
+  `4c59d2b9740930145a27a4c693217d22`;
+- Magus female base `beba0e0c7dcd5c64d97d767be3e72995` and accessory
+  `a93ead19aae8afc4794c54f5bcf73168`;
+- Rogue male accessory `b1c62eff2287d9a4fbbf76c345d58840` and base
+  `d019e95d4a8a8474aa4e03489449d6ee`;
+- Rogue female accessory `345af8eabd450524ab364e7a7c6f1044` and base
+  `c6757746d62b78f46a92020110dfe088`;
+- Slayer male accessory/base/native accessory
+  `096463cb26b8c3343874d2a2a1a752f6`,
+  `bf0f3ba364295e14eb5f2b285cea16b0`, and
+  `9e98bd43dc04964409db62644ace4b15`;
+- Slayer female accessory/base/native accessory
+  `24230460eaff3fe49b0e186873c38218`,
+  `5eeabb19544a9ae41a8b26075933ef8d`, and
+  `50b6ed92792f308479a07f8d9052c6d5`.
 
 ## Hard-rejection log
 
-No rendered candidate has been rejected yet.
+No enumerated hard rejection is established for the best three from this
+Human batch. Bard was omitted because its dominant traveler pack and plain
+tunic do not read as a Gunslinger. Alchemist was omitted because its large
+tank and apron remain unmistakably Alchemist. Ranger was omitted because its
+large bedroll/backpack and fur-heavy leg silhouette read as a wilderness
+class and create a high-risk double-backpack interaction. These are
+below-threshold shortlist decisions, not claims about untested race or
+equipment compatibility.
 
 ## Final selection
 
-Pending exhaustive installed-game evidence.
+`magus-complete` is the provisional full-matrix finalist. Its coherent native
+base-plus-one-accessory presentation best matches the privateer/swashbuckler
+brief without a literal hat, baked weapon, or generic Fighter silhouette.
+Production remains unchanged pending an accepting guarded rerun and exhaustive
+race, gender, color, animation, equipment-overlay, rebuild, and persistence
+evidence.

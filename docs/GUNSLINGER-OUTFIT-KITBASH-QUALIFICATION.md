@@ -16,20 +16,20 @@ claim.
 |---|---|---|
 | Installed API contracts | Pass (audit stage) | Exact installed 2.1.7b assembly identity and public/reflected member findings recorded |
 | Native class/resource catalog | Pass | Guarded run `20260830T2012181937219Z`, candidate set `dd81603f...03357` |
-| Serious candidate renders | Pending | M/F preview-like, isometric, no-weapon, pistol, long-gun |
-| Best-three scoring | Pending | Weighted rubric and hard-rejection audit |
+| Serious candidate renders | Partial | In-game PASS for 48 Human cases/96 images; accepting outer rerun required |
+| Best-three scoring | Pass (Human stage) | Magus 81, Rogue 75, Slayer 70; full finalist gates pending |
 | Race/gender coverage | Pending | Dynamically discovered supported matrix |
-| Color ramps | Pending | Valid defaults and systematic valid sampling |
-| Body/material integrity | Pending | Structured load data plus direct renders |
+| Color ramps | Partial | Native and alternate valid ramps rendered on Human M/F; systematic grid pending |
+| Body/material integrity | Partial | Human M/F direct renders and structured load data pass; all races pending |
 | Animation/weapon fit | Pending | Idle/walk/run/turn/fire/reload/melee evidence |
 | Equipment overrides | Pending | Light/heavy armor, headgear/hair, cloak, backpack, inactive weapon |
-| Preview/gameplay paths | Pending | Class-preview/API-equivalent and isometric evidence |
+| Preview/gameplay paths | Partial | Four-view preview-like and ordinary isometric Human evidence; finalist grid pending |
 | Save/load/rebuild | Pending | Guarded structured evidence |
-| Focused tests | Pass (render checkpoint; repeat final) | Renderer guard/catalog/matrix plus 160 runtime preflight checks |
-| Repository validation | Pass (render checkpoint; repeat final) | Build-Local.ps1, 2026-08-30 |
-| Complete domain suite | Pass (render checkpoint; repeat final) | 1365/1365, Release clean run |
-| Clean Release build | Pass (render checkpoint; repeat final) | Exact-reference Release construction |
-| Installable package | Pass (render checkpoint; repeat final) | Strict standalone UMM validation, SHA-256 693c0968...16ce8 |
+| Focused tests | Pass (collector checkpoint; repeat final) | Renderer guard/catalog/matrix, exact 600-second collector assertion, and 160 runtime preflight checks |
+| Repository validation | Pass (collector checkpoint; repeat final) | Build-Local.ps1, 2026-08-30T21:54:14Z |
+| Complete domain suite | Pass (collector checkpoint; repeat final) | 1365/1365, Release clean run |
+| Clean Release build | Pass (collector checkpoint; repeat final) | Exact-reference Release construction |
+| Installable package | Pass (collector checkpoint; repeat final) | Strict standalone/local validation, SHA-256 2f515302...76849 |
 | Compatibility profiles | Pending | Exact applicable command/result |
 | Guarded runtime smoke | Pending | Exact request, result, build fingerprint |
 | Publication | Pending | Commit(s), helper output, identical local/remote SHAs |
@@ -119,6 +119,51 @@ the reported class when available and the exact audited native Fighter class
 otherwise, while recording original/donor entities and their intersection.
 All 1365 tests, game-facing compilation, Build-Local, and strict package
 validation pass after that repair. Installed candidate images remain pending.
+
+The next run is retained at
+`runtime-evidence/20260830T2130124467293Z-gunslinger-outfit-candidate-render`.
+It loaded exact commit `9de7c4ef40483150ffba40782deb71714d2a0307`,
+mod version `0.0.110`, and DLL SHA-256
+`7fb96cd42ed986241fa63f79a52e01633da7c8b7bc18e1ed68d0a1562e4d5aac`
+through Steam App ID 640820. Exact working-save correlation and a stable
+fingerprint passed with no save-writing API.
+
+The outer collector timed out at 21:32:28Z under the generic 120-second
+deadline, approximately five seconds before the post-load fingerprint
+completed. It left Kingmaker running and did not force terminate. The guarded
+scenario then completed safely at 21:34:30Z, passed all ten assertions,
+removed hooks, initiated automatic exit, and left no game process.
+
+The terminal index records candidate set
+`ef38c5c841510df7f03bbf68a8ca9e7fbef3f3403369022505449cb038d347be`,
+six candidates, two Human gender fixtures, four cases per candidate/gender,
+48 exact held states, 48 preview images, 48 isometric images, 24 palette
+applications, and 12/12 restorations. It records
+`saveApiCalled=false` and `productionBlueprintMutated=false`. All 96 images
+were directly inspected from ignored local evidence. Eleven isometric images
+were flagged low pixel density; paired four-view previews remained usable,
+but this cannot close the final presentation gate.
+
+Human-stage weighted scores are Magus complete 81/100, Rogue capless/capeless
+75/100, and Slayer capless 70/100. Magus advances as the provisional finalist
+because its native fitted torso, split waist tails, belts, bracers, and boots
+best satisfy the swashbuckler/privateer brief. Bard, Alchemist, and Ranger
+were below the shortlist for traveler-pack, apron/tank, and bedroll-heavy
+wilderness identities respectively. No enumerated hard rejection is inferred
+for the best three before the exhaustive matrix.
+
+The collector now grants only this scenario a bounded
+`max(request timeout, 600) + 15` seconds. The focused test requires that exact
+ceiling, and all 1365/1365 Release domain tests pass. A clean validated
+published checkpoint and accepting rerun remain required before the Human
+render gate can close.
+The full `Build-Local.ps1` gate then passed at 2026-08-30T21:54:14Z.
+Standalone and local-runtime packages are byte-identical at SHA-256
+`2f515302e2d0263adccb837b4e4f079d1120fcb0074054fae9ba4093aef76849`;
+the DLL SHA-256 is
+`7fb96cd42ed986241fa63f79a52e01633da7c8b7bc18e1ed68d0a1562e4d5aac`.
+Runtime preflight first observed the immediate post-build timestamp-invariance
+guard, then passed all 160 checks once outputs were quiescent.
 
 ## Local evidence policy
 

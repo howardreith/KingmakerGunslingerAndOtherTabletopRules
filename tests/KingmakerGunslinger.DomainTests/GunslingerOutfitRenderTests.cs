@@ -54,6 +54,8 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTesting", "RuntimeTestRequest.cs");
             string automation = Read("scripts",
                 "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
             string preflight = Read("scripts",
                 "Test-RuntimeScenarioPreflight.ps1");
             string project = Read("src", "KingmakerGunslinger",
@@ -89,6 +91,19 @@ namespace KingmakerGunslinger.DomainTests
                 metadata.Contains(
                     "ReadinessBehavior = 'autonomous-working-save'"),
                 "Outfit renderer metadata must fail closed to the disposable working save.");
+            string collectorMarker = "elseif ($Scenario -eq '" +
+                scenario + "')";
+            int collectorStart = orchestrator.IndexOf(collectorMarker,
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0,
+                "Outfit renderer must own an explicit bounded result collector window.");
+            string collector = orchestrator.Substring(collectorStart,
+                Math.Min(500, orchestrator.Length - collectorStart));
+            Assertions.True(collector.Contains(
+                    "[Math]::Max($TimeoutSeconds, 600) + 15") &&
+                collector.IndexOf("elseif ($Scenario",
+                    collectorMarker.Length, StringComparison.Ordinal) > 0,
+                "Outfit renderer collector must preserve the exact 600-second scenario-only ceiling.");
         }
 
         internal static void CandidateCatalogIsExactAndBounded()

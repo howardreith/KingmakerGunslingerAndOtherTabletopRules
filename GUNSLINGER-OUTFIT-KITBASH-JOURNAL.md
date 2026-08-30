@@ -210,3 +210,61 @@ commit.
 Exact next action: pass quiescent runtime preflight, commit and publish the
 audited donor fallback, verify the three refs, then rerun the serious render
 batch from that clean commit.
+
+## 2026-08-30 - Complete Human render batch and scored shortlist
+
+- Published donor-fallback checkpoint
+  `9de7c4ef40483150ffba40782deb71714d2a0307`; local HEAD, the local
+  feature ref, and the origin feature ref were identical before launch.
+- Guarded evidence directory
+  `20260830T2130124467293Z-gunslinger-outfit-candidate-render` loaded that
+  exact commit through Steam App ID 640820. The loaded DLL SHA-256 is
+  `7fb96cd42ed986241fa63f79a52e01633da7c8b7bc18e1ed68d0a1562e4d5aac`.
+- The outer orchestrator used the generic 120-second final-result deadline and
+  timed out at 21:32:28Z, before the stable post-load fingerprint completed at
+  21:32:33Z. It left the responsive game running and did not force terminate.
+- The guarded in-game scenario continued safely, completed at 21:34:30Z,
+  passed all ten assertions, removed its hooks, requested automatic exit, and
+  exited. Its total request duration was 249,628 ms; the render phase after the
+  stable fingerprint was approximately 117 seconds.
+- Exact working save identification, descriptor/load correlation, completion
+  callback, stable fingerprint, and no-save-writing evidence passed.
+  Candidate set
+  `ef38c5c841510df7f03bbf68a8ca9e7fbef3f3403369022505449cb038d347be`
+  produced 48 records, 48 preview-like four-view images, 48 ordinary isometric
+  images, 48 exact held states, 24 palette applications, and 12/12 exact
+  restorations. `saveApiCalled=false` and
+  `productionBlueprintMutated=false`.
+- Directly inspected all 96 source images via temporary external contact
+  boards; no capture or reference image entered the repository. Eleven
+  ordinary-isometric records, primarily female Magus/Rogue, were tagged
+  low-pixel-density, but their paired four-view previews were usable. Final
+  qualification must produce stronger density or preserve this limitation.
+- Weighted Human-stage ranking: Magus complete 81/100, Rogue capless/capeless
+  75/100, Slayer capless 70/100. Magus is the provisional finalist. Race,
+  animation, armor, overlay, rebuild, and persistence points remain withheld;
+  production remains unchanged.
+- Bard, Alchemist, and Ranger were omitted from the best three because their
+  rendered silhouettes respectively read as packed traveler/commoner, bulky
+  Alchemist, and bedroll-heavy wilderness class. No enumerated hard rejection
+  was inferred merely from a below-threshold visual score.
+- Added an exact scenario-only collector branch that grants this 96-image
+  render a bounded `max(request timeout, 600) + 15` seconds without changing
+  other scenarios or weakening request guards. The focused test requires that
+  exact branch. Repository validation and all 1365/1365 Release domain tests
+  pass after the repair.
+- `Build-Local.ps1` passed at 2026-08-30T21:54:14Z: repository validation,
+  1365/1365 tests, exact-reference Release construction, deterministic
+  packaging, and strict standalone/local-runtime validation. Both packages
+  are byte-identical at SHA-256
+  `2f515302e2d0263adccb837b4e4f079d1120fcb0074054fae9ba4093aef76849`;
+  the DLL SHA-256 is
+  `7fb96cd42ed986241fa63f79a52e01633da7c8b7bc18e1ed68d0a1562e4d5aac`.
+  Runtime preflight first encountered its known immediate post-build
+  timestamp-invariance guard, then passed all 160 checks unchanged once the
+  outputs were quiescent.
+
+Exact next action: complete clean build/package validation, commit and publish
+the collector/evidence checkpoint, verify all three refs, then rerun the same
+Human batch so the outer orchestrator accepts the terminal PASS before adding
+the finalist-only exhaustive qualification scenario.

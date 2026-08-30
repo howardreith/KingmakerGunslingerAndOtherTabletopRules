@@ -564,6 +564,13 @@ try {
             $DescriptorResolutionTimeoutSeconds + $LoadEntryTimeoutSeconds +
             $CompletionTimeoutSeconds + $FingerprintTimeoutSeconds + 30)
     }
+    elseif ($Scenario -eq 'gunslinger-outfit-candidate-render') {
+        # This bounded collector window includes guarded working-save loading
+        # plus 96 deterministic image writes. The generic smoke default expires
+        # before rendering begins on the qualified Windows 10 environment.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 600) + 15)
+    }
     elseif ($Scenario -eq 'observe-save-catalog-and-selection') {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)
