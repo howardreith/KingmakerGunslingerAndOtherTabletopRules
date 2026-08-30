@@ -208,6 +208,25 @@ validation pass. Pre-publication package SHA-256 is
 DLL SHA-256 is
 `8621f5402e652fbdc1b3eb7d0657d0450f3f5c00cfd861a02961c5563cb0e46f`.
 
+The next run at
+`20260830T2309022972406Z-gunslinger-outfit-finalist-race-matrix` completed
+every intended fixture and render. Dynamic race coverage, all 18 ordered
+native link pairs, donor probes, 36 palettes/records, 72 images/180 views, and
+18/18 restorations passed. The only failure was terminal cleanup: the global
+unit-reference collection did not return to its initial set within 360 update
+ticks, although party, save, production, and actor-null boundaries remained
+intact. Therefore the result and images remain unaccepted.
+
+The next instrumentation change is evidence-only. It preserves the exact
+global cleanup criterion and emits initial/current counts plus described
+missing and unexpected unit/party references at terminal cleanup. This will
+identify whether the delta is a disposable actor leak or unrelated engine/
+third-party churn before cleanup semantics change. All 1365 tests and strict
+clean package validation pass. Pre-publication diagnostic package SHA-256 is
+`368140973c5e42aacf420168159b30b4a48fe26c7476984a282f621b529721f2`;
+DLL SHA-256 is
+`93edda11b82111e8a76c1c2298e7260ae142e8d1c68ba127e004b6cef7ea24aa`.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

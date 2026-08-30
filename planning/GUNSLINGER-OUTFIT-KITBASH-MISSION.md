@@ -218,3 +218,14 @@ only an exact empty-to-empty round trip with unchanged saved links, continues
 to reject a null avatar, and applies the same restoration during fallback
 cleanup. All 1365 tests and clean package validation pass; a published rerun
 remains required before race-grid acceptance.
+
+The exact-empty retry at
+`runtime-evidence/20260830T2309022972406Z-gunslinger-outfit-finalist-race-matrix`
+advanced through all 18 fixtures. Dynamic race coverage, donor acceptance,
+native links, 36 palette records, 72 PNGs/180 views, and 18/18 avatar
+restorations passed. Only the final whole-world unit snapshot timed out after
+360 updates; party/save/production boundaries remained intact. Because the
+current evidence does not identify the missing or unexpected global reference,
+the gate remains failed. Diagnostic-only instrumentation now emits exact
+expected/actual counts and described missing/unexpected unit and party
+references without changing the strict cleanup criterion.
