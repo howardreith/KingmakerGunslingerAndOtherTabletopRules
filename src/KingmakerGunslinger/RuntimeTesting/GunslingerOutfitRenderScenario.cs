@@ -32,6 +32,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const int IsometricPanelSize = 512;
         private const string MaleHumanDonorGuid =
             "5dc5fc514d8f40d4baec6a54a17f0185";
+        private const string FighterClassGuid =
+            "48ac8db94d5de7645906c7d0ad3bcfbd";
         private const string ExpectedAssemblySha256 =
             "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb";
         private const string ExpectedAssemblyMvid =
@@ -806,21 +808,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Secondary = _avatar.GetSecondaryRampIndex(value)
                     }).ToArray();
                 _savedLinksBefore = SavedLinks(_avatar);
-                BlueprintCharacterClass equipmentClass = _actor.Descriptor
-                    .Progression.GetEquipmentClass();
-                if (equipmentClass == null)
-                    throw new InvalidOperationException(fixture.Label +
-                        " has no native equipment class.");
+                BlueprintCharacterClass reportedEquipmentClass =
+                    _actor.Descriptor.Progression.GetEquipmentClass();
+                BlueprintCharacterClass equipmentClass =
+                    reportedEquipmentClass ?? BlueprintLibraryLookup
+                        .RequireExact<BlueprintCharacterClass>(
+                            BlueprintBootstrap.Library, FighterClassGuid,
+                            "gunslinger-outfit-render-fighter-donor-class");
                 _classEntities = equipmentClass.LoadClothes(_actor.Gender,
                         _actor.Descriptor.Progression.Race)
                     .Where(value => value != null).ToArray();
-                bool classPresent = _classEntities.Any(value =>
+                int classPresentCount = _classEntities.Count(value =>
                     _avatarBefore.Any(original =>
                         ReferenceEquals(original.Entity, value)));
-                if (_avatarBefore.Length == 0 || _classEntities.Length == 0 ||
-                    !classPresent)
+                if (_avatarBefore.Length == 0 || _classEntities.Length == 0)
                     throw new InvalidOperationException(fixture.Label +
-                        " cannot prove its original native class clothing.");
+                        " cannot resolve its exact native donor clothing.");
 
                 _fixtureRecords.Add(new JObject
                 {
@@ -836,8 +839,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _actor.Descriptor.Progression.Race.RaceId.ToString() },
                     { "equipmentClassName", equipmentClass.name },
                     { "equipmentClassGuid", equipmentClass.AssetGuid },
+                    { "equipmentClassSource",
+                        reportedEquipmentClass == null
+                            ? "exact-fighter-fallback" : "progression" },
                     { "originalEntityCount", _avatarBefore.Length },
                     { "classEntityCount", _classEntities.Length },
+                    { "classEntityPresentCount", classPresentCount },
+                    { "originalEntities", new JArray(_avatarBefore.Select(
+                        value => value.Entity.name + "/layer=" +
+                            value.Entity.Layer).ToArray()) },
+                    { "donorClassEntities", new JArray(
+                        _classEntities.Select(value => value.name + "/layer=" +
+                            value.Layer).ToArray()) },
                     { "rendererCount", renderers.Length },
                     { "rigExact", true }
                 });

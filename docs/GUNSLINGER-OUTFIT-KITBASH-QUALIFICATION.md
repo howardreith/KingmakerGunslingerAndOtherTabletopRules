@@ -108,6 +108,18 @@ and covered by the focused guard test. After repair, all 1365 tests,
 Build-Local, strict package validation, and the quiescent 160-check runtime
 preflight pass. A new clean-commit runtime attempt remains required.
 
+The next clean run is retained at
+runtime-evidence/20260830T2119065677129Z-gunslinger-outfit-candidate-render.
+It accepted the request, identified and loaded exactly
+KMG_AUTOMATION_WORKING, reached a stable fingerprint with no save-writing API,
+then failed closed before the first render because the otherwise valid male
+pregen rig exposed no optional Progression equipment class. Cleanup passed,
+automatic exit completed, and no candidate was scored. The renderer now uses
+the reported class when available and the exact audited native Fighter class
+otherwise, while recording original/donor entities and their intersection.
+All 1365 tests, game-facing compilation, Build-Local, and strict package
+validation pass after that repair. Installed candidate images remain pending.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

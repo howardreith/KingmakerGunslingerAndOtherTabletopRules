@@ -174,3 +174,39 @@ commit and directly inspect every generated candidate image.
 Exact next action: commit and publish this narrow request-contract repair,
 verify the three feature refs, and rerun the renderer from the new clean
 commit.
+
+## 2026-08-30 - Disposable avatar class-source repair
+
+- Published request-contract repair
+  166d7d0756de2f7cc4ab1cbbfea515e9b5aad081 and verified the three
+  required feature refs were identical. The earlier rejected process was
+  responsive and had performed no UI or save action; it accepted a graceful
+  main-window close and exited. Force termination was not used.
+- Guarded run
+  20260830T2119065677129Z-gunslinger-outfit-candidate-render loaded the
+  exact published commit through Steam, accepted the request, positively
+  identified and loaded KMG_AUTOMATION_WORKING, obtained a stable post-load
+  fingerprint, observed no save-writing API, and exited automatically.
+- The scenario then failed closed before the first candidate at
+  settle-male-human because StartGamePregenFighterUnit produced a valid Male
+  Human Medium rig but Progression.GetEquipmentClass() returned null.
+  Cleanup passed and restored the exact party/global-unit snapshots; zero
+  candidates, images, or scores were accepted.
+- The prior guarded audit proves native Fighter class
+  48ac8db94d5de7645906c7d0ad3bcfbd and its exact three Human links per
+  gender. The renderer now preserves a reported equipment class when present
+  and otherwise loads that exact Fighter donor class. It records the source,
+  original entity names/layers, donor names/layers, and exact intersection
+  count instead of treating the optional live field as mandatory.
+- The focused matrix test now rejects the obsolete optional-field requirement
+  and requires the exact audited Fighter fallback and added diagnostics.
+- Repository validation, game-facing compilation, and all 1365/1365 tests
+  pass. Build-Local passed exact-reference Release construction and strict
+  standalone/local package validation at SHA-256
+  55241abdbea95d5e273fc18372cf2f1b4636a406b7990a924146260476ed9af2;
+  the DLL SHA-256 is
+  74bc1c9209f561eeceea68456e6b697f5fe77caf7a37e3643e6aef05a829cb10.
+
+Exact next action: pass quiescent runtime preflight, commit and publish the
+audited donor fallback, verify the three refs, then rerun the serious render
+batch from that clean commit.

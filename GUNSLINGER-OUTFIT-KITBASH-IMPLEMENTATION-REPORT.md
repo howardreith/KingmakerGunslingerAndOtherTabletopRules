@@ -53,7 +53,11 @@ isometric views for male and female Humans in native-default/no-weapon,
 native-default/pistol, native-default/musket, and alternate-valid-ramp
 no-weapon cases. It snapshots, restores, and verifies entity order, both ramp
 arrays, and saved links around every candidate, then verifies request-local
-cleanup. It cannot write a save.
+cleanup. It cannot write a save. A disposable blueprint may omit the optional
+live Progression equipment-class field, so the renderer preserves it when
+present and otherwise resolves the exact audited native Fighter class already
+used by production; both the source and the actual avatar/link intersection
+are recorded.
 
 ## Selected appearance
 
