@@ -16,7 +16,7 @@ claim.
 |---|---|---|
 | Installed API contracts | Pass (audit stage) | Exact installed 2.1.7b assembly identity and public/reflected member findings recorded |
 | Native class/resource catalog | Pass | Guarded run `20260830T2012181937219Z`, candidate set `dd81603f...03357` |
-| Serious candidate renders | Partial | In-game PASS for 48 Human cases/96 images; accepting outer rerun required |
+| Serious candidate renders | Pass (Human stage) | Accepted outer/in-game PASS for 48 cases/96 directly inspected images |
 | Best-three scoring | Pass (Human stage) | Magus 81, Rogue 75, Slayer 70; full finalist gates pending |
 | Race/gender coverage | Pending | Dynamically discovered supported matrix |
 | Color ramps | Partial | Native and alternate valid ramps rendered on Human M/F; systematic grid pending |
@@ -31,7 +31,7 @@ claim.
 | Clean Release build | Pass (collector checkpoint; repeat final) | Exact-reference Release construction |
 | Installable package | Pass (collector checkpoint; repeat final) | Strict standalone/local validation, SHA-256 2f515302...76849 |
 | Compatibility profiles | Pending | Exact applicable command/result |
-| Guarded runtime smoke | Pending | Exact request, result, build fingerprint |
+| Guarded runtime smoke | Pass (candidate stage; repeat final) | Accepted run `20260830T2158516580621Z`, exact build fingerprint |
 | Publication | Pending | Commit(s), helper output, identical local/remote SHAs |
 
 ## Guarded catalog evidence
@@ -164,6 +164,28 @@ the DLL SHA-256 is
 `7fb96cd42ed986241fa63f79a52e01633da7c8b7bc18e1ed68d0a1562e4d5aac`.
 Runtime preflight first observed the immediate post-build timestamp-invariance
 guard, then passed all 160 checks once outputs were quiescent.
+
+Accepting rerun
+`runtime-evidence/20260830T2158516580621Z-gunslinger-outfit-candidate-render`
+used a clean published tree, `-TimeoutSeconds 600`, exact save
+`KMG_AUTOMATION_WORKING`, automatic exit, and no force-termination option.
+Outer orchestration reached `final-result-received` with PASS, and all 10
+in-game assertions passed without exception.
+
+The run loaded commit `8f47f2db723fdfe6146ca30c352ea83ba7d3589f`,
+package SHA-256
+`2fdaa2813262e237e687ce277d1a67cc56a8e8ce72c778dcdbd01da995b5d7f4`,
+DLL SHA-256
+`c9ace6013911f041e5e824c340b04e06d2b09a5a1bbdee5e123396853e0900c0`,
+and MVID `5a02e6db-4452-4a75-a2cf-f836f98a3407`. It records exact
+request/save/build correlation, no save interaction/write, no production
+mutation, 48 records, 96 images, 48 exact held states, 12/12 restorations,
+and automatic exit with no remaining Kingmaker process.
+
+All 96 accepted images were directly inspected from ignored local evidence.
+The candidate-set identity reproduced exactly and the scored order remained
+Magus, Rogue, Slayer. Zero preview images and eight ordinary-isometric images
+were tagged low density; the latter remain an explicit final-matrix concern.
 
 ## Local evidence policy
 

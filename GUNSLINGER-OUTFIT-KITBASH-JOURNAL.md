@@ -268,3 +268,39 @@ Exact next action: complete clean build/package validation, commit and publish
 the collector/evidence checkpoint, verify all three refs, then rerun the same
 Human batch so the outer orchestrator accepts the terminal PASS before adding
 the finalist-only exhaustive qualification scenario.
+
+## 2026-08-30 - Accepting Human render rerun
+
+- Published collector checkpoint
+  `8f47f2db723fdfe6146ca30c352ea83ba7d3589f`; HEAD, the local feature
+  ref, and the origin feature ref were identical and the tree was clean.
+- Canonical guarded command used `-TimeoutSeconds 600`, Steam App ID 640820,
+  exact save `KMG_AUTOMATION_WORKING`, automatic exit, and no force
+  termination. Evidence:
+  `20260830T2158516580621Z-gunslinger-outfit-candidate-render`.
+- The outer orchestration and in-game result both passed. All 10/10 assertions
+  passed with no exception; `guardedRequestAccepted=true`,
+  `saveInteractionOccurred=false`, `saveApiCalled=false`, and
+  `productionBlueprintMutated=false`. Automatic exit initiated and no
+  Kingmaker process remained.
+- Loaded exact commit `8f47f2db723fdfe6146ca30c352ea83ba7d3589f`,
+  package SHA-256
+  `2fdaa2813262e237e687ce277d1a67cc56a8e8ce72c778dcdbd01da995b5d7f4`,
+  DLL SHA-256
+  `c9ace6013911f041e5e824c340b04e06d2b09a5a1bbdee5e123396853e0900c0`,
+  and MVID `5a02e6db-4452-4a75-a2cf-f836f98a3407`.
+- Candidate set
+  `ef38c5c841510df7f03bbf68a8ca9e7fbef3f3403369022505449cb038d347be`
+  reproduced exactly with 48 records, 96 images, 48 exact held states, and
+  12/12 restorations. All 96 accepted images were directly inspected through
+  temporary external boards. The Magus/Rogue/Slayer order is unchanged.
+- All preview captures cleared the density floor. Eight ordinary-isometric
+  captures were tagged low density, improved from eleven in the diagnostic
+  batch; paired preview views remain usable. Pixel hashes differ between
+  runs because live actors were captured at different animation phases, while
+  catalog, IDs, cases, restoration, and structured evidence are deterministic.
+
+Exact next action: implement the guarded finalist-only exhaustive matrix for
+the Magus pair across dynamically discovered races, both genders, systematic
+valid colors, required firearm/animation states, armor and overlay
+interactions, rebuild, and persistence boundaries.
