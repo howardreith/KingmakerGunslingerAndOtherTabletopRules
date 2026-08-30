@@ -132,7 +132,10 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[]
             {
                 "ResourcesLibrary.TryGetResource<EquipmentEntity>",
-                "GetEquipmentClass()", "LoadClothes(",
+                "GetEquipmentClass()", "FighterClassGuid",
+                "gunslinger-outfit-render-fighter-donor-class",
+                "exact-fighter-fallback", "classEntityPresentCount",
+                "originalEntities", "donorClassEntities", "LoadClothes(",
                 "RemoveEquipmentEntities(_classEntities, false)",
                 "AddEquipmentEntities(_candidateEntities, false)",
                 "SetRampIndices(entity, primary, secondary,",
@@ -158,6 +161,9 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(source.Contains(forbidden),
                     "Outfit renderer contains forbidden save/UI/global-inventory token: " +
                     forbidden);
+            Assertions.False(source.Contains(
+                    "has no native equipment class"),
+                "An optional live EquipmentClass must not be required when the exact audited Fighter donor is available.");
         }
 
         private static string RenderSource()
