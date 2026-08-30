@@ -388,3 +388,39 @@ exact save `KMG_AUTOMATION_WORKING` and directly inspect all ignored images.
 Exact next action: commit and publish the focused donor-retry repair, verify
 all three feature refs and a clean tree, rebuild the commit-bound package, and
 rerun the full guarded race matrix before inspecting any accepted images.
+
+## 2026-08-30 - Exact-empty avatar baseline repair
+
+- Published donor-retry checkpoint
+  `a27c4a7ecb061bf972df799ee096dc1b31e5e62d` was identical at HEAD,
+  local, and origin with a clean tree. Its commit-bound package SHA-256 was
+  `945dbb864c94c9cf1be75ea455e44c321e501d7ba24f97f54e84fb476ca6525e`;
+  DLL SHA-256 was
+  `a4ffb80afa5a9574e5138bdd72b196708c23de9f7218cdb43322158f5ddbe1c7`.
+- Guarded retry evidence is
+  `20260830T2257046480918Z-gunslinger-outfit-finalist-race-matrix`. It
+  used Steam App ID 640820 and exact working save
+  `KMG_AUTOMATION_WORKING`, reached `final-result-received`, cleaned up,
+  automatically exited, left no Kingmaker process, and recorded no save
+  interaction or production mutation.
+- Male Aasimar again completed two palettes/four images. Donor retry then
+  exercised all six canonical Medium female Aasimar sources. Every source had
+  a valid avatar but an empty original equipment-entity sequence; all six were
+  rejected solely because the probe conflated zero entities with a missing
+  avatar. This proves deterministic retry and rejection evidence while
+  identifying a request-local instrumentation defect.
+- An empty ordered sequence is exact when removal/re-add leaves it empty and
+  saved links unchanged; its ramp comparison is vacuously exact. The repair
+  rejects only a null avatar, records `originalEmpty`, and requires the same
+  exact empty restoration in exceptional cleanup. It does not weaken any
+  nonempty order, ramp, or saved-link comparison.
+- Installed-game Release compilation and all 1365/1365 tests pass. The clean
+  standalone/local-runtime package gate passes with pre-publication package
+  SHA-256
+  `3b7e2deb7b96dac8e62eba66d1628af2355e0ab2c4ff4259ab245e5710b3168a`
+  and DLL SHA-256
+  `8621f5402e652fbdc1b3eb7d0657d0450f3f5c00cfd861a02961c5563cb0e46f`.
+
+Exact next action: publish this focused empty-baseline correction, verify the
+three refs, rebuild its commit-bound package, pass quiescent preflight, and
+rerun the complete matrix without changing the finalist score.

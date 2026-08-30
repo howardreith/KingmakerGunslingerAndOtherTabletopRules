@@ -189,6 +189,25 @@ DLL SHA-256 is
 `c9840e31c00997b9c6d50b6f6b044175cbe34165d3f00414ce90fc7781040bef`.
 A clean published rerun remains required.
 
+That published rerun at
+`20260830T2257046480918Z-gunslinger-outfit-finalist-race-matrix` exercised
+all six deterministic canonical-size female Aasimar sources. Each reached a
+live avatar, rig, and renderer but began with zero equipment entities, so the
+probe rejected every one under its `missing-avatar-or-empty-snapshot` branch.
+The common failure proves the candidate retry path and isolates the remaining
+defect to zero-length snapshot interpretation; it is not visual evidence about
+the Magus entities.
+
+The follow-up correction treats an empty sequence as a first-class original
+state: it must restore to zero entities with unchanged saved links, while a
+null avatar remains invalid. Nonempty entity order and ramp comparisons are
+unchanged, and fallback cleanup now verifies empty baselines too. Installed
+game compilation, all 1365 tests, clean packaging, and strict package
+validation pass. Pre-publication package SHA-256 is
+`3b7e2deb7b96dac8e62eba66d1628af2355e0ab2c4ff4259ab245e5710b3168a`;
+DLL SHA-256 is
+`8621f5402e652fbdc1b3eb7d0657d0450f3f5c00cfd861a02961c5563cb0e46f`.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

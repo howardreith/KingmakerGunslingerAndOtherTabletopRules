@@ -159,3 +159,15 @@ and DLL SHA-256
 `c9840e31c00997b9c6d50b6f6b044175cbe34165d3f00414ce90fc7781040bef`.
 All 1365 tests and the quiescent 163-check preflight pass. Scores and finalist
 disposition remain unchanged until a complete rerun is directly reviewed.
+
+The published retry
+`20260830T2257046480918Z-gunslinger-outfit-finalist-race-matrix` confirmed
+that all six canonical-size female Aasimar donors reached a live rig and then
+reported the same `originalEntityCount=0` probe result. This is a fixture
+instrumentation defect, not an outfit incompatibility: an empty original
+equipment sequence has a well-defined exact order and no ramp entries. The
+probe now requires it to remain empty and preserve saved links, while a null
+avatar still fails. The pre-publication repaired package is
+`3b7e2deb7b96dac8e62eba66d1628af2355e0ab2c4ff4259ab245e5710b3168a`
+(DLL `8621f5402e652fbdc1b3eb7d0657d0450f3f5c00cfd861a02961c5563cb0e46f`).
+No score or ranking changes from this nonvisual failure.
