@@ -342,3 +342,49 @@ interactions, rebuild, and persistence boundaries.
 Exact next action: commit and publish this clean source-qualified matrix,
 verify all three feature refs, then run it through Steam App ID 640820 against
 exact save `KMG_AUTOMATION_WORKING` and directly inspect all ignored images.
+
+## 2026-08-30 - First finalist matrix diagnostic and donor repair
+
+- Published checkpoint `fe86bce4484d45ca8f6a6f7070bfd7942fd5a0fc`
+  was identical at HEAD, the local feature ref, and the origin feature ref
+  before launch. The canonical guarded command used Steam App ID 640820,
+  exact save `KMG_AUTOMATION_WORKING`, `-TimeoutSeconds 1200`, automatic exit,
+  and no force termination. Evidence:
+  `20260830T2237589386140Z-gunslinger-outfit-finalist-race-matrix`.
+- The run loaded mod `0.0.110`, MVID
+  `985fe6cf-03f4-4120-9a8e-e586315c1135`, and DLL SHA-256
+  `09fcb5096344aac82da288b8306b212b8b0dc44c9c7654f4d6515ff293a735a9`.
+  Guard acceptance, exact working-save boundary, installed Assembly-CSharp
+  identity, request-local cleanup, and automatic exit passed. No Kingmaker
+  process remained; no save API or production blueprint mutation occurred.
+- Male Aasimar completed both requested palettes: two records, four PNGs, ten
+  views, and one exact post-outfit restoration. The first female Aasimar donor
+  was `LibraryNPC02/967f70edf50093242949489c50c5fb65/Female/Aasimar/Medium`.
+  Its original avatar state failed the pre-application exactness expectation,
+  so the scenario stopped before applying the finalist to that body. The
+  partial output is not used for aesthetic scoring or race-grid acceptance.
+- Donor diagnostics also exposed
+  `StartGamePregenClericUnit/a8c334ffb376dde44952ac805f85076e/Female/Halfling/Medium`
+  as the initial female Halfling source. The repair filters Gnome/Halfling to
+  Small and every other installed player race to Medium, retains all exact
+  race/gender/size matches in deterministic priority order, and advances only
+  after recording a rejected disposable donor.
+- Acceptance now requires a full original-avatar remove/re-add probe before
+  finalist application. Exact entity order, primary and secondary ramps, and
+  saved links are recorded for every accepted donor; rejection records retain
+  source identity, attempt index, reason, and detailed mismatch. The strict
+  restoration contract was not weakened, and no campaign actor is involved.
+- Repository validation and installed-game Release compilation pass. The
+  complete domain suite passes 1365/1365. `Build-Local.ps1` then passed clean
+  Release construction, deterministic package creation, and strict standalone
+  plus local-runtime package validation. Pre-publication repair package
+  SHA-256 is
+  `255de7da0529767b089d65fbd9638fb4964020a562797f1c6048d3315014c624`;
+  DLL SHA-256 is
+  `c9840e31c00997b9c6d50b6f6b044175cbe34165d3f00414ce90fc7781040bef`.
+  Runtime preflight first saw the known immediate post-build artifact
+  quiescence check, then passed all 163 checks unchanged.
+
+Exact next action: commit and publish the focused donor-retry repair, verify
+all three feature refs and a clean tree, rebuild the commit-bound package, and
+rerun the full guarded race matrix before inspecting any accepted images.

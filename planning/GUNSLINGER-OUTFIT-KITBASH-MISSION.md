@@ -185,3 +185,25 @@ Completion requires all audit, rendering, scoring, production, tests, clean
 build, package, compatibility, guarded runtime, documentation, publication,
 remote-SHA, clean-tree, and forbidden-artifact checks to pass, with exact
 commands and uncertainties recorded.
+
+## Execution checkpoint: first finalist matrix diagnostic
+
+Published commit `fe86bce4484d45ca8f6a6f7070bfd7942fd5a0fc` ran through
+Steam App ID 640820 against exact working save `KMG_AUTOMATION_WORKING` at
+`runtime-evidence/20260830T2237589386140Z-gunslinger-outfit-finalist-race-matrix`.
+The guard, save boundary, installed-game identity, cleanup, and automatic exit
+passed. Male Aasimar completed both palettes (two records/four images), then
+the first female Aasimar donor failed closed before finalist application
+because its original avatar could not prove exact restoration. No save API or
+production blueprint was touched, and no visual acceptance is inferred from
+the partial batch.
+
+The evidence also exposed a noncanonical Medium female Halfling source in the
+unfiltered donor order. The guarded fixture selector now filters Gnome and
+Halfling to Small and all other installed player races to Medium, retains every
+matching donor in deterministic order, and accepts one only after exact
+entity-order, ramp, and saved-link remove/re-add proof. Rejected disposable
+donors are recorded with exact source and reason before the next is tried.
+Repository validation, installed-game compilation, all 1365 tests, clean
+Release/package validation, and the quiescent 163-check runtime preflight pass
+for this repair. A clean published rerun remains required.

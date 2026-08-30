@@ -160,6 +160,35 @@ This closes only the source/package gate. Installed-game race-grid rendering,
 direct image review, overlays, motion, production binding, and persistence
 remain open.
 
+The first installed finalist-matrix attempt at
+`20260830T2237589386140Z-gunslinger-outfit-finalist-race-matrix` loaded exact
+published commit `fe86bce4484d45ca8f6a6f7070bfd7942fd5a0fc`. It safely
+completed both palettes for male Aasimar, then stopped before applying the
+outfit to female Aasimar because the selected native donor's original avatar
+state was not exactly restorable. Guard, working-save boundary, game identity,
+cleanup, no-save behavior, no-production-mutation behavior, and automatic exit
+all passed. The two partial records/four images do not qualify the race grid or
+change the score.
+
+The repair treats native body blueprints as deterministic candidates rather
+than assumed-safe fixtures. It filters each donor to canonical player-race
+size (Small for Gnome/Halfling, Medium otherwise), preserves all exact
+race/gender/size matches, and runs a full entity-order/ramp/saved-link
+round-trip before acceptance. Failed disposable actors are recorded and
+retired before trying the next candidate. Every accepted fixture carries an
+explicit round-trip diagnostic in the ignored index. Focused source tests
+require this fail-closed selection behavior.
+
+The repaired source passes repository validation, installed-game compilation,
+all 1365 domain/reflection tests, clean Release construction, deterministic
+packaging, strict standalone and local-runtime validation, and 163 runtime
+preflight checks once the known immediate-post-build timestamp window was
+quiescent. The pre-publication local-runtime package SHA-256 is
+`255de7da0529767b089d65fbd9638fb4964020a562797f1c6048d3315014c624`;
+DLL SHA-256 is
+`c9840e31c00997b9c6d50b6f6b044175cbe34165d3f00414ce90fc7781040bef`.
+A clean published rerun remains required.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

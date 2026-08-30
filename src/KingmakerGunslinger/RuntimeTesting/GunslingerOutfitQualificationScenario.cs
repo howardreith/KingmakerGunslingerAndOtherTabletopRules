@@ -34,12 +34,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class RaceFixtureSpec
         {
             internal RaceFixtureSpec(BlueprintRace race, Gender gender,
-                BlueprintUnit source, int donorCount)
+                BlueprintUnit[] sources)
             {
                 Race = race;
                 Gender = gender;
-                Source = source;
-                DonorCount = donorCount;
+                Sources = sources ?? new BlueprintUnit[0];
                 Label = gender.ToString().ToLowerInvariant() + "-" +
                     race.RaceId.ToString().ToLowerInvariant();
             }
@@ -47,8 +46,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly string Label;
             internal readonly BlueprintRace Race;
             internal readonly Gender Gender;
-            internal readonly BlueprintUnit Source;
-            internal readonly int DonorCount;
+            internal readonly BlueprintUnit[] Sources;
+            internal int DonorIndex;
+
+            internal BlueprintUnit Source
+            {
+                get { return Sources[DonorIndex]; }
+            }
+
+            internal int DonorCount
+            {
+                get { return Sources.Length; }
+            }
+
+            internal bool TryAdvanceDonor()
+            {
+                if (DonorIndex + 1 >= Sources.Length) return false;
+                DonorIndex++;
+                return true;
+            }
         }
 
         internal sealed class FinalistRaceMatrixSession
@@ -69,6 +85,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly JArray _records = new JArray();
             private readonly JArray _fixtureRecords = new JArray();
             private readonly JArray _nativeLinkRecords = new JArray();
+            private readonly JArray _donorRejections = new JArray();
             private readonly JArray _restorationRecords = new JArray();
             private object _allUnits;
             private object _party;
@@ -90,6 +107,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private EquipmentEntity[] _candidateEntities =
                 new EquipmentEntity[0];
             private JArray _paletteEvidence = new JArray();
+            private JObject _lastRestorationDiagnostic = new JObject();
             private int _fixtureIndex;
             private int _paletteIndex;
             private int _phase;
@@ -222,9 +240,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Gender.Male, Gender.Female
                     })
                     {
+                        Size expectedSize =
+                            ExpectedPlayerRaceSize(race.RaceId);
                         BlueprintUnit[] matches = donors.Where(value =>
                                 value.Gender == gender &&
-                                value.Race.RaceId == race.RaceId)
+                                value.Race.RaceId == race.RaceId &&
+                                value.Size == expectedSize)
                             .OrderBy(value => DonorPriority(value, race))
                             .ThenBy(value => value.name ?? string.Empty,
                                 StringComparer.Ordinal)
@@ -235,7 +256,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "No native body donor exists for " +
                                 gender + " " + race.RaceId + ".");
                         fixtures.Add(new RaceFixtureSpec(race, gender,
-                            matches[0], matches.Length));
+                            matches));
                     }
                 _fixtures = fixtures.ToArray();
                 ValidateFinalistNativeLinks();
@@ -335,6 +356,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return 5;
             }
 
+            private static Size ExpectedPlayerRaceSize(Race race)
+            {
+                return race == Race.Gnome || race == Race.Halfling
+                    ? Size.Small : Size.Medium;
+            }
+
             private static string DescribeQualificationBlueprint(
                 BlueprintUnit value)
             {
@@ -364,9 +391,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (prefab == null)
                 {
                     if (_settleUpdates < MaximumSettleUpdates) return false;
-                    throw new InvalidOperationException(fixture.Label +
-                        " native unit prefab did not load after " +
-                        _settleUpdates + " updates.");
+                    RejectCurrentDonor("prefab-load-timeout",
+                        new JObject
+                        {
+                            { "settleUpdates", _settleUpdates }
+                        });
+                    return false;
                 }
                 _actor = Game.Instance.EntityCreator.SpawnUnit(
                     _actorBlueprint, prefab,
@@ -398,8 +428,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!complete)
                 {
                     if (_settleUpdates < MaximumSettleUpdates) return;
-                    throw new InvalidOperationException(fixture.Label +
-                        " did not materialize a complete native avatar.");
+                    RejectCurrentDonor("incomplete-native-avatar",
+                        new JObject
+                        {
+                            { "settleUpdates", _settleUpdates }
+                        });
+                    return;
                 }
                 if (!_fixtureInitialized)
                 {
@@ -431,8 +465,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_settleUpdates < MinimumSettleUpdates || !exact)
                 {
                     if (_settleUpdates < MaximumSettleUpdates) return;
-                    throw new InvalidOperationException(fixture.Label +
-                        " did not settle the exact native body contract.");
+                    RejectCurrentDonor("native-body-contract-not-exact",
+                        new JObject
+                        {
+                            { "settleUpdates", _settleUpdates },
+                            { "actualGender", _actor.Gender.ToString() },
+                            { "actualRaceId",
+                                _actor.Descriptor.Progression.Race.RaceId
+                                    .ToString() },
+                            { "actualSize",
+                                _actor.Descriptor.State.Size.ToString() },
+                            { "expectedSize",
+                                ExpectedPlayerRaceSize(
+                                    fixture.Race.RaceId).ToString() },
+                            { "rigExact",
+                                HasExactHumanoidRig(
+                                    _actor.View.transform) },
+                            { "rendererCount", renderers.Length }
+                        });
+                    return;
                 }
 
                 _avatar = _actor.View.CharacterAvatar;
@@ -447,12 +498,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _savedLinksBefore = QualificationSavedLinks(_avatar);
                 _classEntities = LoadPresentClassClothes(
                     fixture.Gender, fixture.Race);
+                if (!RestoreAvatar())
+                {
+                    RejectCurrentDonor(
+                        "avatar-roundtrip-restoration-not-exact",
+                        _lastRestorationDiagnostic);
+                    return;
+                }
+                _currentRestored = true;
                 _fixtureRecords.Add(new JObject
                 {
                     { "fixture", fixture.Label },
                     { "sourceName", fixture.Source.name },
                     { "sourceGuid", fixture.Source.AssetGuid },
                     { "donorCandidateCount", fixture.DonorCount },
+                    { "donorAttemptIndex", fixture.DonorIndex },
                     { "gender", _actor.Gender.ToString() },
                     { "raceName",
                         _actor.Descriptor.Progression.Race.name },
@@ -461,8 +521,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "raceId",
                         _actor.Descriptor.Progression.Race.RaceId.ToString() },
                     { "size", _actor.Descriptor.State.Size.ToString() },
+                    { "expectedSize",
+                        ExpectedPlayerRaceSize(
+                            fixture.Race.RaceId).ToString() },
                     { "originalEntityCount", _avatarBefore.Length },
                     { "presentClassEntityCount", _classEntities.Length },
+                    { "initialRoundTripRestored", true },
+                    { "initialRoundTripDiagnostic",
+                        _lastRestorationDiagnostic.DeepClone() },
                     { "featureNodes",
                         new JArray(QualificationFeatureNodes(_actor)) },
                     { "rendererCount", renderers.Length },
@@ -492,11 +558,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(original.Entity, value))).ToArray();
             }
 
+            private void RejectCurrentDonor(string reason, JObject detail)
+            {
+                RaceFixtureSpec fixture = _fixtures[_fixtureIndex];
+                BlueprintUnit rejected = fixture.Source;
+                var record = new JObject
+                {
+                    { "fixture", fixture.Label },
+                    { "donorAttemptIndex", fixture.DonorIndex },
+                    { "donorCandidateCount", fixture.DonorCount },
+                    { "sourceName", rejected.name },
+                    { "sourceGuid", rejected.AssetGuid },
+                    { "sourceGender", rejected.Gender.ToString() },
+                    { "sourceRaceId", rejected.Race.RaceId.ToString() },
+                    { "sourceSize", rejected.Size.ToString() },
+                    { "reason", reason },
+                    { "detail", detail == null ? new JObject() :
+                        detail.DeepClone() }
+                };
+                _donorRejections.Add(record);
+                _diagnostics.Add("donorRejected=" +
+                    record.ToString(Newtonsoft.Json.Formatting.None));
+
+                // A failed round trip affects only this disposable actor. Skip
+                // restoration, dispose the actor, and try the next exact native
+                // donor rather than weakening the restoration contract.
+                _currentRestored = true;
+                RetireActor();
+                if (!fixture.TryAdvanceDonor())
+                    throw new InvalidOperationException(fixture.Label +
+                        " exhausted " + fixture.DonorCount +
+                        " deterministic native body donors; lastReason=" +
+                        reason + ".");
+                _phase = 1;
+                _settleUpdates = 0;
+                WriteProgress("donor-rejected");
+            }
+
             private void ApplyFinalist()
             {
                 RaceFixtureSpec fixture = _fixtures[_fixtureIndex];
                 _stage = "apply-finalist-" + fixture.Label;
-                if (!RestoreAvatar())
+                if (!_currentRestored)
                     throw new InvalidOperationException(
                         fixture.Label + " original avatar state was not " +
                         "exact before finalist application.");
@@ -767,7 +870,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool RestoreAvatar()
             {
                 if (_avatar == null || _avatarBefore.Length == 0)
+                {
+                    _lastRestorationDiagnostic = new JObject
+                    {
+                        { "avatarPresent", _avatar != null },
+                        { "originalEntityCount", _avatarBefore.Length },
+                        { "reason", "missing-avatar-or-empty-snapshot" }
+                    };
                     return false;
+                }
                 _avatar.RemoveAllEquipmentEntities(false);
                 foreach (AvatarEntityState state in _avatarBefore)
                     _avatar.AddEquipmentEntity(state.Entity, false);
@@ -793,10 +904,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         state.Primary &&
                     _avatar.GetSecondaryRampIndex(state.Entity) ==
                         state.Secondary);
-                return exactOrder && exactRamps &&
-                    _savedLinksBefore.SequenceEqual(
-                        QualificationSavedLinks(_avatar),
-                        StringComparer.Ordinal);
+                bool savedLinksExact = _savedLinksBefore.SequenceEqual(
+                    QualificationSavedLinks(_avatar),
+                    StringComparer.Ordinal);
+                _lastRestorationDiagnostic = new JObject
+                {
+                    { "originalEntityCount", _avatarBefore.Length },
+                    { "currentEntityCount", current.Length },
+                    { "exactOrder", exactOrder },
+                    { "exactRamps", exactRamps },
+                    { "savedLinksExact", savedLinksExact },
+                    { "rampMismatchCount", _avatarBefore.Count(state =>
+                        _avatar.GetPrimaryRampIndex(state.Entity) !=
+                            state.Primary ||
+                        _avatar.GetSecondaryRampIndex(state.Entity) !=
+                            state.Secondary) },
+                    { "originalEntities", new JArray(_avatarBefore.Select(
+                        value => value.Entity.name + "/layer=" +
+                            value.Entity.Layer).ToArray()) },
+                    { "currentEntities", new JArray(current.Select(value =>
+                        value.name + "/layer=" + value.Layer).ToArray()) }
+                };
+                return exactOrder && exactRamps && savedLinksExact;
             }
 
             private static string[] QualificationSavedLinks(Character avatar)
@@ -839,6 +968,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _savedLinksBefore = new string[0];
                     _classEntities = new EquipmentEntity[0];
                     _candidateEntities = new EquipmentEntity[0];
+                    _lastRestorationDiagnostic = new JObject();
                     _fixtureInitialized = false;
                     _currentRestored = false;
                 }
@@ -868,6 +998,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             { "raceId", value.RaceId.ToString() }
                         }).ToArray()) },
                     { "nativeLinkMatrix", _nativeLinkRecords },
+                    { "donorRejections", _donorRejections },
                     { "fixtures", _fixtureRecords },
                     { "restorations", _restorationRecords },
                     { "records", _records },
@@ -889,6 +1020,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "stage", progressStage },
                     { "detailStage", _stage },
                     { "fixtureIndex", _fixtureIndex },
+                    { "donorIndex", _fixtureIndex < _fixtures.Length
+                        ? _fixtures[_fixtureIndex].DonorIndex : -1 },
                     { "paletteIndex", _paletteIndex },
                     { "phase", _phase },
                     { "captured", _captured },
@@ -1010,8 +1143,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                             StringComparer.Ordinal) &&
                         _fixtureRecords.OfType<JObject>().All(value =>
                             (bool)value["rigExact"] &&
-                            (int)value["rendererCount"] > 0),
+                            (int)value["rendererCount"] > 0 &&
+                            string.Equals((string)value["size"],
+                                (string)value["expectedSize"],
+                                StringComparison.Ordinal) &&
+                            (int)value["donorAttemptIndex"] >= 0 &&
+                            (int)value["donorAttemptIndex"] <
+                                (int)value["donorCandidateCount"]),
                     "BlueprintRoot progression race discovery plus native BlueprintUnit race/gender donors");
+                Add(_assertions,
+                    "gunslinger-outfit-finalist-donor-selection",
+                    "every rejected disposable donor is recorded; every accepted donor proves an exact avatar round trip",
+                    "rejections=" + _donorRejections.Count +
+                        ";accepted=" + _fixtureRecords.Count,
+                    _fixtureRecords.Count == expectedFixtures &&
+                        _fixtureRecords.OfType<JObject>().All(value =>
+                            (bool)value["initialRoundTripRestored"] &&
+                            (bool)value["initialRoundTripDiagnostic"]
+                                ["exactOrder"] &&
+                            (bool)value["initialRoundTripDiagnostic"]
+                                ["exactRamps"] &&
+                            (bool)value["initialRoundTripDiagnostic"]
+                                ["savedLinksExact"]) &&
+                        _donorRejections.OfType<JObject>().All(value =>
+                            !string.IsNullOrEmpty(
+                                (string)value["sourceGuid"]) &&
+                            !string.IsNullOrEmpty(
+                                (string)value["reason"])),
+                    "deterministic candidate order, canonical player-race size, and exact remove/re-add restoration probe");
                 Add(_assertions,
                     "gunslinger-outfit-finalist-native-links",
                     "exact ordered two-entity Magus pair in every discovered cell",

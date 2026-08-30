@@ -136,3 +136,26 @@ Repository validation, game-reference compilation, all 1365 tests, clean
 Release packaging, strict package validation, and 163 runtime-preflight checks
 pass. This is instrumentation qualification, not race-grid visual acceptance;
 the guarded Steam-backed run and direct review remain open.
+
+### First finalist matrix result
+
+The first clean published run,
+`20260830T2237589386140Z-gunslinger-outfit-finalist-race-matrix`, is a safe
+diagnostic FAIL, not visual evidence against the Magus outfit. Male Aasimar
+completed native/default and alternate palettes with two records and four
+images. The selected female Aasimar body donor
+`LibraryNPC02` (`967f70edf50093242949489c50c5fb65`) could not reproduce its
+original avatar entity state, so the gate stopped before applying the outfit.
+Cleanup and auto-exit passed; save and production mutation remained false.
+
+The same diagnostic listed a Medium `StartGamePregenClericUnit` as the initial
+female Halfling source. Donor discovery now enforces canonical player-race
+size and tries all exact race/gender/size matches in deterministic order. A
+donor is admitted only after exact original entity order, both ramps, and
+saved links survive a request-local round trip; every rejection is preserved
+in structured evidence. The repaired package has SHA-256
+`255de7da0529767b089d65fbd9638fb4964020a562797f1c6048d3315014c624`
+and DLL SHA-256
+`c9840e31c00997b9c6d50b6f6b044175cbe34165d3f00414ce90fc7781040bef`.
+All 1365 tests and the quiescent 163-check preflight pass. Scores and finalist
+disposition remain unchanged until a complete rerun is directly reviewed.
