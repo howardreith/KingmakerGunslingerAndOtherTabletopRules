@@ -1,5 +1,10 @@
 # Kingmaker Gunslinger 0.0.108
 
+> Historical release. Version 0.0.109 supersedes this package with custom
+> Martial Performance choices, loaded-firearm repair, and prominent Broken /
+> Wrecked feedback; this file retains the exact 0.0.108 archive identity for
+> provenance.
+
 Release archive:
 `KingmakerGunslinger-0.0.108-icon-art-polish-round-2.zip`.
 

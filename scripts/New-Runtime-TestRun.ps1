@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string]$Scenario,
-    [string]$ExpectedVersion = '0.0.108',
+    [string]$ExpectedVersion = '0.0.109',
     [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
     [string]$RunName
 )

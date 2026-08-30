@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.109-martial-performance-repair-notifications
+
+- Publishes all seven active custom weapon categories to Call of the Wild's
+  exact Martial Performance selector without disturbing native choices. The
+  native proficiency gate, including level-up preview proficiency, remains the
+  authority for visibility and selection.
+- Allows ordinary repair of a loaded Broken firearm. A successful repair
+  consumes one repair kit, restores Normal condition, and destroys every round
+  and loaded-ammunition identity held by that exact firearm; every rejected or
+  rolled-back attempt restores the complete prior state.
+- Adds one concise native transient warning after each committed Normal-to-
+  Broken or Broken-to-Wrecked degradation while retaining the existing combat
+  log entry. Recovery, prevention, unchanged, hydration, and failed-commit
+  paths do not notify.
+- Adds focused selector, repair-transaction, state-machine, notification,
+  rollback, and guarded runtime coverage. The complete deterministic suite is
+  1,348 tests.
+
 ## 0.0.108-icon-art-polish-round-2
 
 - Removes the baked inset frame from the shared Blunderbuss, Musket, and Pistol

@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.108-icon-art-polish-round-2",
-  "version": "0.0.108",
+  "milestone": "0.0.109-martial-performance-repair-notifications",
+  "version": "0.0.109",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -700,5 +700,23 @@
     "dependentFeatRuntimePass": true,
     "cordRuntimePass": true,
     "workingSaveSmokePass": true
+  },
+  "martialPerformanceRepairNotifications109": {
+    "deterministicTestCount": 1348,
+    "martialPerformanceFocusedCaseCount": 11,
+    "repairFocusedCaseCount": 22,
+    "conditionNotificationFocusedCaseCount": 9,
+    "customMartialPerformanceCategoryCount": 7,
+    "firearmMartialPerformanceCategoryCount": 3,
+    "easternMartialPerformanceCategoryCount": 3,
+    "elvenBranchedSpearMartialPerformanceCategoryCount": 1,
+    "loadedRepairDiscardsAmmunition": true,
+    "loadedRepairAtomicRollback": true,
+    "nativeTopNotificationApi": "Kingmaker.UI.Common.UIUtility.SendWarning(System.String)",
+    "combatLogBeforeTopNotification": true,
+    "runtimeRequalificationPending": true,
+    "supervisedNativeLevelUpPresentationPending": true,
+    "supervisedTopScreenVisualPlacementPending": true,
+    "supervisedLoadedMultiRoundInteractionPending": true
   }
 }
