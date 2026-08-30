@@ -65,6 +65,13 @@ function Get-KmgFeatureModuleCatalog {
             DependencyState = 'independent'
             RuntimeParameter = 'bodyguardFeats'
         }
+        [pscustomobject]@{
+            InternalProperty = 'ProtectionFromAlignmentControlImmunity'
+            JsonKey = 'protection-from-alignment-control-immunity'
+            DisplayName = 'Protection from Alignment: control immunity'
+            DependencyState = 'independent'
+            RuntimeParameter = 'protectionFromAlignmentControlImmunity'
+        }
     )
 }
 

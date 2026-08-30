@@ -1154,7 +1154,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 9 -or
+        if ($Parameters.Count -ne 10 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -1172,8 +1172,11 @@ function Assert-KmgRuntimeScenarioPreflight {
             -not $Parameters.ContainsKey('urbanBarbarian') -or
             $Parameters.urbanBarbarian -isnot [bool] -or
             -not $Parameters.ContainsKey('bodyguardFeats') -or
-            $Parameters.bodyguardFeats -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, and bodyguardFeats parameters."
+            $Parameters.bodyguardFeats -isnot [bool] -or
+            -not $Parameters.ContainsKey(
+                'protectionFromAlignmentControlImmunity') -or
+            $Parameters.protectionFromAlignmentControlImmunity -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, and protectionFromAlignmentControlImmunity parameters."
         }
     }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -1293,6 +1296,8 @@ function New-KmgRuntimeRequest {
                 brownFurTransmuter = [bool]$Parameters.brownFurTransmuter
                 urbanBarbarian = [bool]$Parameters.urbanBarbarian
                 bodyguardFeats = [bool]$Parameters.bodyguardFeats
+                protectionFromAlignmentControlImmunity =
+                    [bool]$Parameters.protectionFromAlignmentControlImmunity
             }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {

@@ -54,6 +54,11 @@ namespace KingmakerGunslinger.Bootstrap
             Write("INFO", phase, eventName, message);
         }
 
+        internal void Debug(string phase, string eventName, string message)
+        {
+            Write("DEBUG", phase, eventName, message);
+        }
+
         internal void Warning(string phase, string eventName, string message)
         {
             Write("WARN", phase, eventName, message);

@@ -43,9 +43,13 @@ namespace KingmakerGunslinger.FeatureModules
             bool bodyguardFeats = ImmediateModeGui.Toggle(
                 _state.Pending.BodyguardFeats,
                 "Bodyguard, In Harms Way, and Helpful");
+            bool protectionFromAlignmentControlImmunity = ImmediateModeGui.Toggle(
+                _state.Pending.ProtectionFromAlignmentControlImmunity,
+                "Protection from Alignment: control immunity");
             _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
                 elvenBranchedSpears, easternWeapons, brownFurTransmuter,
-                urbanBarbarian, bodyguardFeats);
+                urbanBarbarian, bodyguardFeats,
+                protectionFromAlignmentControlImmunity);
             BrownFurFeatureStatus brownFurStatus =
                 BrownFurFeatureStatusRegistry.Current;
             ImmediateModeGui.Label("Brown-Fur dependency: " +

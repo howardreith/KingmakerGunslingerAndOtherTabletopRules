@@ -13,11 +13,13 @@ namespace KingmakerGunslinger.FeatureModules
         internal const string BrownFurTransmuterId = "brown-fur-transmuter";
         internal const string UrbanBarbarianId = "urban-barbarian";
         internal const string BodyguardFeatsId = "bodyguard-feats";
+        internal const string ProtectionFromAlignmentControlImmunityId =
+            "protection-from-alignment-control-immunity";
 
         internal FeatureModuleConfiguration(bool gunslinger, bool acadamaeGraduate,
             bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears,
             bool easternWeapons, bool brownFurTransmuter, bool urbanBarbarian,
-            bool bodyguardFeats)
+            bool bodyguardFeats, bool protectionFromAlignmentControlImmunity)
         {
             Gunslinger = gunslinger;
             AcadamaeGraduate = acadamaeGraduate;
@@ -28,6 +30,8 @@ namespace KingmakerGunslinger.FeatureModules
             BrownFurTransmuter = brownFurTransmuter;
             UrbanBarbarian = urbanBarbarian;
             BodyguardFeats = bodyguardFeats;
+            ProtectionFromAlignmentControlImmunity =
+                protectionFromAlignmentControlImmunity;
         }
 
         internal bool Gunslinger { get; private set; }
@@ -39,9 +43,10 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool BrownFurTransmuter { get; private set; }
         internal bool UrbanBarbarian { get; private set; }
         internal bool BodyguardFeats { get; private set; }
+        internal bool ProtectionFromAlignmentControlImmunity { get; private set; }
         internal static FeatureModuleConfiguration Defaults
         { get { return new FeatureModuleConfiguration(true, true, true, true, true, true,
-            true, true, true); } }
+            true, true, true, true); } }
 
         public bool Equals(FeatureModuleConfiguration other)
         {
@@ -53,7 +58,9 @@ namespace KingmakerGunslinger.FeatureModules
                 EasternWeapons == other.EasternWeapons &&
                 BrownFurTransmuter == other.BrownFurTransmuter &&
                 UrbanBarbarian == other.UrbanBarbarian &&
-                BodyguardFeats == other.BodyguardFeats;
+                BodyguardFeats == other.BodyguardFeats &&
+                ProtectionFromAlignmentControlImmunity ==
+                    other.ProtectionFromAlignmentControlImmunity;
         }
 
         public override bool Equals(object obj)
@@ -64,7 +71,8 @@ namespace KingmakerGunslinger.FeatureModules
             (ShieldOther ? 4 : 0) | (ExpandedSummoning ? 8 : 0) |
             (ElvenBranchedSpears ? 16 : 0) | (EasternWeapons ? 32 : 0) |
             (BrownFurTransmuter ? 64 : 0) | (UrbanBarbarian ? 128 : 0) |
-            (BodyguardFeats ? 256 : 0); }
+            (BodyguardFeats ? 256 : 0) |
+            (ProtectionFromAlignmentControlImmunity ? 512 : 0); }
 
         public override string ToString()
         { return "gunslinger=" + Gunslinger + ";acadamae-graduate=" +
@@ -74,6 +82,8 @@ namespace KingmakerGunslinger.FeatureModules
             ";eastern-weapons=" + EasternWeapons +
             ";brown-fur-transmuter=" + BrownFurTransmuter +
             ";urban-barbarian=" + UrbanBarbarian +
-            ";bodyguard-feats=" + BodyguardFeats; }
+            ";bodyguard-feats=" + BodyguardFeats +
+            ";protection-from-alignment-control-immunity=" +
+            ProtectionFromAlignmentControlImmunity; }
     }
 }

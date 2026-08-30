@@ -100,6 +100,7 @@
     <Compile Include="RepairRuntimePolicyTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="FeatureModuleSettingsTests.cs" />
+    <Compile Include="ProtectionFromAlignmentControlImmunityTests.cs" />
     <Compile Include="BodyguardBlueprintContractTests.cs" />
     <Compile Include="BodyguardPolicyTests.cs" />
     <Compile Include="ImmediateActionEconomyPolicyTests.cs" />
@@ -189,6 +190,15 @@
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModulePublicationPlan.cs"><Link>FeatureModules\FeatureModulePublicationPlan.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleSettingsState.cs"><Link>FeatureModules\FeatureModuleSettingsState.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FeatureModules\FeatureModuleSettingsStore.cs"><Link>FeatureModules\FeatureModuleSettingsStore.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Blueprints\BlueprintId.cs"><Link>Blueprints\BlueprintId.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ProtectionFromAlignment\ProtectionAlignment.cs"><Link>ProtectionFromAlignment\ProtectionAlignment.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ProtectionFromAlignment\MentalControlBlueprintKind.cs"><Link>ProtectionFromAlignment\MentalControlBlueprintKind.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ProtectionFromAlignment\MentalControlContentSource.cs"><Link>ProtectionFromAlignment\MentalControlContentSource.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ProtectionFromAlignment\MentalControlCatalogEntry.cs"><Link>ProtectionFromAlignment\MentalControlCatalogEntry.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ProtectionFromAlignment\MentalControlCatalog.cs"><Link>ProtectionFromAlignment\MentalControlCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ProtectionFromAlignment\MentalControlCatalogDefaults.cs"><Link>ProtectionFromAlignment\MentalControlCatalogDefaults.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ProtectionFromAlignment\ProtectionControlImmunityPolicy.cs"><Link>ProtectionFromAlignment\ProtectionControlImmunityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\ProtectionFromAlignment\ProtectionComponentPublicationPolicy.cs"><Link>ProtectionFromAlignment\ProtectionComponentPublicationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherDamageSplit.cs"><Link>ShieldOther\ShieldOtherDamageSplit.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherDamageSplitPolicy.cs"><Link>ShieldOther\ShieldOtherDamageSplitPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\ShieldOther\ShieldOtherLinkValidityRequest.cs"><Link>ShieldOther\ShieldOtherLinkValidityRequest.cs</Link></Compile>

@@ -39,7 +39,7 @@ $failure = $null
 
 function Set-BodyguardFeatureState([bool]$enabled) {
     $configuration = [ordered]@{
-        schemaVersion = 8
+        schemaVersion = 9
         gunslinger = $true
         'acadamae-graduate' = $true
         'shield-other' = $true
@@ -49,6 +49,7 @@ function Set-BodyguardFeatureState([bool]$enabled) {
         'brown-fur-transmuter' = $true
         'urban-barbarian' = $true
         'bodyguard-feats' = $enabled
+        'protection-from-alignment-control-immunity' = $true
     }
     $temporary = $settings + '.kmg-bodyguard-qualification.tmp'
     [IO.File]::WriteAllText($temporary,

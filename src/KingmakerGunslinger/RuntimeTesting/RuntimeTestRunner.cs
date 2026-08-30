@@ -49,6 +49,7 @@ using KingmakerGunslinger.Feats;
 using KingmakerGunslinger.Acadamae;
 using KingmakerGunslinger.Fatigue;
 using KingmakerGunslinger.Spells.ShieldOther;
+using KingmakerGunslinger.Spells.ProtectionFromAlignment;
 using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
@@ -11998,6 +11999,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (bool)_request.Parameters["urbanBarbarian"];
             bool expectedBodyguardFeats =
                 (bool)_request.Parameters["bodyguardFeats"];
+            bool expectedProtectionFromAlignmentControlImmunity =
+                (bool)_request.Parameters[
+                    "protectionFromAlignmentControlImmunity"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
@@ -12013,6 +12017,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.UrbanBarbarian;
             bool activeBodyguardFeats =
                 _context.FeatureModules.Active.BodyguardFeats;
+            bool activeProtectionFromAlignmentControlImmunity =
+                _context.FeatureModules.Active
+                    .ProtectionFromAlignmentControlImmunity;
             UrbanBarbarianBlueprintSet urbanSet = BlueprintBootstrap.UrbanBarbarian;
             BlueprintArchetype[] barbarianArchetypes = urbanSet.BarbarianClass
                 .Archetypes ?? Array.Empty<BlueprintArchetype>();
@@ -12482,17 +12489,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             ShieldOtherInventoryObservation shieldObservation =
                 ShieldOtherInventoryObserver.Observe(BlueprintBootstrap.Library);
+            ProtectionFromAlignmentPublicationObservation protectionObservation =
+                ProtectionFromAlignmentPublication.Observe(
+                    BlueprintBootstrap.Library);
             string observed = "expected=" + expectedGunslinger + "/" +
                 expectedAcadamae + "/" + expectedShieldOther + "/" +
                 expectedExpandedSummoning + "/" + expectedElvenBranchedSpears +
                 "/" + expectedEasternWeapons + "/" + expectedBrownFurTransmuter +
                 "/" + expectedUrbanBarbarian + "/" + expectedBodyguardFeats +
+                "/" + expectedProtectionFromAlignmentControlImmunity +
                 ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
                 activeShieldOther + "/" + activeExpandedSummoning + "/" +
                 activeElvenBranchedSpears + "/" + activeEasternWeapons + "/" +
                 activeBrownFurTransmuter + "/" + activeUrbanBarbarian + "/" +
-                activeBodyguardFeats +
+                activeBodyguardFeats + "/" +
+                activeProtectionFromAlignmentControlImmunity +
                 ";brownFur=contract:" + brownFurContractCompatible +
                 "/identities:" + (brownFurBlueprints == null ? 0 :
                     brownFurBlueprints.Count) + "/published:" +
@@ -12521,7 +12533,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
                 ";rareLoot=" + rareLootRows + ";shieldLists=" +
                 shieldObservation.PublishedLists + "/" +
-                shieldObservation.ExpectedPublishedLists + ";spearRegistered=" +
+                shieldObservation.ExpectedPublishedLists +
+                ";protectionControl=" +
+                protectionObservation.ResolvedProtectionBuffs + "/" +
+                protectionObservation.PublishedComponents + "/" +
+                protectionObservation.InvalidComponents +
+                ";spearRegistered=" +
                 spearRegisteredItems + ";spearParameters=" +
                 spearParameterizedOptions + ";spearStatic=" +
                 spearStaticOptions + ";spearFamiliarity=" +
@@ -12561,7 +12578,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeEasternWeapons == expectedEasternWeapons &&
                     activeBrownFurTransmuter == expectedBrownFurTransmuter &&
                     activeUrbanBarbarian == expectedUrbanBarbarian &&
-                    activeBodyguardFeats == expectedBodyguardFeats,
+                    activeBodyguardFeats == expectedBodyguardFeats &&
+                    activeProtectionFromAlignmentControlImmunity ==
+                        expectedProtectionFromAlignmentControlImmunity,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime + " identities in the current optional-mod state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
@@ -12614,6 +12633,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         shieldObservation.PublishedLists == (expectedShieldOther ?
                             shieldObservation.ExpectedPublishedLists : 0),
                     "required base and optional final-live spell lists"),
+                Assertion(
+                    "feature-module-protection-from-alignment-control-immunity",
+                    expectedProtectionFromAlignmentControlImmunity ?
+                        "five protection terminal buffs each patched exactly once" :
+                        "five protection terminal buffs resolved with no published components",
+                    observed,
+                    protectionObservation.ExpectedProtectionBuffs == 5 &&
+                    protectionObservation.ResolvedProtectionBuffs == 5 &&
+                    protectionObservation.PublishedComponents ==
+                        (expectedProtectionFromAlignmentControlImmunity ? 5 : 0) &&
+                    protectionObservation.InvalidComponents == 0,
+                    "exact terminal-buff component inventory"),
                 Assertion("feature-module-expanded-summoning-publication-gate",
                     expectedExpandedSummoning ? "enabled" : "disabled",
                     activeExpandedSummoning ? "enabled" : "disabled",

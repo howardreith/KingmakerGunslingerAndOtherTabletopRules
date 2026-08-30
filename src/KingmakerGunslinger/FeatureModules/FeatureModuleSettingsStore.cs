@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal static class FeatureModuleSettingsStore
     {
-        internal const int CurrentSchemaVersion = 8;
+        internal const int CurrentSchemaVersion = 9;
         internal const string FileName = "FeatureModules.json";
 
         internal static FeatureModuleSettingsState Load(string modPath,
@@ -49,11 +49,15 @@ namespace KingmakerGunslinger.FeatureModules
                     FeatureModuleConfiguration.UrbanBarbarianId);
                 bool bodyguardFeats = ReadDefaultOn(root,
                     FeatureModuleConfiguration.BodyguardFeatsId);
+                bool protectionFromAlignmentControlImmunity = ReadDefaultOn(root,
+                    FeatureModuleConfiguration
+                        .ProtectionFromAlignmentControlImmunityId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
                         shieldOther, expandedSummoning, elvenBranchedSpears,
                         easternWeapons, brownFurTransmuter, urbanBarbarian,
-                        bodyguardFeats), path,
+                        bodyguardFeats,
+                        protectionFromAlignmentControlImmunity), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
                         "settings", false);
                 if (schema < CurrentSchemaVersion) Save(state);
@@ -106,7 +110,10 @@ namespace KingmakerGunslinger.FeatureModules
                 [FeatureModuleConfiguration.UrbanBarbarianId] =
                     state.Pending.UrbanBarbarian,
                 [FeatureModuleConfiguration.BodyguardFeatsId] =
-                    state.Pending.BodyguardFeats
+                    state.Pending.BodyguardFeats,
+                [FeatureModuleConfiguration
+                    .ProtectionFromAlignmentControlImmunityId] =
+                    state.Pending.ProtectionFromAlignmentControlImmunity
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";
