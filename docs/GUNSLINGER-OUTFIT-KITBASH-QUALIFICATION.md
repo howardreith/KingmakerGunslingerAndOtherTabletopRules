@@ -212,6 +212,44 @@ This checkpoint does not claim installed-game race visual acceptance.
 Steam-backed execution, direct image inspection, and separate equipment,
 animation, production, and persistence gates remain required.
 
+## First finalist matrix diagnostic
+
+The clean published run at
+`runtime-evidence/20260830T2237589386140Z-gunslinger-outfit-finalist-race-matrix`
+used Steam App ID 640820, exact save `KMG_AUTOMATION_WORKING`, and commit
+`fe86bce4484d45ca8f6a6f7070bfd7942fd5a0fc`. It loaded MVID
+`985fe6cf-03f4-4120-9a8e-e586315c1135` and DLL SHA-256
+`09fcb5096344aac82da288b8306b212b8b0dc44c9c7654f4d6515ff293a735a9`.
+The outer and in-game result correctly reported FAIL after 122,368 ms.
+
+Male Aasimar completed native-default and alternate palettes, producing two
+records, four PNGs, ten views, and one exact restoration. Before female
+Aasimar finalist application, the first deterministic native donor failed the
+original-avatar exactness requirement. The gate stopped rather than applying
+or scoring against an unproven body. Guard, working-save boundary, installed
+Assembly-CSharp identity, cleanup, no-save behavior, no-production mutation,
+and automatic exit passed. No Kingmaker process remained.
+
+The retained donor inventory also showed a Medium initial female Halfling
+source. The repaired selector now requires canonical size (Small for Gnome and
+Halfling; Medium for all other installed player races), retains all exact
+race/gender/size sources in deterministic order, and probes each source before
+acceptance. The probe removes and re-adds the original avatar entities and
+requires exact order, primary/secondary ramps, and saved links. A rejected
+disposable source is recorded with its attempt index, identity, reason, and
+mismatch details, retired, and followed by the next source. This does not
+weaken restoration or touch a campaign actor.
+
+After repair, repository validation, game-reference compilation, all
+1365/1365 tests, clean Release build, package construction, strict standalone
+and local-runtime validation, and the quiescent 163-check runtime preflight
+pass. Pre-publication repair package SHA-256 is
+`255de7da0529767b089d65fbd9638fb4964020a562797f1c6048d3315014c624`;
+DLL SHA-256 is
+`c9840e31c00997b9c6d50b6f6b044175cbe34165d3f00414ce90fc7781040bef`.
+Full installed-game rerun and direct inspection remain open; the partial images
+make no aesthetic or compatibility acceptance claim.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result
