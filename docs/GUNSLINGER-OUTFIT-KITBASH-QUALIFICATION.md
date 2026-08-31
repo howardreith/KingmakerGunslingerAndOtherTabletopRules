@@ -775,3 +775,58 @@ broken material, baked weapon duplication, unacceptable body-part hiding,
 severe animation clipping, unsafe race/gender gap, broken armor transition,
 optional dependency, or generic-Fighter identity. Until every applicable gate
 above passes, the mission remains unqualified.
+
+## 2026-08-31 production motion source qualification
+
+Scenario: `gunslinger-outfit-production-motion`.
+
+Guard boundary:
+
+- autonomous guarded request only;
+- exact permitted save `KMG_AUTOMATION_WORKING`;
+- Steam App ID 640820 launch remains mandatory for the runtime run;
+- no save-writing API, UI input, mouse, screenshots, or player-save mutation;
+- distinct 1,800-second evidence collector and exact cleanup result.
+
+Installed native contracts verified before implementation:
+
+- `UnitMovementAgentBase.MaxSpeedOverride`, `Velocity`, `WantsToMove`,
+  `IsReallyMoving`, and `TickMovement(float)`;
+- `UnitAnimationManager.Speed`, `WalkSpeedType`, and
+  `GetAction(UnitAnimationType)`;
+- exact Slow/Normal enum in
+  `Kingmaker.Visual.Animation.Kingmaker.Actions`;
+- `UnitMoveTo`, same-area `ForcedPath`, and `ForceLookAt`;
+- `UnitAttack.CreateAttackCommand`, `UnitCommands.Run`, and acted animation;
+- production Reload Firearm through `AbilityData`, `TargetWrapper`, and
+  `UnitUseAbility`, with `ReloadRuntimeDiagnostics` and exact ammunition
+  deltas.
+
+Expected evidence is exactly two production Human fixtures, eight actions per
+fixture, 54 records/sidecars, 54 four-view PNGs, 216 labeled views, six attack
+outcomes, four movement outcomes, two turn outcomes, two reload outcomes, and
+two original-avatar restorations. Required states are unarmed idle; slow walk;
+normal run; right turn; pistol and musket native attack; production musket
+reload; and native Shortsword melee. Fixed and event-aligned schedules are
+encoded in the source and focused test.
+
+Local source gates:
+
+- repository validation: `PASS`;
+- complete Release domain/reflection suite: `1369/1369 PASS`;
+- focused `outfit-render.production-motion`: `PASS`;
+- clean installed-reference Release build: `PASS`;
+- firearm manifest and SoundBank checks: `PASS`;
+- strict standalone UMM package validation: `PASS`;
+- runtime scenario preflight: `169 PASS`;
+- local package SHA-256:
+  `00c80de81ff7acc218c1bbf08e51623950281f90e74e5750fee685da48b6e9be`;
+- local DLL SHA-256:
+  `c60baee8be07590b39c30a8685bde51e277bb13d8f9d0b226fb9f3950a1e4abd`;
+- local DLL MVID: `a9e50b0b-b2e1-42f4-aa91-c9cdf98d4c5c`.
+
+These are pre-commit local identities. Motion remains `PENDING` until the
+exact published commit is rebuilt/installed, the guarded Steam run reaches
+terminal `PASS`, every sidecar/hash/invariant is reconciled, and all 54 images
+are directly inspected. Persistence remains a separate subsequent gate, so
+the selected candidate remains 88/100.

@@ -134,6 +134,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gunslingerOutfitFinalistRaceMatrix;
         private GunslingerOutfitRenderScenario.ProductionCompatibilitySession
             _gunslingerOutfitProductionCompatibility;
+        private GunslingerOutfitRenderScenario.ProductionCompatibilitySession
+            _gunslingerOutfitProductionMotion;
         private CraftMagicItemsAmmunitionUiObserver.Session
             _craftMagicItemsAmmunitionUiObserver;
         private bool _craftMagicItemsPersistenceSaveStarted;
@@ -701,6 +703,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitCandidateRender &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitFinalistRaceMatrix &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitProductionCompatibility &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
                     _trace.Record("manual-interaction-timeout",
@@ -1494,6 +1497,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.GunslingerOutfitProductionCompatibility ||
                     _request.Scenario ==
+                        RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion ||
+                    _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro ||
@@ -1556,6 +1561,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.GunslingerOutfitFinalistRaceMatrix ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.GunslingerOutfitProductionCompatibility ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -2183,6 +2190,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_gunslingerOutfitProductionCompatibility.Complete)
                         Complete(
                             _gunslingerOutfitProductionCompatibility.Result);
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .GunslingerOutfitProductionMotion)
+                {
+                    if (_gunslingerOutfitProductionMotion == null)
+                        _gunslingerOutfitProductionMotion =
+                            GunslingerOutfitRenderScenario
+                                .BeginProductionMotion(_context, _request);
+                    _gunslingerOutfitProductionMotion.Poll();
+                    if (_gunslingerOutfitProductionMotion.Complete)
+                        Complete(
+                            _gunslingerOutfitProductionMotion.Result);
                 }
                 else
                 {

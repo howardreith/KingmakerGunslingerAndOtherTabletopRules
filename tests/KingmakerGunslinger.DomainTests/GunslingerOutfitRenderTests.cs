@@ -302,6 +302,114 @@ namespace KingmakerGunslinger.DomainTests
                     forbidden);
         }
 
+        internal static void ProductionMotionIsGuardedAndExact()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionMotionScenario.cs");
+            string shared = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionCompatibilityScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            const string scenario =
+                "gunslinger-outfit-production-motion";
+            Assertions.True(catalog.Contains(
+                    "GunslingerOutfitProductionMotion") &&
+                catalog.Contains(scenario) &&
+                runner.Contains("BeginProductionMotion(") &&
+                runner.Contains(
+                    "_gunslingerOutfitProductionMotion.Poll()") &&
+                WorkingSavePredicate(request).Contains(
+                    "GunslingerOutfitProductionMotion") &&
+                automation.Contains("'" + scenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains(
+                    scenario + "-only-permits-working-save") &&
+                project.Contains(@"RuntimeTesting\GunslingerOutfitProductionMotionScenario.cs"),
+                "Production outfit motion is not wired through every guarded working-save surface.");
+            string metadata = automation.Substring(
+                automation.IndexOf("'" + scenario +
+                    "' = [pscustomobject]", StringComparison.Ordinal), 500);
+            Assertions.True(metadata.Contains(
+                    "RequiresSaveName = $true") &&
+                metadata.Contains(
+                    "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                metadata.Contains(
+                    "RequiresManualInteraction = $false"),
+                "Production outfit motion must fail closed to the disposable working save.");
+            int collectorStart = orchestrator.IndexOf(
+                "elseif ($Scenario -eq '" + scenario + "')",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                orchestrator.Substring(collectorStart,
+                    Math.Min(500, orchestrator.Length - collectorStart))
+                    .Contains(
+                        "[Math]::Max($TimeoutSeconds, 1800) + 15"),
+                "Production outfit motion needs its exact bounded collector window.");
+
+            Assertions.Equal(8, Regex.Matches(source,
+                "new ProductionMotionSpec\\(").Count,
+                "The production motion matrix must contain exactly eight actions.");
+            foreach (string token in new[]
+            {
+                "unarmed-idle", "musket-slow-walk",
+                "musket-normal-run", "musket-turn-right",
+                "pistol-native-attack", "musket-native-attack",
+                "musket-production-reload", "shortsword-native-melee",
+                "57c8994d1f1becf49ac4f642e5d8ca9d",
+                "ProductionFirearms.Pistol", "ProductionFirearms.Musket",
+                "UnitMoveTo", "Pathfinding.ForcedPath",
+                "MaxSpeedOverride", "WalkSpeedType.Slow",
+                "WalkSpeedType.Normal", "ForceLookAt",
+                "UnitAttack.CreateAttackCommand", "IsSingleAttack = true",
+                "new AbilityData(", "new UnitUseAbility(",
+                "ReloadTestMusketRuntime.Evaluate", "ExecutionProcess.Tick()",
+                "ProductionMotionAttackUpdates",
+                "ProductionMotionReloadUpdates", "1, 12, 36",
+                "1, 12, 36, 96, 160, 240",
+                "CaptureContactSheet(", "ProductionMotionOutfitExact()",
+                "ProductionEntitiesPresent()", "ProductionRampEvidence()",
+                "RestoreProductionSnapshot(_avatarBefore",
+                "RestoreProductionMotionInventory",
+                "RetireProductionMotionTarget",
+                "productionBlueprintMutated", "saveApiCalled"
+            })
+                Assertions.True(source.Contains(token),
+                    "Production motion lacks exact evidence token: " +
+                    token);
+            foreach (string token in new[]
+            {
+                "IsProductionMotion", "PollProductionMotion()",
+                "PrepareProductionMotionCleanup()",
+                "RestoreProductionMotionInventory()",
+                "FinishProductionMotion(cleaned)", "SameReferences("
+            })
+                Assertions.True(shared.Contains(token),
+                    "Shared production fixture lacks motion hook token: " +
+                    token);
+            foreach (string forbidden in new[]
+            {
+                "SaveGame", "QuickSave", "ScreenCapture", "Input.",
+                "Mouse.", "PlayerPrefs"
+            })
+                Assertions.False(source.Contains(forbidden),
+                    "Production motion contains a forbidden save/UI token: " +
+                    forbidden);
+        }
+
         internal static void FinalistRaceMatrixIsExactAndReversible()
         {
             string source = QualificationSource();
