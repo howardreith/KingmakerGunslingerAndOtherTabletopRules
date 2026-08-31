@@ -1526,3 +1526,52 @@ the exact commit, and run attempt 13. Candidate score remains 88/100.
 
 Exact next action: commit and policy-publish the repair, rebuild the exact
 commit, and run attempt 14. Candidate score remains 88/100.
+
+## 2026-08-31 - Motion attempt 14 and locomotion action contract
+
+- Published commit: `4447ebd679aaf55058958a52b69ba9ac4b00effb`.
+- Commit-bound package SHA-256:
+  `028fd526db9656a4952d3343e0f08453343ff6a5614d53acad475f0e23eff833`.
+- Loaded DLL SHA-256:
+  `348b19e22d598cb5a818ff7847a6e7a896966ab2380bad710318ab85c90585c2`;
+  MVID: `2cedc19a-8bac-4655-b0ed-03e02e98b3a4`.
+- Evidence: `20260831T1608345329020Z-gunslinger-outfit-production-motion`.
+- Result: terminal `FAIL` with 54/54 records and 216/216 views. Every
+  assertion except `gunslinger-outfit-production-motion-fixtures` passed.
+- Both fixture creation gates passed with preloading false, the outfit and
+  humanoid rig were exact, both disposable brains were disabled, and all
+  native locomotion, turn, attack, reload, restoration, combat, cleanup,
+  immutable-blueprint, working-save/no-save, and exit contracts passed.
+- The lone failure came from a stale `locomotionClipCount > 0` requirement.
+  The native action has no generic clips in this configuration even though
+  accepted `UnitMoveTo` commands produced measured velocity/displacement,
+  distinct walk/run speeds, and visible motion poses. Repository exact-game
+  precedent checks that the locomotion action exists, not that its generic
+  clip collection is populated.
+- Reconciliation passed for every PNG/sidecar hash, byte length, identity,
+  and meaningful-pixel count: 54 unique PNGs, 54 sidecars, 27 records per
+  gender, and 216 views. Index SHA-256:
+  `278cce94824eaae17a5886071221aa54eb541108900030346f086b661ad2fc66`.
+  Canonical PNG-set digest:
+  `043f3dd3d8cd2bbba09dc035067dd0e110b19ac6fab41c67ab1a4ef8813605cd`.
+- I directly reviewed all 54 four-view sheets in six temporary boards outside
+  the repository. Outfit geometry stayed complete and coherent across every
+  pose with no body/outfit clipping, missing part, or detached accent. Native
+  combat outlining in some frames did not change or obscure the kitbash.
+  Because terminal status was `FAIL`, none of this batch is accepted for the
+  final motion gate.
+- The repair records/requires `locomotionActionPresent`, leaves clip count
+  informational, and retains every live-movement requirement. Repository
+  validation, installed-reference compile, all `1369/1369` tests, clean
+  Release/package construction, strict firearm/audio/package validation, and
+  the settled 169-check preflight pass. Its first pass reported only the
+  documented artifact-tree stabilization sentinel. Pre-commit package
+  SHA-256 is
+  `3c6cc236fc0e84b1da02616bcafe15eb82c427c6b8ea7e1f4ffc1ddbea285b49`,
+  DLL SHA-256 is
+  `5d46a1faeb471014841af5732244ad64e22b3c15ae935fc28fb950119a68c2f1`,
+  and MVID is `6b1c2eb8-6a9a-41d2-b15e-de3d1df503ef`.
+
+Exact next action: commit and policy-publish this contract repair, rebuild its
+exact commit, and run attempt 15. Candidate score remains 88/100 pending
+terminal motion and persistence PASS.

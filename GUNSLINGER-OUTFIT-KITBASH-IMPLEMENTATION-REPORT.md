@@ -1157,3 +1157,47 @@ DLL SHA-256 is
 `379f0bc2a1612065b3ae53539b391f11ac20161be18b4a0dfb0f47bba8803a89`,
 and MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`. An exact-commit replacement
 run remains pending.
+
+### Fourteenth motion execution and locomotion action predicate
+
+Published commit `4447ebd679aaf55058958a52b69ba9ac4b00effb` ran through
+Steam 640820 with package SHA-256
+`028fd526db9656a4952d3343e0f08453343ff6a5614d53acad475f0e23eff833`,
+DLL SHA-256
+`348b19e22d598cb5a818ff7847a6e7a896966ab2380bad710318ab85c90585c2`,
+and MVID `2cedc19a-8bac-4655-b0ed-03e02e98b3a4`. Evidence
+`20260831T1608345329020Z-gunslinger-outfit-production-motion` completed the
+full two-fixture 54-record/216-view matrix. The resource gate worked for both
+fixtures, and every mechanical, isolation, restoration, cleanup, no-save,
+blueprint, and automatic-exit assertion passed.
+
+The only terminal failure was a fixture subpredicate requiring a positive
+generic locomotion clip count. The live animation managers and movement agents
+completed accepted walk and run commands with measured velocity,
+displacement, distinct speeds, and captured animated poses. The generic clip
+list is therefore not a valid proxy for locomotion support. Existing
+exact-game repository code likewise treats `GetAction(LocoMotion) != null` as
+the animation surface contract.
+
+Every PNG/sidecar pair reconciled against the index; there are 54 unique PNGs,
+54 sidecars, 27 records per gender, and 216 views. Index SHA-256 is
+`278cce94824eaae17a5886071221aa54eb541108900030346f086b661ad2fc66`,
+and the filename-sorted PNG-set digest is
+`043f3dd3d8cd2bbba09dc035067dd0e110b19ac6fab41c67ab1a4ef8813605cd`.
+Direct review of all 54 four-view sheets found the selected outfit complete
+and unclipped through idle, walk, run, turn, pistol, musket, reload, and
+shortsword states. The terminal failure keeps the batch provisional.
+
+The implementation now records and requires a non-null locomotion action,
+retains clip count for diagnosis, and keeps the successful live-motion
+contracts unchanged. Installed-reference compilation, repository validation,
+all `1369/1369` tests, clean Release/package construction, strict
+package/firearm/audio validation, and the settled 169-check preflight pass.
+The first preflight reported only the expected artifact-tree stabilization
+sentinel. Pre-commit package SHA-256 is
+`3c6cc236fc0e84b1da02616bcafe15eb82c427c6b8ea7e1f4ffc1ddbea285b49`,
+DLL SHA-256 is
+`5d46a1faeb471014841af5732244ad64e22b3c15ae935fc28fb950119a68c2f1`,
+and MVID is `6b1c2eb8-6a9a-41d2-b15e-de3d1df503ef`. Exact-commit attempt 15 is
+pending; motion and the bundled compatibility score remain unqualified until
+that run passes.
