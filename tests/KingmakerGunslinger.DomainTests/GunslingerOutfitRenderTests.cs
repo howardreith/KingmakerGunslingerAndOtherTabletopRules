@@ -385,6 +385,18 @@ namespace KingmakerGunslinger.DomainTests
                 "RestoreProductionSnapshot(_avatarBefore",
                 "RestoreProductionMotionInventory",
                 "RetireProductionMotionTarget",
+                "RetireProductionMotionFactions",
+                "PrepareProductionMotionActorBlueprint",
+                "ConfigureProductionMotionFaction",
+                "CreateProductionMotionTarget",
+                "AttackFactions = new[] { enemy }",
+                "IsDirectlyControllable = false",
+                "_actor.Group.Memory.Remove(retiredTarget)",
+                "ProductionMotionPlayerBoundaryExact",
+                "actorTargetBilateralEnemy",
+                "actorSharesPlayerGroup",
+                "targetSharesPlayerGroup",
+                "playerHostility=False",
                 "ReconcileProductionMotionCombatBoundary",
                 "_motionTarget.LeaveCombat()",
                 "_actor.LeaveCombat()",
@@ -422,10 +434,15 @@ namespace KingmakerGunslinger.DomainTests
                     "_motionTarget.CombatState.LeaveCombat()") ||
                 source.Contains("_actor.CombatState.LeaveCombat()"),
                 "Production motion must not bypass UnitEntityData combat-leave events.");
+            Assertions.False(source.Contains("SpawnHostileTarget(") ||
+                source.Contains("Game.Instance.Player.Party.Add("),
+                "Production motion must use its request-local faction pair and never enlist the working-save party.");
             foreach (string token in new[]
             {
                 "IsProductionMotion", "PollProductionMotion()",
+                "PrepareProductionMotionActorBlueprint(_actorBlueprint)",
                 "PrepareProductionMotionCleanup()",
+                "RetireProductionMotionFactions()",
                 "RestoreProductionMotionInventory()",
                 "FinishProductionMotion(cleaned)", "SameReferences("
             })

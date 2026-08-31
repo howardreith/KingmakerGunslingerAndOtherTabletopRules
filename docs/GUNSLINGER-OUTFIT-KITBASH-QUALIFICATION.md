@@ -944,3 +944,41 @@ firearm/audio validation pass. The first preflight reported only the known
 artifact-tree stabilization sentinel; the unchanged rerun passed 169/169.
 Motion remains `PENDING` until an exact-commit replacement terminal PASS,
 structured reconciliation, and direct image review.
+
+## 2026-08-31 production motion attempt 4
+
+Published source commit:
+`f127e1f25f0d6d562a27a56ce9fe23f9b1ab8044`.
+Commit-bound package SHA-256:
+`66d97da08b4615991210cf74e5f0784d1de3c8910dfcecac78d779ec96f6dbed`.
+Loaded DLL SHA-256:
+`ea7c0b4931fbd32587aa9451b2c3475613bb866cc3658ad9dc67b63abfe7229e`.
+MVID: `1f1de511-e4f9-4f52-98e0-ec2127a56494`.
+Evidence directory:
+`20260831T0601202638447Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` after 9/54 records.
+
+The complete male pistol schedule reached fixed and acted frames and recorded
+one exact discharge, but transition to musket rejected a non-quiescent prior
+action. No partial capture is accepted. Identity, save-name, no-save, game,
+blueprint, inventory, target, structural cleanup, and exit guards held; player
+and turn-based combat remained true and correctly failed the cleanup gate.
+
+Installed IL proves the disposable actor inherited the real player faction and
+therefore the directly-controllable group. It also proves native group memory
+can rejoin a live conscious hostile between actions. The replacement creates
+two non-player, player-neutral faction clones with only bilateral request-local
+hostility and a fresh target for each attack. Sidecars and live guards require
+no shared player group, no actor/target hostility to the real anchor, and exact
+player/party/turn-based caches at every tick and capture. Target memory links,
+targets, blueprints, and faction clones are all request-local and destroyed.
+Installed-reference compile, repository validation, and all `1369/1369` tests
+pass. Clean Release/package and strict firearm/audio validation pass. The first
+preflight reported only the known artifact-tree stabilization sentinel; the
+unchanged rerun passed all 169 checks. Pre-commit package SHA-256 is
+`78e8a067544d097c158aa77ce014fa9ccc0caf9863a6d2d9691492c7821cfd9c`,
+DLL SHA-256 is
+`db27ce97885fbba43df32c5bc804fde1ef81d3e6ed45c521c1bfd7386616cd9d`,
+and MVID is `f4bc8c6e-c148-4890-818c-34dba4f32f1a`. Motion remains
+`PENDING` until an exact-commit terminal PASS, structured reconciliation, and
+direct image review.

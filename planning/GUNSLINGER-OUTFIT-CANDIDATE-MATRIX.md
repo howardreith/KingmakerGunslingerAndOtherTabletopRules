@@ -512,3 +512,27 @@ preflight pass. Pre-commit package/DLL SHA-256 values are
 and `9f717b6c8d08f39cd67635bfc5e635543e38d60a38ce215a0a5c4f590cadfa41`.
 `magus-complete` remains 88/100 until a complete replacement motion PASS and
 the independent persistence gate.
+
+### Production motion attempt 4 diagnostic
+
+Exact published package `66d97da08b4615991210cf74e5f0784d1de3c8910dfcecac78d779ec96f6dbed`
+at commit `f127e1f25f0d6d562a27a56ce9fe23f9b1ab8044` produced 9/54
+records in evidence `20260831T0601202638447Z-gunslinger-outfit-production-motion`
+before rejecting the transition from pistol to musket attack. The full male
+pistol schedule fired and acted, but the actor's inherited player faction had
+coupled native combat to the working-save group. No partial record is scored.
+
+The replacement uses a request-local mutually hostile faction pair, a fresh
+target per attack, zero hostility to the real player anchor, and per-tick exact
+player/party/turn-based equality. Installed-reference compilation and all
+`1369/1369` tests pass. This is harness isolation evidence, not candidate
+acceptance; `magus-complete` remains 88/100 pending a complete motion PASS and
+the independent persistence gate.
+
+Clean strict packaging and the settled 169-check preflight pass. The initial
+preflight produced only the documented stabilization sentinel. Pre-commit
+package/DLL SHA-256 values are
+`78e8a067544d097c158aa77ce014fa9ccc0caf9863a6d2d9691492c7821cfd9c` and
+`db27ce97885fbba43df32c5bc804fde1ef81d3e6ed45c521c1bfd7386616cd9d`;
+MVID is `f4bc8c6e-c148-4890-818c-34dba4f32f1a`. This does not change
+the score or accept partial runtime evidence.

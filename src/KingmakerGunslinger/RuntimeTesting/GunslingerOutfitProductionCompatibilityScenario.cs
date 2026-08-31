@@ -468,6 +468,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _stage = "spawn-production-" + fixture.Label;
                 _actorBlueprint = UnityEngine.Object.Instantiate(
                     fixture.Source);
+                if (IsProductionMotion)
+                    PrepareProductionMotionActorBlueprint(_actorBlueprint);
                 _actorBlueprint.Race = fixture.Race;
                 _actorBlueprint.Gender = fixture.Gender;
                 _actorBlueprint.Body = CreateProductionNeutralBody(
@@ -1715,7 +1717,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (IsProductionMotion)
                         PrepareProductionMotionCleanup();
-                    RetireProductionActor();
+                    try
+                    {
+                        RetireProductionActor();
+                    }
+                    finally
+                    {
+                        if (IsProductionMotion)
+                            RetireProductionMotionFactions();
+                    }
                 }
                 catch (Exception cleanupException)
                 {
