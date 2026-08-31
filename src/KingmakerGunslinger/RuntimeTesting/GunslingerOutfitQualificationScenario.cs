@@ -439,11 +439,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(fixture.Label +
                             " character-creation DollData did not create a " +
                             "native view with a root Character component.");
-                    _actor = Game.Instance.EntityCreator.SpawnUnit(
-                        _actorBlueprint, dollView,
-                        NearestNavigable(_anchor.Position +
-                            new Vector3(-3.5f, 0f, 3.5f)),
-                        Quaternion.identity, _anchor.HoldingState);
+                    dollView.Blueprint = _actorBlueprint;
+                    dollView.UniqueId = Guid.NewGuid().ToString();
+                    dollView.transform.position = NearestNavigable(
+                        _anchor.Position + new Vector3(-3.5f, 0f, 3.5f));
+                    dollView.transform.rotation = Quaternion.identity;
+                    _actor = Game.Instance.EntityCreator
+                        .SpawnEntityWithView(dollView,
+                            _anchor.HoldingState) as UnitEntityData;
+                    if (_actor == null ||
+                        !ReferenceEquals(_actor.View, dollView))
+                        throw new InvalidOperationException(fixture.Label +
+                            " native doll view ownership transfer failed.");
+                    dollView = null;
                 }
                 finally
                 {

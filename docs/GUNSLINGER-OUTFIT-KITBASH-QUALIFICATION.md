@@ -408,6 +408,35 @@ DLL SHA-256 is
 A published commit-bound rerun and direct inspection of all replacement images
 remain mandatory.
 
+The published lifecycle rerun at
+`runtime-evidence/20260831T0044105199782Z-gunslinger-outfit-finalist-race-matrix`
+loaded commit `08bfed17843adf348b210883b6f929b1af7c5678`, exact DLL
+SHA-256
+`9ebe80a42b3711dcc874357792da4b5a2e797eb0db18cd7a8d7f7d9a5e374db8`,
+and MVID `f8abfd0e-59da-48c0-a796-15f085984c32`. All five male-Aasimar
+donors attached and passed body, rig, size, and no-weapon checks, but each
+recorded `dollExact=false` and zero renderers after 360 updates. No image was
+created. Save, production, cleanup, and automatic-exit gates passed.
+
+Installed IL identifies an ownership mismatch:
+
+- `DollData.CreateUnitView` returns an instantiated, runtime-configured view;
+- `SpawnUnit(BlueprintUnit, UnitEntityView, ...)` instantiates its argument
+  again before registration;
+- public `SpawnEntityWithView` attaches and registers the supplied view without
+  cloning it.
+
+The corrected probe initializes the existing view's blueprint, unique ID, and
+transform, registers it directly, and requires the actor's view to be the same
+reference before transferring cleanup ownership. Focused tests forbid the
+double-clone path. Repository validation, 1365/1365 tests, clean
+installed-reference Release packaging, and strict package validation pass.
+Pre-publication package SHA-256 is
+`d1dfe7cf3697e5757ce0bc86d7f0e2af72a621e98e4021c5ff5101511885a0ec`;
+DLL SHA-256 is
+`5462960ebbfd8815523b2132e84d7b2377dfc52a051b2ccdb04a646bf33e7108`.
+The complete published rerun and direct image review remain mandatory.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

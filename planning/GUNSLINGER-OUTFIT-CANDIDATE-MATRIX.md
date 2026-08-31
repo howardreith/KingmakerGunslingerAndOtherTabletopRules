@@ -241,3 +241,15 @@ runtime avatar afterward. All 1365 tests and clean strict packaging pass.
 No candidate was rendered or compared in the failed run, so
 `magus-complete` remains provisional at 81/100 and production remains
 unchanged.
+
+The next published run,
+`20260831T0044105199782Z-gunslinger-outfit-finalist-race-matrix`, proved
+the root-component lifecycle repair but rejected all five male-Aasimar donors
+before rendering: each had exact body identity, rig, size, and empty weapon
+models, while the expected doll entities and renderers were absent. Installed
+IL shows that `SpawnUnit` cloned the already-instantiated doll view a second
+time, losing its runtime `Character` equipment state. The corrected fixture
+uses public native `SpawnEntityWithView` and requires that the registered actor
+own that exact view reference. All 1365 tests and clean strict packaging pass.
+No outfit image or comparison resulted, so `magus-complete` remains
+provisional at 81/100 and production is still unchanged.

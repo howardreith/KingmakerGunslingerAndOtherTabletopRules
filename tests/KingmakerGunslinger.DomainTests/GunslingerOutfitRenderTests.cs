@@ -269,7 +269,11 @@ namespace KingmakerGunslinger.DomainTests
                 "CreateData()",
                 "CreateUnitView(false)",
                 "dollView.GetComponent<Character>()",
-                "_actorBlueprint, dollView,",
+                "dollView.Blueprint = _actorBlueprint",
+                "dollView.UniqueId = Guid.NewGuid().ToString()",
+                "SpawnEntityWithView(dollView,",
+                "ReferenceEquals(_actor.View, dollView)",
+                "dollView = null;",
                 "Body.AllSlots",
                 "slot.RemoveItem(false)",
                 "character-creation-doll-not-neutral",
@@ -323,6 +327,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(source.Contains(
                     "dollView.CharacterAvatar"),
                 "CharacterAvatar is initialized by UnitEntityView.OnDataAttached and must not be required on the unbound DollData view template.");
+            Assertions.False(source.Contains(
+                    "_actorBlueprint, dollView,"),
+                "The configured DollData view must be registered directly; SpawnUnit would clone it and lose Character runtime equipment state.");
             foreach (string id in new[]
             {
                 "6df8f61725a84294c8661bb9585eca97",
