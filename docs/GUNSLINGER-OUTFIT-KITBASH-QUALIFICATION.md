@@ -1107,6 +1107,51 @@ MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. Motion remains `PENDING`
 until an exact-commit terminal PASS, structured reconciliation, and direct
 review of all 54 replacement images.
 
+## 2026-08-31 production motion attempt 11
+
+Published source commit:
+`4ef28f65577d09329536a905976b405cac4562ef`.
+Commit-bound package SHA-256:
+`6f849b89c4ffba745585d268c1a1ff12c83074b2e5f80d13853e91e3c6c77a34`.
+Loaded DLL SHA-256:
+`871a89190537624f150356e381b106cb162b70a215936c780913642096cb01c4`.
+MVID: `10e8676b-e8d8-48f4-b4a1-210d0afe0d2f`.
+Evidence directory:
+`20260831T1438053243232Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` before record 1/54.
+
+The male Human fixture again timed out before production application with no
+native DollData entities or hair
+(`doll=False;hair=False;noWeapon=True;active=.`). Guarded request, exact game
+and loaded-build identity, disposable working-save/no-save boundary,
+production-blueprint immutability, exact player and structural cleanup,
+empty/disposed request-local scene, and automatic exit passed. No PNG was
+created or accepted.
+
+Because this is the second occurrence of attempt 9's pre-action boundary, no
+unchanged retry is permitted. Installed IL shows the native DollData character
+should receive synchronously resolved equipment entities before spawn, while
+the subsequent queued attachment starts, updates, and rebuilds that view's
+character. The pending exact-commit diagnostic records the original character
+after creation, after spawn before the entity tick, after attachment, and at
+timeout. It reports resource-preloading state, Unity instance identity,
+raw/active/saved entity counts, expected ID count, active entity names, and
+template/attached reference equality. These records distinguish creation
+failure, transfer loss, and replacement during attachment without mutating
+production assets or the save.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release/package, strict firearm/audio/package validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+artifact-tree stabilization sentinel. Pre-commit local-runtime package
+SHA-256 is
+`aa512f88878ef88d7486176080552f6ff3ac237f540a3f042d49d75842227112`;
+DLL SHA-256 is
+`0c97e7c7a7c450fa93fef6fcc42a523809302c9dc01934352ab06530cdc0583b`;
+MVID is `47392b4f-cbc0-450f-9b72-82b284e578c7`. Motion remains `PENDING`
+until an exact-commit terminal PASS, structured reconciliation, and direct
+review of all 54 replacement images.
+
 ## 2026-08-31 production motion attempt 8
 
 Published source commit:

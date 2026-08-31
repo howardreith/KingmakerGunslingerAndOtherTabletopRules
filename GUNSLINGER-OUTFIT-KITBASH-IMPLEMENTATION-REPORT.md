@@ -1024,6 +1024,49 @@ DLL SHA-256 is
 and MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`. Exact-commit
 replacement runtime evidence remains pending.
 
+### Eleventh motion execution and doll-attachment lifecycle instrumentation
+
+Published commit `4ef28f65577d09329536a905976b405cac4562ef` ran through
+Steam 640820 with package SHA-256
+`6f849b89c4ffba745585d268c1a1ff12c83074b2e5f80d13853e91e3c6c77a34`,
+DLL SHA-256
+`871a89190537624f150356e381b106cb162b70a215936c780913642096cb01c4`,
+and MVID `10e8676b-e8d8-48f4-b4a1-210d0afe0d2f`. Evidence
+`20260831T1438053243232Z-gunslinger-outfit-production-motion` failed before
+record one. The male Human fixture reached its bounded settle timeout with no
+active DollData entities and no hair. Exact guard, build/game, disposable-save
+and no-save, immutable-blueprint, player state, structural cleanup,
+request-local scene disposal, and automatic-exit contracts passed. No image
+exists or is accepted.
+
+This repeats attempt 9's pre-action boundary, so the unchanged implementation
+will not be retried. Installed IL establishes the useful observation points:
+`DollData.CreateUnitView(false)` instantiates the native character and resolves
+and adds each equipment-entity ID; `SpawnEntityWithView` queues ownership; and
+`UnitEntityView.OnDataAttached` subsequently obtains and starts the character,
+then updates body/class equipment and rebuilds its outfit.
+
+The implementation now retains the original template `Character` and records
+its lifecycle immediately after creation, after spawn but before the entity
+tick, after attachment, and at the settle timeout. Structured diagnostics
+include `ResourcesLibrary.Preloading`, Unity object identity, raw, active, and
+saved equipment counts, expected DollData ID count, active names, and whether
+the attached character is the original instance. This is bounded,
+request-local observation only; it does not add game or save mutations.
+Fallback cleanup explicitly clears the retained references. Focused tests
+require all four diagnostics in causal order.
+
+Installed-reference compilation, repository validation, all `1369/1369`
+tests, clean Release/package construction, strict package/firearm/audio
+validation, and the settled 169-check preflight pass. The first preflight
+reported only the documented artifact-tree stabilization sentinel. Pre-commit
+local-runtime package SHA-256 is
+`aa512f88878ef88d7486176080552f6ff3ac237f540a3f042d49d75842227112`,
+DLL SHA-256 is
+`0c97e7c7a7c450fa93fef6fcc42a523809302c9dc01934352ab06530cdc0583b`,
+and MVID is `47392b4f-cbc0-450f-9b72-82b284e578c7`. Exact-commit attempt 12
+remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
