@@ -665,6 +665,58 @@ DLL SHA-256 is
 A published commit-bound rerun and direct inspection of all 64 replacement
 PNGs remain required.
 
+## 2026-08-30 second production compatibility run
+
+Evidence directory:
+`runtime-evidence/20260831T0319410552031Z-gunslinger-outfit-production-compatibility`.
+
+- published commit:
+  `453f54732c05be6141d3eec259e4c46325f047e0`;
+- commit-bound package SHA-256:
+  `bd3934c4acdfb42ca369753ce29d523f6a3391badfb39a224254ef265b6e1fda`;
+- loaded DLL SHA-256:
+  `d9be26094a0eb8fd6f86dcff5572e85756ff311f1db12d22699ca4311c2b1388`;
+- loaded MVID: `0c09675f-81e2-44f2-b98d-f14dd0ee619e`;
+- result: terminal `FAIL`, not timeout or ambiguous exit;
+- completed scope: all 18 installed race/gender production-link rows, zero
+  fixture records, zero PNGs, and zero visual captures;
+- passed boundaries: exact game/mod/class identity, working save, no save API,
+  production-blueprint immutability, exact party/global-unit cleanup, hooks
+  removed, and automatic exit;
+- failure: after the old production-first settle sequence, class entities,
+  saved links, and empty weapon state were exact, but native hair
+  `9edf6b60bbf4d834facd4789837a3e0b` was absent.
+
+The same hair entity survived through four states in the preceding run. The
+second run therefore exposes scheduler-sensitive fixture ordering, not a
+visual candidate defect. Installed assembly inspection confirms that native
+view attachment has continuing `UnitEntityView`/`Character` lifecycle work;
+the old harness took its mutation snapshot before proving that all resolved
+`DollData` entities had settled. No image exists to inspect from this run.
+
+The corrected source now adopts the accepted race-matrix boundary: before any
+production mutation, it waits at least 30 updates and requires exact descriptor
+`DollData`, every resolved native doll entity, selected hair, humanoid rig,
+active renderers, and no weapon presentation. A bounded timeout records active
+entity names and fails closed. Focused source assertions require this gate to
+precede the production snapshot.
+
+Local corrected-source results:
+
+- repository validation: `PASS`;
+- complete Release domain/reflection suite: `1368/1368 PASS`;
+- clean installed-reference Release build: `PASS`;
+- firearm/SoundBank and strict package validation: `PASS`;
+- package SHA-256:
+  `f7e0b896470a4fc120e6d9f8d7166ca1d6bdfaf7a94c53b1545ba73b12ea073c`;
+- DLL SHA-256:
+  `79f5f5138ea94c37b202d21b9320513a1986c78975d9fd3dd78bd8eeb1e8dd76`;
+- MVID: `1e6d17a7-bb7c-4e5a-b36f-19e64b59969c`.
+
+These are dirty-tree local identities. Publication, commit-bound rebuild,
+quiescent preflight, a full terminal-PASS rerun, and direct inspection of all
+64 replacement PNGs remain required. The candidate stays at 88/100.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

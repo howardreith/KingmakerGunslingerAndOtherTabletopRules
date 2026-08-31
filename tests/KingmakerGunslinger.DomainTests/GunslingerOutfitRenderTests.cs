@@ -256,6 +256,11 @@ namespace KingmakerGunslinger.DomainTests
                 "SetClass(_gunslingerClass)", "GetHairEntities()",
                 "SpawnEntityWithView(dollView,",
                 "CreateProductionNeutralBody", "Body.AllSlots",
+                "native doll did not settle exactly before",
+                "bool nativeDollExact = ReferenceEquals(",
+                "_actor.Descriptor.Doll, _dollData)",
+                "_dollEntities.All(expected =>",
+                "_settleUpdates < MinimumSettleUpdates ||",
                 "ProductionFirearms.Pistol.Item",
                 "ProductionFirearms.Musket.Item",
                 "ProductionFirearms.Blunderbuss.Item",
@@ -278,6 +283,15 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Production compatibility lacks exact evidence token: " +
                     token);
+            int nativeDollGate = source.IndexOf(
+                "bool nativeDollExact", StringComparison.Ordinal);
+            int productionSnapshot = source.IndexOf(
+                "_avatarBefore = TakeProductionSnapshot(_avatar)",
+                StringComparison.Ordinal);
+            Assertions.True(nativeDollGate >= 0 &&
+                productionSnapshot > nativeDollGate,
+                "Production compatibility must settle the complete native " +
+                "DollData avatar before taking the production mutation snapshot.");
             foreach (string forbidden in new[]
             {
                 "SaveGame", "QuickSave", "ScreenCapture", "Input.",

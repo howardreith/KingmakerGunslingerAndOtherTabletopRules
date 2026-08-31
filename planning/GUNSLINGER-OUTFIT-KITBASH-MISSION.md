@@ -572,3 +572,31 @@ Exact next action: publish this focused harness repair, rebuild and validate
 the exact commit, pass quiescent preflight, rerun the complete 32-state matrix,
 and inspect all 64 replacement PNGs. The four partial images from the failed
 batch are diagnostic only and cannot close any visual gate.
+
+## 2026-08-30 - Native-doll settlement retry contract
+
+Stored-musket repair commit
+`453f54732c05be6141d3eec259e4c46325f047e0` loaded exact DLL SHA-256
+`d9be26094a0eb8fd6f86dcff5572e85756ff311f1db12d22699ca4311c2b1388`
+and MVID `0c09675f-81e2-44f2-b98d-f14dd0ee619e` in guarded evidence
+`20260831T0319410552031Z-gunslinger-outfit-production-compatibility`.
+The run failed before any capture because selected native hair was absent at
+the end of the old production-first settle sequence. Exact production links,
+class entities, saved links, save protection, blueprint immutability, cleanup,
+and exit passed. Zero PNGs were produced, so this is not visual rejection
+evidence and the candidate remains 88/100.
+
+Read-only installed-method inspection plus comparison with the already-
+accepted race harness identified the missing pre-mutation boundary. The
+compatibility harness now waits the full native settle minimum and requires
+exact descriptor `DollData`, all resolved doll entities, selected hair, rig,
+renderers, and empty weapon state before snapshot or production mutation. The
+change is harness-only. Repository validation, 1368/1368 tests, clean Release
+build/package, firearm/SoundBank checks, and strict package validation pass;
+local package SHA-256 is
+`f7e0b896470a4fc120e6d9f8d7166ca1d6bdfaf7a94c53b1545ba73b12ea073c`.
+
+Exact next action: publish the readiness correction, rebuild and preflight the
+exact commit, rerun the full 32-state matrix through Steam 640820, and inspect
+all 64 images. Do not advance to motion or persistence qualification until
+this static compatibility gate passes and its complete images are accepted.

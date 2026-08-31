@@ -354,3 +354,22 @@ requires and frames the visible stored musket, and records its presentation
 role. All 1368 tests and clean strict packaging pass. No score changes:
 `magus-complete` remains selected at 88/100 pending the full replacement run
 and direct review.
+
+### Native-doll settlement diagnostic
+
+The corrected stored-musket commit
+`453f54732c05be6141d3eec259e4c46325f047e0` was exercised in guarded run
+`20260831T0319410552031Z-gunslinger-outfit-production-compatibility`.
+It failed before the first capture when selected male-Human hair was absent
+after the harness applied production clothing without first proving the whole
+native doll had settled. All 18 production race/gender link rows, class
+entities, saved links, blueprint immutability, save protection, cleanup, and
+exit remained exact. The same hair survived the preceding run, and this run
+produced zero images.
+
+The evidence is therefore a fixture-ordering diagnostic, not a candidate
+penalty. The harness now requires every resolved `DollData` entity and the
+selected hair to survive the bounded native settle window before any snapshot
+or mutation, matching the accepted all-race harness. All 1368 tests and clean
+strict packaging pass locally. No score changes: `magus-complete` remains
+selected at 88/100 pending a complete terminal-PASS matrix and direct review.

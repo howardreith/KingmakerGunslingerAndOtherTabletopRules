@@ -625,6 +625,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ReferenceEquals(value, _hairEntity)))
                         throw new InvalidOperationException(fixture.Label +
                             " selected hairstyle did not resolve through DollData.");
+                    bool nativeDollExact = ReferenceEquals(
+                            _actor.Descriptor.Doll, _dollData) &&
+                        _dollEntities.Length > 0 &&
+                        _dollEntities.All(expected =>
+                            _avatar.EquipmentEntities.Any(actual =>
+                                ReferenceEquals(expected, actual)));
+                    bool nativeHairPresent = _avatar.EquipmentEntities.Any(
+                        value => ReferenceEquals(value, _hairEntity));
+                    bool nativeNoWeapon =
+                        _actor.Body.PrimaryHand.MaybeItem == null &&
+                        _actor.Body.SecondaryHand.MaybeItem == null &&
+                        _actor.View.HandsEquipment.GetWeaponModel(false) ==
+                            null &&
+                        _actor.View.HandsEquipment.GetWeaponModel(true) ==
+                            null &&
+                        !_actor.View.HandsEquipment.InCombat;
+                    bool nativeReady = nativeDollExact &&
+                        nativeHairPresent && nativeNoWeapon &&
+                        HasExactHumanoidRig(_actor.View.transform) &&
+                        ActiveRenderers(_actor).Length > 0;
+                    if (_settleUpdates < MinimumSettleUpdates ||
+                        !nativeReady)
+                    {
+                        if (_settleUpdates < MaximumSettleUpdates) return;
+                        throw new InvalidOperationException(fixture.Label +
+                            " native doll did not settle exactly before " +
+                            "production application; doll=" +
+                            nativeDollExact + ";hair=" +
+                            nativeHairPresent + ";noWeapon=" +
+                            nativeNoWeapon + ";active=" + string.Join(",",
+                                _avatar.EquipmentEntities.Where(value =>
+                                    value != null).Select(value =>
+                                    value.name).ToArray()) + ".");
+                    }
                     _avatarBefore = TakeProductionSnapshot(_avatar);
                     _savedLinksBefore = ProductionSavedLinks(_avatar);
                     _productionEntities = _gunslingerClass.LoadClothes(
@@ -643,7 +677,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ":productionEntities=" + string.Join(",",
                             CurrentProductionAssetIds()) +
                         ";added=" + missing.Length + ";hair=" +
-                        _hairAssetId);
+                        _hairAssetId + ";nativeSettleUpdates=" +
+                        _settleUpdates);
                     return;
                 }
 
