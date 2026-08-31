@@ -367,3 +367,40 @@ The pre-publication package SHA-256 is
 `d1dfe7cf3697e5757ce0bc86d7f0e2af72a621e98e4021c5ff5101511885a0ec`;
 DLL SHA-256 is
 `5462960ebbfd8815523b2132e84d7b2377dfc52a051b2ccdb04a646bf33e7108`.
+
+## 2026-08-30 - Direct review rejects a no-weapon false positive
+
+Published commit `141c6a8e1fcdacdb61164113ac77a6191b16254e` passed the
+guarded Steam `640820` race matrix at
+`20260831T0058130079392Z-gunslinger-outfit-finalist-race-matrix`.
+Structured evidence reported all 9 player races, 18 gender/race fixtures, 36
+palette records, 72 PNGs/180 views, 18/18 exact restorations, exact cleanup,
+no save API, and no production mutation. All 72 images were then inspected.
+Both female-Human palettes visibly retained the donor's oversized two-handed
+sword, so the mechanically passing batch is visually rejected.
+
+The false-positive record is exact: fixture source
+`AmiriLevel20_Companion`, source GUID
+`ca08eabf5f6a33e4ba366e889e4fecdc`,
+`clearedSlotItemCount=14`, `rendererCount=2`, and
+`noWeaponModels=true`. The existing check observed only the current
+active/inactive `HandsEquipment` references after removing items; it did
+not prove that a previously instantiated donor weapon renderer had been
+destroyed. This changes no candidate score or production binding.
+
+Installed reflection shows that `BlueprintUnit.UnitBody` has a public
+constructor and explicit weapon, armor, accessory, limb, and quick-slot fields.
+The corrected harness replaces only the disposable cloned donor's body before
+entity creation with a request-local neutral body, preserves the native hidden
+`EmptyHandWeapon`, empties starting inventory and limb/quick-slot arrays,
+and rejects any donor that nevertheless creates a slot item. It does not mutate
+the source blueprint and contains no donor-name or donor-GUID exception.
+
+Repository validation, the complete 1365/1365 domain suite, clean
+installed-reference Release construction, packaging, and strict standalone
+package validation pass. The pre-publication package SHA-256 is
+`be1b6048c299f1d996db1091372c8e6c43863f51bae7b287ee58ca76f3c92bbb`;
+DLL SHA-256 is
+`68489bd17dd3bb363bbf53464beda0f7011cc10a7725212b31ef60127c80e13d`.
+The full replacement matrix and direct review of every new image remain
+mandatory.

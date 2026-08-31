@@ -673,3 +673,52 @@ complete matrix. No visual, ranking, or production gate changed.
 Exact next action: publish the direct-view ownership correction, verify refs,
 rebuild its commit-bound package, pass quiescent preflight, and rerun the
 complete matrix. Candidate score and production remain unchanged.
+
+## 2026-08-30 - Mechanical PASS rejected by direct image review
+
+- Commit `141c6a8e1fcdacdb61164113ac77a6191b16254e` was published
+  with exact HEAD/local/origin refs and a clean tree. Its commit-bound runtime
+  package SHA-256 was
+  `835e61db8f1a4b59e45cfec7421eab3b48322e49d355041449a679369b2d4a4b`;
+  DLL SHA-256 was
+  `d5d28e5e974b655cfcd5411aa9ceb726b2de00588a935bad5ababbc520b7c3f4`.
+- Standalone preflight passed 163/163. Guarded Steam `640820` evidence
+  `20260831T0058130079392Z-gunslinger-outfit-finalist-race-matrix`
+  loaded that exact commit and DLL, then reached terminal `PASS`:
+  9 races, 18 fixtures, 36 records, 72 PNGs, 180 views, 18/18
+  restorations, exact unit/party cleanup, no save API, no production mutation,
+  and process exit.
+- Labeled review boards were created outside the repository and every one of
+  the 72 ignored runtime PNGs was inspected. Male and female bodies otherwise
+  showed the coherent Magus pair across all races and both palettes. The
+  female-Human native and alternate records visibly retained an oversized
+  two-handed sword; original-resolution review confirmed it in front, side,
+  rear, three-quarter, and isometric presentation. The matrix is visually
+  rejected.
+- Structured evidence identifies the contaminated source as
+  `AmiriLevel20_Companion` /
+  `ca08eabf5f6a33e4ba366e889e4fecdc` with
+  `clearedSlotItemCount=14`, `rendererCount=2`, and
+  `noWeaponModels=true`. The old assertion checked current
+  `HandsEquipment.GetWeaponModel` references only; removal after entity
+  creation could leave the donor's already-instantiated renderer visible.
+- Installed reflection proves `BlueprintUnit.UnitBody` is a
+  public-constructible nested type with explicit active hand, hand-set, armor,
+  accessory, limb, empty-hand, and quick-slot fields. The repair assigns a new
+  empty body only to the cloned disposable blueprint before
+  `SpawnEntityWithView`, preserves the source
+  `EmptyHandWeapon`, clears starting inventory, and rejects any donor
+  for which `ClearAllQualificationEquipment` still finds an item. It
+  neither mutates a source blueprint nor hardcodes the failed donor.
+- Focused contracts require the clone-before-neutralization order, exact zero
+  created items, and the generic fail-closed rejection. Repository validation,
+  all 1365/1365 tests, clean installed-reference Release/package construction,
+  and strict standalone validation pass. Pre-publication package SHA-256 is
+  `be1b6048c299f1d996db1091372c8e6c43863f51bae7b287ee58ca76f3c92bbb`;
+  DLL SHA-256 is
+  `68489bd17dd3bb363bbf53464beda0f7011cc10a7725212b31ef60127c80e13d`.
+
+Exact next action: publish the neutral-body correction, verify all refs,
+rebuild its commit-bound package, pass quiescent preflight, rerun the complete
+matrix, and directly inspect every replacement image. The candidate remains
+provisional at 81/100 and production remains unchanged.

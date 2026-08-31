@@ -367,6 +367,44 @@ DLL SHA-256 is
 `5462960ebbfd8815523b2132e84d7b2377dfc52a051b2ccdb04a646bf33e7108`.
 The matrix and direct visual gates remain open.
 
+## Neutral-body false-positive correction
+
+Guarded evidence
+`20260831T0058130079392Z-gunslinger-outfit-finalist-race-matrix`
+loaded published commit
+`141c6a8e1fcdacdb61164113ac77a6191b16254e` and its exact
+commit-bound DLL. All structured matrix, restoration, cleanup, no-save, and
+no-production-mutation assertions passed. Direct inspection of all 72
+captures overruled that mechanical result: both female-Human palettes retained
+an oversized two-handed sword from the disposable donor.
+
+The failing fixture recorded `AmiriLevel20_Companion`,
+`clearedSlotItemCount=14`, `rendererCount=2`, and
+`noWeaponModels=true`. Item removal had cleared the current
+`HandsEquipment` references, but it occurred after entity creation and
+did not prove destruction of an already-created renderer. The batch is
+visually rejected; `magus-complete` remains provisional at 81/100,
+and production is unchanged.
+
+Installed reflection establishes a safer pre-creation boundary:
+`BlueprintUnit.UnitBody` is public-constructible and explicitly owns
+all starting hand sets, armor/accessories, limbs, and quick slots. The scenario
+now replaces only the disposable cloned donor's body with a new neutral body
+before registration, preserves its native hidden `EmptyHandWeapon`,
+sets starting inventory and body arrays empty, and rejects the donor if any
+slot item nevertheless exists after spawn. The source blueprint is never
+written, and no donor name or identifier is used by production or harness
+logic.
+
+Focused tests require clone-before-neutralization ordering, zero created slot
+items, source immutability, and generic rejection. Repository validation,
+1365/1365 domain tests, clean installed-reference Release build/package, and
+strict package validation pass. Pre-publication package SHA-256 is
+`be1b6048c299f1d996db1091372c8e6c43863f51bae7b287ee58ca76f3c92bbb`;
+DLL SHA-256 is
+`68489bd17dd3bb363bbf53464beda0f7011cc10a7725212b31ef60127c80e13d`.
+The replacement matrix and full direct image review remain open.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

@@ -274,6 +274,10 @@ namespace KingmakerGunslinger.DomainTests
                 "SpawnEntityWithView(dollView,",
                 "ReferenceEquals(_actor.View, dollView)",
                 "dollView = null;",
+                "CreateNeutralQualificationBody(fixture.Source)",
+                "EmptyHandWeapon = source.Body.EmptyHandWeapon",
+                "neutral-body-created-items",
+                "requestLocalNeutralBody",
                 "Body.AllSlots",
                 "slot.RemoveItem(false)",
                 "character-creation-doll-not-neutral",
@@ -330,6 +334,22 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(source.Contains(
                     "_actorBlueprint, dollView,"),
                 "The configured DollData view must be registered directly; SpawnUnit would clone it and lose Character runtime equipment state.");
+            int donorClone = source.IndexOf(
+                "_actorBlueprint = UnityEngine.Object.Instantiate(",
+                StringComparison.Ordinal);
+            int neutralBody = source.IndexOf(
+                "CreateNeutralQualificationBody(fixture.Source)",
+                StringComparison.Ordinal);
+            string zeroClearedItems = "(int)value[" + (char)34 +
+                "clearedSlotItemCount" + (char)34 + "] == 0";
+            Assertions.True(donorClone >= 0 && neutralBody > donorClone &&
+                source.Contains("_clearedSlotItems != 0") &&
+                source.Contains(zeroClearedItems),
+                "The disposable clone must receive an empty request-local body before spawn, and any later-created slot item must reject the donor.");
+            Assertions.False(source.Contains("fixture.Source.Body =") ||
+                source.Contains("AmiriLevel20_Companion") ||
+                source.Contains("ca08eabf5f6a33e4ba366e889e4fecdc"),
+                "Neutral fixture construction must not mutate a native source blueprint or hardcode the visually contaminated donor.");
             foreach (string id in new[]
             {
                 "6df8f61725a84294c8661bb9585eca97",
