@@ -7,6 +7,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Combat;
+using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.UnitLogic;
@@ -97,6 +98,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionTurnBasedController;
             private UnitCombatLeaveController _motionCombatLeaveController;
             private UnitCombatJoinController _motionCombatJoinController;
+            private AreaPersistentState _motionAreaState;
+            private SceneEntitiesState _motionSceneState;
+            private object[] _motionControllableBefore = new object[0];
+            private object[] _motionCrossSceneBefore = new object[0];
             private bool _motionPlayerCombatBefore;
             private bool _motionTurnBasedCombatBefore;
             private int _motionPartyCombatantsBefore;
@@ -244,6 +249,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 faction.AttackFactions = new[] { enemy };
             }
 
+            private SceneEntitiesState ProductionMotionHoldingState()
+            {
+                if (_motionAreaState == null || _motionSceneState == null ||
+                    !ReferenceEquals(_motionAreaState,
+                        Game.Instance.State.LoadedAreaState) ||
+                    !ReferenceEquals(_motionAreaState,
+                        Game.Instance.CurrentScene) ||
+                    !ReferenceEquals(_motionSceneState,
+                        _motionAreaState.MainState) ||
+                    !_motionSceneState.IsSceneLoaded ||
+                    ReferenceEquals(_motionSceneState,
+                        _motionPlayer.CrossSceneState))
+                    throw new InvalidOperationException(
+                        "Production motion lost its exact loaded-area holding state.");
+                return _motionSceneState;
+            }
+
+            private void RefreshProductionMotionPlayerLists()
+            {
+                _motionPlayer.InvalidateCharacterLists();
+                _motionPlayer.UpdateCharacterLists();
+            }
+
+            private bool ProductionMotionPlayerListsExact()
+            {
+                return _motionPlayer != null &&
+                    _motionPlayer.CrossSceneState != null &&
+                    SameReferences(_motionControllableBefore,
+                        Snapshot(_motionPlayer.ControllableCharacters)) &&
+                    SameReferences(_motionCrossSceneBefore,
+                        Snapshot(_motionPlayer.CrossSceneState.AllEntityData));
+            }
+
             private void PollProductionMotion()
             {
                 if (_phase == 0)
@@ -285,6 +323,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GetController<UnitCombatLeaveController>(true);
                 _motionCombatJoinController = Game.Instance
                     .GetController<UnitCombatJoinController>(true);
+                _motionAreaState = Game.Instance.State.LoadedAreaState;
+                _motionSceneState = _motionAreaState == null ? null :
+                    _motionAreaState.MainState;
                 _motionPowder = BlueprintBootstrap.BasicAmmunition.BlackPowder;
                 _motionBall = BlueprintBootstrap.BasicAmmunition.LeadBall;
                 _motionReloadBlueprint = BlueprintBootstrap
@@ -293,6 +334,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionTurnBasedController == null ||
                     _motionCombatLeaveController == null ||
                     _motionCombatJoinController == null ||
+                    _motionAreaState == null ||
+                    _motionSceneState == null ||
+                    _motionPlayer.CrossSceneState == null ||
+                    !ReferenceEquals(_motionAreaState,
+                        Game.Instance.CurrentScene) ||
+                    !ReferenceEquals(_motionSceneState,
+                        _motionAreaState.MainState) ||
+                    !_motionSceneState.IsSceneLoaded ||
+                    ReferenceEquals(_motionSceneState,
+                        _motionPlayer.CrossSceneState) ||
                     _motionPlayer.Inventory == null ||
                     _motionPowder == null || _motionBall == null ||
                     _motionReloadBlueprint == null ||
@@ -303,6 +354,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.ProductionFirearms.Musket.Item == null)
                     throw new InvalidOperationException(
                         "Production motion dependencies are unavailable.");
+                RefreshProductionMotionPlayerLists();
+                _motionControllableBefore = Snapshot(
+                    _motionPlayer.ControllableCharacters);
+                _motionCrossSceneBefore = Snapshot(
+                    _motionPlayer.CrossSceneState.AllEntityData);
                 _motionPlayerCombatBefore = _motionPlayer.IsInCombat;
                 _motionTurnBasedCombatBefore =
                     TurnBased.Controllers.CombatController
@@ -324,6 +380,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionTurnBasedUnitsBefore != 0)
                     throw new InvalidOperationException(
                         "Production motion requires a clean non-combat working save.");
+                _diagnostics.Add("productionMotionHoldingState=loadedArea:" +
+                    _motionSceneState.GetType().FullName +
+                    ";sceneName=" + _motionSceneState.SceneName +
+                    ";anchorCrossScene=" + ReferenceEquals(
+                        _anchor.HoldingState,
+                        _motionPlayer.CrossSceneState) +
+                    ";controllableCount=" +
+                    _motionControllableBefore.Length +
+                    ";crossSceneCount=" + _motionCrossSceneBefore.Length);
                 BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
                     BlueprintBootstrap.Library,
                     OutfitMotionShortswordItemGuid,
@@ -405,11 +470,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(fixture.Label +
                         " did not retain the production Reload Firearm ability.");
 
+                RefreshProductionMotionPlayerLists();
                 if (_motionActorFaction == null ||
                     _motionTargetFaction == null || _actor.IsPlayerFaction ||
-                    ReferenceEquals(_actor.Group, _motionPlayer.Group))
+                    ReferenceEquals(_actor.Group, _motionPlayer.Group) ||
+                    !ReferenceEquals(_actor.HoldingState,
+                        ProductionMotionHoldingState()) ||
+                    ContainsReference(_motionPlayer.ControllableCharacters,
+                        _actor) || !ProductionMotionPlayerListsExact())
                     throw new InvalidOperationException(fixture.Label +
-                        " did not isolate its request-local actor group.");
+                        " did not isolate its request-local actor and area state.");
                 _actor.Commands.InterruptAll(true);
                 if (_actor.CombatState.IsInCombat)
                     _actor.LeaveCombat();
@@ -430,6 +500,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "actorIsPlayerFaction", _actor.IsPlayerFaction },
                     { "actorSharesPlayerGroup",
                         ReferenceEquals(_actor.Group, _motionPlayer.Group) },
+                    { "actorHoldingStateIsLoadedArea",
+                        ReferenceEquals(_actor.HoldingState,
+                            _motionSceneState) },
+                    { "actorInControllableCharacters",
+                        ContainsReference(
+                            _motionPlayer.ControllableCharacters, _actor) },
+                    { "playerCharacterListsExact",
+                        ProductionMotionPlayerListsExact() },
                     { "actorGroupId", _actor.GroupId },
                     { "movementAgentType",
                         _actor.View.MovementAgent.GetType().FullName },
@@ -480,11 +558,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Array.Empty<BlueprintItem>();
                 _motionTarget = Game.Instance.EntityCreator.SpawnUnit(
                     _motionHostileBlueprint, targetPosition,
-                    Quaternion.identity, _anchor.HoldingState);
+                    Quaternion.identity, ProductionMotionHoldingState());
                 Game.Instance.EntityCreator.Tick();
+                RefreshProductionMotionPlayerLists();
                 if (_motionTarget == null || _motionTarget.View == null ||
                     _motionTarget.Descriptor == null ||
                     _motionTarget.IsPlayerFaction ||
+                    !ReferenceEquals(_motionTarget.HoldingState,
+                        _motionSceneState) ||
+                    ContainsReference(_motionPlayer.ControllableCharacters,
+                        _actor) ||
+                    ContainsReference(_motionPlayer.ControllableCharacters,
+                        _motionTarget) ||
+                    !ProductionMotionPlayerListsExact() ||
                     ReferenceEquals(_motionTarget.Group,
                         _motionPlayer.Group) ||
                     !_actor.IsEnemy(_motionTarget) ||
@@ -506,7 +592,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor.GroupId + ";targetGroup=" +
                     _motionTarget.GroupId + ";playerGroup=" +
                     _motionPlayer.Group.Id + ";bilateralEnemy=True;" +
-                    "playerHostility=False");
+                    "playerHostility=False;loadedArea=True;" +
+                    "playerListsExact=True");
             }
 
             private int MotionAnimationClipCount(UnitAnimationType type)
@@ -1543,12 +1630,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "actorIsPlayerFaction", _actor.IsPlayerFaction },
                     { "actorSharesPlayerGroup",
                         ReferenceEquals(_actor.Group, _motionPlayer.Group) },
+                    { "actorHoldingStateIsLoadedArea", ReferenceEquals(
+                        _actor.HoldingState, _motionSceneState) },
+                    { "actorInControllableCharacters", ContainsReference(
+                        _motionPlayer.ControllableCharacters, _actor) },
                     { "targetPresent", _motionTarget != null },
                     { "targetIsPlayerFaction", _motionTarget != null &&
                         _motionTarget.IsPlayerFaction },
                     { "targetSharesPlayerGroup", _motionTarget != null &&
                         ReferenceEquals(_motionTarget.Group,
                             _motionPlayer.Group) },
+                    { "targetHoldingStateIsLoadedArea",
+                        _motionTarget != null && ReferenceEquals(
+                            _motionTarget.HoldingState, _motionSceneState) },
+                    { "targetInControllableCharacters",
+                        _motionTarget != null && ContainsReference(
+                            _motionPlayer.ControllableCharacters,
+                            _motionTarget) },
                     { "actorTargetBilateralEnemy", _motionTarget != null &&
                         _actor.IsEnemy(_motionTarget) &&
                         _motionTarget.IsEnemy(_actor) },
@@ -1559,6 +1657,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _anchor.IsEnemy(_motionTarget)) },
                     { "playerBoundaryExact",
                         ProductionMotionPlayerBoundaryExact() },
+                    { "playerCharacterListsExact",
+                        ProductionMotionPlayerListsExact() },
                     { "weaponKind", _motionSpec.Weapon },
                     { "itemGuid", _motionWeapon == null ||
                         _motionWeapon.Blueprint == null ? "<none>" :
@@ -1845,6 +1945,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return _motionPlayer != null &&
                     _motionTurnBasedController != null &&
+                    ProductionMotionPlayerListsExact() &&
+                    (_actor == null ||
+                        ReferenceEquals(_actor.HoldingState,
+                            _motionSceneState) &&
+                        !ContainsReference(
+                            _motionPlayer.ControllableCharacters, _actor)) &&
+                    (_motionTarget == null ||
+                        ReferenceEquals(_motionTarget.HoldingState,
+                            _motionSceneState) &&
+                        !ContainsReference(
+                            _motionPlayer.ControllableCharacters,
+                            _motionTarget)) &&
                     _motionPlayer.IsInCombat ==
                         _motionPlayerCombatBefore &&
                     _motionPlayer.Party.Count(unit => unit != null &&
@@ -1881,7 +1993,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionTurnBasedController.HadEnemyAtSomePoint + "/" +
                     _motionTurnBasedHadEnemyBefore + ";units=" +
                     _motionTurnBasedController.SortedUnits.Count() + "/" +
-                    _motionTurnBasedUnitsBefore;
+                    _motionTurnBasedUnitsBefore + ";playerLists=" +
+                    ProductionMotionPlayerListsExact();
             }
 
             private bool ProductionMotionOutfitExact()
@@ -2061,6 +2174,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _motionHostileBlueprint);
                 _motionTarget = null;
                 _motionHostileBlueprint = null;
+                RefreshProductionMotionPlayerLists();
+                if (!ProductionMotionPlayerListsExact())
+                    throw new InvalidOperationException(
+                        "Production motion target retirement changed player character lists.");
             }
 
             private void RetireProductionMotionFactions()
@@ -2082,6 +2199,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_motionPlayer == null)
                     throw new InvalidOperationException(
                         "Production motion lost its exact player reference.");
+                RefreshProductionMotionPlayerLists();
+                bool playerListsBefore =
+                    ProductionMotionPlayerListsExact();
                 bool playerBefore = _motionPlayer.IsInCombat;
                 bool turnBasedBefore =
                     TurnBased.Controllers.CombatController
@@ -2100,6 +2220,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .HasEnemyInCombat;
                 _motionCombatLeaveController.Tick();
                 _motionCombatJoinController.Tick();
+                RefreshProductionMotionPlayerLists();
+                bool playerListsAfter =
+                    ProductionMotionPlayerListsExact();
                 bool playerAfter = _motionPlayer.IsInCombat;
                 bool turnBasedAfter =
                     TurnBased.Controllers.CombatController
@@ -2129,6 +2252,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "turnBasedHadEnemyAfterReconcile", hadEnemyAfter },
                     { "turnBasedUnitsBeforeReconcile", turnBasedUnitsBefore },
                     { "turnBasedUnitsAfterReconcile", turnBasedUnitsAfter },
+                    { "playerCharacterListsBeforeReconcile",
+                        playerListsBefore },
+                    { "playerCharacterListsAfterReconcile",
+                        playerListsAfter },
                     { "expectedPlayerInCombat",
                         _motionPlayerCombatBefore },
                     { "expectedPartyCombatants",
@@ -2155,8 +2282,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "->" + hasEnemyAfter + ";hadEnemy=" +
                     hadEnemyBefore + "->" + hadEnemyAfter +
                     ";turnBasedUnits=" + turnBasedUnitsBefore + "->" +
-                    turnBasedUnitsAfter);
-                if (playerAfter != _motionPlayerCombatBefore ||
+                    turnBasedUnitsAfter + ";playerLists=" +
+                    playerListsBefore + "->" + playerListsAfter);
+                if (!playerListsBefore || !playerListsAfter ||
+                    playerAfter != _motionPlayerCombatBefore ||
                     partyAfter != _motionPartyCombatantsBefore ||
                     turnBasedAfter != _motionTurnBasedCombatBefore ||
                     hasEnemyAfter != _motionTurnBasedHasEnemyBefore ||
@@ -2353,14 +2482,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !(bool)value["saveApiCalled"] &&
                     !(bool)value["actorIsPlayerFaction"] &&
                     !(bool)value["actorSharesPlayerGroup"] &&
+                    (bool)value["actorHoldingStateIsLoadedArea"] &&
+                    !(bool)value["actorInControllableCharacters"] &&
                     !(bool)value["actorPlayerHostility"] &&
                     !(bool)value["targetPlayerHostility"] &&
                     (bool)value["playerBoundaryExact"] &&
+                    (bool)value["playerCharacterListsExact"] &&
                     (string.Equals((string)value["kind"], "attack",
                             StringComparison.Ordinal)
                         ? (bool)value["targetPresent"] &&
                             !(bool)value["targetIsPlayerFaction"] &&
                             !(bool)value["targetSharesPlayerGroup"] &&
+                            (bool)value[
+                                "targetHoldingStateIsLoadedArea"] &&
+                            !(bool)value[
+                                "targetInControllableCharacters"] &&
                             (bool)value["actorTargetBilateralEnemy"]
                         : !(bool)value["targetPresent"]) &&
                     (int)value["activeRendererCount"] > 0 &&
@@ -2432,6 +2568,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _motionTurnBasedHadEnemyBefore &&
                         (int)value["turnBasedUnitsAfterReconcile"] ==
                             _motionTurnBasedUnitsBefore &&
+                        (bool)value[
+                            "playerCharacterListsBeforeReconcile"] &&
+                        (bool)value[
+                            "playerCharacterListsAfterReconcile"] &&
                         string.Equals((string)value[
                             "nativeReconciliation"],
                             "TurnBased.Controllers.CombatController.Tick->" +
@@ -2481,6 +2621,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (bool)value["humanoidRigExact"] &&
                             !(bool)value["actorIsPlayerFaction"] &&
                             !(bool)value["actorSharesPlayerGroup"] &&
+                            (bool)value[
+                                "actorHoldingStateIsLoadedArea"] &&
+                            !(bool)value[
+                                "actorInControllableCharacters"] &&
+                            (bool)value["playerCharacterListsExact"] &&
                             (int)value["locomotionClipCount"] > 0 &&
                             (int)value["mainHandAttackClipCount"] > 0),
                     "production class DollState/CreateData/CreateUnitView plus live rig contracts");
@@ -2568,12 +2713,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _motionInventoryRestored + ";target=" +
                         (_motionTarget == null) + ";factions=" +
                         (_motionActorFaction == null &&
-                            _motionTargetFaction == null),
+                            _motionTargetFaction == null) +
+                        ";playerLists=" +
+                        ProductionMotionPlayerListsExact() +
+                        ";loadedScene=" + ReferenceEquals(
+                            _motionSceneState,
+                            _motionAreaState == null ? null :
+                                _motionAreaState.MainState),
                     cleaned && _motionInventoryRestored &&
                         _motionTarget == null && _motionPlayer != null &&
                         _motionHostileBlueprint == null &&
                         _motionActorFaction == null &&
                         _motionTargetFaction == null &&
+                        ProductionMotionPlayerListsExact() &&
+                        ReferenceEquals(_motionAreaState,
+                            Game.Instance.State.LoadedAreaState) &&
+                        ReferenceEquals(_motionSceneState,
+                            _motionAreaState.MainState) &&
                         _motionPlayer.IsInCombat ==
                             _motionPlayerCombatBefore &&
                         _motionPlayer.Party.Count(unit =>
@@ -2589,7 +2745,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _motionTurnBasedHadEnemyBefore &&
                         _motionTurnBasedController.SortedUnits.Count() ==
                             _motionTurnBasedUnitsBefore,
-                    "request-local actors, targets, factions, items, blueprint clones, cameras, textures, and ammunition");
+                    "loaded-area request-local actors, targets, factions, items, blueprint clones, cameras, textures, and ammunition");
                 Add(_assertions, "loaded-mod-version",
                     _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,

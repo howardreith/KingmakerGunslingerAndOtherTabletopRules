@@ -389,6 +389,12 @@ namespace KingmakerGunslinger.DomainTests
                 "PrepareProductionMotionActorBlueprint",
                 "ConfigureProductionMotionFaction",
                 "CreateProductionMotionTarget",
+                "ProductionMotionHoldingState",
+                "Game.Instance.State.LoadedAreaState",
+                "_motionPlayer.CrossSceneState",
+                "RefreshProductionMotionPlayerLists",
+                "InvalidateCharacterLists",
+                "ProductionMotionPlayerListsExact",
                 "AttackFactions = new[] { enemy }",
                 "IsDirectlyControllable = false",
                 "_actor.Group.Memory.Remove(retiredTarget)",
@@ -396,6 +402,11 @@ namespace KingmakerGunslinger.DomainTests
                 "actorTargetBilateralEnemy",
                 "actorSharesPlayerGroup",
                 "targetSharesPlayerGroup",
+                "actorHoldingStateIsLoadedArea",
+                "actorInControllableCharacters",
+                "targetHoldingStateIsLoadedArea",
+                "targetInControllableCharacters",
+                "playerCharacterListsExact",
                 "playerHostility=False",
                 "ReconcileProductionMotionCombatBoundary",
                 "_motionTarget.LeaveCombat()",
@@ -435,12 +446,16 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("_actor.CombatState.LeaveCombat()"),
                 "Production motion must not bypass UnitEntityData combat-leave events.");
             Assertions.False(source.Contains("SpawnHostileTarget(") ||
-                source.Contains("Game.Instance.Player.Party.Add("),
+                source.Contains("Game.Instance.Player.Party.Add(") ||
+                source.Contains(
+                    "Quaternion.identity, _anchor.HoldingState"),
                 "Production motion must use its request-local faction pair and never enlist the working-save party.");
             foreach (string token in new[]
             {
                 "IsProductionMotion", "PollProductionMotion()",
                 "PrepareProductionMotionActorBlueprint(_actorBlueprint)",
+                "SceneEntitiesState holdingState = IsProductionMotion",
+                "ProductionMotionHoldingState()",
                 "PrepareProductionMotionCleanup()",
                 "RetireProductionMotionFactions()",
                 "RestoreProductionMotionInventory()",

@@ -536,3 +536,30 @@ package/DLL SHA-256 values are
 `db27ce97885fbba43df32c5bc804fde1ef81d3e6ed45c521c1bfd7386616cd9d`;
 MVID is `f4bc8c6e-c148-4890-818c-34dba4f32f1a`. This does not change
 the score or accept partial runtime evidence.
+
+### Production motion attempt 5 diagnostic
+
+Published package
+`8102f48085bed0830f746c52042e5b05e6a603dc36de49c556b052ec30863e71`
+at commit `1d2b1f8865b5ec12e57ea7dcc1ad25a8762eb63c` produced four
+noncombat male records in evidence
+`20260831T0637014594621Z-gunslinger-outfit-production-motion`, then rejected
+pistol preparation at `player=true;party=0;turnBased=true;units=2`. The
+isolated factions and zero party combat were not enough: installed IL proves
+the actor's cross-scene holding state placed it in
+`Player.m_ControllableCharacters` regardless of faction.
+
+The corrected fixture uses the exact loaded area's live `MainState`, never the
+player cross-scene state, and requires unchanged controllable/cross-scene
+reference sets plus area-local actor and target identities everywhere.
+Compilation and all `1369/1369` tests pass. This remains harness evidence, not
+candidate acceptance; `magus-complete` remains 88/100 pending complete motion
+and persistence PASS gates.
+
+Clean strict packaging and the settled 169-check preflight pass; the first
+preflight produced only the documented stabilization sentinel. Pre-commit
+package/DLL SHA-256 values are
+`2c6bdf7ffe6901ef33ddf5ab908e195cb3ce0675d93fc974b8c2798de9a30077` and
+`81a315c486dae914ec04c63bd0079be1780c626d5031416c0f5c0c0d7ecf6651`;
+MVID is `6ed1466d-9131-4b83-84e6-5f86c156a20f`. The score remains
+unchanged.

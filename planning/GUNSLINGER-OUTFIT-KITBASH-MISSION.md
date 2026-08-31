@@ -845,3 +845,43 @@ identities qualify the source/package checkpoint only.
 
 Exact next action: publish the coherent checkpoint, rebuild its exact commit,
 and rerun all 54 records.
+
+## 2026-08-31 - Motion attempt 5 removes cross-scene player-cache coupling
+
+Published commit `1d2b1f8865b5ec12e57ea7dcc1ad25a8762eb63c` ran through
+Steam 640820 as package SHA-256
+`8102f48085bed0830f746c52042e5b05e6a603dc36de49c556b052ec30863e71`,
+DLL SHA-256
+`65c530ec491759987d026d86cb4400197eccd209cdb2ba641e774940edd22925`,
+and MVID `f420093c-fef2-4a76-ad47-21e79bbc5c2b`. Evidence
+`20260831T0637014594621Z-gunslinger-outfit-production-motion` failed closed
+after four clean male records when pistol preparation changed the boundary to
+`player=true;party=0;turnBased=true;units=2`. No partial image is accepted.
+
+The faction pair was isolated, but a second installed-IL review disproved the
+initial global-bookkeeping explanation. The actor was still created in the
+main character's cross-scene holding state. `Player.UpdateCharacterLists`
+enumerates that state, and `Player.AddCharacterToLists` adds every in-game,
+non-detached, non-ex-companion unit to `m_ControllableCharacters` without a
+faction predicate. `Player.UpdateIsInCombat` then reads those groups, and
+turn-based state reads `Player.IsInCombat`.
+
+The replacement uses `PersistentState.LoadedAreaState.MainState`, requires it
+to be the loaded live scene and distinct from `Player.CrossSceneState`, and
+recomputes and compares the exact controllable and cross-scene reference sets
+at fixture, tick, capture, reconciliation, and cleanup boundaries. Actor and
+target must both remain area-local and absent from controllable characters.
+Installed-reference compilation and all `1369/1369` tests pass. Candidate
+score remains 88/100.
+
+Clean Release packaging and strict package/firearm/audio validation pass. The
+first preflight reported only the known artifact-tree stabilization sentinel;
+the unchanged rerun passed all 169 checks. Pre-commit package SHA-256 is
+`2c6bdf7ffe6901ef33ddf5ab908e195cb3ce0675d93fc974b8c2798de9a30077`,
+DLL SHA-256 is
+`81a315c486dae914ec04c63bd0079be1780c626d5031416c0f5c0c0d7ecf6651`,
+and MVID is `6ed1466d-9131-4b83-84e6-5f86c156a20f`. These dirty-tree
+identities qualify the source/package checkpoint only.
+
+Exact next action: commit and policy-publish this scene-state correction,
+rebuild its exact commit, and rerun all 54 records.
