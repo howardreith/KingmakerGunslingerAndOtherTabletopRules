@@ -116,6 +116,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             "gunslinger-outfit-production-compatibility";
         internal const string GunslingerOutfitProductionMotion =
             "gunslinger-outfit-production-motion";
+        internal const string GunslingerOutfitProductionPersistencePrepare =
+            "gunslinger-outfit-production-persistence-prepare";
+        internal const string GunslingerOutfitProductionPersistence =
+            "gunslinger-outfit-production-persistence";
+        internal const string GunslingerOutfitProductionPersistenceVerifyAbsent =
+            "gunslinger-outfit-production-persistence-verify-absent";
         internal const string IconOverhaulVisualEvidence =
             "icon-overhaul-visual-evidence";
         internal const string ObserveNativeWeaponFeatContracts =
@@ -423,6 +429,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 GunslingerOutfitFinalistRaceMatrix,
                 GunslingerOutfitProductionCompatibility,
                 GunslingerOutfitProductionMotion,
+                GunslingerOutfitProductionPersistencePrepare,
+                GunslingerOutfitProductionPersistence,
+                GunslingerOutfitProductionPersistenceVerifyAbsent,
                 IconOverhaulVisualEvidence,
                 ObserveNativeWeaponFeatContracts,
                 ObserveElvenBranchedSpearContracts,
@@ -558,6 +567,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return IsSummonSameTurnWorkingSaveScenario(scenario) ||
                 IsSummonSameTurnCompatibilityScenario(scenario);
+        }
+
+        internal static bool IsGunslingerOutfitProductionPersistenceScenario(
+            string scenario)
+        {
+            return string.Equals(scenario,
+                    GunslingerOutfitProductionPersistencePrepare,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    GunslingerOutfitProductionPersistence,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    GunslingerOutfitProductionPersistenceVerifyAbsent,
+                    StringComparison.Ordinal);
         }
 
         internal static bool IsSummonSameTurnWorkingSaveScenario(

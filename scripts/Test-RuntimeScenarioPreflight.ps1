@@ -118,6 +118,9 @@ $expected = @(
     'gunslinger-outfit-finalist-race-matrix',
     'gunslinger-outfit-production-compatibility',
     'gunslinger-outfit-production-motion',
+    'gunslinger-outfit-production-persistence-prepare',
+    'gunslinger-outfit-production-persistence',
+    'gunslinger-outfit-production-persistence-verify-absent',
     'working-save-elven-branched-spear-prepare',
     'working-save-elven-branched-spear-verify-cleanup',
     'working-save-elven-branched-spear-verify-absent',
@@ -393,6 +396,20 @@ Assert-True $gunslingerOutfitProductionMotion.RequiresSaveName `
 Assert-True ($gunslingerOutfitProductionMotion.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'gunslinger-outfit-production-motion-only-permits-working-save'
+foreach ($outfitPersistenceScenario in @(
+    'gunslinger-outfit-production-persistence-prepare',
+    'gunslinger-outfit-production-persistence',
+    'gunslinger-outfit-production-persistence-verify-absent')) {
+    $gunslingerOutfitProductionPersistence = Get-KmgRuntimeScenarioMetadata `
+        $outfitPersistenceScenario
+    Assert-True (-not $gunslingerOutfitProductionPersistence.RequiresManualInteraction) `
+        ($outfitPersistenceScenario + '-is-autonomous')
+    Assert-True $gunslingerOutfitProductionPersistence.RequiresSaveName `
+        ($outfitPersistenceScenario + '-requires-save-name')
+    Assert-True ($gunslingerOutfitProductionPersistence.PermittedSaveName -eq `
+        'KMG_AUTOMATION_WORKING') `
+        ($outfitPersistenceScenario + '-only-permits-working-save')
+}
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
     'vendor-contracts-is-autonomous'

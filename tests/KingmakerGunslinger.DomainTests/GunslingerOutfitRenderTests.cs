@@ -626,6 +626,169 @@ namespace KingmakerGunslinger.DomainTests
                     forbidden);
         }
 
+        internal static void ProductionPersistenceIsGuardedAndExact()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionPersistenceScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string workingSave = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "WorkingSaveSmokeScenario.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            string[] scenarios =
+            {
+                "gunslinger-outfit-production-persistence-prepare",
+                "gunslinger-outfit-production-persistence",
+                "gunslinger-outfit-production-persistence-verify-absent"
+            };
+            Assertions.True(catalog.Contains(
+                    "GunslingerOutfitProductionPersistence") &&
+                scenarios.All(catalog.Contains) &&
+                catalog.Contains(
+                    "IsGunslingerOutfitProductionPersistenceScenario") &&
+                runner.Contains("BeginProductionPersistence(") &&
+                runner.Contains(
+                    "_gunslingerOutfitProductionPersistence.Poll()") &&
+                WorkingSavePredicate(request).Contains(
+                    "GunslingerOutfitProductionPersistence") &&
+                scenarios.All(value => automation.Contains("'" + value +
+                    "' = [pscustomobject]")) &&
+                scenarios.All(preflight.Contains) &&
+                project.Contains(@"RuntimeTesting\GunslingerOutfitProductionPersistenceScenario.cs"),
+                "Production outfit persistence is not wired through every guarded working-save surface.");
+            Assertions.True(Regex.IsMatch(workingSave,
+                    @"AutomationWorkingWithOutfitFixture\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 4\);",
+                    RegexOptions.Singleline) &&
+                runner.Contains(
+                    ".AutomationWorkingWithOutfitFixture"),
+                "Marker-bearing verification must require the exact four-member working-save identity before cleanup.");
+            foreach (string scenario in scenarios)
+            {
+                int metadataStart = automation.IndexOf("'" + scenario +
+                    "' = [pscustomobject]", StringComparison.Ordinal);
+                Assertions.True(metadataStart >= 0,
+                    "Missing persistence metadata for " + scenario + ".");
+                string metadata = automation.Substring(metadataStart,
+                    Math.Min(500, automation.Length - metadataStart));
+                Assertions.True(metadata.Contains(
+                        "RequiresSaveName = $true") &&
+                    metadata.Contains(
+                        "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                    metadata.Contains(
+                        "RequiresManualInteraction = $false"),
+                    "Persistence phase must fail closed to the disposable working save: " +
+                    scenario);
+            }
+            int collectorStart = orchestrator.IndexOf(
+                "gunslinger-outfit-production-persistence-prepare",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                orchestrator.Substring(collectorStart,
+                    Math.Min(700, orchestrator.Length - collectorStart))
+                    .Contains(
+                        "[Math]::Max($TimeoutSeconds, 1200) + 15"),
+                "Production outfit persistence needs its exact bounded collector window.");
+            Assertions.Equal(2, Regex.Matches(source,
+                @"new PersistenceFixture\(").Count,
+                "Persistence qualification must contain exact male and female Human native-respec fixtures.");
+            foreach (string token in new[]
+            {
+                "PersistedOutfitFixtureUniqueId",
+                "PersistedOutfitFixtureName",
+                "GunslingerOutfitProductionPersistencePrepare",
+                "GunslingerOutfitProductionPersistenceVerifyAbsent",
+                "Progression.GetClassLevel(", "Descriptor.Doll",
+                "m_EquipmentClass", "UpdateClassEquipment()",
+                "RebuildOutfit()", "SerializedClassClothesAbsent",
+                "persisted-native-class-reconstruction",
+                "RestorePersistedAvatar", "TakeAvatarSnapshot",
+                "SavedEquipmentEntities",
+                "StartWithoutAssigningStaticInstance",
+                "LevelUpState.CharBuildMode.CharGen",
+                "LevelUpState.CharBuildMode.Respec", "SelectClass",
+                "ApplyClassMechanics", "ApplyLevelup", "Commit",
+                "sourceFighterExact", "previewGunslingerLevel",
+                "committedGunslingerLevel", "defaultPaletteExact",
+                "replacementLevelBeforeRespec",
+                "distinctSourceAndReplacement", "respecMode",
+                "_respecSourceActor", "RetireRespecSource",
+                "RollbackStarterGrants",
+                "DefaultPrimaryColor", "DefaultSecondaryColor",
+                "CaptureContactSheet(", "CaptureIsometric(",
+                "SameValues(expectedRemote", "PartyCharacters",
+                "ArmExactWorkingSaveWrite", "WorkingDescriptor",
+                "ExpectedWorkingSaveRoutineCount", "RemoveEntityData",
+                "productionBlueprintMutated", "saveApiCalledAtCapture",
+                "GroupBy(value => value.RaceId)",
+                "OrderBy(value => value.AssetGuid",
+                "loadedFixtureMembership", "markedCrossUnits",
+                "cleanupCandidates", "expectedCross",
+                "ForcceUseClassEquipment", "RespecRecordExact",
+                "SetValue(_actor.View, null)",
+                "postRefreshEquipmentClassExact",
+                "BeginPersistedViewActivation",
+                "preActivationAppearanceExact",
+                "UpdateViewActive()", "SetVisible(true, true)",
+                "persistedViewActivationExact",
+                "refused to promote or save"
+            })
+                Assertions.True(source.Contains(token),
+                    "Production persistence lacks exact evidence token: " +
+                    token);
+            foreach (string id in new[]
+            {
+                "9875b1f3cf3b8bf42a5fb99907e5a794",
+                "551682302c6f9b146b7657c52b5cabac",
+                "67b5adfbb99269b43bb3ca00438626c8",
+                "04e8446d4666d6a46b28a98c55ec9f6c",
+                "d771acb96d986484dbd006a78a65cdba",
+                "8061ab0f406f7f84e8d36eada05f97a7"
+            })
+                Assertions.True(source.Contains(id),
+                    "Persistence qualification lacks audited historical Fighter entity: " +
+                    id);
+            foreach (string forbidden in new[]
+            {
+                "QuickSave", "ScreenCapture",
+                "Input.", "Mouse.", "PlayerPrefs",
+                "gameObject.SetActive"
+            })
+                Assertions.False(source.Contains(forbidden),
+                    "Production persistence contains a forbidden save/UI token: " +
+                    forbidden);
+            /* Replaced below with a quote-agnostic source regex.
+            Assertions.Equal(1, Regex.Matches(source,
+                "value.Name == \\SaveGame\\").Count,
+                "Persistence must expose one exact native SaveGame reflection boundary."); */
+            Assertions.Equal(1, Regex.Matches(source,
+                "value.Name == .SaveGame.").Count,
+                "Persistence must expose one exact native SaveGame reflection boundary.");
+            int snapshot = source.IndexOf(
+                "_persistedAvatarBefore = TakeAvatarSnapshot(",
+                StringComparison.Ordinal);
+            int force = source.IndexOf(
+                "_equipmentClassField.SetValue(_persistedUnit.View, null)",
+                StringComparison.Ordinal);
+            int restore = source.IndexOf(
+                "_persistedRestored = RestorePersistedAvatar()",
+                StringComparison.Ordinal);
+            Assertions.True(snapshot >= 0 && force > snapshot &&
+                    restore > force,
+                "The real loaded avatar must be snapshotted before forced native reconstruction and restored afterward.");
+        }
+
         internal static void FinalistRaceMatrixIsExactAndReversible()
         {
             string source = QualificationSource();

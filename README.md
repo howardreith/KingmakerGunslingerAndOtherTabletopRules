@@ -9,6 +9,12 @@ active when protection is applied; this is intentionally not the complete
 tabletop rule. The feature has its own default-enabled, restart-applied Unity
 Mod Manager toggle.
 
+The current feature branch also gives the Gunslinger a distinct native
+swashbuckler/privateer class outfit instead of inheriting Fighter clothing. It
+uses only Kingmaker's built-in male/female Magus base and accessory entities,
+preserves normal equipment and color-ramp behavior, and adds no asset or mod
+dependency.
+
 This release also retains 0.0.105's Brown-Fur ordering, player-facing presentation,
 and 30-item fixed-loot distribution; the 0.0.104 same-turn summon correction;
 and the unrelated accepted 0.0.103 Overhaul Firearm and Expanded Summoning

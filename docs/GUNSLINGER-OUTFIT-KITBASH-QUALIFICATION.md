@@ -1,7 +1,7 @@
 # Gunslinger Outfit Kitbash Qualification
 
-Status: not qualified. This document is a live gate ledger, not an acceptance
-claim.
+Status: installed-game and final package qualification accepted at 93/100
+with no hard rejection. Policy publication is in progress.
 
 ## Authority
 
@@ -17,22 +17,22 @@ claim.
 | Installed API contracts | Pass (audit stage) | Exact installed 2.1.7b assembly identity and public/reflected member findings recorded |
 | Native class/resource catalog | Pass | Guarded run `20260830T2012181937219Z`, candidate set `dd81603f...03357` |
 | Serious candidate renders | Pass (Human stage) | Accepted outer/in-game PASS for 48 cases/96 directly inspected images |
-| Best-three scoring | Pass (selection stage) | Magus 88 after accepted coverage/static equipment/motion, Rogue 75, Slayer 70; bundled persistence points remain withheld |
+| Best-three scoring | Pass | Magus 93 after accepted coverage/static equipment/motion/persistence/respec, Rogue 75, Slayer 70 |
 | Race/gender coverage | Pass (selection stage) | Accepted guarded 9-race x 2-gender matrix and direct review of all 72 PNGs |
 | Color ramps | Pass (systematic sample) | Native 2/22 and one valid alternate applied to both entities in every 9x2 cell |
 | Body/material integrity | Pass (no-weapon selection stage) | All 72 race/gender/palette preview/isometric PNGs directly accepted; equipment/motion gates remain separate |
 | Animation/weapon fit | Pass | Terminal-PASS attempt 15 plus reconciliation and direct review of all 54 male/female idle/walk/run/turn/fire/reload/melee sheets |
 | Equipment overrides | Pass | Guarded 32-state/64-image light/heavy armor, headgear/hair, cloak, backpack, inactive-weapon and removal matrix |
 | Preview/gameplay paths | Pass (selection stage) | Four-view preview-like and ordinary isometric evidence across the complete 9x2 grid |
-| Save/load/rebuild | Partial | Commit-bound working save load and request-local repeated rebuilds pass; persisted outfit and respec-like reconstruction pending |
-| Focused tests | Pass (static-runtime checkpoint; repeat final) | Exact catalog/validation/defensive-copy, atomic wiring, and guarded compatibility contracts |
-| Repository validation | Pass (static-runtime checkpoint; repeat final) | Active 0.0.110 validator with 1369 current tests |
-| Complete domain suite | Pass (static-runtime checkpoint; repeat final) | 1369/1369, clean Release run |
-| Clean Release build | Pass (production checkpoint; repeat final) | Exact installed-reference Release construction |
-| Installable package | Pass (commit-bound static checkpoint; repeat final) | Strict standalone validation, SHA-256 `e15546c5...394` |
-| Compatibility profiles | Pending | Exact applicable command/result |
-| Guarded runtime smoke | Pass (static checkpoint; repeat final) | Canonical load plus accepted production matrix `20260831T0344513197562Z` with exact commit/build/save correlation |
-| Publication | Pass (static source checkpoint; repeat final) | `59eb7a9...566` published by helper; HEAD/local/origin refs identical |
+| Save/load/rebuild | Pass | Three-launch exact working-save transaction, pre-activation deserialization, native reconstruction, male/female native respec, cleanup, and fresh-process absence |
+| Focused tests | Pass | Exact catalog/validation/defensive-copy, atomic wiring, and guarded persistence contracts |
+| Repository validation | Pass | Active 0.0.110 and every inherited validator pass |
+| Complete domain suite | Pass | 1370/1370 twice in clean Release gates |
+| Clean Release build | Pass | Configured installed-reference and exact private-reference Release construction |
+| Installable package | Pass | Both strict 135-entry archives, SHA-256 `4f3e7d97...397d0` |
+| Compatibility profiles | Pass | Exact-reference, supply-icon, production firearm/SoundBank, package, and stable 178-check preflight |
+| Guarded runtime smoke | Pass | Canonical load, accepted static/motion matrices, and accepted three-launch persistence transaction |
+| Publication | Pending final checkpoint | Prior commits helper-published; final coherent implementation/evidence commit pending |
 
 ## Guarded catalog evidence
 
@@ -1451,3 +1451,150 @@ persisted outfit reconstruction and the required respec-like reconstruction
 path remain open. The final five compatibility points remain withheld as the
 predeclared indivisible motion-plus-persistence block; current score stays
 88/100 until persistence passes.
+
+## 2026-08-31 production persistence and native respec - accepted
+
+The qualification is deliberately transactional across three guarded Steam
+App ID 640820 launches against exact `KMG_AUTOMATION_WORKING`:
+
+1. `gunslinger-outfit-production-persistence-prepare`;
+2. `gunslinger-outfit-production-persistence`;
+3. `gunslinger-outfit-production-persistence-verify-absent`.
+
+All three used deployment
+`C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260831T2042133344215Z\deployment.json`
+and the same package/DLL:
+
+- package SHA-256
+  `fd264483efa7eafd93520a9bd95431142f120e8b3f981b4fc17e48b6d12fbbb5`;
+- DLL SHA-256
+  `a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`;
+- MVID `6e07322d-0bc4-4f2c-96a8-f89f4b75c8eb`;
+- source-state SHA-256
+  `15448540eb44a5a52821e2d165061a82d0be345baca7e5650b1d4e1f8e3a8827`;
+- installed Assembly-CSharp SHA-256
+  `3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`,
+  MVID `07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`.
+
+### Prepare
+
+Evidence:
+`20260831T2042133984189Z-gunslinger-outfit-production-persistence-prepare`.
+
+- terminal PASS, 7/7 assertions;
+- exact marker `87ee6591-0383-4f83-bfb9-cd8a4f5ed4b7`;
+- distinct real Fighter source and level-zero replacement;
+- native `CharBuildMode.Respec` selection and commit;
+- committed Fighter 0 / Gunslinger 1 with callback, starter rollback,
+  serialized class-clothes absence, `ForcceUseClassEquipment=true`, exact
+  Gunslinger equipment-class cache, 2/22 palette, outfit pair, and humanoid rig;
+- one sidecar, two PNGs, five labelled views, all captured before save;
+- one exact working-save routine, no unexpected write.
+
+### Fresh-load verify, reconstruction, respec, and cleanup
+
+Evidence:
+`20260831T2044530382564Z-gunslinger-outfit-production-persistence`.
+
+- terminal PASS, 10/10 assertions;
+- marker found exactly once in global units, party, party characters,
+  cross-scene identity, and cross-scene units; zero remote copies;
+- before visibility mutation, the deserialized view already contained the
+  production male pair, no Fighter pair, exact 2/22 ramps, exact Gunslinger
+  equipment class, and humanoid rig;
+- native `UpdateViewActive` plus `SetVisible(true,true)` settled one active
+  body renderer without any direct GameObject activation;
+- loaded capture exact;
+- native `UpdateClassEquipment` plus `Character.RebuildOutfit` reproduced
+  the exact outfit while DollData remained byte-for-field unchanged, followed
+  by exact restoration;
+- new male and female Human Fighter-to-Gunslinger native Respec records both
+  reached exact class levels, outfit, 2/22 palette, rig, serialized boundary,
+  and starter rollback;
+- four sidecars, eight PNGs, twenty labelled views, all before the cleanup save;
+- marker removed, all player/global/cross-scene snapshots restored, and one
+  exact cleanup save; no production blueprint mutation.
+
+### Fresh-process absence
+
+Evidence:
+`20260831T2047331339967Z-gunslinger-outfit-production-persistence-verify-absent`.
+
+- terminal PASS, 5/5 assertions;
+- exact original three-character fingerprint;
+- zero marker identities in global, party, party-character,
+  remote-companion, cross-scene, and cross-scene-unit state;
+- zero save routines and zero unexpected writes.
+
+### Evidence reconciliation and direct visual review
+
+Prepare index/result/runtime-evidence SHA-256:
+
+- `2dfc6b17a8b602ecda14da03a49397b221f30f3a17fb304248d5c477e9df52b5`;
+- `e43e413b8406a0b9748314b603f134d1dce44f036040a03571a201f64c09ae87`;
+- `fc076a978430a46f4b68dea9b6dc480fd338ed21d30c6847a41232aa99b53c89`.
+
+Verify index/result/runtime-evidence SHA-256:
+
+- `5be24a1bcee2226be7db8dbc2124b0141a89e4858c96b15ad1399b63fc731d88`;
+- `e8cc7d667d76411f6e078d4dbb2b6dc82fb61bbe3751f83889a5134e020eafeb`;
+- `4346504346561154a8d25022b6d43fcbced4a5baab0c0a4c098937042d00f919`.
+
+Verify-absent index/result/runtime-evidence SHA-256:
+
+- `b9b82c43a2c7834894a2730f0b257d08fb445d782c87c29ab3f35b7e0effc93f`;
+- `989dbd1f7bbf02888fad1e94be9377896c524762345aa0951693525b81813c1d`;
+- `72192d49f50e7dcded9328a1f2de134a7332374e6416da466b9ebf20ebea7149`.
+
+Reconciliation passed for every one of the five sidecars and ten PNGs: exact
+filename, SHA-256, byte count, label, unit identity, outfit IDs, 2/22 palette,
+rig, and save-before-capture field. All ten images were directly inspected.
+Prepared, persisted-loaded, native-reconstructed, and fresh-respec male
+captures match; the female capture uses its exact intended pair. Preview and
+isometric silhouettes retain complete body/outfit geometry, attached
+accessories, and the restrained navy/red officer-privateer read. No Fighter
+remnant, palette drift, missing part, material failure, detached accent, or rig
+deformation appears.
+
+Persistence, save/load, class reconstruction, and native Respec are accepted.
+The bundled final five compatibility points are awarded in full. Final
+candidate score is `93/100 (26/23/20/15/9)`, above threshold with no hard
+rejection.
+
+## Final local validation and package checkpoint
+
+Commands and results:
+
+```powershell
+.\scripts\validate-repository.ps1
+.\scripts\test-domain.ps1 -Configuration Release
+.\scripts\build.ps1 -Configuration Release -Clean -SkipDomainTests
+.\scripts\Build-Local.ps1
+.\scripts\Test-RuntimeScenarioPreflight.ps1
+.\scripts\Test-RuntimeScenarioPreflight.ps1
+```
+
+- repository validation: PASS;
+- domain/reflection suite: 1370/1370, and the exact-reference builder repeated
+  the same 1370/1370 PASS;
+- clean installed-reference Release build/output validation: PASS;
+- exact-reference build, supply-icon checks, firearm/SoundBank validation,
+  deterministic package construction, and strict validation: PASS;
+- first post-package preflight: only the documented
+  `unsupported-does-not-build-or-stage-package` stabilization sentinel;
+- identical second preflight: PASS 178/178.
+
+Final standalone and local-runtime packages are byte-identical, with 135
+entries, 22,833,554 bytes, and SHA-256
+`4f3e7d97b0be0e3fb3636b4037642b657f2ade6f4d932a6b99f411911e0397d0`.
+Their DLL SHA-256 is
+`a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`,
+exactly the DLL accepted by the persistence transaction. The package hash
+changed only because final README/CHANGELOG text was added; runtime code did
+not change. Direct archive inspection found zero installed game assemblies,
+raw catalogs, reference images, screenshot batches, runtime evidence, or CSV
+inventories.
+
+All local and installed-game qualification gates pass. Publication, remote-ref
+equality, and final clean-tree verification are the only remaining
+administrative steps.
