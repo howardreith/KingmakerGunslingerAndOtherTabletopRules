@@ -423,6 +423,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fixture.Source);
                     _actorBlueprint.Race = fixture.Race;
                     _actorBlueprint.Gender = fixture.Gender;
+                    _actorBlueprint.Body =
+                        CreateNeutralQualificationBody(fixture.Source);
+                    _actorBlueprint.StartingInventory = Array.Empty<
+                        Kingmaker.Blueprints.Items.BlueprintItem>();
                     _actorBlueprint.name =
                         "KMG_Runtime_Gunslinger_Outfit_Finalist_" +
                         fixture.Label.Replace('-', '_');
@@ -529,6 +533,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ClearAllQualificationEquipment(_actor);
                     _actor.View.HandsEquipment.UpdateAll();
                     _actor.View.HandsEquipment.ForceSwitch(false);
+                    if (_clearedSlotItems != 0)
+                    {
+                        RejectCurrentDonor(
+                            "neutral-body-created-items",
+                            new JObject
+                            {
+                                { "createdItemCount", _clearedSlotItems },
+                                { "requestLocalNeutralBody", true }
+                            });
+                        return;
+                    }
                     _fixtureInitialized = true;
                     _settleUpdates = 0;
                     return;
@@ -649,6 +664,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _dollData.EquipmentEntityIds.ToArray()) },
                     { "dollEntityCount", _dollEntities.Length },
                     { "unexpectedDollEntityCount", 0 },
+                    { "requestLocalNeutralBody", true },
                     { "clearedSlotItemCount", _clearedSlotItems },
                     { "noWeaponModels", true },
                     { "originalEntityCount", _avatarBefore.Length },
@@ -700,6 +716,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 foreach (ItemEntity item in removed) item.Dispose();
                 return removed.Count;
+            }
+
+            private static BlueprintUnit.UnitBody
+                CreateNeutralQualificationBody(BlueprintUnit source)
+            {
+                if (source == null || source.Body == null)
+                    throw new InvalidOperationException(
+                        "A qualification donor has no native body contract.");
+                return new BlueprintUnit.UnitBody
+                {
+                    DisableHands = false,
+                    EmptyHandWeapon = source.Body.EmptyHandWeapon,
+                    AdditionalLimbs = Array.Empty<Kingmaker.Blueprints.Items
+                        .Weapons.BlueprintItemWeapon>(),
+                    AdditionalSecondaryLimbs = Array.Empty<Kingmaker.Blueprints
+                        .Items.Weapons.BlueprintItemWeapon>(),
+                    QuickSlots = Array.Empty<Kingmaker.Blueprints.Items
+                        .Equipment.BlueprintItemEquipmentUsable>()
+                };
             }
 
             private EquipmentEntity[] LoadPresentClassClothes(
@@ -1502,9 +1537,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (int)value["dollEntityCount"] > 0 &&
                             (int)value["originalEntityCount"] > 0 &&
                             (int)value["unexpectedDollEntityCount"] == 0 &&
-                            (int)value["clearedSlotItemCount"] >= 0 &&
+                            (bool)value["requestLocalNeutralBody"] &&
+                            (int)value["clearedSlotItemCount"] == 0 &&
                             (bool)value["noWeaponModels"]),
-                    "BlueprintRace.Presets plus DollState.CreateData/CreateUnitView and complete UnitBody.AllSlots cleanup");
+                    "BlueprintRace.Presets plus DollState.CreateData/CreateUnitView and a request-local neutral UnitBody before entity creation");
                 Add(_assertions,
                     "gunslinger-outfit-finalist-donor-selection",
                     "every rejected disposable donor is recorded; every accepted donor proves an exact avatar round trip",

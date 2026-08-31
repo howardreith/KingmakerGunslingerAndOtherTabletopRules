@@ -437,6 +437,49 @@ DLL SHA-256 is
 `5462960ebbfd8815523b2132e84d7b2377dfc52a051b2ccdb04a646bf33e7108`.
 The complete published rerun and direct image review remain mandatory.
 
+## 2026-08-30 replacement-matrix visual rejection
+
+Evidence directory
+`20260831T0058130079392Z-gunslinger-outfit-finalist-race-matrix`
+is a mechanical `PASS` for published commit
+`141c6a8e1fcdacdb61164113ac77a6191b16254e` and DLL SHA-256
+`d5d28e5e974b655cfcd5411aa9ceb726b2de00588a935bad5ababbc520b7c3f4`.
+It contains the expected 9 races, 18 gender/race fixtures, 36 records,
+72 PNGs/180 views, and 18 exact restorations. Unit/party cleanup, no-save,
+no-production-mutation, hook removal, and automatic exit also passed.
+
+Every PNG was reviewed through labeled boards kept outside the repository.
+All cells rendered the intended Magus outfit, but both female-Human palettes
+also showed a large two-handed sword. Original-resolution front, side, rear,
+three-quarter, and isometric views confirm it. Therefore:
+
+- the batch is visually `FAIL` despite its structured `PASS`;
+- `magus-complete` remains provisional at 81/100;
+- no production outfit is selected or mutated;
+- the other clean-looking cells cannot substitute for a complete all-race
+  matrix.
+
+The female-Human fixture used `AmiriLevel20_Companion` and recorded
+`clearedSlotItemCount=14`, `rendererCount=2`, and
+`noWeaponModels=true`. The last value covered current
+`HandsEquipment` model references but not an orphaned renderer created
+before item removal.
+
+Installed API reflection verifies a public
+`BlueprintUnit.UnitBody()` and explicit starting equipment fields.
+The replacement harness now gives only the request-local cloned donor a
+neutral body before entity creation, preserves `EmptyHandWeapon`,
+empties starting inventory/limb/quick-slot arrays, and rejects any donor that
+still creates a slot item. Tests forbid source-blueprint mutation and
+donor-specific exceptions. Repository validation, 1365/1365 tests, clean
+Release packaging, and strict package validation pass; pre-publication package
+SHA-256 is
+`be1b6048c299f1d996db1091372c8e6c43863f51bae7b287ee58ca76f3c92bbb`
+and DLL SHA-256 is
+`68489bd17dd3bb363bbf53464beda0f7011cc10a7725212b31ef60127c80e13d`.
+A fresh guarded full matrix and direct inspection of all replacement images
+are mandatory.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

@@ -253,3 +253,23 @@ uses public native `SpawnEntityWithView` and requires that the registered actor
 own that exact view reference. All 1365 tests and clean strict packaging pass.
 No outfit image or comparison resulted, so `magus-complete` remains
 provisional at 81/100 and production is still unchanged.
+
+The published direct-view run,
+`20260831T0058130079392Z-gunslinger-outfit-finalist-race-matrix`,
+passed every structured count, restoration, cleanup, save, and production
+assertion at commit `141c6a8e1fcdacdb61164113ac77a6191b16254e`.
+Direct inspection of all 72 images nevertheless rejects the batch: the
+female-Human native and alternate palette captures visibly include an
+oversized two-handed sword. Its fixture used
+`AmiriLevel20_Companion` and reported
+`clearedSlotItemCount=14` while the narrower hands-equipment model
+check incorrectly reported no weapon.
+
+This is fixture contamination, not evidence against the Magus clothing pair.
+`magus-complete` remains provisional at 81/100; no ranking or
+production selection changes. The replacement harness gives the disposable
+clone an empty request-local `UnitBody` before spawn and rejects any
+later-created slot item without hardcoding the contaminated donor. All
+1365/1365 tests and clean strict packaging pass. A complete published rerun
+and direct inspection of every replacement frame are required before this
+matrix may affect the score.
