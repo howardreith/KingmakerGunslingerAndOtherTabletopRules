@@ -957,3 +957,43 @@ Exact next action: commit and policy-publish this readiness correction, verify
 HEAD/local/origin identity, rebuild the exact commit, pass strict validation
 and quiescent preflight, then rerun the complete matrix. Only a terminal PASS
 followed by direct inspection of all 64 replacement PNGs can close this gate.
+
+## 2026-08-31 - Complete production compatibility matrix accepted
+
+- Readiness correction commit
+  `59eb7a97d6c1278f1e4e0d351aa6d4557b2db566` was policy-published with
+  identical local/remote refs and a clean tree. The commit-bound package
+  SHA-256 was
+  `e15546c561d244f5f29517bec79f71025713cbd79530238ff69232f38fb18394`;
+  loaded DLL SHA-256 was
+  `10f1beaf90eb6f5578ab5c8c09f9d10b219d587bb2adb11b308a959a7a422b26`;
+  loaded MVID was `780b053b-acb8-4716-a5b5-87b578e356e0`.
+- Guarded Steam 640820 run
+  `20260831T0344513197562Z-gunslinger-outfit-production-compatibility`
+  reached terminal `PASS`: 9 races, 18 exact production links, 2 exact Human
+  fixtures, 32 ordered state records/sidecars, 64 PNGs, 160 views, 2/2 exact
+  restorations, immutable production blueprint, no save API, exact cleanup,
+  hook removal, and automatic exit.
+- Independently parsed every record and sidecar and rehashed every capture.
+  The reconciliation passed with zero issues: 32/32 sidecar/index matches,
+  64/64 byte/hash matches, exact production pairs and 35x35 ramps, exact
+  default 2/22 and alternate 13/4 applications, cleared prior states, native
+  hair/saved-link preservation, correct held/stored weapon roles, and exact
+  armor/head/shoulder/backpack transitions.
+- Directly inspected all 64 images through 16 labeled boards: male and female,
+  preview-like and isometric, four state groups each. No missing body part,
+  material failure, severe clipping, baked weapon duplicate, lost hair, or
+  stale equipment geometry was present. Light/heavy armor, tricorn, cloak,
+  and backpack all override and clear cleanly; held and stored firearms leave
+  the outfit intact.
+- All previews passed density checks. Eight female isometric images were
+  conservatively flagged low-density, with a minimum 11,278 meaningful
+  pixels; every one was directly legible and paired with a clear four-view
+  preview. This limitation is retained rather than hidden.
+- Static equipment and rebuild compatibility is accepted. The candidate stays
+  at 88/100 because the five reserved compatibility points remain bundled
+  until motion/animation and persistence both pass.
+
+Exact next action: build the bounded motion/fire/reload/melee runtime gate,
+fully source-qualify and publish it, then run and directly inspect the complete
+commit-bound installed-game result.

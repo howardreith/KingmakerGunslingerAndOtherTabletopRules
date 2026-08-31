@@ -17,22 +17,22 @@ claim.
 | Installed API contracts | Pass (audit stage) | Exact installed 2.1.7b assembly identity and public/reflected member findings recorded |
 | Native class/resource catalog | Pass | Guarded run `20260830T2012181937219Z`, candidate set `dd81603f...03357` |
 | Serious candidate renders | Pass (Human stage) | Accepted outer/in-game PASS for 48 cases/96 directly inspected images |
-| Best-three scoring | Pass (selection stage) | Magus 88 after accepted full coverage, Rogue 75, Slayer 70; compatibility gates remain |
+| Best-three scoring | Pass (selection stage) | Magus 88 after accepted coverage/static equipment, Rogue 75, Slayer 70; motion/persistence points remain withheld |
 | Race/gender coverage | Pass (selection stage) | Accepted guarded 9-race x 2-gender matrix and direct review of all 72 PNGs |
 | Color ramps | Pass (systematic sample) | Native 2/22 and one valid alternate applied to both entities in every 9x2 cell |
 | Body/material integrity | Pass (no-weapon selection stage) | All 72 race/gender/palette preview/isometric PNGs directly accepted; equipment/motion gates remain separate |
-| Animation/weapon fit | Pending | Idle/walk/run/turn/fire/reload/melee evidence |
-| Equipment overrides | Pending | Light/heavy armor, headgear/hair, cloak, backpack, inactive weapon |
+| Animation/weapon fit | Partial | Static pistol/musket/blunderbuss fit passes; idle/walk/run/turn/fire/reload/melee evidence pending |
+| Equipment overrides | Pass | Guarded 32-state/64-image light/heavy armor, headgear/hair, cloak, backpack, inactive-weapon and removal matrix |
 | Preview/gameplay paths | Pass (selection stage) | Four-view preview-like and ordinary isometric evidence across the complete 9x2 grid |
-| Save/load/rebuild | Pass (canonical load only; rebuild/persistence pending) | Commit-bound working save loaded with stable fingerprint and no save write |
-| Focused tests | Pass (production checkpoint; repeat final) | Exact catalog/validation/defensive-copy and atomic donor-independent wiring cases |
-| Repository validation | Pass (production checkpoint; repeat final) | Active 0.0.110 validator with 1367 current tests |
-| Complete domain suite | Pass (production checkpoint; repeat final) | 1367/1367, clean Release run |
+| Save/load/rebuild | Partial | Commit-bound working save load and request-local repeated rebuilds pass; persisted outfit and respec-like reconstruction pending |
+| Focused tests | Pass (static-runtime checkpoint; repeat final) | Exact catalog/validation/defensive-copy, atomic wiring, and guarded compatibility contracts |
+| Repository validation | Pass (static-runtime checkpoint; repeat final) | Active 0.0.110 validator with 1368 current tests |
+| Complete domain suite | Pass (static-runtime checkpoint; repeat final) | 1368/1368, clean Release run |
 | Clean Release build | Pass (production checkpoint; repeat final) | Exact installed-reference Release construction |
-| Installable package | Pass (commit-bound production checkpoint; repeat final) | Strict standalone validation, SHA-256 `4a91c92b...6c61` |
+| Installable package | Pass (commit-bound static checkpoint; repeat final) | Strict standalone validation, SHA-256 `e15546c5...394` |
 | Compatibility profiles | Pending | Exact applicable command/result |
-| Guarded runtime smoke | Pass (production commit; repeat final) | Accepted run `20260831T0159136175513Z`, exact commit/build/save correlation |
-| Publication | Pass (production checkpoint; repeat final) | `bf3e052...02d` published by helper; HEAD/local/origin refs identical |
+| Guarded runtime smoke | Pass (static checkpoint; repeat final) | Canonical load plus accepted production matrix `20260831T0344513197562Z` with exact commit/build/save correlation |
+| Publication | Pass (static source checkpoint; repeat final) | `59eb7a9...566` published by helper; HEAD/local/origin refs identical |
 
 ## Guarded catalog evidence
 
@@ -716,6 +716,50 @@ Local corrected-source results:
 These are dirty-tree local identities. Publication, commit-bound rebuild,
 quiescent preflight, a full terminal-PASS rerun, and direct inspection of all
 64 replacement PNGs remain required. The candidate stays at 88/100.
+
+## 2026-08-31 accepted production compatibility run
+
+Evidence directory:
+`runtime-evidence/20260831T0344513197562Z-gunslinger-outfit-production-compatibility`.
+
+- published commit:
+  `59eb7a97d6c1278f1e4e0d351aa6d4557b2db566`;
+- commit-bound package SHA-256:
+  `e15546c561d244f5f29517bec79f71025713cbd79530238ff69232f38fb18394`;
+- loaded DLL SHA-256:
+  `10f1beaf90eb6f5578ab5c8c09f9d10b219d587bb2adb11b308a959a7a422b26`;
+- loaded MVID: `780b053b-acb8-4716-a5b5-87b578e356e0`;
+- installed game assembly SHA-256:
+  `3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`;
+- installed game assembly MVID: `07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`;
+- result: terminal `PASS`, version `0.0.110`;
+- scope: 9 dynamic races, 18 exact race/gender production links, 2 Human
+  fixtures, 32 exact ordered states/sidecars, 64 PNGs, 160 labeled views, and
+  2/2 exact restorations;
+- safety: exact named working-save boundary, no save-writing API, unchanged
+  production blueprint arrays/links/colors, exact actor/global cleanup, hooks
+  removed, and automatic exit.
+
+Direct inspection covered every one of the 64 images through 16 labeled
+male/female preview/isometric review boards. Default and alternate colors,
+pistol, held/stored musket, blunderbuss, light/heavy armor and removal,
+tricorn and hair restoration, cloak, backpack, and final rebuild are visually
+accepted for both genders. No missing geometry, broken material, baked weapon
+duplication, unacceptable hair loss, severe clipping, or stale override was
+seen. Eight female isometric files are conservatively flagged low-density;
+their minimum is 11,278 meaningful pixels, all paired previews pass density,
+and every flagged image was directly legible.
+
+An independent structured reconciliation returned `PASS` with zero issues:
+32/32 sidecars equal their index records, 64/64 byte counts and SHA-256 hashes
+match, all 160 views are accounted for, production pairs and ramps are exact,
+previous states clear, native hair/saved links persist, weapon roles and body
+slots are correct, and save/blueprint/restoration safeguards remain exact.
+
+This closes static equipment override and request-local rebuild qualification.
+Motion/fire/reload/melee and actual outfit persistence/respec-like
+reconstruction remain independent mandatory gates. The candidate remains
+88/100 until those complete the five-point withheld compatibility block.
 
 ## Local evidence policy
 
