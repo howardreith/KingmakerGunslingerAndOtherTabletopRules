@@ -42,6 +42,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
 $expected = @(
     'mod-load-smoke',
     'observe-kmg-compatibility-asset-attribution',
+    'gunslinger-outfit-audit',
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
     'disposable-urban-barbarian-focused',
@@ -113,6 +114,13 @@ $expected = @(
     'weapon-presentation-transition-motion-evidence',
     'weapon-presentation-reload-evidence',
     'weapon-presentation-body-matrix-evidence',
+    'gunslinger-outfit-candidate-render',
+    'gunslinger-outfit-finalist-race-matrix',
+    'gunslinger-outfit-production-compatibility',
+    'gunslinger-outfit-production-motion',
+    'gunslinger-outfit-production-persistence-prepare',
+    'gunslinger-outfit-production-persistence',
+    'gunslinger-outfit-production-persistence-verify-absent',
     'working-save-elven-branched-spear-prepare',
     'working-save-elven-branched-spear-verify-cleanup',
     'working-save-elven-branched-spear-verify-absent',
@@ -242,7 +250,7 @@ Assert-True (-not $cmiPersistence.RequiresManualInteraction -and
     'craft-magic-items-persistence-is-guarded-working-save-only'
 $assetRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-kmg-compatibility-asset-attribution' `
-    -ExpectedVersion '0.0.110' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.111' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
         'kmg-attribution-request-test') `
     -Parameters @{ assetConfiguration = 'firearms-only' }
@@ -251,7 +259,7 @@ Assert-True ($assetRequest.parameters.assetConfiguration -ceq 'firearms-only') `
 Assert-Throws {
     New-KmgRuntimeRequest `
         -Scenario 'observe-kmg-compatibility-asset-attribution' `
-        -ExpectedVersion '0.0.110' -TimeoutSeconds 120 `
+        -ExpectedVersion '0.0.111' -TimeoutSeconds 120 `
         -ExitAfterCompletion $true `
         -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
             'kmg-attribution-request-test') `
@@ -352,6 +360,56 @@ Assert-True $weaponPresentationBodyMatrix.RequiresSaveName `
 Assert-True ($weaponPresentationBodyMatrix.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'weapon-presentation-body-matrix-evidence-only-permits-working-save'
+$gunslingerOutfitCandidateRender = Get-KmgRuntimeScenarioMetadata `
+    'gunslinger-outfit-candidate-render'
+Assert-True (-not $gunslingerOutfitCandidateRender.RequiresManualInteraction) `
+    'gunslinger-outfit-candidate-render-is-autonomous'
+Assert-True $gunslingerOutfitCandidateRender.RequiresSaveName `
+    'gunslinger-outfit-candidate-render-requires-save-name'
+Assert-True ($gunslingerOutfitCandidateRender.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'gunslinger-outfit-candidate-render-only-permits-working-save'
+$gunslingerOutfitFinalistRaceMatrix = Get-KmgRuntimeScenarioMetadata `
+    'gunslinger-outfit-finalist-race-matrix'
+Assert-True (-not $gunslingerOutfitFinalistRaceMatrix.RequiresManualInteraction) `
+    'gunslinger-outfit-finalist-race-matrix-is-autonomous'
+Assert-True $gunslingerOutfitFinalistRaceMatrix.RequiresSaveName `
+    'gunslinger-outfit-finalist-race-matrix-requires-save-name'
+Assert-True ($gunslingerOutfitFinalistRaceMatrix.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'gunslinger-outfit-finalist-race-matrix-only-permits-working-save'
+$gunslingerOutfitProductionCompatibility = Get-KmgRuntimeScenarioMetadata `
+    'gunslinger-outfit-production-compatibility'
+Assert-True (-not $gunslingerOutfitProductionCompatibility.RequiresManualInteraction) `
+    'gunslinger-outfit-production-compatibility-is-autonomous'
+Assert-True $gunslingerOutfitProductionCompatibility.RequiresSaveName `
+    'gunslinger-outfit-production-compatibility-requires-save-name'
+Assert-True ($gunslingerOutfitProductionCompatibility.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'gunslinger-outfit-production-compatibility-only-permits-working-save'
+$gunslingerOutfitProductionMotion = Get-KmgRuntimeScenarioMetadata `
+    'gunslinger-outfit-production-motion'
+Assert-True (-not $gunslingerOutfitProductionMotion.RequiresManualInteraction) `
+    'gunslinger-outfit-production-motion-is-autonomous'
+Assert-True $gunslingerOutfitProductionMotion.RequiresSaveName `
+    'gunslinger-outfit-production-motion-requires-save-name'
+Assert-True ($gunslingerOutfitProductionMotion.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'gunslinger-outfit-production-motion-only-permits-working-save'
+foreach ($outfitPersistenceScenario in @(
+    'gunslinger-outfit-production-persistence-prepare',
+    'gunslinger-outfit-production-persistence',
+    'gunslinger-outfit-production-persistence-verify-absent')) {
+    $gunslingerOutfitProductionPersistence = Get-KmgRuntimeScenarioMetadata `
+        $outfitPersistenceScenario
+    Assert-True (-not $gunslingerOutfitProductionPersistence.RequiresManualInteraction) `
+        ($outfitPersistenceScenario + '-is-autonomous')
+    Assert-True $gunslingerOutfitProductionPersistence.RequiresSaveName `
+        ($outfitPersistenceScenario + '-requires-save-name')
+    Assert-True ($gunslingerOutfitProductionPersistence.PermittedSaveName -eq `
+        'KMG_AUTOMATION_WORKING') `
+        ($outfitPersistenceScenario + '-only-permits-working-save')
+}
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
     'vendor-contracts-is-autonomous'
@@ -634,7 +692,7 @@ Assert-True (-not $humanRepro.RequiresManualInteraction -and
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.110'
+    ExpectedVersion = '0.0.111'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -667,7 +725,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.110' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.111' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -731,7 +789,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.110' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.111' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

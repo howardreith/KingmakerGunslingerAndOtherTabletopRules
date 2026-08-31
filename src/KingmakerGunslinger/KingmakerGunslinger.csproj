@@ -206,6 +206,8 @@
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Compile Include="Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs" />
     <Compile Include="Presentation\PlayerFacingTextPolicy.cs" />
+    <Compile Include="Presentation\GunslingerClassAppearanceCatalog.cs" />
+    <Compile Include="Presentation\GunslingerClassAppearance.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -926,6 +928,12 @@
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
     <Compile Include="RuntimeTesting\CompatibilityAttributionRuntimeControl.cs" />
     <Compile Include="RuntimeTesting\CompatibilityAssetAttributionScenario.cs" />
+    <Compile Include="RuntimeTesting\GunslingerOutfitAuditScenario.cs" />
+    <Compile Include="RuntimeTesting\GunslingerOutfitRenderScenario.cs" />
+    <Compile Include="RuntimeTesting\GunslingerOutfitQualificationScenario.cs" />
+    <Compile Include="RuntimeTesting\GunslingerOutfitProductionCompatibilityScenario.cs" />
+    <Compile Include="RuntimeTesting\GunslingerOutfitProductionMotionScenario.cs" />
+    <Compile Include="RuntimeTesting\GunslingerOutfitProductionPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianRageInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianFocusedScenario.cs" />

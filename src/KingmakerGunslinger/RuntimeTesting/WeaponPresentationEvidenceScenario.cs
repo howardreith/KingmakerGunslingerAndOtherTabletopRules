@@ -207,7 +207,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string DonorTypeGuid;
         }
 
-        private sealed class CaptureSummary
+        internal sealed class CaptureSummary
         {
             internal string PngPath;
             internal long Bytes;
@@ -6156,7 +6156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return top.Length == 1 ? top[0] : null;
         }
 
-        private static Transform ResolveActivePresentation(UnitEntityData actor,
+        internal static Transform ResolveActivePresentation(UnitEntityData actor,
             WeaponVisualParameters visual, string state, out string role)
         {
             GameObject weapon = actor.View.HandsEquipment.GetWeaponModel(false);
@@ -6224,7 +6224,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string.Join("|", values);
         }
 
-        private static CaptureSummary CaptureContactSheet(UnitEntityData actor,
+        internal static CaptureSummary CaptureContactSheet(UnitEntityData actor,
             Transform model, Renderer[] fixtureBodyRenderers, string pngPath,
             bool allowBodyOnly = false)
         {
@@ -6844,7 +6844,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             });
         }
 
-        private static byte[] EncodePng(Texture2D texture)
+        internal static byte[] EncodePng(Texture2D texture)
         {
             if (texture == null || texture.width <= 0 || texture.height <= 0)
                 throw new ArgumentException("PNG texture is invalid.");

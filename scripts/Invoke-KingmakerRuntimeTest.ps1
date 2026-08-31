@@ -564,6 +564,40 @@ try {
             $DescriptorResolutionTimeoutSeconds + $LoadEntryTimeoutSeconds +
             $CompletionTimeoutSeconds + $FingerprintTimeoutSeconds + 30)
     }
+    elseif ($Scenario -eq 'gunslinger-outfit-candidate-render') {
+        # This bounded collector window includes guarded working-save loading
+        # plus 96 deterministic image writes. The generic smoke default expires
+        # before rendering begins on the qualified Windows 10 environment.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 600) + 15)
+    }
+    elseif ($Scenario -eq 'gunslinger-outfit-finalist-race-matrix') {
+        # The installed race list drives 18 native actor materializations and
+        # 72 deterministic image writes before a result can be collected.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1200) + 15)
+    }
+    elseif ($Scenario -eq 'gunslinger-outfit-production-compatibility') {
+        # Two production class-preview fixtures drive 32 sidecars and 64
+        # deterministic image writes before a result can be collected.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1200) + 15)
+    }
+    elseif ($Scenario -eq 'gunslinger-outfit-production-motion') {
+        # Two production class-preview fixtures drive 54 native-motion
+        # sidecars and image writes through full-round reload update 240.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1800) + 15)
+    }
+    elseif ($Scenario -in @(
+        'gunslinger-outfit-production-persistence-prepare',
+        'gunslinger-outfit-production-persistence',
+        'gunslinger-outfit-production-persistence-verify-absent')) {
+        # The guarded three-launch save transaction covers prepare, fresh-load
+        # reconstruction/respec/cleanup, and fresh-load absence verification.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1200) + 15)
+    }
     elseif ($Scenario -eq 'observe-save-catalog-and-selection') {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)
