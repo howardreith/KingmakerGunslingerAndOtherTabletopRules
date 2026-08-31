@@ -391,6 +391,9 @@ namespace KingmakerGunslinger.DomainTests
                 "CreateProductionMotionTarget",
                 "ProductionMotionHoldingState",
                 "Game.Instance.State.LoadedAreaState",
+                "_motionLoadedSceneState",
+                "new SceneEntitiesState(",
+                "SkipSerialize = true",
                 "_motionPlayer.CrossSceneState",
                 "RefreshProductionMotionPlayerLists",
                 "InvalidateCharacterLists",
@@ -402,10 +405,11 @@ namespace KingmakerGunslinger.DomainTests
                 "actorTargetBilateralEnemy",
                 "actorSharesPlayerGroup",
                 "targetSharesPlayerGroup",
-                "actorHoldingStateIsLoadedArea",
+                "actorHoldingStateIsRequestLocalLoadedScene",
                 "actorInControllableCharacters",
-                "targetHoldingStateIsLoadedArea",
+                "targetHoldingStateIsRequestLocalLoadedScene",
                 "targetInControllableCharacters",
+                "requestLocalSceneMatchesLoadedScene",
                 "playerCharacterListsExact",
                 "playerHostility=False",
                 "ReconcileProductionMotionCombatBoundary",
@@ -424,6 +428,10 @@ namespace KingmakerGunslinger.DomainTests
                 "partyCombatantsAfterReconcile",
                 "turnBasedCombatAfterReconcile",
                 "gunslinger-outfit-production-motion-combat-boundary",
+                "DisposeProductionMotionEntity",
+                "RetireProductionMotionScene",
+                "_motionSceneState.RemoveEntityData(entity)",
+                "_motionSceneDisposed",
                 "productionBlueprintMutated", "saveApiCalled"
             })
                 Assertions.True(source.Contains(token),
@@ -448,7 +456,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(source.Contains("SpawnHostileTarget(") ||
                 source.Contains("Game.Instance.Player.Party.Add(") ||
                 source.Contains(
-                    "Quaternion.identity, _anchor.HoldingState"),
+                    "Quaternion.identity, _anchor.HoldingState") ||
+                source.Contains(
+                    "_motionSceneState = _motionAreaState.MainState"),
                 "Production motion must use its request-local faction pair and never enlist the working-save party.");
             foreach (string token in new[]
             {

@@ -1020,3 +1020,47 @@ DLL SHA-256 is
 and MVID is `6ed1466d-9131-4b83-84e6-5f86c156a20f`. Motion remains
 `PENDING` until an exact-commit terminal PASS, structured reconciliation, and
 direct review of every replacement image.
+
+## 2026-08-31 production motion attempt 6
+
+Published source commit:
+`27bc24ae9ce5b84d3eb8760741833697ed52a911`.
+Commit-bound package SHA-256:
+`9c97279edf78fb4f7540667b3e983b2c5b5b0b5ec98604c3fdea3b0e4bec3413`.
+Loaded DLL SHA-256:
+`37c764f27e63f984fd09b9ec80d465372e997e693269716b8b61e66f07eb98a3`.
+MVID: `38f7a207-baa3-4ee8-8774-c8d3de192b92`.
+Evidence directory:
+`20260831T1215532823796Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` before record 1.
+
+The male-Human view attached and its weapon presentation remained empty, but
+the bounded settle gate observed `doll=False;hair=False;active=`. The run
+retained exact false player/turn-based combat, zero party combatants, exact
+controllable and cross-scene lists, inventory restoration, blueprint
+immutability, no-save behavior, the then-current global-unit cleanup gate, and
+automatic exit. That cleanup gate did not inspect `MainState.AllEntityData`;
+no save API ran and the process exited. No partial capture exists or is
+accepted.
+
+Installed IL shows that using the save-backed `MainState` is unnecessary for
+live scene behavior. `SceneEntitiesState.AddEntityData` accepts an independent
+container, and `IsSceneLoaded` resolves only its `SceneName` through Unity's
+scene manager. It also shows `EntityDataBase.Dispose` does not remove state
+membership. The pending repair creates a disposable state with the exact
+loaded `MainState.SceneName`, marks it `SkipSerialize`, and proves it differs
+from both `MainState` and `CrossSceneState`. Actor and target retain the live
+Unity rendering/navigation context without joining player or persistence
+graphs. Native `RemoveEntityData` must empty it between fixtures; terminal
+cleanup must dispose it while still empty.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release/package, and strict firearm/audio/package validation pass. The
+first preflight reported only the known artifact-tree stabilization sentinel;
+the unchanged rerun passed 169/169. Pre-commit package SHA-256 is
+`64d07b6d3aa843aefb185cd2a07e4dce860ea46e522770e9eff7e9d16988981e`;
+DLL SHA-256 is
+`582e306bae50394eca161705b425c847bc08ba36e59ab23b36ac6fdfdd91a0d3`;
+MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`. Motion remains
+`PENDING` until an exact-commit terminal PASS, structured reconciliation, and
+direct review of every replacement image.

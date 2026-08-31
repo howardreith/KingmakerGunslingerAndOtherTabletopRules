@@ -563,3 +563,32 @@ package/DLL SHA-256 values are
 `81a315c486dae914ec04c63bd0079be1780c626d5031416c0f5c0c0d7ecf6651`;
 MVID is `6ed1466d-9131-4b83-84e6-5f86c156a20f`. The score remains
 unchanged.
+
+### Production motion attempt 6 diagnostic
+
+Published commit `27bc24ae9ce5b84d3eb8760741833697ed52a911` and package
+SHA-256
+`9c97279edf78fb4f7540667b3e983b2c5b5b0b5ec98604c3fdea3b0e4bec3413`
+ran as evidence
+`20260831T1215532823796Z-gunslinger-outfit-production-motion`. It retained an
+exact clean player/party/turn-based boundary but rejected the first male
+fixture because its area-owned avatar had no DollData entities or hair after
+the bounded settle window. Zero records were accepted.
+
+Installed IL separates live scene identity from persistence ownership:
+`SceneEntitiesState.IsSceneLoaded` uses `SceneName`, while `AddEntityData`
+does not require the container to belong to `AreaPersistentState`. The
+replacement therefore uses a disposable state carrying the exact loaded scene
+name, never `MainState` or `CrossSceneState`, and removes entities through
+native `RemoveEntityData` before disposing an exactly empty container. This
+preserves real rendering/navigation without adding player or save-backed
+membership.
+
+Compile, repository validation, all `1369/1369` tests, clean strict packaging,
+firearm/audio checks, and the stable 169-check preflight pass. Pre-commit
+package/DLL SHA-256 values are
+`64d07b6d3aa843aefb185cd2a07e4dce860ea46e522770e9eff7e9d16988981e` and
+`582e306bae50394eca161705b425c847bc08ba36e59ab23b36ac6fdfdd91a0d3`;
+MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`. This is harness evidence;
+`magus-complete` remains 88/100 pending complete motion and persistence PASS
+gates.
