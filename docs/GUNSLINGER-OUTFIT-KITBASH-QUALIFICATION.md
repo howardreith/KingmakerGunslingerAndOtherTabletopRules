@@ -380,6 +380,34 @@ DLL SHA-256 is
 `edbc636195bd0b1fe80e41df7bdf532236502135da819570e07980a99a645824`.
 The complete commit-bound rerun remains required.
 
+The next guarded attempt,
+`runtime-evidence/20260831T0026335779530Z-gunslinger-outfit-finalist-race-matrix`,
+loaded published commit `55c487cc460c4950305d47e3c679bf8e858c943d`, DLL
+SHA-256
+`1be20efa6c457eb8da426b54f67598c3529cfc76c5c62454eea7ce9654e1897c`,
+and MVID `e496489f-2fbc-47cf-a4c1-da914eda915a` through Steam `640820`.
+It failed closed at `spawn-male-aasimar` before creating a fixture or image.
+The working-save guard, no-save/no-production boundaries, exact cleanup, and
+automatic exit passed.
+
+Installed IL distinguishes the two native lifecycle stages:
+
+- `DollData.CreateUnitView` configures a root `Character` component on the
+  returned unbound `UnitEntityView` template;
+- `UnitEntityView.OnDataAttached` later initializes `CharacterAvatar` with
+  `GetComponentInChildren<Character>()`.
+
+The qualification probe now checks the root `Character` before spawn and
+retains the runtime `CharacterAvatar` check after attachment. Its focused test
+forbids a pre-spawn `dollView.CharacterAvatar` requirement. Repository
+validation, all 1365 tests, clean installed-reference Release packaging, and
+strict validation pass. Pre-publication package SHA-256 is
+`024d0c2b89a6e561b4c8d6eecc67e6f30c6b85941b893db7f9dcc6d5d22b0f2e`;
+DLL SHA-256 is
+`3cf170e14b0dc96910b093ee0737e713fd7d0c432a20cd59971c36dfc7be7d42`.
+A published commit-bound rerun and direct inspection of all replacement images
+remain mandatory.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

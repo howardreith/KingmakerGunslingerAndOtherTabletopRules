@@ -308,6 +308,34 @@ DLL SHA-256 is
 No candidate disposition or production state changes from this early
 instrumentation failure.
 
+The corrected visual-race retry at
+`20260831T0026335779530Z-gunslinger-outfit-finalist-race-matrix` loaded
+published commit `55c487cc460c4950305d47e3c679bf8e858c943d`, exact DLL
+SHA-256
+`1be20efa6c457eb8da426b54f67598c3529cfc76c5c62454eea7ce9654e1897c`,
+and MVID `e496489f-2fbc-47cf-a4c1-da914eda915a`. It failed at the first
+male-Aasimar spawn before a fixture, screenshot, or outfit mutation. The
+guarded working-save boundary, no save API, exact cleanup, no production
+mutation, and automatic exit all passed.
+
+Read-only installed IL makes the root cause exact. `DollData.CreateUnitView`
+gets the `UnitEntityView` from the gender-specific doll, instantiates it, gets
+and configures its root `Character`, and returns the template. It does not set
+the `CharacterAvatar` backing field. `UnitEntityView.OnDataAttached` performs
+that assignment later with `GetComponentInChildren<Character>()`. The repaired
+probe therefore validates `dollView.GetComponent<Character>()` before
+`SpawnUnit` and retains its post-spawn `_actor.View.CharacterAvatar` gate.
+Focused tests lock both sides of this lifecycle boundary.
+
+Repository validation, 1365/1365 domain tests, clean installed-reference
+Release construction, package creation, and strict package validation pass.
+The pre-publication package SHA-256 is
+`024d0c2b89a6e561b4c8d6eecc67e6f30c6b85941b893db7f9dcc6d5d22b0f2e`;
+DLL SHA-256 is
+`3cf170e14b0dc96910b093ee0737e713fd7d0c432a20cd59971c36dfc7be7d42`.
+The runtime and visual matrix gates remain open; this failure changes neither
+candidate score nor production.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

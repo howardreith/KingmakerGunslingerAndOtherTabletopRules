@@ -601,3 +601,36 @@ preflight, rerun all 18 cells, and directly inspect all 72 replacement images.
 Exact next action: publish the native visual-race correction, verify all refs,
 rebuild its commit-bound package, pass quiescent preflight, and rerun the full
 matrix. No visual or score gate changed.
+
+## 2026-08-30 - Native doll view lifecycle fails closed
+
+- Commit `55c487cc460c4950305d47e3c679bf8e858c943d` was published with
+  exact HEAD/local/origin refs and a clean tree. Its commit-bound runtime
+  package SHA-256 was
+  `5ff29573950c002977c9f35e3d290bf3662a510f172c327489de6c6f9876a4b1`;
+  DLL SHA-256 was
+  `1be20efa6c457eb8da426b54f67598c3529cfc76c5c62454eea7ce9654e1897c`.
+- Quiescent preflight passed all 163 checks. The guarded Steam `640820` run
+  `20260831T0026335779530Z-gunslinger-outfit-finalist-race-matrix` loaded
+  that exact commit/DLL and MVID `e496489f-2fbc-47cf-a4c1-da914eda915a`.
+  It failed at `spawn-male-aasimar` because the unbound doll view's
+  `CharacterAvatar` property was null. Zero fixtures and zero images were
+  created. The named working-save guard, no-save/no-production boundaries,
+  cleanup, hooks removal, and automatic exit passed.
+- Installed `Assembly-CSharp.dll` IL proves `DollData.CreateUnitView` gets
+  and configures the root `Character` component, whereas
+  `UnitEntityView.OnDataAttached` later assigns `CharacterAvatar` using
+  `GetComponentInChildren<Character>()`. The probe now checks
+  `dollView.GetComponent<Character>()` before spawn and continues to require
+  `_actor.View.CharacterAvatar` during post-attachment readiness.
+- The focused test both requires the native root-component check and forbids
+  `dollView.CharacterAvatar`. Repository validation, all 1365/1365 tests,
+  clean installed-reference Release/package construction, and strict package
+  validation pass. The pre-publication package SHA-256 is
+  `024d0c2b89a6e561b4c8d6eecc67e6f30c6b85941b893db7f9dcc6d5d22b0f2e`;
+  DLL SHA-256 is
+  `3cf170e14b0dc96910b093ee0737e713fd7d0c432a20cd59971c36dfc7be7d42`.
+
+Exact next action: publish this lifecycle correction, verify all three refs,
+rebuild its commit-bound package, pass quiescent preflight, and rerun the
+complete matrix. No visual, ranking, or production gate changed.

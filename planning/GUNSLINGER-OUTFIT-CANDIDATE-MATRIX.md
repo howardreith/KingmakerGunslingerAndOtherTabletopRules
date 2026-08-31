@@ -228,3 +228,16 @@ serialized `race.Presets[0]` and loads skin with `RacePreset.RaceId`; the
 corrected fixture mirrors and records those separate identities. All 1365
 tests and the clean strict package gate pass. `magus-complete` remains
 provisional at 81/100 pending the replacement matrix and direct review.
+
+The published visual-race retry
+`20260831T0026335779530Z-gunslinger-outfit-finalist-race-matrix` loaded commit
+`55c487cc460c4950305d47e3c679bf8e858c943d` and failed before its first
+male-Aasimar fixture or screenshot. Installed IL shows that the probe
+incorrectly treated pre-spawn `dollView.CharacterAvatar` as a
+`DollData.CreateUnitView` guarantee. The returned template instead owns a root
+`Character`; `UnitEntityView.OnDataAttached` assigns `CharacterAvatar` after
+spawn. The corrected probe checks the root component before spawn and the
+runtime avatar afterward. All 1365 tests and clean strict packaging pass.
+No candidate was rendered or compared in the failed run, so
+`magus-complete` remains provisional at 81/100 and production remains
+unchanged.
