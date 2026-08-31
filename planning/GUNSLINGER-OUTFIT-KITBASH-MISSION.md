@@ -5,7 +5,8 @@
 This is the durable operating contract for the Gunslinger class outfit kitbash
 mission. The authoritative work order supplied by the human remains controlling.
 This record is an operationally equivalent checklist intended to survive context
-compaction. The mission is active and incomplete.
+compaction. Installed-game and final local package qualification are complete;
+policy publication is in progress.
 
 Intake baseline:
 
@@ -18,14 +19,17 @@ Intake baseline:
 
 Current checkpoint:
 
-- the deterministic audit, accepted Human shortlist render, and accepted
-  nine-race/two-gender neutral-body matrix are complete;
-- `magus-complete` is selected at 88/100 and is independently bound to the
-  Gunslinger class in published commit `bf3e052cb3a91691e214ec9a87c025f25f380c2d`;
-- the commit-bound clean package and canonical guarded working-save load pass
-  with exact build/save correlation and no save write;
-- equipment overrides, weapon/motion states, rebuild, and outfit persistence
-  remain open, so the mission remains active and incomplete.
+- the deterministic audit, accepted Human shortlist render, accepted
+  nine-race/two-gender neutral-body matrix, static equipment matrix, and native
+  motion matrix are complete;
+- `magus-complete` is selected at 93/100 with no hard rejection and is
+  independently bound to the Gunslinger class;
+- the guarded three-launch persistence transaction proves exact native respec,
+  save/load, class-outfit reconstruction, palette retention, cleanup, and a
+  fresh-process marker-absence boundary;
+- final repository/package revalidation and documentation closure pass; only
+  coherent commit, helper publication, remote-SHA equality, and clean-tree
+  verification remain.
 
 ## Objective
 
@@ -1339,3 +1343,106 @@ block; motion has passed, but persisted outfit reconstruction and the required
 respec-like path remain open. Exact next action: build the guarded persistence
 qualification against the mission's save/load and rebuild boundaries, then
 run and directly inspect its complete evidence matrix.
+
+## 2026-08-31 - Persistence and native respec accepted
+
+The guarded persistence implementation is a three-fresh-process transaction:
+`gunslinger-outfit-production-persistence-prepare` creates one exact
+marker-bound disposable actor through native Fighter-to-Gunslinger Respec,
+captures it before any save call, and writes exactly
+`KMG_AUTOMATION_WORKING` once;
+`gunslinger-outfit-production-persistence` loads that exact marker, proves
+the deserialized class outfit before activation, activates it only through
+native view APIs, captures loaded and reconstructed states, runs new male and
+female native Respec fixtures, removes the marker, restores all snapshots, and
+writes the working save exactly once; and
+`gunslinger-outfit-production-persistence-verify-absent` performs a final
+fresh load with zero writes and requires the marker to be absent from global,
+party, party-character, remote-companion, and cross-scene state.
+
+Installed 2.1.7b IL established the required native path. `CharBuildMode`
+uses `Respec=3`; a level-zero replacement is required for first-level class
+replacement; the native commit writes `Doll.CreateData()`; and
+`UnitEntityView.UpdateClassEquipment` is guarded by
+`UseClassEquipment` plus its cached equipment class. The harness therefore
+uses distinct real Fighter source/replacement actors, sets serialized
+`ForcceUseClassEquipment`, invalidates only the stale view equipment-class
+cache after commit, and calls the public native update/rebuild path. A hard
+pre-save gate refuses to persist anything unless class, outfit pair, 2/22
+palette, rig, level transition, starter-grant rollback, and marker identity
+are exact.
+
+The accepted transaction used deployment
+`runtime-evidence/deployments/20260831T2042133344215Z/deployment.json`:
+
+- package SHA-256
+  `fd264483efa7eafd93520a9bd95431142f120e8b3f981b4fc17e48b6d12fbbb5`;
+- DLL SHA-256
+  `a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`;
+- DLL MVID `6e07322d-0bc4-4f2c-96a8-f89f4b75c8eb`;
+- source-state SHA-256
+  `15448540eb44a5a52821e2d165061a82d0be345baca7e5650b1d4e1f8e3a8827`;
+- exact installed Assembly-CSharp SHA-256
+  `3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`
+  and MVID `07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`.
+
+Prepare evidence
+`20260831T2042133984189Z-gunslinger-outfit-production-persistence-prepare`
+passed 7/7 assertions, captured one exact male Human native Respec record
+before the save API, and performed one exact save. Verify evidence
+`20260831T2044530382564Z-gunslinger-outfit-production-persistence`
+passed 10/10 assertions and four records: persisted-loaded,
+persisted-native-class-reconstruction, native-respec-male-human, and
+native-respec-female-human. Each record retained the exact gender-specific
+production pair, no historical Fighter clothes, exact 2/22 palette, humanoid
+rig, absent serialized class clothes, and an unchanged production blueprint.
+It then removed the marker and performed one exact cleanup save. Final
+evidence
+`20260831T2047331339967Z-gunslinger-outfit-production-persistence-verify-absent`
+passed 5/5 assertions with the original three-character fingerprint, zero
+marker memberships, and zero writes.
+
+Independent reconciliation matched all five sidecars to all ten PNG hashes,
+byte lengths, labels, and exact appearance fields. All ten preview-like and
+ordinary-isometric images were directly inspected. Prepared, loaded,
+reconstructed, and fresh male states are visually identical; the female uses
+the intended gender-specific pair. Both retain complete bodies, attached
+components, the navy/red officer-privateer palette, and legible isometric
+silhouettes with no Fighter remnant, palette drift, material failure, or rig
+deformation.
+
+The final compatibility criterion advances from 15/20 to 20/20. Final score:
+`93/100 (26/23/20/15/9)`, above the 75-point threshold with no hard
+rejection.
+
+## 2026-08-31 - Final local qualification
+
+The completed tree passed the required local gate sequence:
+
+1. `.\scripts\validate-repository.ps1` - active 0.0.110 and all inherited
+   validators pass;
+2. `.\scripts\test-domain.ps1 -Configuration Release` - 1370/1370 pass;
+3. `.\scripts\build.ps1 -Configuration Release -Clean -SkipDomainTests` -
+   clean installed-reference Release build and output validation pass;
+4. `.\scripts\Build-Local.ps1` - repository validation, a second clean
+   1370/1370 run, exact private-reference Release compilation, icon checks,
+   SoundBank/firearm validation, deterministic packaging, and strict
+   standalone/local-runtime package validation pass;
+5. `.\scripts\Test-RuntimeScenarioPreflight.ps1` - the documented first
+   post-package run reported only
+   `unsupported-does-not-build-or-stage-package`; the unchanged second run
+   passed all 178 checks.
+
+Standalone and local-runtime archives are byte-identical, contain 135 entries,
+and have SHA-256
+`4f3e7d97b0be0e3fb3636b4037642b657f2ade6f4d932a6b99f411911e0397d0`.
+Archive inspection found zero game-assembly, raw-catalog, reference-image,
+screenshot, runtime-evidence, or CSV matches. The DLL remains byte-identical
+to the fully runtime-qualified artifact, SHA-256
+`a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`;
+only package-facing README/CHANGELOG text changed the archive hash.
+
+Local qualification is complete. Exact remaining action: commit this coherent
+implementation/evidence checkpoint, publish only with the approved helper,
+then record and verify `HEAD`, local branch, and origin equality plus a clean
+forbidden-artifact state.

@@ -1,11 +1,11 @@
 # Gunslinger Outfit Candidate Matrix
 
 Status: `magus-complete` is bound through a focused production appearance
-policy after accepted Human weapon-state rendering and an accepted guarded
-18-cell race/gender matrix. The published production commit, clean commit-bound
-package, canonical guarded working-save load, and complete static production
-equipment/rebuild matrix pass. Motion/animation now passes; the outfit-
-persistence gate remains open, so this is not final mission qualification.
+policy and is accepted at 93/100 with no hard rejection. Human weapon-state,
+the guarded 18-cell race/gender matrix, static equipment/rebuild, complete
+native motion, native male/female respec, and the three-launch persisted-outfit
+transaction all pass. Final repository/package revalidation also passes;
+policy publication is in progress.
 
 ## Scoring contract
 
@@ -37,7 +37,7 @@ exist.
 
 | Stream | Base hypothesis | Accent hypothesis | API inventory | Rendered M/F | Race grid | Weapon states | Equipment override | Current score | Disposition |
 |---|---|---|---|---|---|---|---|---:|---|
-| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 races x 2 genders directly accepted | Static firearms plus accepted idle/walk/run/turn/fire/reload/melee | Accepted 16-state M/F production matrix | 88 | Advance coherent Magus pair |
+| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 races x 2 genders directly accepted | Static firearms plus accepted idle/walk/run/turn/fire/reload/melee | Accepted 16-state M/F production matrix plus save/load/rebuild/respec | 93 | Select coherent Magus pair |
 | B | Ranger or Slayer practical leather | Native class accessory set | Loaded exact M/F links; cap/cape separable | Ranger and Slayer pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | 70 (Slayer) | Retain Slayer as reserve |
 | C | Bard coat/waistcoat hypothesis | Native Bard accessory set | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant traveler pack/commoner identity |
 | D | Alchemist or other strong single class outfit | Native same-class accessories | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant Alchemist tank/apron identity |
@@ -80,17 +80,17 @@ same scored order after direct inspection of all 96 new images.
 
 | Rank | Candidate-set ID | Exact assets | M/F identity | Coverage | Compatibility | Colors | Score | Evidence | Decision |
 |---:|---|---|---|---|---|---|---:|---|---|
-| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F weapon/equipment cases plus accepted 9x2 no-weapon grid | Static weapon/equipment/rebuild and complete native motion matrix accepted; persistence pending | 35x35 valid ramps; native 2/22 and alternate accepted across 9x2 | 88 (26/23/15/15/9) | Preview-like/isometric race and equipment matrices plus 54 directly accepted motion sheets | Approved for focused production integration |
+| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F weapon/equipment cases plus accepted 9x2 no-weapon grid | Static weapon/equipment/rebuild, complete native motion, persistence, and native respec accepted | 35x35 valid ramps; native 2/22 and alternate accepted across 9x2 and persistence | 93 (26/23/20/15/9) | Preview-like/isometric race, equipment, motion, persisted-load, reconstruction, and respec matrices | Selected; final qualification accepted |
 | 2 | `rogue-capless-capeless` | 2 M / 2 F below | Clean fitted dark coat/tunic, diagonal straps, restrained burgundy; less distinctive | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 35x35 base ramps; native 31/22 and alternate rendered | 75 (23/20/16/8/8) | Same guarded matrix | Runner-up if Magus fails |
 | 3 | `slayer-capless` | 3 M / 3 F below | Long layered garment and asymmetric shoulder; heavier and more armored than desired | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 37x37 ramps; native 35/36 and alternate rendered | 70 (21/17/15/8/9) | Same guarded matrix | Reserve; below production threshold |
 
 Score components are recorded in rubric order: silhouette, thematic
 coherence, compatibility, race/gender coverage, and color quality. The
 accepted complete race/gender matrix awards the remaining seven coverage
-points. The complete static matrix now proves equipment-overlay and rebuild
-behavior. Five compatibility points remain deliberately withheld as one
-conservative block until motion/animation and persistence evidence also pass;
-no partial increment is inferred inside the combined 20-point criterion.
+points. Static equipment/rebuild, native motion, persisted load/reconstruction,
+and native respec all pass. The previously bundled five compatibility points
+are therefore awarded in full; no partial increment was inferred before both
+motion and persistence completed.
 
 Exact selected and runner-up assets:
 
@@ -127,9 +127,10 @@ equipment compatibility.
 `magus-complete` is the evidence-selected production candidate. Its coherent native
 base-plus-one-accessory presentation best matches the privateer/swashbuckler
 brief without a literal hat, baked weapon, or generic Fighter silhouette.
-The all-race no-weapon gate is accepted at 88/100. Focused production binding
-is now authorized; final acceptance remains contingent on animation,
-equipment-overlay, rebuild, and persistence evidence.
+The complete candidate is accepted at 93/100 (26/23/20/15/9). Animation,
+equipment overlays, rebuild, persistence, and native respec all have direct
+installed-game evidence, so the focused production binding is finally
+accepted.
 
 The first finalist-only gate discovers player races from
 `BlueprintRoot.Instance.Progression.CharacterRaces`, selects deterministic
@@ -854,3 +855,45 @@ Motion qualification now passes. `magus-complete` remains 88/100 only because
 the scoring contract withholds the final five compatibility points as one
 motion-plus-persistence block; no partial increment is invented before the
 persistence and respec-like reconstruction gate passes.
+
+### Production persistence and native respec accepted
+
+The final accepted three-launch transaction is:
+
+1. `20260831T2042133984189Z-gunslinger-outfit-production-persistence-prepare`
+   - 7/7 assertions, one marker-bound male Human native Respec, two images,
+     one exact working-save write;
+2. `20260831T2044530382564Z-gunslinger-outfit-production-persistence`
+   - 10/10 assertions, exact deserialized pre-activation appearance, native
+     activation settlement, loaded capture, forced native class
+     reconstruction with unchanged DollData, fresh male/female Human native
+     Respec, eight images, marker removal, and one exact cleanup save;
+3. `20260831T2047331339967Z-gunslinger-outfit-production-persistence-verify-absent`
+   - 5/5 assertions, original three-character fingerprint, marker absent from
+     every player/global/cross-scene collection, and zero writes.
+
+All five sidecars and ten PNGs reconcile by filename, SHA-256, byte count,
+record identity, palette, outfit pair, and rig state. Direct review accepts
+all ten preview-like/isometric captures. The persisted and reconstructed male
+outfit is visually identical to its prepared and fresh-respec states; the
+female native Respec presents the coherent gender-specific counterpart. No
+historical Fighter component, palette drift, missing geometry, detached part,
+or isometric readability failure appears.
+
+The previously withheld five compatibility points are now earned. Final
+ranking is `magus-complete` 93, `rogue-capless-capeless` 75, and
+`slayer-capless` 70. The winning breakdown is
+`26/30 + 23/25 + 20/20 + 15/15 + 9/10 = 93/100`, with no hard rejection.
+
+### Final local gate
+
+Repository validation, 1370/1370 domain/reflection tests, clean
+installed-reference Release construction, exact-reference packaging, firearm
+and SoundBank validation, strict standalone/local-runtime validation, and the
+stable 178-check runtime preflight all pass. Both 135-entry packages have
+SHA-256
+`4f3e7d97b0be0e3fb3636b4037642b657f2ade6f4d932a6b99f411911e0397d0`;
+their DLL SHA-256
+`a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`
+is byte-identical to the accepted persistence transaction. Forbidden package
+material count is zero. Publication remains the sole open administrative gate.

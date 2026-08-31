@@ -589,6 +589,15 @@ try {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             [Math]::Max($TimeoutSeconds, 1800) + 15)
     }
+    elseif ($Scenario -in @(
+        'gunslinger-outfit-production-persistence-prepare',
+        'gunslinger-outfit-production-persistence',
+        'gunslinger-outfit-production-persistence-verify-absent')) {
+        # The guarded three-launch save transaction covers prepare, fresh-load
+        # reconstruction/respec/cleanup, and fresh-load absence verification.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1200) + 15)
+    }
     elseif ($Scenario -eq 'observe-save-catalog-and-selection') {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)

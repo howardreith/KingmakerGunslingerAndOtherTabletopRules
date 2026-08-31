@@ -1620,3 +1620,146 @@ terminal motion and persistence PASS.
 Exact next action: implement and qualify the mission's guarded persisted-
 outfit and respec-like reconstruction matrix, then repeat final package and
 working-save checks.
+
+## 2026-08-31 - Persistence investigation, fail-closed repairs, and acceptance
+
+The first verifier
+`20260831T1758496102515Z-gunslinger-outfit-production-persistence`
+correctly failed because the ordinary working save contained no qualifying
+Gunslinger fixture. It performed cleanup/no-save checks and motivated the
+marker-bound three-launch transaction instead of weakening identity.
+
+The following replacement attempts failed closed and supplied actionable
+evidence:
+
+- `20260831T1842454839722Z-gunslinger-outfit-production-persistence-prepare`:
+  multiple Human race entries made
+  name-only selection ambiguous; fixed with deterministic race grouping;
+- `20260831T1853108963476Z-gunslinger-outfit-production-persistence-prepare`:
+  the attempted controller path had
+  no `DollState`; installed IL inspection established native Respec setup;
+- `20260831T1904353068748Z-gunslinger-outfit-production-persistence-prepare`:
+  wrong build mode; corrected to
+  `CharBuildMode.Respec`;
+- `20260831T1918479609019Z-gunslinger-outfit-production-persistence-prepare`:
+  source/replacement semantics were
+  still inexact and the marker was saved; a mandatory pre-save appearance gate
+  was added so later preparation failures write nothing;
+- `20260831T1922134526607Z-gunslinger-outfit-production-persistence`: the
+  persisted fourth party
+  member invalidated the original three-member loader fingerprint; added an
+  exact marker-bearing party-four identity used only by verification;
+- `20260831T1938072647826Z-gunslinger-outfit-production-persistence`: the
+  marker also occupied native
+  cross-scene state; all native player topology is now captured and checked;
+- `20260831T1950524023506Z-gunslinger-outfit-production-persistence`:
+  deserialized appearance was
+  exact but the loaded body renderer was inactive; cleanup still passed and
+  saved the restored three-character state;
+- `20260831T1953488098235Z-gunslinger-outfit-production-persistence-verify-absent`:
+  fresh-process cleanup
+  confirmation passed;
+- `20260831T2005125416033Z-gunslinger-outfit-production-persistence-prepare`:
+  serialized DollData was 2/22 while
+  the live view remained 3/23; the new hard gate prevented any save;
+- `20260831T2021129033200Z-gunslinger-outfit-production-persistence-prepare`:
+  cache invalidation corrected the
+  live 2/22 state and preparation passed;
+- `20260831T2023501872098Z-gunslinger-outfit-production-persistence`:
+  immediate deserialization proved
+  the exact outfit but the request-local cross-scene view remained invisible;
+  cleanup still removed the marker and saved exactly once;
+- `20260831T2027055428497Z-gunslinger-outfit-production-persistence-verify-absent`:
+  the post-failure working save
+  was proven clean.
+
+The final repair records pre-activation appearance before any visibility
+change, then uses only `UnitEntityData.IsInGame=true`,
+`UnitEntityData.IsInFogOfWar=false`,
+`UnitEntityView.UpdateViewActive()`, and
+`UnitEntityView.SetVisible(true,true)`, followed by a bounded native settle.
+Direct `gameObject.SetActive` is forbidden by the focused test. Installed IL
+also established that `ForcceUseClassEquipment` is serialized and that the
+equipment-class cache can legitimately retain the prior Fighter identity; the
+native Respec path now sets the serialized force flag and clears only that
+stale cache before `UpdateClassEquipment`.
+
+Accepted deployment:
+
+- manifest:
+  `runtime-evidence/deployments/20260831T2042133344215Z/deployment.json`;
+- package:
+  `fd264483efa7eafd93520a9bd95431142f120e8b3f981b4fc17e48b6d12fbbb5`;
+- DLL:
+  `a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`;
+- MVID: `6e07322d-0bc4-4f2c-96a8-f89f4b75c8eb`;
+- source-state:
+  `15448540eb44a5a52821e2d165061a82d0be345baca7e5650b1d4e1f8e3a8827`.
+
+Accepted fresh-process sequence:
+
+- prepare evidence
+  `20260831T2042133984189Z-gunslinger-outfit-production-persistence-prepare`:
+  PASS 7/7, one exact save, one record/two PNGs/five labelled views;
+- verify/cleanup evidence
+  `20260831T2044530382564Z-gunslinger-outfit-production-persistence`:
+  PASS 10/10, one exact cleanup save, four records/eight PNGs/twenty views;
+- verify-absent evidence
+  `20260831T2047331339967Z-gunslinger-outfit-production-persistence-verify-absent`:
+  PASS 5/5, zero writes, party count three, zero marker memberships.
+
+Prepare index/result/runtime-evidence SHA-256 values are
+`2dfc6b17a8b602ecda14da03a49397b221f30f3a17fb304248d5c477e9df52b5`,
+`e43e413b8406a0b9748314b603f134d1dce44f036040a03571a201f64c09ae87`,
+and
+`fc076a978430a46f4b68dea9b6dc480fd338ed21d30c6847a41232aa99b53c89`.
+Verifier values are
+`5be24a1bcee2226be7db8dbc2124b0141a89e4858c96b15ad1399b63fc731d88`,
+`e8cc7d667d76411f6e078d4dbb2b6dc82fb61bbe3751f83889a5134e020eafeb`,
+and
+`4346504346561154a8d25022b6d43fcbced4a5baab0c0a4c098937042d00f919`.
+Final absence values are
+`b9b82c43a2c7834894a2730f0b257d08fb445d782c87c29ab3f35b7e0effc93f`,
+`989dbd1f7bbf02888fad1e94be9377896c524762345aa0951693525b81813c1d`,
+and
+`72192d49f50e7dcded9328a1f2de134a7332374e6416da466b9ebf20ebea7149`.
+
+All ten PNGs were independently reconciled to their sidecars and directly
+inspected. Prepared, loaded, reconstructed, and fresh-respec male captures
+match visually; the female capture is the intended counterpart. Preview and
+isometric silhouettes are complete and coherent, with exact 2/22 navy/red
+color, no Fighter remnants, palette drift, missing body, detached accessory,
+material fault, or rig deformation. Persistence and native Respec are
+accepted. Candidate score advances from 88 to 93/100 with no hard rejection.
+
+Exact next action: repeat final domain, installed-reference Release, package,
+strict compatibility, and quiescent preflight gates; update durable closure;
+commit and publish only through the approved helper; then verify all three refs
+and the clean forbidden-artifact state.
+
+## 2026-08-31 - Final local gates pass
+
+- `.\scripts\validate-repository.ps1`: PASS.
+- `.\scripts\test-domain.ps1 -Configuration Release`: PASS, 1370/1370.
+- `.\scripts\build.ps1 -Configuration Release -Clean -SkipDomainTests`:
+  PASS, clean configured installed-reference Release output.
+- `.\scripts\Build-Local.ps1`: PASS; repeated repository validation and
+  1370/1370 tests, exact-reference compilation, supply-icon checks, build
+  output checks, firearm/SoundBank checks, deterministic package construction,
+  and strict validation of both archives.
+- Standalone and local-runtime packages: 135 entries, 22,833,554 bytes,
+  byte-identical SHA-256
+  `4f3e7d97b0be0e3fb3636b4037642b657f2ade6f4d932a6b99f411911e0397d0`.
+- Final DLL SHA-256:
+  `a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`;
+  byte-identical to all three accepted persistence launches.
+- Package inspection: zero prohibited game assemblies, reference images, raw
+  catalogs, screenshots, runtime-evidence files, or CSV inventories.
+- First post-package preflight: expected sole artifact-tree stabilization
+  sentinel `unsupported-does-not-build-or-stage-package`.
+- Identical second `.\scripts\Test-RuntimeScenarioPreflight.ps1`: PASS,
+  178/178.
+
+All engineering, installed-game, visual, save, clean-build, compatibility, and
+package gates are complete. Only coherent commit, helper publication,
+three-ref equality, and clean-tree verification remain.

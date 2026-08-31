@@ -14,7 +14,7 @@ INFORMATIONAL_VERSION = (
     "0.0.110-protection-from-alignment-control-immunity")
 PACKAGE = "KingmakerGunslinger-0.0.110-local-runtime.zip"
 PACKAGE_SUFFIX = "protection-from-alignment-control-immunity"
-DETERMINISTIC_TEST_COUNT = 1369
+DETERMINISTIC_TEST_COUNT = 1370
 STATIC_KEY = "protectionFromAlignment110"
 
 

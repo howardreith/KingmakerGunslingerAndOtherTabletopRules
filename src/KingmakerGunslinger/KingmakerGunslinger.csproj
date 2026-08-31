@@ -933,6 +933,7 @@
     <Compile Include="RuntimeTesting\GunslingerOutfitQualificationScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitProductionCompatibilityScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitProductionMotionScenario.cs" />
+    <Compile Include="RuntimeTesting\GunslingerOutfitProductionPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianRageInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianFocusedScenario.cs" />
