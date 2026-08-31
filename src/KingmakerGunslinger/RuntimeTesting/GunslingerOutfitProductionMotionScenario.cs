@@ -99,7 +99,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             private UnitCombatLeaveController _motionCombatLeaveController;
             private UnitCombatJoinController _motionCombatJoinController;
             private AreaPersistentState _motionAreaState;
+            private SceneEntitiesState _motionLoadedSceneState;
             private SceneEntitiesState _motionSceneState;
+            private bool _motionSceneDisposed;
             private object[] _motionControllableBefore = new object[0];
             private object[] _motionCrossSceneBefore = new object[0];
             private bool _motionPlayerCombatBefore;
@@ -251,18 +253,27 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private SceneEntitiesState ProductionMotionHoldingState()
             {
-                if (_motionAreaState == null || _motionSceneState == null ||
+                if (_motionAreaState == null ||
+                    _motionLoadedSceneState == null ||
+                    _motionSceneState == null || _motionSceneDisposed ||
                     !ReferenceEquals(_motionAreaState,
                         Game.Instance.State.LoadedAreaState) ||
                     !ReferenceEquals(_motionAreaState,
                         Game.Instance.CurrentScene) ||
-                    !ReferenceEquals(_motionSceneState,
+                    !ReferenceEquals(_motionLoadedSceneState,
                         _motionAreaState.MainState) ||
+                    !_motionLoadedSceneState.IsSceneLoaded ||
                     !_motionSceneState.IsSceneLoaded ||
                     ReferenceEquals(_motionSceneState,
-                        _motionPlayer.CrossSceneState))
+                        _motionLoadedSceneState) ||
+                    ReferenceEquals(_motionSceneState,
+                        _motionPlayer.CrossSceneState) ||
+                    !string.Equals(_motionSceneState.SceneName,
+                        _motionLoadedSceneState.SceneName,
+                        StringComparison.Ordinal) ||
+                    !_motionSceneState.SkipSerialize)
                     throw new InvalidOperationException(
-                        "Production motion lost its exact loaded-area holding state.");
+                        "Production motion lost its request-local loaded-scene holding state.");
                 return _motionSceneState;
             }
 
@@ -324,7 +335,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionCombatJoinController = Game.Instance
                     .GetController<UnitCombatJoinController>(true);
                 _motionAreaState = Game.Instance.State.LoadedAreaState;
-                _motionSceneState = _motionAreaState == null ? null :
+                _motionLoadedSceneState = _motionAreaState == null ? null :
                     _motionAreaState.MainState;
                 _motionPowder = BlueprintBootstrap.BasicAmmunition.BlackPowder;
                 _motionBall = BlueprintBootstrap.BasicAmmunition.LeadBall;
@@ -335,14 +346,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionCombatLeaveController == null ||
                     _motionCombatJoinController == null ||
                     _motionAreaState == null ||
-                    _motionSceneState == null ||
+                    _motionLoadedSceneState == null ||
                     _motionPlayer.CrossSceneState == null ||
                     !ReferenceEquals(_motionAreaState,
                         Game.Instance.CurrentScene) ||
-                    !ReferenceEquals(_motionSceneState,
+                    !ReferenceEquals(_motionLoadedSceneState,
                         _motionAreaState.MainState) ||
-                    !_motionSceneState.IsSceneLoaded ||
-                    ReferenceEquals(_motionSceneState,
+                    !_motionLoadedSceneState.IsSceneLoaded ||
+                    ReferenceEquals(_motionLoadedSceneState,
                         _motionPlayer.CrossSceneState) ||
                     _motionPlayer.Inventory == null ||
                     _motionPowder == null || _motionBall == null ||
@@ -380,9 +391,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionTurnBasedUnitsBefore != 0)
                     throw new InvalidOperationException(
                         "Production motion requires a clean non-combat working save.");
-                _diagnostics.Add("productionMotionHoldingState=loadedArea:" +
+                _motionSceneState = new SceneEntitiesState(
+                    _motionLoadedSceneState.SceneName)
+                {
+                    SkipSerialize = true
+                };
+                _motionSceneDisposed = false;
+                if (ReferenceEquals(_motionSceneState,
+                        _motionLoadedSceneState) ||
+                    ReferenceEquals(_motionSceneState,
+                        _motionPlayer.CrossSceneState) ||
+                    !_motionSceneState.IsSceneLoaded ||
+                    _motionSceneState.AllEntityData.Count != 0)
+                    throw new InvalidOperationException(
+                        "Production motion did not create an empty request-local loaded-scene state.");
+                _diagnostics.Add(
+                    "productionMotionHoldingState=requestLocalLoadedScene:" +
                     _motionSceneState.GetType().FullName +
                     ";sceneName=" + _motionSceneState.SceneName +
+                    ";loadedState=" +
+                    _motionLoadedSceneState.GetType().FullName +
+                    ";skipSerialize=" + _motionSceneState.SkipSerialize +
                     ";anchorCrossScene=" + ReferenceEquals(
                         _anchor.HoldingState,
                         _motionPlayer.CrossSceneState) +
@@ -500,9 +529,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "actorIsPlayerFaction", _actor.IsPlayerFaction },
                     { "actorSharesPlayerGroup",
                         ReferenceEquals(_actor.Group, _motionPlayer.Group) },
-                    { "actorHoldingStateIsLoadedArea",
+                    { "actorHoldingStateIsRequestLocalLoadedScene",
                         ReferenceEquals(_actor.HoldingState,
                             _motionSceneState) },
+                    { "requestLocalSceneMatchesLoadedScene",
+                        _motionLoadedSceneState != null &&
+                        string.Equals(_motionSceneState.SceneName,
+                            _motionLoadedSceneState.SceneName,
+                            StringComparison.Ordinal) &&
+                        _motionSceneState.IsSceneLoaded },
                     { "actorInControllableCharacters",
                         ContainsReference(
                             _motionPlayer.ControllableCharacters, _actor) },
@@ -592,7 +627,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor.GroupId + ";targetGroup=" +
                     _motionTarget.GroupId + ";playerGroup=" +
                     _motionPlayer.Group.Id + ";bilateralEnemy=True;" +
-                    "playerHostility=False;loadedArea=True;" +
+                    "playerHostility=False;requestLocalLoadedScene=True;" +
                     "playerListsExact=True");
             }
 
@@ -1630,8 +1665,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "actorIsPlayerFaction", _actor.IsPlayerFaction },
                     { "actorSharesPlayerGroup",
                         ReferenceEquals(_actor.Group, _motionPlayer.Group) },
-                    { "actorHoldingStateIsLoadedArea", ReferenceEquals(
+                    { "actorHoldingStateIsRequestLocalLoadedScene",
+                        ReferenceEquals(
                         _actor.HoldingState, _motionSceneState) },
+                    { "requestLocalSceneMatchesLoadedScene",
+                        _motionLoadedSceneState != null &&
+                        string.Equals(_motionSceneState.SceneName,
+                            _motionLoadedSceneState.SceneName,
+                            StringComparison.Ordinal) &&
+                        _motionSceneState.IsSceneLoaded },
                     { "actorInControllableCharacters", ContainsReference(
                         _motionPlayer.ControllableCharacters, _actor) },
                     { "targetPresent", _motionTarget != null },
@@ -1640,7 +1682,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "targetSharesPlayerGroup", _motionTarget != null &&
                         ReferenceEquals(_motionTarget.Group,
                             _motionPlayer.Group) },
-                    { "targetHoldingStateIsLoadedArea",
+                    { "targetHoldingStateIsRequestLocalLoadedScene",
                         _motionTarget != null && ReferenceEquals(
                             _motionTarget.HoldingState, _motionSceneState) },
                     { "targetInControllableCharacters",
@@ -2118,6 +2160,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RetireProductionMotionTarget();
                 RetireProductionActor();
                 RetireProductionMotionFactions();
+                if (_motionSceneState == null ||
+                    _motionSceneState.AllEntityData.Count != 0)
+                    throw new InvalidOperationException(fixture.Label +
+                        " did not empty its request-local loaded-scene state.");
                 ReconcileProductionMotionCombatBoundary(fixture.Label);
                 _fixtureIndex++;
                 _motionStep = 0;
@@ -2156,7 +2202,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Game.Instance.Player.Party.Remove(dependent);
                         if (ContainsReference(_allUnits, dependent))
                             Game.Instance.State.Units.All.Remove(dependent);
-                        dependent.Dispose();
+                        DisposeProductionMotionEntity(dependent);
                     }
                     retiredTarget.Commands.InterruptAll(true);
                     if (retiredTarget.CombatState.IsInCombat)
@@ -2167,7 +2213,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Game.Instance.Player.Party.Remove(retiredTarget);
                     if (ContainsReference(_allUnits, retiredTarget))
                         Game.Instance.State.Units.All.Remove(retiredTarget);
-                    retiredTarget.Dispose();
+                    DisposeProductionMotionEntity(retiredTarget);
                 }
                 if (_motionHostileBlueprint != null)
                     UnityEngine.Object.DestroyImmediate(
@@ -2191,6 +2237,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Object.DestroyImmediate(_motionTargetFaction);
                 _motionActorFaction = null;
                 _motionTargetFaction = null;
+            }
+
+            private void DisposeProductionMotionEntity(
+                UnitEntityData entity)
+            {
+                if (entity == null) return;
+                if (_motionSceneState != null &&
+                    ReferenceEquals(entity.HoldingState,
+                        _motionSceneState) &&
+                    _motionSceneState.AllEntityData.Any(value =>
+                        ReferenceEquals(value, entity)))
+                {
+                    _motionSceneState.RemoveEntityData(entity);
+                    return;
+                }
+                entity.Dispose();
+            }
+
+            private void RetireProductionMotionScene()
+            {
+                if (_motionSceneState == null || _motionSceneDisposed)
+                    return;
+                foreach (EntityDataBase entity in _motionSceneState
+                    .AllEntityData.ToArray())
+                {
+                    UnitEntityData unit = entity as UnitEntityData;
+                    if (unit != null)
+                    {
+                        if (unit.Commands != null)
+                            unit.Commands.InterruptAll(true);
+                        if (unit.CombatState != null &&
+                            unit.CombatState.IsInCombat)
+                            unit.LeaveCombat();
+                        if (unit.Descriptor != null)
+                            unit.Descriptor.State.Immortality.ReleaseAll();
+                        if (ContainsReference(_party, unit))
+                            Game.Instance.Player.Party.Remove(unit);
+                        if (ContainsReference(_allUnits, unit))
+                            Game.Instance.State.Units.All.Remove(unit);
+                    }
+                    _motionSceneState.RemoveEntityData(entity);
+                }
+                _motionSceneState.Dispose();
+                _motionSceneDisposed = true;
+                if (_motionSceneState.AllEntityData.Count != 0)
+                    throw new InvalidOperationException(
+                        "Production motion request-local scene did not dispose exactly.");
             }
 
             private void ReconcileProductionMotionCombatBoundary(
@@ -2482,7 +2575,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !(bool)value["saveApiCalled"] &&
                     !(bool)value["actorIsPlayerFaction"] &&
                     !(bool)value["actorSharesPlayerGroup"] &&
-                    (bool)value["actorHoldingStateIsLoadedArea"] &&
+                    (bool)value[
+                        "actorHoldingStateIsRequestLocalLoadedScene"] &&
+                    (bool)value[
+                        "requestLocalSceneMatchesLoadedScene"] &&
                     !(bool)value["actorInControllableCharacters"] &&
                     !(bool)value["actorPlayerHostility"] &&
                     !(bool)value["targetPlayerHostility"] &&
@@ -2494,7 +2590,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !(bool)value["targetIsPlayerFaction"] &&
                             !(bool)value["targetSharesPlayerGroup"] &&
                             (bool)value[
-                                "targetHoldingStateIsLoadedArea"] &&
+                                "targetHoldingStateIsRequestLocalLoadedScene"] &&
                             !(bool)value[
                                 "targetInControllableCharacters"] &&
                             (bool)value["actorTargetBilateralEnemy"]
@@ -2622,7 +2718,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !(bool)value["actorIsPlayerFaction"] &&
                             !(bool)value["actorSharesPlayerGroup"] &&
                             (bool)value[
-                                "actorHoldingStateIsLoadedArea"] &&
+                                "actorHoldingStateIsRequestLocalLoadedScene"] &&
+                            (bool)value[
+                                "requestLocalSceneMatchesLoadedScene"] &&
                             !(bool)value[
                                 "actorInControllableCharacters"] &&
                             (bool)value["playerCharacterListsExact"] &&
@@ -2716,8 +2814,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _motionTargetFaction == null) +
                         ";playerLists=" +
                         ProductionMotionPlayerListsExact() +
+                        ";requestLocalSceneDisposed=" +
+                        _motionSceneDisposed +
+                        ";requestLocalSceneEmpty=" +
+                        (_motionSceneState != null &&
+                            _motionSceneState.AllEntityData.Count == 0) +
                         ";loadedScene=" + ReferenceEquals(
-                            _motionSceneState,
+                            _motionLoadedSceneState,
                             _motionAreaState == null ? null :
                                 _motionAreaState.MainState),
                     cleaned && _motionInventoryRestored &&
@@ -2728,8 +2831,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ProductionMotionPlayerListsExact() &&
                         ReferenceEquals(_motionAreaState,
                             Game.Instance.State.LoadedAreaState) &&
-                        ReferenceEquals(_motionSceneState,
+                        ReferenceEquals(_motionLoadedSceneState,
                             _motionAreaState.MainState) &&
+                        _motionLoadedSceneState.IsSceneLoaded &&
+                        _motionSceneState != null &&
+                        !ReferenceEquals(_motionSceneState,
+                            _motionLoadedSceneState) &&
+                        !ReferenceEquals(_motionSceneState,
+                            _motionPlayer.CrossSceneState) &&
+                        string.Equals(_motionSceneState.SceneName,
+                            _motionLoadedSceneState.SceneName,
+                            StringComparison.Ordinal) &&
+                        _motionSceneState.SkipSerialize &&
+                        _motionSceneDisposed &&
+                        _motionSceneState.AllEntityData.Count == 0 &&
                         _motionPlayer.IsInCombat ==
                             _motionPlayerCombatBefore &&
                         _motionPlayer.Party.Count(unit =>
@@ -2745,7 +2860,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _motionTurnBasedHadEnemyBefore &&
                         _motionTurnBasedController.SortedUnits.Count() ==
                             _motionTurnBasedUnitsBefore,
-                    "loaded-area request-local actors, targets, factions, items, blueprint clones, cameras, textures, and ammunition");
+                    "request-local loaded-scene state, actors, targets, factions, items, blueprint clones, cameras, textures, and ammunition");
                 Add(_assertions, "loaded-mod-version",
                     _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,

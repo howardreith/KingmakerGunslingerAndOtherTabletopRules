@@ -1260,3 +1260,42 @@ exact package, then execute a complete replacement batch. Score stays 88/100.
 Exact next action: commit and policy-publish the scene-state repair, rebuild
 its exact package, then execute a complete replacement batch. Score remains
 88/100.
+
+## 2026-08-31 - Sixth motion run rejects save-backed area ownership
+
+- Published commit `27bc24ae9ce5b84d3eb8760741833697ed52a911`, package
+  `9c97279edf78fb4f7540667b3e983b2c5b5b0b5ec98604c3fdea3b0e4bec3413`,
+  DLL `37c764f27e63f984fd09b9ec80d465372e997e693269716b8b61e66f07eb98a3`,
+  and MVID `38f7a207-baa3-4ee8-8774-c8d3de192b92` ran through Steam 640820.
+- Evidence `20260831T1215532823796Z-gunslinger-outfit-production-motion`
+  failed before its first record. The male-Human view attached and stayed
+  weapon-empty, but `doll=False;hair=False;active=` remained exact through
+  the bounded settle window. The player/party/turn-based boundary stayed
+  false/zero/false; identity, no-save, blueprint, inventory, player lists,
+  then-current global-unit cleanup, and automatic exit passed. That cleanup
+  assertion did not inspect `MainState.AllEntityData`; no save API ran and the
+  process exited. No partial image exists.
+- Exact installed IL shows `SceneEntitiesState.AddEntityData` only adds the
+  entity, assigns holding state, and raises the global event. The container
+  need not be registered in `AreaPersistentState`. `IsSceneLoaded` is solely
+  `SceneManager.GetSceneByName(SceneName).isLoaded`. It also shows ordinary
+  `EntityDataBase.Dispose()` detaches the view but does not remove the entity
+  from its holding state's list.
+- The repair creates one request-local state bearing the exact live
+  `MainState.SceneName` and marks it `SkipSerialize`. Actor and target retain
+  live Unity rendering/navigation while belonging to neither the save-backed
+  area state nor player cross-scene state. Every unit is removed through
+  native `RemoveEntityData`; exact emptiness is required between fixtures and
+  emptiness plus state disposal at terminal cleanup.
+- Installed-reference compilation, repository validation, all `1369/1369`
+  tests, clean Release/package, firearm/audio, and strict package validation
+  pass. The first preflight reported only the known stabilization sentinel;
+  the unchanged rerun passed all 169 checks. Pre-commit package SHA-256 is
+  `64d07b6d3aa843aefb185cd2a07e4dce860ea46e522770e9eff7e9d16988981e`,
+  DLL SHA-256 is
+  `582e306bae50394eca161705b425c847bc08ba36e59ab23b36ac6fdfdd91a0d3`,
+  and MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`.
+
+Exact next action: commit and policy-publish this request-local loaded-scene
+container, rebuild its exact package, and execute all 54 replacement records.
+Candidate score remains 88/100.

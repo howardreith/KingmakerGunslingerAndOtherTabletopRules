@@ -847,6 +847,44 @@ DLL SHA-256 is
 and MVID is `6ed1466d-9131-4b83-84e6-5f86c156a20f`. Exact-commit
 replacement runtime evidence remains pending.
 
+### Sixth motion execution and request-local loaded-scene container
+
+Published commit `27bc24ae9ce5b84d3eb8760741833697ed52a911` ran through
+Steam 640820 with package SHA-256
+`9c97279edf78fb4f7540667b3e983b2c5b5b0b5ec98604c3fdea3b0e4bec3413`,
+DLL SHA-256
+`37c764f27e63f984fd09b9ec80d465372e997e693269716b8b61e66f07eb98a3`,
+and MVID `38f7a207-baa3-4ee8-8774-c8d3de192b92`. Evidence
+`20260831T1215532823796Z-gunslinger-outfit-production-motion` failed before
+record 1 because the area-owned male fixture attached without its DollData
+entity set or hair. The player and turn-based states remained false, player
+lists stayed exact, the then-current global-unit cleanup assertion passed,
+and no image was accepted. That assertion did not cover the save-backed
+state's own entity list; no save API ran and the process exited.
+
+Read-only installed IL establishes a narrower solution. A
+`SceneEntitiesState` can own an entity without being registered in
+`AreaPersistentState`; its live-scene predicate is only a lookup of its
+`SceneName`. Conversely, `EntityDataBase.Dispose` does not remove the entity
+from the owning state. The repaired harness constructs a disposable state
+with the exact active `MainState.SceneName` and `SkipSerialize=true`, proves
+it is distinct from both `MainState` and `CrossSceneState`, and routes actor
+and target through it. This preserves the loaded Unity scene for pathing and
+rendering without mutating either persistence graph. Cleanup uses native
+`RemoveEntityData`, requires the container empty between genders, and disposes
+the still-empty container terminally.
+
+Installed-reference compilation, repository validation, all `1369/1369`
+tests, clean Release/package construction, strict package/firearm/audio
+validation, and the settled 169-check preflight pass. The first preflight
+reported only the documented artifact-tree stabilization sentinel.
+Pre-commit package SHA-256 is
+`64d07b6d3aa843aefb185cd2a07e4dce860ea46e522770e9eff7e9d16988981e`,
+DLL SHA-256 is
+`582e306bae50394eca161705b425c847bc08ba36e59ab23b36ac6fdfdd91a0d3`,
+and MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`. Exact-commit
+replacement runtime evidence remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

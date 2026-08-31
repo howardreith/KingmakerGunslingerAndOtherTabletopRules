@@ -1580,7 +1580,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Game.Instance.Player.Party.Remove(dependent);
                         if (ContainsReference(_allUnits, dependent))
                             Game.Instance.State.Units.All.Remove(dependent);
-                        dependent.Dispose();
+                        if (IsProductionMotion)
+                            DisposeProductionMotionEntity(dependent);
+                        else
+                            dependent.Dispose();
                     }
                     if (_actor != null)
                     {
@@ -1591,7 +1594,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _actor.Descriptor.State.Immortality.ReleaseAll();
                         if (ContainsReference(_allUnits, _actor))
                             Game.Instance.State.Units.All.Remove(_actor);
-                        _actor.Dispose();
+                        if (IsProductionMotion)
+                            DisposeProductionMotionEntity(_actor);
+                        else
+                            _actor.Dispose();
                     }
                     if (_actorBlueprint != null)
                         UnityEngine.Object.DestroyImmediate(_actorBlueprint);
@@ -1728,7 +1734,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     finally
                     {
                         if (IsProductionMotion)
-                            RetireProductionMotionFactions();
+                        {
+                            try
+                            {
+                                RetireProductionMotionFactions();
+                            }
+                            finally
+                            {
+                                RetireProductionMotionScene();
+                            }
+                        }
                     }
                 }
                 catch (Exception cleanupException)
@@ -1740,7 +1755,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (_actor != null &&
                             ContainsReference(_allUnits, _actor))
                             Game.Instance.State.Units.All.Remove(_actor);
-                        if (_actor != null) _actor.Dispose();
+                        if (_actor != null)
+                        {
+                            if (IsProductionMotion)
+                                DisposeProductionMotionEntity(_actor);
+                            else
+                                _actor.Dispose();
+                        }
                         if (_actorBlueprint != null)
                             UnityEngine.Object.DestroyImmediate(
                                 _actorBlueprint);
@@ -1753,6 +1774,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor = null;
                     _actorBlueprint = null;
                     _avatar = null;
+                    if (IsProductionMotion)
+                    {
+                        try
+                        {
+                            RetireProductionMotionScene();
+                        }
+                        catch (Exception sceneCleanupException)
+                        {
+                            _diagnostics.Add("sceneCleanupException=" +
+                                sceneCleanupException);
+                        }
+                    }
                 }
                 _cleanupStarted = true;
                 _settleUpdates = 0;

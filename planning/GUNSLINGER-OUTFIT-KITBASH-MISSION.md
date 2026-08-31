@@ -885,3 +885,47 @@ identities qualify the source/package checkpoint only.
 
 Exact next action: commit and policy-publish this scene-state correction,
 rebuild its exact commit, and rerun all 54 records.
+
+## 2026-08-31 - Motion attempt 6 separates live scene identity from persistence ownership
+
+Published commit `27bc24ae9ce5b84d3eb8760741833697ed52a911` ran through
+Steam 640820 as package SHA-256
+`9c97279edf78fb4f7540667b3e983b2c5b5b0b5ec98604c3fdea3b0e4bec3413`,
+DLL SHA-256
+`37c764f27e63f984fd09b9ec80d465372e997e693269716b8b61e66f07eb98a3`,
+and MVID `38f7a207-baa3-4ee8-8774-c8d3de192b92`. Evidence
+`20260831T1215532823796Z-gunslinger-outfit-production-motion` failed closed
+before record 1: the male-Human view attached, remained weapon-empty, and
+preserved the exact clean player lists, but its native DollData entities and
+hair stayed absent through the bounded settle window. No image is accepted.
+The then-current global-unit cleanup assertion passed, but did not inspect the
+area container's own entity list; no save API ran and the process exited.
+
+The player-boundary correction was effective, but using
+`AreaPersistentState.MainState` as request-local ownership was not. Installed
+IL shows `SceneEntitiesState.AddEntityData` needs no area registration,
+`IsSceneLoaded` derives only from the container's scene-name string, and
+`EntityDataBase.Dispose` does not remove holding-state membership. The prior
+path therefore both failed to reproduce the proven doll lifecycle and left a
+disposed entry in the save-backed area container unless separately removed.
+
+The replacement creates a disposable `SceneEntitiesState` with the exact live
+`MainState.SceneName` and `SkipSerialize=true`. Actor and target thus retain
+the active Unity scene's rendering/navigation context while belonging to
+neither area persistence nor `Player.CrossSceneState`. Native
+`RemoveEntityData` now clears holding state and disposal ownership for every
+fixture; the container must be empty between genders and empty plus disposed
+at cleanup. Exact controllable/cross-scene snapshots remain mandatory.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release packaging, strict package/firearm/audio validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+artifact-tree stabilization sentinel. Pre-commit package SHA-256 is
+`64d07b6d3aa843aefb185cd2a07e4dce860ea46e522770e9eff7e9d16988981e`,
+DLL SHA-256 is
+`582e306bae50394eca161705b425c847bc08ba36e59ab23b36ac6fdfdd91a0d3`,
+and MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`. Candidate score remains
+88/100.
+
+Exact next action: commit and policy-publish the request-local loaded-scene
+container, rebuild its exact commit, and rerun the complete 54-record matrix.
