@@ -404,3 +404,31 @@ DLL SHA-256 is
 `68489bd17dd3bb363bbf53464beda0f7011cc10a7725212b31ef60127c80e13d`.
 The full replacement matrix and direct review of every new image remain
 mandatory.
+
+## 2026-08-30 - Neutral-body race matrix accepted
+
+The published neutral-body commit
+`47d6c55f6742219dac07824b08e1daa1c23309a1` passed the guarded Steam
+`640820` replacement matrix at
+`20260831T0125478276325Z-gunslinger-outfit-finalist-race-matrix`.
+The game loaded exact DLL SHA-256
+`57f9d7dec390cae8f53a78fadb9bd8c5cadb30368c97b5eadd8e454806ce285c`
+and MVID `1bace4ca-657e-4d4b-bccf-d9ee4933876e`. The result contains all
+9 dynamically discovered player races, 18 gender/race fixtures, 36 palette
+records, 72 PNGs/180 views, and 18/18 exact restorations. Every accepted donor
+used a request-local neutral body, created zero slot items, and exposed no
+weapon model. Exact cleanup, no save API, no production mutation, and process
+exit passed.
+
+All 72 ignored images were inspected directly. The female-Human greatsword
+contamination is absent from both palettes and both preview/isometric paths.
+All other cells show intact geometry/materials, expected race features, no
+donor gear, and coherent native versus alternate ramps. The replacement batch
+is mechanically and visually accepted. `magus-complete` is now the selected
+production candidate at 88/100; five compatibility points remain withheld for
+equipment, animation, rebuild, and persistence qualification.
+
+Exact next action: implement the focused, independently owned Gunslinger class
+appearance policy with the accepted two-link male/female pairs and 2/22
+defaults, then add observable blueprint-state tests before any final equipment
+or motion runtime claim.

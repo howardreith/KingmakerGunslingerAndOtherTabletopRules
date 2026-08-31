@@ -1,10 +1,9 @@
 # Gunslinger Outfit Candidate Matrix
 
-Status: Human candidate rendering and scoring complete; `magus-complete` is
-the provisional finalist. The guarded 18-cell race/gender matrix is
-source/package-qualified and awaiting installed-game execution; no production
-asset identifier is approved until the equipment, animation, and persistence
-qualification passes.
+Status: `magus-complete` is approved for focused production integration after
+accepted Human weapon-state rendering and an accepted guarded 18-cell
+race/gender matrix. Equipment, animation, rebuild, and persistence gates remain
+open; approval here is not final mission qualification.
 
 ## Scoring contract
 
@@ -34,9 +33,9 @@ exist.
 
 ## Discovery streams
 
-| Stream | Base hypothesis | Accent hypothesis | API inventory | Rendered M/F | Race grid | Weapon states | Equipment override | Provisional score | Disposition |
+| Stream | Base hypothesis | Accent hypothesis | API inventory | Rendered M/F | Race grid | Weapon states | Equipment override | Current score | Disposition |
 |---|---|---|---|---|---|---|---|---:|---|
-| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | 81 | Advance coherent Magus pair |
+| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 races x 2 genders directly accepted | No weapon/pistol/musket pass | Pending | 88 | Advance coherent Magus pair |
 | B | Ranger or Slayer practical leather | Native class accessory set | Loaded exact M/F links; cap/cape separable | Ranger and Slayer pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | 70 (Slayer) | Retain Slayer as reserve |
 | C | Bard coat/waistcoat hypothesis | Native Bard accessory set | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant traveler pack/commoner identity |
 | D | Alchemist or other strong single class outfit | Native same-class accessories | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant Alchemist tank/apron identity |
@@ -79,16 +78,17 @@ same scored order after direct inspection of all 96 new images.
 
 | Rank | Candidate-set ID | Exact assets | M/F identity | Coverage | Compatibility | Colors | Score | Evidence | Decision |
 |---:|---|---|---|---|---|---|---:|---|---|
-| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F rendered; 9x2 grid inventoried | No missing geometry/material defect across Human weapon/ramp cases; animation/equipment pending | 35x35 valid ramps; native 2/22 and alternate rendered | 81 (26/23/15/8/9) | Preview-like four-view and ordinary isometric, all four cases per gender | Provisional finalist; run full matrix |
+| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F weapon cases plus accepted 9x2 no-weapon grid | No missing geometry/material defect in accepted race, gender, palette, and Human weapon cases; animation/equipment pending | 35x35 valid ramps; native 2/22 and alternate accepted across 9x2 | 88 (26/23/15/15/9) | Preview-like four-view and ordinary isometric; all 72 replacement grid PNGs directly inspected | Approved for focused production integration |
 | 2 | `rogue-capless-capeless` | 2 M / 2 F below | Clean fitted dark coat/tunic, diagonal straps, restrained burgundy; less distinctive | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 35x35 base ramps; native 31/22 and alternate rendered | 75 (23/20/16/8/8) | Same guarded matrix | Runner-up if Magus fails |
 | 3 | `slayer-capless` | 3 M / 3 F below | Long layered garment and asymmetric shoulder; heavier and more armored than desired | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 37x37 ramps; native 35/36 and alternate rendered | 70 (21/17/15/8/9) | Same guarded matrix | Reserve; below production threshold |
 
 Score components are recorded in rubric order: silhouette, thematic
-coherence, compatibility, race/gender coverage, and color quality. Coverage
-and compatibility points remain deliberately withheld for unrendered races,
-animations, and equipment overlays.
+coherence, compatibility, race/gender coverage, and color quality. The
+accepted complete race/gender matrix awards the remaining seven coverage
+points. Five compatibility points remain deliberately withheld for animation,
+equipment-overlay, rebuild, and persistence evidence.
 
-Exact provisional-finalist assets:
+Exact selected and runner-up assets:
 
 - Magus male base `6df8f61725a84294c8661bb9585eca97` and accessory
   `4c59d2b9740930145a27a4c693217d22`;
@@ -120,11 +120,12 @@ equipment compatibility.
 
 ## Final selection
 
-`magus-complete` is the provisional full-matrix finalist. Its coherent native
+`magus-complete` is the evidence-selected production candidate. Its coherent native
 base-plus-one-accessory presentation best matches the privateer/swashbuckler
 brief without a literal hat, baked weapon, or generic Fighter silhouette.
-Production remains unchanged pending exhaustive race, gender, color,
-animation, equipment-overlay, rebuild, and persistence evidence.
+The all-race no-weapon gate is accepted at 88/100. Focused production binding
+is now authorized; final acceptance remains contingent on animation,
+equipment-overlay, rebuild, and persistence evidence.
 
 The first finalist-only gate discovers player races from
 `BlueprintRoot.Instance.Progression.CharacterRaces`, selects deterministic
@@ -273,3 +274,26 @@ later-created slot item without hardcoding the contaminated donor. All
 1365/1365 tests and clean strict packaging pass. A complete published rerun
 and direct inspection of every replacement frame are required before this
 matrix may affect the score.
+
+### Accepted neutral-body replacement matrix
+
+Published commit `47d6c55f6742219dac07824b08e1daa1c23309a1` produced the
+accepted guarded run
+`20260831T0125478276325Z-gunslinger-outfit-finalist-race-matrix` through
+Steam App ID 640820. The exact loaded DLL SHA-256 was
+`57f9d7dec390cae8f53a78fadb9bd8c5cadb30368c97b5eadd8e454806ce285c`
+with MVID `1bace4ca-657e-4d4b-bccf-d9ee4933876e`. All nine dynamically
+discovered player races and both genders completed: 18 neutral request-local
+fixtures, 36 native/alternate palette records, 72 PNGs/180 views, and 18/18
+exact restorations. Every accepted fixture created zero slot items and exposed
+no weapon model. Exact party/global-unit cleanup, no save API, no production
+mutation, hooks removal, and automatic process exit passed.
+
+All 72 ignored captures were directly inspected through eight labeled review
+boards outside the repository. The female-Human native and alternate preview
+and isometric cells are free of the previously inherited greatsword. Across
+the full matrix, body geometry and materials remain intact; hair, ears, horns,
+and tails remain visible where expected; no donor clothing or weapon survives;
+and native 2/22 versus alternate color treatment is consistent. The matrix is
+therefore visually accepted. `magus-complete` advances from provisional
+81/100 to 88/100 by receiving the remaining seven race/gender coverage points.

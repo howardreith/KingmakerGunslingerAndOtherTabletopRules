@@ -17,13 +17,13 @@ claim.
 | Installed API contracts | Pass (audit stage) | Exact installed 2.1.7b assembly identity and public/reflected member findings recorded |
 | Native class/resource catalog | Pass | Guarded run `20260830T2012181937219Z`, candidate set `dd81603f...03357` |
 | Serious candidate renders | Pass (Human stage) | Accepted outer/in-game PASS for 48 cases/96 directly inspected images |
-| Best-three scoring | Pass (Human stage) | Magus 81, Rogue 75, Slayer 70; full finalist gates pending |
-| Race/gender coverage | Pending | Dynamically discovered supported matrix |
-| Color ramps | Partial | Native and alternate valid ramps rendered on Human M/F; systematic grid pending |
-| Body/material integrity | Partial | Human M/F direct renders and structured load data pass; all races pending |
+| Best-three scoring | Pass (selection stage) | Magus 88 after accepted full coverage, Rogue 75, Slayer 70; compatibility gates remain |
+| Race/gender coverage | Pass (selection stage) | Accepted guarded 9-race x 2-gender matrix and direct review of all 72 PNGs |
+| Color ramps | Pass (systematic sample) | Native 2/22 and one valid alternate applied to both entities in every 9x2 cell |
+| Body/material integrity | Pass (no-weapon selection stage) | All 72 race/gender/palette preview/isometric PNGs directly accepted; equipment/motion gates remain separate |
 | Animation/weapon fit | Pending | Idle/walk/run/turn/fire/reload/melee evidence |
 | Equipment overrides | Pending | Light/heavy armor, headgear/hair, cloak, backpack, inactive weapon |
-| Preview/gameplay paths | Partial | Four-view preview-like and ordinary isometric Human evidence; finalist grid pending |
+| Preview/gameplay paths | Pass (selection stage) | Four-view preview-like and ordinary isometric evidence across the complete 9x2 grid |
 | Save/load/rebuild | Pending | Guarded structured evidence |
 | Focused tests | Pass (collector checkpoint; repeat final) | Renderer guard/catalog/matrix, exact 600-second collector assertion, and 160 runtime preflight checks |
 | Repository validation | Pass (collector checkpoint; repeat final) | Build-Local.ps1, 2026-08-30T21:54:14Z |
@@ -479,6 +479,46 @@ and DLL SHA-256 is
 `68489bd17dd3bb363bbf53464beda0f7011cc10a7725212b31ef60127c80e13d`.
 A fresh guarded full matrix and direct inspection of all replacement images
 are mandatory.
+
+## 2026-08-30 accepted neutral-body matrix
+
+Command:
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario gunslinger-outfit-finalist-race-matrix `
+  -ExpectedVersion 0.0.110 `
+  -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true `
+  -Confirm:$false
+```
+
+Accepted evidence directory:
+`20260831T0125478276325Z-gunslinger-outfit-finalist-race-matrix`.
+
+- published commit: `47d6c55f6742219dac07824b08e1daa1c23309a1`;
+- loaded DLL SHA-256:
+  `57f9d7dec390cae8f53a78fadb9bd8c5cadb30368c97b5eadd8e454806ce285c`;
+- loaded MVID: `1bace4ca-657e-4d4b-bccf-d9ee4933876e`;
+- result: terminal `PASS`, all 11 scenario assertions;
+- scope: 9 dynamically discovered races, 18 gender/race fixtures, 36
+  native/alternate palette records, 72 PNGs, and 180 total views;
+- fixture boundary: 18/18 request-local neutral bodies, zero created slot
+  items, no weapon models, and three unsafe donor attempts rejected before
+  capture;
+- state boundary: 18/18 exact entity/ramp/saved-link restorations, exact
+  party/global-unit cleanup, no save API, no production mutation, hooks
+  removed, and process exited;
+- visual boundary: every ignored PNG was inspected through eight labeled
+  boards outside the repository. Female Human is free of the previously
+  inherited greatsword in both palettes and both camera paths. All cells retain
+  intact geometry/materials and expected hair/ear/horn/tail features with no
+  donor gear or color-ramp failure.
+
+The race/gender/color/no-weapon selection gate is accepted. The chosen
+`magus-complete` pair now scores 88/100 (26/23/15/15/9). Equipment,
+animation, rebuild, persistence, and production integration remain open and
+may still establish a hard rejection.
 
 ## Local evidence policy
 
