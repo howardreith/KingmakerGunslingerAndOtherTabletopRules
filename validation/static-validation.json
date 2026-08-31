@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.110-protection-from-alignment-control-immunity",
-  "version": "0.0.110",
+  "milestone": "0.0.111-gunslinger-class-outfit-kitbash",
+  "version": "0.0.111",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -727,6 +727,22 @@
     "supervisedNativeLevelUpPresentationPending": true,
     "supervisedTopScreenVisualPlacementPending": true,
     "supervisedLoadedMultiRoundInteractionPending": true
+  },
+  "gunslingerOutfitKitbash111": {
+    "deterministicTestCount": 1370,
+    "nativeOnly": true,
+    "customAssetsAdded": false,
+    "maleLinkCount": 2,
+    "femaleLinkCount": 2,
+    "supportedRaceCount": 9,
+    "genderCount": 2,
+    "defaultPrimaryColor": 2,
+    "defaultSecondaryColor": 22,
+    "candidateScore": 93,
+    "equipmentOverridesQualified": true,
+    "motionQualified": true,
+    "persistenceQualified": true,
+    "runtimeQualificationPassed": true
   },
   "protectionFromAlignment110": {
     "deterministicTestCount": 1370,

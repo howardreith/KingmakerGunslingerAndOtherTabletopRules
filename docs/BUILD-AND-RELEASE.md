@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.110` targets:
+Kingmaker Gunslinger `0.0.111` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -73,7 +73,7 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.110 Protection from Alignment control-immunity and player-description
+The 0.0.111 Gunslinger class outfit kitbash
 release is owner-approved for publication through this workflow. Its inherited
 mechanics, new description surfaces, complete tests, deterministic package,
 and guarded runtime inventory are validated before publication.
@@ -122,10 +122,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.110 `
+gh release download v0.0.111 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.110-protection-from-alignment-control-immunity.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.110"
+  --pattern 'KingmakerGunslinger-0.0.111-gunslinger-class-outfit-kitbash.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.111"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The

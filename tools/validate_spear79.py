@@ -22,7 +22,9 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("protection-from-alignment-control-immunity"
+    effective_suffix = ("gunslinger-class-outfit-kitbash"
+        if VERSION == "0.0.111"
+        else "protection-from-alignment-control-immunity"
         if VERSION == "0.0.110"
         else "martial-performance-repair-notifications"
         if VERSION == "0.0.109"

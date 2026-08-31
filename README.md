@@ -1,6 +1,6 @@
 # Kingmaker Gunslinger
 
-Version `0.0.110` gives Protection from Evil, Good, Law, and Chaos their
+Version `0.0.111` gives Protection from Evil, Good, Law, and Chaos their
 Wrath-style defense against new registered domination, charm, and comparable
 mental-control effects from matching-alignment sources. The ten generic,
 individual, and communal spell cards plus the five active protection-buff
@@ -9,7 +9,7 @@ active when protection is applied; this is intentionally not the complete
 tabletop rule. The feature has its own default-enabled, restart-applied Unity
 Mod Manager toggle.
 
-The current feature branch also gives the Gunslinger a distinct native
+It also gives the Gunslinger a distinct native
 swashbuckler/privateer class outfit instead of inheriting Fighter clothing. It
 uses only Kingmaker's built-in male/female Magus base and accessory entities,
 preserves normal equipment and color-ramp behavior, and adds no asset or mod

@@ -25,7 +25,7 @@ $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\Kingm
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
-$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-protection-from-alignment-control-immunity.zip"
+$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-gunslinger-class-outfit-kitbash.zip"
 $checksumPath = "$packagePath.sha256"
 
 if (Test-Path -LiteralPath $stagingDirectory) {
