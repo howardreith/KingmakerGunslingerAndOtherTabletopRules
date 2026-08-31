@@ -6156,7 +6156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return top.Length == 1 ? top[0] : null;
         }
 
-        private static Transform ResolveActivePresentation(UnitEntityData actor,
+        internal static Transform ResolveActivePresentation(UnitEntityData actor,
             WeaponVisualParameters visual, string state, out string role)
         {
             GameObject weapon = actor.View.HandsEquipment.GetWeaponModel(false);

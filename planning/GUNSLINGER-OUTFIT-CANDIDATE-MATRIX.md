@@ -335,3 +335,22 @@ is `b6da46f4c1a7c61fab0625762b46f5f7c222f6d478811300fdfa041512f409d6`.
 This changes no score: the harness has not yet run in the installed game, its
 images have not been reviewed, and motion plus persistence are explicitly
 outside its scope. `magus-complete` remains selected at 88/100.
+
+### Stored-musket diagnostic
+
+Published compatibility run
+`20260831T0304180367838Z-gunslinger-outfit-production-compatibility`
+loaded exact commit `82361d31d2b0d7d278046161c13ee503aff6d51a` and stopped
+cleanly after four male-Human states. The matrix rejected the inactive musket
+solely because its model remained renderable while `HandsEquipment` was out of
+combat. Exact production entities, hair, ramps, saved links, body slot,
+blueprint immutability, cleanup, and no-save boundaries all passed.
+
+The repository's already-qualified presentation contract requires visible
+stored presentation for long guns; hidden storage is reserved for designated
+handgun profiles. The partial run is therefore a harness diagnostic, not a
+candidate defect. The repaired harness reuses the established resolver,
+requires and frames the visible stored musket, and records its presentation
+role. All 1368 tests and clean strict packaging pass. No score changes:
+`magus-complete` remains selected at 88/100 pending the full replacement run
+and direct review.
