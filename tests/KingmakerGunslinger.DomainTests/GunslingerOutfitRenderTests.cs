@@ -399,8 +399,19 @@ namespace KingmakerGunslinger.DomainTests
                 "RetireProductionMotionTarget",
                 "RetireProductionMotionFactions",
                 "PrepareProductionMotionActorBlueprint",
+                "blueprint.Brain = null",
                 "ConfigureProductionMotionFaction",
                 "CreateProductionMotionTarget",
+                "_motionHostileBlueprint.Brain = null",
+                "actorAutonomousBrainDisabled",
+                "targetAutonomousBrainDisabled",
+                "_motionAutonomousCommandsExcluded",
+                "acquired an autonomous command before the ",
+                "harness-owned UnitAttack; resident=",
+                "commandHasAiAction",
+                "_motionAttackCommand.AiAction != null",
+                "activeCommandAiActions",
+                "ProductionMotionResidentCommandAiActions",
                 "ProductionMotionHoldingState",
                 "Game.Instance.State.LoadedAreaState",
                 "_motionLoadedSceneState",
@@ -488,6 +499,26 @@ namespace KingmakerGunslinger.DomainTests
                         "_actor.Commands.Run(_motionAttackCommand)") &&
                     !probeBody.Contains("_actor.Commands.InterruptAll(true)"),
                 "Attack readiness must use a detached native UnitAttack probe; only the separately constructed evidence command may run.");
+            int actorBrainDisabled = source.IndexOf(
+                "blueprint.Brain = null", StringComparison.Ordinal);
+            int targetBrainDisabled = source.IndexOf(
+                "_motionHostileBlueprint.Brain = null",
+                actorBrainDisabled, StringComparison.Ordinal);
+            int combatJoin = source.IndexOf(
+                "_actor.CombatState.JoinCombat()",
+                targetBrainDisabled, StringComparison.Ordinal);
+            int autonomousCommandGate = source.IndexOf(
+                "_motionAutonomousCommandsExcluded =",
+                combatJoin, StringComparison.Ordinal);
+            int readyCapture = source.IndexOf(
+                "CaptureProductionMotionRecord(_motionSpec.Label +",
+                autonomousCommandGate, StringComparison.Ordinal);
+            Assertions.True(actorBrainDisabled >= 0 &&
+                    targetBrainDisabled > actorBrainDisabled &&
+                    combatJoin > targetBrainDisabled &&
+                    autonomousCommandGate > combatJoin &&
+                    readyCapture > autonomousCommandGate,
+                "Production motion must disable AI only on both request-local clones before combat and reject autonomous commands before accepting an attack evidence frame.");
             int removalStart = source.IndexOf(
                 "private void BeginProductionMotionRemoval()",
                 StringComparison.Ordinal);

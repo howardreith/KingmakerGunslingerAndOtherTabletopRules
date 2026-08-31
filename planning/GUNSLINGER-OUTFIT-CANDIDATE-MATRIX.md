@@ -722,3 +722,33 @@ package/DLL SHA-256 values are
 MVID is `47392b4f-cbc0-450f-9b72-82b284e578c7`. This remains harness
 evidence; `magus-complete` remains 88/100 pending complete motion and
 persistence PASS gates.
+
+### Production motion attempt 12 diagnostic
+
+Published commit `2e73bf3035860ffc940c31f4e5c090b0f5d5df2e`, package
+SHA-256
+`6d4e6b3aa27658e958f7010937a7d62e481988eb4eb5967fdc8d719dfbd94d5f`,
+DLL SHA-256
+`90c727bcbd90ac962e7dd406c6bbc0c8f16f55ac05ff4ba8f812a9ff0e1f205d`,
+and MVID `6d5eafa3-919a-40fc-a39c-9206ab6ca58f` produced evidence
+`20260831T1509405239304Z-gunslinger-outfit-production-motion`. The native doll
+was intact throughout creation and attachment: the same avatar instance kept
+five active entities at all three captured boundaries with resource preloading
+false. The run reached 10/54 male records, then rejected musket attack after
+an unowned native `UnitAttack` consumed the loaded round. No partial image is
+scored.
+
+The musket-ready sidecar had a detached probe, no installed harness command,
+zero rounds, two total discharges, and a resident/running `UnitAttack`; the
+preceding pistol cleanup had already proven an empty command container. Both
+disposable blueprint clones still inherited the donor NPC brain, and their
+native combat engagement activated it. The repair disables that brain only on
+the request-local clones, fails before capture if any autonomous command is
+present, and records/requires null command `AiAction` ownership. Compilation
+and all `1369/1369` tests pass, as do clean strict packaging, firearm/audio
+checks, and the settled 169-check preflight; its first pass reported only the
+documented stabilization sentinel. Pre-commit package/DLL SHA-256 values are
+`b3c73cf63e68fa3cb4aff086bd236accf3769e69f53a5afe7c259776139d76e2` and
+`3c95c8c5115135023023ff74d4c77cbc3aaf90ff7c0ca742c3e397e1741c839d`;
+MVID is `5a199838-48eb-49a2-8b92-7ca8d0dfabe2`. `magus-complete` remains
+88/100 until complete motion and persistence PASS gates.
