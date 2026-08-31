@@ -156,6 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private float _motionTurnDegrees;
             private bool _motionAttackTargetPrepared;
             private bool _motionAttackProbeDetached;
+            private bool _motionAutonomousCommandsExcluded;
             private bool _motionCommandInstalled;
             private bool _motionCommandCanStart;
             private bool _motionCommandCloseEnough;
@@ -231,6 +232,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ConfigureProductionMotionFaction(_motionTargetFaction,
                     _motionActorFaction);
                 blueprint.Faction = _motionActorFaction;
+                blueprint.Brain = null;
 
                 if (ReferenceEquals(source, _motionActorFaction) ||
                     ReferenceEquals(source, _motionTargetFaction) ||
@@ -504,6 +506,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RefreshProductionMotionPlayerLists();
                 if (_motionActorFaction == null ||
                     _motionTargetFaction == null || _actor.IsPlayerFaction ||
+                    _actor.Blueprint.Brain != null ||
                     ReferenceEquals(_actor.Group, _motionPlayer.Group) ||
                     !ReferenceEquals(_actor.HoldingState,
                         ProductionMotionHoldingState()) ||
@@ -529,6 +532,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "humanoidRigExact",
                         HasExactHumanoidRig(_actor.View.transform) },
                     { "actorIsPlayerFaction", _actor.IsPlayerFaction },
+                    { "actorAutonomousBrainDisabled",
+                        _actor.Blueprint.Brain == null },
                     { "actorSharesPlayerGroup",
                         ReferenceEquals(_actor.Group, _motionPlayer.Group) },
                     { "actorHoldingStateIsRequestLocalLoadedScene",
@@ -590,6 +595,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionHostileBlueprint.name =
                     "KMG_Runtime_Gunslinger_Outfit_Motion_Target";
                 _motionHostileBlueprint.Faction = _motionTargetFaction;
+                _motionHostileBlueprint.Brain = null;
                 _motionHostileBlueprint.IsCheater = true;
                 _motionHostileBlueprint.StartingInventory =
                     Array.Empty<BlueprintItem>();
@@ -601,6 +607,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_motionTarget == null || _motionTarget.View == null ||
                     _motionTarget.Descriptor == null ||
                     _motionTarget.IsPlayerFaction ||
+                    _motionTarget.Blueprint.Brain != null ||
                     !ReferenceEquals(_motionTarget.HoldingState,
                         _motionSceneState) ||
                     ContainsReference(_motionPlayer.ControllableCharacters,
@@ -630,7 +637,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionTarget.GroupId + ";playerGroup=" +
                     _motionPlayer.Group.Id + ";bilateralEnemy=True;" +
                     "playerHostility=False;requestLocalLoadedScene=True;" +
-                    "playerListsExact=True");
+                    "playerListsExact=True;autonomousBrainsDisabled=True");
             }
 
             private int MotionAnimationClipCount(UnitAnimationType type)
@@ -817,6 +824,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _settleUpdates = 0;
                         return;
                     }
+                    string[] residentCommands =
+                        ProductionMotionResidentCommandTypes();
+                    string[] queuedCommands =
+                        ProductionMotionQueuedCommandTypes();
+                    _motionAutonomousCommandsExcluded =
+                        _actor.Commands.Empty &&
+                        residentCommands.Length == 0 &&
+                        queuedCommands.Length == 0;
+                    if (!_motionAutonomousCommandsExcluded)
+                        throw new InvalidOperationException(_motionSpec.Label +
+                            " acquired an autonomous command before the " +
+                            "harness-owned UnitAttack; resident=" +
+                            string.Join("|", residentCommands) +
+                            ";queued=" + string.Join("|", queuedCommands) +
+                            ".");
                     CaptureProductionMotionRecord(_motionSpec.Label +
                         "-ready", 0,
                         "target-aligned combat-ready frame before native UnitAttack",
@@ -1209,6 +1231,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_motionAttackCommand == null)
                     throw new InvalidOperationException(_motionSpec.Label +
                         " did not reproduce a native UnitAttack.");
+                if (_motionAttackCommand.AiAction != null)
+                    throw new InvalidOperationException(_motionSpec.Label +
+                        " constructed an AI-owned UnitAttack instead of the " +
+                        "harness-owned native command.");
                 _motionAttackCommand.IsSingleAttack = true;
                 _actor.Commands.Run(_motionAttackCommand);
                 _motionCommandInstalled =
@@ -1357,6 +1383,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "firearm", firearm },
                     { "readinessProbeDetached",
                         _motionAttackProbeDetached },
+                    { "autonomousCommandsExcluded",
+                        _motionAutonomousCommandsExcluded },
+                    { "commandHasAiAction",
+                        _motionAttackCommand != null &&
+                        _motionAttackCommand.AiAction != null },
                     { "commandInstalled", _motionCommandInstalled },
                     { "commandCanStart", _motionCommandCanStart },
                     { "commandCloseEnough", _motionCommandCloseEnough },
@@ -1695,6 +1726,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !string.Equals(_motionSpec.Kind, "attack",
                             StringComparison.Ordinal) ||
                         _motionAttackProbeDetached },
+                    { "autonomousCommandsExcluded",
+                        !string.Equals(_motionSpec.Kind, "attack",
+                            StringComparison.Ordinal) ||
+                        _motionAutonomousCommandsExcluded },
                     { "productionClassGuid", _gunslingerClass.AssetGuid },
                     { "productionAssetIds", new JArray(
                         CurrentProductionAssetIds()) },
@@ -1714,6 +1749,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "activeRendererCount",
                         ActiveRenderers(_actor).Length },
                     { "actorIsPlayerFaction", _actor.IsPlayerFaction },
+                    { "actorAutonomousBrainDisabled",
+                        _actor.Blueprint.Brain == null },
                     { "actorSharesPlayerGroup",
                         ReferenceEquals(_actor.Group, _motionPlayer.Group) },
                     { "actorHoldingStateIsRequestLocalLoadedScene",
@@ -1728,6 +1765,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "actorInControllableCharacters", ContainsReference(
                         _motionPlayer.ControllableCharacters, _actor) },
                     { "targetPresent", _motionTarget != null },
+                    { "targetAutonomousBrainDisabled",
+                        _motionTarget == null ||
+                        _motionTarget.Blueprint.Brain == null },
                     { "targetIsPlayerFaction", _motionTarget != null &&
                         _motionTarget.IsPlayerFaction },
                     { "targetSharesPlayerGroup", _motionTarget != null &&
@@ -1879,6 +1919,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionPlayer.Inventory.Count(_motionBall);
                 record["activeCommandTypes"] = new JArray(
                     ProductionMotionResidentCommandTypes());
+                record["activeCommandAiActions"] = new JArray(
+                    ProductionMotionResidentCommandAiActions());
                 record["runningCommandTypes"] = new JArray(
                     ProductionMotionRunningCommandTypes());
                 record["queuedCommandTypes"] = new JArray(
@@ -1940,6 +1982,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _actor == null ? new string[0] :
                     _actor.Commands.Raw.Where(value => value != null)
                         .Select(value => value.GetType().FullName).ToArray();
+            }
+
+            private string[] ProductionMotionResidentCommandAiActions()
+            {
+                return _actor == null ? new string[0] :
+                    _actor.Commands.Raw.Where(value => value != null)
+                        .Select(value => value.AiAction == null ? "<none>" :
+                            value.AiAction.name ?? "<unnamed>").ToArray();
             }
 
             private string[] ProductionMotionQueuedCommandTypes()
@@ -2215,6 +2265,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionTurnDegrees = 0f;
                 _motionAttackTargetPrepared = false;
                 _motionAttackProbeDetached = false;
+                _motionAutonomousCommandsExcluded = false;
                 _motionCommandInstalled = false;
                 _motionCommandCanStart = false;
                 _motionCommandCloseEnough = false;
@@ -2706,6 +2757,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool recordContracts = records.All(value =>
                     (bool)value["previousActionCleared"] &&
                     (bool)value["attackReadinessProbeDetached"] &&
+                    (bool)value["autonomousCommandsExcluded"] &&
                     (bool)value["productionEntitiesPresent"] &&
                     (bool)value["hairEntityPreserved"] &&
                     (bool)value["savedLinksUnchanged"] &&
@@ -2714,6 +2766,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !(bool)value["productionBlueprintMutated"] &&
                     !(bool)value["saveApiCalled"] &&
                     !(bool)value["actorIsPlayerFaction"] &&
+                    (bool)value["actorAutonomousBrainDisabled"] &&
                     !(bool)value["actorSharesPlayerGroup"] &&
                     (bool)value[
                         "actorHoldingStateIsRequestLocalLoadedScene"] &&
@@ -2727,6 +2780,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (string.Equals((string)value["kind"], "attack",
                             StringComparison.Ordinal)
                         ? (bool)value["targetPresent"] &&
+                            (bool)value[
+                                "targetAutonomousBrainDisabled"] &&
                             !(bool)value["targetIsPlayerFaction"] &&
                             !(bool)value["targetSharesPlayerGroup"] &&
                             (bool)value[
@@ -2734,7 +2789,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !(bool)value[
                                 "targetInControllableCharacters"] &&
                             (bool)value["actorTargetBilateralEnemy"]
-                        : !(bool)value["targetPresent"]) &&
+                        : !(bool)value["targetPresent"] &&
+                            (bool)value[
+                                "targetAutonomousBrainDisabled"]) &&
+                    ((JArray)value["activeCommandAiActions"]).All(
+                        command => string.Equals((string)command, "<none>",
+                            StringComparison.Ordinal)) &&
                     (int)value["activeRendererCount"] > 0 &&
                     (int)value["preview"]["meaningfulPixels"] > 0);
                 bool movementContracts = movements.Length == 4 &&
@@ -2753,6 +2813,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool attackContracts = attacks.Length == 6 &&
                     attacks.All(value =>
                         (bool)value["readinessProbeDetached"] &&
+                        (bool)value["autonomousCommandsExcluded"] &&
+                        !(bool)value["commandHasAiAction"] &&
                         (bool)value["commandInstalled"] &&
                         (bool)value["commandCanStart"] &&
                         (bool)value["commandCloseEnough"] &&
@@ -2867,6 +2929,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (bool)value["productionOutfitExact"] &&
                             (bool)value["humanoidRigExact"] &&
                             !(bool)value["actorIsPlayerFaction"] &&
+                            (bool)value[
+                                "actorAutonomousBrainDisabled"] &&
                             !(bool)value["actorSharesPlayerGroup"] &&
                             (bool)value[
                                 "actorHoldingStateIsRequestLocalLoadedScene"] &&

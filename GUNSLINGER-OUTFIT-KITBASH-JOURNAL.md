@@ -1451,3 +1451,44 @@ score remains 88/100.
 
 Exact next action: commit and policy-publish the lifecycle diagnostic, rebuild
 its exact package, and run attempt 12. Candidate score remains 88/100.
+
+## 2026-08-31 - Twelfth motion run identifies donor-brain command ownership
+
+- Published commit `2e73bf3035860ffc940c31f4e5c090b0f5d5df2e`, package
+  `6d4e6b3aa27658e958f7010937a7d62e481988eb4eb5967fdc8d719dfbd94d5f`,
+  DLL `90c727bcbd90ac962e7dd406c6bbc0c8f16f55ac05ff4ba8f812a9ff0e1f205d`,
+  and MVID `6d5eafa3-919a-40fc-a39c-9206ab6ca58f` ran through Steam 640820.
+- Evidence `20260831T1509405239304Z-gunslinger-outfit-production-motion`
+  reached 10/54 male records, then failed closed when native construction of
+  the musket attack was rejected as unloaded. Guard, exact game/build,
+  working-save/no-save, blueprint immutability, request-local scene, cleanup,
+  and exit passed. No partial image is accepted.
+- Lifecycle instrumentation positively clears attachment: before spawn, after
+  spawn before tick, and after attachment, `Preloading=False`, avatar instance
+  `-654738`, raw/active counts `5/5`, saved count zero, and expected outfit-ID
+  count four were unchanged. The active names remained body, face, eyebrows,
+  short hair, and the empty facial-hair entity.
+- At musket ready, the firearm had zero rounds and total discharge count two.
+  The readiness probe was detached and the harness command was not installed,
+  yet resident and running collections both contained `UnitAttack`. The prior
+  pistol action had already passed empty-container teardown, proving a new
+  unowned command appeared between actions.
+- Both request-local blueprint clones inherited the donor NPC brain. Native
+  `JoinCombat`/`Engage` activated that brain and allowed it to attack before
+  the harness. The replacement clears `Brain` only on those disposable clones,
+  requires an empty command container before an attack frame, rejects an
+  evidence command carrying `AiAction`, and records all ownership facts.
+- Installed-reference compilation passed. The initial complete test run had
+  one source-string assertion mismatch caused by a wrapped diagnostic literal;
+  the assertion was narrowed to its two exact fragments and the unchanged
+  implementation then passed all `1369/1369` tests.
+- Clean Release/package construction, strict package/firearm/audio validation,
+  and the settled 169-check preflight pass. Its first pass reported only the
+  documented artifact-tree stabilization sentinel. Pre-commit package SHA-256
+  is `b3c73cf63e68fa3cb4aff086bd236accf3769e69f53a5afe7c259776139d76e2`,
+  DLL SHA-256 is
+  `3c95c8c5115135023023ff74d4c77cbc3aaf90ff7c0ca742c3e397e1741c839d`,
+  and MVID is `5a199838-48eb-49a2-8b92-7ca8d0dfabe2`.
+
+Exact next action: commit and policy-publish the clone-AI isolation, rebuild
+the exact commit, and run attempt 13. Candidate score remains 88/100.

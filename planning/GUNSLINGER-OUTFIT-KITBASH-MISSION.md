@@ -1129,3 +1129,55 @@ and MVID is `47392b4f-cbc0-450f-9b72-82b284e578c7`. Candidate score remains
 Exact next action: commit and policy-publish the lifecycle instrumentation,
 rebuild its exact commit, and execute attempt 12 to localize the first state
 transition that loses the native DollData entities.
+
+## 2026-08-31 - Motion attempt 12 excludes autonomous clone AI
+
+Published lifecycle commit `2e73bf3035860ffc940c31f4e5c090b0f5d5df2e`
+ran through Steam 640820 as package SHA-256
+`6d4e6b3aa27658e958f7010937a7d62e481988eb4eb5967fdc8d719dfbd94d5f`,
+DLL SHA-256
+`90c727bcbd90ac962e7dd406c6bbc0c8f16f55ac05ff4ba8f812a9ff0e1f205d`,
+and MVID `6d5eafa3-919a-40fc-a39c-9206ab6ca58f`. Evidence
+`20260831T1509405239304Z-gunslinger-outfit-production-motion` reached 10/54
+male records and then failed closed because the musket command could not be
+constructed after an unowned native attack consumed its round. Guard, exact
+game/build, disposable working-save and no-save, immutable-blueprint,
+request-local scene, exact cleanup, and automatic-exit contracts passed. No
+partial image is accepted.
+
+The new lifecycle evidence clears the prior doll hypothesis. Before spawn,
+after spawn before tick, and after attachment, the same avatar instance
+`-654738` remained present with `ResourcesLibrary.Preloading=False`, five raw
+and active entities, zero saved entities, and four expected outfit IDs. The
+active set was the naked body, face, eyebrows, short hair, and empty facial-
+hair entity. No entity disappeared during attachment.
+
+The musket-ready sidecar instead proved `loadedRounds=0`, total firearm
+discharges two, a detached readiness probe, and no installed harness command,
+while both resident and running collections contained `UnitAttack`. The
+preceding pistol teardown had already passed its synchronous empty-container
+gate, so this was not its retired command. Source and installed-API inspection
+show that both request-local clones retained their donor `BlueprintUnit.Brain`;
+`JoinCombat` plus `Engage` activated that NPC AI and allowed it to issue the
+second attack before the harness did.
+
+The narrow replacement sets `Brain=null` only on the disposable actor and
+target blueprint clones. Native factions, combat state, commands, weapons,
+animation, outfit, and the working save remain untouched. Before any attack
+frame can count, the harness now requires `Commands.Empty` and zero resident
+or queued commands; the separately created evidence `UnitAttack` must have no
+`AiAction`. Sidecars expose clone-brain state and command `AiAction` ownership,
+and terminal contracts require every recorded command to be harness-owned.
+Installed-reference compilation, repository validation, all `1369/1369`
+domain tests, clean Release/package construction, strict package/firearm/audio
+validation, and the settled 169-check preflight pass. The first preflight
+reported only the documented artifact-tree stabilization sentinel. Pre-commit
+package SHA-256 is
+`b3c73cf63e68fa3cb4aff086bd236accf3769e69f53a5afe7c259776139d76e2`,
+DLL SHA-256 is
+`3c95c8c5115135023023ff74d4c77cbc3aaf90ff7c0ca742c3e397e1741c839d`,
+and MVID is `5a199838-48eb-49a2-8b92-7ca8d0dfabe2`. Candidate score remains
+88/100.
+
+Exact next action: commit and policy-publish the AI-isolation repair, rebuild
+that exact commit, and execute attempt 13.

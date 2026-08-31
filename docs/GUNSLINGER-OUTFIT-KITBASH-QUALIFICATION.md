@@ -1258,3 +1258,48 @@ DLL SHA-256 is
 MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`. Motion remains `PENDING`
 until an exact-commit terminal PASS, structured reconciliation, and direct
 review of all 54 replacement images.
+
+## 2026-08-31 production motion attempts 11 and 12
+
+Attempt 11 used published commit
+`4ef28f65577d09329536a905976b405cac4562ef` and evidence directory
+`20260831T1438053243232Z-gunslinger-outfit-production-motion`. It failed
+before record one at the repeated empty-doll settle boundary. Guard, exact
+game/build, working-save/no-save, immutable-blueprint, cleanup, request-local
+scene, and exit passed. Because this was the second occurrence, the next
+commit added four-stage native doll lifecycle instrumentation instead of
+retrying unchanged.
+
+Attempt 12 used published lifecycle commit
+`2e73bf3035860ffc940c31f4e5c090b0f5d5df2e`, package SHA-256
+`6d4e6b3aa27658e958f7010937a7d62e481988eb4eb5967fdc8d719dfbd94d5f`,
+DLL SHA-256
+`90c727bcbd90ac962e7dd406c6bbc0c8f16f55ac05ff4ba8f812a9ff0e1f205d`,
+and MVID `6d5eafa3-919a-40fc-a39c-9206ab6ca58f`. Evidence directory:
+`20260831T1509405239304Z-gunslinger-outfit-production-motion`. Terminal
+status: `FAIL` after 10/54 records.
+
+Lifecycle evidence showed the same avatar instance with five raw/active
+entities, zero saved entities, four expected outfit IDs, and preloading false
+before spawn, after spawn before tick, and after attachment. The doll was
+healthy. At musket ready, however, the firearm had zero rounds and two total
+discharges; no harness attack was installed and its readiness probe was
+detached, while resident and running collections contained `UnitAttack`.
+Because pistol cleanup had already proven an empty command container, a new
+unowned attack appeared between actions. No partial image is accepted.
+
+The request-local actor and target clones inherited the donor NPC brain, which
+native combat engagement activated. The pending exact-commit repair clears
+that brain only on the disposable clones, requires an empty command container
+before accepting attack evidence, requires the evidence command's `AiAction`
+to be null, and records clone-brain plus active-command ownership in sidecars
+and terminal contracts. Installed-reference compilation and all `1369/1369`
+tests pass, as do clean strict packaging, firearm/audio validation, and the
+settled 169-check preflight; the first pass reported only the documented
+artifact-tree stabilization sentinel. Pre-commit package SHA-256 is
+`b3c73cf63e68fa3cb4aff086bd236accf3769e69f53a5afe7c259776139d76e2`,
+DLL SHA-256 is
+`3c95c8c5115135023023ff74d4c77cbc3aaf90ff7c0ca742c3e397e1741c839d`,
+and MVID is `5a199838-48eb-49a2-8b92-7ca8d0dfabe2`. Motion remains `PENDING`
+until the replacement run reaches terminal PASS and every one of its 54 PNGs
+is reconciled and directly reviewed.

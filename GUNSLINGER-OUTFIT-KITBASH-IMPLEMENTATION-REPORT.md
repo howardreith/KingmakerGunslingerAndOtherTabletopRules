@@ -1067,6 +1067,49 @@ DLL SHA-256 is
 and MVID is `47392b4f-cbc0-450f-9b72-82b284e578c7`. Exact-commit attempt 12
 remains pending.
 
+### Twelfth motion execution and request-local AI isolation
+
+Published commit `2e73bf3035860ffc940c31f4e5c090b0f5d5df2e` ran through
+Steam 640820 with package SHA-256
+`6d4e6b3aa27658e958f7010937a7d62e481988eb4eb5967fdc8d719dfbd94d5f`,
+DLL SHA-256
+`90c727bcbd90ac962e7dd406c6bbc0c8f16f55ac05ff4ba8f812a9ff0e1f205d`,
+and MVID `6d5eafa3-919a-40fc-a39c-9206ab6ca58f`. Evidence
+`20260831T1509405239304Z-gunslinger-outfit-production-motion` reached 10/54
+male records before the musket's native command was rejected as unloaded.
+All guard, build/game, disposable-save/no-save, immutable-blueprint,
+request-local scene, structural-cleanup, and exit contracts passed. No partial
+image is accepted.
+
+The lifecycle diagnostic resolved its question positively: the same avatar
+instance (`-654738`) retained five raw/active native entities before spawn,
+after spawn before tick, and after data attachment; preloading was false,
+saved count zero, and expected outfit-ID count four throughout. The outfit
+was neither empty nor replaced.
+
+At musket ready, no harness attack was installed and the readiness probe was
+detached, but resident and running command collections contained `UnitAttack`.
+The firearm had zero rounds and total discharge count two. Because the prior
+pistol teardown had synchronously passed its empty-container contract, this
+was a newly issued command. The request-local actor and target blueprint clones
+retained the source NPC brain, and ordinary `JoinCombat`/`Engage` activated it.
+
+The repair clears `BlueprintUnit.Brain` only on those two disposable clones,
+preserving native combat, commands, weapon, animation, outfit, faction, and
+save behavior. It fails before accepting a ready frame unless the command
+container is empty, rejects any harness `UnitAttack` with an `AiAction`, emits
+clone-brain and active-command ownership fields in every sidecar, and requires
+those facts in terminal reconciliation. Installed-reference compilation and
+all `1369/1369` tests pass, as do clean Release/package construction, strict
+package/firearm/audio validation, and the settled 169-check preflight. The
+first pass reported only the documented artifact-tree stabilization sentinel.
+Pre-commit package SHA-256 is
+`b3c73cf63e68fa3cb4aff086bd236accf3769e69f53a5afe7c259776139d76e2`,
+DLL SHA-256 is
+`3c95c8c5115135023023ff74d4c77cbc3aaf90ff7c0ca742c3e397e1741c839d`,
+and MVID is `5a199838-48eb-49a2-8b92-7ca8d0dfabe2`. Commit-bound runtime
+replacement remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
