@@ -1,7 +1,6 @@
 # Gunslinger Outfit Kitbash Qualification
 
-Status: installed-game and final package qualification accepted at 93/100
-with no hard rejection. Policy publication is in progress.
+Status: qualified and policy-published at 93/100 with no hard rejection.
 
 ## Authority
 
@@ -32,7 +31,7 @@ with no hard rejection. Policy publication is in progress.
 | Installable package | Pass | Both strict 135-entry archives, SHA-256 `4f3e7d97...397d0` |
 | Compatibility profiles | Pass | Exact-reference, supply-icon, production firearm/SoundBank, package, and stable 178-check preflight |
 | Guarded runtime smoke | Pass | Canonical load, accepted static/motion matrices, and accepted three-launch persistence transaction |
-| Publication | Pending final checkpoint | Prior commits helper-published; final coherent implementation/evidence commit pending |
+| Publication | Pass | Implementation/evidence commit `92de860...5112a` helper-published; immediate HEAD/local/origin equality and clean tree |
 
 ## Guarded catalog evidence
 
@@ -1595,6 +1594,22 @@ not change. Direct archive inspection found zero installed game assemblies,
 raw catalogs, reference images, screenshot batches, runtime evidence, or CSV
 inventories.
 
-All local and installed-game qualification gates pass. Publication, remote-ref
-equality, and final clean-tree verification are the only remaining
-administrative steps.
+All local, installed-game, publication, remote-ref, and clean-tree
+qualification gates pass.
+
+## Publication checkpoint
+
+Implementation/evidence commit
+`92de86005d2db4f0731b296fc3d803033e15112a` was published with exactly:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1
+```
+
+The helper performed an ordinary non-force push to
+`codex/gunslinger-class-outfit-kitbash`. Immediate readback showed HEAD, the
+local branch ref, and
+`origin/codex/gunslinger-class-outfit-kitbash` all equal to the full commit
+SHA above; `git status --short --branch` was clean. The final documentation
+closure is committed and helper-published before handoff, where the definitive
+closure SHA/ref/clean-tree check is reported. No gate remains open.

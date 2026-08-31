@@ -1761,5 +1761,23 @@ and the clean forbidden-artifact state.
   178/178.
 
 All engineering, installed-game, visual, save, clean-build, compatibility, and
-package gates are complete. Only coherent commit, helper publication,
-three-ref equality, and clean-tree verification remain.
+package gates are complete.
+
+## 2026-08-31 - Publication checkpoint
+
+- Coherent implementation/evidence commit:
+  `92de86005d2db4f0731b296fc3d803033e15112a`.
+- Publication command:
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1`.
+- Helper result: ordinary non-force publication to the identically named
+  `codex/gunslinger-class-outfit-kitbash` branch; no merge, force push,
+  reset, clean, rebase, or history rewrite.
+- Immediate verification: `HEAD`, local branch ref, and
+  `origin/codex/gunslinger-class-outfit-kitbash` all equaled
+  `92de86005d2db4f0731b296fc3d803033e15112a`; tree clean.
+- This final documentation-only closure is committed and helper-published
+  before handoff. The final handoff SHA/ref/clean-tree check is its exact
+  publication record.
+
+Mission complete; no unresolved design question, uncertainty, or hard stop
+remains.
