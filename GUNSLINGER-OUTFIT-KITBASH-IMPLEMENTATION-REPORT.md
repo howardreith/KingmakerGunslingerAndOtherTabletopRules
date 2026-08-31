@@ -336,6 +336,37 @@ DLL SHA-256 is
 The runtime and visual matrix gates remain open; this failure changes neither
 candidate score nor production.
 
+Published lifecycle commit `08bfed17843adf348b210883b6f929b1af7c5678`
+then ran at
+`20260831T0044105199782Z-gunslinger-outfit-finalist-race-matrix` with
+exact DLL SHA-256
+`9ebe80a42b3711dcc874357792da4b5a2e797eb0db18cd7a8d7f7d9a5e374db8`
+and MVID `f8abfd0e-59da-48c0-a796-15f085984c32`. It advanced beyond the
+prior pre-attachment failure. All five male-Aasimar donors then presented an
+exact rig/body/no-weapon contract but no doll entity references or renderers,
+so the scenario failed closed before any capture. Cleanup, save, production,
+and exit boundaries passed.
+
+The installed `SpawnUnit(BlueprintUnit, UnitEntityView, ...)` IL assigns a
+unique ID and then calls `UnityEngine.Object.Instantiate` on the supplied
+view before `SpawnEntityWithView`. That is correct for asset prefabs but not
+for an already-instantiated, runtime-configured `DollData` view: the second
+clone retained the hierarchy while losing `Character` runtime equipment
+state. The public `SpawnEntityWithView` method directly calls
+`CreateEntityData`, attaches data, registers the entity, and does not clone.
+The repaired fixture uses that direct path, mirrors native blueprint/ID/
+transform setup, verifies reference-identical view ownership, and retains
+failure-only local destruction.
+
+Focused contracts require this handoff and prohibit the old double clone.
+Repository validation, all 1365 domain tests, clean installed-reference Release
+construction, packaging, and strict validation pass. Pre-publication package
+SHA-256 is
+`d1dfe7cf3697e5757ce0bc86d7f0e2af72a621e98e4021c5ff5101511885a0ec`;
+DLL SHA-256 is
+`5462960ebbfd8815523b2132e84d7b2377dfc52a051b2ccdb04a646bf33e7108`.
+The matrix and direct visual gates remain open.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

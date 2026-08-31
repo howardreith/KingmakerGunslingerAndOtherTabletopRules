@@ -634,3 +634,42 @@ matrix. No visual or score gate changed.
 Exact next action: publish this lifecycle correction, verify all three refs,
 rebuild its commit-bound package, pass quiescent preflight, and rerun the
 complete matrix. No visual, ranking, or production gate changed.
+
+## 2026-08-30 - Native doll-view ownership fails closed
+
+- Lifecycle commit `08bfed17843adf348b210883b6f929b1af7c5678` was
+  published with exact refs and a clean tree. Its commit-bound package
+  SHA-256 was
+  `ad125fccd577368077ff6784ac6c94f102a22d5a95a7e34be75d63ceccee323c`;
+  DLL SHA-256 was
+  `9ebe80a42b3711dcc874357792da4b5a2e797eb0db18cd7a8d7f7d9a5e374db8`.
+- After the known immediate-post-build timestamp window, unchanged preflight
+  passed all 163 checks. Guarded evidence
+  `20260831T0044105199782Z-gunslinger-outfit-finalist-race-matrix` loaded
+  the exact commit/DLL and MVID
+  `f8abfd0e-59da-48c0-a796-15f085984c32` through Steam `640820`.
+- The view attached and every one of five male-Aasimar donors proved exact
+  gender, progression race, size, humanoid rig, and empty active/inactive
+  weapon models. Each failed after 360 updates with
+  `dollEntityCount=5`, `dollExact=false`, and `rendererCount=0`. Zero
+  captures resulted. Exact 265-unit/3-party cleanup, no save API, no
+  production mutation, hooks removal, and automatic exit passed.
+- Installed IL establishes that `SpawnUnit(BlueprintUnit, UnitEntityView, ...)`
+  always `Instantiate`s the supplied view. The already-instantiated
+  `DollData` view's runtime `Character` equipment collection did not survive
+  that second clone. Public `SpawnEntityWithView` attaches and registers the
+  supplied existing view without cloning it.
+- The corrected fixture mirrors native identity initialization (blueprint,
+  unique ID, transform), calls `SpawnEntityWithView`, requires
+  `ReferenceEquals(_actor.View, dollView)`, and transfers ownership by clearing
+  the local cleanup reference. The focused test forbids the prior
+  `SpawnUnit` call shape. Repository validation, 1365/1365 tests, clean
+  installed-reference Release/package construction, and strict validation
+  pass. Pre-publication package SHA-256 is
+  `d1dfe7cf3697e5757ce0bc86d7f0e2af72a621e98e4021c5ff5101511885a0ec`;
+  DLL SHA-256 is
+  `5462960ebbfd8815523b2132e84d7b2377dfc52a051b2ccdb04a646bf33e7108`.
+
+Exact next action: publish the direct-view ownership correction, verify refs,
+rebuild its commit-bound package, pass quiescent preflight, and rerun the
+complete matrix. Candidate score and production remain unchanged.

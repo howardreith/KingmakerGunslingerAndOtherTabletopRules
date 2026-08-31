@@ -334,3 +334,36 @@ DLL SHA-256 is
 The correction still requires publication, a commit-bound rebuild, guarded
 preflight, the complete runtime matrix, and direct review of every replacement
 image.
+
+### Native doll-view ownership correction
+
+Published lifecycle commit `08bfed17843adf348b210883b6f929b1af7c5678`
+passed quiescent preflight (163 checks) and ran through Steam `640820` at
+`runtime-evidence/20260831T0044105199782Z-gunslinger-outfit-finalist-race-matrix`.
+It loaded exact DLL SHA-256
+`9ebe80a42b3711dcc874357792da4b5a2e797eb0db18cd7a8d7f7d9a5e374db8`
+and MVID `f8abfd0e-59da-48c0-a796-15f085984c32`. The view attached
+successfully, proving the previous lifecycle repair, but all five deterministic
+male-Aasimar donors reached the 360-update ceiling with
+`rigExact=true`, exact gender/race/size, no weapon models, and
+`dollExact=false`/`rendererCount=0`. Zero images were produced. Exact
+cleanup, no save call, no production mutation, and automatic exit passed.
+
+Installed IL explains the shared failure. The
+`SpawnUnit(BlueprintUnit, UnitEntityView, ...)` overload always instantiates
+its supplied prefab again. `DollData.CreateUnitView` had already instantiated
+and runtime-configured a `Character`, so the second clone retained the rig but
+not its runtime equipment collection. The public native
+`SpawnEntityWithView` path instead creates data for the supplied view, attaches
+it, registers it, and does not clone it. The fixture now assigns the exact
+blueprint, fresh unique ID, position, and rotation, registers that existing
+view, requires reference-identical ownership transfer, and destroys the local
+view only if transfer fails.
+
+Focused tests require the direct registration/ownership contract and forbid the
+old double-clone call shape. Repository validation, all 1365 tests, clean
+installed-reference Release construction, and strict package validation pass.
+The pre-publication package SHA-256 is
+`d1dfe7cf3697e5757ce0bc86d7f0e2af72a621e98e4021c5ff5101511885a0ec`;
+DLL SHA-256 is
+`5462960ebbfd8815523b2132e84d7b2377dfc52a051b2ccdb04a646bf33e7108`.
