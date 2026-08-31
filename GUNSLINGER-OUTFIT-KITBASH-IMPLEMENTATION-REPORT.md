@@ -249,6 +249,43 @@ and its DLL is
 The matrix and its images remain unaccepted until the published repair proves
 the exact pet relationship, retirement, and strict final snapshot in game.
 
+That proof completed at
+`20260830T2341080018300Z-gunslinger-outfit-finalist-race-matrix` on published
+commit `8b8d0b17aa90318425404efac56f6977bb2ad11c`, MVID
+`3595f627-40de-4b76-830b-99920d2838ac`. The terminal PASS covers 9 races,
+18 gender fixtures, 36 palette records, 72 PNGs/180 views, 18 restorations,
+exact 265/265 global-unit and 3/3 party snapshots, no save call, and no
+production mutation. The exact pet relationship occurred on male HalfElf;
+the earlier female-Elf attribution was provisional and is superseded.
+
+Mechanical completion exposed a distinct visual-fixture defect. Direct review
+of every PNG showed that native NPC prefab meshes can carry clothes, shields,
+bows, quivers, capes, or large weapons outside `CharacterAvatar`. Those baked
+objects survived the avatar-only setup and obscured or replaced the intended
+outfit in several cells. The complete batch is therefore visually rejected;
+it makes no negative compatibility finding about the Magus pair and does not
+change the provisional score or production.
+
+Read-only installed-game API inspection found the correct deterministic
+replacement. `BlueprintRaceVisualPreset` supplies the exact skin and gender
+skeleton; `DollState` owns the character-generation appearance and class;
+`DollData.CreateData()` records the exact entity IDs; and
+`DollData.CreateUnitView(false)` creates the native player view accepted by
+`EntityCreationController.SpawnUnit`. The repaired matrix uses that view,
+requires a nonempty exact doll baseline and zero unexpected entities, removes
+items from every body slot, and requires both weapon-model channels to be
+empty. The descriptor blueprint remains a disposable same-race/gender native
+source and production blueprints remain untouched.
+
+The repair passes repository validation, all 1365 tests, installed-reference
+compilation, clean Release build/package creation, and explicit strict package
+validation. Pre-publication package SHA-256 is
+`04f13af8fd17a0d9e18611e13c3cc3d27d83f6c7cf1e7dca3b05e094e5f73d18`;
+DLL SHA-256 is
+`d3ec07a2238ff2c062686dfc4e570ee602afaa716a26ddfa01607cb2627653bc`.
+A clean commit-bound guarded rerun and direct review of all replacement images
+remain mandatory.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

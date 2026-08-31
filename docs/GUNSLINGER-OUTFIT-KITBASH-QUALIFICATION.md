@@ -315,6 +315,43 @@ SHA-256 is
 DLL SHA-256 is
 `af8262f6593053ceadf56af84c26e56e61d38964b816ed39896ce7b5f7885b39`.
 
+The published cleanup run at
+`runtime-evidence/20260830T2341080018300Z-gunslinger-outfit-finalist-race-matrix`
+loaded commit `8b8d0b17aa90318425404efac56f6977bb2ad11c`, MVID
+`3595f627-40de-4b76-830b-99920d2838ac`, and reached terminal PASS. It
+completed 9 installed races/18 gender cells, 36 records, 72 PNGs/180 views,
+18/18 exact restorations, exact 265-unit and 3-party-member snapshots, and
+recorded no save or production mutation. Its request-owned
+`AnimalCompanionUnitLeopard` relationship belongs to male HalfElf and was
+retired exactly; this corrects the earlier inferred female-Elf association.
+
+Direct visual inspection of all 72 PNGs rejects that batch. Several donor
+prefabs rendered non-avatar clothing or equipment, including stored shields,
+bows, quivers, capes, and large weapons. A mechanically empty avatar was thus
+not a neutral player body. These images do not qualify race compatibility or
+change candidate scoring.
+
+The replacement fixture follows Kingmaker's native character-creation path:
+
+- resolve the exact `BlueprintRace.Presets` entry for race and gender;
+- configure `DollState` with that preset and the exact native Magus class;
+- create `DollData` and its native `CreateUnitView(false)` player view;
+- spawn a disposable same-race/gender descriptor with that view;
+- clear every `UnitBody.AllSlots` item and both weapon-model channels;
+- require a nonempty exact doll entity set with zero unexpected avatar entity;
+- retain exact avatar restoration, global cleanup, no-save, and no-production
+  gates.
+
+Focused source contracts enforce each step. Repository validation, installed-
+reference compilation, 1365/1365 tests, clean Release construction, package
+creation, and independent strict package validation pass. The pre-publication
+package SHA-256 is
+`04f13af8fd17a0d9e18611e13c3cc3d27d83f6c7cf1e7dca3b05e094e5f73d18`;
+DLL SHA-256 is
+`d3ec07a2238ff2c062686dfc4e570ee602afaa716a26ddfa01607cb2627653bc`.
+Runtime and visual acceptance remain open until a published commit-bound run
+replaces and directly reviews the complete image matrix.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

@@ -241,3 +241,39 @@ that reference was absent from the initial snapshot, retire only that proven
 request-owned dependent, and retain the original strict whole-unit/party
 equality gate. The next published runtime run must prove that relationship and
 exact cleanup before the 72-image matrix can be reviewed or accepted.
+
+## Execution checkpoint: clean mechanics, rejected prefab visuals
+
+Published commit `8b8d0b17aa90318425404efac56f6977bb2ad11c` completed the
+guarded matrix with terminal PASS at
+`runtime-evidence/20260830T2341080018300Z-gunslinger-outfit-finalist-race-matrix`.
+It proved all 9 installed player races/18 gender cells, 36 palette records,
+72 PNGs/180 views, 18/18 exact avatar restorations, exact party/global-unit
+cleanup, no save call, and no production mutation. The one request-owned
+Leopard was captured from and retired with the male-HalfElf fixture. The
+earlier female-Elf attribution was an inference from the preceding terminal
+delta, not the final relationship record, and is superseded by this evidence.
+
+Direct inspection of every image rejects this batch for visual acceptance.
+Several native NPC donor prefabs retained baked clothing, shields, bows,
+quivers, capes, or large weapons despite an empty `CharacterAvatar`; examples
+include male Elf, male HalfElf, male Tiefling, female Aasimar, female Gnome,
+female Human, and female Tiefling. This is a fixture-visual contamination
+failure, not evidence that the exact Magus clothing pair is incompatible, so
+the provisional 81/100 finalist score and production state remain unchanged.
+
+Installed-game API inspection identified the deterministic player-appearance
+path: `BlueprintRace.Presets`, `DollState`, `DollData.CreateData`, and
+`DollData.CreateUnitView(false)`. The fixture now supplies that exact native
+character-creation view to `EntityCreationController.SpawnUnit`, requires a
+nonempty exact preset/doll entity baseline with zero unexpected avatar
+entities, clears every `UnitBody.AllSlots` item, and requires both hand weapon
+models to be absent. Focused source tests enforce this contract. Repository
+validation, all 1365 tests, installed-reference compilation, clean Release
+construction, and explicit strict package validation pass. The
+pre-publication package SHA-256 is
+`04f13af8fd17a0d9e18611e13c3cc3d27d83f6c7cf1e7dca3b05e094e5f73d18`;
+DLL SHA-256 is
+`d3ec07a2238ff2c062686dfc4e570ee602afaa716a26ddfa01607cb2627653bc`.
+The next accepted matrix must be rebuilt from the published commit and all 72
+new images must be inspected; mechanical PASS alone remains insufficient.

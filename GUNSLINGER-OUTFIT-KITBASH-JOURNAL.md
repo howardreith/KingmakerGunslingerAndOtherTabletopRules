@@ -507,3 +507,56 @@ the commit-bound local-runtime package, pass quiescent preflight, and rerun the
 complete matrix. Acceptance requires structured proof that the unexpected
 Leopard is the exact disposable donor's `Descriptor.Pet`, that it is retired,
 and that the original strict snapshots are restored before direct image review.
+
+## 2026-08-30 - Mechanical PASS rejected after complete visual review
+
+- Published cleanup commit
+  `8b8d0b17aa90318425404efac56f6977bb2ad11c` was identical at HEAD,
+  local, and origin with a clean tree. Its commit-bound package SHA-256 was
+  `79f2c09c9114a17bfbed21751f764ea0c273b7e30816523c8952b311d441afc5`;
+  DLL SHA-256 was
+  `4fcd0e88529e3d474f4924a77322c334e9974159b8d160f36f038d13f96bd9e7`.
+- Guarded evidence
+  `20260830T2341080018300Z-gunslinger-outfit-finalist-race-matrix`
+  reached terminal PASS with loaded MVID
+  `3595f627-40de-4b76-830b-99920d2838ac`. It proved 9 races, 18
+  gender cells, 36 records, 72 PNGs/180 views, 18/18 restorations, exact
+  native links/palettes, no save or production mutation, and exact cleanup of
+  265/265 global units and 3/3 party references.
+- The relationship record captured one exact `UnitDescriptor.Pet` for the
+  male-HalfElf fixture: `AnimalCompanionUnitLeopard`
+  (`54cf380dee486ff42b803174d1b9da1b`). It was registered globally but not in
+  party, then retired and absent. This supersedes the prior female-Elf source
+  inference.
+- Every one of the 72 PNGs was inspected in eight temporary review boards
+  outside the repository. The batch is rejected. Several NPC prefabs retained
+  arbitrary baked clothes or equipment even when their `CharacterAvatar`
+  baseline was empty: shields/swords, bows/quivers, capes, a large greatsword,
+  and race-inappropriate donor outfits remained visible. Male Elf, male
+  HalfElf, male Tiefling, female Aasimar, female Gnome, female Human, and
+  female Tiefling provide concrete examples. The temporary review boards and
+  raw images remain ignored and outside the repository.
+- This invalidates the fixture's visual neutrality, not the finalist's
+  provisional 81/100 score. Production remains unchanged and no race-grid
+  visual gate closes from this run.
+
+Installed-game reflection/IL inspection established the native player-doll
+path. `BlueprintRace.Presets` supplies exact gender skeleton and skin;
+`DollState` deterministically owns race preset, appearance choices, class
+clothes, and ramps; `CreateData()` creates `DollData`; and
+`CreateUnitView(false)` builds a character-generation view. The repaired
+scenario spawns that view using the same-race/gender descriptor blueprint,
+requires all preset/doll entities and no unexpected avatar entity, clears
+every `UnitBody.AllSlots` item, and checks both active and inactive hand models.
+An empty baseline now fails closed because a real player doll must be nonempty.
+
+Repository validation, installed-game compilation, all 1365/1365 tests, clean
+Release construction, package creation, and explicit strict package validation
+pass. Pre-publication package SHA-256 is
+`04f13af8fd17a0d9e18611e13c3cc3d27d83f6c7cf1e7dca3b05e094e5f73d18`;
+DLL SHA-256 is
+`d3ec07a2238ff2c062686dfc4e570ee602afaa716a26ddfa01607cb2627653bc`.
+
+Exact next action: publish this neutral-character-creation-fixture checkpoint,
+verify all three refs, rebuild its commit-bound runtime package, pass guarded
+preflight, rerun all 18 cells, and directly inspect all 72 replacement images.

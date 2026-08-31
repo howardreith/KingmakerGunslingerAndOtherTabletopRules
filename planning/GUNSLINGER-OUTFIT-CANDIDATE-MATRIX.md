@@ -193,3 +193,28 @@ active donor actor's exact `UnitDescriptor.Pet` reference and retains strict
 whole-snapshot equality. `magus-complete` remains provisional at 81/100; its
 race-grid images remain unaccepted pending a clean published rerun and direct
 inspection.
+
+The clean relationship-scoped rerun,
+`20260830T2341080018300Z-gunslinger-outfit-finalist-race-matrix`, reached
+terminal PASS at published commit
+`8b8d0b17aa90318425404efac56f6977bb2ad11c`: 9 races, 18 gender cells,
+36 records, 72 PNGs/180 views, 18 restorations, exact cleanup, and no save or
+production mutation. Its exact dependent record places the request-owned
+Leopard on the male-HalfElf fixture, superseding the earlier female-Elf
+inference.
+
+All 72 images were then inspected directly. The batch is visually rejected
+because several NPC donor prefabs supplied baked non-avatar clothing and
+equipment, including shields, bows, quivers, capes, and large weapons. Some
+cells showed the intended Magus pair cleanly, but the contaminated fixtures do
+not permit a fair all-race compatibility or aesthetic judgment. No candidate
+score changes: `magus-complete` stays provisional at 81/100 and production is
+unchanged.
+
+The rerun fixture now uses Kingmaker's native character-generation
+`DollState`/`DollData` view for the exact race preset and gender, clears all
+body slots, and rejects an empty, unexpected, or weapon-bearing baseline. All
+1365 tests, clean installed-reference Release build, and strict package
+validation pass for this repair. A complete published rerun and inspection of
+every replacement image are required before this matrix can affect ranking or
+selection.
