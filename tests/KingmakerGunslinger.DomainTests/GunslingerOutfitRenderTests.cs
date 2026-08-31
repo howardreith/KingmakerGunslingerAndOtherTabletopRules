@@ -268,6 +268,7 @@ namespace KingmakerGunslinger.DomainTests
                 "SetClass(_magusClass)",
                 "CreateData()",
                 "CreateUnitView(false)",
+                "dollView.GetComponent<Character>()",
                 "_actorBlueprint, dollView,",
                 "Body.AllSlots",
                 "slot.RemoveItem(false)",
@@ -319,6 +320,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(source.Contains(
                     "value.RaceId == race.RaceId"),
                 "A progression race must not be equated with the native preset visual RaceId; Aasimar and other shared visual bodies use the preset's own identity.");
+            Assertions.False(source.Contains(
+                    "dollView.CharacterAvatar"),
+                "CharacterAvatar is initialized by UnitEntityView.OnDataAttached and must not be required on the unbound DollData view template.");
             foreach (string id in new[]
             {
                 "6df8f61725a84294c8661bb9585eca97",

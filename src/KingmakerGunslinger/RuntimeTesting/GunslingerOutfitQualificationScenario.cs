@@ -435,10 +435,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _dollData = CreateCharacterCreationDoll(fixture);
                     dollView = _dollData.CreateUnitView(false);
                     if (dollView == null ||
-                        dollView.CharacterAvatar == null)
+                        dollView.GetComponent<Character>() == null)
                         throw new InvalidOperationException(fixture.Label +
                             " character-creation DollData did not create a " +
-                            "complete native view.");
+                            "native view with a root Character component.");
                     _actor = Game.Instance.EntityCreator.SpawnUnit(
                         _actorBlueprint, dollView,
                         NearestNavigable(_anchor.Position +

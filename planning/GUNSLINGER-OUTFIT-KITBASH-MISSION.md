@@ -300,3 +300,37 @@ validation pass. Pre-publication package SHA-256 is
 `e6af511660abba47fd22dae853f6875ed31c1bd68607cc60440fe640f62c9502`;
 DLL SHA-256 is
 `edbc636195bd0b1fe80e41df7bdf532236502135da819570e07980a99a645824`.
+
+### Native view attachment correction
+
+The corrected visual-race build at published commit
+`55c487cc460c4950305d47e3c679bf8e858c943d` ran through Steam App ID
+`640820` at
+`runtime-evidence/20260831T0026335779530Z-gunslinger-outfit-finalist-race-matrix`.
+It loaded exact DLL SHA-256
+`1be20efa6c457eb8da426b54f67598c3529cfc76c5c62454eea7ce9654e1897c`
+and MVID `e496489f-2fbc-47cf-a4c1-da914eda915a`, then failed closed at
+`spawn-male-aasimar` before a fixture, asset mutation, or capture existed.
+The working-save/no-save boundary, exact cleanup, production non-mutation, and
+automatic exit passed.
+
+Installed IL identifies a second probe-lifecycle error. Native
+`DollData.CreateUnitView` configures the root
+`Character` component and returns its `UnitEntityView` template.
+`UnitEntityView.CharacterAvatar` is assigned later by
+`UnitEntityView.OnDataAttached` using
+`GetComponentInChildren<Character>()`. Requiring that property before
+`EntityCreationController.SpawnUnit` was therefore earlier than the native
+lifecycle. The probe now requires `dollView.GetComponent<Character>()` before
+spawn and retains the stronger `_actor.View.CharacterAvatar` requirement after
+data attachment. A focused test forbids the premature property check.
+
+Repository validation, all 1365 domain tests, clean installed-reference Release
+construction, and strict package validation pass for this narrow correction.
+The current pre-publication local-runtime package SHA-256 is
+`024d0c2b89a6e561b4c8d6eecc67e6f30c6b85941b893db7f9dcc6d5d22b0f2e`;
+DLL SHA-256 is
+`3cf170e14b0dc96910b093ee0737e713fd7d0c432a20cd59971c36dfc7be7d42`.
+The correction still requires publication, a commit-bound rebuild, guarded
+preflight, the complete runtime matrix, and direct review of every replacement
+image.
