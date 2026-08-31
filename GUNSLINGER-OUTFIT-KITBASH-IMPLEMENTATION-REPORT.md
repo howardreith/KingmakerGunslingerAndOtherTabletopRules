@@ -1,8 +1,9 @@
 # Gunslinger Outfit Kitbash Implementation Report
 
 Status: native candidate selected at 88/100 and integrated through a focused
-production policy; commit-bound runtime, equipment, animation, rebuild,
-persistence, and final package qualification remain open.
+production policy. The published commit-bound package and canonical guarded
+working-save load pass; equipment, animation, rebuild, outfit persistence, and
+final package qualification remain open.
 
 ## Intake
 
@@ -455,6 +456,27 @@ The pre-publication package SHA-256 is
 DLL SHA-256 is
 `6f039e773910a314f6abf46e2bd0d87d737660abd898d1ea7bd58918d11893eb`.
 Version remains 0.0.110. A commit-bound guarded runtime load remains mandatory.
+
+## Published production load checkpoint
+
+The production binding was committed and policy-published as
+`bf3e052cb3a91691e214ec9a87c025f25f380c2d`. A clean commit-bound local-runtime
+build passed repository validation, all 1367 tests, exact installed-reference
+Release construction, and strict package validation. Its package SHA-256 is
+`4a91c92b9f842b7744adf707a2149ae13a4cc1ec70733979ad453406548a6c61`;
+the DLL SHA-256 is
+`78c8a7e8d8c1372bea930e4a48b4211ef4941974a062c1dbb707b0a8b7a1b8f5`,
+and its MVID is `41fd1851-9dec-4adf-87eb-0e79763d5e02`.
+
+After all 163 preflight checks passed, the canonical guarded Steam 640820 run
+`20260831T0159136175513Z-working-save-smoke` loaded that exact assembly and
+reached terminal `PASS`. It proved one uniquely correlated
+`KMG_AUTOMATION_WORKING`, a distinct protected baseline, complete catalog and
+receiver-bound action correlation, load completion, stable post-load
+fingerprint, no save-writing API, hook removal, and automatic exit. The stable
+fingerprint records game ID `dce769e0-229c-4bfd-b8ea-e2d572bf8472` and party
+count 3. This closes only the commit-bound safe-load checkpoint; it makes no
+visual, override, animation, rebuild, or outfit-persistence claim.
 
 ## Uncertainty
 
