@@ -929,3 +929,49 @@ and MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`. Candidate score remains
 
 Exact next action: commit and policy-publish the request-local loaded-scene
 container, rebuild its exact commit, and rerun the complete 54-record matrix.
+
+## 2026-08-31 - Motion attempt 7 detaches the readiness-only attack probe
+
+Published commit `b27438c7fd38d4e588a47b05b5e2329fb3676932` ran through
+Steam 640820 as package SHA-256
+`788dcf4d89fac23941f79d9cca54db5f673bb5405125ca5e8817ef24553056e8`,
+DLL SHA-256
+`9a0d1a9d671697f9a5a46c366cb6fe29af83dc528530e805987c55791ff21456`,
+and MVID `60f2fd26-9d78-401d-94d1-69a1c393afbe`. Evidence
+`20260831T1253077289617Z-gunslinger-outfit-production-motion` failed closed
+after 10/54 male records. Locomotion, turn, and the complete pistol attack
+executed; the pistol acted and discharged exactly once. The following musket
+ready sidecar then showed zero loaded rounds, total fired count two, and a
+live `UnitAttack`; construction of the real musket evidence command was
+correctly rejected as unloaded. No partial image is accepted.
+
+The request-local scene repair is validated by this run: guard, exact game and
+loaded-build identity, working-save/no-save boundary, production-blueprint
+immutability, native cleanup, exact player lists, empty/disposed request-local
+scene, and automatic exit all passed. Every partial sidecar retained the exact
+outfit, hair, rig, player-neutral faction, non-controllable holding-state, and
+unchanged player combat boundary.
+
+Installed IL identifies the remaining harness error. `UnitAttack.Init` performs
+native attack planning and computes approach radius; `UnitCommands.Run` calls
+that initialization and then registers the command. The readiness probe had
+been run before target positioning, so subsequent live ticks could advance it
+through the acted frame and consume its round. The replacement calls native
+`Init` directly, proves the probe is absent from actor commands throughout
+target placement, and reserves `Run` for the separately constructed evidence
+command. Every attack sidecar and terminal attack outcome must now report the
+detached-probe boundary.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release packaging, strict package/firearm/audio validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+artifact-tree stabilization sentinel. Pre-commit local-runtime package
+SHA-256 is
+`31498b7bed5b9532d0a208cda645b744cdfefa30b2a7246fab472696da7f0ce1`,
+DLL SHA-256 is
+`877b451e4a4a62751b3d1b75c217e24c2b66c857ec4d973e28bdfc5e23ef100d`,
+and MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. Candidate score remains
+88/100.
+
+Exact next action: commit and policy-publish the detached-probe repair, rebuild
+its exact commit, and execute the complete replacement matrix.

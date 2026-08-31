@@ -1064,3 +1064,45 @@ DLL SHA-256 is
 MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`. Motion remains
 `PENDING` until an exact-commit terminal PASS, structured reconciliation, and
 direct review of every replacement image.
+
+## 2026-08-31 production motion attempt 7
+
+Published source commit:
+`b27438c7fd38d4e588a47b05b5e2329fb3676932`.
+Commit-bound package SHA-256:
+`788dcf4d89fac23941f79d9cca54db5f673bb5405125ca5e8817ef24553056e8`.
+Loaded DLL SHA-256:
+`9a0d1a9d671697f9a5a46c366cb6fe29af83dc528530e805987c55791ff21456`.
+MVID: `60f2fd26-9d78-401d-94d1-69a1c393afbe`.
+Evidence directory:
+`20260831T1253077289617Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` after 10/54 records.
+
+Male locomotion, turn, and one complete pistol `UnitAttack` ran. The pistol
+produced ready, fixed, and acted frames and exactly one discharge. Before the
+real musket command, its readiness sidecar showed `loadedRounds=0`, fired count
+two, and an active `UnitAttack`; the production empty-firearm patch therefore
+returned no command. No partial capture is accepted. Guarded request, exact
+game and loaded build, working-save/no-save boundary, blueprint immutability,
+exact player lists and combat state, empty/disposed request-local scene,
+cleanup, and automatic exit passed.
+
+Installed IL proves the readiness probe itself was improperly live:
+`UnitAttack.Init` performs attack planning and approach-radius initialization,
+whereas `UnitCommands.Run` also registers the command for advancement. The
+pending repair directly initializes the probe, proves it never enters actor
+commands throughout target placement, and creates a separate live command
+only after the ready capture. Every attack record and terminal attack outcome
+now requires `readinessProbeDetached=true`.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release/package, strict firearm/audio/package validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+artifact-tree stabilization sentinel. Pre-commit local-runtime package
+SHA-256 is
+`31498b7bed5b9532d0a208cda645b744cdfefa30b2a7246fab472696da7f0ce1`;
+DLL SHA-256 is
+`877b451e4a4a62751b3d1b75c217e24c2b66c857ec4d973e28bdfc5e23ef100d`;
+MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. Motion remains `PENDING`
+until an exact-commit terminal PASS, structured reconciliation, and direct
+review of all 54 replacement images.

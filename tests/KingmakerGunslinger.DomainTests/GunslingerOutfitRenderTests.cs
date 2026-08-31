@@ -375,6 +375,9 @@ namespace KingmakerGunslinger.DomainTests
                 "MaxSpeedOverride", "WalkSpeedType.Slow",
                 "WalkSpeedType.Normal", "ForceLookAt",
                 "UnitAttack.CreateAttackCommand", "IsSingleAttack = true",
+                "_motionAttackCommand.Init(_actor)",
+                "attackReadinessProbeDetached",
+                "readinessProbeDetached",
                 "new AbilityData(", "new UnitUseAbility(",
                 "ReloadTestMusketRuntime.Evaluate", "ExecutionProcess.Tick()",
                 "ProductionMotionAttackUpdates",
@@ -460,6 +463,22 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains(
                     "_motionSceneState = _motionAreaState.MainState"),
                 "Production motion must use its request-local faction pair and never enlist the working-save party.");
+            int probeStart = source.IndexOf(
+                "private void PrepareProductionMotionAttackTarget()",
+                StringComparison.Ordinal);
+            int liveAttackStart = probeStart < 0 ? -1 : source.IndexOf(
+                "private void StartProductionMotionAttack()", probeStart,
+                StringComparison.Ordinal);
+            Assertions.True(probeStart >= 0 && liveAttackStart > probeStart,
+                "Production motion lacks distinct readiness-probe and live-attack methods.");
+            string probeBody = source.Substring(probeStart,
+                liveAttackStart - probeStart);
+            Assertions.True(
+                    probeBody.Contains("_motionAttackCommand.Init(_actor)") &&
+                    !probeBody.Contains(
+                        "_actor.Commands.Run(_motionAttackCommand)") &&
+                    !probeBody.Contains("_actor.Commands.InterruptAll(true)"),
+                "Attack readiness must use a detached native UnitAttack probe; only the separately constructed evidence command may run.");
             foreach (string token in new[]
             {
                 "IsProductionMotion", "PollProductionMotion()",

@@ -1299,3 +1299,37 @@ its exact package, then execute a complete replacement batch. Score remains
 Exact next action: commit and policy-publish this request-local loaded-scene
 container, rebuild its exact package, and execute all 54 replacement records.
 Candidate score remains 88/100.
+
+## 2026-08-31 - Seventh motion run proves the attack probe was live
+
+- Published commit `b27438c7fd38d4e588a47b05b5e2329fb3676932`, package
+  `788dcf4d89fac23941f79d9cca54db5f673bb5405125ca5e8817ef24553056e8`,
+  DLL `9a0d1a9d671697f9a5a46c366cb6fe29af83dc528530e805987c55791ff21456`,
+  and MVID `60f2fd26-9d78-401d-94d1-69a1c393afbe` ran through Steam 640820.
+- Evidence `20260831T1253077289617Z-gunslinger-outfit-production-motion`
+  failed after 10/54 records. Male locomotion, turn, and the full pistol
+  schedule ran; the pistol acted and discharged exactly once. The musket-ready
+  record then exposed zero loaded rounds, total fired count two, and a live
+  `UnitAttack`, so the real command was correctly rejected as unloaded. No
+  partial image is accepted.
+- Guard, game/build/save identity, no-save, blueprint immutability, exact
+  player and combat state, request-local loaded-scene ownership, structural
+  cleanup, and automatic exit passed. This positively validates the scene
+  isolation repair and localizes the failure to command preparation.
+- Installed IL shows `UnitAttack.Init` plans attacks and approach radius without
+  registration. `UnitCommands.Run` performs that initialization and registers
+  a live command. The repair now calls `Init` only for the readiness probe,
+  proves it never appears in actor commands, and reserves `Run` for the fresh
+  evidence command. Sidecars and terminal outcomes require that boundary.
+- Installed-reference compile, repository validation, all `1369/1369` tests,
+  clean Release/package, strict firearm/audio/package validation, and the
+  settled 169-check preflight pass. The first preflight reported only the known
+  stabilization sentinel. Pre-commit package SHA-256 is
+  `31498b7bed5b9532d0a208cda645b744cdfefa30b2a7246fab472696da7f0ce1`,
+  DLL SHA-256 is
+  `877b451e4a4a62751b3d1b75c217e24c2b66c857ec4d973e28bdfc5e23ef100d`,
+  and MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`.
+
+Exact next action: commit and policy-publish the detached-probe repair, rebuild
+its exact package, and execute all 54 replacement records. Candidate score
+remains 88/100.

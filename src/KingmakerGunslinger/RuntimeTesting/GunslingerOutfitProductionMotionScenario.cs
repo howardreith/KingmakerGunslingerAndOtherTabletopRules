@@ -155,6 +155,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private Vector3 _motionTurnStartForward;
             private float _motionTurnDegrees;
             private bool _motionAttackTargetPrepared;
+            private bool _motionAttackProbeDetached;
             private bool _motionCommandInstalled;
             private bool _motionCommandCanStart;
             private bool _motionCommandCloseEnough;
@@ -1107,7 +1108,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(_motionSpec.Label +
                         " did not create a native UnitAttack probe.");
                 _motionAttackCommand.IsSingleAttack = true;
-                _actor.Commands.Run(_motionAttackCommand);
+                // Init is the native planning boundary used by UnitCommands.Run,
+                // but it does not register or advance the command. A live probe
+                // can act while the visual rig settles and consume the firearm
+                // round reserved for the separately constructed evidence command.
+                _motionAttackCommand.Init(_actor);
+                _motionAttackProbeDetached =
+                    !_actor.Commands.Contains(_motionAttackCommand);
+                if (!_motionAttackProbeDetached)
+                    throw new InvalidOperationException(_motionSpec.Label +
+                        " registered its readiness-only UnitAttack probe.");
                 Vector3 forward = _actor.OrientationDirection;
                 forward.y = 0f;
                 if (forward.sqrMagnitude < 0.5f) forward = Vector3.forward;
@@ -1164,8 +1174,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _diagnostics.Add(_motionSpec.Label +
                             ":target=" + placement + ";distance=" +
                             actualDistance.ToString("R") +
-                            ";attempts=" + _motionTargetAttempts);
-                        _actor.Commands.InterruptAll(true);
+                            ";attempts=" + _motionTargetAttempts +
+                            ";probeDetached=True");
+                        if (_actor.Commands.Contains(_motionAttackCommand))
+                            throw new InvalidOperationException(
+                                _motionSpec.Label +
+                                " readiness probe became live while positioning its target.");
                         _actor.View.HandsEquipment
                             .OnCombatStateChanged(true);
                         _actor.View.HandsEquipment
@@ -1181,6 +1195,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void StartProductionMotionAttack()
             {
                 _stage = "start-native-attack-" + _motionSpec.Label;
+                if (!_motionAttackProbeDetached)
+                    throw new InvalidOperationException(_motionSpec.Label +
+                        " did not retain a detached readiness probe boundary.");
                 _motionFiredBefore =
                     FirearmDischargeRuntimeDiagnostics.Fired;
                 _motionDischargeFaultsBefore =
@@ -1323,6 +1340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixture", _fixtures[_fixtureIndex].Label },
                     { "action", _motionSpec.Label },
                     { "firearm", firearm },
+                    { "readinessProbeDetached",
+                        _motionAttackProbeDetached },
                     { "commandInstalled", _motionCommandInstalled },
                     { "commandCanStart", _motionCommandCanStart },
                     { "commandCloseEnough", _motionCommandCloseEnough },
@@ -1644,6 +1663,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "claimBoundary", claim },
                     { "previousActionCleared",
                         _motionPreviousActionCleared },
+                    { "attackReadinessProbeDetached",
+                        !string.Equals(_motionSpec.Kind, "attack",
+                            StringComparison.Ordinal) ||
+                        _motionAttackProbeDetached },
                     { "productionClassGuid", _gunslingerClass.AssetGuid },
                     { "productionAssetIds", new JArray(
                         CurrentProductionAssetIds()) },
@@ -2077,6 +2100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionTurnStartForward = Vector3.zero;
                 _motionTurnDegrees = 0f;
                 _motionAttackTargetPrepared = false;
+                _motionAttackProbeDetached = false;
                 _motionCommandInstalled = false;
                 _motionCommandCanStart = false;
                 _motionCommandCloseEnough = false;
@@ -2566,6 +2590,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal)) == pair.Value);
                 bool recordContracts = records.All(value =>
                     (bool)value["previousActionCleared"] &&
+                    (bool)value["attackReadinessProbeDetached"] &&
                     (bool)value["productionEntitiesPresent"] &&
                     (bool)value["hairEntityPreserved"] &&
                     (bool)value["savedLinksUnchanged"] &&
@@ -2612,6 +2637,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (float)value["turnDegrees"] >= 60f);
                 bool attackContracts = attacks.Length == 6 &&
                     attacks.All(value =>
+                        (bool)value["readinessProbeDetached"] &&
                         (bool)value["commandInstalled"] &&
                         (bool)value["commandCanStart"] &&
                         (bool)value["commandCloseEnough"] &&
