@@ -1148,3 +1148,46 @@ complete replacement Steam run.
 Exact next action: commit and policy-publish this coherent repair, rebuild the
 exact commit, then execute and inspect a complete replacement batch. The
 score remains 88/100.
+
+## 2026-08-31 - Third motion run exposes low-level leave-event bypass
+
+- Published commit `df4f3f04f55bbbdfe56ef113f723f89af23fa62a` rebuilt as
+  package SHA-256
+  `fa29aab259ef800d0db3ab11ccf6bd3b82999760778733523ef2737dfec348dc`,
+  DLL SHA-256
+  `876879b6ab7f1cd2a376e8f43ed74109722f4841eb335179c20dad463ad0b651`,
+  and MVID `c162b31d-1195-47ef-b8d7-685142f07801`.
+- Guarded Steam evidence
+  `20260831T0539205863874Z-gunslinger-outfit-production-motion` returned
+  terminal `FAIL` after the full 27-record male matrix. The native boundary
+  remained `player=true->true;party=3->3;turnBased=true->true`. No record in
+  this partial batch is accepted.
+- Exact commit/DLL/game/save identity, no-save, production-blueprint
+  immutability, ammunition and target restoration, structural cleanup,
+  hook removal, and automatic exit remained protected. Combat cleanup alone
+  correctly prevented acceptance.
+- Installed IL proved the request-local actor/target calls were one layer too
+  low. `UnitCombatState.LeaveCombat()` omits `IUnitCombatHandler`;
+  `UnitEntityData.LeaveCombat()` performs state exit, AI interruption,
+  equipment/audio updates, and that event. `CombatController.HandleUnitLeaveCombat`
+  removes the participant, and `CombatController.Tick()` refreshes cached
+  `HasEnemyInCombat` when the unit set changes.
+- The repair uses full unit leave for every actor, target, and dependent, then
+  orders the registered turn-based cache tick, group-leave tick, and player
+  recomputation tick. It records and restores exact combat, enemy-history,
+  and sorted-unit baselines. The focused test forbids low-level actor/target
+  exits. Installed-reference compilation and all `1369/1369` tests pass.
+- Repository validation, clean Release/package validation, firearm/audio
+  validation, and the settled 169-check preflight pass. The first preflight
+  reported only `unsupported-does-not-build-or-stage-package`; the identical
+  settled-tree rerun passed.
+- Pre-commit package SHA-256 is
+  `ae22f6d1804ef1d4b9677d0a55c57dd3371c0340b63284f76e94e7bd8b5120f3`;
+  DLL SHA-256 is
+  `d0ba5261d5cf26d0b57534f060fbcba7407b1c4f0c421230f99ea8de2dcdcd75`;
+  MVID is `40e11afc-987d-4755-a057-df54bbfd09bf`. These dirty-tree
+  identities are source/package evidence only.
+
+Exact next action: commit and policy-publish the repair, rebuild its exact
+package, and execute a complete replacement batch. Candidate score remains
+88/100.

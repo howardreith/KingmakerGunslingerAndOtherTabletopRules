@@ -457,10 +457,35 @@ by explicit player/party/turn-based before/after records. No score changes:
 `magus-complete` remains 88/100 pending a complete replacement motion PASS and
 the independent persistence gate.
 
+### Production motion attempt 3 diagnostic
+
+Published commit `df4f3f04f55bbbdfe56ef113f723f89af23fa62a` and exact DLL
+SHA-256
+`876879b6ab7f1cd2a376e8f43ed74109722f4841eb335179c20dad463ad0b651`
+ran as guarded evidence
+`20260831T0539205863874Z-gunslinger-outfit-production-motion`. All 27 male
+records completed, but native group retirement again rejected the
+`true/3/true` boundary. No partial visual is scored.
+
+Installed IL now proves the earlier actor/target exit used the wrong layer:
+`UnitCombatState.LeaveCombat()` omits the unit event, while
+`UnitEntityData.LeaveCombat()` raises `IUnitCombatHandler`, allowing the
+turn-based controller to remove the disposable participant. Its registered
+tick then refreshes `HasEnemyInCombat` before the group-leave and player-cache
+ticks. The harness now requires that full event and ordered three-controller
+sequence, with exact turn-based enemy/history/unit-list evidence. Compile and
+all `1369/1369` tests pass. `magus-complete` remains 88/100 pending a complete
+motion PASS and the persistence gate.
+
 The controller-based repair passes repository validation, all `1369/1369`
 Release tests, clean strict packaging, firearm/audio validation, and the
 stable 169-check runtime preflight. This source evidence does not alter the
-score or accept any partial image.
+score or accept any partial image. Its pre-commit package/DLL SHA-256 values
+are `ae22f6d1804ef1d4b9677d0a55c57dd3371c0340b63284f76e94e7bd8b5120f3`
+and `d0ba5261d5cf26d0b57534f060fbcba7407b1c4f0c421230f99ea8de2dcdcd75`;
+MVID is `40e11afc-987d-4755-a057-df54bbfd09bf`. The initial preflight
+reported only the documented artifact-tree stabilization sentinel and the
+unchanged rerun passed all 169 checks.
 
 ### Production motion attempt 2 diagnostic
 

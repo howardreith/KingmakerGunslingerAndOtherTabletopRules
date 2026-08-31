@@ -737,6 +737,38 @@ DLL SHA-256 is
 MVID is `6e2a6987-f89a-42c1-a3ad-e1635a47b796`. Commit-bound replacement
 runtime evidence remains pending.
 
+### Third motion execution and full unit-event repair
+
+Commit `df4f3f04f55bbbdfe56ef113f723f89af23fa62a` ran as exact package
+SHA-256
+`fa29aab259ef800d0db3ab11ccf6bd3b82999760778733523ef2737dfec348dc`
+and DLL SHA-256
+`876879b6ab7f1cd2a376e8f43ed74109722f4841eb335179c20dad463ad0b651`
+in guarded evidence
+`20260831T0539205863874Z-gunslinger-outfit-production-motion`. The male
+27-record matrix completed, but the final player/party/turn-based state stayed
+`true/3/true`; the partial batch is rejected.
+
+Installed IL isolates the cause: low-level
+`UnitCombatState.LeaveCombat()` changes state without raising the unit combat
+event. Full `UnitEntityData.LeaveCombat()` raises that event after native AI,
+equipment, and audio cleanup, allowing the subscribed turn-based controller
+to remove the disposable participants. A registered turn-based tick refreshes
+`HasEnemyInCombat`; group leave and player recomputation can then complete.
+The implementation now uses that full lifecycle for all request-local units,
+records exact enemy/history/sorted-unit caches, and requires the ordered
+turn-based, group-leave, then player-recompute sequence. Installed-reference
+compilation, repository validation, and `1369/1369` tests pass. Clean
+pre-commit packaging and strict firearm/audio validation also pass: package
+SHA-256
+`ae22f6d1804ef1d4b9677d0a55c57dd3371c0340b63284f76e94e7bd8b5120f3`,
+DLL SHA-256
+`d0ba5261d5cf26d0b57534f060fbcba7407b1c4f0c421230f99ea8de2dcdcd75`,
+and MVID `40e11afc-987d-4755-a057-df54bbfd09bf`. The first preflight
+reported only the documented artifact-tree stabilization sentinel; the
+identical settled-tree rerun passed all 169 checks. Exact-commit replacement
+runtime evidence remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
