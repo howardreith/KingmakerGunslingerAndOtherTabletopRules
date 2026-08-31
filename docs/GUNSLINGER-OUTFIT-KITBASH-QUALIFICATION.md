@@ -352,6 +352,34 @@ DLL SHA-256 is
 Runtime and visual acceptance remain open until a published commit-bound run
 replaces and directly reviews the complete image matrix.
 
+The first published neutral-doll qualification at
+`runtime-evidence/20260831T0013309100348Z-gunslinger-outfit-finalist-race-matrix`
+loaded commit `b67ec5444d4b3ef8480007c10fb2d73bab3c031e`, MVID
+`f557435b-3d2a-4b8b-be4f-97de26665088`, and failed before the first spawn.
+The resolver reported no complete male-Aasimar preset because it incorrectly
+equated progression and visual race IDs. Zero fixture/capture records exist.
+The guard, exact working-save load, no-save/no-production boundaries, clean
+265-unit/3-party snapshot, hooks removal, and automatic exit passed.
+
+Read-only installed IL makes the corrective contract exact:
+
+- `DollState.Validate` selects `BlueprintRace.Presets[0]` in serialized order;
+- `DollData.CreateUnitView` loads the preset skin with
+  `BlueprintRaceVisualPreset.RaceId`;
+- no native equality predicate relates that visual identity to the progression
+  race identity.
+
+The corrected probe mirrors these operations, records
+`racePresetVisualRaceId`, and retains the nonnull skin/skeleton, nonempty doll,
+no-unexpected-entity, all-slot-clear, both-hand-empty, restoration, cleanup,
+save, and production guards. The focused test forbids the invalid equality
+predicate. Repository validation, 1365/1365 tests, clean Release build/package,
+and explicit strict validation pass. Pre-publication package SHA-256 is
+`e6af511660abba47fd22dae853f6875ed31c1bd68607cc60440fe640f62c9502`;
+DLL SHA-256 is
+`edbc636195bd0b1fe80e41df7bdf532236502135da819570e07980a99a645824`.
+The complete commit-bound rerun remains required.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

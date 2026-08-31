@@ -218,3 +218,13 @@ body slots, and rejects an empty, unexpected, or weapon-bearing baseline. All
 validation pass for this repair. A complete published rerun and inspection of
 every replacement image are required before this matrix can affect ranking or
 selection.
+
+The first published neutral-doll attempt,
+`20260831T0013309100348Z-gunslinger-outfit-finalist-race-matrix`, failed before
+rendering because its resolver conflated Aasimar's progression race with the
+native preset visual race. This is an instrumentation failure and changes no
+candidate score. Installed IL proves that character generation chooses
+serialized `race.Presets[0]` and loads skin with `RacePreset.RaceId`; the
+corrected fixture mirrors and records those separate identities. All 1365
+tests and the clean strict package gate pass. `magus-complete` remains
+provisional at 81/100 pending the replacement matrix and direct review.

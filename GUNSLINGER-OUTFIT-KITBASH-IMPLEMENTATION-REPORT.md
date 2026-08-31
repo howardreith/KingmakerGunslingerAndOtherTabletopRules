@@ -286,6 +286,28 @@ DLL SHA-256 is
 A clean commit-bound guarded rerun and direct review of all replacement images
 remain mandatory.
 
+The first such run,
+`20260831T0013309100348Z-gunslinger-outfit-finalist-race-matrix`, failed safely
+before spawning male Aasimar. Commit
+`b67ec5444d4b3ef8480007c10fb2d73bab3c031e` assumed that the preset visual
+`RaceId` must equal the progression `BlueprintRace.RaceId`. Zero images were
+created; working-save identity, no-save/no-production boundaries, exact
+265-unit/3-party cleanup, and automatic exit all passed.
+
+Installed IL provides the correction rather than a heuristic. Native
+`DollState.Validate` selects the first serialized `BlueprintRace.Presets`
+entry, while `DollData.CreateUnitView` loads `RacePreset.Skin` with the
+preset's own `RaceId`. The implementation now mirrors those calls, retains
+completeness checks on that first preset, and records progression and visual
+race identities separately. Repository validation, 1365 tests, clean
+installed-reference compilation/package construction, and strict validation
+pass. Pre-publication package SHA-256 is
+`e6af511660abba47fd22dae853f6875ed31c1bd68607cc60440fe640f62c9502`;
+DLL SHA-256 is
+`edbc636195bd0b1fe80e41df7bdf532236502135da819570e07980a99a645824`.
+No candidate disposition or production state changes from this early
+instrumentation failure.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

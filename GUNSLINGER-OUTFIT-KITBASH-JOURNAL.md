@@ -560,3 +560,44 @@ DLL SHA-256 is
 Exact next action: publish this neutral-character-creation-fixture checkpoint,
 verify all three refs, rebuild its commit-bound runtime package, pass guarded
 preflight, rerun all 18 cells, and directly inspect all 72 replacement images.
+
+## 2026-08-30 - Aasimar visual-race semantics fail closed
+
+- Neutral-doll commit `b67ec5444d4b3ef8480007c10fb2d73bab3c031e` was
+  published with exact HEAD/local/origin refs and a clean tree. Its
+  commit-bound local-runtime package SHA-256 was
+  `17ef9c3ffd53514099b15780a97430d361088fe27c3ed275ab66475abcb401ef`;
+  DLL SHA-256 was
+  `87330635b5e02107ec184b5b6ecce3ca2834c7cb3b776bc401c0ecb41363c339`.
+- The standalone runtime preflight initially observed the known
+  immediate-post-build artifact timestamp window, then passed all 163 checks
+  after the artifact tree became quiescent. No launch occurred while it was
+  red.
+- Guarded evidence is
+  `20260831T0013309100348Z-gunslinger-outfit-finalist-race-matrix`, loaded
+  MVID `f557435b-3d2a-4b8b-be4f-97de26665088`. It failed during
+  initialization with `No complete character-creation race preset exists for
+  Male Aasimar`; zero fixtures and zero images were created. Working-save
+  identity, no-save behavior, exact 265/265 global units and 3/3 party,
+  production non-mutation, cleanup, hooks removal, and automatic exit passed.
+- Root cause: the new resolver incorrectly required
+  `BlueprintRaceVisualPreset.RaceId == BlueprintRace.RaceId`. The former is a
+  visual-body identity and native playable races may share it; it is not the
+  progression race identity.
+- Installed `Assembly-CSharp.dll` IL establishes the exact engine contract:
+  `DollState.Validate` uses `BlueprintRace.Presets` followed by native
+  `FirstOrDefault` in serialized order, and `DollData.CreateUnitView` passes
+  `RacePreset.RaceId` to `KingmakerEquipmentEntity.Load`. The correction uses
+  `race.Presets[0]`, loads skin with `fixture.Preset.RaceId`, and records
+  `racePresetVisualRaceId` separately. The focused test forbids the obsolete
+  equality predicate.
+- Repository validation, installed-reference compilation, all 1365/1365
+  tests, clean Release/package construction, and independent strict package
+  validation pass. Pre-publication package SHA-256 is
+  `e6af511660abba47fd22dae853f6875ed31c1bd68607cc60440fe640f62c9502`;
+  DLL SHA-256 is
+  `edbc636195bd0b1fe80e41df7bdf532236502135da819570e07980a99a645824`.
+
+Exact next action: publish the native visual-race correction, verify all refs,
+rebuild its commit-bound package, pass quiescent preflight, and rerun the full
+matrix. No visual or score gate changed.
