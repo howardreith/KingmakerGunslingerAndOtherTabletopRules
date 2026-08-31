@@ -681,3 +681,41 @@ The candidate remains 88/100. Exact next action: commit and policy-publish
 this coherent harness checkpoint, rebuild/install the exact commit, pass
 quiescent preflight, run the guarded scenario through Steam App ID 640820,
 reconcile every sidecar/hash/invariant, and directly inspect all 54 PNGs.
+
+## 2026-08-31 - Motion attempt 1 and native boundary repair
+
+Commit `3071fe38a61b79131f96f965053e7bc058ce209f` was policy-published
+with identical refs; commit-bound local-runtime package SHA-256 was
+`5eb5da0e740b3d84801c256721f921b636db5471d676cd00de98e99f245d2db7`.
+Guarded Steam run
+`20260831T0455599323551Z-gunslinger-outfit-production-motion` returned
+terminal `FAIL` after 28/54 records. The male fixture completed every native
+action and the female exact production doll completed unarmed idle. Female
+slow-walk then failed the unchanged clean-combat guard because player combat
+state remained cached after the male request-local actor and target left
+combat and were disposed.
+
+The run retained exact save/version/game identity, blueprint immutability,
+inventory/global-unit cleanup, no-save, and exit protections. Installed IL
+shows registered `UnitCombatJoinController.Tick()` invokes
+`Player.UpdateIsInCombat()` and raises the party-combat event when its
+controllable-group recomputation changes the cache. The narrow repair captures
+the clean player/party/turn-based baseline, invokes that full native lifecycle
+after each fully retired fixture, records both sides of the boundary, and
+requires exact equality. Diagnostic movement failures now expose navmesh,
+actor, player, and turn-based predicates separately. No partial runtime image
+is accepted and the candidate remains 88/100.
+
+Exact next action: source-qualify, package, publish, and rerun the repaired
+full matrix; accept motion only after a complete PASS, structured
+reconciliation, and direct review of all replacement images.
+
+The repaired source gate now passes repository validation, all `1369/1369`
+Release tests, clean installed-reference build, strict package/firearm/audio
+validation, and the stable 169-check runtime preflight. Pre-commit package
+SHA-256 is
+`7de0fc0ce93a703907a10d5862368083765dae831cd74487073988128538889d`;
+DLL SHA-256 is
+`b378256b722350bc9128b491e7f0d8e8f3a2b630bdccefe4664fb5c80f84e18f`;
+MVID is `b4bf5593-d05b-41d5-b92c-d6ad1eff1356`. Commit-bound rebuild and
+runtime replacement evidence remain mandatory.

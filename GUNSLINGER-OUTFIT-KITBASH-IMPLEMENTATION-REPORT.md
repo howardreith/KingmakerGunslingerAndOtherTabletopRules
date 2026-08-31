@@ -668,6 +668,44 @@ MVID is `a9e50b0b-b2e1-42f4-aa91-c9cdf98d4c5c`. These local identities
 do not establish runtime correctness. Commit-bound guarded execution and
 direct inspection of all 54 PNGs remain mandatory before persistence work.
 
+### First motion execution and repair
+
+The first commit-bound guarded execution used published commit
+`3071fe38a61b79131f96f965053e7bc058ce209f` and package SHA-256
+`5eb5da0e740b3d84801c256721f921b636db5471d676cd00de98e99f245d2db7`.
+Evidence `20260831T0455599323551Z-gunslinger-outfit-production-motion`
+returned terminal `FAIL` at 28/54 records. Male idle, locomotion, turn, pistol
+and musket fire, production reload, and Shortsword melee all completed their
+native evidence schedules; female production materialization and idle also
+completed. The female walk did not start because the clean-combat guard saw a
+cached player combat state left after retirement of the male combat pair.
+
+This partial batch is diagnostic only. The run still proved exact game/mod
+identity, no save API, unchanged production blueprint, restored ammunition,
+exact global-unit/party cleanup, and automatic exit. Reflection plus IL over
+the authorized installed assembly found registered
+`UnitCombatJoinController.Tick()`. It runs the public
+`Player.UpdateIsInCombat()` character-list/group recomputation and raises the
+party-combat event if that value changes. The narrow repair adds a clean
+pre-run snapshot and a per-fixture native controller-tick record after actor
+and target `LeaveCombat` plus disposal. It fails if player,
+party-combatant, or turn-based state differs afterward, and retains the
+original locomotion guard with more specific evidence. Source, build, runtime
+rerun, and image review are still pending for this repair.
+
+The final controller-based source revision passes repository validation,
+`1369/1369` Release tests, a clean installed-reference Release build, strict
+standalone packaging, firearm/SoundBank validation, and the settled-tree
+169-check runtime preflight. The first preflight immediately after each clean
+build observed only a transient artifact-tree fingerprint change; all
+backup/evidence/CIM/process guards remained unchanged, and the identical
+settled rerun passed. Pre-commit package SHA-256 is
+`7de0fc0ce93a703907a10d5862368083765dae831cd74487073988128538889d`;
+DLL SHA-256 is
+`b378256b722350bc9128b491e7f0d8e8f3a2b630bdccefe4664fb5c80f84e18f`;
+MVID is `b4bf5593-d05b-41d5-b92c-d6ad1eff1356`. Commit-bound runtime
+replacement evidence and direct image review remain pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

@@ -830,3 +830,43 @@ exact published commit is rebuilt/installed, the guarded Steam run reaches
 terminal `PASS`, every sidecar/hash/invariant is reconciled, and all 54 images
 are directly inspected. Persistence remains a separate subsequent gate, so
 the selected candidate remains 88/100.
+
+## 2026-08-31 production motion attempt 1
+
+Published source commit:
+`3071fe38a61b79131f96f965053e7bc058ce209f`.
+Commit-bound local-runtime package SHA-256:
+`5eb5da0e740b3d84801c256721f921b636db5471d676cd00de98e99f245d2db7`.
+Evidence directory:
+`20260831T0455599323551Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL`.
+
+The run produced 28/54 records: all 27 male records and the female unarmed
+idle. The male native walk/run/turn, three attacks, and production reload
+executed through their required live boundaries. The female exact production
+doll then failed before slow-walk execution because the clean-combat guard
+observed residual cached player combat state after the male disposable
+combatants had left and been retired. No partial image is accepted as final
+evidence. Save/version/game identity, blueprint immutability, no-save, cleanup,
+and automatic exit assertions passed.
+
+Installed IL confirms registered `UnitCombatJoinController.Tick()` invokes
+the engine's `Player.UpdateIsInCombat()` character-list/group recomputation
+and raises the party-combat event on change. The pending narrow repair records
+the exact player, party-combatant, and turn-based state before and after each
+fixture boundary and fails if it differs from the clean pre-run snapshot. A
+complete replacement PASS plus direct inspection remains mandatory; the
+motion gate and score are unchanged.
+
+Repair source gate: repository validation `PASS`; full Release suite
+`1369/1369 PASS`; clean Release build/package and strict firearm/SoundBank
+checks `PASS`; settled-tree runtime preflight `169 PASS`. The first preflight
+immediately after each clean build observed a transient artifact-tree
+fingerprint change only; it created no backup/evidence and called no CIM or
+process launch. The identical settled rerun passed. Pre-commit package
+SHA-256 is
+`7de0fc0ce93a703907a10d5862368083765dae831cd74487073988128538889d`;
+DLL SHA-256 is
+`b378256b722350bc9128b491e7f0d8e8f3a2b630bdccefe4664fb5c80f84e18f`;
+MVID is `b4bf5593-d05b-41d5-b92c-d6ad1eff1356`. These identities are not
+runtime acceptance.
