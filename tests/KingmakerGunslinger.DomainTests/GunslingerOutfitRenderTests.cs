@@ -260,6 +260,7 @@ namespace KingmakerGunslinger.DomainTests
                 "gunslinger-outfit-finalist-donor-selection",
                 "BlueprintRaceVisualPreset",
                 "race.Presets",
+                "race.Presets[0]",
                 "new DollState()",
                 "SetGender(fixture.Gender)",
                 "SetRace(fixture.Race)",
@@ -272,6 +273,8 @@ namespace KingmakerGunslinger.DomainTests
                 "slot.RemoveItem(false)",
                 "character-creation-doll-not-neutral",
                 "unexpectedDollEntityCount",
+                "fixture.Preset.RaceId",
+                "racePresetVisualRaceId",
                 "gunslinger-outfit-finalist-character-creation-dolls",
                 "CleanupSnapshotDiagnostic",
                 "DescribeRuntimeReference",
@@ -313,6 +316,9 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains(
                     "character-creation-doll-not-neutral"),
                 "Finalist qualification must reject an empty or prefab-contaminated avatar instead of treating it as a neutral player doll.");
+            Assertions.False(source.Contains(
+                    "value.RaceId == race.RaceId"),
+                "A progression race must not be equated with the native preset visual RaceId; Aasimar and other shared visual bodies use the preset's own identity.");
             foreach (string id in new[]
             {
                 "6df8f61725a84294c8661bb9585eca97",

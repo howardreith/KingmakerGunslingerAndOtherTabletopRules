@@ -277,3 +277,26 @@ DLL SHA-256 is
 `d3ec07a2238ff2c062686dfc4e570ee602afaa716a26ddfa01607cb2627653bc`.
 The next accepted matrix must be rebuilt from the published commit and all 72
 new images must be inspected; mechanical PASS alone remains insufficient.
+
+### Native visual-race correction
+
+The first published player-doll run at
+`runtime-evidence/20260831T0013309100348Z-gunslinger-outfit-finalist-race-matrix`
+failed closed during initialization on male Aasimar before any fixture spawn or
+capture. Published commit `b67ec5444d4b3ef8480007c10fb2d73bab3c031e` had
+incorrectly required a preset's visual `RaceId` to equal the progression
+race. The working-save guard passed, no save or production mutation occurred,
+the initial 265-unit/3-party snapshots remained exact, and automatic exit
+completed.
+
+Read-only IL inspection resolves the semantics exactly. Native
+`DollState.Validate` selects serialized `BlueprintRace.Presets[0]` without a
+progression-race equality predicate; native `DollData.CreateUnitView` loads
+the skin using `RacePreset.RaceId`. The fixture now mirrors both operations and
+records progression race and visual race separately. A focused regression test
+forbids restoring the invalid equality assumption. Repository validation, all
+1365 tests, clean installed-reference Release construction, and strict package
+validation pass. Pre-publication package SHA-256 is
+`e6af511660abba47fd22dae853f6875ed31c1bd68607cc60440fe640f62c9502`;
+DLL SHA-256 is
+`edbc636195bd0b1fe80e41df7bdf532236502135da819570e07980a99a645824`.

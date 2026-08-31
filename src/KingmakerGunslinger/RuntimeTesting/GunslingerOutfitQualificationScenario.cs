@@ -294,7 +294,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _fixtures.Select(value => value.Label + "=" +
                         DescribeQualificationBlueprint(value.Source) +
                         ";preset=" + value.Preset.name + "/" +
-                        value.Preset.AssetGuid +
+                        value.Preset.AssetGuid + "/visualRace=" +
+                        value.Preset.RaceId +
                         ";candidateCount=" + value.DonorCount).ToArray()));
                 WriteProgress("initialized");
             }
@@ -381,24 +382,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ResolveCharacterCreationPreset(BlueprintRace race,
                     Gender gender)
             {
-                BlueprintRaceVisualPreset[] presets = race == null ||
-                    race.Presets == null
-                    ? new BlueprintRaceVisualPreset[0]
-                    : race.Presets.Where(value => value != null &&
-                            value.RaceId == race.RaceId &&
-                            value.Skin != null &&
-                            (gender == Gender.Female
-                                ? value.FemaleSkeleton != null
-                                : value.MaleSkeleton != null))
-                        .OrderBy(value => value.AssetGuid,
-                            StringComparer.Ordinal).ToArray();
-                if (presets.Length == 0)
+                BlueprintRaceVisualPreset preset = race == null ||
+                    race.Presets == null || race.Presets.Length == 0
+                    ? null : race.Presets[0];
+                if (preset == null || preset.Skin == null ||
+                    (gender == Gender.Female
+                        ? preset.FemaleSkeleton == null
+                        : preset.MaleSkeleton == null))
                     throw new InvalidOperationException(
-                        "No complete character-creation race preset exists " +
+                        "The native first character-creation race preset " +
+                        "is incomplete " +
                         "for " + gender + " " +
                         (race == null ? "<null>" :
                             race.RaceId.ToString()) + ".");
-                return presets[0];
+                return preset;
             }
 
             private static Size ExpectedPlayerRaceSize(Race race)
@@ -638,6 +635,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             fixture.Race.RaceId).ToString() },
                     { "racePresetName", fixture.Preset.name },
                     { "racePresetGuid", fixture.Preset.AssetGuid },
+                    { "racePresetVisualRaceId",
+                        fixture.Preset.RaceId.ToString() },
                     { "dollEquipmentEntityIds", new JArray(
                         _dollData.EquipmentEntityIds.ToArray()) },
                     { "dollEntityCount", _dollEntities.Length },
@@ -664,7 +663,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var entities = new List<EquipmentEntity>();
                 entities.AddRange(fixture.Preset.Skin.Load(
-                    fixture.Gender, fixture.Race.RaceId).Where(value =>
+                    fixture.Gender, fixture.Preset.RaceId).Where(value =>
                         value != null));
                 foreach (string id in _dollData.EquipmentEntityIds)
                 {
@@ -897,6 +896,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "sourceGuid", fixture.Source.AssetGuid },
                     { "racePresetName", fixture.Preset.name },
                     { "racePresetGuid", fixture.Preset.AssetGuid },
+                    { "racePresetVisualRaceId",
+                        fixture.Preset.RaceId.ToString() },
                     { "dollEquipmentEntityIds", new JArray(
                         _dollData.EquipmentEntityIds.ToArray()) },
                     { "gender", _actor.Gender.ToString() },
@@ -1263,6 +1264,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "racePresetGuid", _fixtureIndex < _fixtures.Length
                         ? _fixtures[_fixtureIndex].Preset.AssetGuid :
                             string.Empty },
+                    { "racePresetVisualRaceId",
+                        _fixtureIndex < _fixtures.Length
+                            ? _fixtures[_fixtureIndex].Preset.RaceId.ToString()
+                            : string.Empty },
                     { "dollEquipmentEntityCount", _dollData == null ||
                         _dollData.EquipmentEntityIds == null ? 0 :
                             _dollData.EquipmentEntityIds.Count },
@@ -1483,6 +1488,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _fixtureRecords.OfType<JObject>().All(value =>
                             !string.IsNullOrEmpty(
                                 (string)value["racePresetGuid"]) &&
+                            !string.IsNullOrEmpty((string)value[
+                                "racePresetVisualRaceId"]) &&
                             ((JArray)value["dollEquipmentEntityIds"]).Count > 0 &&
                             (int)value["dollEntityCount"] > 0 &&
                             (int)value["originalEntityCount"] > 0 &&
