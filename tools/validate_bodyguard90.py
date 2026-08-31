@@ -130,7 +130,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("protection-from-alignment-control-immunity"
+    package_suffix = ("gunslinger-class-outfit-kitbash"
+        if VERSION == "0.0.111" else "protection-from-alignment-control-immunity"
         if VERSION == "0.0.110" else "martial-performance-repair-notifications"
         if VERSION == "0.0.109" else "icon-art-polish-round-2"
         if VERSION == "0.0.108" else "icon-art-overhaul"

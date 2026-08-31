@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased - Gunslinger class outfit kitbash
+## 0.0.111-gunslinger-class-outfit-kitbash
 
 - Replaces the Gunslinger's inherited generic Fighter clothing with a coherent
   native Magus base-and-accessory presentation for male and female characters,
