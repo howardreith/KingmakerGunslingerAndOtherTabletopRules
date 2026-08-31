@@ -254,6 +254,12 @@ namespace KingmakerGunslinger.DomainTests
                 "_gunslingerClass.LoadClothes(",
                 "orderedPairExact", "new DollState()",
                 "SetClass(_gunslingerClass)", "GetHairEntities()",
+                "PollProductionDollCreationReadiness",
+                "ResourcesLibrary.Preloading",
+                "resource preloading did not finish before native ",
+                "dollCreationResourceGatePassed",
+                "resourcePreloadingAtDollCreation",
+                "dollResourceWaitUpdates",
                 "SpawnEntityWithView(dollView,",
                 "CreateProductionNeutralBody", "Body.AllSlots",
                 "native doll did not settle exactly before",
@@ -292,6 +298,18 @@ namespace KingmakerGunslinger.DomainTests
                 productionSnapshot > nativeDollGate,
                 "Production compatibility must settle the complete native " +
                 "DollData avatar before taking the production mutation snapshot.");
+            int creationReadinessCall = source.IndexOf(
+                "if (!PollProductionDollCreationReadiness()) return;",
+                StringComparison.Ordinal);
+            int spawnAfterReadiness = source.IndexOf("SpawnFixture();",
+                creationReadinessCall, StringComparison.Ordinal);
+            int createDollAfterReadiness = source.IndexOf(
+                "_dollData.CreateUnitView(false)", spawnAfterReadiness,
+                StringComparison.Ordinal);
+            Assertions.True(creationReadinessCall >= 0 &&
+                    spawnAfterReadiness > creationReadinessCall &&
+                    createDollAfterReadiness > spawnAfterReadiness,
+                "Production compatibility must wait for native resource preloading to finish before it creates any DollData view.");
             foreach (string forbidden in new[]
             {
                 "SaveGame", "QuickSave", "ScreenCapture", "Input.",
@@ -402,6 +420,7 @@ namespace KingmakerGunslinger.DomainTests
                 "blueprint.Brain = null",
                 "ConfigureProductionMotionFaction",
                 "CreateProductionMotionTarget",
+                "if (!PollProductionDollCreationReadiness()) return;",
                 "_motionHostileBlueprint.Brain = null",
                 "actorAutonomousBrainDisabled",
                 "targetAutonomousBrainDisabled",
@@ -557,6 +576,11 @@ namespace KingmakerGunslinger.DomainTests
                 "productionMotionDollAfterSpawnBeforeTick",
                 "productionMotionDollAfterAttach",
                 "productionMotionDollAtSettleTimeout",
+                "productionMotionDollCreationReadiness",
+                "PollProductionDollCreationReadiness",
+                "dollCreationResourceGatePassed",
+                "resourcePreloadingAtDollCreation",
+                "dollResourceWaitUpdates",
                 "DescribeProductionDollLifecycle",
                 "ResourcesLibrary.Preloading",
                 "_dollTemplateAvatar, _avatar",

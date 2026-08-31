@@ -1181,3 +1181,50 @@ and MVID is `5a199838-48eb-49a2-8b92-7ca8d0dfabe2`. Candidate score remains
 
 Exact next action: commit and policy-publish the AI-isolation repair, rebuild
 that exact commit, and execute attempt 13.
+
+## 2026-08-31 - Motion attempt 13 gates native doll creation on resources
+
+Published AI-isolation commit `934785962bb4ef752993add5558d20cb751f1c7d`
+ran through Steam 640820 as package SHA-256
+`a53c3314dd6aeb5d4ee13a8f0b5615d93325212062f1c5916ef0aa9460f88e5f`,
+DLL SHA-256
+`af2af437dd06f55c1316305190e02aee86f95a1d0f0c2364b48b4eb032c7fff1`,
+and MVID `0e441834-5f14-41d6-b1ad-15d46b4f976e`. Evidence
+`20260831T1548069712324Z-gunslinger-outfit-production-motion` failed closed
+before record one. Exact guard/game/build, disposable working-save/no-save,
+blueprint immutability, request-local scene, structural cleanup, and automatic
+exit contracts passed. No image exists or is accepted.
+
+The lifecycle record now identifies the empty-doll cause rather than merely
+its symptom. `ResourcesLibrary.Preloading` was true before spawn, after spawn,
+and after attachment; the same avatar instance had zero raw, active, and saved
+entities despite four expected DollData IDs. Preloading became false by the
+settle timeout, but the already-created avatar remained empty.
+
+Exact installed IL shows `DollData.CreateUnitView(false)` loops its entity IDs
+and calls `ResourcesLibrary.TryGetResource<EquipmentEntity>(id, false)`.
+`TryGetResource` immediately logs and returns null when global preloading is
+true and the ignore flag is false. `CreateUnitView` adds those null results and
+has no later retry. Extending the post-creation settle window therefore cannot
+repair the object. Installed game code elsewhere waits until
+`ResourcesLibrary.Preloading` is false before resource-dependent work.
+
+The replacement waits before any clone or DollData view is created, with a
+360-update bound and an explicit timeout. It hard-checks the flag again at the
+creation line, records wait length and creation-time state in both production
+fixture types, and makes `gatePassed=true` plus
+`resourcePreloadingAtDollCreation=false` terminal requirements. This is a
+sequencing guard only; it neither preloads assets nor weakens the existing
+native-doll settle contract. Installed-reference compilation and all
+`1369/1369` tests pass, as do clean Release/package construction, strict
+package/firearm/audio validation, and the settled 169-check preflight. The
+first pass reported only the documented artifact-tree stabilization sentinel.
+Pre-commit package SHA-256 is
+`8aba976c9550a3c09b95539dee11d7825362169b0933b546837cb2e34d25c378`,
+DLL SHA-256 is
+`379f0bc2a1612065b3ae53539b391f11ac20161be18b4a0dfb0f47bba8803a89`,
+and MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`. Candidate score remains
+88/100.
+
+Exact next action: commit and policy-publish the pre-creation resource gate,
+rebuild its exact commit, and execute attempt 14.

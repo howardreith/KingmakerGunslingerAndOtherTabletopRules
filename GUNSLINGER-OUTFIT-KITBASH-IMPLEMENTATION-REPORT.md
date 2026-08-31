@@ -1121,3 +1121,39 @@ preview captures. The accepted production matrix likewise has eight
 conservative female-isometric warnings, each directly legible with at least
 11,278 meaningful pixels and a clear paired preview. The limitation is
 explicitly retained while motion and persistence evidence remain open.
+
+### Thirteenth motion execution and pre-creation resource gate
+
+Published commit `934785962bb4ef752993add5558d20cb751f1c7d` ran through
+Steam 640820 with package SHA-256
+`a53c3314dd6aeb5d4ee13a8f0b5615d93325212062f1c5916ef0aa9460f88e5f`,
+DLL SHA-256
+`af2af437dd06f55c1316305190e02aee86f95a1d0f0c2364b48b4eb032c7fff1`,
+and MVID `0e441834-5f14-41d6-b1ad-15d46b4f976e`. Evidence
+`20260831T1548069712324Z-gunslinger-outfit-production-motion` failed before
+record one; every environment, save, blueprint, cleanup, scene, and exit guard
+passed, and no partial image is accepted.
+
+The four-point lifecycle evidence makes this occurrence conclusive. Global
+resource preloading was true when the native doll view was constructed, and
+the same avatar contained zero entities through attachment. Preloading ended
+during the later settle loop, but that object stayed empty. Installed
+`DollData.CreateUnitView` IL loops the IDs and calls
+`TryGetResource<EquipmentEntity>(id, false)`; installed `TryGetResource` IL
+returns null immediately when preloading is true. There is no deferred add in
+the construction path.
+
+The implementation now delays construction itself until preloading is false,
+bounded by the existing 360-update safety window. It hard-fails if the state
+changes at the creation line, emits per-fixture wait and creation-state fields,
+and requires the gate in static compatibility and motion terminal assertions.
+The later settle contract remains unchanged. Installed-reference compilation
+and all `1369/1369` tests pass, as do clean Release/package construction,
+strict package/firearm/audio validation, and the settled 169-check preflight.
+Its first pass reported only the documented artifact-tree stabilization
+sentinel. Pre-commit package SHA-256 is
+`8aba976c9550a3c09b95539dee11d7825362169b0933b546837cb2e34d25c378`,
+DLL SHA-256 is
+`379f0bc2a1612065b3ae53539b391f11ac20161be18b4a0dfb0f47bba8803a89`,
+and MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`. An exact-commit replacement
+run remains pending.

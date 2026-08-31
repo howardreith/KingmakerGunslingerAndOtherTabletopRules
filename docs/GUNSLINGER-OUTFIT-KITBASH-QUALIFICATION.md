@@ -1303,3 +1303,42 @@ DLL SHA-256 is
 and MVID is `5a199838-48eb-49a2-8b92-7ca8d0dfabe2`. Motion remains `PENDING`
 until the replacement run reaches terminal PASS and every one of its 54 PNGs
 is reconciled and directly reviewed.
+
+## 2026-08-31 production motion attempt 13
+
+Published source commit:
+`934785962bb4ef752993add5558d20cb751f1c7d`.
+Commit-bound package SHA-256:
+`a53c3314dd6aeb5d4ee13a8f0b5615d93325212062f1c5916ef0aa9460f88e5f`.
+Loaded DLL SHA-256:
+`af2af437dd06f55c1316305190e02aee86f95a1d0f0c2364b48b4eb032c7fff1`.
+MVID: `0e441834-5f14-41d6-b1ad-15d46b4f976e`.
+Evidence directory:
+`20260831T1548069712324Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` before record 1/54.
+
+The same avatar reported zero raw, active, and saved entities with four
+expected DollData IDs before spawn, after spawn before tick, and after
+attachment; `ResourcesLibrary.Preloading=True` at all three points. The flag
+was false by timeout, but no entity had appeared. Guard, exact game/build,
+working-save/no-save, immutable-blueprint, request-local scene, cleanup, and
+automatic-exit contracts passed. No visual record exists or is accepted.
+
+Installed `DollData.CreateUnitView(false)` IL synchronously calls
+`TryGetResource<EquipmentEntity>(id, false)` for every ID. Installed
+`TryGetResource` IL returns null when preloading is true and the ignore flag is
+false. The avatar therefore cannot heal merely by waiting after creation.
+
+The pending replacement waits up to 360 updates before creation, proceeds only
+when preloading is false, and rechecks that fact at the construction line. It
+records the wait count plus creation-time state and makes both facts terminal
+fixture requirements in static compatibility and motion. Compilation and all
+`1369/1369` tests pass, as do clean strict packaging, firearm/audio validation,
+and the settled 169-check preflight; its first pass reported only the expected
+artifact-tree stabilization sentinel. Pre-commit package SHA-256 is
+`8aba976c9550a3c09b95539dee11d7825362169b0933b546837cb2e34d25c378`,
+DLL SHA-256 is
+`379f0bc2a1612065b3ae53539b391f11ac20161be18b4a0dfb0f47bba8803a89`,
+and MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`. Motion remains `PENDING`
+until the exact-commit replacement reaches terminal PASS and all 54 PNGs are
+reconciled and directly reviewed.

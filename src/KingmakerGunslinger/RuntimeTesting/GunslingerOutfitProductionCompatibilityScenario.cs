@@ -185,6 +185,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _firearmStateSet;
             private bool _fixtureInitialized;
             private bool _dollAttachmentRecorded;
+            private bool _dollCreationResourceGatePassed;
+            private bool _resourcePreloadingAtDollCreation;
             private bool _productionApplied;
             private bool _previousStateCleared;
             private bool _expectHeldWeapon;
@@ -198,6 +200,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _caseIndex;
             private int _phase;
             private int _settleUpdates;
+            private int _dollResourceWaitUpdates;
             private int _captured;
             private int _imageCount;
             private int _viewCount;
@@ -244,6 +247,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     if (_phase == 1)
                     {
+                        if (!PollProductionDollCreationReadiness()) return;
                         SpawnFixture();
                         _phase = 2;
                         _settleUpdates = 0;
@@ -464,11 +468,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return 4;
             }
 
+            private bool PollProductionDollCreationReadiness()
+            {
+                ProductionCompatibilityFixture fixture =
+                    _fixtures[_fixtureIndex];
+                _stage = "wait-production-doll-resources-" + fixture.Label;
+                if (ResourcesLibrary.Preloading)
+                {
+                    _dollResourceWaitUpdates++;
+                    if (_dollResourceWaitUpdates < MaximumSettleUpdates)
+                        return false;
+                    throw new InvalidOperationException(fixture.Label +
+                        " resource preloading did not finish before native " +
+                        "DollData creation; updates=" +
+                        _dollResourceWaitUpdates + ".");
+                }
+
+                _dollCreationResourceGatePassed = true;
+                _diagnostics.Add((IsProductionMotion
+                        ? "productionMotionDollCreationReadiness="
+                        : "productionDollCreationReadiness=") +
+                    fixture.Label + ";waitUpdates=" +
+                    _dollResourceWaitUpdates + ";preloading=False");
+                return true;
+            }
+
             private void SpawnFixture()
             {
                 ProductionCompatibilityFixture fixture =
                     _fixtures[_fixtureIndex];
                 _stage = "spawn-production-" + fixture.Label;
+                _resourcePreloadingAtDollCreation =
+                    ResourcesLibrary.Preloading;
+                if (!_dollCreationResourceGatePassed ||
+                    _resourcePreloadingAtDollCreation)
+                    throw new InvalidOperationException(fixture.Label +
+                        " crossed native DollData creation without a stable " +
+                        "resource-readiness boundary.");
                 _actorBlueprint = UnityEngine.Object.Instantiate(
                     fixture.Source);
                 if (IsProductionMotion)
@@ -770,6 +806,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _dollState.CharacterClass.AssetGuid },
                     { "dollEquipmentEntityIds", new JArray(
                         _dollData.EquipmentEntityIds.ToArray()) },
+                    { "dollCreationResourceGatePassed",
+                        _dollCreationResourceGatePassed },
+                    { "resourcePreloadingAtDollCreation",
+                        _resourcePreloadingAtDollCreation },
+                    { "dollResourceWaitUpdates",
+                        _dollResourceWaitUpdates },
                     { "selectedHairAssetId", _hairAssetId },
                     { "productionAssetIds", new JArray(
                         CurrentProductionAssetIds()) },
@@ -1678,6 +1720,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _hairAssetId = string.Empty;
                     _fixtureInitialized = false;
                     _dollAttachmentRecorded = false;
+                    _dollCreationResourceGatePassed = false;
+                    _resourcePreloadingAtDollCreation = false;
+                    _dollResourceWaitUpdates = 0;
                     _productionApplied = false;
                 }
             }
@@ -1947,6 +1992,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "dollCharacterClassGuid"],
                                 OutfitProductionClassGuid,
                                 StringComparison.Ordinal) &&
+                            (bool)value[
+                                "dollCreationResourceGatePassed"] &&
+                            !(bool)value[
+                                "resourcePreloadingAtDollCreation"] &&
                             (bool)value["rigExact"]),
                     "native DollState.SetClass/CreateData/CreateUnitView path");
                 Add(_assertions,
