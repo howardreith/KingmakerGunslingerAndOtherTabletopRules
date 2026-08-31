@@ -44,6 +44,7 @@ def validate(root: Path) -> None:
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     baseline.PACKAGE = PACKAGE
     baseline.PACKAGE_SUFFIX = PACKAGE_SUFFIX
+    baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
     baseline.validate(root)
 
     policy = require_tokens(root / (

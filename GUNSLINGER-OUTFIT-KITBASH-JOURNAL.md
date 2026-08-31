@@ -757,3 +757,37 @@ Exact next action: implement an independently owned Gunslinger appearance
 policy containing the selected male/female Magus link pairs and 2/22 defaults,
 replace only the Fighter-derived appearance assignments, and add focused
 observable blueprint-state/non-mutation tests.
+
+## 2026-08-30 - Production appearance binding passes local gates
+
+- Added a pure `GunslingerClassAppearanceCatalog` containing only the accepted
+  ordered male/female native IDs and default colors 2/22. Every accessor
+  validates and returns a fresh defensive copy.
+- Added `GunslingerClassAppearance.Apply`. It resolves all four installed
+  `EquipmentEntity` resources before mutation, constructs fresh
+  `EquipmentEntityLink` objects/arrays plus a fresh empty shared array, and
+  then assigns only the new Gunslinger class. The Magus donor class is never
+  resolved or mutated; Fighter now supplies only `StartingGold`.
+- Added two focused cases covering exact values, defensive copies,
+  null/malformed/duplicate/count failures, atomic resource-first wiring,
+  project/factory integration, and rejection of all former Fighter aliases.
+- The first repository-validation attempt correctly failed on the old 1365
+  count. The active count/static evidence moved to 1367 and the one missing
+  inherited count propagation was added to the 0.0.106 validator. The first
+  test compilation then exposed three malformed escaped literals; replacing
+  them with quote-character composition fixed the test, without weakening its
+  assertions.
+- Repository validation and the complete 1367/1367 Release domain/reflection
+  suite pass. A clean installed-reference Release build, package construction,
+  production firearm/SoundBank validation, and strict standalone package
+  validation also pass.
+- Pre-publication package SHA-256 is
+  `34d9a7005fd9f535c33e460d7b4e23dc94553dbbcd34ee45540aeff167476df0`;
+  DLL SHA-256 is
+  `6f039e773910a314f6abf46e2bd0d87d737660abd898d1ea7bd58918d11893eb`.
+  No runtime, equipment, animation, rebuild, or persistence gate changes yet.
+
+Exact next action: commit and publish the production binding, verify HEAD/local/
+origin identity, rebuild its commit-bound local-runtime artifact, pass
+quiescent preflight, and run guarded `working-save-smoke` before building the
+production outfit equipment/motion scenario.
