@@ -1,8 +1,8 @@
 # Gunslinger Outfit Kitbash Implementation Report
 
-Status: native candidate selected at 88/100 and approved for focused
-production integration; final equipment, animation, rebuild, persistence, and
-package qualification remain open.
+Status: native candidate selected at 88/100 and integrated through a focused
+production policy; commit-bound runtime, equipment, animation, rebuild,
+persistence, and final package qualification remain open.
 
 ## Intake
 
@@ -93,10 +93,18 @@ focused production binding.
 
 ## Production changes
 
-Pending focused implementation at this checkpoint. The selected identifiers
-and defaults are now evidence-approved; the next source change will isolate
-them in an independently owned appearance policy and replace only the current
-Fighter-derived presentation assignments.
+`GunslingerClassAppearanceCatalog` owns the exact selected male/female IDs and
+2/22 defaults without game dependencies. It validates lower-hex shape, exact
+counts, and duplicates on every defensive-copy access. The game-facing
+`GunslingerClassAppearance` resolves all four native entities before assigning
+anything, constructs new direct-link arrays/link objects and a new empty shared
+array, then assigns the new Gunslinger blueprint atomically.
+
+`GunslingerClassBlueprints.CreateClass` now calls this policy in place of the
+five Fighter appearance assignments. Fighter remains intentionally resolved
+only for starting gold and the existing native combat-feat selection path.
+Production never resolves or mutates the Magus class blueprint and retains no
+donor mutable-array alias.
 
 ## Tests, build, package, and runtime
 
@@ -430,6 +438,23 @@ full grid has intact bodies/materials, expected race features, no donor gear,
 and consistent ramp behavior. This closes race/gender/color/no-weapon
 selection evidence, not final equipment, motion, rebuild, persistence, or
 production qualification.
+
+## Production-binding local validation
+
+Two new executable/reflection cases bring the deterministic suite to 1367.
+They cover exact ordered identifiers/defaults, defensive copies,
+null/malformed/duplicate/count failure, resource-resolution ordering, fresh
+link/shared arrays, factory/project wiring, and removal of every Fighter
+appearance alias. The active validator count and inherited static evidence are
+1367, including repaired propagation across the only missing inherited edge.
+
+Repository validation, all 1367/1367 Release tests, a clean installed-reference
+Release build, package construction, and strict standalone validation pass.
+The pre-publication package SHA-256 is
+`34d9a7005fd9f535c33e460d7b4e23dc94553dbbcd34ee45540aeff167476df0`;
+DLL SHA-256 is
+`6f039e773910a314f6abf46e2bd0d87d737660abd898d1ea7bd58918d11893eb`.
+Version remains 0.0.110. A commit-bound guarded runtime load remains mandatory.
 
 ## Uncertainty
 

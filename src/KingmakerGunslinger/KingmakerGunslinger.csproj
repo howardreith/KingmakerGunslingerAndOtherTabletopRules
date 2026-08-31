@@ -206,6 +206,8 @@
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
     <Compile Include="Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs" />
     <Compile Include="Presentation\PlayerFacingTextPolicy.cs" />
+    <Compile Include="Presentation\GunslingerClassAppearanceCatalog.cs" />
+    <Compile Include="Presentation\GunslingerClassAppearance.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />

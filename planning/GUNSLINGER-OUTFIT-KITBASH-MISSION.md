@@ -432,3 +432,32 @@ Exact next action: implement the focused, independently owned Gunslinger class
 appearance policy with the accepted two-link male/female pairs and 2/22
 defaults, then add observable blueprint-state tests before any final equipment
 or motion runtime claim.
+
+## 2026-08-30 - Focused production binding locally qualified
+
+Production now owns the accepted identifiers in
+`GunslingerClassAppearanceCatalog` and applies them through
+`GunslingerClassAppearance`. The catalog returns validated defensive copies;
+the adapter resolves every native `EquipmentEntity` before changing the new
+Gunslinger blueprint, creates new male/female link arrays and link objects,
+assigns a new empty shared array, and applies defaults 2/22. Fighter remains a
+source only for starting gold. No Magus or Fighter blueprint is mutated.
+
+Two focused tests prove exact link order/defaults, defensive copying,
+null/malformed/duplicate/count rejection, resource-before-mutation wiring,
+fresh arrays, and absence of the five former Fighter appearance aliases. The
+active deterministic count is 1367; the active inherited validator now
+forwards that count through the previously missing 0.0.106-to-0.0.105 edge.
+Repository validation and all 1367/1367 Release domain tests pass.
+
+The clean installed-reference Release build, package construction, and strict
+standalone package validation pass. Pre-publication package SHA-256 is
+`34d9a7005fd9f535c33e460d7b4e23dc94553dbbcd34ee45540aeff167476df0`;
+DLL SHA-256 is
+`6f039e773910a314f6abf46e2bd0d87d737660abd898d1ea7bd58918d11893eb`.
+Version remains 0.0.110. No runtime claim is made from this local gate.
+
+Exact next action: commit and publish this coherent production binding, verify
+all three refs, rebuild the commit-bound local-runtime package, pass quiescent
+preflight, and run the guarded canonical working-save smoke before extending
+the final production equipment/motion harness.

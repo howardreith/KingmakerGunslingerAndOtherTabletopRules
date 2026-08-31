@@ -1,9 +1,10 @@
 # Gunslinger Outfit Candidate Matrix
 
-Status: `magus-complete` is approved for focused production integration after
-accepted Human weapon-state rendering and an accepted guarded 18-cell
-race/gender matrix. Equipment, animation, rebuild, and persistence gates remain
-open; approval here is not final mission qualification.
+Status: `magus-complete` is bound through a focused production appearance
+policy after accepted Human weapon-state rendering and an accepted guarded
+18-cell race/gender matrix. The local source/test/build/package checkpoint
+passes. Commit-bound runtime, equipment, animation, rebuild, and persistence
+gates remain open; this is not final mission qualification.
 
 ## Scoring contract
 

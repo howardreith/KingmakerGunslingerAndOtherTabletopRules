@@ -646,7 +646,7 @@
     "humanAcceptancePending": true
   },
   "playerPresentation105": {
-    "deterministicTestCount": 1365,
+    "deterministicTestCount": 1367,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -662,7 +662,7 @@
     "humanOrganicPacingAcceptancePending": true
   },
   "fatigueAuthority106": {
-    "deterministicTestCount": 1365,
+    "deterministicTestCount": 1367,
     "focusedFatigueCaseCount": 21,
     "nativeDefaultIntent": "NativePassthrough",
     "acadamaeEscalationRequestLocal": true,
@@ -677,7 +677,7 @@
     "supervisedWorldMapAcceptancePending": true
   },
   "iconOverhaul107": {
-    "deterministicTestCount": 1365,
+    "deterministicTestCount": 1367,
     "officialFirearmKindCount": 3,
     "recognizedFirearmKindCount": 5,
     "selectorIconCount": 3,
@@ -689,7 +689,7 @@
     "workingSaveSmokePass": true
   },
   "iconPolishRoundTwo108": {
-    "deterministicTestCount": 1365,
+    "deterministicTestCount": 1367,
     "protectedFileCount": 30,
     "selectorIconCount": 3,
     "suppliedOriginalCount": 5,
@@ -702,7 +702,7 @@
     "workingSaveSmokePass": true
   },
   "martialPerformanceRepairNotifications109": {
-    "deterministicTestCount": 1365,
+    "deterministicTestCount": 1367,
     "martialPerformanceFocusedCaseCount": 11,
     "repairFocusedCaseCount": 22,
     "conditionNotificationFocusedCaseCount": 9,
@@ -729,7 +729,7 @@
     "supervisedLoadedMultiRoundInteractionPending": true
   },
   "protectionFromAlignment110": {
-    "deterministicTestCount": 1365,
+    "deterministicTestCount": 1367,
     "protectionBuffCount": 5,
     "playerDescriptionTargetCount": 15,
     "playerAbilityDescriptionCount": 10,

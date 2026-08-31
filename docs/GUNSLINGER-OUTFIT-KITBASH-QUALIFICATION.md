@@ -25,11 +25,11 @@ claim.
 | Equipment overrides | Pending | Light/heavy armor, headgear/hair, cloak, backpack, inactive weapon |
 | Preview/gameplay paths | Pass (selection stage) | Four-view preview-like and ordinary isometric evidence across the complete 9x2 grid |
 | Save/load/rebuild | Pending | Guarded structured evidence |
-| Focused tests | Pass (collector checkpoint; repeat final) | Renderer guard/catalog/matrix, exact 600-second collector assertion, and 160 runtime preflight checks |
-| Repository validation | Pass (collector checkpoint; repeat final) | Build-Local.ps1, 2026-08-30T21:54:14Z |
-| Complete domain suite | Pass (collector checkpoint; repeat final) | 1365/1365, Release clean run |
-| Clean Release build | Pass (collector checkpoint; repeat final) | Exact-reference Release construction |
-| Installable package | Pass (collector checkpoint; repeat final) | Strict standalone/local validation, SHA-256 2f515302...76849 |
+| Focused tests | Pass (production checkpoint; repeat final) | Exact catalog/validation/defensive-copy and atomic donor-independent wiring cases |
+| Repository validation | Pass (production checkpoint; repeat final) | Active 0.0.110 validator with 1367 current tests |
+| Complete domain suite | Pass (production checkpoint; repeat final) | 1367/1367, clean Release run |
+| Clean Release build | Pass (production checkpoint; repeat final) | Exact installed-reference Release construction |
+| Installable package | Pass (production checkpoint; repeat final) | Strict standalone validation, SHA-256 `34d9a700...76df0` |
 | Compatibility profiles | Pending | Exact applicable command/result |
 | Guarded runtime smoke | Pass (candidate stage; repeat final) | Accepted run `20260830T2158516580621Z`, exact build fingerprint |
 | Publication | Pending | Commit(s), helper output, identical local/remote SHAs |
@@ -519,6 +519,34 @@ The race/gender/color/no-weapon selection gate is accepted. The chosen
 `magus-complete` pair now scores 88/100 (26/23/15/15/9). Equipment,
 animation, rebuild, persistence, and production integration remain open and
 may still establish a hard rejection.
+
+## 2026-08-30 production-binding local checkpoint
+
+The focused production implementation now owns the exact selected IDs and
+defaults independently of every native donor. It validates and defensively
+copies the catalog, resolves every entity before blueprint mutation, constructs
+new direct links/arrays plus a new empty shared array, and replaces only the
+five Fighter-derived presentation assignments. Fighter remains the existing
+starting-gold source; no native class is mutated.
+
+Local qualification results:
+
+- active repository validator: `PASS`, deterministic count 1367;
+- complete Release domain/reflection suite: `1367/1367 PASS`;
+- clean installed-reference Release build: `PASS`;
+- production firearm and SoundBank validation: `PASS`;
+- strict standalone package validation: `PASS`;
+- package:
+  `KingmakerGunslinger-0.0.110-protection-from-alignment-control-immunity.zip`;
+- package SHA-256:
+  `34d9a7005fd9f535c33e460d7b4e23dc94553dbbcd34ee45540aeff167476df0`;
+- DLL SHA-256:
+  `6f039e773910a314f6abf46e2bd0d87d737660abd898d1ea7bd58918d11893eb`.
+
+This is a dirty-tree/pre-publication build identity. It proves compilation and
+package contents, not in-game resource initialization or visual override
+behavior. The next gate is publication, commit-bound rebuild/preflight, and a
+guarded canonical working-save load.
 
 ## Local evidence policy
 
