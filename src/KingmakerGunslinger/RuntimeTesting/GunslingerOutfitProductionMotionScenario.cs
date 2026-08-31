@@ -93,6 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly JArray _motionRestorationRecords = new JArray();
             private readonly JArray _motionCombatBoundaryRecords = new JArray();
             private Player _motionPlayer;
+            private UnitCombatLeaveController _motionCombatLeaveController;
             private UnitCombatJoinController _motionCombatJoinController;
             private bool _motionPlayerCombatBefore;
             private bool _motionTurnBasedCombatBefore;
@@ -226,6 +227,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The production motion catalog or frame schedule changed.");
                 _motionPlayer = Game.Instance.Player;
+                _motionCombatLeaveController = Game.Instance
+                    .GetController<UnitCombatLeaveController>(true);
                 _motionCombatJoinController = Game.Instance
                     .GetController<UnitCombatJoinController>(true);
                 _motionPowder = BlueprintBootstrap.BasicAmmunition.BlackPowder;
@@ -233,6 +236,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionReloadBlueprint = BlueprintBootstrap
                     .ReloadTestMusketAbility;
                 if (_motionPlayer == null ||
+                    _motionCombatLeaveController == null ||
                     _motionCombatJoinController == null ||
                     _motionPlayer.Inventory == null ||
                     _motionPowder == null || _motionBall == null ||
@@ -1876,6 +1880,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int partyBefore = _motionPlayer.Party.Count(unit =>
                     unit != null && unit.CombatState != null &&
                     unit.CombatState.IsInCombat);
+                _motionCombatLeaveController.Tick();
                 _motionCombatJoinController.Tick();
                 bool playerAfter = _motionPlayer.IsInCombat;
                 bool turnBasedAfter =
@@ -1900,6 +1905,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "expectedTurnBasedCombat",
                         _motionTurnBasedCombatBefore },
                     { "nativeReconciliation",
+                        "Kingmaker.Controllers.Combat.UnitCombatLeaveController.Tick->" +
                         "Kingmaker.Controllers.Combat.UnitCombatJoinController.Tick" }
                 });
                 _diagnostics.Add("productionMotionCombatBoundary=" +
@@ -1940,6 +1946,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     RemoveProductionMotionWeapon();
                     RetireProductionMotionTarget();
+                    if (_motionCombatLeaveController != null)
+                        _motionCombatLeaveController.Tick();
                     if (_motionCombatJoinController != null)
                         _motionCombatJoinController.Tick();
                 }
@@ -2154,6 +2162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _motionTurnBasedCombatBefore &&
                         string.Equals((string)value[
                             "nativeReconciliation"],
+                            "Kingmaker.Controllers.Combat.UnitCombatLeaveController.Tick->" +
                             "Kingmaker.Controllers.Combat.UnitCombatJoinController.Tick",
                             StringComparison.Ordinal));
 
@@ -2268,7 +2277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TurnBased.Controllers.CombatController
                             .IsInTurnBasedCombat(),
                     combatBoundaryContracts,
-                    "UnitCombatState.LeaveCombat followed by native UnitCombatJoinController.Tick recomputation and party event");
+                    "registered UnitCombatLeaveController.Tick group retirement followed by UnitCombatJoinController.Tick recomputation and party event");
                 bool blueprintUnchanged = _gunslingerClass != null &&
                     ProductionBlueprintUnchanged();
                 Add(_assertions,

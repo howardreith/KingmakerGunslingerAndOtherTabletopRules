@@ -461,3 +461,29 @@ The controller-based repair passes repository validation, all `1369/1369`
 Release tests, clean strict packaging, firearm/audio validation, and the
 stable 169-check runtime preflight. This source evidence does not alter the
 score or accept any partial image.
+
+### Production motion attempt 2 diagnostic
+
+Published repair `fe24655acd4516e334796524ab7a3f40fd633888` ran through
+Steam 640820 at evidence ID
+`20260831T0521459019080Z-gunslinger-outfit-production-motion` with exact DLL
+SHA-256
+`ba1638817210bfa9b2d163356465719cc0d22e941947286c3d399bf3f236a9dc`.
+It completed the entire 27-record male matrix, then rejected its fixture
+boundary: request-created combat had propagated to all three baseline party
+members, so the observed player/party/turn-based state remained
+`true/3/true`. This is a lifecycle diagnostic, not visual acceptance and not
+a candidate penalty.
+
+Installed IL identifies registered `UnitCombatLeaveController.Tick()` as the
+missing group-retirement stage. It calls full `UnitEntityData.LeaveCombat()`
+for a qualifying group; registered `UnitCombatJoinController.Tick()` then
+recomputes player combat and raises the normal party event. The replacement
+harness requires those calls in leave-then-join order and preserves the exact
+clean baseline. Repository validation, full `1369/1369` tests, clean Release
+build, strict package/firearm/audio validation, and the settled 169-check
+preflight pass. Pre-commit package/DLL SHA-256 values are
+`b3598b28366eb82161b66b1e65144430c9461380dc93dc3dd2bb15db9fd7fbb3`
+and `9f717b6c8d08f39cd67635bfc5e635543e38d60a38ce215a0a5c4f590cadfa41`.
+`magus-complete` remains 88/100 until a complete replacement motion PASS and
+the independent persistence gate.

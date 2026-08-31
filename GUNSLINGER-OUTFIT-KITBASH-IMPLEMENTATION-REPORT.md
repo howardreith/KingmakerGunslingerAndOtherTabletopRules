@@ -706,6 +706,37 @@ DLL SHA-256 is
 MVID is `b4bf5593-d05b-41d5-b92c-d6ad1eff1356`. Commit-bound runtime
 replacement evidence and direct image review remain pending.
 
+### Second motion execution and native group-retirement repair
+
+Published commit `fe24655acd4516e334796524ab7a3f40fd633888`, package
+SHA-256
+`5228a562f65fbb2b694ec617548e71d1b713c3fea35d93789834b36eccebd44e`,
+and DLL SHA-256
+`ba1638817210bfa9b2d163356465719cc0d22e941947286c3d399bf3f236a9dc`
+ran through Steam 640820 as evidence
+`20260831T0521459019080Z-gunslinger-outfit-production-motion`. The run
+completed all 27 male records, then failed the exact combat boundary. The
+request-created hostile had propagated combat to all three baseline party
+members; retiring only the disposable actor and target left player, party,
+and turn-based observations at `true/3/true`. The join controller therefore
+preserved a real live group state. No partial capture is accepted.
+
+Installed metadata and IL resolved `UnitCombatLeaveController.Tick()` as the
+missing registered stage. Its group path calls full
+`UnitEntityData.LeaveCombat()` and the unit event lifecycle; the existing
+registered join tick then recomputes player combat and raises the party event.
+The repair resolves both controllers, invokes them in leave-then-join order,
+and requires exact equality with the clean pre-run boundary. It does not
+write combat flags, spoof an event, call a save API, or weaken any guard.
+Repository validation, the focused invariant, complete `1369/1369` Release
+suite, clean build, strict package and firearm/audio checks, and settled
+169-check preflight pass. Pre-commit package SHA-256 is
+`b3598b28366eb82161b66b1e65144430c9461380dc93dc3dd2bb15db9fd7fbb3`;
+DLL SHA-256 is
+`9f717b6c8d08f39cd67635bfc5e635543e38d60a38ce215a0a5c4f590cadfa41`;
+MVID is `6e2a6987-f89a-42c1-a3ad-e1635a47b796`. Commit-bound replacement
+runtime evidence remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

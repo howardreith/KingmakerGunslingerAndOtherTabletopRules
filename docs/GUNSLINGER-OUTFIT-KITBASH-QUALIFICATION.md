@@ -870,3 +870,41 @@ DLL SHA-256 is
 `b378256b722350bc9128b491e7f0d8e8f3a2b630bdccefe4664fb5c80f84e18f`;
 MVID is `b4bf5593-d05b-41d5-b92c-d6ad1eff1356`. These identities are not
 runtime acceptance.
+
+## 2026-08-31 production motion attempt 2
+
+Published source commit:
+`fe24655acd4516e334796524ab7a3f40fd633888`.
+Commit-bound package SHA-256:
+`5228a562f65fbb2b694ec617548e71d1b713c3fea35d93789834b36eccebd44e`.
+Loaded DLL SHA-256:
+`ba1638817210bfa9b2d163356465719cc0d22e941947286c3d399bf3f236a9dc`.
+Evidence directory:
+`20260831T0521459019080Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL`.
+
+The run completed all 27 male records, including both native locomotion
+commands, turn, three attacks, and production reload. At fixture restoration,
+the baseline expected false/zero/false but the recorded native boundary was
+`player=true->true;party=3->3;turnBased=true->true`. Combat from the
+disposable hostile had propagated to all three baseline party units. The
+join controller correctly preserved that live group state, so the harness
+failed rather than reporting a false clean boundary. No record from this
+partial batch is accepted.
+
+Read-only installed IL establishes the replacement lifecycle:
+`UnitCombatLeaveController.Tick()` evaluates registered groups and calls full
+`UnitEntityData.LeaveCombat()` when the retired encounter no longer qualifies;
+`UnitCombatJoinController.Tick()` then performs player recomputation and the
+normal party event. The source now resolves both registered controllers and
+requires that leave-then-join sequence per fixture and during cleanup. It
+contains no manual combat-flag write or event spoof. Repository validation,
+the focused invariant, complete `1369/1369` Release suite, clean
+installed-reference build, strict package/firearm/audio checks, and the
+settled 169-check preflight pass. The first post-build preflight reported only
+the documented artifact-tree stabilization sentinel; the identical rerun
+passed. Pre-commit package/DLL SHA-256 values are
+`b3598b28366eb82161b66b1e65144430c9461380dc93dc3dd2bb15db9fd7fbb3`
+and `9f717b6c8d08f39cd67635bfc5e635543e38d60a38ce215a0a5c4f590cadfa41`.
+Motion remains `PENDING` until an exact-commit replacement terminal PASS,
+structured reconciliation, and direct review of all replacement images.
