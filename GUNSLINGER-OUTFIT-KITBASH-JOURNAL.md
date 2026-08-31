@@ -1371,3 +1371,46 @@ remains 88/100.
 Exact next action: commit and policy-publish the native retirement gate,
 rebuild its exact package, and execute all 54 replacement records. Candidate
 score remains 88/100.
+
+## 2026-08-31 - Ninth and tenth motion runs expose a finished resident attack
+
+- Published commit `0dbdaf2b283bbb6245939d4078c26f90d94d01ff`, package
+  `a8a6ae85f171e1c5140f17794830b0d11b64b4154af21a755332dd784ee570ca`,
+  DLL `585e4abf748225398f13c02afbd62313e2111fd46137cd57415af331925efd40`,
+  and MVID `a6768c5d-46e6-4fef-b45c-c2b958989d4e` ran through Steam 640820.
+- Evidence `20260831T1401393847532Z-gunslinger-outfit-production-motion`
+  failed before record one when the male Human native doll did not populate
+  DollData or hair during the bounded settle window. Exact request, loaded
+  build, working-save/no-save boundary, blueprint immutability, request-local
+  cleanup, and automatic exit passed. Because attempts 7 and 8 passed this
+  unchanged pre-action fixture, one controlled same-commit retry was made;
+  another identical miss would have triggered readiness instrumentation.
+- Evidence `20260831T1407213494923Z-gunslinger-outfit-production-motion`
+  reached 10/54 male records. The pistol's update-36 sidecar showed a running,
+  non-interruptible `UnitAttack`; its outcome later reached retirement ready
+  and advanced. Musket-ready then showed no running command but a resident
+  `UnitAttack`, zero loaded rounds, and two total discharges. Production
+  correctly rejected the new unloaded musket command. No partial image from
+  either failed run is accepted.
+- Exact installed IL explains this second lifecycle boundary:
+  `UnitCommands.InterruptAll(bool)` skips `IsFinished` entries without nulling
+  their raw slots. Public `RemoveFinishedAndUpdateQueue()` clears those slots.
+  Thus the pistol was no longer running when the harness advanced, but remained
+  resident and later consumed the newly equipped musket round.
+- The repair rejects any queued command, interrupts normally, calls the native
+  finished-slot cleanup, and proves the evidence command is evicted plus the
+  entire command container is empty of running, resident, and queued work
+  before removing a weapon or target. Sidecars and terminal outcomes record
+  the exact collections and `slotEvicted`; transient cleanup repeats the gate.
+- Installed-reference compilation, repository validation, all `1369/1369`
+  tests, clean Release/package, strict firearm/audio/package validation, and
+  the settled 169-check preflight pass. The first preflight reported only the
+  expected artifact-tree stabilization sentinel. Pre-commit package SHA-256 is
+  `fca9cf06fb1fb6a3e967eb7414c3ffb4ac679d639695ab81faf146788921e274`,
+  DLL SHA-256 is
+  `1d2d17ffe350388308fab4aa62d81637d378ce44c2408ec8c2d34c365a3a418a`,
+  and MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`.
+
+Exact next action: commit and policy-publish the finished-slot eviction repair,
+rebuild its exact package, and execute all 54 replacement records. Candidate
+score remains 88/100.
