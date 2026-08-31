@@ -1370,6 +1370,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "commandRunningAtRetirement", commandRunning },
                     { "commandInterruptibleAtRetirement",
                         commandInterruptible },
+                    { "slotEvicted", false },
+                    { "residentCommandTypesAtEvidenceCompletion",
+                        new JArray(
+                            ProductionMotionResidentCommandTypes()) },
+                    { "queuedCommandTypesAtEvidenceCompletion",
+                        new JArray(
+                            ProductionMotionQueuedCommandTypes()) },
                     { "actionUpdates", _motionActionUpdates },
                     { "animationObserved", _motionAnimationObserved },
                     { "animationActedObserved",
@@ -1871,10 +1878,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 record["ballCount"] = _motionPlayer == null ? -1 :
                     _motionPlayer.Inventory.Count(_motionBall);
                 record["activeCommandTypes"] = new JArray(
-                    _actor.Commands.Raw.Where(value => value != null)
-                        .Select(value => value.GetType().FullName).ToArray());
+                    ProductionMotionResidentCommandTypes());
                 record["runningCommandTypes"] = new JArray(
                     ProductionMotionRunningCommandTypes());
+                record["queuedCommandTypes"] = new JArray(
+                    ProductionMotionQueuedCommandTypes());
                 record["productionBlueprintUnchanged"] =
                     ProductionBlueprintUnchanged();
                 record["productionBlueprintMutated"] = false;
@@ -1927,18 +1935,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Select(value => value.GetType().FullName).ToArray();
             }
 
+            private string[] ProductionMotionResidentCommandTypes()
+            {
+                return _actor == null ? new string[0] :
+                    _actor.Commands.Raw.Where(value => value != null)
+                        .Select(value => value.GetType().FullName).ToArray();
+            }
+
+            private string[] ProductionMotionQueuedCommandTypes()
+            {
+                return _actor == null ? new string[0] :
+                    _actor.Commands.Queue.Where(value => value != null)
+                        .Select(value => value.GetType().FullName).ToArray();
+            }
+
             private void BeginProductionMotionRemoval()
             {
                 _stage = "remove-motion-" + _motionSpec.Label;
                 if (_actor != null)
                 {
+                    string[] queuedBefore =
+                        ProductionMotionQueuedCommandTypes();
+                    if (queuedBefore.Length != 0)
+                        throw new InvalidOperationException(
+                            "Production motion refused teardown with queued native commands: " +
+                            string.Join("|", queuedBefore) + ".");
                     _actor.Commands.InterruptAll(true);
+                    _actor.Commands.RemoveFinishedAndUpdateQueue();
                     string[] runningCommands =
                         ProductionMotionRunningCommandTypes();
-                    if (runningCommands.Length != 0)
+                    string[] residentCommands =
+                        ProductionMotionResidentCommandTypes();
+                    string[] queuedCommands =
+                        ProductionMotionQueuedCommandTypes();
+                    bool slotEvicted = _motionAttackCommand == null ||
+                        !_actor.Commands.Contains(_motionAttackCommand);
+                    if (_motionSpec != null && string.Equals(
+                            _motionSpec.Kind, "attack",
+                            StringComparison.Ordinal) &&
+                        _motionAttackOutcomes.Count > 0)
+                    {
+                        JObject attackOutcome = _motionAttackOutcomes[
+                            _motionAttackOutcomes.Count - 1] as JObject;
+                        if (attackOutcome != null)
+                        {
+                            attackOutcome["slotEvicted"] = slotEvicted;
+                            attackOutcome[
+                                "residentCommandTypesAfterRetirement"] =
+                                new JArray(residentCommands);
+                            attackOutcome[
+                                "queuedCommandTypesAfterRetirement"] =
+                                new JArray(queuedCommands);
+                            attackOutcome[
+                                "runningCommandTypesAfterRetirement"] =
+                                new JArray(runningCommands);
+                        }
+                    }
+                    if (!slotEvicted || !_actor.Commands.Empty ||
+                        runningCommands.Length != 0 ||
+                        residentCommands.Length != 0 ||
+                        queuedCommands.Length != 0)
                         throw new InvalidOperationException(
-                            "Production motion refused teardown while native commands remained running: " +
-                            string.Join("|", runningCommands) + ".");
+                            "Production motion refused teardown until its native command slot was empty; " +
+                            "slotEvicted=" + slotEvicted + ";empty=" +
+                            _actor.Commands.Empty + ";running=" +
+                            string.Join("|", runningCommands) +
+                            ";resident=" +
+                            string.Join("|", residentCommands) +
+                            ";queued=" + string.Join("|", queuedCommands) +
+                            ".");
                     if (_actor.View != null)
                     {
                         _actor.View.StopMoving();
@@ -2037,6 +2102,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !_motionTarget.CombatState.IsInCombat;
                 return _motionWeapon == null &&
                     ProductionMotionRunningCommandTypes().Length == 0 &&
+                    ProductionMotionResidentCommandTypes().Length == 0 &&
+                    ProductionMotionQueuedCommandTypes().Length == 0 &&
+                    _actor.Commands.Empty &&
                     _actor.Body.PrimaryHand.MaybeItem == null &&
                     _actor.Body.SecondaryHand.MaybeItem == null &&
                     _actor.View.HandsEquipment.GetWeaponModel(false) == null &&
@@ -2692,6 +2760,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)value["commandStarted"] &&
                         (bool)value["commandRunningObserved"] &&
                         (bool)value["retirementReady"] &&
+                        (bool)value["slotEvicted"] &&
+                        ((JArray)value[
+                            "residentCommandTypesAfterRetirement"]).Count ==
+                            0 &&
+                        ((JArray)value[
+                            "queuedCommandTypesAfterRetirement"]).Count == 0 &&
+                        ((JArray)value[
+                            "runningCommandTypesAfterRetirement"]).Count ==
+                            0 &&
                         (bool)value["animationObserved"] &&
                         (bool)value["animationActedObserved"] &&
                         (bool)value["actedCaptureTaken"] &&

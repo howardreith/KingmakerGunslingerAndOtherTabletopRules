@@ -650,3 +650,41 @@ package/DLL SHA-256 values are
 MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`. This remains harness
 evidence; `magus-complete` remains 88/100 pending complete motion and
 persistence PASS gates.
+
+### Production motion attempts 9-10 diagnostic
+
+Published commit `0dbdaf2b283bbb6245939d4078c26f90d94d01ff`, package
+SHA-256
+`a8a6ae85f171e1c5140f17794830b0d11b64b4154af21a755332dd784ee570ca`,
+DLL SHA-256
+`585e4abf748225398f13c02afbd62313e2111fd46137cd57415af331925efd40`,
+and MVID `a6768c5d-46e6-4fef-b45c-c2b958989d4e` produced two guarded runs.
+Evidence `20260831T1401393847532Z-gunslinger-outfit-production-motion`
+failed before any record at an intermittent male native-doll settle boundary;
+the exact guard/build/no-save/cleanup gates passed, and one unchanged-commit
+retry was justified by the two preceding passes of that boundary.
+
+Evidence `20260831T1407213494923Z-gunslinger-outfit-production-motion`
+reached 10/54 male records. The pistol acted, discharged once, and eventually
+reported retirement ready. The next musket-ready frame had no running command
+but retained a raw `UnitAttack`, showed zero loaded rounds and two total
+discharges, and the new unloaded musket attack was correctly rejected. No
+partial image from either batch is scored.
+
+Installed IL shows `UnitCommands.InterruptAll` skips finished commands without
+clearing their raw slot; public `RemoveFinishedAndUpdateQueue` performs that
+eviction. The corrected harness rejects queued work, interrupts, invokes the
+native finished-slot cleanup, and proves `slotEvicted`, `Commands.Empty`, and
+zero running/resident/queued commands before any equipment or target teardown.
+Those facts are recorded in sidecars/outcomes and independently required at
+the inter-action boundary.
+
+Compile, repository validation, all `1369/1369` tests, clean strict packaging,
+firearm/audio checks, and the stable 169-check preflight pass. The first
+preflight produced only the documented stabilization sentinel. Pre-commit
+package/DLL SHA-256 values are
+`fca9cf06fb1fb6a3e967eb7414c3ffb4ac679d639695ab81faf146788921e274` and
+`1d2d17ffe350388308fab4aa62d81637d378ce44c2408ec8c2d34c365a3a418a`;
+MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`. This remains harness
+evidence; `magus-complete` remains 88/100 pending complete motion and
+persistence PASS gates.

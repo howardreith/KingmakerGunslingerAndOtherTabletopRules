@@ -381,6 +381,12 @@ namespace KingmakerGunslinger.DomainTests
                 "_motionAttackCommand.IsInterruptible",
                 "retirementReady", "runningCommandTypes",
                 "ProductionMotionRunningCommandTypes().Length == 0",
+                "RemoveFinishedAndUpdateQueue()", "slotEvicted",
+                "residentCommandTypesAfterRetirement",
+                "queuedCommandTypesAfterRetirement",
+                "ProductionMotionResidentCommandTypes().Length == 0",
+                "ProductionMotionQueuedCommandTypes().Length == 0",
+                "_actor.Commands.Empty",
                 "new AbilityData(", "new UnitUseAbility(",
                 "ReloadTestMusketRuntime.Evaluate", "ExecutionProcess.Tick()",
                 "ProductionMotionAttackUpdates",
@@ -496,16 +502,20 @@ namespace KingmakerGunslinger.DomainTests
             int interruptCommands = removalBody.IndexOf(
                 "_actor.Commands.InterruptAll(true)",
                 StringComparison.Ordinal);
-            int runningCommandGate = removalBody.IndexOf(
-                "ProductionMotionRunningCommandTypes()",
+            int evictFinishedCommand = removalBody.IndexOf(
+                "_actor.Commands.RemoveFinishedAndUpdateQueue()",
+                StringComparison.Ordinal);
+            int emptySlotGate = removalBody.IndexOf(
+                "if (!slotEvicted || !_actor.Commands.Empty",
                 StringComparison.Ordinal);
             int removeWeapon = removalBody.IndexOf(
                 "RemoveProductionMotionWeapon();",
                 StringComparison.Ordinal);
             Assertions.True(interruptCommands >= 0 &&
-                    runningCommandGate > interruptCommands &&
-                    removeWeapon > runningCommandGate,
-                "Production motion must reject a live native command after interruption and before weapon teardown.");
+                    evictFinishedCommand > interruptCommands &&
+                    emptySlotGate > evictFinishedCommand &&
+                    removeWeapon > emptySlotGate,
+                "Production motion must interrupt, evict finished native command slots, prove an empty command container, and only then remove the weapon.");
             foreach (string token in new[]
             {
                 "IsProductionMotion", "PollProductionMotion()",

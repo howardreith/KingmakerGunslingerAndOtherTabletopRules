@@ -1024,3 +1024,58 @@ and MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`. Candidate score remains
 
 Exact next action: commit and policy-publish the retirement gate, rebuild its
 exact commit, and execute the complete replacement matrix.
+
+## 2026-08-31 - Motion attempts 9-10 expose a finished resident command
+
+Published commit `0dbdaf2b283bbb6245939d4078c26f90d94d01ff` ran through
+Steam 640820 as package SHA-256
+`a8a6ae85f171e1c5140f17794830b0d11b64b4154af21a755332dd784ee570ca`,
+DLL SHA-256
+`585e4abf748225398f13c02afbd62313e2111fd46137cd57415af331925efd40`,
+and MVID `a6768c5d-46e6-4fef-b45c-c2b958989d4e` in both runs. Evidence
+`20260831T1401393847532Z-gunslinger-outfit-production-motion` failed before
+record one when the male Human native doll intermittently did not populate
+DollData or hair inside the bounded settle window. Exact guard, loaded build,
+no-save, immutable-blueprint, request-local cleanup, and automatic-exit gates
+passed. The same unchanged commit had passed this pre-action boundary in the
+two preceding runs, so one controlled retry was evidence-supported; another
+identical miss would have required narrower readiness instrumentation.
+
+Evidence `20260831T1407213494923Z-gunslinger-outfit-production-motion` passed
+that boundary and reached 10/54 male records. The pistol outcome reached the
+new retirement-ready gate after acting and firing once. Its update-36 sidecar
+had shown a running, non-interruptible `UnitAttack`; the subsequent
+musket-ready sidecar showed that no command was running, yet still listed a
+resident `UnitAttack`, zero loaded musket rounds, and total fired count two.
+The fresh musket command was correctly rejected as unloaded. No partial image
+from either failed batch is accepted.
+
+Exact installed `UnitCommands` IL resolves the apparent contradiction.
+`InterruptAll(bool)` skips an entry whose `IsFinished` is already true and
+does not clear its raw command slot. The public
+`RemoveFinishedAndUpdateQueue()` method clears finished raw slots and then
+updates the queue. The retired pistol command therefore passed the prior
+zero-running gate while remaining resident, later resumed during the weapon
+transition, and consumed the musket round.
+
+The replacement rejects a pre-existing queue, performs ordinary interruption,
+calls native `RemoveFinishedAndUpdateQueue`, and proves the evidence command is
+absent and the complete command container has zero running, resident, or
+queued entries before weapon, combat, target, or outfit teardown. Sidecars and
+terminal attack outcomes carry resident/queued command types and
+`slotEvicted`; inter-action cleanup independently requires the same empty
+container. Focused tests enforce the native eviction-before-teardown order.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release/package construction, strict package/firearm/audio validation,
+and the settled 169-check preflight pass. The first preflight reported only
+the documented artifact-tree stabilization sentinel. Pre-commit local-runtime
+package SHA-256 is
+`fca9cf06fb1fb6a3e967eb7414c3ffb4ac679d639695ab81faf146788921e274`,
+DLL SHA-256 is
+`1d2d17ffe350388308fab4aa62d81637d378ce44c2408ec8c2d34c365a3a418a`,
+and MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`. Candidate score remains
+88/100.
+
+Exact next action: commit and policy-publish the finished-slot eviction
+repair, rebuild its exact commit, and execute the complete 54-record matrix.

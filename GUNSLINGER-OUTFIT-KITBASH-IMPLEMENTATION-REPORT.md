@@ -974,6 +974,56 @@ DLL SHA-256 is
 and MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`. Exact-commit
 replacement runtime evidence remains pending.
 
+### Ninth/tenth motion execution and finished-slot eviction
+
+Published commit `0dbdaf2b283bbb6245939d4078c26f90d94d01ff` ran twice
+through Steam 640820 with package SHA-256
+`a8a6ae85f171e1c5140f17794830b0d11b64b4154af21a755332dd784ee570ca`,
+DLL SHA-256
+`585e4abf748225398f13c02afbd62313e2111fd46137cd57415af331925efd40`,
+and MVID `a6768c5d-46e6-4fef-b45c-c2b958989d4e`. The first evidence set,
+`20260831T1401393847532Z-gunslinger-outfit-production-motion`, failed before
+record one at an intermittent male native-doll settle boundary. All guard,
+build/save identity, no-save, immutable-blueprint, exact cleanup, and exit
+contracts passed. Two prior exact fixtures had passed that pre-action boundary,
+so one unchanged-commit retry was used to distinguish a transient settle miss
+from the command-lifecycle defect.
+
+The retry,
+`20260831T1407213494923Z-gunslinger-outfit-production-motion`, reached ten
+male records. The pistol acted and discharged, remained running and
+non-interruptible at update 36, then eventually satisfied the new retirement
+gate. The following musket-ready frame showed zero running commands but still
+contained a resident `UnitAttack`; its musket had zero loaded rounds and the
+total firearm count had advanced twice. The production unloaded-firearm guard
+correctly refused to construct the next attack. No partial capture is accepted.
+
+Exact installed IL establishes the missing distinction. `UnitCommands.Raw`
+may retain a finished command because `InterruptAll(bool)` skips
+`IsFinished` entries without clearing their slots. Public
+`RemoveFinishedAndUpdateQueue()` removes those finished raw entries. The prior
+zero-running gate therefore admitted a still-resident pistol command that
+later interacted with the newly equipped musket.
+
+The implementation now rejects a nonempty native queue before teardown,
+interrupts, executes `RemoveFinishedAndUpdateQueue`, and requires
+`slotEvicted`, `Commands.Empty`, and empty running/resident/queued collections
+before changing weapon, target, combat, or avatar state. Attack outcomes record
+all post-retirement collections; frame sidecars record resident, running, and
+queued types; inter-action cleanup repeats the entire empty-container contract.
+Focused source tests enforce this precise order.
+
+Installed-reference compilation, repository validation, all `1369/1369`
+tests, clean Release/package construction, strict package/firearm/audio
+validation, and the settled 169-check preflight pass. The first preflight
+reported only the documented artifact-tree stabilization sentinel. Pre-commit
+local-runtime package SHA-256 is
+`fca9cf06fb1fb6a3e967eb7414c3ffb4ac679d639695ab81faf146788921e274`,
+DLL SHA-256 is
+`1d2d17ffe350388308fab4aa62d81637d378ce44c2408ec8c2d34c365a3a418a`,
+and MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`. Exact-commit
+replacement runtime evidence remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

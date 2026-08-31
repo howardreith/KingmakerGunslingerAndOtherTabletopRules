@@ -26,8 +26,8 @@ claim.
 | Preview/gameplay paths | Pass (selection stage) | Four-view preview-like and ordinary isometric evidence across the complete 9x2 grid |
 | Save/load/rebuild | Partial | Commit-bound working save load and request-local repeated rebuilds pass; persisted outfit and respec-like reconstruction pending |
 | Focused tests | Pass (static-runtime checkpoint; repeat final) | Exact catalog/validation/defensive-copy, atomic wiring, and guarded compatibility contracts |
-| Repository validation | Pass (static-runtime checkpoint; repeat final) | Active 0.0.110 validator with 1368 current tests |
-| Complete domain suite | Pass (static-runtime checkpoint; repeat final) | 1368/1368, clean Release run |
+| Repository validation | Pass (static-runtime checkpoint; repeat final) | Active 0.0.110 validator with 1369 current tests |
+| Complete domain suite | Pass (static-runtime checkpoint; repeat final) | 1369/1369, clean Release run |
 | Clean Release build | Pass (production checkpoint; repeat final) | Exact installed-reference Release construction |
 | Installable package | Pass (commit-bound static checkpoint; repeat final) | Strict standalone validation, SHA-256 `e15546c5...394` |
 | Compatibility profiles | Pending | Exact applicable command/result |
@@ -1156,5 +1156,60 @@ SHA-256 is
 DLL SHA-256 is
 `e1b154a9e2c35348d6b6d67cd9fa8274c4764ffa5604335a24e680ada14b5844`;
 MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`. Motion remains `PENDING`
+until an exact-commit terminal PASS, structured reconciliation, and direct
+review of all 54 replacement images.
+
+## 2026-08-31 production motion attempts 9 and 10
+
+Published source commit:
+`0dbdaf2b283bbb6245939d4078c26f90d94d01ff`.
+Commit-bound package SHA-256:
+`a8a6ae85f171e1c5140f17794830b0d11b64b4154af21a755332dd784ee570ca`.
+Loaded DLL SHA-256:
+`585e4abf748225398f13c02afbd62313e2111fd46137cd57415af331925efd40`.
+MVID: `a6768c5d-46e6-4fef-b45c-c2b958989d4e`.
+
+Attempt 9 evidence directory:
+`20260831T1401393847532Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` before record 1/54.
+
+The male Human fixture did not populate native DollData or hair inside its
+bounded settle window (`doll=False;hair=False;noWeapon=True;active=.`).
+Guarded request, exact game/build identity, working-save/no-save boundary,
+blueprint immutability, exact structural cleanup, empty/disposed request-local
+scene, and automatic exit passed. Attempts 7 and 8 had passed the identical
+pre-action fixture, so one controlled retry of the unchanged commit was made;
+no visual record from this run exists or is accepted.
+
+Attempt 10 evidence directory:
+`20260831T1407213494923Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` after 10/54 records.
+
+The pistol update-36 sidecar recorded `loadedRounds=0`, a running
+non-interruptible `UnitAttack`, and a detached readiness probe. Its terminal
+outcome later reached retirement ready. The musket-ready sidecar then recorded
+no running command but retained a raw `UnitAttack`, had `loadedRounds=0`, and
+showed total firearm count two. The separately constructed musket command was
+correctly rejected as unloaded. Guard/build/save/no-save/blueprint/cleanup/exit
+contracts passed; no partial image is accepted.
+
+Installed `UnitCommands` IL proves the residual slot was not equivalent to a
+running command: `InterruptAll(bool)` skips an `IsFinished` command without
+clearing its raw slot, while public `RemoveFinishedAndUpdateQueue()` performs
+that eviction. The pending exact-commit repair rejects queued work, interrupts,
+calls native finished-slot cleanup, and requires `slotEvicted`,
+`Commands.Empty`, and zero running, resident, and queued commands before any
+weapon, target, combat, or outfit teardown. Sidecars and outcomes expose all
+four facts, and transient cleanup independently repeats the gate.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release/package, strict firearm/audio/package validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+artifact-tree stabilization sentinel. Pre-commit local-runtime package
+SHA-256 is
+`fca9cf06fb1fb6a3e967eb7414c3ffb4ac679d639695ab81faf146788921e274`;
+DLL SHA-256 is
+`1d2d17ffe350388308fab4aa62d81637d378ce44c2408ec8c2d34c365a3a418a`;
+MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`. Motion remains `PENDING`
 until an exact-commit terminal PASS, structured reconciliation, and direct
 review of all 54 replacement images.
