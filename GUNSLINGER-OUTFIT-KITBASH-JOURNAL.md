@@ -868,3 +868,44 @@ Exact next action: commit and publish this harness through the approved policy
 helper, verify HEAD/local/origin identity, rebuild the exact commit, pass
 strict package validation and quiescent preflight, then execute and directly
 review the full production compatibility render matrix.
+
+## 2026-08-30 - First production matrix fails on a false hidden-storage assumption
+
+- Compatibility harness commit
+  `82361d31d2b0d7d278046161c13ee503aff6d51a` was policy-published with
+  identical HEAD/local/origin refs and a clean tree.
+- Its commit-bound local-runtime package SHA-256 was
+  `d8f026bec05a99ebc98eb61545e99c6af5d1662fd7446a3d628f28a26037bd44`;
+  DLL SHA-256 was
+  `5265ce9925c4c5b3dd4b2ef90bd0f14d5707edd9d871d9959e77bb060c943562`;
+  MVID was `3b3ab851-e16f-48e6-b900-43c4d78b2558`. The first immediate
+  preflight fingerprint check saw post-build timestamp movement; the unchanged
+  quiescent rerun passed all 166 checks.
+- Guarded Steam 640820 run
+  `20260831T0304180367838Z-gunslinger-outfit-production-compatibility`
+  reached terminal `FAIL` at male-Human `musket-stored-inactive` after four
+  complete records/eight PNGs. Exact game/mod identity, all 18 production
+  race/gender link rows, save guard, class immutability, global cleanup, and
+  automatic exit passed.
+- The failed assertion expected `!Renderable(heldModel)` for an inactive
+  musket. The exact item slot, production entities, hair, saved links, ramps,
+  overlay/base sets, and backpack state all remained correct. Existing
+  qualified weapon-presentation logic proves that a long gun's stored model
+  is supposed to remain visible; designated handgun profiles alone may be
+  intentionally hidden.
+- Repaired only the harness: the existing active-presentation resolver is now
+  internal to runtime-test code, the matrix requires a visible out-of-combat
+  stored musket, the model participates in framing, and each firearm record
+  includes its resolved presentation role and renderability. The focused
+  source contract covers this boundary.
+- Repository validation, 1368/1368 tests, clean installed-reference Release
+  build/package, and strict standalone validation pass. Dirty-tree package
+  SHA-256 is
+  `beed41bbe74601d8d0f499c2ff5dff340f3e90822e02d4fa2e0f25cd69ab6baa`;
+  DLL SHA-256 is
+  `397f4c6a5a9069ae07e0ee2cfd195aa88d2a8fa1d82edaed49b983f68efa3396`.
+  No candidate score changes from the rejected partial batch.
+
+Exact next action: commit and policy-publish the stored-musket correction,
+verify all refs, rebuild the commit-bound package, pass quiescent preflight,
+then rerun and directly review the complete compatibility matrix.

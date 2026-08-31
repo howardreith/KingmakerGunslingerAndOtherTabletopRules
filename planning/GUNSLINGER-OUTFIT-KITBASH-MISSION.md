@@ -536,3 +536,39 @@ harness, verify the three refs, build and validate its commit-bound local
 runtime artifact, pass quiescent preflight, run the exact guarded scenario
 through Steam App ID 640820, and inspect every resulting image before awarding
 or withholding any remaining compatibility points.
+
+## 2026-08-30 - Stored-musket diagnostic and corrected retry contract
+
+Published harness commit
+`82361d31d2b0d7d278046161c13ee503aff6d51a` loaded exact DLL SHA-256
+`5265ce9925c4c5b3dd4b2ef90bd0f14d5707edd9d871d9959e77bb060c943562`
+and MVID `3b3ab851-e16f-48e6-b900-43c4d78b2558` through Steam App ID
+640820. Guarded evidence
+`20260831T0304180367838Z-gunslinger-outfit-production-compatibility`
+reached a clean terminal `FAIL` after four male-Human states. It passed exact
+game/mod/class/race-link identity, production-blueprint immutability,
+working-save/no-save boundaries, request-local cleanup, and process exit.
+
+The failed state was `musket-stored-inactive`. The actor retained the exact
+musket slot item and every outfit/hair/ramp/rebuild contract, but the harness
+required the inactive long-gun model to be non-renderable. That requirement
+contradicts the repository's already-qualified firearm presentation contract:
+long guns have visible stored presentation, while only designated handgun
+profiles may be intentionally hidden. This is an instrumentation defect, not
+an outfit compatibility or aesthetic failure; the candidate remains 88/100.
+
+The narrow correction exposes the established stored/held resolver only to
+other runtime-test code, uses it for every equipped firearm, requires the
+inactive musket to be out of combat and visibly renderable, includes that
+model in capture bounds, and records its exact presentation role. The focused
+test now prevents a return to the hidden-long-gun assumption. Repository
+validation, all 1368/1368 tests, clean Release/package construction, and
+strict standalone validation pass. Dirty-tree package SHA-256 is
+`beed41bbe74601d8d0f499c2ff5dff340f3e90822e02d4fa2e0f25cd69ab6baa`;
+DLL SHA-256 is
+`397f4c6a5a9069ae07e0ee2cfd195aa88d2a8fa1d82edaed49b983f68efa3396`.
+
+Exact next action: publish this focused harness repair, rebuild and validate
+the exact commit, pass quiescent preflight, rerun the complete 32-state matrix,
+and inspect all 64 replacement PNGs. The four partial images from the failed
+batch are diagnostic only and cannot close any visual gate.

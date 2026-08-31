@@ -630,6 +630,41 @@ DLL SHA-256 is
 The command has not yet been run against this source checkpoint; no visual or
 runtime compatibility gate is closed by the local results.
 
+## 2026-08-30 first production compatibility run
+
+Evidence directory:
+`runtime-evidence/20260831T0304180367838Z-gunslinger-outfit-production-compatibility`.
+
+- published commit:
+  `82361d31d2b0d7d278046161c13ee503aff6d51a`;
+- loaded DLL SHA-256:
+  `5265ce9925c4c5b3dd4b2ef90bd0f14d5707edd9d871d9959e77bb060c943562`;
+- loaded MVID: `3b3ab851-e16f-48e6-b900-43c4d78b2558`;
+- result: terminal `FAIL`, not timeout or ambiguous exit;
+- completed scope: one exact male-Human production doll, four records, eight
+  PNGs, and all 18 installed race/gender production-link rows;
+- passed boundaries: exact game/mod/class identity, working save, no save API,
+  production-blueprint immutability, exact party/global-unit cleanup, hooks
+  removed, and automatic exit;
+- failure: `musket-stored-inactive` had exact outfit/hair/ramp/saved-link/body-
+  slot state but failed the harness's `!Renderable` expectation.
+
+The failed expectation was invalid. Existing guarded presentation evidence
+defines the musket as a visibly stored long gun when out of combat; only
+designated handgun profiles use intentionally hidden storage. The partial
+images are diagnostic and are not accepted as the final visual batch.
+
+The corrected contract calls the existing stored/held active-presentation
+resolver, requires the stored musket to remain out of combat with an exact
+slot item and renderable model, includes the model in framing, and records its
+presentation role. Repository validation, all 1368/1368 tests, clean Release
+packaging, and strict validation pass. Dirty-tree package SHA-256 is
+`beed41bbe74601d8d0f499c2ff5dff340f3e90822e02d4fa2e0f25cd69ab6baa`;
+DLL SHA-256 is
+`397f4c6a5a9069ae07e0ee2cfd195aa88d2a8fa1d82edaed49b983f68efa3396`.
+A published commit-bound rerun and direct inspection of all 64 replacement
+PNGs remain required.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

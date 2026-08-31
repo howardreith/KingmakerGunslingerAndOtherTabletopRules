@@ -1161,19 +1161,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool rampsExact = ProductionRampsExact(
                     value.Kind == "alternate-color");
                 bool slotReady = CurrentSlotReady(value.Kind);
-                GameObject heldObject = _actor.View.HandsEquipment
-                    .GetWeaponModel(false);
-                Transform heldModel = heldObject == null ? null :
-                    heldObject.transform;
+                string weaponPresentationRole = "none";
+                Transform weaponModel = null;
+                if (_weaponItem != null)
+                {
+                    WeaponVisualParameters visual = _weaponItem.Blueprint ==
+                        null ? null : _weaponItem.Blueprint.VisualParameters;
+                    if (visual == null)
+                        throw new InvalidOperationException(value.Label +
+                            " has no effective native weapon presentation.");
+                    weaponModel = WeaponPresentationEvidenceScenario
+                        .ResolveActivePresentation(_actor, visual,
+                            _expectStoredWeapon ? "stored" : "held-idle",
+                            out weaponPresentationRole);
+                }
+                bool weaponItemExact = ReferenceEquals(
+                    _actor.Body.PrimaryHand.MaybeWeapon, _weaponItem);
+                bool weaponModelRenderable = Renderable(weaponModel);
                 bool weaponReady = _expectHeldWeapon
                     ? _actor.View.HandsEquipment.InCombat &&
-                        ReferenceEquals(_actor.Body.PrimaryHand.MaybeWeapon,
-                            _weaponItem) && Renderable(heldModel)
+                        weaponItemExact && weaponModelRenderable
                     : _expectStoredWeapon
                         ? !_actor.View.HandsEquipment.InCombat &&
-                            ReferenceEquals(
-                                _actor.Body.PrimaryHand.MaybeWeapon,
-                                _weaponItem) && !Renderable(heldModel)
+                            weaponItemExact && weaponModelRenderable
                         : !_actor.View.HandsEquipment.InCombat &&
                             _actor.Body.PrimaryHand.MaybeItem == null &&
                             _actor.Body.SecondaryHand.MaybeItem == null &&
@@ -1202,11 +1212,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !noUnexpectedAvatarEntities + ";ramps=" +
                         rampsExact + ";slot=" + slotReady + ";weapon=" +
                         weaponReady + ";backpack=" + backpackReady +
-                        ";renderers=" + renderers.Length + ".");
+                        ";renderers=" + renderers.Length + ";inCombat=" +
+                        _actor.View.HandsEquipment.InCombat +
+                        ";weaponItemExact=" + weaponItemExact +
+                        ";weaponModelRenderable=" +
+                        weaponModelRenderable + ";presentationRole=" +
+                        weaponPresentationRole + ".");
                 }
 
                 CaptureProductionCase(value, fixture, renderers,
-                    _expectHeldWeapon ? heldModel : null);
+                    _expectHeldWeapon || _expectStoredWeapon
+                        ? weaponModel : null, weaponPresentationRole);
                 _caseIndex++;
                 if (_caseIndex < ProductionCompatibilityCases.Length)
                 {
@@ -1266,7 +1282,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void CaptureProductionCase(
                 ProductionCompatibilityCase value,
                 ProductionCompatibilityFixture fixture,
-                Renderer[] renderers, Transform heldModel)
+                Renderer[] renderers, Transform weaponModel,
+                string weaponPresentationRole)
             {
                 _stage = "capture-" + fixture.Label + "-" + value.Label;
                 string stem = SafeFileName("production-" + fixture.Label +
@@ -1277,8 +1294,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.EvidenceDirectory, stem + "-isometric.png");
                 WeaponPresentationEvidenceScenario.CaptureSummary preview =
                     WeaponPresentationEvidenceScenario.CaptureContactSheet(
-                        _actor, heldModel, renderers, previewPath,
-                        !_expectHeldWeapon);
+                        _actor, weaponModel, renderers, previewPath,
+                        !_expectHeldWeapon && !_expectStoredWeapon);
                 IsometricCapture isometric = CaptureIsometric(_actor,
                     renderers, isometricPath);
                 var record = new JObject
@@ -1316,7 +1333,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "weaponStoredInactive", _expectStoredWeapon },
                     { "handsInCombat",
                         _actor.View.HandsEquipment.InCombat },
-                    { "heldModelRenderable", Renderable(heldModel) },
+                    { "weaponPresentationRole",
+                        weaponPresentationRole },
+                    { "weaponModelRenderable",
+                        Renderable(weaponModel) },
                     { "bodySlots", BodySlotEvidence() },
                     { "overlayEntities", OverlayEvidence() },
                     { "backpackVisible", ReadBackpackVisible() },

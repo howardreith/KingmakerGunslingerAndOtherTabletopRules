@@ -512,6 +512,40 @@ DLL SHA-256 is
 `1ca246f477ed3ccbd6ef7a194fc90a5b5a14671d2334bbbaf0a08b76236b9d8`.
 These local results establish only source and packaging readiness.
 
+## Stored-musket runtime diagnostic and harness correction
+
+The first published production matrix run,
+`20260831T0304180367838Z-gunslinger-outfit-production-compatibility`,
+loaded commit `82361d31d2b0d7d278046161c13ee503aff6d51a`, DLL SHA-256
+`5265ce9925c4c5b3dd4b2ef90bd0f14d5707edd9d871d9959e77bb060c943562`,
+and MVID `3b3ab851-e16f-48e6-b900-43c4d78b2558`. It completed default,
+alternate-color, held-pistol, and held-musket states before a terminal failure
+at `musket-stored-inactive`. It still passed exact installed-game identity,
+all 18 race/gender class-link rows, working-save/no-write protection,
+production-blueprint immutability, exact global cleanup, and automatic exit.
+
+The failed condition required a stored musket to have no renderable weapon
+model. That is inconsistent with the already-qualified production firearm
+presentation policy: long guns retain visible stored presentation, while only
+specific handgun profiles intentionally hide it. Every outfit-specific state
+at the failure point was exact. Consequently the four-record/eight-image batch
+is rejected as incomplete harness evidence and says nothing adverse about the
+selected clothing.
+
+The correction does not touch production class or firearm behavior. It makes
+the established stored/held resolver available to runtime-test peers, resolves
+the exact active presentation for each equipped firearm, requires the inactive
+musket to be out of combat and renderable, includes it in contact-sheet bounds,
+and records presentation role/renderability. The focused contract prevents
+regression to a hidden-long-gun assumption.
+
+Repository validation, all 1368 tests, clean Release construction, package
+creation, and strict standalone validation pass. Dirty-tree package SHA-256 is
+`beed41bbe74601d8d0f499c2ff5dff340f3e90822e02d4fa2e0f25cd69ab6baa`;
+DLL SHA-256 is
+`397f4c6a5a9069ae07e0ee2cfd195aa88d2a8fa1d82edaed49b983f68efa3396`.
+The complete commit-bound rerun and review remain mandatory.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
