@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.110\"") &&
-                props.Contains("<KmgVersion>0.0.110</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.110-protection-from-alignment-control-immunity</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.110\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.110\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.110-protection-from-alignment-control-immunity\")"),
-                "Release and assembly identity are not transactionally pinned to the Gunslinger fixes release.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.111\"") &&
+                props.Contains("<KmgVersion>0.0.111</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.111-gunslinger-class-outfit-kitbash</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.111\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.111\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.111-gunslinger-class-outfit-kitbash\")"),
+                "Release and assembly identity are not transactionally pinned to the Gunslinger outfit release.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-protection-from-alignment-control-immunity.zip") &&
+                "$($info.Id)-$($info.Version)-gunslinger-class-outfit-kitbash.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Gunslinger fixes archive.");
-            Assertions.True(runtime.Contains("active version 0.0.110") &&
-                localBuild.Contains("active version 0.0.110") &&
-                localBuild.Contains("local-runtime\\0.0.110"),
+                "Package identity is not pinned to the Gunslinger outfit archive.");
+            Assertions.True(runtime.Contains("active version 0.0.111") &&
+                localBuild.Contains("active version 0.0.111") &&
+                localBuild.Contains("local-runtime\\0.0.111"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

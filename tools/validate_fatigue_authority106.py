@@ -13,7 +13,7 @@ VERSION = "0.0.106"
 INFORMATIONAL_VERSION = "0.0.106-fatigue-authority-repair"
 PACKAGE = "KingmakerGunslinger-0.0.106-local-runtime.zip"
 PACKAGE_SUFFIX = "fatigue-authority-repair"
-DETERMINISTIC_TEST_COUNT = 1359
+DETERMINISTIC_TEST_COUNT = 1365
 RELEASE_NOTES_TEST_COUNT = 1325
 FOCUSED_FATIGUE_CASE_COUNT = 21
 STATIC_KEY = "fatigueAuthority106"
@@ -44,6 +44,7 @@ def validate(root: Path) -> None:
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     baseline.PACKAGE = PACKAGE
     baseline.PACKAGE_SUFFIX = PACKAGE_SUFFIX
+    baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
     baseline.validate(root)
 
     policy = require_tokens(root / (

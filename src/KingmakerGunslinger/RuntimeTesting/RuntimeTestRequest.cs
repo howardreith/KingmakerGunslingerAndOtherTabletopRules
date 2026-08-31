@@ -218,6 +218,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "startup-timeout-invalid";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .GunslingerOutfitCandidateRender ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .GunslingerOutfitFinalistRaceMatrix ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .GunslingerOutfitProductionCompatibility ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .GunslingerOutfitProductionMotion ||
+                RuntimeTestScenarioCatalog
+                    .IsGunslingerOutfitProductionPersistenceScenario(
+                        request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationHandgunMotionEvidence ||

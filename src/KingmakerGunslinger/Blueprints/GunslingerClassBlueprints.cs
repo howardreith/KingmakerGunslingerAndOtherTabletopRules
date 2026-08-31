@@ -11,6 +11,7 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.FactLogic;
+using KingmakerGunslinger.Presentation;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -185,7 +186,7 @@ namespace KingmakerGunslinger.Blueprints
             if (gunsmithKit == null) throw new ArgumentNullException("gunsmithKit");
 
             BlueprintCharacterClass fighter = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
-                library, FighterClassGuid, "Gunslinger presentation source Fighter class");
+                library, FighterClassGuid, "Gunslinger starting-gold source Fighter class");
             BlueprintStatProgression fullBab = BlueprintLibraryLookup.RequireExact<BlueprintStatProgression>(
                 library, FullBaseAttackGuid, "full base attack progression");
             BlueprintStatProgression goodSave = BlueprintLibraryLookup.RequireExact<BlueprintStatProgression>(
@@ -437,11 +438,7 @@ namespace KingmakerGunslinger.Blueprints
             result.Archetypes = Array.Empty<BlueprintArchetype>();
             result.RecommendedAttributes = new[] { StatType.Dexterity, StatType.Wisdom };
             result.NotRecommendedAttributes = Array.Empty<StatType>();
-            result.MaleEquipmentEntities = fighter.MaleEquipmentEntities;
-            result.FemaleEquipmentEntities = fighter.FemaleEquipmentEntities;
-            result.EquipmentEntities = fighter.EquipmentEntities;
-            result.PrimaryColor = fighter.PrimaryColor;
-            result.SecondaryColor = fighter.SecondaryColor;
+            GunslingerClassAppearance.Apply(result);
             return result;
         }
 

@@ -106,6 +106,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-class-blueprint-contracts";
         internal const string ObserveGunslingerPresentation =
             "observe-gunslinger-presentation";
+        internal const string GunslingerOutfitAudit =
+            "gunslinger-outfit-audit";
+        internal const string GunslingerOutfitCandidateRender =
+            "gunslinger-outfit-candidate-render";
+        internal const string GunslingerOutfitFinalistRaceMatrix =
+            "gunslinger-outfit-finalist-race-matrix";
+        internal const string GunslingerOutfitProductionCompatibility =
+            "gunslinger-outfit-production-compatibility";
+        internal const string GunslingerOutfitProductionMotion =
+            "gunslinger-outfit-production-motion";
+        internal const string GunslingerOutfitProductionPersistencePrepare =
+            "gunslinger-outfit-production-persistence-prepare";
+        internal const string GunslingerOutfitProductionPersistence =
+            "gunslinger-outfit-production-persistence";
+        internal const string GunslingerOutfitProductionPersistenceVerifyAbsent =
+            "gunslinger-outfit-production-persistence-verify-absent";
         internal const string IconOverhaulVisualEvidence =
             "icon-overhaul-visual-evidence";
         internal const string ObserveNativeWeaponFeatContracts =
@@ -408,6 +424,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveCraftMagicItemsVerifyCleanup,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
+                GunslingerOutfitAudit,
+                GunslingerOutfitCandidateRender,
+                GunslingerOutfitFinalistRaceMatrix,
+                GunslingerOutfitProductionCompatibility,
+                GunslingerOutfitProductionMotion,
+                GunslingerOutfitProductionPersistencePrepare,
+                GunslingerOutfitProductionPersistence,
+                GunslingerOutfitProductionPersistenceVerifyAbsent,
                 IconOverhaulVisualEvidence,
                 ObserveNativeWeaponFeatContracts,
                 ObserveElvenBranchedSpearContracts,
@@ -543,6 +567,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return IsSummonSameTurnWorkingSaveScenario(scenario) ||
                 IsSummonSameTurnCompatibilityScenario(scenario);
+        }
+
+        internal static bool IsGunslingerOutfitProductionPersistenceScenario(
+            string scenario)
+        {
+            return string.Equals(scenario,
+                    GunslingerOutfitProductionPersistencePrepare,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    GunslingerOutfitProductionPersistence,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    GunslingerOutfitProductionPersistenceVerifyAbsent,
+                    StringComparison.Ordinal);
         }
 
         internal static bool IsSummonSameTurnWorkingSaveScenario(

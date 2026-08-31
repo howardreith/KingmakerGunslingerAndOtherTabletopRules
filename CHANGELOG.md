@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.111-gunslinger-class-outfit-kitbash
+
+- Replaces the Gunslinger's inherited generic Fighter clothing with a coherent
+  native Magus base-and-accessory presentation for male and female characters,
+  using guarded defaults 2/22 without adding custom game assets or dependencies.
+- Preserves supported race/gender fallback, user color ramps, armor, headgear,
+  cloak, backpack, firearm/melee animation, rebuild, save/load, and native
+  respec behavior. The installed-game qualification covers the complete
+  nine-race/two-gender grid, static equipment overrides, motion/fire/reload/
+  melee, persisted reconstruction, and cleanup of its disposable save fixture.
+
 ## 0.0.110-protection-from-alignment-control-immunity
 
 - Protection from Evil, Good, Law, and Chaos now prevent new registered

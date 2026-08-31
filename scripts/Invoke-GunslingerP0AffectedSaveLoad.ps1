@@ -2,7 +2,7 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$SourceCopyPath,
-    [string]$ExpectedVersion = '0.0.110',
+    [string]$ExpectedVersion = '0.0.111',
     [ValidateRange(120, 900)]
     [int]$TimeoutSeconds = 600,
     [switch]$AllowDirtyGit,
