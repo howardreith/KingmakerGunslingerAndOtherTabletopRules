@@ -1414,3 +1414,40 @@ score remains 88/100.
 Exact next action: commit and policy-publish the finished-slot eviction repair,
 rebuild its exact package, and execute all 54 replacement records. Candidate
 score remains 88/100.
+
+## 2026-08-31 - Eleventh motion run repeats the empty native-doll boundary
+
+- Published commit `4ef28f65577d09329536a905976b405cac4562ef`, package
+  `6f849b89c4ffba745585d268c1a1ff12c83074b2e5f80d13853e91e3c6c77a34`,
+  DLL `871a89190537624f150356e381b106cb162b70a215936c780913642096cb01c4`,
+  and MVID `10e8676b-e8d8-48f4-b4a1-210d0afe0d2f` ran through Steam 640820.
+- Evidence `20260831T1438053243232Z-gunslinger-outfit-production-motion`
+  failed before record one: male Human reached the settle timeout with no
+  DollData outfit and no hair (`doll=False;hair=False;noWeapon=True;active=.`).
+  No screenshot exists or is accepted. Exact guard/game/build, disposable
+  working save, no-save, immutable-blueprint, structural cleanup,
+  empty/disposed request-local scene, and automatic-exit contracts passed.
+- This is the second occurrence of the attempt-9 boundary, despite attempt 10
+  passing it. Per the retry contract, no unchanged-commit retry is allowed.
+- Installed IL confirms `DollData.CreateUnitView(false)` creates a char-gen
+  character and resolves/adds its equipment IDs before spawn. Entity spawn
+  then queues attachment, whose `OnDataAttached` obtains, starts, updates, and
+  rebuilds the view character. Existing evidence did not identify which side
+  of this boundary was empty.
+- The new diagnostic retains the original template character and records it
+  after creation, after spawn before the next entity tick, after attachment,
+  and at timeout. Each line captures resource-preloading state, Unity instance
+  identity, raw/active/saved entity counts, DollData expected-ID count, active
+  names, and template/attached reference equality. Fallback cleanup clears all
+  retained diagnostic references. Tests enforce lifecycle ordering.
+- Installed-reference compilation, repository validation, all `1369/1369`
+  tests, clean Release/package, strict firearm/audio/package validation, and
+  the settled 169-check preflight pass. The first preflight reported only the
+  expected stabilization sentinel. Pre-commit package SHA-256 is
+  `aa512f88878ef88d7486176080552f6ff3ac237f540a3f042d49d75842227112`,
+  DLL SHA-256 is
+  `0c97e7c7a7c450fa93fef6fcc42a523809302c9dc01934352ab06530cdc0583b`,
+  and MVID is `47392b4f-cbc0-450f-9b72-82b284e578c7`.
+
+Exact next action: commit and policy-publish the lifecycle diagnostic, rebuild
+its exact package, and run attempt 12. Candidate score remains 88/100.

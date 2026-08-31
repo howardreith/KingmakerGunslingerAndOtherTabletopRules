@@ -688,3 +688,37 @@ package/DLL SHA-256 values are
 MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`. This remains harness
 evidence; `magus-complete` remains 88/100 pending complete motion and
 persistence PASS gates.
+
+### Production motion attempt 11 diagnostic
+
+Published commit `4ef28f65577d09329536a905976b405cac4562ef`, package
+SHA-256
+`6f849b89c4ffba745585d268c1a1ff12c83074b2e5f80d13853e91e3c6c77a34`,
+DLL SHA-256
+`871a89190537624f150356e381b106cb162b70a215936c780913642096cb01c4`,
+and MVID `10e8676b-e8d8-48f4-b4a1-210d0afe0d2f` produced evidence
+`20260831T1438053243232Z-gunslinger-outfit-production-motion`. It failed
+before record one because the male Human native doll again had neither its
+DollData entities nor hair at the settle boundary. Guard, exact loaded build,
+working-save/no-save, immutable-blueprint, exact cleanup, request-local scene,
+and automatic-exit gates passed. No image exists or is scored.
+
+Because this repeats attempt 9's boundary, the next commit instruments rather
+than retries it. It records the native character before spawn, after spawn but
+before the entity tick, after data attachment, and at timeout. Resource
+preloading state, object identity, raw/active/saved entity counts, expected ID
+count, active names, and template/attached reference equality localize whether
+creation, ownership transfer, or attachment loses the outfit. Installed IL
+supports these exact boundaries: DollData resolves and adds entities during
+`CreateUnitView`, while the queued attachment later starts and rebuilds the
+view character.
+
+Compile, repository validation, all `1369/1369` tests, clean strict packaging,
+firearm/audio checks, and the stable 169-check preflight pass. The first
+preflight produced only the documented stabilization sentinel. Pre-commit
+package/DLL SHA-256 values are
+`aa512f88878ef88d7486176080552f6ff3ac237f540a3f042d49d75842227112` and
+`0c97e7c7a7c450fa93fef6fcc42a523809302c9dc01934352ab06530cdc0583b`;
+MVID is `47392b4f-cbc0-450f-9b72-82b284e578c7`. This remains harness
+evidence; `magus-complete` remains 88/100 pending complete motion and
+persistence PASS gates.

@@ -1079,3 +1079,53 @@ and MVID is `d983a009-2e6c-41aa-ba32-56b9c20487f9`. Candidate score remains
 
 Exact next action: commit and policy-publish the finished-slot eviction
 repair, rebuild its exact commit, and execute the complete 54-record matrix.
+
+## 2026-08-31 - Motion attempt 11 requires doll-attachment lifecycle evidence
+
+Published commit `4ef28f65577d09329536a905976b405cac4562ef` ran through
+Steam 640820 as package SHA-256
+`6f849b89c4ffba745585d268c1a1ff12c83074b2e5f80d13853e91e3c6c77a34`,
+DLL SHA-256
+`871a89190537624f150356e381b106cb162b70a215936c780913642096cb01c4`,
+and MVID `10e8676b-e8d8-48f4-b4a1-210d0afe0d2f`. Evidence
+`20260831T1438053243232Z-gunslinger-outfit-production-motion` failed closed
+before record one because the male Human native doll did not populate its
+DollData outfit or hair inside the bounded settle window
+(`doll=False;hair=False;noWeapon=True;active=.`). No image exists or is
+accepted. Guard, exact game and loaded-build identity, the disposable working
+save with no save writes, production-blueprint immutability, exact structural
+cleanup, empty/disposed request-local scene, and automatic exit all passed.
+
+This is the second occurrence of the same pre-action empty-doll boundary
+(attempts 9 and 11, with attempt 10 passing it), so an unchanged retry is not
+permitted. Installed IL shows that `DollData.CreateUnitView(false)` creates the
+native character and synchronously resolves and adds every equipment-entity
+ID before ownership transfer; `SpawnEntityWithView` queues attachment, and
+`UnitEntityView.OnDataAttached` later obtains and starts the view's
+`Character`, then updates and rebuilds its outfit. The prior evidence could
+not distinguish an empty template from state lost or replaced during that
+attachment transition.
+
+The replacement captures the native `Character` at four bounded points:
+immediately after `CreateUnitView`, after `SpawnEntityWithView` but before the
+next entity tick, after data attachment, and at a settle timeout. Each record
+includes `ResourcesLibrary.Preloading`, avatar instance identity,
+raw/active/saved entity counts, expected DollData ID count, active names, and
+whether the attached avatar is the original template. Cleanup clears every
+new reference even on fallback. Focused source tests require the four records
+in lifecycle order.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release/package construction, strict package/firearm/audio validation,
+and the settled 169-check preflight pass. The first preflight reported only
+the documented artifact-tree stabilization sentinel. Pre-commit local-runtime
+package SHA-256 is
+`aa512f88878ef88d7486176080552f6ff3ac237f540a3f042d49d75842227112`,
+DLL SHA-256 is
+`0c97e7c7a7c450fa93fef6fcc42a523809302c9dc01934352ab06530cdc0583b`,
+and MVID is `47392b4f-cbc0-450f-9b72-82b284e578c7`. Candidate score remains
+88/100.
+
+Exact next action: commit and policy-publish the lifecycle instrumentation,
+rebuild its exact commit, and execute attempt 12 to localize the first state
+transition that loses the native DollData entities.

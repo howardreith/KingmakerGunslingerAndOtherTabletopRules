@@ -154,6 +154,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private BlueprintUnit _actorBlueprint;
             private DollState _dollState;
             private DollData _dollData;
+            private Character _dollTemplateAvatar;
             private Character _avatar;
             private BlueprintCharacterClass _gunslingerClass;
             private EquipmentEntity[] _productionEntities =
@@ -183,6 +184,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private ItemEntity _cloakItem;
             private bool _firearmStateSet;
             private bool _fixtureInitialized;
+            private bool _dollAttachmentRecorded;
             private bool _productionApplied;
             private bool _previousStateCleared;
             private bool _expectHeldWeapon;
@@ -518,10 +520,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     dollView = _dollData.CreateUnitView(false);
-                    if (dollView == null ||
-                        dollView.GetComponent<Character>() == null)
+                    _dollTemplateAvatar = dollView == null ? null :
+                        dollView.GetComponent<Character>();
+                    if (dollView == null || _dollTemplateAvatar == null)
                         throw new InvalidOperationException(fixture.Label +
                             " DollData did not create a native Character view.");
+                    _dollAttachmentRecorded = false;
+                    if (IsProductionMotion)
+                        _diagnostics.Add(
+                            "productionMotionDollBeforeAttach=" +
+                            DescribeProductionDollLifecycle(
+                                _dollTemplateAvatar));
                     dollView.Blueprint = _actorBlueprint;
                     dollView.UniqueId = Guid.NewGuid().ToString();
                     dollView.transform.position = NearestNavigable(
@@ -537,6 +546,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !ReferenceEquals(_actor.View, dollView))
                         throw new InvalidOperationException(fixture.Label +
                             " DollData view ownership transfer failed.");
+                    if (IsProductionMotion)
+                        _diagnostics.Add(
+                            "productionMotionDollAfterSpawnBeforeTick=" +
+                            DescribeProductionDollLifecycle(
+                                _dollTemplateAvatar) + ";viewAvatar=" +
+                            DescribeProductionDollLifecycle(
+                                _actor.View.CharacterAvatar));
                     dollView = null;
                 }
                 finally
@@ -610,6 +626,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " did not materialize a complete native view.");
                 }
 
+                if (IsProductionMotion && !_dollAttachmentRecorded)
+                {
+                    _avatar = _actor.View.CharacterAvatar;
+                    _diagnostics.Add("productionMotionDollAfterAttach=" +
+                        DescribeProductionDollLifecycle(_avatar) +
+                        ";templateSame=" + ReferenceEquals(
+                            _dollTemplateAvatar, _avatar));
+                    _dollAttachmentRecorded = true;
+                }
+
                 if (!_fixtureInitialized)
                 {
                     _actor.Descriptor.State.Immortality.Retain();
@@ -664,6 +690,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !nativeReady)
                     {
                         if (_settleUpdates < MaximumSettleUpdates) return;
+                        if (IsProductionMotion)
+                            _diagnostics.Add(
+                                "productionMotionDollAtSettleTimeout=" +
+                                DescribeProductionDollLifecycle(_avatar) +
+                                ";templateSame=" + ReferenceEquals(
+                                    _dollTemplateAvatar, _avatar));
                         throw new InvalidOperationException(fixture.Label +
                             " native doll did not settle exactly before " +
                             "production application; doll=" +
@@ -769,6 +801,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.Add(entity);
                 }
                 return result.Distinct().ToArray();
+            }
+
+            private string DescribeProductionDollLifecycle(Character avatar)
+            {
+                EquipmentEntity[] active = avatar == null ||
+                        avatar.EquipmentEntities == null
+                    ? new EquipmentEntity[0]
+                    : avatar.EquipmentEntities.Where(value => value != null)
+                        .ToArray();
+                int rawCount = avatar == null ||
+                        avatar.EquipmentEntities == null
+                    ? -1 : avatar.EquipmentEntities.Count;
+                int savedCount = avatar == null ||
+                        avatar.SavedEquipmentEntities == null
+                    ? -1 : avatar.SavedEquipmentEntities.Count;
+                int expectedCount = _dollData == null ||
+                        _dollData.EquipmentEntityIds == null
+                    ? -1 : _dollData.EquipmentEntityIds.Count;
+                return "preloading=" + ResourcesLibrary.Preloading +
+                    ";avatar=" + (avatar == null ? "<null>" :
+                        avatar.GetInstanceID().ToString()) +
+                    ";rawCount=" + rawCount +
+                    ";activeCount=" + active.Length +
+                    ";savedCount=" + savedCount +
+                    ";expectedIdCount=" + expectedCount +
+                    ";active=" + string.Join("|", active.Select(value =>
+                        value.name ?? "<unnamed>").ToArray());
             }
 
             private static int ClearProductionBodyEquipment(
@@ -1605,6 +1664,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actorBlueprint = null;
                     _dollState = null;
                     _dollData = null;
+                    _dollTemplateAvatar = null;
                     _avatar = null;
                     _productionEntities = new EquipmentEntity[0];
                     _dollEntities = new EquipmentEntity[0];
@@ -1617,6 +1677,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _baseSavedLinks = new string[0];
                     _hairAssetId = string.Empty;
                     _fixtureInitialized = false;
+                    _dollAttachmentRecorded = false;
                     _productionApplied = false;
                 }
             }
@@ -1773,7 +1834,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     _actor = null;
                     _actorBlueprint = null;
+                    _dollTemplateAvatar = null;
                     _avatar = null;
+                    _dollAttachmentRecorded = false;
                     if (IsProductionMotion)
                     {
                         try

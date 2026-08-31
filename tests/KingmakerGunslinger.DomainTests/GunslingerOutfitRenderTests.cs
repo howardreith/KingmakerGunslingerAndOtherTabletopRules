@@ -522,6 +522,13 @@ namespace KingmakerGunslinger.DomainTests
                 "PrepareProductionMotionActorBlueprint(_actorBlueprint)",
                 "SceneEntitiesState holdingState = IsProductionMotion",
                 "ProductionMotionHoldingState()",
+                "productionMotionDollBeforeAttach",
+                "productionMotionDollAfterSpawnBeforeTick",
+                "productionMotionDollAfterAttach",
+                "productionMotionDollAtSettleTimeout",
+                "DescribeProductionDollLifecycle",
+                "ResourcesLibrary.Preloading",
+                "_dollTemplateAvatar, _avatar",
                 "PrepareProductionMotionCleanup()",
                 "RetireProductionMotionFactions()",
                 "RestoreProductionMotionInventory()",
@@ -530,6 +537,23 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(shared.Contains(token),
                     "Shared production fixture lacks motion hook token: " +
                     token);
+            int dollBeforeAttach = shared.IndexOf(
+                "productionMotionDollBeforeAttach",
+                StringComparison.Ordinal);
+            int dollAfterSpawn = shared.IndexOf(
+                "productionMotionDollAfterSpawnBeforeTick",
+                StringComparison.Ordinal);
+            int dollAfterAttach = shared.IndexOf(
+                "productionMotionDollAfterAttach",
+                StringComparison.Ordinal);
+            int dollSettleTimeout = shared.IndexOf(
+                "productionMotionDollAtSettleTimeout",
+                StringComparison.Ordinal);
+            Assertions.True(dollBeforeAttach >= 0 &&
+                    dollAfterSpawn > dollBeforeAttach &&
+                    dollAfterAttach > dollAfterSpawn &&
+                    dollSettleTimeout > dollAfterAttach,
+                "Production motion must record bounded native DollData state before spawn, after spawn, after attachment, and at settle timeout.");
             foreach (string forbidden in new[]
             {
                 "SaveGame", "QuickSave", "ScreenCapture", "Input.",
