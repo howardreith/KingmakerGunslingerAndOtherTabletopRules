@@ -562,6 +562,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _actor.View.MovementAgent.GetType().FullName },
                     { "animationManagerType",
                         _actor.View.AnimationManager.GetType().FullName },
+                    { "locomotionActionPresent",
+                        MotionAnimationActionPresent(
+                            UnitAnimationType.LocoMotion) },
                     { "locomotionClipCount", MotionAnimationClipCount(
                         UnitAnimationType.LocoMotion) },
                     { "mainHandAttackClipCount", MotionAnimationClipCount(
@@ -654,6 +657,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor.View.AnimationManager.GetAction(type);
                 return action == null ? 0 : action.Clips.Count(value =>
                     value != null);
+            }
+
+            private bool MotionAnimationActionPresent(
+                UnitAnimationType type)
+            {
+                return _actor != null && _actor.View != null &&
+                    _actor.View.AnimationManager != null &&
+                    _actor.View.AnimationManager.GetAction(type) != null;
             }
 
             private void PrepareProductionMotionAction()
@@ -2950,9 +2961,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !(bool)value[
                                 "actorInControllableCharacters"] &&
                             (bool)value["playerCharacterListsExact"] &&
-                            (int)value["locomotionClipCount"] > 0 &&
+                            (bool)value["locomotionActionPresent"] &&
                             (int)value["mainHandAttackClipCount"] > 0),
-                    "production class DollState/CreateData/CreateUnitView plus live rig contracts");
+                    "production class DollState/CreateData/CreateUnitView plus live rig and animation-action contracts");
                 Add(_assertions,
                     "gunslinger-outfit-production-motion-captures",
                     "54 exact sidecars/PNGs and 216 labelled views",

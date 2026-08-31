@@ -780,3 +780,43 @@ values are
 `379f0bc2a1612065b3ae53539b391f11ac20161be18b4a0dfb0f47bba8803a89`;
 MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`. `magus-complete` remains
 88/100 pending complete motion and persistence PASS gates.
+
+### Production motion attempt 14 diagnostic
+
+Published commit `4447ebd679aaf55058958a52b69ba9ac4b00effb`, package
+SHA-256
+`028fd526db9656a4952d3343e0f08453343ff6a5614d53acad475f0e23eff833`,
+DLL SHA-256
+`348b19e22d598cb5a818ff7847a6e7a896966ab2380bad710318ab85c90585c2`,
+and MVID `2cedc19a-8bac-4655-b0ed-03e02e98b3a4` produced evidence
+`20260831T1608345329020Z-gunslinger-outfit-production-motion`. It completed
+54/54 records and 216/216 views. All native movement, turn, attack, reload,
+restoration, combat-boundary, immutable-blueprint, cleanup, save, and build
+assertions passed. Both exact production dolls crossed the resource gate with
+preloading false and remained complete.
+
+Only the aggregate fixture assertion failed: it treated the native
+locomotion action's empty generic `Clips` list as missing locomotion. Actual
+walk/run commands were accepted and produced live velocity, displacement,
+distinct speeds, and visibly distinct poses. Existing exact-game test code
+correctly accepts the non-null locomotion action independently of clip-list
+population. The replacement makes action presence the fixture requirement
+while retaining the stronger live movement outcomes.
+
+All 54 PNG and sidecar pairs reconciled by hash, byte length, and record
+identity. Index SHA-256 is
+`278cce94824eaae17a5886071221aa54eb541108900030346f086b661ad2fc66`;
+the canonical PNG-set digest is
+`043f3dd3d8cd2bbba09dc035067dd0e110b19ac6fab41c67ab1a4ef8813605cd`.
+Direct inspection of every sheet found no missing or clipped outfit geometry
+in any male/female idle, locomotion, firearm, reload, or melee pose. The batch
+is not scored because its terminal status is `FAIL`.
+
+Compile, all `1369/1369` tests, clean strict packaging, firearm/audio checks,
+and the settled 169-check preflight pass for the narrow repair; the first
+preflight emitted only its documented stabilization sentinel. Pre-commit
+package/DLL SHA-256 values are
+`3c6cc236fc0e84b1da02616bcafe15eb82c427c6b8ea7e1f4ffc1ddbea285b49` and
+`5d46a1faeb471014841af5732244ad64e22b3c15ae935fc28fb950119a68c2f1`;
+MVID is `6b1c2eb8-6a9a-41d2-b15e-de3d1df503ef`. `magus-complete` remains
+88/100 pending a replacement terminal motion PASS and persistence PASS.

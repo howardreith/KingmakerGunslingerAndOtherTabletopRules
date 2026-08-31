@@ -1228,3 +1228,60 @@ and MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`. Candidate score remains
 
 Exact next action: commit and policy-publish the pre-creation resource gate,
 rebuild its exact commit, and execute attempt 14.
+
+## 2026-08-31 - Motion attempt 14 completes the matrix and exposes a stale predicate
+
+Published resource-gate commit
+`4447ebd679aaf55058958a52b69ba9ac4b00effb` ran through Steam 640820 as
+package SHA-256
+`028fd526db9656a4952d3343e0f08453343ff6a5614d53acad475f0e23eff833`,
+DLL SHA-256
+`348b19e22d598cb5a818ff7847a6e7a896966ab2380bad710318ab85c90585c2`,
+and MVID `2cedc19a-8bac-4655-b0ed-03e02e98b3a4`. Evidence
+`20260831T1608345329020Z-gunslinger-outfit-production-motion` completed both
+fixtures and all 54 records/216 labelled views. Native locomotion, turn, six
+attacks, two production reloads, restoration, combat reconciliation,
+blueprint immutability, request-local cleanup, no-save, and automatic exit all
+passed. Both creation gates reported `passed=true`, preloading false at the
+creation line, and zero wait updates.
+
+The terminal result remained `FAIL` only because the fixture aggregate
+required `GetAction(LocoMotion).Clips.Count > 0`. Both exact male and female
+runtime managers expose locomotion through the native action surface without
+populating that generic clip list; the live `UnitMoveTo` outcomes nonetheless
+proved accepted paths, velocity, displacement, and distinct walk/run speeds,
+and the captured frames showed the poses. Existing repository exact-game code
+already treats action presence, not a positive clip-list count, as the
+locomotion surface contract. This is a stale harness predicate, not an outfit
+or animation failure.
+
+Independent reconciliation matched every index and sidecar hash, byte count,
+fixture/action/state identity, and meaningful-pixel count: 54 unique PNGs, 54
+sidecars, 27 records per gender, and 216 views. Index SHA-256 is
+`278cce94824eaae17a5886071221aa54eb541108900030346f086b661ad2fc66`;
+the filename-sorted `name:sha256` PNG-set digest is
+`043f3dd3d8cd2bbba09dc035067dd0e110b19ac6fab41c67ab1a4ef8813605cd`.
+All 54 four-view sheets were directly inspected outside the repository. The
+selected outfit remained complete and coherent through every pose; there was
+no missing geometry, outfit/body clipping, detached accent, or weapon-induced
+garment break. A native live-combat outline appears in some frames but does
+not alter or obscure the kitbash. Because the scenario status is not terminal
+PASS, this review is recorded but the batch is not yet accepted as qualifying
+motion evidence and the score remains 88/100.
+
+The narrow repair records and requires `locomotionActionPresent`, retains
+`locomotionClipCount` as informational evidence, and leaves all live movement
+outcome predicates intact. Installed-reference compilation, repository
+validation, all `1369/1369` tests, clean Release/package construction, strict
+package/firearm/audio validation, and the settled 169-check preflight pass.
+The first preflight reported only the documented artifact-tree stabilization
+sentinel. Pre-commit package SHA-256 is
+`3c6cc236fc0e84b1da02616bcafe15eb82c427c6b8ea7e1f4ffc1ddbea285b49`,
+DLL SHA-256 is
+`5d46a1faeb471014841af5732244ad64e22b3c15ae935fc28fb950119a68c2f1`,
+and MVID is `6b1c2eb8-6a9a-41d2-b15e-de3d1df503ef`.
+
+Exact next action: commit and policy-publish the corrected action-surface
+contract, rebuild that exact commit, and execute attempt 15. Accept motion
+only after its terminal PASS and a fresh reconciliation of the replacement
+batch.

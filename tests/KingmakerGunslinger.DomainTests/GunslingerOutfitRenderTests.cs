@@ -392,6 +392,8 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitMoveTo", "Pathfinding.ForcedPath",
                 "MaxSpeedOverride", "WalkSpeedType.Slow",
                 "WalkSpeedType.Normal", "ForceLookAt",
+                "locomotionActionPresent",
+                "MotionAnimationActionPresent",
                 "UnitAttack.CreateAttackCommand", "IsSingleAttack = true",
                 "_motionAttackCommand.Init(_actor)",
                 "attackReadinessProbeDetached",
@@ -479,6 +481,11 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Production motion lacks exact evidence token: " +
                     token);
+            Assertions.True(source.Contains(
+                    @"(bool)value[""locomotionActionPresent""]") &&
+                !source.Contains(
+                    @"(int)value[""locomotionClipCount""] > 0"),
+                "Production motion must require the native locomotion action and leave its zero-clip implementation detail informational; live movement outcomes prove locomotion behavior.");
             int turnBasedTick = source.IndexOf(
                 "_motionTurnBasedController.Tick()",
                 StringComparison.Ordinal);

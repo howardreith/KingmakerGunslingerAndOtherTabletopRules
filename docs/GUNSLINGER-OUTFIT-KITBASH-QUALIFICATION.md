@@ -1342,3 +1342,59 @@ DLL SHA-256 is
 and MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`. Motion remains `PENDING`
 until the exact-commit replacement reaches terminal PASS and all 54 PNGs are
 reconciled and directly reviewed.
+
+## 2026-08-31 production motion attempt 14
+
+Published source commit:
+`4447ebd679aaf55058958a52b69ba9ac4b00effb`.
+Commit-bound package SHA-256:
+`028fd526db9656a4952d3343e0f08453343ff6a5614d53acad475f0e23eff833`.
+Loaded DLL SHA-256:
+`348b19e22d598cb5a818ff7847a6e7a896966ab2380bad710318ab85c90585c2`.
+MVID: `2cedc19a-8bac-4655-b0ed-03e02e98b3a4`.
+Evidence directory:
+`20260831T1608345329020Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` after 54/54 records and 216/216 views.
+
+All assertions except the aggregate fixture assertion passed. That includes
+exact guard/game/build/save identity, no save call, both resource-ready exact
+production dolls, native walk/run with distinct measured speeds, turn, all
+six native attacks, both production reloads, exact restoration, combat-state
+reconciliation, blueprint immutability, request-local cleanup, and automatic
+exit. Both dolls were created while preloading was false.
+
+The fixture failure was exclusively `locomotionClipCount=0` on both genders.
+The successful live movement outcomes and frames prove that positive generic
+clip-list population is not the engine's locomotion contract. Existing
+exact-game repository code accepts a non-null `LocoMotion` action plus the
+movement agent. The pending repair requires that exact action surface and
+retains the zero count as diagnostic information; it does not remove any live
+movement assertion.
+
+Independent reconciliation result: `PASS`; 54 unique indexed PNGs, 54
+sidecars, 27 records per gender, 216 views, and exact hash/byte/identity/
+meaningful-pixel agreement. Index SHA-256:
+`278cce94824eaae17a5886071221aa54eb541108900030346f086b661ad2fc66`.
+Canonical filename-sorted PNG-set digest:
+`043f3dd3d8cd2bbba09dc035067dd0e110b19ac6fab41c67ab1a4ef8813605cd`.
+Every one of the 54 four-view sheets was directly inspected. No selected
+outfit part disappeared or clipped through the body or another outfit part in
+idle, walk, run, turn, pistol, musket, reload, or shortsword motion. Some live
+combat frames contain a native outline; the outfit remains legible and
+unchanged. This visual result is not promoted to qualification because the
+batch's terminal status is `FAIL`.
+
+Repair qualification: repository validation and installed-reference compile
+pass; complete domain suite `1369/1369`; clean Release/package, firearm/audio,
+and strict standalone-package validation pass; stabilized runtime preflight
+`169/169`. Its first pass emitted only the documented
+`unsupported-does-not-build-or-stage-package` stabilization sentinel.
+Pre-commit package SHA-256:
+`3c6cc236fc0e84b1da02616bcafe15eb82c427c6b8ea7e1f4ffc1ddbea285b49`.
+DLL SHA-256:
+`5d46a1faeb471014841af5732244ad64e22b3c15ae935fc28fb950119a68c2f1`.
+MVID: `6b1c2eb8-6a9a-41d2-b15e-de3d1df503ef`.
+
+Motion remains `PENDING` until the published repair's exact-commit attempt 15
+reaches terminal PASS and its replacement 54-image batch is reconciled and
+directly reviewed.
