@@ -1575,3 +1575,48 @@ commit, and run attempt 14. Candidate score remains 88/100.
 Exact next action: commit and policy-publish this contract repair, rebuild its
 exact commit, and run attempt 15. Candidate score remains 88/100 pending
 terminal motion and persistence PASS.
+
+## 2026-08-31 - Motion attempt 15 terminal PASS and direct acceptance
+
+- Published source commit:
+  `c22b103b4080b7ac88b1893d7940e1f1fda5ec71`.
+- Commit-bound package SHA-256:
+  `0358326d581583563fcf83dab9b38c7a58d36447a387a1bd93737a035a8c61c3`.
+- Loaded DLL SHA-256:
+  `4f04f64d1f7fdc96d70a7b355fb57bef28f0d8a6679cf8b0f98e4b3910d88c94`;
+  MVID: `8fc3629c-9fb3-41f6-961a-6b35e46d442b`.
+- Evidence: `20260831T1635361787487Z-gunslinger-outfit-production-motion`.
+- Terminal result: `PASS`; 14/14 assertions, 54 records, 54 PNGs, 54
+  sidecars, 216 views, and 109 scenario evidence files.
+- Both production fixtures had gate true, preloading false, exact outfit/rig,
+  locomotion action present, 39 attack clips, clone brain disabled, exact
+  player lists, and request-local scene ownership. Zero generic locomotion
+  clips is retained as truthful informational evidence.
+- Four movement outcomes accepted native paths and produced velocity and
+  displacement with distinct walk/run speeds; both turns were 90 degrees.
+  Six attacks started/running/animated/acted and retired cleanly with null
+  `AiAction`; pistol/musket discharged four times total with zero faults.
+  Both update-240 reloads consumed one powder/ball and loaded one round with
+  `Success`; both shortsword attacks acted. All restoration, combat,
+  blueprint, no-save, cleanup, and exit gates passed.
+- Independent reconciliation matched every PNG/sidecar hash, byte length,
+  identity, and meaningful-pixel count. Index SHA-256:
+  `0e3ae7eb6cd73642c7c77dc127ce55eb756356ad62aae111a86f956bf1bf01df`;
+  runtime-result SHA-256:
+  `cac0f8b73031d19f6f9c2dd2879612ad796bf021f1ad5bf0dbd0bac7411435d0`;
+  runtime-evidence SHA-256:
+  `cecb82b3ab2d946ab8340dfac359bcee9a0557e02b22a258810f9ce851b287ac`;
+  canonical PNG-set digest:
+  `9d3e90e23dceebd164f96452009b7b154b0c8eb58331dc0bb8a2d52bc8bd7975`.
+- I directly inspected all 54 replacement four-view sheets in six temporary
+  boards outside the repository. Male/female outfit geometry remained intact
+  through every action, with no missing part, body/outfit clipping, detached
+  accent, or pose-specific silhouette failure. The native hostile-action
+  outline in some female frames does not change or hide the kitbash.
+- Motion/fire/reload/melee is accepted. Score stays 88/100 because the last
+  five compatibility points are an indivisible motion-plus-persistence block
+  and persistence is still open.
+
+Exact next action: implement and qualify the mission's guarded persisted-
+outfit and respec-like reconstruction matrix, then repeat final package and
+working-save checks.

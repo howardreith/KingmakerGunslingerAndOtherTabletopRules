@@ -1285,3 +1285,57 @@ Exact next action: commit and policy-publish the corrected action-surface
 contract, rebuild that exact commit, and execute attempt 15. Accept motion
 only after its terminal PASS and a fresh reconciliation of the replacement
 batch.
+
+## 2026-08-31 - Motion attempt 15 accepted
+
+Published repair commit `c22b103b4080b7ac88b1893d7940e1f1fda5ec71`
+ran through Steam 640820 as package SHA-256
+`0358326d581583563fcf83dab9b38c7a58d36447a387a1bd93737a035a8c61c3`,
+DLL SHA-256
+`4f04f64d1f7fdc96d70a7b355fb57bef28f0d8a6679cf8b0f98e4b3910d88c94`,
+and MVID `8fc3629c-9fb3-41f6-961a-6b35e46d442b`. Evidence
+`20260831T1635361787487Z-gunslinger-outfit-production-motion` reached terminal
+`PASS`; every assertion passed with 54 records, 216 labelled views, and 109
+scenario evidence files.
+
+Both exact Human fixtures proved their pre-creation resource gate, production
+outfit, humanoid rig, non-null locomotion action, 39 main-hand attack clips,
+disabled disposable brain, request-local scene ownership, and exact player
+lists. The generic locomotion clip count remained zero as expected. Male
+walk/run maxima were 1.2191999/3.047531 with 0.764907241/0.781484246 metres of
+displacement; female maxima were 1.62559927/2.8448 with
+0.8196764/0.856158555 metres. Both turns reached exactly 90 degrees. All six
+native attacks started, ran, animated, acted, retired, and evicted their
+command slots with no `AiAction`; each firearm attack discharged exactly once
+with zero faults. Both update-240 production reloads ran their execution
+process to completion, consumed exactly one powder and ball, loaded one round,
+and returned `Success` with zero faults. Avatar/movement/ammunition restoration,
+combat reconciliation, blueprint immutability, request-local disposal,
+working-save identity, no-save, and automatic exit all passed.
+
+Independent reconciliation matched every PNG and sidecar to its index hash,
+byte count, fixture/action/state identity, and positive meaningful-pixel
+count. Counts are 54 unique PNGs, 54 sidecars, 27 records per gender, and 216
+views. Index SHA-256 is
+`0e3ae7eb6cd73642c7c77dc127ce55eb756356ad62aae111a86f956bf1bf01df`;
+runtime-result SHA-256 is
+`cac0f8b73031d19f6f9c2dd2879612ad796bf021f1ad5bf0dbd0bac7411435d0`;
+runtime-evidence SHA-256 is
+`cecb82b3ab2d946ab8340dfac359bcee9a0557e02b22a258810f9ce851b287ac`;
+and the filename-sorted PNG-set digest is
+`9d3e90e23dceebd164f96452009b7b154b0c8eb58331dc0bb8a2d52bc8bd7975`.
+
+All 54 replacement four-view sheets were directly inspected. Male and female
+base/accessory geometry remained complete and coherent through unarmed idle,
+musket walk/run/turn, pistol and musket native attacks, production reload,
+and shortsword melee. There was no body/outfit clipping, missing part,
+detached accent, or pose-specific silhouette failure. A native combat outline
+appears in some female hostile-action frames but neither changes nor obscures
+the outfit. Motion/fire/reload/melee qualification is accepted.
+
+The score remains the conservative 88/100 because the final five
+compatibility points were defined as an indivisible motion-plus-persistence
+block; motion has passed, but persisted outfit reconstruction and the required
+respec-like path remain open. Exact next action: build the guarded persistence
+qualification against the mission's save/load and rebuild boundaries, then
+run and directly inspect its complete evidence matrix.

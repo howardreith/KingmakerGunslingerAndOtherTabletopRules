@@ -4,8 +4,8 @@ Status: `magus-complete` is bound through a focused production appearance
 policy after accepted Human weapon-state rendering and an accepted guarded
 18-cell race/gender matrix. The published production commit, clean commit-bound
 package, canonical guarded working-save load, and complete static production
-equipment/rebuild matrix pass. Motion/animation and outfit-persistence gates
-remain open; this is not final mission qualification.
+equipment/rebuild matrix pass. Motion/animation now passes; the outfit-
+persistence gate remains open, so this is not final mission qualification.
 
 ## Scoring contract
 
@@ -37,7 +37,7 @@ exist.
 
 | Stream | Base hypothesis | Accent hypothesis | API inventory | Rendered M/F | Race grid | Weapon states | Equipment override | Current score | Disposition |
 |---|---|---|---|---|---|---|---|---:|---|
-| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 races x 2 genders directly accepted | No weapon/pistol/musket/blunderbuss pass | Accepted 16-state M/F production matrix | 88 | Advance coherent Magus pair |
+| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 races x 2 genders directly accepted | Static firearms plus accepted idle/walk/run/turn/fire/reload/melee | Accepted 16-state M/F production matrix | 88 | Advance coherent Magus pair |
 | B | Ranger or Slayer practical leather | Native class accessory set | Loaded exact M/F links; cap/cape separable | Ranger and Slayer pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | 70 (Slayer) | Retain Slayer as reserve |
 | C | Bard coat/waistcoat hypothesis | Native Bard accessory set | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant traveler pack/commoner identity |
 | D | Alchemist or other strong single class outfit | Native same-class accessories | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant Alchemist tank/apron identity |
@@ -80,7 +80,7 @@ same scored order after direct inspection of all 96 new images.
 
 | Rank | Candidate-set ID | Exact assets | M/F identity | Coverage | Compatibility | Colors | Score | Evidence | Decision |
 |---:|---|---|---|---|---|---|---:|---|---|
-| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F weapon/equipment cases plus accepted 9x2 no-weapon grid | Static weapon, armor, headgear/hair, cloak, backpack, and rebuild states accepted; motion and persistence pending | 35x35 valid ramps; native 2/22 and alternate accepted across 9x2 | 88 (26/23/15/15/9) | Preview-like four-view and ordinary isometric; all 72 race-grid and 64 production-matrix PNGs directly inspected | Approved for focused production integration |
+| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F weapon/equipment cases plus accepted 9x2 no-weapon grid | Static weapon/equipment/rebuild and complete native motion matrix accepted; persistence pending | 35x35 valid ramps; native 2/22 and alternate accepted across 9x2 | 88 (26/23/15/15/9) | Preview-like/isometric race and equipment matrices plus 54 directly accepted motion sheets | Approved for focused production integration |
 | 2 | `rogue-capless-capeless` | 2 M / 2 F below | Clean fitted dark coat/tunic, diagonal straps, restrained burgundy; less distinctive | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 35x35 base ramps; native 31/22 and alternate rendered | 75 (23/20/16/8/8) | Same guarded matrix | Runner-up if Magus fails |
 | 3 | `slayer-capless` | 3 M / 3 F below | Long layered garment and asymmetric shoulder; heavier and more armored than desired | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 37x37 ramps; native 35/36 and alternate rendered | 70 (21/17/15/8/9) | Same guarded matrix | Reserve; below production threshold |
 
@@ -820,3 +820,37 @@ package/DLL SHA-256 values are
 `5d46a1faeb471014841af5732244ad64e22b3c15ae935fc28fb950119a68c2f1`;
 MVID is `6b1c2eb8-6a9a-41d2-b15e-de3d1df503ef`. `magus-complete` remains
 88/100 pending a replacement terminal motion PASS and persistence PASS.
+
+### Production motion attempt 15 accepted
+
+Published commit `c22b103b4080b7ac88b1893d7940e1f1fda5ec71`, package
+SHA-256
+`0358326d581583563fcf83dab9b38c7a58d36447a387a1bd93737a035a8c61c3`,
+DLL SHA-256
+`4f04f64d1f7fdc96d70a7b355fb57bef28f0d8a6679cf8b0f98e4b3910d88c94`,
+and MVID `8fc3629c-9fb3-41f6-961a-6b35e46d442b` produced terminal-PASS evidence
+`20260831T1635361787487Z-gunslinger-outfit-production-motion`.
+
+The run accepted both exact production fixtures and all 54 records/216 views.
+It proved live walk/run velocity and displacement with distinct speeds, two
+90-degree turns, six harness-owned native attacks with acted frames, four
+exact firearm discharges and zero faults, two complete production reloads,
+and shortsword melee. Resource readiness, outfit/rig identity, command
+retirement, avatar/movement/inventory restoration, combat reconciliation,
+blueprint immutability, request-local cleanup, working-save/no-save, and exit
+all passed.
+
+Independent reconciliation passed for all 54 PNG/sidecar pairs. Index
+SHA-256 is
+`0e3ae7eb6cd73642c7c77dc127ce55eb756356ad62aae111a86f956bf1bf01df`;
+canonical PNG-set digest is
+`9d3e90e23dceebd164f96452009b7b154b0c8eb58331dc0bb8a2d52bc8bd7975`.
+All 54 four-view sheets were directly inspected and accepted: no outfit part
+was missing, detached, or clipped through the body or another outfit part in
+any male/female action frame. The native combat outline in some hostile
+frames is not kitbash geometry.
+
+Motion qualification now passes. `magus-complete` remains 88/100 only because
+the scoring contract withholds the final five compatibility points as one
+motion-plus-persistence block; no partial increment is invented before the
+persistence and respec-like reconstruction gate passes.

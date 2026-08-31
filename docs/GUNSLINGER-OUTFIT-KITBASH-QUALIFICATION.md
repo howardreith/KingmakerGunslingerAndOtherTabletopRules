@@ -17,11 +17,11 @@ claim.
 | Installed API contracts | Pass (audit stage) | Exact installed 2.1.7b assembly identity and public/reflected member findings recorded |
 | Native class/resource catalog | Pass | Guarded run `20260830T2012181937219Z`, candidate set `dd81603f...03357` |
 | Serious candidate renders | Pass (Human stage) | Accepted outer/in-game PASS for 48 cases/96 directly inspected images |
-| Best-three scoring | Pass (selection stage) | Magus 88 after accepted coverage/static equipment, Rogue 75, Slayer 70; motion/persistence points remain withheld |
+| Best-three scoring | Pass (selection stage) | Magus 88 after accepted coverage/static equipment/motion, Rogue 75, Slayer 70; bundled persistence points remain withheld |
 | Race/gender coverage | Pass (selection stage) | Accepted guarded 9-race x 2-gender matrix and direct review of all 72 PNGs |
 | Color ramps | Pass (systematic sample) | Native 2/22 and one valid alternate applied to both entities in every 9x2 cell |
 | Body/material integrity | Pass (no-weapon selection stage) | All 72 race/gender/palette preview/isometric PNGs directly accepted; equipment/motion gates remain separate |
-| Animation/weapon fit | Partial | Static pistol/musket/blunderbuss fit passes; idle/walk/run/turn/fire/reload/melee evidence pending |
+| Animation/weapon fit | Pass | Terminal-PASS attempt 15 plus reconciliation and direct review of all 54 male/female idle/walk/run/turn/fire/reload/melee sheets |
 | Equipment overrides | Pass | Guarded 32-state/64-image light/heavy armor, headgear/hair, cloak, backpack, inactive-weapon and removal matrix |
 | Preview/gameplay paths | Pass (selection stage) | Four-view preview-like and ordinary isometric evidence across the complete 9x2 grid |
 | Save/load/rebuild | Partial | Commit-bound working save load and request-local repeated rebuilds pass; persisted outfit and respec-like reconstruction pending |
@@ -1398,3 +1398,56 @@ MVID: `6b1c2eb8-6a9a-41d2-b15e-de3d1df503ef`.
 Motion remains `PENDING` until the published repair's exact-commit attempt 15
 reaches terminal PASS and its replacement 54-image batch is reconciled and
 directly reviewed.
+
+## 2026-08-31 production motion attempt 15 - accepted
+
+Published source commit:
+`c22b103b4080b7ac88b1893d7940e1f1fda5ec71`.
+Commit-bound package SHA-256:
+`0358326d581583563fcf83dab9b38c7a58d36447a387a1bd93737a035a8c61c3`.
+Loaded DLL SHA-256:
+`4f04f64d1f7fdc96d70a7b355fb57bef28f0d8a6679cf8b0f98e4b3910d88c94`.
+MVID: `8fc3629c-9fb3-41f6-961a-6b35e46d442b`.
+Evidence directory:
+`20260831T1635361787487Z-gunslinger-outfit-production-motion`.
+Terminal status: `PASS` with every assertion passing, 54/54 records, 54/54
+PNGs, 54/54 sidecars, and 216/216 views.
+
+Both exact production fixtures report resource gate true, preloading false,
+outfit exact, humanoid rig exact, locomotion action present, 39 main-hand
+attack clips, disposable brain disabled, request-local scene ownership, and
+exact player lists. The generic locomotion clip list remains empty but is now
+correctly informational. Four native movement outcomes accepted their paths,
+produced live velocity and displacement, and separated walk from run. Both
+turns reached 90 degrees. All six native attacks started, ran, animated,
+acted, retired, and evicted their command slot with no `AiAction`. Four
+firearm attacks each discharged once with zero faults. Both production
+reloads completed through update 240, consumed exactly one powder and ball,
+loaded one round, and returned `Success`. Restoration, combat reconciliation,
+blueprint immutability, request-local cleanup, working-save/no-save, and exit
+all passed.
+
+Reconciliation: `PASS`. Every index/sidecar/PNG hash, byte length,
+fixture/action/state identity, and meaningful-pixel count agrees. Counts are
+54 unique PNGs, 54 sidecars, 27 records per gender, and 216 views. Index
+SHA-256:
+`0e3ae7eb6cd73642c7c77dc127ce55eb756356ad62aae111a86f956bf1bf01df`.
+Runtime-result SHA-256:
+`cac0f8b73031d19f6f9c2dd2879612ad796bf021f1ad5bf0dbd0bac7411435d0`.
+Runtime-evidence SHA-256:
+`cecb82b3ab2d946ab8340dfac359bcee9a0557e02b22a258810f9ce851b287ac`.
+Canonical PNG-set digest:
+`9d3e90e23dceebd164f96452009b7b154b0c8eb58331dc0bb8a2d52bc8bd7975`.
+
+Direct review: `PASS`. Every replacement four-view sheet was inspected. Male
+and female outfit geometry stays complete and coherent across unarmed idle,
+musket walk/run/turn, pistol and musket attacks, production reload, and
+shortsword melee. There is no missing part, detached accent, body/outfit
+clipping, or pose-specific silhouette failure. The native combat outline in
+some hostile-action frames does not alter or obscure the outfit.
+
+Animation/weapon fit is accepted. Overall status remains not qualified because
+persisted outfit reconstruction and the required respec-like reconstruction
+path remain open. The final five compatibility points remain withheld as the
+predeclared indivisible motion-plus-persistence block; current score stays
+88/100 until persistence passes.
