@@ -182,6 +182,106 @@ namespace KingmakerGunslinger.DomainTests
             FinalistRaceMatrixIsExactAndReversible();
         }
 
+        internal static void ProductionCompatibilityIsGuardedAndExact()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionCompatibilityScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            const string scenario =
+                "gunslinger-outfit-production-compatibility";
+            Assertions.True(catalog.Contains(
+                    "GunslingerOutfitProductionCompatibility") &&
+                catalog.Contains(scenario) &&
+                runner.Contains(
+                    "BeginProductionCompatibility(") &&
+                runner.Contains(
+                    "_gunslingerOutfitProductionCompatibility.Poll()") &&
+                WorkingSavePredicate(request).Contains(
+                    "GunslingerOutfitProductionCompatibility") &&
+                automation.Contains("'" + scenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains(
+                    scenario + "-only-permits-working-save") &&
+                project.Contains(@"RuntimeTesting\GunslingerOutfitProductionCompatibilityScenario.cs"),
+                "Production outfit compatibility is not wired through every guarded working-save surface.");
+            string metadata = automation.Substring(
+                automation.IndexOf("'" + scenario +
+                    "' = [pscustomobject]", StringComparison.Ordinal), 500);
+            Assertions.True(metadata.Contains(
+                    "RequiresSaveName = $true") &&
+                metadata.Contains(
+                    "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                metadata.Contains(
+                    "RequiresManualInteraction = $false"),
+                "Production outfit compatibility must fail closed to the disposable working save.");
+            int collectorStart = orchestrator.IndexOf(
+                "elseif ($Scenario -eq '" + scenario + "')",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                orchestrator.Substring(collectorStart,
+                    Math.Min(500, orchestrator.Length - collectorStart))
+                    .Contains(
+                        "[Math]::Max($TimeoutSeconds, 1200) + 15"),
+                "Production outfit compatibility needs its exact bounded collector window.");
+
+            Assertions.Equal(16, Regex.Matches(source,
+                "new ProductionCompatibilityCase\\(").Count,
+                "The production compatibility matrix must contain exactly sixteen states.");
+            foreach (string token in new[]
+            {
+                "abca4797366d4df0831a418eee39069a",
+                "afbe88d27a0eb544583e00fa78ffb2c7",
+                "559b0b6f194656c428c403a000ceee78",
+                "f33dadeeb51cdba45b23bb40a40e5fb3",
+                "04dff7841c5f499478c91487d9bbdcef",
+                "431d16d2153d1854280b97470223eea6",
+                "49641981096de8b43b198e95c7193b65",
+                "Progression.CharacterRaces",
+                "_gunslingerClass.LoadClothes(",
+                "orderedPairExact", "new DollState()",
+                "SetClass(_gunslingerClass)", "GetHairEntities()",
+                "SpawnEntityWithView(dollView,",
+                "CreateProductionNeutralBody", "Body.AllSlots",
+                "ProductionFirearms.Pistol.Item",
+                "ProductionFirearms.Musket.Item",
+                "ProductionFirearms.Blunderbuss.Item",
+                "Body.Armor.InsertItem", "Body.Head.InsertItem",
+                "Body.Shoulders.InsertItem",
+                "OutfitPartSpecialType.Backpack",
+                "UpdateBackpackVisibility(true)",
+                "SetProductionPalette(true)",
+                "RestoreProductionSnapshot", "RebuildOutfit()",
+                "CaptureContactSheet(", "CaptureIsometric(",
+                "ProductionBlueprintUnchanged()",
+                "productionBlueprintMutated", "saveApiCalled"
+            })
+                Assertions.True(source.Contains(token),
+                    "Production compatibility lacks exact evidence token: " +
+                    token);
+            foreach (string forbidden in new[]
+            {
+                "SaveGame", "QuickSave", "ScreenCapture", "Input.",
+                "Mouse.", "PlayerPrefs", "Game.Instance.Player.Inventory"
+            })
+                Assertions.False(source.Contains(forbidden),
+                    "Production compatibility contains a forbidden save/UI/global-inventory token: " +
+                    forbidden);
+        }
+
         internal static void FinalistRaceMatrixIsExactAndReversible()
         {
             string source = QualificationSource();

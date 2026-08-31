@@ -577,6 +577,12 @@ try {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             [Math]::Max($TimeoutSeconds, 1200) + 15)
     }
+    elseif ($Scenario -eq 'gunslinger-outfit-production-compatibility') {
+        # Two production class-preview fixtures drive 32 sidecars and 64
+        # deterministic image writes before a result can be collected.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1200) + 15)
+    }
     elseif ($Scenario -eq 'observe-save-catalog-and-selection') {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             $SelectionTimeoutSeconds + $CompletionTimeoutSeconds + 15)
