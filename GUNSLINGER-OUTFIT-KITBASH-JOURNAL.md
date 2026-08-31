@@ -1045,3 +1045,58 @@ Exact next action: commit and policy-publish this coherent harness, verify all
 three refs, rebuild/install the exact commit, pass quiescent preflight, execute
 the guarded Steam 640820 motion scenario, reconcile all records/files, and
 directly inspect every generated image before persistence work begins.
+
+## 2026-08-31 - First production motion run failed closed
+
+- Harness commit `3071fe38a61b79131f96f965053e7bc058ce209f` was
+  policy-published with identical HEAD/local/origin refs. Its commit-bound
+  local-runtime package SHA-256 was
+  `5eb5da0e740b3d84801c256721f921b636db5471d676cd00de98e99f245d2db7`.
+- Guarded Steam 640820 run
+  `20260831T0455599323551Z-gunslinger-outfit-production-motion` reached
+  terminal `FAIL`, not ambiguity. Save name/version/game identity,
+  production-blueprint immutability, no-save, exact inventory/unit cleanup,
+  hook removal, and automatic exit all remained protected.
+- The male Human fixture completed all eight actions and emitted 27 records:
+  live slow walk/run/turn, pistol and musket attacks, production reload, and
+  Shortsword melee all reached their native acted/counter boundaries. The
+  female production doll and exact outfit then instantiated and emitted its
+  unarmed-idle record, for 28/54 total records.
+- The next female slow-walk stopped at the clean-combat guard. Both disposable
+  male combatants had received `LeaveCombat` and were disposed, but the
+  cached `Game.Player.IsInCombat` boundary had not yet been recomputed.
+  This is a harness lifecycle defect, not visual acceptance and not a score
+  change.
+- Installed 2.1.7b reflection and IL inspection identified the registered
+  `UnitCombatJoinController.Tick()` lifecycle. It invokes
+  `Player.UpdateIsInCombat()` to recompute the cached flag from controllable
+  groups and raises the matching party-combat event when the value changes.
+  The narrow repair snapshots player/party/turn-based state, ticks that native
+  controller only after both request-local combatants leave, records
+  before/after facts per fixture, and requires exact restoration. The
+  locomotion guard remains fail-closed and reports each predicate separately.
+
+Exact next action: complete every required source/build/package gate, publish
+the repair, rebuild/install that exact commit, and rerun the full 54-record
+matrix. The 28 partial captures are diagnostic only and will not be mixed
+with replacement qualification evidence.
+
+### Repair source gate
+
+- Repository validation and diff hygiene: `PASS`.
+- Focused motion contract and complete Release suite: `1369/1369 PASS`.
+- Clean installed-reference Release build, firearm/SoundBank validation, and
+  strict standalone package validation: `PASS`.
+- Stable guarded-runtime preflight: `169 PASS`. The first invocation directly
+  after each clean package build detected only a transient artifact-tree
+  timestamp/directory fingerprint change; backup, evidence, CIM, and process
+  guards all remained unchanged. The identical settled-tree rerun passed.
+- Pre-commit package SHA-256:
+  `7de0fc0ce93a703907a10d5862368083765dae831cd74487073988128538889d`;
+  DLL SHA-256:
+  `b378256b722350bc9128b491e7f0d8e8f3a2b630bdccefe4664fb5c80f84e18f`;
+  MVID: `b4bf5593-d05b-41d5-b92c-d6ad1eff1356`.
+
+These are pre-commit identities and do not qualify runtime behavior. Exact
+next action remains commit, policy publication, commit-bound rebuild, and a
+complete replacement Steam run.

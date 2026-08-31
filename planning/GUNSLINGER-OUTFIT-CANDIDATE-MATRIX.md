@@ -435,3 +435,29 @@ DLL SHA-256 is
 No score changes from source evidence: `magus-complete` remains selected at
 88/100 until the complete installed-game motion batch is reconciled and
 directly accepted, followed by the separate persistence gate.
+
+### Production motion attempt 1 diagnostic
+
+Published commit `3071fe38a61b79131f96f965053e7bc058ce209f` ran through
+Steam 640820 at evidence ID
+`20260831T0455599323551Z-gunslinger-outfit-production-motion` and failed
+closed after 28/54 records. All 27 male records crossed their required native
+movement, turn, attack, reload, and melee boundaries. The female exact outfit
+and rig also materialized and produced unarmed idle, but its subsequent walk
+was correctly rejected while the player's cached combat flag still reflected
+the retired male request-local combatants.
+
+This is an inter-fixture harness lifecycle failure, not a candidate visual or
+compatibility penalty. Save, identity, blueprint, no-save, inventory, unit,
+and automatic-exit safeguards held. Installed IL identified registered
+`UnitCombatJoinController.Tick()` as the full engine lifecycle: it performs
+the `Player.UpdateIsInCombat()` recomputation and raises the party event on a
+change. It is now invoked only after disposable combatants leave and is backed
+by explicit player/party/turn-based before/after records. No score changes:
+`magus-complete` remains 88/100 pending a complete replacement motion PASS and
+the independent persistence gate.
+
+The controller-based repair passes repository validation, all `1369/1369`
+Release tests, clean strict packaging, firearm/audio validation, and the
+stable 169-check runtime preflight. This source evidence does not alter the
+score or accept any partial image.

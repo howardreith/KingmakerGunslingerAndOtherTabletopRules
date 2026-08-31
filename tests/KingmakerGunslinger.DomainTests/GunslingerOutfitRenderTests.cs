@@ -385,6 +385,14 @@ namespace KingmakerGunslinger.DomainTests
                 "RestoreProductionSnapshot(_avatarBefore",
                 "RestoreProductionMotionInventory",
                 "RetireProductionMotionTarget",
+                "ReconcileProductionMotionCombatBoundary",
+                "GetController<UnitCombatJoinController>(true)",
+                "_motionCombatJoinController.Tick()",
+                "UnitCombatJoinController.Tick",
+                "playerInCombatAfterReconcile",
+                "partyCombatantsAfterReconcile",
+                "turnBasedCombatAfterReconcile",
+                "gunslinger-outfit-production-motion-combat-boundary",
                 "productionBlueprintMutated", "saveApiCalled"
             })
                 Assertions.True(source.Contains(token),

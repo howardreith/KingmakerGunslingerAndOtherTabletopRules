@@ -6,6 +6,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.UnitLogic;
@@ -90,7 +91,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly JArray _motionAttackOutcomes = new JArray();
             private readonly JArray _motionReloadOutcomes = new JArray();
             private readonly JArray _motionRestorationRecords = new JArray();
+            private readonly JArray _motionCombatBoundaryRecords = new JArray();
             private Player _motionPlayer;
+            private UnitCombatJoinController _motionCombatJoinController;
+            private bool _motionPlayerCombatBefore;
+            private bool _motionTurnBasedCombatBefore;
+            private int _motionPartyCombatantsBefore;
             private BlueprintItem _motionPowder;
             private BlueprintItem _motionBall;
             private int _motionPowderBefore;
@@ -220,11 +226,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The production motion catalog or frame schedule changed.");
                 _motionPlayer = Game.Instance.Player;
+                _motionCombatJoinController = Game.Instance
+                    .GetController<UnitCombatJoinController>(true);
                 _motionPowder = BlueprintBootstrap.BasicAmmunition.BlackPowder;
                 _motionBall = BlueprintBootstrap.BasicAmmunition.LeadBall;
                 _motionReloadBlueprint = BlueprintBootstrap
                     .ReloadTestMusketAbility;
                 if (_motionPlayer == null ||
+                    _motionCombatJoinController == null ||
                     _motionPlayer.Inventory == null ||
                     _motionPowder == null || _motionBall == null ||
                     _motionReloadBlueprint == null ||
@@ -235,6 +244,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.ProductionFirearms.Musket.Item == null)
                     throw new InvalidOperationException(
                         "Production motion dependencies are unavailable.");
+                _motionPlayerCombatBefore = _motionPlayer.IsInCombat;
+                _motionTurnBasedCombatBefore =
+                    TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat();
+                _motionPartyCombatantsBefore = _motionPlayer.Party.Count(
+                    unit => unit != null && unit.CombatState != null &&
+                        unit.CombatState.IsInCombat);
+                if (_motionPlayerCombatBefore ||
+                    _motionTurnBasedCombatBefore ||
+                    _motionPartyCombatantsBefore != 0)
+                    throw new InvalidOperationException(
+                        "Production motion requires a clean non-combat working save.");
                 BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
                     BlueprintBootstrap.Library,
                     OutfitMotionShortswordItemGuid,
@@ -605,7 +626,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TurnBased.Controllers.CombatController
                         .IsInTurnBasedCombat())
                     throw new InvalidOperationException(_motionSpec.Label +
-                        " cannot start without a live navmesh and clean combat state.");
+                        " cannot start without a live navmesh and clean combat state;" +
+                        "navmesh=" + (AstarPath.active != null) +
+                        ";actorInCombat=" +
+                        _actor.CombatState.IsInCombat +
+                        ";playerInCombat=" +
+                        Game.Instance.Player.IsInCombat +
+                        ";turnBasedCombat=" +
+                        TurnBased.Controllers.CombatController
+                            .IsInTurnBasedCombat() + ".");
                 Pathfinding.NNInfo start = AstarPath.active.GetNearest(
                     _actor.Position);
                 if (start.node == null || !start.node.Walkable)
@@ -1781,6 +1810,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionRestorations++;
                 RetireProductionMotionTarget();
                 RetireProductionActor();
+                ReconcileProductionMotionCombatBoundary(fixture.Label);
                 _fixtureIndex++;
                 _motionStep = 0;
                 _motionPhase = 0;
@@ -1833,6 +1863,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionHostileBlueprint = null;
             }
 
+            private void ReconcileProductionMotionCombatBoundary(
+                string fixture)
+            {
+                if (_motionPlayer == null)
+                    throw new InvalidOperationException(
+                        "Production motion lost its exact player reference.");
+                bool playerBefore = _motionPlayer.IsInCombat;
+                bool turnBasedBefore =
+                    TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat();
+                int partyBefore = _motionPlayer.Party.Count(unit =>
+                    unit != null && unit.CombatState != null &&
+                    unit.CombatState.IsInCombat);
+                _motionCombatJoinController.Tick();
+                bool playerAfter = _motionPlayer.IsInCombat;
+                bool turnBasedAfter =
+                    TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat();
+                int partyAfter = _motionPlayer.Party.Count(unit =>
+                    unit != null && unit.CombatState != null &&
+                    unit.CombatState.IsInCombat);
+                _motionCombatBoundaryRecords.Add(new JObject
+                {
+                    { "fixture", fixture },
+                    { "playerInCombatBeforeReconcile", playerBefore },
+                    { "playerInCombatAfterReconcile", playerAfter },
+                    { "partyCombatantsBeforeReconcile", partyBefore },
+                    { "partyCombatantsAfterReconcile", partyAfter },
+                    { "turnBasedCombatBeforeReconcile", turnBasedBefore },
+                    { "turnBasedCombatAfterReconcile", turnBasedAfter },
+                    { "expectedPlayerInCombat",
+                        _motionPlayerCombatBefore },
+                    { "expectedPartyCombatants",
+                        _motionPartyCombatantsBefore },
+                    { "expectedTurnBasedCombat",
+                        _motionTurnBasedCombatBefore },
+                    { "nativeReconciliation",
+                        "Kingmaker.Controllers.Combat.UnitCombatJoinController.Tick" }
+                });
+                _diagnostics.Add("productionMotionCombatBoundary=" +
+                    fixture + ";player=" + playerBefore + "->" +
+                    playerAfter + ";party=" + partyBefore + "->" +
+                    partyAfter + ";turnBased=" + turnBasedBefore +
+                    "->" + turnBasedAfter);
+                if (playerAfter != _motionPlayerCombatBefore ||
+                    partyAfter != _motionPartyCombatantsBefore ||
+                    turnBasedAfter != _motionTurnBasedCombatBefore)
+                    throw new InvalidOperationException(fixture +
+                        " did not restore the exact native combat boundary.");
+            }
+
             private void PrepareProductionMotionCleanup()
             {
                 try
@@ -1859,6 +1940,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     RemoveProductionMotionWeapon();
                     RetireProductionMotionTarget();
+                    if (_motionCombatJoinController != null)
+                        _motionCombatJoinController.Tick();
                 }
                 finally
                 {
@@ -1946,6 +2029,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "reloadOutcomes", _motionReloadOutcomes },
                     { "records", _motionRecords },
                     { "restorations", _motionRestorationRecords },
+                    { "combatBoundaries", _motionCombatBoundaryRecords },
+                    { "playerInCombatBefore", _motionPlayerCombatBefore },
+                    { "partyCombatantsBefore",
+                        _motionPartyCombatantsBefore },
+                    { "turnBasedCombatBefore",
+                        _motionTurnBasedCombatBefore },
                     { "ammunitionSeed", _motionAmmunitionSeed },
                     { "powderCountBefore", _motionPowderBefore },
                     { "ballCountBefore", _motionBallBefore },
@@ -1972,6 +2061,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<JObject>().ToArray();
                 JObject[] reloads = _motionReloadOutcomes
                     .OfType<JObject>().ToArray();
+                JObject[] combatBoundaries =
+                    _motionCombatBoundaryRecords.OfType<JObject>()
+                        .ToArray();
                 var expectedActionCounts = new Dictionary<string, int>(
                     StringComparer.Ordinal)
                 {
@@ -2051,6 +2143,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (int)value["plannedRounds"] &&
                         (long)value["firedDelta"] == 0 &&
                         (long)value["dischargeFaultDelta"] == 0);
+                bool combatBoundaryContracts =
+                    combatBoundaries.Length == expectedFixtures &&
+                    combatBoundaries.All(value =>
+                        (bool)value["playerInCombatAfterReconcile"] ==
+                            _motionPlayerCombatBefore &&
+                        (int)value["partyCombatantsAfterReconcile"] ==
+                            _motionPartyCombatantsBefore &&
+                        (bool)value["turnBasedCombatAfterReconcile"] ==
+                            _motionTurnBasedCombatBefore &&
+                        string.Equals((string)value[
+                            "nativeReconciliation"],
+                            "Kingmaker.Controllers.Combat.UnitCombatJoinController.Tick",
+                            StringComparison.Ordinal));
 
                 Add(_assertions,
                     "gunslinger-outfit-production-motion-guard",
@@ -2152,6 +2257,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 (bool)value["runDistinctFromWalk"]) &&
                         _motionInventoryRestored,
                     "saved:false Character snapshots, exact movement settings, and inventory count snapshots");
+                Add(_assertions,
+                    "gunslinger-outfit-production-motion-combat-boundary",
+                    "exact pre-run player, party, and turn-based combat state after each disposable fixture",
+                    "boundaries=" + combatBoundaries.Length +
+                        ";playerInCombat=" +
+                        (_motionPlayer == null ? "<missing>" :
+                            _motionPlayer.IsInCombat.ToString()) +
+                        ";turnBased=" +
+                        TurnBased.Controllers.CombatController
+                            .IsInTurnBasedCombat(),
+                    combatBoundaryContracts,
+                    "UnitCombatState.LeaveCombat followed by native UnitCombatJoinController.Tick recomputation and party event");
                 bool blueprintUnchanged = _gunslingerClass != null &&
                     ProductionBlueprintUnchanged();
                 Add(_assertions,
@@ -2167,7 +2284,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _motionInventoryRestored + ";target=" +
                         (_motionTarget == null),
                     cleaned && _motionInventoryRestored &&
-                        _motionTarget == null,
+                        _motionTarget == null && _motionPlayer != null &&
+                        _motionPlayer.IsInCombat ==
+                            _motionPlayerCombatBefore &&
+                        _motionPlayer.Party.Count(unit =>
+                            unit != null && unit.CombatState != null &&
+                            unit.CombatState.IsInCombat) ==
+                                _motionPartyCombatantsBefore &&
+                        TurnBased.Controllers.CombatController
+                            .IsInTurnBasedCombat() ==
+                                _motionTurnBasedCombatBefore,
                     "request-local actors, target, items, blueprint clones, cameras, textures, and ammunition");
                 Add(_assertions, "loaded-mod-version",
                     _request.ExpectedModVersion,
