@@ -162,6 +162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _motionCommandTargetInState;
             private bool _motionCommandStarted;
             private bool _motionCommandRunningObserved;
+            private bool _motionAttackRetirementReady;
             private bool _motionAnimationObserved;
             private bool _motionAnimationActedObserved;
             private bool _motionActedCaptureTaken;
@@ -1318,9 +1319,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _motionFiredBefore >= 1
                     : _motionCommandRunningObserved &&
                         _motionAnimationObserved;
-                bool complete = _motionCaptureScheduleIndex ==
+                bool evidenceComplete = _motionCaptureScheduleIndex ==
                         ProductionMotionAttackUpdates.Length &&
                     _motionActedCaptureTaken && attackObserved;
+                bool commandRunning = _motionAttackCommand != null &&
+                    _motionAttackCommand.IsRunning;
+                bool commandInterruptible = _motionAttackCommand == null ||
+                    _motionAttackCommand.IsInterruptible;
+                _motionAttackRetirementReady = !commandRunning ||
+                    commandInterruptible;
+                bool complete = evidenceComplete &&
+                    _motionAttackRetirementReady;
                 if (!complete)
                 {
                     if (_motionActionUpdates < MotionMaximumUpdates) return;
@@ -1328,7 +1337,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " did not complete exact native attack evidence; " +
                         "captures=" + _motionCaptureScheduleIndex +
                         ";acted=" + _motionActedCaptureTaken +
-                        ";observed=" + attackObserved + ".");
+                        ";observed=" + attackObserved +
+                        ";retirementReady=" +
+                        _motionAttackRetirementReady +
+                        ";commandRunning=" + commandRunning +
+                        ";commandInterruptible=" +
+                        commandInterruptible +
+                        ";updates=" + _motionActionUpdates + ".");
                 }
 
                 FirearmState state = firearm && _motionWeapon != null
@@ -1350,6 +1365,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "commandStarted", _motionCommandStarted },
                     { "commandRunningObserved",
                         _motionCommandRunningObserved },
+                    { "retirementReady",
+                        _motionAttackRetirementReady },
+                    { "commandRunningAtRetirement", commandRunning },
+                    { "commandInterruptibleAtRetirement",
+                        commandInterruptible },
+                    { "actionUpdates", _motionActionUpdates },
                     { "animationObserved", _motionAnimationObserved },
                     { "animationActedObserved",
                         _motionAnimationActedObserved },
@@ -1799,6 +1820,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 record["commandStarted"] = _motionCommandStarted;
                 record["commandRunningObserved"] =
                     _motionCommandRunningObserved;
+                record["attackRetirementReady"] =
+                    _motionAttackRetirementReady;
+                record["commandCurrentlyRunning"] =
+                    _motionAttackCommand != null &&
+                    _motionAttackCommand.IsRunning;
+                record["commandCurrentlyInterruptible"] =
+                    _motionAttackCommand != null &&
+                    _motionAttackCommand.IsInterruptible;
                 record["animationObserved"] = _motionAnimationObserved;
                 record["animationActedObserved"] =
                     _motionAnimationActedObserved;
@@ -1844,6 +1873,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 record["activeCommandTypes"] = new JArray(
                     _actor.Commands.Raw.Where(value => value != null)
                         .Select(value => value.GetType().FullName).ToArray());
+                record["runningCommandTypes"] = new JArray(
+                    ProductionMotionRunningCommandTypes());
                 record["productionBlueprintUnchanged"] =
                     ProductionBlueprintUnchanged();
                 record["productionBlueprintMutated"] = false;
@@ -1888,12 +1919,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return string.Join("/", names.ToArray());
             }
 
+            private string[] ProductionMotionRunningCommandTypes()
+            {
+                return _actor == null ? new string[0] :
+                    _actor.Commands.Raw
+                        .Where(value => value != null && value.IsRunning)
+                        .Select(value => value.GetType().FullName).ToArray();
+            }
+
             private void BeginProductionMotionRemoval()
             {
                 _stage = "remove-motion-" + _motionSpec.Label;
                 if (_actor != null)
                 {
                     _actor.Commands.InterruptAll(true);
+                    string[] runningCommands =
+                        ProductionMotionRunningCommandTypes();
+                    if (runningCommands.Length != 0)
+                        throw new InvalidOperationException(
+                            "Production motion refused teardown while native commands remained running: " +
+                            string.Join("|", runningCommands) + ".");
                     if (_actor.View != null)
                     {
                         _actor.View.StopMoving();
@@ -1991,6 +2036,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool targetClean = _motionTarget == null ||
                     !_motionTarget.CombatState.IsInCombat;
                 return _motionWeapon == null &&
+                    ProductionMotionRunningCommandTypes().Length == 0 &&
                     _actor.Body.PrimaryHand.MaybeItem == null &&
                     _actor.Body.SecondaryHand.MaybeItem == null &&
                     _actor.View.HandsEquipment.GetWeaponModel(false) == null &&
@@ -2107,6 +2153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionCommandTargetInState = false;
                 _motionCommandStarted = false;
                 _motionCommandRunningObserved = false;
+                _motionAttackRetirementReady = false;
                 _motionAnimationObserved = false;
                 _motionAnimationActedObserved = false;
                 _motionActedCaptureTaken = false;
@@ -2644,6 +2691,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)value["commandTargetInState"] &&
                         (bool)value["commandStarted"] &&
                         (bool)value["commandRunningObserved"] &&
+                        (bool)value["retirementReady"] &&
                         (bool)value["animationObserved"] &&
                         (bool)value["animationActedObserved"] &&
                         (bool)value["actedCaptureTaken"] &&

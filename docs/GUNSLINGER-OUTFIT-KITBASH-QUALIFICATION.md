@@ -1106,3 +1106,55 @@ DLL SHA-256 is
 MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. Motion remains `PENDING`
 until an exact-commit terminal PASS, structured reconciliation, and direct
 review of all 54 replacement images.
+
+## 2026-08-31 production motion attempt 8
+
+Published source commit:
+`5d520bbccaff98e09a9a94c3fa2c59811cd2f0ca`.
+Commit-bound package SHA-256:
+`a703f089ff28cc83c3d835df36de1180950d668b5230a6bcef9a7cc9fcf7eb6b`.
+Loaded DLL SHA-256:
+`7e8c1619acec69da73f10f6e5f3f6089a5d571163077fe9533193c4976763548`.
+MVID: `8b7060eb-cefe-4ac9-8be1-62d61a0e1974`.
+Evidence directory:
+`20260831T1330408485246Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` after 10/54 records.
+
+The detached-probe evidence is positive: both pistol and musket preparation
+reported `probeDetached=True`. The pistol's acted frame consumed exactly one
+round, but its update-36 sidecar still showed a running `UnitAttack`. At the
+next musket-ready frame, `loadedRounds=0`, total fired count was two, and the
+same command type remained active. Production correctly returned no command
+for the empty musket. Guarded request, exact loaded package and game identity,
+working-save/no-save boundary, blueprint immutability, request-local
+scene/player/combat cleanup, and automatic exit passed. No partial capture is
+accepted.
+
+Installed IL establishes why ordinary cleanup was insufficient. An acted
+`UnitCommand` is non-interruptible while its animation handle is unfinished,
+and `UnitCommands.InterruptAll(true)` skips it. The prior evidence schedule
+ended at update 36 and proceeded to equipment/target teardown without proving
+native command retirement. The game log records an equipment-animation null
+reference after pistol discharge and another round consumption after the
+weapon switch, consistent with the retained pistol command firing the newly
+equipped musket.
+
+The pending exact-commit repair waits until all visual/discharge evidence is
+complete and the command is either stopped or natively interruptible. It adds
+structured `retirementReady`, running/interruptible, update-count, and
+running-command-type evidence; terminal attack contracts require readiness.
+After ordinary interruption, a hard gate forbids weapon, combat, or target
+mutation while any command remains running, and the inter-action transient
+contract independently requires zero running commands.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release/package, strict firearm/audio/package validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+artifact-tree stabilization sentinel. Pre-commit local-runtime package
+SHA-256 is
+`17d46838be9b31b3fecda29ef582f2aae2cfc422e2f5c25be41f3d58811f2dbb`;
+DLL SHA-256 is
+`e1b154a9e2c35348d6b6d67cd9fa8274c4764ffa5604335a24e680ada14b5844`;
+MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`. Motion remains `PENDING`
+until an exact-commit terminal PASS, structured reconciliation, and direct
+review of all 54 replacement images.

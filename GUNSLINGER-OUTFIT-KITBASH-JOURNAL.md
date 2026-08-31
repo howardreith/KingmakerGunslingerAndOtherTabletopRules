@@ -1333,3 +1333,41 @@ Candidate score remains 88/100.
 Exact next action: commit and policy-publish the detached-probe repair, rebuild
 its exact package, and execute all 54 replacement records. Candidate score
 remains 88/100.
+
+## 2026-08-31 - Eighth motion run exposes non-interruptible attack teardown
+
+- Published commit `5d520bbccaff98e09a9a94c3fa2c59811cd2f0ca`, package
+  `a703f089ff28cc83c3d835df36de1180950d668b5230a6bcef9a7cc9fcf7eb6b`,
+  DLL `7e8c1619acec69da73f10f6e5f3f6089a5d571163077fe9533193c4976763548`,
+  and MVID `8b7060eb-cefe-4ac9-8be1-62d61a0e1974` ran through Steam 640820.
+- Evidence `20260831T1330408485246Z-gunslinger-outfit-production-motion`
+  failed after 10/54 records. Pistol and musket preparation both reported
+  `probeDetached=True`, so the preceding repair worked. The pistol acted and
+  discharged once; at update 36 its sidecar still showed a running
+  `UnitAttack`. Musket-ready then showed `loadedRounds=0`, fired count two,
+  and an active `UnitAttack`; production rejected the new unloaded attack.
+  No partial image is accepted.
+- The game log places a `UnitViewHandsEquipment.get_IsDollRoom` /
+  `AnimateEquipping` null reference immediately after the pistol discharge and
+  a second round consumption after the weapon switch. Installed IL shows an
+  acted command remains non-interruptible until its animation finishes, and
+  `UnitCommands.InterruptAll(true)` skips it. The evidence-backed cause is the
+  old update-36 completion gate allowing target and weapon teardown while the
+  pistol command remained live.
+- The repair waits for `!IsRunning || IsInterruptible` after all scheduled and
+  acted/discharge evidence exists. Attack outcomes carry retirement readiness,
+  running/interruptible state, and update count. Teardown interrupts normally,
+  then fails before any mutation if a running command remains; transient-state
+  cleanup also requires none. Every sidecar lists its running command types.
+- Installed-reference compilation, repository validation, all `1369/1369`
+  tests, clean Release/package, strict firearm/audio/package validation, and
+  the settled 169-check preflight pass. The first preflight reported only the
+  expected stabilization sentinel. Pre-commit package SHA-256 is
+  `17d46838be9b31b3fecda29ef582f2aae2cfc422e2f5c25be41f3d58811f2dbb`,
+  DLL SHA-256 is
+  `e1b154a9e2c35348d6b6d67cd9fa8274c4764ffa5604335a24e680ada14b5844`,
+  and MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`.
+
+Exact next action: commit and policy-publish the native retirement gate,
+rebuild its exact package, and execute all 54 replacement records. Candidate
+score remains 88/100.

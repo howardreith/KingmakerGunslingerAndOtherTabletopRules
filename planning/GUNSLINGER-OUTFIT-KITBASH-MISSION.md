@@ -975,3 +975,52 @@ and MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. Candidate score remains
 
 Exact next action: commit and policy-publish the detached-probe repair, rebuild
 its exact commit, and execute the complete replacement matrix.
+
+## 2026-08-31 - Motion attempt 8 waits for native attack retirement
+
+Published commit `5d520bbccaff98e09a9a94c3fa2c59811cd2f0ca` ran through
+Steam 640820 as package SHA-256
+`a703f089ff28cc83c3d835df36de1180950d668b5230a6bcef9a7cc9fcf7eb6b`,
+DLL SHA-256
+`7e8c1619acec69da73f10f6e5f3f6089a5d571163077fe9533193c4976763548`,
+and MVID `8b7060eb-cefe-4ac9-8be1-62d61a0e1974`. Evidence
+`20260831T1330408485246Z-gunslinger-outfit-production-motion` failed closed
+after 10/54 male records. Both pistol and musket preparation reported a
+detached readiness probe, positively validating attempt 7's repair. The
+pistol acted and fired once, but its update-36 sidecar still contained a
+running `UnitAttack`. The next musket-ready sidecar then reported zero loaded
+rounds, total fired count two, and that same active command; production
+correctly rejected a new unloaded musket attack. No partial image is accepted.
+
+The installed log records an equipment-animation null reference immediately
+after the pistol discharge and a second round consumption after the weapon
+switch. Installed IL explains the sequence: base `UnitCommand.IsInterruptible`
+is false while a started, acted animation has not finished, and
+`UnitCommands.InterruptAll(true)` retains a non-interruptible command. The
+prior harness declared evidence complete at update 36, attempted ordinary
+interruption, then removed the weapon and target while that command remained
+live. The surviving pistol command subsequently acted against the newly
+equipped musket.
+
+The replacement separates visual-evidence completion from native-command
+retirement. It waits within the existing 360-update bound until the command is
+finished or `IsInterruptible`, records the exact retirement state and update
+count, and requires `retirementReady=true` in every terminal attack outcome.
+After native interruption, teardown fails before changing combat, target, or
+equipment state if any actor command remains running. Per-frame sidecars now
+list running command types, and inter-action cleanup independently requires
+zero running commands. Focused source tests enforce the order.
+
+Installed-reference compile, repository validation, all `1369/1369` tests,
+clean Release packaging, strict package/firearm/audio validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+artifact-tree stabilization sentinel. Pre-commit local-runtime package
+SHA-256 is
+`17d46838be9b31b3fecda29ef582f2aae2cfc422e2f5c25be41f3d58811f2dbb`,
+DLL SHA-256 is
+`e1b154a9e2c35348d6b6d67cd9fa8274c4764ffa5604335a24e680ada14b5844`,
+and MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`. Candidate score remains
+88/100.
+
+Exact next action: commit and policy-publish the retirement gate, rebuild its
+exact commit, and execute the complete replacement matrix.
