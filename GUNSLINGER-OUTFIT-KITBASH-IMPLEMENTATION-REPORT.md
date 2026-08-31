@@ -546,6 +546,44 @@ DLL SHA-256 is
 `397f4c6a5a9069ae07e0ee2cfd195aa88d2a8fa1d82edaed49b983f68efa3396`.
 The complete commit-bound rerun and review remain mandatory.
 
+## Native-doll settlement diagnostic and correction
+
+The stored-musket correction was published as
+`453f54732c05be6141d3eec259e4c46325f047e0`. Guarded run
+`20260831T0319410552031Z-gunslinger-outfit-production-compatibility`
+loaded its exact DLL SHA-256
+`d9be26094a0eb8fd6f86dcff5572e85756ff311f1db12d22699ca4311c2b1388`
+and MVID `0c09675f-81e2-44f2-b98d-f14dd0ee619e`, then failed before
+the first capture because the selected male-Human hair entity was absent after
+production application. Class entities, saved links, empty weapon state,
+production links over all nine races/both genders, blueprint immutability,
+save protection, cleanup, and exit were exact. With zero generated images,
+this run has no visual acceptance or rejection value.
+
+Installed method inspection attributes the nondeterminism to harness ordering.
+The native doll view is materialized through `DollData.CreateUnitView`, but
+attached `UnitEntityView`/`Character` lifecycle work continues afterward. The
+compatibility harness mutated the avatar immediately after its basic view
+objects appeared; the already-accepted race harness instead waited until every
+resolved `DollData` entity survived a bounded native settle window.
+
+The corrected compatibility harness adopts that proven boundary. Before any
+snapshot or production addition, it requires descriptor/DollData reference
+identity, every resolved doll entity, selected hair, exact humanoid rig,
+active renderers, and no held/stored weapon for at least the existing
+30-update minimum. Timeout diagnostics include the active entity names. This
+changes only guarded evidence timing; production appearance and game behavior
+remain untouched.
+
+Repository validation and all 1368/1368 tests pass. A clean installed-
+reference Release build, firearm/SoundBank checks, package creation, and
+strict standalone package validation pass. Dirty-tree package SHA-256 is
+`f7e0b896470a4fc120e6d9f8d7166ca1d6bdfaf7a94c53b1545ba73b12ea073c`;
+DLL SHA-256 is
+`79f5f5138ea94c37b202d21b9320513a1986c78975d9fd3dd78bd8eeb1e8dd76`;
+MVID is `1e6d17a7-bb7c-4e5a-b36f-19e64b59969c`. A published,
+commit-bound complete rerun and direct review remain mandatory.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

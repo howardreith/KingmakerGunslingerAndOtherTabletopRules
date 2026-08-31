@@ -909,3 +909,51 @@ review the full production compatibility render matrix.
 Exact next action: commit and policy-publish the stored-musket correction,
 verify all refs, rebuild the commit-bound package, pass quiescent preflight,
 then rerun and directly review the complete compatibility matrix.
+
+## 2026-08-30 - Second matrix exposes a premature native-doll mutation
+
+- The stored-musket repair was committed and policy-published as
+  `453f54732c05be6141d3eec259e4c46325f047e0`. Its commit-bound package
+  SHA-256 was
+  `bd3934c4acdfb42ca369753ce29d523f6a3391badfb39a224254ef265b6e1fda`;
+  loaded DLL SHA-256 was
+  `d9be26094a0eb8fd6f86dcff5572e85756ff311f1db12d22699ca4311c2b1388`;
+  loaded MVID was `0c09675f-81e2-44f2-b98d-f14dd0ee619e`.
+- Guarded Steam 640820 evidence
+  `20260831T0319410552031Z-gunslinger-outfit-production-compatibility`
+  reached terminal `FAIL` before its first capture. It produced zero records
+  and zero PNGs. All 18 production race/gender links, exact game/mod/class
+  identity, protected working-save/no-write boundary, class immutability,
+  cleanup, and automatic exit passed.
+- At the end of the old post-mutation settle window, class clothing, saved
+  links, and empty-weapon state were exact, but selected native hair
+  `9edf6b60bbf4d834facd4789837a3e0b` was absent. The preceding run used the
+  same hair and retained it through four states. This is scheduler-sensitive
+  fixture lifecycle evidence, not an aesthetic or compatibility rejection.
+- Read-only inspection of the installed assembly with the game-bundled
+  metadata library confirmed that `DollData.CreateUnitView` creates the
+  initial avatar entities, while `UnitEntityView` and `Character` continue
+  native start/class-equipment/rebuild work after attachment. `RebuildOutfit`
+  rebuilds render objects but does not establish `DollData` membership. The
+  already-accepted race-matrix harness waits for every resolved doll entity
+  before mutation; this compatibility harness had not.
+- The narrow correction now requires the exact descriptor `DollData`, every
+  resolved native doll entity, the selected hair, the humanoid rig, active
+  renderers, and an empty out-of-combat weapon presentation to survive the
+  full 30-update native settle window before taking the snapshot or adding
+  production entities. Failure records the active entity names. No production
+  class, item, weapon, or appearance behavior changed.
+- The first complete test invocation found one line-break-sensitive token in
+  the new source-contract assertion; correcting that test expectation yielded
+  1368/1368 PASS. Repository validation, clean installed-reference Release
+  build, firearm/SoundBank validation, package construction, and strict
+  standalone validation pass. Dirty-tree package SHA-256 is
+  `f7e0b896470a4fc120e6d9f8d7166ca1d6bdfaf7a94c53b1545ba73b12ea073c`;
+  DLL SHA-256 is
+  `79f5f5138ea94c37b202d21b9320513a1986c78975d9fd3dd78bd8eeb1e8dd76`;
+  MVID is `1e6d17a7-bb7c-4e5a-b36f-19e64b59969c`.
+
+Exact next action: commit and policy-publish this readiness correction, verify
+HEAD/local/origin identity, rebuild the exact commit, pass strict validation
+and quiescent preflight, then rerun the complete matrix. Only a terminal PASS
+followed by direct inspection of all 64 replacement PNGs can close this gate.
