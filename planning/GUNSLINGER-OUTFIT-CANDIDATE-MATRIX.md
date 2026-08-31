@@ -4,8 +4,8 @@ Status: `magus-complete` is bound through a focused production appearance
 policy and is accepted at 93/100 with no hard rejection. Human weapon-state,
 the guarded 18-cell race/gender matrix, static equipment/rebuild, complete
 native motion, native male/female respec, and the three-launch persisted-outfit
-transaction all pass. Final repository/package revalidation also passes;
-policy publication is in progress.
+transaction, final repository/package revalidation, and policy publication all
+pass.
 
 ## Scoring contract
 
@@ -896,4 +896,6 @@ SHA-256
 their DLL SHA-256
 `a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`
 is byte-identical to the accepted persistence transaction. Forbidden package
-material count is zero. Publication remains the sole open administrative gate.
+material count is zero. Implementation/evidence commit
+`92de86005d2db4f0731b296fc3d803033e15112a` was helper-published with exact
+HEAD/local/origin equality and a clean tree. The selection is final.

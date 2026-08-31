@@ -4,7 +4,7 @@ Status: native candidate accepted at 93/100 with no hard rejection and
 integrated through a focused production policy. Race/gender, color, static
 equipment/rebuild, motion, persisted load/reconstruction, and native respec
 all pass installed-game qualification. Final repository/package revalidation
-also passes; policy publication is in progress.
+and policy publication also pass.
 
 ## Intake
 
@@ -1335,5 +1335,7 @@ inventory.
 
 The first preflight after package construction produced only the documented
 `unsupported-does-not-build-or-stage-package` artifact-tree stabilization
-sentinel. The unchanged rerun passed all 178 checks. Local qualification is
-complete; helper-only publication and ref/clean-tree verification remain.
+sentinel. The unchanged rerun passed all 178 checks. Implementation/evidence
+commit `92de86005d2db4f0731b296fc3d803033e15112a` was published only through
+the approved helper; immediate HEAD/local/origin equality and clean-tree
+verification passed. The mission is complete.

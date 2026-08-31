@@ -5,8 +5,7 @@
 This is the durable operating contract for the Gunslinger class outfit kitbash
 mission. The authoritative work order supplied by the human remains controlling.
 This record is an operationally equivalent checklist intended to survive context
-compaction. Installed-game and final local package qualification are complete;
-policy publication is in progress.
+compaction. The mission is complete.
 
 Intake baseline:
 
@@ -27,9 +26,10 @@ Current checkpoint:
 - the guarded three-launch persistence transaction proves exact native respec,
   save/load, class-outfit reconstruction, palette retention, cleanup, and a
   fresh-process marker-absence boundary;
-- final repository/package revalidation and documentation closure pass; only
-  coherent commit, helper publication, remote-SHA equality, and clean-tree
-  verification remain.
+- final repository/package revalidation and documentation closure pass;
+- implementation/evidence checkpoint
+  `92de86005d2db4f0731b296fc3d803033e15112a` was published by the approved
+  helper with identical HEAD/local/origin refs and a clean tree.
 
 ## Objective
 
@@ -1442,7 +1442,10 @@ to the fully runtime-qualified artifact, SHA-256
 `a935db30e597c482a155bbba3fe9e207db78bbbb6e823acb3c6eeca313078acf`;
 only package-facing README/CHANGELOG text changed the archive hash.
 
-Local qualification is complete. Exact remaining action: commit this coherent
-implementation/evidence checkpoint, publish only with the approved helper,
-then record and verify `HEAD`, local branch, and origin equality plus a clean
-forbidden-artifact state.
+Implementation/evidence commit
+`92de86005d2db4f0731b296fc3d803033e15112a` was published only through the
+approved helper. `HEAD`, the local branch, and the origin feature branch were
+identical afterward and the tree was clean. This final documentation-only
+closure is also helper-published before handoff, whose final SHA check is the
+authoritative self-publication record. No engineering or qualification gate
+remains.
