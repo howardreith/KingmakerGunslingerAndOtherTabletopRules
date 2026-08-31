@@ -618,3 +618,35 @@ stable 169-check preflight pass. Pre-commit package/DLL SHA-256 values are
 MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. This is harness evidence;
 `magus-complete` remains 88/100 pending complete motion and persistence PASS
 gates.
+
+### Production motion attempt 8 diagnostic
+
+Published commit `5d520bbccaff98e09a9a94c3fa2c59811cd2f0ca` and package
+SHA-256
+`a703f089ff28cc83c3d835df36de1180950d668b5230a6bcef9a7cc9fcf7eb6b`
+again produced 10/54 male records in evidence
+`20260831T1330408485246Z-gunslinger-outfit-production-motion`. Both attack
+preparations proved their readiness probes detached. The pistol acted and
+fired once, but its update-36 sidecar still reported an active running
+`UnitAttack`. The subsequent musket-ready record showed zero loaded rounds,
+two total discharges, and the same active command. The separately constructed
+musket attack was correctly rejected as unloaded. No partial image is scored.
+
+Installed `UnitCommand`/`UnitCommands` IL shows that an acted animation is not
+interruptible until its animation handle finishes, so ordinary
+`InterruptAll(true)` retained the pistol command when the old harness began
+weapon teardown. The correction waits for native retirement readiness inside
+the existing bound, records command running/interruptible state and the final
+update, rejects teardown if any command survives interruption, and requires a
+zero-running-command inter-action boundary. Sidecars now enumerate running
+command types and terminal outcomes require `retirementReady=true`.
+
+Compile, repository validation, all `1369/1369` tests, clean strict packaging,
+firearm/audio checks, and the stable 169-check preflight pass. The first
+preflight produced only the documented stabilization sentinel. Pre-commit
+package/DLL SHA-256 values are
+`17d46838be9b31b3fecda29ef582f2aae2cfc422e2f5c25be41f3d58811f2dbb` and
+`e1b154a9e2c35348d6b6d67cd9fa8274c4764ffa5604335a24e680ada14b5844`;
+MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`. This remains harness
+evidence; `magus-complete` remains 88/100 pending complete motion and
+persistence PASS gates.

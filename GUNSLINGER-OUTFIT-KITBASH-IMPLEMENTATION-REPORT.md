@@ -927,6 +927,53 @@ DLL SHA-256 is
 and MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. Exact-commit
 replacement runtime evidence remains pending.
 
+### Eighth motion execution and native command retirement
+
+Published commit `5d520bbccaff98e09a9a94c3fa2c59811cd2f0ca` ran through
+Steam 640820 with package SHA-256
+`a703f089ff28cc83c3d835df36de1180950d668b5230a6bcef9a7cc9fcf7eb6b`,
+DLL SHA-256
+`7e8c1619acec69da73f10f6e5f3f6089a5d571163077fe9533193c4976763548`,
+and MVID `8b7060eb-cefe-4ac9-8be1-62d61a0e1974`. Evidence
+`20260831T1330408485246Z-gunslinger-outfit-production-motion` again reached
+ten male records. Crucially, pistol and musket preparation both proved their
+readiness probes detached, validating the seventh-attempt implementation. The
+pistol command acted and discharged exactly once, yet its update-36 sidecar
+still contained a running `UnitAttack`. The musket-ready sidecar then recorded
+zero loaded rounds, fired count two, and the same active command. A fresh
+musket command was correctly rejected as unloaded. No partial capture is
+accepted.
+
+Exact installed IL isolates a different lifecycle defect. Base
+`UnitCommand.IsInterruptible` remains false while a started, acted animation
+has not finished, and `UnitCommands.InterruptAll(true)` retains such a command.
+The old harness completed its evidence contract at update 36, then changed
+equipment, combat, and target state despite that retained command. The game
+log's equipment-animation null reference immediately after pistol discharge,
+followed by a second firearm round consumption after the switch, corroborates
+the surviving-command sequence.
+
+The implementation now has separate evidence-complete and retirement-ready
+conditions. It continues native ticks inside the existing 360-update bound
+until the attack is no longer running or is natively interruptible. Outcome
+JSON records readiness, current running/interruptible state, and update count;
+the terminal attack contract requires readiness. Ordinary interruption then
+runs, followed by a hard zero-running-command gate before weapon, target, or
+combat mutation. Inter-action transient cleanup requires the same zero state,
+and frame sidecars enumerate running command types. A focused source test
+enforces interrupt, gate, then teardown ordering.
+
+Installed-reference compilation, repository validation, all `1369/1369`
+tests, clean Release/package construction, strict package/firearm/audio
+validation, and the settled 169-check preflight pass. The first preflight
+reported only the documented artifact-tree stabilization sentinel. Pre-commit
+local-runtime package SHA-256 is
+`17d46838be9b31b3fecda29ef582f2aae2cfc422e2f5c25be41f3d58811f2dbb`,
+DLL SHA-256 is
+`e1b154a9e2c35348d6b6d67cd9fa8274c4764ffa5604335a24e680ada14b5844`,
+and MVID is `bbd56913-905f-4d32-8546-cc3926bdaa2f`. Exact-commit
+replacement runtime evidence remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

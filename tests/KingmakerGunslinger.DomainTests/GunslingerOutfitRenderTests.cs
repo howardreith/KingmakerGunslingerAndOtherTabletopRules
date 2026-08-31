@@ -378,6 +378,9 @@ namespace KingmakerGunslinger.DomainTests
                 "_motionAttackCommand.Init(_actor)",
                 "attackReadinessProbeDetached",
                 "readinessProbeDetached",
+                "_motionAttackCommand.IsInterruptible",
+                "retirementReady", "runningCommandTypes",
+                "ProductionMotionRunningCommandTypes().Length == 0",
                 "new AbilityData(", "new UnitUseAbility(",
                 "ReloadTestMusketRuntime.Evaluate", "ExecutionProcess.Tick()",
                 "ProductionMotionAttackUpdates",
@@ -479,6 +482,30 @@ namespace KingmakerGunslinger.DomainTests
                         "_actor.Commands.Run(_motionAttackCommand)") &&
                     !probeBody.Contains("_actor.Commands.InterruptAll(true)"),
                 "Attack readiness must use a detached native UnitAttack probe; only the separately constructed evidence command may run.");
+            int removalStart = source.IndexOf(
+                "private void BeginProductionMotionRemoval()",
+                StringComparison.Ordinal);
+            int removeWeaponStart = removalStart < 0 ? -1 : source.IndexOf(
+                "private void RemoveProductionMotionWeapon()", removalStart,
+                StringComparison.Ordinal);
+            Assertions.True(removalStart >= 0 &&
+                    removeWeaponStart > removalStart,
+                "Production motion lacks a bounded teardown method.");
+            string removalBody = source.Substring(removalStart,
+                removeWeaponStart - removalStart);
+            int interruptCommands = removalBody.IndexOf(
+                "_actor.Commands.InterruptAll(true)",
+                StringComparison.Ordinal);
+            int runningCommandGate = removalBody.IndexOf(
+                "ProductionMotionRunningCommandTypes()",
+                StringComparison.Ordinal);
+            int removeWeapon = removalBody.IndexOf(
+                "RemoveProductionMotionWeapon();",
+                StringComparison.Ordinal);
+            Assertions.True(interruptCommands >= 0 &&
+                    runningCommandGate > interruptCommands &&
+                    removeWeapon > runningCommandGate,
+                "Production motion must reject a live native command after interruption and before weapon teardown.");
             foreach (string token in new[]
             {
                 "IsProductionMotion", "PollProductionMotion()",
