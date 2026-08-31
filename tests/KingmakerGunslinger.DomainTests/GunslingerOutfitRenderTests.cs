@@ -258,6 +258,21 @@ namespace KingmakerGunslinger.DomainTests
                 "initialRoundTripRestored",
                 "originalEmpty",
                 "gunslinger-outfit-finalist-donor-selection",
+                "BlueprintRaceVisualPreset",
+                "race.Presets",
+                "new DollState()",
+                "SetGender(fixture.Gender)",
+                "SetRace(fixture.Race)",
+                "SetRacePreset(fixture.Preset)",
+                "SetClass(_magusClass)",
+                "CreateData()",
+                "CreateUnitView(false)",
+                "_actorBlueprint, dollView,",
+                "Body.AllSlots",
+                "slot.RemoveItem(false)",
+                "character-creation-doll-not-neutral",
+                "unexpectedDollEntityCount",
+                "gunslinger-outfit-finalist-character-creation-dolls",
                 "CleanupSnapshotDiagnostic",
                 "DescribeRuntimeReference",
                 "cleanupSnapshot=",
@@ -272,10 +287,10 @@ namespace KingmakerGunslinger.DomainTests
                 "ownedDependentsCleared",
                 "MagusClassGuid",
                 "45a4607686d96a1498891b3286121780",
-                "magus.LoadClothes(",
+                "_magusClass.LoadClothes(",
                 "fixture.Gender, fixture.Race)",
                 "orderedPairExact",
-                "magus.PrimaryColor != _finalist.Primary",
+                "_magusClass.PrimaryColor != _finalist.Primary",
                 "expectedFixtures = _races.Length * 2",
                 "expectedRecords = expectedFixtures * 2",
                 "ApplyQualificationPalette",
@@ -293,11 +308,11 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Finalist race matrix lacks exact guard/evidence token: " +
                     token);
-            Assertions.False(source.Contains(
-                    "_avatar == null || _avatarBefore.Length == 0") ||
+            Assertions.True(source.Contains(
+                    "_avatarBefore.Length == 0") &&
                 source.Contains(
-                    "_avatarBefore.Length > 0 && !RestoreAvatar()"),
-                "A valid empty original avatar must be restored and verified as an exact empty sequence.");
+                    "character-creation-doll-not-neutral"),
+                "Finalist qualification must reject an empty or prefab-contaminated avatar instead of treating it as a neutral player doll.");
             foreach (string id in new[]
             {
                 "6df8f61725a84294c8661bb9585eca97",

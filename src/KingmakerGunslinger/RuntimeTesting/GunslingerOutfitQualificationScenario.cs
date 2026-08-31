@@ -4,10 +4,16 @@ using System.IO;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.CharGen;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
+using Kingmaker.Items;
+using Kingmaker.Items.Slots;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Class.LevelUp;
+using Kingmaker.View;
 using Kingmaker.Visual.CharacterSystem;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -34,10 +40,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class RaceFixtureSpec
         {
             internal RaceFixtureSpec(BlueprintRace race, Gender gender,
-                BlueprintUnit[] sources)
+                BlueprintRaceVisualPreset preset, BlueprintUnit[] sources)
             {
                 Race = race;
                 Gender = gender;
+                Preset = preset;
                 Sources = sources ?? new BlueprintUnit[0];
                 Label = gender.ToString().ToLowerInvariant() + "-" +
                     race.RaceId.ToString().ToLowerInvariant();
@@ -46,6 +53,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly string Label;
             internal readonly BlueprintRace Race;
             internal readonly Gender Gender;
+            internal readonly BlueprintRaceVisualPreset Preset;
             internal readonly BlueprintUnit[] Sources;
             internal int DonorIndex;
 
@@ -96,12 +104,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             private object[] _partyBefore = new object[0];
             private UnitEntityData _anchor;
             private BlueprintRace[] _races = new BlueprintRace[0];
+            private BlueprintCharacterClass _magusClass;
             private RaceFixtureSpec[] _fixtures =
                 new RaceFixtureSpec[0];
             private CandidateSpec _finalist;
             private UnitEntityData _actor;
             private BlueprintUnit _actorBlueprint;
+            private DollData _dollData;
             private Character _avatar;
+            private EquipmentEntity[] _dollEntities =
+                new EquipmentEntity[0];
             private AvatarEntityState[] _avatarBefore =
                 new AvatarEntityState[0];
             private string[] _savedLinksBefore = new string[0];
@@ -121,6 +133,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _captured;
             private int _imageCount;
             private int _viewCount;
+            private int _clearedSlotItems;
             private bool _fixtureInitialized;
             private bool _currentRestored;
             private bool _cleanupStarted;
@@ -259,8 +272,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             throw new InvalidOperationException(
                                 "No native body donor exists for " +
                                 gender + " " + race.RaceId + ".");
+                        BlueprintRaceVisualPreset preset =
+                            ResolveCharacterCreationPreset(race, gender);
                         fixtures.Add(new RaceFixtureSpec(race, gender,
-                            matches));
+                            preset, matches));
                     }
                 _fixtures = fixtures.ToArray();
                 ValidateFinalistNativeLinks();
@@ -278,18 +293,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _diagnostics.Add("fixtureDonors=" + string.Join("|",
                     _fixtures.Select(value => value.Label + "=" +
                         DescribeQualificationBlueprint(value.Source) +
+                        ";preset=" + value.Preset.name + "/" +
+                        value.Preset.AssetGuid +
                         ";candidateCount=" + value.DonorCount).ToArray()));
                 WriteProgress("initialized");
             }
 
             private void ValidateFinalistNativeLinks()
             {
-                BlueprintCharacterClass magus = BlueprintLibraryLookup
+                _magusClass = BlueprintLibraryLookup
                     .RequireExact<BlueprintCharacterClass>(
                         BlueprintBootstrap.Library, MagusClassGuid,
                         "gunslinger-outfit-finalist-native-magus-class");
-                if (magus.PrimaryColor != _finalist.Primary ||
-                    magus.SecondaryColor != _finalist.Secondary)
+                if (_magusClass.PrimaryColor != _finalist.Primary ||
+                    _magusClass.SecondaryColor != _finalist.Secondary)
                     throw new InvalidOperationException(
                         "The native Magus color defaults no longer match the " +
                         "audited finalist defaults.");
@@ -306,7 +323,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     id + ".");
                             return entity;
                         }).ToArray();
-                    EquipmentEntity[] observed = magus.LoadClothes(
+                    EquipmentEntity[] observed = _magusClass.LoadClothes(
                             fixture.Gender, fixture.Race)
                         .Where(value => value != null).ToArray();
                     bool exact = expected.Length == observed.Length &&
@@ -360,6 +377,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return 5;
             }
 
+            private static BlueprintRaceVisualPreset
+                ResolveCharacterCreationPreset(BlueprintRace race,
+                    Gender gender)
+            {
+                BlueprintRaceVisualPreset[] presets = race == null ||
+                    race.Presets == null
+                    ? new BlueprintRaceVisualPreset[0]
+                    : race.Presets.Where(value => value != null &&
+                            value.RaceId == race.RaceId &&
+                            value.Skin != null &&
+                            (gender == Gender.Female
+                                ? value.FemaleSkeleton != null
+                                : value.MaleSkeleton != null))
+                        .OrderBy(value => value.AssetGuid,
+                            StringComparer.Ordinal).ToArray();
+                if (presets.Length == 0)
+                    throw new InvalidOperationException(
+                        "No complete character-creation race preset exists " +
+                        "for " + gender + " " +
+                        (race == null ? "<null>" :
+                            race.RaceId.ToString()) + ".");
+                return presets[0];
+            }
+
             private static Size ExpectedPlayerRaceSize(Race race)
             {
                 return race == Race.Gnome || race == Race.Halfling
@@ -384,36 +425,70 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actorBlueprint = UnityEngine.Object.Instantiate(
                         fixture.Source);
                     _actorBlueprint.Race = fixture.Race;
+                    _actorBlueprint.Gender = fixture.Gender;
                     _actorBlueprint.name =
                         "KMG_Runtime_Gunslinger_Outfit_Finalist_" +
                         fixture.Label.Replace('-', '_');
                     _actorBlueprint.IsCheater = true;
                 }
                 Game.Instance.EntityCreator.Tick();
-                var prefab = fixture.Source.Prefab.Load(false);
-                _settleUpdates++;
-                if (prefab == null)
+                UnitEntityView dollView = null;
+                try
                 {
-                    if (_settleUpdates < MaximumSettleUpdates) return false;
-                    RejectCurrentDonor("prefab-load-timeout",
-                        new JObject
-                        {
-                            { "settleUpdates", _settleUpdates }
-                        });
-                    return false;
+                    _dollData = CreateCharacterCreationDoll(fixture);
+                    dollView = _dollData.CreateUnitView(false);
+                    if (dollView == null ||
+                        dollView.CharacterAvatar == null)
+                        throw new InvalidOperationException(fixture.Label +
+                            " character-creation DollData did not create a " +
+                            "complete native view.");
+                    _actor = Game.Instance.EntityCreator.SpawnUnit(
+                        _actorBlueprint, dollView,
+                        NearestNavigable(_anchor.Position +
+                            new Vector3(-3.5f, 0f, 3.5f)),
+                        Quaternion.identity, _anchor.HoldingState);
                 }
-                _actor = Game.Instance.EntityCreator.SpawnUnit(
-                    _actorBlueprint, prefab,
-                    NearestNavigable(_anchor.Position +
-                        new Vector3(-3.5f, 0f, 3.5f)),
-                    Quaternion.identity, _anchor.HoldingState);
+                finally
+                {
+                    if (dollView != null)
+                        UnityEngine.Object.DestroyImmediate(
+                            dollView.gameObject);
+                }
                 if (_actor == null)
                     throw new InvalidOperationException(
                         fixture.Label + " disposable actor did not spawn.");
+                if (_actor.Descriptor != null)
+                    _actor.Descriptor.Doll = _dollData;
                 _fixtureInitialized = false;
                 _currentRestored = false;
                 WriteProgress("spawned");
                 return true;
+            }
+
+            private DollData CreateCharacterCreationDoll(
+                RaceFixtureSpec fixture)
+            {
+                var state = new DollState();
+                state.SetGender(fixture.Gender);
+                state.SetRace(fixture.Race);
+                state.SetRacePreset(fixture.Preset);
+                state.SetClass(_magusClass);
+                if (state.GetSkinRamps().Count > 0)
+                    state.SetSkinColor(0);
+                if (state.GetHairRamps().Count > 0)
+                    state.SetHairColor(0);
+                if (state.GetHornsRamps().Count > 0)
+                    state.SetHornsColor(0);
+                DollData data = state.CreateData();
+                if (data == null ||
+                    !ReferenceEquals(data.RacePreset, fixture.Preset) ||
+                    data.Gender != fixture.Gender ||
+                    data.EquipmentEntityIds == null ||
+                    data.EquipmentEntityIds.Count == 0)
+                    throw new InvalidOperationException(fixture.Label +
+                        " did not produce complete deterministic native " +
+                        "DollData.");
+                return data;
             }
 
             private void PollFixtureReadiness()
@@ -445,12 +520,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor.Commands.InterruptAll(true);
                     if (_actor.CombatState.IsInCombat)
                         _actor.CombatState.LeaveCombat();
-                    ClearHand(_actor, true);
-                    ClearHand(_actor, false);
-                    if (_actor.Body.Armor.HasArmor)
-                        _actor.Body.Armor.RemoveItem(false);
-                    if (_actor.Body.Shoulders.MaybeItem != null)
-                        _actor.Body.Shoulders.RemoveItem(false);
+                    _clearedSlotItems =
+                        ClearAllQualificationEquipment(_actor);
                     _actor.View.HandsEquipment.UpdateAll();
                     _actor.View.HandsEquipment.ForceSwitch(false);
                     _fixtureInitialized = true;
@@ -460,11 +531,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_actor.View.AnimationManager != null)
                     _actor.View.AnimationManager.Tick();
                 Renderer[] renderers = ActiveRenderers(_actor);
+                _avatar = _actor.View.CharacterAvatar;
+                _dollEntities = ResolveDollEntities(fixture);
+                bool dollExact = _dollData != null &&
+                    ReferenceEquals(_actor.Descriptor.Doll, _dollData) &&
+                    _dollEntities.Length > 0 &&
+                    _dollEntities.All(expected =>
+                        _avatar.EquipmentEntities.Any(actual =>
+                            ReferenceEquals(expected, actual)));
+                bool noWeaponModels = _actor.View.HandsEquipment
+                        .GetWeaponModel(false) == null &&
+                    _actor.View.HandsEquipment.GetWeaponModel(true) == null;
                 bool exact = _actor.Gender == fixture.Gender &&
                     _actor.Descriptor.Progression.Race.RaceId ==
                         fixture.Race.RaceId &&
                     _actor.Descriptor.State.Size == fixture.Source.Size &&
                     HasExactHumanoidRig(_actor.View.transform) &&
+                    dollExact && noWeaponModels &&
                     renderers.Length > 0;
                 if (_settleUpdates < MinimumSettleUpdates || !exact)
                 {
@@ -485,12 +568,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             { "rigExact",
                                 HasExactHumanoidRig(
                                     _actor.View.transform) },
+                            { "dollExact", dollExact },
+                            { "dollEntityCount", _dollEntities.Length },
+                            { "noWeaponModels", noWeaponModels },
                             { "rendererCount", renderers.Length }
                         });
                     return;
                 }
 
-                _avatar = _actor.View.CharacterAvatar;
                 _avatarBefore = _avatar.EquipmentEntities
                     .Where(value => value != null)
                     .Select(value => new AvatarEntityState
@@ -502,6 +587,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _savedLinksBefore = QualificationSavedLinks(_avatar);
                 _classEntities = LoadPresentClassClothes(
                     fixture.Gender, fixture.Race);
+                EquipmentEntity[] unexpectedDollEntities = _avatarBefore
+                    .Select(value => value.Entity).Where(value =>
+                        !_dollEntities.Any(expected =>
+                            ReferenceEquals(expected, value)) &&
+                        !_classEntities.Any(expected =>
+                            ReferenceEquals(expected, value))).ToArray();
+                if (_avatarBefore.Length == 0 ||
+                    unexpectedDollEntities.Length > 0)
+                {
+                    RejectCurrentDonor(
+                        "character-creation-doll-not-neutral",
+                        new JObject
+                        {
+                            { "originalEntityCount", _avatarBefore.Length },
+                            { "dollEntityCount", _dollEntities.Length },
+                            { "classEntityCount", _classEntities.Length },
+                            { "unexpectedEntities", new JArray(
+                                unexpectedDollEntities.Select(value =>
+                                    value.name + "/layer=" + value.Layer)
+                                    .ToArray()) }
+                        });
+                    return;
+                }
                 if (!RestoreAvatar())
                 {
                     RejectCurrentDonor(
@@ -528,6 +636,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "expectedSize",
                         ExpectedPlayerRaceSize(
                             fixture.Race.RaceId).ToString() },
+                    { "racePresetName", fixture.Preset.name },
+                    { "racePresetGuid", fixture.Preset.AssetGuid },
+                    { "dollEquipmentEntityIds", new JArray(
+                        _dollData.EquipmentEntityIds.ToArray()) },
+                    { "dollEntityCount", _dollEntities.Length },
+                    { "unexpectedDollEntityCount", 0 },
+                    { "clearedSlotItemCount", _clearedSlotItems },
+                    { "noWeaponModels", true },
                     { "originalEntityCount", _avatarBefore.Length },
                     { "presentClassEntityCount", _classEntities.Length },
                     { "initialRoundTripRestored", true },
@@ -541,6 +657,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _phase = 3;
                 _settleUpdates = 0;
                 WriteProgress("fixture-ready");
+            }
+
+            private EquipmentEntity[] ResolveDollEntities(
+                RaceFixtureSpec fixture)
+            {
+                var entities = new List<EquipmentEntity>();
+                entities.AddRange(fixture.Preset.Skin.Load(
+                    fixture.Gender, fixture.Race.RaceId).Where(value =>
+                        value != null));
+                foreach (string id in _dollData.EquipmentEntityIds)
+                {
+                    EquipmentEntity entity = ResourcesLibrary
+                        .TryGetResource<EquipmentEntity>(id, true);
+                    if (entity == null)
+                        throw new InvalidOperationException(fixture.Label +
+                            " DollData entity did not resolve: " + id + ".");
+                    entities.Add(entity);
+                }
+                return entities.Distinct().ToArray();
+            }
+
+            private static int ClearAllQualificationEquipment(
+                UnitEntityData actor)
+            {
+                if (actor == null || actor.Body == null) return 0;
+                var removed = new List<ItemEntity>();
+                foreach (ItemSlot slot in actor.Body.AllSlots.ToArray())
+                {
+                    if (slot == null || slot.MaybeItem == null) continue;
+                    ItemEntity item = slot.MaybeItem;
+                    slot.RemoveItem(false);
+                    if (!removed.Any(value => ReferenceEquals(value, item)))
+                        removed.Add(item);
+                }
+                foreach (ItemEntity item in removed) item.Dispose();
+                return removed.Count;
             }
 
             private EquipmentEntity[] LoadPresentClassClothes(
@@ -699,7 +851,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     QualificationSavedLinks(_avatar),
                     StringComparer.Ordinal);
                 bool noWeapon = _actor.View.HandsEquipment
-                    .GetWeaponModel(false) == null &&
+                        .GetWeaponModel(false) == null &&
+                    _actor.View.HandsEquipment.GetWeaponModel(true) == null &&
                     !_actor.View.HandsEquipment.InCombat;
                 if (_settleUpdates < MinimumSettleUpdates ||
                     !allCandidate || staleClass || !savedLinksExact ||
@@ -742,6 +895,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixture", fixture.Label },
                     { "sourceName", fixture.Source.name },
                     { "sourceGuid", fixture.Source.AssetGuid },
+                    { "racePresetName", fixture.Preset.name },
+                    { "racePresetGuid", fixture.Preset.AssetGuid },
+                    { "dollEquipmentEntityIds", new JArray(
+                        _dollData.EquipmentEntityIds.ToArray()) },
                     { "gender", _actor.Gender.ToString() },
                     { "raceName",
                         _actor.Descriptor.Progression.Race.name },
@@ -1035,12 +1192,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnityEngine.Object.DestroyImmediate(_actorBlueprint);
                     _actor = null;
                     _actorBlueprint = null;
+                    _dollData = null;
                     _avatar = null;
+                    _dollEntities = new EquipmentEntity[0];
                     _avatarBefore = new AvatarEntityState[0];
                     _savedLinksBefore = new string[0];
                     _classEntities = new EquipmentEntity[0];
                     _candidateEntities = new EquipmentEntity[0];
                     _lastRestorationDiagnostic = new JObject();
+                    _clearedSlotItems = 0;
                     _fixtureInitialized = false;
                     _currentRestored = false;
                 }
@@ -1099,7 +1259,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "phase", _phase },
                     { "captured", _captured },
                     { "imageCount", _imageCount },
-                    { "actorPresent", _actor != null }
+                    { "actorPresent", _actor != null },
+                    { "racePresetGuid", _fixtureIndex < _fixtures.Length
+                        ? _fixtures[_fixtureIndex].Preset.AssetGuid :
+                            string.Empty },
+                    { "dollEquipmentEntityCount", _dollData == null ||
+                        _dollData.EquipmentEntityIds == null ? 0 :
+                            _dollData.EquipmentEntityIds.Count },
+                    { "clearedSlotItemCount", _clearedSlotItems }
                 };
                 WriteJsonAtomic(Path.Combine(_request.EvidenceDirectory,
                     "gunslinger-outfit-finalist-race-matrix-progress.json"),
@@ -1303,7 +1470,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (int)value["donorAttemptIndex"] >= 0 &&
                             (int)value["donorAttemptIndex"] <
                                 (int)value["donorCandidateCount"]),
-                    "BlueprintRoot progression race discovery plus native BlueprintUnit race/gender donors");
+                    "BlueprintRoot progression race discovery plus native BlueprintUnit race/gender descriptors");
+                Add(_assertions,
+                    "gunslinger-outfit-finalist-character-creation-dolls",
+                    "every cell uses one exact nonempty neutral DollState/DollData race preset with no equipped or visible weapon",
+                    "fixtures=" + _fixtureRecords.Count + ";presets=" +
+                        string.Join(",", _fixtureRecords.OfType<JObject>()
+                            .Select(value => (string)value["racePresetGuid"])
+                            .OrderBy(value => value, StringComparer.Ordinal)
+                            .ToArray()),
+                    _fixtureRecords.Count == expectedFixtures &&
+                        _fixtureRecords.OfType<JObject>().All(value =>
+                            !string.IsNullOrEmpty(
+                                (string)value["racePresetGuid"]) &&
+                            ((JArray)value["dollEquipmentEntityIds"]).Count > 0 &&
+                            (int)value["dollEntityCount"] > 0 &&
+                            (int)value["originalEntityCount"] > 0 &&
+                            (int)value["unexpectedDollEntityCount"] == 0 &&
+                            (int)value["clearedSlotItemCount"] >= 0 &&
+                            (bool)value["noWeaponModels"]),
+                    "BlueprintRace.Presets plus DollState.CreateData/CreateUnitView and complete UnitBody.AllSlots cleanup");
                 Add(_assertions,
                     "gunslinger-outfit-finalist-donor-selection",
                     "every rejected disposable donor is recorded; every accepted donor proves an exact avatar round trip",
