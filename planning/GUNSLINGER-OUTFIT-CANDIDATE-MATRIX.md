@@ -3,9 +3,9 @@
 Status: `magus-complete` is bound through a focused production appearance
 policy after accepted Human weapon-state rendering and an accepted guarded
 18-cell race/gender matrix. The published production commit, clean commit-bound
-package, and canonical guarded working-save load pass. Equipment, animation,
-rebuild, and outfit-persistence gates remain open; this is not final mission
-qualification.
+package, canonical guarded working-save load, and complete static production
+equipment/rebuild matrix pass. Motion/animation and outfit-persistence gates
+remain open; this is not final mission qualification.
 
 ## Scoring contract
 
@@ -37,7 +37,7 @@ exist.
 
 | Stream | Base hypothesis | Accent hypothesis | API inventory | Rendered M/F | Race grid | Weapon states | Equipment override | Current score | Disposition |
 |---|---|---|---|---|---|---|---|---:|---|
-| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 races x 2 genders directly accepted | No weapon/pistol/musket pass | Pending | 88 | Advance coherent Magus pair |
+| A | Inquisitor or Magus fitted base | Alchemist/Rogue utility or strap | Loaded exact M/F links; Inquisitor cap and cape separated | Magus pass | 9 races x 2 genders directly accepted | No weapon/pistol/musket/blunderbuss pass | Accepted 16-state M/F production matrix | 88 | Advance coherent Magus pair |
 | B | Ranger or Slayer practical leather | Native class accessory set | Loaded exact M/F links; cap/cape separable | Ranger and Slayer pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | 70 (Slayer) | Retain Slayer as reserve |
 | C | Bard coat/waistcoat hypothesis | Native Bard accessory set | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant traveler pack/commoner identity |
 | D | Alchemist or other strong single class outfit | Native same-class accessories | Loaded exact M/F links | Pass | 9 race IDs inventoried | No weapon/pistol/musket pass | Pending | Below top three | Dominant Alchemist tank/apron identity |
@@ -80,15 +80,17 @@ same scored order after direct inspection of all 96 new images.
 
 | Rank | Candidate-set ID | Exact assets | M/F identity | Coverage | Compatibility | Colors | Score | Evidence | Decision |
 |---:|---|---|---|---|---|---|---:|---|---|
-| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F weapon cases plus accepted 9x2 no-weapon grid | No missing geometry/material defect in accepted race, gender, palette, and Human weapon cases; animation/equipment pending | 35x35 valid ramps; native 2/22 and alternate accepted across 9x2 | 88 (26/23/15/15/9) | Preview-like four-view and ordinary isometric; all 72 replacement grid PNGs directly inspected | Approved for focused production integration |
+| 1 | `magus-complete` | 2 M / 2 F below | Strong fitted open torso, split waist tails, bracers, belts, and boots; controlled arcane detail | Human M/F weapon/equipment cases plus accepted 9x2 no-weapon grid | Static weapon, armor, headgear/hair, cloak, backpack, and rebuild states accepted; motion and persistence pending | 35x35 valid ramps; native 2/22 and alternate accepted across 9x2 | 88 (26/23/15/15/9) | Preview-like four-view and ordinary isometric; all 72 race-grid and 64 production-matrix PNGs directly inspected | Approved for focused production integration |
 | 2 | `rogue-capless-capeless` | 2 M / 2 F below | Clean fitted dark coat/tunic, diagonal straps, restrained burgundy; less distinctive | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 35x35 base ramps; native 31/22 and alternate rendered | 75 (23/20/16/8/8) | Same guarded matrix | Runner-up if Magus fails |
 | 3 | `slayer-capless` | 3 M / 3 F below | Long layered garment and asymmetric shoulder; heavier and more armored than desired | Human M/F rendered; 9x2 grid inventoried | Clean Human weapon/ramp cases; animation/equipment pending | 37x37 ramps; native 35/36 and alternate rendered | 70 (21/17/15/8/9) | Same guarded matrix | Reserve; below production threshold |
 
 Score components are recorded in rubric order: silhouette, thematic
 coherence, compatibility, race/gender coverage, and color quality. The
 accepted complete race/gender matrix awards the remaining seven coverage
-points. Five compatibility points remain deliberately withheld for animation,
-equipment-overlay, rebuild, and persistence evidence.
+points. The complete static matrix now proves equipment-overlay and rebuild
+behavior. Five compatibility points remain deliberately withheld as one
+conservative block until motion/animation and persistence evidence also pass;
+no partial increment is inferred inside the combined 20-point criterion.
 
 Exact selected and runner-up assets:
 
@@ -373,3 +375,35 @@ selected hair to survive the bounded native settle window before any snapshot
 or mutation, matching the accepted all-race harness. All 1368 tests and clean
 strict packaging pass locally. No score changes: `magus-complete` remains
 selected at 88/100 pending a complete terminal-PASS matrix and direct review.
+
+### Accepted production compatibility matrix
+
+Published readiness commit
+`59eb7a97d6c1278f1e4e0d351aa6d4557b2db566` passed the complete guarded
+Steam 640820 matrix at
+`20260831T0344513197562Z-gunslinger-outfit-production-compatibility`.
+The commit-bound package SHA-256 is
+`e15546c561d244f5f29517bec79f71025713cbd79530238ff69232f38fb18394`;
+the loaded DLL SHA-256 is
+`10f1beaf90eb6f5578ab5c8c09f9d10b219d587bb2adb11b308a959a7a422b26`
+with MVID `780b053b-acb8-4716-a5b5-87b578e356e0`.
+
+All 18 installed race/gender production-link rows were exact. Both Human
+fixtures completed all 16 states, producing 32 matching records/sidecars, 64
+hash-verified PNGs, and 160 labeled views; both original avatar states were
+restored exactly. Direct inspection of every capture accepts default and
+alternate colors, pistol, held and stored musket, blunderbuss, light/heavy
+armor override and removal, tricorn and hair restoration, cloak, backpack,
+and final rebuild for both genders. There is no missing geometry, broken
+material, severe clipping, baked duplication, or stale override. Eight female
+isometric captures carry the conservative low-density flag, but each has
+11,278 or more meaningful pixels, its paired four-view preview is not low
+density, and every image was directly legible.
+
+An independent read-only reconciliation found zero issues: 32/32 sidecars
+equal their index records, 64/64 file byte counts and SHA-256 values match,
+all production entities and ramps are exact, all prior states clear, native
+hair and saved links survive, and save/API, blueprint-mutation, cleanup, and
+restoration guards pass. This closes static equipment and rebuild evidence.
+The score remains 88/100 until the deliberately bundled motion/animation and
+persistence evidence completes the remaining compatibility criterion.

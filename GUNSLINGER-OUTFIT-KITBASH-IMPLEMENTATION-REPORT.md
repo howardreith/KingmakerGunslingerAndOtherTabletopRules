@@ -1,9 +1,9 @@
 # Gunslinger Outfit Kitbash Implementation Report
 
 Status: native candidate selected at 88/100 and integrated through a focused
-production policy. The published commit-bound package and canonical guarded
-working-save load pass; equipment, animation, rebuild, outfit persistence, and
-final package qualification remain open.
+production policy. The published commit-bound package, canonical guarded
+working-save load, and complete static equipment/rebuild matrix pass; motion,
+outfit persistence, and final package qualification remain open.
 
 ## Intake
 
@@ -584,12 +584,51 @@ DLL SHA-256 is
 MVID is `1e6d17a7-bb7c-4e5a-b36f-19e64b59969c`. A published,
 commit-bound complete rerun and direct review remain mandatory.
 
+## Accepted production compatibility matrix
+
+The readiness correction was committed and policy-published as
+`59eb7a97d6c1278f1e4e0d351aa6d4557b2db566`. Its commit-bound package
+SHA-256 is
+`e15546c561d244f5f29517bec79f71025713cbd79530238ff69232f38fb18394`;
+the exact loaded DLL SHA-256 is
+`10f1beaf90eb6f5578ab5c8c09f9d10b219d587bb2adb11b308a959a7a422b26`;
+MVID is `780b053b-acb8-4716-a5b5-87b578e356e0`.
+
+Guarded Steam 640820 run
+`20260831T0344513197562Z-gunslinger-outfit-production-compatibility`
+completed with terminal `PASS`. The installed-game index records the exact
+2.1.7b assembly identity, all nine dynamic player races and both genders, 18
+exact production-link rows, one male and one female Human production doll, 16
+reversible states per fixture, 32 sidecars, 64 captures, 160 views, and 2/2
+exact original-avatar restorations. The working save was named exactly and no
+save-writing API ran. Production blueprint arrays, links, and colors remained
+unchanged, and request-local actor/global cleanup plus automatic exit passed.
+
+All 64 captures were directly reviewed. The production outfit retains intact
+geometry, materials, hair, and class identity under default and alternate
+colors; pistol, musket held/stored, and blunderbuss presentation; light/heavy
+armor; tricorn; cloak; backpack; every removal transition; and the final
+rebuild for both genders. No hard rejection or stale geometry was observed.
+Eight female isometric captures retain low-density warnings, but each remains
+legible (minimum 11,278 meaningful pixels) and has a clear four-view preview.
+
+A separate read-only invariant pass compared all 32 sidecars byte-for-state
+with their index records, rehashed all 64 PNGs, and checked exact class assets,
+35x35 ramp bounds, color applications, hair/saved links, slot transitions,
+weapon roles, renderers, restoration, blueprint immutability, and save guards.
+It reported zero issues. Static equipment and rebuild compatibility is thus
+accepted. The combined compatibility score stays at 15/20 pending independent
+motion and persistence gates; no partial points are invented inside the five-
+point withheld block.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
 manifest-matching pre-existing untracked package was inspected provisionally
 without modifying or publishing it. The path discrepancy remains explicit.
 Eleven ordinary-isometric images in the first batch were tagged low pixel
-density; the accepted rerun reduced that to eight with zero low-density
-preview captures. Paired preview-like images were directly usable, but final
-evidence must improve or explicitly retain that limitation.
+density; the accepted race rerun reduced that to eight with zero low-density
+preview captures. The accepted production matrix likewise has eight
+conservative female-isometric warnings, each directly legible with at least
+11,278 meaningful pixels and a clear paired preview. The limitation is
+explicitly retained while motion and persistence evidence remain open.

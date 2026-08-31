@@ -600,3 +600,41 @@ Exact next action: publish the readiness correction, rebuild and preflight the
 exact commit, rerun the full 32-state matrix through Steam 640820, and inspect
 all 64 images. Do not advance to motion or persistence qualification until
 this static compatibility gate passes and its complete images are accepted.
+
+## 2026-08-31 - Static production compatibility accepted
+
+Readiness commit `59eb7a97d6c1278f1e4e0d351aa6d4557b2db566` was already
+policy-published with identical HEAD/local/origin refs and a clean tree. Its
+commit-bound package SHA-256 is
+`e15546c561d244f5f29517bec79f71025713cbd79530238ff69232f38fb18394`;
+the installed DLL SHA-256 is
+`10f1beaf90eb6f5578ab5c8c09f9d10b219d587bb2adb11b308a959a7a422b26`;
+MVID is `780b053b-acb8-4716-a5b5-87b578e356e0`.
+
+Guarded Steam App ID 640820 evidence
+`20260831T0344513197562Z-gunslinger-outfit-production-compatibility`
+reached terminal `PASS` on version `0.0.110`. It proves 18/18 exact installed
+race/gender production links, two exact native Human dolls, 32/32 ordered
+states, 32 sidecars, 64 PNGs, 160 labeled views, 2/2 original restorations,
+unchanged production blueprint state, no save-writing API, exact request-local
+cleanup, and automatic exit.
+
+Every one of the 64 captures was directly inspected through 16 labeled review
+boards outside the repository. Both genders retain coherent bodies, materials,
+hair, and class clothing across both palettes; pistol, held/stored musket, and
+blunderbuss presentation; light/heavy armor overrides and removals; tricorn
+equip/removal with hair restoration; cloak; backpack; and final rebuild. No
+hard rejection was observed. A separate sidecar/hash reconciliation passed
+with zero issues over all 32 records and all 64 files. Eight female isometric
+images retain low-density warnings but remain legible at 11,278-14,496
+meaningful pixels and have non-low-density paired previews.
+
+The static equipment/rebuild gate is closed. The candidate remains at a
+conservative 88/100 because the final five compatibility points are withheld
+as a block until motion/fire/reload/melee and outfit persistence/rebuild across
+save/load and respec-like reconstruction also pass.
+
+Exact next action: implement and source-qualify a separately guarded,
+deterministic motion matrix for idle, walk, run, turn, fire, reload, and melee
+on both production genders, then run and directly inspect it before beginning
+the independent persistence gate.
