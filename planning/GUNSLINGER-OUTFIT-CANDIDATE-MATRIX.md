@@ -752,3 +752,31 @@ documented stabilization sentinel. Pre-commit package/DLL SHA-256 values are
 `3c95c8c5115135023023ff74d4c77cbc3aaf90ff7c0ca742c3e397e1741c839d`;
 MVID is `5a199838-48eb-49a2-8b92-7ca8d0dfabe2`. `magus-complete` remains
 88/100 until complete motion and persistence PASS gates.
+
+### Production motion attempt 13 diagnostic
+
+Published commit `934785962bb4ef752993add5558d20cb751f1c7d`, package
+SHA-256
+`a53c3314dd6aeb5d4ee13a8f0b5615d93325212062f1c5916ef0aa9460f88e5f`,
+DLL SHA-256
+`af2af437dd06f55c1316305190e02aee86f95a1d0f0c2364b48b4eb032c7fff1`,
+and MVID `0e441834-5f14-41d6-b1ad-15d46b4f976e` produced evidence
+`20260831T1548069712324Z-gunslinger-outfit-production-motion`. It failed
+before record one with exact guard/build/save/no-save/blueprint/scene/cleanup/
+exit contracts passing and no image accepted.
+
+All lifecycle boundaries used the same avatar but reported zero entities while
+`ResourcesLibrary.Preloading=True`; after the flag became false, the existing
+avatar stayed empty. Installed IL proves `CreateUnitView(false)` had already
+received null for every ID from `TryGetResource(id, false)`, which forbids
+loads during preloading and has no deferred retry. The repair waits boundedly
+for false before creation, hard-checks the same-frame flag, records the wait,
+and makes creation readiness terminal evidence for both production scenarios.
+Compilation and all `1369/1369` tests pass, as do clean strict packaging,
+firearm/audio checks, and the settled 169-check preflight; its first pass had
+only the documented stabilization sentinel. Pre-commit package/DLL SHA-256
+values are
+`8aba976c9550a3c09b95539dee11d7825362169b0933b546837cb2e34d25c378` and
+`379f0bc2a1612065b3ae53539b391f11ac20161be18b4a0dfb0f47bba8803a89`;
+MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`. `magus-complete` remains
+88/100 pending complete motion and persistence PASS gates.

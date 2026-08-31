@@ -1492,3 +1492,37 @@ its exact package, and run attempt 12. Candidate score remains 88/100.
 
 Exact next action: commit and policy-publish the clone-AI isolation, rebuild
 the exact commit, and run attempt 13. Candidate score remains 88/100.
+
+## 2026-08-31 - Thirteenth motion run proves a pre-creation resource race
+
+- Published commit `934785962bb4ef752993add5558d20cb751f1c7d`, package
+  `a53c3314dd6aeb5d4ee13a8f0b5615d93325212062f1c5916ef0aa9460f88e5f`,
+  DLL `af2af437dd06f55c1316305190e02aee86f95a1d0f0c2364b48b4eb032c7fff1`,
+  and MVID `0e441834-5f14-41d6-b1ad-15d46b4f976e` ran through Steam 640820.
+- Evidence `20260831T1548069712324Z-gunslinger-outfit-production-motion`
+  failed before record one. Guard, exact game/build, disposable working save,
+  no-save, immutable-blueprint, request-local scene, cleanup, and exit passed;
+  no image exists or is accepted.
+- Before spawn, after spawn, and after attachment, preloading was true and the
+  same avatar instance had zero raw/active/saved entities for four expected
+  IDs. At timeout preloading was false, but the avatar was still empty.
+- Installed IL proves the cause: `DollData.CreateUnitView(false)` calls
+  `TryGetResource(id, false)` once for each ID; during preloading that API
+  returns null immediately, and the created avatar has no deferred retry.
+  Native game code also demonstrates waiting for preloading to become false
+  before resource-dependent work.
+- The repair adds a 360-update pre-creation wait, hard-checks the flag again at
+  `CreateUnitView`, records wait updates and creation-time preloading state,
+  and requires that evidence in both static and motion terminal contracts.
+  It does not load resources itself or relax native doll validation.
+- Installed-reference compilation and all `1369/1369` tests pass.
+- Clean Release/package construction, strict package/firearm/audio validation,
+  and the settled 169-check preflight pass; its first pass reported only the
+  expected artifact-tree stabilization sentinel. Pre-commit package SHA-256
+  is `8aba976c9550a3c09b95539dee11d7825362169b0933b546837cb2e34d25c378`,
+  DLL SHA-256 is
+  `379f0bc2a1612065b3ae53539b391f11ac20161be18b4a0dfb0f47bba8803a89`,
+  and MVID is `5a3b66e8-97b3-4d55-b7e0-db500ca82c96`.
+
+Exact next action: commit and policy-publish the repair, rebuild the exact
+commit, and run attempt 14. Candidate score remains 88/100.

@@ -308,6 +308,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_phase == 1)
                 {
+                    if (!PollProductionDollCreationReadiness()) return;
                     SpawnFixture();
                     _phase = 2;
                     _settleUpdates = 0;
@@ -526,6 +527,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "raceId", fixture.Race.RaceId.ToString() },
                     { "productionAssetIds", new JArray(
                         CurrentProductionAssetIds()) },
+                    { "dollCreationResourceGatePassed",
+                        _dollCreationResourceGatePassed },
+                    { "resourcePreloadingAtDollCreation",
+                        _resourcePreloadingAtDollCreation },
+                    { "dollResourceWaitUpdates",
+                        _dollResourceWaitUpdates },
                     { "selectedHairAssetId", _hairAssetId },
                     { "productionOutfitExact",
                         ProductionMotionOutfitExact() },
@@ -2928,6 +2935,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _motionFixtureRecords.OfType<JObject>().All(value =>
                             (bool)value["productionOutfitExact"] &&
                             (bool)value["humanoidRigExact"] &&
+                            (bool)value[
+                                "dollCreationResourceGatePassed"] &&
+                            !(bool)value[
+                                "resourcePreloadingAtDollCreation"] &&
                             !(bool)value["actorIsPlayerFaction"] &&
                             (bool)value[
                                 "actorAutonomousBrainDisabled"] &&
