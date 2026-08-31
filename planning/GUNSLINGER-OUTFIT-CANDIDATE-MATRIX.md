@@ -592,3 +592,29 @@ package/DLL SHA-256 values are
 MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`. This is harness evidence;
 `magus-complete` remains 88/100 pending complete motion and persistence PASS
 gates.
+
+### Production motion attempt 7 diagnostic
+
+Published commit `b27438c7fd38d4e588a47b05b5e2329fb3676932` and package
+SHA-256
+`788dcf4d89fac23941f79d9cca54db5f673bb5405125ca5e8817ef24553056e8`
+produced 10/54 male records in evidence
+`20260831T1253077289617Z-gunslinger-outfit-production-motion`. The request-local
+loaded-scene fixture succeeded: player/save/scene/cleanup boundaries stayed
+exact, locomotion and turn ran, and the pistol attack acted and discharged.
+The readiness-only musket probe then fired before the real evidence command,
+leaving zero rounds and causing the production empty-firearm guard to reject
+that command. No partial image is scored.
+
+Installed IL proves native `UnitAttack.Init` supplies attack planning and
+approach radius without registration, while `UnitCommands.Run` makes the
+command live. The repaired harness initializes its placement probe directly,
+requires it never appear in actor commands, and records that fact in every
+attack sidecar and terminal outcome. Compile, repository validation, all
+`1369/1369` tests, clean strict packaging, firearm/audio checks, and the
+stable 169-check preflight pass. Pre-commit package/DLL SHA-256 values are
+`31498b7bed5b9532d0a208cda645b744cdfefa30b2a7246fab472696da7f0ce1` and
+`877b451e4a4a62751b3d1b75c217e24c2b66c857ec4d973e28bdfc5e23ef100d`;
+MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. This is harness evidence;
+`magus-complete` remains 88/100 pending complete motion and persistence PASS
+gates.

@@ -885,6 +885,48 @@ DLL SHA-256 is
 and MVID is `43f248b1-be23-43f8-aaf9-78cb02a8f9cd`. Exact-commit
 replacement runtime evidence remains pending.
 
+### Seventh motion execution and detached native attack planning
+
+Published commit `b27438c7fd38d4e588a47b05b5e2329fb3676932` ran through
+Steam 640820 with package SHA-256
+`788dcf4d89fac23941f79d9cca54db5f673bb5405125ca5e8817ef24553056e8`,
+DLL SHA-256
+`9a0d1a9d671697f9a5a46c366cb6fe29af83dc528530e805987c55791ff21456`,
+and MVID `60f2fd26-9d78-401d-94d1-69a1c393afbe`. Evidence
+`20260831T1253077289617Z-gunslinger-outfit-production-motion` reached ten
+male records: exact locomotion, turn, and the full pistol attack schedule all
+ran, including one acted discharge. It then failed before the real musket
+attack because the target-placement probe had already acted and consumed that
+weapon's only round. The musket-ready sidecar records zero loaded rounds,
+total fired count two, and a live `UnitAttack`; production correctly rejected
+the resulting unloaded request. No partial capture is accepted.
+
+This run validates the request-local loaded-scene architecture. Exact
+game/build/save identity, no-save behavior, blueprint immutability, player
+lists and combat boundary, scene emptiness/disposal, cleanup, and automatic
+exit passed. Every sidecar retained the exact production outfit and neutral,
+non-controllable request-local unit contracts.
+
+Exact installed IL distinguishes planning from execution. `UnitAttack.Init`
+sets the executor, creates the native attack plan, and computes approach
+radius. `UnitCommands.Run` calls that method and additionally registers the
+command, allowing normal ticks to start and act it. The repair uses direct
+native initialization for target-placement probing, requires the probe absent
+from actor command slots before and after positioning, and reserves `Run` for
+the separately constructed command being evidenced. Structured sidecars and
+terminal attack contracts now require the detached-probe fact.
+
+Installed-reference compilation, repository validation, all `1369/1369`
+tests, clean Release/package construction, strict package/firearm/audio
+validation, and the settled 169-check preflight pass. The first preflight
+reported only the documented artifact-tree stabilization sentinel. Pre-commit
+local-runtime package SHA-256 is
+`31498b7bed5b9532d0a208cda645b744cdfefa30b2a7246fab472696da7f0ce1`,
+DLL SHA-256 is
+`877b451e4a4a62751b3d1b75c217e24c2b66c857ec4d973e28bdfc5e23ef100d`,
+and MVID is `2ada3432-6aa8-4a77-81b1-934fe1a698f0`. Exact-commit
+replacement runtime evidence remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
