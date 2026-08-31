@@ -982,3 +982,41 @@ DLL SHA-256 is
 and MVID is `f4bc8c6e-c148-4890-818c-34dba4f32f1a`. Motion remains
 `PENDING` until an exact-commit terminal PASS, structured reconciliation, and
 direct image review.
+
+## 2026-08-31 production motion attempt 5
+
+Published source commit:
+`1d2b1f8865b5ec12e57ea7dcc1ad25a8762eb63c`.
+Commit-bound package SHA-256:
+`8102f48085bed0830f746c52042e5b05e6a603dc36de49c556b052ec30863e71`.
+Loaded DLL SHA-256:
+`65c530ec491759987d026d86cb4400197eccd209cdb2ba641e774940edd22925`.
+MVID: `f420093c-fef2-4a76-ad47-21e79bbc5c2b`.
+Evidence directory:
+`20260831T0637014594621Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` after 4/54 records.
+
+The four noncombat male records retained exact outfit, hair, links, rig,
+weapon, palette, and boundary contracts. Pistol preparation then observed
+`player=True/False;party=0/0;turnBased=True/False;units=2/0`; no record in the
+partial batch is accepted. Game/build/save identity, no-save, blueprint,
+inventory, target/faction, structural cleanup, and exit assertions passed.
+
+Installed IL proves the party anchor's holding state is still a player-coupled
+boundary even after faction isolation: cross-scene units enter
+`m_ControllableCharacters` through `Player.AddCharacterToLists` without a
+faction predicate, and `UpdateIsInCombat` counts their groups. The pending
+repair uses the exact loaded `AreaPersistentState.MainState`, verifies it is
+live and distinct from `Player.CrossSceneState`, and requires exact
+controllable/cross-scene reference sets plus area-local actor/target identities
+at every boundary. Installed-reference compile, repository validation, and
+all `1369/1369` tests pass. Clean Release/package and strict firearm/audio
+validation pass. The first preflight reported only the documented artifact-
+tree stabilization sentinel; the unchanged rerun passed all 169 checks.
+Pre-commit package SHA-256 is
+`2c6bdf7ffe6901ef33ddf5ab908e195cb3ce0675d93fc974b8c2798de9a30077`,
+DLL SHA-256 is
+`81a315c486dae914ec04c63bd0079be1780c626d5031416c0f5c0c0d7ecf6651`,
+and MVID is `6ed1466d-9131-4b83-84e6-5f86c156a20f`. Motion remains
+`PENDING` until an exact-commit terminal PASS, structured reconciliation, and
+direct review of every replacement image.

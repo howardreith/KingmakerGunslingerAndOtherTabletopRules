@@ -805,6 +805,48 @@ DLL SHA-256 is
 and MVID is `f4bc8c6e-c148-4890-818c-34dba4f32f1a`. Exact-commit runtime
 replacement remains pending.
 
+### Fifth motion execution and loaded-scene isolation
+
+Published commit `1d2b1f8865b5ec12e57ea7dcc1ad25a8762eb63c` ran through
+Steam 640820 with package SHA-256
+`8102f48085bed0830f746c52042e5b05e6a603dc36de49c556b052ec30863e71`,
+DLL SHA-256
+`65c530ec491759987d026d86cb4400197eccd209cdb2ba641e774940edd22925`,
+and MVID `f420093c-fef2-4a76-ad47-21e79bbc5c2b`. Evidence
+`20260831T0637014594621Z-gunslinger-outfit-production-motion` produced four
+clean noncombat male records, then failed before its first pistol capture when
+the boundary became `player=True/False;party=0/0;turnBased=True/False;units=2/0`.
+No partial image is accepted. Cleanup still passed with exact save, inventory,
+target, faction, global-unit, blueprint, hook, and automatic-exit protection.
+
+The isolated faction result did not justify treating that transition as benign.
+Exact installed IL shows `Player.UpdateCharacterLists` enumerates both party
+references and `CrossSceneState`. `Player.AddCharacterToLists` adds any
+in-game, non-detached, non-ex-companion cross-scene unit to
+`m_ControllableCharacters` without checking faction or direct-control flags.
+`Player.UpdateIsInCombat` then sets the global property from every controllable
+unit's group; turn-based mode in turn reads that property. The shared doll
+spawn used the live party anchor's cross-scene holding state, so the fixture
+was still player-coupled even though its faction and group were not.
+
+The corrected motion path resolves
+`PersistentState.LoadedAreaState.MainState`, requires it to be the exact loaded
+scene and not `Player.CrossSceneState`, and routes only motion actors through
+that scene. It refreshes and snapshots canonical controllable and cross-scene
+reference sets and requires them to remain exact at actor/target creation,
+every tick and capture, target retirement, combat reconciliation, and cleanup.
+Sidecars require both disposable units to be area-local and absent from
+controllable characters. Installed-reference compilation, repository
+validation, and all `1369/1369` tests pass. Clean Release/package and strict
+firearm/audio validation pass. The first preflight reported only the known
+artifact-tree stabilization sentinel; the identical rerun passed all 169
+checks. Pre-commit package SHA-256 is
+`2c6bdf7ffe6901ef33ddf5ab908e195cb3ce0675d93fc974b8c2798de9a30077`,
+DLL SHA-256 is
+`81a315c486dae914ec04c63bd0079be1780c626d5031416c0f5c0c0d7ecf6651`,
+and MVID is `6ed1466d-9131-4b83-84e6-5f86c156a20f`. Exact-commit
+replacement runtime evidence remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

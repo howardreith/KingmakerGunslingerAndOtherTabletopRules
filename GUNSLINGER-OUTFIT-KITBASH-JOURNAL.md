@@ -1225,3 +1225,38 @@ package, and execute a complete replacement batch. Candidate score remains
 
 Exact next action: commit and policy-publish the isolated fixture, rebuild its
 exact package, then execute a complete replacement batch. Score stays 88/100.
+
+## 2026-08-31 - Fifth motion run identifies cross-scene cache membership
+
+- Published commit `1d2b1f8865b5ec12e57ea7dcc1ad25a8762eb63c`, package
+  `8102f48085bed0830f746c52042e5b05e6a603dc36de49c556b052ec30863e71`,
+  DLL `65c530ec491759987d026d86cb4400197eccd209cdb2ba641e774940edd22925`,
+  and MVID `f420093c-fef2-4a76-ad47-21e79bbc5c2b` ran through Steam 640820.
+- Evidence `20260831T0637014594621Z-gunslinger-outfit-production-motion`
+  failed after four noncombat male records. Pistol setup observed
+  `player=True/False;party=0/0;turnBased=True/False;units=2/0`. No partial
+  record is accepted. Exact identity, no-save, blueprint, inventory, target,
+  faction, structural cleanup, and exit guards passed.
+- Rechecking the installed IL showed the prior conclusion was incomplete.
+  Despite non-player factions and distinct groups, the shared actor spawn used
+  the main character's `CrossSceneState`. `Player.AddCharacterToLists` adds
+  every qualifying in-game cross-scene unit to controllable characters with no
+  faction check; `UpdateIsInCombat` therefore counted the disposable group.
+- The repair spawns actor and target in the exact loaded area's live
+  `MainState`, requires that scene to differ from `CrossSceneState`, refreshes
+  canonical player lists, and proves the exact controllable and cross-scene
+  reference sets never change. Every sidecar and final assertion includes the
+  area-local and non-controllable contracts. Compile and all `1369/1369`
+  tests pass.
+- Clean Release/package, firearm/audio, and strict package validation pass.
+  The first preflight reported only the known stabilization sentinel; the
+  unchanged rerun passed all 169 checks. Pre-commit package SHA-256 is
+  `2c6bdf7ffe6901ef33ddf5ab908e195cb3ce0675d93fc974b8c2798de9a30077`,
+  DLL SHA-256 is
+  `81a315c486dae914ec04c63bd0079be1780c626d5031416c0f5c0c0d7ecf6651`,
+  and MVID is `6ed1466d-9131-4b83-84e6-5f86c156a20f`. These are
+  dirty-tree source/package identities only.
+
+Exact next action: commit and policy-publish the scene-state repair, rebuild
+its exact package, then execute a complete replacement batch. Score remains
+88/100.

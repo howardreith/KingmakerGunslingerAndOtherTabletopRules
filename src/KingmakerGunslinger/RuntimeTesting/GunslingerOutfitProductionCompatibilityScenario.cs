@@ -12,6 +12,7 @@ using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.Items;
@@ -526,9 +527,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     dollView.transform.position = NearestNavigable(
                         _anchor.Position + new Vector3(-3.5f, 0f, 3.5f));
                     dollView.transform.rotation = Quaternion.identity;
+                    SceneEntitiesState holdingState = IsProductionMotion
+                        ? ProductionMotionHoldingState()
+                        : _anchor.HoldingState;
                     _actor = Game.Instance.EntityCreator
                         .SpawnEntityWithView(dollView,
-                            _anchor.HoldingState) as UnitEntityData;
+                            holdingState) as UnitEntityData;
                     if (_actor == null ||
                         !ReferenceEquals(_actor.View, dollView))
                         throw new InvalidOperationException(fixture.Label +
