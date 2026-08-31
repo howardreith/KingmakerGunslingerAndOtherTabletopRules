@@ -908,3 +908,39 @@ passed. Pre-commit package/DLL SHA-256 values are
 and `9f717b6c8d08f39cd67635bfc5e635543e38d60a38ce215a0a5c4f590cadfa41`.
 Motion remains `PENDING` until an exact-commit replacement terminal PASS,
 structured reconciliation, and direct review of all replacement images.
+
+## 2026-08-31 production motion attempt 3
+
+Published source commit:
+`df4f3f04f55bbbdfe56ef113f723f89af23fa62a`.
+Commit-bound package SHA-256:
+`fa29aab259ef800d0db3ab11ccf6bd3b82999760778733523ef2737dfec348dc`.
+Loaded DLL SHA-256:
+`876879b6ab7f1cd2a376e8f43ed74109722f4841eb335179c20dad463ad0b651`.
+Evidence directory:
+`20260831T0539205863874Z-gunslinger-outfit-production-motion`.
+Terminal status: `FAIL` after 27/54 records.
+
+The complete male action schedule passed its live action boundaries, but the
+final combat record remained `true/3/true`; no partial capture is accepted.
+Identity, no-save, blueprint immutability, inventory/target restoration,
+structural cleanup, and exit protections held.
+
+Installed IL proves `UnitCombatState.LeaveCombat()` does not raise the event
+needed by `CombatController.HandleUnitLeaveCombat`. Full
+`UnitEntityData.LeaveCombat()` performs that event-bearing lifecycle;
+registered `CombatController.Tick()` then refreshes `HasEnemyInCombat` before
+group leave and player recomputation. The pending repair uses full unit leave
+for every disposable participant, records exact enemy/history/sorted-unit
+caches, requires turn-based, group-leave, then player-recompute order, and
+forbids low-level actor/target exits in the focused test. Installed-reference
+compilation, repository validation, and all `1369/1369` tests pass. Clean
+pre-commit package SHA-256 is
+`ae22f6d1804ef1d4b9677d0a55c57dd3371c0340b63284f76e94e7bd8b5120f3`;
+DLL SHA-256 is
+`d0ba5261d5cf26d0b57534f060fbcba7407b1c4f0c421230f99ea8de2dcdcd75`;
+MVID is `40e11afc-987d-4755-a057-df54bbfd09bf`. Strict package and
+firearm/audio validation pass. The first preflight reported only the known
+artifact-tree stabilization sentinel; the unchanged rerun passed 169/169.
+Motion remains `PENDING` until an exact-commit replacement terminal PASS,
+structured reconciliation, and direct image review.

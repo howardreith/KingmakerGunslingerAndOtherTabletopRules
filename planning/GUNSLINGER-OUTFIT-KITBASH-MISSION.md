@@ -758,3 +758,48 @@ Exact next action: commit and policy-publish the native leave/join repair,
 rebuild the exact commit, and run a wholly replacement 54-record batch.
 Accept no motion evidence until terminal PASS, invariant reconciliation, and
 direct inspection of every replacement PNG.
+
+## 2026-08-31 - Motion attempt 3 resolves the skipped unit event
+
+Published commit `df4f3f04f55bbbdfe56ef113f723f89af23fa62a` rebuilt as
+package SHA-256
+`fa29aab259ef800d0db3ab11ccf6bd3b82999760778733523ef2737dfec348dc`,
+DLL SHA-256
+`876879b6ab7f1cd2a376e8f43ed74109722f4841eb335179c20dad463ad0b651`,
+and MVID `c162b31d-1195-47ef-b8d7-685142f07801`. Guarded evidence
+`20260831T0539205863874Z-gunslinger-outfit-production-motion` again failed
+closed after all 27 male records with `true/3/true` still present. Exact
+build/save/game identity, no-save, blueprint immutability, inventory/target
+restoration, structural cleanup, and exit guards held; the batch is rejected.
+
+Read-only installed IL identified the skipped boundary precisely. The harness
+used low-level `UnitCombatState.LeaveCombat()`, which changes the unit state
+but does not raise `IUnitCombatHandler`. Full
+`UnitEntityData.LeaveCombat()` calls that state method, interrupts AI,
+updates equipment/audio, and raises the unit event. The subscribed turn-based
+controller handles that event with `RemoveUnit`; its registered `Tick()` then
+recomputes cached `HasEnemyInCombat`. Only after that cache update can
+`UnitCombatLeaveController.Tick()` retire the player group and
+`UnitCombatJoinController.Tick()` recompute/announce the player boundary.
+
+The harness now uses the full unit lifecycle for every request-local actor,
+target, and dependent; executes the registered turn-based, group-leave, and
+player-recompute ticks in that order; records enemy/history/unit-list caches;
+and requires exact clean-baseline restoration. A focused test forbids the
+low-level actor/target bypass. Installed-reference compilation, repository
+validation, and all `1369/1369` tests pass. Candidate score remains 88/100.
+
+Clean pre-commit packaging and all strict firearm/audio checks pass. Package
+SHA-256 is
+`ae22f6d1804ef1d4b9677d0a55c57dd3371c0340b63284f76e94e7bd8b5120f3`,
+DLL SHA-256 is
+`d0ba5261d5cf26d0b57534f060fbcba7407b1c4f0c421230f99ea8de2dcdcd75`,
+and MVID is `40e11afc-987d-4755-a057-df54bbfd09bf`. The first
+post-build preflight reported only the documented
+`unsupported-does-not-build-or-stage-package` artifact-tree stabilization
+sentinel; the identical settled-tree rerun passed all 169 checks. These
+dirty-tree identities qualify the source checkpoint, not runtime behavior.
+
+Exact next action: commit and policy-publish this full-event repair, rebuild
+the exact commit, and rerun the entire replacement matrix. No partial image is
+accepted.

@@ -386,12 +386,17 @@ namespace KingmakerGunslinger.DomainTests
                 "RestoreProductionMotionInventory",
                 "RetireProductionMotionTarget",
                 "ReconcileProductionMotionCombatBoundary",
+                "_motionTarget.LeaveCombat()",
+                "_actor.LeaveCombat()",
+                "_motionTurnBasedController.Tick()",
                 "GetController<UnitCombatLeaveController>(true)",
                 "GetController<UnitCombatJoinController>(true)",
                 "_motionCombatLeaveController.Tick()",
                 "_motionCombatJoinController.Tick()",
                 "UnitCombatLeaveController.Tick",
                 "UnitCombatJoinController.Tick",
+                "turnBasedHasEnemyAfterTurnTick",
+                "turnBasedUnitsAfterReconcile",
                 "playerInCombatAfterReconcile",
                 "partyCombatantsAfterReconcile",
                 "turnBasedCombatAfterReconcile",
@@ -401,14 +406,22 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Production motion lacks exact evidence token: " +
                     token);
+            int turnBasedTick = source.IndexOf(
+                "_motionTurnBasedController.Tick()",
+                StringComparison.Ordinal);
             int leaveTick = source.IndexOf(
                 "_motionCombatLeaveController.Tick()",
-                StringComparison.Ordinal);
+                turnBasedTick, StringComparison.Ordinal);
             int joinTick = source.IndexOf(
                 "_motionCombatJoinController.Tick()", leaveTick,
                 StringComparison.Ordinal);
-            Assertions.True(leaveTick >= 0 && joinTick > leaveTick,
-                "Production motion must run native group combat leave before player combat recomputation.");
+            Assertions.True(turnBasedTick >= 0 && leaveTick > turnBasedTick &&
+                    joinTick > leaveTick,
+                "Production motion must run native turn-based cache, group leave, and player recomputation in order.");
+            Assertions.False(source.Contains(
+                    "_motionTarget.CombatState.LeaveCombat()") ||
+                source.Contains("_actor.CombatState.LeaveCombat()"),
+                "Production motion must not bypass UnitEntityData combat-leave events.");
             foreach (string token in new[]
             {
                 "IsProductionMotion", "PollProductionMotion()",
