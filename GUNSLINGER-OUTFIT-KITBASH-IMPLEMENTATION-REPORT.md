@@ -1201,3 +1201,40 @@ DLL SHA-256 is
 and MVID is `6b1c2eb8-6a9a-41d2-b15e-de3d1df503ef`. Exact-commit attempt 15 is
 pending; motion and the bundled compatibility score remain unqualified until
 that run passes.
+
+### Fifteenth motion execution accepted
+
+Published commit `c22b103b4080b7ac88b1893d7940e1f1fda5ec71` ran through
+Steam 640820 with package SHA-256
+`0358326d581583563fcf83dab9b38c7a58d36447a387a1bd93737a035a8c61c3`,
+DLL SHA-256
+`4f04f64d1f7fdc96d70a7b355fb57bef28f0d8a6679cf8b0f98e4b3910d88c94`,
+and MVID `8fc3629c-9fb3-41f6-961a-6b35e46d442b`. Evidence
+`20260831T1635361787487Z-gunslinger-outfit-production-motion` passed every
+terminal assertion with two fixtures, 54 records, and 216 labelled views.
+
+The run proves exact resource-ready native dolls, outfit and humanoid-rig
+identity, locomotion action presence, live walk/run movement and distinct
+speeds, 90-degree turns, pistol/musket/shortsword native attacks, production
+musket reload through update 240, exact ammunition deltas, harness command
+ownership, command retirement, avatar/movement/inventory restoration, combat
+reconciliation, blueprint immutability, request-local disposal, working-save
+identity, no-save behavior, and automatic exit.
+
+The replacement batch independently reconciled all 54 PNGs and sidecars.
+Index SHA-256 is
+`0e3ae7eb6cd73642c7c77dc127ce55eb756356ad62aae111a86f956bf1bf01df`;
+runtime-result SHA-256 is
+`cac0f8b73031d19f6f9c2dd2879612ad796bf021f1ad5bf0dbd0bac7411435d0`;
+runtime-evidence SHA-256 is
+`cecb82b3ab2d946ab8340dfac359bcee9a0557e02b22a258810f9ce851b287ac`;
+and canonical PNG-set digest is
+`9d3e90e23dceebd164f96452009b7b154b0c8eb58331dc0bb8a2d52bc8bd7975`.
+Direct inspection of all 54 four-view sheets accepted both outfits in every
+pose with no missing or detached component and no body/outfit clipping. A
+native combat outline on some hostile frames is not an outfit defect.
+
+Motion/fire/reload/melee qualification is complete. The final five
+compatibility points and overall final qualification remain withheld under
+the existing indivisible scoring contract until persisted outfit state and
+respec-like reconstruction pass their guarded installed-game matrix.
