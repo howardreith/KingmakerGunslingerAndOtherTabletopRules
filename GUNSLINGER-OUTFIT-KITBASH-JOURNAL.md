@@ -722,3 +722,38 @@ Exact next action: publish the neutral-body correction, verify all refs,
 rebuild its commit-bound package, pass quiescent preflight, rerun the complete
 matrix, and directly inspect every replacement image. The candidate remains
 provisional at 81/100 and production remains unchanged.
+
+## 2026-08-30 - Replacement race matrix accepted
+
+- Neutral-body commit `47d6c55f6742219dac07824b08e1daa1c23309a1`
+  was published through the approved helper; HEAD, the local branch, and
+  origin were identical with a clean tree.
+- Its commit-bound local-runtime package SHA-256 was
+  `36b3a6e096df511b689ab91126c3dad6845398fd64a3559558cdc8da32870104`;
+  DLL SHA-256 was
+  `57f9d7dec390cae8f53a78fadb9bd8c5cadb30368c97b5eadd8e454806ce285c`.
+  After the known timestamp-quiescence window, unchanged preflight passed all
+  163 checks.
+- Guarded Steam `640820` evidence
+  `20260831T0125478276325Z-gunslinger-outfit-finalist-race-matrix`
+  loaded that exact commit/DLL and MVID
+  `1bace4ca-657e-4d4b-bccf-d9ee4933876e`, then reached terminal `PASS`:
+  9 races, 18 fixtures, 36 records, 72 PNGs/180 views, 18/18 restorations,
+  exact cleanup, no save API, no production mutation, and automatic exit.
+- All 18 accepted fixtures recorded `requestLocalNeutralBody=true`,
+  `clearedSlotItemCount=0`, and no weapon model. Three unsafe donor attempts
+  were recorded and rejected before capture: one non-round-tripping male
+  Aasimar donor and the two female Tiefling donors with Kineticist tattoos.
+- Eight labeled boards outside the repository cover all 72 ignored PNGs and
+  were directly inspected. The female-Human native and alternate preview and
+  isometric cells no longer show Amiri's greatsword. No race/gender cell shows
+  donor clothing, weapon contamination, missing geometry, broken material, or
+  unacceptable hair/ear/horn/tail loss. Both palettes remain coherent.
+- The race/gender/color/no-weapon gate is accepted. `magus-complete` gains the
+  seven previously withheld coverage points and advances to 88/100
+  (26/23/15/15/9). Production is still unchanged at this exact checkpoint.
+
+Exact next action: implement an independently owned Gunslinger appearance
+policy containing the selected male/female Magus link pairs and 2/22 defaults,
+replace only the Fighter-derived appearance assignments, and add focused
+observable blueprint-state/non-mutation tests.

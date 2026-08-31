@@ -1,7 +1,8 @@
 # Gunslinger Outfit Kitbash Implementation Report
 
-Status: provisional native finalist selected; production implementation is
-intentionally unchanged pending exhaustive qualification.
+Status: native candidate selected at 88/100 and approved for focused
+production integration; final equipment, animation, rebuild, persistence, and
+package qualification remain open.
 
 ## Intake
 
@@ -69,7 +70,8 @@ resource-name inference.
 
 ## Selected appearance
 
-Provisional finalist: coherent native Magus base plus its one native accessory.
+Selected production candidate: coherent native Magus base plus its one native
+accessory.
 
 - male: `EE_Magus_M_Any_Colorize`
   (`6df8f61725a84294c8661bb9585eca97`) plus
@@ -84,12 +86,17 @@ Provisional finalist: coherent native Magus base plus its one native accessory.
 
 The fitted torso, split waist tails, layered belts, bracers, and boots read as
 a Golarion swashbuckler/privateer without a literal cowboy or pirate hat. The
-small arcane color accents and pending full compatibility matrix account for
-withheld points. This is not yet a production binding.
+small arcane color accents and pending equipment/animation qualification
+account for withheld points. The accepted all-race matrix raises the score from
+81 to 88 by awarding full race/gender coverage. This checkpoint precedes the
+focused production binding.
 
 ## Production changes
 
-Pending evidence-based selection.
+Pending focused implementation at this checkpoint. The selected identifiers
+and defaults are now evidence-approved; the next source change will isolate
+them in an independently owned appearance policy and replace only the current
+Fighter-derived presentation assignments.
 
 ## Tests, build, package, and runtime
 
@@ -404,6 +411,25 @@ strict package validation pass. Pre-publication package SHA-256 is
 DLL SHA-256 is
 `68489bd17dd3bb363bbf53464beda0f7011cc10a7725212b31ef60127c80e13d`.
 The replacement matrix and full direct image review remain open.
+
+## Accepted all-race visual checkpoint
+
+Published commit `47d6c55f6742219dac07824b08e1daa1c23309a1` passed the
+guarded Steam-backed run
+`20260831T0125478276325Z-gunslinger-outfit-finalist-race-matrix` with
+exact DLL SHA-256
+`57f9d7dec390cae8f53a78fadb9bd8c5cadb30368c97b5eadd8e454806ce285c`
+and MVID `1bace4ca-657e-4d4b-bccf-d9ee4933876e`. It completed all nine
+installed player races for both genders, both systematic palettes, preview-like
+and isometric paths, and exact restoration/cleanup boundaries. All accepted
+fixtures used request-local neutral bodies and created zero equipment items.
+
+Direct inspection of all 72 replacement images accepts the batch. The prior
+female-Human greatsword is absent in both palettes and both camera paths; the
+full grid has intact bodies/materials, expected race features, no donor gear,
+and consistent ramp behavior. This closes race/gender/color/no-weapon
+selection evidence, not final equipment, motion, rebuild, persistence, or
+production qualification.
 
 ## Uncertainty
 
