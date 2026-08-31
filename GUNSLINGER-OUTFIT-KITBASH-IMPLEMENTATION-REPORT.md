@@ -478,6 +478,40 @@ fingerprint records game ID `dce769e0-229c-4bfd-b8ea-e2d572bf8472` and party
 count 3. This closes only the commit-bound safe-load checkpoint; it makes no
 visual, override, animation, rebuild, or outfit-persistence claim.
 
+## Production compatibility harness local checkpoint
+
+The new `gunslinger-outfit-production-compatibility` scenario evaluates the
+exact production Gunslinger appearance instead of recreating the selection
+from a native class. Before fixture creation it resolves the bound class,
+compares the ordered male/female entity resources and default colors against
+the Gunslinger-owned catalog, and repeats that resource-resolution boundary
+for every installed player race and both genders.
+
+Two request-local Human `DollState`/`DollData` fixtures call native
+`SetClass(_gunslingerClass)` and capture a 16-state sequence per gender. The
+sequence spans native/alternate ramps, no weapon, held pistol, held musket,
+stored inactive musket, held blunderbuss, light/heavy armor overrides and
+removal rebuilds, tricorn and restored hair, cloak and removal rebuild,
+backpack visibility, and final clean rebuild. Each state records exact
+link-backed entity references, body slots, ramps, saved links, production
+blueprint immutability, and paired preview-like/isometric renders. The expected
+batch is 32 sidecars, 64 ignored PNGs, and 160 views.
+
+No production reflection was introduced. Harness-only reflection is narrowed
+to exact installed signatures for private hair enumeration and backpack state;
+all mutations use installed public game paths. Actor/global cleanup is exact,
+and save-writing APIs are forbidden. The scenario deliberately leaves motion,
+fire/reload/melee, and save persistence to later independently guarded gates.
+
+One focused case raises the suite to 1368. Repository validation, all
+1368/1368 Release tests, a clean installed-reference Release build, production
+firearm/SoundBank checks, package creation, and strict standalone validation
+pass. Dirty-tree package SHA-256 is
+`b6da46f4c1a7c61fab0625762b46f5f7c222f6d478811300fdfa041512f409d6`;
+DLL SHA-256 is
+`1ca246f477ed3ccbd6ef7a194fc90a5b5a14671d2334bbbaf0a08b76236b9d8`.
+These local results establish only source and packaging readiness.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

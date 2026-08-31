@@ -495,3 +495,44 @@ compatibility scenario that observes the exact bound blueprint and covers
 equipment overrides, representative firearm/empty-hand states, required
 motions, preview/isometric rendering, rebuild, and save/load persistence
 without mutating the protected baseline.
+
+## 2026-08-30 - Production compatibility harness locally qualified
+
+The guarded `gunslinger-outfit-production-compatibility` scenario now observes
+the actual production Gunslinger class rather than a donor approximation. It
+first resolves and validates the exact production male/female entity links and
+2/22 defaults for every installed player race and both genders. It then creates
+two request-local Human character-generation dolls through native
+`DollState`/`DollData`, calls `SetClass` with the production Gunslinger, and
+captures 16 deterministic states per gender in paired character-creation-like
+and ordinary-isometric presentations.
+
+The state matrix covers default and alternate ramps; empty hand; held pistol,
+held musket, stored inactive musket, and held blunderbuss; light- and
+heavy-armor override plus removal/rebuild; tricorn override plus removal with
+hair restoration; cloak override plus removal/rebuild; and backpack visible
+plus removal/final rebuild. Every record carries exact link-backed entity
+identity, body-slot state, color ramps, saved links, production-blueprint
+immutability, and cleanup assertions. The scenario expects 32 structured
+records, 64 ignored PNGs, and 160 views. It never calls a save-writing API and
+does not attempt to prove motion, firing, reload, melee, or save persistence.
+
+One focused executable/reflection case brings the deterministic suite to
+1368. It proves catalog/request/runner/script registration, the production
+class boundary, exact equipment identifiers and state labels, native doll
+construction, isolated exact-signature reflection for installed private hair
+and backpack state only, fail-closed accounting, no-save/no-production-
+mutation assertions, and the separate motion boundary. Repository validation,
+all 1368/1368 Release domain tests, clean installed-reference Release build,
+package construction, production firearm/SoundBank validation, and strict
+standalone package validation pass. The dirty-tree package SHA-256 is
+`b6da46f4c1a7c61fab0625762b46f5f7c222f6d478811300fdfa041512f409d6`;
+the staged DLL SHA-256 is
+`1ca246f477ed3ccbd6ef7a194fc90a5b5a14671d2334bbbaf0a08b76236b9d8`.
+No runtime or visual compatibility claim is made from these local gates.
+
+Exact next action: commit and policy-publish the coherent compatibility
+harness, verify the three refs, build and validate its commit-bound local
+runtime artifact, pass quiescent preflight, run the exact guarded scenario
+through Steam App ID 640820, and inspect every resulting image before awarding
+or withholding any remaining compatibility points.

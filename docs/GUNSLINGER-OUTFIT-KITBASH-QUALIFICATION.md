@@ -588,6 +588,48 @@ Evidence directory
 This is commit-bound load evidence. It does not close outfit rebuild,
 persistence, equipment override, animation, or final visual qualification.
 
+## 2026-08-30 production compatibility harness local checkpoint
+
+The independently guarded scenario name is
+`gunslinger-outfit-production-compatibility`. Its eventual commit-bound command
+is:
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario gunslinger-outfit-production-compatibility `
+  -ExpectedVersion 0.0.110 `
+  -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true `
+  -Confirm:$false
+```
+
+The source-qualified acceptance contract is:
+
+- observe the actual production Gunslinger class and exact selected resources
+  for every installed player race and both genders before rendering;
+- build native request-local Human character-generation dolls and apply the
+  production class with `DollState.SetClass`;
+- capture 16 named states for each gender, yielding exactly 32 sidecars, 64
+  ignored PNGs, and 160 views across preview-like and ordinary-isometric paths;
+- include default/alternate ramps; empty hand; held pistol, held musket,
+  inactive/stored musket, and held blunderbuss; light/heavy armor override and
+  removal; tricorn override and hair restoration; cloak override/removal;
+  backpack visibility/removal; and repeated final rebuild;
+- assert exact link resources, body slots, ramps, saved links, production
+  blueprint immutability, request-local actor cleanup, exact global state, no
+  save-writing API, hook removal, and process exit;
+- make no motion, fire/reload/melee, or save-persistence claim from this run.
+
+The focused registration/reflection contract and all 1368 domain tests pass.
+Repository validation, clean installed-reference Release construction,
+production firearm/SoundBank validation, packaging, and strict standalone
+validation also pass. Dirty-tree package SHA-256 is
+`b6da46f4c1a7c61fab0625762b46f5f7c222f6d478811300fdfa041512f409d6`;
+DLL SHA-256 is
+`1ca246f477ed3ccbd6ef7a194fc90a5b5a14671d2334bbbaf0a08b76236b9d8`.
+The command has not yet been run against this source checkpoint; no visual or
+runtime compatibility gate is closed by the local results.
+
 ## Local evidence policy
 
 Raw catalogs, extracted metadata, screenshots/contact sheets, runtime result

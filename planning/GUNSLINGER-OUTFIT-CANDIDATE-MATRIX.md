@@ -316,3 +316,22 @@ post-load fingerprint, no-save-write, hook-removal, and automatic-exit gates.
 This removes the commit-bound load uncertainty only. It adds no compatibility
 points and does not close the equipment, motion, rebuild, or outfit-persistence
 criteria.
+
+### Production compatibility harness local gate
+
+The guarded `gunslinger-outfit-production-compatibility` scenario is now
+source-qualified against the actual production Gunslinger blueprint. It
+validates the exact selected pair/defaults over all installed player races,
+then uses native Human character-generation dolls for 16 deterministic states
+per gender: both palettes, empty/held/stored firearm combinations, light and
+heavy armor overrides/removals, tricorn and hair restoration, cloak
+override/removal, backpack visibility/removal, and repeated appearance
+rebuilds. Paired preview-like and isometric capture should produce 32 records,
+64 PNGs, and 160 views.
+
+The focused contract plus all 1368 tests, clean Release construction, package
+creation, and strict package validation pass. The dirty-tree package SHA-256
+is `b6da46f4c1a7c61fab0625762b46f5f7c222f6d478811300fdfa041512f409d6`.
+This changes no score: the harness has not yet run in the installed game, its
+images have not been reviewed, and motion plus persistence are explicitly
+outside its scope. `magus-complete` remains selected at 88/100.

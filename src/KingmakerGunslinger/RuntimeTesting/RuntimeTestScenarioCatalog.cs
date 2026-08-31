@@ -112,6 +112,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "gunslinger-outfit-candidate-render";
         internal const string GunslingerOutfitFinalistRaceMatrix =
             "gunslinger-outfit-finalist-race-matrix";
+        internal const string GunslingerOutfitProductionCompatibility =
+            "gunslinger-outfit-production-compatibility";
         internal const string IconOverhaulVisualEvidence =
             "icon-overhaul-visual-evidence";
         internal const string ObserveNativeWeaponFeatContracts =
@@ -417,6 +419,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 GunslingerOutfitAudit,
                 GunslingerOutfitCandidateRender,
                 GunslingerOutfitFinalistRaceMatrix,
+                GunslingerOutfitProductionCompatibility,
                 IconOverhaulVisualEvidence,
                 ObserveNativeWeaponFeatContracts,
                 ObserveElvenBranchedSpearContracts,

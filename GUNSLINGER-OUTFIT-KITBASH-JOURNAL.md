@@ -825,3 +825,46 @@ Exact next action: add a narrowly guarded production compatibility scenario
 and focused tests, then repeat complete source qualification before rendering
 and directly inspecting equipment, weapon, motion, rebuild, and persistence
 states in game.
+
+## 2026-08-30 - Production compatibility harness passes local gates
+
+- Added guarded scenario `gunslinger-outfit-production-compatibility`, wired
+  through the exact request catalog, parser, runner, script allowlist, and
+  preflight surface.
+- The harness resolves the actual production Gunslinger class and proves its
+  exact selected link pairs/default colors across every installed race and
+  both genders before it creates a fixture. It does not reuse the Magus class
+  as a behavioral proxy.
+- Male and female Human fixtures use native character-generation
+  `DollState`/`DollData`, a request-local neutral body, `SetClass` on the
+  production blueprint, and a real compatible hair entity. Exact-signature
+  reflection is isolated to the installed private `DollState.GetHairEntities`
+  and `Character.m_ShowBackpack` boundaries; production appearance code stays
+  reflection-free.
+- Each gender has 16 named states: default/no weapon, alternate color, held
+  pistol, held musket, inactive/stored musket, held blunderbuss, light armor,
+  light-armor removal/rebuild, heavy armor, heavy-armor removal/rebuild,
+  tricorn, tricorn removal/hair restoration, cloak, cloak removal/rebuild,
+  backpack visible, and backpack removal/final rebuild. Expected output is 32
+  sidecars, 64 ignored PNGs, and 160 views.
+- Each transition asserts link-backed resource identity, exact body slots,
+  ramps, saved links, blueprint immutability, and paired preview/isometric
+  capture. Cleanup requires exact actor/global state restoration; save-writing
+  calls are forbidden. Motion/fire/reload/melee and persistence remain
+  explicitly separate gates.
+- Installed-reference compilation exposed two useful API facts before
+  publication: `EquipmentEntity` has no public asset-ID property, so evidence
+  uses the owning wrapper link plus resource-reference equality; hair
+  enumeration and raw backpack state are private, so the harness uses exact
+  installed signatures and public mutation paths.
+- Repository validation and all 1368/1368 Release domain/reflection tests pass.
+  The clean Release/package and strict standalone validator also pass.
+  Dirty-tree package SHA-256 is
+  `b6da46f4c1a7c61fab0625762b46f5f7c222f6d478811300fdfa041512f409d6`;
+  DLL SHA-256 is
+  `1ca246f477ed3ccbd6ef7a194fc90a5b5a14671d2334bbbaf0a08b76236b9d8`.
+
+Exact next action: commit and publish this harness through the approved policy
+helper, verify HEAD/local/origin identity, rebuild the exact commit, pass
+strict package validation and quiescent preflight, then execute and directly
+review the full production compatibility render matrix.
