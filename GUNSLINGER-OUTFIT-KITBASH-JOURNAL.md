@@ -791,3 +791,37 @@ Exact next action: commit and publish the production binding, verify HEAD/local/
 origin identity, rebuild its commit-bound local-runtime artifact, pass
 quiescent preflight, and run guarded `working-save-smoke` before building the
 production outfit equipment/motion scenario.
+
+## 2026-08-30 - Published production build passes canonical save smoke
+
+- Committed the focused production binding as
+  `bf3e052cb3a91691e214ec9a87c025f25f380c2d` and published it only through the
+  approved policy helper. `HEAD`, the local branch ref, and the matching origin
+  feature ref were identical.
+- The clean commit-bound local-runtime build passed repository validation,
+  1367/1367 tests, installed-reference Release construction, package creation,
+  and strict package validation. Package SHA-256 is
+  `4a91c92b9f842b7744adf707a2149ae13a4cc1ec70733979ad453406548a6c61`;
+  DLL SHA-256 is
+  `78c8a7e8d8c1372bea930e4a48b4211ef4941974a062c1dbb707b0a8b7a1b8f5`;
+  MVID is `41fd1851-9dec-4adf-87eb-0e79763d5e02`.
+- The first immediate preflight attempt failed closed only because the new
+  artifact had not satisfied the fingerprint-quiescence interval. No game or
+  save interaction occurred. After waiting without modifying the artifact,
+  all 163 preflight checks passed.
+- Launched the canonical guarded `working-save-smoke` through Steam App ID
+  640820. Evidence directory
+  `20260831T0159136175513Z-working-save-smoke` reached terminal `PASS` with
+  exact commit/DLL/version identity, a complete 111-entry catalog, one exact
+  working save, one distinct protected baseline, exact receiver-correlated
+  load order, completion callback, stable post-load fingerprint, no save API,
+  hook removal, and automatic process exit.
+- The stable fingerprint records game ID
+  `dce769e0-229c-4bfd-b8ea-e2d572bf8472`, party count 3, and a nonnull main
+  character reference. This is safe-load evidence, not yet outfit rebuild or
+  persistence evidence. The candidate remains 88/100.
+
+Exact next action: add a narrowly guarded production compatibility scenario
+and focused tests, then repeat complete source qualification before rendering
+and directly inspecting equipment, weapon, motion, rebuild, and persistence
+states in game.

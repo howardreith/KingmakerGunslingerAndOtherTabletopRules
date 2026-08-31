@@ -18,12 +18,14 @@ Intake baseline:
 
 Current checkpoint:
 
-- the deterministic audit and accepted Human shortlist render are complete;
-- `magus-complete` is the provisional 81/100 finalist;
-- the guarded, production-free finalist race/gender matrix is source-qualified
-  and package-qualified, with installed-game execution still pending;
-- production class clothing remains unchanged until the race, overlay, motion,
-  rebuild, and persistence gates pass.
+- the deterministic audit, accepted Human shortlist render, and accepted
+  nine-race/two-gender neutral-body matrix are complete;
+- `magus-complete` is selected at 88/100 and is independently bound to the
+  Gunslinger class in published commit `bf3e052cb3a91691e214ec9a87c025f25f380c2d`;
+- the commit-bound clean package and canonical guarded working-save load pass
+  with exact build/save correlation and no save write;
+- equipment overrides, weapon/motion states, rebuild, and outfit persistence
+  remain open, so the mission remains active and incomplete.
 
 ## Objective
 
@@ -461,3 +463,35 @@ Exact next action: commit and publish this coherent production binding, verify
 all three refs, rebuild the commit-bound local-runtime package, pass quiescent
 preflight, and run the guarded canonical working-save smoke before extending
 the final production equipment/motion harness.
+
+## 2026-08-30 - Published production binding and save smoke pass
+
+Commit `bf3e052cb3a91691e214ec9a87c025f25f380c2d` was published only through the
+approved helper. `HEAD`, the local feature ref, and
+`origin/codex/gunslinger-class-outfit-kitbash` were identical afterward. Its
+clean `Build-Local.ps1` artifact passed repository validation, all 1367 domain
+tests, exact-reference Release construction, and strict package validation.
+The commit-bound package SHA-256 is
+`4a91c92b9f842b7744adf707a2149ae13a4cc1ec70733979ad453406548a6c61`;
+the DLL SHA-256 is
+`78c8a7e8d8c1372bea930e4a48b4211ef4941974a062c1dbb707b0a8b7a1b8f5`,
+with MVID `41fd1851-9dec-4adf-87eb-0e79763d5e02`. After the required artifact
+quiescence interval, all 163 runtime preflight checks passed.
+
+The canonical Steam App ID 640820 run
+`20260831T0159136175513Z-working-save-smoke` reached terminal `PASS`. It loaded
+the exact commit-bound DLL and version 0.0.110, found one exact
+`KMG_AUTOMATION_WORKING` and one distinct protected baseline among 111 complete
+catalog descriptors, invoked one receiver-correlated UI/load path, observed
+load completion, and stabilized at game ID
+`dce769e0-229c-4bfd-b8ea-e2d572bf8472` with three party members. The strict
+sequence was `22<24<26<29<32`; no save-writing API was observed, hooks were
+removed, and automatic exit completed. This proves the production build loads
+the disposable save safely. It does not yet prove outfit rebuild, persistence,
+equipment override, or motion compatibility.
+
+Exact next action: implement and source-qualify a guarded production outfit
+compatibility scenario that observes the exact bound blueprint and covers
+equipment overrides, representative firearm/empty-hand states, required
+motions, preview/isometric rendering, rebuild, and save/load persistence
+without mutating the protected baseline.

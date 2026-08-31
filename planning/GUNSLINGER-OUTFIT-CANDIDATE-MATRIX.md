@@ -2,9 +2,10 @@
 
 Status: `magus-complete` is bound through a focused production appearance
 policy after accepted Human weapon-state rendering and an accepted guarded
-18-cell race/gender matrix. The local source/test/build/package checkpoint
-passes. Commit-bound runtime, equipment, animation, rebuild, and persistence
-gates remain open; this is not final mission qualification.
+18-cell race/gender matrix. The published production commit, clean commit-bound
+package, and canonical guarded working-save load pass. Equipment, animation,
+rebuild, and outfit-persistence gates remain open; this is not final mission
+qualification.
 
 ## Scoring contract
 
@@ -298,3 +299,20 @@ and tails remain visible where expected; no donor clothing or weapon survives;
 and native 2/22 versus alternate color treatment is consistent. The matrix is
 therefore visually accepted. `magus-complete` advances from provisional
 81/100 to 88/100 by receiving the remaining seven race/gender coverage points.
+
+### Production binding and canonical load checkpoint
+
+Published commit `bf3e052cb3a91691e214ec9a87c025f25f380c2d` binds the exact
+accepted pair through a Gunslinger-owned catalog and atomic resolver. The clean
+commit-bound package SHA-256 is
+`4a91c92b9f842b7744adf707a2149ae13a4cc1ec70733979ad453406548a6c61`;
+its loaded DLL SHA-256 is
+`78c8a7e8d8c1372bea930e4a48b4211ef4941974a062c1dbb707b0a8b7a1b8f5`
+with MVID `41fd1851-9dec-4adf-87eb-0e79763d5e02`.
+
+Guarded Steam run `20260831T0159136175513Z-working-save-smoke` passed exact
+working-save catalog, receiver correlation, load completion, stable
+post-load fingerprint, no-save-write, hook-removal, and automatic-exit gates.
+This removes the commit-bound load uncertainty only. It adds no compatibility
+points and does not close the equipment, motion, rebuild, or outfit-persistence
+criteria.

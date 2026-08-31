@@ -24,15 +24,15 @@ claim.
 | Animation/weapon fit | Pending | Idle/walk/run/turn/fire/reload/melee evidence |
 | Equipment overrides | Pending | Light/heavy armor, headgear/hair, cloak, backpack, inactive weapon |
 | Preview/gameplay paths | Pass (selection stage) | Four-view preview-like and ordinary isometric evidence across the complete 9x2 grid |
-| Save/load/rebuild | Pending | Guarded structured evidence |
+| Save/load/rebuild | Pass (canonical load only; rebuild/persistence pending) | Commit-bound working save loaded with stable fingerprint and no save write |
 | Focused tests | Pass (production checkpoint; repeat final) | Exact catalog/validation/defensive-copy and atomic donor-independent wiring cases |
 | Repository validation | Pass (production checkpoint; repeat final) | Active 0.0.110 validator with 1367 current tests |
 | Complete domain suite | Pass (production checkpoint; repeat final) | 1367/1367, clean Release run |
 | Clean Release build | Pass (production checkpoint; repeat final) | Exact installed-reference Release construction |
-| Installable package | Pass (production checkpoint; repeat final) | Strict standalone validation, SHA-256 `34d9a700...76df0` |
+| Installable package | Pass (commit-bound production checkpoint; repeat final) | Strict standalone validation, SHA-256 `4a91c92b...6c61` |
 | Compatibility profiles | Pending | Exact applicable command/result |
-| Guarded runtime smoke | Pass (candidate stage; repeat final) | Accepted run `20260830T2158516580621Z`, exact build fingerprint |
-| Publication | Pending | Commit(s), helper output, identical local/remote SHAs |
+| Guarded runtime smoke | Pass (production commit; repeat final) | Accepted run `20260831T0159136175513Z`, exact commit/build/save correlation |
+| Publication | Pass (production checkpoint; repeat final) | `bf3e052...02d` published by helper; HEAD/local/origin refs identical |
 
 ## Guarded catalog evidence
 
@@ -547,6 +547,46 @@ This is a dirty-tree/pre-publication build identity. It proves compilation and
 package contents, not in-game resource initialization or visual override
 behavior. The next gate is publication, commit-bound rebuild/preflight, and a
 guarded canonical working-save load.
+
+## 2026-08-30 published production save-smoke checkpoint
+
+Production commit `bf3e052cb3a91691e214ec9a87c025f25f380c2d` was published
+through the approved helper and all three feature refs were identical. Its
+clean commit-bound local-runtime build passed repository validation, 1367/1367
+tests, exact-reference Release construction, and strict package validation:
+
+- package SHA-256:
+  `4a91c92b9f842b7744adf707a2149ae13a4cc1ec70733979ad453406548a6c61`;
+- DLL SHA-256:
+  `78c8a7e8d8c1372bea930e4a48b4211ef4941974a062c1dbb707b0a8b7a1b8f5`;
+- MVID: `41fd1851-9dec-4adf-87eb-0e79763d5e02`;
+- quiescent runtime preflight: `163/163 PASS`.
+
+The exact canonical command was:
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario working-save-smoke `
+  -ExpectedVersion 0.0.110 `
+  -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true `
+  -Confirm:$false
+```
+
+Evidence directory
+`runtime-evidence/20260831T0159136175513Z-working-save-smoke` records terminal
+`PASS` through Steam App ID 640820. Exact observations are:
+
+- 111 catalog descriptors, one exact working save, and one distinct protected
+  baseline;
+- one exact UI action and receiver-correlated slot/window/load invocation;
+- strict action/callback/fingerprint sequence `22<24<26<29<32`;
+- stable post-load game ID `dce769e0-229c-4bfd-b8ea-e2d572bf8472`, party
+  count 3, and a nonnull main-character reference;
+- no save-writing API, no warning, hooks removed, and automatic exit.
+
+This is commit-bound load evidence. It does not close outfit rebuild,
+persistence, equipment override, animation, or final visual qualification.
 
 ## Local evidence policy
 
