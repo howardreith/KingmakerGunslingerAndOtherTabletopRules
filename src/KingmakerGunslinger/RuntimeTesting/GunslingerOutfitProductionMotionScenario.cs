@@ -118,6 +118,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _motionPlannedRounds;
             private UnitEntityData _motionTarget;
             private BlueprintUnit _motionHostileBlueprint;
+            private BlueprintFaction _motionActorFaction;
+            private BlueprintFaction _motionTargetFaction;
             private Renderer[] _motionBodyRenderers = new Renderer[0];
             private ProductionMotionSpec _motionSpec;
             private ItemEntityWeapon _motionWeapon;
@@ -195,6 +197,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .GunslingerOutfitProductionMotion,
                         StringComparison.Ordinal);
                 }
+            }
+
+            private void PrepareProductionMotionActorBlueprint(
+                BlueprintUnit blueprint)
+            {
+                if (blueprint == null || blueprint.Faction == null)
+                    throw new InvalidOperationException(
+                        "Production motion requires an exact source faction.");
+                if (_motionActorFaction != null ||
+                    _motionTargetFaction != null)
+                    throw new InvalidOperationException(
+                        "Production motion faction clones were not retired.");
+
+                BlueprintFaction source = blueprint.Faction;
+                _motionActorFaction = UnityEngine.Object.Instantiate(source);
+                _motionTargetFaction = UnityEngine.Object.Instantiate(source);
+                _motionActorFaction.name =
+                    "KMG_Runtime_Gunslinger_Outfit_Motion_Actor_Faction";
+                _motionTargetFaction.name =
+                    "KMG_Runtime_Gunslinger_Outfit_Motion_Target_Faction";
+                ConfigureProductionMotionFaction(_motionActorFaction,
+                    _motionTargetFaction);
+                ConfigureProductionMotionFaction(_motionTargetFaction,
+                    _motionActorFaction);
+                blueprint.Faction = _motionActorFaction;
+
+                if (ReferenceEquals(source, _motionActorFaction) ||
+                    ReferenceEquals(source, _motionTargetFaction) ||
+                    ReferenceEquals(_motionActorFaction,
+                        _motionTargetFaction))
+                    throw new InvalidOperationException(
+                        "Production motion faction isolation reused a native object.");
+            }
+
+            private static void ConfigureProductionMotionFaction(
+                BlueprintFaction faction, BlueprintFaction enemy)
+            {
+                if (faction == null || enemy == null)
+                    throw new ArgumentNullException("faction");
+                faction.Peaceful = false;
+                faction.AlwaysEnemy = false;
+                faction.Neutral = false;
+                faction.IsDirectlyControllable = false;
+                faction.Dummy = null;
+                faction.AttackFactions = new[] { enemy };
             }
 
             private void PollProductionMotion()
@@ -358,23 +405,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(fixture.Label +
                         " did not retain the production Reload Firearm ability.");
 
-                Vector3 targetPosition = NearestNavigable(_actor.Position +
-                    Vector3.forward * 6f);
-                _motionTarget = ElvenBranchedSpearCombatScenario
-                    .SpawnHostileTarget(_actor, _actorBlueprint,
-                        targetPosition, _anchor.HoldingState,
-                        out _motionHostileBlueprint);
-                Game.Instance.EntityCreator.Tick();
-                if (_motionTarget == null || _motionTarget.View == null ||
-                    _motionTarget.Descriptor == null)
+                if (_motionActorFaction == null ||
+                    _motionTargetFaction == null || _actor.IsPlayerFaction ||
+                    ReferenceEquals(_actor.Group, _motionPlayer.Group))
                     throw new InvalidOperationException(fixture.Label +
-                        " did not materialize a disposable native target.");
-                _motionTarget.Descriptor.State.Immortality.Retain();
-                _motionTarget.Descriptor.Stats.HitPoints.BaseValue = 10000;
-                _motionTarget.Descriptor.Damage = 0;
-                _motionTarget.Commands.InterruptAll(true);
-                if (_motionTarget.CombatState.IsInCombat)
-                    _motionTarget.LeaveCombat();
+                        " did not isolate its request-local actor group.");
                 _actor.Commands.InterruptAll(true);
                 if (_actor.CombatState.IsInCombat)
                     _actor.LeaveCombat();
@@ -392,6 +427,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ProductionMotionOutfitExact() },
                     { "humanoidRigExact",
                         HasExactHumanoidRig(_actor.View.transform) },
+                    { "actorIsPlayerFaction", _actor.IsPlayerFaction },
+                    { "actorSharesPlayerGroup",
+                        ReferenceEquals(_actor.Group, _motionPlayer.Group) },
+                    { "actorGroupId", _actor.GroupId },
                     { "movementAgentType",
                         _actor.View.MovementAgent.GetType().FullName },
                     { "animationManagerType",
@@ -418,6 +457,58 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteProgress("motion-fixture-ready");
             }
 
+            private void CreateProductionMotionTarget()
+            {
+                if (_motionTarget != null ||
+                    _motionHostileBlueprint != null)
+                    throw new InvalidOperationException(
+                        "Production motion retained a prior target.");
+                if (_actor == null || _actorBlueprint == null ||
+                    _motionTargetFaction == null || _anchor == null)
+                    throw new InvalidOperationException(
+                        "Production motion target dependencies are unavailable.");
+
+                Vector3 targetPosition = NearestNavigable(_actor.Position +
+                    Vector3.forward * 6f);
+                _motionHostileBlueprint = UnityEngine.Object.Instantiate(
+                    _actorBlueprint);
+                _motionHostileBlueprint.name =
+                    "KMG_Runtime_Gunslinger_Outfit_Motion_Target";
+                _motionHostileBlueprint.Faction = _motionTargetFaction;
+                _motionHostileBlueprint.IsCheater = true;
+                _motionHostileBlueprint.StartingInventory =
+                    Array.Empty<BlueprintItem>();
+                _motionTarget = Game.Instance.EntityCreator.SpawnUnit(
+                    _motionHostileBlueprint, targetPosition,
+                    Quaternion.identity, _anchor.HoldingState);
+                Game.Instance.EntityCreator.Tick();
+                if (_motionTarget == null || _motionTarget.View == null ||
+                    _motionTarget.Descriptor == null ||
+                    _motionTarget.IsPlayerFaction ||
+                    ReferenceEquals(_motionTarget.Group,
+                        _motionPlayer.Group) ||
+                    !_actor.IsEnemy(_motionTarget) ||
+                    !_motionTarget.IsEnemy(_actor) ||
+                    _actor.IsEnemy(_anchor) || _anchor.IsEnemy(_actor) ||
+                    _motionTarget.IsEnemy(_anchor) ||
+                    _anchor.IsEnemy(_motionTarget))
+                    throw new InvalidOperationException(
+                        "Production motion target violated isolated bilateral hostility.");
+
+                _motionTarget.Descriptor.State.Immortality.Retain();
+                _motionTarget.Descriptor.Stats.HitPoints.BaseValue = 10000;
+                _motionTarget.Descriptor.Damage = 0;
+                _motionTarget.Commands.InterruptAll(true);
+                if (_motionTarget.CombatState.IsInCombat)
+                    _motionTarget.LeaveCombat();
+                _diagnostics.Add("productionMotionIsolation=" +
+                    _fixtures[_fixtureIndex].Label + ";actorGroup=" +
+                    _actor.GroupId + ";targetGroup=" +
+                    _motionTarget.GroupId + ";playerGroup=" +
+                    _motionPlayer.Group.Id + ";bilateralEnemy=True;" +
+                    "playerHostility=False");
+            }
+
             private int MotionAnimationClipCount(UnitAnimationType type)
             {
                 var action = _actor == null || _actor.View == null ||
@@ -437,10 +528,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ProductionMotionTransientStateCleared();
                 if (!_motionPreviousActionCleared)
                     throw new InvalidOperationException(_motionSpec.Label +
-                        " began before the previous action was cleared.");
+                        " began before the previous action was cleared; " +
+                        ProductionMotionPlayerBoundaryDescription() + ".");
                 ResetProductionMotionActionState();
                 _motionSpec = ProductionMotionSpecs[_motionStep];
                 _motionPreviousActionCleared = true;
+                if (string.Equals(_motionSpec.Kind, "attack",
+                        StringComparison.Ordinal))
+                    CreateProductionMotionTarget();
+                else if (_motionTarget != null ||
+                    _motionHostileBlueprint != null)
+                    throw new InvalidOperationException(_motionSpec.Label +
+                        " retained a target outside an attack action.");
                 if (!string.Equals(_motionSpec.Kind, "idle",
                         StringComparison.Ordinal))
                     EquipProductionMotionWeapon();
@@ -627,6 +726,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_actor != null && _actor.View != null &&
                     _actor.View.HandsEquipment != null)
                     _actor.View.HandsEquipment.UpdateAll();
+                if (!ProductionMotionPlayerBoundaryExact())
+                    throw new InvalidOperationException(_stage +
+                        " changed the working-save combat boundary; " +
+                        ProductionMotionPlayerBoundaryDescription() + ".");
             }
 
             private static void SetProductionMotionUnitPosition(
@@ -1381,6 +1484,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!ProductionMotionOutfitExact())
                     throw new InvalidOperationException(state +
                         " cannot be captured because the production outfit contract changed.");
+                if (!ProductionMotionPlayerBoundaryExact())
+                    throw new InvalidOperationException(state +
+                        " cannot be captured because the working-save combat boundary changed; " +
+                        ProductionMotionPlayerBoundaryDescription() + ".");
                 string stem = SafeFileName("production-motion-" +
                     _fixtures[_fixtureIndex].Label + "-" + state);
                 string pngPath = Path.Combine(_request.EvidenceDirectory,
@@ -1433,6 +1540,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         HasExactHumanoidRig(_actor.View.transform) },
                     { "activeRendererCount",
                         ActiveRenderers(_actor).Length },
+                    { "actorIsPlayerFaction", _actor.IsPlayerFaction },
+                    { "actorSharesPlayerGroup",
+                        ReferenceEquals(_actor.Group, _motionPlayer.Group) },
+                    { "targetPresent", _motionTarget != null },
+                    { "targetIsPlayerFaction", _motionTarget != null &&
+                        _motionTarget.IsPlayerFaction },
+                    { "targetSharesPlayerGroup", _motionTarget != null &&
+                        ReferenceEquals(_motionTarget.Group,
+                            _motionPlayer.Group) },
+                    { "actorTargetBilateralEnemy", _motionTarget != null &&
+                        _actor.IsEnemy(_motionTarget) &&
+                        _motionTarget.IsEnemy(_actor) },
+                    { "actorPlayerHostility", _actor.IsEnemy(_anchor) ||
+                        _anchor.IsEnemy(_actor) },
+                    { "targetPlayerHostility", _motionTarget != null &&
+                        (_motionTarget.IsEnemy(_anchor) ||
+                            _anchor.IsEnemy(_motionTarget)) },
+                    { "playerBoundaryExact",
+                        ProductionMotionPlayerBoundaryExact() },
                     { "weaponKind", _motionSpec.Weapon },
                     { "itemGuid", _motionWeapon == null ||
                         _motionWeapon.Blueprint == null ? "<none>" :
@@ -1643,6 +1769,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor.View.HandsEquipment.UpdateAll();
                     _actor.View.HandsEquipment.ForceSwitch(false);
                 }
+                if (_motionSpec != null && string.Equals(
+                        _motionSpec.Kind, "attack", StringComparison.Ordinal))
+                    RetireProductionMotionTarget();
             }
 
             private void RemoveProductionMotionWeapon()
@@ -1708,7 +1837,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor.View.AnimationManager.WalkSpeedType ==
                         _motionOriginalWalkSpeedType &&
                     Math.Abs(_actor.View.AnimationManager.Speed -
-                        _motionOriginalAnimationSpeed) < 0.0001f;
+                        _motionOriginalAnimationSpeed) < 0.0001f &&
+                    ProductionMotionPlayerBoundaryExact();
+            }
+
+            private bool ProductionMotionPlayerBoundaryExact()
+            {
+                return _motionPlayer != null &&
+                    _motionTurnBasedController != null &&
+                    _motionPlayer.IsInCombat ==
+                        _motionPlayerCombatBefore &&
+                    _motionPlayer.Party.Count(unit => unit != null &&
+                        unit.CombatState != null &&
+                        unit.CombatState.IsInCombat) ==
+                            _motionPartyCombatantsBefore &&
+                    TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat() ==
+                            _motionTurnBasedCombatBefore &&
+                    _motionTurnBasedController.HasEnemyInCombat ==
+                        _motionTurnBasedHasEnemyBefore &&
+                    _motionTurnBasedController.HadEnemyAtSomePoint ==
+                        _motionTurnBasedHadEnemyBefore &&
+                    _motionTurnBasedController.SortedUnits.Count() ==
+                        _motionTurnBasedUnitsBefore;
+            }
+
+            private string ProductionMotionPlayerBoundaryDescription()
+            {
+                if (_motionPlayer == null ||
+                    _motionTurnBasedController == null)
+                    return "player-boundary=unavailable";
+                return "player=" + _motionPlayer.IsInCombat +
+                    "/" + _motionPlayerCombatBefore + ";party=" +
+                    _motionPlayer.Party.Count(unit => unit != null &&
+                        unit.CombatState != null &&
+                        unit.CombatState.IsInCombat) + "/" +
+                    _motionPartyCombatantsBefore + ";turnBased=" +
+                    TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat() + "/" +
+                    _motionTurnBasedCombatBefore + ";hasEnemy=" +
+                    _motionTurnBasedController.HasEnemyInCombat + "/" +
+                    _motionTurnBasedHasEnemyBefore + ";hadEnemy=" +
+                    _motionTurnBasedController.HadEnemyAtSomePoint + "/" +
+                    _motionTurnBasedHadEnemyBefore + ";units=" +
+                    _motionTurnBasedController.SortedUnits.Count() + "/" +
+                    _motionTurnBasedUnitsBefore;
             }
 
             private bool ProductionMotionOutfitExact()
@@ -1831,6 +2004,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionRestorations++;
                 RetireProductionMotionTarget();
                 RetireProductionActor();
+                RetireProductionMotionFactions();
                 ReconcileProductionMotionCombatBoundary(fixture.Label);
                 _fixtureIndex++;
                 _motionStep = 0;
@@ -1850,9 +2024,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_motionTarget != null)
                 {
+                    UnitEntityData retiredTarget = _motionTarget;
+                    if (_actor != null && _actor.Group != null)
+                        _actor.Group.Memory.Remove(retiredTarget);
+                    if (retiredTarget.Group != null && _actor != null)
+                        retiredTarget.Group.Memory.Remove(_actor);
                     UnitEntityData dependent =
-                        _motionTarget.Descriptor == null ? null :
-                        _motionTarget.Descriptor.Pet;
+                        retiredTarget.Descriptor == null ? null :
+                        retiredTarget.Descriptor.Pet;
                     if (dependent != null &&
                         !_unitsBefore.Any(value => ReferenceEquals(
                             value, dependent)))
@@ -1866,22 +2045,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Game.Instance.State.Units.All.Remove(dependent);
                         dependent.Dispose();
                     }
-                    _motionTarget.Commands.InterruptAll(true);
-                    if (_motionTarget.CombatState.IsInCombat)
-                        _motionTarget.LeaveCombat();
-                    if (_motionTarget.Descriptor != null)
-                        _motionTarget.Descriptor.State.Immortality.ReleaseAll();
-                    if (ContainsReference(_party, _motionTarget))
-                        Game.Instance.Player.Party.Remove(_motionTarget);
-                    if (ContainsReference(_allUnits, _motionTarget))
-                        Game.Instance.State.Units.All.Remove(_motionTarget);
-                    _motionTarget.Dispose();
+                    retiredTarget.Commands.InterruptAll(true);
+                    if (retiredTarget.CombatState.IsInCombat)
+                        retiredTarget.LeaveCombat();
+                    if (retiredTarget.Descriptor != null)
+                        retiredTarget.Descriptor.State.Immortality.ReleaseAll();
+                    if (ContainsReference(_party, retiredTarget))
+                        Game.Instance.Player.Party.Remove(retiredTarget);
+                    if (ContainsReference(_allUnits, retiredTarget))
+                        Game.Instance.State.Units.All.Remove(retiredTarget);
+                    retiredTarget.Dispose();
                 }
                 if (_motionHostileBlueprint != null)
                     UnityEngine.Object.DestroyImmediate(
                         _motionHostileBlueprint);
                 _motionTarget = null;
                 _motionHostileBlueprint = null;
+            }
+
+            private void RetireProductionMotionFactions()
+            {
+                if (_motionTarget != null ||
+                    _motionHostileBlueprint != null)
+                    RetireProductionMotionTarget();
+                if (_motionActorFaction != null)
+                    UnityEngine.Object.DestroyImmediate(_motionActorFaction);
+                if (_motionTargetFaction != null)
+                    UnityEngine.Object.DestroyImmediate(_motionTargetFaction);
+                _motionActorFaction = null;
+                _motionTargetFaction = null;
             }
 
             private void ReconcileProductionMotionCombatBoundary(
@@ -2159,6 +2351,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (bool)value["productionBlueprintUnchanged"] &&
                     !(bool)value["productionBlueprintMutated"] &&
                     !(bool)value["saveApiCalled"] &&
+                    !(bool)value["actorIsPlayerFaction"] &&
+                    !(bool)value["actorSharesPlayerGroup"] &&
+                    !(bool)value["actorPlayerHostility"] &&
+                    !(bool)value["targetPlayerHostility"] &&
+                    (bool)value["playerBoundaryExact"] &&
+                    (string.Equals((string)value["kind"], "attack",
+                            StringComparison.Ordinal)
+                        ? (bool)value["targetPresent"] &&
+                            !(bool)value["targetIsPlayerFaction"] &&
+                            !(bool)value["targetSharesPlayerGroup"] &&
+                            (bool)value["actorTargetBilateralEnemy"]
+                        : !(bool)value["targetPresent"]) &&
                     (int)value["activeRendererCount"] > 0 &&
                     (int)value["preview"]["meaningfulPixels"] > 0);
                 bool movementContracts = movements.Length == 4 &&
@@ -2275,6 +2479,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _motionFixtureRecords.OfType<JObject>().All(value =>
                             (bool)value["productionOutfitExact"] &&
                             (bool)value["humanoidRigExact"] &&
+                            !(bool)value["actorIsPlayerFaction"] &&
+                            !(bool)value["actorSharesPlayerGroup"] &&
                             (int)value["locomotionClipCount"] > 0 &&
                             (int)value["mainHandAttackClipCount"] > 0),
                     "production class DollState/CreateData/CreateUnitView plus live rig contracts");
@@ -2360,9 +2566,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact party/global-unit/inventory snapshots restored; no save call",
                     "cleaned=" + cleaned + ";inventory=" +
                         _motionInventoryRestored + ";target=" +
-                        (_motionTarget == null),
+                        (_motionTarget == null) + ";factions=" +
+                        (_motionActorFaction == null &&
+                            _motionTargetFaction == null),
                     cleaned && _motionInventoryRestored &&
                         _motionTarget == null && _motionPlayer != null &&
+                        _motionHostileBlueprint == null &&
+                        _motionActorFaction == null &&
+                        _motionTargetFaction == null &&
                         _motionPlayer.IsInCombat ==
                             _motionPlayerCombatBefore &&
                         _motionPlayer.Party.Count(unit =>
@@ -2378,7 +2589,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _motionTurnBasedHadEnemyBefore &&
                         _motionTurnBasedController.SortedUnits.Count() ==
                             _motionTurnBasedUnitsBefore,
-                    "request-local actors, target, items, blueprint clones, cameras, textures, and ammunition");
+                    "request-local actors, targets, factions, items, blueprint clones, cameras, textures, and ammunition");
                 Add(_assertions, "loaded-mod-version",
                     _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,

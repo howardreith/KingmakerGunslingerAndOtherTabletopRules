@@ -803,3 +803,45 @@ dirty-tree identities qualify the source checkpoint, not runtime behavior.
 Exact next action: commit and policy-publish this full-event repair, rebuild
 the exact commit, and rerun the entire replacement matrix. No partial image is
 accepted.
+
+## 2026-08-31 - Motion attempt 4 replaces party-coupled combat fixtures
+
+Published commit `f127e1f25f0d6d562a27a56ce9fe23f9b1ab8044` ran as
+package SHA-256
+`66d97da08b4615991210cf74e5f0784d1de3c8910dfcecac78d779ec96f6dbed`,
+DLL SHA-256
+`ea7c0b4931fbd32587aa9451b2c3475613bb866cc3658ad9dc67b63abfe7229e`,
+and MVID `1f1de511-e4f9-4f52-98e0-ec2127a56494`. Evidence
+`20260831T0601202638447Z-gunslinger-outfit-production-motion` failed closed
+after 9/54 male records when the next musket attack found the preceding
+pistol action no longer quiescent. The complete pistol schedule, including
+the acted frame and one exact discharge, ran, but no partial image is accepted.
+
+Installed IL and the live boundary identify fixture coupling rather than an
+outfit defect. The disposable actor inherited the real player faction, whose
+group ID is the directly-controllable group; native combat therefore enlisted
+the working-save group. Live enemy memory can also rejoin a conscious retained
+target between actions. Exception cleanup restored units, target, inventory,
+blueprint, and save guards, but correctly reported player and turn-based combat
+still true.
+
+The replacement fixture clones two factions request-locally, makes only those
+clones mutually hostile, proves neither actor nor fresh per-attack target is a
+player-faction/group member or hostile to the save anchor, and retires each
+target before the next action. Every tick and capture now requires the original
+player/party/turn-based caches exactly. All clones and their memory links are
+removed during guarded cleanup. Installed-reference compilation, repository
+validation, and all `1369/1369` tests pass. Candidate score remains 88/100.
+
+Clean Release packaging, strict package/firearm/audio validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+`unsupported-does-not-build-or-stage-package` stabilization sentinel; the
+identical rerun passed. Pre-commit package SHA-256 is
+`78e8a067544d097c158aa77ce014fa9ccc0caf9863a6d2d9691492c7821cfd9c`,
+DLL SHA-256 is
+`db27ce97885fbba43df32c5bc804fde1ef81d3e6ed45c521c1bfd7386616cd9d`,
+and MVID is `f4bc8c6e-c148-4890-818c-34dba4f32f1a`. These dirty-tree
+identities qualify the source/package checkpoint only.
+
+Exact next action: publish the coherent checkpoint, rebuild its exact commit,
+and rerun all 54 records.

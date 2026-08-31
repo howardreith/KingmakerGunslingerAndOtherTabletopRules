@@ -1191,3 +1191,37 @@ score remains 88/100.
 Exact next action: commit and policy-publish the repair, rebuild its exact
 package, and execute a complete replacement batch. Candidate score remains
 88/100.
+
+## 2026-08-31 - Fourth motion run exposes player-faction fixture coupling
+
+- Commit `f127e1f25f0d6d562a27a56ce9fe23f9b1ab8044`, package
+  `66d97da08b4615991210cf74e5f0784d1de3c8910dfcecac78d779ec96f6dbed`,
+  DLL `ea7c0b4931fbd32587aa9451b2c3475613bb866cc3658ad9dc67b63abfe7229e`,
+  and MVID `1f1de511-e4f9-4f52-98e0-ec2127a56494` ran through Steam 640820.
+- Evidence `20260831T0601202638447Z-gunslinger-outfit-production-motion`
+  failed at 9/54 records before male musket attack. The prior pistol command
+  reached all fixed frames, acted, and discharged exactly once. No partial
+  image is accepted.
+- Exact identity, game, save-name, no-save, blueprint, inventory, target,
+  structural cleanup, and automatic-exit guards held. The player and
+  turn-based combat caches remained true, so cleanup correctly failed.
+- Installed IL proves player-faction units use the directly-controllable group.
+  It also proves live group memory can rejoin a conscious target between
+  actions. Repeated controller cleanup is therefore the wrong fixture design.
+- The replacement clones two factions request-locally, makes only that pair
+  mutually hostile, creates and retires one fresh target per attack, and
+  requires zero player hostility/shared group plus exact player caches at every
+  tick and capture. Cleanup destroys all faction, target, blueprint, and memory
+  state. Compile, repository validation, and `1369/1369` tests pass.
+- Clean Release/package, firearm/audio, and strict package validation pass.
+  The first preflight reported only the known
+  `unsupported-does-not-build-or-stage-package` stabilization sentinel; the
+  unchanged rerun passed all 169 checks. Pre-commit package SHA-256 is
+  `78e8a067544d097c158aa77ce014fa9ccc0caf9863a6d2d9691492c7821cfd9c`,
+  DLL SHA-256 is
+  `db27ce97885fbba43df32c5bc804fde1ef81d3e6ed45c521c1bfd7386616cd9d`,
+  and MVID is `f4bc8c6e-c148-4890-818c-34dba4f32f1a`. These are
+  dirty-tree source/package identities, not runtime qualification.
+
+Exact next action: commit and policy-publish the isolated fixture, rebuild its
+exact package, then execute a complete replacement batch. Score stays 88/100.

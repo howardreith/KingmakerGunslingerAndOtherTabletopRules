@@ -769,6 +769,42 @@ reported only the documented artifact-tree stabilization sentinel; the
 identical settled-tree rerun passed all 169 checks. Exact-commit replacement
 runtime evidence remains pending.
 
+### Fourth motion execution and request-local faction isolation
+
+Published commit `f127e1f25f0d6d562a27a56ce9fe23f9b1ab8044` ran through
+Steam 640820 with package SHA-256
+`66d97da08b4615991210cf74e5f0784d1de3c8910dfcecac78d779ec96f6dbed`,
+DLL SHA-256
+`ea7c0b4931fbd32587aa9451b2c3475613bb866cc3658ad9dc67b63abfe7229e`,
+and MVID `1f1de511-e4f9-4f52-98e0-ec2127a56494`. Evidence
+`20260831T0601202638447Z-gunslinger-outfit-production-motion` completed nine
+male records, including all pistol frames and one acted discharge, then failed
+before musket attack because the preceding action was no longer quiescent.
+No image from the partial batch is accepted.
+
+Installed `UnitEntityData.GroupId` IL proves a real player-faction actor joins
+the directly-controllable group. Installed join/leave IL also proves a live,
+conscious remembered hostile can re-enlist a group between actions. The
+exception cleanup preserved save, inventory, unit, target, blueprint, and exit
+guards but correctly rejected player and turn-based combat still being true.
+
+The repair replaces that party-coupled fixture. It clones two native factions
+request-locally, clears player-control/global-hostility flags, gives only the
+two clones mutual `AttackFactions`, and verifies actor/target hostility while
+both directions to the real save anchor remain non-hostile. Each attack gets a
+fresh target retired before the next action. Every tick and capture requires
+the original player, party, turn-based enemy/history, and sorted-unit caches;
+cleanup removes only request-local memory links and destroys every clone.
+Installed-reference compilation, repository validation, and all `1369/1369`
+tests pass. Clean Release/package, strict firearm/audio validation, and the
+settled 169-check preflight pass. The first preflight reported only the known
+artifact-tree stabilization sentinel. Pre-commit package SHA-256 is
+`78e8a067544d097c158aa77ce014fa9ccc0caf9863a6d2d9691492c7821cfd9c`,
+DLL SHA-256 is
+`db27ce97885fbba43df32c5bc804fde1ef81d3e6ed45c521c1bfd7386616cd9d`,
+and MVID is `f4bc8c6e-c148-4890-818c-34dba4f32f1a`. Exact-commit runtime
+replacement remains pending.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A
