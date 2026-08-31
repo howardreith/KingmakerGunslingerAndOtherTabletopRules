@@ -386,8 +386,11 @@ namespace KingmakerGunslinger.DomainTests
                 "RestoreProductionMotionInventory",
                 "RetireProductionMotionTarget",
                 "ReconcileProductionMotionCombatBoundary",
+                "GetController<UnitCombatLeaveController>(true)",
                 "GetController<UnitCombatJoinController>(true)",
+                "_motionCombatLeaveController.Tick()",
                 "_motionCombatJoinController.Tick()",
+                "UnitCombatLeaveController.Tick",
                 "UnitCombatJoinController.Tick",
                 "playerInCombatAfterReconcile",
                 "partyCombatantsAfterReconcile",
@@ -398,6 +401,14 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Production motion lacks exact evidence token: " +
                     token);
+            int leaveTick = source.IndexOf(
+                "_motionCombatLeaveController.Tick()",
+                StringComparison.Ordinal);
+            int joinTick = source.IndexOf(
+                "_motionCombatJoinController.Tick()", leaveTick,
+                StringComparison.Ordinal);
+            Assertions.True(leaveTick >= 0 && joinTick > leaveTick,
+                "Production motion must run native group combat leave before player combat recomputation.");
             foreach (string token in new[]
             {
                 "IsProductionMotion", "PollProductionMotion()",

@@ -1100,3 +1100,51 @@ with replacement qualification evidence.
 These are pre-commit identities and do not qualify runtime behavior. Exact
 next action remains commit, policy publication, commit-bound rebuild, and a
 complete replacement Steam run.
+
+## 2026-08-31 - Second motion run failed closed at group retirement
+
+- Repair commit `fe24655acd4516e334796524ab7a3f40fd633888` was
+  policy-published with identical HEAD/local/origin refs. Its commit-bound
+  package SHA-256 was
+  `5228a562f65fbb2b694ec617548e71d1b713c3fea35d93789834b36eccebd44e`;
+  DLL SHA-256 was
+  `ba1638817210bfa9b2d163356465719cc0d22e941947286c3d399bf3f236a9dc`;
+  MVID was `90286a4d-27e5-476d-82eb-1b1cbb3ac3a9`.
+- Guarded Steam evidence
+  `20260831T0521459019080Z-gunslinger-outfit-production-motion` reached
+  terminal `FAIL` after all 27 male records. No female record was attempted.
+  Every male locomotion, turn, firearm attack, production reload, and melee
+  boundary completed, but none is accepted from this partial batch.
+- Initialization proved a clean false/zero/false combat baseline. After the
+  disposable pair retired, the boundary record showed
+  `player=true->true;party=3->3;turnBased=true->true`. Native attacks had
+  enlisted the three real party members; the join controller correctly
+  recomputed that still-live group state.
+- Exact build/save/game identity, blueprint immutability, no-save,
+  ammunition restoration, target retirement, hook removal, and automatic
+  exit remained protected. Structural cleanup was true, while the combat
+  boundary and therefore total cleanup correctly failed.
+- Read-only installed 2.1.7b IL inspection found the registered missing
+  stage. `UnitCombatLeaveController.Tick()` evaluates group retirement and
+  calls full `UnitEntityData.LeaveCombat()`; that method updates combat state,
+  interrupts AI commands, updates hands/audio, and raises the unit event.
+  `UnitCombatJoinController.Tick()` then recomputes the player cache and
+  raises the party event. No inspected method was invoked by the metadata
+  probe.
+- The harness now resolves both registered controllers and requires
+  leave-then-join order after target/actor retirement and in cleanup.
+- Repository validation, diff hygiene, focused invariant, full `1369/1369`
+  Release suite, clean installed-reference build, firearm/SoundBank checks,
+  and strict package validation pass. The first preflight after the build
+  reported only `unsupported-does-not-build-or-stage-package`; the identical
+  settled-tree rerun passed all 169 checks.
+- Pre-commit package SHA-256 is
+  `b3598b28366eb82161b66b1e65144430c9461380dc93dc3dd2bb15db9fd7fbb3`;
+  DLL SHA-256 is
+  `9f717b6c8d08f39cd67635bfc5e635543e38d60a38ce215a0a5c4f590cadfa41`;
+  MVID is `6e2a6987-f89a-42c1-a3ad-e1635a47b796`. These dirty-state
+  identities do not qualify runtime behavior.
+
+Exact next action: commit and policy-publish this coherent repair, rebuild the
+exact commit, then execute and inspect a complete replacement batch. The
+score remains 88/100.

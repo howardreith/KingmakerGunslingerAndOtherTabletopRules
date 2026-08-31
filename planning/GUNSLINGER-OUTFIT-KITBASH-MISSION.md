@@ -719,3 +719,42 @@ DLL SHA-256 is
 `b378256b722350bc9128b491e7f0d8e8f3a2b630bdccefe4664fb5c80f84e18f`;
 MVID is `b4bf5593-d05b-41d5-b92c-d6ad1eff1356`. Commit-bound rebuild and
 runtime replacement evidence remain mandatory.
+
+## 2026-08-31 - Motion attempt 2 exposes group combat retirement
+
+Published repair commit `fe24655acd4516e334796524ab7a3f40fd633888`
+was rebuilt as package SHA-256
+`5228a562f65fbb2b694ec617548e71d1b713c3fea35d93789834b36eccebd44e`,
+DLL SHA-256
+`ba1638817210bfa9b2d163356465719cc0d22e941947286c3d399bf3f236a9dc`,
+and MVID `90286a4d-27e5-476d-82eb-1b1cbb3ac3a9`. Guarded Steam evidence
+`20260831T0521459019080Z-gunslinger-outfit-production-motion` returned a
+definite `FAIL` after all 27 male records. The clean initial boundary was
+false/zero/false, but native attacks placed the three baseline party members
+in combat. Retiring only the disposable actor and hostile left the observed
+player/party/turn-based boundary `true/3/true`; the join controller correctly
+preserved that live group state instead of fabricating a clean result.
+
+The package/save/game identities, no-save guard, blueprint immutability,
+inventory restoration, disposable target retirement, and structural cleanup
+held. The batch remains diagnostic only. Read-only installed IL then resolved
+the missing registered lifecycle: `UnitCombatLeaveController.Tick()` evaluates
+groups and invokes full `UnitEntityData.LeaveCombat()` (unit event, equipment,
+and AI lifecycle), after which `UnitCombatJoinController.Tick()` recomputes
+the player cache and raises the party event. The harness now requires that
+leave-then-join sequence at each retired fixture boundary and in cleanup.
+Focused source validation, all `1369/1369` Release tests, the clean
+installed-reference build, firearm/SoundBank checks, and strict package
+validation pass. The settled runtime preflight passes all 169 checks; its
+first post-build invocation reported only the already documented artifact-tree
+stabilization sentinel. Pre-commit package SHA-256 is
+`b3598b28366eb82161b66b1e65144430c9461380dc93dc3dd2bb15db9fd7fbb3`,
+DLL SHA-256 is
+`9f717b6c8d08f39cd67635bfc5e635543e38d60a38ce215a0a5c4f590cadfa41`,
+and MVID is `6e2a6987-f89a-42c1-a3ad-e1635a47b796`. These dirty-state
+identities are not runtime acceptance. The score remains 88/100.
+
+Exact next action: commit and policy-publish the native leave/join repair,
+rebuild the exact commit, and run a wholly replacement 54-record batch.
+Accept no motion evidence until terminal PASS, invariant reconciliation, and
+direct inspection of every replacement PNG.
