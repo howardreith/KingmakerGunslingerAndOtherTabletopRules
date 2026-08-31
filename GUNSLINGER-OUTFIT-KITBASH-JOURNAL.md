@@ -997,3 +997,51 @@ followed by direct inspection of all 64 replacement PNGs can close this gate.
 Exact next action: build the bounded motion/fire/reload/melee runtime gate,
 fully source-qualify and publish it, then run and directly inspect the complete
 commit-bound installed-game result.
+
+## 2026-08-31 - Production motion harness source-qualified
+
+- Read-only reflection over the installed `Assembly-CSharp.dll` resolved the
+  exact locomotion contracts. `UnitMovementAgentBase` supplies nullable
+  `MaxSpeedOverride`, live velocity/movement flags, and `TickMovement`;
+  `UnitAnimationManager` supplies `Speed`, `WalkSpeedType`, and actions. The
+  exact Slow/Normal enum type is in
+  `Kingmaker.Visual.Animation.Kingmaker.Actions`. No GUID or API was guessed.
+- Reused the accepted production doll settlement lifecycle as a partial
+  session, while giving `gunslinger-outfit-production-motion` its own guarded
+  request identity, runner field, result/index, script metadata, preflight
+  assertions, and 1,800-second collector window.
+- Added eight exact actions on each production gender: unarmed idle; musket
+  slow walk, normal run, and right turn; pistol and musket `UnitAttack`;
+  production musket `UnitUseAbility` reload; and native Shortsword melee.
+  Attack frames are ready + 1/12/36 + acted; reload frames are ready +
+  1/12/36/96/160/240 + acted. Expected output is 54 PNGs, 54 sidecars, and
+  216 views.
+- Each capture records the exact class/pair/ramp/hair/saved-link/rig state,
+  item/presentation role, movement or command state, relevant diagnostics,
+  image hash/bytes/pixels, immutable blueprint, and `saveApiCalled=false`.
+  Movement requires accepted native `UnitMoveTo`/`ForcedPath`, nonzero
+  velocity/displacement, Slow/Normal modes, and distinct observed speed.
+- Success and failure cleanup remove actor, target, dependent, items, firearm
+  state, and clones; restore original avatar and movement settings; restore
+  exact shared powder/ball counts; and require original unit/party snapshots.
+- Initial validation correctly stopped on the deterministic suite-size guard.
+  The one new focused test raised the current inherited count from 1368 to
+  1369. The next compile exposed and corrected the exact installed
+  `...Kingmaker.Actions` namespace plus two over-assumed capture-summary
+  fields and missing known source namespaces. No behavior was weakened.
+- Final local gates: repository validation `PASS`; focused contract `PASS`;
+  full Release suite `1369/1369 PASS`; clean installed-reference Release build
+  `PASS`; firearm/SoundBank checks `PASS`; strict standalone package
+  validation `PASS`; runtime preflight `169 PASS`.
+- Pre-commit clean package SHA-256:
+  `00c80de81ff7acc218c1bbf08e51623950281f90e74e5750fee685da48b6e9be`;
+  DLL SHA-256:
+  `c60baee8be07590b39c30a8685bde51e277bb13d8f9d0b226fb9f3950a1e4abd`;
+  MVID: `a9e50b0b-b2e1-42f4-aa91-c9cdf98d4c5c`.
+- No runtime or visual claim is made from these source/build checks. The
+  candidate remains 88/100.
+
+Exact next action: commit and policy-publish this coherent harness, verify all
+three refs, rebuild/install the exact commit, pass quiescent preflight, execute
+the guarded Steam 640820 motion scenario, reconcile all records/files, and
+directly inspect every generated image before persistence work begins.

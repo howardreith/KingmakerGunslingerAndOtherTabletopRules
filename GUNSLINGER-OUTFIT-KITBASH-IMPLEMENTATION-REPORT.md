@@ -621,6 +621,53 @@ accepted. The combined compatibility score stays at 15/20 pending independent
 motion and persistence gates; no partial points are invented inside the five-
 point withheld block.
 
+## Production motion harness
+
+The separately guarded `gunslinger-outfit-production-motion` scenario is now
+source-qualified. Installed API inspection established the concrete native
+path: `UnitMoveTo` and same-area `ForcedPath` drive movement;
+`UnitMovementAgentBase` reports velocity/displacement and accepts a nullable
+speed override; `UnitAnimationManager` selects exact Slow/Normal locomotion;
+`ForceLookAt` drives the body-relative turn; `UnitAttack` drives pistol,
+musket, and native Shortsword attacks; and `AbilityData`/`UnitUseAbility`
+drives the actual production Reload Firearm implementation. The exact
+locomotion enum namespace was confirmed from installed metadata.
+
+The existing production session was made partial only to share its already-
+accepted DollState/DollData materialization, production link/ramp/hair checks,
+avatar snapshots, and cleanup utilities. Static compatibility behavior remains
+on its original request path. The new request has a distinct allowlist entry,
+working-save restriction, runner instance, progress/index names, 1,800-second
+collector, result assertions, and focused source contract.
+
+Each gender contributes 27 records: one unarmed idle; one slow walk; one
+normal run; one right turn; five frames each for pistol, musket, and Shortsword
+attack (ready, updates 1/12/36, acted); and eight reload frames (ready, updates
+1/12/36/96/160/240, acted). The complete expected batch is 54 sidecars, 54
+four-view PNGs, and 216 labeled views. Every record reasserts exact production
+entities/default ramps/hair/saved links/rig and immutable blueprint state.
+Dynamic acceptance additionally requires live command ownership, acted
+animation, firearm discharge or reload counters, exact ammunition consumption,
+nonzero movement velocity/displacement, distinct run speed, and a 60-degree
+or greater native turn.
+
+Cleanup is symmetric on pass or exception: item slots and firearm state are
+cleared; actor, target, target dependent, and blueprint clones are removed;
+original avatar entity order/ramps/saved links and movement settings are
+restored; powder and ball return to exact pre-request counts; and global unit
+and party references must match their initial snapshots. No save API exists in
+the scenario.
+
+Repository validation, all `1369/1369` Release domain/reflection tests, clean
+Release build, firearm/SoundBank checks, strict standalone packaging, and all
+169 runtime preflight assertions pass. The pre-commit package SHA-256 is
+`00c80de81ff7acc218c1bbf08e51623950281f90e74e5750fee685da48b6e9be`;
+DLL SHA-256 is
+`c60baee8be07590b39c30a8685bde51e277bb13d8f9d0b226fb9f3950a1e4abd`;
+MVID is `a9e50b0b-b2e1-42f4-aa91-c9cdf98d4c5c`. These local identities
+do not establish runtime correctness. Commit-bound guarded execution and
+direct inspection of all 54 PNGs remain mandatory before persistence work.
+
 ## Uncertainty
 
 The supplied external mission-package path was absent at intake. A

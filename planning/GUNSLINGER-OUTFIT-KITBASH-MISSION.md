@@ -638,3 +638,46 @@ Exact next action: implement and source-qualify a separately guarded,
 deterministic motion matrix for idle, walk, run, turn, fire, reload, and melee
 on both production genders, then run and directly inspect it before beginning
 the independent persistence gate.
+
+## 2026-08-31 - Native motion source gate complete
+
+Read-only installed-assembly inspection resolved the exact native contracts
+before implementation. `UnitMovementAgentBase` exposes writable nullable
+`MaxSpeedOverride`, live `Velocity`, `WantsToMove`, `IsReallyMoving`, and
+`TickMovement(float)`. `UnitAnimationManager` exposes `Speed`,
+`WalkSpeedType`, and `GetAction(UnitAnimationType)`; the installed enum is
+`Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionLocoMotion.WalkSpeedType`
+with exact `Slow` and `Normal` members. Existing qualified repository paths
+establish native `UnitMoveTo` plus same-area `ForcedPath`, `ForceLookAt`,
+`UnitAttack.CreateAttackCommand`, and production Reload Firearm through
+`AbilityData`/`UnitUseAbility`. No animation-only substitute is used.
+
+The new guarded `gunslinger-outfit-production-motion` scenario reuses the
+accepted production `DollState`/`DollData` settlement boundary, but has its
+own allowlist identity, 1,800-second collector window, evidence index, and
+result contract. For each exact male/female Human production doll it captures
+unarmed idle; musket slow walk, normal run, and body-relative turn; pistol and
+musket native attacks; the actual production musket reload; and native
+Shortsword melee. Attacks record ready, updates 1/12/36, and an event-aligned
+acted frame. Reload records ready, updates 1/12/36/96/160/240, and an acted
+frame. Expected output is 54 sidecars, 54 four-view PNGs, and 216 labeled
+views. Every record repeats production-pair, ramp, hair, rig, saved-link,
+blueprint, and no-save invariants.
+
+Request-local cleanup restores nullable speed override, walk type, animation
+speed, exact powder/ball counts, original avatar entities/ramps/saved links,
+and exact global-unit/party snapshots; it removes the actor, target,
+dependents, items, firearm state, and blueprint clones. Repository validation,
+the complete `1369/1369` Release suite, clean installed-reference Release
+build, SoundBank/firearm checks, strict standalone package validation, and all
+169 runtime preflight checks pass. The local clean package SHA-256 is
+`00c80de81ff7acc218c1bbf08e51623950281f90e74e5750fee685da48b6e9be`;
+DLL SHA-256 is
+`c60baee8be07590b39c30a8685bde51e277bb13d8f9d0b226fb9f3950a1e4abd`;
+MVID is `a9e50b0b-b2e1-42f4-aa91-c9cdf98d4c5c`. These identities are
+pre-commit and cannot support runtime acceptance.
+
+The candidate remains 88/100. Exact next action: commit and policy-publish
+this coherent harness checkpoint, rebuild/install the exact commit, pass
+quiescent preflight, run the guarded scenario through Steam App ID 640820,
+reconcile every sidecar/hash/invariant, and directly inspect all 54 PNGs.

@@ -62,6 +62,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("outfit-render.catalog", GunslingerOutfitRenderTests.CandidateCatalogIsExactAndBounded),
             Case("outfit-render.matrix", GunslingerOutfitRenderTests.RendererRestoresAndCapturesExactMatrix),
             Case("outfit-render.production-compatibility", GunslingerOutfitRenderTests.ProductionCompatibilityIsGuardedAndExact),
+            Case("outfit-render.production-motion", GunslingerOutfitRenderTests.ProductionMotionIsGuardedAndExact),
             Case("outfit-appearance.catalog", GunslingerClassAppearanceTests.CatalogIsExactValidatedAndDefensive),
             Case("outfit-appearance.production", GunslingerClassAppearanceTests.ProductionWiringIsAtomicAndDonorIndependent),
             Case("brown-fur.progression-normal", BrownFurContractTests.NormalProgressionIsExact),

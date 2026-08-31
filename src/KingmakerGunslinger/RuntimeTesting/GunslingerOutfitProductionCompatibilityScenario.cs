@@ -125,7 +125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly BlueprintUnit Source;
         }
 
-        internal sealed class ProductionCompatibilitySession
+        internal sealed partial class ProductionCompatibilitySession
         {
             private const int MaximumSettleUpdates = 360;
             private const int MinimumSettleUpdates = 30;
@@ -228,6 +228,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         PollCleanup();
                         return;
                     }
+                    if (IsProductionMotion)
+                    {
+                        PollProductionMotion();
+                        return;
+                    }
                     if (_phase == 0)
                     {
                         Initialize();
@@ -259,9 +264,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     _exceptionSummary = exception.ToString();
                     Add(_assertions,
-                        "gunslinger-outfit-production-compatibility-exception",
+                        IsProductionMotion
+                            ? "gunslinger-outfit-production-motion-exception"
+                            : "gunslinger-outfit-production-compatibility-exception",
                         "no exception", "stage=" + _stage + ";" + exception,
-                        false, "guarded request-local outfit fixture");
+                        false, IsProductionMotion
+                            ? "guarded request-local native-motion outfit fixture"
+                            : "guarded request-local outfit fixture");
                     BeginCleanup();
                 }
             }
@@ -1683,21 +1692,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixtureIndex", _fixtureIndex },
                     { "caseIndex", _caseIndex },
                     { "phase", _phase },
+                    { "motionStep", IsProductionMotion ?
+                        _motionStep : -1 },
                     { "captured", _captured },
                     { "imageCount", _imageCount },
                     { "actorPresent", _actor != null }
                 };
                 WriteJsonAtomic(Path.Combine(_request.EvidenceDirectory,
-                    "gunslinger-outfit-production-compatibility-progress.json"),
+                    IsProductionMotion
+                        ? "gunslinger-outfit-production-motion-progress.json"
+                        : "gunslinger-outfit-production-compatibility-progress.json"),
                     progress);
             }
 
             private void BeginCleanup()
             {
                 if (_cleanupStarted) return;
-                _stage = "gunslinger-outfit-production-compatibility-cleanup";
+                _stage = IsProductionMotion
+                    ? "gunslinger-outfit-production-motion-cleanup"
+                    : "gunslinger-outfit-production-compatibility-cleanup";
                 try
                 {
+                    if (IsProductionMotion)
+                        PrepareProductionMotionCleanup();
                     RetireProductionActor();
                 }
                 catch (Exception cleanupException)
@@ -1731,6 +1748,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void PollCleanup()
             {
                 Game.Instance.EntityCreator.Tick();
+                if (IsProductionMotion) RestoreProductionMotionInventory();
                 bool cleaned = SameReferences(_unitsBefore,
                         Snapshot(_allUnits)) &&
                     SameReferences(_partyBefore, Snapshot(_party)) &&
@@ -1742,6 +1760,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void Finish(bool cleaned)
             {
+                if (IsProductionMotion)
+                {
+                    FinishProductionMotion(cleaned);
+                    return;
+                }
                 int expectedFixtures = _fixtures.Length;
                 int expectedRecords = expectedFixtures *
                     ProductionCompatibilityCases.Length;

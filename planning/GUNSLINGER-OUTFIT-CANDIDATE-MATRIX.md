@@ -407,3 +407,31 @@ hair and saved links survive, and save/API, blueprint-mutation, cleanup, and
 restoration guards pass. This closes static equipment and rebuild evidence.
 The score remains 88/100 until the deliberately bundled motion/animation and
 persistence evidence completes the remaining compatibility criterion.
+
+### Production motion source gate
+
+The selected `magus-complete` production pair is now the only clothing under
+test in a separately guarded native-motion matrix. The eight exact actions per
+gender are unarmed idle; musket slow walk, normal run, and right turn; pistol
+and musket native attacks; production musket reload; and native Shortsword
+melee. Native attack records include ready, fixed 1/12/36 updates, and the
+acted event. Reload includes ready, fixed 1/12/36/96/160/240 updates, and the
+acted event. The planned batch is exactly 54 sidecars/PNGs and 216 views.
+
+The harness requires the selected production entities, default 2/22 ramps,
+native hair, saved links, humanoid rig, and immutable class blueprint on every
+frame. Slow/run acceptance requires accepted `UnitMoveTo`, same-area
+`ForcedPath`, nonzero live velocity and displacement, exact Slow/Normal walk
+types, and a materially greater observed run velocity. Turn, attack, and
+reload acceptance use live native commands and runtime counters rather than
+pose injection. Exact actor/target/item/inventory/avatar cleanup is mandatory.
+
+Repository validation, `1369/1369` Release tests, clean Release packaging,
+strict package validation, and 169 runtime preflight checks pass. Local package
+SHA-256 is
+`00c80de81ff7acc218c1bbf08e51623950281f90e74e5750fee685da48b6e9be`;
+DLL SHA-256 is
+`c60baee8be07590b39c30a8685bde51e277bb13d8f9d0b226fb9f3950a1e4abd`.
+No score changes from source evidence: `magus-complete` remains selected at
+88/100 until the complete installed-game motion batch is reconciled and
+directly accepted, followed by the separate persistence gate.
