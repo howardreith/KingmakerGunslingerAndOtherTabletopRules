@@ -70,7 +70,7 @@ namespace KingmakerGunslinger.Blueprints
                     LocalizationService.Create("KMG.Crafting.PaperCartridges.Name",
                         "Craft Paper Cartridges"),
                     LocalizationService.Create("KMG.Crafting.PaperCartridges.Description",
-                        "Once per rest, use a Gunsmith's Kit outside combat to pay 120 gp and create 20 Paper Cartridges. This shares the same entitlement as Craft Basic Firearm Ammunition; choosing either recipe prevents the other until rest. A failed transaction restores gold, inventory, and the entitlement exactly."),
+                        "Once per rest, use a Gunsmith's Kit outside combat to pay 24 gp (10% of ordinary purchase value) and create 20 Paper Cartridges. This shares the same entitlement as Craft Basic Firearm Ammunition; choosing either recipe prevents the other until rest. A failed transaction consumes nothing."),
                     ammo.PaperCartridge.Icon);
                 value.Type = AbilityType.Extraordinary;
                 value.Range = AbilityRange.Personal;
@@ -88,6 +88,10 @@ namespace KingmakerGunslinger.Blueprints
                         tool, marker) };
                 return value;
             });
+            if (paperAbility.ComponentsArray.OfType<CraftPaperCartridgesAbilityLogic>()
+                .Single().GoldCost != 24)
+                throw new InvalidOperationException(
+                    "Paper Cartridge craft cost must equal 24 gp.");
             return new GunsmithingCraftingBlueprintSet(ability, paperAbility, marker);
         }
     }

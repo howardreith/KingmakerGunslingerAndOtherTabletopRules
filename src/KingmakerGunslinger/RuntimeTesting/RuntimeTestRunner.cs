@@ -20769,8 +20769,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 sharedBlocked + ";" + vendorObserved + ";cleaned=" + cleaned;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("paper-crafting-transaction", "120 gp creates exactly 20 Paper Cartridges",
-                    observed, crafted && paperLogic != null && basicLogic.GoldCost == 22,
+                Assertion("paper-crafting-transaction", "24 gp creates exactly 20 Paper Cartridges",
+                    observed, crafted && paperLogic != null &&
+                        paperLogic.GoldCost == 24 && basicLogic.GoldCost == 22,
                     "native ability command plus shared atomic transaction"),
                 Assertion("paper-crafting-shared-marker", "either recipe blocks both until rest",
                     observed, sharedBlocked, "one exact persisted marker"),

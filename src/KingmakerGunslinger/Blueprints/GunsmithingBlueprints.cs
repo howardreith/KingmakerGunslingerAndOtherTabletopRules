@@ -73,7 +73,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create("KMG.Gunslinger.Gunsmithing.Name", "Gunsmithing"),
                 LocalizationService.Create("KMG.Gunslinger.Gunsmithing.Description",
-                    "You can repair Broken firearms with a Firearm Repair Kit and overhaul Wrecked firearms with a Firearm Overhaul Kit. Once per rest, a non-consumable Gunsmith's Kit lets you choose either 22 gp for 20 Black Powder Charges plus 20 Lead Balls, or 120 gp for 20 Paper Cartridges. The recipes share one entitlement. Gunslingers gain this feature automatically at 1st level."), null);
+                    "You can repair Broken firearms with a Firearm Repair Kit and overhaul Wrecked firearms with a Firearm Overhaul Kit. Once per rest, a non-consumable Gunsmith's Kit lets you choose either 22 gp for 20 Black Powder Charges plus 20 Lead Balls, or 24 gp for 20 Paper Cartridges. The recipes share one entitlement. Gunslingers gain this feature automatically at 1st level."), null);
             return feature;
         }
     }
