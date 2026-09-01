@@ -133,7 +133,7 @@ $protected = [ordered]@{
     'src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs' = 'bc22787d2838a418dd22b656b87554a5e3be8d25c9f9b420c3d2a07e3410bc75'
     'src/KingmakerGunslinger/Blueprints/GunTrainingBlueprints.cs' = '8603c87a4fc9fecd86ed0aa2da52bdcd9c5969d898639a6688139faeb93c0564'
     'src/KingmakerGunslinger/Firearms/ProductionFirearmCatalog.cs' = '75a8352c85c2e4fe5369ea02c414df9adc8a04f33c075f9176bd2f1138ad18dd'
-    'src/KingmakerGunslinger/CraftMagicItemsCompatibility/CraftMagicItemsCompatibilityPolicy.cs' = 'ae8f6c1739268bea982334153c6eb37eacf6625a798e7e6bc0d2e3a94bc06ce3'
+    'src/KingmakerGunslinger/CraftMagicItemsCompatibility/CraftMagicItemsCompatibilityPolicy.cs' = '6236d4392435b397bf7312d58c1633bc9ab84a368ededc47abf30fd9e3b57ea3'
 }
 foreach ($entry in $protected.GetEnumerator()) {
     Assert-Sha256 $entry.Key $entry.Value
