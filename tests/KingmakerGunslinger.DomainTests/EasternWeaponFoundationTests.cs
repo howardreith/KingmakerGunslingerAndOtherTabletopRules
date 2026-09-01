@@ -137,6 +137,21 @@ namespace KingmakerGunslinger.DomainTests
                 "Registered three stable categories, twelve generic items" })
                 Assertions.True(source.Contains(token),
                     "Eastern generic blueprint source contract is missing: " + token);
+            Assertions.True(source.Contains(
+                    "A long cavalry blade designed for sweeping cuts."),
+                "Nodachi must override inherited Brace donor copy with concise local text.");
+            string named = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints",
+                "EasternWeaponNamedBlueprints.cs"));
+            Assertions.False(named.Contains(": string.Empty;"),
+                "Named eastern weapons must not inherit donor descriptions when no bespoke mechanic applies.");
+            foreach (string text in new[] {
+                "A warm shimmer travels along its polished edge.",
+                "Its blackened steel drinks in the light.",
+                "A border warden's blade, worn smooth by long patrols.",
+                "Its blade bears the shape of an ancient bough." })
+                Assertions.True(named.Contains(text),
+                    "Named eastern description override is missing: " + text);
             string runtime = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "EasternWeapons",
                 "EasternWeaponCategoryRuntime.cs"));

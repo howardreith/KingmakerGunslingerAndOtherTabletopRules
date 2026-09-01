@@ -606,7 +606,7 @@ namespace KingmakerGunslinger.Blueprints
                 "Usable with Weapon Finesse." :
                 definition.Key == "katana" ?
                 "Martial Weapon Proficiency is sufficient when wielded two-handed." :
-                string.Empty;
+                "A long cavalry blade designed for sweeping cuts.";
         }
 
         internal void Validate(BlueprintItemWeapon item,
