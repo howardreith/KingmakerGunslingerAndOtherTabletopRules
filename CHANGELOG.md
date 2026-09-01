@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.112-ammunition-cmi-copy-notifications
+
+- Uses one positive, 10%-of-retail ammunition policy across native Gunsmithing
+  and KMG's scoped Craft Magic Items route: 22 gp for the loose 20/20 batch and
+  24 gp for 20 Paper Cartridges. Native transactions verify and deduct gold
+  once, roll back owned state on failure, and now display the actual paper
+  price in every project-authored card and runtime assertion.
+- Makes Use Paper Cartridges authoritative from the current native activatable
+  state, reconciles its hidden marker safely, invalidates stale presentation,
+  and keeps queued reload action, ammunition source, and inventory commitment
+  coherent.
+- Replaces synthetic Craft Magic Items lifecycle cycling with targeted,
+  idempotent KMG-owned finalization. KMG never toggles, reloads, or changes
+  Craft Magic Items' UMM lifecycle state.
+- Audits project-authored item descriptions, records the review in
+  `docs/ITEM-DESCRIPTION-AUDIT.md`, and maps project-owned reload/crafting
+  diagnostics to concise player-facing messages while retaining structured logs.
+
 ## 0.0.111-gunslinger-class-outfit-kitbash
 
 - Replaces the Gunslinger's inherited generic Fighter clothing with a coherent

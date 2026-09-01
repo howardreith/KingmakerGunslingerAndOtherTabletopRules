@@ -1,13 +1,19 @@
 # Kingmaker Gunslinger
 
-Version `0.0.111` gives Protection from Evil, Good, Law, and Chaos their
-Wrath-style defense against new registered domination, charm, and comparable
-mental-control effects from matching-alignment sources. The ten generic,
-individual, and communal spell cards plus the five active protection-buff
-tooltips now explain that behavior to players. Existing control effects remain
-active when protection is applied; this is intentionally not the complete
-tabletop rule. The feature has its own default-enabled, restart-applied Unity
-Mod Manager toggle.
+Version `0.0.112` repairs firearm-ammunition crafting, paper-cartridge mode,
+Craft Magic Items attachment, item copy, and player-facing failure text. Every
+project-owned 20-unit ammunition batch now costs 10% of retail, rounded up with
+a 1 gp minimum: 22 gp for loose powder and balls together, and 24 gp for Paper
+Cartridges. Native and scoped CMI routes charge once and restore their owned
+state on failure. Use Paper Cartridges follows the native activatable ability's
+current state, so turning it off immediately restores loose-ammunition reload
+selection and action economy. The optional CMI bridge is targeted and
+idempotent; it never cycles CMI's UMM toggle or lifecycle.
+
+The release retains Protection from Evil, Good, Law, and Chaos's Wrath-style
+defense against new registered matching-alignment mental-control effects. Its
+separate default-enabled UMM setting and the player-facing scope remain
+unchanged.
 
 It also gives the Gunslinger a distinct native
 swashbuckler/privateer class outfit instead of inheriting Fighter clothing. It
@@ -25,8 +31,9 @@ optional Craft Magic Items 2.1.0 integration without linking or packaging
 ammunition UI seam remains: CMI owns its complete top-level mundane selector on
 every IMGUI event, while KMG intercepts only the exact finalized Firearm
 Ammunition data object before CMI's equipment-only body. Exact 20-unit
-ammunition projects now all use timed target 5 while retaining scale-1.0 prices
-of 34/4/40 gp. Official firearm support is exactly Pistol, Musket, and
+ammunition projects use target 5 and KMG's scoped 10%-of-retail price policy:
+20/2/24 gp for powder, ball, and paper. The scope restores CMI's ordinary
+settings immediately after the KMG ammunition operation. Official firearm support is exactly Pistol, Musket, and
 Blunderbuss. Advanced Rifle and Advanced Revolver are hidden legacy identities:
 they remain registered only so old-save or deliberately Toy Box-spawned items
 load and can be upgraded, but they have no normal selection, starting grant,

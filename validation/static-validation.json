@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.111-gunslinger-class-outfit-kitbash",
-  "version": "0.0.111",
+  "milestone": "0.0.112-ammunition-cmi-copy-notifications",
+  "version": "0.0.112",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -759,5 +759,20 @@
     "broadDescriptorImmunityAllowed": false,
     "guardedRuntimeDescriptionInventoryRequired": true,
     "manualEncounterValidationOngoing": true
+  },
+  "ammunitionCmiCopyNotifications112": {
+    "deterministicTestCount": 1372,
+    "discountPercent": 10,
+    "minimumCost": 1,
+    "basicBatchCost": 22,
+    "paperBatchCost": 24,
+    "paperToggleAuthoritative": "activatable-is-on",
+    "paperMarkerReconciliation": true,
+    "cmiSyntheticToggleProhibited": true,
+    "cmiTargetedBridgeIdempotent": true,
+    "descriptionAudit": "docs/ITEM-DESCRIPTION-AUDIT.md",
+    "screenSafeReasons": true,
+    "brokenWreckedNotificationsExactOnce": true,
+    "guardedRuntimeRequestCallbackObserved": false
   }
 }

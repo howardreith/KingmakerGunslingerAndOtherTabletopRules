@@ -217,10 +217,14 @@ namespace KingmakerGunslinger.DomainTests
                 reasonPolicy.Contains("Cannot craft now."),
                 "Gunsmithing failure reasons bypass the screen-text policy.");
             Assertions.True(blueprints.Contains("PaperAbilitySymbol") &&
-                blueprints.Contains("CraftPaperCartridgesAbilityLogic.Create"),
+                blueprints.Contains("CraftPaperCartridgesAbilityLogic.Create") &&
+                blueprints.Contains("pay 24 gp") &&
+                blueprints.Contains("Paper Cartridge craft cost must equal 24 gp."),
                 "paper recipe blueprint");
             Assertions.True(grants.Contains("Facts.Length != 4") &&
-                grants.Contains("paperCraftingAbility"), "shared Gunsmithing grants");
+                grants.Contains("paperCraftingAbility") &&
+                grants.Contains("24 gp for 20 Paper Cartridges"),
+                "shared Gunsmithing grants");
             Assertions.True(sale.Contains("ammo.PaperCartridge"),
                 "paper zero resale");
         }
