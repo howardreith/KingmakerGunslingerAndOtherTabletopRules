@@ -22,7 +22,9 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("ammunition-cmi-copy-notifications"
+    effective_suffix = ("save-load-hotfix"
+        if VERSION == "0.0.113"
+        else "ammunition-cmi-copy-notifications"
         if VERSION == "0.0.112"
         else "gunslinger-class-outfit-kitbash"
         if VERSION == "0.0.111"

@@ -1,14 +1,17 @@
 # Kingmaker Gunslinger
 
-Version `0.0.112` repairs firearm-ammunition crafting, paper-cartridge mode,
-Craft Magic Items attachment, item copy, and player-facing failure text. Every
-project-owned 20-unit ammunition batch now costs 10% of retail, rounded up with
-a 1 gp minimum: 22 gp for loose powder and balls together, and 24 gp for Paper
-Cartridges. Native and scoped CMI routes charge once and restore their owned
-state on failure. Use Paper Cartridges follows the native activatable ability's
-current state, so turning it off immediately restores loose-ammunition reload
-selection and action economy. The optional CMI bridge is targeted and
-idempotent; it never cycles CMI's UMM toggle or lifecycle.
+Version `0.0.113` is a save-load hotfix for the paper-cartridge mode repair.
+Paper-mode reads now use only the native activatable ability's current state;
+they never reconcile marker buffs or alter a unit while Kingmaker is loading a
+save. The `set_IsOn` hook is cache-only, and a stale marker is ignored
+mechanically. Turning Use Paper Cartridges off still immediately selects loose
+ammunition and its normal action economy.
+
+Every project-owned 20-unit ammunition batch costs 10% of retail, rounded up
+with a 1 gp minimum: 22 gp for loose powder and balls together, and 24 gp for
+Paper Cartridges. Native and scoped CMI routes charge once and restore their
+owned state on failure. The optional CMI bridge is targeted and idempotent; it
+never cycles CMI's UMM toggle or lifecycle.
 
 The release retains Protection from Evil, Good, Law, and Chaos's Wrath-style
 defense against new registered matching-alignment mental-control effects. Its
