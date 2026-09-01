@@ -21,6 +21,8 @@ $source = ($files | ForEach-Object {
 }) -join "`n"
 $proficiency = Get-Content -Raw -LiteralPath (Join-Path $root `
     'src\KingmakerGunslinger\Blueprints\FirearmProficiencyBlueprints.cs')
+$gunsmithing = Get-Content -Raw -LiteralPath (Join-Path $root `
+    'src\KingmakerGunslinger\Blueprints\GunsmithingBlueprints.cs')
 $runner = Get-Content -Raw -LiteralPath (Join-Path $root `
     'src\KingmakerGunslinger\RuntimeTesting\RuntimeTestRunner.cs')
 
@@ -38,11 +40,13 @@ $checks = [ordered]@{
         $source.Contains('Symbol = "KMG.Test.ReloadAbility"') -and
         $source.Contains('Symbol = "KMG.Test.RepairAbility"') -and
         $source.Contains('Symbol = "KMG.Test.OverhaulAbility"')
-    'exact-three-ability-grant' =
+    'current-production-ability-grants' =
         $proficiency.Contains('grant.Facts.Length != 3') -and
         $proficiency.Contains('ReferenceEquals(grant.Facts[0], reloadAbility)') -and
-        $proficiency.Contains('ReferenceEquals(grant.Facts[1], overhaulAbility)') -and
-        $proficiency.Contains('ReferenceEquals(grant.Facts[2], repairAbility)')
+        $proficiency.Contains('ReferenceEquals(grant.Facts[1], scatterShotAbility)') -and
+        $proficiency.Contains('ReferenceEquals(grant.Facts[2], paperCartridgeMode)') -and
+        $gunsmithing.Contains('{ overhaulAbility, repairAbility, craftingAbility,') -and
+        $gunsmithing.Contains('paperCraftingAbility }')
     'save-free-runtime-presentation-assertion' =
         $runner.Contains('"production-firearm-actions-presentation"') -and
         $runner.Contains('reload.Name == "Reload Firearm"') -and
