@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.111` targets:
+Kingmaker Gunslinger `0.0.112` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -73,10 +73,10 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.111 Gunslinger class outfit kitbash
-release is owner-approved for publication through this workflow. Its inherited
-mechanics, new description surfaces, complete tests, deterministic package,
-and guarded runtime inventory are validated before publication.
+The 0.0.112 ammunition, CMI, paper-mode, item-copy, and notification repair
+release is owner-approved for publication through this workflow. It preserves
+the prior native outfit work and is published only after its complete
+version-aware deterministic build, package, and repository-validation gates.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default
@@ -122,10 +122,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.111 `
+gh release download v0.0.112 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.111-gunslinger-class-outfit-kitbash.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.111"
+  --pattern 'KingmakerGunslinger-0.0.112-ammunition-cmi-copy-notifications.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.112"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The
