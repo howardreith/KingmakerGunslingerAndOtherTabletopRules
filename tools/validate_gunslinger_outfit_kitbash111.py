@@ -14,7 +14,7 @@ VERSION = "0.0.111"
 INFORMATIONAL_VERSION = "0.0.111-gunslinger-class-outfit-kitbash"
 PACKAGE = "KingmakerGunslinger-0.0.111-local-runtime.zip"
 PACKAGE_SUFFIX = "gunslinger-class-outfit-kitbash"
-DETERMINISTIC_TEST_COUNT = 1370
+DETERMINISTIC_TEST_COUNT = 1372
 STATIC_KEY = "gunslingerOutfitKitbash111"
 
 MALE_IDS = (

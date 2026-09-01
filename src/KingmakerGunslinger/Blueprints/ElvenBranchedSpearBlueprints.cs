@@ -502,11 +502,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static string Describe(ElvenBranchedSpearItemSpec spec)
         {
-            string prefix = spec.ColdIron ? "This cold iron " : "This ";
-            string quality = spec.Enhancement == 1 ? "+1 magic " :
-                spec.Masterwork ? "masterwork " : string.Empty;
-            return prefix + quality +
-                "two-handed reach weapon can be used with Weapon Finesse and grants a +2 bonus on attacks of opportunity provoked by movement.";
+            return "Usable with Weapon Finesse. Grants a +2 bonus on attacks of opportunity triggered by enemy movement.";
         }
 
         private static DamageTypeDescription PhysicalPiercing(bool coldIron)

@@ -83,11 +83,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "real CMI clone, item-owned KMG markers, and native UIUtilityItem tooltip builder");
             diagnostics.AddRange(tooltipInspection.Diagnostics);
             Add(assertions, "save-free-disposable-boundary",
-                "no save, inventory, party, input, or campaign mutation",
-                "request-local item entities and CMI custom blueprints removed by the qualified full rebuild",
-                qualification.RebuiltGeneration >
+                "no save, inventory, party, input, campaign, or CMI lifecycle mutation",
+                "request-local item entities disposed without replaying CMI lifecycle",
+                qualification.FinalizationGeneration ==
                     qualification.InitialGeneration,
-                "observer creates no inventory entries and invokes no save/input API");
+                "observer creates no inventory entries and invokes no save/input or CMI-toggle API");
             warnings.Add("CMI-crafted custom items use CMI's ordinary custom-blueprint GUID persistence and require both mods to remain installed.");
             warnings.Add("Visual placement and end-to-end CMI UMM interaction remain human acceptance items; this observer supplies mechanical graph evidence only.");
 

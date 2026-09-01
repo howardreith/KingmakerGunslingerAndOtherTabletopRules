@@ -56,6 +56,19 @@ namespace KingmakerGunslinger.Reloading
             }
         }
 
+        internal static void RecordRejected(string technicalReason)
+        {
+            if (string.IsNullOrWhiteSpace(technicalReason))
+                throw new ArgumentException("A technical reload reason is required.",
+                    "technicalReason");
+            Interlocked.Increment(ref _attempts);
+            Interlocked.Increment(ref _rejected);
+            lock (Gate)
+            {
+                _lastResult = "REJECTED " + technicalReason;
+            }
+        }
+
         internal static void RecordFault(Exception exception)
         {
             if (exception == null)

@@ -16,6 +16,7 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.Items;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
@@ -385,7 +386,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         }
 
         // Fallback used only when a compatible graph already exists before
-        // this bridge is attached. A complete CMI rebuild is preferred.
+        // this bridge attaches; it augments only KMG-owned state.
         internal static void AfterDataRead()
         {
             CraftMagicItemsContract contract;
@@ -395,6 +396,51 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             Array augmented = AugmentDataReadResult(raw);
             if (augmented != null && !ReferenceEquals(raw, augmented))
                 contract.ItemDataField.SetValue(null, augmented);
+        }
+
+        // Late attachment is deliberately limited to KMG-owned augmentation
+        // and indexes. It never replays Craft Magic Items' lifecycle.
+        internal static bool TryFinalizeLateAttachment()
+        {
+            CraftMagicItemsContract contract;
+            Array graph;
+            lock (Gate)
+            {
+                if (_failed) return false;
+                contract = _contract;
+                graph = _currentGraph;
+            }
+            if (contract == null) return false;
+            if (graph == null)
+            {
+                Array raw = contract.ItemDataField.GetValue(null) as Array;
+                if (raw == null) return false;
+                AfterDataRead();
+                lock (Gate)
+                {
+                    if (_failed) return false;
+                    graph = _currentGraph;
+                }
+            }
+            if (graph == null || !HasOrdinaryWeaponRecipes(graph))
+                return false;
+            BeforeEquipmentIndexes();
+            if (!IsFinalized) return false;
+            ActivateMagicFeatCategories();
+            return IsFinalized;
+        }
+
+        private static bool HasOrdinaryWeaponRecipes(Array graph)
+        {
+            try
+            {
+                object arms = RequireItemData(graph, ArmsAndArmorIdentity);
+                return ReadRecipes(arms).Any(RecipeSupportsWeapon);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         // Called from the first equipment-index prefix after CMI has initialized
@@ -483,8 +529,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 CraftMagicItemsCompatibilityStatusRegistry.Update(
                     new CraftMagicItemsCompatibilityStatus(
                         CraftMagicItemsCompatibilityAvailability.Active,
-                        "CMI graph generation " + _generation +
-                        " finalized with synchronized public data and indexes.",
+                        "CMI targeted bridge generation " + _generation +
+                        " finalized KMG-owned data and indexes.",
                         _snapshot.ItemTypes,
                         _snapshot.FirearmCreationBases +
                             _snapshot.MartialBases +
@@ -493,7 +539,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                             _snapshot.ReliableRecipes +
                             _snapshot.AmmunitionRecipes));
                 context.Logger.Info("craft-magic-items",
-                    "graph.finalized", string.Format(
+                    "targeted-bridge.finalized", string.Format(
                         CultureInfo.InvariantCulture,
                         "generation={0};itemTypes={1};firearmCreationBases={2};firearmRecognitionIdentities={3};martialBases={4};exoticBases={5};customFamilyMagicItemTypes=0;customFamilyRecognitionIdentities={6};ordinaryWeaponRecipes={7};reliableRecipes={8};ammunitionRecipes={9};namedCreationBases=0",
                         _snapshot.Generation, _snapshot.ItemTypes,
@@ -794,9 +840,11 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             object ammunition;
             AmmunitionRenderPlan plan;
             bool available;
+            CraftMagicItemsContract contract;
             lock (Gate)
             {
                 ammunition = _ammunition;
+                contract = _contract;
                 if (CraftMagicItemsMundaneUiRoutePolicy.Resolve(
                         selectedCraftingData, ammunition) !=
                     CraftMagicItemsMundaneUiRoute.AmmunitionLowerPanel)
@@ -837,8 +885,9 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     crafter, StatType.SkillKnowledgeWorld,
                     CraftMagicItemsCompatibilityPolicy.AmmunitionMundaneBaseDc,
                     0, null, null, false, null, true });
-                plan.RenderCraftControl.Invoke(null, new object[] {
-                    crafter, plan.CraftingData, recipe, 0, item, null });
+                using (CraftMagicItemsAmmunitionCostScope.Begin(contract))
+                    plan.RenderCraftControl.Invoke(null, new object[] {
+                        crafter, plan.CraftingData, recipe, 0, item, null });
                 lock (Gate) SelectedAmmunitionGuids.Add(item.AssetGuid);
                 return true;
             }
@@ -903,7 +952,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             var diagnostics = new List<string>();
             var customGuids = new List<string>();
             int initialGeneration = 0;
-            int rebuiltGeneration = 0;
+            int finalizationGeneration = 0;
             try
             {
                 CraftMagicItemsContract contract;
@@ -1009,19 +1058,19 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
 
                 CraftMagicItemsGraphSnapshot before = Snapshot;
                 CraftMagicItemsOptionalExtensionCoordinator
-                    .RebuildCompleteGraphForQualification();
+                    .RepeatTargetedFinalizationForQualification();
                 CraftMagicItemsGraphSnapshot after = Snapshot;
-                rebuiltGeneration = after.Generation;
+                finalizationGeneration = after.Generation;
                 ValidateFinalizedGraph();
                 bool sameGraph = SameGraphShape(before, after) &&
-                    rebuiltGeneration == initialGeneration + 1;
-                AddQualificationCheck(checks, "complete-rebuild-idempotence",
-                    "one new generation with the same exact graph and no duplicates",
+                    finalizationGeneration == initialGeneration;
+                AddQualificationCheck(checks, "targeted-finalization-idempotence",
+                    "same exact graph and generation with no duplicates",
                     "before=" + DescribeSnapshot(before) + ";after=" +
                         DescribeSnapshot(after), sameGraph,
-                    "real CMI OnToggle(false)/OnToggle(true) full index rebuild");
+                    "repeated KMG-owned finalization only; no CMI lifecycle invocation");
                 diagnostics.Add("initialGraph=" + DescribeSnapshot(before));
-                diagnostics.Add("rebuiltGraph=" + DescribeSnapshot(after));
+                diagnostics.Add("finalizedGraph=" + DescribeSnapshot(after));
                 diagnostics.Add("customBlueprints=" + string.Join(",",
                     customGuids.ToArray()));
             }
@@ -1034,7 +1083,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     "bounded compatibility qualification exception");
             }
             return new CraftMagicItemsQualificationResult(checks, diagnostics,
-                initialGeneration, rebuiltGeneration, customGuids);
+                initialGeneration, finalizationGeneration, customGuids);
         }
 
         private static void ValidateFinalizedGraph()
@@ -1338,7 +1387,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     registration.Plan.ValueDerivedTarget +
                     ":timedTarget=" +
                     registration.Plan.TimedProjectTarget + ":gold=" +
-                    registration.Plan.GoldCost(1f));
+                    registration.Plan.GoldCost(AmmunitionCraftingCostPolicy.CraftMagicItemsPriceScale));
             }
             AddQualificationCheck(checks, "ammunition-result-recipes",
                 "three exact BlueprintItem results; 20 units each; ordinary CMI mundane economics",
@@ -1370,7 +1419,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     if ((int)contract.ProjectTargetCostField.GetValue(project)
                             != registration.Plan.TimedProjectTarget ||
                         (int)contract.ProjectGoldSpentField.GetValue(project)
-                            != registration.Plan.GoldCost(1f) ||
+                            != registration.Plan.GoldCost(AmmunitionCraftingCostPolicy.CraftMagicItemsPriceScale) ||
                         !ReferenceEquals(contract.ProjectResultItemField
                             .GetValue(project), result))
                         throw new InvalidOperationException(
@@ -1410,7 +1459,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                     NewProjectNormalizationCount == normalizationBefore + 2;
                 AddQualificationCheck(checks,
                     "ammunition-project-target-and-migration",
-                    "all three new timed targets 5 with gold 34/4/40; one target-60 legacy project migrates once while preserving progress, gold, result, and order",
+                    "all three new timed targets 5 with gold 20/2/24; one target-60 legacy project migrates once while preserving progress, gold, result, and order",
                     "targets=" + string.Join(",", projects.Select(value =>
                         contract.ProjectTargetCostField.GetValue(value)
                             .ToString()).ToArray()) + ";gold=" +
@@ -1437,7 +1486,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 .GetParameters();
             object[] arguments = { null,
                 registration.Plan.ValueDerivedTarget,
-                registration.Plan.GoldCost(1f), 0, result,
+                registration.Plan.GoldCost(AmmunitionCraftingCostPolicy.CraftMagicItemsPriceScale), 0, result,
                 AmmunitionIdentity,
                 "KMGAmmunition." + registration.Item.AssetGuid,
                 Array.CreateInstance(parameters[7].ParameterType

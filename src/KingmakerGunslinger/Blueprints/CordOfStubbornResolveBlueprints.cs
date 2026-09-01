@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.Blueprints
                     LocalizationService.Create("KMG.Item.CordOfStubbornResolve.Name",
                         "Cord of Stubborn Resolve"),
                     LocalizationService.Create("KMG.Item.CordOfStubbornResolve.Description",
-                        "This belt grants a +2 enhancement bonus to Constitution. Whenever an effect would make the wearer fatigued, the wearer instead takes 1d6 damage that ignores damage reduction and cannot reduce the wearer below 1 hit point. Whenever an effect would make the wearer exhausted, the wearer takes this damage and becomes fatigued instead."),
+                        "When an effect would fatigue you, take 1d6 damage that ignores damage reduction instead; it cannot reduce you below 1 hit point. When an effect would exhaust you, take that damage and become fatigued instead."),
                     LocalizationService.Create("KMG.Item.CordOfStubbornResolve.Flavor",
                         "This tightly knotted cord steadies body and resolve against consuming weariness."),
                     15000, 1f);

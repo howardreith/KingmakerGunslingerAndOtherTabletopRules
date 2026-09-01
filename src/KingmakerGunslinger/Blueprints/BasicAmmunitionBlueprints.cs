@@ -32,11 +32,11 @@ namespace KingmakerGunslinger.Blueprints
         internal const string PaperCartridgeDisplayName = "Paper Cartridge";
 
         private const string BlackPowderDescription =
-            "A measured charge of black powder used with a projectile to load an early firearm.";
+            "Use with a lead ball to load early firearms.";
         private const string LeadBallDescription =
-            "A cast lead projectile sized for an early firearm. Loading one also requires a black powder charge.";
+            "Use with a black powder charge to load early firearms.";
         internal const string PaperCartridgeDescription =
-            "A prepared paper or cloth bundle of black powder with a bullet or pellets. It replaces loose powder and shot, reduces reload time by one step, and increases misfire by 1 for that loaded shot. Compatible with early pistols, muskets, and blunderbusses.";
+            "Combines powder and shot for early firearms. Reduces reload time by one step and increases misfire by 1.";
         private const string BlackPowderFlavor =
             "Keep dry, sealed, and well away from sparks.";
         private const string LeadBallFlavor =

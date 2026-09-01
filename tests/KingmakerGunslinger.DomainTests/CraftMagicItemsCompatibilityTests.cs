@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
+using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.CraftMagicItemsCompatibility;
 
 #pragma warning disable 0169, 0649 // Reflection-only external contract fixture.
@@ -454,10 +455,10 @@ namespace KingmakerGunslinger.DomainTests
         internal static void AmmunitionBatchEconomicsAreExact()
         {
             AssertAmmo("black-powder", "Black Powder Charge", 10, 200,
-                50, 5, 34);
-            AssertAmmo("lead-ball", "Lead Ball", 1, 20, 5, 5, 4);
+                50, 5, 20);
+            AssertAmmo("lead-ball", "Lead Ball", 1, 20, 5, 5, 2);
             AssertAmmo("paper-cartridge", "Paper Cartridge", 12, 240,
-                60, 5, 40);
+                60, 5, 24);
             string bridge = Read("src", "KingmakerGunslinger",
                 "CraftMagicItemsCompatibility",
                 "CraftMagicItemsReflectionBridge.cs");
@@ -467,6 +468,23 @@ namespace KingmakerGunslinger.DomainTests
                 "Ammunition does not use exact result items and CMI's mundane control.");
             Assertions.False(bridge.Contains("NewItemBaseIDs = ammunition"),
                 "Plain ammunition was forced into CMI equipment base arrays.");
+            string scope = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsAmmunitionCostScope.cs");
+            string adapter = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsAmmunitionUiRuntimeAdapter.cs");
+            Assertions.True(scope.Contains("CraftingCostsNoGold") &&
+                scope.Contains("CraftingPriceScale") &&
+                scope.Contains("CraftMagicItemsPriceScale") &&
+                scope.Contains("result.Dispose()") &&
+                scope.Contains("_costsNoGoldField.SetValue") &&
+                scope.Contains("_priceScaleField.SetValue"),
+                "KMG ammunition does not scope and restore CMI's gold settings.");
+            Assertions.True(bridge.Contains(
+                    "using (CraftMagicItemsAmmunitionCostScope.Begin(contract))") &&
+                adapter.Contains("CraftMagicItemsPriceScale"),
+                "CMI ammunition UI no longer applies the shared paid-cost scope.");
         }
 
         internal static void AmmunitionProjectMigrationIsExact()
@@ -592,7 +610,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "AfterDataRead",
                 "AugmentDataReadResult", "AddItemIdForEnchantment",
                 "AddAllCraftingFeats", "ActivateMagicFeatCategories",
-                "BeforeEquipmentIndexes", "RebuildCompleteGraph",
+                "BeforeEquipmentIndexes", "TryFinalizeTargetedGraph",                "TryFinalizeLateAttachment", "RepeatTargetedFinalizationForQualification",                "toggle-observer", "targeted-finalization",
                 "ExternalDisabled", "HarmonyLib.Harmony",
                 "first-update-after-umm-load", "late-attachment",
                 "patches=13", "RollbackCompatibilityGraph",
@@ -615,6 +633,19 @@ namespace KingmakerGunslinger.DomainTests
                 bridge.Contains("_magicCustomWeapons") ||
                 bridge.Contains("CategoryScope.CustomWeapons"),
                 "The obsolete standalone Eastern/Elven magic category remains.");
+            string qualification = Read("src", "KingmakerGunslinger",
+                "CraftMagicItemsCompatibility",
+                "CraftMagicItemsRuntimeQualification.cs");
+            string tooltipQualification = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "CraftMagicItemsTooltipInspection.cs");
+            string lifecycleSources = coordinator + bridge + qualification +
+                tooltipQualification;
+            string syntheticToggleInvocation = "On" + "Toggle" + ".Invoke";
+            string syntheticGraphRebuild = "Rebuild" + "CompleteGraph";
+            Assertions.False(lifecycleSources.Contains(syntheticToggleInvocation) ||
+                lifecycleSources.Contains(syntheticGraphRebuild) ||
+                lifecycleSources.Contains("Main.Load"),
+                "Production or qualification code can still replay CMI lifecycle state.");
             string scenarioCatalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -703,7 +734,7 @@ namespace KingmakerGunslinger.DomainTests
                 name + " value-derived target changed.");
             Assertions.Equal(timedTarget, plan.TimedProjectTarget,
                 name + " timed project target changed.");
-            Assertions.Equal(gold, plan.GoldCost(1f),
+            Assertions.Equal(gold, plan.GoldCost(AmmunitionCraftingCostPolicy.CraftMagicItemsPriceScale),
                 name + " ordinary CMI gold cost changed.");
         }
 

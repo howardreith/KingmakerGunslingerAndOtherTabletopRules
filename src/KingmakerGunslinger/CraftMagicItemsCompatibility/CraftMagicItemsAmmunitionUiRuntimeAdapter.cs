@@ -10,6 +10,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Items;
 using Kingmaker.UnitLogic;
+using KingmakerGunslinger.Ammunition;
 
 namespace KingmakerGunslinger.CraftMagicItemsCompatibility
 {
@@ -270,7 +271,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             SelectAmmunition(recipeIndex, false);
             _takesNoTimeField.SetValue(_settings, takesNoTime);
             _costsNoGoldField.SetValue(_settings, false);
-            _priceScaleField.SetValue(_settings, 1f);
+            _priceScaleField.SetValue(_settings, AmmunitionCraftingCostPolicy.CraftMagicItemsPriceScale);
             CraftMagicItemsRegistrationCatalog catalog =
                 CraftMagicItemsReflectionBridge.Catalog;
             string itemName = catalog == null ? null :
@@ -306,7 +307,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 ItemGuid = registration.Item.AssetGuid,
                 ExpectedCount = registration.Plan.Count,
                 ExpectedProgress = registration.Plan.TimedProjectTarget,
-                ExpectedGold = registration.Plan.GoldCost(1f),
+                ExpectedGold = registration.Plan.GoldCost(AmmunitionCraftingCostPolicy.CraftMagicItemsPriceScale),
                 InventoryBefore = inventoryBefore,
                 InventoryAfter = Game.Instance.Player.Inventory.Count(
                     registration.Item),

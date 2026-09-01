@@ -32,12 +32,12 @@ transient action debt; it does not alter either feat or automation mode.
 
 1. Back up any saves you intend to keep outside the game's active save folder.
 2. Install the standalone
-   `KingmakerGunslinger-0.0.111-gunslinger-class-outfit-kitbash.zip`
+   `KingmakerGunslinger-0.0.112-ammunition-cmi-copy-notifications.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.111 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.112 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -224,7 +224,7 @@ by itself prove campaign or cross-mod compatibility.
 ## Optional Craft Magic Items integration
 
 When the Unity Mod Manager entry with ID `CraftMagicItems` is installed and
-active, Gunslinger 0.0.111 probes `CraftMagicItems.Main` and enables the bridge
+active, Gunslinger 0.0.112 probes `CraftMagicItems.Main` and enables the bridge
 only if the required 2.1.0 data-loading, recipe, indexing, crafting, and Harmony
 surfaces match. There is no required assembly reference: Gunslinger continues
 normally when CMI is absent or disabled, and an incompatible external contract
@@ -239,12 +239,13 @@ Repaint use KMG's renderer while a category selection changed, producing a
 `SelectionGrid` control-count exception and unbalanced GUILayout/GUIClip
 state. Version 0.0.99 removed that prefix and passed its first human ammunition
 UI interaction test: the category remained visible and crafting worked.
-Version 0.0.100 preserved that architecture through final human acceptance;
-the 0.0.111 release retains that accepted behavior. CMI always owns its top-level
-Mundane Crafting and parent/subtype selectors; the bridge branches only after
+Version 0.0.100 preserved that selector architecture through final human
+acceptance. The 0.0.112 bridge retains CMI's ownership of its top-level Mundane
+Crafting and parent/subtype selectors, then augments only KMG-owned data after
 CMI has finalized the exact selected data and immediately before its ordinary
-equipment-only `NewItemBaseIDs` path. The ammunition panel returns to CMI's
-common Current Money footer.
+equipment-only `NewItemBaseIDs` path. It never drives CMI through a false/true
+toggle, mutates CMI's UMM state, or replays CMI's load lifecycle. The ammunition
+panel returns to CMI's common Current Money footer.
 
 If KMG's lower panel throws, the exception is fully unwrapped and rethrown.
 The original ordinary renderer is not run after partial custom output, and no
@@ -274,18 +275,19 @@ variants remain exact owned-item upgrade targets. Named campaign weapons may
 be upgraded only when already owned and never become from-scratch bases.
 
 The **Firearm Ammunition** category makes the exact inventory identities used
-by Gunslinger in batches of 20. CMI's value calculation remains unchanged:
-Black Powder Charge has batch value 200 gp, Lead Ball has value 20 gp, and
-Paper Cartridge has value 240 gp. Those values previously produced timed
-targets 50/5/60 and human estimates of about 7/1/8 days somewhere safe. The
-consumable-specific policy now gives all three projects target 5 without
-changing item value or CMI's price calculation. At price scale 1.0, costs
-remain exactly 34/4/40 gp. Existing exact KMG ammunition projects with target
-50 or 60 are normalized once while preserving progress, `GoldSpent`, result,
-recipe, crafter, and ordering; cancellation refunds the original exact spend,
-and a project already at progress 5 or greater completes through CMI's normal
-processing. The recipes do not create loaded-state markers or change
-Gunslinger's rest crafting, reload, or Paper mode rules.
+by Gunslinger in batches of 20. Its shared KMG policy charges 10% of retail,
+rounded up with a 1 gp minimum: Black Powder Charge is 200 gp retail/20 gp to
+craft, Lead Ball is 20 gp/2 gp, and Paper Cartridge is 240 gp/24 gp. KMG
+applies CMI's non-free setting and scale 0.60 only for its own ammunition
+operation, restores both settings in every success and exception path, and
+leaves non-KMG recipes untouched. Timed and immediate CMI projects charge once
+at creation; completion never charges a second time. Existing exact KMG
+ammunition projects with target 50 or 60 are normalized once while preserving
+progress, `GoldSpent`, result, recipe, crafter, and ordering; cancellation
+refunds the original exact spend, and a project already at progress 5 or
+greater completes through CMI's normal processing. The recipes do not create
+loaded-state markers or change Gunslinger's rest crafting, reload, or Paper
+mode rules.
 
 KMG's item-owned firearm state-token and battered-origin enchantments remain
 mechanically present and save-stable. The native tooltip filter omits only
@@ -319,7 +321,7 @@ changing module state.
 
 CMI UI release-regression checklist for one fresh process:
 
-1. Confirm CMI reports Kingmaker Gunslinger 0.0.111.
+1. Confirm CMI reports Kingmaker Gunslinger 0.0.112.
 2. Open Craft Mundane Items.
 3. Confirm Firearms offers exactly Pistol, Musket, and Blunderbuss.
 4. Confirm Advanced Rifle and Advanced Revolver are absent.
@@ -329,7 +331,7 @@ CMI UI release-regression checklist for one fresh process:
 8. Craft one 20-unit batch of each ammunition item.
 9. Confirm each project estimate is approximately one safe crafting day with
    the same crafter and settings.
-10. Confirm prices remain 34/4/40 gp at price scale 1.0.
+10. Confirm prices are 20/2/24 gp for powder, ball, and paper; CMI remains enabled.
 11. Confirm Work in Progress reports target/progress consistently.
 12. Enchant one owned Eastern or Elven weapon through Arms and Armor.
 13. Inspect a newly crafted magical Pistol.
