@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Firearms;
+using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.Reloading;
 using KingmakerGunslinger.Deeds;
 using KingmakerGunslinger.Misfires;
+using KingmakerGunslinger.Presentation;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -125,15 +127,69 @@ namespace KingmakerGunslinger.DomainTests
                 "ordinary direct-field fallback preserves the exact forced-roll hook");
         }
 
+        internal static void AmmunitionCraftingEconomyIsExact()
+        {
+            int basicRetail = (10 + 1) * 20;
+            int paperRetail = 12 * 20;
+            int basic = AmmunitionCraftingCostPolicy.ForCombinedBatch(10, 1,
+                20);
+            int powder = AmmunitionCraftingCostPolicy.ForBatch(10, 20);
+            int ball = AmmunitionCraftingCostPolicy.ForBatch(1, 20);
+            int paper = AmmunitionCraftingCostPolicy.ForBatch(12, 20);
+            Assertions.Equal(22, basic, "basic ammunition craft cost");
+            Assertions.Equal(20, powder, "powder craft cost");
+            Assertions.Equal(2, ball, "lead ball craft cost");
+            Assertions.Equal(24, paper, "paper cartridge craft cost");
+            Assertions.Equal(1, AmmunitionCraftingCostPolicy.ForBatch(0, 20),
+                "the explicit minimum-cost rule changed");
+            foreach (int cost in new[] { basic, powder, ball, paper })
+                Assertions.True(cost > 0, "ammunition craft became free");
+            Assertions.True(basic < basicRetail && paper < paperRetail &&
+                powder < 200 && ball < 20,
+                "ammunition craft cost is no longer discounted from retail");
+        }
+
+        internal static void PlayerFacingFailureReasonsAreScreenSafe()
+        {
+            foreach (string message in new[] { "Equip one firearm.",
+                "That firearm is already loaded.", "That firearm is wrecked.",
+                "No paper cartridges.", "No loose ammunition.",
+                "Reload is already in progress.", "Not enough gold.",
+                "Cannot craft now." })
+                Assertions.True(PlayerFacingTextPolicy.IsScreenSafe(message),
+                    "A concise player reason was rejected: " + message);
+            foreach (string diagnostic in new[] {
+                "Requires one unambiguous equipped firearm; unit=abc",
+                "System.InvalidOperationException: broken",
+                "failure\ntrace", "0123456789abcdef0123456789abcdef" })
+                Assertions.False(PlayerFacingTextPolicy.IsScreenSafe(diagnostic),
+                    "A technical diagnostic was accepted for UI: " + diagnostic);
+            ReloadPlayerFacingReasonPolicy.Remember(
+                "Requires one unambiguous equipped firearm; unit=abc");
+            Assertions.Equal("Cannot reload now.",
+                ReloadPlayerFacingReasonPolicy.CurrentOrFallback(),
+                "Reload diagnostic leaked through the availability reason.");
+            GunsmithingPlayerFacingReasonPolicy.Remember("Not enough gold.");
+            Assertions.Equal("Not enough gold.",
+                GunsmithingPlayerFacingReasonPolicy.CurrentOrFallback(),
+                "Zero-gold crafting did not retain its concise reason.");
+        }
+
         internal static void CraftingSharedTransactionContract()
         {
             string root = Environment.CurrentDirectory;
+            string basic = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Gunsmithing",
+                "CraftBasicAmmunitionAbilityLogic.cs"));
             string paper = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Gunsmithing",
                 "CraftPaperCartridgesAbilityLogic.cs"));
             string transaction = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Gunsmithing",
                 "FirearmCraftingTransactionService.cs"));
+            string reasonPolicy = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Gunsmithing",
+                "GunsmithingPlayerFacingReasonPolicy.cs"));
             string blueprints = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Blueprints",
                 "GunsmithingCraftingBlueprints.cs"));
@@ -142,14 +198,24 @@ namespace KingmakerGunslinger.DomainTests
             string sale = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Gunsmithing",
                 "BasicAmmunitionSaleValuePatch.cs"));
-            foreach (string token in new[] { "BatchSize = 20", "GoldCost = 120",
-                "FirearmCraftingTransactionService.Complete", "m_UsedMarker" })
+            foreach (string token in new[] { "BatchSize = 20",
+                "AmmunitionCraftingCostPolicy.ForBatch",
+                "FirearmCraftingTransactionService.Complete", "m_UsedMarker",
+                "Not enough gold." })
                 Assertions.True(paper.Contains(token), "paper craft: " + token);
-            foreach (string token in new[] { "SpendMoney(goldCost)",
-                "caster.RemoveFact(marker)", "GainMoney(missingMoney)",
-                "countsBefore[index]" })
+            foreach (string token in new[] { "BatchSize = 20",
+                "AmmunitionCraftingCostPolicy.ForCombinedBatch",
+                "FirearmCraftingTransactionService.Complete", "Not enough gold." })
+                Assertions.True(basic.Contains(token), "basic craft: " + token);
+            foreach (string token in new[] { "moneyBefore < goldCost",
+                "SpendMoney(goldCost)", "caster.RemoveFact(marker)",
+                "GainMoney(missingMoney)", "countsBefore[index]",
+                "ammunition-craft.committed" })
                 Assertions.True(transaction.Contains(token),
                     "shared rollback: " + token);
+            Assertions.True(reasonPolicy.Contains("IsScreenSafe") &&
+                reasonPolicy.Contains("Cannot craft now."),
+                "Gunsmithing failure reasons bypass the screen-text policy.");
             Assertions.True(blueprints.Contains("PaperAbilitySymbol") &&
                 blueprints.Contains("CraftPaperCartridgesAbilityLogic.Create"),
                 "paper recipe blueprint");
@@ -347,7 +413,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "KMG.Ammunition.PaperCartridge",
                 "Paper Cartridge", "PaperCartridgeCost = 12",
                 "PaperCartridgeWeight = 0f", "ComponentsArray = Array.Empty<BlueprintComponent>()",
-                "reduces reload time by one step", "increases misfire by 1" })
+                "Reduces reload time by one step", "increases misfire by 1" })
                 Assertions.True(source.Contains(token), "paper item contract: " + token);
             Assertions.False(source.Contains("Dragon"), "no unrelated cartridge");
         }
@@ -491,6 +557,26 @@ namespace KingmakerGunslinger.DomainTests
                 "Reloading", "PaperCartridgeModeRuntime.cs"));
             Assertions.False(runtime.Contains("_isActive") || runtime.Contains("Dictionary<Unit"),
                 "mode runtime must not own global mutable selection state");
+            foreach (string token in new[] { "ActivatableAbility", "toggle.IsOn",
+                "set_IsOn", "PostLoad", "RemoveFact", "Interlocked.Increment" })
+                Assertions.True(runtime.Contains(token),
+                    "paper-mode authoritative-state contract: " + token);
+            Assertions.False(runtime.Contains("RawFacts.OfType<Buff>().Any"),
+                "A hidden marker is still treated as sufficient toggle evidence.");
+            string presentation = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Reloading",
+                "ReloadAbilityPresentationPatches.cs"));
+            string ability = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Reloading",
+                "ReloadTestMusketAbilityLogic.cs"));
+            foreach (string token in new[] { "InvalidatePaperMode",
+                "ReloadQueuedPlanBinding", "Bindings.Add", "IsCurrent", "Forget" })
+                Assertions.True(presentation.Contains(token),
+                    "reload queue coherence contract: " + token);
+            foreach (string token in new[] { "ReloadQueuedPlanBinding.IsCurrent",
+                "ForQueuedPlanChange", "RecordUnavailable", "ability.unavailable" })
+                Assertions.True(ability.Contains(token),
+                    "reload delivery coherence contract: " + token);
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts", "Build-Local.ps1"));
             string package = File.ReadAllText(Path.Combine(root, "scripts",
                 "package.ps1"));

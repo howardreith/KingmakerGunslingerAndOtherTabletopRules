@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KingmakerGunslinger.Ammunition;
 
 namespace KingmakerGunslinger.CraftMagicItemsCompatibility
 {
@@ -163,9 +164,16 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             if (craftingPriceScale < 0f || float.IsNaN(craftingPriceScale) ||
                 float.IsInfinity(craftingPriceScale))
                 throw new ArgumentOutOfRangeException("craftingPriceScale");
+            int expected = AmmunitionCraftingCostPolicy.ForBatch(UnitCost,
+                Count);
             int scaled = (int)Math.Round(ValueDerivedTarget *
                 (double)craftingPriceScale, MidpointRounding.ToEven);
-            return Math.Max(1, (scaled * 2 + 2) / 3);
+            int cmiCost = Math.Max(1, (scaled * 2 + 2) / 3);
+            if (Math.Abs(craftingPriceScale - AmmunitionCraftingCostPolicy
+                    .CraftMagicItemsPriceScale) < 0.0001f &&
+                cmiCost != expected) throw new InvalidOperationException(
+                    "CMI ammunition price scale no longer matches KMG cost policy.");
+            return expected;
         }
     }
 

@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         private static bool _patched;
         private static bool _firstUpdateAttached;
         private static bool _safeUpdateAttached;
-        private static bool _rebuilding;
+        private static bool _lateAttachmentPending;
         private static bool _incompatibleLogged;
 
         internal static CraftMagicItemsContract Contract
@@ -101,6 +101,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
             float delta)
         {
             CraftMagicItemsReflectionBridge.ProcessDeferredUiFailure();
+            TryFinalizeTargetedGraph("safe-update");
         }
 
         private static void TryResolveAndPatch(string checkpoint)
@@ -201,10 +202,13 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 context.Logger.Info("craft-magic-items",
                     "contract.accepted", "checkpoint=" + checkpoint + ";" +
                     AssemblyIdentity(assembly) +
-                    ";lifecycle=first-equipment-index-prefix");
+                    ";bridge=targeted-equipment-index-finalization");
                 if (resolution.Contract.ItemDataField.GetValue(null) != null &&
                     !CraftMagicItemsReflectionBridge.IsFinalized)
-                    RebuildCompleteGraph("late-attachment");
+                {
+                    lock (Gate) _lateAttachmentPending = true;
+                    TryFinalizeTargetedGraph("late-attachment");
+                }
                 else if (!CraftMagicItemsReflectionBridge.IsFinalized)
                     CraftMagicItemsCompatibilityStatusRegistry.Update(
                         new CraftMagicItemsCompatibilityStatus(
@@ -292,8 +296,8 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 Apply("ammunition-project-migration", harmony, patch,
                     methodConstructor, contract.GetCraftingTimer, null,
                     Callback("GetCraftingTimerPostfix"));
-                Apply("toggle-rebuild", harmony, patch, methodConstructor,
-                    contract.OnToggle, null, Callback("OnTogglePostfix"));
+                Apply("toggle-observer", harmony, patch, methodConstructor,
+                    contract.OnToggle, null, Callback("OnExternalToggleObservedPostfix"));
             }
             catch (Exception patchException)
             {
@@ -504,11 +508,12 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                 .MigrateExistingAmmunitionProjects(__result);
         }
 
-        private static void OnTogglePostfix(bool enabled)
+        private static void OnExternalToggleObservedPostfix(bool enabled)
         {
             if (!enabled)
             {
                 CraftMagicItemsReflectionBridge.ExternalDisabled();
+                lock (Gate) _lateAttachmentPending = false;
                 CraftMagicItemsCompatibilityStatusRegistry.Update(
                     new CraftMagicItemsCompatibilityStatus(
                         CraftMagicItemsCompatibilityAvailability
@@ -534,45 +539,43 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
                             "CraftMagicItems was enabled; awaiting its finalized data graph.",
                             0, 0, 0));
             }
+            if (enabled) TryResolveAndPatch("observed-user-toggle");
         }
 
-        internal static void RebuildCompleteGraphForQualification()
-        { RebuildCompleteGraph("guarded-runtime-qualification"); }
-
-        private static void RebuildCompleteGraph(string checkpoint)
+        internal static void RepeatTargetedFinalizationForQualification()
         {
-            CraftMagicItemsContract contract;
+            if (!TryFinalizeTargetedGraph("guarded-runtime-qualification",
+                    true)) throw new InvalidOperationException(
+                "The targeted CMI bridge is not ready for qualification.");
+        }
+
+        private static bool TryFinalizeTargetedGraph(string checkpoint,
+            bool force = false)
+        {
+            ModContext context;
             UnityModManager.ModEntry entry;
+            CraftMagicItemsContract contract;
+            bool pending;
             lock (Gate)
             {
-                if (_rebuilding) throw new InvalidOperationException(
-                    "A CMI graph rebuild is already active.");
-                _rebuilding = true;
-                contract = _contract;
+                context = _context;
                 entry = _entry;
+                contract = _contract;
+                pending = _lateAttachmentPending;
             }
-            try
-            {
-                if (contract == null || entry == null)
-                    throw new InvalidOperationException(
-                        "The exact CMI toggle contract is unavailable.");
-                object disabled = contract.OnToggle.Invoke(null,
-                    new object[] { entry, false });
-                object enabled = contract.OnToggle.Invoke(null,
-                    new object[] { entry, true });
-                if (!Equals(disabled, true) || !Equals(enabled, true) ||
-                    !CraftMagicItemsReflectionBridge.IsFinalized)
-                    throw new InvalidOperationException(
-                        "CMI did not complete one exact disable/enable graph rebuild.");
-                _context.Logger.Info("craft-magic-items",
-                    "graph.rebuilt", "checkpoint=" + checkpoint +
-                    ";generation=" + CraftMagicItemsReflectionBridge
-                        .Snapshot.Generation);
-            }
-            finally
-            {
-                lock (Gate) _rebuilding = false;
-            }
+            if ((!force && !pending) || context == null || entry == null ||
+                contract == null || !entry.Loaded || !entry.Active ||
+                entry.ErrorOnLoading ||
+                !(bool)contract.EnabledField.GetValue(null))
+                return false;
+            bool finalized = CraftMagicItemsReflectionBridge
+                .TryFinalizeLateAttachment();
+            if (!finalized) return false;
+            lock (Gate) _lateAttachmentPending = false;
+            context.Logger.Info("craft-magic-items", "targeted-finalization",
+                "checkpoint=" + checkpoint + ";generation=" +
+                CraftMagicItemsReflectionBridge.Snapshot.Generation);
+            return true;
         }
 
         private static void Incompatible(string failedCheck, string detail,

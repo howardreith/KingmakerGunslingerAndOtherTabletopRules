@@ -47,6 +47,7 @@
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsMundaneUiContract.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsMundaneUiTranspiler.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsAmmunitionUiRuntimeAdapter.cs" />
+    <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsAmmunitionCostScope.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsRegistrationCatalog.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsReflectionBridge.cs" />
     <Compile Include="CraftMagicItemsCompatibility\CraftMagicItemsOptionalExtensionCoordinator.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Misfires\EffectiveFirearmMisfirePolicy.cs" />
     <Compile Include="Misfires\EffectiveFirearmMisfireValuePolicy.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionSourceKind.cs" />
+    <Compile Include="Ammunition\AmmunitionCraftingCostPolicy.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionProfile.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionProfileCatalog.cs" />
     <Compile Include="Ammunition\ReloadInventoryComponent.cs" />
@@ -579,6 +581,7 @@
     <Compile Include="Gunsmithing\StartingFirearmGrantPolicy.cs" />
     <Compile Include="Gunsmithing\CraftBasicAmmunitionAbilityLogic.cs" />
     <Compile Include="Gunsmithing\CraftPaperCartridgesAbilityLogic.cs" />
+    <Compile Include="Gunsmithing\GunsmithingPlayerFacingReasonPolicy.cs" />
     <Compile Include="Gunsmithing\FirearmCraftingTransactionService.cs" />
     <Compile Include="Gunsmithing\CraftingRestResetPatch.cs" />
     <Compile Include="Gunsmithing\BasicAmmunitionSaleValuePatch.cs" />
@@ -817,6 +820,7 @@
     <Compile Include="Reloading\FullAttackAutoReloadPolicy.cs" />
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
     <Compile Include="Reloading\ReloadAbilityPresentationPatches.cs" />
+    <Compile Include="Reloading\ReloadPlayerFacingReasonPolicy.cs" />
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
     <Compile Include="Feats\FirearmWeaponFeatBonus.cs" />
     <Compile Include="Feats\NativeFirearmFeatIntegration.cs" />

@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using KingmakerGunslinger.Bootstrap;
 using Kingmaker;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
@@ -33,10 +35,12 @@ namespace KingmakerGunslinger.Gunsmithing
                     throw new ArgumentException("Crafting output configuration is invalid.");
                 countsBefore[index] = player.Inventory.Count(outputs[index]);
             }
-            if (!player.SpendMoney(goldCost) || player.Money != moneyBefore - goldCost)
-                throw new InvalidOperationException("Crafting gold removal failed.");
             try
             {
+                if (moneyBefore < goldCost || !player.SpendMoney(goldCost) ||
+                    player.Money != moneyBefore - goldCost)
+                    throw new InvalidOperationException(
+                        "Crafting gold removal failed.");
                 for (int index = 0; index < outputs.Length; index++)
                     player.Inventory.Add(outputs[index], amounts[index]);
                 for (int index = 0; index < outputs.Length; index++)
@@ -47,6 +51,14 @@ namespace KingmakerGunslinger.Gunsmithing
                 if (caster.AddFact(marker) == null || !caster.HasFact(marker))
                     throw new InvalidOperationException(
                         "Crafting entitlement marker was not persisted.");
+                ModContext context;
+                if (ModContext.TryGet(out context))
+                    context.Logger.Info("gunsmithing",
+                        "ammunition-craft.committed", "outputs=" +
+                        string.Join(",", outputs.Select(value => value.AssetGuid)) +
+                        ";count=" + string.Join(",", amounts) + ";cost=" +
+                        goldCost + ";moneyBefore=" + moneyBefore +
+                        ";moneyAfter=" + player.Money);
             }
             catch
             {
@@ -58,6 +70,9 @@ namespace KingmakerGunslinger.Gunsmithing
                 }
                 long missingMoney = moneyBefore - player.Money;
                 if (missingMoney > 0) player.GainMoney(missingMoney);
+                if (player.Money > moneyBefore)
+                    throw new InvalidOperationException(
+                        "Crafting rollback restored more gold than the transaction owned.");
                 throw;
             }
         }
