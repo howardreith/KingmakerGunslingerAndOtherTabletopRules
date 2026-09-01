@@ -321,25 +321,18 @@ namespace KingmakerGunslinger.Blueprints
 
         private static string Describe(NamedSpearSpec spec)
         {
-            string profile = "+" + spec.Enhancement +
-                (spec.Agile ? " Agile" : string.Empty) +
-                (spec.Keen ? " Keen" : string.Empty) +
-                (spec.Corrosive ? " Corrosive" : string.Empty) +
-                (spec.Speed ? " Speed" : string.Empty) +
-                (spec.ColdIron ? " Cold Iron" : string.Empty);
             string effect = spec.Kind == NamedSpearKind.Boughkeeper
-                ? "An attack of opportunity hit grants +1 dodge AC until the beginning of the wielder's next turn."
+                ? " An attack of opportunity hit grants +1 dodge bonus to AC until the start of your next turn."
                 : spec.Kind == NamedSpearKind.Thornstep
-                ? "Once per round, a movement-provoked attack of opportunity hit reduces the target's speed by 10 feet for 1 round."
+                ? " Once per round, an attack of opportunity triggered by enemy movement that hits reduces the target's speed by 10 feet for 1 round."
                 : spec.Kind == NamedSpearKind.VipersReach
-                ? "Once per round, a sneak attack that deals damage imposes a -2 Reflex penalty for 1 round."
+                ? " Once per round, a damaging sneak attack imposes a -2 penalty on Reflex saves for 1 round."
                 : spec.Kind == NamedSpearKind.BriarCrownedSpear
-                ? "Once per round after an attack of opportunity hit, the wielder may expend another attack of opportunity to attack that target at -5."
+                ? " Once per round after an attack of opportunity hit, expend another available attack of opportunity to attack that target at -5."
                 : spec.Kind == NamedSpearKind.SpearOfTheFirstBranch
-                ? "First Branch's Reprisal forces a once-per-round Fortitude save after an attack of opportunity hit or a sneak attack that deals damage; failure Entangles for 1 round and success reduces speed by 10 feet for 1 round."
-                : "It is Agile and made of cold iron.";
-            return profile + " Elven Branched Spear. " + effect +
-                " It remains a two-handed reach weapon usable with Weapon Finesse and grants +2 on attacks of opportunity provoked by movement.";
+                ? " Once per round after an attack of opportunity hit or damaging sneak attack, the target makes a Fortitude save. Failure entangles it for 1 round; success reduces its speed by 10 feet for 1 round."
+                : string.Empty;
+            return "Usable with Weapon Finesse. Grants a +2 bonus on attacks of opportunity triggered by enemy movement." + effect;
         }
 
         private static void Validate(NamedSpearBlueprintEntry[] entries,

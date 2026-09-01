@@ -583,15 +583,10 @@ namespace KingmakerGunslinger.Blueprints
             EasternWeaponGenericSpec spec,
             BlueprintWeaponEnchantment[] enchantments)
         {
-            string quality = spec.Enhancement == 1 ? "+1 magic " :
-                spec.Masterwork ? "masterwork " : string.Empty;
-            string material = spec.ColdIron ? "cold iron " : string.Empty;
             BlueprintItemAccess.Resolve().ConfigureWeapon(item,
                 LocalizationService.Create(spec.Symbol + ".Name", spec.DisplayName),
                 LocalizationService.Create(spec.Symbol + ".Description",
-                    "This is a " + quality + material +
-                    definition.Presentation.DisplayName.ToLowerInvariant() +
-                    "."),
+                    DescribeItem(definition)),
                 LocalizationService.Create(spec.Symbol + ".Flavor",
                     "A carefully proportioned curved blade imported through specialist trade."),
                 spec.Cost, definition.WeightPounds);
@@ -602,6 +597,16 @@ namespace KingmakerGunslinger.Blueprints
             _damageType.SetValue(item,
                 EasternWeaponTypeAccess.Physical(definition, spec.ColdIron));
             _visualParameters.SetValue(item, item.Type.VisualParameters);
+        }
+
+        private static string DescribeItem(
+            CustomWeaponCategoryDefinition definition)
+        {
+            return definition.Key == "wakizashi" ?
+                "Usable with Weapon Finesse." :
+                definition.Key == "katana" ?
+                "Martial Weapon Proficiency is sufficient when wielded two-handed." :
+                string.Empty;
         }
 
         internal void Validate(BlueprintItemWeapon item,

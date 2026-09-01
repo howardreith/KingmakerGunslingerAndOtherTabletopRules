@@ -330,25 +330,17 @@ namespace KingmakerGunslinger.Blueprints
 
         private static string Describe(EasternWeaponNamedSpec spec)
         {
-            var properties = new List<string> { "+" + spec.Enhancement };
-            foreach (EasternWeaponNativeProperty property in Enum.GetValues(
-                typeof(EasternWeaponNativeProperty)))
-                if (property != EasternWeaponNativeProperty.None &&
-                    spec.Has(property)) properties.Add(PropertyName(property));
-            if (spec.ColdIron) properties.Add("Cold Iron");
-            string effect = spec.Kind == EasternWeaponNamedKind.WayfarersOath
-                ? " While active, it grants +2 competence to Initiative."
+            return spec.Kind == EasternWeaponNamedKind.WayfarersOath
+                ? "Grants a +2 competence bonus on Initiative while equipped."
                 : spec.Kind == EasternWeaponNamedKind.FallingPetal
-                ? " A critical hit grants +1 dodge AC for 1 round, ending early if this weapon is no longer wielded."
+                ? "A critical hit grants a +1 dodge bonus to AC for 1 round, ending early if you stop wielding it."
                 : spec.Kind == EasternWeaponNamedKind.MoonlitCrossing
-                ? " One-handed use grants +1 dodge AC; two-handed use grants +2 weapon damage."
+                ? "One-handed use grants a +1 dodge bonus to AC. Two-handed use grants +2 weapon damage."
                 : spec.Kind == EasternWeaponNamedKind.MountainSunder
-                ? " Mighty Cleaving permits one additional Cleave attack. While Power Attack is active, its first hit each round deals 1d6 force damage."
+                ? "Mighty Cleaving allows one additional Cleave attack. While Power Attack is active, your first hit each round deals 1d6 force damage."
                 : spec.Kind == EasternWeaponNamedKind.UnfixedForm
-                ? " While polymorphed or changed from natural size, it deals base damage as if it were one size category larger."
+                ? "While polymorphed or not your natural size, deals base damage as if one size category larger."
                 : string.Empty;
-            return string.Join(", ", properties.ToArray()) + " " +
-                spec.Family + "." + effect;
         }
 
         private static void AddEquipmentFact(BlueprintItemWeapon item,

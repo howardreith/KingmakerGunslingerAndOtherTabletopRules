@@ -124,12 +124,18 @@ namespace KingmakerGunslinger.DomainTests
         {
             string root = Environment.CurrentDirectory;
             string source = string.Join("\n", new[] {
+                Read(root, "BasicAmmunitionBlueprints.cs"),
+                Read(root, "GunsmithingSupplyBlueprints.cs"),
+                Read(root, "FirearmRepairKitBlueprints.cs"),
+                Read(root, "ProductionFirearmBlueprints.cs"),
                 Read(root, "EasternWeaponBlueprints.cs"),
                 Read(root, "EasternWeaponNamedBlueprints.cs"),
                 Read(root, "ElvenBranchedSpearBlueprints.cs"),
                 Read(root, "ElvenBranchedSpearNamedBlueprints.cs"),
                 Read(root, "MagicFirearmBlueprints.cs"),
                 Read(root, "CordOfStubbornResolveBlueprints.cs") });
+            string audit = File.ReadAllText(Path.Combine(root, "docs",
+                "ITEM-DESCRIPTION-AUDIT.md"));
             foreach (string phrase in new[] {
                 "native-style proficiency", "stable weapon category",
                 "single stable weapon", "this exact weapon",
@@ -143,6 +149,19 @@ namespace KingmakerGunslinger.DomainTests
                 "ConfigureEnchantmentText(value, string.Empty,") &&
                 source.Contains("string.Empty, 0);"),
                 "The Eastern policy-only enchantment must remain textless.");
+            foreach (string redundant in new[] { "This is a ",
+                " It remains a two-handed reach weapon", "bears a +1 enhancement bonus",
+                " Elven Branched Spear. " })
+                Assertions.False(source.Contains(redundant),
+                    "Item source still repeats a normal-card trait: " + redundant);
+            Assertions.True(source.Contains(
+                    "Usable with Weapon Finesse. Grants a +2 bonus on attacks of opportunity triggered by enemy movement.") &&
+                audit.Contains("| Moonlit Fork |") &&
+                audit.Contains("KMG.ElvenBranchedSpear.MoonlitFork.Description") &&
+                audit.Contains("## Magic firearms") &&
+                audit.Contains("## Eastern named weapons") &&
+                audit.Contains("## Elven Branched Spears"),
+                "The individually reviewed item-description audit or Moonlit Fork snapshot is incomplete.");
         }
 
         private static ProjectMagicItemLocation[] DistributedLocations()
