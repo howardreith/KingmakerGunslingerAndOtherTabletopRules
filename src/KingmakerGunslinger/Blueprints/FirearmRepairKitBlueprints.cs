@@ -18,7 +18,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string DisplayName = "Firearm Repair Kit";
 
         private const string Description =
-            "A compact set of replacement springs, pins, tools, and fitted parts. Consuming one lets a trained wielder overhaul a Wrecked Test Musket into an empty Broken firearm; ordinary repair is still required afterward.";
+            "Consume with Overhaul Firearm to change a wrecked Test Musket to an empty broken firearm. Repair it afterward.";
         private const string Flavor =
             "Enough fitted parts for one emergency overhaul, not a complete repair.";
         private const int Cost = 50;

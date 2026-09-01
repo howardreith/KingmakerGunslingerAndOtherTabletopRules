@@ -195,10 +195,9 @@ namespace KingmakerGunslinger.Blueprints
             string itemInternalName)
         {
             string localizationStem = "KMG.Item." + spec.DisplayName.Replace(" ", string.Empty);
-            string eraName = spec.Definition.Era == FirearmEra.Advanced ? "advanced" : "early";
             string descriptionText = spec.Definition.IsScatter
-                ? "An early firearm that can fire an ordinary lead ball at a 10-foot range increment or use Scatter Shot to fire pellets in a 15-foot cone. It uses black powder and lead balls, can misfire, and must be reloaded after firing."
-                : "An " + eraName + " firearm with a black-powder mechanism. It uses powder and lead shot, can misfire, and must be reloaded as its capacity is spent.";
+                ? "Uses black powder and lead balls. It can fire a lead ball or use Scatter Shot to fire pellets in a 15-foot cone. It can misfire and must be reloaded."
+                : "Uses black powder and lead balls. It can misfire and must be reloaded.";
             descriptionText += " " + FirearmPenetrationPresentation.Describe(
                 spec.Definition);
             var name = LocalizationService.Create(localizationStem + ".Name", spec.DisplayName);
