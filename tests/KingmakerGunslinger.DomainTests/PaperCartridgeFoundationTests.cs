@@ -562,9 +562,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(runtime.Contains("_isActive") || runtime.Contains("Dictionary<Unit"),
                 "mode runtime must not own global mutable selection state");
             foreach (string token in new[] { "ActivatableAbility", "toggle.IsOn",
-                "set_IsOn", "PostLoad", "RemoveFact", "Interlocked.Increment" })
+                "set_IsOn", "Interlocked.Increment", "InvalidatePaperMode" })
                 Assertions.True(runtime.Contains(token),
                     "paper-mode authoritative-state contract: " + token);
+            foreach (string prohibited in new[] { "UnitEntityData",
+                "PaperCartridgeModePostLoadPatch", "Reconcile", "AddFact",
+                "RemoveFact", ".Stop(" })
+                Assertions.False(runtime.Contains(prohibited),
+                    "paper-mode runtime must not mutate serialized facts: " +
+                    prohibited);
             Assertions.False(runtime.Contains("RawFacts.OfType<Buff>().Any"),
                 "A hidden marker is still treated as sufficient toggle evidence.");
             string presentation = File.ReadAllText(Path.Combine(root, "src",
@@ -593,6 +599,60 @@ namespace KingmakerGunslinger.DomainTests
                 package.Contains("expectedPackageFileCount") &&
                 !package.Contains("Compress-Archive"),
                 "standalone release package must use the deterministic ZIP builder");
+        }
+
+        internal static void ModeReadOnlySourceContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string runtime = File.ReadAllText(Path.Combine(root,
+                "src", "KingmakerGunslinger", "Reloading",
+                "PaperCartridgeModeRuntime.cs")).Replace("\r\n", "\n");
+            string active = SourceSlice(runtime,
+                "internal static bool IsActive(UnitDescriptor unit,\n            BlueprintActivatableAbility ability, BlueprintBuff marker)",
+                "internal static bool IsPaperToggle");
+            Assertions.True(active.Contains("toggle != null && toggle.IsOn"),
+                "the live native toggle must be the authoritative paper-mode read");
+            foreach (string prohibited in new[] { "Reconcile", "AddFact",
+                "RemoveFact", ".Stop(", "IsOn =", "Buffs", "RawFacts" })
+                Assertions.False(active.Contains(prohibited),
+                    "IsActive must be side-effect-free: " + prohibited);
+            Assertions.True(active.Contains("catch (Exception)") &&
+                active.Contains("return false;"),
+                "a not-yet-hydrated activatable collection must fail closed");
+
+            string setter = SourceSlice(runtime,
+                "internal static void OnToggleChanged(ActivatableAbility ability)",
+                "private static ActivatableAbility Find");
+            foreach (string prohibited in new[] { "Reconcile", "AddFact",
+                "RemoveFact", ".Stop(", "IsOn =", "Buffs", "RawFacts" })
+                Assertions.False(setter.Contains(prohibited),
+                    "the IsOn setter hook must not mutate persistent state: " +
+                    prohibited);
+            Assertions.True(setter.Contains("Interlocked.Increment") &&
+                setter.Contains("ReloadAbilityPresentation.InvalidatePaperMode"),
+                "the setter hook retains lightweight cache invalidation only");
+            Assertions.False(runtime.Contains("UnitEntityData") ||
+                runtime.Contains("PostLoad"),
+                "no KMG UnitEntityData.PostLoad patch may touch paper-mode facts");
+
+            string reload = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Reloading",
+                "ReloadTestMusketRuntime.cs"));
+            Assertions.True(reload.Contains("PaperCartridgeModeRuntime.IsActive") &&
+                reload.Contains("ReloadAmmunitionProfileCatalog.PaperCartridge") &&
+                reload.Contains("ReloadAmmunitionProfileCatalog.LooseBasic"),
+                "reload selection remains native-toggle driven and marker independent");
+        }
+
+        private static string SourceSlice(string source, string start,
+            string end)
+        {
+            int startIndex = source.IndexOf(start, StringComparison.Ordinal);
+            Assertions.True(startIndex >= 0, "source slice start: " + start);
+            int endIndex = source.IndexOf(end, startIndex,
+                StringComparison.Ordinal);
+            Assertions.True(endIndex > startIndex, "source slice end: " + end);
+            return source.Substring(startIndex, endIndex - startIndex);
         }
 
         internal static void LightningReloadDynamicActions()
