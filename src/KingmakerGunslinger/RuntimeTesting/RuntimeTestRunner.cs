@@ -7605,7 +7605,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 magicCompatible = false, staticPreserved = false,
                 advancedRejected = false, brokenRetained = false,
                 modeIsolated = false, exhaustionRetainsMode = false, cleaned = false;
-            bool toggleOffReload = false, staleMarkerRemoved = false;
+            bool toggleOffReload = false, toggleOffReadIsSideEffectFree = false;
+            int markerCountBeforeModeRead = -1, markerCountAfterModeRead = -1;
             string observed = null;
             try
             {
@@ -7616,15 +7617,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out ignored, out method))
                     throw new InvalidOperationException("Temporary Paper Cartridges could not be added.");
                 if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
-                    new[] { new object[] { ammunition.BlackPowder, 2 },
+                    new[] { new object[] { ammunition.BlackPowder, 3 },
                         new object[] { ammunition.BlackPowder } },
                     out ignored, out method) ||
                     !ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
-                    new[] { new object[] { ammunition.LeadBall, 2 },
+                    new[] { new object[] { ammunition.LeadBall, 3 },
                         new object[] { ammunition.LeadBall } },
                     out ignored, out method) ||
-                    player.Inventory.Count(ammunition.BlackPowder) < powderBefore + 2 ||
-                    player.Inventory.Count(ammunition.LeadBall) < ballBefore + 2)
+                    player.Inventory.Count(ammunition.BlackPowder) < powderBefore + 3 ||
+                    player.Inventory.Count(ammunition.LeadBall) < ballBefore + 3)
                     throw new InvalidOperationException("Temporary loose ammunition could not be added.");
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
@@ -7662,8 +7663,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmState loaded = FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State;
                 pistolLoaded = reload.Succeeded && loaded.LoadedAmmunition ==
                     ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
-                noLooseConsumption = player.Inventory.Count(ammunition.BlackPowder) == powderBefore + 2 &&
-                    player.Inventory.Count(ammunition.LeadBall) == ballBefore + 2;
+                noLooseConsumption = player.Inventory.Count(ammunition.BlackPowder) == powderBefore + 3 &&
+                    player.Inventory.Count(ammunition.LeadBall) == ballBefore + 3;
                 int remainingPaper = player.Inventory.Count(ammunition.PaperCartridge);
                 if (remainingPaper > 0)
                     player.Inventory.Remove(ammunition.PaperCartridge, remainingPaper);
@@ -7675,17 +7676,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int looseBallBefore = player.Inventory.Count(ammunition.LeadBall);
                 FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
                 nativeMode.IsOn = false;
-                staleMarkerRemoved = !nativeMode.IsOn &&
-                    !PaperCartridgeModeRuntime.IsActive(unit.Descriptor, mode.Marker) &&
-                    !unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(value =>
-                        ReferenceEquals(value.Blueprint, mode.Marker));
+                markerCountBeforeModeRead = unit.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Count(value => ReferenceEquals(value.Blueprint,
+                        mode.Marker));
+                bool inactiveAfterToggle = !PaperCartridgeModeRuntime.IsActive(
+                    unit.Descriptor, mode.Marker);
+                markerCountAfterModeRead = unit.Descriptor.Buffs.RawFacts
+                    .OfType<Buff>().Count(value => ReferenceEquals(value.Blueprint,
+                        mode.Marker));
+                toggleOffReadIsSideEffectFree = !nativeMode.IsOn &&
+                    inactiveAfterToggle && markerCountBeforeModeRead ==
+                    markerCountAfterModeRead;
                 ReloadTestMusketAvailability loosePlan = ReloadTestMusketRuntime.Evaluate(
                     unit.Descriptor, pistol, ammunition.BlackPowder, ammunition.LeadBall);
                 FirearmReloadResult looseReload = ReloadTestMusketRuntime.Execute(
                     unit.Descriptor, pistol, ammunition.BlackPowder, ammunition.LeadBall);
                 FirearmState looseLoaded = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .Repository.State;
-                toggleOffReload = staleMarkerRemoved && loosePlan.IsAvailable &&
+                toggleOffReload = toggleOffReadIsSideEffectFree && loosePlan.IsAvailable &&
                     loosePlan.Plan.Action == EffectiveReloadAction.Move &&
                     loosePlan.Plan.Profile == ReloadAmmunitionProfileCatalog.LooseBasic &&
                     looseReload.Succeeded && looseLoaded.LoadedAmmunition ==
@@ -7725,10 +7733,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 weapon = new ItemEntityWeapon(rifle);
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 FirearmRuntimeState.Service.Set(weapon, FirearmState.CreateEmpty());
+                nativeMode.IsOn = true;
                 ReloadTestMusketAvailability rejected = ReloadTestMusketRuntime.Evaluate(
                     unit.Descriptor, rifle, ammunition.BlackPowder, ammunition.LeadBall);
-                advancedRejected = !rejected.IsAvailable && rejected.Plan != null &&
-                    rejected.Plan.Status == FirearmReloadPlanStatus.IncompatibleAmmunition;
+                advancedRejected = nativeMode.IsOn && PaperCartridgeModeRuntime.IsActive(
+                    unit.Descriptor, mode.Marker) && !rejected.IsAvailable &&
+                    rejected.Plan != null && rejected.Plan.Profile ==
+                    ReloadAmmunitionProfileCatalog.PaperCartridge && rejected.Plan.Status ==
+                    FirearmReloadPlanStatus.IncompatibleAmmunition;
                 observed = "modeGranted=" + modeGranted + ";offDefault=" + offByDefault +
                     ";action=" + actionExact + ";pistol=" + pistolLoaded +
                     ";looseUntouched=" + noLooseConsumption + ";magic=" + magicCompatible +
@@ -7737,7 +7749,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";modeIsolated=" + modeIsolated +
                     ";exhaustionRetainsMode=" + exhaustionRetainsMode +
                     ";toggleOffReload=" + toggleOffReload +
-                    ";staleMarkerRemoved=" + staleMarkerRemoved;
+                    ";toggleOffReadOnly=" + toggleOffReadIsSideEffectFree +
+                    ";markerCountBeforeRead=" + markerCountBeforeModeRead +
+                    ";markerCountAfterRead=" + markerCountAfterModeRead;
             }
             finally
             {
@@ -7783,8 +7797,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "authoritative plan and atomic manual reload transaction"),
                 Assertion("paper-toggle-off-loose-reload",
                     "Pistol plus Rapid Reload uses loose ammunition and a Move action after paper mode is off",
-                    observed, toggleOffReload && staleMarkerRemoved,
-                    "one coherent post-toggle reload plan and exact marker reconciliation"),
+                    observed, toggleOffReload,
+                    "one coherent post-toggle reload plan; native toggle state is authoritative and the read does not mutate marker facts"),
                 Assertion("paper-magic-family-state", "named Reliable Pistol shares compatibility and retains two static enchantments",
                     observed, magicCompatible && staticPreserved && brokenRetained,
                     "canonical family definition and item-token replacement"),

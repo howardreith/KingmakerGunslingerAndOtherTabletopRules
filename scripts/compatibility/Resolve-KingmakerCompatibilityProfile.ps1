@@ -10,7 +10,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
 $root = Get-KmgCompatibilityRepositoryRoot
-if (-not $PackagePath) { $PackagePath = Join-Path $root 'artifacts\local-runtime\0.0.112\KingmakerGunslinger-0.0.112-local-runtime.zip' }
+if (-not $PackagePath) { $PackagePath = Join-Path $root 'artifacts\local-runtime\0.0.113\KingmakerGunslinger-0.0.113-local-runtime.zip' }
 if (-not $OutputPath) { $OutputPath = Join-Path $root "artifacts\compatibility\profile-resolution\$ProfileId.json" }
 $output = [IO.Path]::GetFullPath($OutputPath)
 $allowedOutput = [IO.Path]::GetFullPath((Join-Path $root 'artifacts\compatibility')).TrimEnd('\')

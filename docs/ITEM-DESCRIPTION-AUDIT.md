@@ -56,10 +56,10 @@ The old generator is expanded below so every stable item and localization key ha
 | Masterwork Katana | `KMG.EasternWeapons.Katana.MasterworkItem.Description` | This is a masterwork katana. | Martial Weapon Proficiency is sufficient when wielded two-handed. | Grip-dependent proficiency exception. |
 | Cold Iron Katana | `KMG.EasternWeapons.Katana.ColdIronItem.Description` | This is a cold iron katana. | Martial Weapon Proficiency is sufficient when wielded two-handed. | Grip-dependent proficiency exception. |
 | +1 Katana | `KMG.EasternWeapons.Katana.Plus1Item.Description` | This is a +1 magic katana. | Martial Weapon Proficiency is sufficient when wielded two-handed. | Grip-dependent proficiency exception. |
-| Nodachi | `KMG.EasternWeapons.Nodachi.BaseItem.Description` | This is a nodachi. | — | The normal card communicates all remaining traits. |
-| Masterwork Nodachi | `KMG.EasternWeapons.Nodachi.MasterworkItem.Description` | This is a masterwork nodachi. | — | The normal card communicates all remaining traits. |
-| Cold Iron Nodachi | `KMG.EasternWeapons.Nodachi.ColdIronItem.Description` | This is a cold iron nodachi. | — | The normal card communicates all remaining traits. |
-| +1 Nodachi | `KMG.EasternWeapons.Nodachi.Plus1Item.Description` | This is a +1 magic nodachi. | — | The normal card communicates all remaining traits. |
+| Nodachi | `KMG.EasternWeapons.Nodachi.BaseItem.Description` | This is a nodachi. | A long cavalry blade designed for sweeping cuts. | Concise flavor prevents inherited donor Brace text from leaking into the item card. |
+| Masterwork Nodachi | `KMG.EasternWeapons.Nodachi.MasterworkItem.Description` | This is a masterwork nodachi. | A long cavalry blade designed for sweeping cuts. | Concise flavor prevents inherited donor Brace text from leaking into the item card. |
+| Cold Iron Nodachi | `KMG.EasternWeapons.Nodachi.ColdIronItem.Description` | This is a cold iron nodachi. | A long cavalry blade designed for sweeping cuts. | Concise flavor prevents inherited donor Brace text from leaking into the item card. |
+| +1 Nodachi | `KMG.EasternWeapons.Nodachi.Plus1Item.Description` | This is a +1 magic nodachi. | A long cavalry blade designed for sweeping cuts. | Concise flavor prevents inherited donor Brace text from leaking into the item card. |
 
 ## Eastern named weapons
 
@@ -67,24 +67,24 @@ The old generated text was `{enhancement}, {native properties}, {material} {fami
 
 | Item | Description key | New text | Retained information |
 | --- | --- | --- | --- |
-| Paper Lantern | `KMG.EasternWeapons.Wakizashi.PaperLantern.Description` | — | Native Flaming card only. |
-| Quiet Current | `KMG.EasternWeapons.Wakizashi.QuietCurrent.Description` | — | Native Agile card only. |
+| Paper Lantern | `KMG.EasternWeapons.Wakizashi.PaperLantern.Description` | A warm shimmer travels along its polished edge. | Native card covers properties; flavor blocks donor copy. |
+| Quiet Current | `KMG.EasternWeapons.Wakizashi.QuietCurrent.Description` | Its polished edge moves like still water. | Native card covers properties; flavor blocks donor copy. |
 | Falling Petal | `KMG.EasternWeapons.Wakizashi.FallingPetal.Description` | A critical hit grants a +1 dodge bonus to AC for 1 round, ending early if you stop wielding it. | Bespoke critical-hit effect. |
-| Foxfire Whisper | `KMG.EasternWeapons.Wakizashi.FoxfireWhisper.Description` | — | Native Agile and Ghost Touch cards only. |
-| Empty Sleeve | `KMG.EasternWeapons.Wakizashi.EmptySleeve.Description` | — | Native Agile and Keen cards only. |
-| Night Without Moon | `KMG.EasternWeapons.Wakizashi.NightWithoutMoon.Description` | — | Native Agile, Keen, and Speed cards only. |
+| Foxfire Whisper | `KMG.EasternWeapons.Wakizashi.FoxfireWhisper.Description` | A pale glimmer clings to the blade. | Native card covers properties; flavor blocks donor copy. |
+| Empty Sleeve | `KMG.EasternWeapons.Wakizashi.EmptySleeve.Description` | Its unadorned guard conceals careful craftsmanship. | Native card covers properties; flavor blocks donor copy. |
+| Night Without Moon | `KMG.EasternWeapons.Wakizashi.NightWithoutMoon.Description` | Its blackened steel drinks in the light. | Native card covers properties; flavor blocks donor copy. |
 | Wayfarer's Oath | `KMG.EasternWeapons.Katana.WayfarersOath.Description` | Grants a +2 competence bonus on Initiative while equipped. | Bespoke equipped bonus. |
-| Winter Reed | `KMG.EasternWeapons.Katana.WinterReed.Description` | — | Native Frost card only. |
-| Drawn Horizon | `KMG.EasternWeapons.Katana.DrawnHorizon.Description` | — | Native Keen card only. |
-| Thunder at the Gate | `KMG.EasternWeapons.Katana.ThunderAtTheGate.Description` | — | Native Shock and Thundering cards only. |
+| Winter Reed | `KMG.EasternWeapons.Katana.WinterReed.Description` | A cold hush follows each drawn cut. | Native card covers properties; flavor blocks donor copy. |
+| Drawn Horizon | `KMG.EasternWeapons.Katana.DrawnHorizon.Description` | Its edge reflects a distant, clear horizon. | Native card covers properties; flavor blocks donor copy. |
+| Thunder at the Gate | `KMG.EasternWeapons.Katana.ThunderAtTheGate.Description` | A storm-dark pattern runs along the steel. | Native card covers properties; flavor blocks donor copy. |
 | Moonlit Crossing | `KMG.EasternWeapons.Katana.MoonlitCrossing.Description` | One-handed use grants a +1 dodge bonus to AC. Two-handed use grants +2 weapon damage. | Grip-dependent bespoke effects. |
-| Heaven's Measure | `KMG.EasternWeapons.Katana.HeavensMeasure.Description` | — | Native Keen and Brilliant Energy cards only. |
-| Border Sentinel | `KMG.EasternWeapons.Nodachi.BorderSentinel.Description` | — | Native enhancement/material card only. |
-| Cloud-Cleaver | `KMG.EasternWeapons.Nodachi.CloudCleaver.Description` | — | Native Keen card only. |
-| Storm Over Stone | `KMG.EasternWeapons.Nodachi.StormOverStone.Description` | — | Native Shock and Thundering cards only. |
+| Heaven's Measure | `KMG.EasternWeapons.Katana.HeavensMeasure.Description` | Its measured curve is bright as noon. | Native card covers properties; flavor blocks donor copy. |
+| Border Sentinel | `KMG.EasternWeapons.Nodachi.BorderSentinel.Description` | A border warden's blade, worn smooth by long patrols. | Native card covers properties; flavor blocks donor copy. |
+| Cloud-Cleaver | `KMG.EasternWeapons.Nodachi.CloudCleaver.Description` | Its broad edge is polished like open sky. | Native card covers properties; flavor blocks donor copy. |
+| Storm Over Stone | `KMG.EasternWeapons.Nodachi.StormOverStone.Description` | Its dark steel recalls rain on stone. | Native card covers properties; flavor blocks donor copy. |
 | Mountain-Sunder | `KMG.EasternWeapons.Nodachi.MountainSunder.Description` | Mighty Cleaving allows one additional Cleave attack. While Power Attack is active, your first hit each round deals 1d6 force damage. | Both bespoke effects. |
 | Unfixed Form | `KMG.EasternWeapons.Nodachi.UnfixedForm.Description` | While polymorphed or not your natural size, deals base damage as if one size category larger. | Bespoke size condition. |
-| World-Tree Severer | `KMG.EasternWeapons.Nodachi.WorldTreeSeverer.Description` | — | Native Holy and Speed cards only. |
+| World-Tree Severer | `KMG.EasternWeapons.Nodachi.WorldTreeSeverer.Description` | Its blade bears the shape of an ancient bough. | Native card covers properties; flavor blocks donor copy. |
 
 ## Elven Branched Spears
 

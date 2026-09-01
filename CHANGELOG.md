@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.113-save-load-hotfix
+
+- Removes paper-cartridge marker reconciliation from mode reads and all
+  save-deserialization hooks. The native activatable ability is authoritative;
+  stale markers are ignored mechanically rather than deleted during hydration.
+- Keeps the `set_IsOn` hook cache-only, preserving toggle-off loose-ammunition
+  reload behavior without changing persistent unit facts.
+- Restores concise local descriptions for generic Nodachi and every named
+  eastern weapon, preventing blank local copy from inheriting donor text
+  containing `Brace` during blueprint validation.
+
 ## 0.0.112-ammunition-cmi-copy-notifications
 
 - Uses one positive, 10%-of-retail ammunition policy across native Gunsmithing

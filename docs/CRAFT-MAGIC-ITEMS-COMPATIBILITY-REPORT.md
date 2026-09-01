@@ -32,7 +32,7 @@ is the metadata-promoted release and repeats the automated gates below.
 ## Current targeted bridge and ammunition-economy contract
 
 This archive records the accepted 0.0.100/0.0.101 qualification. The active
-0.0.112 source contract supersedes its historical CMI lifecycle and ammunition
+0.0.113 source contract retains the targeted CMI lifecycle and ammunition
 price behavior:
 
 - KMG passively detects one compatible, enabled CMI UMM entry. It never calls
