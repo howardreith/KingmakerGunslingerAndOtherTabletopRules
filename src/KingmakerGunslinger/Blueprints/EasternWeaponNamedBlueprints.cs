@@ -340,7 +340,33 @@ namespace KingmakerGunslinger.Blueprints
                 ? "Mighty Cleaving allows one additional Cleave attack. While Power Attack is active, your first hit each round deals 1d6 force damage."
                 : spec.Kind == EasternWeaponNamedKind.UnfixedForm
                 ? "While polymorphed or not your natural size, deals base damage as if one size category larger."
-                : string.Empty;
+                : spec.Kind == EasternWeaponNamedKind.PaperLantern
+                ? "A warm shimmer travels along its polished edge."
+                : spec.Kind == EasternWeaponNamedKind.QuietCurrent
+                ? "Its polished edge moves like still water."
+                : spec.Kind == EasternWeaponNamedKind.FoxfireWhisper
+                ? "A pale glimmer clings to the blade."
+                : spec.Kind == EasternWeaponNamedKind.EmptySleeve
+                ? "Its unadorned guard conceals careful craftsmanship."
+                : spec.Kind == EasternWeaponNamedKind.NightWithoutMoon
+                ? "Its blackened steel drinks in the light."
+                : spec.Kind == EasternWeaponNamedKind.WinterReed
+                ? "A cold hush follows each drawn cut."
+                : spec.Kind == EasternWeaponNamedKind.DrawnHorizon
+                ? "Its edge reflects a distant, clear horizon."
+                : spec.Kind == EasternWeaponNamedKind.ThunderAtTheGate
+                ? "A storm-dark pattern runs along the steel."
+                : spec.Kind == EasternWeaponNamedKind.HeavensMeasure
+                ? "Its measured curve is bright as noon."
+                : spec.Kind == EasternWeaponNamedKind.BorderSentinel
+                ? "A border warden's blade, worn smooth by long patrols."
+                : spec.Kind == EasternWeaponNamedKind.CloudCleaver
+                ? "Its broad edge is polished like open sky."
+                : spec.Kind == EasternWeaponNamedKind.StormOverStone
+                ? "Its dark steel recalls rain on stone."
+                : spec.Kind == EasternWeaponNamedKind.WorldTreeSeverer
+                ? "Its blade bears the shape of an ancient bough."
+                : "An eastern blade with a storied history.";
         }
 
         private static void AddEquipmentFact(BlueprintItemWeapon item,
