@@ -32,12 +32,12 @@ transient action debt; it does not alter either feat or automation mode.
 
 1. Back up any saves you intend to keep outside the game's active save folder.
 2. Install the standalone
-   `KingmakerGunslinger-0.0.112-ammunition-cmi-copy-notifications.zip`
+   `KingmakerGunslinger-0.0.113-save-load-hotfix.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.112 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.113 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
