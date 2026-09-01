@@ -29,6 +29,32 @@ accepted the installed 0.0.100 candidate on 2026-08-25 and authorized
 finalization, merge, publication, and an incremented release. Version 0.0.101
 is the metadata-promoted release and repeats the automated gates below.
 
+## Current targeted bridge and ammunition-economy contract
+
+This archive records the accepted 0.0.100/0.0.101 qualification. The active
+0.0.111 source contract supersedes its historical CMI lifecycle and ammunition
+price behavior:
+
+- KMG passively detects one compatible, enabled CMI UMM entry. It never calls
+  CMI's toggle API, never changes CMI's UMM active/loaded/enabled state, and
+  never invokes CMI's general load or feat-publication lifecycle.
+- If CMI's graph already exists, KMG augments and finalizes only KMG-owned
+  categories, recipes, and indexes by stable identity. Repeated callbacks are
+  idempotent. A genuine user disable leaves CMI disabled and makes the KMG
+  bridge inactive.
+- Every 20-unit KMG ammunition batch uses the same 10%-of-retail policy in the
+  native and CMI routes: Black Powder Charge retail 200 gp/craft 20 gp; Lead
+  Ball retail 20 gp/craft 2 gp; Paper Cartridge retail 240 gp/craft 24 gp.
+  Costs round up and have a 1 gp minimum.
+- During only the KMG ammunition control render/commit boundary, the bridge
+  temporarily applies CMI's non-free setting and price scale 0.60 so CMI
+  calculates that exact policy. Both user settings are restored in the scope's
+  dispose/rollback path. No non-KMG recipe or persistent CMI setting changes.
+
+The 34/4/40 figures and historical full-graph rebuild wording below are
+archival evidence for the old released candidate, not instructions for the
+active bridge.
+
 ## Baseline and external authority
 
 | Field | Exact value |
@@ -308,7 +334,8 @@ mechanical evidence.
 - It proved advanced firearms recognition-only, zero named creation bases, all
   four custom families through Arms and Armor, target/gold/migration policy,
   Reliable identity/applicability/price, custom clone integrity, state transfer,
-  tooltip suppression, base immutability, and complete rebuild idempotence.
+  tooltip suppression, base immutability, and the historical full-graph
+  idempotence check. Current source uses targeted KMG-only finalization instead.
 
 ### Actual ammunition UI observer — PASS 13/13
 
@@ -317,9 +344,11 @@ mechanical evidence.
 - Transpiler applications `1`; exact seam as recorded above; outer owner CMI.
 - Ordinary routes `4`; ammunition body bypasses/lower renders `24/24`; events
   `Layout,repaint`; zero GUI failures, UI failures, or rollbacks.
-- All recipes were selectable. Immediate paths spent 34/4/40 and produced 20
-  exact units. A normal Paper Cartridge project used target 5 and completed via
-  CMI. A powder cancellation refunded exact `GoldSpent` and created no result.
+- All recipes were selectable. In the historical candidate, immediate paths
+  spent 34/4/40 and produced 20 exact units. The active policy replaces those
+  archived costs with 20/2/24. A normal Paper Cartridge project used target 5
+  and completed via CMI. A powder cancellation refunded exact GoldSpent and
+  created no result.
 - Crafted powder/ball were consumed by loose reload and the exact cartridge by
   Paper mode. Request-local inventory and money cleanup was exact.
 
@@ -401,6 +430,10 @@ The accepted 0.0.100 checklist is retained as the post-install regression
 checklist for 0.0.101. Perform all steps in one fresh process and retain a fresh
 UMM output log:
 
+
+This is an archival 0.0.101 checklist. For current KMG, retain its UI and
+identity checks but use the targeted-bridge contract and 20/2/24 ammunition
+costs above rather than its historical lifecycle and pricing rows.
 1. Confirm CMI reports KMG 0.0.101.
 2. Open **Craft Mundane Items**.
 3. Confirm **Firearms** offers exactly Pistol, Musket, and Blunderbuss.
@@ -410,7 +443,7 @@ UMM output log:
 7. Confirm no separate **Eastern and Elven Weapons** magic category exists.
 8. Craft one 20-unit batch of each ammunition item.
 9. Confirm each project estimate is approximately one safe crafting day with the same crafter/settings.
-10. Confirm prices remain 34, 4, and 40 gold at price scale 1.0.
+10. For archival 0.0.101 verification only, confirm prices remain 34, 4, and 40 gold at price scale 1.0.
 11. Confirm Work in Progress reports target/progress consistently.
 12. Enchant one owned Eastern or Elven weapon through Arms and Armor.
 13. Inspect a newly crafted magical Pistol.

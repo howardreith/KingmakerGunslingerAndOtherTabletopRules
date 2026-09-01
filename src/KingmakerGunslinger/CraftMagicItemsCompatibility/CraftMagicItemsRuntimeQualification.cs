@@ -28,13 +28,13 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         internal CraftMagicItemsQualificationResult(
             IEnumerable<CraftMagicItemsQualificationCheck> checks,
             IEnumerable<string> diagnostics, int initialGeneration,
-            int rebuiltGeneration, IEnumerable<string> customBlueprintGuids)
+            int finalizationGeneration, IEnumerable<string> customBlueprintGuids)
         {
             Checks = (checks ?? new CraftMagicItemsQualificationCheck[0])
                 .ToArray();
             Diagnostics = (diagnostics ?? new string[0]).ToArray();
             InitialGeneration = initialGeneration;
-            RebuiltGeneration = rebuiltGeneration;
+            FinalizationGeneration = finalizationGeneration;
             CustomBlueprintGuids = (customBlueprintGuids ?? new string[0])
                 .ToArray();
         }
@@ -43,7 +43,7 @@ namespace KingmakerGunslinger.CraftMagicItemsCompatibility
         { get; private set; }
         internal string[] Diagnostics { get; private set; }
         internal int InitialGeneration { get; private set; }
-        internal int RebuiltGeneration { get; private set; }
+        internal int FinalizationGeneration { get; private set; }
         internal string[] CustomBlueprintGuids { get; private set; }
         internal bool Passed
         { get { return Checks.Length > 0 && Checks.All(value => value.Passed); } }

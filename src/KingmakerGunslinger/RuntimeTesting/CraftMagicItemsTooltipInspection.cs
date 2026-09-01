@@ -50,7 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var diagnostics = new List<string>();
             var items = new List<ItemEntityWeapon>();
             UnitEntityData owner = null;
-            bool rebuildRequired = false;
+            bool finalizationRequired = false;
             int suppressedBefore = FirearmInternalEnchantmentPresentation
                 .SuppressedCount;
             try
@@ -78,7 +78,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintItemWeapon clone = CraftMagicItemsReflectionBridge
                     .BuildQualificationClone(pistol, new[] { anarchic,
                         enhancementFive });
-                rebuildRequired = clone != null;
+                finalizationRequired = clone != null;
                 if (clone == null)
                     throw new InvalidOperationException(
                         "CMI did not resolve the +5/Anarchic Pistol clone.");
@@ -180,9 +180,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     item.Dispose();
                 }
                 if (owner != null) owner.Dispose();
-                if (rebuildRequired)
+                if (finalizationRequired)
                     CraftMagicItemsOptionalExtensionCoordinator
-                        .RebuildCompleteGraphForQualification();
+                        .RepeatTargetedFinalizationForQualification();
             }
         }
 

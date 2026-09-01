@@ -264,9 +264,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CraftMagicItemsReflectionBridge.Catalog
                         .Ammunition[recipeIndex];
                 int remainingCost = CraftMagicItemsReflectionBridge.Catalog
-                    .Ammunition.Sum(value => value.Plan.GoldCost(1f)) +
+                    .Ammunition.Sum(value => value.Plan.GoldCost(AmmunitionCraftingCostPolicy.CraftMagicItemsPriceScale)) +
                     CraftMagicItemsReflectionBridge.Catalog.Ammunition[2]
-                        .Plan.GoldCost(1f);
+                        .Plan.GoldCost(AmmunitionCraftingCostPolicy.CraftMagicItemsPriceScale);
                 if (Game.Instance.Player.Money < remainingCost)
                     Game.Instance.Player.GainMoney(remainingCost -
                         Game.Instance.Player.Money);
@@ -538,7 +538,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.ExpectedCount && value.MoneyAfter ==
                         value.MoneyBefore - value.ExpectedGold);
                 Add(assertions, "immediate-ammunition-crafting",
-                    "each exact recipe spends 34/4/40 gp and creates 20 exact units immediately",
+                    "each exact recipe spends 20/2/24 gp and creates 20 exact units immediately",
                     DescribeCrafts(immediate), immediateExact,
                     "actual CMI RenderRecipeBasedCraftItemControl button path with Crafting Takes No Time");
                 CraftMagicItemsAmmunitionCraftObservation timed =
