@@ -110,6 +110,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-elemental-race-blueprints";
         internal const string ElementalRaceVisualAudit =
             "elemental-race-visual-audit";
+        internal const string ElementalRaceClassEquipment =
+            "elemental-race-class-equipment";
         internal const string DisposableElementalRaceMechanics =
             "disposable-elemental-race-mechanics";
         internal const string DisposableElementalRaceSlas =
@@ -438,6 +440,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveGunslingerPresentation,
                 ObserveElementalRaceBlueprints,
                 ElementalRaceVisualAudit,
+                ElementalRaceClassEquipment,
                 DisposableElementalRaceMechanics,
                 DisposableElementalRaceSlas,
                 DisposableHydraulicPush,

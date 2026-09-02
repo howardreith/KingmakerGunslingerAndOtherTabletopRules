@@ -583,6 +583,12 @@ try {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             [Math]::Max($TimeoutSeconds, 1200) + 15)
     }
+    elseif ($Scenario -eq 'elemental-race-class-equipment') {
+        # Eight production elemental race/sex fixtures drive 128 reversible
+        # Gunslinger class/outfit/equipment cases and 256 optional captures.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1800) + 15)
+    }
     elseif ($Scenario -eq 'gunslinger-outfit-production-motion') {
         # Two production class-preview fixtures drive 54 native-motion
         # sidecars and image writes through full-round reload update 240.

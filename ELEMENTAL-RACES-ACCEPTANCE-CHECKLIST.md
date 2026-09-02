@@ -16,7 +16,7 @@
 - [ ] Focused rules, SLA, persistence, manifest, localization, rollback,
   package-content, and compatibility tests pass.
 - [x] Complete repository validation and dependency-free domain suite pass at
-  the current production-visual checkpoint (1,385/1,385).
+  the current class/equipment checkpoint (1,386/1,386).
 - [x] Clean Release/package command and strict package validation pass at the
   current production-visual checkpoint.
 - [x] Guarded Steam App ID 640820 base-mechanics, native donor-SLA, Hydraulic
@@ -27,6 +27,9 @@
   resolve; 56/56 production race/sex/option cases cover every preset, offered
   option, seven skin indexes, and four or more hair colors with complete baked
   materials and exact graph cleanup.
+- [x] Eight elemental Gunslinger fixtures (four races, both sexes) pass all
+  128 accepted outfit/equipment/rebuild states with 8/8 exact restorations,
+  unchanged production class/shared-unit state, and no save API call.
 - [ ] KMG-alone, Call of the Wild, Races Unleashed, combined, highest-risk, and
   Visual Adjustments-if-installed profiles are qualified and restored exactly.
 - [ ] Existing Gunslinger outfit, firearm visual/mechanical, feature-module,

@@ -286,7 +286,7 @@ two-process save-backed persistence qualification.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,385/1,385 |
+| Current complete domain suite | PASS - 1,386/1,386 |
 | Phase C clean Release package | PASS - strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
@@ -299,8 +299,9 @@ two-process save-backed persistence qualification.
 | Guarded module-OFF selector absence/identity retention | PASS - `20260902T0958454418742Z-observe-feature-module-settings` |
 | Guarded native visual-donor inventory | PASS - `20260902T1042298660656Z-observe-elemental-race-blueprints` |
 | Guarded production all-option visual matrix | PASS - `20260902T1301142529832Z-elemental-race-visual-audit` (56/56) |
+| Guarded elemental Gunslinger class/equipment matrix | PASS - `20260902T1346079130473Z-elemental-race-class-equipment` (128/128) |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
-| Guarded class/equipment/motion and runtime persistence | NOT-RUN |
+| Guarded broader class/motion and runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
 | Human visual acceptance | NOT-READY |
 
@@ -380,3 +381,31 @@ DLL SHA-256:
 `89ba7f9cd2a3f5393c6034a6b1b99a416dae7117c0546ad6cd7f8679eab21a5e`;
 DLL MVID: `ef41cc19-3e5c-41a2-a9f1-f0eb51d29887`. This remains a
 version 0.0.113 engineering checkpoint, not the final preview artifact.
+
+The subsequent elemental Gunslinger class/equipment transaction reused the
+accepted production compatibility harness for all four races and both sexes.
+It passed 128/128 exact equipment/rebuild states, 8/8 fixture restorations,
+unchanged production class/shared-unit state, and no save API call. Runtime
+transaction:
+`20260902T1346079130473Z-elemental-race-class-equipment`; run ID:
+`20260902T1346079340812Z-a1279a136b5c438dbaf91caddec0387b`.
+Runtime-result SHA-256:
+`9f766d5224c6eb7a2aafccfdbb6fd38123e4e152bf94ba21d9f13d6bcb033e71`;
+matrix-index SHA-256:
+`6af7737ebf9f1f46511b620e83f8ea2fee254c6e8dd438e924ffad551b99aa99`;
+runtime package/DLL SHA-256:
+`b7ceb091a8750a6eb2b5a5124d3bc6cca8b1985e8e615b45d31cbc6385e49749` /
+`3c7a6f83bdeb2b378d87a474d7f1fa662a5927da098e134fe50986f4f4d91b1a`;
+DLL MVID: `c2a5c72c-05b2-4b4a-bf57-b1856c915211`. Generated
+images are only supporting evidence; clipping and aesthetics remain human
+review surfaces. Broader class clothing, medium armor, robes, accessory slots,
+motion, and save-backed persistence remain pending.
+
+The required clean Release/package pipeline then passed with all 1,386 tests.
+Clean package SHA-256:
+`1c8065ae6a0d0218930de556ef30ab5648922a18d82c3e2fabefc77fcc89bb45`;
+DLL SHA-256:
+`d1a45067f0636eb4df19818c1780ca3deca49cebae6f73ab5edc0acae6b9a1bd`;
+DLL MVID: `93c4538b-07ad-43cd-93c1-b9fc977a9be3`. This remains a
+version 0.0.113 engineering checkpoint rather than the final preview
+candidate.
