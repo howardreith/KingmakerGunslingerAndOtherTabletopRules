@@ -846,6 +846,8 @@ namespace KingmakerGunslinger.DomainTests
                 "_actor.Blueprint.IsCheater = false",
                 "request-local-hostile",
                 "_elementalDamageAfterLethal",
+                "_elementalConstitutionAtLethal",
+                "Stats.Constitution.ModifiedValue",
                 "BeastShapeTwoSpellGuid",
                 "5d4028eb28a106d4691ed1b92bbb1915",
                 "8dc6510d31614345a8c718208fbac1f8",

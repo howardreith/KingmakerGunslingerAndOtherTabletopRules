@@ -87,6 +87,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _elementalHpBefore;
             private int _elementalDamageAfterLethal;
             private int _elementalHpAfterLethal;
+            private int _elementalConstitutionAtLethal;
             private bool _elementalDeathCheaterCaptured;
             private bool _elementalDeathCheaterBefore;
             private bool _elementalDeathObserved;
@@ -458,6 +459,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CreateProductionMotionTarget();
                     _elementalDamageBefore = _actor.Descriptor.Damage;
                     _elementalHpBefore = _actor.HPLeft;
+                    _elementalConstitutionAtLethal = Math.Max(1,
+                        _actor.Descriptor.Stats.Constitution.ModifiedValue);
                     _elementalDeathCheaterBefore =
                         _actor.Blueprint.IsCheater;
                     _elementalDeathCheaterCaptured = true;
@@ -466,7 +469,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var lethal = new RuleDealDamage(_motionTarget, _actor,
                         new DamageBundle(new DirectDamage(
                             new DiceFormula(0, DiceType.D6),
-                            _actor.MaxHP + 10)))
+                            _actor.MaxHP +
+                                _elementalConstitutionAtLethal + 10)))
                     {
                         DisablePrecisionDamage = true,
                         IgnoreDamageReduction = true
@@ -487,7 +491,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _elementalHpAfterLethal + ";dead=" +
                         _elementalDeathObserved + ";actorCheater=" +
                         _elementalDeathCheaterBefore + "->" +
-                        _actor.Blueprint.IsCheater);
+                        _actor.Blueprint.IsCheater + ";constitution=" +
+                        _elementalConstitutionAtLethal);
                     _elementalTransitionUpdates = 0;
                     return;
                 }
@@ -507,6 +512,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 _elementalDamageAfterLethal + ";hp=" +
                                 _elementalHpBefore + "->" +
                                 _elementalHpAfterLethal +
+                                ";constitution=" +
+                                _elementalConstitutionAtLethal +
                                 ";actorCheater=" +
                                 _actor.Blueprint.IsCheater +
                                 ";initiatorPresent=" +
@@ -558,6 +565,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "damageAfterLethal",
                         _elementalDamageAfterLethal },
                     { "hpAfterLethal", _elementalHpAfterLethal },
+                    { "constitutionAtLethal",
+                        _elementalConstitutionAtLethal },
                     { "lethalInitiator",
                         "request-local-hostile" },
                     { "deathObserved", _elementalDeathObserved },
@@ -816,6 +825,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _elementalHpBefore = 0;
                 _elementalDamageAfterLethal = 0;
                 _elementalHpAfterLethal = 0;
+                _elementalConstitutionAtLethal = 0;
                 _elementalDeathCheaterCaptured = false;
                 _elementalDeathCheaterBefore = false;
                 _elementalDeathObserved = false;
