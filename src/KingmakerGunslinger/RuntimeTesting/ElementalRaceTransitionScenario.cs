@@ -96,6 +96,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _elementalSpellTargetInState;
             private bool _elementalSpellCommandCanStart;
             private bool _elementalSpellCommandCloseEnough;
+            private bool _elementalSpellReadinessProbeDetached;
             private float _elementalSpellTargetDistance;
             private float _elementalSpellApproachRadius;
             private bool _elementalActorCheaterCaptured;
@@ -327,15 +328,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DescribeElementalSpellAvailability();
                 bool targetable = _elementalTransitionAbilityData
                     .CanTarget(target);
-                var candidate = new UnitUseAbility(
+                var readiness = new UnitUseAbility(
                     _elementalTransitionAbilityData, target);
-                candidate.IgnoreCooldown(TimeSpan.Zero);
+                readiness.IgnoreCooldown(TimeSpan.Zero);
+                readiness.Init(_actor);
+                _elementalSpellReadinessProbeDetached =
+                    !_actor.Commands.Contains(readiness);
+                if (!_elementalSpellReadinessProbeDetached)
+                    throw new InvalidOperationException(
+                        "The racial SLA readiness probe became a live command.");
                 _elementalSpellTargetInState = target.Unit == null ||
                     target.Unit.IsInState;
-                _elementalSpellCommandCanStart = candidate.CanStart;
+                _elementalSpellCommandCanStart = readiness.CanStart;
                 _elementalSpellCommandCloseEnough =
-                    candidate.IsUnitEnoughClose;
-                _elementalSpellApproachRadius = candidate.ApproachRadius;
+                    readiness.IsUnitEnoughClose;
+                _elementalSpellApproachRadius = readiness.ApproachRadius;
                 _elementalSpellTargetDistance = Vector3.Distance(
                     _actor.Position, target.Point);
                 if (_elementalSpellAvailabilitySettleUpdates == 0 ||
@@ -362,7 +369,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";targetDistance=" +
                         _elementalSpellTargetDistance.ToString("R") +
                         ";approachRadius=" +
-                        _elementalSpellApproachRadius.ToString("R") + ";" +
+                        _elementalSpellApproachRadius.ToString("R") +
+                        ";probeDetached=" +
+                        _elementalSpellReadinessProbeDetached + ";" +
                         _elementalSpellAvailabilityGates);
                 if (availableCount != 1 || !targetable ||
                     !_elementalSpellCommandCanStart ||
@@ -383,6 +392,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _elementalSpellTargetDistance.ToString("R") +
                         ";approachRadius=" +
                         _elementalSpellApproachRadius.ToString("R") +
+                        ";probeDetached=" +
+                        _elementalSpellReadinessProbeDetached +
                         ";availableCount=" + availableCount +
                         ";resource=" + _elementalSpellResourceBefore +
                         ";maximum=" + _elementalSpellResourceMaximum +
@@ -400,7 +411,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 _elementalSpellFinalAvailability = true;
-                _elementalTransitionAbilityCommand = candidate;
+                _elementalTransitionAbilityCommand = new UnitUseAbility(
+                    _elementalTransitionAbilityData, target);
+                _elementalTransitionAbilityCommand.IgnoreCooldown(
+                    TimeSpan.Zero);
                 _actor.Commands.Run(
                     _elementalTransitionAbilityCommand);
                 _elementalTransitionAbilityCommand.Start();
@@ -513,6 +527,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _elementalSpellCommandCanStart },
                         { "commandCloseEnough",
                             _elementalSpellCommandCloseEnough },
+                        { "readinessProbeDetached",
+                            _elementalSpellReadinessProbeDetached },
                         { "targetDistance",
                             _elementalSpellTargetDistance },
                         { "approachRadius",
@@ -1021,6 +1037,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _elementalSpellTargetInState = false;
                 _elementalSpellCommandCanStart = false;
                 _elementalSpellCommandCloseEnough = false;
+                _elementalSpellReadinessProbeDetached = false;
                 _elementalSpellTargetDistance = 0f;
                 _elementalSpellApproachRadius = 0f;
                 _elementalActorCheaterCaptured = false;
