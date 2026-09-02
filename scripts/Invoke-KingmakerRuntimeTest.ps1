@@ -589,6 +589,12 @@ try {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             [Math]::Max($TimeoutSeconds, 1800) + 15)
     }
+    elseif ($Scenario -eq 'elemental-race-class-clothing') {
+        # Ten exact classes across four elemental races and both sexes drive
+        # 80 native DollState/CreateData/CreateUnitView render contracts.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 600) + 15)
+    }
     elseif ($Scenario -eq 'gunslinger-outfit-production-motion') {
         # Two production class-preview fixtures drive 54 native-motion
         # sidecars and image writes through full-round reload update 240.
