@@ -10,6 +10,7 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
@@ -85,6 +86,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _elementalSpellResourceMaximum;
             private int _elementalSpellResourceRecordsBefore;
             private int _elementalSpellResourceRecordsAfter;
+            private bool _elementalSpellInitialAvailabilityCaptured;
+            private bool _elementalSpellInitialAvailability;
+            private bool _elementalSpellFinalAvailability;
+            private int _elementalSpellAvailabilitySettleUpdates;
+            private string _elementalSpellAvailabilityGates =
+                string.Empty;
             private bool _elementalActorCheaterCaptured;
             private bool _elementalActorCheaterBefore;
             private int _elementalDamageBefore;
@@ -269,9 +276,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (ability == null)
                     throw new InvalidOperationException(
                         "The disposable actor did not receive its racial SLA.");
-                _elementalActorCheaterBefore =
-                    _actor.Blueprint.IsCheater;
-                _elementalActorCheaterCaptured = true;
+                if (!_elementalActorCheaterCaptured)
+                {
+                    _elementalActorCheaterBefore =
+                        _actor.Blueprint.IsCheater;
+                    _elementalActorCheaterCaptured = true;
+                }
                 _actor.Blueprint.IsCheater = false;
                 _elementalTransitionAbilityData =
                     new AbilityData(ability);
@@ -285,25 +295,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .IsAvailable;
                 int availableCount = _elementalTransitionAbilityData
                     .GetAvailableForCastCount();
-                _diagnostics.Add("elementalSlaReadiness=" +
-                    _fixtures[_fixtureIndex].Label + ";initial=" +
-                    _elementalSpellResourceInitial + ";prepared=" +
-                    _elementalSpellResourceBefore + ";maximum=" +
-                    _elementalSpellResourceMaximum + ";records=" +
-                    _elementalSpellResourceRecordsBefore + "->" +
-                    _elementalSpellResourceRecordsAfter +
-                    ";availableCount=" + availableCount +
-                    ";available=" + available);
+                if (!_elementalSpellInitialAvailabilityCaptured)
+                {
+                    _elementalSpellInitialAvailability = available;
+                    _elementalSpellInitialAvailabilityCaptured = true;
+                }
+                _elementalSpellAvailabilityGates =
+                    DescribeElementalSpellAvailability();
                 bool targetable = _elementalTransitionAbilityData
                     .CanTarget(target);
-                _elementalTransitionAbilityCommand =
-                    new UnitUseAbility(
-                        _elementalTransitionAbilityData, target);
-                _elementalTransitionAbilityCommand.IgnoreCooldown(
-                    TimeSpan.Zero);
-                bool canStart =
-                    _elementalTransitionAbilityCommand.CanStart;
-                if (!available || !targetable || !canStart)
+                var candidate = new UnitUseAbility(
+                    _elementalTransitionAbilityData, target);
+                candidate.IgnoreCooldown(TimeSpan.Zero);
+                bool canStart = candidate.CanStart;
+                if (_elementalSpellAvailabilitySettleUpdates == 0 ||
+                    available)
+                    _diagnostics.Add("elementalSlaReadiness=" +
+                        _fixtures[_fixtureIndex].Label + ";update=" +
+                        _elementalSpellAvailabilitySettleUpdates +
+                        ";initial=" + _elementalSpellResourceInitial +
+                        ";prepared=" + _elementalSpellResourceBefore +
+                        ";maximum=" + _elementalSpellResourceMaximum +
+                        ";records=" +
+                        _elementalSpellResourceRecordsBefore + "->" +
+                        _elementalSpellResourceRecordsAfter +
+                        ";availableCount=" + availableCount +
+                        ";available=" + available + ";targetable=" +
+                        targetable + ";canStart=" + canStart + ";" +
+                        _elementalSpellAvailabilityGates);
+                if (availableCount != 1 || !targetable || !canStart)
                     throw new InvalidOperationException(
                         "The racial SLA native command was not ready; " +
                         "available=" + available + ";targetable=" +
@@ -312,7 +332,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";resource=" + _elementalSpellResourceBefore +
                         ";maximum=" + _elementalSpellResourceMaximum +
                         ";records=" +
-                        _elementalSpellResourceRecordsAfter + ".");
+                        _elementalSpellResourceRecordsAfter + ";" +
+                        _elementalSpellAvailabilityGates + ".");
+                if (!available)
+                {
+                    TickProductionMotionRuntime();
+                    _elementalTransitionUpdates++;
+                    _elementalSpellAvailabilitySettleUpdates++;
+                    RequireElementalTransitionTime(
+                        "racial SLA availability (" +
+                        _elementalSpellAvailabilityGates + ")");
+                    return;
+                }
+                _elementalSpellFinalAvailability = true;
+                _elementalTransitionAbilityCommand = candidate;
                 _actor.Commands.Run(
                     _elementalTransitionAbilityCommand);
                 _elementalTransitionAbilityCommand.Start();
@@ -384,6 +417,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _elementalSpellResourceRecordsBefore },
                         { "resourceRecordsAfter",
                             _elementalSpellResourceRecordsAfter },
+                        { "initialAvailability",
+                            _elementalSpellInitialAvailability },
+                        { "finalAvailability",
+                            _elementalSpellFinalAvailability },
+                        { "availabilitySettleUpdates",
+                            _elementalSpellAvailabilitySettleUpdates },
+                        { "availabilityGates",
+                            _elementalSpellAvailabilityGates },
                         { "resourceDebitBoundary",
                             "request-local actor BlueprintUnit.IsCheater=false" },
                         { "actorCheaterRestored",
@@ -879,6 +920,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _elementalSpellResourceMaximum = 0;
                 _elementalSpellResourceRecordsBefore = 0;
                 _elementalSpellResourceRecordsAfter = 0;
+                _elementalSpellInitialAvailabilityCaptured = false;
+                _elementalSpellInitialAvailability = false;
+                _elementalSpellFinalAvailability = false;
+                _elementalSpellAvailabilitySettleUpdates = 0;
+                _elementalSpellAvailabilityGates = string.Empty;
                 _elementalActorCheaterCaptured = false;
                 _elementalActorCheaterBefore = false;
                 _elementalDamageBefore = 0;
@@ -900,6 +946,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _elementalPolymorphSpell = null;
                 _elementalPolymorphBlueprint = null;
                 _elementalPolymorphBuff = null;
+            }
+
+            private string DescribeElementalSpellAvailability()
+            {
+                IAbilityCasterChecker[] checkers =
+                    _elementalTransitionAbility.CasterCheckers ??
+                        new IAbilityCasterChecker[0];
+                IAbilityAvailabilityProvider[] providers =
+                    _elementalTransitionAbility.AvailabilityProviders ??
+                        new IAbilityAvailabilityProvider[0];
+                string checkerResults = string.Join("|", checkers.Select(
+                    value => value.GetType().FullName + ":" +
+                        value.CorrectCaster(_actor)));
+                string providerResults = string.Join("|", providers.Select(
+                    value => value.GetType().FullName + ":" +
+                        value.IsAvailableFor(
+                            _elementalTransitionAbilityData)));
+                return "factPresent=" +
+                    (_elementalTransitionAbilityData.Fact != null) +
+                    ";factActive=" +
+                    (_elementalTransitionAbilityData.Fact != null &&
+                        _elementalTransitionAbilityData.Fact.Active) +
+                    ";hasRequiredParams=" +
+                    _elementalTransitionAbilityData.HasRequiredParams +
+                    ";isAvailableForCast=" +
+                    _elementalTransitionAbilityData.IsAvailableForCast +
+                    ";spellbookPresent=" +
+                    (_elementalTransitionAbilityData.Spellbook != null) +
+                    ";sourceItemPresent=" +
+                    (_elementalTransitionAbilityData.SourceItem != null) +
+                    ";spellCastingForbidden=" +
+                    (bool)_actor.Descriptor.State.SpellCastingForbidden +
+                    ";magicItemsForbidden=" +
+                    (bool)_actor.Descriptor.State.MagicItemsForbidden +
+                    ";exAndSuForbidden=" +
+                    (bool)_actor.Descriptor.State.ExAndSuAbilitiesForbidden +
+                    ";polymorphed=" + _actor.Body.IsPolymorphed +
+                    ";casterCheckers=" + checkerResults +
+                    ";availabilityProviders=" + providerResults;
             }
 
             private void CleanupElementalRaceTransitions()
