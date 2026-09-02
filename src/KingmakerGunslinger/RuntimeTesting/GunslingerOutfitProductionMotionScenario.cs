@@ -2962,6 +2962,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)value["deathCaptured"] &&
                         (bool)value["resurrectionStarted"] &&
                         (bool)value["immortalityReacquired"] &&
+                        (bool)value["actorCheaterRestored"] &&
+                        string.Equals((string)value["lethalInitiator"],
+                            "request-local-hostile",
+                            StringComparison.Ordinal) &&
+                        (int)value["damageAfterLethal"] >
+                            (int)value["damageBefore"] &&
+                        (int)value["hpAfterLethal"] <
+                            (int)value["hpBefore"] &&
                         (int)value["hpAfter"] ==
                             (int)value["maxHpAfter"] &&
                         (int)value["damageAfter"] == 0);
