@@ -12,7 +12,29 @@ foreach ($profile in $profiles.profiles) {
     $results += $result
 }
 $runtime = @($results | Where-Object runtimeCapable)
-if ($runtime.Count -ne 10) { throw "Expected ten runtime-capable profiles, observed $($runtime.Count)." }
+if ($runtime.Count -ne 12) { throw "Expected twelve runtime-capable profiles, observed $($runtime.Count)." }
+$racesUnleashed = @($results | Where-Object {
+    $_.profileId -ceq 'gunslinger-races-unleashed'
+})[0]
+$cotwRacesUnleashed = @($results | Where-Object {
+    $_.profileId -ceq 'gunslinger-call-of-the-wild-races-unleashed'
+})[0]
+if (-not $racesUnleashed.runtimeCapable -or
+    @($racesUnleashed.runtimeMods | Where-Object {
+        $_.key -ceq 'races-unleashed'
+    }).Count -ne 1 -or
+    @($racesUnleashed.runtimeMods | Where-Object {
+        $_.key -ceq 'call-of-the-wild'
+    }).Count -ne 0 -or
+    -not $cotwRacesUnleashed.runtimeCapable -or
+    @($cotwRacesUnleashed.runtimeMods | Where-Object {
+        $_.key -ceq 'races-unleashed'
+    }).Count -ne 1 -or
+    @($cotwRacesUnleashed.runtimeMods | Where-Object {
+        $_.key -ceq 'call-of-the-wild'
+    }).Count -ne 1) {
+    throw 'The two exact Races Unleashed profiles did not preserve their required mod graphs.'
+}
 $favoredProfiles = @($results | Where-Object {
     $_.profileId -in @(
         'gunslinger-call-of-the-wild-favored-class',
@@ -44,4 +66,4 @@ if ($craft.runtimeCapable -or $craft.staticOnlyReferences.Count -ne 1) { throw '
 $all = $results | Where-Object profileId -ceq 'gunslinger-all-loadable-local'
 if (@($all.runtimeMods | Where-Object key -eq 'kaz-asset-references').Count -ne 0) { throw 'KAZ references entered runtime staging.' }
 if (@($all.expectedUmmIds | Where-Object { $_ -like 'KAZ_*' }).Count -ne 0) { throw 'KAZ UMM IDs entered all-loadable profile.' }
-Write-Host 'All twelve compatibility profile dry-runs passed; the dedicated CMI authority remains separate from generic staging, three exact Favored Class profiles are runtime capable, and KAZ references remain non-runtime.'
+Write-Host 'All fourteen compatibility profile dry-runs passed; twelve are runtime capable, both exact Races Unleashed graphs resolve, the dedicated CMI authority remains separately staged, and KAZ references remain non-runtime.'

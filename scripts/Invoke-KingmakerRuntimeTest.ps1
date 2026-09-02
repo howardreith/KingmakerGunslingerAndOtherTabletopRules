@@ -29,7 +29,9 @@ param(
     [string]$SaveName,
     [ValidateSet(
         'gunslinger-only',
+        'gunslinger-races-unleashed',
         'gunslinger-call-of-the-wild',
+        'gunslinger-call-of-the-wild-races-unleashed',
         'gunslinger-arms-armor',
         'gunslinger-toggle-custom-soundpacks',
         'gunslinger-high-risk-combined',

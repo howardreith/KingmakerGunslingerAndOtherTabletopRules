@@ -3,7 +3,9 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet(
         'gunslinger-only',
+        'gunslinger-races-unleashed',
         'gunslinger-call-of-the-wild',
+        'gunslinger-call-of-the-wild-races-unleashed',
         'gunslinger-call-of-the-wild-favored-class',
         'gunslinger-call-of-the-wild-favored-class-traits-disabled',
         'gunslinger-arms-armor',
@@ -42,6 +44,7 @@ param(
         'observe-brown-fur-cotw-absent-isolation',
         'observe-aid-another-compatibility-contracts',
         'disposable-helpful-bodyguard',
+        'elemental-races-races-unleashed-compatibility',
         'disposable-bodyguard-feats-disabled',
         'working-save-smoke',
         'disposable-brown-fur-native-cast',
@@ -122,6 +125,7 @@ $favoredTraitsMode = if ($ProfileId -ceq
 }
 
 $cotwProfileIds = @('gunslinger-call-of-the-wild',
+    'gunslinger-call-of-the-wild-races-unleashed',
     'gunslinger-call-of-the-wild-favored-class',
     'gunslinger-call-of-the-wild-favored-class-traits-disabled',
     'gunslinger-high-risk-combined-favored-class',
@@ -135,8 +139,9 @@ if ($CotwProgressionMode -cne 'unchanged' -and
     throw "CotW progression mode requires an existing original settings file: $cotwSettingsPath"
 }
 
-$moduleScenario = @($Scenario | Where-Object { $_ -ceq
-    'observe-feature-module-settings' }).Count -gt 0 -or
+$moduleScenario = @($Scenario | Where-Object { $_ -in @(
+    'observe-feature-module-settings',
+    'elemental-races-races-unleashed-compatibility') }).Count -gt 0 -or
     (@($Scenario | Where-Object { $_ -ceq
         'observe-vendor-table-contracts' }).Count -gt 0 -and
         $Parameters.Count -gt 0)
