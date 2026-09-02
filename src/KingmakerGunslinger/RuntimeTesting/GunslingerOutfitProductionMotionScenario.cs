@@ -2942,6 +2942,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (int)value["resourceAfter"] == 0 &&
                         (int)value["resourceMaximum"] == 1 &&
                         (int)value["resourceRecordsAfter"] == 1 &&
+                        (bool)value["finalAvailability"] &&
+                        (int)value["availabilitySettleUpdates"] >= 0 &&
                         (bool)value["commandInstalled"] &&
                         (bool)value["commandStarted"] &&
                         (bool)value["commandRunningObserved"] &&
