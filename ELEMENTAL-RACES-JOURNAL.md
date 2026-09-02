@@ -246,3 +246,69 @@
 - Next: checkpoint and push the cohesive production-rules graph, then add
   actual-unit mechanics/SLA scenarios, module-ON publication qualification,
   production visual inventories/proxies, persistence, and compatibility.
+
+## 2026-09-02 - Guarded base-mechanics qualification
+
+- Added `disposable-elemental-race-mechanics`, a request-local, save-free
+  guarded scenario that creates actual `ChargenUnit` fixtures for all four
+  production races. It applies the production racial facts, performs native
+  Fighter/Wizard level-up, damage, ability-resource, rest, ability-parameter,
+  and resource-serialization operations, then restores the exact global-unit
+  sequence.
+- The first transaction,
+  `20260902T0605221766137Z-disposable-elemental-race-mechanics`, failed closed
+  for two precise reasons. Its Perception assertion incorrectly compared the
+  full skill delta even though Wisdom changes legitimately affect that total;
+  and Unity 2018 rejected the `SpellDescriptor` enum field on the custom
+  affinity component because that enum is backed by `Int64`. The latter was a
+  genuine production defect: the matching-descriptor mask would not survive
+  Unity component serialization.
+- Changed the probe to inspect the exact typed racial modifier sourced from
+  native Keen Senses. Changed `ElementalSpellAffinity` to store a validated
+  Unity-safe 32-bit descriptor mask and cast it only while handling the native
+  rule event. The four authorized descriptors are low-bit values, so no rule
+  information is truncated. No global spell patch was introduced.
+- Corrected transaction
+  `20260902T0615360204789Z-disposable-elemental-race-mechanics` passed all 28
+  assertions. A separate evidence file was initially reduced to an opt-in
+  JSON shell by Kingmaker's global contract resolver, even though the complete
+  observations were present in `runtime-result.json`; this was treated as an
+  evidence-quality defect, not ignored.
+- Added an explicit default JSON contract resolver for the request-owned
+  mechanics evidence and reran through guarded Steam App ID 640820. Transaction
+  `20260902T0626272331311Z-disposable-elemental-race-mechanics` **PASS** (run ID
+  `20260902T0626272562123Z-f9463005dae440f0a17e4b6268bb1800`) with all 28
+  assertions and four complete standalone race records. Evidence SHA-256:
+  `902f8b81d87883230f344a67db017829c897ef3e74a55ce534b0674ba2934c65`.
+- Actual observations per race proved exact stat components, Medium/Aasimar
+  donor identity, base speed (Oread 20; others 30), the exact +2 typed racial
+  Perception bonus, resistance 5 by resolving 8 matching damage to 3 and 8
+  nonmatching damage to 8, one-use resources, no spellbook/material component,
+  cancel-before-commit without spending, one exact spend, unavailability,
+  native rest restoration, and spent-state blueprint/amount round-trip.
+- A 2 Fighter / 3 Wizard fixture produced total caster level 5 for every SLA,
+  spell level 1, and Charisma-based DC. Real
+  `RuleCalculateAbilityParams` events changed matching spell DC by exactly one
+  and nonmatching DC by zero for Fire, Acid, Electricity, and Cold.
+- Runtime DLL SHA-256:
+  `32c0a75c7f6c84331c1dea8e9acb2bc190d8a0b0fb1bfd44dc5805af54ebdf86`;
+  MVID: `06f4414e-96b1-4679-8ba4-cdd50da37f1d`. The runtime used the dirty
+  feature branch at committed base `e2d5946e6fb89a81cac0e266a5d4a3acac2c6bb6`;
+  source fingerprints in the evidence identify the exact deployed binary.
+- Added focused guarded/native scenario contract coverage and updated the
+  authoritative deterministic count. The complete domain command
+  `.\scripts\test-domain.ps1 -Configuration Release` is **1,382/1,382 PASS**.
+- This checkpoint proves base rules, affinity, resource semantics, rest,
+  multiclass total-level scaling, and request-local resource persistence. It
+  does not yet prove native command delivery for the three donor spells,
+  Stone Fist behavior/expiry, Oread armored or encumbered movement, or
+  Hydraulic Push combat resolution; those remain separate required surfaces.
+- Required clean command
+  `.\scripts\build.ps1 -Configuration Release -Clean -Package` passed on the
+  mechanics tree: repository validation, all 1,382 tests, production compile,
+  build-output and SoundBank checks, deterministic packaging, and strict UMM
+  package validation. Package SHA-256:
+  `599e65d26fb92ae8146296c8265043849d7394d77482fe70084eb593793d3c44`;
+  DLL SHA-256:
+  `cab862592cb85a732c565c4811b44f77f39d68db6a7a57ed7f7a06419c8606b1`;
+  DLL MVID: `284f7252-665f-417d-ba47-5786cfe95236`.

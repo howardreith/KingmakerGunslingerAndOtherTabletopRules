@@ -2,14 +2,15 @@
 
 ## Current outcome
 
-**IN PROGRESS - PRODUCTION BASE-RACE GRAPH AND MODULE-OFF RUNTIME QUALIFIED.**
-All four production races, their common/race-specific rules, 24 stable
-identities, racial SLAs, and atomic selector publication now exist. The
-request-gated guarded scenario proves exact live registration while the preview
-module is OFF, no selector leakage, no foreign same-race collision, donor doll
-rendering, hidden-reference persistence, and exact cleanup. Actual combat/rest
-mechanics, module-ON publication, distinctive visual proxies, save-backed
-persistence, compatibility profiles, and human acceptance remain pending.
+**IN PROGRESS - BASE-RACE MECHANICS AND MODULE-OFF RUNTIME QUALIFIED.** All
+four production races, their common/race-specific rules, 24 stable identities,
+racial SLAs, and atomic selector publication now exist. Guarded live evidence
+proves module-OFF identity registration, no selector leakage, exact base stats
+and speed, energy resistance, Keen Senses, affinity inclusion/exclusion,
+multiclass total-level caster scaling, one-use resources, rest restoration, and
+resource-state serialization. Native ability delivery/combat effects,
+module-ON publication, distinctive visual proxies, save-backed persistence,
+compatibility profiles, and human acceptance remain pending.
 
 ## Authoritative baseline
 
@@ -86,6 +87,36 @@ outsider/person-spell precedent and Human skeleton contracts. It may cause
 dialogue or other checks that consult only `RaceId` to treat an elemental race
 as Aasimar; no broad rewrite is applied.
 
+## Guarded base-mechanics inventory
+
+- `ElementalRaceMechanicsScenario.cs` creates disposable native character
+  generation units for each production race, applies real facts, performs 2
+  Fighter plus 3 Wizard level-up, resolves matching/nonmatching energy damage,
+  exercises the real SLA resource and rest paths, calculates real ability
+  parameters, and round-trips the spent resource record without using a save.
+- Native rule observations prove resistance 5 (`8 -> 3` matching and `8 -> 8`
+  nonmatching), a source-specific +2 racial Perception modifier, total caster
+  level 5, spell level 1, Charisma-based SLA DC, matching affinity `+1` exactly
+  once, and nonmatching affinity `+0` for every race.
+- The first run caught an unsafe Unity serialization surface: Kingmaker's
+  `SpellDescriptor` enum has an `Int64` backing type, unsupported in serialized
+  component fields in this Unity version. Production now stores a validated
+  32-bit mask for the four low-bit descriptors and casts only during event
+  handling. This is a local component fix, not a global spell patch.
+- Guarded transaction
+  `20260902T0626272331311Z-disposable-elemental-race-mechanics` passed all 28
+  assertions. Run ID:
+  `20260902T0626272562123Z-f9463005dae440f0a17e4b6268bb1800`;
+  standalone evidence SHA-256:
+  `902f8b81d87883230f344a67db017829c897ef3e74a55ce534b0674ba2934c65`.
+  The fixture restored the exact global-unit reference sequence and reported
+  `saveStateTouched=false`.
+
+This scenario does not claim actual Burning Hands delivery/save resolution,
+Stone Fist buff behavior or expiry, Feather Step buff delivery, Oread armored
+or encumbered movement, or Hydraulic Push combat-maneuver resolution. Those
+delivery-specific gates remain required.
+
 ## Qualification status
 
 | Gate | Status |
@@ -93,12 +124,13 @@ as Aasimar; no broad rewrite is applied.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,381/1,381 |
+| Current complete domain suite | PASS - 1,382/1,382 |
 | Phase C clean Release package | PASS - strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
 | Guarded production identity/module-off runtime | PASS - `20260902T0538341591619Z-observe-elemental-race-blueprints` |
-| Guarded actual mechanics/SLA runtime | NOT-RUN |
+| Guarded base mechanics/resource runtime | PASS - `20260902T0626272331311Z-disposable-elemental-race-mechanics` |
+| Guarded native SLA delivery runtime | NOT-RUN |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
 | Guarded visuals/runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
@@ -137,3 +169,11 @@ DLL SHA-256 is
 `8ee289d26d2754d394a570dc2dd3f0fee6cb3360a8f7163d7fcff2cacfefcfeb`,
 and DLL MVID is `6ef0225c-8e4e-4a60-9853-84db65f331b9`. It also remains a
 development checkpoint rather than the final preview candidate.
+
+The base-mechanics clean Release/package gate passed with all 1,382 tests.
+Package SHA-256:
+`599e65d26fb92ae8146296c8265043849d7394d77482fe70084eb593793d3c44`;
+DLL SHA-256:
+`cab862592cb85a732c565c4811b44f77f39d68db6a7a57ed7f7a06419c8606b1`;
+DLL MVID: `284f7252-665f-417d-ba47-5786cfe95236`. This remains a version
+0.0.113 engineering checkpoint, not the human-acceptance preview candidate.

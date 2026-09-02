@@ -13,7 +13,10 @@ namespace KingmakerGunslinger.ElementalRaces
     public sealed class ElementalSpellAffinity :
         RuleInitiatorLogicComponent<RuleCalculateAbilityParams>
     {
-        public SpellDescriptor Descriptor;
+        // SpellDescriptor is Int64-backed. Unity 2018 rejects that enum as a
+        // serialized component field, so retain only the four authorized
+        // low-bit elemental values in an ordinary Int32 field.
+        public int DescriptorMask;
 
         public override void OnEventAboutToTrigger(
             RuleCalculateAbilityParams evt)
@@ -21,7 +24,8 @@ namespace KingmakerGunslinger.ElementalRaces
             BlueprintAbility ability = evt == null ? null :
                 evt.Blueprint as BlueprintAbility;
             if (ability == null ||
-                !MatchesDescriptor(ability, Descriptor))
+                !MatchesDescriptor(ability,
+                    (SpellDescriptor)DescriptorMask))
                 return;
             evt.AddBonusDC(1);
         }
