@@ -312,3 +312,115 @@
   DLL SHA-256:
   `cab862592cb85a732c565c4811b44f77f39d68db6a7a57ed7f7a06419c8606b1`;
   DLL MVID: `284f7252-665f-417d-ba47-5786cfe95236`.
+
+## 2026-09-02 - Native donor-SLA qualification
+
+- Added `disposable-elemental-race-slas`, a save-free guarded scenario that
+  constructs disposable native units and executes the production Ifrit,
+  Oread, and Sylph spell-like abilities through the normal `UnitUseAbility`
+  path. The scenario records cancellation, resource commitment and gating,
+  ordinary rest, effect delivery, duration/expiry, save/damage behavior, and
+  exact global-unit cleanup.
+- Transaction
+  `20260902T0659506655164Z-disposable-elemental-race-slas` failed closed. Native
+  delivery worked, but the early fixture did not yet observe a distinct Reflex
+  success path (`24/24` damage), and its command assertion conflated command
+  result with zero-resource availability. It touched no save.
+- Transaction
+  `20260902T0711398412802Z-disposable-elemental-race-slas` failed closed. The
+  initial saving-throw control changed target modifiers but did not control the
+  actual request-local save event (`4/4` damage); direct reuse of an existing
+  command object also reported success after depletion even though it delivered
+  no second effect. The fixture was narrowed to a request-local rule probe and
+  a fresh `AbilityData` availability check. It touched no save.
+- Transaction
+  `20260902T0723038687479Z-disposable-elemental-race-slas` failed only the
+  damage/save assertion. The trace proved the attempted handler did not alter
+  the real Reflex resolution (`24/24`, both saves natural 1 and failed). The
+  probe was moved to the rule-event component path actually used by the native
+  resolution. It touched no save.
+- Corrected transaction
+  `20260902T0727505151505Z-disposable-elemental-race-slas` **PASS** (run ID
+  `20260902T0727505399772Z-38fc5469392f4871af7e367a5dd10f22`) with all 13
+  assertions. Evidence SHA-256:
+  `166c5fe7ed1846de64bbdf28ee113b9145b609859cf36621526f6f19322cd322`.
+  Runtime-result SHA-256:
+  `90d5cf0c1f27af048f0200bb4bab30d93f99862b7aeadc38ca8d7e7a4ae581ee`.
+- Ifrit retained native 15-foot/5-foot cone delivery and Fire
+  d6-per-rank/half-on-Reflex action structure. At total level 5 the real
+  ability parameters were caster level 5 and DC 17. Identical natural roll 10
+  produced 20 damage on forced failure and 10 on forced success.
+- Oread applied native `StoneFistBuffMedium`
+  (`af56c42a31a264648b42d725f362c18d`) for 60 seconds at level 1 and 300 at
+  level 5, changed the EmptyHand weapon to native Stone Fist, and expired
+  through the native duration path. Sylph applied native Feather Step
+  (`c748cceadcab2614b942e56ff257cfbc`) for 600/3,000 seconds at levels 1/5 and
+  expired normally.
+- All three abilities observed resource `1 -> 1` after cancellation, `1 -> 0`
+  on commit, a fresh unavailable second use, and `0 -> 1` after ordinary rest.
+  Runtime DLL SHA-256:
+  `7d3558f05a999542a15a8bd231e11367cf83f1b075e599dd745036ca15163e81`;
+  MVID: `44c0f06d-569d-4226-8487-6fa8ec15c2e5`.
+
+## 2026-09-02 - Hydraulic Push native combat qualification
+
+- Added `disposable-hydraulic-push`, a save-free guarded scenario using
+  isolated request-owned hostile native units and the production Hydraulic
+  Push ability. It records actual `RuleCombatManeuver`, `RuleAttackRoll`, and
+  `RuleSavingThrow` construction; command resource state; opportunity-command
+  counts; and native force-movement use.
+- The formula matrix covers each unique Intelligence/Wisdom/Charisma maximum,
+  all-negative scores, deterministic two-way and three-way ties, and a 2
+  Fighter / 3 Wizard multiclass. Ordinary success and failure and combat-
+  maneuver immunity are separately observed.
+- Transaction
+  `20260902T0810509976976Z-disposable-hydraulic-push` failed only resource
+  lifecycle. All mechanics passed, but the instant native action resolved
+  synchronously before ordinary `UnitUseAbility` debit, leaving the resource
+  `1 -> 1` at effect commitment. Runtime DLL SHA-256:
+  `d6f9cf7349cf3443deed0d26dcac171ce5df6691af7880b05c3e5b6379ff73ca`;
+  MVID: `ffa01811-b7f1-4753-bf8d-3ea2a8895f15`.
+- Transaction
+  `20260902T0821459403802Z-disposable-hydraulic-push` failed only the second-use
+  availability gate. Moving debit entirely into the action produced an exact
+  `1 -> 0` commit, but disabling native spend semantics also made a fresh
+  zero-resource `AbilityData` appear available. That strategy was rejected.
+  Runtime DLL SHA-256:
+  `c0ed003e748c1800b4cccc39d505c45046ee020de096a2cbfd1254626ff5dba9`;
+  MVID: `e046e656-f2a2-4eac-b759-69e4e9eac867`.
+- Final production strategy retains ordinary `AbilityResourceLogic` spend and
+  availability semantics and inserts a narrow idempotent commit action
+  immediately before the native Bull Rush action. If normal debit happens
+  first, the action sees zero and no-ops; if the instant effect happens first,
+  it spends once and the later normal debit cannot spend again. Cancellation
+  never reaches the action. No global patch was added.
+- Corrected transaction
+  `20260902T0828281705241Z-disposable-hydraulic-push` **PASS** (run ID
+  `20260902T0828281945254Z-55efda7cf4584851b7bc869178dd9a8b`) with all 12
+  assertions. Evidence SHA-256:
+  `c5afc2e51c9227f0d9c8acb71a39d232ff721c9fc067fdbff256f99d4a3d1cb5`;
+  runtime-result SHA-256:
+  `b4740a9b637a5343a1750e57a423d956c900011b3ba02b433b110b123b71c883`.
+- Command evidence was `1 -> 1` after cancellation, `1 -> 0` after commit,
+  unavailable with a fresh ability at zero, and `0 -> 1` after rest. Native
+  Bull Rush constructed exactly one maneuver event, no attack or saving-throw
+  event, no opportunity command, and used `UnitPartForceMove.Push`. Immunity
+  stopped before a roll; ordinary success/failure used native CMB/CMD.
+- Runtime DLL SHA-256:
+  `8f19b9528df358ae14f2e28fb945b7a9ea7041c72c38dfeeb962f4d806b85b82`;
+  MVID: `d62cbb4f-bd4e-4dbc-a177-2034a04efb15`. The guarded launcher reran the
+  complete **1,384/1,384 PASS** domain suite and strict package validation.
+- Remaining Phase E mechanics surfaces are Oread armor/encumbrance movement,
+  native-outsider/person-spell and prerequisite behavior, module-ON selector
+  publication, and two-process save-backed persistence. A suitable native
+  water presentation remains pending the visual/asset audit.
+- Required clean command
+  `.\scripts\build.ps1 -Configuration Release -Clean -Package` then passed on
+  the exact donor-SLA/Hydraulic checkpoint tree: repository validation, all
+  1,384 tests, production compilation, output and SoundBank checks,
+  deterministic package creation, and strict standalone UMM validation.
+  Package SHA-256:
+  `da6efee6dd435b917cd2191bb6aebca6f255eaca18532f1a30dd10d3d342d816`;
+  DLL SHA-256:
+  `fee51842a8144e1e75324b968f322b2bbf5de7a181ad0c5bd2523443e31ced6b`;
+  DLL MVID: `0670cdd2-e916-4d20-942d-ebcf8340cfec`.

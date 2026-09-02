@@ -2,15 +2,18 @@
 
 ## Current outcome
 
-**IN PROGRESS - BASE-RACE MECHANICS AND MODULE-OFF RUNTIME QUALIFIED.** All
+**IN PROGRESS - BASE-RACE AND RACIAL-SLA MECHANICS RUNTIME QUALIFIED.** All
 four production races, their common/race-specific rules, 24 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
 and speed, energy resistance, Keen Senses, affinity inclusion/exclusion,
 multiclass total-level caster scaling, one-use resources, rest restoration, and
-resource-state serialization. Native ability delivery/combat effects,
-module-ON publication, distinctive visual proxies, save-backed persistence,
-compatibility profiles, and human acceptance remain pending.
+resource-state serialization. Separate guarded native command runs prove
+Burning Hands save/damage delivery, Stone Fist delivery/expiry and unarmed
+replacement, Feather Step delivery/expiry, and Hydraulic Push resource and
+Bull Rush behavior. Oread armor/encumbrance movement, module-ON publication,
+distinctive visual proxies, save-backed persistence, compatibility profiles,
+and human acceptance remain pending.
 
 ## Authoritative baseline
 
@@ -117,6 +120,57 @@ Stone Fist buff behavior or expiry, Feather Step buff delivery, Oread armored
 or encumbered movement, or Hydraulic Push combat-maneuver resolution. Those
 delivery-specific gates remain required.
 
+## Guarded racial-SLA and Hydraulic Push inventory
+
+- `ElementalRaceSlaScenario.cs` creates request-local disposable native units
+  and executes the production Ifrit, Oread, and Sylph abilities through
+  `UnitUseAbility`. It proves cancel-before-commit, exactly one committed use,
+  second-use unavailability, native rest restoration, and exact cleanup.
+- Ifrit uses the cloned native 15-foot/5-foot Burning Hands cone. At total
+  level 5 it observed caster level 5 and DC 17. With the same natural roll 10,
+  a failed Reflex target took 20 and a successful Reflex target took 10; the
+  action graph remained Fire d6-per-rank with native half-on-save behavior.
+- Oread applied native `StoneFistBuffMedium`
+  (`af56c42a31a264648b42d725f362c18d`) for 60 seconds at level 1 and 300
+  seconds at level 5, expired through the native duration path, and changed
+  the empty-hand weapon to native Stone Fist.
+- Sylph applied native Feather Step buff
+  (`c748cceadcab2614b942e56ff257cfbc`) for 600 seconds at level 1 and 3,000
+  seconds at level 5, then expired through the native duration path.
+- Guarded transaction
+  `20260902T0727505151505Z-disposable-elemental-race-slas` passed all 13
+  assertions. Run ID:
+  `20260902T0727505399772Z-38fc5469392f4871af7e367a5dd10f22`;
+  standalone evidence SHA-256:
+  `166c5fe7ed1846de64bbdf28ee113b9145b609859cf36621526f6f19322cd322`;
+  DLL SHA-256:
+  `7d3558f05a999542a15a8bd231e11367cf83f1b075e599dd745036ca15163e81`;
+  DLL MVID: `44c0f06d-569d-4226-8487-6fa8ec15c2e5`.
+- `HydraulicPushScenario.cs` exercises the production ability against
+  request-local hostile native units. It covers Intelligence, Wisdom, and
+  Charisma maxima; all-negative modifiers; deterministic ties; 2 Fighter / 3
+  Wizard total-level scaling; ordinary success/failure; immunity; native force
+  movement; and actual `UnitUseAbility` lifecycle.
+- Hydraulic Push now uses ordinary `AbilityResourceLogic` for availability and
+  an idempotent request-owned commit action immediately before the native Bull
+  Rush action. This preserves normal zero-resource gating while ensuring an
+  instant native effect spends exactly once whether command debit happens
+  before or after synchronous delivery. Cancellation spends zero. No global
+  patch is used.
+- Guarded transaction
+  `20260902T0828281705241Z-disposable-hydraulic-push` passed all 12 assertions.
+  Run ID: `20260902T0828281945254Z-55efda7cf4584851b7bc869178dd9a8b`;
+  evidence SHA-256:
+  `c5afc2e51c9227f0d9c8acb71a39d232ff721c9fc067fdbff256f99d4a3d1cb5`;
+  DLL SHA-256:
+  `8f19b9528df358ae14f2e28fb945b7a9ea7041c72c38dfeeb962f4d806b85b82`;
+  DLL MVID: `d62cbb4f-bd4e-4dbc-a177-2034a04efb15`. The native maneuver
+  path constructed no unrelated attack, saving throw, or opportunity attack.
+  It used native Bull Rush resolution and `UnitPartForceMove.Push`.
+
+These request-local scenarios are save-free. They do not replace the required
+two-process save-backed persistence qualification.
+
 ## Qualification status
 
 | Gate | Status |
@@ -124,13 +178,14 @@ delivery-specific gates remain required.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,382/1,382 |
+| Current complete domain suite | PASS - 1,384/1,384 |
 | Phase C clean Release package | PASS - strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
 | Guarded production identity/module-off runtime | PASS - `20260902T0538341591619Z-observe-elemental-race-blueprints` |
 | Guarded base mechanics/resource runtime | PASS - `20260902T0626272331311Z-disposable-elemental-race-mechanics` |
-| Guarded native SLA delivery runtime | NOT-RUN |
+| Guarded native donor-SLA delivery runtime | PASS - `20260902T0727505151505Z-disposable-elemental-race-slas` |
+| Guarded Hydraulic Push runtime | PASS - `20260902T0828281705241Z-disposable-hydraulic-push` |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
 | Guarded visuals/runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
@@ -177,3 +232,12 @@ DLL SHA-256:
 `cab862592cb85a732c565c4811b44f77f39d68db6a7a57ed7f7a06419c8606b1`;
 DLL MVID: `284f7252-665f-417d-ba47-5786cfe95236`. This remains a version
 0.0.113 engineering checkpoint, not the human-acceptance preview candidate.
+
+The donor-SLA/Hydraulic source tree passed the complete 1,384-test domain suite,
+both guarded native scenarios, and the required clean Release/package gate.
+Clean package SHA-256:
+`da6efee6dd435b917cd2191bb6aebca6f255eaca18532f1a30dd10d3d342d816`;
+DLL SHA-256:
+`fee51842a8144e1e75324b968f322b2bbf5de7a181ad0c5bd2523443e31ced6b`;
+DLL MVID: `0670cdd2-e916-4d20-942d-ebcf8340cfec`. This remains a
+development version 0.0.113 artifact, not the final preview candidate.

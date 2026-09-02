@@ -9,12 +9,12 @@ unsafe mechanism, but must not silently change the player-facing rule.
 | Native outsider | Exact native empty `OutsiderType` fact plus Aasimar donor identity, matching installed Aasimar/Tiefling person-spell precedent | IMPLEMENTED; ACTUAL PERSON-SPELL MATRIX PENDING |
 | Race identity | Four distinct project `BlueprintRace` references using `RaceId.Aasimar`; no new enum member or broad race-check patch | IMPLEMENTED; DIALOGUE LIMITATION ACCEPTED |
 | Elemental affinity | +1 racial spell DC only for Fire, Acid, Electricity, or Cold respectively; exactly once; no caster-level bonus. The component stores the authorized low-bit descriptor as a Unity-safe 32-bit mask because Kingmaker's `Int64`-backed enum cannot be serialized as a component field. | IMPLEMENTED; ACTUAL RULE-EVENT RUNTIME PASS |
-| Ifrit SLA | Native Burning Hands, once daily, Charisma-based racial SLA DC, total character-level caster level | BASE RESOURCE/PARAMETERS PASS; DELIVERY/SAVE PENDING |
+| Ifrit SLA | Native Burning Hands, once daily, Charisma-based racial SLA DC, total character-level caster level | NATIVE COMMAND, CONE, SAVE, DAMAGE, RESOURCE, REST PASS; SAVE-BACKED RELOAD PENDING |
 | Oread movement | Base 20 feet plus the exact native Dwarf Slow and Steady feature for armor/encumbrance immunity | IMPLEMENTED; ACTUAL MOVEMENT MATRIX PENDING |
-| Oread SLA | Sanitized native Kingmaker Stone Fist clone, one use per rest | IMPLEMENTED; ACTUAL CAST/EXPIRY PENDING |
-| Sylph SLA | Feather Step replaces Feather Fall and must be named honestly in player text | BASE RESOURCE/PARAMETERS PASS; BUFF DELIVERY PENDING |
+| Oread SLA | Sanitized native Kingmaker Stone Fist clone, one use per rest | NATIVE COMMAND, BUFF, UNARMED REPLACEMENT, DURATION, EXPIRY, RESOURCE, REST PASS; SAVE-BACKED RELOAD PENDING |
+| Sylph SLA | Feather Step replaces Feather Fall and must be named honestly in player text | NATIVE COMMAND, BUFF, DURATION, EXPIRY, RESOURCE, REST PASS; SAVE-BACKED RELOAD PENDING |
 | Undine swimming | Swim speed and Swim-as-class-skill clauses are descriptive no-ops because Kingmaker has no ordinary player swimming system | APPROVED OMISSION |
-| Hydraulic Push | Native `ContextActionCombatManeuver` Bull Rush with caster level as base attack and best mental stat; no save or unrelated attack roll | IMPLEMENTED; ACTUAL COMBAT/IMMUNITY RUNTIME PENDING |
+| Hydraulic Push | Native `ContextActionCombatManeuver` Bull Rush with caster level as base attack and best mental stat; no save or unrelated attack roll. An idempotent action commits the resource immediately before the synchronous native maneuver while ordinary resource logic retains availability gating. | NATIVE COMMAND, RESOURCE, FORMULA, SUCCESS/FAILURE, IMMUNITY, FORCE-MOVEMENT, NO-SAVE/ATTACK/AOO RUNTIME PASS; SAVE-BACKED RELOAD AND WATER PRESENTATION PENDING |
 | Languages | Not implemented | OUT OF SCOPE |
 | Favored-class bonuses | Not implemented | OUT OF SCOPE |
 | Alternate traits/heritages | Base heritage only | OUT OF SCOPE |
