@@ -894,3 +894,129 @@
   `7cf1181feec82b606189fd22a3bffbd15d9db8ae44ee76c519e2c6ef325145a8`,
   MVID `399e6d2a-4593-4e90-b59d-44a49ca9058a`. Packaged `Info.json` remains
   `0.0.113`; this is not the final preview candidate.
+
+## 2026-09-02 - Three-process save-backed persistence qualification
+
+- Added three guarded working-save scenarios:
+  `elemental-race-persistence-prepare`,
+  `elemental-race-module-disabled-persistence`, and
+  `elemental-race-persistence-verify-absent`. A transactional orchestration
+  script pins the package and deployment manifest, writes an exact schema-10
+  module-ON configuration for prepare, writes module-OFF for reload, restores
+  the original settings bytes in `finally`, and requires the absence check as
+  an independent third fresh launch after restoration.
+- The fixture set is exactly Ifrit, Oread, Sylph, and Undine by male/female.
+  Phase 1 uses native `LevelUpController.SelectRace` and `ApplyLevelup` to
+  make eight level-1 Gunslingers, applies deterministic production
+  customization, renders the accepted class outfit, spends each SLA from one
+  use to zero through native `AbilityResourceLogic`, promotes the fixtures to
+  the party, and saves only `KMG_AUTOMATION_WORKING`. Phase 2 reloads with
+  Elemental Races OFF and proves hidden selectors plus registered identities,
+  exact race/facts/stats/ability/resource-zero/DollData/render/outfit state,
+  native rest restoration to one, level-up to two, and total-level caster
+  level two before exact fixture cleanup and save. Phase 3 proves zero fixture
+  residue and the original working-save routine count.
+- Stable request-owned fixture IDs are
+  `a9be3b86-9d80-472a-93e6-71fcfb3a827a`,
+  `2fc7d5a4-5dab-4bb9-bee1-da1fdfa2a337`,
+  `f4933068-5824-46fa-a330-25b78764503e`,
+  `27a98188-4106-419d-8897-64ccd6f63305`,
+  `d532ec12-a328-4afb-8cbf-7f3ddf41f072`,
+  `08e1cd1d-4512-4c52-a9fa-6dd8d815499a`,
+  `043d4fc2-c26c-4e72-9d11-219d0ff74b43`, and
+  `91472289-c1d7-4558-b7ed-a5e8c06345fb`.
+- The complete domain command
+  `.scripts	est-domain.ps1 -Configuration Release` passed
+  **1,389/1,389** after adding the focused guarded/exact-orchestration
+  contract. Runtime preflight passed **193/193** immediately before the final
+  launch sequence.
+
+### Fail-closed iteration evidence
+
+- `20260902T1703470958910Z-elemental-race-persistence-prepare` (run
+  `20260902T1703471269277Z-e852816c413845ce85b4c769868919fe`) failed because
+  assigning the target race before native character generation made
+  `SelectRace` a no-op and omitted the SLA. The clone now retains its donor
+  race until native race selection commits.
+- `20260902T1713296584828Z-elemental-race-persistence-prepare` (run
+  `20260902T1713296825293Z-9e2c5a35a55047f0a8633ca8720edb73`) failed because
+  reflected zero-argument `AbilityData.Spend` did not commit the resource.
+  The fixture now uses the ability's exact native resource-cost component.
+- `20260902T1722475679831Z-elemental-race-persistence-prepare` (run
+  `20260902T1722475919837Z-74e3d634281342e19d5a39bc71d10837`) failed because
+  native `AbilityResourceLogic.Spend` correctly exempts a blueprint marked
+  `IsCheater`. Production-realistic fixtures are now explicitly non-cheater.
+- `20260902T1733547857625Z-elemental-race-persistence-prepare` (run
+  `20260902T1733548137604Z-4a3847d3aeee4835b3ced8fe710ed053`) failed because
+  independently ordered options selected a Sylph female head and incompatible
+  eyebrow that native DollData validation normalized. Eyebrows are now paired
+  by the production head-array index.
+- The corrected prepare
+  `20260902T1745349991483Z-elemental-race-persistence-prepare` passed, but
+  module-disabled reload
+  `20260902T1748093001497Z-elemental-race-module-disabled-persistence` (run
+  `20260902T1748093021519Z-50540d31eb004138911ee2184b8645df`) failed when a
+  female fixture inherited the male dynamic donor blueprint gender after
+  reload and therefore lost female class clothes. Native
+  `UnitDescriptor.CustomGender` is now set and asserted for every fixture.
+  Fail-safe cleanup completed, and independent recovery transaction
+  `20260902T1751460976119Z-elemental-race-persistence-verify-absent` (run
+  `20260902T1751461216779Z-b35a2be3879c43e9bb1c25ae871db43b`) passed 6/6,
+  proving the working save was clean before the final sequence.
+
+### Final persistence evidence
+
+- Prepare transaction
+  `20260902T1759420290804Z-elemental-race-persistence-prepare`, run
+  `20260902T1759420540785Z-9764141caa2645208e08ba64e1870d23`,
+  **PASS 10/10** in 138,457 ms. It created all eight exact fixtures, captured
+  16 supporting images/40 structural views, and persisted each SLA at zero.
+  Runtime-result/index SHA-256:
+  `ac8d16c4d8d2fa7bdc382e5c3836ce3190371c7008b26b9042ccb6ec6a54921a` /
+  `ac1ae1a5748a4fc97e21da297824ca9269dd7a262b04fc486f5b784f6e25a17d`.
+- Module-disabled transaction
+  `20260902T1802161725612Z-elemental-race-module-disabled-persistence`, run
+  `20260902T1802161745656Z-11fbec67bb7e4939b4de818d6695e538`,
+  **PASS 10/10** in 140,975 ms. All eight identities loaded while selectors
+  remained hidden; race, facts, statistics, spent resource, production
+  DollData, sex, render, and Gunslinger outfit were exact. Native rest restored
+  each resource to one; promotion produced level/caster level two. Cleanup
+  removed every fixture and saved the working save. Runtime-result/index
+  SHA-256:
+  `f16a93ab55be1bbbf87622bdeae4b927b65a352fe637add66d050e1a3bf697d4` /
+  `f285ce0e8d762748cbfa63055300e3333114c089457a9f501b11b8d81ddd2ee8`.
+- Post-restoration transaction
+  `20260902T1805097536949Z-elemental-race-persistence-verify-absent`, run
+  `20260902T1805097767152Z-7e0adc8b36e343e8b2f9891c5a7713fa`,
+  **PASS 6/6** in 121,652 ms. It observed zero project fixtures, exact baseline
+  absence, exact party/global-unit structure, and the original one working-save
+  routine. Runtime-result/index SHA-256:
+  `27d69f12cba8e77482fd012122fe1b5d47c115763d886fc6ffb9c36e8aacc12f` /
+  `d285ec257df1910a437c81f8eb635f94a86833cadb6496def2fb5d82d5bbcd02`.
+- All three final launches used guarded Steam App ID 640820 and deployment
+  `20260902T1758236782720Z` (manifest SHA-256
+  `662b53bb99d24477922b88a9cb267bb2455c77d3574e486587ac4ea931ac1fbf`).
+  Runtime package/DLL SHA-256:
+  `b4a1762c3dfd2d91c025a8f2ed9ce6cac8dc49a443ce5f404c601e60c731a843` /
+  `17f85ab3142fcf4aea91ec96870d00a09411a8121a929deac9bed97eaef4cf47`;
+  DLL MVID `b9eb12f4-f96b-4374-b046-bd5c78e88127`; source-state SHA-256
+  `baf7fefcd9076982a0fe3a41b7ebab549f4df733bb0df0c3f6367f49b095b3eb`.
+  Exact original/restored FeatureModules bytes both hash to
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+  The protected baseline and the existing human-persistence evidence were
+  never selected, written, or altered.
+- Required clean command
+  `powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File
+  .\scripts\build.ps1 -Configuration Release -Clean -Package` then passed:
+  repository validation, **1,389/1,389** dependency-free tests, production
+  compilation, build-output and SoundBank validation, deterministic package
+  creation, and strict standalone UMM validation.
+- Clean engineering checkpoint package
+  `artifacts/packages/KingmakerGunslinger-0.0.113-save-load-hotfix.zip` is
+  22,957,333 bytes, SHA-256
+  `4e2faaa7a0671ef4463750434e07b54057766a97e4478b3141262da47de65ecd`.
+  Clean DLL is 5,349,376 bytes, SHA-256
+  `ac846bde870dfe7c2bd2355aa0e8bf15fe69cd77b42bcf5a9f6e3eaeea1f2770`,
+  MVID `5b9fc86a-0d95-4a75-b2cd-8a9237b4e516`. Packaged `Info.json`
+  remains version `0.0.113`; this persistence checkpoint is not the final
+  preview candidate.

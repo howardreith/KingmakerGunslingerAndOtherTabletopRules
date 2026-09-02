@@ -116,6 +116,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             "elemental-race-class-equipment";
         internal const string ElementalRaceMotion =
             "elemental-race-motion";
+        internal const string ElementalRacePersistencePrepare =
+            "elemental-race-persistence-prepare";
+        internal const string ElementalRaceModuleDisabledPersistence =
+            "elemental-race-module-disabled-persistence";
+        internal const string ElementalRacePersistenceVerifyAbsent =
+            "elemental-race-persistence-verify-absent";
         internal const string DisposableElementalRaceMechanics =
             "disposable-elemental-race-mechanics";
         internal const string DisposableElementalRaceSlas =
@@ -447,6 +453,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalRaceClassClothing,
                 ElementalRaceClassEquipment,
                 ElementalRaceMotion,
+                ElementalRacePersistencePrepare,
+                ElementalRaceModuleDisabledPersistence,
+                ElementalRacePersistenceVerifyAbsent,
                 DisposableElementalRaceMechanics,
                 DisposableElementalRaceSlas,
                 DisposableHydraulicPush,
@@ -607,6 +616,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal) ||
                 string.Equals(scenario,
                     GunslingerOutfitProductionPersistenceVerifyAbsent,
+                    StringComparison.Ordinal);
+        }
+
+        internal static bool IsElementalRacePersistenceScenario(
+            string scenario)
+        {
+            return string.Equals(scenario,
+                    ElementalRacePersistencePrepare,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    ElementalRaceModuleDisabledPersistence,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    ElementalRacePersistenceVerifyAbsent,
                     StringComparison.Ordinal);
         }
 

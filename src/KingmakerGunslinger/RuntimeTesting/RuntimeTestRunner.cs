@@ -139,6 +139,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gunslingerOutfitProductionMotion;
         private GunslingerOutfitRenderScenario.ProductionPersistenceSession
             _gunslingerOutfitProductionPersistence;
+        private GunslingerOutfitRenderScenario.ElementalRacePersistenceSession
+            _elementalRacePersistence;
         private ElementalRaceDevelopmentProbeScenario.Session
             _elementalRaceDevelopmentProbe;
         private ElementalRaceVisualAuditScenario.Session
@@ -715,6 +717,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ElementalRaceMotion &&
                     !RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
+                            _request.Scenario) &&
+                    !RuntimeTestScenarioCatalog
+                        .IsElementalRacePersistenceScenario(
                             _request.Scenario) &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
@@ -1576,6 +1581,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
                             _request.Scenario) ||
+                    RuntimeTestScenarioCatalog
+                        .IsElementalRacePersistenceScenario(
+                            _request.Scenario) ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -1647,6 +1655,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.ElementalRaceMotion ||
                     RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
+                            _request.Scenario) ||
+                    RuntimeTestScenarioCatalog
+                        .IsElementalRacePersistenceScenario(
                             _request.Scenario) ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
@@ -1732,6 +1743,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .GunslingerOutfitProductionPersistence
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithOutfitFixture
+                    : _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceModuleDisabledPersistence
+                            ? WorkingSaveSmokeIdentity
+                                .AutomationWorkingWithElementalFixtures
                     : _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                             ? WorkingSaveSmokeIdentity.AffectedFocusedAim
@@ -2310,6 +2325,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_gunslingerOutfitProductionPersistence.Complete)
                         Complete(
                             _gunslingerOutfitProductionPersistence.Result);
+                }
+                else if (RuntimeTestScenarioCatalog
+                    .IsElementalRacePersistenceScenario(
+                        _request.Scenario))
+                {
+                    if (_elementalRacePersistence == null)
+                        _elementalRacePersistence =
+                            GunslingerOutfitRenderScenario
+                                .BeginElementalRacePersistence(
+                                    _context, _request,
+                                    _workingSaveSmoke);
+                    _elementalRacePersistence.Poll();
+                    if (_elementalRacePersistence.Complete)
+                        Complete(_elementalRacePersistence.Result);
                 }
                 else
                 {
