@@ -736,9 +736,14 @@ namespace KingmakerGunslinger.DomainTests
             string source = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting",
                 "GunslingerOutfitProductionMotionScenario.cs");
+            string transitions = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "ElementalRaceTransitionScenario.cs");
             string shared = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting",
                 "GunslingerOutfitProductionCompatibilityScenario.cs");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
             string catalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -816,6 +821,44 @@ namespace KingmakerGunslinger.DomainTests
                     "Elemental motion lacks exact reuse token: " + token);
             foreach (string token in new[]
             {
+                "expectedTransitionRecords",
+                "ElementalTransitionActions.Length * 2",
+                "transitionRecords.Count(value => string.Equals(",
+                "== 16",
+                "elemental-race-native-sla-casting",
+                "elemental-race-native-prone-recovery",
+                "elemental-race-native-death-resurrection",
+                "elemental-race-native-polymorph-return"
+            })
+                Assertions.True(source.Contains(token),
+                    "Elemental motion lacks transition assertion token: " +
+                    token);
+            Assertions.True(project.Contains(
+                    "RuntimeTesting\\ElementalRaceTransitionScenario.cs"),
+                "The elemental transition partial is absent from the explicit production compile list.");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility", "Animation.IsActed",
+                "ExecutionProcess.Tick()", "resourceBefore",
+                "resourceAfter", "UnitCondition.Prone",
+                "RuleDealDamage", "ResurrectAndFullRestore",
+                "BeastShapeTwoSpellGuid",
+                "5d4028eb28a106d4691ed1b92bbb1915",
+                "8dc6510d31614345a8c718208fbac1f8",
+                "Body.IsPolymorphed", "ActiveRenderers(_actor)",
+                "sharedMaterials", "material.shader",
+                "racial-sla-native-cast-acted",
+                "native-prone-restored", "native-resurrected",
+                "beast-shape-ii-restored",
+                "ElementalTransitionMaximumUpdates",
+                "CleanupElementalRaceTransitions",
+                (char)34 + "saveApiCalled" + (char)34
+            })
+                Assertions.True(transitions.Contains(token),
+                    "Elemental transition partial lacks exact native token: " +
+                    token);
+            foreach (string token in new[]
+            {
                 "UsesElementalRaceFixtures",
                 "IsElementalRaceClassEquipment ||",
                 "IsElementalRaceMotion",
@@ -842,7 +885,8 @@ namespace KingmakerGunslinger.DomainTests
                 "SaveGame", "QuickSave", "PlayerPrefs", "Input.",
                 "Mouse."
             })
-                Assertions.False(source.Contains(forbidden),
+                Assertions.False(source.Contains(forbidden) ||
+                    transitions.Contains(forbidden),
                     "Elemental motion contains forbidden save/UI token: " +
                     forbidden);
         }
