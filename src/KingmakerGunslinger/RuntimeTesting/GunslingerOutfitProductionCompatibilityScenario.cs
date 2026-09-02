@@ -2047,6 +2047,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "phase", _phase },
                     { "motionStep", IsProductionMotion ?
                         _motionStep : -1 },
+                    { "elementalTransitionStep",
+                        IsElementalRaceMotion
+                            ? _elementalTransitionStep : -1 },
+                    { "elementalTransitionPhase",
+                        IsElementalRaceMotion
+                            ? _elementalTransitionPhase : -1 },
+                    { "elementalTransitionCaptured",
+                        IsElementalRaceMotion
+                            ? _elementalTransitionCaptured : 0 },
+                    { "elementalTransitionViews",
+                        IsElementalRaceMotion
+                            ? _elementalTransitionViews : 0 },
                     { "captured", _captured },
                     { "imageCount", _imageCount },
                     { "actorPresent", _actor != null }

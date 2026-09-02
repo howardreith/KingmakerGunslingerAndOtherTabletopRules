@@ -463,6 +463,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void PollProductionMotionAction()
             {
+                if (_motionPhase >= 10)
+                {
+                    PollElementalRaceTransitions();
+                    return;
+                }
                 switch (_motionPhase)
                 {
                     case 0:
@@ -2351,6 +2356,12 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void FinishProductionMotionFixture()
             {
+                if (IsElementalRaceMotion &&
+                    !_elementalTransitionFixtureComplete)
+                {
+                    BeginElementalRaceTransitions();
+                    return;
+                }
                 ProductionCompatibilityFixture fixture =
                     _fixtures[_fixtureIndex];
                 _stage = "restore-motion-" + fixture.Label;
@@ -2391,6 +2402,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _fixtureIndex++;
                 _motionStep = 0;
                 _motionPhase = 0;
+                _elementalTransitionFixtureComplete = false;
+                _elementalTransitionStep = 0;
+                _elementalTransitionPhase = 0;
                 _settleUpdates = 0;
                 if (_fixtureIndex < _fixtures.Length)
                 {
@@ -2615,6 +2629,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 try
                 {
+                    CleanupElementalRaceTransitions();
                     if (_actor != null)
                     {
                         _actor.Commands.InterruptAll(true);
@@ -2719,6 +2734,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .DefaultSecondaryColor },
                     { "actions", new JArray(ProductionMotionSpecs.Select(
                         value => value.Label).ToArray()) },
+                    { "elementalTransitionActions",
+                        IsElementalRaceMotion
+                            ? new JArray(ElementalTransitionActions)
+                            : new JArray() },
                     { "supportedRaces", new JArray(
                         _supportedRaces.Select(value => new JObject
                         {
@@ -2739,6 +2758,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "attackOutcomes", _motionAttackOutcomes },
                     { "reloadOutcomes", _motionReloadOutcomes },
                     { "records", _motionRecords },
+                    { "elementalTransitionRecords",
+                        _elementalTransitionRecords },
+                    { "elementalSpellcastOutcomes",
+                        _elementalSpellcastOutcomes },
+                    { "elementalProneOutcomes",
+                        _elementalProneOutcomes },
+                    { "elementalDeathOutcomes",
+                        _elementalDeathOutcomes },
+                    { "elementalPolymorphOutcomes",
+                        _elementalPolymorphOutcomes },
                     { "restorations", _motionRestorationRecords },
                     { "combatBoundaries", _motionCombatBoundaryRecords },
                     { "playerInCombatBefore", _motionPlayerCombatBefore },
@@ -2774,8 +2803,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ? ElementalRaceCatalog.RaceCount * 2
                     : 2;
                 int expectedRecords = expectedFixtures * 27;
+                int expectedTransitionRecords = IsElementalRaceMotion
+                    ? expectedFixtures * ElementalTransitionActions.Length * 2
+                    : 0;
                 JObject[] records = _motionRecords.OfType<JObject>()
                     .ToArray();
+                JObject[] transitionRecords = _elementalTransitionRecords
+                    .OfType<JObject>().ToArray();
+                JObject[] spellcasts = _elementalSpellcastOutcomes
+                    .OfType<JObject>().ToArray();
+                JObject[] proneOutcomes = _elementalProneOutcomes
+                    .OfType<JObject>().ToArray();
+                JObject[] deathOutcomes = _elementalDeathOutcomes
+                    .OfType<JObject>().ToArray();
+                JObject[] polymorphOutcomes = _elementalPolymorphOutcomes
+                    .OfType<JObject>().ToArray();
                 JObject[] movements = _motionMovementOutcomes
                     .OfType<JObject>().ToArray();
                 JObject[] attacks = _motionAttackOutcomes
@@ -2844,6 +2886,99 @@ namespace KingmakerGunslinger.RuntimeTesting
                             StringComparison.Ordinal)) &&
                     (int)value["activeRendererCount"] > 0 &&
                     (int)value["preview"]["meaningfulPixels"] > 0);
+                bool transitionRecordContracts = !IsElementalRaceMotion
+                    ? transitionRecords.Length == 0
+                    : transitionRecords.Length ==
+                            expectedTransitionRecords &&
+                        transitionRecords.All(value =>
+                        {
+                            string state = (string)value["state"];
+                            bool polymorphed = string.Equals(state,
+                                "beast-shape-ii-polymorphed",
+                                StringComparison.Ordinal);
+                            bool dead = string.Equals(state,
+                                "native-death",
+                                StringComparison.Ordinal);
+                            bool prone = string.Equals(state,
+                                "native-prone",
+                                StringComparison.Ordinal);
+                            return (bool)value["polymorphed"] ==
+                                    polymorphed &&
+                                (bool)value["dead"] == dead &&
+                                (bool)value["prone"] == prone &&
+                                (polymorphed ||
+                                    (bool)value[
+                                        "productionOutfitExact"]) &&
+                                (bool)value[
+                                    "productionBlueprintUnchanged"] &&
+                                (bool)value["playerBoundaryExact"] &&
+                                (bool)value[
+                                    "playerCharacterListsExact"] &&
+                                !(bool)value["saveApiCalled"] &&
+                                (int)value["activeRendererCount"] > 0 &&
+                                (int)value["materialSlotCount"] > 0 &&
+                                (int)value["nullMaterialCount"] == 0 &&
+                                (int)value["nullShaderCount"] == 0 &&
+                                (int)value["preview"][
+                                    "meaningfulPixels"] > 0;
+                        });
+                bool transitionStateCounts = !IsElementalRaceMotion ||
+                    new[]
+                    {
+                        "racial-sla-native-cast-acted",
+                        "racial-sla-native-cast-restored",
+                        "native-prone", "native-prone-restored",
+                        "native-death", "native-resurrected",
+                        "beast-shape-ii-polymorphed",
+                        "beast-shape-ii-restored"
+                    }.All(state => transitionRecords.Count(value =>
+                        string.Equals((string)value["state"], state,
+                            StringComparison.Ordinal)) ==
+                        expectedFixtures);
+                bool elementalSpellContracts = !IsElementalRaceMotion ||
+                    spellcasts.Length == expectedFixtures &&
+                    spellcasts.All(value =>
+                        (int)value["resourceBefore"] == 1 &&
+                        (int)value["resourceAfter"] == 0 &&
+                        (bool)value["commandInstalled"] &&
+                        (bool)value["commandStarted"] &&
+                        (bool)value["commandRunningObserved"] &&
+                        (bool)value["animationObserved"] &&
+                        (bool)value["animationActedObserved"] &&
+                        (bool)value["executionProcessObserved"] &&
+                        (bool)value["executionProcessEndedObserved"] &&
+                        (bool)value["actorCheaterRestored"]);
+                bool elementalProneContracts = !IsElementalRaceMotion ||
+                    proneOutcomes.Length == expectedFixtures &&
+                    proneOutcomes.All(value =>
+                        (bool)value["proneApplied"] &&
+                        (bool)value["proneCaptured"] &&
+                        (bool)value["proneRemoved"] &&
+                        (bool)value["productionBaselineRestored"]);
+                bool elementalDeathContracts = !IsElementalRaceMotion ||
+                    deathOutcomes.Length == expectedFixtures &&
+                    deathOutcomes.All(value =>
+                        (bool)value["deathObserved"] &&
+                        (bool)value["deathCaptured"] &&
+                        (bool)value["resurrectionStarted"] &&
+                        (bool)value["immortalityReacquired"] &&
+                        (int)value["hpAfter"] ==
+                            (int)value["maxHpAfter"] &&
+                        (int)value["damageAfter"] == 0);
+                bool elementalPolymorphContracts =
+                    !IsElementalRaceMotion ||
+                    polymorphOutcomes.Length == expectedFixtures &&
+                    polymorphOutcomes.All(value =>
+                        string.Equals((string)value["spellGuid"],
+                            BeastShapeTwoSpellGuid,
+                            StringComparison.Ordinal) &&
+                        string.Equals((string)value["buffGuid"],
+                            BeastShapeTwoBuffGuid,
+                            StringComparison.Ordinal) &&
+                        (bool)value["polymorphCaptured"] &&
+                        (bool)value["buffRemoved"] &&
+                        (bool)value["bodyReturned"] &&
+                        (bool)value["productionBaselineRestored"]);
                 bool movementContracts = movements.Length ==
                         expectedFixtures * 2 &&
                     movements.All(value =>
@@ -2947,7 +3082,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 StringComparison.Ordinal)) == 2 &&
                             records.Count(value => string.Equals(
                                 (string)value["raceGuid"], race.AssetGuid,
-                                StringComparison.Ordinal)) == 54) &&
+                                StringComparison.Ordinal)) == 54 &&
+                            transitionRecords.Count(value => string.Equals(
+                                (string)value["raceGuid"], race.AssetGuid,
+                                StringComparison.Ordinal)) == 16) &&
                         fixtureRecords.All(value => string.Equals(
                             (string)value["raceId"], "Aasimar",
                             StringComparison.Ordinal))
@@ -3030,19 +3168,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsElementalRaceMotion
                         ? "elemental-race-motion-captures"
                         : "gunslinger-outfit-production-motion-captures",
-                    expectedRecords + " exact sidecars/PNGs and " +
-                        (expectedRecords * 4) + " labelled views",
+                    expectedRecords + " motion plus " +
+                        expectedTransitionRecords +
+                        " transition sidecars/PNGs and " +
+                        ((expectedRecords + expectedTransitionRecords) * 4) +
+                        " labelled views",
                     "records=" + records.Length + ";captured=" +
-                        _motionCaptured + ";views=" + _motionViewCount +
+                    _motionCaptured + ";views=" + _motionViewCount +
+                        ";transitionRecords=" +
+                        transitionRecords.Length +
+                        ";transitionCaptured=" +
+                        _elementalTransitionCaptured +
+                        ";transitionViews=" + _elementalTransitionViews +
                         ";files=" + _evidenceFiles.Count,
                     records.Length == expectedRecords &&
                         _motionCaptured == expectedRecords &&
                         _motionViewCount == expectedRecords * 4 &&
+                        transitionRecords.Length ==
+                            expectedTransitionRecords &&
+                        _elementalTransitionCaptured ==
+                            expectedTransitionRecords &&
+                        _elementalTransitionViews ==
+                            expectedTransitionRecords * 4 &&
                         exactActionCounts && recordContracts &&
+                        transitionRecordContracts &&
+                        transitionStateCounts &&
                         _motionIndexWritten &&
-                        _evidenceFiles.Count == expectedRecords * 2 + 1 &&
+                        _evidenceFiles.Count ==
+                            (expectedRecords +
+                                expectedTransitionRecords) * 2 + 1 &&
                         _evidenceFiles.All(File.Exists),
                     "four-view contact sheets plus structured per-frame sidecars");
+                if (IsElementalRaceMotion)
+                {
+                    Add(_assertions,
+                        "elemental-race-native-sla-casting",
+                        "one real race-owned UnitUseAbility cast and exact one-use spend per race/sex fixture",
+                        "outcomes=" + spellcasts.Length,
+                        elementalSpellContracts,
+                        "AbilityData, UnitUseAbility, acted animation, execution process, and race-owned BlueprintAbilityResource");
+                    Add(_assertions,
+                        "elemental-race-native-prone-recovery",
+                        "native Prone presentation and exact production-doll recovery per race/sex fixture",
+                        "outcomes=" + proneOutcomes.Length,
+                        elementalProneContracts,
+                        "UnitCondition.Prone add/remove plus live renderer and saved-link audit");
+                    Add(_assertions,
+                        "elemental-race-native-death-resurrection",
+                        "native lethal damage, dead presentation, full resurrection, and exact production-doll recovery per race/sex fixture",
+                        "outcomes=" + deathOutcomes.Length,
+                        elementalDeathContracts,
+                        "RuleDealDamage, dead-state renderer audit, ResurrectAndFullRestore, and immortality-boundary restoration");
+                    Add(_assertions,
+                        "elemental-race-native-polymorph-return",
+                        "exact native Beast Shape II body replacement and production-doll return per race/sex fixture",
+                        "outcomes=" + polymorphOutcomes.Length,
+                        elementalPolymorphContracts,
+                        "base-game spell/buff IDs, UnitBody.IsPolymorphed, renderer/material/shader audit, and buff removal");
+                }
                 Add(_assertions,
                     IsElementalRaceMotion
                         ? "elemental-race-native-locomotion"
