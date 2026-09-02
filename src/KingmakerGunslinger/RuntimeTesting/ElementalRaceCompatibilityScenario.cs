@@ -12,6 +12,7 @@ using Kingmaker.Blueprints.Root;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.ElementalRaces;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using UnityEngine;
 using UnityModManagerNet;
 
@@ -113,7 +114,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             string path = Path.Combine(request.EvidenceDirectory,
                 EvidenceFileName);
             File.WriteAllText(path, JsonConvert.SerializeObject(evidence,
-                Formatting.Indented));
+                Formatting.Indented, new JsonSerializerSettings
+                {
+                    ContractResolver = new DefaultContractResolver(),
+                    PreserveReferencesHandling =
+                        PreserveReferencesHandling.None,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Error
+                }));
             evidenceFiles.Add(path);
             diagnostics.Add("elementalRacesCompatibilitySha256=" +
                 HashFile(path));
@@ -152,7 +159,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintBootstrap.Library != null && set != null &&
                 set.Count == ElementalRaceIdentityCatalog.IdentityCount;
             Add(assertions, "elemental-races-bootstrap",
-                "all 24 stable elemental identities registered",
+                "all stable elemental identities registered at catalog count",
                 set == null ? "missing" : "count=" + set.Count,
                 bootstrap, "live BlueprintBootstrap.ElementalRaces");
             Add(assertions, "elemental-races-module-active",

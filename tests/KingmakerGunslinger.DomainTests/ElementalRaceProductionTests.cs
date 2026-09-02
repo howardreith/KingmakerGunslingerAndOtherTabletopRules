@@ -494,6 +494,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalRacePublication.Apply(set, true)",
                 "ReferenceEquals(catalogReference, afterFirst)",
                 "SameReferences(before, afterSecond)",
+                "ContractResolver = new DefaultContractResolver()",
                 "third-party-race-order-preserved"
             })
                 Assertions.True(scenario.Contains(token),
