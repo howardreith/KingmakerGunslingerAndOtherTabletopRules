@@ -436,13 +436,30 @@ namespace KingmakerGunslinger.DomainTests
                     "its native zero-projectile synchronous resolve branch") &&
                 fixture.Contains("new BlueprintProjectile[0]") &&
                 fixture.Contains("attacker.Memory.Add(protector)") &&
+                fixture.Contains("protector.Memory.Add(attacker)") &&
                 fixture.Contains("protector.LastMoveTime =") &&
                 fixture.Contains("RemoveMemory(Attacker, ProtectorOne)") &&
+                fixture.Contains("RemoveMemory(ProtectorOne, Attacker)") &&
                 !fixture.Contains(
                     ".SetValue(visual, source.VisualParameters, null)") &&
                 fixture.Contains("catch\n            {\n                Dispose();") &&
                 fixture.Contains("if (_disposed) return;"),
                 "The request-local ranged fixture can inherit projectiles or leak a partially constructed fixture.");
+            int failedAidStart = scenario.IndexOf(
+                "\"helpful-bodyguard-failure-zero\"",
+                StringComparison.Ordinal);
+            int failedAidEnd = scenario.IndexOf(
+                "\"helpful-in-harms-way-after-three\"",
+                failedAidStart, StringComparison.Ordinal);
+            string failedAidBlock = failedAidStart < 0 ||
+                failedAidEnd <= failedAidStart ? string.Empty :
+                scenario.Substring(failedAidStart,
+                    failedAidEnd - failedAidStart);
+            Assertions.True(failedAidBlock.Contains(
+                    "CombatLogLastMessage.Contains(\"failed\")") &&
+                !failedAidBlock.Contains(
+                    "CombatLogLastMessage.Contains(\"failure\")"),
+                "The failed-Aid observer must match the current truthful combat-log wording.");
             string diceControl = Read("src", "KingmakerGunslinger",
                 "BodyguardFeats", "BodyguardQualificationControl.cs");
             string misfirePatches = Read("src", "KingmakerGunslinger",
