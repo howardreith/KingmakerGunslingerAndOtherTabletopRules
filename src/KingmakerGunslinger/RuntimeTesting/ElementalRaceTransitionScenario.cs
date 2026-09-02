@@ -85,6 +85,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _elementalActorCheaterBefore;
             private int _elementalDamageBefore;
             private int _elementalHpBefore;
+            private int _elementalDamageAfterLethal;
+            private int _elementalHpAfterLethal;
+            private bool _elementalDeathCheaterCaptured;
+            private bool _elementalDeathCheaterBefore;
             private bool _elementalDeathObserved;
             private bool _elementalProneApplied;
             private bool _elementalProneCaptured;
@@ -451,10 +455,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _fixtures[_fixtureIndex].Label;
                 if (!_elementalDeathTriggered)
                 {
+                    CreateProductionMotionTarget();
                     _elementalDamageBefore = _actor.Descriptor.Damage;
                     _elementalHpBefore = _actor.HPLeft;
+                    _elementalDeathCheaterBefore =
+                        _actor.Blueprint.IsCheater;
+                    _elementalDeathCheaterCaptured = true;
+                    _actor.Blueprint.IsCheater = false;
                     _actor.Descriptor.State.Immortality.ReleaseAll();
-                    var lethal = new RuleDealDamage(_actor, _actor,
+                    var lethal = new RuleDealDamage(_motionTarget, _actor,
                         new DamageBundle(new DirectDamage(
                             new DiceFormula(0, DiceType.D6),
                             _actor.MaxHP + 10)))
@@ -463,9 +472,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         IgnoreDamageReduction = true
                     };
                     Rulebook.Trigger(lethal);
+                    _elementalDamageAfterLethal =
+                        _actor.Descriptor.Damage;
+                    _elementalHpAfterLethal = _actor.HPLeft;
                     _elementalDeathTriggered = true;
                     _elementalDeathObserved |=
                         _actor.Descriptor.State.IsDead;
+                    _diagnostics.Add("elementalLethal=" +
+                        _fixtures[_fixtureIndex].Label +
+                        ";initiator=request-local-hostile;damage=" +
+                        _elementalDamageBefore + "->" +
+                        _elementalDamageAfterLethal + ";hp=" +
+                        _elementalHpBefore + "->" +
+                        _elementalHpAfterLethal + ";dead=" +
+                        _elementalDeathObserved + ";actorCheater=" +
+                        _elementalDeathCheaterBefore + "->" +
+                        _actor.Blueprint.IsCheater);
                     _elementalTransitionUpdates = 0;
                     return;
                 }
@@ -477,7 +499,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (!_elementalDeathObserved)
                     {
-                        RequireElementalTransitionTime("native lethal damage");
+                        if (_elementalTransitionUpdates >=
+                            ElementalTransitionMaximumUpdates)
+                            throw new InvalidOperationException(
+                                "Native lethal damage did not enter dead state; " +
+                                "damage=" + _elementalDamageBefore + "->" +
+                                _elementalDamageAfterLethal + ";hp=" +
+                                _elementalHpBefore + "->" +
+                                _elementalHpAfterLethal +
+                                ";actorCheater=" +
+                                _actor.Blueprint.IsCheater +
+                                ";initiatorPresent=" +
+                                (_motionTarget != null) + ".");
                         return;
                     }
                     if (_elementalTransitionUpdates <
@@ -495,8 +528,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !_actor.Descriptor.State.IsDead &&
                     _actor.HPLeft == _actor.MaxHP)
                 {
+                    if (_elementalDeathCheaterCaptured)
+                        _actor.Blueprint.IsCheater =
+                            _elementalDeathCheaterBefore;
                     _actor.Descriptor.State.Immortality.Retain();
                     _elementalImmortalityReacquired = true;
+                    if (_actor.CombatState.IsInCombat)
+                        _actor.LeaveCombat();
+                    if (_motionTarget != null &&
+                        _motionTarget.CombatState.IsInCombat)
+                        _motionTarget.LeaveCombat();
+                    RetireProductionMotionTarget();
                 }
                 if (!_elementalImmortalityReacquired ||
                     !ElementalTransitionBaselineExact())
@@ -513,12 +555,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixture", _fixtures[_fixtureIndex].Label },
                     { "damageBefore", _elementalDamageBefore },
                     { "hpBefore", _elementalHpBefore },
+                    { "damageAfterLethal",
+                        _elementalDamageAfterLethal },
+                    { "hpAfterLethal", _elementalHpAfterLethal },
+                    { "lethalInitiator",
+                        "request-local-hostile" },
                     { "deathObserved", _elementalDeathObserved },
                     { "deathCaptured", _elementalDeathCaptured },
                     { "resurrectionStarted",
                         _elementalResurrectionStarted },
                     { "immortalityReacquired",
                         _elementalImmortalityReacquired },
+                    { "actorCheaterRestored",
+                        _actor.Blueprint.IsCheater ==
+                            _elementalDeathCheaterBefore },
                     { "hpAfter", _actor.HPLeft },
                     { "maxHpAfter", _actor.MaxHP },
                     { "damageAfter", _actor.Descriptor.Damage }
@@ -764,6 +814,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _elementalActorCheaterBefore = false;
                 _elementalDamageBefore = 0;
                 _elementalHpBefore = 0;
+                _elementalDamageAfterLethal = 0;
+                _elementalHpAfterLethal = 0;
+                _elementalDeathCheaterCaptured = false;
+                _elementalDeathCheaterBefore = false;
                 _elementalDeathObserved = false;
                 _elementalProneApplied = false;
                 _elementalProneCaptured = false;
@@ -787,6 +841,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_elementalActorCheaterCaptured)
                         _actor.Blueprint.IsCheater =
                             _elementalActorCheaterBefore;
+                    if (_elementalDeathCheaterCaptured)
+                        _actor.Blueprint.IsCheater =
+                            _elementalDeathCheaterBefore;
                     RemoveElementalIntroducedBuffs(_actor,
                         _elementalActorBuffsBefore);
                     if (_actor.Descriptor.State.HasCondition(
