@@ -47,6 +47,7 @@ $expected = @(
     'disposable-elemental-race-mechanics',
     'disposable-elemental-race-slas',
     'disposable-hydraulic-push',
+    'disposable-elemental-race-native-identity',
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
     'disposable-urban-barbarian-focused',

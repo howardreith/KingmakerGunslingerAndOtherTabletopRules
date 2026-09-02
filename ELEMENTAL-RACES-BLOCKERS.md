@@ -6,8 +6,10 @@ None established as of 2026-09-02. Production identities, base-rule
 blueprints, resources, energy resistance, Keen Senses, affinity, total-level
 SLA parameters, native donor delivery, Stone Fist and Feather Step expiry,
 Hydraulic Push combat resolution, rest restoration, and request-local resource
-persistence now pass guarded runtime checks. Oread movement, visuals,
-save-backed persistence, and compatibility qualification remain incomplete;
+persistence now pass guarded runtime checks. Native Oread movement,
+Aasimar/Tiefling creature-type behavior, and module ON/OFF publication also
+pass guarded runtime checks. Visuals, save-backed persistence, and
+compatibility qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
@@ -43,14 +45,26 @@ absence of a hard blocker is not a completion claim.
   attack roll, saving throw, or Bull-Rush-created opportunity attack. The final
   resource strategy preserves ordinary availability gating and spends exactly
   once at synchronous effect commitment.
+- Actual medium and heavy armor and a calculated heavy equipped load left Oread
+  and native Dwarf at 20 feet while the Human control fell from 30 to 20.
+  Request-local +10 and -5 generic modifiers otherwise applied normally.
+- Installed Human, Aasimar, Tiefling, and all four elemental races were tested
+  with native Hold Person, Charm Person, Enlarge Person, Reduce Person,
+  `PrerequisiteFeature`, and `PrerequisiteNoFeature`. The installed donor races
+  and their first heritage facts do not grant `OutsiderType`; the production
+  races now deliberately match that native behavior while retaining distinct
+  exact-`BlueprintRace` prerequisite identities.
+- Fresh module-ON and module-OFF processes proved 24 identities remain
+  registered in both states. ON published one contiguous Ifrit/Oread/Sylph/
+  Undine sequence without shared-catalog duplicates; OFF published none.
 
 ## Open risks requiring evidence
 
-- The selected donor is `RaceId.Aasimar` with the exact native Outsider fact.
-  Actual Hold/Charm/Enlarge/Reduce Person, prerequisite, level-up, respec, and
-  donor-dialogue observations remain pending.
-- Native Dwarf Slow and Steady and Outsider facts are selected. Save-backed
-  SLA reload and armored or encumbered Oread movement remain pending.
+- The selected donor remains `RaceId.Aasimar`. Exact person-spell and type/race
+  prerequisite behavior now passes, but donor-dialogue observations, level-up,
+  respec, and save-backed reload remain pending.
+- Native Dwarf Slow and Steady passes the live armor/encumbrance matrix.
+  Save-backed SLA reload and ordinary character persistence remain pending.
 - Hydraulic Push combat mechanics and resource commitment are qualified. A
   safe native water projectile has not yet been selected, and save-backed
   persistence remains pending.

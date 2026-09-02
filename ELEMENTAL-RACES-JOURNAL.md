@@ -424,3 +424,77 @@
   DLL SHA-256:
   `fee51842a8144e1e75324b968f322b2bbf5de7a181ad0c5bd2523443e31ced6b`;
   DLL MVID: `0670cdd2-e916-4d20-942d-ebcf8340cfec`.
+
+## 2026-09-02 - Native identity, Oread movement, and selector publication
+
+- Added `disposable-elemental-race-native-identity`, a guarded save-free
+  scenario using native armor slots, encumbrance helpers, speed stats, person
+  spell targeting, feature prerequisites, and exact race prerequisites.
+- Transaction
+  `20260902T0933001067567Z-disposable-elemental-race-native-identity` failed
+  closed when a private party encumbrance updater entered a Harmony-patched
+  party-context path for a detached unit. The strategy changed to the native
+  per-unit `EncumbranceHelper` and `UnitPartEncumbrance.Init` path. No save was
+  touched.
+- Transaction
+  `20260902T0937414169613Z-disposable-elemental-race-native-identity` failed
+  closed after proving the Oread/Dwarf armor matrix. Raw heavy encumbrance
+  penalty remained `-10` for all races because Slow and Steady suppresses the
+  applied modifier, and personal inventory weight was not part of per-unit
+  equipment encumbrance. The assertions were corrected and the load fixture
+  changed to audited equipped full plate. No save was touched.
+- The same run proved installed Aasimar and Tiefling, including their first
+  heritage facts, do not grant `OutsiderType`; native Hold Person, Charm Person,
+  Enlarge Person, and Reduce Person target them. Production was corrected to
+  follow that exact engine precedent instead of adding the empty Outsider fact.
+  Stable race identities and donor `RaceId.Aasimar` were unchanged.
+- Corrected transaction
+  `20260902T0947509229460Z-disposable-elemental-race-native-identity` **PASS**
+  (run ID `20260902T0947509479461Z-478bab6aa9d44475ba40e7b36219205a`),
+  16/16 assertions. Oread and native Dwarf stayed at 20 feet in real medium and
+  heavy armor and under a calculated 50-pound heavy equipped load; Human fell
+  from 30 to 20. Generic +10/-5 speed facts applied normally. All seven race
+  fixtures matched person-spell/type prerequisites, while exact race
+  prerequisites remained distinct. Cleanup restored the exact global-unit
+  reference sequence and `saveStateTouched=false`.
+- Evidence SHA-256:
+  `b3378be2e628d3b7896bcaefb2dcb56498f2026118ba0b28ecdc89b021b68161`;
+  runtime-result SHA-256:
+  `265c4562ce2b04e12ed803c290f52f724d1981f0aaf994521739c5962ec2df06`;
+  runtime DLL SHA-256:
+  `442a5d85ab598f0477fb5ad608603fffaf6d099b1d4f2d9d0fa4dcae006d6298`;
+  MVID: `d821f0b0-3165-4bf3-b994-72d5b12448e7`.
+- Extended the feature-module runtime observer with a live shared-catalog
+  reference/GUID inventory. Enabled transaction
+  `20260902T0955212013652Z-observe-feature-module-settings` **PASS** (run ID
+  `20260902T0955212264067Z-08636fcde0b14641af31e2d869b3577e`): 24 identities,
+  one entry each at indexes 9/10/11/12, unique shared catalog, exact contiguous
+  Ifrit/Oread/Sylph/Undine order. Runtime-result SHA-256:
+  `3150a63f6e5f8eccaf16671900716caf3e40f02fbede0391b2266c378f1af05f`.
+- Disabled transaction
+  `20260902T0958454418742Z-observe-feature-module-settings` **PASS** (run ID
+  `20260902T0958454608633Z-c7e4b8f7efc2414bbb1be23818bddd17`): the same 24
+  identities remained registered, selector reference/GUID counts were all
+  zero, and the 16-entry shared catalog remained unique. Runtime-result
+  SHA-256:
+  `5d251de2ab1f00bb8f86dfff18f1edb65efa301cf9fca03c44c933fa30e75df8`.
+- Both module transactions restored the exact original settings hash
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+  Their common package/DLL SHA-256 values were
+  `7a6dde430145b71778877225b643c80a0f574506003750df3233dd3f38bdc286` /
+  `63c75f122df292b51f5a0f5ccd67d74435620364b073e3b2d95b4cee5af53675`;
+  DLL MVID: `43609df8-b22a-4374-bf3f-eb2b2ce44e3c`.
+- Repository validation and the complete domain command passed at
+  **1,385/1,385** before both guarded module launches. Save-backed persistence,
+  visuals, compatibility profiles, and the remaining 22 boundary launches are
+  still pending.
+- Required clean command
+  `.\scripts\build.ps1 -Configuration Release -Clean -Package` passed on this
+  documented checkpoint: repository validation, all 1,385 tests, production
+  compile, output and SoundBank checks, deterministic package creation, and
+  strict standalone UMM validation. Package SHA-256:
+  `abb0639d5942fb4692a6cb455671436a47de6d7ce31f5833976db7d37768dacd`;
+  DLL SHA-256:
+  `b25b2e76e9c10d900fa391c432f7838a7023cbeed9381de5338e0afe90756ce0`;
+  DLL MVID: `57a10073-0765-4107-986e-de9ef987ca0b`. This remains a version
+  0.0.113 engineering checkpoint, not the final preview candidate.

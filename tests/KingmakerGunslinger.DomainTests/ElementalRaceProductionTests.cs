@@ -92,6 +92,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalRaceKind.Undine", "StatType.Strength, -2",
                 "DamageEnergyType.Cold", "SpellDescriptor.Cold",
                 "Kingmaker has no ordinary player swimming system",
+                "same creature-type interactions as its Aasimar and Tieflings",
                 "total character level"
             })
                 Assertions.True(catalog.Contains(token),
@@ -150,6 +151,8 @@ namespace KingmakerGunslinger.DomainTests
             string publication = Source("ElementalRacePublication.cs");
             string bootstrap = Read("src", "KingmakerGunslinger",
                 "Bootstrap", "BlueprintBootstrap.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
             foreach (string token in new[]
             {
                 "AasimarRaceGuid", "OutsiderTypeGuid", "KeenSensesGuid",
@@ -178,6 +181,16 @@ namespace KingmakerGunslinger.DomainTests
                 "Bootstrap does not unconditionally register and transactionally publish elemental identities.");
             Assertions.False(factory.Contains("CharacterRaces"),
                 "Race identity construction must remain separate from selector publication.");
+            foreach (string token in new[]
+            {
+                "ElementalRaceBlueprintSet elementalSet =",
+                "BlueprintRoot.Instance.Progression.CharacterRaces",
+                "elementalReferences.All(value => value == 1)",
+                "elementalIndexes.All(value => value < 0)",
+                "feature-module-elemental-races-publication"
+            })
+                Assertions.True(runner.Contains(token),
+                    "Live elemental selector-publication proof is absent: " + token);
         }
 
         internal static void RuntimeMechanicsScenarioIsGuardedAndNative()
@@ -312,6 +325,49 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("Game.Instance.Player.Party") ||
                 scenario.Contains("KMG_AUTOMATION_BASELINE"),
                 "Hydraulic Push qualification must remain save-free and detached from protected state.");
+        }
+
+        internal static void RuntimeNativeIdentityScenarioUsesLiveEngineRules()
+        {
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalRaceNativeIdentityScenario.cs");
+            foreach (string token in new[]
+            {
+                "new ItemEntityArmor", "Body.Armor.InsertItem",
+                "EncumbranceHelper", ".GetCarryingCapacity(owner)",
+                "owner.Ensure<UnitPartEncumbrance>()", ".Init(encumbrance)",
+                "UnitPartEncumbrance.GetSpeedPenalty",
+                "new AbilityData(hold",
+                "CanTarget(wrapper)",
+                "PrerequisiteFeature", "PrerequisiteNoFeature",
+                "SameReferences(unitsBefore",
+                "ContractResolver = new DefaultContractResolver()"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Native identity runtime token is absent: " + token);
+            const string name =
+                "disposable-elemental-race-native-identity";
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            Assertions.True(catalog.Contains(name) &&
+                runner.Contains("ElementalRaceNativeIdentityScenario.Run(") &&
+                automation.Contains("'" + name +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + name + "'") &&
+                project.Contains("ElementalRaceNativeIdentityScenario.cs"),
+                "Native identity scenario is not wired through every guarded surface.");
+            Assertions.False(scenario.Contains("SaveManager") ||
+                scenario.Contains("Game.Instance.Player.Party") ||
+                scenario.Contains("KMG_AUTOMATION_BASELINE"),
+                "Native identity qualification must remain save-free and detached from protected state.");
         }
 
         private static string Source(string file)

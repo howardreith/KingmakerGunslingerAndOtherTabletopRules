@@ -26,7 +26,11 @@ namespace KingmakerGunslinger.ElementalRaces
             BlueprintRace aasimar = BlueprintLibraryLookup.RequireExact<
                 BlueprintRace>(library,
                     ElementalRaceIdentityCatalog.AasimarRaceGuid,
-                    "native Aasimar race and outsider presentation precedent");
+                    "native Aasimar race and presentation precedent");
+            BlueprintRace tiefling = BlueprintLibraryLookup.RequireExact<
+                BlueprintRace>(library,
+                    ElementalRaceIdentityCatalog.TieflingRaceGuid,
+                    "native Tiefling race-type behavior precedent");
             BlueprintFeature keen = BlueprintLibraryLookup.RequireExact<
                 BlueprintFeature>(library,
                     ElementalRaceIdentityCatalog.KeenSensesGuid,
@@ -40,7 +44,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     ElementalRaceIdentityCatalog.OutsiderTypeGuid,
                     "native Outsider type fact");
 
-            ValidateNativeDonors(aasimar, keen, slow, outsider);
+            ValidateNativeDonors(aasimar, tiefling, keen, slow, outsider);
             var result = new List<ElementalRaceBlueprints>();
             foreach (ElementalRaceDefinition definition in
                 ElementalRaceCatalog.Ordered())
@@ -63,7 +67,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 BlueprintRace race = registry.Register<BlueprintRace>(
                     definition.RaceSymbol,
                     () => CreateRace(definition, aasimar, keen, slow,
-                        outsider, resistance, affinity, sla));
+                        resistance, affinity, sla));
                 var blueprints = new ElementalRaceBlueprints(definition, race,
                     resistance, affinity, sla, resource, ability);
                 ValidateRace(blueprints, aasimar, keen, slow, outsider);
@@ -120,7 +124,7 @@ namespace KingmakerGunslinger.ElementalRaces
         private static BlueprintRace CreateRace(
             ElementalRaceDefinition definition, BlueprintRace aasimar,
             BlueprintFeature keen, BlueprintFeature slow,
-            BlueprintFeature outsider, BlueprintFeature resistance,
+            BlueprintFeature resistance,
             BlueprintFeature affinity, BlueprintFeature sla)
         {
             BlueprintRace race = BlueprintCloneService.Clone(aasimar,
@@ -135,9 +139,9 @@ namespace KingmakerGunslinger.ElementalRaces
             }).ToArray();
             var features = new List<BlueprintFeature>
             {
-                outsider, keen, resistance, affinity, sla
+                keen, resistance, affinity, sla
             };
-            if (definition.SlowAndSteady) features.Insert(2, slow);
+            if (definition.SlowAndSteady) features.Insert(1, slow);
             race.Features = features.ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(race,
                 LocalizationService.Create(LocalizationKey(definition,
@@ -160,7 +164,7 @@ namespace KingmakerGunslinger.ElementalRaces
         }
 
         private static void ValidateNativeDonors(BlueprintRace aasimar,
-            BlueprintFeature keen, BlueprintFeature slow,
+            BlueprintRace tiefling, BlueprintFeature keen, BlueprintFeature slow,
             BlueprintFeature outsider)
         {
             AddStatBonus perception = (keen.ComponentsArray ??
@@ -168,6 +172,11 @@ namespace KingmakerGunslinger.ElementalRaces
                 .SingleOrDefault();
             if (aasimar.Presets == null || aasimar.Presets.Length < 1 ||
                 aasimar.MaleOptions == null || aasimar.FemaleOptions == null ||
+                tiefling == null ||
+                (aasimar.Features ?? Array.Empty<BlueprintFeature>())
+                    .Contains(outsider) ||
+                (tiefling.Features ?? Array.Empty<BlueprintFeature>())
+                    .Contains(outsider) ||
                 perception == null ||
                 perception.Stat != StatType.SkillPerception ||
                 perception.Value != KeenSensesPerceptionBonus ||
@@ -191,7 +200,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 .ComponentsArray.OfType<AddDamageResistanceEnergy>().Single();
             if (ReferenceEquals(race, aasimar) || race.Size != aasimar.Size ||
                 race.RaceId != aasimar.RaceId || stats.Length != 3 ||
-                !race.Features.Contains(outsider) ||
+                race.Features.Contains(outsider) ||
                 !race.Features.Contains(keen) ||
                 !race.Features.Contains(value.Resistance) ||
                 !race.Features.Contains(value.Affinity) ||

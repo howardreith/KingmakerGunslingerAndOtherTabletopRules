@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-e-racial-slas-and-hydraulic-runtime-qualified",
+  "phase": "phase-e-native-identity-movement-and-publication-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -23,20 +23,20 @@
     "diagnosticIdentity": "RESERVED-REQUEST-GATED",
     "developmentProbe": "PASS",
     "productionStableIdentities": "SOURCE-DOMAIN-RUNTIME-PASS",
-    "publication": "SOURCE-DOMAIN-AND-MODULE-OFF-RUNTIME-PASS",
+    "publication": "SOURCE-DOMAIN-AND-MODULE-ON-OFF-RUNTIME-PASS",
     "ifritRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "oreadRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-MOVEMENT-AND-SAVE-BACKED-PENDING",
+    "oreadRules": "BASE-NATIVE-SLA-AND-MOVEMENT-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "sylphRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "undineRules": "BASE-AND-HYDRAULIC-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "visuals": "NOT-STARTED",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-OFF-BASE-MECHANICS-DONOR-SLAS-AND-HYDRAULIC-PASS",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-AND-MOVEMENT-PASS",
     "compatibility": "NOT-STARTED",
     "packaging": "PRODUCTION-RULES-RUNTIME-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1384,
+    "passed": 1385,
     "failed": 0,
     "status": "PASS"
   },
@@ -183,14 +183,59 @@
         "assertionsPassed": 12,
         "saveStateTouched": false,
         "evidenceSha256": "c5afc2e51c9227f0d9c8acb71a39d232ff721c9fc067fdbff256f99d4a3d1cb5"
+      },
+      {
+        "id": "20260902T0933001067567Z-disposable-elemental-race-native-identity",
+        "runId": "20260902T0933001297991Z-d7163836b9c843fb9055e3841799603b",
+        "scenario": "disposable-elemental-race-native-identity",
+        "status": "FAIL",
+        "reason": "patched party encumbrance updater required party context for detached fixture",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0937414169613Z-disposable-elemental-race-native-identity",
+        "runId": "20260902T0937414389630Z-db557884ff8e4fdab8a358c9c1325ecb",
+        "scenario": "disposable-elemental-race-native-identity",
+        "status": "FAIL",
+        "reason": "fixture expected raw penalty suppression and counted personal inventory outside unit equipment encumbrance",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0947509229460Z-disposable-elemental-race-native-identity",
+        "runId": "20260902T0947509479461Z-478bab6aa9d44475ba40e7b36219205a",
+        "scenario": "disposable-elemental-race-native-identity",
+        "status": "PASS",
+        "assertionsPassed": 16,
+        "saveStateTouched": false,
+        "evidenceSha256": "b3378be2e628d3b7896bcaefb2dcb56498f2026118ba0b28ecdc89b021b68161"
+      },
+      {
+        "id": "20260902T0955212013652Z-observe-feature-module-settings",
+        "runId": "20260902T0955212264067Z-08636fcde0b14641af31e2d869b3577e",
+        "scenario": "observe-feature-module-settings",
+        "configuration": "on-on-on-on-on-on-on-on-on-on-on",
+        "status": "PASS",
+        "elementalRaces": true,
+        "selectorCounts": [1, 1, 1, 1],
+        "settingsRestoredExactly": true
+      },
+      {
+        "id": "20260902T0958454418742Z-observe-feature-module-settings",
+        "runId": "20260902T0958454608633Z-c7e4b8f7efc2414bbb1be23818bddd17",
+        "scenario": "observe-feature-module-settings",
+        "configuration": "on-on-on-on-on-on-on-on-on-on-off",
+        "status": "PASS",
+        "elementalRaces": false,
+        "selectorCounts": [0, 0, 0, 0],
+        "settingsRestoredExactly": true
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "da6efee6dd435b917cd2191bb6aebca6f255eaca18532f1a30dd10d3d342d816",
-    "dllSha256": "fee51842a8144e1e75324b968f322b2bbf5de7a181ad0c5bd2523443e31ced6b",
-    "dllMvid": "0670cdd2-e916-4d20-942d-ebcf8340cfec",
+    "packageSha256": "abb0639d5942fb4692a6cb455671436a47de6d7ce31f5833976db7d37768dacd",
+    "dllSha256": "b25b2e76e9c10d900fa391c432f7838a7023cbeed9381de5338e0afe90756ce0",
+    "dllMvid": "57a10073-0765-4107-986e-de9ef987ca0b",
     "version": "0.0.113"
   },
   "runtimeMechanicsArtifact": {
@@ -209,6 +254,18 @@
     "dllSha256": "8f19b9528df358ae14f2e28fb945b7a9ea7041c72c38dfeeb962f4d806b85b82",
     "dllMvid": "d62cbb4f-bd4e-4dbc-a177-2034a04efb15",
     "evidenceSha256": "c5afc2e51c9227f0d9c8acb71a39d232ff721c9fc067fdbff256f99d4a3d1cb5",
+    "version": "0.0.113"
+  },
+  "runtimeNativeIdentityArtifact": {
+    "dllSha256": "442a5d85ab598f0477fb5ad608603fffaf6d099b1d4f2d9d0fa4dcae006d6298",
+    "dllMvid": "d821f0b0-3165-4bf3-b994-72d5b12448e7",
+    "evidenceSha256": "b3378be2e628d3b7896bcaefb2dcb56498f2026118ba0b28ecdc89b021b68161",
+    "version": "0.0.113"
+  },
+  "runtimePublicationArtifact": {
+    "packageSha256": "7a6dde430145b71778877225b643c80a0f574506003750df3233dd3f38bdc286",
+    "dllSha256": "63c75f122df292b51f5a0f5ccd67d74435620364b073e3b2d95b4cee5af53675",
+    "dllMvid": "43609df8-b22a-4374-bf3f-eb2b2ce44e3c",
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

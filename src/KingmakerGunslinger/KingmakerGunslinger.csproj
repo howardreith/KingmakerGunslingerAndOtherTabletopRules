@@ -938,6 +938,7 @@
     <Compile Include="RuntimeTesting\ElementalRaceMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceSlaScenario.cs" />
     <Compile Include="RuntimeTesting\HydraulicPushScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalRaceNativeIdentityScenario.cs" />
     <Compile Include="ElementalRaces\ElementalRaceIdentityCatalog.cs" />
     <Compile Include="ElementalRaces\ElementalRaceDefinition.cs" />
     <Compile Include="ElementalRaces\ElementalRaceCatalog.cs" />

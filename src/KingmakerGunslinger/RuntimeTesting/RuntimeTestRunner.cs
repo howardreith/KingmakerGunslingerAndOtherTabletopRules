@@ -55,6 +55,7 @@ using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
 using KingmakerGunslinger.BrownFur;
 using KingmakerGunslinger.FeatureModules;
+using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.UrbanBarbarian;
 using KingmakerGunslinger.CraftMagicItemsCompatibility;
 using KingmakerGunslinger.Diagnostics;
@@ -781,6 +782,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (ResourcesLibrary.Preloading) return;
                     Complete(HydraulicPushScenario.Run(_context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalRaceNativeIdentity)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalRaceNativeIdentityScenario.Run(
+                        _context, _request));
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -12240,6 +12249,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ProtectionFromAlignmentControlImmunity;
             bool activeElementalRaces =
                 _context.FeatureModules.Active.ElementalRaces;
+            ElementalRaceBlueprintSet elementalSet =
+                BlueprintBootstrap.ElementalRaces;
+            BlueprintRace[] elementalOrdered = elementalSet.OrderedRaces();
+            BlueprintRace[] characterRaces =
+                BlueprintRoot.Instance.Progression.CharacterRaces ??
+                    Array.Empty<BlueprintRace>();
+            int[] elementalReferences = elementalOrdered.Select(race =>
+                characterRaces.Count(value => ReferenceEquals(value, race)))
+                .ToArray();
+            int[] elementalGuids = elementalOrdered.Select(race =>
+                characterRaces.Count(value => value != null && string.Equals(
+                    value.AssetGuid, race.AssetGuid,
+                    StringComparison.Ordinal))).ToArray();
+            int[] elementalIndexes = elementalOrdered.Select(race =>
+                Array.FindIndex(characterRaces, value =>
+                    ReferenceEquals(value, race))).ToArray();
+            bool characterRacesUnique = characterRaces.All(value =>
+                    value != null && !string.IsNullOrWhiteSpace(value.AssetGuid)) &&
+                characterRaces.Distinct().Count() == characterRaces.Length &&
+                characterRaces.Select(value => value.AssetGuid).Distinct(
+                    StringComparer.Ordinal).Count() == characterRaces.Length;
+            bool elementalOrderExact = elementalIndexes[0] >= 0 &&
+                Enumerable.Range(1, elementalIndexes.Length - 1).All(index =>
+                    elementalIndexes[index] == elementalIndexes[0] + index);
+            bool elementalPublicationExact = expectedElementalRaces
+                ? elementalReferences.All(value => value == 1) &&
+                    elementalGuids.All(value => value == 1) &&
+                    elementalOrderExact
+                : elementalReferences.All(value => value == 0) &&
+                    elementalGuids.All(value => value == 0) &&
+                    elementalIndexes.All(value => value < 0);
             UrbanBarbarianBlueprintSet urbanSet = BlueprintBootstrap.UrbanBarbarian;
             BlueprintArchetype[] barbarianArchetypes = urbanSet.BarbarianClass
                 .Archetypes ?? Array.Empty<BlueprintArchetype>();
@@ -12772,6 +12812,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spearVendorRows + ";spearBtslTables=" +
                 installedSpearBtslTables + ";spearLoot=" + spearLootRows;
             observed += ";urban=" + urbanObserved;
+            observed += ";elementalRaces=identities:" + elementalSet.Count +
+                "/catalog:" + characterRaces.Length +
+                "/references:" + string.Join("/", elementalReferences) +
+                "/guids:" + string.Join("/", elementalGuids) +
+                "/indexes:" + string.Join("/", elementalIndexes) +
+                "/unique:" + characterRacesUnique +
+                "/ordered:" + elementalOrderExact;
             observed += ";easternRegistered=" + easternRegisteredTypes + "/" +
                 easternRegisteredItems + "/" + easternRegisteredFeatures + "/" +
                 easternRegisteredPolicies + ";easternParameters=" +
@@ -12882,6 +12929,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeElementalRaces ? "enabled" : "disabled",
                     activeElementalRaces == expectedElementalRaces,
                     "immutable restart-bound selector-publication intent"),
+                Assertion("feature-module-elemental-races-publication",
+                    expectedElementalRaces
+                        ? "24 stable identities and one contiguous Ifrit/Oread/Sylph/Undine selector entry each"
+                        : "24 stable identities and no elemental selector entries",
+                    observed,
+                    elementalSet.Count ==
+                        ElementalRaceIdentityCatalog.IdentityCount &&
+                    elementalOrdered.Length == ElementalRaceCatalog.RaceCount &&
+                    characterRacesUnique && elementalPublicationExact,
+                    "live BlueprintRoot CharacterRaces reference/GUID inventory"),
                 Assertion("feature-module-expanded-summoning-publication-gate",
                     expectedExpandedSummoning ? "enabled" : "disabled",
                     activeExpandedSummoning ? "enabled" : "disabled",
