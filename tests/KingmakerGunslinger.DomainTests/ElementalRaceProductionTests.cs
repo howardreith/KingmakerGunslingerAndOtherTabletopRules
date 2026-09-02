@@ -490,6 +490,7 @@ namespace KingmakerGunslinger.DomainTests
                 "e9b9acb5-9b3f-41ad-bbd7-74494d5d7680",
                 "6d18168cb90ffe60931addc8ee11e42b3ef647ef0e6d4b7ce8980d44659f4cb0",
                 "d1335380a70e4bd7aa535f36770b93de",
+                "cd40ff5a556bcf3419bf7479616cd2ad",
                 "3cfdcda8edd74212a58d3b0d9d4041a4",
                 "ElementalRacePublication.Apply(set, true)",
                 "ReferenceEquals(catalogReference, afterFirst)",

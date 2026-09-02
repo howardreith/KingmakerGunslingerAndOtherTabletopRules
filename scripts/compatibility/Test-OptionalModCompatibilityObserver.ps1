@@ -8,6 +8,7 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 $runtimeProfiles = @(
     'gunslinger-only', 'gunslinger-call-of-the-wild', 'gunslinger-arms-armor',
     'gunslinger-toggle-custom-soundpacks', 'gunslinger-high-risk-combined',
+    'gunslinger-high-risk-combined-favored-class',
     'gunslinger-all-loadable-local', 'gunslinger-qualified-combined'
 )
 foreach ($profile in $runtimeProfiles) {
