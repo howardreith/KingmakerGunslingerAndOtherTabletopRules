@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-f-native-visual-donor-audit-qualified",
+  "phase": "phase-f-production-visual-matrix-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -28,10 +28,10 @@
     "oreadRules": "BASE-NATIVE-SLA-AND-MOVEMENT-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "sylphRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "undineRules": "BASE-AND-HYDRAULIC-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "visuals": "NATIVE-DONOR-INVENTORY-RUNTIME-PASS-PRODUCTION-PENDING",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-AND-VISUAL-DONOR-AUDIT-PASS",
+    "visuals": "PRODUCTION-PROXIES-AND-56-CASE-RUNTIME-MATRIX-PASS-PERSISTENCE-MOTION-AND-HUMAN-REVIEW-PENDING",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-AND-PRODUCTION-VISUAL-MATRIX-PASS",
     "compatibility": "NOT-STARTED",
-    "packaging": "VISUAL-DONOR-AUDIT-CLEAN-RELEASE-CHECKPOINT-PASS",
+    "packaging": "PRODUCTION-VISUAL-CLEAN-RELEASE-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
@@ -264,14 +264,73 @@
         "nativeRampContract": "256x1 RGB24 bilinear clamp",
         "saveStateTouched": false,
         "evidenceSha256": "e1bca7ba7357d0aef9e964fd02e6c5f254ee6368331c5ace0a9776202f5c5733"
+      },
+      {
+        "id": "20260902T1237574226385Z-elemental-race-visual-audit",
+        "runId": "20260902T1237574466387Z-65f300c9e62f4067bab10cc3cfd2997b",
+        "scenario": "elemental-race-visual-audit",
+        "status": "FAIL",
+        "reason": "fixture required the separately resolved body proxy inside DollData.EquipmentEntityIds",
+        "renderCases": 0,
+        "dataFailures": 1,
+        "saveStateTouched": false,
+        "evidenceSha256": "11dd6ed2de444e1a2af4649cea31e685d9621d74a9c0495b042c62957e5fe98b"
+      },
+      {
+        "id": "20260902T1244048097940Z-elemental-race-visual-audit",
+        "runId": "20260902T1244048308239Z-0d78b08d64ec444097e2580a967d6946",
+        "scenario": "elemental-race-visual-audit",
+        "status": "FAIL",
+        "reason": "instrumentation proved exact option data while confirming the body proxy is carried by the race preset wrapper",
+        "renderCases": 0,
+        "dataFailures": 1,
+        "saveStateTouched": false,
+        "evidenceSha256": "10238e8f272fda27a1c20b383085597f8638745833dda441220a9201bc9a8724"
+      },
+      {
+        "id": "20260902T1249193950321Z-elemental-race-visual-audit",
+        "runId": "20260902T1249194230369Z-5e40330bfd4846d081618c626cec7737",
+        "scenario": "elemental-race-visual-audit",
+        "status": "FAIL",
+        "reason": "fixture required post-bake CharacterAvatar equipment retention although native doll baking clears that list after producing the combined renderer",
+        "renderCases": 1,
+        "dataFailures": 0,
+        "saveStateTouched": false,
+        "evidenceSha256": "80b73a86d5c868eea89c78c266c298c831611e7dc45e3f03c7baa8a7892d4fa1"
+      },
+      {
+        "id": "20260902T1254143906397Z-elemental-race-visual-audit",
+        "runId": "20260902T1254144156369Z-2a5f567fc76c456596fbde88bded3c84",
+        "scenario": "elemental-race-visual-audit",
+        "status": "FAIL",
+        "reason": "coverage aggregator treated null and the native empty-asset sentinel as different optional beard and horn choices",
+        "renderCases": 56,
+        "dataFailures": 0,
+        "exactCoverageGroups": 1,
+        "saveStateTouched": false,
+        "evidenceSha256": "f80a6771461eb300134376384db3aafedb533a9a720a21097bc2d2d964810bfb"
+      },
+      {
+        "id": "20260902T1301142529832Z-elemental-race-visual-audit",
+        "runId": "20260902T1301142730203Z-d7724f16516944cb960e95a5cec358cd",
+        "scenario": "elemental-race-visual-audit",
+        "status": "PASS",
+        "assertionsPassed": 5,
+        "renderCases": 56,
+        "dataFailures": 0,
+        "exactCoverageGroups": 8,
+        "visualBlueprints": 16,
+        "visualResources": 28,
+        "saveStateTouched": false,
+        "evidenceSha256": "592e0d9f7c37bf850e9a79808102197d713a3e29b4655a765a66b1cdb5e8c699"
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "f15d67d2334e197f64bc0eb4f7edb580876e1a737ee6f75ae689416692c56323",
-    "dllSha256": "d4861724104b211cf800ba13c5617a8da60c170548a007807919c2d49a439e8c",
-    "dllMvid": "bcee4c97-da02-45e2-9c11-abaa8cf497f0",
+    "packageSha256": "8167bc0b7294e7d6936b59e2f58ec9b6fb6954882ea6b25379129f2ac481f3f2",
+    "dllSha256": "89ba7f9cd2a3f5393c6034a6b1b99a416dae7117c0546ad6cd7f8679eab21a5e",
+    "dllMvid": "ef41cc19-3e5c-41a2-a9f1-f0eb51d29887",
     "version": "0.0.113"
   },
   "runtimeMechanicsArtifact": {
@@ -310,6 +369,16 @@
     "dllMvid": "8ed2482c-7e21-4afb-851d-fe6a14480ca1",
     "runtimeResultSha256": "6227ad7e44a917d98adcfbaaa8fd84fab31efe3a2a28f4e5af8fcfd9aa04a0c7",
     "evidenceSha256": "e1bca7ba7357d0aef9e964fd02e6c5f254ee6368331c5ace0a9776202f5c5733",
+    "version": "0.0.113"
+  },
+  "runtimeProductionVisualArtifact": {
+    "packageSha256": "757c0a708bdcb57249629c690c2783172977376072bd61a6f7a1c6984efe6da0",
+    "dllSha256": "7bff93029f7d35dad8bda0d9d4bd967e888fd5e8ccb9bcdf849db261d0cbb0b6",
+    "dllMvid": "07958c59-ab7d-48db-83dc-6fb5d0c6f06c",
+    "runtimeResultSha256": "53879496629b6a8dac4cd5f41a4c99e41654c8b487736ee7525a1c6dde83a569",
+    "evidenceSha256": "592e0d9f7c37bf850e9a79808102197d713a3e29b4655a765a66b1cdb5e8c699",
+    "renderCases": 56,
+    "exactCoverageGroups": 8,
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

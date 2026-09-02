@@ -8,6 +8,8 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.ElementalRaces.Visuals;
 using UnityEngine;
 
 namespace KingmakerGunslinger.ElementalRaces
@@ -18,10 +20,13 @@ namespace KingmakerGunslinger.ElementalRaces
         internal const int KeenSensesPerceptionBonus = 2;
 
         internal static ElementalRaceBlueprintSet Register(
-            LibraryScriptableObject library, BlueprintRegistry registry)
+            LibraryScriptableObject library, BlueprintManifest manifest,
+            BlueprintRegistry registry, ModLogger logger)
         {
             if (library == null) throw new ArgumentNullException("library");
+            if (manifest == null) throw new ArgumentNullException("manifest");
             if (registry == null) throw new ArgumentNullException("registry");
+            if (logger == null) throw new ArgumentNullException("logger");
             ElementalRaceIdentityCatalog.Validate();
             BlueprintRace aasimar = BlueprintLibraryLookup.RequireExact<
                 BlueprintRace>(library,
@@ -45,35 +50,48 @@ namespace KingmakerGunslinger.ElementalRaces
                     "native Outsider type fact");
 
             ValidateNativeDonors(aasimar, tiefling, keen, slow, outsider);
-            var result = new List<ElementalRaceBlueprints>();
-            foreach (ElementalRaceDefinition definition in
-                ElementalRaceCatalog.Ordered())
+            ElementalRaceVisualSet visuals = ElementalRaceVisualFactory.Register(
+                library, manifest, registry, logger, aasimar);
+            try
             {
-                BlueprintAbilityResource resource =
-                    ElementalRaceAbilityFactory.RegisterResource(registry,
-                        definition);
-                Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility ability =
-                    ElementalRaceAbilityFactory.RegisterAbility(library,
-                        registry, definition, resource);
-                BlueprintFeature resistance = registry.Register<
-                    BlueprintFeature>(definition.ResistanceSymbol,
-                        () => CreateResistance(definition));
-                BlueprintFeature affinity = registry.Register<BlueprintFeature>(
-                    definition.AffinitySymbol,
-                    () => CreateAffinity(definition));
-                BlueprintFeature sla =
-                    ElementalRaceAbilityFactory.RegisterFeature(registry,
-                        definition, resource, ability);
-                BlueprintRace race = registry.Register<BlueprintRace>(
-                    definition.RaceSymbol,
-                    () => CreateRace(definition, aasimar, keen, slow,
-                        resistance, affinity, sla));
-                var blueprints = new ElementalRaceBlueprints(definition, race,
-                    resistance, affinity, sla, resource, ability);
-                ValidateRace(blueprints, aasimar, keen, slow, outsider);
-                result.Add(blueprints);
+                var result = new List<ElementalRaceBlueprints>();
+                foreach (ElementalRaceDefinition definition in
+                    ElementalRaceCatalog.Ordered())
+                {
+                    ElementalRaceVisualBlueprints raceVisuals = visuals.Require(
+                        definition.Kind);
+                    BlueprintAbilityResource resource =
+                        ElementalRaceAbilityFactory.RegisterResource(registry,
+                            definition);
+                    Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility ability =
+                        ElementalRaceAbilityFactory.RegisterAbility(library,
+                            registry, definition, resource);
+                    BlueprintFeature resistance = registry.Register<
+                        BlueprintFeature>(definition.ResistanceSymbol,
+                            () => CreateResistance(definition));
+                    BlueprintFeature affinity = registry.Register<BlueprintFeature>(
+                        definition.AffinitySymbol,
+                        () => CreateAffinity(definition));
+                    BlueprintFeature sla =
+                        ElementalRaceAbilityFactory.RegisterFeature(registry,
+                            definition, resource, ability);
+                    BlueprintRace race = registry.Register<BlueprintRace>(
+                        definition.RaceSymbol,
+                        () => CreateRace(definition, aasimar, keen, slow,
+                            resistance, affinity, sla, raceVisuals));
+                    var blueprints = new ElementalRaceBlueprints(definition, race,
+                        resistance, affinity, sla, resource, ability,
+                        raceVisuals);
+                    ValidateRace(blueprints, aasimar, keen, slow, outsider);
+                    result.Add(blueprints);
+                }
+                return new ElementalRaceBlueprintSet(result, visuals);
             }
-            return new ElementalRaceBlueprintSet(result);
+            catch
+            {
+                visuals.RollbackResources();
+                throw;
+            }
         }
 
         private static BlueprintFeature CreateResistance(
@@ -125,7 +143,8 @@ namespace KingmakerGunslinger.ElementalRaces
             ElementalRaceDefinition definition, BlueprintRace aasimar,
             BlueprintFeature keen, BlueprintFeature slow,
             BlueprintFeature resistance,
-            BlueprintFeature affinity, BlueprintFeature sla)
+            BlueprintFeature affinity, BlueprintFeature sla,
+            ElementalRaceVisualBlueprints visuals)
         {
             BlueprintRace race = BlueprintCloneService.Clone(aasimar,
                 InternalName(definition.RaceSymbol));
@@ -143,6 +162,9 @@ namespace KingmakerGunslinger.ElementalRaces
             };
             if (definition.SlowAndSteady) features.Insert(1, slow);
             race.Features = features.ToArray();
+            race.Presets = visuals.Presets;
+            race.MaleOptions = visuals.MaleOptions;
+            race.FemaleOptions = visuals.FemaleOptions;
             BlueprintUnitFactAccess.Resolve().Configure(race,
                 LocalizationService.Create(LocalizationKey(definition,
                     "Race.Name"), definition.DisplayName),
@@ -210,8 +232,12 @@ namespace KingmakerGunslinger.ElementalRaces
                 value.Affinity.ComponentsArray.OfType<
                     ElementalSpellAffinity>().Single().DescriptorMask !=
                         checked((int)value.Definition.Affinity) ||
-                race.Presets == null || race.Presets.Length < 1 ||
-                race.MaleOptions == null || race.FemaleOptions == null)
+                race.Presets == null || race.Presets.Length != 3 ||
+                !race.Presets.SequenceEqual(value.Visuals.Presets) ||
+                !ReferenceEquals(race.MaleOptions,
+                    value.Visuals.MaleOptions) ||
+                !ReferenceEquals(race.FemaleOptions,
+                    value.Visuals.FemaleOptions))
                 throw new InvalidOperationException(value.Definition.DisplayName +
                     " race blueprint failed deterministic validation.");
         }

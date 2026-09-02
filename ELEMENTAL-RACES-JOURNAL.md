@@ -562,3 +562,99 @@
   `d4861724104b211cf800ba13c5617a8da60c170548a007807919c2d49a439e8c`;
   DLL MVID: `bcee4c97-da02-45e2-9c11-abaa8cf497f0`. This remains a version
   0.0.113 engineering checkpoint, not the final preview candidate.
+
+## 2026-09-02 - Production vanilla-asset visuals and renderer matrix
+
+- Added a production visual layer under `ElementalRaces/Visuals`: four stable
+  body-wrapper blueprints, twelve stable standard/heavy/slender preset clones,
+  and 28 stable raw `EquipmentEntity` proxies. The authoritative inventory is
+  now 68 elemental identities (24 mechanics plus 44 visuals), and the project
+  manifest is 1,706 total / 1,704 active / two reserved identities.
+- Construction resolves every native donor before mutation, clones rather than
+  mutates native entities, registers the raw proxies by project GUID, preserves
+  the Aasimar preset's Human doll `RaceId`, and rolls every proxy back if any
+  mandatory visual cannot validate. Each race has an Aasimar-compatible body
+  fallback, three complete native preset/skeleton fallbacks, two heads per sex,
+  four nonempty hair styles plus the native empty choice, two brows per sex,
+  supported male beards, and seven native 256x1 skin ramps. Ifrit alone offers
+  an empty horn choice plus two restrained Tiefling-derived horn proxies.
+- Geometry remains in the runtime-proven Human/Aasimar/Tiefling skeleton
+  family. Palette ramps are referenced from audited native resources; no
+  texture extraction, copied asset, generated mesh, original body mesh,
+  persistent VFX, or new runtime dependency was introduced. Kingmaker exposes
+  no race-level eye-color selector in `CustomizationOptions`; eye appearance
+  therefore remains part of the native head/material contract and is retained
+  as a documented human-review limitation.
+- Added guarded scenario `elemental-race-visual-audit`. Its deterministic 56
+  cases cover all four races, both sexes, all three body presets, every head,
+  hair, eyebrow, beard, and horn choice, all seven skin indexes, and at least
+  four hair-color indexes. Every case uses the production race and accepted
+  Gunslinger class, produces exact `DollData`, builds a native unit view, and
+  requires a baked `Renderer_Character_*` renderer with non-null materials and
+  shaders. It destroys each view before proceeding and proves the shared
+  `CharacterRaces` reference/content and both blueprint indexes remain exact.
+- Transaction
+  `20260902T1237574226385Z-elemental-race-visual-audit` **FAIL** (run ID
+  `20260902T1237574466387Z-65f300c9e62f4067bab10cc3cfd2997b`) because the
+  first fixture required the race-preset body proxy inside
+  `DollData.EquipmentEntityIds`. Evidence SHA-256:
+  `11dd6ed2de444e1a2af4649cea31e685d9621d74a9c0495b042c62957e5fe98b`;
+  runtime-result SHA-256:
+  `6b28f10856dbb97bf64037dfd940121386aefbe63f9d79ecc20b67f529e78d85`.
+- Instrumented transaction
+  `20260902T1244048097940Z-elemental-race-visual-audit` **FAIL** (run ID
+  `20260902T1244048308239Z-0d78b08d64ec444097e2580a967d6946`) while proving
+  every selectable option was exact and resolvable; it confirmed the body is
+  resolved separately through `BlueprintRaceVisualPreset.Skin`. The assertion
+  was narrowed to the actual native envelope. Evidence/runtime-result hashes:
+  `10238e8f272fda27a1c20b383085597f8638745833dda441220a9201bc9a8724` /
+  `1e785d9ade93f6b9a1030afe4c592fc4e1457cf4d4082312f106755de3a4e807`.
+- Transaction
+  `20260902T1249193950321Z-elemental-race-visual-audit` **FAIL** (run ID
+  `20260902T1249194230369Z-5e40330bfd4846d081618c626cec7737`) after the first
+  complete view showed three valid renderers and materials. Native doll baking
+  had consumed and cleared `CharacterAvatar.EquipmentEntities`; requiring the
+  post-bake list was rejected in favor of the exact preset/body assertion plus
+  the baked character-renderer/material contract. Evidence/runtime-result
+  hashes:
+  `80b73a86d5c868eea89c78c266c298c831611e7dc45e3f03c7baa8a7892d4fa1` /
+  `75476bd8f4e97d3bebe9a417f3221298ed1a1ca5317d958c50cec78b5e50d4d4`.
+- Transaction
+  `20260902T1254143906397Z-elemental-race-visual-audit` **FAIL** (run ID
+  `20260902T1254144156369Z-2a5f567fc76c456596fbde88bded3c84`) only in final
+  aggregation after all 56 cases passed. Optional beard/horn absence can be a
+  null link or the native empty-asset sentinel; the aggregator normalized those
+  equivalent none choices without weakening mandatory option comparisons.
+  Evidence/runtime-result hashes:
+  `f80a6771461eb300134376384db3aafedb533a9a720a21097bc2d2d964810bfb` /
+  `398a1001443b61340ae68da9278e4bc5e5f4132b02bb6a4ec0b4e31c5fc1e599`.
+- Corrected transaction
+  `20260902T1301142529832Z-elemental-race-visual-audit` **PASS** (run ID
+  `20260902T1301142730203Z-d7724f16516944cb960e95a5cec358cd`): 56/56 render
+  cases, eight/eight exact coverage groups, 28/28 proxy registrations, 16/16
+  visual blueprints, zero data failures, zero missing materials/shaders, exact
+  graph cleanup, and `saveStateTouched=false`. Evidence SHA-256:
+  `592e0d9f7c37bf850e9a79808102197d713a3e29b4655a765a66b1cdb5e8c699`;
+  runtime-result SHA-256:
+  `53879496629b6a8dac4cd5f41a4c99e41654c8b487736ee7525a1c6dde83a569`.
+  Runtime package/DLL SHA-256 values were
+  `757c0a708bdcb57249629c690c2783172977376072bd61a6f7a1c6984efe6da0` /
+  `7bff93029f7d35dad8bda0d9d4bd967e888fd5e8ccb9bcdf849db261d0cbb0b6`;
+  DLL MVID: `07958c59-ab7d-48db-83dc-6fb5d0c6f06c`.
+- The guarded launcher rebuilt the candidate, passed repository validation and
+  all **1,385/1,385** domain tests, validated the standalone package, launched
+  only through Steam App ID 640820, and restored the pretest installation.
+  Class/equipment/motion, two-process save persistence, compatibility profiles,
+  and subjective aesthetic acceptance remain pending.
+- Required clean command
+  `powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File
+  .\scripts\build.ps1 -Configuration Release -Clean -Package` then passed on
+  the documented production-visual tree: repository validation, all 1,385
+  tests, production compilation, build-output and SoundBank validation,
+  deterministic package creation, and strict standalone UMM validation. Clean
+  package SHA-256:
+  `8167bc0b7294e7d6936b59e2f58ec9b6fb6954882ea6b25379129f2ac481f3f2`;
+  DLL SHA-256:
+  `89ba7f9cd2a3f5393c6034a6b1b99a416dae7117c0546ad6cd7f8679eab21a5e`;
+  DLL MVID: `ef41cc19-3e5c-41a2-a9f1-f0eb51d29887`. This remains an
+  engineering version 0.0.113 checkpoint, not the final preview artifact.

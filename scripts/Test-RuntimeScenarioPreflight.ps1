@@ -44,6 +44,7 @@ $expected = @(
     'observe-kmg-compatibility-asset-attribution',
     'gunslinger-outfit-audit',
     'observe-elemental-race-blueprints',
+    'elemental-race-visual-audit',
     'disposable-elemental-race-mechanics',
     'disposable-elemental-race-slas',
     'disposable-hydraulic-push',

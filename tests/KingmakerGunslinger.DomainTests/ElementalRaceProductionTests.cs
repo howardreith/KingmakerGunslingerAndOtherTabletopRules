@@ -34,7 +34,51 @@ namespace KingmakerGunslinger.DomainTests
                 { "KMG.ElementalRaces.Undine.WaterAffinity", "0ecda8a5185742e5a80a6c6deb0bf609" },
                 { "KMG.ElementalRaces.Undine.HydraulicPushFeature", "7a040c051ef04e33921a3224ff03f4b0" },
                 { "KMG.ElementalRaces.Undine.HydraulicPushResource", "c2663ff520804fd5840e209c23725dda" },
-                { "KMG.ElementalRaces.Undine.HydraulicPushAbility", "df0f9d05341a4eb59af8c369e447843f" }
+                { "KMG.ElementalRaces.Undine.HydraulicPushAbility", "df0f9d05341a4eb59af8c369e447843f" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Body", "cf78c5410e484e6c8c1ce8faf19656e3" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Preset.Standard", "8078a649cb8a4621b3e29bbbf48d324d" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Preset.Heavy", "9e6b73f4ee0345559bdd5a5077892a40" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Preset.Slender", "a0657cb122404c5894e2a7b34c71dad5" },
+                { "KMG.ElementalRaces.Oread.Visual.Body", "53ae478cf4374a86a7ba9fc5087aea0e" },
+                { "KMG.ElementalRaces.Oread.Visual.Preset.Standard", "327137756be04458a3108a0e907b69f8" },
+                { "KMG.ElementalRaces.Oread.Visual.Preset.Heavy", "557616abd28d496c84ad57f4e8939afe" },
+                { "KMG.ElementalRaces.Oread.Visual.Preset.Slender", "438c3be835424b07afd2355167b563a4" },
+                { "KMG.ElementalRaces.Sylph.Visual.Body", "95e3efb6e8d24873b00ef66440357929" },
+                { "KMG.ElementalRaces.Sylph.Visual.Preset.Standard", "c72bb83d23f4496ea610af7850aa8680" },
+                { "KMG.ElementalRaces.Sylph.Visual.Preset.Heavy", "b5f893c4aab34f0bb5c942b6371cf3d7" },
+                { "KMG.ElementalRaces.Sylph.Visual.Preset.Slender", "82316d0b7e2942f498fab229fed1077b" },
+                { "KMG.ElementalRaces.Undine.Visual.Body", "9a499ab69c7243039e9f487c5a34f6d0" },
+                { "KMG.ElementalRaces.Undine.Visual.Preset.Standard", "daab362867ab49449fb8b99fa497f41d" },
+                { "KMG.ElementalRaces.Undine.Visual.Preset.Heavy", "c170dfe7425248e6adced7c0380c3a71" },
+                { "KMG.ElementalRaces.Undine.Visual.Preset.Slender", "5d70583ff8194a368bcac7959947d946" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Body.Male", "2b436bad4d4f480db61e5c16bc4f7e50" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Body.Female", "c43cc8f3302746a8a7b2efc3fe263af0" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Head.Male.01", "873ac0bdc4a04475a75d9015702a52ae" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Head.Male.02", "f9f2552915d94088a4138ffe7b546bab" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Head.Female.01", "956c61b782be4250b1f3d53e829b990b" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Head.Female.02", "25f062ea439f446a9b470e78577b55bf" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Horn.Male.01", "6abe2a5c06ea42a7b25ec8bcada7c3c4" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Horn.Male.02", "7db56f21efda4d8a83dcdce193342750" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Horn.Female.01", "8c97cbf1ebeb409283aaf6176343a5bb" },
+                { "KMG.ElementalRaces.Ifrit.Visual.Horn.Female.02", "16c89d1048e2455989c1ba577230da46" },
+                { "KMG.ElementalRaces.Oread.Visual.Body.Male", "1d661d42bdc24e8cb79a16f27e8e2a9e" },
+                { "KMG.ElementalRaces.Oread.Visual.Body.Female", "e415f44e6d5f415ea79f36b57ff0cc0a" },
+                { "KMG.ElementalRaces.Oread.Visual.Head.Male.01", "d44896914e9e459385313890fcad7b56" },
+                { "KMG.ElementalRaces.Oread.Visual.Head.Male.02", "b156af8682ed4bed8c5004eb1e75c477" },
+                { "KMG.ElementalRaces.Oread.Visual.Head.Female.01", "3eee36079ef14022b299bf82fab425d4" },
+                { "KMG.ElementalRaces.Oread.Visual.Head.Female.02", "3208a94a9f4d4f9f885feb8c0ad1fd51" },
+                { "KMG.ElementalRaces.Sylph.Visual.Body.Male", "4c8952d69afd412cabc1ff7b4016fee0" },
+                { "KMG.ElementalRaces.Sylph.Visual.Body.Female", "3422858bb40b4071867ae5038ce412d1" },
+                { "KMG.ElementalRaces.Sylph.Visual.Head.Male.01", "629aca3295324088aee8d2705e4045ce" },
+                { "KMG.ElementalRaces.Sylph.Visual.Head.Male.02", "f0394ff493a340c2b7e7369081503572" },
+                { "KMG.ElementalRaces.Sylph.Visual.Head.Female.01", "25a85ece629e4c1aa4089239448f1e78" },
+                { "KMG.ElementalRaces.Sylph.Visual.Head.Female.02", "98bd78ec8008446faa61568ca1428bc1" },
+                { "KMG.ElementalRaces.Undine.Visual.Body.Male", "5f46cadce318428dbf08a1d549eea3d2" },
+                { "KMG.ElementalRaces.Undine.Visual.Body.Female", "0d40de45aa9b4d60ac58600293cf85c0" },
+                { "KMG.ElementalRaces.Undine.Visual.Head.Male.01", "4a5c63dc835943c9a32b4d11c0fc0af1" },
+                { "KMG.ElementalRaces.Undine.Visual.Head.Male.02", "7dacab6ed41a473795b5246f382ac7c2" },
+                { "KMG.ElementalRaces.Undine.Visual.Head.Female.01", "2275367bdc5648f98df13f506c5cdf32" },
+                { "KMG.ElementalRaces.Undine.Visual.Head.Female.02", "e2bd207dbf6b4f15b84ff7d4f6c7efc7" }
             };
 
         internal static void StableManifestInventoryIsExact()
@@ -47,11 +91,11 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG.ElementalRaces.", StringComparison.Ordinal) &&
                 string.Equals((string)value["status"], "active",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(24, elemental.Length,
+            Assertions.Equal(68, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1662, all.Length,
-                "Manifest total must include 24 production elemental identities.");
-            Assertions.Equal(1660, all.Count(value => string.Equals(
+            Assertions.Equal(1706, all.Length,
+                "Manifest total must include 68 production elemental identities.");
+            Assertions.Equal(1704, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>
@@ -68,9 +112,73 @@ namespace KingmakerGunslinger.DomainTests
                     "Elemental GUID changed for " + expected.Key);
             }
             string catalog = Source("ElementalRaceIdentityCatalog.cs");
-            Assertions.True(catalog.Contains("IdentityCount = 24") &&
-                ExpectedIds.Keys.All(catalog.Contains),
+            string visualCatalog = SourceVisual(
+                "ElementalRaceVisualCatalog.cs");
+            string inventory = catalog + visualCatalog;
+            Assertions.True(catalog.Contains("MechanicIdentityCount = 24") &&
+                catalog.Contains("ManifestIdentityCount = IdentityCount +") &&
+                ExpectedIds.Keys.All(inventory.Contains),
                 "Identity catalog and manifest symbols drifted.");
+            VisualCatalogAndResourceRegistryAreSaveSafe();
+        }
+
+        internal static void VisualCatalogAndResourceRegistryAreSaveSafe()
+        {
+            JObject manifest = JObject.Parse(Read("blueprints",
+                "blueprints.json"));
+            JToken[] elemental = manifest["entries"].Where(value =>
+                ((string)value["symbol"]).StartsWith(
+                    "KMG.ElementalRaces.", StringComparison.Ordinal) &&
+                string.Equals((string)value["status"], "active",
+                    StringComparison.Ordinal)).ToArray();
+            Assertions.Equal(28, elemental.Count(value => string.Equals(
+                (string)value["plannedType"], "EquipmentEntity",
+                StringComparison.Ordinal)),
+                "Visual resource proxy identity count changed.");
+            Assertions.Equal(4, elemental.Count(value => string.Equals(
+                (string)value["plannedType"], "KingmakerEquipmentEntity",
+                StringComparison.Ordinal)),
+                "Race body-wrapper identity count changed.");
+            Assertions.Equal(12, elemental.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintRaceVisualPreset",
+                StringComparison.Ordinal)),
+                "Race visual-preset identity count changed.");
+
+            string catalog = SourceVisual("ElementalRaceVisualCatalog.cs");
+            string definition = SourceVisual(
+                "ElementalRaceVisualDefinition.cs");
+            string factory = SourceVisual("ElementalRaceVisualFactory.cs");
+            string resources = SourceVisual(
+                "ElementalRaceVisualResourceRegistry.cs");
+            foreach (string token in new[]
+            {
+                "BlueprintIdentityCount", "ResourceIdentityCount = 28",
+                "SkinRampCount = 7", "BuildIfrit(), BuildOread(), BuildSylph(), BuildUndine()",
+                "At least two visual head proxies are required",
+                "At least four native hair choices are required",
+                "Exactly seven unique native skin ramps are required",
+                "640e57f7890fa044ea78914930ddac5b",
+                "d529cb3def52a584f93a4aff5e20316a",
+                "00fa5240ec151e8419cb60c34fb96e0e",
+                "preset.RaceId = donor.RaceId",
+                "Preserve that exact split",
+                "proxy.ColorsProfile = null",
+                "PrimaryRampsField.SetValue", "SecondaryRampsField.SetValue",
+                "NormalizeFallbackPalette", "CreateBodyWrapper",
+                "CreateOptions", "TailSkinColors = Array.Empty",
+                "texture.width == 256", "TextureFormat.RGB24",
+                "FilterMode.Bilinear", "TextureWrapMode.Clamp",
+                "s_LoadedResources", "LoadedResource contract changed",
+                "EnsureAvailable", "Visual resource GUID collision",
+                "RollbackAll", "rollback refused a foreign replacement"
+            })
+                Assertions.True((catalog + definition + factory + resources)
+                    .Contains(token),
+                    "Elemental visual safety token is absent: " + token);
+            Assertions.False(factory.Contains("new Texture2D") ||
+                factory.Contains("HarmonyPatch") ||
+                factory.Contains("CharacterRaces"),
+                "Visual construction must reference native ramps without custom textures or global patches.");
         }
 
         internal static void CatalogMatchesApprovedRules()
@@ -174,10 +282,12 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(publication.Contains(token),
                     "Atomic race publication contract is absent: " + token);
             Assertions.True(bootstrap.Contains(
-                    "ElementalRaceBlueprintFactory.Register(library, registry)") &&
+                    "ElementalRaceBlueprintFactory.Register(library,") &&
+                bootstrap.Contains("manifest, registry, context.Logger") &&
                 bootstrap.Contains("publicationPlan.ElementalRaceSelectors") &&
                 bootstrap.Contains("ElementalRaceIdentityCatalog.IdentityCount") &&
-                bootstrap.Contains("elementalRacePublication.Rollback()"),
+                bootstrap.Contains("elementalRacePublication.Rollback()") &&
+                bootstrap.Contains("elementalRaces.RollbackVisualResources()"),
                 "Bootstrap does not unconditionally register and transactionally publish elemental identities.");
             Assertions.False(factory.Contains("CharacterRaces"),
                 "Race identity construction must remain separate from selector publication.");
@@ -373,6 +483,12 @@ namespace KingmakerGunslinger.DomainTests
         private static string Source(string file)
         {
             return Read("src", "KingmakerGunslinger", "ElementalRaces", file);
+        }
+
+        private static string SourceVisual(string file)
+        {
+            return Read("src", "KingmakerGunslinger", "ElementalRaces",
+                "Visuals", file);
         }
 
         private static string Read(params string[] parts)

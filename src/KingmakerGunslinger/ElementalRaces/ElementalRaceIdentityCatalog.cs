@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using KingmakerGunslinger.ElementalRaces.Visuals;
 
 namespace KingmakerGunslinger.ElementalRaces
 {
     internal static class ElementalRaceIdentityCatalog
     {
-        internal const int IdentityCount = 24;
+        internal const int MechanicIdentityCount = 24;
+        internal const int IdentityCount = MechanicIdentityCount +
+            ElementalRaceVisualCatalog.BlueprintIdentityCount;
+        internal const int ManifestIdentityCount = IdentityCount +
+            ElementalRaceVisualCatalog.ResourceIdentityCount;
 
         internal const string IfritRace = "KMG.ElementalRaces.Ifrit.Race";
         internal const string IfritResistance = "KMG.ElementalRaces.Ifrit.FireResistance";
@@ -46,7 +52,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
         internal static IReadOnlyList<string> Symbols()
         {
-            return new[]
+            string[] mechanics = new[]
             {
                 IfritRace, IfritResistance, IfritAffinity, IfritSlaFeature,
                 IfritSlaResource, IfritSlaAbility,
@@ -57,6 +63,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 UndineRace, UndineResistance, UndineAffinity, UndineSlaFeature,
                 UndineSlaResource, UndineSlaAbility
             };
+            return mechanics.Concat(ElementalRaceVisualCatalog
+                .BlueprintSymbols()).ToArray();
         }
 
         internal static void Validate()
@@ -64,6 +72,13 @@ namespace KingmakerGunslinger.ElementalRaces
             IReadOnlyList<string> symbols = Symbols();
             if (symbols.Count != IdentityCount)
                 throw new InvalidOperationException("Elemental race identity count drifted.");
+            ElementalRaceVisualCatalog.Validate();
+            string[] all = symbols.Concat(ElementalRaceVisualCatalog
+                .ResourceSymbols()).ToArray();
+            if (all.Length != ManifestIdentityCount ||
+                all.Distinct(StringComparer.Ordinal).Count() != all.Length)
+                throw new InvalidOperationException(
+                    "Elemental blueprint and visual resource identities collided.");
             var seen = new HashSet<string>(StringComparer.Ordinal);
             for (int index = 0; index < symbols.Count; index++)
                 if (string.IsNullOrWhiteSpace(symbols[index]) ||

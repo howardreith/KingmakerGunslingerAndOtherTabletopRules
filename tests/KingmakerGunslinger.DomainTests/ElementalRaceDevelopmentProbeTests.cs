@@ -14,6 +14,8 @@ namespace KingmakerGunslinger.DomainTests
             "57005fca40ab4775ae2fea5613214054";
         private const string Scenario =
             "observe-elemental-race-blueprints";
+        private const string VisualScenario =
+            "elemental-race-visual-audit";
 
         internal static void ReservedIdentityIsExactAndUnique()
         {
@@ -76,27 +78,42 @@ namespace KingmakerGunslinger.DomainTests
                     "ElementalRaceDevelopmentProbeScenario.Begin(") &&
                 runner.Contains(
                     "_elementalRaceDevelopmentProbe.Poll()") &&
+                catalog.Contains(
+                    "internal const string ElementalRaceVisualAudit") &&
+                catalog.Contains(VisualScenario) &&
+                runner.Contains(
+                    "ElementalRaceVisualAuditScenario.Begin(") &&
+                runner.Contains("_elementalRaceVisualAudit.Poll()") &&
                 automation.Contains("'" + Scenario +
                     "' = [pscustomobject]") &&
+                automation.Contains("'" + VisualScenario +
+                    "' = [pscustomobject]") &&
                 preflight.Contains("'" + Scenario + "'") &&
+                preflight.Contains("'" + VisualScenario + "'") &&
                 project.Contains(
                     "ElementalRaceDevelopmentProbeScenario.cs") &&
+                project.Contains("ElementalRaceVisualAuditScenario.cs") &&
                 project.Contains(
                     "ElementalRaceDiagnosticIdentityCatalog.cs"),
                 "Development race probe is not wired through every guarded runtime surface.");
-            int offset = automation.IndexOf("'" + Scenario +
-                "' = [pscustomobject]", StringComparison.Ordinal);
-            Assertions.True(offset >= 0,
-                "Development race probe metadata is absent.");
-            string metadata = automation.Substring(offset,
-                Math.Min(500, automation.Length - offset));
-            Assertions.True(metadata.Contains(
+            foreach (string scenario in new[] { Scenario, VisualScenario })
+            {
+                int offset = automation.IndexOf("'" + scenario +
+                    "' = [pscustomobject]", StringComparison.Ordinal);
+                Assertions.True(offset >= 0,
+                    scenario + " metadata is absent.");
+                string metadata = automation.Substring(offset,
+                    Math.Min(500, automation.Length - offset));
+                Assertions.True(metadata.Contains(
                     "RequiresSaveName = $false") &&
-                metadata.Contains("RequiresManualInteraction = $false") &&
-                metadata.Contains("ReadinessBehavior = 'mod-load'") &&
-                metadata.Contains("UsesCatalogTimeout = $false") &&
-                metadata.Contains("UsesSelectionTimeouts = $false"),
-                "Development race probe must remain autonomous, save-free, and selector-free.");
+                    metadata.Contains(
+                        "RequiresManualInteraction = $false") &&
+                    metadata.Contains("ReadinessBehavior = 'mod-load'") &&
+                    metadata.Contains("UsesCatalogTimeout = $false") &&
+                    metadata.Contains("UsesSelectionTimeouts = $false"),
+                    scenario +
+                    " must remain autonomous, save-free, and selector-free.");
+            }
         }
 
         internal static void ProbeIsAtomicNativeAndOutfitSafe()
@@ -173,6 +190,47 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(Regex.IsMatch(source,
                     @"\.CharacterRaces\s*=(?!=)"),
                 "Development race probe assigns the shared CharacterRaces array.");
+
+            string visual = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalRaceVisualAuditScenario.cs");
+            foreach (string token in new[]
+            {
+                "MinimumCasesPerRaceAndSex = 7",
+                "ElementalRaceVisualCatalog.ResourceIdentityCount",
+                "ElementalRaceVisualCatalog.SkinRampCount",
+                "BuildCases(races[index], visuals[index])",
+                "state.SetRace(renderCase.Race)",
+                "state.SetRacePreset(renderCase.Preset)",
+                "state.SetClass(_gunslinger)",
+                "state.SetHead(renderCase.Head)",
+                "state.SetHair(renderCase.Hair)",
+                "EyebrowsProperty.SetValue",
+                "state.SetBeard(renderCase.Beard)",
+                "state.SetHorn(renderCase.Horn)",
+                "state.SetSkinColor(renderCase.SkinIndex)",
+                "state.SetHairColor(renderCase.HairColorIndex)",
+                "state.CreateData()",
+                "ElementalRaceDevelopmentProbeScenario.CreateView",
+                "ElementalRaceDevelopmentProbeScenario.ViewReady",
+                ".DescribeView(renderCase.Label",
+                "ElementalRaceDevelopmentProbeScenario.DestroyView",
+                "nullMaterials", "nullShaders", "RequiredEntityIds",
+                "ReferenceEquals(_root.Progression.CharacterRaces,",
+                "saveStateTouched=false;selectorStateTouched=false"
+            })
+                Assertions.True(visual.Contains(token),
+                    "Production visual audit lacks exact token: " + token);
+            foreach (string forbidden in new[]
+            {
+                "Guid.NewGuid", "SaveGame", "QuickSave", "PlayerPrefs",
+                "Input.", "Mouse."
+            })
+                Assertions.False(visual.Contains(forbidden),
+                    "Production visual audit contains forbidden mutation/UI token: " +
+                    forbidden);
+            Assertions.False(Regex.IsMatch(visual,
+                    @"\.CharacterRaces\s*=(?!=)"),
+                "Production visual audit assigns the shared CharacterRaces array.");
 
             string appearance = Read("src", "KingmakerGunslinger",
                 "Presentation", "GunslingerClassAppearanceCatalog.cs");

@@ -2,8 +2,8 @@
 
 ## Current outcome
 
-**IN PROGRESS - BASE-RACE, IDENTITY, PUBLICATION, RACIAL-SLA MECHANICS, AND NATIVE VISUAL DONOR INVENTORY RUNTIME QUALIFIED.** All
-four production races, their common/race-specific rules, 24 stable identities,
+**IN PROGRESS - BASE-RACE, IDENTITY, PUBLICATION, RACIAL-SLA MECHANICS, AND PRODUCTION VISUAL MATRIX RUNTIME QUALIFIED.** All
+four production races, their common/race-specific rules, 68 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
 and speed, energy resistance, Keen Senses, affinity inclusion/exclusion,
@@ -14,8 +14,9 @@ replacement, Feather Step delivery/expiry, Hydraulic Push resource and Bull
 Rush behavior, native Oread armor/encumbrance movement, exact person-spell and
 prerequisite behavior, and module-ON/module-OFF selector publication.
 The live donor audit additionally proves complete native modular geometry and
-palette inputs for the production visual phase. Distinctive visual proxies,
-candidate rendering, save-backed persistence, compatibility profiles,
+palette inputs. Sixteen production visual blueprints, 28 stable asset proxies,
+and a 56-case all-option production renderer matrix now pass guarded runtime
+qualification. Class/equipment/motion, save-backed persistence, compatibility profiles,
 the full 24-state runtime boundary matrix, and human acceptance remain pending.
 
 ## Authoritative baseline
@@ -42,11 +43,11 @@ the full 24-state runtime boundary matrix, and human acceptance remain pending.
 - Three focused domain tests cover reserved identity/manifest arithmetic,
   guarded scenario wiring, and the no-publication/atomic-cleanup/outfit
   contract.
-- Manifest arithmetic is now 1,638 total identities: 1,636 active and two
+- Manifest arithmetic is now 1,706 total identities: 1,704 active and two
   reserved. The new reserved identity is not packaged as active content.
 
-Distinctive visual proxies, compatibility scenarios, final artifact hashes,
-and final limitations remain pending exact implementation evidence.
+Compatibility scenarios, final artifact hashes, and final limitations remain
+pending exact implementation evidence.
 
 ## Phase C feature-module inventory
 
@@ -65,7 +66,8 @@ and final limitations remain pending exact implementation evidence.
 
 ## Production base-race inventory
 
-- `ElementalRaceIdentityCatalog.cs`: 24 stable symbols/GUID-backed identities.
+- `ElementalRaceIdentityCatalog.cs`: 24 stable mechanical and 44 stable visual
+  symbols/GUID-backed identities.
 - `ElementalRaceDefinition.cs` and `ElementalRaceCatalog.cs`: strongly typed,
   fixed Ifrit/Oread/Sylph/Undine rule definitions and original player text.
 - `ElementalRaceBlueprintSet.cs`: exact six-object inventory per race and fixed
@@ -78,7 +80,8 @@ and final limitations remain pending exact implementation evidence.
 - `ElementalRaceBlueprintFactory.cs`: separate Aasimar-compatible Medium race
   objects, exact racial stats, validated Aasimar/Tiefling type precedent,
   native Keen Senses/Slow and Steady donors, resistance 5, affinities, SLAs,
-  and complete Aasimar visual fallback.
+  and production race-specific visual sets with complete Aasimar-compatible
+  fallback.
 - `ElementalRacePublication.cs`: validated all-or-none append, third-party order
   preservation, idempotence, conflict refusal, and exact-reference rollback.
 - `BlueprintBootstrap.cs`: unconditional identity registration and restart-bound
@@ -248,9 +251,33 @@ two-process save-backed persistence qualification.
   or redistributing Owlcat textures. Human, Aasimar, and Tiefling presets use
   Human-compatible skeletons; geometry from the other donor skeletons remains
   excluded pending an explicit renderer qualification.
-- This inventory qualifies inputs and fallback feasibility, not a production
-  appearance. Project-owned proxies, candidate rendering, armor/outfit/motion,
-  persistence, and subjective visual review remain pending.
+- Production visuals use four project-owned body wrappers, twelve stable
+  standard/heavy/slender Aasimar-preset clones, and 28 project-owned
+  `EquipmentEntity` proxies. Native donors are resolved before construction;
+  proxy registration and validation roll back as one unit on failure, and no
+  native donor is mutated. Geometry stays within the Human/Aasimar/Tiefling
+  skeleton family, while audited native warm, stone, pale/metallic, and
+  blue/teal 256x1 ramps provide seven skin choices per race without extracting
+  or packaging Owlcat textures.
+- Every sex exposes two heads, four nonempty hair styles plus no hair, two
+  eyebrows, supported male beards, and three body presets. Ifrit alone offers
+  the native empty choice plus two optional restrained Tiefling horn proxies.
+  Kingmaker's race customization contract has no eye-color array, so eye
+  appearance remains attached to native head/material assets and requires
+  human review rather than an invasive subsystem.
+- Guarded transaction
+  `20260902T1301142529832Z-elemental-race-visual-audit` passed 56/56 cases and
+  all eight race/sex coverage groups. It covered every preset and option, all
+  seven skin indexes, and at least four hair-color indexes; every native doll
+  produced a baked character renderer with complete non-null materials and
+  shaders. It also proved 16/16 visual blueprints and 28/28 proxy resources
+  resolve exactly and that cleanup preserves the shared race array and both
+  blueprint indexes. Evidence SHA-256:
+  `592e0d9f7c37bf850e9a79808102197d713a3e29b4655a765a66b1cdb5e8c699`;
+  runtime-result SHA-256:
+  `53879496629b6a8dac4cd5f41a4c99e41654c8b487736ee7525a1c6dde83a569`.
+  Class/equipment/motion, persistence, and subjective visual review remain
+  pending.
 
 ## Qualification status
 
@@ -271,8 +298,9 @@ two-process save-backed persistence qualification.
 | Guarded module-ON selector publication | PASS - `20260902T0955212013652Z-observe-feature-module-settings` |
 | Guarded module-OFF selector absence/identity retention | PASS - `20260902T0958454418742Z-observe-feature-module-settings` |
 | Guarded native visual-donor inventory | PASS - `20260902T1042298660656Z-observe-elemental-race-blueprints` |
+| Guarded production all-option visual matrix | PASS - `20260902T1301142529832Z-elemental-race-visual-audit` (56/56) |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
-| Guarded visuals/runtime persistence | NOT-RUN |
+| Guarded class/equipment/motion and runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
 | Human visual acceptance | NOT-READY |
 
@@ -343,3 +371,12 @@ DLL SHA-256:
 `d4861724104b211cf800ba13c5617a8da60c170548a007807919c2d49a439e8c`;
 DLL MVID: `bcee4c97-da02-45e2-9c11-abaa8cf497f0`. This remains a version
 0.0.113 engineering checkpoint, not the production visual candidate.
+
+The production visual checkpoint passed its guarded 56-case renderer matrix
+and the required clean Release/package pipeline with all 1,385 tests. Clean
+package SHA-256:
+`8167bc0b7294e7d6936b59e2f58ec9b6fb6954882ea6b25379129f2ac481f3f2`;
+DLL SHA-256:
+`89ba7f9cd2a3f5393c6034a6b1b99a416dae7117c0546ad6cd7f8679eab21a5e`;
+DLL MVID: `ef41cc19-3e5c-41a2-a9f1-f0eb51d29887`. This remains a
+version 0.0.113 engineering checkpoint, not the final preview artifact.

@@ -935,6 +935,7 @@
     <Compile Include="RuntimeTesting\CompatibilityAssetAttributionScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceDevelopmentProbeScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalRaceVisualAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceSlaScenario.cs" />
     <Compile Include="RuntimeTesting\HydraulicPushScenario.cs" />
@@ -947,6 +948,11 @@
     <Compile Include="ElementalRaces\ElementalRaceAbilityFactory.cs" />
     <Compile Include="ElementalRaces\ElementalRaceBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalRacePublication.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualDefinition.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualCatalog.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualResourceRegistry.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualBlueprintSet.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualFactory.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitRenderScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitQualificationScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitProductionCompatibilityScenario.cs" />
