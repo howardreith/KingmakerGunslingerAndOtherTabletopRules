@@ -2,7 +2,7 @@
 
 ## Current outcome
 
-**IN PROGRESS - BASE-RACE, IDENTITY, PUBLICATION, RACIAL-SLA MECHANICS, AND PRODUCTION VISUAL MATRIX RUNTIME QUALIFIED.** All
+**IN PROGRESS - BASE-RACE, IDENTITY, PUBLICATION, RACIAL-SLA MECHANICS, PRODUCTION VISUAL MATRIX, AND SAVE-BACKED MODULE-OFF PERSISTENCE RUNTIME QUALIFIED.** All
 four production races, their common/race-specific rules, 68 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
@@ -19,9 +19,12 @@ and a 56-case all-option production renderer matrix now pass guarded runtime
 qualification. The existing 128-state elemental Gunslinger equipment matrix
 and an 80-case exact native clothing matrix across ten classes also pass. Eight
 elemental Gunslinger fixtures pass the accepted 216-record native motion
-matrix, and its original two-Human mode passes again. Remaining equipment and
-noncovered motion states, save-backed persistence, compatibility profiles,
-the full 24-state runtime boundary matrix, and human acceptance remain pending.
+matrix, and its original two-Human mode passes again. A three-process,
+eight-fixture working-save transaction proves spent SLA state, exact
+race/facts/appearance/outfit reload with the module OFF, rest, level-up,
+total-level caster scaling, exact cleanup, and settings restoration. Remaining
+equipment and noncovered motion states, compatibility profiles, the full
+24-state runtime boundary matrix, and human acceptance remain pending.
 
 ## Authoritative baseline
 
@@ -182,8 +185,9 @@ delivery-specific gates remain required.
   path constructed no unrelated attack, saving throw, or opportunity attack.
   It used native Bull Rush resolution and `UnitPartForceMove.Push`.
 
-These request-local scenarios are save-free. They do not replace the required
-two-process save-backed persistence qualification.
+These request-local scenarios are save-free. The later three-process
+save-backed persistence qualification independently covers persisted resource,
+identity, appearance, level-up, and module-disabled reload behavior.
 
 ## Guarded native identity, movement, and publication inventory
 
@@ -282,8 +286,8 @@ two-process save-backed persistence qualification.
   `53879496629b6a8dac4cd5f41a4c99e41654c8b487736ee7525a1c6dde83a569`.
   The 128-state elemental Gunslinger equipment matrix and 80-case ten-class
   native clothing matrix and 216-record elemental native-motion matrix pass
-  separately. Remaining equipment/noncovered motion, persistence, and
-  subjective visual review remain pending.
+  separately. Save-backed persistence now passes independently. Remaining
+  equipment/noncovered motion and subjective visual review remain pending.
 
 ## Qualification status
 
@@ -292,7 +296,7 @@ two-process save-backed persistence qualification.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,388/1,388 |
+| Current complete domain suite | PASS - 1,389/1,389 |
 | Phase C clean Release package | PASS - strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
@@ -309,8 +313,9 @@ two-process save-backed persistence qualification.
 | Guarded ten-class elemental clothing matrix | PASS - `20260902T1451545064731Z-elemental-race-class-clothing` (80/80) |
 | Guarded elemental native-motion matrix | PASS - `20260902T1520151111405Z-elemental-race-motion` (216/216) |
 | Existing Human native-motion regression | PASS - `20260902T1531223520715Z-gunslinger-outfit-production-motion` (54/54) |
+| Three-process save-backed/module-OFF persistence | PASS - `20260902T1759420290804Z` / `20260902T1802161725612Z` / `20260902T1805097536949Z` |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
-| Guarded remaining equipment/noncovered motion and runtime persistence | NOT-RUN |
+| Guarded remaining equipment/noncovered motion | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
 | Human visual acceptance | NOT-READY |
 
@@ -407,8 +412,9 @@ runtime package/DLL SHA-256:
 `3c7a6f83bdeb2b378d87a474d7f1fa662a5927da098e134fe50986f4f4d91b1a`;
 DLL MVID: `c2a5c72c-05b2-4b4a-bf57-b1856c915211`. Generated
 images are only supporting evidence; clipping and aesthetics remain human
-review surfaces. Broader class clothing, medium armor, robes, accessory slots,
-motion, and save-backed persistence remain pending.
+  review surfaces. Broader class clothing and motion subsequently passed;
+  medium armor, robes, remaining accessory slots, and subjective review remain
+  separate gates.
 
 The required clean Release/package pipeline then passed with all 1,386 tests.
 Clean package SHA-256:
@@ -497,3 +503,45 @@ the 5,294,080-byte DLL SHA-256 is
 DLL MVID is `399e6d2a-4593-4e90-b59d-44a49ca9058a`. `Info.json` remains
 version `0.0.113`; this is an engineering checkpoint rather than the final
 preview candidate.
+
+The three-process save-backed persistence transaction then qualified all four
+races and both sexes in `KMG_AUTOMATION_WORKING`. Prepare transaction
+`20260902T1759420290804Z-elemental-race-persistence-prepare` (run
+`20260902T1759420540785Z-9764141caa2645208e08ba64e1870d23`) passed 10/10:
+eight native level-1 elemental Gunslingers retained exact production
+customization/outfit state and persisted their racial SLA from one use to zero.
+With Elemental Races disabled, transaction
+`20260902T1802161725612Z-elemental-race-module-disabled-persistence` (run
+`20260902T1802161745656Z-11fbec67bb7e4939b4de818d6695e538`) passed 10/10:
+selectors stayed hidden while all identities, facts, statistics, abilities,
+spent resources, sex-specific DollData, renders, and class clothes reloaded;
+rest restored exactly one use and promotion produced level/caster level two
+before exact cleanup. After original settings bytes were restored, transaction
+`20260902T1805097536949Z-elemental-race-persistence-verify-absent` (run
+`20260902T1805097767152Z-7e0adc8b36e343e8b2f9891c5a7713fa`) passed 6/6 with
+zero fixture residue and exact baseline party/global-unit structure.
+
+Final persistence runtime-result/index SHA-256 pairs are
+`ac8d16c4d8d2fa7bdc382e5c3836ce3190371c7008b26b9042ccb6ec6a54921a` /
+`ac1ae1a5748a4fc97e21da297824ca9269dd7a262b04fc486f5b784f6e25a17d`,
+`f16a93ab55be1bbbf87622bdeae4b927b65a352fe637add66d050e1a3bf697d4` /
+`f285ce0e8d762748cbfa63055300e3333114c089457a9f501b11b8d81ddd2ee8`,
+and
+`27d69f12cba8e77482fd012122fe1b5d47c115763d886fc6ffb9c36e8aacc12f` /
+`d285ec257df1910a437c81f8eb635f94a86833cadb6496def2fb5d82d5bbcd02`.
+All used deployment `20260902T1758236782720Z`, package/DLL SHA-256
+`b4a1762c3dfd2d91c025a8f2ed9ce6cac8dc49a443ce5f404c601e60c731a843` /
+`17f85ab3142fcf4aea91ec96870d00a09411a8121a929deac9bed97eaef4cf47`,
+and DLL MVID `b9eb12f4-f96b-4374-b046-bd5c78e88127`. The exact original
+and restored module-settings bytes hash to
+`d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+
+The required clean Release/package pipeline then passed repository validation,
+all 1,389 tests, production compilation, output/SoundBank validation,
+deterministic packaging, and strict UMM validation. The 22,957,333-byte clean
+package SHA-256 is
+`4e2faaa7a0671ef4463750434e07b54057766a97e4478b3141262da47de65ecd`;
+the 5,349,376-byte DLL SHA-256 is
+`ac846bde870dfe7c2bd2355aa0e8bf15fe69cd77b42bcf5a9f6e3eaeea1f2770`;
+DLL MVID is `5b9fc86a-0d95-4a75-b2cd-8a9237b4e516`. This remains a
+version `0.0.113` engineering checkpoint rather than the final preview.

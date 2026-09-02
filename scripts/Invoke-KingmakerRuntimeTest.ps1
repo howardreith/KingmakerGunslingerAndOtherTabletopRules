@@ -608,6 +608,15 @@ try {
             [Math]::Max($TimeoutSeconds, 7200) + 15)
     }
     elseif ($Scenario -in @(
+        'elemental-race-persistence-prepare',
+        'elemental-race-module-disabled-persistence',
+        'elemental-race-persistence-verify-absent')) {
+        # Eight exact race/sex fixtures cover prepare, fresh module-OFF load,
+        # reconstruction/rest/level-up/cleanup, and fresh-load absence.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1800) + 15)
+    }
+    elseif ($Scenario -in @(
         'gunslinger-outfit-production-persistence-prepare',
         'gunslinger-outfit-production-persistence',
         'gunslinger-outfit-production-persistence-verify-absent')) {

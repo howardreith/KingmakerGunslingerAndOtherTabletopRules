@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-g-elemental-motion-qualified",
+  "phase": "phase-g-save-backed-persistence-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -24,19 +24,19 @@
     "developmentProbe": "PASS",
     "productionStableIdentities": "SOURCE-DOMAIN-RUNTIME-PASS",
     "publication": "SOURCE-DOMAIN-AND-MODULE-ON-OFF-RUNTIME-PASS",
-    "ifritRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "oreadRules": "BASE-NATIVE-SLA-AND-MOVEMENT-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "sylphRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "undineRules": "BASE-AND-HYDRAULIC-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-128-CASE-GUNSLINGER-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-AND-216-RECORD-ELEMENTAL-MOTION-MATRIX-PASS-PERSISTENCE-REMAINING-EQUIPMENT-AND-HUMAN-REVIEW-PENDING",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-PRODUCTION-VISUAL-MATRIX-ELEMENTAL-GUNSLINGER-CLASS-EQUIPMENT-TEN-CLASS-CLOTHING-ELEMENTAL-MOTION-AND-HUMAN-MOTION-REGRESSION-PASS",
+    "ifritRules": "BASE-NATIVE-SLA-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
+    "oreadRules": "BASE-NATIVE-SLA-MOVEMENT-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
+    "sylphRules": "BASE-NATIVE-SLA-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
+    "undineRules": "BASE-HYDRAULIC-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
+    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-128-CASE-GUNSLINGER-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-216-RECORD-ELEMENTAL-MOTION-MATRIX-AND-EIGHT-FIXTURE-SAVE-BACKED-RELOAD-PASS-REMAINING-EQUIPMENT-AND-HUMAN-REVIEW-PENDING",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-PRODUCTION-VISUAL-MATRIX-ELEMENTAL-GUNSLINGER-CLASS-EQUIPMENT-TEN-CLASS-CLOTHING-ELEMENTAL-MOTION-HUMAN-MOTION-REGRESSION-AND-THREE-PROCESS-PERSISTENCE-PASS",
     "compatibility": "NOT-STARTED",
-    "packaging": "ELEMENTAL-MOTION-CLEAN-RELEASE-CHECKPOINT-PASS",
+    "packaging": "PERSISTENCE-CLEAN-RELEASE-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1388,
+    "passed": 1389,
     "failed": 0,
     "status": "PASS"
   },
@@ -432,17 +432,105 @@
         "saveStateTouched": false,
         "runtimeResultSha256": "da1da6742ab2852541928475f1f5375783df660f426f5976f289f7e7f1a4f886",
         "indexSha256": "5f04ac4cf1da0159cd98f5ddf6b692e02714349ddaffa9edccc62abfb052bf07"
+      },
+      {
+        "id": "20260902T1703470958910Z-elemental-race-persistence-prepare",
+        "runId": "20260902T1703471269277Z-e852816c413845ce85b4c769868919fe",
+        "scenario": "elemental-race-persistence-prepare",
+        "status": "FAIL",
+        "reason": "fixture preview race bypassed native SelectRace and omitted the racial SLA"
+      },
+      {
+        "id": "20260902T1713296584828Z-elemental-race-persistence-prepare",
+        "runId": "20260902T1713296825293Z-9e2c5a35a55047f0a8633ca8720edb73",
+        "scenario": "elemental-race-persistence-prepare",
+        "status": "FAIL",
+        "reason": "reflected AbilityData.Spend did not commit the native resource cost"
+      },
+      {
+        "id": "20260902T1722475679831Z-elemental-race-persistence-prepare",
+        "runId": "20260902T1722475919837Z-74e3d634281342e19d5a39bc71d10837",
+        "scenario": "elemental-race-persistence-prepare",
+        "status": "FAIL",
+        "reason": "native AbilityResourceLogic correctly exempted a fixture marked IsCheater"
+      },
+      {
+        "id": "20260902T1733547857625Z-elemental-race-persistence-prepare",
+        "runId": "20260902T1733548137604Z-4a3847d3aeee4835b3ced8fe710ed053",
+        "scenario": "elemental-race-persistence-prepare",
+        "status": "FAIL",
+        "reason": "independent option ordering paired the Sylph female head with a nonmatching eyebrow"
+      },
+      {
+        "id": "20260902T1745349991483Z-elemental-race-persistence-prepare",
+        "runId": "20260902T1745350211806Z-69a1d03430b6402e906c2766c6e384ec",
+        "scenario": "elemental-race-persistence-prepare",
+        "status": "PASS",
+        "assertionsPassed": 10,
+        "fixtures": 8,
+        "resourceBefore": 1,
+        "resourceAfter": 0
+      },
+      {
+        "id": "20260902T1748093001497Z-elemental-race-module-disabled-persistence",
+        "runId": "20260902T1748093021519Z-50540d31eb004138911ee2184b8645df",
+        "scenario": "elemental-race-module-disabled-persistence",
+        "status": "FAIL",
+        "reason": "female fixture effective gender reverted through the dynamic donor blueprint after reload"
+      },
+      {
+        "id": "20260902T1751460976119Z-elemental-race-persistence-verify-absent",
+        "runId": "20260902T1751461216779Z-b35a2be3879c43e9bb1c25ae871db43b",
+        "scenario": "elemental-race-persistence-verify-absent",
+        "status": "PASS",
+        "assertionsPassed": 6,
+        "fixturesRemaining": 0,
+        "cleanupRecovery": true
+      },
+      {
+        "id": "20260902T1759420290804Z-elemental-race-persistence-prepare",
+        "runId": "20260902T1759420540785Z-9764141caa2645208e08ba64e1870d23",
+        "scenario": "elemental-race-persistence-prepare",
+        "status": "PASS",
+        "assertionsPassed": 10,
+        "fixtures": 8,
+        "resourceBefore": 1,
+        "resourceAfter": 0,
+        "renderedViews": 40
+      },
+      {
+        "id": "20260902T1802161725612Z-elemental-race-module-disabled-persistence",
+        "runId": "20260902T1802161745656Z-11fbec67bb7e4939b4de818d6695e538",
+        "scenario": "elemental-race-module-disabled-persistence",
+        "status": "PASS",
+        "assertionsPassed": 10,
+        "fixtures": 8,
+        "resourceLoaded": 0,
+        "resourceAfterRest": 1,
+        "levelAfterPromotion": 2,
+        "casterLevelAfterPromotion": 2,
+        "renderedViews": 40,
+        "structuralCleaned": true
+      },
+      {
+        "id": "20260902T1805097536949Z-elemental-race-persistence-verify-absent",
+        "runId": "20260902T1805097767152Z-7e0adc8b36e343e8b2f9891c5a7713fa",
+        "scenario": "elemental-race-persistence-verify-absent",
+        "status": "PASS",
+        "assertionsPassed": 6,
+        "fixturesRemaining": 0,
+        "baselineAbsentExact": true
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "sourceCheckpoint": "elemental-motion",
-    "packageSha256": "497625066222aa5c08fe2323e7134e8c257a8dddf58b193687c20a7d0f05c279",
-    "packageBytes": 22940247,
-    "dllSha256": "7cf1181feec82b606189fd22a3bffbd15d9db8ae44ee76c519e2c6ef325145a8",
-    "dllBytes": 5294080,
-    "dllMvid": "399e6d2a-4593-4e90-b59d-44a49ca9058a",
+    "sourceCheckpoint": "save-backed-persistence",
+    "packageSha256": "4e2faaa7a0671ef4463750434e07b54057766a97e4478b3141262da47de65ecd",
+    "packageBytes": 22957333,
+    "dllSha256": "ac846bde870dfe7c2bd2355aa0e8bf15fe69cd77b42bcf5a9f6e3eaeea1f2770",
+    "dllBytes": 5349376,
+    "dllMvid": "5b9fc86a-0d95-4a75-b2cd-8a9237b4e516",
     "version": "0.0.113"
   },
   "runtimeMechanicsArtifact": {
@@ -538,6 +626,25 @@
     "fixtures": 2,
     "records": 54,
     "renderedViews": 216,
+    "version": "0.0.113"
+  },
+  "runtimePersistenceArtifact": {
+    "deploymentId": "20260902T1758236782720Z",
+    "deploymentManifestSha256": "662b53bb99d24477922b88a9cb267bb2455c77d3574e486587ac4ea931ac1fbf",
+    "packageSha256": "b4a1762c3dfd2d91c025a8f2ed9ce6cac8dc49a443ce5f404c601e60c731a843",
+    "dllSha256": "17f85ab3142fcf4aea91ec96870d00a09411a8121a929deac9bed97eaef4cf47",
+    "dllMvid": "b9eb12f4-f96b-4374-b046-bd5c78e88127",
+    "sourceStateSha256": "baf7fefcd9076982a0fe3a41b7ebab549f4df733bb0df0c3f6367f49b095b3eb",
+    "settingsBeforeAndAfterSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e",
+    "prepareRuntimeResultSha256": "ac8d16c4d8d2fa7bdc382e5c3836ce3190371c7008b26b9042ccb6ec6a54921a",
+    "prepareIndexSha256": "ac1ae1a5748a4fc97e21da297824ca9269dd7a262b04fc486f5b784f6e25a17d",
+    "moduleDisabledRuntimeResultSha256": "f16a93ab55be1bbbf87622bdeae4b927b65a352fe637add66d050e1a3bf697d4",
+    "moduleDisabledIndexSha256": "f285ce0e8d762748cbfa63055300e3333114c089457a9f501b11b8d81ddd2ee8",
+    "verifyAbsentRuntimeResultSha256": "27d69f12cba8e77482fd012122fe1b5d47c115763d886fc6ffb9c36e8aacc12f",
+    "verifyAbsentIndexSha256": "d285ec257df1910a437c81f8eb635f94a86833cadb6496def2fb5d82d5bbcd02",
+    "fixtures": 8,
+    "prepareRenderedViews": 40,
+    "moduleDisabledRenderedViews": 40,
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

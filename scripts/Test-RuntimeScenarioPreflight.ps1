@@ -126,6 +126,9 @@ $expected = @(
     'gunslinger-outfit-production-compatibility',
     'elemental-race-class-equipment',
     'elemental-race-motion',
+    'elemental-race-persistence-prepare',
+    'elemental-race-module-disabled-persistence',
+    'elemental-race-persistence-verify-absent',
     'gunslinger-outfit-production-motion',
     'gunslinger-outfit-production-persistence-prepare',
     'gunslinger-outfit-production-persistence',
@@ -435,6 +438,20 @@ foreach ($outfitPersistenceScenario in @(
     Assert-True ($gunslingerOutfitProductionPersistence.PermittedSaveName -eq `
         'KMG_AUTOMATION_WORKING') `
         ($outfitPersistenceScenario + '-only-permits-working-save')
+}
+foreach ($elementalPersistenceScenario in @(
+    'elemental-race-persistence-prepare',
+    'elemental-race-module-disabled-persistence',
+    'elemental-race-persistence-verify-absent')) {
+    $elementalRacePersistence = Get-KmgRuntimeScenarioMetadata `
+        $elementalPersistenceScenario
+    Assert-True (-not $elementalRacePersistence.RequiresManualInteraction) `
+        ($elementalPersistenceScenario + '-is-autonomous')
+    Assert-True $elementalRacePersistence.RequiresSaveName `
+        ($elementalPersistenceScenario + '-requires-save-name')
+    Assert-True ($elementalRacePersistence.PermittedSaveName -eq `
+        'KMG_AUTOMATION_WORKING') `
+        ($elementalPersistenceScenario + '-only-permits-working-save')
 }
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
