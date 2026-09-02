@@ -2,13 +2,13 @@
 
 ## Automated source and package gates
 
-- [ ] Four stable, noncolliding race GUIDs and every save-bearing child identity
+- [x] Four stable, noncolliding race GUIDs and every save-bearing child identity
   are active in the authoritative blueprint manifest.
 - [ ] Identities register with the module both ON and OFF.
 - [ ] Atomic publication appends Ifrit, Oread, Sylph, and Undine exactly once,
   preserves the complete prior array and order, and restores it exactly on
   failure.
-- [ ] Feature settings migrate schemas 0 through 9 to schema 10, preserve every
+- [x] Feature settings migrate schemas 0 through 9 to schema 10, preserve every
   explicit value, default absent Elemental Races OFF, round-trip schema 10, and
   reject future schemas.
 - [ ] The eleven-module source matrix has 2,048 exhaustive states and the

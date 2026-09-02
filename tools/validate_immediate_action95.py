@@ -37,8 +37,8 @@ def validate(root: Path) -> None:
     baseline.PACKAGE = PACKAGE
     baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
     baseline.STATIC_KEY = STATIC_KEY
-    baseline.EXPECTED_LEDGER_ENTRIES = 1638
-    baseline.EXPECTED_ACTIVE_BLUEPRINTS = 1636
+    baseline.EXPECTED_LEDGER_ENTRIES = 1662
+    baseline.EXPECTED_ACTIVE_BLUEPRINTS = 1660
     baseline.PROJECT_BLUEPRINT_COUNT = 14
     baseline.ADDITIONAL_IDENTITIES = dict(IMMEDIATE_DEBT_IDENTITIES)
     baseline.validate(root)

@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-c-feature-module-qualified",
+  "phase": "phase-e-production-rules-module-off-runtime-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -22,21 +22,21 @@
     "featureModule": "SOURCE-AND-DOMAIN-PASS",
     "diagnosticIdentity": "RESERVED-REQUEST-GATED",
     "developmentProbe": "PASS",
-    "productionStableIdentities": "NOT-STARTED",
-    "publication": "NOT-STARTED",
-    "ifritRules": "NOT-STARTED",
-    "oreadRules": "NOT-STARTED",
-    "sylphRules": "NOT-STARTED",
-    "undineRules": "NOT-STARTED",
+    "productionStableIdentities": "SOURCE-DOMAIN-RUNTIME-PASS",
+    "publication": "SOURCE-DOMAIN-AND-MODULE-OFF-RUNTIME-PASS",
+    "ifritRules": "BASE-BLUEPRINT-PASS-ACTUAL-MECHANICS-RUNTIME-PENDING",
+    "oreadRules": "BASE-BLUEPRINT-PASS-ACTUAL-MECHANICS-RUNTIME-PENDING",
+    "sylphRules": "BASE-BLUEPRINT-PASS-ACTUAL-MECHANICS-RUNTIME-PENDING",
+    "undineRules": "BASE-BLUEPRINT-PASS-ACTUAL-MECHANICS-RUNTIME-PENDING",
     "visuals": "NOT-STARTED",
-    "runtimeScenarios": "DEVELOPMENT-PROBE-ONLY",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-AND-MODULE-OFF-PASS",
     "compatibility": "NOT-STARTED",
-    "packaging": "PHASE-C-CHECKPOINT-PASS",
+    "packaging": "PRODUCTION-RULES-RUNTIME-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1377,
+    "passed": 1381,
     "failed": 0,
     "status": "PASS"
   },
@@ -81,14 +81,33 @@
         "elementalRaces": false,
         "settingsRestoredExactly": true,
         "originalSettingsSha256": "9c95e56da5713b0c9d040a918a270c117a8006b9fb8124b068a6a613d925f11e"
+      },
+      {
+        "id": "20260902T0531395848382Z-observe-elemental-race-blueprints",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "FAIL",
+        "reason": "pre-production collision scan included exact project-owned race GUIDs",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0538341591619Z-observe-elemental-race-blueprints",
+        "runId": "20260902T0538341802095Z-e2ecaa804cd146128423d6af33c7010e",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "PASS",
+        "productionIdentityCount": 24,
+        "elementalRaces": false,
+        "selectorCounts": [0, 0, 0, 0],
+        "saveStateTouched": false,
+        "publishedToCharacterRaces": false,
+        "evidenceSha256": "e338ce2529f76a09fbe9b13f8bd9cf15b658c77b88f9692e4127a44692043159"
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "a3fa4c26704f59ce3bc8eed61325a4443a04b3d504a6f3d3518d3f26461b5d5a",
-    "dllSha256": "5875845dd31e1b4c6a5ea4f764df08d4e325df88b58069c933b174661e204eaf",
-    "dllMvid": "1dbe88b3-acc6-45e0-b6c4-f981d9a135f4",
+    "packageSha256": "bb05bc9ba75ebb596ba57d2eee36fe71b95d9b3baff4a079ec2cb1c44a8ab4d4",
+    "dllSha256": "8ee289d26d2754d394a570dc2dd3f0fee6cb3360a8f7163d7fcff2cacfefcfeb",
+    "dllMvid": "6ef0225c-8e4e-4a60-9853-84db65f331b9",
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

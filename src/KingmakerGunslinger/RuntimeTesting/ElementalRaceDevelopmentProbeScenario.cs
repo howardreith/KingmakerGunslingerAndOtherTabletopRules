@@ -10,10 +10,13 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.CharGen;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.ResourceLinks;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using Kingmaker.View;
 using Kingmaker.Visual.CharacterSystem;
@@ -50,6 +53,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             "1dc20e195581a804890ddc74218bfd8e"
         };
 
+        private const string KeenSensesGuid =
+            "9c747d24f6321f744aa1bb4bd343880d";
+        private const string SlowAndSteadyGuid =
+            "786588ad1694e61498e77321d4b07157";
+        private const string OutsiderTypeGuid =
+            "9054d3988d491d944ac144e27b6bc318";
+        private const string BurningHandsGuid =
+            "4783c3709a74a794dbe7c8e7e0b1b038";
+        private const string StoneFistGuid =
+            "85067a04a97416949b5d1dbf986d93f3";
+        private const string FeatherStepGuid =
+            "f3c0b267dd17a2a45a40805e31fe3cd1";
+        private const string HoldPersonGuid =
+            "c7104f7526c4c524f91474614054547e";
+        private const string EnlargePersonGuid =
+            "c60969e7f264e6d4b84a1499fdcf9039";
+        private const string ReducePersonGuid =
+            "4e0e9aba6447d514f88eff1464cc4763";
+
         private sealed class PersistenceEnvelope
         {
             [JsonProperty("race", Order = 1)]
@@ -80,6 +102,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "saveStateTouched", false },
                 { "publishedToCharacterRaces", false },
                 { "nativeRaces", new JArray() },
+                { "mechanicDonors", new JArray() },
+                { "outsiderPrecedent", new JObject() },
+                { "productionRaces", new JArray() },
                 { "dolls", new JArray() },
                 { "sameRaceCollisionCandidates", new JArray() }
             };
@@ -173,15 +198,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Distinct(StringComparer.Ordinal).Count() == 7,
                     "live blueprint library");
 
+                _stage = "audit-native-mechanic-donors";
+                AuditMechanicDonors(_library, native, _evidence,
+                    _assertions);
+
+                _stage = "audit-production-elemental-identities";
+                ElementalRaceBlueprintSet production =
+                    BlueprintBootstrap.ElementalRaces;
+                if (production == null)
+                    throw new InvalidOperationException(
+                        "The production elemental race blueprint set is unavailable.");
+                BlueprintRace[] productionRaces = production.OrderedRaces();
+                foreach (BlueprintRace race in productionRaces)
+                    ((JArray)_evidence["productionRaces"]).Add(
+                        DescribeRace(race));
+                bool productionRegistered =
+                    production.Count == ElementalRaceIdentityCatalog.IdentityCount &&
+                    productionRaces.Length == ElementalRaceCatalog.RaceCount &&
+                    production.OrderedBlueprints().All(IsRegisteredExactly);
+                Add(_assertions, "elemental-production-identities",
+                    "24 project identities resolve exactly in fixed Ifrit/Oread/Sylph/Undine order",
+                    "count=" + production.Count + ";races=" +
+                        string.Join("|", productionRaces.Select(Identity)
+                            .ToArray()),
+                    productionRegistered,
+                    "live production BlueprintBootstrap set and library indexes");
+
+                bool selectorsEnabled = _context.FeatureModules.Active
+                    .ElementalRaces;
+                int[] publicationCounts = productionRaces.Select(race =>
+                    _racesBefore.Count(value => ReferenceEquals(value, race)))
+                    .ToArray();
+                bool publicationExact = publicationCounts.All(value =>
+                    value == (selectorsEnabled ? 1 : 0));
+                Add(_assertions, "elemental-production-publication-gate",
+                    selectorsEnabled ?
+                        "each production race is published exactly once" :
+                        "all identities remain registered while selectors remain unpublished",
+                    "enabled=" + selectorsEnabled + ";counts=" +
+                        string.Join(",", publicationCounts.Select(value =>
+                            value.ToString()).ToArray()),
+                    publicationExact,
+                    "restart-bound active module state and CharacterRaces snapshot");
+
                 _stage = "detect-same-race-collisions";
                 JArray collisions = (JArray)_evidence[
                     "sameRaceCollisionCandidates"];
+                var ownedRaceGuids = new HashSet<string>(
+                    productionRaces.Select(value => value.AssetGuid),
+                    StringComparer.Ordinal);
                 foreach (BlueprintRace candidate in ResourcesLibrary
                     .GetBlueprints<BlueprintRace>().Where(value =>
-                        value != null && IsElementalName(value)))
+                        value != null && IsElementalName(value) &&
+                        !ownedRaceGuids.Contains(value.AssetGuid)))
                     collisions.Add(Identity(candidate));
                 Add(_assertions, "elemental-probe-no-same-race-collision",
-                    "no live Ifrit, Oread, Sylph, or Undine race blueprint",
+                    "no foreign live Ifrit, Oread, Sylph, or Undine race blueprint",
                     collisions.Count == 0 ? "none" :
                         collisions.ToString(Formatting.None),
                     collisions.Count == 0,
@@ -459,6 +531,127 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
         }
 
+        private static void AuditMechanicDonors(
+            LibraryScriptableObject library, IList<BlueprintRace> races,
+            JObject evidence,
+            ICollection<RuntimeTestAssertion> assertions)
+        {
+            if (races == null || races.Count != NativeRaceGuids.Length)
+                throw new InvalidOperationException(
+                    "The exact native race inventory is unavailable.");
+
+            BlueprintFeature keen = Require<BlueprintFeature>(library,
+                KeenSensesGuid, "native Keen Senses");
+            BlueprintFeature slow = Require<BlueprintFeature>(library,
+                SlowAndSteadyGuid, "native Slow and Steady");
+            BlueprintFeature outsider = Require<BlueprintFeature>(library,
+                OutsiderTypeGuid, "native outsider type");
+            BlueprintAbility burning = Require<BlueprintAbility>(library,
+                BurningHandsGuid, "native Burning Hands");
+            BlueprintAbility stone = Require<BlueprintAbility>(library,
+                StoneFistGuid, "native Stone Fist");
+            BlueprintAbility feather = Require<BlueprintAbility>(library,
+                FeatherStepGuid, "native Feather Step");
+            BlueprintAbility hold = Require<BlueprintAbility>(library,
+                HoldPersonGuid, "native Hold Person");
+            BlueprintAbility enlarge = Require<BlueprintAbility>(library,
+                EnlargePersonGuid, "native Enlarge Person");
+            BlueprintAbility reduce = Require<BlueprintAbility>(library,
+                ReducePersonGuid, "native Reduce Person");
+
+            BlueprintScriptableObject[] donors =
+            {
+                keen, slow, outsider, burning, stone, feather, hold,
+                enlarge, reduce
+            };
+            JArray donorEvidence = (JArray)evidence["mechanicDonors"];
+            foreach (BlueprintScriptableObject donor in donors)
+                donorEvidence.Add(DescribeBlueprint(donor));
+
+            BlueprintFeatureSelection aasimar = (races[1].Features ??
+                new BlueprintFeature[0]).OfType<BlueprintFeatureSelection>()
+                .Single();
+            BlueprintFeatureSelection tiefling = (races[2].Features ??
+                new BlueprintFeature[0]).OfType<BlueprintFeatureSelection>()
+                .Single();
+            BlueprintFeature[] aasimarHeritages = aasimar.AllFeatures ??
+                new BlueprintFeature[0];
+            BlueprintFeature[] tieflingHeritages = tiefling.AllFeatures ??
+                new BlueprintFeature[0];
+            evidence["outsiderPrecedent"] = new JObject
+            {
+                { "aasimarSelection", DescribeBlueprint(aasimar) },
+                { "aasimarHeritages", new JArray(aasimarHeritages
+                    .Select(DescribeBlueprint)) },
+                { "tieflingSelection", DescribeBlueprint(tiefling) },
+                { "tieflingHeritages", new JArray(tieflingHeritages
+                    .Select(DescribeBlueprint)) },
+                { "outsiderType", DescribeBlueprint(outsider) }
+            };
+
+            bool distinct = donors.All(value => value != null) &&
+                donors.Select(value => value.AssetGuid).Distinct(
+                    StringComparer.Ordinal).Count() == donors.Length;
+            bool exactRaceFeatures = (races[3].Features ??
+                    new BlueprintFeature[0]).Any(value =>
+                        ReferenceEquals(value, keen)) &&
+                (races[4].Features ?? new BlueprintFeature[0]).Any(value =>
+                    ReferenceEquals(value, keen)) &&
+                (races[4].Features ?? new BlueprintFeature[0]).Any(value =>
+                    ReferenceEquals(value, slow));
+            bool nativeSpellTypes = burning.Type == AbilityType.Spell &&
+                stone.Type == AbilityType.Spell &&
+                feather.Type == AbilityType.Spell;
+            Add(assertions, "elemental-probe-mechanic-donors",
+                "nine exact, distinct native mechanic donors with race links and spell contracts",
+                "donors=" + donors.Length + ";keen=" + exactRaceFeatures +
+                    ";spells=" + nativeSpellTypes +
+                    ";aasimarHeritages=" + aasimarHeritages.Length +
+                    ";tieflingHeritages=" + tieflingHeritages.Length,
+                distinct && exactRaceFeatures && nativeSpellTypes &&
+                    aasimarHeritages.Length > 0 &&
+                    tieflingHeritages.Length > 0,
+                "live exact-GUID native blueprint and heritage inventory");
+        }
+
+        private static T Require<T>(LibraryScriptableObject library,
+            string guid, string purpose) where T : BlueprintScriptableObject
+        {
+            return BlueprintLibraryLookup.RequireExact<T>(library, guid,
+                "elemental-race development probe " + purpose);
+        }
+
+        private static JObject DescribeBlueprint(
+            BlueprintScriptableObject blueprint)
+        {
+            BlueprintUnitFact fact = blueprint as BlueprintUnitFact;
+            string displayName = string.Empty;
+            string description = string.Empty;
+            if (fact != null)
+            {
+                try { displayName = fact.Name ?? string.Empty; }
+                catch { displayName = "<error>"; }
+                try { description = fact.Description ?? string.Empty; }
+                catch { description = "<error>"; }
+            }
+            return new JObject
+            {
+                { "name", blueprint.name ?? string.Empty },
+                { "guid", blueprint.AssetGuid ?? string.Empty },
+                { "type", blueprint.GetType().FullName },
+                { "displayName", displayName },
+                { "description", description },
+                { "components", new JArray((blueprint.ComponentsArray ??
+                    new BlueprintComponent[0]).Select(value =>
+                        value == null ? (JToken)JValue.CreateNull() :
+                        new JObject
+                        {
+                            { "type", value.GetType().FullName },
+                            { "fields", DescribeFields(value) }
+                        })) }
+            };
+        }
+
         private static JObject DescribeFields(object value)
         {
             var result = new JObject();
@@ -654,6 +847,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new[] { "Ifrit", "Oread", "Sylph", "Undine" }
                 .Any(value => text.IndexOf(value,
                     StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        private static bool IsRegisteredExactly(
+            ElementalRaceBlueprints value)
+        {
+            return value != null &&
+                ReferenceEquals(ResourcesLibrary.TryGetBlueprint<
+                    BlueprintRace>(value.Race.AssetGuid), value.Race) &&
+                ReferenceEquals(ResourcesLibrary.TryGetBlueprint<
+                    BlueprintFeature>(value.Resistance.AssetGuid),
+                    value.Resistance) &&
+                ReferenceEquals(ResourcesLibrary.TryGetBlueprint<
+                    BlueprintFeature>(value.Affinity.AssetGuid),
+                    value.Affinity) &&
+                ReferenceEquals(ResourcesLibrary.TryGetBlueprint<
+                    BlueprintFeature>(value.SlaFeature.AssetGuid),
+                    value.SlaFeature) &&
+                ReferenceEquals(ResourcesLibrary.TryGetBlueprint<
+                    BlueprintAbilityResource>(value.SlaResource.AssetGuid),
+                    value.SlaResource) &&
+                ReferenceEquals(ResourcesLibrary.TryGetBlueprint<
+                    BlueprintAbility>(value.SlaAbility.AssetGuid),
+                    value.SlaAbility);
         }
 
         private static string SafeName(BlueprintRace race)

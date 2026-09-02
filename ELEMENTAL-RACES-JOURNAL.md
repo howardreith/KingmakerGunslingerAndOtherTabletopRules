@@ -175,3 +175,74 @@
   `9c95e56da5713b0c9d040a918a270c117a8006b9fb8124b068a6a613d925f11e`.
 - The complete 24-launch boundary matrix remains pending until production
   identities and selector publication exist.
+
+## 2026-09-02 - Production base-race identities and rules checkpoint
+
+- Allocated and registered 24 active, project-owned identities: each race has
+  a distinct `BlueprintRace`, resistance feature, affinity feature, SLA
+  feature, daily resource, and spell-like ability. Manifest arithmetic is now
+  1,662 total, 1,660 active, and two reserved; exact GUID inventory is in
+  `blueprints/blueprints.json` and the implementation report.
+- Selected native Aasimar as the safest visual/RaceId donor. Every production
+  race is a separate project object, remains Medium, uses `RaceId.Aasimar`,
+  receives the exact native empty `OutsiderType` fact, and retains complete
+  Aasimar Human-skeleton fallback options. Consequence: native Aasimar-style
+  person-spell exclusion is preserved, while base-game dialogue and checks
+  based only on `RaceId` may classify an elemental race as Aasimar.
+- Implemented exact racial stat components, native Keen Senses, energy
+  resistance 5, native Dwarf Slow and Steady for Oread, and a narrow
+  `RuleCalculateAbilityParams` affinity component that adds DC once for the
+  matching descriptor and never adds caster level.
+- Cloned and sanitized native Burning Hands, Stone Fist, and Feather Step
+  effects into once-per-rest `AbilityType.SpellLike` abilities. Optional-mod
+  components and spell-list/resource/variant parameter carriers are excluded;
+  each ability spends its single project resource through native
+  `AbilityResourceLogic`. A feature-owned parameter component sets caster
+  level to total character level and uses Charisma for the racial SLA DC.
+- Reconstructed Hydraulic Push with a native `ContextActionCombatManeuver`
+  Bull Rush using caster level as base attack and the best mental statistic,
+  no saving throw, spell resistance enabled, and no unrelated attack roll or
+  global patch. Native projectile selection remains a later presentation
+  surface.
+- Implemented atomic selector publication. It snapshots the exact shared
+  array, validates all four races first, preserves every prior reference and
+  order, appends only missing project races in Ifrit/Oread/Sylph/Undine order,
+  rejects identity conflicts, is idempotent, and restores the exact prior
+  array reference on failure. All identities register regardless of module
+  state; only selector publication is gated.
+- Added four focused production contract tests and updated all manifest/test
+  arithmetic. `./scripts/test-domain.ps1 -Configuration Release` completed
+  **1,381/1,381 PASS**. Direct Release compilation also passed, and canonical
+  repository validation passed with the 1,662/1,660/2 manifest.
+- First production guarded run,
+  `20260902T0531395848382Z-observe-elemental-race-blueprints`, failed only
+  because the pre-production collision assertion classified the four exact
+  KMG-owned race GUIDs as foreign candidates. All other assertions passed.
+  The check was narrowed to foreign identities; no blueprint or save state was
+  changed by the failed request.
+- Corrected guarded transaction
+  `20260902T0538341591619Z-observe-elemental-race-blueprints` **PASS** (run ID
+  `20260902T0538341802095Z-e2ecaa804cd146128423d6af33c7010e`). It resolved all
+  24 production objects exactly, observed fixed race order, proved active
+  Elemental Races OFF with selector counts `0,0,0,0`, found no foreign
+  same-race blueprint, rendered both diagnostic donor dolls, applied facts,
+  round-tripped a hidden race reference, and restored both indexes and the
+  exact `CharacterRaces` reference. Evidence SHA-256:
+  `e338ce2529f76a09fbe9b13f8bd9cf15b658c77b88f9692e4127a44692043159`.
+- Runtime-build artifact for that transaction: package SHA-256
+  `abab69dfa4d593421c6fb40ff72021da07ec064651bd2072630f0827045efd46`;
+  DLL SHA-256
+  `b95cb93e35bb4338673c0a532367346264de487cce775ebc024c8ce71df2a3c5`.
+  It remains a development 0.0.113 artifact, not the final preview candidate.
+- Required clean command
+  `.\scripts\build.ps1 -Configuration Release -Clean -Package` passed on the
+  recorded production-rules tree: repository validation, 1,381 tests,
+  production compilation, output/SoundBank validation, deterministic package,
+  and strict UMM validation. Clean package SHA-256:
+  `bb05bc9ba75ebb596ba57d2eee36fe71b95d9b3baff4a079ec2cb1c44a8ab4d4`;
+  DLL SHA-256:
+  `8ee289d26d2754d394a570dc2dd3f0fee6cb3360a8f7163d7fcff2cacfefcfeb`;
+  DLL MVID: `6ef0225c-8e4e-4a60-9853-84db65f331b9`.
+- Next: checkpoint and push the cohesive production-rules graph, then add
+  actual-unit mechanics/SLA scenarios, module-ON publication qualification,
+  production visual inventories/proxies, persistence, and compatibility.
