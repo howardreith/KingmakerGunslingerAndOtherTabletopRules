@@ -131,3 +131,47 @@
   DLL MVID is `c900ae62-326b-4ec8-a36a-b672122b4266`.
 - Next: checkpoint Phase A/B, then implement schema-10 `elemental-races`
   feature-module integration and its 24-state runtime boundary catalog.
+
+## 2026-09-02 - Phase C feature-module integration
+
+- Added one module ID, `elemental-races`, one UMM checkbox, and bit 1024. The
+  established ten modules retain default ON; Elemental Races defaults OFF.
+- Advanced `FeatureModules.json` to schema 10. Schemas 0 through 9 preserve all
+  explicit existing values, migrate an absent Elemental Races key to OFF, and
+  preserve an explicit Elemental Races true or false value. Schema 11 is
+  rejected as future input.
+- Malformed recovery now reports the actual mixed defaults instead of claiming
+  every module defaults ON. The malformed source bytes remain untouched and a
+  diagnostic quarantine copy is retained.
+- Extended active/pending snapshots, equality, hash code, `ToString`, ordered
+  serialization, publication planning, UMM presentation, guarded request
+  validation/writing, live settings observation, compatibility-profile
+  settings transactions, and focused persistence fixtures.
+- Ran `.\scripts\build.ps1 -Configuration Release -SkipDomainTests`.
+  Repository validation and production compilation passed.
+- Ran `.\scripts\test-domain.ps1 -Configuration Release`.
+  **1,377/1,377 PASS**, including all 2,048 settings combinations and the new
+  every-schema migration case.
+- Executed `Get-KmgFeatureModuleCatalog` and
+  `Get-KmgFeatureModuleConfigurations` directly. Observed 11 modules, 2,048
+  exhaustive configurations, 24 unique boundary profiles, 1,024 exhaustive
+  Elemental-ON states, and `elemental-races` as the final deterministic key.
+- Ran `.\scripts\build.ps1 -Configuration Release -Clean -Package` on the
+  exact Phase C tree. Repository validation, 1,377 tests, production compile,
+  output/SoundBank checks, deterministic packaging, and strict UMM validation
+  passed. Package SHA-256:
+  `a3fa4c26704f59ce3bc8eed61325a4443a04b3d504a6f3d3518d3f26461b5d5a`;
+  DLL SHA-256:
+  `5875845dd31e1b4c6a5ea4f764df08d4e325df88b58069c933b174661e204eaf`;
+  MVID: `1dbe88b3-acc6-45e0-b6c4-f981d9a135f4`.
+- Ran focused guarded configuration
+  `on-on-on-on-on-on-on-on-on-on-off` through
+  `Invoke-FeatureModuleRuntimeMatrix.ps1`. Transaction
+  `20260902T0440201720486Z-observe-feature-module-settings` passed every
+  existing publication assertion and the new
+  `feature-module-elemental-races-restart-snapshot` assertion with observed
+  `disabled`. The controller restored the exact original settings bytes;
+  original SHA-256:
+  `9c95e56da5713b0c9d040a918a270c117a8006b9fb8124b068a6a613d925f11e`.
+- The complete 24-launch boundary matrix remains pending until production
+  identities and selector publication exist.

@@ -34,7 +34,7 @@ $failure = $null
 
 function Set-UrbanEnabled([bool]$enabled) {
     $configuration = [ordered]@{
-        schemaVersion = 9
+        schemaVersion = 10
         gunslinger = $true
         'acadamae-graduate' = $true
         'shield-other' = $true
@@ -45,6 +45,7 @@ function Set-UrbanEnabled([bool]$enabled) {
         'urban-barbarian' = $enabled
         'bodyguard-feats' = $true
         'protection-from-alignment-control-immunity' = $true
+        'elemental-races' = $false
     }
     $temporary = $settings + '.kmg-urban-barbarian-persistence.tmp'
     [IO.File]::WriteAllText($temporary, ($configuration | ConvertTo-Json -Depth 4), (New-Object Text.UTF8Encoding($false)))

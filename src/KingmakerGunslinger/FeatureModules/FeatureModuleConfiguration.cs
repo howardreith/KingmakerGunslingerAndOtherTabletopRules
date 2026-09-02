@@ -4,6 +4,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal sealed class FeatureModuleConfiguration : IEquatable<FeatureModuleConfiguration>
     {
+        internal const int ModuleCount = 11;
         internal const string GunslingerId = "gunslinger";
         internal const string AcadamaeGraduateId = "acadamae-graduate";
         internal const string ShieldOtherId = "shield-other";
@@ -15,11 +16,13 @@ namespace KingmakerGunslinger.FeatureModules
         internal const string BodyguardFeatsId = "bodyguard-feats";
         internal const string ProtectionFromAlignmentControlImmunityId =
             "protection-from-alignment-control-immunity";
+        internal const string ElementalRacesId = "elemental-races";
 
         internal FeatureModuleConfiguration(bool gunslinger, bool acadamaeGraduate,
             bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears,
             bool easternWeapons, bool brownFurTransmuter, bool urbanBarbarian,
-            bool bodyguardFeats, bool protectionFromAlignmentControlImmunity)
+            bool bodyguardFeats, bool protectionFromAlignmentControlImmunity,
+            bool elementalRaces)
         {
             Gunslinger = gunslinger;
             AcadamaeGraduate = acadamaeGraduate;
@@ -32,6 +35,7 @@ namespace KingmakerGunslinger.FeatureModules
             BodyguardFeats = bodyguardFeats;
             ProtectionFromAlignmentControlImmunity =
                 protectionFromAlignmentControlImmunity;
+            ElementalRaces = elementalRaces;
         }
 
         internal bool Gunslinger { get; private set; }
@@ -44,9 +48,10 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool UrbanBarbarian { get; private set; }
         internal bool BodyguardFeats { get; private set; }
         internal bool ProtectionFromAlignmentControlImmunity { get; private set; }
+        internal bool ElementalRaces { get; private set; }
         internal static FeatureModuleConfiguration Defaults
         { get { return new FeatureModuleConfiguration(true, true, true, true, true, true,
-            true, true, true, true); } }
+            true, true, true, true, false); } }
 
         public bool Equals(FeatureModuleConfiguration other)
         {
@@ -60,7 +65,8 @@ namespace KingmakerGunslinger.FeatureModules
                 UrbanBarbarian == other.UrbanBarbarian &&
                 BodyguardFeats == other.BodyguardFeats &&
                 ProtectionFromAlignmentControlImmunity ==
-                    other.ProtectionFromAlignmentControlImmunity;
+                    other.ProtectionFromAlignmentControlImmunity &&
+                ElementalRaces == other.ElementalRaces;
         }
 
         public override bool Equals(object obj)
@@ -72,7 +78,8 @@ namespace KingmakerGunslinger.FeatureModules
             (ElvenBranchedSpears ? 16 : 0) | (EasternWeapons ? 32 : 0) |
             (BrownFurTransmuter ? 64 : 0) | (UrbanBarbarian ? 128 : 0) |
             (BodyguardFeats ? 256 : 0) |
-            (ProtectionFromAlignmentControlImmunity ? 512 : 0); }
+            (ProtectionFromAlignmentControlImmunity ? 512 : 0) |
+            (ElementalRaces ? 1024 : 0); }
 
         public override string ToString()
         { return "gunslinger=" + Gunslinger + ";acadamae-graduate=" +
@@ -84,6 +91,7 @@ namespace KingmakerGunslinger.FeatureModules
             ";urban-barbarian=" + UrbanBarbarian +
             ";bodyguard-feats=" + BodyguardFeats +
             ";protection-from-alignment-control-immunity=" +
-            ProtectionFromAlignmentControlImmunity; }
+            ProtectionFromAlignmentControlImmunity +
+            ";elemental-races=" + ElementalRaces; }
     }
 }

@@ -16,8 +16,10 @@ The standard cross-module runtime qualification is the boundary matrix:
 
 For `N` active modules this boundary contains exactly `2N + 2` states. It is
 authoritative because, for Boolean module settings, it covers every possible
-one-, two-, and three-module value combination. Bodyguard and In Harms Way add
-the ninth module, so the current runtime boundary contains 20 states.
+one-, two-, and three-module value combination. Elemental Races is the eleventh
+module, so the current runtime boundary contains exactly 24 states. Fast domain
+tests cover all 2,048 Boolean configurations; the launcher must not turn that
+exhaustive set into 2,048 game launches.
 
 Add focused higher-order combined profiles only when a concrete architectural
 reason suggests an interaction among four or more modules. An exhaustive

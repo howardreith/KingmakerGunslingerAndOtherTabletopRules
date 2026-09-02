@@ -70,18 +70,20 @@ Weapon Focus remains an exact negative control.
 The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,
 Expanded Summoning, Elven Branched Spears, Eastern Weapons, `Brown-Fur
 Transmuter -- requires Call of the Wild`, Urban Barbarian, Bodyguard and In
-Harms Way, and `Protection from Alignment: control immunity` checkboxes. All
-default ON. A change is
+Harms Way, `Protection from Alignment: control immunity`, and `Elemental Races:
+Ifrit, Oread, Sylph, and Undine (preview)` checkboxes. The first ten default ON;
+Elemental Races defaults OFF. A change is
 saved for the next complete game restart; the panel reports active and saved
-next-restart state separately. Older settings migrate to schema 9 while
-preserving every explicit prior value and defaulting absent module keys ON.
+next-restart state separately. Older settings migrate to schema 10 while
+preserving every explicit prior value. An absent `elemental-races` key migrates
+OFF; absent legacy keys retain their established ON defaults.
 
 Brown-Fur is the only module that requires Call of the Wild. Its adjacent
 status reports Available, Unavailable, or Blocked independently from saved user
 intent, effective publication, and restart-required state. Saved ON intent is
 preserved when CotW is absent, but Brown-Fur is not registered or published.
 Structurally incompatible CotW installations also fail closed without disabling
-the package's nine independent modules. Urban Barbarian, Bodyguard/In Harm's
+the package's ten independent modules. Urban Barbarian, Bodyguard/In Harm's
 Way, and Protection from Alignment are native-core features and remain
 available when CotW is absent, unknown, or ambiguous.
 

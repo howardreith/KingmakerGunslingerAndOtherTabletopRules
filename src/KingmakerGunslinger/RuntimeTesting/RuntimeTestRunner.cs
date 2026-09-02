@@ -12195,6 +12195,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool expectedProtectionFromAlignmentControlImmunity =
                 (bool)_request.Parameters[
                     "protectionFromAlignmentControlImmunity"];
+            bool expectedElementalRaces =
+                (bool)_request.Parameters["elementalRaces"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
@@ -12213,6 +12215,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool activeProtectionFromAlignmentControlImmunity =
                 _context.FeatureModules.Active
                     .ProtectionFromAlignmentControlImmunity;
+            bool activeElementalRaces =
+                _context.FeatureModules.Active.ElementalRaces;
             UrbanBarbarianBlueprintSet urbanSet = BlueprintBootstrap.UrbanBarbarian;
             BlueprintArchetype[] barbarianArchetypes = urbanSet.BarbarianClass
                 .Archetypes ?? Array.Empty<BlueprintArchetype>();
@@ -12690,14 +12694,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 expectedExpandedSummoning + "/" + expectedElvenBranchedSpears +
                 "/" + expectedEasternWeapons + "/" + expectedBrownFurTransmuter +
                 "/" + expectedUrbanBarbarian + "/" + expectedBodyguardFeats +
-                "/" + expectedProtectionFromAlignmentControlImmunity +
+                "/" + expectedProtectionFromAlignmentControlImmunity + "/" +
+                expectedElementalRaces +
                 ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
                 activeShieldOther + "/" + activeExpandedSummoning + "/" +
                 activeElvenBranchedSpears + "/" + activeEasternWeapons + "/" +
                 activeBrownFurTransmuter + "/" + activeUrbanBarbarian + "/" +
                 activeBodyguardFeats + "/" +
-                activeProtectionFromAlignmentControlImmunity +
+                activeProtectionFromAlignmentControlImmunity + "/" +
+                activeElementalRaces +
                 ";brownFur=contract:" + brownFurContractCompatible +
                 "/identities:" + (brownFurBlueprints == null ? 0 :
                     brownFurBlueprints.Count) + "/published:" +
@@ -12777,7 +12783,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeUrbanBarbarian == expectedUrbanBarbarian &&
                     activeBodyguardFeats == expectedBodyguardFeats &&
                     activeProtectionFromAlignmentControlImmunity ==
-                        expectedProtectionFromAlignmentControlImmunity,
+                        expectedProtectionFromAlignmentControlImmunity &&
+                    activeElementalRaces == expectedElementalRaces,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime + " identities in the current optional-mod state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
@@ -12847,6 +12854,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedProtectionFromAlignmentControlImmunity ? 15 : 0) &&
                     protectionObservation.InvalidDescriptions == 0,
                     "exact terminal-buff component and player-description inventories"),
+                Assertion("feature-module-elemental-races-restart-snapshot",
+                    expectedElementalRaces ? "enabled" : "disabled",
+                    activeElementalRaces ? "enabled" : "disabled",
+                    activeElementalRaces == expectedElementalRaces,
+                    "immutable restart-bound selector-publication intent"),
                 Assertion("feature-module-expanded-summoning-publication-gate",
                     expectedExpandedSummoning ? "enabled" : "disabled",
                     activeExpandedSummoning ? "enabled" : "disabled",
