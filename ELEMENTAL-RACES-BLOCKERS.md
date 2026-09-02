@@ -4,10 +4,11 @@
 
 None established as of 2026-09-02. Production identities, base-rule
 blueprints, resources, energy resistance, Keen Senses, affinity, total-level
-SLA parameters, rest restoration, and request-local resource persistence now
-pass guarded runtime checks. Native ability delivery, visuals, save-backed
-persistence, and compatibility qualification remain incomplete; absence of a
-hard blocker is not a completion claim.
+SLA parameters, native donor delivery, Stone Fist and Feather Step expiry,
+Hydraulic Push combat resolution, rest restoration, and request-local resource
+persistence now pass guarded runtime checks. Oread movement, visuals,
+save-backed persistence, and compatibility qualification remain incomplete;
+absence of a hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
 
@@ -32,22 +33,27 @@ hard blocker is not a completion claim.
 - Actual 2 Fighter / 3 Wizard level-up, resource spend, native rest, and
   resource-record serialization proved total character-level scaling,
   once-per-rest accounting, and exact spent-state identity/amount round-trip.
+- Native command execution proved Burning Hands geometry/save/damage, Stone
+  Fist buff delivery/unarmed replacement/expiry, and Feather Step buff
+  delivery/expiry. Cancellation, committed spend, second-use gating, and rest
+  restoration passed for all three donor abilities.
+- Actual Hydraulic Push command execution proved best-mental selection,
+  all-negative and tie handling, total-level formula, ordinary Bull Rush
+  success/failure, immunity, native force movement, and absence of an unrelated
+  attack roll, saving throw, or Bull-Rush-created opportunity attack. The final
+  resource strategy preserves ordinary availability gating and spends exactly
+  once at synchronous effect commitment.
 
 ## Open risks requiring evidence
 
 - The selected donor is `RaceId.Aasimar` with the exact native Outsider fact.
   Actual Hold/Charm/Enlarge/Reduce Person, prerequisite, level-up, respec, and
   donor-dialogue observations remain pending.
-- Native Stone Fist, Dwarf Slow and Steady, Outsider, and the three donor spell
-  effects are selected. Actual cast command commitment/cancellation, donor
-  effect delivery, Stone Fist expiry, save-backed reload, and armored or
-  encumbered Oread movement remain pending. Direct resource commitment,
-  cancel-before-commit, native rest, and request-local resource persistence
-  have passed and must not be overreported as delivery evidence.
-- Hydraulic Push uses the narrow native Bull Rush action path, but its actual
-  combat maneuver bonus, success/failure, immunity, movement, and resource
-  commitment need guarded unit evidence. A safe native water projectile has
-  not yet been selected.
+- Native Dwarf Slow and Steady and Outsider facts are selected. Save-backed
+  SLA reload and armored or encumbered Oread movement remain pending.
+- Hydraulic Push combat mechanics and resource commitment are qualified. A
+  safe native water projectile has not yet been selected, and save-backed
+  persistence remains pending.
 - Vanilla head, hair, skin, eye, eyebrow, beard, horn, body, color-profile, and
   class/equipment compatibility donors remain unaudited for the four races.
 - Complete Aasimar fallback arrays render and preserve Human skeleton/body

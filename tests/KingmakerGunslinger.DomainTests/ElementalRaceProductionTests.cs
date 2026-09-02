@@ -111,12 +111,16 @@ namespace KingmakerGunslinger.DomainTests
                 "ability.Parent = null", "component is SpellListComponent",
                 "component is AbilityResourceLogic",
                 "fullName.StartsWith(\"Kingmaker.\"",
-                "RequiredResource = resource", "IsSpendResource = true",
-                "Amount = 1", "RestoreAmount = true",
+                "RequiredResource = resource",
+                "Amount = 1", "ResourceCost(resource, true)",
+                "RestoreAmount = true",
                 "RestoreOnLevelUp = false", "UseThisAsResource = false",
                 "CombatManeuver.BullRush",
+                "maneuver.ReplaceStat = true",
                 "UseCasterLevelAsBaseAttack = true",
                 "UseBestMentalStat = true",
+                "ElementalHydraulicResourceCommit",
+                "ResourceCost(resource, true)",
                 "SavingThrowType.Unknown", "SpellResistance = true"
             })
                 Assertions.True(ability.Contains(token),
@@ -128,7 +132,10 @@ namespace KingmakerGunslinger.DomainTests
                 "(SpellDescriptor)DescriptorMask",
                 "Owner.Progression.CharacterLevel",
                 "evt.ReplaceCasterLevel", "evt.ReplaceSpellLevel",
-                "evt.ReplaceStat = Stat", "StatType.Charisma"
+                "evt.ReplaceStat = Stat", "StatType.Charisma",
+                "ElementalHydraulicResourceCommit",
+                "GetResourceAmount(Resource) <= 0",
+                "Resources.Spend(Resource, 1)"
             })
                 Assertions.True(rules.Contains(token),
                     "Racial parameter/affinity contract is absent: " + token);
@@ -215,6 +222,96 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("SaveManager") ||
                 scenario.Contains("KMG_AUTOMATION_BASELINE"),
                 "The mechanics scenario must remain save-free and detached from protected state.");
+        }
+
+        internal static void RuntimeSlaScenarioUsesNativeDelivery()
+        {
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalRaceSlaScenario.cs");
+            foreach (string token in new[]
+            {
+                "new UnitUseAbility(data, target)",
+                "GetMethod(\"OnAction\"",
+                "AbilityExecutionProcess process",
+                "process.InstantDeliver()", "effect.Apply(",
+                "AbilityDeliverProjectile", "ContextActionApplyBuff",
+                "FindNativeD20Seed(10)", "SavingThrowType.Reflex",
+                "m_EndTime", "Buffs.UpdateNextEvent()",
+                "RestController.ApplyRest", "DefaultContractResolver",
+                "SameReferences(unitsBefore"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Native SLA delivery token is absent: " + token);
+            const string name = "disposable-elemental-race-slas";
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            Assertions.True(catalog.Contains(name) &&
+                runner.Contains("ElementalRaceSlaScenario.Run(") &&
+                automation.Contains("'" + name +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + name + "'") &&
+                project.Contains("ElementalRaceSlaScenario.cs"),
+                "Elemental SLA scenario is not wired through every guarded surface.");
+            Assertions.False(scenario.Contains("SaveManager") ||
+                scenario.Contains("Game.Instance.Player.Party") ||
+                scenario.Contains("KMG_AUTOMATION_BASELINE"),
+                "The SLA delivery scenario must remain save-free and detached from protected saves.");
+        }
+
+        internal static void RuntimeHydraulicPushScenarioUsesNativeManeuver()
+        {
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "HydraulicPushScenario.cs");
+            foreach (string token in new[]
+            {
+                "ContextActionCombatManeuver",
+                "RuleCombatManeuver",
+                "ReplaceAttackBonus",
+                "ReplaceBaseStat",
+                "InitiatorCMB",
+                "TargetCMD",
+                "UnitAttackOfOpportunity",
+                "IInitiatorRulebookHandler<RuleAttackRoll>",
+                "IInitiatorRulebookHandler<RuleSavingThrow>",
+                "FindNativeD20Seed(10)",
+                "RestController.ApplyRest",
+                "BrownFurIlDisassembler.Describe",
+                "UnitPartForceMove.Push",
+                "SameReferences(unitsBefore",
+                "ContractResolver = new DefaultContractResolver()"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Native Hydraulic Push runtime token is absent: " + token);
+            const string name = "disposable-hydraulic-push";
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            Assertions.True(catalog.Contains(name) &&
+                runner.Contains("HydraulicPushScenario.Run(") &&
+                automation.Contains("'" + name +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + name + "'") &&
+                project.Contains("HydraulicPushScenario.cs"),
+                "Hydraulic Push is not wired through every guarded surface.");
+            Assertions.False(scenario.Contains("SaveManager") ||
+                scenario.Contains("Game.Instance.Player.Party") ||
+                scenario.Contains("KMG_AUTOMATION_BASELINE"),
+                "Hydraulic Push qualification must remain save-free and detached from protected state.");
         }
 
         private static string Source(string file)

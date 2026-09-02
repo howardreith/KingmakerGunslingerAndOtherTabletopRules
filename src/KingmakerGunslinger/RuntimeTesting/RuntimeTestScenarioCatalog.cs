@@ -110,6 +110,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-elemental-race-blueprints";
         internal const string DisposableElementalRaceMechanics =
             "disposable-elemental-race-mechanics";
+        internal const string DisposableElementalRaceSlas =
+            "disposable-elemental-race-slas";
+        internal const string DisposableHydraulicPush =
+            "disposable-hydraulic-push";
         internal const string GunslingerOutfitAudit =
             "gunslinger-outfit-audit";
         internal const string GunslingerOutfitCandidateRender =
@@ -430,6 +434,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveGunslingerPresentation,
                 ObserveElementalRaceBlueprints,
                 DisposableElementalRaceMechanics,
+                DisposableElementalRaceSlas,
+                DisposableHydraulicPush,
                 GunslingerOutfitAudit,
                 GunslingerOutfitCandidateRender,
                 GunslingerOutfitFinalistRaceMatrix,

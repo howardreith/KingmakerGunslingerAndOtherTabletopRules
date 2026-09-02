@@ -45,6 +45,8 @@ $expected = @(
     'gunslinger-outfit-audit',
     'observe-elemental-race-blueprints',
     'disposable-elemental-race-mechanics',
+    'disposable-elemental-race-slas',
+    'disposable-hydraulic-push',
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
     'disposable-urban-barbarian-focused',

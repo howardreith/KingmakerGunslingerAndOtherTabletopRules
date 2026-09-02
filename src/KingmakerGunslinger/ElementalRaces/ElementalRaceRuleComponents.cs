@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 
 namespace KingmakerGunslinger.ElementalRaces
 {
@@ -90,6 +92,33 @@ namespace KingmakerGunslinger.ElementalRaces
                 current = current.Parent;
             }
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Hydraulic Push can complete synchronously before UnitUseAbility reaches
+    /// its ordinary AbilityData.Spend call. Spend at effect commitment only
+    /// when that ordinary path has not already consumed the single use.
+    /// </summary>
+    [Serializable]
+    public sealed class ElementalHydraulicResourceCommit : ContextAction
+    {
+        public BlueprintAbilityResource Resource;
+
+        public override string GetCaption()
+        {
+            return "Commit one available Hydraulic Push racial use";
+        }
+
+        public override void RunAction()
+        {
+            UnitEntityData caster = Context == null ? null :
+                Context.MaybeCaster;
+            if (caster == null || caster.Descriptor == null ||
+                caster.Descriptor.Resources == null || Resource == null ||
+                caster.Descriptor.Resources.GetResourceAmount(Resource) <= 0)
+                return;
+            caster.Descriptor.Resources.Spend(Resource, 1);
         }
     }
 }

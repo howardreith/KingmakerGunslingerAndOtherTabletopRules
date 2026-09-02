@@ -768,6 +768,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _context, _request));
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalRaceSlas)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalRaceSlaScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableHydraulicPush)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(HydraulicPushScenario.Run(_context, _request));
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveFeatureModuleSettings)
                 {
@@ -27217,7 +27232,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return string.Join(";", components.ToArray());
         }
 
-        private static string DescribeNestedObject(object value, int depth)
+        internal static string DescribeNestedObject(object value, int depth)
         {
             if (value == null) return "<null>";
             Type type = value.GetType();

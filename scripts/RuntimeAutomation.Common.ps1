@@ -32,6 +32,18 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'disposable-elemental-race-slas' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-hydraulic-push' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-optional-mod-compatibility' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'

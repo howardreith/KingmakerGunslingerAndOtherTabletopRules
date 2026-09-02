@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-e-base-mechanics-runtime-qualified",
+  "phase": "phase-e-racial-slas-and-hydraulic-runtime-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -24,19 +24,19 @@
     "developmentProbe": "PASS",
     "productionStableIdentities": "SOURCE-DOMAIN-RUNTIME-PASS",
     "publication": "SOURCE-DOMAIN-AND-MODULE-OFF-RUNTIME-PASS",
-    "ifritRules": "BASE-MECHANICS-RUNTIME-PASS-DELIVERY-SPECIFIC-PENDING",
-    "oreadRules": "BASE-MECHANICS-RUNTIME-PASS-MOVEMENT-AND-DELIVERY-PENDING",
-    "sylphRules": "BASE-MECHANICS-RUNTIME-PASS-DELIVERY-SPECIFIC-PENDING",
-    "undineRules": "BASE-MECHANICS-RUNTIME-PASS-HYDRAULIC-DELIVERY-PENDING",
+    "ifritRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
+    "oreadRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-MOVEMENT-AND-SAVE-BACKED-PENDING",
+    "sylphRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
+    "undineRules": "BASE-AND-HYDRAULIC-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "visuals": "NOT-STARTED",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-OFF-AND-BASE-MECHANICS-PASS",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-OFF-BASE-MECHANICS-DONOR-SLAS-AND-HYDRAULIC-PASS",
     "compatibility": "NOT-STARTED",
     "packaging": "PRODUCTION-RULES-RUNTIME-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1382,
+    "passed": 1384,
     "failed": 0,
     "status": "PASS"
   },
@@ -125,20 +125,90 @@
         "raceRecords": 4,
         "saveStateTouched": false,
         "evidenceSha256": "902f8b81d87883230f344a67db017829c897ef3e74a55ce534b0674ba2934c65"
+      },
+      {
+        "id": "20260902T0659506655164Z-disposable-elemental-race-slas",
+        "runId": "20260902T0659506915557Z-479271d5044041a1b27537734ffdfcde",
+        "scenario": "disposable-elemental-race-slas",
+        "status": "FAIL",
+        "reason": "fixture did not control the real Reflex event and conflated command result with fresh zero-resource availability",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0711398412802Z-disposable-elemental-race-slas",
+        "runId": "20260902T0711398712630Z-94ad60ca93c94dbc9629117ec7db0da1",
+        "scenario": "disposable-elemental-race-slas",
+        "status": "FAIL",
+        "reason": "target modifier fixture did not control the actual Reflex rule event",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0723038687479Z-disposable-elemental-race-slas",
+        "runId": "20260902T0723038897485Z-561fe0e5cf9d483d8c3a08cd923f5218",
+        "scenario": "disposable-elemental-race-slas",
+        "status": "FAIL",
+        "reason": "first request-local save handler was not on the native Reflex resolution path",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0727505151505Z-disposable-elemental-race-slas",
+        "runId": "20260902T0727505399772Z-38fc5469392f4871af7e367a5dd10f22",
+        "scenario": "disposable-elemental-race-slas",
+        "status": "PASS",
+        "assertionsPassed": 13,
+        "saveStateTouched": false,
+        "evidenceSha256": "166c5fe7ed1846de64bbdf28ee113b9145b609859cf36621526f6f19322cd322"
+      },
+      {
+        "id": "20260902T0810509976976Z-disposable-hydraulic-push",
+        "runId": "20260902T0810510197001Z-db4d84f0bc6749ac9f37f20303f2761d",
+        "scenario": "disposable-hydraulic-push",
+        "status": "FAIL",
+        "reason": "instant native effect resolved before ordinary command resource debit",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0821459403802Z-disposable-hydraulic-push",
+        "runId": "20260902T0821459653810Z-91b56e34aaa44c69995f69f3217820ba",
+        "scenario": "disposable-hydraulic-push",
+        "status": "FAIL",
+        "reason": "action-only debit disabled ordinary zero-resource availability gating",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0828281705241Z-disposable-hydraulic-push",
+        "runId": "20260902T0828281945254Z-55efda7cf4584851b7bc869178dd9a8b",
+        "scenario": "disposable-hydraulic-push",
+        "status": "PASS",
+        "assertionsPassed": 12,
+        "saveStateTouched": false,
+        "evidenceSha256": "c5afc2e51c9227f0d9c8acb71a39d232ff721c9fc067fdbff256f99d4a3d1cb5"
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "599e65d26fb92ae8146296c8265043849d7394d77482fe70084eb593793d3c44",
-    "dllSha256": "cab862592cb85a732c565c4811b44f77f39d68db6a7a57ed7f7a06419c8606b1",
-    "dllMvid": "284f7252-665f-417d-ba47-5786cfe95236",
+    "packageSha256": "da6efee6dd435b917cd2191bb6aebca6f255eaca18532f1a30dd10d3d342d816",
+    "dllSha256": "fee51842a8144e1e75324b968f322b2bbf5de7a181ad0c5bd2523443e31ced6b",
+    "dllMvid": "0670cdd2-e916-4d20-942d-ebcf8340cfec",
     "version": "0.0.113"
   },
   "runtimeMechanicsArtifact": {
     "dllSha256": "32c0a75c7f6c84331c1dea8e9acb2bc190d8a0b0fb1bfd44dc5805af54ebdf86",
     "dllMvid": "06f4414e-96b1-4679-8ba4-cdd50da37f1d",
     "evidenceSha256": "902f8b81d87883230f344a67db017829c897ef3e74a55ce534b0674ba2934c65",
+    "version": "0.0.113"
+  },
+  "runtimeSlaArtifact": {
+    "dllSha256": "7d3558f05a999542a15a8bd231e11367cf83f1b075e599dd745036ca15163e81",
+    "dllMvid": "44c0f06d-569d-4226-8487-6fa8ec15c2e5",
+    "evidenceSha256": "166c5fe7ed1846de64bbdf28ee113b9145b609859cf36621526f6f19322cd322",
+    "version": "0.0.113"
+  },
+  "runtimeHydraulicArtifact": {
+    "dllSha256": "8f19b9528df358ae14f2e28fb945b7a9ea7041c72c38dfeeb962f4d806b85b82",
+    "dllMvid": "d62cbb4f-bd4e-4dbc-a177-2034a04efb15",
+    "evidenceSha256": "c5afc2e51c9227f0d9c8acb71a39d232ff721c9fc067fdbff256f99d4a3d1cb5",
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

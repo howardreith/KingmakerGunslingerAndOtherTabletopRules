@@ -99,7 +99,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 Array.Empty<BlueprintComponent>();
             ability.ComponentsArray = (ability.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Where(IsSafeNativeEffect)
-                .Concat(new BlueprintComponent[] { ResourceCost(resource) })
+                .Concat(new BlueprintComponent[] { ResourceCost(resource, true) })
                 .ToArray();
             ability.Type = AbilityType.SpellLike;
             ability.Parent = null;
@@ -173,22 +173,26 @@ namespace KingmakerGunslinger.ElementalRaces
             var maneuver = ScriptableObject.CreateInstance<
                 ContextActionCombatManeuver>();
             maneuver.Type = CombatManeuver.BullRush;
+            maneuver.ReplaceStat = true;
             maneuver.UseCasterLevelAsBaseAttack = true;
             maneuver.UseBestMentalStat = true;
             maneuver.OnSuccess = new ActionList
             {
                 Actions = Array.Empty<GameAction>()
             };
+            var spend = ScriptableObject.CreateInstance<
+                ElementalHydraulicResourceCommit>();
+            spend.Resource = resource;
             var effect = ScriptableObject.CreateInstance<
                 AbilityEffectRunAction>();
             effect.SavingThrowType = SavingThrowType.Unknown;
             effect.Actions = new ActionList
             {
-                Actions = new GameAction[] { maneuver }
+                Actions = new GameAction[] { spend, maneuver }
             };
             ability.ComponentsArray = new BlueprintComponent[]
             {
-                spell, ResourceCost(resource), effect
+                spell, ResourceCost(resource, true), effect
             };
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(
@@ -239,12 +243,12 @@ namespace KingmakerGunslinger.ElementalRaces
         }
 
         private static AbilityResourceLogic ResourceCost(
-            BlueprintAbilityResource resource)
+            BlueprintAbilityResource resource, bool spendOnCommand)
         {
             var result = ScriptableObject.CreateInstance<
                 AbilityResourceLogic>();
             result.RequiredResource = resource;
-            result.IsSpendResource = true;
+            result.IsSpendResource = spendOnCommand;
             result.CostIsCustom = false;
             result.Amount = 1;
             return result;

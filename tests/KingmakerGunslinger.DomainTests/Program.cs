@@ -66,6 +66,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-races.sla-affinity-hydraulic", ElementalRaceProductionTests.SlaAffinityAndHydraulicContractsAreNarrow),
             Case("elemental-races.registration-publication", ElementalRaceProductionTests.RegistrationAndPublicationAreSaveSafe),
             Case("elemental-races.runtime-mechanics", ElementalRaceProductionTests.RuntimeMechanicsScenarioIsGuardedAndNative),
+            Case("elemental-races.runtime-slas", ElementalRaceProductionTests.RuntimeSlaScenarioUsesNativeDelivery),
+            Case("elemental-races.runtime-hydraulic-push", ElementalRaceProductionTests.RuntimeHydraulicPushScenarioUsesNativeManeuver),
             Case("outfit-render.guard", GunslingerOutfitRenderTests.GuardedWorkingSaveBoundaryIsExact),
             Case("outfit-render.catalog", GunslingerOutfitRenderTests.CandidateCatalogIsExactAndBounded),
             Case("outfit-render.matrix", GunslingerOutfitRenderTests.RendererRestoresAndCapturesExactMatrix),
