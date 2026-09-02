@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-f-production-visual-matrix-qualified",
+  "phase": "phase-g-elemental-gunslinger-class-equipment-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -28,15 +28,15 @@
     "oreadRules": "BASE-NATIVE-SLA-AND-MOVEMENT-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "sylphRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "undineRules": "BASE-AND-HYDRAULIC-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "visuals": "PRODUCTION-PROXIES-AND-56-CASE-RUNTIME-MATRIX-PASS-PERSISTENCE-MOTION-AND-HUMAN-REVIEW-PENDING",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-AND-PRODUCTION-VISUAL-MATRIX-PASS",
+    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-AND-128-CASE-GUNSLINGER-EQUIPMENT-MATRIX-PASS-PERSISTENCE-MOTION-BROADER-CLASS-MATRIX-AND-HUMAN-REVIEW-PENDING",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-PRODUCTION-VISUAL-MATRIX-AND-ELEMENTAL-GUNSLINGER-CLASS-EQUIPMENT-PASS",
     "compatibility": "NOT-STARTED",
-    "packaging": "PRODUCTION-VISUAL-CLEAN-RELEASE-CHECKPOINT-PASS",
+    "packaging": "CLASS-EQUIPMENT-CLEAN-RELEASE-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1385,
+    "passed": 1386,
     "failed": 0,
     "status": "PASS"
   },
@@ -323,14 +323,29 @@
         "visualResources": 28,
         "saveStateTouched": false,
         "evidenceSha256": "592e0d9f7c37bf850e9a79808102197d713a3e29b4655a765a66b1cdb5e8c699"
+      },
+      {
+        "id": "20260902T1346079130473Z-elemental-race-class-equipment",
+        "runId": "20260902T1346079340812Z-a1279a136b5c438dbaf91caddec0387b",
+        "scenario": "elemental-race-class-equipment",
+        "status": "PASS",
+        "assertionsPassed": 11,
+        "fixtures": 8,
+        "equipmentStates": 128,
+        "renderedViews": 640,
+        "imageCount": 256,
+        "restoredFixtures": 8,
+        "saveStateTouched": false,
+        "runtimeResultSha256": "9f766d5224c6eb7a2aafccfdbb6fd38123e4e152bf94ba21d9f13d6bcb033e71",
+        "indexSha256": "6af7737ebf9f1f46511b620e83f8ea2fee254c6e8dd438e924ffad551b99aa99"
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "8167bc0b7294e7d6936b59e2f58ec9b6fb6954882ea6b25379129f2ac481f3f2",
-    "dllSha256": "89ba7f9cd2a3f5393c6034a6b1b99a416dae7117c0546ad6cd7f8679eab21a5e",
-    "dllMvid": "ef41cc19-3e5c-41a2-a9f1-f0eb51d29887",
+    "packageSha256": "1c8065ae6a0d0218930de556ef30ab5648922a18d82c3e2fabefc77fcc89bb45",
+    "dllSha256": "d1a45067f0636eb4df19818c1780ca3deca49cebae6f73ab5edc0acae6b9a1bd",
+    "dllMvid": "93c4538b-07ad-43cd-93c1-b9fc977a9be3",
     "version": "0.0.113"
   },
   "runtimeMechanicsArtifact": {
@@ -379,6 +394,17 @@
     "evidenceSha256": "592e0d9f7c37bf850e9a79808102197d713a3e29b4655a765a66b1cdb5e8c699",
     "renderCases": 56,
     "exactCoverageGroups": 8,
+    "version": "0.0.113"
+  },
+  "runtimeClassEquipmentArtifact": {
+    "packageSha256": "b7ceb091a8750a6eb2b5a5124d3bc6cca8b1985e8e615b45d31cbc6385e49749",
+    "dllSha256": "3c7a6f83bdeb2b378d87a474d7f1fa662a5927da098e134fe50986f4f4d91b1a",
+    "dllMvid": "c2a5c72c-05b2-4b4a-bf57-b1856c915211",
+    "runtimeResultSha256": "9f766d5224c6eb7a2aafccfdbb6fd38123e4e152bf94ba21d9f13d6bcb033e71",
+    "indexSha256": "6af7737ebf9f1f46511b620e83f8ea2fee254c6e8dd438e924ffad551b99aa99",
+    "fixtures": 8,
+    "equipmentStates": 128,
+    "renderedViews": 640,
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

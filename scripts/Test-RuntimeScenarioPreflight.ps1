@@ -123,6 +123,7 @@ $expected = @(
     'gunslinger-outfit-candidate-render',
     'gunslinger-outfit-finalist-race-matrix',
     'gunslinger-outfit-production-compatibility',
+    'elemental-race-class-equipment',
     'gunslinger-outfit-production-motion',
     'gunslinger-outfit-production-persistence-prepare',
     'gunslinger-outfit-production-persistence',
@@ -393,6 +394,15 @@ Assert-True $gunslingerOutfitProductionCompatibility.RequiresSaveName `
 Assert-True ($gunslingerOutfitProductionCompatibility.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'gunslinger-outfit-production-compatibility-only-permits-working-save'
+$elementalRaceClassEquipment = Get-KmgRuntimeScenarioMetadata `
+    'elemental-race-class-equipment'
+Assert-True (-not $elementalRaceClassEquipment.RequiresManualInteraction) `
+    'elemental-race-class-equipment-is-autonomous'
+Assert-True $elementalRaceClassEquipment.RequiresSaveName `
+    'elemental-race-class-equipment-requires-save-name'
+Assert-True ($elementalRaceClassEquipment.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'elemental-race-class-equipment-only-permits-working-save'
 $gunslingerOutfitProductionMotion = Get-KmgRuntimeScenarioMetadata `
     'gunslinger-outfit-production-motion'
 Assert-True (-not $gunslingerOutfitProductionMotion.RequiresManualInteraction) `

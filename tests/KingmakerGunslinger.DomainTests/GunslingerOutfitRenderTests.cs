@@ -320,6 +320,87 @@ namespace KingmakerGunslinger.DomainTests
                     forbidden);
         }
 
+        internal static void ElementalClassEquipmentReusesProductionTransaction()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionCompatibilityScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            const string scenario = "elemental-race-class-equipment";
+
+            Assertions.True(catalog.Contains(
+                    "ElementalRaceClassEquipment") &&
+                catalog.Contains(scenario) &&
+                runner.Contains(".ElementalRaceClassEquipment") &&
+                runner.Contains("BeginProductionCompatibility(") &&
+                WorkingSavePredicate(request).Contains(
+                    "ElementalRaceClassEquipment") &&
+                automation.Contains("'" + scenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains(
+                    scenario + "-only-permits-working-save"),
+                "Elemental class/equipment qualification is not wired through every guarded working-save surface.");
+            string metadata = automation.Substring(
+                automation.IndexOf("'" + scenario +
+                    "' = [pscustomobject]", StringComparison.Ordinal), 500);
+            Assertions.True(metadata.Contains(
+                    "RequiresSaveName = $true") &&
+                metadata.Contains(
+                    "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                metadata.Contains(
+                    "RequiresManualInteraction = $false"),
+                "Elemental class/equipment qualification must fail closed to the disposable working save.");
+            int collectorStart = orchestrator.IndexOf(
+                "elseif ($Scenario -eq '" + scenario + "')",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                orchestrator.Substring(collectorStart,
+                    Math.Min(550, orchestrator.Length - collectorStart))
+                    .Contains(
+                        "[Math]::Max($TimeoutSeconds, 1800) + 15"),
+                "Eight elemental fixtures need their exact bounded collector window.");
+
+            foreach (string token in new[]
+            {
+                "IsElementalRaceClassEquipment",
+                "RequireElementalRaces()",
+                "BuildElementalFixtures()",
+                "ElementalRaceCatalog.RaceCount *",
+                ".ElementalRaces.OrderedBlueprints()",
+                "_supportedRaces.All(race => fixtureRecords.Count(",
+                (char)34 + "raceGuid" + (char)34,
+                "race.AssetGuid",
+                "elemental-race-class-equipment-index.json",
+                "elemental-race-class-equipment-progress.json",
+                "elemental-race-class-equipment-fixtures",
+                (char)34 + "equipment-matrix" + (char)34,
+                "ElementalRaceClassEquipment"
+            })
+                Assertions.True(source.Contains(token),
+                    "Shared production transaction lacks elemental contract token: " +
+                    token);
+            Assertions.Equal(16, Regex.Matches(source,
+                "new ProductionCompatibilityCase\\(").Count,
+                "Elemental mode must reuse the accepted sixteen-state matrix without duplicating it.");
+            Assertions.True(source.Contains(
+                    "GunslingerOutfitProductionCompatibility") &&
+                source.Contains("BuildHumanFixtures()") &&
+                source.Contains("expectedFixtures == 2") &&
+                source.Contains((char)34 + "Human" + (char)34),
+                "The accepted two-Human compatibility path must remain explicitly preserved.");
+        }
+
         internal static void ProductionMotionIsGuardedAndExact()
         {
             string source = Read("src", "KingmakerGunslinger",

@@ -11,8 +11,10 @@ Aasimar/Tiefling creature-type behavior, and module ON/OFF publication also
 pass guarded runtime checks. The complete eight-race native visual donor and
 palette inventory also passes guarded runtime checks. Production visual
 proxies and the 56-case race/sex/option renderer matrix now pass guarded
-runtime checks. Class/equipment/motion, save-backed persistence, compatibility,
-and human visual qualification remain incomplete;
+runtime checks. The 128-state elemental Gunslinger outfit/equipment/rebuild
+matrix also passes guarded runtime checks. Broader class clothing, remaining
+equipment slots, motion, save-backed persistence, compatibility, and human
+visual qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
@@ -75,6 +77,12 @@ absence of a hard blocker is not a completion claim.
   clearing, and null-versus-empty optional choices were observed and encoded
   without weakening mandatory asset checks. No shared race or blueprint index
   changed during the save-free scenario.
+- Eight production Gunslinger dolls (four races, both sexes) passed all 128
+  accepted equipment/rebuild states: sex-specific Magus-derived class clothes,
+  firearms held and stored, light/heavy armor, headgear/hair, cloak, backpack,
+  class colors, repeated rebuild, exact fixture restoration, and unchanged
+  production class/shared-unit state. The guarded scenario made no save call;
+  generated images remain supporting evidence only.
 
 ## Open risks requiring evidence
 
@@ -88,9 +96,11 @@ absence of a hard blocker is not a completion claim.
   persistence remains pending.
 - Native head, hair, skin, eyebrow, beard, horn, body, preset, and color-ramp
   donors are inventoried and production proxies/curated combinations pass the
-  complete option renderer matrix. Kingmaker has no race-level eye-color field
-  in `CustomizationOptions`; native head/material eyes and that limitation need
-  human review. The full class/equipment/motion matrix remains to be qualified.
+  complete option renderer matrix and the elemental Gunslinger equipment
+  matrix. Kingmaker has no race-level eye-color field in
+  CustomizationOptions; native head/material eyes and that limitation need
+  human review. The nine additional base-game classes, medium armor, robes,
+  accessory slots, and full motion matrix remain to be qualified.
 - Complete Aasimar fallback arrays render and preserve Human skeleton/body
   compatibility. Production visuals will initially constrain geometry to the
   runtime-proven Human-compatible Human/Aasimar/Tiefling skeleton family;

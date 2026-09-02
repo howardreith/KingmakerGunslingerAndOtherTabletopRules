@@ -225,6 +225,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitProductionCompatibility ||
                 request.Scenario == RuntimeTestScenarioCatalog
+                    .ElementalRaceClassEquipment ||
+                request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitProductionMotion ||
                 RuntimeTestScenarioCatalog
                     .IsGunslingerOutfitProductionPersistenceScenario(

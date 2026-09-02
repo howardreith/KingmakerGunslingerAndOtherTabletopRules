@@ -658,3 +658,74 @@
   `89ba7f9cd2a3f5393c6034a6b1b99a416dae7117c0546ad6cd7f8679eab21a5e`;
   DLL MVID: `ef41cc19-3e5c-41a2-a9f1-f0eb51d29887`. This remains an
   engineering version 0.0.113 checkpoint, not the final preview artifact.
+
+## 2026-09-02 - Elemental Gunslinger class/equipment qualification
+
+- Generalized the accepted
+  GunslingerOutfitProductionCompatibilityScenario transaction without
+  changing its Human mode. The new guarded
+  elemental-race-class-equipment mode resolves the four unconditional
+  production race identities, creates one male and one female Gunslinger doll
+  per race, and reuses the exact existing sixteen-state production matrix.
+  It records race GUID and donor RaceId, verifies the accepted sex-specific
+  Magus-derived class links, and uses distinct progress/index filenames.
+- The matrix covers default and alternate class colors; held pistol, musket,
+  and blunderbuss; stored musket; light and heavy armor equip/remove rebuilds;
+  tricorn equip/remove with hair restoration; cloak equip/remove; backpack
+  visibility/removal; and final rebuild. Every state requires exact body-slot
+  contents, native character rebuild completion, non-null render materials and
+  shaders, and reversible fixture cleanup. The original Human scenario retains
+  its two Human fixtures, labels, assertion IDs, and sixteen cases.
+- Added the scenario to the guarded working-save allowlist, exact preflight
+  metadata, bounded 1,800-second collector window, runner dispatch, and
+  exception routing. It names only KMG_AUTOMATION_WORKING, never calls a save
+  API, and uses request-local actors/items/cameras/textures.
+- Domain command
+  .\scripts\test-domain.ps1 -Configuration Release was run four times
+  during focused test construction. The first three completed all 1,386 tests
+  with exactly one failure each in the new source-shape test: first a line-wrap
+  assumption around BlueprintBootstrap.ElementalRaces, then a line-wrap
+  assumption around the raceGuid indexer, then an assumption that the
+  dynamically prefixed equipment assertion existed as one literal. These were
+  test-only contract defects; no production behavior failed. The checks were
+  narrowed to the semantic ordered-race, per-race aggregation, and dynamic
+  assertion-suffix contracts. The final run passed **1,386/1,386**.
+- Guarded command
+  .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario
+  elemental-race-class-equipment -ExpectedVersion 0.0.113 -SaveName
+  KMG_AUTOMATION_WORKING -TimeoutSeconds 1800 -ExitAfterCompletion:$true
+  -Confirm:$false -AllowDirtyGit completed transaction
+  20260902T1346079130473Z-elemental-race-class-equipment **PASS** (run ID
+  20260902T1346079340812Z-a1279a136b5c438dbaf91caddec0387b).
+- All 11 assertions passed: exact guarded scenario and working-save boundary,
+  exact Kingmaker 2.1.7b assembly identity, eight/eight production race/sex
+  link rows, eight/eight native Gunslinger fixtures, 128/128 exact equipment
+  states, 256 supporting PNGs and 640 labelled structural views, eight/eight
+  exact fixture restorations, unchanged production class blueprint, unchanged
+  party/global-unit snapshots, no save call, and loaded mod version 0.0.113.
+  The runtime lasted 310,084 ms and removed all scenario hooks.
+- Runtime result SHA-256:
+  9f766d5224c6eb7a2aafccfdbb6fd38123e4e152bf94ba21d9f13d6bcb033e71;
+  matrix index SHA-256:
+  6af7737ebf9f1f46511b620e83f8ea2fee254c6e8dd438e924ffad551b99aa99;
+  runtime package/DLL SHA-256 values:
+  b7ceb091a8750a6eb2b5a5124d3bc6cca8b1985e8e615b45d31cbc6385e49749 /
+  3c7a6f83bdeb2b378d87a474d7f1fa662a5927da098e134fe50986f4f4d91b1a;
+  DLL MVID: c2a5c72c-05b2-4b4a-bf57-b1856c915211.
+- Low foreground-density warnings were retained as framing diagnostics.
+  Screenshots are supporting evidence only and do not establish clipping or
+  aesthetic acceptance. This scenario proves static Gunslinger outfit,
+  firearm, armor, headgear/hair, cloak, backpack, color, and rebuild
+  compatibility. The broader class-clothing matrix, medium armor, robes,
+  accessory slots, motion, save-backed persistence, compatibility profiles,
+  and human visual review remain pending.
+- Required clean command
+  .\scripts\build.ps1 -Configuration Release -Clean -Package then passed:
+  repository validation, all 1,386 tests, production compilation, build-output
+  and SoundBank validation, deterministic package creation, and strict
+  standalone UMM validation. Clean package SHA-256:
+  1c8065ae6a0d0218930de556ef30ab5648922a18d82c3e2fabefc77fcc89bb45;
+  DLL SHA-256:
+  d1a45067f0636eb4df19818c1780ca3deca49cebae6f73ab5edc0acae6b9a1bd;
+  DLL MVID: 93c4538b-07ad-43cd-93c1-b9fc977a9be3. This is a version
+  0.0.113 engineering checkpoint, not the final preview artifact.
