@@ -850,6 +850,8 @@ namespace KingmakerGunslinger.DomainTests
                 "if (_motionTarget == null)",
                 "SetProductionMotionUnitPosition(_motionTarget",
                 "IsUnitEnoughClose", "ApproachRadius",
+                "readiness.Init(_actor)",
+                "readinessProbeDetached",
                 (char)34 + "targetInState" + (char)34,
                 (char)34 + "commandCloseEnough" + (char)34,
                 "RuleDealDamage", "ResurrectAndFullRestore",
