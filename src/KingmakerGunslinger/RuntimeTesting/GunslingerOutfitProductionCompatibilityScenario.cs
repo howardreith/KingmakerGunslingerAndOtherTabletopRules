@@ -419,11 +419,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ToLowerInvariant();
                 _gameAssemblyMvid = gameAssembly.ManifestModule
                     .ModuleVersionId.ToString("D");
-                if (ProductionCompatibilityCases.Length != 16 ||
+                if (ProductionCompatibilityCases.Length != 28 ||
                     ProductionCompatibilityCases.Select(value => value.Label)
-                        .Distinct(StringComparer.Ordinal).Count() != 16)
+                        .Distinct(StringComparer.Ordinal).Count() !=
+                            ProductionCompatibilityCases.Length)
                     throw new InvalidOperationException(
-                        "The production compatibility matrix must contain sixteen unique states.");
+                        "The production compatibility matrix must contain twenty-eight unique states.");
                 WriteProgress("initialized");
             }
 

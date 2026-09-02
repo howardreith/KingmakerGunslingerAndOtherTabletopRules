@@ -241,6 +241,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(28, Regex.Matches(source,
                 "new ProductionCompatibilityCase\\(").Count,
                 "The production compatibility matrix must contain exactly twenty-eight states.");
+            Assertions.True(source.Contains(
+                    "ProductionCompatibilityCases.Length != 28") &&
+                source.Contains(
+                    "ProductionCompatibilityCases.Length)") &&
+                source.Contains(
+                    "must contain twenty-eight unique states"),
+                "The production runtime guard must enforce the same twenty-eight unique states.");
             foreach (string token in new[]
             {
                 "abca4797366d4df0831a418eee39069a",
