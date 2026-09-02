@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-e-native-identity-movement-and-publication-qualified",
+  "phase": "phase-f-native-visual-donor-audit-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -28,10 +28,10 @@
     "oreadRules": "BASE-NATIVE-SLA-AND-MOVEMENT-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "sylphRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "undineRules": "BASE-AND-HYDRAULIC-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "visuals": "NOT-STARTED",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-AND-MOVEMENT-PASS",
+    "visuals": "NATIVE-DONOR-INVENTORY-RUNTIME-PASS-PRODUCTION-PENDING",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-AND-VISUAL-DONOR-AUDIT-PASS",
     "compatibility": "NOT-STARTED",
-    "packaging": "PRODUCTION-RULES-RUNTIME-CHECKPOINT-PASS",
+    "packaging": "VISUAL-DONOR-AUDIT-CLEAN-RELEASE-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
@@ -228,14 +228,50 @@
         "elementalRaces": false,
         "selectorCounts": [0, 0, 0, 0],
         "settingsRestoredExactly": true
+      },
+      {
+        "id": "20260902T1026029043019Z-observe-elemental-race-blueprints",
+        "runId": "20260902T1026029223078Z-0538f23fa0f84073b2f09d8efa6ffac3",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "FAIL",
+        "reason": "fixture incorrectly required eyebrows for every donor; Half-Orc intentionally exposes none",
+        "declaredVisualLinks": 358,
+        "resolvedVisualLinks": 358,
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T1030175263514Z-observe-elemental-race-blueprints",
+        "runId": "20260902T1030175473872Z-8119193d15fe46f58b619ebe4cd71a41",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "PASS",
+        "visualDonors": 8,
+        "declaredVisualLinks": 358,
+        "resolvedVisualLinks": 358,
+        "unresolvedVisualLinks": 0,
+        "saveStateTouched": false,
+        "evidenceSha256": "dce1a2f1077a67c2cf0a13041256dd0b3eb0e30f2b349bd4c999ae042db1a8a2"
+      },
+      {
+        "id": "20260902T1042298660656Z-observe-elemental-race-blueprints",
+        "runId": "20260902T1042298861108Z-ffb1e76c92564fda8db19251778e4ae5",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "PASS",
+        "visualDonors": 8,
+        "declaredVisualLinks": 358,
+        "uniqueVisualLinks": 303,
+        "resolvedVisualLinks": 358,
+        "unresolvedVisualLinks": 0,
+        "nativeRampContract": "256x1 RGB24 bilinear clamp",
+        "saveStateTouched": false,
+        "evidenceSha256": "e1bca7ba7357d0aef9e964fd02e6c5f254ee6368331c5ace0a9776202f5c5733"
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "abb0639d5942fb4692a6cb455671436a47de6d7ce31f5833976db7d37768dacd",
-    "dllSha256": "b25b2e76e9c10d900fa391c432f7838a7023cbeed9381de5338e0afe90756ce0",
-    "dllMvid": "57a10073-0765-4107-986e-de9ef987ca0b",
+    "packageSha256": "f15d67d2334e197f64bc0eb4f7edb580876e1a737ee6f75ae689416692c56323",
+    "dllSha256": "d4861724104b211cf800ba13c5617a8da60c170548a007807919c2d49a439e8c",
+    "dllMvid": "bcee4c97-da02-45e2-9c11-abaa8cf497f0",
     "version": "0.0.113"
   },
   "runtimeMechanicsArtifact": {
@@ -266,6 +302,14 @@
     "packageSha256": "7a6dde430145b71778877225b643c80a0f574506003750df3233dd3f38bdc286",
     "dllSha256": "63c75f122df292b51f5a0f5ccd67d74435620364b073e3b2d95b4cee5af53675",
     "dllMvid": "43609df8-b22a-4374-bf3f-eb2b2ce44e3c",
+    "version": "0.0.113"
+  },
+  "runtimeVisualDonorArtifact": {
+    "packageSha256": "dc4164159f59954a32a794d6cdf33a29603343bed3fad530000aa6935919a663",
+    "dllSha256": "efcc1d274d233991dfe357a304ec506f9441533bc1bce81b6d0b7e5c8d00ad0b",
+    "dllMvid": "8ed2482c-7e21-4afb-851d-fe6a14480ca1",
+    "runtimeResultSha256": "6227ad7e44a917d98adcfbaaa8fd84fab31efe3a2a28f4e5af8fcfd9aa04a0c7",
+    "evidenceSha256": "e1bca7ba7357d0aef9e964fd02e6c5f254ee6368331c5ace0a9776202f5c5733",
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

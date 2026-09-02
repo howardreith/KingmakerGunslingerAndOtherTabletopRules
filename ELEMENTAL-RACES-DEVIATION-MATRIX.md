@@ -19,6 +19,6 @@ unsafe mechanism, but must not silently change the player-facing rule.
 | Favored-class bonuses | Not implemented | OUT OF SCOPE |
 | Alternate traits/heritages | Base heritage only | OUT OF SCOPE |
 | Race feats/archetypes/dialogue rewrites | Not implemented | OUT OF SCOPE |
-| Visual geometry | Vanilla Kingmaker modular assets only; no new body meshes, fins, crystals, flame hair, or persistent VFX | APPROVED CONSTRAINT |
+| Visual geometry | Vanilla Kingmaker modular assets only; no new body meshes, fins, crystals, flame hair, or persistent VFX. A guarded eight-race inventory resolved all 358 donor links and native palettes; production proxies and renderer/motion qualification remain pending. | APPROVED CONSTRAINT; DONOR INVENTORY RUNTIME PASS |
 | Portraits | No automatic race-specific portraits | OUT OF SCOPE |
 | Donor dialogue consequences | `RaceId.Aasimar` checks can classify an elemental race as Aasimar; do not globally rewrite dialogue or person-spell checks | ACCEPTED LIMITATION |

@@ -498,3 +498,67 @@
   `b25b2e76e9c10d900fa391c432f7838a7023cbeed9381de5338e0afe90756ce0`;
   DLL MVID: `57a10073-0765-4107-986e-de9ef987ca0b`. This remains a version
   0.0.113 engineering checkpoint, not the final preview candidate.
+
+## 2026-09-02 - Guarded native visual-donor and palette inventory
+
+- Extended the request-gated `observe-elemental-race-blueprints` probe to
+  inspect Human, Aasimar, Tiefling, Elf, Dwarf, Half-Elf, Half-Orc, and Gnome.
+  It records exact resource IDs/names, race and sex link context, equipment
+  layers, body/outfit and hidden-body-part metadata, color profiles and ramp
+  names, visual-preset wrappers and skeletons, DLC flags, and texture metadata.
+  The diagnostic race remains unselectable, save-free, and removed exactly.
+- Transaction
+  `20260902T1026029043019Z-observe-elemental-race-blueprints` **FAIL** (run ID
+  `20260902T1026029223078Z-0538f23fa0f84073b2f09d8efa6ffac3`) only because
+  the first fixture required eyebrows from every donor. Half-Orc intentionally
+  declares none; all 358/358 visual links had resolved and every preset was
+  complete. Runtime-result SHA-256:
+  `e144ea66316ae8d28a913c282cd0a06eff452a5ead537266afdcd871370aa2eb`;
+  probe evidence SHA-256:
+  `fe7a167cb11634e0d54f69de0c1a24ab57e3f10f4f44f041e7ac3c3b5d1f3ee4`.
+  The test was corrected to make brows an audited optional category.
+- Corrected transaction
+  `20260902T1030175263514Z-observe-elemental-race-blueprints` **PASS** (run ID
+  `20260902T1030175473872Z-8119193d15fe46f58b619ebe4cd71a41`): eight donors,
+  358 declared and resolved links, 303 unique resources, 55 repeated
+  references, zero unresolved links, complete presets, and required head/hair
+  breadth for both sexes. Runtime-result SHA-256:
+  `9da3723c1550e743c9cdc2da51c8d51ec0b3f4599d7e9239139fef4ba7739ee3`;
+  probe evidence SHA-256:
+  `dce1a2f1077a67c2cf0a13041256dd0b3eb0e30f2b349bd4c999ae042db1a8a2`.
+- Added live texture metadata and reran transaction
+  `20260902T1042298660656Z-observe-elemental-race-blueprints` **PASS** (run ID
+  `20260902T1042298861108Z-ffb1e76c92564fda8db19251778e4ae5`). Every native
+  ramp observed was 256x1 RGB24, bilinear, clamped, and non-readable; this is a
+  consistent donor material contract for project-owned visual proxies. The
+  probe identifies suitable native Tiefling warm/blue skin, Elf pale blue/
+  green/gray skin and hair, Aasimar metallic hair, and Gnome blue/aquamarine/
+  violet hair palettes without extracting or redistributing textures.
+- Human, Aasimar, and Tiefling presets use the Human-compatible skeleton
+  family. Production geometry will remain in that proven family initially;
+  Elf, Dwarf, Half-Elf, Half-Orc, and Gnome geometry is not assumed compatible
+  merely because its links resolve. Their audited native ramp textures remain
+  usable as palette inputs subject to proxy rendering.
+- Final donor-audit evidence SHA-256:
+  `e1bca7ba7357d0aef9e964fd02e6c5f254ee6368331c5ace0a9776202f5c5733`;
+  runtime-result SHA-256:
+  `6227ad7e44a917d98adcfbaaa8fd84fab31efe3a2a28f4e5af8fcfd9aa04a0c7`.
+  Runtime package/DLL SHA-256 values were
+  `dc4164159f59954a32a794d6cdf33a29603343bed3fad530000aa6935919a663` /
+  `efcc1d274d233991dfe357a304ec506f9441533bc1bce81b6d0b7e5c8d00ad0b`;
+  DLL MVID: `8ed2482c-7e21-4afb-851d-fe6a14480ca1`. The guarded launcher reran the
+  complete **1,385/1,385 PASS** domain suite and strict package validation.
+- This checkpoint proves donor availability and palette contracts, not the
+  final per-race appearance. Stable proxy registration, curated combinations,
+  candidate rendering, class/equipment/motion compatibility, save persistence,
+  and human aesthetic acceptance remain pending.
+- Required clean command
+  `.\scripts\build.ps1 -Configuration Release -Clean -Package` passed on the
+  exact documented donor-audit tree: repository validation, all 1,385 tests,
+  production compilation, output and SoundBank checks, deterministic package
+  creation, and strict standalone UMM validation. Package SHA-256:
+  `f15d67d2334e197f64bc0eb4f7edb580876e1a737ee6f75ae689416692c56323`;
+  DLL SHA-256:
+  `d4861724104b211cf800ba13c5617a8da60c170548a007807919c2d49a439e8c`;
+  DLL MVID: `bcee4c97-da02-45e2-9c11-abaa8cf497f0`. This remains a version
+  0.0.113 engineering checkpoint, not the final preview candidate.

@@ -2,7 +2,7 @@
 
 ## Current outcome
 
-**IN PROGRESS - BASE-RACE, IDENTITY, PUBLICATION, AND RACIAL-SLA MECHANICS RUNTIME QUALIFIED.** All
+**IN PROGRESS - BASE-RACE, IDENTITY, PUBLICATION, RACIAL-SLA MECHANICS, AND NATIVE VISUAL DONOR INVENTORY RUNTIME QUALIFIED.** All
 four production races, their common/race-specific rules, 24 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
@@ -13,7 +13,9 @@ Burning Hands save/damage delivery, Stone Fist delivery/expiry and unarmed
 replacement, Feather Step delivery/expiry, Hydraulic Push resource and Bull
 Rush behavior, native Oread armor/encumbrance movement, exact person-spell and
 prerequisite behavior, and module-ON/module-OFF selector publication.
-Distinctive visual proxies, save-backed persistence, compatibility profiles,
+The live donor audit additionally proves complete native modular geometry and
+palette inputs for the production visual phase. Distinctive visual proxies,
+candidate rendering, save-backed persistence, compatibility profiles,
 the full 24-state runtime boundary matrix, and human acceptance remain pending.
 
 ## Authoritative baseline
@@ -214,6 +216,42 @@ two-process save-backed persistence qualification.
   retaining all 24 registered identities. Both shared catalogs were unique and
   both settings transactions restored the exact original SHA-256.
 
+## Guarded native visual-donor inventory
+
+- The request-gated development probe now audits Human, Aasimar, Tiefling,
+  Elf, Dwarf, Half-Elf, Half-Orc, and Gnome. It records exact resource IDs and
+  names, sex and race compatibility, body and outfit parts, hidden body parts,
+  color profiles, preset wrappers, skeletons, DLC flags, and native ramp
+  texture metadata. It does not publish or persist a diagnostic race.
+- Across the eight donors, all 358 declared references resolved (303 unique
+  resources and 55 repeated references), all visual presets were complete,
+  and both sexes met the required minimum of two heads and four hair choices.
+  Eyebrows, beards, horns, and tail palettes are audited when present rather
+  than treated as universal mandatory categories.
+- Transaction `20260902T1026029043019Z-observe-elemental-race-blueprints`
+  failed only because the first fixture incorrectly required eyebrows from
+  Half-Orc, whose native race definition intentionally declares none. All
+  358/358 links had already resolved. The requirement was corrected without
+  changing production content.
+- Corrected transaction
+  `20260902T1030175263514Z-observe-elemental-race-blueprints` passed the full
+  link/preset/options inventory. The extended texture-metadata transaction
+  `20260902T1042298660656Z-observe-elemental-race-blueprints` also passed (run
+  ID `20260902T1042298861108Z-ffb1e76c92564fda8db19251778e4ae5`).
+  Evidence SHA-256:
+  `e1bca7ba7357d0aef9e964fd02e6c5f254ee6368331c5ace0a9776202f5c5733`;
+  runtime-result SHA-256:
+  `6227ad7e44a917d98adcfbaaa8fd84fab31efe3a2a28f4e5af8fcfd9aa04a0c7`.
+- Every inspected native ramp used the same compatible contract: 256 by 1,
+  RGB24, bilinear filtering, clamp wrapping. The inventory exposes suitable
+  vanilla warm, stone, pale/metallic, and blue/teal palettes without extracting
+  or redistributing Owlcat textures. Human, Aasimar, and Tiefling presets use
+  Human-compatible skeletons; geometry from the other donor skeletons remains
+  excluded pending an explicit renderer qualification.
+- This inventory qualifies inputs and fallback feasibility, not a production
+  appearance. Project-owned proxies, candidate rendering, armor/outfit/motion,
+  persistence, and subjective visual review remain pending.
+
 ## Qualification status
 
 | Gate | Status |
@@ -232,6 +270,7 @@ two-process save-backed persistence qualification.
 | Guarded native identity/Oread movement | PASS - `20260902T0947509229460Z-disposable-elemental-race-native-identity` |
 | Guarded module-ON selector publication | PASS - `20260902T0955212013652Z-observe-feature-module-settings` |
 | Guarded module-OFF selector absence/identity retention | PASS - `20260902T0958454418742Z-observe-feature-module-settings` |
+| Guarded native visual-donor inventory | PASS - `20260902T1042298660656Z-observe-elemental-race-blueprints` |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
 | Guarded visuals/runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
@@ -296,3 +335,11 @@ DLL SHA-256:
 `b25b2e76e9c10d900fa391c432f7838a7023cbeed9381de5338e0afe90756ce0`;
 DLL MVID: `57a10073-0765-4107-986e-de9ef987ca0b`. This is still a version
 0.0.113 engineering checkpoint rather than the final preview artifact.
+
+The guarded native visual-donor checkpoint passed the complete 1,385-test
+suite and the required clean Release/package gate. Clean package SHA-256:
+`f15d67d2334e197f64bc0eb4f7edb580876e1a737ee6f75ae689416692c56323`;
+DLL SHA-256:
+`d4861724104b211cf800ba13c5617a8da60c170548a007807919c2d49a439e8c`;
+DLL MVID: `bcee4c97-da02-45e2-9c11-abaa8cf497f0`. This remains a version
+0.0.113 engineering checkpoint, not the production visual candidate.
