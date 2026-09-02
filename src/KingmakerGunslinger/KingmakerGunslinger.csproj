@@ -210,6 +210,7 @@
     <Compile Include="Presentation\PlayerFacingTextPolicy.cs" />
     <Compile Include="Presentation\GunslingerClassAppearanceCatalog.cs" />
     <Compile Include="Presentation\GunslingerClassAppearance.cs" />
+    <Compile Include="ElementalRaces\ElementalRaceDiagnosticIdentityCatalog.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -933,6 +934,7 @@
     <Compile Include="RuntimeTesting\CompatibilityAttributionRuntimeControl.cs" />
     <Compile Include="RuntimeTesting\CompatibilityAssetAttributionScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitAuditScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalRaceDevelopmentProbeScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitRenderScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitQualificationScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitProductionCompatibilityScenario.cs" />

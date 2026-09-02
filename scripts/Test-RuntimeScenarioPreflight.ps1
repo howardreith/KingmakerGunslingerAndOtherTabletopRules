@@ -43,6 +43,7 @@ $expected = @(
     'mod-load-smoke',
     'observe-kmg-compatibility-asset-attribution',
     'gunslinger-outfit-audit',
+    'observe-elemental-race-blueprints',
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
     'disposable-urban-barbarian-focused',

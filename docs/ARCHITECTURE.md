@@ -518,10 +518,13 @@ catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
 plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, extend the
-append-only ledger to 1637 stable IDs: 1636 active and one reserved. The two
+append-only ledger to 1638 stable IDs: 1636 active and 2 reserved. The two
 latest active identities are hidden, mechanically inert In Harm's Way
 immediate-action debt facts. They preserve an off-turn spend across save/load
 and tie it to the owner's next actual turn without using a global-round flag.
+The additional reservation is the request-gated Elemental Races diagnostic
+race. It is never part of ordinary bootstrap or character creation and is
+removed by the guarded probe that owns it.
 Twenty-five active identities belong to the isolated Brown-Fur extension and
 do not change the unconditional core registration count; they register only
 after the structural CotW contract succeeds, while selector publication

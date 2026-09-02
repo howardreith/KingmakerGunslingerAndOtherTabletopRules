@@ -12620,6 +12620,10 @@
     {
       "symbol": "KMG.Traits.HeirloomWeapon.Nodachi.CombatManeuverBonus", "guid": "1a7a5d985fe740cc8442f04f0fe814d8",
       "plannedType": "BlueprintFeature", "status": "active", "milestone": "Eastern Weapons Favored Class compatibility", "notes": "Hidden equipment-conditional Additional CMB carrier for Heirloom Weapon (Nodachi)."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Diagnostics.ProbeRace", "guid": "57005fca40ab4775ae2fea5613214054",
+      "plannedType": "BlueprintRace", "status": "reserved", "milestone": "Elemental Races reconnaissance", "notes": "Request-gated diagnostic race identity. It is registered only inside the guarded development probe, never published, and removed before the probe completes."
     }
   ]
 }

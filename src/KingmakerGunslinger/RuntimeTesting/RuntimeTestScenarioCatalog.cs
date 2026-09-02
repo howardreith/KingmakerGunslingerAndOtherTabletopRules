@@ -106,6 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-class-blueprint-contracts";
         internal const string ObserveGunslingerPresentation =
             "observe-gunslinger-presentation";
+        internal const string ObserveElementalRaceBlueprints =
+            "observe-elemental-race-blueprints";
         internal const string GunslingerOutfitAudit =
             "gunslinger-outfit-audit";
         internal const string GunslingerOutfitCandidateRender =
@@ -424,6 +426,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveCraftMagicItemsVerifyCleanup,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
+                ObserveElementalRaceBlueprints,
                 GunslingerOutfitAudit,
                 GunslingerOutfitCandidateRender,
                 GunslingerOutfitFinalistRaceMatrix,
