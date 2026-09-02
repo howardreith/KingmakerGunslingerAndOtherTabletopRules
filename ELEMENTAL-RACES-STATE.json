@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "mission": "elemental-races",
+  "branch": "codex/elemental-races",
+  "startingBranch": "master",
+  "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
+  "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
+  "phase": "phase-b-development-probe-qualified",
+  "version": "0.0.113",
+  "informationalVersion": "0.0.113-save-load-hotfix",
+  "featureModuleSchema": 9,
+  "featureModuleCount": 10,
+  "featureModuleBoundaryCount": 22,
+  "elementalModuleDefault": false,
+  "baselineDomainTests": {
+    "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
+    "passed": 1373,
+    "failed": 0,
+    "status": "PASS"
+  },
+  "implementation": {
+    "featureModule": "NOT-STARTED",
+    "diagnosticIdentity": "RESERVED-REQUEST-GATED",
+    "developmentProbe": "PASS",
+    "productionStableIdentities": "NOT-STARTED",
+    "publication": "NOT-STARTED",
+    "ifritRules": "NOT-STARTED",
+    "oreadRules": "NOT-STARTED",
+    "sylphRules": "NOT-STARTED",
+    "undineRules": "NOT-STARTED",
+    "visuals": "NOT-STARTED",
+    "runtimeScenarios": "DEVELOPMENT-PROBE-ONLY",
+    "compatibility": "NOT-STARTED",
+    "packaging": "PHASE-B-CHECKPOINT-PASS",
+    "draftPullRequest": "NOT-OPENED"
+  },
+  "runtime": {
+    "transactions": [
+      {
+        "id": "20260902T0300398535825Z-gunslinger-outfit-audit",
+        "scenario": "gunslinger-outfit-audit",
+        "status": "PASS"
+      },
+      {
+        "id": "20260902T0342307483942Z-observe-elemental-race-blueprints",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "FAIL",
+        "reason": "same-frame diagnostic doll readiness assumption"
+      },
+      {
+        "id": "20260902T0352481058858Z-observe-elemental-race-blueprints",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "FAIL",
+        "reason": "unattached CharacterAvatar entity assumption"
+      },
+      {
+        "id": "20260902T0358322341784Z-observe-elemental-race-blueprints",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "FAIL",
+        "reason": "non-native race application and combined DollData envelope"
+      },
+      {
+        "id": "20260902T0409422132157Z-observe-elemental-race-blueprints",
+        "scenario": "observe-elemental-race-blueprints",
+        "status": "PASS",
+        "saveStateTouched": false,
+        "publishedToCharacterRaces": false,
+        "evidenceSha256": "edfdc13e786fe800851573e4339176b1fdac2116ed43141fd658627ccda40e04"
+      }
+    ],
+    "status": "PARTIAL-PASS"
+  },
+  "humanReview": "NOT-READY"
+}

@@ -138,6 +138,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gunslingerOutfitProductionMotion;
         private GunslingerOutfitRenderScenario.ProductionPersistenceSession
             _gunslingerOutfitProductionPersistence;
+        private ElementalRaceDevelopmentProbeScenario.Session
+            _elementalRaceDevelopmentProbe;
         private CraftMagicItemsAmmunitionUiObserver.Session
             _craftMagicItemsAmmunitionUiObserver;
         private bool _craftMagicItemsPersistenceSaveStarted;
@@ -743,6 +745,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Complete(GunslingerOutfitAuditScenario.Run(
                         _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalRaceBlueprints)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    if (_elementalRaceDevelopmentProbe == null)
+                        _elementalRaceDevelopmentProbe =
+                            ElementalRaceDevelopmentProbeScenario.Begin(
+                                _context, _request);
+                    _elementalRaceDevelopmentProbe.Poll();
+                    if (_elementalRaceDevelopmentProbe.Complete)
+                        Complete(_elementalRaceDevelopmentProbe.Result);
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.

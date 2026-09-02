@@ -8,7 +8,13 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1637 stable identifiers: 1636 active and one reserved.
+Validator contract: 1638 stable identifiers: 1636 active and 2 reserved.
+
+The second reservation, `KMG.ElementalRaces.Diagnostics.ProbeRace`
+(`57005fca40ab4775ae2fea5613214054`), is development-only. Ordinary bootstrap
+does not register it. The guarded Elemental Races probe temporarily registers
+the exact identity without publishing it to `CharacterRaces`, then removes the
+owned dictionary/list entries before completion.
 
 The 25 active `KMG.BrownFur.*` identities are owned by the isolated optional
 extension. They are registered only when the structural Call of the Wild
