@@ -4,8 +4,8 @@
 
 - [x] Four stable, noncolliding race GUIDs and every save-bearing child identity
   are active in the authoritative blueprint manifest.
-- [ ] Identities register with the module both ON and OFF.
-- [ ] Atomic publication appends Ifrit, Oread, Sylph, and Undine exactly once,
+- [x] Identities register with the module both ON and OFF.
+- [x] Atomic publication appends Ifrit, Oread, Sylph, and Undine exactly once,
   preserves the complete prior array and order, and restores it exactly on
   failure.
 - [x] Feature settings migrate schemas 0 through 9 to schema 10, preserve every
@@ -16,13 +16,13 @@
 - [ ] Focused rules, SLA, persistence, manifest, localization, rollback,
   package-content, and compatibility tests pass.
 - [x] Complete repository validation and dependency-free domain suite pass at
-  the current racial-SLA/Hydraulic checkpoint (1,384/1,384).
+  the current native-identity/publication checkpoint (1,385/1,385).
 - [x] Clean Release/package command and strict package validation pass at the
   current base-mechanics checkpoint.
-- [x] Guarded Steam App ID 640820 base-mechanics, native donor-SLA, and
-  Hydraulic Push scenarios record exact build identity and structured evidence
-  without touching protected saves; publication, persistence, visuals, and
-  compatibility scenarios remain separately unchecked below.
+- [x] Guarded Steam App ID 640820 base-mechanics, native donor-SLA, Hydraulic
+  Push, native identity/movement, and ON/OFF publication scenarios record exact
+  build identity and structured evidence without touching protected saves;
+  persistence, visuals, and compatibility remain separately unchecked below.
 - [ ] KMG-alone, Call of the Wild, Races Unleashed, combined, highest-risk, and
   Visual Adjustments-if-installed profiles are qualified and restored exactly.
 - [ ] Existing Gunslinger outfit, firearm visual/mechanical, feature-module,

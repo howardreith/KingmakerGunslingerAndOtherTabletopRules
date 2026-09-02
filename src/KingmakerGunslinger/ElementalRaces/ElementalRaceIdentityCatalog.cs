@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.ElementalRaces
         internal const string UndineSlaAbility = "KMG.ElementalRaces.Undine.HydraulicPushAbility";
 
         internal const string AasimarRaceGuid = "b7f02ba92b363064fb873963bec275ee";
+        internal const string TieflingRaceGuid = "5c4e42124dc2b4647af6e36cf2590500";
         internal const string KeenSensesGuid = "9c747d24f6321f744aa1bb4bd343880d";
         internal const string SlowAndSteadyGuid = "786588ad1694e61498e77321d4b07157";
         internal const string OutsiderTypeGuid = "9054d3988d491d944ac144e27b6bc318";

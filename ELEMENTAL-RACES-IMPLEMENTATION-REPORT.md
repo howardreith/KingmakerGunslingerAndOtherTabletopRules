@@ -2,7 +2,7 @@
 
 ## Current outcome
 
-**IN PROGRESS - BASE-RACE AND RACIAL-SLA MECHANICS RUNTIME QUALIFIED.** All
+**IN PROGRESS - BASE-RACE, IDENTITY, PUBLICATION, AND RACIAL-SLA MECHANICS RUNTIME QUALIFIED.** All
 four production races, their common/race-specific rules, 24 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
@@ -10,10 +10,11 @@ and speed, energy resistance, Keen Senses, affinity inclusion/exclusion,
 multiclass total-level caster scaling, one-use resources, rest restoration, and
 resource-state serialization. Separate guarded native command runs prove
 Burning Hands save/damage delivery, Stone Fist delivery/expiry and unarmed
-replacement, Feather Step delivery/expiry, and Hydraulic Push resource and
-Bull Rush behavior. Oread armor/encumbrance movement, module-ON publication,
-distinctive visual proxies, save-backed persistence, compatibility profiles,
-and human acceptance remain pending.
+replacement, Feather Step delivery/expiry, Hydraulic Push resource and Bull
+Rush behavior, native Oread armor/encumbrance movement, exact person-spell and
+prerequisite behavior, and module-ON/module-OFF selector publication.
+Distinctive visual proxies, save-backed persistence, compatibility profiles,
+the full 24-state runtime boundary matrix, and human acceptance remain pending.
 
 ## Authoritative baseline
 
@@ -73,8 +74,9 @@ and final limitations remain pending exact implementation evidence.
   Hands, Stone Fist, and Feather Step clones; narrow native Bull Rush Hydraulic
   Push reconstruction.
 - `ElementalRaceBlueprintFactory.cs`: separate Aasimar-compatible Medium race
-  objects, exact racial stats, native Outsider/Keen Senses/Slow and Steady
-  donors, resistance 5, affinities, SLAs, and complete Aasimar visual fallback.
+  objects, exact racial stats, validated Aasimar/Tiefling type precedent,
+  native Keen Senses/Slow and Steady donors, resistance 5, affinities, SLAs,
+  and complete Aasimar visual fallback.
 - `ElementalRacePublication.cs`: validated all-or-none append, third-party order
   preservation, idempotence, conflict refusal, and exact-reference rollback.
 - `BlueprintBootstrap.cs`: unconditional identity registration and restart-bound
@@ -85,10 +87,13 @@ reserved. Each race owns these six identity categories: race, resistance,
 affinity, SLA feature, daily resource, and SLA ability. The exact GUID list is
 maintained in `blueprints/blueprints.json`; tests require the full 24-entry map.
 
-The donor `RaceId` is Aasimar. This intentionally follows Kingmaker's native
-outsider/person-spell precedent and Human skeleton contracts. It may cause
-dialogue or other checks that consult only `RaceId` to treat an elemental race
-as Aasimar; no broad rewrite is applied.
+The donor `RaceId` is Aasimar. Guarded inspection proved that installed
+Aasimar and Tiefling base races and their first heritage facts do not grant the
+empty native `OutsiderType` fact; Hold/Charm/Enlarge/Reduce Person therefore
+target them. The project races deliberately match that installed precedent,
+while their exact `BlueprintRace` references remain distinct. Checks that use
+only `RaceId` may still classify an elemental race as Aasimar; no broad rewrite
+is applied.
 
 ## Guarded base-mechanics inventory
 
@@ -171,6 +176,44 @@ delivery-specific gates remain required.
 These request-local scenarios are save-free. They do not replace the required
 two-process save-backed persistence qualification.
 
+## Guarded native identity, movement, and publication inventory
+
+- `ElementalRaceNativeIdentityScenario.cs` uses audited native medium and heavy
+  armor, `EncumbranceHelper`, `UnitPartEncumbrance`, native speed stats, and
+  request-local generic speed facts against Oread, Dwarf, and Human controls.
+  Oread/Dwarf observed `20/20/20` feet unarmored/medium/heavy and stayed at 20
+  under a calculated heavy equipped load; Human observed `30/20/20` and 20
+  under the same heavy load. All returned exactly after fixture removal.
+- The same scenario tests Human, Aasimar, Tiefling, and all four production
+  races with native `AbilityData.CanTarget` for Hold Person, Charm Person,
+  Enlarge Person, and Reduce Person plus real feature/no-feature and exact-race
+  prerequisites. All seven matched the installed targetable person-spell
+  behavior; exact project race prerequisites remained distinct despite the
+  shared donor `RaceId`.
+- Two fixture attempts failed closed before the final PASS. Transaction
+  `20260902T0933001067567Z-disposable-elemental-race-native-identity` exposed a
+  party-context requirement in the patched private encumbrance controller, so
+  the fixture moved to the underlying native per-unit APIs. Transaction
+  `20260902T0937414169613Z-disposable-elemental-race-native-identity` proved
+  immunity is applied when modifiers are evaluated (not by changing the raw
+  `-10` penalty) and that personal inventory is excluded from this unit load;
+  the fixture moved to audited equipped full plate. Neither touched a save.
+- Corrected transaction
+  `20260902T0947509229460Z-disposable-elemental-race-native-identity` passed all
+  16 assertions (run ID
+  `20260902T0947509479461Z-478bab6aa9d44475ba40e7b36219205a`). Evidence SHA-256:
+  `b3378be2e628d3b7896bcaefb2dcb56498f2026118ba0b28ecdc89b021b68161`;
+  runtime-result SHA-256:
+  `265c4562ce2b04e12ed803c290f52f724d1981f0aaf994521739c5962ec2df06`.
+- The existing feature-module observer now inventories the live
+  `BlueprintRoot.Progression.CharacterRaces` catalog by both reference and GUID.
+  Enabled transaction
+  `20260902T0955212013652Z-observe-feature-module-settings` published all four
+  once at indexes 9-12 in the required contiguous order. Disabled transaction
+  `20260902T0958454418742Z-observe-feature-module-settings` published zero while
+  retaining all 24 registered identities. Both shared catalogs were unique and
+  both settings transactions restored the exact original SHA-256.
+
 ## Qualification status
 
 | Gate | Status |
@@ -178,7 +221,7 @@ two-process save-backed persistence qualification.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,384/1,384 |
+| Current complete domain suite | PASS - 1,385/1,385 |
 | Phase C clean Release package | PASS - strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
@@ -186,6 +229,9 @@ two-process save-backed persistence qualification.
 | Guarded base mechanics/resource runtime | PASS - `20260902T0626272331311Z-disposable-elemental-race-mechanics` |
 | Guarded native donor-SLA delivery runtime | PASS - `20260902T0727505151505Z-disposable-elemental-race-slas` |
 | Guarded Hydraulic Push runtime | PASS - `20260902T0828281705241Z-disposable-hydraulic-push` |
+| Guarded native identity/Oread movement | PASS - `20260902T0947509229460Z-disposable-elemental-race-native-identity` |
+| Guarded module-ON selector publication | PASS - `20260902T0955212013652Z-observe-feature-module-settings` |
+| Guarded module-OFF selector absence/identity retention | PASS - `20260902T0958454418742Z-observe-feature-module-settings` |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
 | Guarded visuals/runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
@@ -241,3 +287,12 @@ DLL SHA-256:
 `fee51842a8144e1e75324b968f322b2bbf5de7a181ad0c5bd2523443e31ced6b`;
 DLL MVID: `0670cdd2-e916-4d20-942d-ebcf8340cfec`. This remains a
 development version 0.0.113 artifact, not the final preview candidate.
+
+The native-identity/movement/publication checkpoint passed the complete
+1,385-test suite, both selector states, and the required clean Release/package
+gate. Clean package SHA-256:
+`abb0639d5942fb4692a6cb455671436a47de6d7ce31f5833976db7d37768dacd`;
+DLL SHA-256:
+`b25b2e76e9c10d900fa391c432f7838a7023cbeed9381de5338e0afe90756ce0`;
+DLL MVID: `57a10073-0765-4107-986e-de9ef987ca0b`. This is still a version
+0.0.113 engineering checkpoint rather than the final preview artifact.
