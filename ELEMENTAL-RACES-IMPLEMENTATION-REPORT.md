@@ -16,7 +16,9 @@ prerequisite behavior, and module-ON/module-OFF selector publication.
 The live donor audit additionally proves complete native modular geometry and
 palette inputs. Sixteen production visual blueprints, 28 stable asset proxies,
 and a 56-case all-option production renderer matrix now pass guarded runtime
-qualification. Class/equipment/motion, save-backed persistence, compatibility profiles,
+qualification. The existing 128-state elemental Gunslinger equipment matrix
+and an 80-case exact native clothing matrix across ten classes also pass.
+Remaining equipment/motion, save-backed persistence, compatibility profiles,
 the full 24-state runtime boundary matrix, and human acceptance remain pending.
 
 ## Authoritative baseline
@@ -276,8 +278,9 @@ two-process save-backed persistence qualification.
   `592e0d9f7c37bf850e9a79808102197d713a3e29b4655a765a66b1cdb5e8c699`;
   runtime-result SHA-256:
   `53879496629b6a8dac4cd5f41a4c99e41654c8b487736ee7525a1c6dde83a569`.
-  Class/equipment/motion, persistence, and subjective visual review remain
-  pending.
+  The 128-state elemental Gunslinger equipment matrix and 80-case ten-class
+  native clothing matrix pass separately. Remaining equipment/motion,
+  persistence, and subjective visual review remain pending.
 
 ## Qualification status
 
@@ -286,7 +289,7 @@ two-process save-backed persistence qualification.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,386/1,386 |
+| Current complete domain suite | PASS - 1,387/1,387 |
 | Phase C clean Release package | PASS - strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
@@ -300,8 +303,9 @@ two-process save-backed persistence qualification.
 | Guarded native visual-donor inventory | PASS - `20260902T1042298660656Z-observe-elemental-race-blueprints` |
 | Guarded production all-option visual matrix | PASS - `20260902T1301142529832Z-elemental-race-visual-audit` (56/56) |
 | Guarded elemental Gunslinger class/equipment matrix | PASS - `20260902T1346079130473Z-elemental-race-class-equipment` (128/128) |
+| Guarded ten-class elemental clothing matrix | PASS - `20260902T1451545064731Z-elemental-race-class-clothing` (80/80) |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
-| Guarded broader class/motion and runtime persistence | NOT-RUN |
+| Guarded remaining equipment/motion and runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
 | Human visual acceptance | NOT-READY |
 
@@ -409,3 +413,40 @@ DLL SHA-256:
 DLL MVID: `93c4538b-07ad-43cd-93c1-b9fc977a9be3`. This remains a
 version 0.0.113 engineering checkpoint rather than the final preview
 candidate.
+
+The save-free elemental class-clothing transaction then qualified the exact
+native class presentation for Ifrit, Oread, Sylph, and Undine, both sexes, and
+Gunslinger, Fighter, Rogue, Ranger, Alchemist, Magus, Wizard, Cleric, Monk, and
+Kineticist. It passed 80/80 planned cases, ten/ten exact class groups, complete
+materials/shaders, exact blueprint/race graph restoration, and no selector or
+save-state mutation. Runtime transaction:
+`20260902T1451545064731Z-elemental-race-class-clothing`; run ID:
+`20260902T1451545269918Z-bd479eeecec14d81b202649ee013234b`.
+Runtime-result/evidence/runtime-evidence SHA-256 values:
+`d4432e55fc47f503bab4167c79c7920ec01fedf1934e6be94435e360df2c84c5` /
+`846b5d05ed6f573006856d9595310c1b0af7cc6ce7bf360f56a745f25e89fcc4` /
+`da636404476081bc32256fe511cedb9aa1ebe58a32a95ab6347c65e28cc34053`.
+Runtime package/DLL SHA-256:
+`49415761e4abe0d68fbb82fd7e23a12aabc01850529b07c5fd5f4faf6751d498` /
+`c450e8019d92cd70a365ef8611965e217525483cb8192bb2c5e5e10f8daab3db`;
+DLL MVID: `232218ab-4a89-4447-ac65-465500f73cf6`.
+
+Four preceding attempts failed closed and touched no save. They exposed, in
+order: a reconstructed clothing order that differed from authoritative
+`LoadClothes`; an incorrect assumption that class clothes appear in
+`DollData.EquipmentEntityIds`; synchronous access before native view
+attachment; and one remaining mixed avatar access in the settle path. The
+fixture now maps exact observed clothing references, keeps DollData assertions
+to identity/customization, waits for the attached `Character`, and validates
+the baked native render. These corrections narrowed instrumentation without
+weakening production assertions.
+
+The required clean Release/package pipeline then passed with all 1,387 tests,
+production compilation, build-output and SoundBank validation, deterministic
+package creation, and strict standalone UMM validation. Clean package SHA-256:
+`a60b04d199d3b20c3e63342ae896275a8e98b8117fecf106c891bfd5c5521382`;
+DLL SHA-256:
+`18be7cb6e5d5923471bf5d702eda8aa206f4b4a8ac2a72cc709d1c589f72fc56`;
+DLL MVID: `5cd6ca86-8a25-42d9-a900-95ef2257ef65`. This remains a
+version 0.0.113 engineering checkpoint rather than the final preview
+artifact.

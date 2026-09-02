@@ -16,6 +16,8 @@ namespace KingmakerGunslinger.DomainTests
             "observe-elemental-race-blueprints";
         private const string VisualScenario =
             "elemental-race-visual-audit";
+        private const string ClassClothingScenario =
+            "elemental-race-class-clothing";
 
         internal static void ReservedIdentityIsExactAndUnique()
         {
@@ -81,6 +83,9 @@ namespace KingmakerGunslinger.DomainTests
                 catalog.Contains(
                     "internal const string ElementalRaceVisualAudit") &&
                 catalog.Contains(VisualScenario) &&
+                catalog.Contains(
+                    "internal const string ElementalRaceClassClothing") &&
+                catalog.Contains(ClassClothingScenario) &&
                 runner.Contains(
                     "ElementalRaceVisualAuditScenario.Begin(") &&
                 runner.Contains("_elementalRaceVisualAudit.Poll()") &&
@@ -88,15 +93,21 @@ namespace KingmakerGunslinger.DomainTests
                     "' = [pscustomobject]") &&
                 automation.Contains("'" + VisualScenario +
                     "' = [pscustomobject]") &&
+                automation.Contains("'" + ClassClothingScenario +
+                    "' = [pscustomobject]") &&
                 preflight.Contains("'" + Scenario + "'") &&
                 preflight.Contains("'" + VisualScenario + "'") &&
+                preflight.Contains("'" + ClassClothingScenario + "'") &&
                 project.Contains(
                     "ElementalRaceDevelopmentProbeScenario.cs") &&
                 project.Contains("ElementalRaceVisualAuditScenario.cs") &&
                 project.Contains(
                     "ElementalRaceDiagnosticIdentityCatalog.cs"),
                 "Development race probe is not wired through every guarded runtime surface.");
-            foreach (string scenario in new[] { Scenario, VisualScenario })
+            foreach (string scenario in new[]
+            {
+                Scenario, VisualScenario, ClassClothingScenario
+            })
             {
                 int offset = automation.IndexOf("'" + scenario +
                     "' = [pscustomobject]", StringComparison.Ordinal);
@@ -114,6 +125,123 @@ namespace KingmakerGunslinger.DomainTests
                     scenario +
                     " must remain autonomous, save-free, and selector-free.");
             }
+        }
+
+        internal static void ClassClothingMatrixIsExactAndSaveFree()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalRaceVisualAuditScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+
+            Assertions.True(catalog.Contains(
+                    "ElementalRaceClassClothing") &&
+                catalog.Contains(ClassClothingScenario) &&
+                runner.Contains(".ElementalRaceClassClothing") &&
+                runner.Contains("ElementalRaceVisualAuditScenario.Begin(") &&
+                automation.Contains("'" + ClassClothingScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + ClassClothingScenario + "'"),
+                "Class-clothing audit is not wired through every guarded surface.");
+            int metadataStart = automation.IndexOf("'" +
+                ClassClothingScenario + "' = [pscustomobject]",
+                StringComparison.Ordinal);
+            string metadata = automation.Substring(metadataStart,
+                Math.Min(500, automation.Length - metadataStart));
+            Assertions.True(metadata.Contains(
+                    "RequiresSaveName = $false") &&
+                metadata.Contains(
+                    "RequiresManualInteraction = $false") &&
+                metadata.Contains("ReadinessBehavior = 'mod-load'") &&
+                metadata.Contains("UsesCatalogTimeout = $false") &&
+                metadata.Contains("UsesSelectionTimeouts = $false"),
+                "Class-clothing audit must remain autonomous and save-free.");
+            int collectorStart = orchestrator.IndexOf(
+                "elseif ($Scenario -eq '" + ClassClothingScenario + "')",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                orchestrator.Substring(collectorStart,
+                    Math.Min(500, orchestrator.Length - collectorStart))
+                    .Contains("[Math]::Max($TimeoutSeconds, 600) + 15"),
+                "The exact 80-case class-clothing matrix needs its bounded collector window.");
+
+            foreach (string token in new[]
+            {
+                "ClassClothingClassCount = 10",
+                "ClassClothingCaseCount =",
+                "ElementalRaceCatalog.RaceCount * 2 *",
+                "ResolveClassClothing()",
+                "BuildClassClothingCases(",
+                "RequireClassClothingAssetIds(",
+                "characterClass.LoadClothes(",
+                "wrapper.GetLinks(gender, race.RaceId)",
+                "unmatchedEntities.FindIndex",
+                "return observedIds.ToArray()",
+                "state.SetClass(renderCase.CharacterClass)",
+                "ApplyClassClothing(renderCase)",
+                "avatar.AddEquipmentEntities(missing, false)",
+                "ApplyClassPalette(",
+                "avatar.RebuildOutfit()",
+                "classClothingViewExact",
+                "ClassClothingAssetIds",
+                "ClassClothingExact",
+                "MaterialContract",
+                "elemental-class-clothing-inventory",
+                "elemental-class-clothing-case-plan",
+                "elemental-class-clothing-render-matrix",
+                "elemental-class-clothing-cleanup",
+                "elemental-class-clothing-save-free",
+                "elemental-race-class-clothing.json"
+            })
+                Assertions.True(source.Contains(token),
+                    "Class-clothing audit lacks exact contract token: " +
+                    token);
+            string[] classGuids =
+            {
+                "48ac8db94d5de7645906c7d0ad3bcfbd",
+                "299aa766dee3cbf4790da4efb8c72484",
+                "cda0615668a6df14eb36ba19ee881af6",
+                "0937bec61c0dabc468428f496580c721",
+                "45a4607686d96a1498891b3286121780",
+                "ba34257984f4c41408ce1dc2004e342e",
+                "67819271767a9dd4fbfd4ae700befea0",
+                "e8f21e5b58e0569468e420ebea456124",
+                "42a455d9ec1ad924d889272429eb8391"
+            };
+            int prior = -1;
+            foreach (string guid in classGuids)
+            {
+                int current = source.IndexOf(guid,
+                    StringComparison.Ordinal);
+                Assertions.True(current > prior,
+                    "Required native class GUID is missing or out of order: " +
+                    guid);
+                prior = current;
+            }
+            Assertions.Equal(9, Regex.Matches(source,
+                "new ClassClothingDefinition[(]").Count,
+                "The class matrix must contain exactly nine native donors plus the project Gunslinger.");
+            Assertions.True(source.Contains(
+                    "BuildCases(races[index], visuals[index])") &&
+                source.Contains("CharacterClass = _gunslinger") &&
+                source.Contains("elemental-visual-render-matrix"),
+                "The accepted 56-case Gunslinger visual-audit mode was not preserved.");
+            foreach (string forbidden in new[]
+            {
+                "Guid.NewGuid", "SaveGame", "QuickSave", "PlayerPrefs",
+                "Input.", "Mouse."
+            })
+                Assertions.False(source.Contains(forbidden),
+                    "Class-clothing audit contains forbidden mutation/UI token: " +
+                    forbidden);
         }
 
         internal static void ProbeIsAtomicNativeAndOutfitSafe()
@@ -201,7 +329,8 @@ namespace KingmakerGunslinger.DomainTests
                 "BuildCases(races[index], visuals[index])",
                 "state.SetRace(renderCase.Race)",
                 "state.SetRacePreset(renderCase.Preset)",
-                "state.SetClass(_gunslinger)",
+                "CharacterClass = _gunslinger",
+                "state.SetClass(renderCase.CharacterClass)",
                 "state.SetHead(renderCase.Head)",
                 "state.SetHair(renderCase.Hair)",
                 "EyebrowsProperty.SetValue",

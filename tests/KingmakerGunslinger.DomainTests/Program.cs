@@ -60,6 +60,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("outfit-audit.evidence-manifest", GunslingerOutfitAuditTests.EvidenceManifestPreservesCatalog),
             Case("elemental-probe.identity", ElementalRaceDevelopmentProbeTests.ReservedIdentityIsExactAndUnique),
             Case("elemental-probe.guard", ElementalRaceDevelopmentProbeTests.GuardedScenarioWiringIsSaveFree),
+            Case("elemental-races.class-clothing", ElementalRaceDevelopmentProbeTests.ClassClothingMatrixIsExactAndSaveFree),
             Case("elemental-probe.atomic-native-outfit", ElementalRaceDevelopmentProbeTests.ProbeIsAtomicNativeAndOutfitSafe),
             Case("elemental-races.identities", ElementalRaceProductionTests.StableManifestInventoryIsExact),
             Case("elemental-races.catalog", ElementalRaceProductionTests.CatalogMatchesApprovedRules),

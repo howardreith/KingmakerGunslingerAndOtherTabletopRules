@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-g-elemental-gunslinger-class-equipment-qualified",
+  "phase": "phase-g-base-class-clothing-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -28,15 +28,15 @@
     "oreadRules": "BASE-NATIVE-SLA-AND-MOVEMENT-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "sylphRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "undineRules": "BASE-AND-HYDRAULIC-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-AND-128-CASE-GUNSLINGER-EQUIPMENT-MATRIX-PASS-PERSISTENCE-MOTION-BROADER-CLASS-MATRIX-AND-HUMAN-REVIEW-PENDING",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-PRODUCTION-VISUAL-MATRIX-AND-ELEMENTAL-GUNSLINGER-CLASS-EQUIPMENT-PASS",
+    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-128-CASE-GUNSLINGER-EQUIPMENT-MATRIX-AND-80-CASE-TEN-CLASS-CLOTHING-MATRIX-PASS-PERSISTENCE-MOTION-REMAINING-EQUIPMENT-AND-HUMAN-REVIEW-PENDING",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-PRODUCTION-VISUAL-MATRIX-ELEMENTAL-GUNSLINGER-CLASS-EQUIPMENT-AND-TEN-CLASS-CLOTHING-PASS",
     "compatibility": "NOT-STARTED",
-    "packaging": "CLASS-EQUIPMENT-CLEAN-RELEASE-CHECKPOINT-PASS",
+    "packaging": "CLASS-CLOTHING-CLEAN-RELEASE-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1386,
+    "passed": 1387,
     "failed": 0,
     "status": "PASS"
   },
@@ -338,14 +338,70 @@
         "saveStateTouched": false,
         "runtimeResultSha256": "9f766d5224c6eb7a2aafccfdbb6fd38123e4e152bf94ba21d9f13d6bcb033e71",
         "indexSha256": "6af7737ebf9f1f46511b620e83f8ea2fee254c6e8dd438e924ffad551b99aa99"
+      },
+      {
+        "id": "20260902T1424092517156Z-elemental-race-class-clothing",
+        "runId": "20260902T1424092707494Z-7271d466b0694c398605788449b709c3",
+        "scenario": "elemental-race-class-clothing",
+        "status": "FAIL",
+        "reason": "reconstructed direct-and-wrapper order differed from authoritative native LoadClothes order",
+        "saveStateTouched": false,
+        "runtimeResultSha256": "b52b2ae2b0cd84bd33e558496477a7c7b5faf49bbca22fe99ee06aee975c1c0e",
+        "evidenceSha256": "4269e3b08f3d8eeef982c4045a0fd4afd4ca4acd53404bd927bb388dc8199517"
+      },
+      {
+        "id": "20260902T1433563378448Z-elemental-race-class-clothing",
+        "runId": "20260902T1433563598503Z-25e61a17aa16479a8a79d30dd0ddd3e2",
+        "scenario": "elemental-race-class-clothing",
+        "status": "FAIL",
+        "reason": "fixture incorrectly required native class clothes inside DollData equipment IDs",
+        "saveStateTouched": false,
+        "runtimeResultSha256": "98348fe3f1b3de1ad2be21df08581fd0738427478a541e8293ce9d7302b1141a",
+        "evidenceSha256": "f3ad5f4aee9d3a000642c8d391beb6c08fe7020ab1d4d1d852a78096c5765cab"
+      },
+      {
+        "id": "20260902T1442416931078Z-elemental-race-class-clothing",
+        "runId": "20260902T1442417131444Z-f5835f471899411284398363802ce11e",
+        "scenario": "elemental-race-class-clothing",
+        "status": "FAIL",
+        "reason": "fixture attempted synchronous avatar access before disposable view attachment completed",
+        "saveStateTouched": false,
+        "runtimeResultSha256": "75059db1e8625cf07c33f23ae993ae27d1b44b5966305ba0096d250f2db06df6",
+        "evidenceSha256": "93d6467d6d88743f0b17b45666e8eecf1f87f26365104accd4c6c92e14f760f1"
+      },
+      {
+        "id": "20260902T1447240186139Z-elemental-race-class-clothing",
+        "runId": "20260902T1447240426141Z-5dfa73748aa14213aeb7f55e30a849f1",
+        "scenario": "elemental-race-class-clothing",
+        "status": "FAIL",
+        "reason": "settle path mixed attached Character readiness with null UnitEntityView CharacterAvatar access",
+        "saveStateTouched": false,
+        "runtimeResultSha256": "ff2a0bb22e840b9d0a8ce9aa4dc3de6c05f1e7a41264e886c88b99dee0991145",
+        "evidenceSha256": "93d6467d6d88743f0b17b45666e8eecf1f87f26365104accd4c6c92e14f760f1"
+      },
+      {
+        "id": "20260902T1451545064731Z-elemental-race-class-clothing",
+        "runId": "20260902T1451545269918Z-bd479eeecec14d81b202649ee013234b",
+        "scenario": "elemental-race-class-clothing",
+        "status": "PASS",
+        "assertionsPassed": 5,
+        "renderCases": 80,
+        "coverageGroups": 10,
+        "races": 4,
+        "genders": 2,
+        "classes": 10,
+        "saveStateTouched": false,
+        "selectorStateTouched": false,
+        "runtimeResultSha256": "d4432e55fc47f503bab4167c79c7920ec01fedf1934e6be94435e360df2c84c5",
+        "evidenceSha256": "846b5d05ed6f573006856d9595310c1b0af7cc6ce7bf360f56a745f25e89fcc4"
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "1c8065ae6a0d0218930de556ef30ab5648922a18d82c3e2fabefc77fcc89bb45",
-    "dllSha256": "d1a45067f0636eb4df19818c1780ca3deca49cebae6f73ab5edc0acae6b9a1bd",
-    "dllMvid": "93c4538b-07ad-43cd-93c1-b9fc977a9be3",
+    "packageSha256": "a60b04d199d3b20c3e63342ae896275a8e98b8117fecf106c891bfd5c5521382",
+    "dllSha256": "18be7cb6e5d5923471bf5d702eda8aa206f4b4a8ac2a72cc709d1c589f72fc56",
+    "dllMvid": "5cd6ca86-8a25-42d9-a900-95ef2257ef65",
     "version": "0.0.113"
   },
   "runtimeMechanicsArtifact": {
@@ -405,6 +461,18 @@
     "fixtures": 8,
     "equipmentStates": 128,
     "renderedViews": 640,
+    "version": "0.0.113"
+  },
+  "runtimeClassClothingArtifact": {
+    "packageSha256": "49415761e4abe0d68fbb82fd7e23a12aabc01850529b07c5fd5f4faf6751d498",
+    "dllSha256": "c450e8019d92cd70a365ef8611965e217525483cb8192bb2c5e5e10f8daab3db",
+    "dllMvid": "232218ab-4a89-4447-ac65-465500f73cf6",
+    "runtimeResultSha256": "d4432e55fc47f503bab4167c79c7920ec01fedf1934e6be94435e360df2c84c5",
+    "evidenceSha256": "846b5d05ed6f573006856d9595310c1b0af7cc6ce7bf360f56a745f25e89fcc4",
+    "runtimeEvidenceSha256": "da636404476081bc32256fe511cedb9aa1ebe58a32a95ab6347c65e28cc34053",
+    "renderCases": 80,
+    "coverageGroups": 10,
+    "classes": 10,
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

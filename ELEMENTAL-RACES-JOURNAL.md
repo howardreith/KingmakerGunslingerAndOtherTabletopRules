@@ -729,3 +729,89 @@
   d1a45067f0636eb4df19818c1780ca3deca49cebae6f73ab5edc0acae6b9a1bd;
   DLL MVID: 93c4538b-07ad-43cd-93c1-b9fc977a9be3. This is a version
   0.0.113 engineering checkpoint, not the final preview artifact.
+
+## 2026-09-02 - Ten-class elemental clothing qualification
+
+- Added the guarded, save-free `elemental-race-class-clothing` scenario. It
+  reuses the production visual session and covers exactly four races by two
+  sexes by ten classes: Gunslinger, Fighter, Rogue, Ranger, Alchemist, Magus,
+  Wizard, Cleric, Monk, and Kineticist. The scenario resolves direct and
+  wrapper-linked class entities, then maps the authoritative native
+  `LoadClothes` result back to stable resource IDs by exact reference rather
+  than reconstructing or sorting the shared order.
+- Each of the 80 planned cases validates exact race and sex identity,
+  customization data, exact expected class-clothing references, native
+  asynchronous character attachment and bake completion, and non-null
+  materials and shaders. Cleanup destroys every request-local view and restores
+  the exact `CharacterRaces` array plus both blueprint indexes. It never calls
+  a save API and never mutates selector state.
+- Added guarded launcher/preflight/catalog/runner wiring with a bounded
+  600-second collection window and a focused `elemental-races.class-clothing`
+  domain contract. The complete domain command
+  `.\scripts\test-domain.ps1 -Configuration Release` passed
+  **1,387/1,387**.
+- Transaction
+  `20260902T1424092517156Z-elemental-race-class-clothing` **FAIL** (run ID
+  `20260902T1424092707494Z-7271d466b0694c398605788449b709c3`) because the first
+  inventory reconstructed direct-plus-wrapper order and disagreed with the
+  authoritative native `LoadClothes` order for male Ifrit Rogue. The fixture
+  was changed to observe and map the exact native result. Evidence/runtime
+  result SHA-256:
+  `4269e3b08f3d8eeef982c4045a0fd4afd4ca4acd53404bd927bb388dc8199517` /
+  `b52b2ae2b0cd84bd33e558496477a7c7b5faf49bbca22fe99ee06aee975c1c0e`.
+- Transaction
+  `20260902T1433563378448Z-elemental-race-class-clothing` **FAIL** (run ID
+  `20260902T1433563598503Z-25e61a17aa16479a8a79d30dd0ddd3e2`) because the
+  fixture incorrectly required native class clothing in
+  `DollData.EquipmentEntityIds`. Native class clothes are supplied outside that
+  customization envelope, so the assertion was separated without weakening
+  the later exact native clothing check. Evidence/runtime-result SHA-256:
+  `f3ad5f4aee9d3a000642c8d391beb6c08fe7020ab1d4d1d852a78096c5765cab` /
+  `98348fe3f1b3de1ad2be21df08581fd0738427478a541e8293ce9d7302b1141a`.
+- Transaction
+  `20260902T1442416931078Z-elemental-race-class-clothing` **FAIL** (run ID
+  `20260902T1442417131444Z-f5835f471899411284398363802ce11e`) because the
+  fixture accessed the avatar synchronously before the request-local view had
+  attached its native `Character`. Evidence/runtime-result SHA-256:
+  `93d6467d6d88743f0b17b45666e8eecf1f87f26365104accd4c6c92e14f760f1` /
+  `75059db1e8625cf07c33f23ae993ae27d1b44b5966305ba0096d250f2db06df6`.
+- Transaction
+  `20260902T1447240186139Z-elemental-race-class-clothing` **FAIL** (run ID
+  `20260902T1447240426141Z-5dfa73748aa14213aeb7f55e30a849f1`) because the
+  settle predicate recognized the attached `Character` while one remaining
+  path still read the null `UnitEntityView.CharacterAvatar`. The path was
+  unified on the attached component. Evidence/runtime-result SHA-256:
+  `93d6467d6d88743f0b17b45666e8eecf1f87f26365104accd4c6c92e14f760f1` /
+  `ff2a0bb22e840b9d0a8ce9aa4dc3de6c05f1e7a41264e886c88b99dee0991145`.
+- Corrected guarded command
+  `.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario
+  elemental-race-class-clothing -ExpectedVersion 0.0.113 -SaveName
+  KMG_AUTOMATION_WORKING -TimeoutSeconds 600 -ExitAfterCompletion:$true
+  -Confirm:$false -AllowDirtyGit` completed transaction
+  `20260902T1451545064731Z-elemental-race-class-clothing` **PASS** (run ID
+  `20260902T1451545269918Z-bd479eeecec14d81b202649ee013234b`). All five
+  assertions passed: exact 16-blueprint/28-resource/four-race/ten-class
+  inventory, exact 80-case plan, 80 rendered cases in ten exact groups, exact
+  graph cleanup, and `saveStateTouched=false` /
+  `selectorStateTouched=false`; warnings were zero.
+- Runtime-result/evidence/runtime-evidence SHA-256 values:
+  `d4432e55fc47f503bab4167c79c7920ec01fedf1934e6be94435e360df2c84c5` /
+  `846b5d05ed6f573006856d9595310c1b0af7cc6ce7bf360f56a745f25e89fcc4` /
+  `da636404476081bc32256fe511cedb9aa1ebe58a32a95ab6347c65e28cc34053`.
+  Runtime package/DLL SHA-256 values:
+  `49415761e4abe0d68fbb82fd7e23a12aabc01850529b07c5fd5f4faf6751d498` /
+  `c450e8019d92cd70a365ef8611965e217525483cb8192bb2c5e5e10f8daab3db`;
+  DLL MVID: `232218ab-4a89-4447-ac65-465500f73cf6`. The loaded commit field
+  remains the committed checkpoint `fea328d59912c316868adbe36618a5104130fb17`
+  because this was an authorized dirty-tree run; source, package, DLL, and MVID
+  fields identify the tested build exactly.
+- Required clean command
+  `.\scripts\build.ps1 -Configuration Release -Clean -Package` then passed:
+  repository validation, all 1,387 tests, production compilation, build-output
+  and SoundBank validation, deterministic package creation, and strict
+  standalone UMM validation. Clean package SHA-256:
+  `a60b04d199d3b20c3e63342ae896275a8e98b8117fecf106c891bfd5c5521382`;
+  DLL SHA-256:
+  `18be7cb6e5d5923471bf5d702eda8aa206f4b4a8ac2a72cc709d1c589f72fc56`;
+  DLL MVID: `5cd6ca86-8a25-42d9-a900-95ef2257ef65`. This is a version
+  0.0.113 engineering checkpoint, not the final preview artifact.

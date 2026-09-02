@@ -12,8 +12,10 @@ pass guarded runtime checks. The complete eight-race native visual donor and
 palette inventory also passes guarded runtime checks. Production visual
 proxies and the 56-case race/sex/option renderer matrix now pass guarded
 runtime checks. The 128-state elemental Gunslinger outfit/equipment/rebuild
-matrix also passes guarded runtime checks. Broader class clothing, remaining
-equipment slots, motion, save-backed persistence, compatibility, and human
+matrix also passes guarded runtime checks. The exact 80-case matrix across the
+four races, both sexes, Gunslinger, and nine additional base-game classes also
+passes guarded runtime checks. Remaining equipment slots, motion, save-backed
+persistence, compatibility, and human
 visual qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
@@ -83,6 +85,12 @@ absence of a hard blocker is not a completion claim.
   class colors, repeated rebuild, exact fixture restoration, and unchanged
   production class/shared-unit state. The guarded scenario made no save call;
   generated images remain supporting evidence only.
+- Eighty production race/sex/class dolls passed the exact native class-clothing
+  contract for Gunslinger, Fighter, Rogue, Ranger, Alchemist, Magus, Wizard,
+  Cleric, Monk, and Kineticist. The scenario maps authoritative `LoadClothes`
+  entities back to stable IDs by reference, waits for native asynchronous view
+  attachment and baking, verifies all materials and shaders, and restores the
+  exact race and blueprint graphs without touching selector or save state.
 
 ## Open risks requiring evidence
 
@@ -99,8 +107,8 @@ absence of a hard blocker is not a completion claim.
   complete option renderer matrix and the elemental Gunslinger equipment
   matrix. Kingmaker has no race-level eye-color field in
   CustomizationOptions; native head/material eyes and that limitation need
-  human review. The nine additional base-game classes, medium armor, robes,
-  accessory slots, and full motion matrix remain to be qualified.
+  human review. Medium armor, representative robes, remaining accessory slots,
+  and the full motion matrix remain to be qualified.
 - Complete Aasimar fallback arrays render and preserve Human skeleton/body
   compatibility. Production visuals will initially constrain geometry to the
   runtime-proven Human-compatible Human/Aasimar/Tiefling skeleton family;
