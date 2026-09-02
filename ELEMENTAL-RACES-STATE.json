@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-g-base-class-clothing-qualified",
+  "phase": "phase-g-elemental-motion-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -28,15 +28,15 @@
     "oreadRules": "BASE-NATIVE-SLA-AND-MOVEMENT-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "sylphRules": "BASE-AND-NATIVE-SLA-RUNTIME-PASS-SAVE-BACKED-PENDING",
     "undineRules": "BASE-AND-HYDRAULIC-RUNTIME-PASS-SAVE-BACKED-PENDING",
-    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-128-CASE-GUNSLINGER-EQUIPMENT-MATRIX-AND-80-CASE-TEN-CLASS-CLOTHING-MATRIX-PASS-PERSISTENCE-MOTION-REMAINING-EQUIPMENT-AND-HUMAN-REVIEW-PENDING",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-PRODUCTION-VISUAL-MATRIX-ELEMENTAL-GUNSLINGER-CLASS-EQUIPMENT-AND-TEN-CLASS-CLOTHING-PASS",
+    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-128-CASE-GUNSLINGER-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-AND-216-RECORD-ELEMENTAL-MOTION-MATRIX-PASS-PERSISTENCE-REMAINING-EQUIPMENT-AND-HUMAN-REVIEW-PENDING",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-PRODUCTION-VISUAL-MATRIX-ELEMENTAL-GUNSLINGER-CLASS-EQUIPMENT-TEN-CLASS-CLOTHING-ELEMENTAL-MOTION-AND-HUMAN-MOTION-REGRESSION-PASS",
     "compatibility": "NOT-STARTED",
-    "packaging": "CLASS-CLOTHING-CLEAN-RELEASE-CHECKPOINT-PASS",
+    "packaging": "ELEMENTAL-MOTION-CLEAN-RELEASE-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1387,
+    "passed": 1388,
     "failed": 0,
     "status": "PASS"
   },
@@ -394,14 +394,55 @@
         "selectorStateTouched": false,
         "runtimeResultSha256": "d4432e55fc47f503bab4167c79c7920ec01fedf1934e6be94435e360df2c84c5",
         "evidenceSha256": "846b5d05ed6f573006856d9595310c1b0af7cc6ce7bf360f56a745f25e89fcc4"
+      },
+      {
+        "id": "20260902T1520151111405Z-elemental-race-motion",
+        "runId": "20260902T1520151280510Z-1512e7f8e1fe41b4bc268018108d6941",
+        "scenario": "elemental-race-motion",
+        "status": "PASS",
+        "assertionsPassed": 14,
+        "fixtures": 8,
+        "records": 216,
+        "renderedViews": 864,
+        "movementOutcomes": 16,
+        "turnOutcomes": 8,
+        "attackOutcomes": 24,
+        "reloadOutcomes": 8,
+        "restorations": 8,
+        "combatBoundaries": 8,
+        "saveStateTouched": false,
+        "runtimeResultSha256": "9fa5484e3b5c2eb96778305f785387c271783d7958945ab77bb4e7b49d744eab",
+        "indexSha256": "7d2616e5a6c1647625ec3605720713dbfddf538542ad1627230256d558bb315d"
+      },
+      {
+        "id": "20260902T1531223520715Z-gunslinger-outfit-production-motion",
+        "runId": "20260902T1531223770733Z-ed026c1eaa5240c5893cb70313f6c8e3",
+        "scenario": "gunslinger-outfit-production-motion",
+        "status": "PASS",
+        "assertionsPassed": 14,
+        "fixtures": 2,
+        "records": 54,
+        "renderedViews": 216,
+        "movementOutcomes": 4,
+        "turnOutcomes": 2,
+        "attackOutcomes": 6,
+        "reloadOutcomes": 2,
+        "restorations": 2,
+        "combatBoundaries": 2,
+        "saveStateTouched": false,
+        "runtimeResultSha256": "da1da6742ab2852541928475f1f5375783df660f426f5976f289f7e7f1a4f886",
+        "indexSha256": "5f04ac4cf1da0159cd98f5ddf6b692e02714349ddaffa9edccc62abfb052bf07"
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "a60b04d199d3b20c3e63342ae896275a8e98b8117fecf106c891bfd5c5521382",
-    "dllSha256": "18be7cb6e5d5923471bf5d702eda8aa206f4b4a8ac2a72cc709d1c589f72fc56",
-    "dllMvid": "5cd6ca86-8a25-42d9-a900-95ef2257ef65",
+    "sourceCheckpoint": "elemental-motion",
+    "packageSha256": "497625066222aa5c08fe2323e7134e8c257a8dddf58b193687c20a7d0f05c279",
+    "packageBytes": 22940247,
+    "dllSha256": "7cf1181feec82b606189fd22a3bffbd15d9db8ae44ee76c519e2c6ef325145a8",
+    "dllBytes": 5294080,
+    "dllMvid": "399e6d2a-4593-4e90-b59d-44a49ca9058a",
     "version": "0.0.113"
   },
   "runtimeMechanicsArtifact": {
@@ -473,6 +514,30 @@
     "renderCases": 80,
     "coverageGroups": 10,
     "classes": 10,
+    "version": "0.0.113"
+  },
+  "runtimeElementalMotionArtifact": {
+    "packageSha256": "c5e6431d97a116d737584fe85a0d05bbf5e713b3be8f915dc9c4bc72f184815d",
+    "dllSha256": "f7f69f3f0c96425497639bc7845e971205e28b652115c8773c11d57b0d5b4ec7",
+    "dllMvid": "39b4cd0b-71e9-470f-a032-33cec7ea7f14",
+    "runtimeResultSha256": "9fa5484e3b5c2eb96778305f785387c271783d7958945ab77bb4e7b49d744eab",
+    "indexSha256": "7d2616e5a6c1647625ec3605720713dbfddf538542ad1627230256d558bb315d",
+    "runtimeEvidenceSha256": "04c0078e909f7aad3a0c4caaf20d62185f725841e4e7cb02ebc42351b2b6c8e3",
+    "fixtures": 8,
+    "records": 216,
+    "renderedViews": 864,
+    "version": "0.0.113"
+  },
+  "runtimeHumanMotionRegressionArtifact": {
+    "packageSha256": "c5e6431d97a116d737584fe85a0d05bbf5e713b3be8f915dc9c4bc72f184815d",
+    "dllSha256": "f7f69f3f0c96425497639bc7845e971205e28b652115c8773c11d57b0d5b4ec7",
+    "dllMvid": "39b4cd0b-71e9-470f-a032-33cec7ea7f14",
+    "runtimeResultSha256": "da1da6742ab2852541928475f1f5375783df660f426f5976f289f7e7f1a4f886",
+    "indexSha256": "5f04ac4cf1da0159cd98f5ddf6b692e02714349ddaffa9edccc62abfb052bf07",
+    "runtimeEvidenceSha256": "6731baa03fd3439542ba835ecefbbf0a3c1904ba9f9c969afaf6497487fdc3c9",
+    "fixtures": 2,
+    "records": 54,
+    "renderedViews": 216,
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

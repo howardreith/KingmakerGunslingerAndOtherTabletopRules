@@ -712,6 +712,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitProductionCompatibility &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ElementalRaceClassEquipment &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ElementalRaceMotion &&
                     !RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
                             _request.Scenario) &&
@@ -1570,6 +1571,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.ElementalRaceClassEquipment ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ElementalRaceMotion ||
                     RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
                             _request.Scenario) ||
@@ -1640,6 +1643,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.ElementalRaceClassEquipment ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ElementalRaceMotion ||
                     RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
                             _request.Scenario) ||
@@ -2278,7 +2283,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _gunslingerOutfitProductionCompatibility.Result);
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
-                    .GunslingerOutfitProductionMotion)
+                        .GunslingerOutfitProductionMotion ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceMotion)
                 {
                     if (_gunslingerOutfitProductionMotion == null)
                         _gunslingerOutfitProductionMotion =

@@ -601,6 +601,12 @@ try {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             [Math]::Max($TimeoutSeconds, 1800) + 15)
     }
+    elseif ($Scenario -eq 'elemental-race-motion') {
+        # Eight production elemental race/sex fixtures each drive the accepted
+        # 27-record native idle/walk/run/turn/attack/reload/melee matrix.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 7200) + 15)
+    }
     elseif ($Scenario -in @(
         'gunslinger-outfit-production-persistence-prepare',
         'gunslinger-outfit-production-persistence',

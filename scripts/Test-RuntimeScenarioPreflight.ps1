@@ -125,6 +125,7 @@ $expected = @(
     'gunslinger-outfit-finalist-race-matrix',
     'gunslinger-outfit-production-compatibility',
     'elemental-race-class-equipment',
+    'elemental-race-motion',
     'gunslinger-outfit-production-motion',
     'gunslinger-outfit-production-persistence-prepare',
     'gunslinger-outfit-production-persistence',
@@ -413,6 +414,14 @@ Assert-True $gunslingerOutfitProductionMotion.RequiresSaveName `
 Assert-True ($gunslingerOutfitProductionMotion.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'gunslinger-outfit-production-motion-only-permits-working-save'
+$elementalRaceMotion = Get-KmgRuntimeScenarioMetadata 'elemental-race-motion'
+Assert-True (-not $elementalRaceMotion.RequiresManualInteraction) `
+    'elemental-race-motion-is-autonomous'
+Assert-True $elementalRaceMotion.RequiresSaveName `
+    'elemental-race-motion-requires-save-name'
+Assert-True ($elementalRaceMotion.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'elemental-race-motion-only-permits-working-save'
 foreach ($outfitPersistenceScenario in @(
     'gunslinger-outfit-production-persistence-prepare',
     'gunslinger-outfit-production-persistence',

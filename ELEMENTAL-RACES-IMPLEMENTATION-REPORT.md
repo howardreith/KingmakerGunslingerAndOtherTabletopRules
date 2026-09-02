@@ -17,8 +17,10 @@ The live donor audit additionally proves complete native modular geometry and
 palette inputs. Sixteen production visual blueprints, 28 stable asset proxies,
 and a 56-case all-option production renderer matrix now pass guarded runtime
 qualification. The existing 128-state elemental Gunslinger equipment matrix
-and an 80-case exact native clothing matrix across ten classes also pass.
-Remaining equipment/motion, save-backed persistence, compatibility profiles,
+and an 80-case exact native clothing matrix across ten classes also pass. Eight
+elemental Gunslinger fixtures pass the accepted 216-record native motion
+matrix, and its original two-Human mode passes again. Remaining equipment and
+noncovered motion states, save-backed persistence, compatibility profiles,
 the full 24-state runtime boundary matrix, and human acceptance remain pending.
 
 ## Authoritative baseline
@@ -279,8 +281,9 @@ two-process save-backed persistence qualification.
   runtime-result SHA-256:
   `53879496629b6a8dac4cd5f41a4c99e41654c8b487736ee7525a1c6dde83a569`.
   The 128-state elemental Gunslinger equipment matrix and 80-case ten-class
-  native clothing matrix pass separately. Remaining equipment/motion,
-  persistence, and subjective visual review remain pending.
+  native clothing matrix and 216-record elemental native-motion matrix pass
+  separately. Remaining equipment/noncovered motion, persistence, and
+  subjective visual review remain pending.
 
 ## Qualification status
 
@@ -289,7 +292,7 @@ two-process save-backed persistence qualification.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,387/1,387 |
+| Current complete domain suite | PASS - 1,388/1,388 |
 | Phase C clean Release package | PASS - strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
@@ -304,8 +307,10 @@ two-process save-backed persistence qualification.
 | Guarded production all-option visual matrix | PASS - `20260902T1301142529832Z-elemental-race-visual-audit` (56/56) |
 | Guarded elemental Gunslinger class/equipment matrix | PASS - `20260902T1346079130473Z-elemental-race-class-equipment` (128/128) |
 | Guarded ten-class elemental clothing matrix | PASS - `20260902T1451545064731Z-elemental-race-class-clothing` (80/80) |
+| Guarded elemental native-motion matrix | PASS - `20260902T1520151111405Z-elemental-race-motion` (216/216) |
+| Existing Human native-motion regression | PASS - `20260902T1531223520715Z-gunslinger-outfit-production-motion` (54/54) |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
-| Guarded remaining equipment/motion and runtime persistence | NOT-RUN |
+| Guarded remaining equipment/noncovered motion and runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
 | Human visual acceptance | NOT-READY |
 
@@ -450,3 +455,45 @@ DLL SHA-256:
 DLL MVID: `5cd6ca86-8a25-42d9-a900-95ef2257ef65`. This remains a
 version 0.0.113 engineering checkpoint rather than the final preview
 artifact.
+
+The guarded `elemental-race-motion` mode reused the accepted production motion
+transaction without changing its Human fixture path. It covered Ifrit, Oread,
+Sylph, and Undine, both sexes, with native idle, slow walk, normal run, turn,
+pistol and musket attacks, production musket reload, and shortsword melee.
+Transaction `20260902T1520151111405Z-elemental-race-motion` passed all 14
+assertions: 8/8 exact fixtures, 216/216 records and PNG/sidecar pairs, 864
+labelled views, 16 movements, 8 turns, 24 attacks, 8 reloads, 8 exact avatar
+restorations, 8 exact combat-boundary reconciliations, unchanged published
+class data, and no save call. Run ID:
+`20260902T1520151280510Z-1512e7f8e1fe41b4bc268018108d6941`.
+Runtime-result/index/runtime-evidence SHA-256 values:
+`9fa5484e3b5c2eb96778305f785387c271783d7958945ab77bb4e7b49d744eab` /
+`7d2616e5a6c1647625ec3605720713dbfddf538542ad1627230256d558bb315d` /
+`04c0078e909f7aad3a0c4caaf20d62185f725841e4e7cb02ebc42351b2b6c8e3`.
+
+The original accepted Human mode was then rerun on the same source. Transaction
+`20260902T1531223520715Z-gunslinger-outfit-production-motion` passed all 14
+assertions, 2/2 fixtures, 54/54 records, 216 views, all native action outcomes,
+both restorations and combat boundaries, blueprint immutability, and no save
+call. Run ID:
+`20260902T1531223770733Z-ed026c1eaa5240c5893cb70313f6c8e3`.
+Runtime-result/index/runtime-evidence SHA-256 values:
+`da1da6742ab2852541928475f1f5375783df660f426f5976f289f7e7f1a4f886` /
+`5f04ac4cf1da0159cd98f5ddf6b692e02714349ddaffa9edccc62abfb052bf07` /
+`6731baa03fd3439542ba835ecefbbf0a3c1904ba9f9c969afaf6497487fdc3c9`.
+Both runs used local-runtime package SHA-256
+`c5e6431d97a116d737584fe85a0d05bbf5e713b3be8f915dc9c4bc72f184815d`,
+loaded DLL SHA-256
+`f7f69f3f0c96425497639bc7845e971205e28b652115c8773c11d57b0d5b4ec7`,
+and DLL MVID `39b4cd0b-71e9-470f-a032-33cec7ea7f14`.
+
+The required clean Release/package pipeline then passed on the elemental-motion
+source tree: repository validation, all 1,388 tests, production compilation,
+build-output and SoundBank validation, deterministic package creation, and
+strict standalone UMM validation. The 22,940,247-byte package SHA-256 is
+`497625066222aa5c08fe2323e7134e8c257a8dddf58b193687c20a7d0f05c279`;
+the 5,294,080-byte DLL SHA-256 is
+`7cf1181feec82b606189fd22a3bffbd15d9db8ae44ee76c519e2c6ef325145a8`;
+DLL MVID is `399e6d2a-4593-4e90-b59d-44a49ca9058a`. `Info.json` remains
+version `0.0.113`; this is an engineering checkpoint rather than the final
+preview candidate.

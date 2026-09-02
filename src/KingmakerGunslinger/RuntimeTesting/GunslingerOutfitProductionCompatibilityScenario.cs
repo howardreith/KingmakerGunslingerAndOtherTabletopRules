@@ -239,6 +239,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
 
+            private bool UsesElementalRaceFixtures
+            {
+                get
+                {
+                    return IsElementalRaceClassEquipment ||
+                        IsElementalRaceMotion;
+                }
+            }
+
             internal ProductionCompatibilitySession(ModContext context,
                 RuntimeTestRequest request)
             {
@@ -299,7 +308,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _exceptionSummary = exception.ToString();
                     Add(_assertions,
                         IsProductionMotion
-                            ? "gunslinger-outfit-production-motion-exception"
+                            ? IsElementalRaceMotion
+                                ? "elemental-race-motion-exception"
+                                : "gunslinger-outfit-production-motion-exception"
                             : IsElementalRaceClassEquipment
                                 ? "elemental-race-class-equipment-exception"
                                 : "gunslinger-outfit-production-compatibility-exception",
@@ -341,7 +352,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(value, _gunslingerClass)))
                     throw new InvalidOperationException(
                         "The exact production Gunslinger is not published in the installed class catalog.");
-                _supportedRaces = IsElementalRaceClassEquipment
+                _supportedRaces = UsesElementalRaceFixtures
                     ? RequireElementalRaces()
                     : root.Progression.CharacterRaces
                         .Where(value => value != null)
@@ -360,7 +371,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _primaryBefore = _gunslingerClass.PrimaryColor;
                 _secondaryBefore = _gunslingerClass.SecondaryColor;
                 ValidateProductionRaceLinks();
-                _fixtures = IsElementalRaceClassEquipment
+                _fixtures = UsesElementalRaceFixtures
                     ? BuildElementalFixtures()
                     : BuildHumanFixtures();
                 _showBackpackField = typeof(Character).GetField(
@@ -1892,7 +1903,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 };
                 WriteJsonAtomic(Path.Combine(_request.EvidenceDirectory,
                     IsProductionMotion
-                        ? "gunslinger-outfit-production-motion-progress.json"
+                        ? IsElementalRaceMotion
+                            ? "elemental-race-motion-progress.json"
+                            : "gunslinger-outfit-production-motion-progress.json"
                         : IsElementalRaceClassEquipment
                             ? "elemental-race-class-equipment-progress.json"
                             : "gunslinger-outfit-production-compatibility-progress.json"),
@@ -1903,7 +1916,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_cleanupStarted) return;
                 _stage = IsProductionMotion
-                    ? "gunslinger-outfit-production-motion-cleanup"
+                    ? IsElementalRaceMotion
+                        ? "elemental-race-motion-cleanup"
+                        : "gunslinger-outfit-production-motion-cleanup"
                     : IsElementalRaceClassEquipment
                         ? "elemental-race-class-equipment-cleanup"
                         : "gunslinger-outfit-production-compatibility-cleanup";
