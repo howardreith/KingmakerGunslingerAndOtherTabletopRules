@@ -14,7 +14,7 @@ VERSION = "0.0.113"
 INFORMATIONAL_VERSION = "0.0.113-save-load-hotfix"
 PACKAGE = "KingmakerGunslinger-0.0.113-local-runtime.zip"
 PACKAGE_SUFFIX = "save-load-hotfix"
-DETERMINISTIC_TEST_COUNT = 1377
+DETERMINISTIC_TEST_COUNT = 1381
 STATIC_KEY = "saveLoadReconciliation113"
 
 

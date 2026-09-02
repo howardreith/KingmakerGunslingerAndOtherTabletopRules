@@ -935,6 +935,14 @@
     <Compile Include="RuntimeTesting\CompatibilityAssetAttributionScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceDevelopmentProbeScenario.cs" />
+    <Compile Include="ElementalRaces\ElementalRaceIdentityCatalog.cs" />
+    <Compile Include="ElementalRaces\ElementalRaceDefinition.cs" />
+    <Compile Include="ElementalRaces\ElementalRaceCatalog.cs" />
+    <Compile Include="ElementalRaces\ElementalRaceBlueprintSet.cs" />
+    <Compile Include="ElementalRaces\ElementalRaceRuleComponents.cs" />
+    <Compile Include="ElementalRaces\ElementalRaceAbilityFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalRaceBlueprintFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalRacePublication.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitRenderScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitQualificationScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitProductionCompatibilityScenario.cs" />

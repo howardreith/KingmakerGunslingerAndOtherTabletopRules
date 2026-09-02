@@ -21,6 +21,7 @@ using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
 using KingmakerGunslinger.UrbanBarbarian;
 using KingmakerGunslinger.Spells.ProtectionFromAlignment;
+using KingmakerGunslinger.ElementalRaces;
 
 namespace KingmakerGunslinger.Bootstrap
 {
@@ -34,7 +35,8 @@ namespace KingmakerGunslinger.Bootstrap
     {
         internal const int ExpectedRegisteredBlueprintCount = 341 + 1 + 5 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount +
-            UrbanBarbarianIdentityCatalog.IdentityCount;
+            UrbanBarbarianIdentityCatalog.IdentityCount +
+            ElementalRaceIdentityCatalog.IdentityCount;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -69,6 +71,8 @@ namespace KingmakerGunslinger.Bootstrap
         private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;
         private static EasternWeaponBlueprintSet _easternWeapons;
         private static UrbanBarbarianBlueprintSet _urbanBarbarian;
+        private static ElementalRaceBlueprintSet _elementalRaces;
+        private static ElementalRacePublication _elementalRacePublication;
         private static CustomWeaponMartialPerformancePublication
             _martialPerformancePublication;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
@@ -165,6 +169,16 @@ namespace KingmakerGunslinger.Bootstrap
         internal static UrbanBarbarianBlueprintSet UrbanBarbarian
         {
             get { lock (Gate) { return _urbanBarbarian; } }
+        }
+
+        internal static ElementalRaceBlueprintSet ElementalRaces
+        {
+            get { lock (Gate) { return _elementalRaces; } }
+        }
+
+        internal static ElementalRacePublication ElementalRacePublication
+        {
+            get { lock (Gate) { return _elementalRacePublication; } }
         }
 
         internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
@@ -590,6 +604,9 @@ namespace KingmakerGunslinger.Bootstrap
                     _elvenBranchedSpears = result.ElvenBranchedSpears;
                     _easternWeapons = result.EasternWeapons;
                     _urbanBarbarian = result.UrbanBarbarian;
+                    _elementalRaces = result.ElementalRaces;
+                    _elementalRacePublication =
+                        result.ElementalRacePublication;
                     _martialPerformancePublication =
                         result.MartialPerformancePublication;
                     _registeredBlueprintCount = result.RegisteredBlueprintCount;
@@ -692,10 +709,17 @@ namespace KingmakerGunslinger.Bootstrap
             CustomWeaponMartialPerformancePublication
                 martialPerformancePublication = null;
             UrbanBarbarianPublication urbanBarbarianPublication = null;
+            ElementalRacePublication elementalRacePublication = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
                 DiagnosticBlueprints.Validate(diagnosticFeature);
+
+                ElementalRaceBlueprintSet elementalRaces =
+                    ElementalRaceBlueprintFactory.Register(library, registry);
+                elementalRacePublication = ElementalRacePublication.Apply(
+                    elementalRaces,
+                    publicationPlan.ElementalRaceSelectors);
 
                 UrbanBarbarianBlueprintSet urbanBarbarian =
                     UrbanBarbarianBlueprints.Register(library, registry);
@@ -1070,6 +1094,8 @@ namespace KingmakerGunslinger.Bootstrap
                     elvenBranchedSpears,
                     easternWeapons,
                     urbanBarbarian,
+                    elementalRaces,
+                    elementalRacePublication,
                     martialPerformancePublication,
                     registry.RegisteredCount,
                     expectedRegisteredBlueprintCount);
@@ -1286,6 +1312,17 @@ namespace KingmakerGunslinger.Bootstrap
                             summonRollbackException);
                     }
                 }
+                if (elementalRacePublication != null)
+                {
+                    try { elementalRacePublication.Rollback(); }
+                    catch (Exception raceRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "elemental-races.rollback-failed",
+                            "Blueprint initialization failed and CharacterRaces rollback was refused.",
+                            raceRollbackException);
+                    }
+                }
                 if (classPublication != null)
                 {
                     try
@@ -1379,6 +1416,8 @@ namespace KingmakerGunslinger.Bootstrap
                 ElvenBranchedSpearBlueprintSet elvenBranchedSpears,
                 EasternWeaponBlueprintSet easternWeapons,
                 UrbanBarbarianBlueprintSet urbanBarbarian,
+                ElementalRaceBlueprintSet elementalRaces,
+                ElementalRacePublication elementalRacePublication,
                 CustomWeaponMartialPerformancePublication
                     martialPerformancePublication,
                 int registeredBlueprintCount,
@@ -1423,6 +1462,11 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("easternWeapons");
                 UrbanBarbarian = urbanBarbarian ??
                     throw new ArgumentNullException("urbanBarbarian");
+                ElementalRaces = elementalRaces ??
+                    throw new ArgumentNullException("elementalRaces");
+                ElementalRacePublication = elementalRacePublication ??
+                    throw new ArgumentNullException(
+                        "elementalRacePublication");
                 MartialPerformancePublication =
                     martialPerformancePublication ??
                     throw new ArgumentNullException(
@@ -1485,6 +1529,10 @@ namespace KingmakerGunslinger.Bootstrap
             internal EasternWeaponBlueprintSet EasternWeapons
             { get; private set; }
             internal UrbanBarbarianBlueprintSet UrbanBarbarian
+            { get; private set; }
+            internal ElementalRaceBlueprintSet ElementalRaces
+            { get; private set; }
+            internal ElementalRacePublication ElementalRacePublication
             { get; private set; }
             internal CustomWeaponMartialPerformancePublication
                 MartialPerformancePublication { get; private set; }

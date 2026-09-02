@@ -2,13 +2,14 @@
 
 ## Current outcome
 
-**IN PROGRESS - PHASE C SOURCE/DOMAIN QUALIFIED.** The request-gated diagnostic race and
-`observe-elemental-race-blueprints` scenario prove stable hidden registration,
-native character-generation fact application, Human-compatible male/female
-doll rendering, accepted Gunslinger outfit compatibility, blueprint-reference
-persistence, and exact rollback. No production elemental race, rule feature,
-SLA, visual proxy, or selector publication exists yet. The single preview-off
-feature-module setting and its selector-publication intent are implemented.
+**IN PROGRESS - PRODUCTION BASE-RACE GRAPH AND MODULE-OFF RUNTIME QUALIFIED.**
+All four production races, their common/race-specific rules, 24 stable
+identities, racial SLAs, and atomic selector publication now exist. The
+request-gated guarded scenario proves exact live registration while the preview
+module is OFF, no selector leakage, no foreign same-race collision, donor doll
+rendering, hidden-reference persistence, and exact cleanup. Actual combat/rest
+mechanics, module-ON publication, distinctive visual proxies, save-backed
+persistence, compatibility profiles, and human acceptance remain pending.
 
 ## Authoritative baseline
 
@@ -37,9 +38,8 @@ feature-module setting and its selector-publication intent are implemented.
 - Manifest arithmetic is now 1,638 total identities: 1,636 active and two
   reserved. The new reserved identity is not packaged as active content.
 
-Production stable GUID inventory, race definitions, mechanics, visual proxies,
-publication behavior, fallback behavior, compatibility scenarios, final
-artifact hashes, and limitations remain pending exact implementation evidence.
+Distinctive visual proxies, compatibility scenarios, final artifact hashes,
+and final limitations remain pending exact implementation evidence.
 
 ## Phase C feature-module inventory
 
@@ -56,6 +56,36 @@ artifact hashes, and limitations remain pending exact implementation evidence.
   PowerShell catalog independently generated 24 unique `2 + 2N` boundary
   profiles; those real runtime launches remain pending the production graph.
 
+## Production base-race inventory
+
+- `ElementalRaceIdentityCatalog.cs`: 24 stable symbols/GUID-backed identities.
+- `ElementalRaceDefinition.cs` and `ElementalRaceCatalog.cs`: strongly typed,
+  fixed Ifrit/Oread/Sylph/Undine rule definitions and original player text.
+- `ElementalRaceBlueprintSet.cs`: exact six-object inventory per race and fixed
+  deterministic order.
+- `ElementalRaceRuleComponents.cs`: descriptor-scoped +1 DC and total-character
+  level/Charisma racial SLA parameter components; no global spell patch.
+- `ElementalRaceAbilityFactory.cs`: one-use resources; sanitized native Burning
+  Hands, Stone Fist, and Feather Step clones; narrow native Bull Rush Hydraulic
+  Push reconstruction.
+- `ElementalRaceBlueprintFactory.cs`: separate Aasimar-compatible Medium race
+  objects, exact racial stats, native Outsider/Keen Senses/Slow and Steady
+  donors, resistance 5, affinities, SLAs, and complete Aasimar visual fallback.
+- `ElementalRacePublication.cs`: validated all-or-none append, third-party order
+  preservation, idempotence, conflict refusal, and exact-reference rollback.
+- `BlueprintBootstrap.cs`: unconditional identity registration and restart-bound
+  selector publication with rollback integrated into the existing transaction.
+
+The authoritative manifest now contains 1,662 entries: 1,660 active and two
+reserved. Each race owns these six identity categories: race, resistance,
+affinity, SLA feature, daily resource, and SLA ability. The exact GUID list is
+maintained in `blueprints/blueprints.json`; tests require the full 24-entry map.
+
+The donor `RaceId` is Aasimar. This intentionally follows Kingmaker's native
+outsider/person-spell precedent and Human skeleton contracts. It may cause
+dialogue or other checks that consult only `RaceId` to treat an elemental race
+as Aasimar; no broad rewrite is applied.
+
 ## Qualification status
 
 | Gate | Status |
@@ -63,11 +93,12 @@ artifact hashes, and limitations remain pending exact implementation evidence.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,377/1,377 |
+| Current complete domain suite | PASS - 1,381/1,381 |
 | Phase C clean Release package | PASS - strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
-| Guarded production mechanics runtime | NOT-RUN |
+| Guarded production identity/module-off runtime | PASS - `20260902T0538341591619Z-observe-elemental-race-blueprints` |
+| Guarded actual mechanics/SLA runtime | NOT-RUN |
 | Eleven-module 24-state runtime matrix | NOT-RUN |
 | Guarded visuals/runtime persistence | NOT-RUN |
 | Compatibility profiles | NOT-RUN |
@@ -90,3 +121,19 @@ artifact. Package SHA-256:
 DLL SHA-256:
 `5875845dd31e1b4c6a5ea4f764df08d4e325df88b58069c933b174661e204eaf`;
 DLL MVID: `1dbe88b3-acc6-45e0-b6c4-f981d9a135f4`.
+
+The production-rules guarded checkpoint also remains a non-final 0.0.113
+artifact. Package SHA-256:
+`abab69dfa4d593421c6fb40ff72021da07ec064651bd2072630f0827045efd46`;
+DLL SHA-256:
+`b95cb93e35bb4338673c0a532367346264de487cce775ebc024c8ce71df2a3c5`;
+DLL MVID: `6d810d87-4a3b-49ca-91e2-b2b7ff423a57`. This is not the
+human-acceptance candidate.
+
+The subsequent required clean Release/package gate passed on the documented
+checkpoint. Its package SHA-256 is
+`bb05bc9ba75ebb596ba57d2eee36fe71b95d9b3baff4a079ec2cb1c44a8ab4d4`,
+DLL SHA-256 is
+`8ee289d26d2754d394a570dc2dd3f0fee6cb3360a8f7163d7fcff2cacfefcfeb`,
+and DLL MVID is `6ef0225c-8e4e-4a60-9853-84db65f331b9`. It also remains a
+development checkpoint rather than the final preview candidate.

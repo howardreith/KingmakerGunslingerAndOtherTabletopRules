@@ -518,7 +518,7 @@ catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
 plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, extend the
-append-only ledger to 1638 stable IDs: 1636 active and 2 reserved. The two
+append-only ledger to 1662 stable IDs: 1660 active and 2 reserved. The two
 latest active identities are hidden, mechanically inert In Harm's Way
 immediate-action debt facts. They preserve an off-turn spend across save/load
 and tie it to the owner's next actual turn without using a global-round flag.
