@@ -8,8 +8,10 @@ SLA parameters, native donor delivery, Stone Fist and Feather Step expiry,
 Hydraulic Push combat resolution, rest restoration, and request-local resource
 persistence now pass guarded runtime checks. Native Oread movement,
 Aasimar/Tiefling creature-type behavior, and module ON/OFF publication also
-pass guarded runtime checks. Visuals, save-backed persistence, and
-compatibility qualification remain incomplete;
+pass guarded runtime checks. The complete eight-race native visual donor and
+palette inventory also passes guarded runtime checks. Production visual
+proxies, candidate rendering, save-backed persistence, and compatibility
+qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
@@ -57,6 +59,13 @@ absence of a hard blocker is not a completion claim.
 - Fresh module-ON and module-OFF processes proved 24 identities remain
   registered in both states. ON published one contiguous Ifrit/Oread/Sylph/
   Undine sequence without shared-catalog duplicates; OFF published none.
+- The guarded donor inventory resolved all 358 declared head, hair, eyebrow,
+  beard, horn, tail-palette, body, and preset links across Human, Aasimar,
+  Tiefling, Elf, Dwarf, Half-Elf, Half-Orc, and Gnome. It proved at least two
+  heads and four hair choices per sex, complete native fallback presets, and a
+  common 256x1 RGB24/bilinear/clamp ramp contract. The initial fixture-only
+  assumption that every donor supplies eyebrows was corrected after Half-Orc
+  accurately reported none.
 
 ## Open risks requiring evidence
 
@@ -68,11 +77,15 @@ absence of a hard blocker is not a completion claim.
 - Hydraulic Push combat mechanics and resource commitment are qualified. A
   safe native water projectile has not yet been selected, and save-backed
   persistence remains pending.
-- Vanilla head, hair, skin, eye, eyebrow, beard, horn, body, color-profile, and
-  class/equipment compatibility donors remain unaudited for the four races.
+- Native head, hair, skin, eyebrow, beard, horn, body, preset, and color-ramp
+  donors are inventoried by exact ID. Production proxy registration, curated
+  per-race combinations, candidate rendering, eye-color behavior, and the full
+  class/equipment/motion matrix remain to be implemented and qualified.
 - Complete Aasimar fallback arrays render and preserve Human skeleton/body
-  compatibility. Distinctive per-race donor IDs, profiles, original ramps, and
-  fallback combinations remain to be audited and implemented.
+  compatibility. Production visuals will initially constrain geometry to the
+  runtime-proven Human-compatible Human/Aasimar/Tiefling skeleton family;
+  palettes from other donors may be reused through their audited native ramp
+  resources without copying textures.
 
 These are investigation items, not hard stops. Change strategy and continue
 while a safe, reversible evidence path remains.

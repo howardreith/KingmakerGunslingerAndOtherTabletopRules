@@ -50,7 +50,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "25a5878d125338244896ebd3238226c8",
             "c4faf439f0e70bd40b5e36ee80d06be7",
             "b3646842ffbd01643ab4dac7479b20b0",
-            "1dc20e195581a804890ddc74218bfd8e"
+            "1dc20e195581a804890ddc74218bfd8e",
+            "ef35a22c9a27da345a4528f0d5889157"
         };
 
         private const string KeenSensesGuid =
@@ -98,11 +99,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<string> _warnings = new List<string>();
             private readonly JObject _evidence = new JObject
             {
-                { "schemaVersion", 1 },
+                { "schemaVersion", 3 },
                 { "saveStateTouched", false },
                 { "publishedToCharacterRaces", false },
                 { "nativeRaces", new JArray() },
                 { "mechanicDonors", new JArray() },
+                { "visualDonors", new JArray() },
                 { "outsiderPrecedent", new JObject() },
                 { "productionRaces", new JArray() },
                 { "dolls", new JArray() },
@@ -192,15 +194,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         DescribeRace(race));
                 }
                 Add(_assertions, "elemental-probe-native-races",
-                    "seven exact native race GUIDs resolve uniquely",
+                    "eight exact native race GUIDs resolve uniquely",
                     string.Join("|", native.Select(Identity).ToArray()),
-                    native.Count == 7 && native.Select(value => value.AssetGuid)
-                        .Distinct(StringComparer.Ordinal).Count() == 7,
+                    native.Count == 8 && native.Select(value => value.AssetGuid)
+                        .Distinct(StringComparer.Ordinal).Count() == 8,
                     "live blueprint library");
 
                 _stage = "audit-native-mechanic-donors";
                 AuditMechanicDonors(_library, native, _evidence,
                     _assertions);
+
+                _stage = "audit-native-visual-donors";
+                AuditVisualDonors(native, _evidence, _assertions);
 
                 _stage = "audit-production-elemental-identities";
                 ElementalRaceBlueprintSet production =
@@ -619,6 +624,347 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return BlueprintLibraryLookup.RequireExact<T>(library, guid,
                 "elemental-race development probe " + purpose);
+        }
+
+        private static void AuditVisualDonors(IList<BlueprintRace> races,
+            JObject evidence,
+            ICollection<RuntimeTestAssertion> assertions)
+        {
+            if (races == null || races.Count != NativeRaceGuids.Length)
+                throw new InvalidOperationException(
+                    "The exact native visual donor inventory is unavailable.");
+
+            var assetIds = new List<string>();
+            int resolvedLinks = 0;
+            int unresolvedLinks = 0;
+            bool requiredOptionsComplete = true;
+            bool presetsComplete = true;
+            JArray donors = (JArray)evidence["visualDonors"];
+            foreach (BlueprintRace race in races)
+            {
+                JObject male = DescribeCustomization(race,
+                    Gender.Male, race.MaleOptions, assetIds,
+                    ref resolvedLinks, ref unresolvedLinks);
+                JObject female = DescribeCustomization(race,
+                    Gender.Female, race.FemaleOptions, assetIds,
+                    ref resolvedLinks, ref unresolvedLinks);
+                JArray presets = DescribeVisualPresets(race, assetIds,
+                    ref resolvedLinks, ref unresolvedLinks,
+                    ref presetsComplete);
+                requiredOptionsComplete &= RequiredOptionsComplete(male) &&
+                    RequiredOptionsComplete(female);
+                donors.Add(new JObject
+                {
+                    { "identity", Identity(race) },
+                    { "sourceClassification", "installed-native-race" },
+                    { "dlcType", DescribeMember(race, "DlcType") },
+                    { "male", male },
+                    { "female", female },
+                    { "presets", presets }
+                });
+            }
+
+            string[] distinctAssetIds = assetIds.Where(value =>
+                    !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.Ordinal).OrderBy(value => value,
+                    StringComparer.Ordinal).ToArray();
+            evidence["visualDonorTotals"] = new JObject
+            {
+                { "raceCount", races.Count },
+                { "linkCount", assetIds.Count },
+                { "uniqueAssetCount", distinctAssetIds.Length },
+                { "duplicateReferences", assetIds.Count -
+                    distinctAssetIds.Length },
+                { "resolvedLinks", resolvedLinks },
+                { "unresolvedLinks", unresolvedLinks },
+                { "requiredOptionsComplete", requiredOptionsComplete },
+                { "presetsComplete", presetsComplete },
+                { "assetIds", new JArray(distinctAssetIds) }
+            };
+            Add(assertions, "elemental-probe-visual-donors",
+                "eight exact native donors expose at least two heads and four hairs per sex, complete presets, and every declared asset link resolves",
+                "races=" + races.Count + ";links=" + assetIds.Count +
+                    ";unique=" + distinctAssetIds.Length +
+                    ";resolved=" + resolvedLinks +
+                    ";unresolved=" + unresolvedLinks +
+                    ";options=" + requiredOptionsComplete +
+                    ";presets=" + presetsComplete,
+                races.Count == 8 && assetIds.Count > 0 &&
+                    unresolvedLinks == 0 && requiredOptionsComplete &&
+                    presetsComplete,
+                "live EquipmentEntityLink.Load(false), native presets, skeletons, body parts, and color ramps");
+        }
+
+        private static JObject DescribeCustomization(BlueprintRace race,
+            Gender gender, CustomizationOptions options,
+            ICollection<string> assetIds, ref int resolvedLinks,
+            ref int unresolvedLinks)
+        {
+            var result = new JObject
+            {
+                { "gender", gender.ToString() },
+                { "heads", DescribeVisualLinks(race, gender, "heads",
+                    options == null ? null : options.Heads, assetIds,
+                    ref resolvedLinks, ref unresolvedLinks) },
+                { "hair", DescribeVisualLinks(race, gender, "hair",
+                    options == null ? null : options.Hair, assetIds,
+                    ref resolvedLinks, ref unresolvedLinks) },
+                { "eyebrows", DescribeVisualLinks(race, gender,
+                    "eyebrows", options == null ? null : options.Eyebrows,
+                    assetIds, ref resolvedLinks, ref unresolvedLinks) },
+                { "beards", DescribeVisualLinks(race, gender, "beards",
+                    options == null ? null : options.Beards, assetIds,
+                    ref resolvedLinks, ref unresolvedLinks) },
+                { "horns", DescribeVisualLinks(race, gender, "horns",
+                    options == null ? null : options.Horns, assetIds,
+                    ref resolvedLinks, ref unresolvedLinks) },
+                { "tailSkinColors", DescribeVisualLinks(race, gender,
+                    "tailSkinColors", options == null ? null :
+                    options.TailSkinColors, assetIds, ref resolvedLinks,
+                    ref unresolvedLinks) }
+            };
+            return result;
+        }
+
+        private static JArray DescribeVisualLinks(BlueprintRace race,
+            Gender gender, string category, EquipmentEntityLink[] links,
+            ICollection<string> assetIds, ref int resolvedLinks,
+            ref int unresolvedLinks)
+        {
+            var result = new JArray();
+            EquipmentEntityLink[] values = links ??
+                new EquipmentEntityLink[0];
+            for (int index = 0; index < values.Length; index++)
+                result.Add(DescribeVisualLink(race, gender, category,
+                    index, values[index], assetIds, ref resolvedLinks,
+                    ref unresolvedLinks));
+            return result;
+        }
+
+        private static JObject DescribeVisualLink(BlueprintRace race,
+            Gender gender, string category, int index,
+            EquipmentEntityLink link, ICollection<string> assetIds,
+            ref int resolvedLinks, ref int unresolvedLinks)
+        {
+            string assetId = link == null ? string.Empty :
+                link.AssetId ?? string.Empty;
+            assetIds.Add(assetId);
+            EquipmentEntity entity = null;
+            string error = string.Empty;
+            try
+            {
+                entity = link == null ? null : link.Load(false);
+                if (entity == null) error = "resolved-null";
+            }
+            catch (Exception exception)
+            {
+                error = exception.GetType().FullName + ": " +
+                    exception.Message;
+            }
+            if (entity == null) unresolvedLinks++;
+            else resolvedLinks++;
+            return new JObject
+            {
+                { "race", race.name ?? string.Empty },
+                { "raceId", race.RaceId.ToString() },
+                { "gender", gender.ToString() },
+                { "category", category },
+                { "index", index },
+                { "assetId", assetId },
+                { "resourceName", ResourceName(assetId) },
+                { "resolved", entity != null },
+                { "loadError", error },
+                { "entity", entity == null ? (JToken)JValue.CreateNull() :
+                    DescribeEquipmentEntity(entity) }
+            };
+        }
+
+        private static JArray DescribeVisualPresets(BlueprintRace race,
+            ICollection<string> assetIds, ref int resolvedLinks,
+            ref int unresolvedLinks, ref bool presetsComplete)
+        {
+            var result = new JArray();
+            BlueprintRaceVisualPreset[] presets = race.Presets ??
+                new BlueprintRaceVisualPreset[0];
+            for (int index = 0; index < presets.Length; index++)
+            {
+                BlueprintRaceVisualPreset preset = presets[index];
+                if (preset == null)
+                {
+                    presetsComplete = false;
+                    result.Add(JValue.CreateNull());
+                    continue;
+                }
+                EquipmentEntityLink[] male = preset.Skin == null ? null :
+                    preset.Skin.GetLinks(Gender.Male, race.RaceId);
+                EquipmentEntityLink[] female = preset.Skin == null ? null :
+                    preset.Skin.GetLinks(Gender.Female, race.RaceId);
+                bool complete = preset.Skin != null &&
+                    preset.MaleSkeleton != null &&
+                    preset.FemaleSkeleton != null && male != null &&
+                    male.Length > 0 && female != null && female.Length > 0;
+                presetsComplete &= complete;
+                result.Add(new JObject
+                {
+                    { "index", index },
+                    { "name", preset.name ?? string.Empty },
+                    { "guid", preset.AssetGuid ?? string.Empty },
+                    { "raceId", preset.RaceId.ToString() },
+                    { "complete", complete },
+                    { "skinWrapperName", preset.Skin == null ?
+                        string.Empty : preset.Skin.name ?? string.Empty },
+                    { "skinWrapperGuid", preset.Skin == null ?
+                        string.Empty : preset.Skin.AssetGuid ?? string.Empty },
+                    { "maleSkeleton", DescribeUnity(
+                        preset.MaleSkeleton) },
+                    { "femaleSkeleton", DescribeUnity(
+                        preset.FemaleSkeleton) },
+                    { "maleSkinLinks", DescribeVisualLinks(race,
+                        Gender.Male, "preset-skin", male, assetIds,
+                        ref resolvedLinks, ref unresolvedLinks) },
+                    { "femaleSkinLinks", DescribeVisualLinks(race,
+                        Gender.Female, "preset-skin", female, assetIds,
+                        ref resolvedLinks, ref unresolvedLinks) }
+                });
+            }
+            if (presets.Length == 0) presetsComplete = false;
+            return result;
+        }
+
+        private static bool RequiredOptionsComplete(JObject options)
+        {
+            return options != null && ((JArray)options["heads"]).Count >= 2 &&
+                ((JArray)options["hair"]).Count >= 4;
+        }
+
+        private static JObject DescribeEquipmentEntity(
+            EquipmentEntity entity)
+        {
+            return new JObject
+            {
+                { "name", entity.name ?? string.Empty },
+                { "layer", entity.Layer },
+                { "hideBodyParts", entity.HideBodyParts.ToString() },
+                { "showLowerMaterials", entity.ShowLowerMaterials },
+                { "colorsProfile", entity.ColorsProfile == null ?
+                    "<none>" : entity.ColorsProfile.name ?? string.Empty },
+                { "primaryRamps", new JArray((entity.PrimaryRamps ??
+                    new List<Texture2D>()).Select(DescribeTexture)) },
+                { "secondaryRamps", new JArray((entity.SecondaryRamps ??
+                    new List<Texture2D>()).Select(DescribeTexture)) },
+                { "bodyParts", DescribeVisualParts(entity.BodyParts) },
+                { "outfitParts", DescribeVisualParts(entity.OutfitParts) }
+            };
+        }
+
+        private static JObject DescribeTexture(Texture2D texture)
+        {
+            var result = new JObject
+            {
+                { "identity", DescribeUnity(texture) }
+            };
+            if (texture == null)
+            {
+                result["missing"] = true;
+                return result;
+            }
+            result["width"] = texture.width;
+            result["height"] = texture.height;
+            result["format"] = texture.format.ToString();
+            result["mipmapCount"] = texture.mipmapCount;
+            result["filterMode"] = texture.filterMode.ToString();
+            result["wrapMode"] = texture.wrapMode.ToString();
+            result["anisoLevel"] = texture.anisoLevel;
+            result["readable"] = texture.isReadable;
+            var samples = new JArray();
+            if (texture.isReadable && texture.width > 0 &&
+                texture.height > 0)
+            {
+                int y = texture.height / 2;
+                foreach (int x in new[] { 0, texture.width / 2,
+                    texture.width - 1 }.Distinct())
+                {
+                    try
+                    {
+                        Color32 color = texture.GetPixel(x, y);
+                        samples.Add(new JObject
+                        {
+                            { "x", x },
+                            { "y", y },
+                            { "rgba", string.Format(
+                                System.Globalization.CultureInfo.InvariantCulture,
+                                "{0:x2}{1:x2}{2:x2}{3:x2}", color.r,
+                                color.g, color.b, color.a) }
+                        });
+                    }
+                    catch (Exception exception)
+                    {
+                        samples.Add("<error:" +
+                            exception.GetType().Name + ">");
+                    }
+                }
+            }
+            result["samples"] = samples;
+            return result;
+        }
+
+        private static JArray DescribeVisualParts(IEnumerable parts)
+        {
+            var result = new JArray();
+            if (parts == null) return result;
+            int index = 0;
+            foreach (object part in parts)
+            {
+                if (part == null) continue;
+                result.Add(new JObject
+                {
+                    { "index", index++ },
+                    { "type", DescribeUnity(ReadVisualMember(part,
+                        "Type")) },
+                    { "prefab", DescribeUnity(ReadVisualMember(part,
+                        "Prefab") ?? ReadVisualMember(part,
+                        "RendererPrefab")) },
+                    { "material", DescribeUnity(ReadVisualMember(part,
+                        "Material")) },
+                    { "special", DescribeUnity(ReadVisualMember(part,
+                        "Special")) },
+                    { "onlyInDollRoom", DescribeUnity(ReadVisualMember(
+                        part, "OnlyInDollRoom")) },
+                    { "staysInPeacefulMode", DescribeUnity(
+                        ReadVisualMember(part, "StaysInPeacefulMode")) }
+                });
+            }
+            return result;
+        }
+
+        private static object ReadVisualMember(object instance, string name)
+        {
+            if (instance == null) return null;
+            for (Type type = instance.GetType(); type != null;
+                type = type.BaseType)
+            {
+                PropertyInfo property = type.GetProperty(name,
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                if (property != null && property.GetIndexParameters().Length == 0)
+                    return property.GetValue(instance, null);
+                FieldInfo field = type.GetField(name,
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                if (field != null) return field.GetValue(instance);
+            }
+            return null;
+        }
+
+        private static string ResourceName(string assetId)
+        {
+            string value;
+            return !string.IsNullOrWhiteSpace(assetId) &&
+                ResourcesLibrary.LibraryObject != null &&
+                ResourcesLibrary.LibraryObject.ResourceNamesByAssetId != null &&
+                ResourcesLibrary.LibraryObject.ResourceNamesByAssetId
+                    .TryGetValue(assetId, out value)
+                ? value ?? string.Empty : "<unmapped>";
         }
 
         private static JObject DescribeBlueprint(
