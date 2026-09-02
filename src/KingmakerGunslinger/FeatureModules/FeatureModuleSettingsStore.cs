@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal static class FeatureModuleSettingsStore
     {
-        internal const int CurrentSchemaVersion = 9;
+        internal const int CurrentSchemaVersion = 10;
         internal const string FileName = "FeatureModules.json";
 
         internal static FeatureModuleSettingsState Load(string modPath,
@@ -52,12 +52,15 @@ namespace KingmakerGunslinger.FeatureModules
                 bool protectionFromAlignmentControlImmunity = ReadDefaultOn(root,
                     FeatureModuleConfiguration
                         .ProtectionFromAlignmentControlImmunityId);
+                bool elementalRaces = ReadDefaultOff(root,
+                    FeatureModuleConfiguration.ElementalRacesId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
                         shieldOther, expandedSummoning, elvenBranchedSpears,
                         easternWeapons, brownFurTransmuter, urbanBarbarian,
                         bodyguardFeats,
-                        protectionFromAlignmentControlImmunity), path,
+                        protectionFromAlignmentControlImmunity,
+                        elementalRaces), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
                         "settings", false);
                 if (schema < CurrentSchemaVersion) Save(state);
@@ -81,7 +84,8 @@ namespace KingmakerGunslinger.FeatureModules
                         ":" + copyException.Message;
                 }
                 if (warning != null) warning("Malformed feature-module settings at " +
-                    path + "; all modules default ON; " + evidence + "; error=" +
+                    path + "; recovered mixed defaults (existing modules ON, " +
+                    "Elemental Races OFF); " + evidence + "; error=" +
                     exception.GetType().FullName + ":" + exception.Message);
                 return new FeatureModuleSettingsState(
                     FeatureModuleConfiguration.Defaults, path,
@@ -113,7 +117,9 @@ namespace KingmakerGunslinger.FeatureModules
                     state.Pending.BodyguardFeats,
                 [FeatureModuleConfiguration
                     .ProtectionFromAlignmentControlImmunityId] =
-                    state.Pending.ProtectionFromAlignmentControlImmunity
+                    state.Pending.ProtectionFromAlignmentControlImmunity,
+                [FeatureModuleConfiguration.ElementalRacesId] =
+                    state.Pending.ElementalRaces
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";
@@ -135,6 +141,16 @@ namespace KingmakerGunslinger.FeatureModules
             if (token == null) return true;
             if (token.Type != JTokenType.Boolean)
                 throw new JsonException("Feature-module key '" + key + "' must be boolean.");
+            return token.Value<bool>();
+        }
+
+        private static bool ReadDefaultOff(JObject root, string key)
+        {
+            JToken token = root[key];
+            if (token == null) return false;
+            if (token.Type != JTokenType.Boolean)
+                throw new JsonException("Feature-module key '" + key +
+                    "' must be boolean.");
             return token.Value<bool>();
         }
 

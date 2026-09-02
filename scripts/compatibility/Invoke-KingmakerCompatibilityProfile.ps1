@@ -147,14 +147,15 @@ if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
 }
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
-    if ($keys.Count -ne 10 -or $keys[0] -cne 'acadamaeGraduate' -or
+    if ($keys.Count -ne 11 -or $keys[0] -cne 'acadamaeGraduate' -or
         $keys[1] -cne 'bodyguardFeats' -or
         $keys[2] -cne 'brownFurTransmuter' -or
         $keys[3] -cne 'easternWeapons' -or
-        $keys[4] -cne 'elvenBranchedSpears' -or
-        $keys[5] -cne 'expandedSummoning' -or $keys[6] -cne 'gunslinger' -or
-        $keys[7] -cne 'protectionFromAlignmentControlImmunity' -or
-        $keys[8] -cne 'shieldOther' -or $keys[9] -cne 'urbanBarbarian' -or
+        $keys[4] -cne 'elementalRaces' -or
+        $keys[5] -cne 'elvenBranchedSpears' -or
+        $keys[6] -cne 'expandedSummoning' -or $keys[7] -cne 'gunslinger' -or
+        $keys[8] -cne 'protectionFromAlignmentControlImmunity' -or
+        $keys[9] -cne 'shieldOther' -or $keys[10] -cne 'urbanBarbarian' -or
         $Parameters.gunslinger -isnot [bool] -or
         $Parameters.acadamaeGraduate -isnot [bool] -or
         $Parameters.shieldOther -isnot [bool] -or
@@ -164,8 +165,9 @@ if ($moduleScenario) {
         $Parameters.brownFurTransmuter -isnot [bool] -or
         $Parameters.urbanBarbarian -isnot [bool] -or
         $Parameters.bodyguardFeats -isnot [bool] -or
-        $Parameters.protectionFromAlignmentControlImmunity -isnot [bool]) {
-        throw 'Feature-module profile observation requires exactly ten Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, and protectionFromAlignmentControlImmunity.'
+        $Parameters.protectionFromAlignmentControlImmunity -isnot [bool] -or
+        $Parameters.elementalRaces -isnot [bool]) {
+        throw 'Feature-module profile observation requires exactly eleven Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, and elementalRaces.'
     }
 } elseif ($assetAttributionScenario) {
     $keys = @($Parameters.Keys)
@@ -258,7 +260,7 @@ try {
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settings = [ordered]@{ schemaVersion = 9
+        $settings = [ordered]@{ schemaVersion = 10
             gunslinger = [bool]$Parameters.gunslinger
             'acadamae-graduate' = [bool]$Parameters.acadamaeGraduate
             'shield-other' = [bool]$Parameters.shieldOther
@@ -269,7 +271,8 @@ try {
             'urban-barbarian' = [bool]$Parameters.urbanBarbarian
             'bodyguard-feats' = [bool]$Parameters.bodyguardFeats
             'protection-from-alignment-control-immunity' =
-                [bool]$Parameters.protectionFromAlignmentControlImmunity }
+                [bool]$Parameters.protectionFromAlignmentControlImmunity
+            'elemental-races' = [bool]$Parameters.elementalRaces }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),

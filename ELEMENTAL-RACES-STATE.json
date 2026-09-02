@@ -5,12 +5,12 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-b-development-probe-qualified",
+  "phase": "phase-c-feature-module-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
-  "featureModuleSchema": 9,
-  "featureModuleCount": 10,
-  "featureModuleBoundaryCount": 22,
+  "featureModuleSchema": 10,
+  "featureModuleCount": 11,
+  "featureModuleBoundaryCount": 24,
   "elementalModuleDefault": false,
   "baselineDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
@@ -19,7 +19,7 @@
     "status": "PASS"
   },
   "implementation": {
-    "featureModule": "NOT-STARTED",
+    "featureModule": "SOURCE-AND-DOMAIN-PASS",
     "diagnosticIdentity": "RESERVED-REQUEST-GATED",
     "developmentProbe": "PASS",
     "productionStableIdentities": "NOT-STARTED",
@@ -31,8 +31,14 @@
     "visuals": "NOT-STARTED",
     "runtimeScenarios": "DEVELOPMENT-PROBE-ONLY",
     "compatibility": "NOT-STARTED",
-    "packaging": "PHASE-B-CHECKPOINT-PASS",
-    "draftPullRequest": "NOT-OPENED"
+    "packaging": "PHASE-C-CHECKPOINT-PASS",
+    "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
+  },
+  "currentDomainTests": {
+    "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
+    "passed": 1377,
+    "failed": 0,
+    "status": "PASS"
   },
   "runtime": {
     "transactions": [
@@ -66,9 +72,24 @@
         "saveStateTouched": false,
         "publishedToCharacterRaces": false,
         "evidenceSha256": "edfdc13e786fe800851573e4339176b1fdac2116ed43141fd658627ccda40e04"
+      },
+      {
+        "id": "20260902T0440201720486Z-observe-feature-module-settings",
+        "scenario": "observe-feature-module-settings",
+        "configuration": "on-on-on-on-on-on-on-on-on-on-off",
+        "status": "PASS",
+        "elementalRaces": false,
+        "settingsRestoredExactly": true,
+        "originalSettingsSha256": "9c95e56da5713b0c9d040a918a270c117a8006b9fb8124b068a6a613d925f11e"
       }
     ],
     "status": "PARTIAL-PASS"
+  },
+  "checkpointArtifact": {
+    "packageSha256": "a3fa4c26704f59ce3bc8eed61325a4443a04b3d504a6f3d3518d3f26461b5d5a",
+    "dllSha256": "5875845dd31e1b4c6a5ea4f764df08d4e325df88b58069c933b174661e204eaf",
+    "dllMvid": "1dbe88b3-acc6-45e0-b6c4-f981d9a135f4",
+    "version": "0.0.113"
   },
   "humanReview": "NOT-READY"
 }

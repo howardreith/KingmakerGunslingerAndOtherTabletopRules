@@ -13,7 +13,8 @@ namespace KingmakerGunslinger.FeatureModules
                 active.ExpandedSummoning, active.ElvenBranchedSpears,
                 active.EasternWeapons, active.BrownFurTransmuter,
                 active.UrbanBarbarian, active.BodyguardFeats,
-                active.ProtectionFromAlignmentControlImmunity);
+                active.ProtectionFromAlignmentControlImmunity,
+                active.ElementalRaces);
             Path = path ?? string.Empty;
             Source = source ?? string.Empty;
             Recovered = recovered;
@@ -29,10 +30,11 @@ namespace KingmakerGunslinger.FeatureModules
         internal void SetPending(bool gunslinger, bool acadamaeGraduate,
             bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears,
             bool easternWeapons, bool brownFurTransmuter, bool urbanBarbarian,
-            bool bodyguardFeats, bool protectionFromAlignmentControlImmunity)
+            bool bodyguardFeats, bool protectionFromAlignmentControlImmunity,
+            bool elementalRaces)
         { Pending = new FeatureModuleConfiguration(gunslinger, acadamaeGraduate,
             shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons,
             brownFurTransmuter, urbanBarbarian, bodyguardFeats,
-            protectionFromAlignmentControlImmunity); }
+            protectionFromAlignmentControlImmunity, elementalRaces); }
     }
 }

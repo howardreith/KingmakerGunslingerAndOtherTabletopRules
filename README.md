@@ -185,26 +185,35 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find ten checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find eleven checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
 Transmuter -- requires Call of the Wild**, **Urban Barbarian**, **Bodyguard
-and In Harms Way**, and **Protection from Alignment: control immunity**. All
-default enabled. Older settings migrate to schema 9
-while preserving explicit existing values and enabling newly absent default-on
-modules.
+and In Harms Way**, **Protection from Alignment: control immunity**, and
+**Elemental Races: Ifrit, Oread, Sylph, and Undine (preview)**. The first ten
+modules default enabled; the Elemental Races preview defaults disabled. Older
+settings migrate to schema 10 while preserving every explicit value. An absent
+Elemental Races key migrates OFF; legacy absent keys for the existing modules
+retain their established ON defaults.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All ten modules
+items, summons, ammunition state, or equipment from a save. All eleven modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other nine modules continue. Urban Barbarian and
+publication while the other ten modules continue. Urban Barbarian and
 Protection from Alignment remain available regardless of CotW compatibility.
 Keep the whole mod installed
 for any campaign that has used project content.
+
+To use the Elemental Races preview, enable its single checkbox in the KMG UMM
+panel and restart Kingmaker completely. Its setting controls only publication
+to new-character and respec selectors. Turning it OFF and restarting hides
+those choices but keeps all elemental identities available to existing saves.
+Removing the entire mod from a campaign that has used an elemental race remains
+unsupported.
 
 ## Urban Barbarian
 

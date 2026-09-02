@@ -1208,7 +1208,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 10 -or
+        if ($Parameters.Count -ne 11 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -1229,8 +1229,10 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.bodyguardFeats -isnot [bool] -or
             -not $Parameters.ContainsKey(
                 'protectionFromAlignmentControlImmunity') -or
-            $Parameters.protectionFromAlignmentControlImmunity -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, and protectionFromAlignmentControlImmunity parameters."
+            $Parameters.protectionFromAlignmentControlImmunity -isnot [bool] -or
+            -not $Parameters.ContainsKey('elementalRaces') -or
+            $Parameters.elementalRaces -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, and elementalRaces parameters."
         }
     }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -1352,6 +1354,7 @@ function New-KmgRuntimeRequest {
                 bodyguardFeats = [bool]$Parameters.bodyguardFeats
                 protectionFromAlignmentControlImmunity =
                     [bool]$Parameters.protectionFromAlignmentControlImmunity
+                elementalRaces = [bool]$Parameters.elementalRaces
             }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {
