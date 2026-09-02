@@ -332,7 +332,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return false;
             if (!loaded)
                 return RacesUnleashedRaceGuids.All(guid =>
-                    !library.BlueprintsByAssetId.ContainsKey(guid) &&
                     catalog.All(value => value == null || !string.Equals(
                         value.AssetGuid, guid,
                         StringComparison.Ordinal)));

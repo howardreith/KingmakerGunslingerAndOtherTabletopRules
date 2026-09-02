@@ -501,6 +501,9 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(scenario.Contains(token),
                     "Races Unleashed compatibility token is absent: " +
                         token);
+            Assertions.False(scenario.Contains(
+                    "!library.BlueprintsByAssetId.ContainsKey(guid) &&"),
+                "The absent-mod control must inspect the shared race selector, not reject cached registry identities.");
             const string name =
                 "elemental-races-races-unleashed-compatibility";
             string catalog = Read("src", "KingmakerGunslinger",
