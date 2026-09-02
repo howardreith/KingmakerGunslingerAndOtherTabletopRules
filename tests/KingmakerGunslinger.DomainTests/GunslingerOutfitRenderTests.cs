@@ -707,6 +707,122 @@ namespace KingmakerGunslinger.DomainTests
                     forbidden);
         }
 
+        internal static void ElementalRaceMotionReusesProductionTransaction()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionMotionScenario.cs");
+            string shared = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionCompatibilityScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            const string scenario = "elemental-race-motion";
+
+            Assertions.True(catalog.Contains("ElementalRaceMotion") &&
+                catalog.Contains(scenario) &&
+                runner.Contains(".ElementalRaceMotion") &&
+                runner.Contains("BeginProductionMotion(") &&
+                WorkingSavePredicate(request).Contains(
+                    "ElementalRaceMotion") &&
+                automation.Contains("'" + scenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains(
+                    scenario + "-only-permits-working-save"),
+                "Elemental race motion is not wired through every guarded working-save surface.");
+            int metadataStart = automation.IndexOf("'" + scenario +
+                "' = [pscustomobject]", StringComparison.Ordinal);
+            string metadata = automation.Substring(metadataStart,
+                Math.Min(500, automation.Length - metadataStart));
+            Assertions.True(metadata.Contains(
+                    "RequiresSaveName = $true") &&
+                metadata.Contains(
+                    "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                metadata.Contains(
+                    "RequiresManualInteraction = $false"),
+                "Elemental race motion must fail closed to the disposable working save.");
+            int collectorStart = orchestrator.IndexOf(
+                "elseif ($Scenario -eq '" + scenario + "')",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                orchestrator.Substring(collectorStart,
+                    Math.Min(500, orchestrator.Length - collectorStart))
+                    .Contains(
+                        "[Math]::Max($TimeoutSeconds, 7200) + 15"),
+                "Eight elemental motion fixtures need their exact bounded collector window.");
+
+            foreach (string token in new[]
+            {
+                "IsElementalRaceMotion",
+                "RuntimeTestScenarioCatalog.ElementalRaceMotion",
+                "ElementalRaceCatalog.RaceCount * 2",
+                "expectedRecords = expectedFixtures * 27",
+                "expectedFixtures * 5",
+                "expectedFixtures * 8",
+                "expectedFixtures * 2",
+                "expectedFixtures * 3",
+                "records.Count(value => string.Equals(",
+                "(string)value[" + (char)34 + "raceGuid" +
+                    (char)34 + "], race.AssetGuid",
+                "== 54",
+                "elemental-race-motion-index.json",
+                "elemental-race-motion-guard",
+                "elemental-race-motion-fixtures",
+                "elemental-race-motion-captures",
+                "elemental-race-native-locomotion",
+                "elemental-race-native-turn",
+                "elemental-race-native-attacks",
+                "elemental-race-native-reload",
+                "elemental-race-motion-restoration",
+                "elemental-race-motion-combat-boundary",
+                "elemental-race-motion-blueprint-immutability",
+                "elemental-race-motion-cleanup"
+            })
+                Assertions.True(source.Contains(token),
+                    "Elemental motion lacks exact reuse token: " + token);
+            foreach (string token in new[]
+            {
+                "UsesElementalRaceFixtures",
+                "IsElementalRaceClassEquipment ||",
+                "IsElementalRaceMotion",
+                "_supportedRaces = UsesElementalRaceFixtures",
+                "_fixtures = UsesElementalRaceFixtures",
+                "BuildElementalFixtures()",
+                "elemental-race-motion-exception",
+                "elemental-race-motion-progress.json",
+                "elemental-race-motion-cleanup"
+            })
+                Assertions.True(shared.Contains(token),
+                    "Shared production transaction lacks elemental motion token: " +
+                    token);
+            Assertions.True(source.Contains(": 2;") &&
+                source.Contains(
+                    "gunslinger-outfit-production-motion-index.json") &&
+                source.Contains(
+                    "gunslinger-outfit-production-motion-guard") &&
+                source.Contains(
+                    "one exact male and female Human production DollData fixture"),
+                "The accepted two-Human motion mode was not preserved.");
+            foreach (string forbidden in new[]
+            {
+                "SaveGame", "QuickSave", "PlayerPrefs", "Input.",
+                "Mouse."
+            })
+                Assertions.False(source.Contains(forbidden),
+                    "Elemental motion contains forbidden save/UI token: " +
+                    forbidden);
+        }
+
         internal static void ProductionPersistenceIsGuardedAndExact()
         {
             string source = Read("src", "KingmakerGunslinger",

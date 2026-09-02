@@ -16,9 +16,9 @@
 - [ ] Focused rules, SLA, persistence, manifest, localization, rollback,
   package-content, and compatibility tests pass.
 - [x] Complete repository validation and dependency-free domain suite pass at
-  the current class-clothing checkpoint (1,387/1,387).
+  the current elemental-motion checkpoint (1,388/1,388).
 - [x] Clean Release/package command and strict package validation pass at the
-  current ten-class clothing checkpoint.
+  current elemental-motion checkpoint.
 - [x] Guarded Steam App ID 640820 base-mechanics, native donor-SLA, Hydraulic
   Push, native identity/movement, and ON/OFF publication scenarios record exact
   build identity and structured evidence without touching protected saves;
@@ -34,6 +34,9 @@
   Ranger, Alchemist, Magus, Wizard, Cleric, Monk, and Kineticist resolve their
   exact native class clothes and render complete materials/shaders without
   touching selector or save state.
+- [x] Eight elemental Gunslinger fixtures pass 216/216 native idle, walk, run,
+  turn, pistol/musket attack, production reload, and shortsword-melee records;
+  the unchanged two-Human mode passes its 54/54-record regression matrix.
 - [ ] KMG-alone, Call of the Wild, Races Unleashed, combined, highest-risk, and
   Visual Adjustments-if-installed profiles are qualified and restored exactly.
 - [ ] Existing Gunslinger outfit, firearm visual/mechanical, feature-module,

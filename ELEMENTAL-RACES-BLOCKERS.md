@@ -15,7 +15,9 @@ runtime checks. The 128-state elemental Gunslinger outfit/equipment/rebuild
 matrix also passes guarded runtime checks. The exact 80-case matrix across the
 four races, both sexes, Gunslinger, and nine additional base-game classes also
 passes guarded runtime checks. Remaining equipment slots, motion, save-backed
-persistence, compatibility, and human
+passes guarded runtime checks. The 216-record elemental native-motion matrix
+and the original 54-record Human motion regression both pass. Remaining
+equipment slots, save-backed persistence, compatibility, and human
 visual qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
@@ -91,6 +93,12 @@ absence of a hard blocker is not a completion claim.
   entities back to stable IDs by reference, waits for native asynchronous view
   attachment and baking, verifies all materials and shaders, and restores the
   exact race and blueprint graphs without touching selector or save state.
+- Eight elemental Gunslinger dolls passed the accepted native motion matrix:
+  idle, slow walk, normal run, turn, pistol and musket attacks, production
+  musket reload, and shortsword melee. All 216 record/PNG/sidecar states and
+  864 labelled views retained exact race GUID, outfit, rig, materials, command,
+  firearm, combat-boundary, and cleanup evidence. The original two-Human
+  54-record scenario passed again on the same generalized source.
 
 ## Open risks requiring evidence
 
@@ -108,7 +116,8 @@ absence of a hard blocker is not a completion claim.
   matrix. Kingmaker has no race-level eye-color field in
   CustomizationOptions; native head/material eyes and that limitation need
   human review. Medium armor, representative robes, remaining accessory slots,
-  and the full motion matrix remain to be qualified.
+  spellcasting/prone/death/polymorph surfaces, and persistence remain to be
+  qualified.
 - Complete Aasimar fallback arrays render and preserve Human skeleton/body
   compatibility. Production visuals will initially constrain geometry to the
   runtime-proven Human-compatible Human/Aasimar/Tiefling skeleton family;

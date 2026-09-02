@@ -730,6 +730,68 @@
   DLL MVID: 93c4538b-07ad-43cd-93c1-b9fc977a9be3. This is a version
   0.0.113 engineering checkpoint, not the final preview artifact.
 
+## 2026-09-02 - Elemental native-motion qualification
+
+- Added guarded `elemental-race-motion` as an alternate mode of the accepted
+  production motion transaction. It selects the four production elemental
+  race identities and both sexes while retaining the original Human fixture
+  path. Because all four races deliberately use `RaceId.Aasimar`, fixture and
+  frame aggregation now records and validates each exact race blueprint GUID.
+- The per-fixture matrix is unchanged: unarmed idle; musket slow walk, normal
+  run, and body-relative turn; native pistol and musket attacks; production
+  musket reload through update 240; and native shortsword melee. Eight fixtures
+  therefore produce exactly 216 records, 216 PNGs, 216 structured sidecars,
+  864 labelled views, 16 movement outcomes, 8 turns, 24 attacks, and 8 reloads.
+  Every actor/target/faction/scene is request-local; inventory, avatar, player,
+  combat, and published-class snapshots restore exactly; no save API is called.
+- Added the scenario to the request catalog, working-save predicate, autonomous
+  metadata, preflight contract, runner dispatch/area-load routing, and a bounded
+  7,200-second collector. The public request timeout remains within its existing
+  1,800-second validation limit. An initial command using 7,200 was rejected by
+  PowerShell parameter binding before launch or transaction creation; the
+  corrected command used 1,800 while the scenario-specific collector retained
+  its bounded 7,200-second deadline.
+- The first domain run stopped at repository validation because the newly added
+  test made the pinned total 1,387 stale. The count was deliberately advanced
+  to 1,388. The second run exposed one invalid quote escape in the focused test
+  only; it was replaced with the existing `(char)34` pattern. The complete
+  command `.\scripts\test-domain.ps1 -Configuration Release` then passed
+  **1,388/1,388**, and the production Release build passed.
+- Corrected guarded command
+  `.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario elemental-race-motion
+  -ExpectedVersion 0.0.113 -SaveName KMG_AUTOMATION_WORKING -TimeoutSeconds
+  1800 -ExitAfterCompletion:$true -Confirm:$false -AllowDirtyGit` completed
+  transaction `20260902T1520151111405Z-elemental-race-motion` **PASS** (run ID
+  `20260902T1520151280510Z-1512e7f8e1fe41b4bc268018108d6941`). All 14
+  assertions passed: 8/8 fixtures, 216/216 records, 864 views, exact action
+  counts, 8/8 avatar restorations, 8/8 combat-boundary reconciliations,
+  blueprint immutability, and no save call. Duration: 410,936 ms.
+- Runtime-result/index/runtime-evidence SHA-256 values:
+  `9fa5484e3b5c2eb96778305f785387c271783d7958945ab77bb4e7b49d744eab` /
+  `7d2616e5a6c1647625ec3605720713dbfddf538542ad1627230256d558bb315d` /
+  `04c0078e909f7aad3a0c4caaf20d62185f725841e4e7cb02ebc42351b2b6c8e3`.
+- Required regression command
+  `.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario
+  gunslinger-outfit-production-motion -ExpectedVersion 0.0.113 -SaveName
+  KMG_AUTOMATION_WORKING -TimeoutSeconds 1800 -ExitAfterCompletion:$true
+  -Confirm:$false -AllowDirtyGit` completed transaction
+  `20260902T1531223520715Z-gunslinger-outfit-production-motion` **PASS** (run
+  ID `20260902T1531223770733Z-ed026c1eaa5240c5893cb70313f6c8e3`). Its
+  original 14 assertions, 2/2 Human fixtures, 54/54 records, 216 views, action
+  outcomes, restorations, combat boundaries, immutability, and no-save contract
+  all remained exact. Duration: 192,181 ms.
+- Human runtime-result/index/runtime-evidence SHA-256 values:
+  `da1da6742ab2852541928475f1f5375783df660f426f5976f289f7e7f1a4f886` /
+  `5f04ac4cf1da0159cd98f5ddf6b692e02714349ddaffa9edccc62abfb052bf07` /
+  `6731baa03fd3439542ba835ecefbbf0a3c1904ba9f9c969afaf6497487fdc3c9`.
+  Both runs used package/DLL SHA-256
+  `c5e6431d97a116d737584fe85a0d05bbf5e713b3be8f915dc9c4bc72f184815d` /
+  `f7f69f3f0c96425497639bc7845e971205e28b652115c8773c11d57b0d5b4ec7`;
+  DLL MVID: `39b4cd0b-71e9-470f-a032-33cec7ea7f14`. The loaded commit
+  remains `d1b931d22e86d337385b1a3bdc33c2ac3466f9cc`, the immediately preceding
+  committed checkpoint; the dirty-run source/package/DLL identities capture
+  the exact tested build.
+
 ## 2026-09-02 - Ten-class elemental clothing qualification
 
 - Added the guarded, save-free `elemental-race-class-clothing` scenario. It
@@ -815,3 +877,20 @@
   `18be7cb6e5d5923471bf5d702eda8aa206f4b4a8ac2a72cc709d1c589f72fc56`;
   DLL MVID: `5cd6ca86-8a25-42d9-a900-95ef2257ef65`. This is a version
   0.0.113 engineering checkpoint, not the final preview artifact.
+
+## 2026-09-02 - Elemental motion clean package checkpoint
+
+- After both elemental and original-Human production-motion scenarios passed,
+  ran the required clean command
+  `.\scripts\build.ps1 -Configuration Release -Clean -Package` on the exact
+  motion source tree. Repository validation, all **1,388/1,388** tests,
+  production compilation, build-output and SoundBank validation, deterministic
+  packaging, and strict standalone UMM validation passed.
+- Clean package:
+  `artifacts/packages/KingmakerGunslinger-0.0.113-save-load-hotfix.zip`,
+  22,940,247 bytes, SHA-256
+  `497625066222aa5c08fe2323e7134e8c257a8dddf58b193687c20a7d0f05c279`.
+  Clean DLL: 5,294,080 bytes, SHA-256
+  `7cf1181feec82b606189fd22a3bffbd15d9db8ae44ee76c519e2c6ef325145a8`,
+  MVID `399e6d2a-4593-4e90-b59d-44a49ca9058a`. Packaged `Info.json` remains
+  `0.0.113`; this is not the final preview candidate.
