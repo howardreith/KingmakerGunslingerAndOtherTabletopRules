@@ -130,6 +130,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-hydraulic-push";
         internal const string DisposableElementalRaceNativeIdentity =
             "disposable-elemental-race-native-identity";
+        internal const string ElementalRacesRacesUnleashedCompatibility =
+            "elemental-races-races-unleashed-compatibility";
         internal const string GunslingerOutfitAudit =
             "gunslinger-outfit-audit";
         internal const string GunslingerOutfitCandidateRender =
@@ -460,6 +462,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableElementalRaceSlas,
                 DisposableHydraulicPush,
                 DisposableElementalRaceNativeIdentity,
+                ElementalRacesRacesUnleashedCompatibility,
                 GunslingerOutfitAudit,
                 GunslingerOutfitCandidateRender,
                 GunslingerOutfitFinalistRaceMatrix,

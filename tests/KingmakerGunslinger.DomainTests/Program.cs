@@ -70,6 +70,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-races.runtime-slas", ElementalRaceProductionTests.RuntimeSlaScenarioUsesNativeDelivery),
             Case("elemental-races.runtime-hydraulic-push", ElementalRaceProductionTests.RuntimeHydraulicPushScenarioUsesNativeManeuver),
             Case("elemental-races.runtime-native-identity", ElementalRaceProductionTests.RuntimeNativeIdentityScenarioUsesLiveEngineRules),
+            Case("elemental-races.races-unleashed-compatibility", ElementalRaceProductionTests.RacesUnleashedCompatibilityIsExactAndSaveFree),
             Case("outfit-render.guard", GunslingerOutfitRenderTests.GuardedWorkingSaveBoundaryIsExact),
             Case("outfit-render.catalog", GunslingerOutfitRenderTests.CandidateCatalogIsExactAndBounded),
             Case("outfit-render.matrix", GunslingerOutfitRenderTests.RendererRestoresAndCapturesExactMatrix),

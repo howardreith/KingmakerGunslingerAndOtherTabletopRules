@@ -480,6 +480,67 @@ namespace KingmakerGunslinger.DomainTests
                 "Native identity qualification must remain save-free and detached from protected state.");
         }
 
+        internal static void RacesUnleashedCompatibilityIsExactAndSaveFree()
+        {
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalRaceCompatibilityScenario.cs");
+            foreach (string token in new[]
+            {
+                "RacesUnleashedVersion = \"1.0.11\"",
+                "e9b9acb5-9b3f-41ad-bbd7-74494d5d7680",
+                "6d18168cb90ffe60931addc8ee11e42b3ef647ef0e6d4b7ce8980d44659f4cb0",
+                "d1335380a70e4bd7aa535f36770b93de",
+                "3cfdcda8edd74212a58d3b0d9d4041a4",
+                "ElementalRacePublication.Apply(set, true)",
+                "ReferenceEquals(catalogReference, afterFirst)",
+                "SameReferences(before, afterSecond)",
+                "third-party-race-order-preserved"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Races Unleashed compatibility token is absent: " +
+                        token);
+            const string name =
+                "elemental-races-races-unleashed-compatibility";
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            string wrapper = Read("scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1");
+            Assertions.True(catalog.Contains(name) &&
+                runner.Contains("ElementalRaceCompatibilityScenario.Run(") &&
+                automation.Contains("'" + name +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + name + "'") &&
+                project.Contains("ElementalRaceCompatibilityScenario.cs") &&
+                wrapper.Contains("'" + name + "'"),
+                "Compatibility observer is not wired through every guarded surface.");
+            JObject profiles = JObject.Parse(Read("compatibility",
+                "profiles.json"));
+            JToken[] exact = profiles["profiles"].Where(value =>
+                (string)value["id"] == "gunslinger-races-unleashed" ||
+                (string)value["id"] ==
+                    "gunslinger-call-of-the-wild-races-unleashed").ToArray();
+            Assertions.Equal(2, exact.Length,
+                "Both exact Races Unleashed profiles are required.");
+            Assertions.True(exact.All(value =>
+                    value["scenarios"].Any(item =>
+                        (string)item == name)) &&
+                exact.Count(value => value["modKeys"].Any(item =>
+                    (string)item == "races-unleashed")) == 2,
+                "Exact Races Unleashed profiles must include the focused observer.");
+            Assertions.False(scenario.Contains("SaveManager") ||
+                scenario.Contains("Game.Instance.Player.Party") ||
+                scenario.Contains("KMG_AUTOMATION_BASELINE"),
+                "Compatibility qualification must remain save-free.");
+        }
+
         private static string Source(string file)
         {
             return Read("src", "KingmakerGunslinger", "ElementalRaces", file);

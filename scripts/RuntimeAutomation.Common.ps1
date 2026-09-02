@@ -62,6 +62,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'elemental-races-races-unleashed-compatibility' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-optional-mod-compatibility' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1259,7 +1265,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
         $allowedProfiles = @(
             'gunslinger-only',
+            'gunslinger-races-unleashed',
             'gunslinger-call-of-the-wild',
+            'gunslinger-call-of-the-wild-races-unleashed',
             'gunslinger-arms-armor',
             'gunslinger-toggle-custom-soundpacks',
             'gunslinger-high-risk-combined',

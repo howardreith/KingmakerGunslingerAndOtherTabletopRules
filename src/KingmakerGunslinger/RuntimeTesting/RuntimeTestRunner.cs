@@ -816,6 +816,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _context, _request));
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ElementalRacesRacesUnleashedCompatibility)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalRaceCompatibilityScenario.Run(
+                        _context, _request));
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveFeatureModuleSettings)
                 {
