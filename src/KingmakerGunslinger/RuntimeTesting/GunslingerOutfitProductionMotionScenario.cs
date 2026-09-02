@@ -2940,6 +2940,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     spellcasts.All(value =>
                         (int)value["resourceBefore"] == 1 &&
                         (int)value["resourceAfter"] == 0 &&
+                        (int)value["resourceMaximum"] == 1 &&
+                        (int)value["resourceRecordsAfter"] == 1 &&
                         (bool)value["commandInstalled"] &&
                         (bool)value["commandStarted"] &&
                         (bool)value["commandRunningObserved"] &&

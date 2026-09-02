@@ -841,6 +841,8 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitUseAbility", "Animation.IsActed",
                 "ExecutionProcess.Tick()", "resourceBefore",
                 "resourceAfter", "UnitCondition.Prone",
+                "PersistantResources", ".Resources.Add(",
+                "elementalSlaReadiness=",
                 "RuleDealDamage", "ResurrectAndFullRestore",
                 "CreateProductionMotionTarget()",
                 "_actor.Blueprint.IsCheater = false",

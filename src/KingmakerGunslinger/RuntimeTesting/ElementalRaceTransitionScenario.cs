@@ -79,8 +79,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _elementalSpellProcessEnded;
             private bool _elementalSpellLiveCaptured;
             private bool _elementalSpellCleanupStarted;
+            private int _elementalSpellResourceInitial;
             private int _elementalSpellResourceBefore;
             private int _elementalSpellResourceAfter;
+            private int _elementalSpellResourceMaximum;
+            private int _elementalSpellResourceRecordsBefore;
+            private int _elementalSpellResourceRecordsAfter;
             private bool _elementalActorCheaterCaptured;
             private bool _elementalActorCheaterBefore;
             private int _elementalDamageBefore;
@@ -225,10 +229,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _elementalTransitionRace.SlaFeature))
                     _actor.Descriptor.AddFact(
                         _elementalTransitionRace.SlaFeature);
-                if (_actor.Descriptor.Resources.GetResourceAmount(
-                        _elementalTransitionResource) <= 0)
+                _elementalSpellResourceInitial = _actor.Descriptor.Resources
+                    .GetResourceAmount(_elementalTransitionResource);
+                _elementalSpellResourceRecordsBefore = _actor.Descriptor
+                    .Resources.PersistantResources.Count(value =>
+                        value != null && ReferenceEquals(value.Blueprint,
+                            _elementalTransitionResource));
+                if (_elementalSpellResourceRecordsBefore == 0)
+                    _actor.Descriptor.Resources.Add(
+                        _elementalTransitionResource, true);
+                int resourceAfterRegistration = _actor.Descriptor.Resources
+                    .GetResourceAmount(_elementalTransitionResource);
+                if (resourceAfterRegistration < 1)
                     _actor.Descriptor.Resources.Restore(
-                        _elementalTransitionResource, 1);
+                        _elementalTransitionResource,
+                        1 - resourceAfterRegistration);
+                _elementalSpellResourceBefore = _actor.Descriptor.Resources
+                    .GetResourceAmount(_elementalTransitionResource);
+                _elementalSpellResourceMaximum =
+                    _elementalTransitionResource.GetMaxAmount(
+                        _actor.Descriptor);
+                _elementalSpellResourceRecordsAfter = _actor.Descriptor
+                    .Resources.PersistantResources.Count(value =>
+                        value != null && ReferenceEquals(value.Blueprint,
+                            _elementalTransitionResource));
+                if (_elementalSpellResourceBefore != 1 ||
+                    _elementalSpellResourceMaximum != 1 ||
+                    _elementalSpellResourceRecordsAfter != 1)
+                    throw new InvalidOperationException(
+                        "The disposable actor's racial SLA resource could not " +
+                        "be initialized exactly; initial=" +
+                        _elementalSpellResourceInitial + ";prepared=" +
+                        _elementalSpellResourceBefore + ";maximum=" +
+                        _elementalSpellResourceMaximum + ";records=" +
+                        _elementalSpellResourceRecordsBefore + "->" +
+                        _elementalSpellResourceRecordsAfter + ".");
                 Ability ability = _actor.Descriptor.Abilities.GetAbility(
                     _elementalTransitionAbility);
                 if (ability == null)
@@ -248,6 +283,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .RawFacts.OfType<Buff>().ToArray();
                 bool available = _elementalTransitionAbilityData
                     .IsAvailable;
+                int availableCount = _elementalTransitionAbilityData
+                    .GetAvailableForCastCount();
+                _diagnostics.Add("elementalSlaReadiness=" +
+                    _fixtures[_fixtureIndex].Label + ";initial=" +
+                    _elementalSpellResourceInitial + ";prepared=" +
+                    _elementalSpellResourceBefore + ";maximum=" +
+                    _elementalSpellResourceMaximum + ";records=" +
+                    _elementalSpellResourceRecordsBefore + "->" +
+                    _elementalSpellResourceRecordsAfter +
+                    ";availableCount=" + availableCount +
+                    ";available=" + available);
                 bool targetable = _elementalTransitionAbilityData
                     .CanTarget(target);
                 _elementalTransitionAbilityCommand =
@@ -261,10 +307,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The racial SLA native command was not ready; " +
                         "available=" + available + ";targetable=" +
-                        targetable + ";canStart=" + canStart + ".");
-                _elementalSpellResourceBefore =
-                    _actor.Descriptor.Resources.GetResourceAmount(
-                        _elementalTransitionResource);
+                        targetable + ";canStart=" + canStart +
+                        ";availableCount=" + availableCount +
+                        ";resource=" + _elementalSpellResourceBefore +
+                        ";maximum=" + _elementalSpellResourceMaximum +
+                        ";records=" +
+                        _elementalSpellResourceRecordsAfter + ".");
                 _actor.Commands.Run(
                     _elementalTransitionAbilityCommand);
                 _elementalTransitionAbilityCommand.Start();
@@ -326,8 +374,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "raceGuid", _elementalTransitionRace.Race.AssetGuid },
                         { "abilityGuid", _elementalTransitionAbility.AssetGuid },
                         { "resourceGuid", _elementalTransitionResource.AssetGuid },
+                        { "resourceInitial",
+                            _elementalSpellResourceInitial },
                         { "resourceBefore", _elementalSpellResourceBefore },
                         { "resourceAfter", _elementalSpellResourceAfter },
+                        { "resourceMaximum",
+                            _elementalSpellResourceMaximum },
+                        { "resourceRecordsBefore",
+                            _elementalSpellResourceRecordsBefore },
+                        { "resourceRecordsAfter",
+                            _elementalSpellResourceRecordsAfter },
                         { "resourceDebitBoundary",
                             "request-local actor BlueprintUnit.IsCheater=false" },
                         { "actorCheaterRestored",
@@ -817,8 +873,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _elementalSpellProcessEnded = false;
                 _elementalSpellLiveCaptured = false;
                 _elementalSpellCleanupStarted = false;
+                _elementalSpellResourceInitial = 0;
                 _elementalSpellResourceBefore = 0;
                 _elementalSpellResourceAfter = 0;
+                _elementalSpellResourceMaximum = 0;
+                _elementalSpellResourceRecordsBefore = 0;
+                _elementalSpellResourceRecordsAfter = 0;
                 _elementalActorCheaterCaptured = false;
                 _elementalActorCheaterBefore = false;
                 _elementalDamageBefore = 0;
