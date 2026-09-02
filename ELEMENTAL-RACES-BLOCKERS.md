@@ -2,10 +2,12 @@
 
 ## Active hard blockers
 
-None established as of 2026-09-02. Production identities and base-rule
-blueprints now pass source/domain and guarded module-off runtime checks, but
-actual mechanics, visuals, persistence, and compatibility qualification remain
-incomplete; absence of a hard blocker is not a completion claim.
+None established as of 2026-09-02. Production identities, base-rule
+blueprints, resources, energy resistance, Keen Senses, affinity, total-level
+SLA parameters, rest restoration, and request-local resource persistence now
+pass guarded runtime checks. Native ability delivery, visuals, save-backed
+persistence, and compatibility qualification remain incomplete; absence of a
+hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
 
@@ -23,16 +25,25 @@ incomplete; absence of a hard blocker is not a completion claim.
 - Exact installed-mod inventory found no Visual Adjustments installation, so
   its machine-local compatibility observation will remain `NOT-RUN` unless the
   local state changes.
+- Actual native `RuleDealDamage` proved resistance 5 for all four energy types.
+  Native ability-parameter events proved matching affinity +1 exactly once and
+  nonmatching +0 after replacing an unsafe `Int64`-backed enum component field
+  discovered by the first failed mechanics run.
+- Actual 2 Fighter / 3 Wizard level-up, resource spend, native rest, and
+  resource-record serialization proved total character-level scaling,
+  once-per-rest accounting, and exact spent-state identity/amount round-trip.
 
 ## Open risks requiring evidence
 
 - The selected donor is `RaceId.Aasimar` with the exact native Outsider fact.
   Actual Hold/Charm/Enlarge/Reduce Person, prerequisite, level-up, respec, and
   donor-dialogue observations remain pending.
-- Native Stone Fist, Dwarf Slow and Steady, Outsider, Keen Senses, and the
-  racial SLA resource path are selected and structurally qualified. Actual
-  cast commitment/cancellation, rest, save/reload, movement, and damage
-  resolution remain pending.
+- Native Stone Fist, Dwarf Slow and Steady, Outsider, and the three donor spell
+  effects are selected. Actual cast command commitment/cancellation, donor
+  effect delivery, Stone Fist expiry, save-backed reload, and armored or
+  encumbered Oread movement remain pending. Direct resource commitment,
+  cancel-before-commit, native rest, and request-local resource persistence
+  have passed and must not be overreported as delivery evidence.
 - Hydraulic Push uses the narrow native Bull Rush action path, but its actual
   combat maneuver bonus, success/failure, immunity, movement, and resource
   commitment need guarded unit evidence. A safe native water projectile has

@@ -102,7 +102,7 @@ namespace KingmakerGunslinger.ElementalRaces
             var feature = BaseFeature(definition.AffinitySymbol);
             var affinity = ScriptableObject.CreateInstance<
                 ElementalSpellAffinity>();
-            affinity.Descriptor = definition.Affinity;
+            affinity.DescriptorMask = checked((int)definition.Affinity);
             feature.ComponentsArray = new BlueprintComponent[] { affinity };
             string affinityName = definition.Kind == ElementalRaceKind.Sylph ?
                 "Air Affinity" : definition.Kind == ElementalRaceKind.Undine ?
@@ -199,8 +199,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 race.Features.Contains(slow) != value.Definition.SlowAndSteady ||
                 resistance.Type != value.Definition.Resistance ||
                 value.Affinity.ComponentsArray.OfType<
-                    ElementalSpellAffinity>().Single().Descriptor !=
-                        value.Definition.Affinity ||
+                    ElementalSpellAffinity>().Single().DescriptorMask !=
+                        checked((int)value.Definition.Affinity) ||
                 race.Presets == null || race.Presets.Length < 1 ||
                 race.MaleOptions == null || race.FemaleOptions == null)
                 throw new InvalidOperationException(value.Definition.DisplayName +

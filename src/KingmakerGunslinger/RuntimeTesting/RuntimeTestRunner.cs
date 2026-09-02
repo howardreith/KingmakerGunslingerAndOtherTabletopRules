@@ -760,6 +760,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Complete(_elementalRaceDevelopmentProbe.Result);
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalRaceMechanics)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalRaceMechanicsScenario.Run(
+                        _context, _request));
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveFeatureModuleSettings)
                 {

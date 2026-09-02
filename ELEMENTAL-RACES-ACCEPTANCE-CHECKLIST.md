@@ -15,8 +15,10 @@
   runtime boundary matrix has exactly 24 states.
 - [ ] Focused rules, SLA, persistence, manifest, localization, rollback,
   package-content, and compatibility tests pass.
-- [ ] Complete repository validation and dependency-free domain suite pass.
-- [ ] Clean Release/package command and strict package validation pass.
+- [x] Complete repository validation and dependency-free domain suite pass at
+  the current base-mechanics checkpoint (1,382/1,382).
+- [x] Clean Release/package command and strict package validation pass at the
+  current base-mechanics checkpoint.
 - [ ] Guarded Steam App ID 640820 scenarios record exact build identity and
   structured PASS/FAIL/NOT-RUN evidence without touching protected saves.
 - [ ] KMG-alone, Call of the Wild, Races Unleashed, combined, highest-risk, and

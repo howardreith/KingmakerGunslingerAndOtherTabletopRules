@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-e-production-rules-module-off-runtime-qualified",
+  "phase": "phase-e-base-mechanics-runtime-qualified",
   "version": "0.0.113",
   "informationalVersion": "0.0.113-save-load-hotfix",
   "featureModuleSchema": 10,
@@ -24,19 +24,19 @@
     "developmentProbe": "PASS",
     "productionStableIdentities": "SOURCE-DOMAIN-RUNTIME-PASS",
     "publication": "SOURCE-DOMAIN-AND-MODULE-OFF-RUNTIME-PASS",
-    "ifritRules": "BASE-BLUEPRINT-PASS-ACTUAL-MECHANICS-RUNTIME-PENDING",
-    "oreadRules": "BASE-BLUEPRINT-PASS-ACTUAL-MECHANICS-RUNTIME-PENDING",
-    "sylphRules": "BASE-BLUEPRINT-PASS-ACTUAL-MECHANICS-RUNTIME-PENDING",
-    "undineRules": "BASE-BLUEPRINT-PASS-ACTUAL-MECHANICS-RUNTIME-PENDING",
+    "ifritRules": "BASE-MECHANICS-RUNTIME-PASS-DELIVERY-SPECIFIC-PENDING",
+    "oreadRules": "BASE-MECHANICS-RUNTIME-PASS-MOVEMENT-AND-DELIVERY-PENDING",
+    "sylphRules": "BASE-MECHANICS-RUNTIME-PASS-DELIVERY-SPECIFIC-PENDING",
+    "undineRules": "BASE-MECHANICS-RUNTIME-PASS-HYDRAULIC-DELIVERY-PENDING",
     "visuals": "NOT-STARTED",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-AND-MODULE-OFF-PASS",
+    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-OFF-AND-BASE-MECHANICS-PASS",
     "compatibility": "NOT-STARTED",
     "packaging": "PRODUCTION-RULES-RUNTIME-CHECKPOINT-PASS",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1381,
+    "passed": 1382,
     "failed": 0,
     "status": "PASS"
   },
@@ -100,14 +100,45 @@
         "saveStateTouched": false,
         "publishedToCharacterRaces": false,
         "evidenceSha256": "e338ce2529f76a09fbe9b13f8bd9cf15b658c77b88f9692e4127a44692043159"
+      },
+      {
+        "id": "20260902T0605221766137Z-disposable-elemental-race-mechanics",
+        "scenario": "disposable-elemental-race-mechanics",
+        "status": "FAIL",
+        "reason": "fixture counted Wisdom skill delta and Unity rejected Int64-backed SpellDescriptor component field",
+        "saveStateTouched": false
+      },
+      {
+        "id": "20260902T0615360204789Z-disposable-elemental-race-mechanics",
+        "scenario": "disposable-elemental-race-mechanics",
+        "status": "PASS",
+        "assertionsPassed": 28,
+        "saveStateTouched": false,
+        "evidenceQuality": "runtime-result complete; standalone evidence opt-in shell"
+      },
+      {
+        "id": "20260902T0626272331311Z-disposable-elemental-race-mechanics",
+        "runId": "20260902T0626272562123Z-f9463005dae440f0a17e4b6268bb1800",
+        "scenario": "disposable-elemental-race-mechanics",
+        "status": "PASS",
+        "assertionsPassed": 28,
+        "raceRecords": 4,
+        "saveStateTouched": false,
+        "evidenceSha256": "902f8b81d87883230f344a67db017829c897ef3e74a55ce534b0674ba2934c65"
       }
     ],
     "status": "PARTIAL-PASS"
   },
   "checkpointArtifact": {
-    "packageSha256": "bb05bc9ba75ebb596ba57d2eee36fe71b95d9b3baff4a079ec2cb1c44a8ab4d4",
-    "dllSha256": "8ee289d26d2754d394a570dc2dd3f0fee6cb3360a8f7163d7fcff2cacfefcfeb",
-    "dllMvid": "6ef0225c-8e4e-4a60-9853-84db65f331b9",
+    "packageSha256": "599e65d26fb92ae8146296c8265043849d7394d77482fe70084eb593793d3c44",
+    "dllSha256": "cab862592cb85a732c565c4811b44f77f39d68db6a7a57ed7f7a06419c8606b1",
+    "dllMvid": "284f7252-665f-417d-ba47-5786cfe95236",
+    "version": "0.0.113"
+  },
+  "runtimeMechanicsArtifact": {
+    "dllSha256": "32c0a75c7f6c84331c1dea8e9acb2bc190d8a0b0fb1bfd44dc5805af54ebdf86",
+    "dllMvid": "06f4414e-96b1-4679-8ba4-cdd50da37f1d",
+    "evidenceSha256": "902f8b81d87883230f344a67db017829c897ef3e74a55ce534b0674ba2934c65",
     "version": "0.0.113"
   },
   "humanReview": "NOT-READY"

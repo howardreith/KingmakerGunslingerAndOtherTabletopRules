@@ -124,6 +124,8 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[]
             {
                 "evt.AddBonusDC(1)", "current = current.Parent",
+                "public int DescriptorMask",
+                "(SpellDescriptor)DescriptorMask",
                 "Owner.Progression.CharacterLevel",
                 "evt.ReplaceCasterLevel", "evt.ReplaceSpellLevel",
                 "evt.ReplaceStat = Stat", "StatType.Charisma"
@@ -169,6 +171,50 @@ namespace KingmakerGunslinger.DomainTests
                 "Bootstrap does not unconditionally register and transactionally publish elemental identities.");
             Assertions.False(factory.Contains("CharacterRaces"),
                 "Race identity construction must remain separate from selector publication.");
+        }
+
+        internal static void RuntimeMechanicsScenarioIsGuardedAndNative()
+        {
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalRaceMechanicsScenario.cs");
+            foreach (string token in new[]
+            {
+                "Rulebook.Trigger(new RuleDealDamage",
+                "new EnergyDamage(", "LevelUpController",
+                "GetClassLevel(fighter)", "GetClassLevel(wizard)",
+                "new AbilityData(granted)", "GetAvailableForCastCount()",
+                "AbilityData).GetMethod(", "Spend",
+                "RestController.ApplyRest(owner)",
+                "PersistantResources.Single", "DefaultJsonSettings",
+                "ModifierDescriptor.Racial", "AddAssertions(assertions",
+                "SameReferences(unitsBefore",
+                "ContractResolver = new DefaultContractResolver()",
+                "PreserveReferencesHandling.None"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Native guarded mechanics token is absent: " + token);
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            const string name = "disposable-elemental-race-mechanics";
+            Assertions.True(catalog.Contains(name) &&
+                runner.Contains("ElementalRaceMechanicsScenario.Run(") &&
+                automation.Contains("'" + name +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + name + "'") &&
+                project.Contains("ElementalRaceMechanicsScenario.cs"),
+                "Elemental mechanics scenario is not wired through every guarded surface.");
+            Assertions.False(scenario.Contains("Game.Instance.Player.Party") ||
+                scenario.Contains("SaveManager") ||
+                scenario.Contains("KMG_AUTOMATION_BASELINE"),
+                "The mechanics scenario must remain save-free and detached from protected state.");
         }
 
         private static string Source(string file)
