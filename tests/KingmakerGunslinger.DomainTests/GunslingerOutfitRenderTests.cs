@@ -848,6 +848,8 @@ namespace KingmakerGunslinger.DomainTests
                 "racial SLA availability (",
                 "hostile-2m-forward-navmesh",
                 "if (_motionTarget == null)",
+                "hostilePlacementCount",
+                "target was not placed exactly once",
                 "SetProductionMotionUnitPosition(_motionTarget",
                 "IsUnitEnoughClose", "ApproachRadius",
                 "readiness.Init(_actor)",

@@ -93,6 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private string _elementalSpellAvailabilityGates =
                 string.Empty;
             private string _elementalSpellTargetPlacement = string.Empty;
+            private int _elementalSpellHostilePlacementCount;
             private bool _elementalSpellTargetInState;
             private bool _elementalSpellCommandCanStart;
             private bool _elementalSpellCommandCloseEnough;
@@ -226,20 +227,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ElementalRaceKind.Undine)
                 {
                     if (_motionTarget == null)
+                    {
                         CreateProductionMotionTarget();
-                    Vector3 forward = _actor.OrientationDirection;
-                    forward.y = 0f;
-                    if (forward.sqrMagnitude < 0.5f)
-                        forward = Vector3.forward;
-                    Vector3 position = NearestNavigable(_actor.Position +
-                        forward.normalized * 2f);
-                    SetProductionMotionUnitPosition(_motionTarget,
-                        position);
-                    _actor.ForceLookAt(position);
-                    _motionTarget.ForceLookAt(_actor.Position);
-                    Game.Instance.EntityCreator.Tick();
-                    _elementalSpellTargetPlacement =
-                        "hostile-2m-forward-navmesh";
+                        Vector3 forward = _actor.OrientationDirection;
+                        forward.y = 0f;
+                        if (forward.sqrMagnitude < 0.5f)
+                            forward = Vector3.forward;
+                        Vector3 position = NearestNavigable(
+                            _actor.Position +
+                            forward.normalized * 2f);
+                        SetProductionMotionUnitPosition(_motionTarget,
+                            position);
+                        _actor.ForceLookAt(position);
+                        _motionTarget.ForceLookAt(_actor.Position);
+                        Game.Instance.EntityCreator.Tick();
+                        _elementalSpellTargetPlacement =
+                            "hostile-2m-forward-navmesh";
+                        _elementalSpellHostilePlacementCount++;
+                    }
+                    if (_elementalSpellHostilePlacementCount != 1)
+                        throw new InvalidOperationException(
+                            "The Undine SLA target was not placed exactly once.");
                     return new TargetWrapper(_motionTarget);
                 }
                 _elementalSpellTargetPlacement = "self";
@@ -362,6 +370,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _elementalSpellCommandCanStart +
                         ";targetPlacement=" +
                         _elementalSpellTargetPlacement +
+                        ";hostilePlacements=" +
+                        _elementalSpellHostilePlacementCount +
                         ";targetInState=" +
                         _elementalSpellTargetInState +
                         ";closeEnough=" +
@@ -384,6 +394,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _elementalSpellCommandCanStart +
                         ";targetPlacement=" +
                         _elementalSpellTargetPlacement +
+                        ";hostilePlacements=" +
+                        _elementalSpellHostilePlacementCount +
                         ";targetInState=" +
                         _elementalSpellTargetInState +
                         ";closeEnough=" +
@@ -521,6 +533,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _elementalSpellAvailabilityGates },
                         { "targetPlacement",
                             _elementalSpellTargetPlacement },
+                        { "hostilePlacementCount",
+                            _elementalSpellHostilePlacementCount },
                         { "targetInState",
                             _elementalSpellTargetInState },
                         { "commandCanStart",
@@ -1034,6 +1048,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _elementalSpellAvailabilitySettleUpdates = 0;
                 _elementalSpellAvailabilityGates = string.Empty;
                 _elementalSpellTargetPlacement = string.Empty;
+                _elementalSpellHostilePlacementCount = 0;
                 _elementalSpellTargetInState = false;
                 _elementalSpellCommandCanStart = false;
                 _elementalSpellCommandCloseEnough = false;
