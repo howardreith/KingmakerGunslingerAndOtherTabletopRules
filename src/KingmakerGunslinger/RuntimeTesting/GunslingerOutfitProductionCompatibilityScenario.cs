@@ -45,10 +45,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             "afbe88d27a0eb544583e00fa78ffb2c7";
         private const string OutfitHeavyArmorItemGuid =
             "559b0b6f194656c428c403a000ceee78";
+        private const string OutfitMediumArmorItemGuid =
+            "9809987cc12d94545a64ff20e6fdb216";
+        private const string OutfitRobeItemGuid =
+            "028cee4babc7c9c4d95043fc4a1f4359";
         private const string OutfitTricornItemGuid =
             "f33dadeeb51cdba45b23bb40a40e5fb3";
         private const string OutfitCloakItemGuid =
             "04dff7841c5f499478c91487d9bbdcef";
+        private const string OutfitBootsItemGuid =
+            "1223ceb45ed647b44a04b44a9312328b";
+        private const string OutfitGlovesItemGuid =
+            "08dee7b852c2ef647ab5290eb2055102";
+        private const string OutfitBracersItemGuid =
+            "9482c62934be44044918c3aac3730232";
         private const string OutfitMaleBackpackEntityGuid =
             "431d16d2153d1854280b97470223eea6";
         private const string OutfitFemaleBackpackEntityGuid =
@@ -71,9 +81,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "light-armor"),
             new ProductionCompatibilityCase("light-armor-removed-rebuild",
                 "baseline"),
+            new ProductionCompatibilityCase("medium-armor-equipped",
+                "medium-armor"),
+            new ProductionCompatibilityCase("medium-armor-removed-rebuild",
+                "baseline"),
             new ProductionCompatibilityCase("heavy-armor-equipped",
                 "heavy-armor"),
             new ProductionCompatibilityCase("heavy-armor-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("robe-equipped", "robe"),
+            new ProductionCompatibilityCase("robe-removed-rebuild",
                 "baseline"),
             new ProductionCompatibilityCase("tricorn-equipped",
                 "tricorn"),
@@ -81,6 +98,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "baseline"),
             new ProductionCompatibilityCase("cloak-equipped", "cloak"),
             new ProductionCompatibilityCase("cloak-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("boots-equipped", "boots"),
+            new ProductionCompatibilityCase("boots-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("gloves-equipped", "gloves"),
+            new ProductionCompatibilityCase("gloves-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("bracers-equipped",
+                "bracers"),
+            new ProductionCompatibilityCase("bracers-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("belt-equipped", "belt"),
+            new ProductionCompatibilityCase("belt-removed-rebuild",
                 "baseline"),
             new ProductionCompatibilityCase("backpack-visible",
                 "backpack"),
@@ -198,6 +228,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private ItemEntityArmor _armorItem;
             private ItemEntity _headItem;
             private ItemEntity _cloakItem;
+            private ItemEntity _accessoryItem;
+            private ItemSlot _accessorySlot;
             private bool _firearmStateSet;
             private bool _fixtureInitialized;
             private bool _dollAttachmentRecorded;
@@ -1128,15 +1160,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                         EquipProductionArmor(OutfitLightArmorItemGuid,
                             ArmorProficiencyGroup.Light);
                         break;
+                    case "medium-armor":
+                        EquipProductionArmor(OutfitMediumArmorItemGuid,
+                            ArmorProficiencyGroup.Medium);
+                        break;
                     case "heavy-armor":
                         EquipProductionArmor(OutfitHeavyArmorItemGuid,
                             ArmorProficiencyGroup.Heavy);
+                        break;
+                    case "robe":
+                        EquipProductionRobe();
                         break;
                     case "tricorn":
                         EquipProductionHeadgear();
                         break;
                     case "cloak":
                         EquipProductionCloak();
+                        break;
+                    case "boots":
+                        EquipProductionAccessory(
+                            BlueprintLibraryLookup.RequireExact<
+                                BlueprintItemEquipmentFeet>(
+                                    BlueprintBootstrap.Library,
+                                    OutfitBootsItemGuid,
+                                    "gunslinger-outfit-production-boots"),
+                            _actor.Body.Feet, "boots", true);
+                        break;
+                    case "gloves":
+                        EquipProductionAccessory(
+                            BlueprintLibraryLookup.RequireExact<
+                                BlueprintItemEquipmentGloves>(
+                                    BlueprintBootstrap.Library,
+                                    OutfitGlovesItemGuid,
+                                    "gunslinger-outfit-production-gloves"),
+                            _actor.Body.Gloves, "gloves", true);
+                        break;
+                    case "bracers":
+                        EquipProductionAccessory(
+                            BlueprintLibraryLookup.RequireExact<
+                                BlueprintItemEquipmentWrist>(
+                                    BlueprintBootstrap.Library,
+                                    OutfitBracersItemGuid,
+                                    "gunslinger-outfit-production-bracers"),
+                            _actor.Body.Wrist, "bracers", true);
+                        break;
+                    case "belt":
+                        EquipProductionAccessory(
+                            BlueprintBootstrap.CordOfStubbornResolve,
+                            _actor.Body.Belt, "belt", false);
                         break;
                     case "backpack":
                         EquipProductionBackpack();
@@ -1164,6 +1235,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RemoveProductionItem(_actor.Body.Armor, ref _armorItem);
                 RemoveProductionItem(_actor.Body.Head, ref _headItem);
                 RemoveProductionItem(_actor.Body.Shoulders, ref _cloakItem);
+                RemoveProductionItem(_accessorySlot, ref _accessoryItem);
+                _accessorySlot = null;
                 if (_backpackEntity != null)
                     _avatar.RemoveEquipmentEntity(_backpackEntity, false);
                 _backpackEntity = null;
@@ -1178,6 +1251,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor.Body.Armor.MaybeItem == null &&
                     _actor.Body.Head.MaybeItem == null &&
                     _actor.Body.Shoulders.MaybeItem == null &&
+                    _actor.Body.Feet.MaybeItem == null &&
+                    _actor.Body.Gloves.MaybeItem == null &&
+                    _actor.Body.Wrist.MaybeItem == null &&
+                    _actor.Body.Belt.MaybeItem == null &&
                     !ReadBackpackVisible();
             }
 
@@ -1224,6 +1301,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!ReferenceEquals(_actor.Body.Armor.Armor, _armorItem))
                     throw new InvalidOperationException(expectedGroup +
                         " armor did not remain equipped.");
+                _currentItemGuid = blueprint.AssetGuid;
+                _currentItemName = blueprint.name;
+            }
+
+            private void EquipProductionRobe()
+            {
+                BlueprintItemArmor blueprint = BlueprintLibraryLookup
+                    .RequireExact<BlueprintItemArmor>(
+                        BlueprintBootstrap.Library, OutfitRobeItemGuid,
+                        "gunslinger-outfit-production-robe");
+                _expectedOverlayEntities = LoadProductionItemEntities(
+                    blueprint);
+                _armorItem = new ItemEntityArmor(blueprint);
+                _actor.Body.Armor.InsertItem(_armorItem);
+                if (!ReferenceEquals(_actor.Body.Armor.Armor, _armorItem))
+                    throw new InvalidOperationException(
+                        "The audited native robe did not remain equipped.");
+                _currentItemGuid = blueprint.AssetGuid;
+                _currentItemName = blueprint.name;
+            }
+
+            private void EquipProductionAccessory(
+                BlueprintItemEquipment blueprint, ItemSlot slot,
+                string label, bool requireVisual)
+            {
+                if (blueprint == null || slot == null)
+                    throw new InvalidOperationException(
+                        "The " + label + " blueprint or body slot is absent.");
+                if (requireVisual)
+                {
+                    _expectedOverlayEntities =
+                        LoadProductionItemEntities(blueprint);
+                }
+                else
+                {
+                    _expectedOverlayEntities = new EquipmentEntity[0];
+                    _expectedOverlayAssetIds = new string[0];
+                }
+                _accessoryItem = blueprint.CreateEntity();
+                _accessorySlot = slot;
+                slot.InsertItem(_accessoryItem);
+                if (!ReferenceEquals(slot.MaybeItem, _accessoryItem))
+                    throw new InvalidOperationException(
+                        "The audited native " + label +
+                        " did not remain equipped.");
                 _currentItemGuid = blueprint.AssetGuid;
                 _currentItemName = blueprint.name;
             }
@@ -1500,7 +1622,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : _actor.Body.PrimaryHand.MaybeItem == null &&
                         _actor.Body.SecondaryHand.MaybeItem == null;
                 bool armor = kind == "light-armor" ||
-                    kind == "heavy-armor"
+                    kind == "medium-armor" ||
+                    kind == "heavy-armor" || kind == "robe"
                     ? ReferenceEquals(_actor.Body.Armor.MaybeItem, _armorItem)
                     : _actor.Body.Armor.MaybeItem == null;
                 bool head = kind == "tricorn"
@@ -1510,7 +1633,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ? ReferenceEquals(_actor.Body.Shoulders.MaybeItem,
                         _cloakItem)
                     : _actor.Body.Shoulders.MaybeItem == null;
-                return hands && armor && head && shoulders;
+                bool feet = kind == "boots"
+                    ? ReferenceEquals(_actor.Body.Feet.MaybeItem,
+                        _accessoryItem)
+                    : _actor.Body.Feet.MaybeItem == null;
+                bool gloves = kind == "gloves"
+                    ? ReferenceEquals(_actor.Body.Gloves.MaybeItem,
+                        _accessoryItem)
+                    : _actor.Body.Gloves.MaybeItem == null;
+                bool wrist = kind == "bracers"
+                    ? ReferenceEquals(_actor.Body.Wrist.MaybeItem,
+                        _accessoryItem)
+                    : _actor.Body.Wrist.MaybeItem == null;
+                bool belt = kind == "belt"
+                    ? ReferenceEquals(_actor.Body.Belt.MaybeItem,
+                        _accessoryItem)
+                    : _actor.Body.Belt.MaybeItem == null;
+                return hands && armor && head && shoulders && feet &&
+                    gloves && wrist && belt;
             }
 
             private void CaptureProductionCase(
@@ -1654,7 +1794,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "armor", SlotItemGuid(_actor.Body.Armor) },
                     { "head", SlotItemGuid(_actor.Body.Head) },
                     { "shoulders", SlotItemGuid(
-                        _actor.Body.Shoulders) }
+                        _actor.Body.Shoulders) },
+                    { "feet", SlotItemGuid(_actor.Body.Feet) },
+                    { "gloves", SlotItemGuid(_actor.Body.Gloves) },
+                    { "wrist", SlotItemGuid(_actor.Body.Wrist) },
+                    { "belt", SlotItemGuid(_actor.Body.Belt) }
                 };
             }
 
@@ -1742,6 +1886,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ref _headItem);
                         RemoveProductionItem(_actor.Body.Shoulders,
                             ref _cloakItem);
+                        RemoveProductionItem(_accessorySlot,
+                            ref _accessoryItem);
+                        _accessorySlot = null;
                         if (_backpackEntity != null)
                             _avatar.RemoveEquipmentEntity(_backpackEntity,
                                 false);
@@ -1794,6 +1941,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _productionEntities = new EquipmentEntity[0];
                     _dollEntities = new EquipmentEntity[0];
                     _hairEntity = null;
+                    _accessoryItem = null;
+                    _accessorySlot = null;
                     _expectedOverlayEntities = new EquipmentEntity[0];
                     _expectedOverlayAssetIds = new string[0];
                     _avatarBefore = new AvatarEntityState[0];
@@ -2119,7 +2268,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native DollState.SetClass/CreateData/CreateUnitView path");
                 Add(_assertions,
                     assertionId("equipment-matrix"),
-                    "16 exact reversible color, weapon, armor, headgear/hair, cloak, backpack, inactive-weapon, and rebuild states per race/gender fixture",
+                    "28 exact reversible color, weapon, light/medium/heavy armor, robe, headgear/hair, cloak, boots, gloves, bracers, belt, backpack, inactive-weapon, and rebuild states per race/gender fixture",
                     "records=" + records.Length + ";exactStates=" +
                         exactStateCounts,
                     records.Length == expectedRecords && exactStateCounts &&

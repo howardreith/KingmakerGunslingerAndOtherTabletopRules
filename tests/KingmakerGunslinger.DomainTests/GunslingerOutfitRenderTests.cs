@@ -238,9 +238,9 @@ namespace KingmakerGunslinger.DomainTests
                         "[Math]::Max($TimeoutSeconds, 1200) + 15"),
                 "Production outfit compatibility needs its exact bounded collector window.");
 
-            Assertions.Equal(16, Regex.Matches(source,
+            Assertions.Equal(28, Regex.Matches(source,
                 "new ProductionCompatibilityCase\\(").Count,
-                "The production compatibility matrix must contain exactly sixteen states.");
+                "The production compatibility matrix must contain exactly twenty-eight states.");
             foreach (string token in new[]
             {
                 "abca4797366d4df0831a418eee39069a",
@@ -390,9 +390,26 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Shared production transaction lacks elemental contract token: " +
                     token);
-            Assertions.Equal(16, Regex.Matches(source,
+            Assertions.Equal(28, Regex.Matches(source,
                 "new ProductionCompatibilityCase\\(").Count,
-                "Elemental mode must reuse the accepted sixteen-state matrix without duplicating it.");
+                "Elemental mode must reuse the expanded twenty-eight-state matrix without duplicating it.");
+            foreach (string token in new[]
+            {
+                "OutfitMediumArmorItemGuid",
+                "OutfitRobeItemGuid",
+                "OutfitBootsItemGuid",
+                "OutfitGlovesItemGuid",
+                "OutfitBracersItemGuid",
+                "ArmorProficiencyGroup.Medium",
+                "_actor.Body.Feet",
+                "_actor.Body.Gloves",
+                "_actor.Body.Wrist",
+                "_actor.Body.Belt",
+                "BlueprintBootstrap.CordOfStubbornResolve"
+            })
+                Assertions.True(source.Contains(token),
+                    "Expanded elemental equipment matrix lacks exact token: " +
+                    token);
             Assertions.True(source.Contains(
                     "GunslingerOutfitProductionCompatibility") &&
                 source.Contains("BuildHumanFixtures()") &&
