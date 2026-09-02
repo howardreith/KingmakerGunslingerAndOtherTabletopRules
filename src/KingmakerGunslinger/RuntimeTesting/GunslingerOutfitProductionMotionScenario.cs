@@ -2970,6 +2970,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (int)value["damageBefore"] &&
                         (int)value["hpAfterLethal"] <
                             (int)value["hpBefore"] &&
+                        (int)value["hpAfterLethal"] <
+                            -(int)value["constitutionAtLethal"] &&
                         (int)value["hpAfter"] ==
                             (int)value["maxHpAfter"] &&
                         (int)value["damageAfter"] == 0);
