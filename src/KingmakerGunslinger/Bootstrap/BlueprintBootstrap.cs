@@ -710,13 +710,14 @@ namespace KingmakerGunslinger.Bootstrap
                 martialPerformancePublication = null;
             UrbanBarbarianPublication urbanBarbarianPublication = null;
             ElementalRacePublication elementalRacePublication = null;
+            ElementalRaceBlueprintSet elementalRaces = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
                 DiagnosticBlueprints.Validate(diagnosticFeature);
 
-                ElementalRaceBlueprintSet elementalRaces =
-                    ElementalRaceBlueprintFactory.Register(library, registry);
+                elementalRaces = ElementalRaceBlueprintFactory.Register(library,
+                    manifest, registry, context.Logger);
                 elementalRacePublication = ElementalRacePublication.Apply(
                     elementalRaces,
                     publicationPlan.ElementalRaceSelectors);
@@ -1349,6 +1350,17 @@ namespace KingmakerGunslinger.Bootstrap
                         "registry.rollback-failed",
                         "Blueprint initialization failed and the best-effort rollback also encountered an error.",
                         rollbackException);
+                }
+                if (elementalRaces != null)
+                {
+                    try { elementalRaces.RollbackVisualResources(); }
+                    catch (Exception visualRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "elemental-races.visual-resource-rollback-failed",
+                            "Blueprint initialization failed and elemental visual resource rollback was refused.",
+                            visualRollbackException);
+                    }
                 }
 
                 throw new InvalidOperationException(

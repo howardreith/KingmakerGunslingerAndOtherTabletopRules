@@ -10,8 +10,9 @@ persistence now pass guarded runtime checks. Native Oread movement,
 Aasimar/Tiefling creature-type behavior, and module ON/OFF publication also
 pass guarded runtime checks. The complete eight-race native visual donor and
 palette inventory also passes guarded runtime checks. Production visual
-proxies, candidate rendering, save-backed persistence, and compatibility
-qualification remain incomplete;
+proxies and the 56-case race/sex/option renderer matrix now pass guarded
+runtime checks. Class/equipment/motion, save-backed persistence, compatibility,
+and human visual qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
@@ -66,6 +67,14 @@ absence of a hard blocker is not a completion claim.
   common 256x1 RGB24/bilinear/clamp ramp contract. The initial fixture-only
   assumption that every donor supplies eyebrows was corrected after Half-Orc
   accurately reported none.
+- All 16 production visual blueprints and 28 project-owned equipment proxies
+  resolve exactly. Fifty-six production doll cases cover all races, sexes,
+  body presets, customization options, seven skin indexes, and at least four
+  hair-color indexes with complete baked renderers, materials, and shaders.
+  Native body resolution through `RacePreset.Skin`, post-bake equipment-list
+  clearing, and null-versus-empty optional choices were observed and encoded
+  without weakening mandatory asset checks. No shared race or blueprint index
+  changed during the save-free scenario.
 
 ## Open risks requiring evidence
 
@@ -78,9 +87,10 @@ absence of a hard blocker is not a completion claim.
   safe native water projectile has not yet been selected, and save-backed
   persistence remains pending.
 - Native head, hair, skin, eyebrow, beard, horn, body, preset, and color-ramp
-  donors are inventoried by exact ID. Production proxy registration, curated
-  per-race combinations, candidate rendering, eye-color behavior, and the full
-  class/equipment/motion matrix remain to be implemented and qualified.
+  donors are inventoried and production proxies/curated combinations pass the
+  complete option renderer matrix. Kingmaker has no race-level eye-color field
+  in `CustomizationOptions`; native head/material eyes and that limitation need
+  human review. The full class/equipment/motion matrix remains to be qualified.
 - Complete Aasimar fallback arrays render and preserve Human skeleton/body
   compatibility. Production visuals will initially constrain geometry to the
   runtime-proven Human-compatible Human/Aasimar/Tiefling skeleton family;

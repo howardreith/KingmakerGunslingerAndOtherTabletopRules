@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using KingmakerGunslinger.ElementalRaces.Visuals;
 
 namespace KingmakerGunslinger.ElementalRaces
 {
@@ -12,7 +13,8 @@ namespace KingmakerGunslinger.ElementalRaces
         internal ElementalRaceBlueprints(ElementalRaceDefinition definition,
             BlueprintRace race, BlueprintFeature resistance,
             BlueprintFeature affinity, BlueprintFeature slaFeature,
-            BlueprintAbilityResource slaResource, BlueprintAbility slaAbility)
+            BlueprintAbilityResource slaResource, BlueprintAbility slaAbility,
+            ElementalRaceVisualBlueprints visuals)
         {
             Definition = definition ?? throw new ArgumentNullException("definition");
             Race = race ?? throw new ArgumentNullException("race");
@@ -21,6 +23,7 @@ namespace KingmakerGunslinger.ElementalRaces
             SlaFeature = slaFeature ?? throw new ArgumentNullException("slaFeature");
             SlaResource = slaResource ?? throw new ArgumentNullException("slaResource");
             SlaAbility = slaAbility ?? throw new ArgumentNullException("slaAbility");
+            Visuals = visuals ?? throw new ArgumentNullException("visuals");
         }
 
         internal ElementalRaceDefinition Definition { get; private set; }
@@ -30,7 +33,8 @@ namespace KingmakerGunslinger.ElementalRaces
         internal BlueprintFeature SlaFeature { get; private set; }
         internal BlueprintAbilityResource SlaResource { get; private set; }
         internal BlueprintAbility SlaAbility { get; private set; }
-        internal int Count { get { return 6; } }
+        internal ElementalRaceVisualBlueprints Visuals { get; private set; }
+        internal int Count { get { return 6 + Visuals.BlueprintCount; } }
     }
 
     internal sealed class ElementalRaceBlueprintSet
@@ -38,9 +42,11 @@ namespace KingmakerGunslinger.ElementalRaces
         private readonly ElementalRaceBlueprints[] _ordered;
 
         internal ElementalRaceBlueprintSet(
-            IEnumerable<ElementalRaceBlueprints> ordered)
+            IEnumerable<ElementalRaceBlueprints> ordered,
+            ElementalRaceVisualSet visuals)
         {
             _ordered = ordered == null ? null : ordered.ToArray();
+            Visuals = visuals ?? throw new ArgumentNullException("visuals");
             if (_ordered == null ||
                 _ordered.Length != ElementalRaceCatalog.RaceCount ||
                 _ordered.Any(value => value == null) ||
@@ -61,6 +67,7 @@ namespace KingmakerGunslinger.ElementalRaces
         internal ElementalRaceBlueprints Oread { get { return _ordered[1]; } }
         internal ElementalRaceBlueprints Sylph { get { return _ordered[2]; } }
         internal ElementalRaceBlueprints Undine { get { return _ordered[3]; } }
+        internal ElementalRaceVisualSet Visuals { get; private set; }
         internal int Count { get { return _ordered.Sum(value => value.Count); } }
 
         internal BlueprintRace[] OrderedRaces()
@@ -71,6 +78,11 @@ namespace KingmakerGunslinger.ElementalRaces
         internal IReadOnlyList<ElementalRaceBlueprints> OrderedBlueprints()
         {
             return (ElementalRaceBlueprints[])_ordered.Clone();
+        }
+
+        internal void RollbackVisualResources()
+        {
+            Visuals.RollbackResources();
         }
     }
 }

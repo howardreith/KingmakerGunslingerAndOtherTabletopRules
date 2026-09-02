@@ -222,7 +222,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     productionRaces.Length == ElementalRaceCatalog.RaceCount &&
                     production.OrderedBlueprints().All(IsRegisteredExactly);
                 Add(_assertions, "elemental-production-identities",
-                    "24 project identities resolve exactly in fixed Ifrit/Oread/Sylph/Undine order",
+                    ElementalRaceIdentityCatalog.IdentityCount +
+                        " project blueprint identities resolve exactly in fixed Ifrit/Oread/Sylph/Undine order",
                     "count=" + production.Count + ";races=" +
                         string.Join("|", productionRaces.Select(Identity)
                             .ToArray()),
@@ -1109,7 +1110,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private static UnitEntityView CreateView(string label, DollData data)
+        internal static UnitEntityView CreateView(string label, DollData data)
         {
             UnitEntityView view = data.CreateUnitView(false);
             if (view == null || view.GetComponent<Character>() == null)
@@ -1118,7 +1119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return view;
         }
 
-        private static bool ViewReady(UnitEntityView view)
+        internal static bool ViewReady(UnitEntityView view)
         {
             if (view == null || view.GetComponent<Character>() == null)
                 return false;
@@ -1135,7 +1136,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.shader != null);
         }
 
-        private static JObject DescribeView(string label, DollData data,
+        internal static JObject DescribeView(string label, DollData data,
             UnitEntityView view, bool ready, int settleUpdates)
         {
             Character avatar = view == null ? null : view.CharacterAvatar;
@@ -1180,7 +1181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed.EquipmentEntityIds, StringComparer.Ordinal);
         }
 
-        private static void DestroyView(UnitEntityView view)
+        internal static void DestroyView(UnitEntityView view)
         {
             if (view != null && view.gameObject != null)
                 UnityEngine.Object.DestroyImmediate(view.gameObject);
