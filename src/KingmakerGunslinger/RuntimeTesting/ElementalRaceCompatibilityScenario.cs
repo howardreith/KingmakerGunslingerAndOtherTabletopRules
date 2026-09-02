@@ -50,10 +50,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             "d1335380a70e4bd7aa535f36770b93de",
             "c515d06d35d048e79801d07039338cda",
+            "cd40ff5a556bcf3419bf7479616cd2ad",
             "a68578b3a2a945a5b8561ec51a0dff5c",
+            "3cfdcda8edd74212a58d3b0d9d4041a4",
             "970bb406a3ac42d795a3ef1b5900fdf3",
-            "f78db38a553f4f91a10a8e68c91019ad",
-            "3cfdcda8edd74212a58d3b0d9d4041a4"
+            "f78db38a553f4f91a10a8e68c91019ad"
         };
 
         private sealed class CatalogEntryEvidence
@@ -284,13 +285,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.RacesUnleashedLoaded);
             Add(assertions, "races-unleashed-races-preserved",
                 evidence.RacesUnleashedLoaded
-                    ? "six exact owned BlueprintRace references each once"
+                    ? "seven exact owned BlueprintRace references each once"
                     : "no Races Unleashed-owned GUID in negative control",
                 "loaded=" + evidence.RacesUnleashedLoaded + ";indexes=" +
                     string.Join(",", evidence.RacesUnleashedIndexes.Select(
                         value => value.ToString()).ToArray()),
                 ruCatalogExact,
-                "six BlueprintRace identities extracted from the authorized local assembly manifest");
+                "six manifest identities plus the live constructed Duergar identity from the authorized local assembly");
 
             ElementalRacePublication first =
                 ElementalRacePublication.Apply(set, true);

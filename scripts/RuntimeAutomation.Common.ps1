@@ -1271,6 +1271,7 @@ function Assert-KmgRuntimeScenarioPreflight {
             'gunslinger-arms-armor',
             'gunslinger-toggle-custom-soundpacks',
             'gunslinger-high-risk-combined',
+            'gunslinger-high-risk-combined-favored-class',
             'gunslinger-all-loadable-local',
             'gunslinger-qualified-combined'
         )
