@@ -723,7 +723,7 @@
       "source elemental Gunslinger exact",
       "replacement level zero before Respec",
       "CharBuildMode.Respec",
-      "SelectRace and SelectClass",
+      "fixed BlueprintRace inheritance and SelectClass",
       "preview and committed race/class exact",
       "racial facts and SLA exact",
       "DollData and Gunslinger presentation exact",
@@ -749,9 +749,22 @@
         "saveStarted": false,
         "saveInteractionOccurred": false,
         "settingsRestoredSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e"
+      },
+      {
+        "evidenceDirectory": "20260903T0232391123197Z-elemental-race-persistence-prepare",
+        "runId": "20260903T0232391363193Z-704f1eec9a7e48f98c4e3abf80bb56c0",
+        "candidateCommit": "0fcdb79c3f6b22f13c37c3bf3b4cfc47a29ce902",
+        "status": "FAIL",
+        "reason": "native Respec rejected SelectRace on the level-zero replacement",
+        "captures": 0,
+        "nativeRespecRecords": 0,
+        "saveStarted": false,
+        "saveInteractionOccurred": false,
+        "settingsRestoredSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e"
       }
     ],
-    "exceptionSafeCleanup": "SOURCE-DOMAIN-CLEAN-PACKAGE-PASS-RUNTIME-RETRY-PENDING"
+    "exceptionSafeCleanup": "RUNTIME-PROVEN-FAILURE-TERMINATES-CLEANLY",
+    "fixedRaceRespecCorrection": "SOURCE-DOMAIN-COMPILE-AND-CLEAN-PACKAGE-PASS-RUNTIME-PENDING"
   },
   "finalCandidate": {
     "version": "0.0.114",
@@ -759,7 +772,7 @@
     "sourceValidation": "PASS",
     "domain": "PASS-1390-OF-1390",
     "cleanReleasePackage": "PASS-STRICT-UMM",
-    "nativeRespecPersistence": "FIRST-ATTEMPT-TIMED-OUT-NO-SAVE-RETRY-PENDING",
+    "nativeRespecPersistence": "SELECTRACE-REJECTION-CORRECTED-FIXED-RACE-RETRY-PENDING",
     "boundaryMatrix": "PENDING-EXACT-VERSION",
     "compatibilityProfiles": "PENDING-EXACT-VERSION"
   },

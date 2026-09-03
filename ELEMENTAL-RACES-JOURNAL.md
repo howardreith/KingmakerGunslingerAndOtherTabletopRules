@@ -1224,8 +1224,9 @@ All entries are `observe-feature-module-settings` PASS:
   the eight race/sex fixtures now starts as an exact native-created elemental
   Gunslinger, settles, and then passes through a distinct level-zero
   replacement descriptor using
-  `LevelUpState.CharBuildMode.Respec`, `SelectRace`, `SelectClass`, and
-  native `Commit`. The temporary source is retired before promotion.
+  `LevelUpState.CharBuildMode.Respec`, fixed-race preservation,
+  `SelectClass`, and native `Commit`. The temporary source is retired
+  before promotion.
 - Promotion now fails closed unless every replacement retains its exact race,
   racial facts, one-use SLA, deterministic `DollData`, stable marker
   identity, and accepted Gunslinger class presentation. The existing
@@ -1284,3 +1285,37 @@ All entries are `observe-feature-module-settings` PASS:
   `elemental-races.persistence` **PASS**; complete domain suite
   **PASS, 1,390/1,390**; canonical clean Release/package and strict UMM
   validation **PASS**.
+
+## 2026-09-02 - Fixed-race native-Respec correction
+
+- Retried the exception-safe artifact from commit
+  `0fcdb79c3f6b22f13c37c3bf3b4cfc47a29ce902`, package/DLL SHA-256
+  `80d53e3316dca42632155d8d3f79d19532837bc32941fecc34ae5c06474585f4` /
+  `1dfbd43cb217e6e602dc23caad9544a94a1f40f1847c4787e30ae20a9c3a7895`,
+  MVID `28a0b584-1fdf-4254-b880-7ac8874fc73d`, deployment
+  `20260903T0232205787044Z`.
+- Transaction
+  `20260903T0232391123197Z-elemental-race-persistence-prepare`, run
+  `20260903T0232391363193Z-704f1eec9a7e48f98c4e3abf80bb56c0`,
+  failed cleanly with exact exception: `ifrit-male native Respec race
+  selection was rejected`. Guard, module-ON registration/publication, game
+  identity, loaded mod version, and live-state preservation passed. There
+  were zero captures, Respec records, or save calls.
+- Kingmaker exited automatically, hooks were removed, and settings restored
+  to SHA-256
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+  The recovery instrumentation therefore converted the prior timeout into a
+  deterministic, nonmutating failure.
+- Engine evidence and the already-qualified Human Respec transaction show
+  that Kingmaker Respec preserves an existing race; it does not select a new
+  race. The replacement now inherits the exact elemental `BlueprintRace`
+  from its request-local blueprint before Respec, requires that identity in
+  both the descriptor and initial preview, selects only Gunslinger, applies
+  the same deterministic race appearance to the controller's `DollState`,
+  commits, and verifies the race remains exact.
+- Correction gates: production compile/build-output validation **PASS**;
+  complete domain suite **PASS, 1,390/1,390**; canonical clean Release/package
+  pipeline, SoundBank validation, deterministic preview ZIP, and strict
+  standalone UMM validation **PASS**.
+- No runtime PASS is inferred from those gates. The fixed-race correction
+  remains pending a committed, exact-artifact guarded Steam retry.
