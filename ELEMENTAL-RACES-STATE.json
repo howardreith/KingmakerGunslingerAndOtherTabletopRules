@@ -736,7 +736,22 @@
       "count": 782,
       "bytes": 1552082960,
       "structuredJsonRetained": true
-    }
+    },
+    "exactVersionAttempts": [
+      {
+        "evidenceDirectory": "20260903T0150113847726Z-elemental-race-persistence-prepare",
+        "runId": "20260903T0150114077599Z-821276f955bd426f9092001d15b34f9b",
+        "candidateCommit": "998c7ec2e34dbf5b050ea3523b4fd43a07605373",
+        "status": "ERROR-TIMEOUT",
+        "lastProgress": "phase-2-fixture-0-cleanup-started",
+        "captures": 0,
+        "nativeRespecRecords": 0,
+        "saveStarted": false,
+        "saveInteractionOccurred": false,
+        "settingsRestoredSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e"
+      }
+    ],
+    "exceptionSafeCleanup": "SOURCE-DOMAIN-CLEAN-PACKAGE-PASS-RUNTIME-RETRY-PENDING"
   },
   "finalCandidate": {
     "version": "0.0.114",
@@ -744,7 +759,7 @@
     "sourceValidation": "PASS",
     "domain": "PASS-1390-OF-1390",
     "cleanReleasePackage": "PASS-STRICT-UMM",
-    "nativeRespecPersistence": "PENDING-GUARDED-RUNTIME",
+    "nativeRespecPersistence": "FIRST-ATTEMPT-TIMED-OUT-NO-SAVE-RETRY-PENDING",
     "boundaryMatrix": "PENDING-EXACT-VERSION",
     "compatibilityProfiles": "PENDING-EXACT-VERSION"
   },

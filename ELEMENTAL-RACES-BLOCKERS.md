@@ -112,8 +112,11 @@ absence of a hard blocker is not a completion claim.
 - The selected donor remains `RaceId.Aasimar`. Exact person-spell and type/race
   prerequisite behavior, save-backed reload, and native level-up now pass.
   Native Respec is implemented with distinct replacement descriptors and is
-  awaiting exact-0.0.114 guarded runtime evidence; donor-dialogue observations
-  remain a documented limitation.
+  awaiting exact-0.0.114 guarded runtime evidence. The first candidate attempt
+  reached exception cleanup before any fixture capture or save, then its
+  entity-creator cleanup tick spun until the guarded timeout. Exception-safe
+  cleanup evidence is source/domain/package qualified and awaits the narrow
+  retry; donor-dialogue observations remain a documented limitation.
 - Native Dwarf Slow and Steady passes the live armor/encumbrance matrix.
   Save-backed SLA reload and ordinary character persistence now pass.
 - Hydraulic Push combat mechanics, resource commitment, and save-backed
