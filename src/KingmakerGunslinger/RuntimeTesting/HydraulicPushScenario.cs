@@ -13,6 +13,7 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -23,6 +24,7 @@ using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
@@ -72,6 +74,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             public int WisdomModifier { get; set; }
             public int CharismaModifier { get; set; }
             public int BestMentalModifier { get; set; }
+            public string TemporaryStat { get; set; }
+            public int TemporaryValue { get; set; }
+            public int TemporaryModifierBefore { get; set; }
+            public int TemporaryModifierAfter { get; set; }
             public int ExpectedManeuverBonus { get; set; }
             public string SelectedMentalStat { get; set; }
             public bool HostileBothWays { get; set; }
@@ -101,6 +107,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FighterLevel + "/" + WizardLevel + ");mental=" +
                     IntelligenceModifier + "/" + WisdomModifier + "/" +
                     CharismaModifier + ";selected=" + ReplaceBaseStat +
+                    ";temporary=" + TemporaryStat + "/" + TemporaryValue +
+                    "/" + TemporaryModifierBefore + "->" +
+                    TemporaryModifierAfter +
                     ";expected=" + ExpectedManeuverBonus + ";cmb=" +
                     InitiatorCmb + ";cmd=" + TargetCmd + ";d20=" + D20 +
                     ";value=" + ManeuverValue + ";success=" + Success +
@@ -277,6 +286,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.Cases.Add(ExerciseCase("multiclass", undine,
                     fighter, wizard, effect, actorFaction, targetFaction,
                     created, transient, 18, 10, 10, 2, 3, false, false));
+                stage = "temporary-wisdom";
+                evidence.Cases.Add(ExerciseCase("temporary-wisdom", undine,
+                    fighter, wizard, effect, actorFaction, targetFaction,
+                    created, transient, 18, 10, 10, 5, 0, false, false,
+                    StatType.Wisdom, 8));
                 stage = "ordinary-failure";
                 evidence.Cases.Add(ExerciseCase("ordinary-failure", undine,
                     fighter, wizard, effect, actorFaction, targetFaction,
@@ -362,7 +376,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ICollection<UnitEntityData> created,
             ICollection<UnityEngine.Object> transient, int intelligence,
             int wisdom, int charisma, int fighterLevels, int wizardLevels,
-            bool hardTarget, bool immune)
+            bool hardTarget, bool immune, StatType? temporaryStat = null,
+            int temporaryValue = 0)
         {
             UnitEntityData caster = CreateUnit(actorFaction, created,
                 transient, new Vector3(created.Count * 0.25f, 0f, 0f),
@@ -372,6 +387,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Target_" + name);
             PrepareCaster(caster, undine, fighter, wizard, intelligence,
                 wisdom, charisma, fighterLevels, wizardLevels);
+            int temporaryModifierBefore = temporaryStat.HasValue ?
+                AbilityModifier(caster.Descriptor, temporaryStat.Value) : 0;
+            if (temporaryStat.HasValue)
+            {
+                BlueprintFeature adjustment = CreateStatAdjustment(
+                    "KMG_Runtime_HydraulicPush_Temporary_" + name,
+                    temporaryStat.Value, temporaryValue, transient);
+                EnsureFact(caster.Descriptor, adjustment);
+            }
+            int temporaryModifierAfter = temporaryStat.HasValue ?
+                AbilityModifier(caster.Descriptor, temporaryStat.Value) : 0;
             target.Descriptor.Stats.Strength.BaseValue = hardTarget ? 100 : 1;
             target.Descriptor.Stats.Dexterity.BaseValue = hardTarget ? 100 : 1;
             target.Descriptor.Stats.Constitution.BaseValue = 10;
@@ -405,6 +431,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WisdomModifier = wisdomModifier,
                 CharismaModifier = charismaModifier,
                 BestMentalModifier = best,
+                TemporaryStat = temporaryStat.HasValue ?
+                    temporaryStat.Value.ToString() : string.Empty,
+                TemporaryValue = temporaryValue,
+                TemporaryModifierBefore = temporaryModifierBefore,
+                TemporaryModifierAfter = temporaryModifierAfter,
                 ExpectedManeuverBonus = caster.Descriptor.Progression
                     .CharacterLevel + best,
                 SelectedMentalStat = ExpectedBestMentalStat(caster),
@@ -447,6 +478,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.State.RemoveCondition(
                     UnitCondition.ImmuneToCombatManeuvers);
             return result;
+        }
+
+        private static BlueprintFeature CreateStatAdjustment(string name,
+            StatType stat, int value,
+            ICollection<UnityEngine.Object> transient)
+        {
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = name;
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.Groups = Array.Empty<FeatureGroup>();
+            var bonus = ScriptableObject.CreateInstance<AddStatBonus>();
+            bonus.Stat = stat;
+            bonus.Value = value;
+            bonus.Descriptor = ModifierDescriptor.Enhancement;
+            feature.ComponentsArray = new BlueprintComponent[] { bonus };
+            transient.Add(feature);
+            transient.Add(bonus);
+            return feature;
+        }
+
+        private static int AbilityModifier(UnitDescriptor owner,
+            StatType stat)
+        {
+            if (stat == StatType.Intelligence)
+                return owner.Stats.Intelligence.Bonus;
+            if (stat == StatType.Wisdom)
+                return owner.Stats.Wisdom.Bonus;
+            if (stat == StatType.Charisma)
+                return owner.Stats.Charisma.Bonus;
+            throw new ArgumentOutOfRangeException("stat", stat,
+                "Hydraulic Push accepts only mental ability scores.");
         }
 
         private static CommandEvidence ExerciseCommand(
@@ -954,7 +1018,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             CaseEvidence[] formula = evidence.Cases == null ?
                 new CaseEvidence[0] : evidence.Cases.Where(value =>
                     value != null && !value.ImmunityInstalled).ToArray();
-            bool formulaPass = formula.Length == 8 && formula.All(value =>
+            bool formulaPass = formula.Length == 9 && formula.All(value =>
                 value.HostileBothWays && value.Targetable &&
                 value.ContextCasterLevel == value.CharacterLevel &&
                 value.ManeuverEvents == 1 &&
@@ -1025,6 +1089,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     multiclass.ReplaceAttackBonus == 5,
                 "real LevelUpController multiclass fixture");
 
+            CaseEvidence temporary = Find(evidence, "temporary-wisdom");
+            Add(assertions, "hydraulic-current-temporary-stat",
+                "temporary Wisdom enhancement changes the best stat and maneuver formula",
+                temporary == null ? "missing" : temporary.Summary(),
+                temporary != null &&
+                    string.Equals(temporary.TemporaryStat,
+                        StatType.Wisdom.ToString(), StringComparison.Ordinal) &&
+                    temporary.TemporaryValue == 8 &&
+                    temporary.TemporaryModifierBefore <
+                        temporary.IntelligenceModifier &&
+                    temporary.TemporaryModifierAfter >
+                        temporary.IntelligenceModifier &&
+                    temporary.WisdomModifier ==
+                        temporary.TemporaryModifierAfter &&
+                    string.Equals(temporary.ReplaceBaseStat,
+                        StatType.Wisdom.ToString(), StringComparison.Ordinal) &&
+                    temporary.InitiatorCmb == temporary.CharacterLevel +
+                        temporary.TemporaryModifierAfter,
+                "request-local AddStatBonus fact and actual native maneuver result");
+
             CaseEvidence failed = Find(evidence, "ordinary-failure");
             CaseEvidence immune = Find(evidence, "maneuver-immunity");
             CaseEvidence succeeded = intelligence;
@@ -1038,7 +1122,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "native Bull Rush RuleCombatManeuver resolution");
 
             bool noCollateral = evidence.Cases != null &&
-                evidence.Cases.Count == 9 && evidence.Cases.All(value =>
+                evidence.Cases.Count == 10 && evidence.Cases.All(value =>
                     value.AttackEvents == 0 &&
                     value.SavingThrowEvents == 0 &&
                     value.OpportunityCommandsBefore ==

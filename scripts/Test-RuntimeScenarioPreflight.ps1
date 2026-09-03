@@ -47,6 +47,7 @@ $expected = @(
     'elemental-race-visual-audit',
     'elemental-race-class-clothing',
     'disposable-elemental-race-mechanics',
+    'disposable-elemental-spell-affinity',
     'disposable-elemental-race-slas',
     'disposable-hydraulic-push',
     'disposable-elemental-race-native-identity',

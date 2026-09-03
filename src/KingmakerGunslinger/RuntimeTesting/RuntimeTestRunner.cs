@@ -794,6 +794,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalSpellAffinity)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalSpellAffinityScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableElementalRaceSlas)
                 {
                     if (ResourcesLibrary.Preloading) return;

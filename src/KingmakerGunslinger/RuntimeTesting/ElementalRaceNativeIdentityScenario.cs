@@ -15,6 +15,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers;
+using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -22,7 +23,10 @@ using Kingmaker.Items;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
@@ -61,6 +65,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "4e0e9aba6447d514f88eff1464cc4763";
         private const string HeavyArmorGuid =
             "559b0b6f194656c428c403a000ceee78";
+        private const string HasteBuffGuid =
+            "03464790f40c3c24aa684b57155f3280";
 
         private sealed class MovementEvidence
         {
@@ -83,6 +89,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             public int HeavyCapacity { get; set; }
             public int SpeedWithBonus { get; set; }
             public int SpeedWithBonusAndPenalty { get; set; }
+            public int ClassMovementSpeed { get; set; }
+            public int SpeedAfterClassMovement { get; set; }
+            public int HasteSpeed { get; set; }
+            public int SpeedAfterHaste { get; set; }
+            public int SlowSpeed { get; set; }
+            public bool SlowConditionInstalled { get; set; }
+            public bool SlowConditionCleared { get; set; }
+            public int SpeedAfterSlow { get; set; }
+            public bool DifficultTerrainConditionInstalled { get; set; }
+            public int DifficultTerrainStatSpeed { get; set; }
+            public bool DifficultTerrainConditionCleared { get; set; }
+            public int SpeedAfterDifficultTerrain { get; set; }
 
             public string Summary()
             {
@@ -93,7 +111,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";encumbrance=" + EncumbranceBefore + "->" +
                     EncumbranceDuring + "->" + EncumbranceAfter +
                     ";generic=" + SpeedWithBonus + "/" +
-                    SpeedWithBonusAndPenalty;
+                    SpeedWithBonusAndPenalty + ";class=" +
+                    ClassMovementSpeed + "->" + SpeedAfterClassMovement +
+                    ";haste=" + HasteSpeed + "->" + SpeedAfterHaste +
+                    ";slow=" + SlowSpeed + "/" +
+                    SlowConditionInstalled + "->" + SpeedAfterSlow + "/" +
+                    SlowConditionCleared + ";terrain=" +
+                    DifficultTerrainConditionInstalled + "/" +
+                    DifficultTerrainStatSpeed + "->" +
+                    SpeedAfterDifficultTerrain + "/" +
+                    DifficultTerrainConditionCleared;
             }
         }
 
@@ -143,6 +170,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             public string SlowAndSteadyComponents { get; set; }
             public string MediumArmor { get; set; }
             public string HeavyArmor { get; set; }
+            public string ClassMovementFeature { get; set; }
+            public string HasteBuff { get; set; }
+            public string SlowBuff { get; set; }
+            public string HasteComponents { get; set; }
+            public string SlowComponents { get; set; }
+            public int HasteValue { get; set; }
+            public bool HasteCappedOnMultiplier { get; set; }
+            public float HasteMultiplierCap { get; set; }
+            public int SlowedConditionValue { get; set; }
+            public int DifficultTerrainConditionValue { get; set; }
+            public string CalculateSpeedModifierIl { get; set; }
             public List<MovementEvidence> Movement { get; set; }
             public List<IdentityEvidence> Identity { get; set; }
             public bool CleanupExact { get; set; }
@@ -190,6 +228,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintFeature slow = Require<BlueprintFeature>(library,
                     ElementalRaceIdentityCatalog.SlowAndSteadyGuid,
                     "Dwarf Slow and Steady");
+                BlueprintFeature classMovement = Require<BlueprintFeature>(
+                    library, UrbanBarbarianBlueprints.FastMovementGuid,
+                    "native Barbarian Fast Movement");
+                BlueprintBuff haste = Require<BlueprintBuff>(library,
+                    HasteBuffGuid, "native Haste buff");
+                BlueprintBuff slowBuff = library.GetAllBlueprints()
+                    .OfType<BlueprintBuff>().Where(value => value != null &&
+                        string.Equals(value.name, "SlowBuff",
+                            StringComparison.Ordinal)).Single();
                 BlueprintItemArmor medium = library.GetAllBlueprints()
                     .OfType<BlueprintItemArmor>().Where(value =>
                         value != null && value.Type != null &&
@@ -212,16 +259,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.GetType().FullName).ToArray());
                 evidence.MediumArmor = Identity(medium);
                 evidence.HeavyArmor = Identity(heavy);
+                evidence.ClassMovementFeature = Identity(classMovement);
+                evidence.HasteBuff = Identity(haste);
+                evidence.SlowBuff = Identity(slowBuff);
+                evidence.HasteComponents = ComponentTypes(haste);
+                evidence.SlowComponents = ComponentTypes(slowBuff);
+                BuffMovementSpeed hasteMovement = (haste.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<
+                        BuffMovementSpeed>().Single();
+                evidence.HasteValue = hasteMovement.Value;
+                evidence.HasteCappedOnMultiplier =
+                    hasteMovement.CappedOnMultiplier;
+                evidence.HasteMultiplierCap = hasteMovement.MultiplierCap;
+                evidence.SlowedConditionValue = (int)UnitCondition.Slowed;
+                evidence.DifficultTerrainConditionValue =
+                    (int)UnitCondition.DifficultTerrain;
+                evidence.CalculateSpeedModifierIl = DescribeMethod(
+                    typeof(UnitEntityData).GetMethod(
+                        "CalculateSpeedModifier", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic));
 
                 stage = "movement-oread";
                 evidence.Movement.Add(ExerciseMovement(set.Oread.Race,
-                    medium, heavy, created, transient));
+                    medium, heavy, classMovement, haste, slowBuff, created,
+                    transient));
                 stage = "movement-dwarf";
                 evidence.Movement.Add(ExerciseMovement(dwarf, medium,
-                    heavy, created, transient));
+                    heavy, classMovement, haste, slowBuff, created,
+                    transient));
                 stage = "movement-human";
                 evidence.Movement.Add(ExerciseMovement(human, medium,
-                    heavy, created, transient));
+                    heavy, classMovement, haste, slowBuff, created,
+                    transient));
 
                 stage = "native-identity";
                 ExerciseIdentity(library, set, human, aasimar, tiefling,
@@ -296,6 +365,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static MovementEvidence ExerciseMovement(BlueprintRace race,
             BlueprintItemArmor medium, BlueprintItemArmor heavy,
+            BlueprintFeature classMovement, BlueprintBuff haste,
+            BlueprintBuff slow,
             ICollection<UnitEntityData> created,
             ICollection<UnityEngine.Object> transient)
         {
@@ -309,6 +380,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RaceGuid = race.AssetGuid,
                 UnarmoredSpeed = owner.Stats.Speed.ModifiedValue
             };
+
+            EnsureFact(owner, classMovement);
+            result.ClassMovementSpeed = owner.Stats.Speed.ModifiedValue;
+            owner.RemoveFact(classMovement);
+            result.SpeedAfterClassMovement = owner.Stats.Speed.ModifiedValue;
+
+            var hasteContext = new MechanicsContext(unit, owner, haste, null,
+                new TargetWrapper(unit));
+            Buff hasteFact = owner.Buffs.AddBuff(haste, hasteContext,
+                TimeSpan.FromSeconds(60d));
+            if (hasteFact == null)
+                throw new InvalidOperationException(
+                    "The native Haste movement buff could not be applied.");
+            result.HasteSpeed = owner.Stats.Speed.ModifiedValue;
+            owner.Buffs.RemoveFact(hasteFact);
+            result.SpeedAfterHaste = owner.Stats.Speed.ModifiedValue;
+
+            var slowContext = new MechanicsContext(unit, owner, slow, null,
+                new TargetWrapper(unit));
+            Buff slowFact = owner.Buffs.AddBuff(slow, slowContext,
+                TimeSpan.FromSeconds(60d));
+            if (slowFact == null)
+                throw new InvalidOperationException(
+                    "The native Slow movement buff could not be applied.");
+            result.SlowSpeed = owner.Stats.Speed.ModifiedValue;
+            result.SlowConditionInstalled = owner.State.HasCondition(
+                UnitCondition.Slowed);
+            owner.Buffs.RemoveFact(slowFact);
+            result.SpeedAfterSlow = owner.Stats.Speed.ModifiedValue;
+            result.SlowConditionCleared = !owner.State.HasCondition(
+                UnitCondition.Slowed);
+
+            owner.State.AddCondition(UnitCondition.DifficultTerrain, null);
+            result.DifficultTerrainConditionInstalled = owner.State
+                .HasCondition(UnitCondition.DifficultTerrain);
+            result.DifficultTerrainStatSpeed = owner.Stats.Speed.ModifiedValue;
+            owner.State.RemoveCondition(UnitCondition.DifficultTerrain);
+            result.SpeedAfterDifficultTerrain = owner.Stats.Speed.ModifiedValue;
+            result.DifficultTerrainConditionCleared = !owner.State
+                .HasCondition(UnitCondition.DifficultTerrain);
 
             result.MediumArmorSpeed = SpeedWithArmor(unit, medium);
             result.HeavyArmorSpeed = SpeedWithArmor(unit, heavy);
@@ -710,6 +821,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.SpeedWithBonusAndPenalty ==
                         value.UnarmoredSpeed + 5),
                 "request-local UntypedStackable speed facts");
+            Add(assertions, "elemental-slow-and-steady-native-layering",
+                "native class movement, Haste, Slow, and difficult terrain retain their independent effects",
+                "class=" + evidence.ClassMovementFeature + ";haste=" +
+                    evidence.HasteBuff + ";slow=" + evidence.SlowBuff + "|" +
+                    string.Join("|", evidence.Movement.Select(Summary)
+                        .ToArray()),
+                evidence.Movement.Count == 3 && evidence.Movement.All(value =>
+                    value.ClassMovementSpeed == value.UnarmoredSpeed + 10 &&
+                    value.SpeedAfterClassMovement == value.UnarmoredSpeed &&
+                    value.HasteSpeed == value.UnarmoredSpeed + 30 &&
+                    value.SpeedAfterHaste == value.UnarmoredSpeed &&
+                    value.SlowSpeed == value.UnarmoredSpeed &&
+                    value.SlowConditionInstalled &&
+                    value.SlowConditionCleared &&
+                    value.SpeedAfterSlow == value.UnarmoredSpeed &&
+                    value.DifficultTerrainConditionInstalled &&
+                    value.DifficultTerrainStatSpeed == value.UnarmoredSpeed &&
+                    value.SpeedAfterDifficultTerrain == value.UnarmoredSpeed &&
+                    value.DifficultTerrainConditionCleared) &&
+                    evidence.HasteValue == 30 &&
+                    evidence.HasteCappedOnMultiplier &&
+                    Math.Abs(evidence.HasteMultiplierCap - 2f) < 0.0001f &&
+                    HasHalfSpeedCondition(evidence.CalculateSpeedModifierIl,
+                        evidence.SlowedConditionValue) &&
+                    HasHalfSpeedCondition(evidence.CalculateSpeedModifierIl,
+                        evidence.DifficultTerrainConditionValue),
+                "actual native facts plus metadata-only IL of UnitEntityData.CalculateSpeedModifier; effective CurrentSpeedMps requires an area-attached view");
 
             Add(assertions, "elemental-native-identity-fixtures", "7",
                 evidence.Identity.Count.ToString(), evidence.Identity.Count == 7,
@@ -823,6 +961,59 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static string Summary(MovementEvidence value)
         {
             return value == null ? "<missing>" : value.Summary();
+        }
+
+        private static bool HasHalfSpeedCondition(string il,
+            int conditionValue)
+        {
+            string[] lines = (il ?? string.Empty).Split(new[]
+            {
+                "\r\n", "\n"
+            }, StringSplitOptions.RemoveEmptyEntries);
+            for (int index = 0; index < lines.Length; index++)
+            {
+                if (!LoadsInteger(lines[index], conditionValue) ||
+                    index + 1 >= lines.Length ||
+                    !lines[index + 1].Contains(
+                        "UnitState.HasCondition")) continue;
+                int end = Math.Min(lines.Length, index + 8);
+                bool half = false;
+                bool multiply = false;
+                for (int cursor = index + 2; cursor < end; cursor++)
+                {
+                    half |= lines[cursor].Contains("ldc.r4 0.5");
+                    multiply |= lines[cursor].Contains(": mul");
+                }
+                if (half && multiply) return true;
+            }
+            return false;
+        }
+
+        private static bool LoadsInteger(string line, int value)
+        {
+            if (line == null) return false;
+            if (value >= 0 && value <= 8)
+                return line.EndsWith("ldc.i4." + value,
+                    StringComparison.Ordinal);
+            return line.EndsWith("ldc.i4.s " + value,
+                    StringComparison.Ordinal) ||
+                line.EndsWith("ldc.i4 " + value,
+                    StringComparison.Ordinal);
+        }
+
+        private static string ComponentTypes(BlueprintUnitFact blueprint)
+        {
+            return string.Join(",", (blueprint.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(value =>
+                    value == null ? "<null>" : value.GetType().FullName)
+                .ToArray());
+        }
+
+        private static string DescribeMethod(MethodInfo method)
+        {
+            return method == null ? "<missing>" : string.Join(
+                Environment.NewLine,
+                BrownFurIlDisassembler.Describe(method).ToArray());
         }
 
         private static string Summary(IdentityEvidence value)

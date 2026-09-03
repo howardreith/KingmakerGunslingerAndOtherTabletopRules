@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "mission": "elemental-races-expansion",
+  "branch": "codex/elemental-races-expansion",
+  "startingCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
+  "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
+  "interveningMasterCommits": [],
+  "startingTreeClean": true,
+  "phase": "release-a-research-and-design",
+  "currentVersion": "0.0.114",
+  "targets": {
+    "releaseA": "0.0.115-elemental-heritages",
+    "releaseB": "0.0.116-elemental-feats",
+    "releaseC": "0.0.117-elemental-traits"
+  },
+  "status": {
+    "foundation": "PASS",
+    "releaseA": "NOT-STARTED",
+    "releaseB": "NOT-STARTED",
+    "releaseC": "NOT-STARTED"
+  },
+  "foundationProgress": {
+    "spellOnlyAffinity": "IMPLEMENTED-RUNTIME-PASS",
+    "exactRacialSlaParameters": "IMPLEMENTED-RUNTIME-AND-PERSISTENCE-PASS",
+    "nativeMovementLayering": "RUNTIME-PASS",
+    "hydraulicPush": "RUNTIME-PASS",
+    "sharedCatalogAudit": "PASS-NO-CHANGE",
+    "visualOwnershipAudit": "PARTIAL-ROLLBACK-DEFECT-FIXED",
+    "runtimeOrganization": "PASS",
+    "deterministicTests": "PASS (1399/1399)"
+  },
+  "baselineGates": {
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1390/1390)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS"
+  },
+  "baselineArtifact": {
+    "package": "KingmakerGunslinger-0.0.114-elemental-races.zip",
+    "packageSize": 22977592,
+    "packageEntries": 135,
+    "packageSha256": "b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694",
+    "dllSize": 5411328,
+    "dllSha256": "09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262",
+    "dllMvid": "dcd73856-39d4-40ce-9b05-77bf249103d7"
+  },
+  "foundationGates": {
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1399/1399)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS",
+    "guardedRuntime": "PASS",
+    "threeProcessPersistence": "PASS",
+    "compatibility": "NOT-RUN-NOT-A-FOUNDATION-GATE"
+  },
+  "foundationCleanArtifact": {
+    "package": "KingmakerGunslinger-0.0.114-elemental-races.zip",
+    "packageSize": 22986873,
+    "packageEntries": 135,
+    "packageSha256": "db18732406bc3facdbeecb3d6305016db49b3fbde74e8bb7987afda4f30ab431",
+    "dllSize": 5447168,
+    "dllSha256": "17c6fd96652888aa8ad5781e216b5dab21606c8221f871f17538a7eedb8b6ca9",
+    "dllMvid": "112ead36-b1ed-4f1d-9b06-73376d3bd541"
+  },
+  "foundationRuntimeArtifact": {
+    "package": "KingmakerGunslinger-0.0.114-local-runtime.zip",
+    "packageSize": 22980131,
+    "packageEntries": 135,
+    "packageSha256": "373242f111db67cc7cda31c8dbd22071439af4da30906272aa6ae75548fcc811",
+    "dllSize": 5434880,
+    "dllSha256": "7aceb6c7e32ff6e8b373cc490f31bf09288f3322df99274dafe7022945f1a202",
+    "dllMvid": "0d555e10-babd-498e-a000-9a5c6b82851e",
+    "sourceStateSha256": "f1e19f02d70ff8828d4c27c4f6b08a32e67e144126de853c6c0221c82e1f6141",
+    "deploymentManifest": "20260903T2133255121232Z"
+  },
+  "runtime": {
+    "authorized": true,
+    "launcher": "guarded Steam App ID 640820 only",
+    "workingSave": "KMG_AUTOMATION_WORKING",
+    "protectedSave": "KMG_AUTOMATION_BASELINE",
+    "runs": [
+      {
+        "scenario": "disposable-elemental-spell-affinity",
+        "runId": "20260903T2133255988842Z-1c1eb1995b514e639d633bda04626da3",
+        "status": "PASS",
+        "assertions": 12,
+        "evidenceSha256": "eb6ef1058039572b98f9ca1d97fbbbe704e13519fb3c3da0dddb930c4eefc2c3",
+        "runtimeResultSha256": "f56f09b864ebf99843e80a7ab1cdb759be936c2c03722fd5142933f94aaf47b1"
+      },
+      {
+        "scenario": "disposable-elemental-race-native-identity",
+        "runId": "20260903T2142120311785Z-ee47d3f88fc3475bb877b4259fa5bb8f",
+        "status": "PASS",
+        "assertions": 17,
+        "evidenceSha256": "76c462f30fa3d98d6e774a724b4704b4bff740db87e93b01ae859f108926612b",
+        "runtimeResultSha256": "46ae2a2ec716c36ef44304b054c62c0c62cb371ba2e3359bb98c932e8be66e63"
+      },
+      {
+        "scenario": "disposable-hydraulic-push",
+        "runId": "20260903T2140036293025Z-87b84a4364f044d7ac75be83523a4285",
+        "status": "PASS",
+        "assertions": 13,
+        "evidenceSha256": "d4aaaa03e50f087bc9c18969837ce8121a8d7b490672f9c32f6473f75f159827",
+        "runtimeResultSha256": "ad86f66495f0ac7c94aff75f8c8fff10c8c608d8753d9e02323ee64fa1bb580c"
+      },
+      {
+        "scenario": "disposable-elemental-race-mechanics",
+        "runId": "20260903T2135544051996Z-c855b8500de740058e9e283d5855d623",
+        "status": "PASS",
+        "assertions": 27,
+        "evidenceSha256": "a90d20c271103068e31e21ec507a35d849c49d29ed8e16e2fc3c4a7fd66b9ee6",
+        "runtimeResultSha256": "763ec220c8dc70eebc1bfbb31fb755ea79668db434dd90915675726bf0057207"
+      },
+      {
+        "scenario": "disposable-elemental-race-slas",
+        "runId": "20260903T2110165345311Z-fbf92c0bf63e4cc696f6675235537a9f",
+        "status": "FAIL-TEST-BOUNDARY-DIAGNOSED",
+        "evidenceSha256": "2c187b30d0bd220a029b25921b4c6fb09814ff3d8e795557a1899ea00f7dc97d"
+      },
+      {
+        "scenario": "disposable-elemental-race-slas",
+        "runId": "20260903T2137599295331Z-58636ac8f2c8435da12b05de86abb9dd",
+        "status": "PASS",
+        "assertions": 13,
+        "evidenceSha256": "858c6e7bd8ef9bd6752dfcecdb2e87b1fd9e92a6853d13e385990bd2f12649d0",
+        "runtimeResultSha256": "b749e8e28e0400a2e419dcf9d0cdde0a00dff443ed17b521d1f2caa82e787760"
+      },
+      {
+        "scenario": "elemental-race-visual-audit",
+        "runId": "20260903T2144172975324Z-4851ddb035d5488988c65a928d3a4413",
+        "status": "PASS",
+        "assertions": 5,
+        "evidenceSha256": "01c29ddb35b7932e61414164056592e2e0743d20b38e7d7fdae2fba3e59176ac",
+        "runtimeResultSha256": "4c53f03b7c11e84563a344f15b4299a8490c9d0333236abc9c6de3753958e511"
+      },
+      {
+        "scenario": "observe-elemental-race-blueprints",
+        "runId": "20260903T2146278436103Z-eabf2189545440cba6e40cff2980baa4",
+        "status": "PASS",
+        "assertions": 12,
+        "evidenceSha256": "fa566e26af6b3d89a06bba8c22965a3ebe150e9f2709dcaba907ed5f7ec9257a",
+        "runtimeResultSha256": "09591c0568eaf1f76478b9bd30cbdef3be82edd4d5bc0be437c7cbc9267a5be8"
+      },
+      {
+        "scenario": "elemental-race-persistence-prepare",
+        "runId": "20260903T2148395938477Z-82b7301d2ec34d46ad43f6d9dc6c0ffc",
+        "status": "PASS-WITH-PRESENTATION-WARNINGS",
+        "assertions": 11,
+        "runtimeResultSha256": "d723d78c60c94f9a6e912ede7bcbf074d5811aa5aaefac5d70b9540c17141f72"
+      },
+      {
+        "scenario": "elemental-race-module-disabled-persistence",
+        "runId": "20260903T2151259292540Z-0b6b930d96e14626b8a47a4b17ea062c",
+        "status": "PASS-WITH-PRESENTATION-WARNINGS",
+        "assertions": 10,
+        "runtimeResultSha256": "6004ddd32b6beb8b8f3dd7f0f72c32999f1378380c55d41f44bb466d9bccc8f0"
+      },
+      {
+        "scenario": "elemental-race-persistence-verify-absent",
+        "runId": "20260903T2154167870215Z-7c987f8ec8614f0681613ec2fc8a2d64",
+        "status": "PASS-WITH-PRESENTATION-WARNINGS",
+        "assertions": 6,
+        "runtimeResultSha256": "35cd4c44ada55a757fd0a313b56c029f804cfefcafad07196f2d9e7dee6f9362"
+      }
+    ],
+    "settingsSha256BeforeAndAfter": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "temporaryModuleOnSettingsSha256": "333e5a3cdb7196ac6c58c9959ad24c81b2b0c98a06804b94e601743685d0fa8e",
+    "temporaryModuleOffSettingsSha256": "fd8420daa53de98aeb7b81538ab4eff4ae8a0eaeadc54342ee53581913de0195",
+    "persistenceFixtureCount": 8,
+    "persistenceFinalFixtureCount": 0
+  },
+  "manifestBaseline": {
+    "total": 1706,
+    "active": 1704,
+    "reserved": 2,
+    "elementalTotal": 69,
+    "elementalActive": 68
+  },
+  "newIdentities": [],
+  "compatibility": {},
+  "commits": [],
+  "pullRequest": null,
+  "blockers": [],
+  "merged": false,
+  "tagged": false,
+  "publicReleasePublished": false
+}
