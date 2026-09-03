@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-j-final-preview-candidate-source-qualification",
+  "phase": "phase-j-final-preview-compatibility-qualification",
   "version": "0.0.114",
   "informationalVersion": "0.0.114-elemental-races-preview",
   "featureModuleSchema": 10,
@@ -29,17 +29,17 @@
     "sylphRules": "BASE-NATIVE-SLA-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
     "undineRules": "BASE-HYDRAULIC-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
     "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-224-RECORD-EXPANDED-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-280-RECORD-ELEMENTAL-MOTION-AND-TRANSITION-MATRIX-EIGHT-FIXTURE-SAVE-BACKED-RELOAD-PASS-HUMAN-REVIEW-PENDING",
-    "runtimeScenarios": "ALL-ELEMENTAL-MECHANICS-PUBLICATION-VISUAL-EQUIPMENT-SLA-PRONE-DEATH-RESURRECTION-POLYMORPH-MOTION-PERSISTENCE-COMPATIBILITY-AND-HUMAN-MOTION-REGRESSION-SCENARIOS-PASS-ON-ENGINEERING-ARTIFACTS",
+    "runtimeScenarios": "ALL-ELEMENTAL-MECHANICS-PUBLICATION-VISUAL-EQUIPMENT-SLA-PRONE-DEATH-RESURRECTION-POLYMORPH-MOTION-PERSISTENCE-BOUNDARY-COMPATIBILITY-AND-HUMAN-MOTION-REGRESSION-SCENARIOS-PASS;BOUNDARY-AND-PERSISTENCE-EXACT-0.0.114",
     "compatibility": "FIVE-REQUIRED-PROFILES-AND-EXACT-RESTORATION-PASS-ON-ENGINEERING-ARTIFACT-FINAL-0.0.114-RERUN-PENDING",
-    "packaging": "0.0.114-SOURCE-DOMAIN-COMPILE-CLEAN-RELEASE-STRICT-PACKAGE-PASS-RUNTIME-PENDING",
+    "packaging": "0.0.114-SOURCE-DOMAIN-COMPILE-CLEAN-RELEASE-STRICT-PACKAGE-PASS-PERSISTENCE-AND-24-STATE-BOUNDARY-RUNTIME-PASS-COMPATIBILITY-PENDING",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
     "passed": 1390,
     "failed": 0,
-    "status": "PASS-AT-651c05ae-BEFORE-FINAL-VERSION-STAMP",
-    "exactVersionRerunPending": true
+    "status": "PASS-AT-b90cb303-EXACT-0.0.114",
+    "exactVersionRerunPending": false
   },
   "runtime": {
     "transactions": [
@@ -670,6 +670,28 @@
     "lastEvidenceDirectory": "20260902T2056561928027Z-observe-feature-module-settings",
     "allSettingsRestoredExactly": true
   },
+  "finalBoundaryQualification": {
+    "status": "PASS",
+    "version": "0.0.114",
+    "gitCommit": "b90cb3038984b49d818690da702e2ca94ea85c14",
+    "configurationCount": 24,
+    "passCount": 24,
+    "warningCount": 0,
+    "expectedEqualsActive": true,
+    "deploymentId": "20260903T0324413582448Z",
+    "deploymentManifestSha256": "2fc3a58efafdee5781e0ea7e09c1a4cec7bd34d8ba5848530924036fc6eebaa8",
+    "sourceStateSha256": "752118f23f10154c084844dd82c87197620cae25875da2e986420dc1c57fcc0b",
+    "packageSha256": "dcd7b7750e36ff13c087e29ab1dc9ae58f64e902d13faa5da48510b2bf2f7fe1",
+    "dllSha256": "7740bfd9f96706d349babeedd3abcaf779169d2ff20fc71a7045f5d719db08da",
+    "dllMvid": "dd706f3c-ddad-4bc2-888c-fe4c68cb66e4",
+    "firstEvidenceDirectory": "20260903T0325021042437Z-observe-feature-module-settings",
+    "firstRunId": "20260903T0325021292270Z-a9077f9fab6a432a8c3c1e0be93ba40c",
+    "lastEvidenceDirectory": "20260903T0407238227609Z-observe-feature-module-settings",
+    "lastRunId": "20260903T0407238247635Z-847ae80b1d6745c0b95a07fd00ba96e4",
+    "allSettingsRestoredExactly": true,
+    "settingsBeforeAndAfterSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e",
+    "kingmakerProcessesAfter": 0
+  },
   "engineeringExpandedEquipmentQualification": {
     "status": "PASS",
     "version": "0.0.113",
@@ -821,7 +843,7 @@
     "domain": "PASS-1390-OF-1390",
     "cleanReleasePackage": "PASS-STRICT-UMM",
     "nativeRespecPersistence": "PASS-THREE-FRESH-PROCESSES",
-    "boundaryMatrix": "PENDING-EXACT-VERSION",
+    "boundaryMatrix": "PASS-24-OF-24-EXACT-0.0.114",
     "compatibilityProfiles": "PENDING-EXACT-VERSION"
   },
   "humanReview": "AUTOMATED-FINAL-CANDIDATE-GATES-IN-PROGRESS"

@@ -324,7 +324,7 @@ identity, appearance, level-up, and module-disabled reload behavior.
 | Guarded elemental native-motion and transition matrix | PASS - `20260903T0012214812700Z-elemental-race-motion` (216 motion + 64 transition) |
 | Existing Human native-motion regression | PASS - `20260903T0022352926189Z-gunslinger-outfit-production-motion` (54/54) |
 | Three-process save-backed/module-OFF persistence | PASS on exact 0.0.114 - `20260903T0306144426995Z` / `20260903T0308580192907Z` / `20260903T0311577493294Z` |
-| Eleven-module 24-state runtime matrix | PASS on 0.0.113 engineering artifact; exact 0.0.114 rerun pending |
+| Eleven-module 24-state runtime matrix | PASS on exact 0.0.114 - 24/24, zero warnings, exact settings restoration |
 | Guarded expanded equipment/noncovered transitions | PASS - 224 equipment + 64 transition records |
 | Five required compatibility profiles | PASS on 0.0.113 engineering artifact with exact restoration; exact 0.0.114 rerun pending |
 | Elemental native respec | PASS on exact 0.0.114 - 8/8 distinct source/replacement commits with race, facts, SLA, DollData, and Gunslinger presentation exact |
@@ -588,3 +588,26 @@ and
 `9be3be51483fa7f529494ad056f6ac2b852bf9f1e0dd67cea71599f655cbe5dc`.
 The original settings bytes were restored exactly to SHA-256
 `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+
+The exact 0.0.114 feature-module boundary qualification reused committed
+artifact `b90cb3038984b49d818690da702e2ca94ea85c14` across 24 guarded
+fresh launches. Deployment `20260903T0324413582448Z`; source-state,
+package, and DLL SHA-256 values:
+`752118f23f10154c084844dd82c87197620cae25875da2e986420dc1c57fcc0b`,
+`dcd7b7750e36ff13c087e29ab1dc9ae58f64e902d13faa5da48510b2bf2f7fe1`,
+and
+`7740bfd9f96706d349babeedd3abcaf779169d2ff20fc71a7045f5d719db08da`;
+DLL MVID `dd706f3c-ddad-4bc2-888c-fe4c68cb66e4`. The deployment
+manifest hashes to
+`2fc3a58efafdee5781e0ea7e09c1a4cec7bd34d8ba5848530924036fc6eebaa8`.
+
+All 24 `observe-feature-module-settings` results passed with zero warnings
+and exact expected/active equality: all ON, each single module OFF,
+Gunslinger only, each non-Gunslinger module alone, and all OFF. Evidence spans
+`20260903T0325021042437Z-observe-feature-module-settings` through
+`20260903T0407238227609Z-observe-feature-module-settings`; the complete
+directory/run-ID ledger is in `ELEMENTAL-RACES-JOURNAL.md`. The matrix
+restored `FeatureModules.json` exactly; an independent post-run hash remained
+`d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`,
+and no Kingmaker process remained. This does not qualify the five exact
+0.0.114 compatibility profiles, which remain pending.
