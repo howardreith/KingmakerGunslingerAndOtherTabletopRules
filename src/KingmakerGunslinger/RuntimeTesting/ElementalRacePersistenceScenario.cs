@@ -458,70 +458,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             private DollData CreateExpectedDollData(
                 ElementalPersistenceFixture fixture)
             {
-                CustomizationOptions options = fixture.Gender == Gender.Male
-                    ? fixture.Blueprints.Race.MaleOptions
-                    : fixture.Blueprints.Race.FemaleOptions;
-                if (options == null || options.Heads == null ||
-                    options.Hair == null || options.Eyebrows == null ||
-                    options.Beards == null || options.Horns == null)
-                    throw new InvalidOperationException(fixture.Label +
-                        " customization options are incomplete.");
-
-                EquipmentEntityLink head = SelectRequiredOption(
-                    options.Heads, fixture.Index, fixture.Label + " head");
-                EquipmentEntityLink hair = SelectRequiredOption(
-                    options.Hair, fixture.Index + 1,
-                    fixture.Label + " hair");
-                EquipmentEntityLink eyebrows = SelectPairedOption(
-                    options.Heads, head, options.Eyebrows,
-                    fixture.Label + " eyebrows");
-                EquipmentEntityLink beard = fixture.Gender == Gender.Male
-                    ? SelectOptionalOption(options.Beards, fixture.Index)
-                    : null;
-                EquipmentEntityLink horn = fixture.Blueprints.Definition.Kind
-                        == ElementalRaceKind.Ifrit
-                    ? SelectRequiredOption(options.Horns,
-                        fixture.Index + 1, fixture.Label + " horn")
-                    : null;
-
                 var state = new DollState();
-                state.SetGender(fixture.Gender);
-                state.SetRace(fixture.Blueprints.Race);
-                state.SetRacePreset(fixture.Preset);
-                state.SetClass(_gunslingerClass);
-                state.SetHead(head);
-                state.SetHair(hair);
-                SetEyebrows(state, eyebrows);
-                if (beard != null) state.SetBeard(beard);
-                if (horn != null) state.SetHorn(horn);
-
-                List<Texture2D> skinRamps = state.GetSkinRamps();
-                if (skinRamps == null || skinRamps.Count !=
-                        ElementalRaceVisualCatalog.SkinRampCount)
-                    throw new InvalidOperationException(fixture.Label +
-                        " does not expose the exact seven-ramp skin palette.");
-                state.SetSkinColor(fixture.Index % skinRamps.Count);
-                List<Texture2D> hairRamps = state.GetHairRamps();
-                if (hairRamps == null || hairRamps.Count < 4)
-                    throw new InvalidOperationException(fixture.Label +
-                        " does not expose four visible hair colors.");
-                state.SetHairColor(fixture.Index % hairRamps.Count);
-                if (horn != null)
-                {
-                    List<Texture2D> hornRamps = state.GetHornsRamps();
-                    if (hornRamps == null || hornRamps.Count == 0)
-                        throw new InvalidOperationException(fixture.Label +
-                            " selected horns without a native color ramp.");
-                    state.SetHornsColor(fixture.Index % hornRamps.Count);
-                }
-                state.Validate();
+                EquipmentEntityLink[] selected =
+                    ConfigureExpectedDollState(state, fixture);
                 DollData data = state.CreateData();
-                string[] required = new[]
-                {
-                    head.AssetId, hair.AssetId, eyebrows.AssetId,
-                    beard == null ? string.Empty : beard.AssetId,
-                    horn == null ? string.Empty : horn.AssetId
-                }.Where(value => !string.IsNullOrWhiteSpace(value) &&
+                string[] required = selected.Where(value => value != null)
+                    .Select(value => value.AssetId)
+                    .Where(value => !string.IsNullOrWhiteSpace(value) &&
                     !string.Equals(value,
                         ElementalRaceVisualCatalog.EmptyAssetId,
                         StringComparison.Ordinal)).Distinct(
@@ -560,6 +503,68 @@ namespace KingmakerGunslinger.RuntimeTesting
                             data.ClothesPrimaryIndex + "/" +
                             data.ClothesSecondaryIndex) + ".");
                 return data;
+            }
+
+            private EquipmentEntityLink[] ConfigureExpectedDollState(
+                DollState state, ElementalPersistenceFixture fixture)
+            {
+                if (state == null)
+                    throw new ArgumentNullException("state");
+                CustomizationOptions options = fixture.Gender == Gender.Male
+                    ? fixture.Blueprints.Race.MaleOptions
+                    : fixture.Blueprints.Race.FemaleOptions;
+                if (options == null || options.Heads == null ||
+                    options.Hair == null || options.Eyebrows == null ||
+                    options.Beards == null || options.Horns == null)
+                    throw new InvalidOperationException(fixture.Label +
+                        " customization options are incomplete.");
+                EquipmentEntityLink head = SelectRequiredOption(
+                    options.Heads, fixture.Index, fixture.Label + " head");
+                EquipmentEntityLink hair = SelectRequiredOption(
+                    options.Hair, fixture.Index + 1,
+                    fixture.Label + " hair");
+                EquipmentEntityLink eyebrows = SelectPairedOption(
+                    options.Heads, head, options.Eyebrows,
+                    fixture.Label + " eyebrows");
+                EquipmentEntityLink beard = fixture.Gender == Gender.Male
+                    ? SelectOptionalOption(options.Beards, fixture.Index)
+                    : null;
+                EquipmentEntityLink horn = fixture.Blueprints.Definition.Kind
+                        == ElementalRaceKind.Ifrit
+                    ? SelectRequiredOption(options.Horns,
+                        fixture.Index + 1, fixture.Label + " horn")
+                    : null;
+
+                state.SetGender(fixture.Gender);
+                state.SetRace(fixture.Blueprints.Race);
+                state.SetRacePreset(fixture.Preset);
+                state.SetClass(_gunslingerClass);
+                state.SetHead(head);
+                state.SetHair(hair);
+                SetEyebrows(state, eyebrows);
+                if (beard != null) state.SetBeard(beard);
+                if (horn != null) state.SetHorn(horn);
+                List<Texture2D> skinRamps = state.GetSkinRamps();
+                if (skinRamps == null || skinRamps.Count !=
+                        ElementalRaceVisualCatalog.SkinRampCount)
+                    throw new InvalidOperationException(fixture.Label +
+                        " does not expose the exact seven-ramp skin palette.");
+                state.SetSkinColor(fixture.Index % skinRamps.Count);
+                List<Texture2D> hairRamps = state.GetHairRamps();
+                if (hairRamps == null || hairRamps.Count < 4)
+                    throw new InvalidOperationException(fixture.Label +
+                        " does not expose four visible hair colors.");
+                state.SetHairColor(fixture.Index % hairRamps.Count);
+                if (horn != null)
+                {
+                    List<Texture2D> hornRamps = state.GetHornsRamps();
+                    if (hornRamps == null || hornRamps.Count == 0)
+                        throw new InvalidOperationException(fixture.Label +
+                            " selected horns without a native color ramp.");
+                    state.SetHornsColor(fixture.Index % hornRamps.Count);
+                }
+                state.Validate();
+                return new[] { head, hair, eyebrows, beard, horn };
             }
 
             private static EquipmentEntityLink SelectRequiredOption(
@@ -669,6 +674,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The native default player donor is incomplete.");
                 _currentBlueprint = UnityEngine.Object.Instantiate(source);
+                if (_creatingRespecReplacement)
+                    SeedFixedElementalRespecRace(_currentBlueprint, fixture);
                 _currentBlueprint.Gender = fixture.Gender;
                 _currentBlueprint.Body = CreateElementalNeutralBody(source);
                 _currentBlueprint.StartingInventory = new BlueprintItem[0];
@@ -834,6 +841,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(fixture.Label +
                         " native Respec requires one distinct level-0 replacement descriptor.");
 
+                _stage = "native-respec-commit-" + fixture.Label;
+                WriteProgress("fixed-race-respec-replacement-created");
                 JObject record = CommitNativeElementalRespec(fixture,
                     sourceObservation, sourceActorId,
                     replacementLevelBeforeRespec,
@@ -884,6 +893,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 LevelUpController controller = null;
                 bool callback = false;
+                bool fixedRaceBeforeRespec = ReferenceEquals(
+                    _currentUnit.Descriptor.Progression.Race,
+                    fixture.Blueprints.Race);
+                if (!fixedRaceBeforeRespec)
+                    throw new InvalidOperationException(fixture.Label +
+                        " level-0 Respec replacement did not inherit its fixed race.");
                 try
                 {
                     controller = LevelUpController
@@ -897,16 +912,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         controller.Preview == null || controller.Doll == null)
                         throw new InvalidOperationException(fixture.Label +
                             " native Respec controller is incomplete.");
-                    if (!controller.SelectRace(fixture.Blueprints.Race))
+                    bool fixedRaceInInitialPreview = ReferenceEquals(
+                        controller.Preview.Progression.Race,
+                        fixture.Blueprints.Race);
+                    if (!fixedRaceInInitialPreview)
                         throw new InvalidOperationException(fixture.Label +
-                            " native Respec race selection was rejected.");
+                            " native Respec preview did not preserve its fixed race.");
                     if (!controller.SelectClass(_gunslingerClass, false))
                         throw new InvalidOperationException(fixture.Label +
                             " native Respec Gunslinger selection was rejected.");
-                    controller.Doll.SetGender(fixture.Gender);
-                    controller.Doll.SetRace(fixture.Blueprints.Race);
-                    controller.Doll.SetRacePreset(fixture.Preset);
-                    controller.Doll.SetClass(_gunslingerClass);
+                    ConfigureExpectedDollState(controller.Doll, fixture);
                     controller.ApplyClassMechanics();
                     int previewLevel = controller.Preview.Progression
                         .CharacterLevel;
@@ -931,7 +946,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "distinctSourceAndReplacement",
                             distinctSourceAndReplacement },
                         { "respecMode", "Respec" },
-                        { "raceSelected", true },
+                        { "fixedRaceBeforeRespec",
+                            fixedRaceBeforeRespec },
+                        { "fixedRaceInInitialPreview",
+                            fixedRaceInInitialPreview },
+                        { "racePreserved", previewRaceExact },
                         { "classSelected", true },
                         { "previewRaceExact", previewRaceExact },
                         { "previewCharacterLevel", previewLevel },
@@ -957,6 +976,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new BlueprintItemWeapon[0],
                     QuickSlots = new BlueprintItemEquipmentUsable[0]
                 };
+            }
+
+            private static void SeedFixedElementalRespecRace(
+                BlueprintUnit blueprint, ElementalPersistenceFixture fixture)
+            {
+                if (blueprint == null)
+                    throw new ArgumentNullException("blueprint");
+                blueprint.Race = fixture.Blueprints.Race;
             }
 
             private bool ResourcesReady()
@@ -1081,7 +1108,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (int)value["replacementLevelBeforeRespec"] == 0 &&
                     string.Equals((string)value["respecMode"], "Respec",
                         StringComparison.Ordinal) &&
-                    (bool)value["raceSelected"] &&
+                    (bool)value["fixedRaceBeforeRespec"] &&
+                    (bool)value["fixedRaceInInitialPreview"] &&
+                    (bool)value["racePreserved"] &&
                     (bool)value["classSelected"] &&
                     (bool)value["previewRaceExact"] &&
                     (int)value["previewCharacterLevel"] == 1 &&
@@ -2280,7 +2309,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "records=" + respecRecords.Length + ";exact=" +
                         respecExact,
                     respecExact,
-                    "StartWithoutAssigningStaticInstance with CharBuildMode.Respec, SelectRace, SelectClass, Commit, source retirement, and replacement observation");
+                    "fixed BlueprintRace inheritance, StartWithoutAssigningStaticInstance with CharBuildMode.Respec, SelectClass, Commit, source retirement, and replacement observation");
                 Add(_assertions,
                     "elemental-race-persistence-prepared-rules",
                     "eight exact race/sex Gunslingers with level-1 facts, stats, resistance, affinity, Keen Senses, and available SLA",
