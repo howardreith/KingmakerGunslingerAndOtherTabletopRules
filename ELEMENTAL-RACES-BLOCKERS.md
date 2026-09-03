@@ -23,9 +23,9 @@ matrix, 64 additional SLA/prone/death/resurrection/polymorph transition
 records, exact 24-state feature boundary, and all five required compatibility
 profiles also pass on version-0.0.113 engineering artifacts with exact
 transaction restoration. The eight-fixture native-respec preparation gate is
-implemented and source-qualified, and the exact-version 0.0.114 clean package
-passes. Its guarded respec/persistence run, boundary/profile reruns, and human
-visual qualification remain incomplete;
+implemented and exact-version 0.0.114 runtime-qualified across prepare,
+module-OFF reload/cleanup, and fresh-process absence. The exact candidate
+boundary/profile reruns and human visual qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
@@ -110,20 +110,13 @@ absence of a hard blocker is not a completion claim.
 ## Open risks requiring evidence
 
 - The selected donor remains `RaceId.Aasimar`. Exact person-spell and type/race
-  prerequisite behavior, save-backed reload, and native level-up now pass.
-  Native Respec is implemented with distinct replacement descriptors and is
-  awaiting exact-0.0.114 guarded runtime evidence. The first candidate attempt
-  reached exception cleanup before any fixture capture or save, then its
-  entity-creator cleanup tick spun until the guarded timeout. Exception-safe
-  cleanup then exposed the exact cause on a clean retry: native Respec rejects
-  race selection. The corrected fixture now follows Kingmaker's fixed-race
-  behavior by seeding and verifying the existing elemental race before
-  selecting the new class. That boundary then passed in one exact commit; the
-  next failure proved that a level-zero fixture must also model a real
-  character's already-active racial feature facts. The narrower correction
-  activates and verifies those exact production facts and SLA before Respec;
-  guarded retry remains pending. Donor-dialogue observations remain a
-  documented limitation.
+  prerequisite behavior, save-backed reload, native level-up, and eight
+  distinct native Respec replacements now pass. The exact 0.0.114
+  three-process transaction also proves spent SLA and appearance persistence
+  with the module OFF, rest restoration, level-up, cleanup, and absence. The
+  earlier timeout, invalid `SelectRace`, and missing fixture-fact attempts
+  remain preserved in the journal as failed strategy evidence.
+  Donor-dialogue observations remain a documented limitation.
 - Native Dwarf Slow and Steady passes the live armor/encumbrance matrix.
   Save-backed SLA reload and ordinary character persistence now pass.
 - Hydraulic Push combat mechanics, resource commitment, and save-backed

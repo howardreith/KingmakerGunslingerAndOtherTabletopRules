@@ -18,8 +18,8 @@
 - [x] Focused compatibility tests pass.
 - [x] Complete repository validation and dependency-free domain suite pass at
   the final engineering transition checkpoint (1,390/1,390).
-- [x] Clean Release/package command and strict package validation pass at the
-  final version-0.0.113 engineering transition checkpoint.
+- [x] Clean Release/package command and strict package validation pass on the
+  exact version-0.0.114 native-Respec persistence candidate.
 - [x] Guarded Steam App ID 640820 base-mechanics, native donor-SLA, Hydraulic
   Push, native identity/movement, and ON/OFF publication scenarios record exact
   build identity and structured evidence without touching protected saves;
@@ -53,9 +53,10 @@
   version-0.0.114 candidate artifact.
 - [x] Existing Gunslinger outfit, firearm visual/mechanical, feature-module,
   bootstrap, save-hydration, and 0.0.113 repair regressions pass.
-- [ ] The implemented eight-fixture native replacement/respec gate preserves
+- [x] The implemented eight-fixture native replacement/respec gate preserves
   race, facts, SLA, appearance, and the accepted Gunslinger outfit in an
-  exact-0.0.114 guarded persistence run (source/domain/build gates pass).
+  exact-0.0.114 guarded three-process persistence run, including module-OFF
+  reload, rest, level-up, cleanup, and fresh-process absence.
 
 ## Owner human acceptance for the exact candidate package
 
