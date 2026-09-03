@@ -1616,3 +1616,81 @@ All entries are `observe-feature-module-settings` PASS:
 - Result: all automatable engineering gates are complete. Visual Adjustments
   is **NOT-RUN** because it is absent. Subjective clipping, appearance, and
   option quality are **HUMAN REVIEW REQUIRED** for the exact package above.
+
+## 2026-09-03 - Byte-identical final artifact runtime closure
+
+- The preceding `2ceeb65e` canonical package is superseded. After committing
+  and pushing the package-record checkpoint as
+  `b19bc04f3b13d7f1f9be2b1137ef63a10f029dca`,
+  `.\scripts\Build-Local.ps1` passed repository validation, all
+  1,390 domain tests, exact-reference compilation, focused supply-icon tests,
+  output/SoundBank validation, deterministic packaging, and strict UMM
+  validation.
+- Build-Local source-state SHA-256:
+  `d685d938705a3ed09859a8e9241cee87191787820d8d2e3ef6bd7c98e5952609`;
+  build-manifest SHA-256:
+  `e305a36bcb55d490996e467efe29f772e444f20f30e137dd9d42e88eb40122aa`.
+- The canonical preview ZIP and guarded local-runtime ZIP are byte-identical:
+  22,971,381 bytes; SHA-256
+  `bd2edc600916f636bee9e5a3640e1a82e175fffdfea1ba82367d37458ab5d334`.
+  DLL: 5,399,040 bytes; SHA-256
+  `670d0ef39b2ede7b28741a1e260f5c63a2728655939c1c494e93bd709fe95273`;
+  MVID `5ecac105-15ca-4b48-becd-789fee85c144`.
+- Guarded deployment `20260903T0533127867278Z` preserved the exact
+  FeatureModules settings SHA-256
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+  Deployment-manifest SHA-256:
+  `3c6546362ef44c72690ca42d288656a6a15a43081e66af19534dedc5385aa170`.
+  Recoverable predeployment backup:
+  `runtime-backups/live-mod/20260903T0533090077088Z`.
+- Exact-byte `mod-load-smoke`: **PASS**, evidence
+  `20260903T0533317289332Z-mod-load-smoke`, run
+  `20260903T0533317519735Z-442c98ca0a054010a75e433ed27d85c8`.
+  All three assertions passed, zero warnings, Steam App ID 640820, no save
+  interaction, automatic exit, result SHA-256
+  `0ed5fa705f85c7d336caa73825a6de86785f5cf82770e5cd09b764793c5f2474`.
+- The first direct
+  `elemental-races-races-unleashed-compatibility` attempt failed closed:
+  evidence
+  `20260903T0537022346184Z-elemental-races-races-unleashed-compatibility`,
+  run `20260903T0537022566454Z-9aee502396b946f68b0706972532ed6d`,
+  result SHA-256
+  `98e1a2a96b82dbdcdb246691083117b6cdb79aafe74f71565cb3436ca876d0ee`.
+  Cause: the restored restart-bound Elemental Races module was OFF. The run
+  still resolved all 40 stable identities, all native races, exact Races
+  Unleashed 1.0.11 and its seven races, touched no save, retained the settings
+  hash, and exited cleanly. It is retained as prerequisite/strategy evidence,
+  not counted as a qualification PASS.
+- Corrected strategy: run the observer inside
+  `gunslinger-races-unleashed` transaction
+  `compat-20260903T054018Z-37b90e067b74`, explicitly staging all eleven
+  modules ON. Transaction SHA-256:
+  `37e4c1c5104dc4479b86deec37a0eaeb15e04ed31f4e9ecb079b52a91c7a5742`.
+- Corrected exact-byte observer: **PASS**, evidence
+  `20260903T0540395884041Z-elemental-races-races-unleashed-compatibility`,
+  run `20260903T0540396044084Z-3f4c7009c72d4de592f1806af1af5a55`,
+  result SHA-256
+  `1ee890689235f9572464c45a5436624b3d0e024808735939d6e8e3a9bfbee8ae`.
+  All ten assertions passed with zero warnings: 40 identities, module active,
+  20 unique shared races, native 8/8, Elemental indexes 9-12, Races Unleashed
+  indexes 13-19, two exact no-op reconciliations, preserved third-party order,
+  and no save state touched.
+- The compatibility transaction reports `Restored`,
+  `restorationVerified=true`, `stagedMutationObserved=true`, and exact
+  FeatureModules byte restoration to SHA-256
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+  No Kingmaker process remained.
+- The package named in the owner checklist is now exactly the package used by
+  both final guarded PASS runs. Visual Adjustments remains **NOT-RUN**;
+  subjective appearance remains **HUMAN REVIEW REQUIRED**.
+- Final evidence-record closure checks after documenting those runs:
+  - `git diff --check`: **PASS**.
+  - `Get-Content -Raw ELEMENTAL-RACES-STATE.json | ConvertFrom-Json`:
+    **PASS**.
+  - `.\scripts\validate-repository.ps1`: **PASS** for version 0.0.114.
+  - `.\scripts\validate-package.ps1 -PackagePath
+    .\artifacts\packages\KingmakerGunslinger-0.0.114-elemental-races-preview.zip`:
+    **PASS** strict standalone UMM validation; package SHA-256 remained
+    `bd2edc600916f636bee9e5a3640e1a82e175fffdfea1ba82367d37458ab5d334`.
+  - `.\scripts\test-domain.ps1 -Configuration Release`: **PASS**, 1,390 of
+    1,390 tests with zero failures.

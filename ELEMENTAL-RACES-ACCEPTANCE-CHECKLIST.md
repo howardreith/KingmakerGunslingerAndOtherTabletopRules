@@ -62,12 +62,14 @@
   exact-0.0.114 guarded three-process persistence run, including module-OFF
   reload, rest, level-up, cleanup, and fresh-process absence.
 - [x] The final clean Release/package pipeline and a separate strict UMM
-  validation pass for the 135-entry human-review package built from
-  `2ceeb65e`: ZIP SHA-256
-  `ee78b29e4fd4c8b3407d6dcd0d326a0ed1a6352c597ee169a4bd7cd09da8aa41`;
+  validation pass for the 135-entry human-review package. The exact-reference
+  rebuild from `b19bc04f` is byte-identical to the guarded deployment and
+  passes fresh core-load and Elemental/Races Unleashed observations: ZIP
+  SHA-256
+  `bd2edc600916f636bee9e5a3640e1a82e175fffdfea1ba82367d37458ab5d334`;
   DLL SHA-256
-  `827f10cd09efe8c9a15b718624c277253ca270f5ef9af222aff8c015f5d8745b`;
-  MVID `61ff8880-9f96-4657-bda8-37e9f2454ea9`.
+  `670d0ef39b2ede7b28741a1e260f5c63a2728655939c1c494e93bd709fe95273`;
+  MVID `5ecac105-15ca-4b48-becd-789fee85c144`.
 
 ## Owner human acceptance for the exact candidate package
 

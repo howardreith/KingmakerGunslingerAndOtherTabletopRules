@@ -328,7 +328,7 @@ identity, appearance, level-up, and module-disabled reload behavior.
 | Guarded expanded equipment/noncovered transitions | PASS - 224 equipment + 64 transition records |
 | Five required compatibility profiles | PASS on exact 0.0.114 - 5/5 profiles, 18/18 nested runs, exact restoration |
 | Elemental native respec | PASS on exact 0.0.114 - 8/8 distinct source/replacement commits with race, facts, SLA, DollData, and Gunslinger presentation exact |
-| Final human-review package | PASS - clean Release build and direct strict UMM validation at `2ceeb65e` |
+| Final human-review package | PASS - clean Release, exact-reference build, strict UMM validation, and two exact-byte guarded PASS runs at `b19bc04f` |
 | Visual Adjustments | NOT-RUN - not installed |
 | Human visual acceptance | HUMAN REVIEW REQUIRED for the exact package below |
 
@@ -660,30 +660,36 @@ UI and appearance acceptance are not inferred.
 
 ## Final human-review artifact
 
-The final canonical package was built from clean product/evidence commit
-`2ceeb65e9c2d0d78189f78ead18e538c8e01eb90` on
+The first canonical package from `2ceeb65e` passed the required clean build
+but was superseded so the human-review ZIP could be byte-identical to a
+guarded-deployment package. The final package was built through
+`.\scripts\Build-Local.ps1` from clean commit
+`b19bc04f3b13d7f1f9be2b1137ef63a10f029dca` on
 `codex/elemental-races`. The identically named upstream branch matched that
-commit, while a final fetch confirmed `origin/master` remained
+commit. The preceding final fetch confirmed `origin/master` remained
 `06c4d998f160df75ad3be7bfcf3de7e415c631d4` at version 0.0.113. The
 repository source-state fingerprint was
-`baa36e497a6e372af4234f38dc6630a88037fb1814af3802f0ec5ebc3dd02505`.
+`d685d938705a3ed09859a8e9241cee87191787820d8d2e3ef6bd7c98e5952609`.
 
 `powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File
 .\scripts\build.ps1 -Configuration Release -Clean -Package` passed
 repository validation, 1,390/1,390 domain tests, production compilation,
 build-output and SoundBank validation, deterministic packaging, and strict
 UMM validation. A separate direct `scripts/validate-package.ps1` invocation
-also passed.
+also passed. `.\scripts\Build-Local.ps1` then repeated repository and
+1,390-test validation, compiled against the exact qualified references,
+validated the output and SoundBank, and produced byte-identical canonical and
+guarded-deployment ZIPs.
 
 - Package:
   `artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races-preview.zip`
-- Package bytes: 22,977,802
+- Package bytes: 22,971,381
 - Package SHA-256:
-  `ee78b29e4fd4c8b3407d6dcd0d326a0ed1a6352c597ee169a4bd7cd09da8aa41`
-- DLL bytes: 5,411,328
+  `bd2edc600916f636bee9e5a3640e1a82e175fffdfea1ba82367d37458ab5d334`
+- DLL bytes: 5,399,040
 - DLL SHA-256:
-  `827f10cd09efe8c9a15b718624c277253ca270f5ef9af222aff8c015f5d8745b`
-- DLL MVID: `61ff8880-9f96-4657-bda8-37e9f2454ea9`
+  `670d0ef39b2ede7b28741a1e260f5c63a2728655939c1c494e93bd709fe95273`
+- DLL MVID: `5ecac105-15ca-4b48-becd-789fee85c144`
 - DLL file version: 0.0.114
 - DLL informational/product version:
   `0.0.114-elemental-races-preview`
@@ -697,13 +703,32 @@ also passed.
 
 The complete guarded compatibility matrix ran against exact-reference commit
 `967f896dc6e7441660e8d7a3c99bf173a4d52c14`. A path-scoped Git comparison
-from that commit to `2ceeb65e` reports no change under `src`, `assets`,
+from that commit to `b19bc04f` reports no change under `src`, `assets`,
 `blueprints`, `Info.json`, or `Directory.Build.props`; only evidence,
 packaged documentation, compatibility-profile disposition, and validation
-status changed. The canonical package above has a distinct SHA-256 and MVID
-and was not itself relaunched after packaging, so no byte-for-byte runtime
-claim is inferred for it. Its runtime inputs are source-identical to the
-fully qualified artifact.
+status changed.
+
+The canonical ZIP above is byte-for-byte identical to the Build-Local package
+deployed under manifest
+`20260903T0533127867278Z` (manifest SHA-256
+`3c6546362ef44c72690ca42d288656a6a15a43081e66af19534dedc5385aa170`).
+Fresh guarded Steam run
+`20260903T0533317519735Z-442c98ca0a054010a75e433ed27d85c8`
+passed exact version, executing assembly, and core-initialization assertions
+with zero warnings and no save interaction.
+
+An immediate direct race observer failed closed because the restored live
+module setting was OFF; its result SHA-256 is
+`98e1a2a96b82dbdcdb246691083117b6cdb79aafe74f71565cb3436ca876d0ee`.
+It still confirmed all 40 identities, all native races, and all seven Races
+Unleashed races, touched no save, and left no process. The corrected
+Races Unleashed profile transaction explicitly enabled all eleven modules,
+then run `20260903T0540396044084Z-3f4c7009c72d4de592f1806af1af5a55`
+passed all ten assertions: 20 unique shared races, elemental indexes 9-12,
+Races Unleashed indexes 13-19, exact third-party order, and two no-op
+reconciliations. Transaction
+`compat-20260903T054018Z-37b90e067b74` restored the full mod tree and the
+original settings bytes exactly.
 
 All automatable gates are complete. Visual Adjustments is NOT-RUN because it
 is not installed. Subjective clipping, appearance, and option quality remain
