@@ -1740,3 +1740,164 @@ All entries are `observe-feature-module-settings` PASS:
   MVID `dcd73856-39d4-40ce-9b05-77bf249103d7`, informational version
   `0.0.114-elemental-races`, and 135 package entries. A separate direct
   `.\scripts\validate-package.ps1` invocation also passed.
+
+## 2026-09-03 - Exact final default-ON artifact qualification
+
+- Finalization commit
+  `8364d195a6dfefeea28e956d2b7d863def6d582f` was pushed before building.
+  `.\scripts\Build-Local.ps1`: **PASS**, including repository validation,
+  1,390/1,390 domain tests, exact-reference compilation, focused icon tests,
+  output/SoundBank validation, deterministic packaging, and strict UMM
+  validation.
+- Source-state SHA-256:
+  `f731ee92e1bcd3481ceee42dcdccd4b025a0d7f63ad29cf65ca1ef60d84093a0`;
+  Build-Local manifest SHA-256:
+  `5ea63dbc267ef79f32d799743e3caca55647261998922d35493a56a38bdc267c`.
+- Canonical and local-runtime ZIPs are byte-identical: 22,971,150 bytes,
+  135 entries, SHA-256
+  `71e34ac769ed3223b85b83b2992fa289f4039db96abf5d51b2920045b8d4d0a9`.
+  DLL: 5,399,040 bytes, SHA-256
+  `51e931e587407f597eff3ba3e9102312db534abcc81badfd5f88d3d02bc24092`,
+  MVID `b986edbc-6bd7-4b23-a3cf-5cdc1ebc3033`.
+- Guarded deployment `20260903T0725424761678Z` passed exact verification;
+  deployment-manifest SHA-256
+  `7b9c65c80f261163fe652daa1ec121aec4b183708235720cffd9893899be611c`.
+  Recoverable backup:
+  `runtime-backups/live-mod/20260903T0725382730178Z`.
+- `.\scripts\Invoke-FeatureModuleRuntimeMatrix.ps1 -ExpectedVersion
+  0.0.114 -TimeoutSeconds 600 -Boundary -ReuseInstalledArtifact
+  -DeploymentManifestPath
+  C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260903T0725424761678Z\deployment.json
+  -PackagePath
+  .\artifacts\local-runtime\0.0.114\KingmakerGunslinger-0.0.114-local-runtime.zip
+  -Confirm:$false`: **PASS, 24/24**, zero warnings, exact settings
+  restoration.
+- Boundary evidence / run IDs, configurations 1-12:
+  1. `20260903T0726355964469Z-observe-feature-module-settings` /
+     `20260903T0726356225054Z-d2ea4716f0704a02bed6f2d90e7e89ff`
+  2. `20260903T0728212129888Z-observe-feature-module-settings` /
+     `20260903T0728212149886Z-ab9498d654174f56900c7fbb15cacc74`
+  3. `20260903T0730071885084Z-observe-feature-module-settings` /
+     `20260903T0730071905444Z-8e8ccb29ba494bb6b746cdf95295d4d0`
+  4. `20260903T0731521784858Z-observe-feature-module-settings` /
+     `20260903T0731521804857Z-b85b7e48a616432082afc3cdd5d7d445`
+  5. `20260903T0733369121674Z-observe-feature-module-settings` /
+     `20260903T0733369141884Z-7bf726e1473f4d96968ebc10b7e62da0`
+  6. `20260903T0735227877030Z-observe-feature-module-settings` /
+     `20260903T0735227967869Z-12b1e576190649ebb14142bd948def6a`
+  7. `20260903T0737075976195Z-observe-feature-module-settings` /
+     `20260903T0737076006256Z-0f8951fcb8b74c2da51e83e17b2f2087`
+  8. `20260903T0738531765906Z-observe-feature-module-settings` /
+     `20260903T0738531795933Z-2ce0bc089cad43d69702fd010884cbf3`
+  9. `20260903T0740382997065Z-observe-feature-module-settings` /
+     `20260903T0740383027439Z-8f01586ff48149a3a7cbdc6df31cbf47`
+  10. `20260903T0742232624189Z-observe-feature-module-settings` /
+      `20260903T0742232654538Z-2f8955fa8758476da060242ff6504a19`
+  11. `20260903T0744082241259Z-observe-feature-module-settings` /
+      `20260903T0744082261655Z-4d65f2eccc414c238cb917e7f9335052`
+  12. `20260903T0745540589901Z-observe-feature-module-settings` /
+      `20260903T0745540610029Z-f470f8ae9b294b5abdde1bd9e080e365`
+- Boundary evidence / run IDs, configurations 13-24:
+  13. `20260903T0747394859285Z-observe-feature-module-settings` /
+      `20260903T0747394879272Z-fd1053799c3e43fbad584e288702e9cb`
+  14. `20260903T0749249827413Z-observe-feature-module-settings` /
+      `20260903T0749249847404Z-6e49ee4e440c42d8a69a5d1beea11a16`
+  15. `20260903T0751105270448Z-observe-feature-module-settings` /
+      `20260903T0751105290431Z-56000fdaa2c04221b6299356e020fbd6`
+  16. `20260903T0752567475189Z-observe-feature-module-settings` /
+      `20260903T0752567495196Z-cc88c25263a84390b0c60cb1daa2d3fc`
+  17. `20260903T0754412728956Z-observe-feature-module-settings` /
+      `20260903T0754412748952Z-683a0bad076244a7ac89862cee36c21d`
+  18. `20260903T0756253104271Z-observe-feature-module-settings` /
+      `20260903T0756253124517Z-f4715219a1eb49048df3267cbc5712a0`
+  19. `20260903T0758100392292Z-observe-feature-module-settings` /
+      `20260903T0758100422487Z-4486491253ef46049a69d9fad24b3342`
+  20. `20260903T0759558267798Z-observe-feature-module-settings` /
+      `20260903T0759558287738Z-9b792b71922440b9b9f7507f5cbd796b`
+  21. `20260903T0801416226322Z-observe-feature-module-settings` /
+      `20260903T0801416245963Z-0c1b68ae877d41a0bb8e6301ae52ed89`
+  22. `20260903T0803254506150Z-observe-feature-module-settings` /
+      `20260903T0803254526569Z-b3d8308b0e56492988df1ef7387a06ee`
+  23. `20260903T0805110249431Z-observe-feature-module-settings` /
+      `20260903T0805110269864Z-c8676c49d3e644c38416b19fb327363b`
+  24. `20260903T0806565036964Z-observe-feature-module-settings` /
+      `20260903T0806565076959Z-08189601ddd242b583ff538631f06fd8`
+- All boundary results loaded 0.0.114 from commit `8364d195`, reported
+  exact expected/active equality and zero warnings, and touched no save. The
+  harness restored the original all-ON settings bytes exactly to SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+- Five exact compatibility transactions then passed. Each reported
+  `Restored`, `restorationVerified=true`, and
+  `stagedMutationObserved=true`:
+  - `gunslinger-only`:
+    `compat-20260903T081005Z-8ca496771a50`; transaction SHA-256
+    `2666ff662f8d66934a38b78b69748b4a98ee50444e738317870a82f47c385d98`
+  - `gunslinger-call-of-the-wild`:
+    `compat-20260903T081346Z-905df7410440`; transaction SHA-256
+    `622b3556a994888abc9d1f4ca3853289d78e3ce1ae4ba88e87ed3ab79794bbeb`
+  - `gunslinger-races-unleashed`:
+    `compat-20260903T081913Z-075487f68705`; transaction SHA-256
+    `a4248ec1a227222a29a444e569715f584aaadf4994ed4e72ed612af09e0b359e`
+  - `gunslinger-call-of-the-wild-races-unleashed`:
+    `compat-20260903T082258Z-4581f2c47b13`; transaction SHA-256
+    `7f532b52081be2c571226926eb297e2e6900e8c3751029b7983124d8ef1c89dd`
+  - `gunslinger-high-risk-combined-favored-class`:
+    `compat-20260903T082828Z-e4751910167e`; transaction SHA-256
+    `29de0f12acb966640a362209a22f3d2da124ff1cc22ed1729d8ee181ce6f9fd8`
+- Compatibility evidence / run IDs, runs 1-9:
+  1. `20260903T0810218244128Z-mod-load-smoke` /
+     `20260903T0810218813908Z-d401ef50e23143f7b996a16054cfdf8d`
+  2. `20260903T0811301339169Z-observe-optional-mod-compatibility` /
+     `20260903T0811301379160Z-f36c1e4f634d40f4865c9cbbe115469b`
+  3. `20260903T0812369668326Z-elemental-races-races-unleashed-compatibility` /
+     `20260903T0812369688228Z-2ec4f450c9b1400b882799c1d3ee8ddd`
+  4. `20260903T0814063455942Z-mod-load-smoke` /
+     `20260903T0814063485929Z-92b2a8885ca647b7ab9256e68f01c675`
+  5. `20260903T0815494869825Z-observe-optional-mod-compatibility` /
+     `20260903T0815494889804Z-234a01c12f384c35b6c8af4bf140f28e`
+  6. `20260903T0817300065534Z-elemental-races-races-unleashed-compatibility` /
+     `20260903T0817300085053Z-3a5d51457b27477abcf77f544a1fd5b4`
+  7. `20260903T0819331892958Z-mod-load-smoke` /
+     `20260903T0819331912522Z-20cab9541762448485b84456c004a45f`
+  8. `20260903T0820406703772Z-observe-optional-mod-compatibility` /
+     `20260903T0820406724155Z-0043caccc6d0406f92298884c9cd9c62`
+  9. `20260903T0821486988167Z-elemental-races-races-unleashed-compatibility` /
+     `20260903T0821487008553Z-e4a2dc021ccd475b98a74877df1905ff`
+- Compatibility evidence / run IDs, runs 10-18:
+  10. `20260903T0823225983908Z-mod-load-smoke` /
+      `20260903T0823226013519Z-7155274807f64cf788e9615d94744b63`
+  11. `20260903T0825046632161Z-observe-optional-mod-compatibility` /
+      `20260903T0825046652500Z-69f2fffc6e01489b935086c091fd9773`
+  12. `20260903T0826450946852Z-elemental-races-races-unleashed-compatibility` /
+      `20260903T0826450966787Z-d0200e3309d04c1db58bd3ce54ac6f3d`
+  13. `20260903T0828558418942Z-mod-load-smoke` /
+      `20260903T0828558439716Z-871e5c9c3ab64195b4086e50d8c5e17f`
+  14. `20260903T0830401955606Z-observe-optional-mod-compatibility` /
+      `20260903T0830401975319Z-cd7d4208088b49c2ae49643c2535b1ab`
+  15. `20260903T0832231164627Z-elemental-races-races-unleashed-compatibility` /
+      `20260903T0832231184844Z-233e597494ce4feea43e36869c377dfc`
+  16. `20260903T0834054923080Z-observe-aid-another-compatibility-contracts` /
+      `20260903T0834054943035Z-c5a47ab652794a81aaff30608fd2fb90`
+  17. `20260903T0835490907400Z-disposable-helpful-bodyguard` /
+      `20260903T0835490926883Z-82f71862e8ba4160bd103cd8a62e8424`
+  18. `20260903T0837339489566Z-disposable-archetype-reconciliation` /
+      `20260903T0837339509555Z-7fa6244ded044472b6287f0c3509581b`
+- All 18 compatibility results were **PASS** with zero warnings, loaded
+  version 0.0.114 and commit `8364d195`, and used guarded Steam App ID
+  640820 processes. The loaded Races Unleashed profiles retained all seven
+  ordered third-party races and one contiguous Ifrit/Oread/Sylph/Undine set
+  in a 20-entry unique shared catalog. The high-risk observer retained all 47
+  Call of the Wild classes in its 49-class final catalog plus singular KMG
+  class and selector identities; Aid Another, Helpful/Bodyguard, and archetype
+  reconciliation also passed.
+- Exact restoration fingerprints: FeatureModules
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`;
+  Call of the Wild settings
+  `24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8`;
+  Favored Class settings
+  `bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b`;
+  SoundBank
+  `0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`.
+  The restored local FeatureModules file explicitly enables all eleven
+  modules, including Elemental Races. No Kingmaker process remained and no
+  protected save was touched.

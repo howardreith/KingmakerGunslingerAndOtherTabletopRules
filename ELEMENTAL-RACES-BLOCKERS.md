@@ -25,8 +25,11 @@ preparation gate is implemented and exact-version 0.0.114 runtime-qualified
 across prepare,
 module-OFF reload/cleanup, and fresh-process absence. The exact candidate
 24-state boundary rerun also passes with exact settings restoration. The
-exact candidate profile reruns also pass with exact restoration. Final package
-revalidation now passes. On 2026-09-03 the owner accepted the candidate and
+exact candidate profile reruns also pass with exact restoration. The final
+default-ON/no-Preview package from pushed commit `8364d195` passes the clean
+build, all 24 exact boundary states, and all five profiles across 18 guarded
+runs with zero warnings and exact restoration. On 2026-09-03 the owner
+accepted the candidate and
 explicitly authorized finalization, merge, and release. No engineering or
 authorization blocker remains. Individual manual-checklist observations were
 not supplied and are not inferred.
