@@ -58,15 +58,15 @@ namespace KingmakerGunslinger.DomainTests
 
             Assertions.True(info.Contains("\"Version\": \"0.0.114\"") &&
                 props.Contains("<KmgVersion>0.0.114</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.114-elemental-races-preview</KmgInformationalVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.114-elemental-races</KmgInformationalVersion>") &&
                 assembly.Contains("AssemblyVersion(\"0.0.114\")") &&
                 assembly.Contains("AssemblyFileVersion(\"0.0.114\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.114-elemental-races-preview\")"),
-                "Release and assembly identity are not transactionally pinned to the Elemental Races preview.");
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.114-elemental-races\")"),
+                "Release and assembly identity are not transactionally pinned to Elemental Races.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-elemental-races-preview.zip") &&
+                "$($info.Id)-$($info.Version)-elemental-races.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Elemental Races preview archive.");
+                "Package identity is not pinned to the Elemental Races archive.");
             Assertions.True(runtime.Contains("active version 0.0.114") &&
                 localBuild.Contains("active version 0.0.114") &&
                 localBuild.Contains("local-runtime\\0.0.114"),

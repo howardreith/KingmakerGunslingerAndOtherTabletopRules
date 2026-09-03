@@ -26,8 +26,10 @@ across prepare,
 module-OFF reload/cleanup, and fresh-process absence. The exact candidate
 24-state boundary rerun also passes with exact settings restoration. The
 exact candidate profile reruns also pass with exact restoration. Final package
-revalidation now passes. Human visual qualification is the only remaining
-gate; absence of an engineering hard blocker is not a human-acceptance claim.
+revalidation now passes. On 2026-09-03 the owner accepted the candidate and
+explicitly authorized finalization, merge, and release. No engineering or
+authorization blocker remains. Individual manual-checklist observations were
+not supplied and are not inferred.
 
 ## Resolved reconnaissance risks
 
@@ -157,5 +159,6 @@ The five exact 0.0.114 compatibility profiles are now
 `RUNTIME-QUALIFIED-EXACT`, and
 `compatibilityRuntimeQualificationPending` is cleared. Visual
 Adjustments is not installed locally and will remain **NOT-RUN** unless that
-machine state changes. Subjective clipping and aesthetics remain **HUMAN
-REVIEW REQUIRED** even after every automatable gate passes.
+machine state changes. Subjective clipping and aesthetics remain documented
+limitations; owner release acceptance is recorded without claiming that the
+individual visual-checklist observations were supplied.

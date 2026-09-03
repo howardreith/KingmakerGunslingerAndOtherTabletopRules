@@ -9,7 +9,7 @@
   preserves the complete prior array and order, and restores it exactly on
   failure.
 - [x] Feature settings migrate schemas 0 through 9 to schema 10, preserve every
-  explicit value, default absent Elemental Races OFF, round-trip schema 10, and
+  explicit value, default absent Elemental Races ON, round-trip schema 10, and
   reject future schemas.
 - [x] The eleven-module source matrix has 2,048 exhaustive states and the
   runtime boundary matrix has exactly 24 states.
@@ -61,8 +61,8 @@
   race, facts, SLA, appearance, and the accepted Gunslinger outfit in an
   exact-0.0.114 guarded three-process persistence run, including module-OFF
   reload, rest, level-up, cleanup, and fresh-process absence.
-- [x] The final clean Release/package pipeline and a separate strict UMM
-  validation pass for the 135-entry human-review package. The exact-reference
+- [x] The preview clean Release/package pipeline and a separate strict UMM
+  validation pass for its 135-entry human-review package. The exact-reference
   rebuild from `b19bc04f` is byte-identical to the guarded deployment and
   passes fresh core-load and Elemental/Races Unleashed observations: ZIP
   SHA-256
@@ -71,13 +71,18 @@
   `670d0ef39b2ede7b28741a1e260f5c63a2728655939c1c494e93bd709fe95273`;
   MVID `5ecac105-15ca-4b48-becd-789fee85c144`.
 
-## Owner human acceptance for the exact candidate package
+## Owner release acceptance and detailed checklist
 
 Install
-`artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races-preview.zip`
-with the exact ZIP hash recorded above, then:
+`artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races.zip`
+with the final exact ZIP hash recorded after commit-bound requalification.
 
-- [ ] Enable **Elemental Races: Ifrit, Oread, Sylph, and Undine** in UMM.
+- [x] On 2026-09-03 the owner accepted the candidate and explicitly authorized
+  removal of the Preview label, default-ON behavior, finalization, merge, tag,
+  and public release.
+
+- [ ] Confirm **Elemental Races: Ifrit, Oread, Sylph, and Undine** is enabled
+  by default in UMM.
 - [ ] Restart Kingmaker completely.
 - [ ] Open character creation and confirm all four races appear exactly once.
 - [ ] Inspect male and female models for every race and representative bodies.
@@ -98,6 +103,6 @@ with the exact ZIP hash recorded above, then:
   third-party and elemental races remain present once and in preserved order.
 - [ ] Record clipping, aesthetics, unavailable combinations, or missing options.
 
-Subjective visual acceptance remains **HUMAN REVIEW REQUIRED** until the owner
-reviews the exact packaged artifact. Structural runtime checks cannot satisfy
-that gate.
+Owner release authorization is complete. The individual observations above
+were not supplied and remain deliberately unchecked; they are not fabricated
+from structural runtime evidence.

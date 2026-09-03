@@ -51,7 +51,7 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool ElementalRaces { get; private set; }
         internal static FeatureModuleConfiguration Defaults
         { get { return new FeatureModuleConfiguration(true, true, true, true, true, true,
-            true, true, true, true, false); } }
+            true, true, true, true, true); } }
 
         public bool Equals(FeatureModuleConfiguration other)
         {

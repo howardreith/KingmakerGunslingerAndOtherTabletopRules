@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.114-elemental-races-preview` targets:
+Kingmaker Gunslinger `0.0.114-elemental-races` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -73,8 +73,8 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.114 preview preserves the 0.0.113 ammunition, CMI, paper-mode,
-item-copy, and notification repairs while adding the default-OFF Elemental
+The 0.0.114 release preserves the 0.0.113 ammunition, CMI, paper-mode,
+item-copy, and notification repairs while adding the default-ON Elemental
 Races module. It may be published only after complete version-aware
 deterministic, package, repository-validation, guarded runtime, exact
 compatibility-restoration, and owner visual-acceptance gates. The mission
@@ -127,7 +127,7 @@ GitHub's automatic **Source code (zip)** archive.
 ```powershell
 gh release download v0.0.114 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.114-elemental-races-preview.zip' `
+  --pattern 'KingmakerGunslinger-0.0.114-elemental-races.zip' `
   --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.114"
 ```
 

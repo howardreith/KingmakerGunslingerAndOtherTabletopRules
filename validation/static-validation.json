@@ -1,5 +1,5 @@
 {
-  "milestone": "0.0.114-elemental-races-preview",
+  "milestone": "0.0.114-elemental-races",
   "version": "0.0.114",
   "requiredFiles": {
     "Info.json": true,
@@ -787,7 +787,7 @@
     "cmiTargetedBridgeIdempotent": true,
     "saveCompatibilityPreserved": true
   },
-  "elementalRacesPreview114": {
+  "elementalRaces114": {
     "deterministicTestCount": 1390,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
@@ -807,12 +807,14 @@
     "reservedDiagnosticIdentityCount": 1,
     "visualBlueprintCount": 16,
     "visualEquipmentProxyCount": 28,
-    "defaultEnabled": false,
+    "defaultEnabled": true,
     "unconditionalRegistration": true,
     "atomicPublication": true,
     "donorRaceId": "Aasimar",
     "saveLoadRepairPreserved": true,
     "compatibilityRuntimeQualificationPending": false,
-    "humanVisualReviewRequired": true
+    "humanVisualReviewRequired": false,
+    "ownerReleaseAuthorized": true,
+    "individualHumanChecklistEvidenceProvided": false
   }
 }

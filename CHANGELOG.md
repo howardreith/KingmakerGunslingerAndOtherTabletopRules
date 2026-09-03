@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.0.114-elemental-races-preview
+## 0.0.114-elemental-races
 
-- Adds one restart-bound, default-OFF Elemental Races module containing stable
+- Adds one restart-bound, default-ON Elemental Races module containing stable
   Ifrit, Oread, Sylph, and Undine race blueprints. All identities register
   unconditionally for save resolution; selector publication is atomic,
   additive, idempotent, and preserves native and third-party ordering.
@@ -16,8 +16,8 @@
   copied mod asset, persistent elemental VFX, or new runtime dependency is
   included.
 - Migrates feature-module settings to schema 10 and eleven modules. Earlier
-  explicit values survive, Elemental Races migrates OFF when absent, malformed
-  recovery uses the mixed defaults, and the runtime boundary matrix contains
+  explicit values survive, Elemental Races migrates ON when absent, malformed
+  recovery enables all modules, and the runtime boundary matrix contains
   exactly 24 states.
 - Adds guarded rules, publication, visual, class/equipment, motion,
   compatibility, and three-process save-persistence scenarios while preserving
@@ -26,8 +26,8 @@
   profiles through 18 fresh-process guarded scenarios with zero warnings and
   exact restoration of the prior mod tree and settings. Visual Adjustments was
   unavailable and remains explicitly NOT-RUN.
-- Marks subjective visual acceptance as HUMAN REVIEW REQUIRED for the exact
-  preview package; no release is published by this change.
+- Records owner acceptance and explicit authorization to finalize, merge, and
+  publish the exact qualified 0.0.114 release.
 
 ## 0.0.113-save-load-hotfix
 
