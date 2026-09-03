@@ -19,16 +19,15 @@ and the original 54-record Human motion regression both pass. Three fresh
 launches also prove eight-fixture save-backed identity, spent-resource,
 appearance, class-outfit, rest, level-up, caster-level, module-OFF reload,
 cleanup, and settings restoration behavior. The expanded 224-record equipment
-matrix, 64 additional SLA/prone/death/resurrection/polymorph transition
-records, exact 24-state feature boundary, and all five required compatibility
-profiles also pass on version-0.0.113 engineering artifacts with exact
-transaction restoration. The eight-fixture native-respec preparation gate is
-implemented and exact-version 0.0.114 runtime-qualified across prepare,
+matrix and 64 additional SLA/prone/death/resurrection/polymorph transition
+records pass on the engineering artifacts. The eight-fixture native-respec
+preparation gate is implemented and exact-version 0.0.114 runtime-qualified
+across prepare,
 module-OFF reload/cleanup, and fresh-process absence. The exact candidate
 24-state boundary rerun also passes with exact settings restoration. The
 exact candidate profile reruns also pass with exact restoration. Final package
-revalidation and human visual qualification remain; absence of a hard blocker
-is not a completion claim.
+revalidation now passes. Human visual qualification is the only remaining
+gate; absence of an engineering hard blocker is not a human-acceptance claim.
 
 ## Resolved reconnaissance risks
 

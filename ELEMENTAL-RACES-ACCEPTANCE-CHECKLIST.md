@@ -61,8 +61,19 @@
   race, facts, SLA, appearance, and the accepted Gunslinger outfit in an
   exact-0.0.114 guarded three-process persistence run, including module-OFF
   reload, rest, level-up, cleanup, and fresh-process absence.
+- [x] The final clean Release/package pipeline and a separate strict UMM
+  validation pass for the 135-entry human-review package built from
+  `2ceeb65e`: ZIP SHA-256
+  `ee78b29e4fd4c8b3407d6dcd0d326a0ed1a6352c597ee169a4bd7cd09da8aa41`;
+  DLL SHA-256
+  `827f10cd09efe8c9a15b718624c277253ca270f5ef9af222aff8c015f5d8745b`;
+  MVID `61ff8880-9f96-4657-bda8-37e9f2454ea9`.
 
 ## Owner human acceptance for the exact candidate package
+
+Install
+`artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races-preview.zip`
+with the exact ZIP hash recorded above, then:
 
 - [ ] Enable **Elemental Races: Ifrit, Oread, Sylph, and Undine** in UMM.
 - [ ] Restart Kingmaker completely.

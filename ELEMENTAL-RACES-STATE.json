@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-j-final-package-and-human-handoff",
+  "phase": "phase-j-human-acceptance-handoff",
   "version": "0.0.114",
   "informationalVersion": "0.0.114-elemental-races-preview",
   "featureModuleSchema": 10,
@@ -31,14 +31,14 @@
     "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-224-RECORD-EXPANDED-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-280-RECORD-ELEMENTAL-MOTION-AND-TRANSITION-MATRIX-EIGHT-FIXTURE-SAVE-BACKED-RELOAD-PASS-HUMAN-REVIEW-PENDING",
     "runtimeScenarios": "ALL-ELEMENTAL-MECHANICS-PUBLICATION-VISUAL-EQUIPMENT-SLA-PRONE-DEATH-RESURRECTION-POLYMORPH-MOTION-PERSISTENCE-BOUNDARY-COMPATIBILITY-AND-HUMAN-MOTION-REGRESSION-SCENARIOS-PASS;BOUNDARY-AND-PERSISTENCE-EXACT-0.0.114",
     "compatibility": "FIVE-REQUIRED-PROFILES-RUNTIME-QUALIFIED-EXACT-0.0.114-WITH-EXACT-RESTORATION",
-    "packaging": "0.0.114-SOURCE-DOMAIN-COMPILE-CLEAN-RELEASE-STRICT-PACKAGE-PERSISTENCE-24-STATE-BOUNDARY-AND-FIVE-PROFILE-RUNTIME-PASS-FINAL-HUMAN-PACKAGE-PENDING",
+    "packaging": "0.0.114-FINAL-CANONICAL-CLEAN-RELEASE-STRICT-PACKAGE-PASS-HUMAN-REVIEW-REQUIRED",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
     "passed": 1390,
     "failed": 0,
-    "status": "PASS-AT-967f896d-EXACT-0.0.114",
+    "status": "PASS-AT-2ceeb65e-EXACT-0.0.114",
     "exactVersionRerunPending": false
   },
   "runtime": {
@@ -695,6 +695,38 @@
     "visualAdjustments": "NOT-RUN-NOT-INSTALLED",
     "kingmakerProcessesAfter": 0
   },
+  "finalHumanReviewPackage": {
+    "status": "PASS-STRICT-UMM-HUMAN-REVIEW-REQUIRED",
+    "builtFromCommit": "2ceeb65e9c2d0d78189f78ead18e538c8e01eb90",
+    "builtFromTree": "92d5ef07c29f7a9eab773a4ed7653382ad68d998",
+    "originFeatureBranchCommitAtBuild": "2ceeb65e9c2d0d78189f78ead18e538c8e01eb90",
+    "originMasterAtBuild": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
+    "sourceStateSha256": "baa36e497a6e372af4234f38dc6630a88037fb1814af3802f0ec5ebc3dd02505",
+    "packagePath": "artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races-preview.zip",
+    "packageBytes": 22977802,
+    "packageSha256": "ee78b29e4fd4c8b3407d6dcd0d326a0ed1a6352c597ee169a4bd7cd09da8aa41",
+    "packageEntryCount": 135,
+    "dllBytes": 5411328,
+    "dllSha256": "827f10cd09efe8c9a15b718624c277253ca270f5ef9af222aff8c015f5d8745b",
+    "dllMvid": "61ff8880-9f96-4657-bda8-37e9f2454ea9",
+    "dllFileVersion": "0.0.114",
+    "dllInformationalVersion": "0.0.114-elemental-races-preview",
+    "infoId": "KingmakerGunslinger",
+    "infoVersion": "0.0.114",
+    "infoManagerVersion": "0.32.4",
+    "manifestEntries": 1706,
+    "manifestActiveEntries": 1704,
+    "manifestReservedEntries": 2,
+    "elementalManifestEntries": 69,
+    "elementalActiveIdentities": 68,
+    "elementalReservedDiagnosticIdentities": 1,
+    "canonicalBuild": "PASS",
+    "directPackageValidation": "PASS",
+    "runtimeInputDiffFromCompatibilityArtifact": "NONE",
+    "canonicalPackageRelaunched": false,
+    "visualAdjustments": "NOT-RUN-NOT-INSTALLED",
+    "humanVisualAcceptance": "HUMAN-REVIEW-REQUIRED"
+  },
   "engineeringBoundaryQualification": {
     "status": "PASS",
     "version": "0.0.113",
@@ -875,9 +907,10 @@
     "sourceValidation": "PASS",
     "domain": "PASS-1390-OF-1390",
     "cleanReleasePackage": "PASS-STRICT-UMM",
+    "packageRecord": "finalHumanReviewPackage",
     "nativeRespecPersistence": "PASS-THREE-FRESH-PROCESSES",
     "boundaryMatrix": "PASS-24-OF-24-EXACT-0.0.114",
     "compatibilityProfiles": "PASS-5-OF-5-EXACT-0.0.114-RESTORED"
   },
-  "humanReview": "AUTOMATED-FINAL-CANDIDATE-GATES-IN-PROGRESS"
+  "humanReview": "HUMAN-REVIEW-REQUIRED-EXACT-PACKAGE-ee78b29e4fd4c8b3407d6dcd0d326a0ed1a6352c597ee169a4bd7cd09da8aa41"
 }
