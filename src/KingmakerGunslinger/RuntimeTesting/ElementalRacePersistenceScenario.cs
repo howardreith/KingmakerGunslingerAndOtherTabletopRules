@@ -1947,7 +1947,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void PollCleanup()
             {
-                Game.Instance.EntityCreator.Tick();
+                if (string.IsNullOrWhiteSpace(_exceptionSummary))
+                    Game.Instance.EntityCreator.Tick();
                 object[] expectedUnits = _unitsBefore.Where(value =>
                     !HasFixtureIdentity(value)).ToArray();
                 object[] expectedParty = _partyBefore.Where(value =>
@@ -2093,7 +2094,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "nativeRespecRecords", _respecRecords.Count },
                     { "currentUnitPresent", _currentUnit != null },
                     { "saveStarted", _saveStarted },
-                    { "cleanupStarted", _cleanupStarted }
+                    { "cleanupStarted", _cleanupStarted },
+                    { "exceptionSummary", _exceptionSummary }
                 };
                 WriteJsonAtomic(Path.Combine(_request.EvidenceDirectory,
                     "elemental-race-persistence-progress.json"), progress);

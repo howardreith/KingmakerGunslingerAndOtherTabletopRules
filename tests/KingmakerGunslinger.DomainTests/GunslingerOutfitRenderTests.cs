@@ -1235,6 +1235,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalPersistenceFixtureCount * 5",
                 "PartyCharacters", "CrossSceneState.AllEntityData",
                 "ArmExactWorkingSaveWrite", "RemoveEntityData",
+                "string.IsNullOrWhiteSpace(_exceptionSummary)",
+                "\"exceptionSummary\", _exceptionSummary",
                 "ExpectedWorkingSaveRoutineCount",
                 "elemental-race-persistence-module-off",
                 "elemental-race-persistence-rest-and-level-up",

@@ -1252,3 +1252,35 @@ All entries are `observe-feature-module-settings` PASS:
   those guarded scenarios.
 - No 0.0.114 runtime PASS is claimed at this checkpoint. A committed/pushed
   artifact is required before the guarded Steam persistence transaction.
+
+## 2026-09-02 - First exact 0.0.114 native-Respec persistence attempt
+
+- Built and deployed committed candidate `998c7ec2e34dbf5b050ea3523b4fd43a07605373`
+  through the local-runtime transaction. Package/DLL SHA-256:
+  `0392afe4db8bf35ffc93fef88eaa7aff09ca41635076ead7480142ef9cdd3f6f` /
+  `bf094266d3507d34c566317611c12cb26015ced2639809eca81ae5cb0d1a5b93`;
+  DLL MVID `7694fba7-ba4b-4627-8a67-94123b1886c1`. Deployment:
+  `20260903T0149499651605Z`.
+- Guarded Steam transaction
+  `20260903T0150113847726Z-elemental-race-persistence-prepare`, run
+  `20260903T0150114077599Z-821276f955bd426f9092001d15b34f9b`,
+  accepted the exact request and working save but produced no runtime result.
+  Its last progress marker was phase 2, fixture 0, cleanup started, zero
+  captures, zero Respec records, `saveStarted=false`. The orchestrator
+  recorded **ERROR** at `2026-09-03T02:20:28.2160951Z` after the
+  persistence scenario's deliberate 1,800-second minimum deadline.
+- The frozen game log stopped immediately after the native Respec boundary.
+  The launcher left verified Kingmaker PID 20352 running by policy; it was
+  terminated only after timeout. The run's zero-byte stale lock was then
+  removed. Orchestration states `saveInteractionOccurred=false`, and the
+  original `FeatureModules.json` bytes were restored exactly with SHA-256
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+- This is not a runtime PASS. The evidence showed exception cleanup had begun
+  before the entity-creator cleanup tick spun. The recovery change skips that
+  tick only after an exception is already recorded and writes the exception
+  summary into the progress marker, preserving normal-path behavior while
+  allowing the next failed attempt to terminate with actionable evidence.
+- Recovery source gates: repository validation **PASS**; focused
+  `elemental-races.persistence` **PASS**; complete domain suite
+  **PASS, 1,390/1,390**; canonical clean Release/package and strict UMM
+  validation **PASS**.
