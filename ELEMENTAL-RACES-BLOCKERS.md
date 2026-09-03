@@ -25,7 +25,8 @@ profiles also pass on version-0.0.113 engineering artifacts with exact
 transaction restoration. The eight-fixture native-respec preparation gate is
 implemented and exact-version 0.0.114 runtime-qualified across prepare,
 module-OFF reload/cleanup, and fresh-process absence. The exact candidate
-boundary/profile reruns and human visual qualification remain incomplete;
+24-state boundary rerun also passes with exact settings restoration. The
+exact candidate profile reruns and human visual qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
@@ -73,6 +74,11 @@ absence of a hard blocker is not a completion claim.
 - Fresh module-ON and module-OFF processes proved 24 identities remain
   registered in both states. ON published one contiguous Ifrit/Oread/Sylph/
   Undine sequence without shared-catalog duplicates; OFF published none.
+- The exact 0.0.114 boundary transaction passed all 24 required configurations
+  on one hash-bound artifact: all ON, every single module OFF, Gunslinger only,
+  every non-Gunslinger module alone, and all OFF. Each runtime result had zero
+  warnings and exact expected/active equality; the original settings bytes
+  were restored exactly and no Kingmaker process remained.
 - The guarded donor inventory resolved all 358 declared head, hair, eyebrow,
   beard, horn, tail-palette, body, and preset links across Human, Aasimar,
   Tiefling, Elf, Dwarf, Half-Elf, Half-Orc, and Gnome. It proved at least two
@@ -140,8 +146,8 @@ absence of a hard blocker is not a completion claim.
 These are investigation items, not hard stops. Change strategy and continue
 while a safe, reversible evidence path remains.
 
-The five compatibility profiles and all 24 boundary configurations must be
-rerun against the exact 0.0.114 candidate before their current
+The five compatibility profiles must be rerun against the exact 0.0.114
+candidate before the current
 `compatibilityRuntimeQualificationPending` state can be cleared. Visual
 Adjustments is not installed locally and will remain **NOT-RUN** unless that
 machine state changes. Subjective clipping and aesthetics remain **HUMAN

@@ -1393,3 +1393,84 @@ All entries are `observe-feature-module-settings` PASS:
   all Kingmaker processes exited, and the original settings bytes were
   restored exactly to SHA-256
   `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+
+## 2026-09-03 - Exact 0.0.114 feature-module boundary matrix PASS
+
+- Built and deployed committed candidate
+  `b90cb3038984b49d818690da702e2ca94ea85c14` once, then reused and
+  reverified it for all 24 guarded Steam launches. Deployment
+  `20260903T0324413582448Z`; source-state SHA-256
+  `752118f23f10154c084844dd82c87197620cae25875da2e986420dc1c57fcc0b`;
+  package SHA-256
+  `dcd7b7750e36ff13c087e29ab1dc9ae58f64e902d13faa5da48510b2bf2f7fe1`;
+  DLL SHA-256
+  `7740bfd9f96706d349babeedd3abcaf779169d2ff20fc71a7045f5d719db08da`;
+  DLL MVID `dd706f3c-ddad-4bc2-888c-fe4c68cb66e4`; deployment-manifest
+  SHA-256
+  `2fc3a58efafdee5781e0ea7e09c1a4cec7bd34d8ba5848530924036fc6eebaa8`.
+- `.\scripts\Invoke-FeatureModuleRuntimeMatrix.ps1 -ExpectedVersion
+  0.0.114 -TimeoutSeconds 600 -Boundary -ReuseInstalledArtifact
+  -DeploymentManifestPath C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260903T0324413582448Z\deployment.json
+  -PackagePath .\artifacts\local-runtime\0.0.114\KingmakerGunslinger-0.0.114-local-runtime.zip
+  -Confirm:$false`: **PASS, 24/24**.
+- Exact evidence directory / run-ID ledger, configurations 1-12:
+  1. `20260903T0325021042437Z-observe-feature-module-settings` /
+     `20260903T0325021292270Z-a9077f9fab6a432a8c3c1e0be93ba40c`
+  2. `20260903T0327015082861Z-observe-feature-module-settings` /
+     `20260903T0327015102266Z-fcc09b7cfd0f4874afc8871ed91381b7`
+  3. `20260903T0328521175556Z-observe-feature-module-settings` /
+     `20260903T0328521195322Z-0bcf7c0d662444deb5315f6538cbe190`
+  4. `20260903T0330417641409Z-observe-feature-module-settings` /
+     `20260903T0330417701437Z-97ef82b408794d96a310588ed97cdfff`
+  5. `20260903T0332321030254Z-observe-feature-module-settings` /
+     `20260903T0332321040256Z-8b6dfe1326b84b74aa897c9f324892c5`
+  6. `20260903T0334226943920Z-observe-feature-module-settings` /
+     `20260903T0334226953911Z-7f495c8d382b42fcb24eae799f4553d4`
+  7. `20260903T0336122079482Z-observe-feature-module-settings` /
+     `20260903T0336122099504Z-e92976f641894a8faa8775e9a3cd6c04`
+  8. `20260903T0338010746697Z-observe-feature-module-settings` /
+     `20260903T0338010756687Z-c113296a53b2433bbaf961ad2a720ca9`
+  9. `20260903T0339508587191Z-observe-feature-module-settings` /
+     `20260903T0339508616671Z-d6ac38a089354a889c19753e9ed6cb24`
+  10. `20260903T0341423331214Z-observe-feature-module-settings` /
+      `20260903T0341423351552Z-06e09374fb4f48e3affd8e9186b8b1de`
+  11. `20260903T0343329997826Z-observe-feature-module-settings` /
+      `20260903T0343330017838Z-b2ab6bddf8024cb2b902ae89059eb33d`
+  12. `20260903T0345240343661Z-observe-feature-module-settings` /
+      `20260903T0345240363294Z-0f0ed4f29b5c459a9723d96547c51904`
+- Exact evidence directory / run-ID ledger, configurations 13-24:
+  13. `20260903T0347131525098Z-observe-feature-module-settings` /
+      `20260903T0347131535075Z-e0abecda06754f53ae375ed9c6005dd7`
+  14. `20260903T0349035019708Z-observe-feature-module-settings` /
+      `20260903T0349035029722Z-3239d4fc4e38409b951683deff5da7d5`
+  15. `20260903T0350531629539Z-observe-feature-module-settings` /
+      `20260903T0350531659889Z-4500067ad76b417a8a988627b98bf021`
+  16. `20260903T0352428590076Z-observe-feature-module-settings` /
+      `20260903T0352428610138Z-4e42427acd32435abe2ff4c024dac17a`
+  17. `20260903T0354328535096Z-observe-feature-module-settings` /
+      `20260903T0354328554736Z-3a49ff1e8b3a459a81f3101dd6093723`
+  18. `20260903T0356235948375Z-observe-feature-module-settings` /
+      `20260903T0356235968388Z-08c1c9aa91474b719df01d1148222aa5`
+  19. `20260903T0358142207849Z-observe-feature-module-settings` /
+      `20260903T0358142227841Z-19651107e8684ce28ee6e5aeff2361c4`
+  20. `20260903T0400040114924Z-observe-feature-module-settings` /
+      `20260903T0400040135141Z-790d437c9862400ea4666b996a20f11d`
+  21. `20260903T0401543279076Z-observe-feature-module-settings` /
+      `20260903T0401543299122Z-3dafa06930354f92a6c767dfb1a95d73`
+  22. `20260903T0403439055158Z-observe-feature-module-settings` /
+      `20260903T0403439085163Z-ccdc4fc0d1e34393831a118767f5b4b7`
+  23. `20260903T0405339441852Z-observe-feature-module-settings` /
+      `20260903T0405339451839Z-89a6355072ea4e9ab7c9c8ab286c79ea`
+  24. `20260903T0407238227609Z-observe-feature-module-settings` /
+      `20260903T0407238247635Z-847ae80b1d6745c0b95a07fd00ba96e4`
+- All 24 runtime results report `PASS`, zero warnings, exact expected/active
+  equality, loaded version 0.0.114, and commit `b90cb303`. The tested order
+  is all ON; each single module OFF in reverse catalog order; Gunslinger only;
+  each non-Gunslinger module alone in catalog order; and all OFF.
+- The harness restored the exact original `FeatureModules.json` bytes.
+  Independent post-run SHA-256:
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+  No Kingmaker process remained. Exact 0.0.114 compatibility-profile reruns
+  remain pending and are not inferred from this boundary PASS.
+- `.\scripts\validate-repository.ps1`: **PASS**, including the
+  version-aware Elemental Races 0.0.114 validator.

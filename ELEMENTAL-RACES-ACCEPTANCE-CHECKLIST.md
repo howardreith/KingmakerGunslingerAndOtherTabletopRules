@@ -49,8 +49,11 @@
   profiles pass on the version-0.0.113 engineering artifact with exact
   transaction restoration. Visual Adjustments is NOT-RUN because it is not
   installed.
-- [ ] All five profiles and all 24 boundary states pass again on the exact
-  version-0.0.114 candidate artifact.
+- [x] All 24 boundary states pass again on one exact version-0.0.114 candidate
+  artifact, with expected/active equality, zero warnings, and exact settings
+  restoration.
+- [ ] All five compatibility profiles pass again on an exact version-0.0.114
+  candidate artifact with exact mod-state restoration.
 - [x] Existing Gunslinger outfit, firearm visual/mechanical, feature-module,
   bootstrap, save-hydration, and 0.0.113 repair regressions pass.
 - [x] The implemented eight-fixture native replacement/respec gate preserves
