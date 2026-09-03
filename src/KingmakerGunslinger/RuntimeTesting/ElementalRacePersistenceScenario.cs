@@ -1277,26 +1277,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int casterLevelBeforeRest = abilityBeforeRest
                     .CreateExecutionContext(new TargetWrapper(_currentUnit))
                     .Params.CasterLevel;
-                Kingmaker.Controllers.Rest.RestController.ApplyRest(
-                    _currentUnit.Descriptor);
-                int resourceAfterRest = _currentUnit.Descriptor.Resources
-                    .GetResourceAmount(fixture.Blueprints.SlaResource);
-                AbilityData abilityAfterRest = RequireAbility(_currentUnit,
-                    fixture.Blueprints.SlaAbility);
-                bool restExact = resourceAfterRest == 1 &&
-                    abilityAfterRest.IsAvailable &&
-                    abilityAfterRest.GetAvailableForCastCount() == 1;
-
                 AdvanceOneGunslingerLevel(fixture);
                 _currentUnit.View.UpdateClassEquipment();
                 CurrentAvatar().RebuildOutfit();
                 ElementalPersistenceObservation advanced = ObserveFixture(
-                    fixture, _currentUnit, _currentExpectedDoll, 1, 2);
+                    fixture, _currentUnit, _currentExpectedDoll, 0, 2);
                 AbilityData abilityAfterLevel = RequireAbility(_currentUnit,
                     fixture.Blueprints.SlaAbility);
                 int casterLevelAfterLevel = abilityAfterLevel
                     .CreateExecutionContext(new TargetWrapper(_currentUnit))
                     .Params.CasterLevel;
+                int resourceAfterSpentLevelUp = _currentUnit.Descriptor
+                    .Resources.GetResourceAmount(
+                        fixture.Blueprints.SlaResource);
                 bool levelExact =
                     _currentUnit.Descriptor.Progression.CharacterLevel == 2 &&
                     _currentUnit.Descriptor.Progression.GetClassLevel(
@@ -1305,8 +1298,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fixture.Blueprints.Race) &&
                     casterLevelBeforeRest == 1 &&
                     casterLevelAfterLevel == 2 &&
+                    resourceAfterSpentLevelUp == 0 &&
+                    !abilityAfterLevel.IsAvailable &&
+                    abilityAfterLevel.GetAvailableForCastCount() == 0 &&
                     _currentExpectedDoll.Matches(
                         _currentUnit.Descriptor.Doll);
+
+                Kingmaker.Controllers.Rest.RestController.ApplyRest(
+                    _currentUnit.Descriptor);
+                int resourceAfterRest = _currentUnit.Descriptor.Resources
+                    .GetResourceAmount(fixture.Blueprints.SlaResource);
+                AbilityData abilityAfterRest = RequireAbility(_currentUnit,
+                    fixture.Blueprints.SlaAbility);
+                ElementalPersistenceObservation restored = ObserveFixture(
+                    fixture, _currentUnit, _currentExpectedDoll, 1, 2);
+                bool restExact = resourceAfterRest == 1 &&
+                    abilityAfterRest.IsAvailable &&
+                    abilityAfterRest.GetAvailableForCastCount() == 1 &&
+                    restored.Exact;
                 var record = new JObject
                 {
                     { "fixture", fixture.Label },
@@ -1320,18 +1329,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "loadedObservation", loaded.Evidence },
                     { "loadedObservationExact", loaded.Exact },
                     { "casterLevelBeforeRest", casterLevelBeforeRest },
-                    { "resourceAfterRest", resourceAfterRest },
-                    { "restExact", restExact },
+                    { "resourceAfterSpentLevelUp",
+                        resourceAfterSpentLevelUp },
                     { "advancedObservation", advanced.Evidence },
                     { "advancedObservationExact", advanced.Exact },
                     { "casterLevelAfterLevel", casterLevelAfterLevel },
-                    { "levelUpExact", levelExact }
+                    { "levelUpExact", levelExact },
+                    { "resourceAfterRest", resourceAfterRest },
+                    { "restoredObservation", restored.Evidence },
+                    { "restoredObservationExact", restored.Exact },
+                    { "restExact", restExact }
                 };
                 CaptureFixture(record, fixture, _currentUnit);
                 if (!_currentLoadedDollExact || !loaded.Exact ||
                     !restExact || !advanced.Exact || !levelExact)
                     throw new InvalidOperationException(fixture.Label +
-                        " did not satisfy exact module-OFF load, rest, level-up, and visual reconstruction contracts.");
+                        " did not satisfy exact module-OFF load, spent level-up, rest, and visual reconstruction contracts.");
                 _currentUnit = null;
                 _currentExpectedDoll = null;
                 _currentLoadedDollExact = false;
@@ -2448,10 +2461,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TokenBool(value,
                             "loadedDollExactBeforeReconstruction") &&
                         TokenBool(value, "loadedObservationExact") &&
-                        TokenBool(value, "restExact") &&
                         TokenBool(value, "advancedObservationExact") &&
                         TokenBool(value, "levelUpExact") &&
+                        TokenBool(value, "restoredObservationExact") &&
+                        TokenBool(value, "restExact") &&
                         value.Value<int>("casterLevelBeforeRest") == 1 &&
+                        value.Value<int>("resourceAfterSpentLevelUp") == 0 &&
                         value.Value<int>("resourceAfterRest") == 1 &&
                         value.Value<int>("casterLevelAfterLevel") == 2);
                 bool capturesExact = CaptureSetExact(records);
@@ -2490,11 +2505,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "actual loaded descriptors and native view reconstruction while selector publication is OFF");
                 Add(_assertions,
                     "elemental-race-persistence-rest-and-level-up",
-                    "ordinary rest restores one use and native level-up retains race/facts while caster level advances from one to two for every fixture",
+                    "spent level-up preserves zero uses while retaining race/facts and advancing caster level; ordinary rest then restores exactly one use",
                     "records=" + records.Length + ";exact=" +
                         recordExact,
                     recordExact,
-                    "RestController.ApplyRest and LevelUpController.ApplyLevelup");
+                    "LevelUpController.ApplyLevelup, pre-rest resource observation, and RestController.ApplyRest");
                 Add(_assertions,
                     "elemental-race-persistence-captures",
                     "8 sidecars, 16 PNGs, and 40 labelled post-load views",

@@ -150,6 +150,8 @@ namespace KingmakerGunslinger.DomainTests
             string factory = SourceVisual("ElementalRaceVisualFactory.cs");
             string resources = SourceVisual(
                 "ElementalRaceVisualResourceRegistry.cs");
+            string rollback = SourceVisual(
+                "ElementalVisualResourceRollbackPolicy.cs");
             foreach (string token in new[]
             {
                 "BlueprintIdentityCount", "ResourceIdentityCount = 28",
@@ -172,13 +174,18 @@ namespace KingmakerGunslinger.DomainTests
                 "EnsureAvailable", "Visual resource GUID collision",
                 "RollbackAll", "rollback refused a foreign replacement"
             })
-                Assertions.True((catalog + definition + factory + resources)
+                Assertions.True((catalog + definition + factory + resources +
+                    rollback)
                     .Contains(token),
                     "Elemental visual safety token is absent: " + token);
             Assertions.False(factory.Contains("new Texture2D") ||
                 factory.Contains("HarmonyPatch") ||
                 factory.Contains("CharacterRaces"),
                 "Visual construction must reference native ramps without custom textures or global patches.");
+            Assertions.True(resources.Contains(
+                    "ElementalVisualResourceRollbackPolicy.CreateRemovalPlan") &&
+                rollback.Contains("return plan.ToArray()"),
+                "Visual rollback must complete its ownership preflight before cache mutation.");
         }
 
         internal static void CatalogMatchesApprovedRules()
@@ -361,7 +368,9 @@ namespace KingmakerGunslinger.DomainTests
                 "FindNativeD20Seed(10)", "SavingThrowType.Reflex",
                 "m_EndTime", "Buffs.UpdateNextEvent()",
                 "RestController.ApplyRest", "DefaultContractResolver",
-                "SameReferences(unitsBefore"
+                "SameReferences(unitsBefore",
+                "secondData.IsAvailable &&",
+                "SecondPlayerPathAvailable"
             })
                 Assertions.True(scenario.Contains(token),
                     "Native SLA delivery token is absent: " + token);
@@ -387,6 +396,50 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("Game.Instance.Player.Party") ||
                 scenario.Contains("KMG_AUTOMATION_BASELINE"),
                 "The SLA delivery scenario must remain save-free and detached from protected saves.");
+        }
+
+        internal static void RuntimeAffinityScenarioUsesNativeAbilityParams()
+        {
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalSpellAffinityScenario.cs");
+            foreach (string token in new[]
+            {
+                "typeof(RuleCalculateAbilityParams)",
+                "EnsureFact(owner, set.Ifrit.Race)",
+                "Advance(owner, fighter, 2)",
+                "Advance(owner, wizard, 3)",
+                "owner.GetSpellbook(wizard)",
+                "new AbilityData(matching, spellbook)",
+                "new AbilityData(canonical, child)",
+                "set.Ifrit.SlaAbility", "new ItemEntityUsable",
+                "SourceItem = item", "AbilityType.Supernatural",
+                "AbilityType.SpellLike", "data.CalculateParams().DC",
+                "SameReferences(unitsBefore", "AddAssertions(assertions"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Native affinity runtime token is absent: " + token);
+            const string name = "disposable-elemental-spell-affinity";
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            Assertions.True(catalog.Contains(name) &&
+                runner.Contains("ElementalSpellAffinityScenario.Run(") &&
+                automation.Contains("'" + name +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + name + "'") &&
+                project.Contains("ElementalSpellAffinityScenario.cs"),
+                "Elemental affinity is not wired through every guarded surface.");
+            Assertions.False(scenario.Contains("SaveManager") ||
+                scenario.Contains("Game.Instance.Player.Party") ||
+                scenario.Contains("KMG_AUTOMATION_BASELINE"),
+                "The affinity scenario must remain save-free and detached from protected state.");
         }
 
         internal static void RuntimeHydraulicPushScenarioUsesNativeManeuver()

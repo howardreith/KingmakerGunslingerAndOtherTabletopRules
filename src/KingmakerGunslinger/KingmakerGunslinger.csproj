@@ -937,6 +937,7 @@
     <Compile Include="RuntimeTesting\ElementalRaceDevelopmentProbeScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceVisualAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceMechanicsScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalSpellAffinityScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceSlaScenario.cs" />
     <Compile Include="RuntimeTesting\HydraulicPushScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceNativeIdentityScenario.cs" />
@@ -945,10 +946,13 @@
     <Compile Include="ElementalRaces\ElementalRaceDefinition.cs" />
     <Compile Include="ElementalRaces\ElementalRaceCatalog.cs" />
     <Compile Include="ElementalRaces\ElementalRaceBlueprintSet.cs" />
+    <Compile Include="ElementalRaces\ElementalSpellAffinityPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalRacialSpellLikePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalRaceRuleComponents.cs" />
     <Compile Include="ElementalRaces\ElementalRaceAbilityFactory.cs" />
     <Compile Include="ElementalRaces\ElementalRaceBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalRacePublication.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRollbackPolicy.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualDefinition.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualCatalog.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualResourceRegistry.cs" />

@@ -25,30 +25,35 @@ namespace KingmakerGunslinger.ElementalRaces
         {
             BlueprintAbility ability = evt == null ? null :
                 evt.Blueprint as BlueprintAbility;
-            if (ability == null ||
-                !MatchesDescriptor(ability,
-                    (SpellDescriptor)DescriptorMask))
-                return;
-            evt.AddBonusDC(1);
+            if (CalculateDcBonus(evt, ability,
+                    (SpellDescriptor)DescriptorMask) == 1)
+                evt.AddBonusDC(1);
         }
 
         public override void OnEventDidTrigger(
             RuleCalculateAbilityParams evt) { }
 
-        internal static bool MatchesDescriptor(BlueprintAbility ability,
-            SpellDescriptor descriptor)
+        internal static int CalculateDcBonus(RuleCalculateAbilityParams evt,
+            BlueprintAbility ability, SpellDescriptor descriptor)
         {
-            if (ability == null || descriptor == SpellDescriptor.None)
-                return false;
+            if (evt == null || ability == null) return 0;
             var visited = new HashSet<BlueprintAbility>();
+            var chain = new List<ElementalSpellAffinityNode>();
             BlueprintAbility current = ability;
             while (current != null && visited.Add(current))
             {
-                if ((current.SpellDescriptor & descriptor) != 0)
-                    return true;
+                chain.Add(new ElementalSpellAffinityNode(
+                    current.Type == AbilityType.Spell,
+                    (long)current.SpellDescriptor));
                 current = current.Parent;
             }
-            return false;
+            return ElementalSpellAffinityPolicy.CalculateDcBonus(
+                evt.AbilityData != null,
+                evt.Spellbook != null,
+                evt.AbilityData != null && evt.Spellbook != null &&
+                    ReferenceEquals(evt.AbilityData.Spellbook, evt.Spellbook),
+                (long)descriptor,
+                chain);
         }
     }
 
@@ -68,9 +73,10 @@ namespace KingmakerGunslinger.ElementalRaces
             if (ability == null || Owner == null ||
                 !MatchesAbility(ability, Ability))
                 return;
-            evt.ReplaceCasterLevel = Math.Max(1,
+            evt.ReplaceCasterLevel = ElementalRacialSpellLikePolicy.CasterLevel(
                 Owner.Progression.CharacterLevel);
-            evt.ReplaceSpellLevel = Math.Max(1, SpellLevel);
+            evt.ReplaceSpellLevel = ElementalRacialSpellLikePolicy.SpellLevel(
+                SpellLevel);
             evt.ReplaceStat = Stat;
         }
 

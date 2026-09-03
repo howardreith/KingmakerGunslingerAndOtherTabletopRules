@@ -179,16 +179,16 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
         {
             if (_order.Count == 0) return;
             IDictionary cache = RequireCache();
-            for (int index = _order.Count - 1; index >= 0; index--)
+            ElementalRaceVisualResourceRegistration[] removalPlan =
+                ElementalVisualResourceRollbackPolicy.CreateRemovalPlan(
+                    _order,
+                    registration => cache.Contains(registration.AssetId),
+                    registration => ReferenceEquals(CurrentResource(
+                        cache[registration.AssetId]), registration.Resource),
+                    registration => registration.AssetId);
+            foreach (ElementalRaceVisualResourceRegistration registration in
+                removalPlan)
             {
-                ElementalRaceVisualResourceRegistration registration =
-                    _order[index];
-                if (!cache.Contains(registration.AssetId)) continue;
-                object current = CurrentResource(cache[registration.AssetId]);
-                if (!ReferenceEquals(current, registration.Resource))
-                    throw new InvalidOperationException(
-                        "Elemental visual rollback refused a foreign replacement for " +
-                        registration.AssetId + ".");
                 cache.Remove(registration.AssetId);
             }
             int removed = _order.Count;

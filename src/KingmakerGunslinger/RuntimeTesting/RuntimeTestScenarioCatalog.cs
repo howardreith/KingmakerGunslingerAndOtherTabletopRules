@@ -124,6 +124,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "elemental-race-persistence-verify-absent";
         internal const string DisposableElementalRaceMechanics =
             "disposable-elemental-race-mechanics";
+        internal const string DisposableElementalSpellAffinity =
+            "disposable-elemental-spell-affinity";
         internal const string DisposableElementalRaceSlas =
             "disposable-elemental-race-slas";
         internal const string DisposableHydraulicPush =
@@ -459,6 +461,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalRaceModuleDisabledPersistence,
                 ElementalRacePersistenceVerifyAbsent,
                 DisposableElementalRaceMechanics,
+                DisposableElementalSpellAffinity,
                 DisposableElementalRaceSlas,
                 DisposableHydraulicPush,
                 DisposableElementalRaceNativeIdentity,
