@@ -72,6 +72,13 @@ function Get-KmgFeatureModuleCatalog {
             DependencyState = 'independent'
             RuntimeParameter = 'protectionFromAlignmentControlImmunity'
         }
+        [pscustomobject]@{
+            InternalProperty = 'ElementalRaces'
+            JsonKey = 'elemental-races'
+            DisplayName = 'Elemental Races: Ifrit, Oread, Sylph, and Undine'
+            DependencyState = 'independent'
+            RuntimeParameter = 'elementalRaces'
+        }
     )
 }
 

@@ -238,9 +238,16 @@ namespace KingmakerGunslinger.DomainTests
                         "[Math]::Max($TimeoutSeconds, 1200) + 15"),
                 "Production outfit compatibility needs its exact bounded collector window.");
 
-            Assertions.Equal(16, Regex.Matches(source,
+            Assertions.Equal(28, Regex.Matches(source,
                 "new ProductionCompatibilityCase\\(").Count,
-                "The production compatibility matrix must contain exactly sixteen states.");
+                "The production compatibility matrix must contain exactly twenty-eight states.");
+            Assertions.True(source.Contains(
+                    "ProductionCompatibilityCases.Length != 28") &&
+                source.Contains(
+                    "ProductionCompatibilityCases.Length)") &&
+                source.Contains(
+                    "must contain twenty-eight unique states"),
+                "The production runtime guard must enforce the same twenty-eight unique states.");
             foreach (string token in new[]
             {
                 "abca4797366d4df0831a418eee39069a",
@@ -318,6 +325,104 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(source.Contains(forbidden),
                     "Production compatibility contains a forbidden save/UI/global-inventory token: " +
                     forbidden);
+        }
+
+        internal static void ElementalClassEquipmentReusesProductionTransaction()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionCompatibilityScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            const string scenario = "elemental-race-class-equipment";
+
+            Assertions.True(catalog.Contains(
+                    "ElementalRaceClassEquipment") &&
+                catalog.Contains(scenario) &&
+                runner.Contains(".ElementalRaceClassEquipment") &&
+                runner.Contains("BeginProductionCompatibility(") &&
+                WorkingSavePredicate(request).Contains(
+                    "ElementalRaceClassEquipment") &&
+                automation.Contains("'" + scenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains(
+                    scenario + "-only-permits-working-save"),
+                "Elemental class/equipment qualification is not wired through every guarded working-save surface.");
+            string metadata = automation.Substring(
+                automation.IndexOf("'" + scenario +
+                    "' = [pscustomobject]", StringComparison.Ordinal), 500);
+            Assertions.True(metadata.Contains(
+                    "RequiresSaveName = $true") &&
+                metadata.Contains(
+                    "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                metadata.Contains(
+                    "RequiresManualInteraction = $false"),
+                "Elemental class/equipment qualification must fail closed to the disposable working save.");
+            int collectorStart = orchestrator.IndexOf(
+                "elseif ($Scenario -eq '" + scenario + "')",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                orchestrator.Substring(collectorStart,
+                    Math.Min(550, orchestrator.Length - collectorStart))
+                    .Contains(
+                        "[Math]::Max($TimeoutSeconds, 1800) + 15"),
+                "Eight elemental fixtures need their exact bounded collector window.");
+
+            foreach (string token in new[]
+            {
+                "IsElementalRaceClassEquipment",
+                "RequireElementalRaces()",
+                "BuildElementalFixtures()",
+                "ElementalRaceCatalog.RaceCount *",
+                ".ElementalRaces.OrderedBlueprints()",
+                "_supportedRaces.All(race => fixtureRecords.Count(",
+                (char)34 + "raceGuid" + (char)34,
+                "race.AssetGuid",
+                "elemental-race-class-equipment-index.json",
+                "elemental-race-class-equipment-progress.json",
+                "elemental-race-class-equipment-fixtures",
+                (char)34 + "equipment-matrix" + (char)34,
+                "ElementalRaceClassEquipment"
+            })
+                Assertions.True(source.Contains(token),
+                    "Shared production transaction lacks elemental contract token: " +
+                    token);
+            Assertions.Equal(28, Regex.Matches(source,
+                "new ProductionCompatibilityCase\\(").Count,
+                "Elemental mode must reuse the expanded twenty-eight-state matrix without duplicating it.");
+            foreach (string token in new[]
+            {
+                "OutfitMediumArmorItemGuid",
+                "OutfitRobeItemGuid",
+                "OutfitBootsItemGuid",
+                "OutfitGlovesItemGuid",
+                "OutfitBracersItemGuid",
+                "ArmorProficiencyGroup.Medium",
+                "_actor.Body.Feet",
+                "_actor.Body.Gloves",
+                "_actor.Body.Wrist",
+                "_actor.Body.Belt",
+                "BlueprintBootstrap.CordOfStubbornResolve"
+            })
+                Assertions.True(source.Contains(token),
+                    "Expanded elemental equipment matrix lacks exact token: " +
+                    token);
+            Assertions.True(source.Contains(
+                    "GunslingerOutfitProductionCompatibility") &&
+                source.Contains("BuildHumanFixtures()") &&
+                source.Contains("expectedFixtures == 2") &&
+                source.Contains((char)34 + "Human" + (char)34),
+                "The accepted two-Human compatibility path must remain explicitly preserved.");
         }
 
         internal static void ProductionMotionIsGuardedAndExact()
@@ -626,6 +731,197 @@ namespace KingmakerGunslinger.DomainTests
                     forbidden);
         }
 
+        internal static void ElementalRaceMotionReusesProductionTransaction()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionMotionScenario.cs");
+            string transitions = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "ElementalRaceTransitionScenario.cs");
+            string shared = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "GunslingerOutfitProductionCompatibilityScenario.cs");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string orchestrator = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            const string scenario = "elemental-race-motion";
+
+            Assertions.True(catalog.Contains("ElementalRaceMotion") &&
+                catalog.Contains(scenario) &&
+                runner.Contains(".ElementalRaceMotion") &&
+                runner.Contains("BeginProductionMotion(") &&
+                WorkingSavePredicate(request).Contains(
+                    "ElementalRaceMotion") &&
+                automation.Contains("'" + scenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains(
+                    scenario + "-only-permits-working-save"),
+                "Elemental race motion is not wired through every guarded working-save surface.");
+            int metadataStart = automation.IndexOf("'" + scenario +
+                "' = [pscustomobject]", StringComparison.Ordinal);
+            string metadata = automation.Substring(metadataStart,
+                Math.Min(500, automation.Length - metadataStart));
+            Assertions.True(metadata.Contains(
+                    "RequiresSaveName = $true") &&
+                metadata.Contains(
+                    "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                metadata.Contains(
+                    "RequiresManualInteraction = $false"),
+                "Elemental race motion must fail closed to the disposable working save.");
+            int collectorStart = orchestrator.IndexOf(
+                "elseif ($Scenario -eq '" + scenario + "')",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                orchestrator.Substring(collectorStart,
+                    Math.Min(500, orchestrator.Length - collectorStart))
+                    .Contains(
+                        "[Math]::Max($TimeoutSeconds, 7200) + 15"),
+                "Eight elemental motion fixtures need their exact bounded collector window.");
+
+            foreach (string token in new[]
+            {
+                "IsElementalRaceMotion",
+                "RuntimeTestScenarioCatalog.ElementalRaceMotion",
+                "ElementalRaceCatalog.RaceCount * 2",
+                "expectedRecords = expectedFixtures * 27",
+                "expectedFixtures * 5",
+                "expectedFixtures * 8",
+                "expectedFixtures * 2",
+                "expectedFixtures * 3",
+                "records.Count(value => string.Equals(",
+                "(string)value[" + (char)34 + "raceGuid" +
+                    (char)34 + "], race.AssetGuid",
+                "== 54",
+                "elemental-race-motion-index.json",
+                "elemental-race-motion-guard",
+                "elemental-race-motion-fixtures",
+                "elemental-race-motion-captures",
+                "elemental-race-native-locomotion",
+                "elemental-race-native-turn",
+                "elemental-race-native-attacks",
+                "elemental-race-native-reload",
+                "elemental-race-motion-restoration",
+                "elemental-race-motion-combat-boundary",
+                "elemental-race-motion-blueprint-immutability",
+                "elemental-race-motion-cleanup"
+            })
+                Assertions.True(source.Contains(token),
+                    "Elemental motion lacks exact reuse token: " + token);
+            foreach (string token in new[]
+            {
+                "expectedTransitionRecords",
+                "ElementalTransitionActions.Length * 2",
+                "transitionRecords.Count(value => string.Equals(",
+                "== 16",
+                "elemental-race-native-sla-casting",
+                "elemental-race-native-prone-recovery",
+                "elemental-race-native-death-resurrection",
+                "elemental-race-native-polymorph-return"
+            })
+                Assertions.True(source.Contains(token),
+                    "Elemental motion lacks transition assertion token: " +
+                    token);
+            Assertions.True(project.Contains(
+                    "RuntimeTesting\\ElementalRaceTransitionScenario.cs"),
+                "The elemental transition partial is absent from the explicit production compile list.");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility", "Animation.IsActed",
+                "ExecutionProcess.Tick()", "resourceBefore",
+                "resourceAfter", "UnitCondition.Prone",
+                "PersistantResources", ".Resources.Add(",
+                "elementalSlaReadiness=",
+                "IAbilityAvailabilityProvider",
+                "availabilitySettleUpdates",
+                "racial SLA availability (",
+                "targetDeferred=True",
+                "hostile-2m-forward-navmesh",
+                "if (_motionTarget == null)",
+                "hostilePlacementCount",
+                "target was not placed exactly once",
+                "SetProductionMotionUnitPosition(_motionTarget",
+                "IsUnitEnoughClose", "ApproachRadius",
+                "readiness.Init(_actor)",
+                "readinessProbeDetached",
+                (char)34 + "targetInState" + (char)34,
+                (char)34 + "commandCloseEnough" + (char)34,
+                "RuleDealDamage", "ResurrectAndFullRestore",
+                "CreateProductionMotionTarget()",
+                "_actor.Blueprint.IsCheater = false",
+                "request-local-hostile",
+                "_elementalDamageAfterLethal",
+                "_elementalConstitutionAtLethal",
+                "Stats.Constitution.ModifiedValue",
+                "BeastShapeTwoSpellGuid",
+                "5d4028eb28a106d4691ed1b92bbb1915",
+                "8dc6510d31614345a8c718208fbac1f8",
+                "Body.IsPolymorphed", "ActiveRenderers(_actor)",
+                "sharedMaterials", "material.shader",
+                "racial-sla-native-cast-acted",
+                "native-prone-restored", "native-resurrected",
+                "beast-shape-ii-restored",
+                "ElementalTransitionMaximumUpdates",
+                "CleanupElementalRaceTransitions",
+                (char)34 + "saveApiCalled" + (char)34
+            })
+                Assertions.True(transitions.Contains(token),
+                    "Elemental transition partial lacks exact native token: " +
+                    token);
+            int availabilityGate = transitions.IndexOf("if (!available)",
+                StringComparison.Ordinal);
+            int targetCreation = transitions.IndexOf(
+                "TargetWrapper target = ElementalSpellTarget();",
+                StringComparison.Ordinal);
+            Assertions.True(availabilityGate >= 0 &&
+                targetCreation > availabilityGate,
+                "Elemental transition target construction must remain behind " +
+                "the native ability-availability settle gate.");
+            foreach (string token in new[]
+            {
+                "UsesElementalRaceFixtures",
+                "IsElementalRaceClassEquipment ||",
+                "IsElementalRaceMotion",
+                "_supportedRaces = UsesElementalRaceFixtures",
+                "_fixtures = UsesElementalRaceFixtures",
+                "BuildElementalFixtures()",
+                "elemental-race-motion-exception",
+                "elemental-race-motion-progress.json",
+                "elemental-race-motion-cleanup"
+            })
+                Assertions.True(shared.Contains(token),
+                    "Shared production transaction lacks elemental motion token: " +
+                    token);
+            Assertions.True(source.Contains(": 2;") &&
+                source.Contains(
+                    "gunslinger-outfit-production-motion-index.json") &&
+                source.Contains(
+                    "gunslinger-outfit-production-motion-guard") &&
+                source.Contains(
+                    "one exact male and female Human production DollData fixture"),
+                "The accepted two-Human motion mode was not preserved.");
+            foreach (string forbidden in new[]
+            {
+                "SaveGame", "QuickSave", "PlayerPrefs", "Input.",
+                "Mouse."
+            })
+                Assertions.False(source.Contains(forbidden) ||
+                    transitions.Contains(forbidden),
+                    "Elemental motion contains forbidden save/UI token: " +
+                    forbidden);
+        }
+
         internal static void ProductionPersistenceIsGuardedAndExact()
         {
             string source = Read("src", "KingmakerGunslinger",
@@ -787,6 +1083,248 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(snapshot >= 0 && force > snapshot &&
                     restore > force,
                 "The real loaded avatar must be snapshotted before forced native reconstruction and restored afterward.");
+        }
+
+        internal static void ElementalRacePersistenceIsGuardedAndExact()
+        {
+            string source = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalRacePersistenceScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string workingSave = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "WorkingSaveSmokeScenario.cs");
+            string request = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string launcher = Read("scripts",
+                "Invoke-KingmakerRuntimeTest.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string sequence = Read("scripts",
+                "Invoke-ElementalRacePersistenceQualification.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            string[] scenarios =
+            {
+                "elemental-race-persistence-prepare",
+                "elemental-race-module-disabled-persistence",
+                "elemental-race-persistence-verify-absent"
+            };
+
+            Assertions.True(catalog.Contains(
+                    "ElementalRacePersistencePrepare") &&
+                catalog.Contains(
+                    "ElementalRaceModuleDisabledPersistence") &&
+                catalog.Contains(
+                    "ElementalRacePersistenceVerifyAbsent") &&
+                scenarios.All(catalog.Contains) &&
+                catalog.Contains(
+                    "IsElementalRacePersistenceScenario") &&
+                runner.Contains("BeginElementalRacePersistence(") &&
+                runner.Contains("_elementalRacePersistence.Poll()") &&
+                WorkingSavePredicate(request).Contains(
+                    "IsElementalRacePersistenceScenario") &&
+                scenarios.All(value => automation.Contains("'" + value +
+                    "' = [pscustomobject]")) &&
+                scenarios.All(preflight.Contains) &&
+                project.Contains(
+                    @"RuntimeTesting\ElementalRacePersistenceScenario.cs"),
+                "Elemental persistence is not wired through every guarded working-save surface.");
+            Assertions.True(Regex.IsMatch(workingSave,
+                    @"AutomationWorkingWithElementalFixtures\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 11\);",
+                    RegexOptions.Singleline) &&
+                runner.Contains(
+                    ".AutomationWorkingWithElementalFixtures"),
+                "Module-disabled verification must require the exact eleven-member marker-bearing working-save identity.");
+            foreach (string scenario in scenarios)
+            {
+                int metadataStart = automation.IndexOf("'" + scenario +
+                    "' = [pscustomobject]", StringComparison.Ordinal);
+                Assertions.True(metadataStart >= 0,
+                    "Missing elemental persistence metadata for " +
+                    scenario + ".");
+                string metadata = automation.Substring(metadataStart,
+                    Math.Min(500, automation.Length - metadataStart));
+                Assertions.True(metadata.Contains(
+                        "RequiresSaveName = $true") &&
+                    metadata.Contains(
+                        "PermittedSaveName = 'KMG_AUTOMATION_WORKING'") &&
+                    metadata.Contains(
+                        "RequiresManualInteraction = $false") &&
+                    metadata.Contains(
+                        "ReadinessBehavior = 'autonomous-working-save'"),
+                    "Elemental persistence phase must fail closed to the disposable working save: " +
+                    scenario);
+            }
+            int collectorStart = launcher.IndexOf(
+                "elemental-race-persistence-prepare",
+                StringComparison.Ordinal);
+            Assertions.True(collectorStart >= 0 &&
+                launcher.Substring(collectorStart,
+                    Math.Min(750, launcher.Length - collectorStart))
+                    .Contains(
+                        "[Math]::Max($TimeoutSeconds, 1800) + 15"),
+                "Elemental persistence needs its exact bounded collector window.");
+
+            foreach (string id in new[]
+            {
+                "a9be3b86-9d80-472a-93e6-71fcfb3a827a",
+                "2fc7d5a4-5dab-4bb9-bee1-da1fdfa2a337",
+                "f4933068-5824-46fa-a330-25b78764503e",
+                "27a98188-4106-419d-8897-64ccd6f63305",
+                "d532ec12-a328-4afb-8cbf-7f3ddf41f072",
+                "08e1cd1d-4512-4c52-a9fa-6dd8d815499a",
+                "043d4fc2-c26c-4e72-9d11-219d0ff74b43",
+                "91472289-c1d7-4558-b7ed-a5e8c06345fb"
+            })
+                Assertions.Equal(1, Regex.Matches(source,
+                        Regex.Escape(id)).Count,
+                    "Elemental persistence needs one stable fixture identity: " +
+                    id);
+            foreach (string token in new[]
+            {
+                "ElementalRaceCatalog.RaceCount * 2",
+                "exactly eight race/sex fixtures",
+                "ElementalRacePersistencePrepare",
+                "ElementalRaceModuleDisabledPersistence",
+                "ElementalRacePersistenceVerifyAbsent",
+                "_context.FeatureModules.Active.ElementalRaces",
+                "BlueprintRoot.Instance",
+                ".Progression.CharacterRaces",
+                "ResourcesLibrary.TryGetBlueprint<",
+                "Progression.Race", "race.Features.All",
+                "_currentBlueprint.IsCheater = false",
+                "!unit.Blueprint.IsCheater",
+                "Descriptor.CustomGender = fixture.Gender",
+                "owner.CustomGender.HasValue",
+                "owner.Stats.GetStat(value.Stat)",
+                "StatType.SkillPerception",
+                "owner.Stats.Speed.ModifiedValue",
+                "owner.Resources.GetResourceAmount(",
+                "SlaResource.GetMaxAmount(owner)",
+                "AbilityType.SpellLike", "ability.Spellbook == null",
+                "!ability.IsAffectedByArcaneSpellFailure",
+                "PerformNativeElementalRespec",
+                "LevelUpState.CharBuildMode.Respec",
+                "SeedFixedElementalRespecRace(_currentBlueprint, fixture)",
+                "SeedFixedElementalRespecFacts(",
+                "EnsureElementalRespecFact(owner, feature)",
+                "fixedRaceBeforeRespec",
+                "fixedRaceFactsBeforeRespec",
+                "seededSlaResourceBeforeRespec",
+                "seededSlaAvailableBeforeRespec",
+                "fixedRaceInInitialPreview",
+                "fixedRaceFactsInInitialPreview",
+                "\"racePreserved\", previewRaceExact",
+                "controller.SelectClass(_gunslingerClass, false)",
+                "ConfigureExpectedDollState(controller.Doll, fixture)",
+                "controller.Commit()",
+                "distinctSourceAndReplacement",
+                "replacementLevelBeforeRespec",
+                "NativeElementalRespecRecordExact",
+                "RetireElementalRespecSource",
+                "elemental-race-persistence-native-respec",
+                "nativeRespecRecords",
+                "InvokeAbilitySpend(", "AbilityResourceLogic",
+                "costs[0].Spend(ability)",
+                "RestController.ApplyRest(",
+                "LevelUpState.CharBuildMode.CharGen",
+                "ApplyLevelup", "Progression.CharacterLevel",
+                "CreateExecutionContext(", "Params.CasterLevel",
+                "Descriptor.Doll", "CreateExpectedDollData(",
+                "SelectPairedOption(", "presetExact=",
+                "PersistenceDollSnapshot.Capture(",
+                "GunslingerClassAppearanceCatalog.MaleAssetIds()",
+                "GunslingerClassAppearanceCatalog.FemaleAssetIds()",
+                "SerializedElementalClassClothesAbsent",
+                "HasExactHumanoidRig(", "materialsExact",
+                "CaptureContactSheet(", "CaptureIsometric(",
+                "ElementalPersistenceFixtureCount * 5",
+                "PartyCharacters", "CrossSceneState.AllEntityData",
+                "ArmExactWorkingSaveWrite", "RemoveEntityData",
+                "string.IsNullOrWhiteSpace(_exceptionSummary)",
+                "\"exceptionSummary\", _exceptionSummary",
+                "ExpectedWorkingSaveRoutineCount",
+                "elemental-race-persistence-module-off",
+                "elemental-race-persistence-rest-and-level-up",
+                "elemental-race-persistence-absence",
+                "protected baseline excluded"
+            })
+                Assertions.True(source.Contains(token),
+                    "Elemental persistence lacks exact native guard/evidence token: " +
+                    token);
+            foreach (string forbidden in new[]
+            {
+                "QuickSave", "ScreenCapture", "Input.", "Mouse.",
+                "PlayerPrefs", "gameObject.SetActive"
+            })
+                Assertions.False(source.Contains(forbidden),
+                    "Elemental persistence contains a forbidden save/UI token: " +
+                    forbidden);
+            Assertions.Equal(1, Regex.Matches(source,
+                "value.Name == .SaveGame.").Count,
+                "Elemental persistence must expose one exact native SaveGame reflection boundary.");
+            int nativeCreation = source.IndexOf(
+                "ApplyNativeCharacterCreation(fixture, data)",
+                StringComparison.Ordinal);
+            int visualRaceAssignment = source.IndexOf(
+                "_currentBlueprint.Race = fixture.Blueprints.Race",
+                StringComparison.Ordinal);
+            Assertions.True(nativeCreation >= 0 &&
+                    visualRaceAssignment > nativeCreation &&
+                    source.Contains(
+                        "if (!controller.SelectRace(fixture.Blueprints.Race))"),
+                "The fixture must execute native race selection before assigning the clone's visual race.");
+
+            foreach (string token in new[]
+            {
+                "[ValidateSet('KMG_AUTOMATION_WORKING')]",
+                "ReadAllBytes($settings)",
+                "WriteAllBytes($temporary, $originalBytes)",
+                "[Convert]::ToBase64String($restored)",
+                "schemaVersion = 10",
+                "'elemental-races' = $enabled",
+                "Set-ElementalRacesEnabled $true",
+                "Set-ElementalRacesEnabled $false",
+                "Restore-OriginalFeatureState",
+                "-ReuseInstalledArtifact",
+                "Wait-ForGuardedKingmakerExit"
+            })
+                Assertions.True(sequence.Contains(token),
+                    "Three-launch persistence orchestration lacks exact restoration token: " +
+                    token);
+            Assertions.False(sequence.Contains("KMG_AUTOMATION_BASELINE"),
+                "The protected baseline must never be eligible for the persistence sequence.");
+            int enable = sequence.IndexOf(
+                "Set-ElementalRacesEnabled $true",
+                StringComparison.Ordinal);
+            int prepare = sequence.IndexOf(
+                "& $invoke -Scenario 'elemental-race-persistence-prepare'",
+                StringComparison.Ordinal);
+            int disable = sequence.IndexOf(
+                "Set-ElementalRacesEnabled $false",
+                StringComparison.Ordinal);
+            int verify = sequence.IndexOf(
+                "& $invoke -Scenario 'elemental-race-module-disabled-persistence'",
+                StringComparison.Ordinal);
+            int finalizer = sequence.IndexOf(
+                "finally {", verify, StringComparison.Ordinal);
+            int restore = sequence.IndexOf(
+                "    Restore-OriginalFeatureState", finalizer,
+                StringComparison.Ordinal);
+            Assertions.True(enable >= 0 && prepare > enable &&
+                    disable > prepare && verify > disable &&
+                    finalizer > verify && restore > finalizer,
+                "The exact enabled-prepare, disabled-verify-cleanup, and finally-restored launch order changed.");
+            Assertions.False(sequence.Contains(
+                    "-Scenario 'elemental-race-persistence-verify-absent'"),
+                "Fresh-load absence must run only after this transaction has returned and restored settings.");
+            Assertions.True(sequence.Contains(
+                    "run elemental-race-persistence-verify-absent next"),
+                "The two-launch transaction must explicitly hand off the restored-settings fresh-load phase.");
         }
 
         internal static void FinalistRaceMatrixIsExactAndReversible()

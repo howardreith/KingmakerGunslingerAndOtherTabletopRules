@@ -260,7 +260,7 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRequest.cs"));
             string runner = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
-            foreach (string token in new[] { "request.Parameters.Count != 10",
+            foreach (string token in new[] { "request.Parameters.Count != 11",
                 "Property(\"shieldOther\")", "[\"shieldOther\"].Type != JTokenType.Boolean",
                 "Property(\"expandedSummoning\")",
                 "[\"expandedSummoning\"].Type != JTokenType.Boolean",
@@ -274,7 +274,9 @@ namespace KingmakerGunslinger.DomainTests
                 "[\"urbanBarbarian\"].Type",
                 "Property(\"bodyguardFeats\")",
                 "[\"bodyguardFeats\"].Type",
-                "protectionFromAlignmentControlImmunity" })
+                "protectionFromAlignmentControlImmunity",
+                "Property(\"elementalRaces\")",
+                "[\"elementalRaces\"].Type" })
                 Assertions.True(request.Contains(token),
                     "Runtime module request contract is missing: " + token);
             foreach (string token in new[] { "Active.ShieldOther",

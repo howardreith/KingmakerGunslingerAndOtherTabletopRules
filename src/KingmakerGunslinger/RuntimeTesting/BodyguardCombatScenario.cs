@@ -330,7 +330,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     failed.AooBefore[0] - 1 &&
                     failed.BodyguardContribution == 0 &&
                     HasTruthfulBodyguardSources(failed, new int[0]) &&
-                    failed.CombatLogLastMessage.Contains("failure"),
+                    failed.CombatLogLastMessage.Contains("failed"),
                 "live native AoO and failed Aid negative control");
 
             fixture.SetModes(fixture.ProtectorOne, true, true);

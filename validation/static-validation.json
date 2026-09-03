@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.113-save-load-hotfix",
-  "version": "0.0.113",
+  "milestone": "0.0.114-elemental-races",
+  "version": "0.0.114",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1637,
-    "activeEntryCount": 1636,
-    "reservedEntryCount": 1,
-    "registrationCount": 1636
+    "entryCount": 1706,
+    "activeEntryCount": 1704,
+    "reservedEntryCount": 2,
+    "registrationCount": 1704
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -646,7 +646,7 @@
     "humanAcceptancePending": true
   },
   "playerPresentation105": {
-    "deterministicTestCount": 1373,
+    "deterministicTestCount": 1390,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -662,7 +662,7 @@
     "humanOrganicPacingAcceptancePending": true
   },
   "fatigueAuthority106": {
-    "deterministicTestCount": 1373,
+    "deterministicTestCount": 1390,
     "focusedFatigueCaseCount": 21,
     "nativeDefaultIntent": "NativePassthrough",
     "acadamaeEscalationRequestLocal": true,
@@ -677,7 +677,7 @@
     "supervisedWorldMapAcceptancePending": true
   },
   "iconOverhaul107": {
-    "deterministicTestCount": 1373,
+    "deterministicTestCount": 1390,
     "officialFirearmKindCount": 3,
     "recognizedFirearmKindCount": 5,
     "selectorIconCount": 3,
@@ -689,7 +689,7 @@
     "workingSaveSmokePass": true
   },
   "iconPolishRoundTwo108": {
-    "deterministicTestCount": 1373,
+    "deterministicTestCount": 1390,
     "protectedFileCount": 30,
     "selectorIconCount": 3,
     "suppliedOriginalCount": 5,
@@ -702,7 +702,7 @@
     "workingSaveSmokePass": true
   },
   "martialPerformanceRepairNotifications109": {
-    "deterministicTestCount": 1373,
+    "deterministicTestCount": 1390,
     "martialPerformanceFocusedCaseCount": 11,
     "repairFocusedCaseCount": 22,
     "conditionNotificationFocusedCaseCount": 9,
@@ -729,7 +729,7 @@
     "supervisedLoadedMultiRoundInteractionPending": true
   },
   "gunslingerOutfitKitbash111": {
-    "deterministicTestCount": 1373,
+    "deterministicTestCount": 1390,
     "nativeOnly": true,
     "customAssetsAdded": false,
     "maleLinkCount": 2,
@@ -745,7 +745,7 @@
     "runtimeQualificationPassed": true
   },
   "protectionFromAlignment110": {
-    "deterministicTestCount": 1373,
+    "deterministicTestCount": 1390,
     "protectionBuffCount": 5,
     "playerDescriptionTargetCount": 15,
     "playerAbilityDescriptionCount": 10,
@@ -761,7 +761,7 @@
     "manualEncounterValidationOngoing": true
   },
   "ammunitionCmiCopyNotifications112": {
-    "deterministicTestCount": 1372,
+    "deterministicTestCount": 1390,
     "discountPercent": 10,
     "minimumCost": 1,
     "basicBatchCost": 22,
@@ -776,7 +776,7 @@
     "guardedRuntimeRequestCallbackObserved": false
   },
   "saveLoadReconciliation113": {
-    "deterministicTestCount": 1373,
+    "deterministicTestCount": 1390,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -786,5 +786,35 @@
     "cmiSyntheticToggleProhibited": true,
     "cmiTargetedBridgeIdempotent": true,
     "saveCompatibilityPreserved": true
+  },
+  "elementalRaces114": {
+    "deterministicTestCount": 1390,
+    "paperToggleAuthoritative": "activatable-is-on",
+    "paperModeReadOnly": true,
+    "paperModePostLoadMutation": false,
+    "paperSetterPersistentFactMutation": false,
+    "staleMarkerIgnoredMechanically": true,
+    "toggleOffLooseReloadPreserved": true,
+    "cmiSyntheticToggleProhibited": true,
+    "cmiTargetedBridgeIdempotent": true,
+    "saveCompatibilityPreserved": true,
+    "featureModuleSchema": 10,
+    "featureModuleCount": 11,
+    "boundaryConfigurationCount": 24,
+    "raceCount": 4,
+    "elementalManifestEntryCount": 69,
+    "activeElementalIdentityCount": 68,
+    "reservedDiagnosticIdentityCount": 1,
+    "visualBlueprintCount": 16,
+    "visualEquipmentProxyCount": 28,
+    "defaultEnabled": true,
+    "unconditionalRegistration": true,
+    "atomicPublication": true,
+    "donorRaceId": "Aasimar",
+    "saveLoadRepairPreserved": true,
+    "compatibilityRuntimeQualificationPending": false,
+    "humanVisualReviewRequired": false,
+    "ownerReleaseAuthorized": true,
+    "individualHumanChecklistEvidenceProvided": false
   }
 }

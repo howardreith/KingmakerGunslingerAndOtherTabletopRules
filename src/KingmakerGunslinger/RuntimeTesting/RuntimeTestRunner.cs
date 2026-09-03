@@ -55,6 +55,7 @@ using KingmakerGunslinger.ElvenBranchedSpear;
 using KingmakerGunslinger.EasternWeapons;
 using KingmakerGunslinger.BrownFur;
 using KingmakerGunslinger.FeatureModules;
+using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.UrbanBarbarian;
 using KingmakerGunslinger.CraftMagicItemsCompatibility;
 using KingmakerGunslinger.Diagnostics;
@@ -138,6 +139,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gunslingerOutfitProductionMotion;
         private GunslingerOutfitRenderScenario.ProductionPersistenceSession
             _gunslingerOutfitProductionPersistence;
+        private GunslingerOutfitRenderScenario.ElementalRacePersistenceSession
+            _elementalRacePersistence;
+        private ElementalRaceDevelopmentProbeScenario.Session
+            _elementalRaceDevelopmentProbe;
+        private ElementalRaceVisualAuditScenario.Session
+            _elementalRaceVisualAudit;
         private CraftMagicItemsAmmunitionUiObserver.Session
             _craftMagicItemsAmmunitionUiObserver;
         private bool _craftMagicItemsPersistenceSaveStarted;
@@ -705,9 +712,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitCandidateRender &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitFinalistRaceMatrix &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitProductionCompatibility &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ElementalRaceClassEquipment &&
                     _request.Scenario != RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ElementalRaceMotion &&
                     !RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
+                            _request.Scenario) &&
+                    !RuntimeTestScenarioCatalog
+                        .IsElementalRacePersistenceScenario(
                             _request.Scenario) &&
                     _manualElapsed.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                 {
@@ -742,6 +754,73 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GunslingerOutfitAudit)
                 {
                     Complete(GunslingerOutfitAuditScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalRaceBlueprints)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    if (_elementalRaceDevelopmentProbe == null)
+                        _elementalRaceDevelopmentProbe =
+                            ElementalRaceDevelopmentProbeScenario.Begin(
+                                _context, _request);
+                    _elementalRaceDevelopmentProbe.Poll();
+                    if (_elementalRaceDevelopmentProbe.Complete)
+                        Complete(_elementalRaceDevelopmentProbe.Result);
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceVisualAudit ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceClassClothing)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    if (_elementalRaceVisualAudit == null)
+                        _elementalRaceVisualAudit =
+                            ElementalRaceVisualAuditScenario.Begin(
+                                _context, _request);
+                    _elementalRaceVisualAudit.Poll();
+                    if (_elementalRaceVisualAudit.Complete)
+                        Complete(_elementalRaceVisualAudit.Result);
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalRaceMechanics)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalRaceMechanicsScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalRaceSlas)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalRaceSlaScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableHydraulicPush)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(HydraulicPushScenario.Run(_context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalRaceNativeIdentity)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalRaceNativeIdentityScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ElementalRacesRacesUnleashedCompatibility)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalRaceCompatibilityScenario.Run(
                         _context, _request));
                     return;
                 }
@@ -1502,9 +1581,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.GunslingerOutfitProductionCompatibility ||
                     _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ElementalRaceClassEquipment ||
+                    _request.Scenario ==
                         RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ElementalRaceMotion ||
                     RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
+                            _request.Scenario) ||
+                    RuntimeTestScenarioCatalog
+                        .IsElementalRacePersistenceScenario(
                             _request.Scenario) ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
@@ -1570,9 +1656,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.GunslingerOutfitProductionCompatibility ||
                     _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ElementalRaceClassEquipment ||
+                    _request.Scenario ==
                         RuntimeTestScenarioCatalog.GunslingerOutfitProductionMotion ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.ElementalRaceMotion ||
                     RuntimeTestScenarioCatalog
                         .IsGunslingerOutfitProductionPersistenceScenario(
+                            _request.Scenario) ||
+                    RuntimeTestScenarioCatalog
+                        .IsElementalRacePersistenceScenario(
                             _request.Scenario) ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
@@ -1658,6 +1751,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .GunslingerOutfitProductionPersistence
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithOutfitFixture
+                    : _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceModuleDisabledPersistence
+                            ? WorkingSaveSmokeIdentity
+                                .AutomationWorkingWithElementalFixtures
                     : _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                             ? WorkingSaveSmokeIdentity.AffectedFocusedAim
@@ -2194,7 +2291,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _gunslingerOutfitFinalistRaceMatrix.Result);
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
-                    .GunslingerOutfitProductionCompatibility)
+                        .GunslingerOutfitProductionCompatibility ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceClassEquipment)
                 {
                     if (_gunslingerOutfitProductionCompatibility == null)
                         _gunslingerOutfitProductionCompatibility =
@@ -2207,7 +2306,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _gunslingerOutfitProductionCompatibility.Result);
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
-                    .GunslingerOutfitProductionMotion)
+                        .GunslingerOutfitProductionMotion ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceMotion)
                 {
                     if (_gunslingerOutfitProductionMotion == null)
                         _gunslingerOutfitProductionMotion =
@@ -2232,6 +2333,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_gunslingerOutfitProductionPersistence.Complete)
                         Complete(
                             _gunslingerOutfitProductionPersistence.Result);
+                }
+                else if (RuntimeTestScenarioCatalog
+                    .IsElementalRacePersistenceScenario(
+                        _request.Scenario))
+                {
+                    if (_elementalRacePersistence == null)
+                        _elementalRacePersistence =
+                            GunslingerOutfitRenderScenario
+                                .BeginElementalRacePersistence(
+                                    _context, _request,
+                                    _workingSaveSmoke);
+                    _elementalRacePersistence.Poll();
+                    if (_elementalRacePersistence.Complete)
+                        Complete(_elementalRacePersistence.Result);
                 }
                 else
                 {
@@ -12180,6 +12295,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool expectedProtectionFromAlignmentControlImmunity =
                 (bool)_request.Parameters[
                     "protectionFromAlignmentControlImmunity"];
+            bool expectedElementalRaces =
+                (bool)_request.Parameters["elementalRaces"];
             bool activeGunslinger = _context.FeatureModules.Active.Gunslinger;
             bool activeAcadamae = _context.FeatureModules.Active.AcadamaeGraduate;
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
@@ -12198,6 +12315,39 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool activeProtectionFromAlignmentControlImmunity =
                 _context.FeatureModules.Active
                     .ProtectionFromAlignmentControlImmunity;
+            bool activeElementalRaces =
+                _context.FeatureModules.Active.ElementalRaces;
+            ElementalRaceBlueprintSet elementalSet =
+                BlueprintBootstrap.ElementalRaces;
+            BlueprintRace[] elementalOrdered = elementalSet.OrderedRaces();
+            BlueprintRace[] characterRaces =
+                BlueprintRoot.Instance.Progression.CharacterRaces ??
+                    Array.Empty<BlueprintRace>();
+            int[] elementalReferences = elementalOrdered.Select(race =>
+                characterRaces.Count(value => ReferenceEquals(value, race)))
+                .ToArray();
+            int[] elementalGuids = elementalOrdered.Select(race =>
+                characterRaces.Count(value => value != null && string.Equals(
+                    value.AssetGuid, race.AssetGuid,
+                    StringComparison.Ordinal))).ToArray();
+            int[] elementalIndexes = elementalOrdered.Select(race =>
+                Array.FindIndex(characterRaces, value =>
+                    ReferenceEquals(value, race))).ToArray();
+            bool characterRacesUnique = characterRaces.All(value =>
+                    value != null && !string.IsNullOrWhiteSpace(value.AssetGuid)) &&
+                characterRaces.Distinct().Count() == characterRaces.Length &&
+                characterRaces.Select(value => value.AssetGuid).Distinct(
+                    StringComparer.Ordinal).Count() == characterRaces.Length;
+            bool elementalOrderExact = elementalIndexes[0] >= 0 &&
+                Enumerable.Range(1, elementalIndexes.Length - 1).All(index =>
+                    elementalIndexes[index] == elementalIndexes[0] + index);
+            bool elementalPublicationExact = expectedElementalRaces
+                ? elementalReferences.All(value => value == 1) &&
+                    elementalGuids.All(value => value == 1) &&
+                    elementalOrderExact
+                : elementalReferences.All(value => value == 0) &&
+                    elementalGuids.All(value => value == 0) &&
+                    elementalIndexes.All(value => value < 0);
             UrbanBarbarianBlueprintSet urbanSet = BlueprintBootstrap.UrbanBarbarian;
             BlueprintArchetype[] barbarianArchetypes = urbanSet.BarbarianClass
                 .Archetypes ?? Array.Empty<BlueprintArchetype>();
@@ -12675,14 +12825,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 expectedExpandedSummoning + "/" + expectedElvenBranchedSpears +
                 "/" + expectedEasternWeapons + "/" + expectedBrownFurTransmuter +
                 "/" + expectedUrbanBarbarian + "/" + expectedBodyguardFeats +
-                "/" + expectedProtectionFromAlignmentControlImmunity +
+                "/" + expectedProtectionFromAlignmentControlImmunity + "/" +
+                expectedElementalRaces +
                 ";active=" +
                 activeGunslinger + "/" + activeAcadamae + "/" +
                 activeShieldOther + "/" + activeExpandedSummoning + "/" +
                 activeElvenBranchedSpears + "/" + activeEasternWeapons + "/" +
                 activeBrownFurTransmuter + "/" + activeUrbanBarbarian + "/" +
                 activeBodyguardFeats + "/" +
-                activeProtectionFromAlignmentControlImmunity +
+                activeProtectionFromAlignmentControlImmunity + "/" +
+                activeElementalRaces +
                 ";brownFur=contract:" + brownFurContractCompatible +
                 "/identities:" + (brownFurBlueprints == null ? 0 :
                     brownFurBlueprints.Count) + "/published:" +
@@ -12728,6 +12880,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spearVendorRows + ";spearBtslTables=" +
                 installedSpearBtslTables + ";spearLoot=" + spearLootRows;
             observed += ";urban=" + urbanObserved;
+            observed += ";elementalRaces=identities:" + elementalSet.Count +
+                "/catalog:" + characterRaces.Length +
+                "/references:" + string.Join("/", elementalReferences) +
+                "/guids:" + string.Join("/", elementalGuids) +
+                "/indexes:" + string.Join("/", elementalIndexes) +
+                "/unique:" + characterRacesUnique +
+                "/ordered:" + elementalOrderExact;
             observed += ";easternRegistered=" + easternRegisteredTypes + "/" +
                 easternRegisteredItems + "/" + easternRegisteredFeatures + "/" +
                 easternRegisteredPolicies + ";easternParameters=" +
@@ -12762,7 +12921,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeUrbanBarbarian == expectedUrbanBarbarian &&
                     activeBodyguardFeats == expectedBodyguardFeats &&
                     activeProtectionFromAlignmentControlImmunity ==
-                        expectedProtectionFromAlignmentControlImmunity,
+                        expectedProtectionFromAlignmentControlImmunity &&
+                    activeElementalRaces == expectedElementalRaces,
                     "immutable process snapshot"),
                 Assertion("feature-module-identity-count", BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime + " identities in the current optional-mod state",
                     observed, BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
@@ -12832,6 +12992,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedProtectionFromAlignmentControlImmunity ? 15 : 0) &&
                     protectionObservation.InvalidDescriptions == 0,
                     "exact terminal-buff component and player-description inventories"),
+                Assertion("feature-module-elemental-races-restart-snapshot",
+                    expectedElementalRaces ? "enabled" : "disabled",
+                    activeElementalRaces ? "enabled" : "disabled",
+                    activeElementalRaces == expectedElementalRaces,
+                    "immutable restart-bound selector-publication intent"),
+                Assertion("feature-module-elemental-races-publication",
+                    expectedElementalRaces
+                        ? "24 stable identities and one contiguous Ifrit/Oread/Sylph/Undine selector entry each"
+                        : "24 stable identities and no elemental selector entries",
+                    observed,
+                    elementalSet.Count ==
+                        ElementalRaceIdentityCatalog.IdentityCount &&
+                    elementalOrdered.Length == ElementalRaceCatalog.RaceCount &&
+                    characterRacesUnique && elementalPublicationExact,
+                    "live BlueprintRoot CharacterRaces reference/GUID inventory"),
                 Assertion("feature-module-expanded-summoning-publication-gate",
                     expectedExpandedSummoning ? "enabled" : "disabled",
                     activeExpandedSummoning ? "enabled" : "disabled",
@@ -27182,7 +27357,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return string.Join(";", components.ToArray());
         }
 
-        private static string DescribeNestedObject(object value, int depth)
+        internal static string DescribeNestedObject(object value, int depth)
         {
             if (value == null) return "<null>";
             Type type = value.GetType();

@@ -83,7 +83,7 @@ Canonical unattended command:
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 `
   -Scenario working-save-smoke `
-  -ExpectedVersion 0.0.113 `
+  -ExpectedVersion 0.0.114 `
   -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true `
   -Confirm:$false

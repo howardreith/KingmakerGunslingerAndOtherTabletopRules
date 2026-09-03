@@ -106,6 +106,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-class-blueprint-contracts";
         internal const string ObserveGunslingerPresentation =
             "observe-gunslinger-presentation";
+        internal const string ObserveElementalRaceBlueprints =
+            "observe-elemental-race-blueprints";
+        internal const string ElementalRaceVisualAudit =
+            "elemental-race-visual-audit";
+        internal const string ElementalRaceClassClothing =
+            "elemental-race-class-clothing";
+        internal const string ElementalRaceClassEquipment =
+            "elemental-race-class-equipment";
+        internal const string ElementalRaceMotion =
+            "elemental-race-motion";
+        internal const string ElementalRacePersistencePrepare =
+            "elemental-race-persistence-prepare";
+        internal const string ElementalRaceModuleDisabledPersistence =
+            "elemental-race-module-disabled-persistence";
+        internal const string ElementalRacePersistenceVerifyAbsent =
+            "elemental-race-persistence-verify-absent";
+        internal const string DisposableElementalRaceMechanics =
+            "disposable-elemental-race-mechanics";
+        internal const string DisposableElementalRaceSlas =
+            "disposable-elemental-race-slas";
+        internal const string DisposableHydraulicPush =
+            "disposable-hydraulic-push";
+        internal const string DisposableElementalRaceNativeIdentity =
+            "disposable-elemental-race-native-identity";
+        internal const string ElementalRacesRacesUnleashedCompatibility =
+            "elemental-races-races-unleashed-compatibility";
         internal const string GunslingerOutfitAudit =
             "gunslinger-outfit-audit";
         internal const string GunslingerOutfitCandidateRender =
@@ -424,6 +450,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveCraftMagicItemsVerifyCleanup,
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
+                ObserveElementalRaceBlueprints,
+                ElementalRaceVisualAudit,
+                ElementalRaceClassClothing,
+                ElementalRaceClassEquipment,
+                ElementalRaceMotion,
+                ElementalRacePersistencePrepare,
+                ElementalRaceModuleDisabledPersistence,
+                ElementalRacePersistenceVerifyAbsent,
+                DisposableElementalRaceMechanics,
+                DisposableElementalRaceSlas,
+                DisposableHydraulicPush,
+                DisposableElementalRaceNativeIdentity,
+                ElementalRacesRacesUnleashedCompatibility,
                 GunslingerOutfitAudit,
                 GunslingerOutfitCandidateRender,
                 GunslingerOutfitFinalistRaceMatrix,
@@ -580,6 +619,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal) ||
                 string.Equals(scenario,
                     GunslingerOutfitProductionPersistenceVerifyAbsent,
+                    StringComparison.Ordinal);
+        }
+
+        internal static bool IsElementalRacePersistenceScenario(
+            string scenario)
+        {
+            return string.Equals(scenario,
+                    ElementalRacePersistencePrepare,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    ElementalRaceModuleDisabledPersistence,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    ElementalRacePersistenceVerifyAbsent,
                     StringComparison.Ordinal);
         }
 

@@ -35,8 +35,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             new Dictionary<string, string[]>(StringComparer.Ordinal)
             {
                 { "gunslinger-only", new[] { "KingmakerGunslinger" } },
+                { "gunslinger-races-unleashed",
+                    new[] { "KingmakerGunslinger", "RacesUnleashed" } },
                 { "gunslinger-call-of-the-wild",
                     new[] { "KingmakerGunslinger", "CallOfTheWild" } },
+                { "gunslinger-call-of-the-wild-races-unleashed",
+                    new[] { "KingmakerGunslinger", "CallOfTheWild",
+                        "RacesUnleashed" } },
+                { "gunslinger-high-risk-combined-favored-class",
+                    new[] { "KingmakerGunslinger", "CallOfTheWild",
+                        "ZFavoredClass", "TweakOrTreat",
+                        "RacesUnleashed" } },
                 { "gunslinger-arms-armor",
                     new[] { "KingmakerGunslinger", "ArmsArmor" } },
                 { "gunslinger-toggle-custom-soundpacks",

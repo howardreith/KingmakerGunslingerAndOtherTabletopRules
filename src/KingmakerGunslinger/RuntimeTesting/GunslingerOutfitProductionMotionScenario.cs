@@ -21,6 +21,7 @@ using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using Kingmaker.Visual.CharacterSystem;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Firing;
 using KingmakerGunslinger.Presentation;
@@ -203,8 +204,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 get
                 {
                     return string.Equals(_request.Scenario,
-                        RuntimeTestScenarioCatalog
-                            .GunslingerOutfitProductionMotion,
+                            RuntimeTestScenarioCatalog
+                                .GunslingerOutfitProductionMotion,
+                            StringComparison.Ordinal) ||
+                        IsElementalRaceMotion;
+                }
+            }
+
+            private bool IsElementalRaceMotion
+            {
+                get
+                {
+                    return string.Equals(_request.Scenario,
+                        RuntimeTestScenarioCatalog.ElementalRaceMotion,
                         StringComparison.Ordinal);
                 }
             }
@@ -451,6 +463,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void PollProductionMotionAction()
             {
+                if (_motionPhase >= 10)
+                {
+                    PollElementalRaceTransitions();
+                    return;
+                }
                 switch (_motionPhase)
                 {
                     case 0:
@@ -524,6 +541,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     { "fixture", fixture.Label },
                     { "gender", fixture.Gender.ToString() },
+                    { "raceGuid", fixture.Race.AssetGuid },
                     { "raceId", fixture.Race.RaceId.ToString() },
                     { "productionAssetIds", new JArray(
                         CurrentProductionAssetIds()) },
@@ -1731,6 +1749,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixture", _fixtures[_fixtureIndex].Label },
                     { "gender",
                         _fixtures[_fixtureIndex].Gender.ToString() },
+                    { "raceGuid",
+                        _fixtures[_fixtureIndex].Race.AssetGuid },
                     { "raceId",
                         _fixtures[_fixtureIndex].Race.RaceId.ToString() },
                     { "action", _motionSpec.Label },
@@ -2336,6 +2356,12 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void FinishProductionMotionFixture()
             {
+                if (IsElementalRaceMotion &&
+                    !_elementalTransitionFixtureComplete)
+                {
+                    BeginElementalRaceTransitions();
+                    return;
+                }
                 ProductionCompatibilityFixture fixture =
                     _fixtures[_fixtureIndex];
                 _stage = "restore-motion-" + fixture.Label;
@@ -2376,6 +2402,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _fixtureIndex++;
                 _motionStep = 0;
                 _motionPhase = 0;
+                _elementalTransitionFixtureComplete = false;
+                _elementalTransitionStep = 0;
+                _elementalTransitionPhase = 0;
                 _settleUpdates = 0;
                 if (_fixtureIndex < _fixtures.Length)
                 {
@@ -2600,6 +2629,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 try
                 {
+                    CleanupElementalRaceTransitions();
                     if (_actor != null)
                     {
                         _actor.Commands.InterruptAll(true);
@@ -2682,7 +2712,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "schemaVersion", 1 },
                     { "scenario", _request.Scenario },
                     { "fixture",
-                        "exact production male/female Human Gunslinger DollData actors" },
+                        IsElementalRaceMotion
+                            ? "exact production male/female Ifrit/Oread/Sylph/Undine Gunslinger DollData actors"
+                            : "exact production male/female Human Gunslinger DollData actors" },
                     { "loadedModVersion",
                         _context.ModEntry.Info.Version },
                     { "gitCommit", identity.GitCommit },
@@ -2702,6 +2734,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .DefaultSecondaryColor },
                     { "actions", new JArray(ProductionMotionSpecs.Select(
                         value => value.Label).ToArray()) },
+                    { "elementalTransitionActions",
+                        IsElementalRaceMotion
+                            ? new JArray(ElementalTransitionActions)
+                            : new JArray() },
+                    { "supportedRaces", new JArray(
+                        _supportedRaces.Select(value => new JObject
+                        {
+                            { "name", value.name },
+                            { "guid", value.AssetGuid },
+                            { "raceId", value.RaceId.ToString() }
+                        }).ToArray()) },
+                    { "productionRaceLinkMatrix", _raceLinkRecords },
                     { "attackCaptureUpdates",
                         new JArray(ProductionMotionAttackUpdates) },
                     { "reloadCaptureUpdates",
@@ -2714,6 +2758,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "attackOutcomes", _motionAttackOutcomes },
                     { "reloadOutcomes", _motionReloadOutcomes },
                     { "records", _motionRecords },
+                    { "elementalTransitionRecords",
+                        _elementalTransitionRecords },
+                    { "elementalSpellcastOutcomes",
+                        _elementalSpellcastOutcomes },
+                    { "elementalProneOutcomes",
+                        _elementalProneOutcomes },
+                    { "elementalDeathOutcomes",
+                        _elementalDeathOutcomes },
+                    { "elementalPolymorphOutcomes",
+                        _elementalPolymorphOutcomes },
                     { "restorations", _motionRestorationRecords },
                     { "combatBoundaries", _motionCombatBoundaryRecords },
                     { "playerInCombatBefore", _motionPlayerCombatBefore },
@@ -2736,17 +2790,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "saveApiCalled", false }
                 };
                 string path = Path.Combine(_request.EvidenceDirectory,
-                    "gunslinger-outfit-production-motion-index.json");
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-index.json"
+                        : "gunslinger-outfit-production-motion-index.json");
                 WriteJsonAtomic(path, index);
                 _evidenceFiles.Add(path);
             }
 
             private void FinishProductionMotion(bool cleaned)
             {
-                const int expectedFixtures = 2;
-                const int expectedRecords = 54;
+                int expectedFixtures = IsElementalRaceMotion
+                    ? ElementalRaceCatalog.RaceCount * 2
+                    : 2;
+                int expectedRecords = expectedFixtures * 27;
+                int expectedTransitionRecords = IsElementalRaceMotion
+                    ? expectedFixtures * ElementalTransitionActions.Length * 2
+                    : 0;
                 JObject[] records = _motionRecords.OfType<JObject>()
                     .ToArray();
+                JObject[] transitionRecords = _elementalTransitionRecords
+                    .OfType<JObject>().ToArray();
+                JObject[] spellcasts = _elementalSpellcastOutcomes
+                    .OfType<JObject>().ToArray();
+                JObject[] proneOutcomes = _elementalProneOutcomes
+                    .OfType<JObject>().ToArray();
+                JObject[] deathOutcomes = _elementalDeathOutcomes
+                    .OfType<JObject>().ToArray();
+                JObject[] polymorphOutcomes = _elementalPolymorphOutcomes
+                    .OfType<JObject>().ToArray();
                 JObject[] movements = _motionMovementOutcomes
                     .OfType<JObject>().ToArray();
                 JObject[] attacks = _motionAttackOutcomes
@@ -2759,14 +2830,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var expectedActionCounts = new Dictionary<string, int>(
                     StringComparer.Ordinal)
                 {
-                    { "unarmed-idle", 2 },
-                    { "musket-slow-walk", 2 },
-                    { "musket-normal-run", 2 },
-                    { "musket-turn-right", 2 },
-                    { "pistol-native-attack", 10 },
-                    { "musket-native-attack", 10 },
-                    { "musket-production-reload", 16 },
-                    { "shortsword-native-melee", 10 }
+                    { "unarmed-idle", expectedFixtures },
+                    { "musket-slow-walk", expectedFixtures },
+                    { "musket-normal-run", expectedFixtures },
+                    { "musket-turn-right", expectedFixtures },
+                    { "pistol-native-attack", expectedFixtures * 5 },
+                    { "musket-native-attack", expectedFixtures * 5 },
+                    { "musket-production-reload", expectedFixtures * 8 },
+                    { "shortsword-native-melee", expectedFixtures * 5 }
                 };
                 bool exactActionCounts = expectedActionCounts.All(pair =>
                     records.Count(value => string.Equals(
@@ -2815,7 +2886,115 @@ namespace KingmakerGunslinger.RuntimeTesting
                             StringComparison.Ordinal)) &&
                     (int)value["activeRendererCount"] > 0 &&
                     (int)value["preview"]["meaningfulPixels"] > 0);
-                bool movementContracts = movements.Length == 4 &&
+                bool transitionRecordContracts = !IsElementalRaceMotion
+                    ? transitionRecords.Length == 0
+                    : transitionRecords.Length ==
+                            expectedTransitionRecords &&
+                        transitionRecords.All(value =>
+                        {
+                            string state = (string)value["state"];
+                            bool polymorphed = string.Equals(state,
+                                "beast-shape-ii-polymorphed",
+                                StringComparison.Ordinal);
+                            bool dead = string.Equals(state,
+                                "native-death",
+                                StringComparison.Ordinal);
+                            bool prone = string.Equals(state,
+                                "native-prone",
+                                StringComparison.Ordinal);
+                            return (bool)value["polymorphed"] ==
+                                    polymorphed &&
+                                (bool)value["dead"] == dead &&
+                                (bool)value["prone"] == prone &&
+                                (polymorphed ||
+                                    (bool)value[
+                                        "productionOutfitExact"]) &&
+                                (bool)value[
+                                    "productionBlueprintUnchanged"] &&
+                                (bool)value["playerBoundaryExact"] &&
+                                (bool)value[
+                                    "playerCharacterListsExact"] &&
+                                !(bool)value["saveApiCalled"] &&
+                                (int)value["activeRendererCount"] > 0 &&
+                                (int)value["materialSlotCount"] > 0 &&
+                                (int)value["nullMaterialCount"] == 0 &&
+                                (int)value["nullShaderCount"] == 0 &&
+                                (int)value["preview"][
+                                    "meaningfulPixels"] > 0;
+                        });
+                bool transitionStateCounts = !IsElementalRaceMotion ||
+                    new[]
+                    {
+                        "racial-sla-native-cast-acted",
+                        "racial-sla-native-cast-restored",
+                        "native-prone", "native-prone-restored",
+                        "native-death", "native-resurrected",
+                        "beast-shape-ii-polymorphed",
+                        "beast-shape-ii-restored"
+                    }.All(state => transitionRecords.Count(value =>
+                        string.Equals((string)value["state"], state,
+                            StringComparison.Ordinal)) ==
+                        expectedFixtures);
+                bool elementalSpellContracts = !IsElementalRaceMotion ||
+                    spellcasts.Length == expectedFixtures &&
+                    spellcasts.All(value =>
+                        (int)value["resourceBefore"] == 1 &&
+                        (int)value["resourceAfter"] == 0 &&
+                        (int)value["resourceMaximum"] == 1 &&
+                        (int)value["resourceRecordsAfter"] == 1 &&
+                        (bool)value["finalAvailability"] &&
+                        (int)value["availabilitySettleUpdates"] >= 0 &&
+                        (bool)value["commandInstalled"] &&
+                        (bool)value["commandStarted"] &&
+                        (bool)value["commandRunningObserved"] &&
+                        (bool)value["animationObserved"] &&
+                        (bool)value["animationActedObserved"] &&
+                        (bool)value["executionProcessObserved"] &&
+                        (bool)value["executionProcessEndedObserved"] &&
+                        (bool)value["actorCheaterRestored"]);
+                bool elementalProneContracts = !IsElementalRaceMotion ||
+                    proneOutcomes.Length == expectedFixtures &&
+                    proneOutcomes.All(value =>
+                        (bool)value["proneApplied"] &&
+                        (bool)value["proneCaptured"] &&
+                        (bool)value["proneRemoved"] &&
+                        (bool)value["productionBaselineRestored"]);
+                bool elementalDeathContracts = !IsElementalRaceMotion ||
+                    deathOutcomes.Length == expectedFixtures &&
+                    deathOutcomes.All(value =>
+                        (bool)value["deathObserved"] &&
+                        (bool)value["deathCaptured"] &&
+                        (bool)value["resurrectionStarted"] &&
+                        (bool)value["immortalityReacquired"] &&
+                        (bool)value["actorCheaterRestored"] &&
+                        string.Equals((string)value["lethalInitiator"],
+                            "request-local-hostile",
+                            StringComparison.Ordinal) &&
+                        (int)value["damageAfterLethal"] >
+                            (int)value["damageBefore"] &&
+                        (int)value["hpAfterLethal"] <
+                            (int)value["hpBefore"] &&
+                        (int)value["hpAfterLethal"] <
+                            -(int)value["constitutionAtLethal"] &&
+                        (int)value["hpAfter"] ==
+                            (int)value["maxHpAfter"] &&
+                        (int)value["damageAfter"] == 0);
+                bool elementalPolymorphContracts =
+                    !IsElementalRaceMotion ||
+                    polymorphOutcomes.Length == expectedFixtures &&
+                    polymorphOutcomes.All(value =>
+                        string.Equals((string)value["spellGuid"],
+                            BeastShapeTwoSpellGuid,
+                            StringComparison.Ordinal) &&
+                        string.Equals((string)value["buffGuid"],
+                            BeastShapeTwoBuffGuid,
+                            StringComparison.Ordinal) &&
+                        (bool)value["polymorphCaptured"] &&
+                        (bool)value["buffRemoved"] &&
+                        (bool)value["bodyReturned"] &&
+                        (bool)value["productionBaselineRestored"]);
+                bool movementContracts = movements.Length ==
+                        expectedFixtures * 2 &&
                     movements.All(value =>
                         (bool)value["commandAccepted"] &&
                         (bool)value["movingObserved"] &&
@@ -2825,10 +3004,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (uint)value["destinationArea"]) &&
                     _motionRestorationRecords.OfType<JObject>().All(value =>
                         (bool)value["runDistinctFromWalk"]);
-                bool turnContracts = _motionTurnOutcomes.Count == 2 &&
+                bool turnContracts = _motionTurnOutcomes.Count ==
+                        expectedFixtures &&
                     _motionTurnOutcomes.OfType<JObject>().All(value =>
                         (float)value["turnDegrees"] >= 60f);
-                bool attackContracts = attacks.Length == 6 &&
+                bool attackContracts = attacks.Length ==
+                        expectedFixtures * 3 &&
                     attacks.All(value =>
                         (bool)value["readinessProbeDetached"] &&
                         (bool)value["autonomousCommandsExcluded"] &&
@@ -2855,7 +3036,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (!(bool)value["firearm"] ||
                             ((long)value["firedDelta"] >= 1 &&
                             (long)value["faultDelta"] == 0)));
-                bool reloadContracts = reloads.Length == 2 &&
+                bool reloadContracts = reloads.Length == expectedFixtures &&
                     reloads.All(value =>
                         (bool)value["abilityAvailable"] &&
                         (bool)value["abilityTargetable"] &&
@@ -2905,19 +3086,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Kingmaker.Controllers.Combat.UnitCombatLeaveController.Tick->" +
                             "Kingmaker.Controllers.Combat.UnitCombatJoinController.Tick",
                             StringComparison.Ordinal));
+                JObject[] fixtureRecords = _motionFixtureRecords
+                    .OfType<JObject>().ToArray();
+                bool exactRaceCoverage = IsElementalRaceMotion
+                    ? _supportedRaces.Length == ElementalRaceCatalog.RaceCount &&
+                        _supportedRaces.All(race =>
+                            fixtureRecords.Count(value => string.Equals(
+                                (string)value["raceGuid"], race.AssetGuid,
+                                StringComparison.Ordinal)) == 2 &&
+                            records.Count(value => string.Equals(
+                                (string)value["raceGuid"], race.AssetGuid,
+                                StringComparison.Ordinal)) == 54 &&
+                            transitionRecords.Count(value => string.Equals(
+                                (string)value["raceGuid"], race.AssetGuid,
+                                StringComparison.Ordinal)) == 16) &&
+                        fixtureRecords.All(value => string.Equals(
+                            (string)value["raceId"], "Aasimar",
+                            StringComparison.Ordinal))
+                    : fixtureRecords.All(value => string.Equals(
+                        (string)value["raceId"], "Human",
+                        StringComparison.Ordinal));
+                string expectedScenario = IsElementalRaceMotion
+                    ? RuntimeTestScenarioCatalog.ElementalRaceMotion
+                    : RuntimeTestScenarioCatalog
+                        .GunslingerOutfitProductionMotion;
 
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-guard",
-                    RuntimeTestScenarioCatalog
-                        .GunslingerOutfitProductionMotion,
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-guard"
+                        : "gunslinger-outfit-production-motion-guard",
+                    expectedScenario,
                     _request.Scenario,
                     string.Equals(_request.Scenario,
-                        RuntimeTestScenarioCatalog
-                            .GunslingerOutfitProductionMotion,
+                        expectedScenario,
                         StringComparison.Ordinal),
                     "validated -kmgRuntimeTestRequest allowlist");
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-save-boundary",
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-save-boundary"
+                        : "gunslinger-outfit-production-motion-save-boundary",
                     "KMG_AUTOMATION_WORKING; no save API",
                     "saveName=" + _request.Parameters.Value<string>(
                         "saveName") + ";saveApiCalled=false",
@@ -2926,7 +3133,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal),
                     "guarded working-save load plus disposable actors");
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-game-identity",
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-game-identity"
+                        : "gunslinger-outfit-production-motion-game-identity",
                     "Kingmaker 2.1.7b exact Assembly-CSharp SHA-256 and MVID",
                     "sha256=" + _gameAssemblySha256 + ";mvid=" +
                         _gameAssemblyMvid,
@@ -2939,10 +3148,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "live loaded Assembly-CSharp identity");
 
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-fixtures",
-                    "one exact male and female Human production DollData fixture",
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-fixtures"
+                        : "gunslinger-outfit-production-motion-fixtures",
+                    IsElementalRaceMotion
+                        ? "one exact male and female production DollData fixture for each of four distinct elemental race GUIDs"
+                        : "one exact male and female Human production DollData fixture",
                     "fixtures=" + _motionFixtureRecords.Count,
                     _motionFixtureRecords.Count == expectedFixtures &&
+                        exactRaceCoverage &&
                         _motionFixtureRecords.OfType<JObject>().All(value =>
                             (bool)value["productionOutfitExact"] &&
                             (bool)value["humanoidRigExact"] &&
@@ -2965,21 +3179,71 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (int)value["mainHandAttackClipCount"] > 0),
                     "production class DollState/CreateData/CreateUnitView plus live rig and animation-action contracts");
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-captures",
-                    "54 exact sidecars/PNGs and 216 labelled views",
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-captures"
+                        : "gunslinger-outfit-production-motion-captures",
+                    expectedRecords + " motion plus " +
+                        expectedTransitionRecords +
+                        " transition sidecars/PNGs and " +
+                        ((expectedRecords + expectedTransitionRecords) * 4) +
+                        " labelled views",
                     "records=" + records.Length + ";captured=" +
-                        _motionCaptured + ";views=" + _motionViewCount +
+                    _motionCaptured + ";views=" + _motionViewCount +
+                        ";transitionRecords=" +
+                        transitionRecords.Length +
+                        ";transitionCaptured=" +
+                        _elementalTransitionCaptured +
+                        ";transitionViews=" + _elementalTransitionViews +
                         ";files=" + _evidenceFiles.Count,
                     records.Length == expectedRecords &&
                         _motionCaptured == expectedRecords &&
                         _motionViewCount == expectedRecords * 4 &&
+                        transitionRecords.Length ==
+                            expectedTransitionRecords &&
+                        _elementalTransitionCaptured ==
+                            expectedTransitionRecords &&
+                        _elementalTransitionViews ==
+                            expectedTransitionRecords * 4 &&
                         exactActionCounts && recordContracts &&
+                        transitionRecordContracts &&
+                        transitionStateCounts &&
                         _motionIndexWritten &&
-                        _evidenceFiles.Count == expectedRecords * 2 + 1 &&
+                        _evidenceFiles.Count ==
+                            (expectedRecords +
+                                expectedTransitionRecords) * 2 + 1 &&
                         _evidenceFiles.All(File.Exists),
                     "four-view contact sheets plus structured per-frame sidecars");
+                if (IsElementalRaceMotion)
+                {
+                    Add(_assertions,
+                        "elemental-race-native-sla-casting",
+                        "one real race-owned UnitUseAbility cast and exact one-use spend per race/sex fixture",
+                        "outcomes=" + spellcasts.Length,
+                        elementalSpellContracts,
+                        "AbilityData, UnitUseAbility, acted animation, execution process, and race-owned BlueprintAbilityResource");
+                    Add(_assertions,
+                        "elemental-race-native-prone-recovery",
+                        "native Prone presentation and exact production-doll recovery per race/sex fixture",
+                        "outcomes=" + proneOutcomes.Length,
+                        elementalProneContracts,
+                        "UnitCondition.Prone add/remove plus live renderer and saved-link audit");
+                    Add(_assertions,
+                        "elemental-race-native-death-resurrection",
+                        "native lethal damage, dead presentation, full resurrection, and exact production-doll recovery per race/sex fixture",
+                        "outcomes=" + deathOutcomes.Length,
+                        elementalDeathContracts,
+                        "RuleDealDamage, dead-state renderer audit, ResurrectAndFullRestore, and immortality-boundary restoration");
+                    Add(_assertions,
+                        "elemental-race-native-polymorph-return",
+                        "exact native Beast Shape II body replacement and production-doll return per race/sex fixture",
+                        "outcomes=" + polymorphOutcomes.Length,
+                        elementalPolymorphContracts,
+                        "base-game spell/buff IDs, UnitBody.IsPolymorphed, renderer/material/shader audit, and buff removal");
+                }
                 Add(_assertions,
-                    "gunslinger-outfit-production-native-locomotion",
+                    IsElementalRaceMotion
+                        ? "elemental-race-native-locomotion"
+                        : "gunslinger-outfit-production-native-locomotion",
                     "Slow walk and Normal run per gender with accepted UnitMoveTo, live velocity/displacement, and distinct observed speeds",
                     "outcomes=" + movements.Length +
                         ";restorations=" +
@@ -2987,26 +3251,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     movementContracts,
                     "UnitMoveTo, same-area ForcedPath, MovementAgent velocity, MaxSpeedOverride, and WalkSpeedType");
                 Add(_assertions,
-                    "gunslinger-outfit-production-native-turn",
+                    IsElementalRaceMotion
+                        ? "elemental-race-native-turn"
+                        : "gunslinger-outfit-production-native-turn",
                     "one body-relative native turn of at least 60 degrees per gender",
                     "outcomes=" + _motionTurnOutcomes.Count,
                     turnContracts,
                     "ForceLookAt and live OrientationDirection");
                 Add(_assertions,
-                    "gunslinger-outfit-production-native-attacks",
+                    IsElementalRaceMotion
+                        ? "elemental-race-native-attacks"
+                        : "gunslinger-outfit-production-native-attacks",
                     "pistol, musket, and Shortsword UnitAttack per gender with fixed and acted frames",
                     "outcomes=" + attacks.Length,
                     attackContracts,
                     "UnitAttack.CreateAttackCommand, UnitCommands.Run, acted animation, and firearm discharge counters");
                 Add(_assertions,
-                    "gunslinger-outfit-production-native-reload",
+                    IsElementalRaceMotion
+                        ? "elemental-race-native-reload"
+                        : "gunslinger-outfit-production-native-reload",
                     "production musket Reload Firearm per gender through update 240 with exact ammunition delivery",
                     "outcomes=" + reloads.Length,
                     reloadContracts,
                     "AbilityData, UnitUseAbility, execution process, ReloadRuntimeDiagnostics, and exact powder/ball deltas");
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-restoration",
-                    "exact original avatar, movement settings, and shared ammunition restored for both fixtures",
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-restoration"
+                        : "gunslinger-outfit-production-motion-restoration",
+                    "exact original avatar, movement settings, and shared ammunition restored for every fixture",
                     "avatars=" + _motionRestorations +
                         ";inventoryRestored=" +
                         _motionInventoryRestored,
@@ -3022,7 +3294,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _motionInventoryRestored,
                     "saved:false Character snapshots, exact movement settings, and inventory count snapshots");
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-combat-boundary",
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-combat-boundary"
+                        : "gunslinger-outfit-production-motion-combat-boundary",
                     "exact pre-run player, party, and turn-based combat state after each disposable fixture",
                     "boundaries=" + combatBoundaries.Length +
                         ";playerInCombat=" +
@@ -3036,13 +3310,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool blueprintUnchanged = _gunslingerClass != null &&
                     ProductionBlueprintUnchanged();
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-blueprint-immutability",
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-blueprint-immutability"
+                        : "gunslinger-outfit-production-motion-blueprint-immutability",
                     "published class arrays, links, and colors remain exact",
                     "unchanged=" + blueprintUnchanged,
                     blueprintUnchanged,
                     "pre/post production BlueprintCharacterClass snapshot");
                 Add(_assertions,
-                    "gunslinger-outfit-production-motion-cleanup",
+                    IsElementalRaceMotion
+                        ? "elemental-race-motion-cleanup"
+                        : "gunslinger-outfit-production-motion-cleanup",
                     "exact party/global-unit/inventory snapshots restored; no save call",
                     "cleaned=" + cleaned + ";inventory=" +
                         _motionInventoryRestored + ";target=" +

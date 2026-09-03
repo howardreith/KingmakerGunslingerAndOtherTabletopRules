@@ -46,10 +46,13 @@ namespace KingmakerGunslinger.FeatureModules
             bool protectionFromAlignmentControlImmunity = ImmediateModeGui.Toggle(
                 _state.Pending.ProtectionFromAlignmentControlImmunity,
                 "Protection from Alignment: control immunity");
+            bool elementalRaces = ImmediateModeGui.Toggle(
+                _state.Pending.ElementalRaces,
+                "Elemental Races: Ifrit, Oread, Sylph, and Undine");
             _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
                 elvenBranchedSpears, easternWeapons, brownFurTransmuter,
                 urbanBarbarian, bodyguardFeats,
-                protectionFromAlignmentControlImmunity);
+                protectionFromAlignmentControlImmunity, elementalRaces);
             BrownFurFeatureStatus brownFurStatus =
                 BrownFurFeatureStatusRegistry.Current;
             ImmediateModeGui.Label("Brown-Fur dependency: " +

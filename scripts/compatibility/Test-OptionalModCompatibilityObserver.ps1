@@ -8,11 +8,12 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 $runtimeProfiles = @(
     'gunslinger-only', 'gunslinger-call-of-the-wild', 'gunslinger-arms-armor',
     'gunslinger-toggle-custom-soundpacks', 'gunslinger-high-risk-combined',
+    'gunslinger-high-risk-combined-favored-class',
     'gunslinger-all-loadable-local', 'gunslinger-qualified-combined'
 )
 foreach ($profile in $runtimeProfiles) {
     [void](Assert-KmgRuntimeScenarioPreflight `
-        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.113' `
+        -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.114' `
         -TimeoutSeconds 120 -Parameters @{ profileId = $profile })
 }
 
@@ -26,7 +27,7 @@ foreach ($parameters in $rejected) {
     $failedClosed = $false
     try {
         [void](Assert-KmgRuntimeScenarioPreflight `
-            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.113' `
+            -Scenario 'observe-optional-mod-compatibility' -ExpectedVersion '0.0.114' `
             -TimeoutSeconds 120 -Parameters $parameters)
     }
     catch { $failedClosed = $true }

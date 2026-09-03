@@ -517,17 +517,27 @@ Expanded Summoning, the Elven Branched Spear, and the Eastern Weapons named
 catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
 plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
-always-registered Bodyguard/In Harm's Way subsystem identities, extend the
-append-only ledger to 1637 stable IDs: 1636 active and one reserved. The two
-latest active identities are hidden, mechanically inert In Harm's Way
-immediate-action debt facts. They preserve an off-turn spend across save/load
-and tie it to the owner's next actual turn without using a global-round flag.
+always-registered Bodyguard/In Harm's Way subsystem identities, and the
+Elemental Races mechanics and visual identities extend the append-only ledger
+to 1706 stable IDs: 1704 active and 2 reserved. The Elemental Races addition is
+24 mechanical blueprints, 16 body-wrapper or visual-preset blueprints, and 28
+project-owned `EquipmentEntity` resource proxies over native Kingmaker
+geometry and native color ramps. All 68 identities remain registered while
+race-selector publication is disabled. The two In Harm's Way immediate-action
+debt facts remain hidden and mechanically inert; they preserve an off-turn
+spend across save/load and tie it to the owner's next actual turn without
+using a global-round flag.
+The additional reservation is the request-gated Elemental Races diagnostic
+race. It is never part of ordinary bootstrap or character creation and is
+removed by the guarded probe that owns it.
 Twenty-five active identities belong to the isolated Brown-Fur extension and
 do not change the unconditional core registration count; they register only
 after the structural CotW contract succeeds, while selector publication
-remains independently gated. The Urban and Bodyguard identities are native core
-identities, bringing unconditional core registration to 1604 blueprints in
-every module state. All 1184
+remains independently gated. The Urban and Bodyguard identities are native
+core identities, and the 16 elemental visual blueprints bring unconditional
+core blueprint registration to 1620 in every module state. The 28 elemental
+visual resource proxies are registered through a separate exact-shape native
+resource-cache transaction. All 1184
 Expanded Summoning feature identities, all twenty-nine spear identities, and
 all forty-six Eastern Weapons identities register in every module state while
 their exact runtime types are registered deterministically; feature enablement

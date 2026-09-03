@@ -43,6 +43,14 @@ $expected = @(
     'mod-load-smoke',
     'observe-kmg-compatibility-asset-attribution',
     'gunslinger-outfit-audit',
+    'observe-elemental-race-blueprints',
+    'elemental-race-visual-audit',
+    'elemental-race-class-clothing',
+    'disposable-elemental-race-mechanics',
+    'disposable-elemental-race-slas',
+    'disposable-hydraulic-push',
+    'disposable-elemental-race-native-identity',
+    'elemental-races-races-unleashed-compatibility',
     'observe-feature-module-settings',
     'observe-urban-barbarian-rage-inventory',
     'disposable-urban-barbarian-focused',
@@ -117,6 +125,11 @@ $expected = @(
     'gunslinger-outfit-candidate-render',
     'gunslinger-outfit-finalist-race-matrix',
     'gunslinger-outfit-production-compatibility',
+    'elemental-race-class-equipment',
+    'elemental-race-motion',
+    'elemental-race-persistence-prepare',
+    'elemental-race-module-disabled-persistence',
+    'elemental-race-persistence-verify-absent',
     'gunslinger-outfit-production-motion',
     'gunslinger-outfit-production-persistence-prepare',
     'gunslinger-outfit-production-persistence',
@@ -250,7 +263,7 @@ Assert-True (-not $cmiPersistence.RequiresManualInteraction -and
     'craft-magic-items-persistence-is-guarded-working-save-only'
 $assetRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-kmg-compatibility-asset-attribution' `
-    -ExpectedVersion '0.0.113' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.114' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
         'kmg-attribution-request-test') `
     -Parameters @{ assetConfiguration = 'firearms-only' }
@@ -259,7 +272,7 @@ Assert-True ($assetRequest.parameters.assetConfiguration -ceq 'firearms-only') `
 Assert-Throws {
     New-KmgRuntimeRequest `
         -Scenario 'observe-kmg-compatibility-asset-attribution' `
-        -ExpectedVersion '0.0.113' -TimeoutSeconds 120 `
+        -ExpectedVersion '0.0.114' -TimeoutSeconds 120 `
         -ExitAfterCompletion $true `
         -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
             'kmg-attribution-request-test') `
@@ -387,6 +400,15 @@ Assert-True $gunslingerOutfitProductionCompatibility.RequiresSaveName `
 Assert-True ($gunslingerOutfitProductionCompatibility.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'gunslinger-outfit-production-compatibility-only-permits-working-save'
+$elementalRaceClassEquipment = Get-KmgRuntimeScenarioMetadata `
+    'elemental-race-class-equipment'
+Assert-True (-not $elementalRaceClassEquipment.RequiresManualInteraction) `
+    'elemental-race-class-equipment-is-autonomous'
+Assert-True $elementalRaceClassEquipment.RequiresSaveName `
+    'elemental-race-class-equipment-requires-save-name'
+Assert-True ($elementalRaceClassEquipment.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'elemental-race-class-equipment-only-permits-working-save'
 $gunslingerOutfitProductionMotion = Get-KmgRuntimeScenarioMetadata `
     'gunslinger-outfit-production-motion'
 Assert-True (-not $gunslingerOutfitProductionMotion.RequiresManualInteraction) `
@@ -396,6 +418,14 @@ Assert-True $gunslingerOutfitProductionMotion.RequiresSaveName `
 Assert-True ($gunslingerOutfitProductionMotion.PermittedSaveName -eq `
     'KMG_AUTOMATION_WORKING') `
     'gunslinger-outfit-production-motion-only-permits-working-save'
+$elementalRaceMotion = Get-KmgRuntimeScenarioMetadata 'elemental-race-motion'
+Assert-True (-not $elementalRaceMotion.RequiresManualInteraction) `
+    'elemental-race-motion-is-autonomous'
+Assert-True $elementalRaceMotion.RequiresSaveName `
+    'elemental-race-motion-requires-save-name'
+Assert-True ($elementalRaceMotion.PermittedSaveName -eq `
+    'KMG_AUTOMATION_WORKING') `
+    'elemental-race-motion-only-permits-working-save'
 foreach ($outfitPersistenceScenario in @(
     'gunslinger-outfit-production-persistence-prepare',
     'gunslinger-outfit-production-persistence',
@@ -409,6 +439,20 @@ foreach ($outfitPersistenceScenario in @(
     Assert-True ($gunslingerOutfitProductionPersistence.PermittedSaveName -eq `
         'KMG_AUTOMATION_WORKING') `
         ($outfitPersistenceScenario + '-only-permits-working-save')
+}
+foreach ($elementalPersistenceScenario in @(
+    'elemental-race-persistence-prepare',
+    'elemental-race-module-disabled-persistence',
+    'elemental-race-persistence-verify-absent')) {
+    $elementalRacePersistence = Get-KmgRuntimeScenarioMetadata `
+        $elementalPersistenceScenario
+    Assert-True (-not $elementalRacePersistence.RequiresManualInteraction) `
+        ($elementalPersistenceScenario + '-is-autonomous')
+    Assert-True $elementalRacePersistence.RequiresSaveName `
+        ($elementalPersistenceScenario + '-requires-save-name')
+    Assert-True ($elementalRacePersistence.PermittedSaveName -eq `
+        'KMG_AUTOMATION_WORKING') `
+        ($elementalPersistenceScenario + '-only-permits-working-save')
 }
 $vendorContracts = Get-KmgRuntimeScenarioMetadata 'observe-vendor-table-contracts'
 Assert-True (-not $vendorContracts.RequiresManualInteraction) `
@@ -692,7 +736,7 @@ Assert-True (-not $humanRepro.RequiresManualInteraction -and
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.113'
+    ExpectedVersion = '0.0.114'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -725,7 +769,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.113' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.114' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -789,7 +833,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.113' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.114' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {

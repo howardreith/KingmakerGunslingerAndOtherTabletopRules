@@ -24,6 +24,7 @@ using Kingmaker.View;
 using Kingmaker.Visual.CharacterSystem;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Presentation;
 using Newtonsoft.Json.Linq;
@@ -44,10 +45,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             "afbe88d27a0eb544583e00fa78ffb2c7";
         private const string OutfitHeavyArmorItemGuid =
             "559b0b6f194656c428c403a000ceee78";
+        private const string OutfitMediumArmorItemGuid =
+            "9809987cc12d94545a64ff20e6fdb216";
+        private const string OutfitRobeItemGuid =
+            "028cee4babc7c9c4d95043fc4a1f4359";
         private const string OutfitTricornItemGuid =
             "f33dadeeb51cdba45b23bb40a40e5fb3";
         private const string OutfitCloakItemGuid =
             "04dff7841c5f499478c91487d9bbdcef";
+        private const string OutfitBootsItemGuid =
+            "1223ceb45ed647b44a04b44a9312328b";
+        private const string OutfitGlovesItemGuid =
+            "08dee7b852c2ef647ab5290eb2055102";
+        private const string OutfitBracersItemGuid =
+            "9482c62934be44044918c3aac3730232";
         private const string OutfitMaleBackpackEntityGuid =
             "431d16d2153d1854280b97470223eea6";
         private const string OutfitFemaleBackpackEntityGuid =
@@ -70,9 +81,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "light-armor"),
             new ProductionCompatibilityCase("light-armor-removed-rebuild",
                 "baseline"),
+            new ProductionCompatibilityCase("medium-armor-equipped",
+                "medium-armor"),
+            new ProductionCompatibilityCase("medium-armor-removed-rebuild",
+                "baseline"),
             new ProductionCompatibilityCase("heavy-armor-equipped",
                 "heavy-armor"),
             new ProductionCompatibilityCase("heavy-armor-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("robe-equipped", "robe"),
+            new ProductionCompatibilityCase("robe-removed-rebuild",
                 "baseline"),
             new ProductionCompatibilityCase("tricorn-equipped",
                 "tricorn"),
@@ -80,6 +98,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "baseline"),
             new ProductionCompatibilityCase("cloak-equipped", "cloak"),
             new ProductionCompatibilityCase("cloak-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("boots-equipped", "boots"),
+            new ProductionCompatibilityCase("boots-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("gloves-equipped", "gloves"),
+            new ProductionCompatibilityCase("gloves-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("bracers-equipped",
+                "bracers"),
+            new ProductionCompatibilityCase("bracers-removed-rebuild",
+                "baseline"),
+            new ProductionCompatibilityCase("belt-equipped", "belt"),
+            new ProductionCompatibilityCase("belt-removed-rebuild",
                 "baseline"),
             new ProductionCompatibilityCase("backpack-visible",
                 "backpack"),
@@ -110,13 +141,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             internal ProductionCompatibilityFixture(Gender gender,
                 BlueprintRace race, BlueprintRaceVisualPreset preset,
-                BlueprintUnit source)
+                BlueprintUnit source, string label = null)
             {
                 Gender = gender;
                 Race = race;
                 Preset = preset;
                 Source = source;
-                Label = gender.ToString().ToLowerInvariant() + "-human";
+                Label = string.IsNullOrWhiteSpace(label)
+                    ? gender.ToString().ToLowerInvariant() + "-human"
+                    : label;
             }
 
             internal readonly string Label;
@@ -124,6 +157,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly BlueprintRace Race;
             internal readonly BlueprintRaceVisualPreset Preset;
             internal readonly BlueprintUnit Source;
+        }
+
+        private sealed class ProductionRaceFixtureSpec
+        {
+            internal ProductionRaceFixtureSpec(string label,
+                BlueprintRace race)
+            {
+                Label = label;
+                Race = race;
+            }
+
+            internal readonly string Label;
+            internal readonly BlueprintRace Race;
         }
 
         internal sealed partial class ProductionCompatibilitySession
@@ -182,6 +228,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private ItemEntityArmor _armorItem;
             private ItemEntity _headItem;
             private ItemEntity _cloakItem;
+            private ItemEntity _accessoryItem;
+            private ItemSlot _accessorySlot;
             private bool _firearmStateSet;
             private bool _fixtureInitialized;
             private bool _dollAttachmentRecorded;
@@ -211,6 +259,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             private string _gameAssemblyMvid = string.Empty;
             private string _stage = "resolve-working-save-anchor";
             private string _exceptionSummary = string.Empty;
+
+            private bool IsElementalRaceClassEquipment
+            {
+                get
+                {
+                    return string.Equals(_request.Scenario,
+                        RuntimeTestScenarioCatalog
+                            .ElementalRaceClassEquipment,
+                        StringComparison.Ordinal);
+                }
+            }
+
+            private bool UsesElementalRaceFixtures
+            {
+                get
+                {
+                    return IsElementalRaceClassEquipment ||
+                        IsElementalRaceMotion;
+                }
+            }
 
             internal ProductionCompatibilitySession(ModContext context,
                 RuntimeTestRequest request)
@@ -272,8 +340,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _exceptionSummary = exception.ToString();
                     Add(_assertions,
                         IsProductionMotion
-                            ? "gunslinger-outfit-production-motion-exception"
-                            : "gunslinger-outfit-production-compatibility-exception",
+                            ? IsElementalRaceMotion
+                                ? "elemental-race-motion-exception"
+                                : "gunslinger-outfit-production-motion-exception"
+                            : IsElementalRaceClassEquipment
+                                ? "elemental-race-class-equipment-exception"
+                                : "gunslinger-outfit-production-compatibility-exception",
                         "no exception", "stage=" + _stage + ";" + exception,
                         false, IsProductionMotion
                             ? "guarded request-local native-motion outfit fixture"
@@ -312,13 +384,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(value, _gunslingerClass)))
                     throw new InvalidOperationException(
                         "The exact production Gunslinger is not published in the installed class catalog.");
-                _supportedRaces = root.Progression.CharacterRaces
-                    .Where(value => value != null)
-                    .GroupBy(value => value.RaceId)
-                    .Select(group => group.OrderBy(value => value.AssetGuid,
-                        StringComparer.Ordinal).First())
-                    .OrderBy(value => value.RaceId.ToString(),
-                        StringComparer.Ordinal).ToArray();
+                _supportedRaces = UsesElementalRaceFixtures
+                    ? RequireElementalRaces()
+                    : root.Progression.CharacterRaces
+                        .Where(value => value != null)
+                        .GroupBy(value => value.RaceId)
+                        .Select(group => group.OrderBy(value =>
+                            value.AssetGuid, StringComparer.Ordinal).First())
+                        .OrderBy(value => value.RaceId.ToString(),
+                            StringComparer.Ordinal).ToArray();
                 if (_supportedRaces.Length == 0)
                     throw new InvalidOperationException(
                         "The installed player-race catalog is empty.");
@@ -329,7 +403,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _primaryBefore = _gunslingerClass.PrimaryColor;
                 _secondaryBefore = _gunslingerClass.SecondaryColor;
                 ValidateProductionRaceLinks();
-                _fixtures = BuildHumanFixtures();
+                _fixtures = UsesElementalRaceFixtures
+                    ? BuildElementalFixtures()
+                    : BuildHumanFixtures();
                 _showBackpackField = typeof(Character).GetField(
                     "m_ShowBackpack", BindingFlags.Instance |
                         BindingFlags.NonPublic);
@@ -343,11 +419,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ToLowerInvariant();
                 _gameAssemblyMvid = gameAssembly.ManifestModule
                     .ModuleVersionId.ToString("D");
-                if (ProductionCompatibilityCases.Length != 16 ||
+                if (ProductionCompatibilityCases.Length != 28 ||
                     ProductionCompatibilityCases.Select(value => value.Label)
-                        .Distinct(StringComparer.Ordinal).Count() != 16)
+                        .Distinct(StringComparer.Ordinal).Count() !=
+                            ProductionCompatibilityCases.Length)
                     throw new InvalidOperationException(
-                        "The production compatibility matrix must contain sixteen unique states.");
+                        "The production compatibility matrix must contain twenty-eight unique states.");
                 WriteProgress("initialized");
             }
 
@@ -411,10 +488,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
             }
 
+            private static BlueprintRace[] RequireElementalRaces()
+            {
+                ElementalRaceBlueprintSet set =
+                    BlueprintBootstrap.ElementalRaces;
+                BlueprintRace[] races = set == null
+                    ? new BlueprintRace[0]
+                    : set.OrderedBlueprints().Select(value =>
+                        value == null ? null : value.Race).ToArray();
+                if (races.Length != ElementalRaceCatalog.RaceCount ||
+                    races.Any(value => value == null) ||
+                    races.Select(value => value.AssetGuid).Distinct(
+                        StringComparer.Ordinal).Count() != races.Length)
+                    throw new InvalidOperationException(
+                        "The four production elemental race identities are unavailable or ambiguous.");
+                return races;
+            }
+
             private ProductionCompatibilityFixture[] BuildHumanFixtures()
             {
                 BlueprintRace human = _supportedRaces.Single(value =>
                     value.RaceId == Race.Human);
+                return BuildProductionFixtures(new[]
+                {
+                    new ProductionRaceFixtureSpec("human", human)
+                });
+            }
+
+            private ProductionCompatibilityFixture[] BuildElementalFixtures()
+            {
+                ElementalRaceBlueprints[] races = BlueprintBootstrap
+                    .ElementalRaces.OrderedBlueprints().ToArray();
+                return BuildProductionFixtures(races.Select(value =>
+                    new ProductionRaceFixtureSpec(value.Definition.Kind
+                        .ToString().ToLowerInvariant(), value.Race)));
+            }
+
+            private ProductionCompatibilityFixture[] BuildProductionFixtures(
+                IEnumerable<ProductionRaceFixtureSpec> raceSpecs)
+            {
                 BlueprintUnit[] donors = ResourcesLibrary
                     .GetBlueprints<BlueprintUnit>()
                     .Where(value => value != null && value.Prefab != null &&
@@ -427,6 +539,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ThenBy(value => value.AssetGuid,
                         StringComparer.Ordinal).ToArray();
                 var fixtures = new List<ProductionCompatibilityFixture>();
+                foreach (ProductionRaceFixtureSpec raceSpec in raceSpecs)
                 foreach (Gender gender in new[]
                 {
                     Gender.Male, Gender.Female
@@ -437,7 +550,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (source == null)
                         throw new InvalidOperationException(
                             "No exact native Human body donor exists for " + gender + ".");
-                    BlueprintRaceVisualPreset preset = human.Presets
+                    BlueprintRaceVisualPreset preset = raceSpec.Race.Presets
                         .Where(value => value != null && value.Skin != null &&
                             (gender == Gender.Female
                                 ? value.FemaleSkeleton != null
@@ -446,9 +559,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             StringComparer.Ordinal).FirstOrDefault();
                     if (preset == null)
                         throw new InvalidOperationException(
-                            "No complete native Human visual preset exists for " + gender + ".");
+                            "No complete production visual preset exists for " +
+                            raceSpec.Label + "/" + gender + ".");
                     fixtures.Add(new ProductionCompatibilityFixture(gender,
-                        human, preset, source));
+                        raceSpec.Race, preset, source,
+                        gender.ToString().ToLowerInvariant() + "-" +
+                            raceSpec.Label));
                 }
                 return fixtures.ToArray();
             }
@@ -1045,15 +1161,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                         EquipProductionArmor(OutfitLightArmorItemGuid,
                             ArmorProficiencyGroup.Light);
                         break;
+                    case "medium-armor":
+                        EquipProductionArmor(OutfitMediumArmorItemGuid,
+                            ArmorProficiencyGroup.Medium);
+                        break;
                     case "heavy-armor":
                         EquipProductionArmor(OutfitHeavyArmorItemGuid,
                             ArmorProficiencyGroup.Heavy);
+                        break;
+                    case "robe":
+                        EquipProductionRobe();
                         break;
                     case "tricorn":
                         EquipProductionHeadgear();
                         break;
                     case "cloak":
                         EquipProductionCloak();
+                        break;
+                    case "boots":
+                        EquipProductionAccessory(
+                            BlueprintLibraryLookup.RequireExact<
+                                BlueprintItemEquipmentFeet>(
+                                    BlueprintBootstrap.Library,
+                                    OutfitBootsItemGuid,
+                                    "gunslinger-outfit-production-boots"),
+                            _actor.Body.Feet, "boots", true);
+                        break;
+                    case "gloves":
+                        EquipProductionAccessory(
+                            BlueprintLibraryLookup.RequireExact<
+                                BlueprintItemEquipmentGloves>(
+                                    BlueprintBootstrap.Library,
+                                    OutfitGlovesItemGuid,
+                                    "gunslinger-outfit-production-gloves"),
+                            _actor.Body.Gloves, "gloves", true);
+                        break;
+                    case "bracers":
+                        EquipProductionAccessory(
+                            BlueprintLibraryLookup.RequireExact<
+                                BlueprintItemEquipmentWrist>(
+                                    BlueprintBootstrap.Library,
+                                    OutfitBracersItemGuid,
+                                    "gunslinger-outfit-production-bracers"),
+                            _actor.Body.Wrist, "bracers", true);
+                        break;
+                    case "belt":
+                        EquipProductionAccessory(
+                            BlueprintBootstrap.CordOfStubbornResolve,
+                            _actor.Body.Belt, "belt", false);
                         break;
                     case "backpack":
                         EquipProductionBackpack();
@@ -1081,6 +1236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RemoveProductionItem(_actor.Body.Armor, ref _armorItem);
                 RemoveProductionItem(_actor.Body.Head, ref _headItem);
                 RemoveProductionItem(_actor.Body.Shoulders, ref _cloakItem);
+                RemoveProductionItem(_accessorySlot, ref _accessoryItem);
+                _accessorySlot = null;
                 if (_backpackEntity != null)
                     _avatar.RemoveEquipmentEntity(_backpackEntity, false);
                 _backpackEntity = null;
@@ -1095,6 +1252,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _actor.Body.Armor.MaybeItem == null &&
                     _actor.Body.Head.MaybeItem == null &&
                     _actor.Body.Shoulders.MaybeItem == null &&
+                    _actor.Body.Feet.MaybeItem == null &&
+                    _actor.Body.Gloves.MaybeItem == null &&
+                    _actor.Body.Wrist.MaybeItem == null &&
+                    _actor.Body.Belt.MaybeItem == null &&
                     !ReadBackpackVisible();
             }
 
@@ -1141,6 +1302,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!ReferenceEquals(_actor.Body.Armor.Armor, _armorItem))
                     throw new InvalidOperationException(expectedGroup +
                         " armor did not remain equipped.");
+                _currentItemGuid = blueprint.AssetGuid;
+                _currentItemName = blueprint.name;
+            }
+
+            private void EquipProductionRobe()
+            {
+                BlueprintItemArmor blueprint = BlueprintLibraryLookup
+                    .RequireExact<BlueprintItemArmor>(
+                        BlueprintBootstrap.Library, OutfitRobeItemGuid,
+                        "gunslinger-outfit-production-robe");
+                _expectedOverlayEntities = LoadProductionItemEntities(
+                    blueprint);
+                _armorItem = new ItemEntityArmor(blueprint);
+                _actor.Body.Armor.InsertItem(_armorItem);
+                if (!ReferenceEquals(_actor.Body.Armor.Armor, _armorItem))
+                    throw new InvalidOperationException(
+                        "The audited native robe did not remain equipped.");
+                _currentItemGuid = blueprint.AssetGuid;
+                _currentItemName = blueprint.name;
+            }
+
+            private void EquipProductionAccessory(
+                BlueprintItemEquipment blueprint, ItemSlot slot,
+                string label, bool requireVisual)
+            {
+                if (blueprint == null || slot == null)
+                    throw new InvalidOperationException(
+                        "The " + label + " blueprint or body slot is absent.");
+                if (requireVisual)
+                {
+                    _expectedOverlayEntities =
+                        LoadProductionItemEntities(blueprint);
+                }
+                else
+                {
+                    _expectedOverlayEntities = new EquipmentEntity[0];
+                    _expectedOverlayAssetIds = new string[0];
+                }
+                _accessoryItem = blueprint.CreateEntity();
+                _accessorySlot = slot;
+                slot.InsertItem(_accessoryItem);
+                if (!ReferenceEquals(slot.MaybeItem, _accessoryItem))
+                    throw new InvalidOperationException(
+                        "The audited native " + label +
+                        " did not remain equipped.");
                 _currentItemGuid = blueprint.AssetGuid;
                 _currentItemName = blueprint.name;
             }
@@ -1417,7 +1623,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : _actor.Body.PrimaryHand.MaybeItem == null &&
                         _actor.Body.SecondaryHand.MaybeItem == null;
                 bool armor = kind == "light-armor" ||
-                    kind == "heavy-armor"
+                    kind == "medium-armor" ||
+                    kind == "heavy-armor" || kind == "robe"
                     ? ReferenceEquals(_actor.Body.Armor.MaybeItem, _armorItem)
                     : _actor.Body.Armor.MaybeItem == null;
                 bool head = kind == "tricorn"
@@ -1427,7 +1634,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ? ReferenceEquals(_actor.Body.Shoulders.MaybeItem,
                         _cloakItem)
                     : _actor.Body.Shoulders.MaybeItem == null;
-                return hands && armor && head && shoulders;
+                bool feet = kind == "boots"
+                    ? ReferenceEquals(_actor.Body.Feet.MaybeItem,
+                        _accessoryItem)
+                    : _actor.Body.Feet.MaybeItem == null;
+                bool gloves = kind == "gloves"
+                    ? ReferenceEquals(_actor.Body.Gloves.MaybeItem,
+                        _accessoryItem)
+                    : _actor.Body.Gloves.MaybeItem == null;
+                bool wrist = kind == "bracers"
+                    ? ReferenceEquals(_actor.Body.Wrist.MaybeItem,
+                        _accessoryItem)
+                    : _actor.Body.Wrist.MaybeItem == null;
+                bool belt = kind == "belt"
+                    ? ReferenceEquals(_actor.Body.Belt.MaybeItem,
+                        _accessoryItem)
+                    : _actor.Body.Belt.MaybeItem == null;
+                return hands && armor && head && shoulders && feet &&
+                    gloves && wrist && belt;
             }
 
             private void CaptureProductionCase(
@@ -1571,7 +1795,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "armor", SlotItemGuid(_actor.Body.Armor) },
                     { "head", SlotItemGuid(_actor.Body.Head) },
                     { "shoulders", SlotItemGuid(
-                        _actor.Body.Shoulders) }
+                        _actor.Body.Shoulders) },
+                    { "feet", SlotItemGuid(_actor.Body.Feet) },
+                    { "gloves", SlotItemGuid(_actor.Body.Gloves) },
+                    { "wrist", SlotItemGuid(_actor.Body.Wrist) },
+                    { "belt", SlotItemGuid(_actor.Body.Belt) }
                 };
             }
 
@@ -1659,6 +1887,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ref _headItem);
                         RemoveProductionItem(_actor.Body.Shoulders,
                             ref _cloakItem);
+                        RemoveProductionItem(_accessorySlot,
+                            ref _accessoryItem);
+                        _accessorySlot = null;
                         if (_backpackEntity != null)
                             _avatar.RemoveEquipmentEntity(_backpackEntity,
                                 false);
@@ -1711,6 +1942,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _productionEntities = new EquipmentEntity[0];
                     _dollEntities = new EquipmentEntity[0];
                     _hairEntity = null;
+                    _accessoryItem = null;
+                    _accessorySlot = null;
                     _expectedOverlayEntities = new EquipmentEntity[0];
                     _expectedOverlayAssetIds = new string[0];
                     _avatarBefore = new AvatarEntityState[0];
@@ -1794,7 +2027,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "productionBlueprintMutated", false }
                 };
                 string path = Path.Combine(_request.EvidenceDirectory,
-                    "gunslinger-outfit-production-compatibility-index.json");
+                    IsElementalRaceClassEquipment
+                        ? "elemental-race-class-equipment-index.json"
+                        : "gunslinger-outfit-production-compatibility-index.json");
                 WriteJsonAtomic(path, index);
                 _evidenceFiles.Add(path);
             }
@@ -1812,14 +2047,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "phase", _phase },
                     { "motionStep", IsProductionMotion ?
                         _motionStep : -1 },
+                    { "elementalTransitionStep",
+                        IsElementalRaceMotion
+                            ? _elementalTransitionStep : -1 },
+                    { "elementalTransitionPhase",
+                        IsElementalRaceMotion
+                            ? _elementalTransitionPhase : -1 },
+                    { "elementalTransitionCaptured",
+                        IsElementalRaceMotion
+                            ? _elementalTransitionCaptured : 0 },
+                    { "elementalTransitionViews",
+                        IsElementalRaceMotion
+                            ? _elementalTransitionViews : 0 },
                     { "captured", _captured },
                     { "imageCount", _imageCount },
                     { "actorPresent", _actor != null }
                 };
                 WriteJsonAtomic(Path.Combine(_request.EvidenceDirectory,
                     IsProductionMotion
-                        ? "gunslinger-outfit-production-motion-progress.json"
-                        : "gunslinger-outfit-production-compatibility-progress.json"),
+                        ? IsElementalRaceMotion
+                            ? "elemental-race-motion-progress.json"
+                            : "gunslinger-outfit-production-motion-progress.json"
+                        : IsElementalRaceClassEquipment
+                            ? "elemental-race-class-equipment-progress.json"
+                            : "gunslinger-outfit-production-compatibility-progress.json"),
                     progress);
             }
 
@@ -1827,8 +2078,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_cleanupStarted) return;
                 _stage = IsProductionMotion
-                    ? "gunslinger-outfit-production-motion-cleanup"
-                    : "gunslinger-outfit-production-compatibility-cleanup";
+                    ? IsElementalRaceMotion
+                        ? "elemental-race-motion-cleanup"
+                        : "gunslinger-outfit-production-motion-cleanup"
+                    : IsElementalRaceClassEquipment
+                        ? "elemental-race-class-equipment-cleanup"
+                        : "gunslinger-outfit-production-compatibility-cleanup";
                 try
                 {
                     if (IsProductionMotion)
@@ -1940,19 +2195,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _supportedRaces.Length * 2 &&
                     _raceLinkRecords.OfType<JObject>().All(value =>
                         (bool)value["orderedPairExact"]);
+                bool elemental = IsElementalRaceClassEquipment;
+                string expectedScenario = elemental
+                    ? RuntimeTestScenarioCatalog.ElementalRaceClassEquipment
+                    : RuntimeTestScenarioCatalog
+                        .GunslingerOutfitProductionCompatibility;
+                Func<string, string> assertionId = suffix => elemental
+                    ? "elemental-race-class-equipment-" + suffix
+                    : "gunslinger-outfit-production-" + suffix;
+                JObject[] fixtureRecords = _fixtureRecords.OfType<JObject>()
+                    .ToArray();
+                bool commonFixtureContracts = fixtureRecords.All(value =>
+                    string.Equals((string)value["dollCharacterClassGuid"],
+                        OutfitProductionClassGuid,
+                        StringComparison.Ordinal) &&
+                    (bool)value["dollCreationResourceGatePassed"] &&
+                    !(bool)value["resourcePreloadingAtDollCreation"] &&
+                    (bool)value["rigExact"]);
+                bool fixtureContracts = _fixtureRecords.Count ==
+                        expectedFixtures && commonFixtureContracts &&
+                    (elemental
+                        ? expectedFixtures == ElementalRaceCatalog.RaceCount *
+                                2 && _supportedRaces.Length ==
+                                ElementalRaceCatalog.RaceCount &&
+                            fixtureRecords.All(value => string.Equals(
+                                (string)value["raceId"], "Aasimar",
+                                StringComparison.Ordinal)) &&
+                            _supportedRaces.All(race => fixtureRecords.Count(
+                                value => string.Equals((string)value[
+                                    "raceGuid"], race.AssetGuid,
+                                    StringComparison.Ordinal)) == 2)
+                        : expectedFixtures == 2 && fixtureRecords.All(value =>
+                            string.Equals((string)value["raceId"], "Human",
+                                StringComparison.Ordinal)));
 
                 Add(_assertions,
-                    "gunslinger-outfit-production-compatibility-guard",
-                    RuntimeTestScenarioCatalog
-                        .GunslingerOutfitProductionCompatibility,
+                    elemental
+                        ? "elemental-race-class-equipment-guard"
+                        : "gunslinger-outfit-production-compatibility-guard",
+                    expectedScenario,
                     _request.Scenario,
                     string.Equals(_request.Scenario,
-                        RuntimeTestScenarioCatalog
-                            .GunslingerOutfitProductionCompatibility,
+                        expectedScenario,
                         StringComparison.Ordinal),
                     "validated -kmgRuntimeTestRequest allowlist");
                 Add(_assertions,
-                    "gunslinger-outfit-production-save-boundary",
+                    assertionId("save-boundary"),
                     "KMG_AUTOMATION_WORKING; no save API",
                     "saveName=" + _request.Parameters.Value<string>(
                         "saveName") + ";saveApiCalled=false",
@@ -1961,7 +2249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal),
                     "guarded working-save load plus disposable actors");
                 Add(_assertions,
-                    "gunslinger-outfit-production-game-identity",
+                    assertionId("game-identity"),
                     "Kingmaker 2.1.7b exact Assembly-CSharp SHA-256 and MVID",
                     "sha256=" + _gameAssemblySha256 + ";mvid=" +
                         _gameAssemblyMvid,
@@ -1973,41 +2261,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.OrdinalIgnoreCase),
                     "live loaded Assembly-CSharp identity");
                 Add(_assertions,
-                    "gunslinger-outfit-production-race-links",
-                    "exact production pair for every installed player race/gender",
+                    assertionId("race-links"),
+                    elemental
+                        ? "exact accepted Gunslinger pair for all four elemental races and both genders"
+                        : "exact production pair for every installed player race/gender",
                     "races=" + _supportedRaces.Length + ";rows=" +
                         _raceLinkRecords.Count,
                     exactRaceLinks,
                     "BlueprintCharacterClass.LoadClothes on installed race catalog");
                 Add(_assertions,
-                    "gunslinger-outfit-production-human-previews",
-                    "one exact male and female Human Gunslinger DollState/DollData fixture with selected native hair",
+                    elemental
+                        ? "elemental-race-class-equipment-fixtures"
+                        : "gunslinger-outfit-production-human-previews",
+                    elemental
+                        ? "one exact male and female production Gunslinger DollState/DollData fixture for each elemental race"
+                        : "one exact male and female Human Gunslinger DollState/DollData fixture with selected native hair",
                     "fixtures=" + _fixtureRecords.Count,
-                    _fixtureRecords.Count == expectedFixtures &&
-                        expectedFixtures == 2 &&
-                        _fixtureRecords.OfType<JObject>().All(value =>
-                            string.Equals((string)value["raceId"], "Human",
-                                StringComparison.Ordinal) &&
-                            string.Equals((string)value[
-                                "dollCharacterClassGuid"],
-                                OutfitProductionClassGuid,
-                                StringComparison.Ordinal) &&
-                            (bool)value[
-                                "dollCreationResourceGatePassed"] &&
-                            !(bool)value[
-                                "resourcePreloadingAtDollCreation"] &&
-                            (bool)value["rigExact"]),
+                    fixtureContracts,
                     "native DollState.SetClass/CreateData/CreateUnitView path");
                 Add(_assertions,
-                    "gunslinger-outfit-production-equipment-matrix",
-                    "16 exact reversible color, weapon, armor, headgear/hair, cloak, backpack, inactive-weapon, and rebuild states per gender",
+                    assertionId("equipment-matrix"),
+                    "28 exact reversible color, weapon, light/medium/heavy armor, robe, headgear/hair, cloak, boots, gloves, bracers, belt, backpack, inactive-weapon, and rebuild states per race/gender fixture",
                     "records=" + records.Length + ";exactStates=" +
                         exactStateCounts,
                     records.Length == expectedRecords && exactStateCounts &&
                         recordContracts,
                     "real Body slots, Character rebuilds, native equipment wrappers, and exact state sidecars");
                 Add(_assertions,
-                    "gunslinger-outfit-production-visual-captures",
+                    assertionId("visual-captures"),
                     expectedRecords + " sidecars, " +
                         (expectedRecords * 2) + " PNGs, " +
                         (expectedRecords * 5) + " labelled views",
@@ -2022,8 +2303,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _evidenceFiles.All(File.Exists),
                     "four-view preview sheets plus elevated ordinary isometric captures");
                 Add(_assertions,
-                    "gunslinger-outfit-production-restoration",
-                    "exact original avatar state and saved links restored for both fixtures",
+                    assertionId("restoration"),
+                    "exact original avatar state and saved links restored for every fixture",
                     "restored=" + _restorations + "/" +
                         expectedFixtures,
                     _restorations == expectedFixtures &&
@@ -2034,13 +2315,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (bool)value["savedLinksUnchanged"]),
                     "saved:false entity/ramp snapshots and Character.RebuildOutfit");
                 Add(_assertions,
-                    "gunslinger-outfit-production-blueprint-immutability",
+                    assertionId("blueprint-immutability"),
                     "published class arrays, links, and colors remain exact original references and values",
                     "unchanged=" + ProductionBlueprintUnchanged(),
                     ProductionBlueprintUnchanged(),
                     "pre/post production BlueprintCharacterClass snapshot");
                 Add(_assertions,
-                    "gunslinger-outfit-production-cleanup",
+                    assertionId("cleanup"),
                     "exact party/global-unit snapshots restored; no save call",
                     "cleaned=" + cleaned + ";updates=" +
                         _settleUpdates, cleaned,
