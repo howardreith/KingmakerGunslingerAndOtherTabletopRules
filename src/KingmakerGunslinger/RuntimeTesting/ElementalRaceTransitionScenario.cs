@@ -317,12 +317,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _actor.Blueprint.IsCheater = false;
                 _elementalTransitionAbilityData =
                     new AbilityData(ability);
-                TargetWrapper target = ElementalSpellTarget();
-                _elementalActorBuffsBefore = _actor.Descriptor.Buffs
-                    .RawFacts.OfType<Buff>().ToArray();
-                _elementalTargetBuffsBefore = _motionTarget == null
-                    ? new Buff[0] : _motionTarget.Descriptor.Buffs
-                        .RawFacts.OfType<Buff>().ToArray();
                 bool available = _elementalTransitionAbilityData
                     .IsAvailable;
                 int availableCount = _elementalTransitionAbilityData
@@ -334,6 +328,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 _elementalSpellAvailabilityGates =
                     DescribeElementalSpellAvailability();
+                if (availableCount != 1)
+                    throw new InvalidOperationException(
+                        "The racial SLA did not retain exactly one available " +
+                        "resource use while settling; availableCount=" +
+                        availableCount + ";resource=" +
+                        _elementalSpellResourceBefore + ";maximum=" +
+                        _elementalSpellResourceMaximum + ";records=" +
+                        _elementalSpellResourceRecordsAfter + ";" +
+                        _elementalSpellAvailabilityGates + ".");
+                if (!available)
+                {
+                    if (_elementalSpellAvailabilitySettleUpdates == 0)
+                        _diagnostics.Add("elementalSlaReadiness=" +
+                            _fixtures[_fixtureIndex].Label + ";update=0;" +
+                            "initial=" + _elementalSpellResourceInitial +
+                            ";prepared=" + _elementalSpellResourceBefore +
+                            ";maximum=" + _elementalSpellResourceMaximum +
+                            ";records=" +
+                            _elementalSpellResourceRecordsBefore + "->" +
+                            _elementalSpellResourceRecordsAfter +
+                            ";availableCount=" + availableCount +
+                            ";available=False;targetDeferred=True;" +
+                            _elementalSpellAvailabilityGates);
+                    TickProductionMotionRuntime();
+                    _elementalTransitionUpdates++;
+                    _elementalSpellAvailabilitySettleUpdates++;
+                    RequireElementalTransitionTime(
+                        "racial SLA availability (" +
+                        _elementalSpellAvailabilityGates + ")");
+                    return;
+                }
+                TargetWrapper target = ElementalSpellTarget();
+                _elementalActorBuffsBefore = _actor.Descriptor.Buffs
+                    .RawFacts.OfType<Buff>().ToArray();
+                _elementalTargetBuffsBefore = _motionTarget == null
+                    ? new Buff[0] : _motionTarget.Descriptor.Buffs
+                        .RawFacts.OfType<Buff>().ToArray();
                 bool targetable = _elementalTransitionAbilityData
                     .CanTarget(target);
                 var readiness = new UnitUseAbility(
@@ -412,16 +443,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";records=" +
                         _elementalSpellResourceRecordsAfter + ";" +
                         _elementalSpellAvailabilityGates + ".");
-                if (!available)
-                {
-                    TickProductionMotionRuntime();
-                    _elementalTransitionUpdates++;
-                    _elementalSpellAvailabilitySettleUpdates++;
-                    RequireElementalTransitionTime(
-                        "racial SLA availability (" +
-                        _elementalSpellAvailabilityGates + ")");
-                    return;
-                }
                 _elementalSpellFinalAvailability = true;
                 _elementalTransitionAbilityCommand = new UnitUseAbility(
                     _elementalTransitionAbilityData, target);
