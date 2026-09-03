@@ -11,15 +11,15 @@
 - [x] Feature settings migrate schemas 0 through 9 to schema 10, preserve every
   explicit value, default absent Elemental Races OFF, round-trip schema 10, and
   reject future schemas.
-- [ ] The eleven-module source matrix has 2,048 exhaustive states and the
+- [x] The eleven-module source matrix has 2,048 exhaustive states and the
   runtime boundary matrix has exactly 24 states.
 - [x] Focused rules, SLA, persistence, manifest, localization, rollback, and
   package-content tests pass.
-- [ ] Focused compatibility tests pass.
+- [x] Focused compatibility tests pass.
 - [x] Complete repository validation and dependency-free domain suite pass at
-  the current save-backed persistence checkpoint (1,389/1,389).
+  the final engineering transition checkpoint (1,390/1,390).
 - [x] Clean Release/package command and strict package validation pass at the
-  current save-backed persistence checkpoint.
+  final version-0.0.113 engineering transition checkpoint.
 - [x] Guarded Steam App ID 640820 base-mechanics, native donor-SLA, Hydraulic
   Push, native identity/movement, and ON/OFF publication scenarios record exact
   build identity and structured evidence without touching protected saves;
@@ -29,8 +29,9 @@
   option, seven skin indexes, and four or more hair colors with complete baked
   materials and exact graph cleanup.
 - [x] Eight elemental Gunslinger fixtures (four races, both sexes) pass all
-  128 accepted outfit/equipment/rebuild states with 8/8 exact restorations,
-  unchanged production class/shared-unit state, and no save API call.
+  224 expanded outfit/equipment/rebuild records across 28 states each with 8/8
+  exact restorations, unchanged production class/shared-unit state, and no
+  save API call.
 - [x] All 80 race/sex/class combinations across Gunslinger, Fighter, Rogue,
   Ranger, Alchemist, Magus, Wizard, Cleric, Monk, and Kineticist resolve their
   exact native class clothes and render complete materials/shaders without
@@ -38,14 +39,23 @@
 - [x] Eight elemental Gunslinger fixtures pass 216/216 native idle, walk, run,
   turn, pistol/musket attack, production reload, and shortsword-melee records;
   the unchanged two-Human mode passes its 54/54-record regression matrix.
+- [x] The same eight fixtures pass 64/64 additional native racial-SLA,
+  prone, death/resurrection, and Beast Shape II/return transition records.
 - [x] Three fresh guarded launches prove eight save-backed race/sex fixtures,
   spent SLA state, module-OFF identity/fact/visual/outfit reload, rest
   restoration, level-up and caster level two, exact fixture cleanup, and exact
   FeatureModules byte restoration.
-- [ ] KMG-alone, Call of the Wild, Races Unleashed, combined, highest-risk, and
-  Visual Adjustments-if-installed profiles are qualified and restored exactly.
-- [ ] Existing Gunslinger outfit, firearm visual/mechanical, feature-module,
-  bootstrap, respec, save-hydration, and 0.0.113 repair regressions pass.
+- [x] KMG-alone, Call of the Wild, Races Unleashed, combined, and highest-risk
+  profiles pass on the version-0.0.113 engineering artifact with exact
+  transaction restoration. Visual Adjustments is NOT-RUN because it is not
+  installed.
+- [ ] All five profiles and all 24 boundary states pass again on the exact
+  version-0.0.114 candidate artifact.
+- [x] Existing Gunslinger outfit, firearm visual/mechanical, feature-module,
+  bootstrap, save-hydration, and 0.0.113 repair regressions pass.
+- [ ] The implemented eight-fixture native replacement/respec gate preserves
+  race, facts, SLA, appearance, and the accepted Gunslinger outfit in an
+  exact-0.0.114 guarded persistence run (source/domain/build gates pass).
 
 ## Owner human acceptance for the exact candidate package
 

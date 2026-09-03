@@ -1020,3 +1020,235 @@
   MVID `5b9fc86a-0d95-4a75-b2cd-8a9237b4e516`. Packaged `Info.json`
   remains version `0.0.113`; this persistence checkpoint is not the final
   preview candidate.
+
+## 2026-09-02 - Compatibility profiles and eleven-module boundary
+
+- Ran the repository compatibility-profile orchestrator with an immutable
+  installed 0.0.113 engineering artifact. Every transaction restored the
+  exact prior Mods tree and module settings. Profile transactions were
+  `compat-20260902T185342Z-5973350fa3fa` and
+  `compat-20260902T190239Z-2c56b50edfe4` (Races Unleashed development
+  passes), `compat-20260902T191139Z-a79767a2b667` (KMG-only observer
+  assumption failed closed), `compat-20260902T192425Z-9c8fcf9cf74a`
+  (KMG only PASS), `compat-20260902T192829Z-9426b83997b1` (Call of the Wild
+  PASS), `compat-20260902T193430Z-4acfea65674b` (Races Unleashed PASS),
+  `compat-20260902T193842Z-5d94f722d0a9` (Call of the Wild plus Races
+  Unleashed PASS), `compat-20260902T194505Z-11348d409953` (highest-risk
+  stack; Elemental Races passed but the inherited Bodyguard fixture failed),
+  and corrected `compat-20260902T200855Z-82edd58b91b7` (highest-risk focused
+  Bodyguard and archetype reconciliation PASS). Every listed transaction
+  reports `Restored=true`.
+- Guarded nested runs were
+  `20260902T1854195574141Z-mod-load-smoke` /
+  `20260902T1855309761198Z-observe-optional-mod-compatibility` /
+  `20260902T1856401598132Z-elemental-races-races-unleashed-compatibility`,
+  `20260902T1903016073083Z-elemental-races-races-unleashed-compatibility`,
+  `20260902T1911578815262Z-mod-load-smoke` /
+  `20260902T1913083417906Z-observe-optional-mod-compatibility` /
+  `20260902T1914171401193Z-elemental-races-races-unleashed-compatibility`
+  (FAIL: the first absence-mode fixture still required Races Unleashed),
+  `20260902T1924432889909Z-mod-load-smoke` /
+  `20260902T1925525300940Z-observe-optional-mod-compatibility` /
+  `20260902T1927013264534Z-elemental-races-races-unleashed-compatibility`,
+  `20260902T1928524725963Z-mod-load-smoke` /
+  `20260902T1930423853288Z-observe-optional-mod-compatibility` /
+  `20260902T1932270230606Z-elemental-races-races-unleashed-compatibility`,
+  `20260902T1934530377201Z-mod-load-smoke` /
+  `20260902T1936027275089Z-observe-optional-mod-compatibility` /
+  `20260902T1937125003792Z-elemental-races-races-unleashed-compatibility`,
+  and `20260902T1939106634916Z-mod-load-smoke` /
+  `20260902T1940579559576Z-observe-optional-mod-compatibility` /
+  `20260902T1942443858679Z-elemental-races-races-unleashed-compatibility`.
+  Highest-risk nested runs
+  `20260902T1945384439064Z-mod-load-smoke`,
+  `20260902T1947291785242Z-observe-optional-mod-compatibility`,
+  `20260902T1949161204578Z-elemental-races-races-unleashed-compatibility`,
+  and `20260902T1951042340323Z-observe-aid-another-compatibility-contracts`
+  passed. `20260902T1952522577770Z-disposable-helpful-bodyguard` failed
+  closed, drove the narrow Bodyguard fixture repair in commit `133abc47`,
+  and was superseded by PASS runs
+  `20260902T2009276441078Z-disposable-helpful-bodyguard` and
+  `20260902T2011198037139Z-disposable-archetype-reconciliation`.
+- Visual Adjustments was not installed in the authorized local mod inventory;
+  its profile is **NOT-RUN**, not PASS.
+- Ran `.\scripts\Invoke-FeatureModuleRuntimeMatrix.ps1` with the immutable
+  installed artifact and generated exactly 24 `2 + 2N` configurations.
+  Every `observe-feature-module-settings` launch passed and restored the
+  exact original settings bytes. Evidence directories and run IDs are recorded
+  in the following section.
+
+### Boundary transaction ledger
+
+All entries are `observe-feature-module-settings` PASS:
+
+```text
+20260902T2014022268316Z / 20260902T2014022478726Z-648c5a0f976c48448f20b91a016409c8
+20260902T2015527171354Z / 20260902T2015527191369Z-e6f9364e3d7c4e2fbda33a339dd99557
+20260902T2017441260505Z / 20260902T2017441280725Z-e81bf9b45d1c4982a939fa8282c373ad
+20260902T2019356615673Z / 20260902T2019356635285Z-d6144b907de147f2b2aa563858b2dd8d
+20260902T2021261946788Z / 20260902T2021261967036Z-189c0d97913d4e899276630b6cd8c7e0
+20260902T2023197732418Z / 20260902T2023197762072Z-5d30a2201c9f483cb58e177e7f3add5d
+20260902T2025134271593Z / 20260902T2025134291633Z-de304636f17943e8a89726db2c909efd
+20260902T2027044821598Z / 20260902T2027044841048Z-d8f296d3904c4193a1c4dbd762ecf0be
+20260902T2028585751265Z / 20260902T2028585781063Z-4eeca35f284f4e6888398b5edb9497ed
+20260902T2030528022234Z / 20260902T2030528042060Z-f183a23a66a84c7896147e36363a065c
+20260902T2032438408466Z / 20260902T2032438438503Z-51c87583c27247fbab6cb8a32c7a8078
+20260902T2034361734679Z / 20260902T2034361754263Z-89848a0f3a964d0dbb336bcae8fb900d
+20260902T2036278173078Z / 20260902T2036278193055Z-05cd5912a4744c0ca7669210634e83bd
+20260902T2038239597329Z / 20260902T2038239627504Z-628ade32173c448c9b572a048c92a0de
+20260902T2040148357921Z / 20260902T2040148377916Z-a8e0a2b1499c4755adfe9b59c7467e59
+20260902T2042070973121Z / 20260902T2042071003309Z-d50008fdf04747b4afec671b16d87a5f
+20260902T2043596368782Z / 20260902T2043596388656Z-72af620fad77447ba1d45215ae4a4c5f
+20260902T2045504373082Z / 20260902T2045504393085Z-cf61e34e6efe4371a7f85852dd5a73ed
+20260902T2047415474773Z / 20260902T2047415484734Z-7877bdfbe6eb45a4b829695504f3030b
+20260902T2049316093982Z / 20260902T2049316113998Z-269616c490524796922a43b4710d74b9
+20260902T2051259790176Z / 20260902T2051259810192Z-2adceb5cb5b3455498da850d95913956
+20260902T2053158397066Z / 20260902T2053158427277Z-8e705ae2576c42c2b037b8a818516a76
+20260902T2055067867187Z / 20260902T2055067897237Z-903ae7339a814a4189dfd90ffa181cbb
+20260902T2056561928027Z / 20260902T2056561948051Z-63d97a60506a48f2860a59d2eac423a7
+```
+
+## 2026-09-02/03 - Expanded equipment and native state transitions
+
+- Generalized the existing Gunslinger outfit compatibility transaction from
+  16 to 28 reversible states per fixture: default/alternate colors; held
+  pistol, musket, and blunderbuss; stored musket; light, medium, and heavy
+  armor with removal/rebuild; robe; tricorn/hair restore; cloak; boots; gloves;
+  bracers; belt; and backpack. The Human/Gunslinger catalog and accepted Magus
+  links were not changed.
+- Transaction `20260902T2112330884762Z-elemental-race-class-equipment`
+  (run `20260902T2112331124769Z-de315475ab184cafa00ac2e15b2bf1e0`)
+  failed closed because one initialization assertion still required sixteen
+  unique states. After replacing that obsolete literal with the catalog
+  count, transaction
+  `20260902T2120481218981Z-elemental-race-class-equipment` (run
+  `20260902T2120481448986Z-18bb6ad3f477460791d5ae063af2dd91`)
+  passed: eight fixtures, 224 records, 448 PNGs, 1,120 structural views, eight
+  exact restorations, exact production blueprint immutability, and no save API.
+- Extended `elemental-race-motion` with eight exact records per fixture for
+  one native race-owned SLA command, prone/stand, lethal
+  damage/death/resurrection, and Beast Shape II polymorph/return. The following
+  attempts failed closed and retained structured JSON:
+  - `20260902T2205348818690Z` /
+    `20260902T2205349008729Z-784c4c89a569418c9ffa442d63e55a8f`:
+    lethal damage did not settle inside the first 600-update fixture contract.
+  - `20260902T2219121894201Z` /
+    `20260902T2219122084179Z-8b9aca9fbadb48d69fb20a742eb602a0`:
+    1 to -10 HP was not the engine's actual death threshold.
+  - `20260902T2227361476475Z` /
+    `20260902T2227361656677Z-4c02e659853e485d8446adeeb101bc97`:
+    a later detached fixture's racial resource had not reached native
+    availability before command construction.
+  - `20260902T2247443557556Z` /
+    `20260902T2247443787624Z-fce0e61d109444b490ad26ec83253f6e`:
+    the resource record existed at one, but the detached native availability
+    boundary still reported false.
+  - `20260902T2305499397631Z` /
+    `20260902T2305499606476Z-2aa494cd00c04b609bcaa96f4110473d`:
+    instant Undine delivery completed without remaining in running state.
+  - `20260902T2331073581683Z` /
+    `20260902T2331073761915Z-96bc43ea77184ff49bf502e6dfb18dc3`:
+    the fixture queried `IsUnitEnoughClose` before completing the target
+    command envelope.
+  - `20260902T2340002984237Z` /
+    `20260902T2340003184267Z-e8029219c7644373a7b54cf2ee67fc50`
+    and `20260902T2354525126645Z` /
+    `20260902T2354525342215Z-86e3394d6dab499a8f1341ba08be2d5c`:
+    female Undine reached all preceding 56 transition records but still
+    reported `spellCastingForbidden=True` until native scene readiness.
+- Strategy changes were narrow and fixture-only: use the engine death
+  threshold, initialize detached resources once, accept synchronous command
+  completion, build/settle a legal hostile target before proximity reads, and
+  defer target assignment until native spellcasting readiness instead of
+  forcing unit state.
+- Corrected transaction
+  `20260903T0012214812700Z-elemental-race-motion` (run
+  `20260903T0012215042665Z-b5c60eb2cdb44439a2d540969ec684d8`)
+  passed on commit `651c05ae2c676fee6ad4c085195c818a9a01613a`:
+  216 motion plus 64 transition records, 1,120 views, eight SLA, prone,
+  death/resurrection, and polymorph/return outcomes, exact cleanup, and no save
+  call. Runtime package/DLL SHA-256:
+  `485da937d4b7eb4188aad01f1dda0553ca667b5d7e938533cff0acaee81d4f80` /
+  `c03d35848e89a9938a88fb66b7fa2cdc51e311391ca212a83db0203fe2a5d34c`;
+  DLL MVID `70f1ac87-fb53-4f13-9d7d-32eacd7df860`.
+- The unchanged Human mode then passed transaction
+  `20260903T0022352926189Z-gunslinger-outfit-production-motion` (run
+  `20260903T0022353126156Z-16f4669473d848d1af5acb1aec4fa829`):
+  two fixtures, 54 records, 216 views, exact cleanup, and the same artifact
+  hashes/MVID.
+
+## 2026-09-02 - Final preview identity selection
+
+- Ran `git fetch origin`. `origin/master` remains exactly
+  `06c4d998f160df75ad3be7bfcf3de7e415c631d4`, tag `v0.0.113` remains the
+  newest published version, and there is no competing release. Selected the
+  owner-authorized next identity: assembly/UMM version `0.0.114`,
+  informational/package identity
+  `0.0.114-elemental-races-preview`, and candidate filename
+  `KingmakerGunslinger-0.0.114-elemental-races-preview.zip`.
+- Updated active build, assembly, package, local-runtime, guarded-preflight,
+  compatibility-profile, persistence-orchestrator, documentation, and test
+  identity surfaces. Historical 0.0.113 evidence and release notes remain
+  intact.
+- Added `tools/validate_elemental_races114.py`. It inherits every accepted
+  0.0.113 paper-mode/save-load invariant and additionally validates 1,706
+  manifest entries (1,704 active, two reserved), 69 Elemental Races entries
+  (68 active plus one request-gated diagnostic), four active race blueprints,
+  schema 10, 11 modules, 24 runtime boundary states, atomic publication,
+  mechanics, visuals, scenarios, compatibility packages, documentation, and
+  1,390 deterministic cases.
+- The first `python .\tools\validate_repository.py` run failed because the
+  UI banner had placed the new marker before the historical
+  `URBAN-BARBARIAN` prefix required by inherited gates. Reordering those two
+  labels preserved both. Subsequent runs exposed two historical suffix maps;
+  each received an explicit 0.0.114 `elemental-races-preview` mapping without
+  changing older mappings.
+- The inherited Eastern/Favored gate initially conflated an unknown new
+  version with its immutable 0.0.93 checkpoint status. The records now keep
+  that historical PASS unchanged while
+  `compatibilityRuntimeQualificationPending=true` records the current
+  candidate honestly and is derived from all five required profile
+  dispositions. No 0.0.114 runtime PASS was borrowed.
+- Release notes now record the unchanged accepted firearm SoundBank checksum,
+  no-`CraftMagicItems.dll` boundary, and inherited 1,288/1,325 checkpoint
+  counts required by version-aware validation.
+- Final command `python .\tools\validate_repository.py` passed the complete
+  inherited Sprint 29-through-113 chain and the new 0.0.114 Elemental Races
+  gate. The exact-version domain suite, clean package, guarded respec,
+  24-state matrix, and five profiles remain pending at this point in history.
+
+## 2026-09-02 - Native Respec source qualification
+
+- Generalized the existing save-backed elemental persistence prepare phase
+  without changing its guarded scenario identity or save boundary. Each of
+  the eight race/sex fixtures now starts as an exact native-created elemental
+  Gunslinger, settles, and then passes through a distinct level-zero
+  replacement descriptor using
+  `LevelUpState.CharBuildMode.Respec`, `SelectRace`, `SelectClass`, and
+  native `Commit`. The temporary source is retired before promotion.
+- Promotion now fails closed unless every replacement retains its exact race,
+  racial facts, one-use SLA, deterministic `DollData`, stable marker
+  identity, and accepted Gunslinger class presentation. The existing
+  persistence phases will then spend the resource, save, reload with selector
+  publication OFF, verify facts/appearance/resource state, rest, level up,
+  clean up, save, and prove absence.
+- Updated the focused `elemental-races.persistence` contract in
+  `GunslingerOutfitRenderTests.cs`; the deterministic case count remains
+  1,390.
+- `.\scripts\test-domain.ps1 -Configuration Release`: **PASS,
+  1,390/1,390**.
+- `.\scripts\build.ps1 -Configuration Release -SkipDomainTests`:
+  production compile and build-output validation **PASS**.
+- `.\scripts\build.ps1 -Configuration Release -Clean -Package`:
+  repository validation, all 1,390 domain tests, production compilation,
+  build-output validation, SoundBank validation, deterministic preview ZIP,
+  and strict standalone UMM validation **PASS**.
+- To preserve enough disk for exact-version guarded runs, removed only 782
+  optional PNGs totaling 1,552,082,960 bytes from the recorded PASS
+  directories `20260903T0012214812700Z-elemental-race-motion`,
+  `20260903T0022352926189Z-gunslinger-outfit-production-motion`, and
+  `20260902T2120481218981Z-elemental-race-class-equipment`. All structured
+  JSON evidence remains. The deleted images are recoverable only by rerunning
+  those guarded scenarios.
+- No 0.0.114 runtime PASS is claimed at this checkpoint. A committed/pushed
+  artifact is required before the guarded Steam persistence transaction.

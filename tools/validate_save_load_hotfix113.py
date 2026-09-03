@@ -141,7 +141,7 @@ def validate(root: Path) -> None:
         raise AssertionError(
             f"Expected {DETERMINISTIC_TEST_COUNT} deterministic test cases")
     package = require_tokens(root / "scripts/package.ps1",
-        "$($info.Id)-$($info.Version)-save-load-hotfix.zip")
+        f"$($info.Id)-$($info.Version)-{PACKAGE_SUFFIX}.zip")
     notes = require_tokens(root / "docs/RELEASE-NOTES-0.0.113.md",
         "Kingmaker Gunslinger 0.0.113",
         "KingmakerGunslinger-0.0.113-save-load-hotfix.zip",

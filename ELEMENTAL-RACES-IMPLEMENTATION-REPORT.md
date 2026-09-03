@@ -2,7 +2,7 @@
 
 ## Current outcome
 
-**IN PROGRESS - BASE-RACE, IDENTITY, PUBLICATION, RACIAL-SLA MECHANICS, PRODUCTION VISUAL MATRIX, AND SAVE-BACKED MODULE-OFF PERSISTENCE RUNTIME QUALIFIED.** All
+**IN PROGRESS - ALL RULES, PUBLICATION, VISUAL-STRUCTURE, EQUIPMENT, TRANSITION, PERSISTENCE, BOUNDARY, AND REQUIRED COMPATIBILITY ENGINEERING GATES PASS.** All
 four production races, their common/race-specific rules, 68 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
@@ -16,22 +16,29 @@ prerequisite behavior, and module-ON/module-OFF selector publication.
 The live donor audit additionally proves complete native modular geometry and
 palette inputs. Sixteen production visual blueprints, 28 stable asset proxies,
 and a 56-case all-option production renderer matrix now pass guarded runtime
-qualification. The existing 128-state elemental Gunslinger equipment matrix
+qualification. The expanded 224-record elemental Gunslinger equipment matrix
 and an 80-case exact native clothing matrix across ten classes also pass. Eight
 elemental Gunslinger fixtures pass the accepted 216-record native motion
 matrix, and its original two-Human mode passes again. A three-process,
 eight-fixture working-save transaction proves spent SLA state, exact
 race/facts/appearance/outfit reload with the module OFF, rest, level-up,
-total-level caster scaling, exact cleanup, and settings restoration. Remaining
-equipment and noncovered motion states, compatibility profiles, the full
-24-state runtime boundary matrix, and human acceptance remain pending.
+total-level caster scaling, exact cleanup, and settings restoration. Sixty-four
+additional SLA/prone/death/resurrection/polymorph transition records, all 24
+boundary states, and all five required compatibility profiles also pass on
+version-0.0.113 engineering artifacts with exact restoration. The persistence
+prepare path now requires eight distinct native Respec source/replacement
+commits before it may save; source validation, all 1,390 tests, production
+compilation, and strict preview packaging pass. Exact-0.0.114 guarded runtime
+reruns remain; subjective appearance acceptance remains human-required.
 
 ## Authoritative baseline
 
 - Upstream and starting SHA:
   `06c4d998f160df75ad3be7bfcf3de7e415c631d4`
 - Branch: `codex/elemental-races`
-- Version: `0.0.113` / `0.0.113-save-load-hotfix`
+- Starting version: `0.0.113` / `0.0.113-save-load-hotfix`
+- Candidate version: `0.0.114` /
+  `0.0.114-elemental-races-preview`
 - Baseline domain qualification: 1,373/1,373 PASS
 - Local game: Pathfinder: Kingmaker 2.1.7b accepted assembly fingerprint
 - Local UMM: 0.32.4; Harmony 1.2.0.1
@@ -53,8 +60,8 @@ equipment and noncovered motion states, compatibility profiles, the full
 - Manifest arithmetic is now 1,706 total identities: 1,704 active and two
   reserved. The new reserved identity is not packaged as active content.
 
-Compatibility scenarios, final artifact hashes, and final limitations remain
-pending exact implementation evidence.
+This Phase B checkpoint statement is retained historically; compatibility,
+expanded visuals, and limitations are reported by the current sections below.
 
 ## Phase C feature-module inventory
 
@@ -69,7 +76,8 @@ pending exact implementation evidence.
   observation, and selector-publication planning all include the eleventh key.
 - Domain tests enumerate all 2,048 configurations. The authoritative
   PowerShell catalog independently generated 24 unique `2 + 2N` boundary
-  profiles; those real runtime launches remain pending the production graph.
+  profiles; all 24 engineering-artifact runtime launches passed with exact
+  settings restoration.
 
 ## Production base-race inventory
 
@@ -94,7 +102,7 @@ pending exact implementation evidence.
 - `BlueprintBootstrap.cs`: unconditional identity registration and restart-bound
   selector publication with rollback integrated into the existing transaction.
 
-The authoritative manifest now contains 1,662 entries: 1,660 active and two
+The authoritative manifest now contains 1,706 entries: 1,704 active and two
 reserved. Each race owns these six identity categories: race, resistance,
 affinity, SLA feature, daily resource, and SLA ability. The exact GUID list is
 maintained in `blueprints/blueprints.json`; tests require the full 24-entry map.
@@ -284,10 +292,11 @@ identity, appearance, level-up, and module-disabled reload behavior.
   `592e0d9f7c37bf850e9a79808102197d713a3e29b4655a765a66b1cdb5e8c699`;
   runtime-result SHA-256:
   `53879496629b6a8dac4cd5f41a4c99e41654c8b487736ee7525a1c6dde83a569`.
-  The 128-state elemental Gunslinger equipment matrix and 80-case ten-class
-  native clothing matrix and 216-record elemental native-motion matrix pass
-  separately. Save-backed persistence now passes independently. Remaining
-  equipment/noncovered motion and subjective visual review remain pending.
+  The 224-record expanded elemental Gunslinger equipment matrix, 80-case
+  ten-class native clothing matrix, 216-record native-motion matrix, and
+  64-record SLA/prone/death/resurrection/polymorph matrix pass separately.
+  Save-backed persistence also passes. Only subjective clipping, eye
+  presentation, and overall aesthetics remain human review surfaces.
 
 ## Qualification status
 
@@ -296,8 +305,8 @@ identity, appearance, level-up, and module-disabled reload behavior.
 | Baseline repository validation | PASS |
 | Baseline domain suite | PASS - 1,373/1,373 |
 | Phase B focused probe tests | PASS - 3/3 |
-| Current complete domain suite | PASS - 1,389/1,389 |
-| Phase C clean Release package | PASS - strict UMM validation |
+| Current complete domain suite | PASS - 1,390/1,390 on 0.0.114 source |
+| Phase C clean Release package | PASS - 0.0.114 deterministic preview package and strict UMM validation |
 | Guarded diagnostic runtime | PASS - `20260902T0409422132157Z-observe-elemental-race-blueprints` |
 | Focused schema-10 runtime observation | PASS - `20260902T0440201720486Z-observe-feature-module-settings` |
 | Guarded production identity/module-off runtime | PASS - `20260902T0538341591619Z-observe-elemental-race-blueprints` |
@@ -309,15 +318,17 @@ identity, appearance, level-up, and module-disabled reload behavior.
 | Guarded module-OFF selector absence/identity retention | PASS - `20260902T0958454418742Z-observe-feature-module-settings` |
 | Guarded native visual-donor inventory | PASS - `20260902T1042298660656Z-observe-elemental-race-blueprints` |
 | Guarded production all-option visual matrix | PASS - `20260902T1301142529832Z-elemental-race-visual-audit` (56/56) |
-| Guarded elemental Gunslinger class/equipment matrix | PASS - `20260902T1346079130473Z-elemental-race-class-equipment` (128/128) |
+| Guarded elemental Gunslinger class/equipment matrix | PASS - `20260902T2120481218981Z-elemental-race-class-equipment` (224/224) |
 | Guarded ten-class elemental clothing matrix | PASS - `20260902T1451545064731Z-elemental-race-class-clothing` (80/80) |
-| Guarded elemental native-motion matrix | PASS - `20260902T1520151111405Z-elemental-race-motion` (216/216) |
-| Existing Human native-motion regression | PASS - `20260902T1531223520715Z-gunslinger-outfit-production-motion` (54/54) |
+| Guarded elemental native-motion and transition matrix | PASS - `20260903T0012214812700Z-elemental-race-motion` (216 motion + 64 transition) |
+| Existing Human native-motion regression | PASS - `20260903T0022352926189Z-gunslinger-outfit-production-motion` (54/54) |
 | Three-process save-backed/module-OFF persistence | PASS - `20260902T1759420290804Z` / `20260902T1802161725612Z` / `20260902T1805097536949Z` |
-| Eleven-module 24-state runtime matrix | NOT-RUN |
-| Guarded remaining equipment/noncovered motion | NOT-RUN |
-| Compatibility profiles | NOT-RUN |
-| Human visual acceptance | NOT-READY |
+| Eleven-module 24-state runtime matrix | PASS on 0.0.113 engineering artifact; exact 0.0.114 rerun pending |
+| Guarded expanded equipment/noncovered transitions | PASS - 224 equipment + 64 transition records |
+| Five required compatibility profiles | PASS on 0.0.113 engineering artifact with exact restoration; exact 0.0.114 rerun pending |
+| Elemental native respec | IMPLEMENTED AND SOURCE-QUALIFIED - exact eight-fixture guarded persistence run pending |
+| Visual Adjustments | NOT-RUN - not installed |
+| Human visual acceptance | HUMAN REVIEW REQUIRED after exact candidate package |
 
 Three preceding probe transactions failed closed and are retained in the
 journal with their exact causes. None touched a save or published a race.

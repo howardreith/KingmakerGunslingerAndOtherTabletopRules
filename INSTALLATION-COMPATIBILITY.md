@@ -32,12 +32,12 @@ transient action debt; it does not alter either feat or automation mode.
 
 1. Back up any saves you intend to keep outside the game's active save folder.
 2. Install the standalone
-   `KingmakerGunslinger-0.0.113-save-load-hotfix.zip`
+   `KingmakerGunslinger-0.0.114-elemental-races-preview.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.113 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.114 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -103,6 +103,39 @@ vanilla protection descriptions and allows new control effects under vanilla
 rules; it does not scan for, remove, or otherwise change any control buff that
 was already active.
 
+### Elemental Races preview
+
+Elemental Races defaults OFF. To use it, enable **Elemental Races: Ifrit,
+Oread, Sylph, and Undine (preview)** in UMM and restart the game completely.
+The four race blueprints, their facts, abilities, resources, buffs, and visual
+proxies register on every startup whether the selector module is ON or OFF.
+Turning the module OFF and restarting hides the races from new-character and
+respec selectors but does not strip or unregister an existing elemental
+character. Do not uninstall the entire mod from a save that contains one.
+
+Kingmaker adaptations are explicit: Keen Senses replaces darkvision; every
+race receives exactly +2 racial Perception; affinity is +1 spell DC for only
+the matching elemental descriptor; Sylph uses Feather Step instead of Feather
+Fall; and Undine swimming rules have no mechanical effect. Oread reuses
+Kingmaker's Dwarf Slow and Steady behavior and native Stone Fist. Hydraulic
+Push uses ordinary Bull Rush resolution and total character level plus the
+best Intelligence, Wisdom, or Charisma modifier.
+
+For doll, class-clothing, and armor compatibility the distinct race blueprints
+use `RaceId.Aasimar`. Exact-blueprint prerequisites remain distinct, but
+RaceId-only dialogue or other base-game checks may identify an elemental race
+as Aasimar. No broad dialogue or person-spell patch is applied. Installed
+Aasimar/Tiefling person-spell behavior is retained.
+
+Appearances use audited vanilla Kingmaker body, head, hair, eyebrow, beard,
+horn, palette, and class-clothing resources behind project-owned stable
+proxies. There are no custom body meshes or persistent elemental effects.
+Kingmaker exposes no race-level eye-color choice array, and clipping or overall
+aesthetics require human review. Visual Adjustments was not installed on the
+qualification machine, so that optional integration is **NOT-RUN**; dynamically
+proxied parts may also be unavailable as individually editable entries in that
+mod.
+
 ## Removal warning
 
 There is no uninstall cleanup or general uninstall-safe-save claim. Saves may
@@ -115,6 +148,8 @@ enchantments, and buffs.
 Urban Barbarian archetypes, allocation facts and abilities, and its Rage buff
 are likewise stable saved identities and remain registered while its module is
 OFF.
+Elemental race identities, racial facts, daily resources, active effects, and
+selected visual proxies are also save-bearing.
 Removing the mod while such references remain can
 make a save fail to load or leave missing/invalid content.
 
