@@ -1319,3 +1319,41 @@ All entries are `observe-feature-module-settings` PASS:
   standalone UMM validation **PASS**.
 - No runtime PASS is inferred from those gates. The fixed-race correction
   remains pending a committed, exact-artifact guarded Steam retry.
+- Commit `43da8c40b3ec658699a14e906a2275670ee5b9b5` produced package/DLL
+  SHA-256
+  `28ccd30c3d68cc3649bc3d1140f67f9c71927dac064caac3a6dec56f6cb47bbc` /
+  `e22101e9fd48ea30e7fa5d5ff17e53576372caf7c1cba5debe639b07fcb7bae5`,
+  MVID `472eb552-d32f-4332-af01-d3709246ca2b`; deployment
+  `20260903T0250082999037Z`.
+- Guarded transaction
+  `20260903T0250283050736Z-elemental-race-persistence-prepare`, run
+  `20260903T0250283271048Z-27fd2eef339b4fe0bfb8fbf07cdef2f6`,
+  proved the first fixed-race native Respec: distinct level-zero replacement,
+  exact race before and in the initial preview, level-1 Gunslinger preview
+  and commit, callback, source retirement, and exact committed race. It then
+  failed closed before capture or save because the replacement lacked
+  `KMG_ElementalRaces_Ifrit_BurningHandsAbility`.
+- Root cause is narrower fixture fidelity: assigning `BlueprintUnit.Race`
+  establishes fixed identity but does not model the already-active racial
+  feature facts carried by a real character into Respec. The corrected
+  replacement activates the exact production race and every entry in
+  `BlueprintRace.Features` through native `UnitDescriptor.AddFact`, then
+  requires the SLA, one resource use, and the same facts in the initial
+  Respec preview before selecting the class and committing.
+- The failed run made zero save calls, exited automatically, removed its
+  hooks, and restored `FeatureModules.json` exactly to SHA-256
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+  No persistence PASS is claimed.
+- Validation exposed and corrected two compile-only type assumptions: the
+  first `-SkipDomainTests` build rejected the missing
+  `Kingmaker.Blueprints.Facts` import; the second showed that native
+  `BlueprintRace.Features` is `BlueprintFeatureBase[]`. No artifact was
+  deployed from either failed compile. The final implementation preserves
+  every base fact and requires rank one only for concrete
+  `BlueprintFeature` entries.
+- Final correction gates: repository validation and production compile
+  **PASS**; focused `elemental-races.persistence` **PASS**; complete domain
+  suite **PASS, 1,390/1,390**; canonical clean Release/package, SoundBank,
+  deterministic ZIP, and strict standalone UMM validation **PASS**.
+- Runtime evidence for the racial-fact correction remains pending a new
+  committed and hash-bound package.

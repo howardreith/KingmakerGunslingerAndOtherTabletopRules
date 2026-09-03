@@ -761,10 +761,25 @@
         "saveStarted": false,
         "saveInteractionOccurred": false,
         "settingsRestoredSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e"
+      },
+      {
+        "evidenceDirectory": "20260903T0250283050736Z-elemental-race-persistence-prepare",
+        "runId": "20260903T0250283271048Z-27fd2eef339b4fe0bfb8fbf07cdef2f6",
+        "candidateCommit": "43da8c40b3ec658699a14e906a2275670ee5b9b5",
+        "status": "FAIL",
+        "reason": "fixed-race Respec committed exactly, but the level-zero fixture had not activated the preexisting racial feature facts and therefore lacked the SLA",
+        "nativeRespecRecords": 1,
+        "fixedRaceBeforeRespec": true,
+        "fixedRaceInInitialPreview": true,
+        "committedRaceExact": true,
+        "saveStarted": false,
+        "saveInteractionOccurred": false,
+        "settingsRestoredSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e"
       }
     ],
     "exceptionSafeCleanup": "RUNTIME-PROVEN-FAILURE-TERMINATES-CLEANLY",
-    "fixedRaceRespecCorrection": "SOURCE-DOMAIN-COMPILE-AND-CLEAN-PACKAGE-PASS-RUNTIME-PENDING"
+    "fixedRaceRespecCorrection": "RUNTIME-PROVEN-RACE-AND-CLASS-COMMIT",
+    "fixedRaceFactSeedCorrection": "SOURCE-DOMAIN-COMPILE-AND-CLEAN-PACKAGE-PASS-RUNTIME-PENDING"
   },
   "finalCandidate": {
     "version": "0.0.114",
@@ -772,7 +787,7 @@
     "sourceValidation": "PASS",
     "domain": "PASS-1390-OF-1390",
     "cleanReleasePackage": "PASS-STRICT-UMM",
-    "nativeRespecPersistence": "SELECTRACE-REJECTION-CORRECTED-FIXED-RACE-RETRY-PENDING",
+    "nativeRespecPersistence": "FIXED-RACE-COMMIT-PASS-RACIAL-FACT-SEED-RETRY-PENDING",
     "boundaryMatrix": "PENDING-EXACT-VERSION",
     "compatibilityProfiles": "PENDING-EXACT-VERSION"
   },

@@ -8,6 +8,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.CharGen;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -721,6 +722,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 _createdUnits.Add(_currentUnit);
                 PrepareBaseStats(_currentUnit.Descriptor);
+                if (_creatingRespecReplacement)
+                    SeedFixedElementalRespecFacts(
+                        _currentUnit.Descriptor, fixture);
                 _currentUnit.Descriptor.CustomGender = fixture.Gender;
                 _currentUnit.Descriptor.Doll = data;
                 _currentUnit.Descriptor.ForcceUseClassEquipment = true;
@@ -896,9 +900,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool fixedRaceBeforeRespec = ReferenceEquals(
                     _currentUnit.Descriptor.Progression.Race,
                     fixture.Blueprints.Race);
-                if (!fixedRaceBeforeRespec)
+                bool fixedRaceFactsBeforeRespec =
+                    FixedElementalRespecFactsExact(
+                        _currentUnit.Descriptor, fixture);
+                AbilityData seededSla = RequireAbility(_currentUnit,
+                    fixture.Blueprints.SlaAbility);
+                int seededSlaResourceBeforeRespec =
+                    _currentUnit.Descriptor.Resources.GetResourceAmount(
+                        fixture.Blueprints.SlaResource);
+                bool seededSlaAvailableBeforeRespec =
+                    seededSla.IsAvailable;
+                if (!fixedRaceBeforeRespec ||
+                    !fixedRaceFactsBeforeRespec ||
+                    seededSlaResourceBeforeRespec != 1 ||
+                    !seededSlaAvailableBeforeRespec)
                     throw new InvalidOperationException(fixture.Label +
-                        " level-0 Respec replacement did not inherit its fixed race.");
+                        " level-0 Respec replacement did not inherit its " +
+                        "fixed race facts and available SLA.");
                 try
                 {
                     controller = LevelUpController
@@ -915,9 +933,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool fixedRaceInInitialPreview = ReferenceEquals(
                         controller.Preview.Progression.Race,
                         fixture.Blueprints.Race);
-                    if (!fixedRaceInInitialPreview)
+                    bool fixedRaceFactsInInitialPreview =
+                        FixedElementalRespecFactsExact(
+                            controller.Preview, fixture);
+                    if (!fixedRaceInInitialPreview ||
+                        !fixedRaceFactsInInitialPreview)
                         throw new InvalidOperationException(fixture.Label +
-                            " native Respec preview did not preserve its fixed race.");
+                            " native Respec preview did not preserve its " +
+                            "fixed race facts.");
                     if (!controller.SelectClass(_gunslingerClass, false))
                         throw new InvalidOperationException(fixture.Label +
                             " native Respec Gunslinger selection was rejected.");
@@ -931,7 +954,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             controller.Preview.Progression.Race,
                             fixture.Blueprints.Race) &&
                         controller.Preview.Progression.Features.GetRank(
-                            fixture.Blueprints.Race) == 1;
+                            fixture.Blueprints.Race) == 1 &&
+                        fixedRaceFactsInInitialPreview;
                     controller.Commit();
                     controller = null;
                     return new JObject
@@ -948,8 +972,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "respecMode", "Respec" },
                         { "fixedRaceBeforeRespec",
                             fixedRaceBeforeRespec },
+                        { "fixedRaceFactsBeforeRespec",
+                            fixedRaceFactsBeforeRespec },
+                        { "seededSlaResourceBeforeRespec",
+                            seededSlaResourceBeforeRespec },
+                        { "seededSlaAvailableBeforeRespec",
+                            seededSlaAvailableBeforeRespec },
                         { "fixedRaceInInitialPreview",
                             fixedRaceInInitialPreview },
+                        { "fixedRaceFactsInInitialPreview",
+                            fixedRaceFactsInInitialPreview },
                         { "racePreserved", previewRaceExact },
                         { "classSelected", true },
                         { "previewRaceExact", previewRaceExact },
@@ -984,6 +1016,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (blueprint == null)
                     throw new ArgumentNullException("blueprint");
                 blueprint.Race = fixture.Blueprints.Race;
+            }
+
+            private static void SeedFixedElementalRespecFacts(
+                UnitDescriptor owner, ElementalPersistenceFixture fixture)
+            {
+                if (owner == null)
+                    throw new ArgumentNullException("owner");
+                EnsureElementalRespecFact(owner,
+                    fixture.Blueprints.Race);
+                foreach (BlueprintFeatureBase feature in
+                    fixture.Blueprints.Race.Features ??
+                        Array.Empty<BlueprintFeatureBase>())
+                    EnsureElementalRespecFact(owner, feature);
+                if (!FixedElementalRespecFactsExact(owner, fixture))
+                    throw new InvalidOperationException(fixture.Label +
+                        " fixed-race facts were not activated before Respec.");
+            }
+
+            private static void EnsureElementalRespecFact(
+                UnitDescriptor owner, BlueprintUnitFact blueprint)
+            {
+                if (blueprint == null)
+                    throw new InvalidOperationException(
+                        "A fixed-race fact blueprint is null.");
+                if (owner.HasFact(blueprint)) return;
+                if (owner.AddFact(blueprint) == null ||
+                    !owner.HasFact(blueprint))
+                    throw new InvalidOperationException(
+                        "The fixed-race Respec fixture rejected " +
+                        blueprint.AssetGuid + ".");
+            }
+
+            private static bool FixedElementalRespecFactsExact(
+                UnitDescriptor owner, ElementalPersistenceFixture fixture)
+            {
+                BlueprintRace race = fixture.Blueprints.Race;
+                return owner != null &&
+                    ReferenceEquals(owner.Progression.Race, race) &&
+                    owner.HasFact(race) &&
+                    owner.Progression.Features.GetRank(race) == 1 &&
+                    race.Features != null &&
+                    race.Features.All(value => value != null &&
+                        owner.HasFact(value) &&
+                        (!(value is BlueprintFeature) ||
+                            owner.Progression.Features.GetRank(
+                                (BlueprintFeature)value) == 1));
             }
 
             private bool ResourcesReady()
@@ -1109,7 +1187,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Equals((string)value["respecMode"], "Respec",
                         StringComparison.Ordinal) &&
                     (bool)value["fixedRaceBeforeRespec"] &&
+                    (bool)value["fixedRaceFactsBeforeRespec"] &&
+                    (int)value["seededSlaResourceBeforeRespec"] == 1 &&
+                    (bool)value["seededSlaAvailableBeforeRespec"] &&
                     (bool)value["fixedRaceInInitialPreview"] &&
+                    (bool)value["fixedRaceFactsInInitialPreview"] &&
                     (bool)value["racePreserved"] &&
                     (bool)value["classSelected"] &&
                     (bool)value["previewRaceExact"] &&
@@ -2309,7 +2391,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "records=" + respecRecords.Length + ";exact=" +
                         respecExact,
                     respecExact,
-                    "fixed BlueprintRace inheritance, StartWithoutAssigningStaticInstance with CharBuildMode.Respec, SelectClass, Commit, source retirement, and replacement observation");
+                    "fixed BlueprintRace and activated racial fact inheritance, StartWithoutAssigningStaticInstance with CharBuildMode.Respec, SelectClass, Commit, source retirement, and replacement observation");
                 Add(_assertions,
                     "elemental-race-persistence-prepared-rules",
                     "eight exact race/sex Gunslingers with level-1 facts, stats, resistance, affinity, Keen Senses, and available SLA",
