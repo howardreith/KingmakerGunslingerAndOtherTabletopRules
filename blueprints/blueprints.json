@@ -12627,7 +12627,7 @@
     },
     {
       "symbol": "KMG.ElementalRaces.Ifrit.Race", "guid": "556a2d9ae0c6401eaed87614a2caf539",
-      "plannedType": "BlueprintRace", "status": "active", "milestone": "Elemental Races", "notes": "Save-stable playable Ifrit race identity, registered unconditionally and published only when the preview module is enabled."
+      "plannedType": "BlueprintRace", "status": "active", "milestone": "Elemental Races", "notes": "Save-stable playable Ifrit race identity, registered unconditionally and published only when the Elemental Races module is enabled."
     },
     {
       "symbol": "KMG.ElementalRaces.Ifrit.FireResistance", "guid": "34bd9d1bb97d4c5a90a5440dbea13462",
@@ -12651,7 +12651,7 @@
     },
     {
       "symbol": "KMG.ElementalRaces.Oread.Race", "guid": "7ef60bcda0204429bf4859e2faa3cbf8",
-      "plannedType": "BlueprintRace", "status": "active", "milestone": "Elemental Races", "notes": "Save-stable playable Oread race identity, registered unconditionally and published only when the preview module is enabled."
+      "plannedType": "BlueprintRace", "status": "active", "milestone": "Elemental Races", "notes": "Save-stable playable Oread race identity, registered unconditionally and published only when the Elemental Races module is enabled."
     },
     {
       "symbol": "KMG.ElementalRaces.Oread.AcidResistance", "guid": "718bed8a80514e1bab6a71a217412c42",
@@ -12675,7 +12675,7 @@
     },
     {
       "symbol": "KMG.ElementalRaces.Sylph.Race", "guid": "68b64570c6e943f1bcbe4571e88bf285",
-      "plannedType": "BlueprintRace", "status": "active", "milestone": "Elemental Races", "notes": "Save-stable playable Sylph race identity, registered unconditionally and published only when the preview module is enabled."
+      "plannedType": "BlueprintRace", "status": "active", "milestone": "Elemental Races", "notes": "Save-stable playable Sylph race identity, registered unconditionally and published only when the Elemental Races module is enabled."
     },
     {
       "symbol": "KMG.ElementalRaces.Sylph.ElectricityResistance", "guid": "4e8386b0fc4545cd9a6ce02bd0de8563",
@@ -12699,7 +12699,7 @@
     },
     {
       "symbol": "KMG.ElementalRaces.Undine.Race", "guid": "557dea40c2cc440f8afe7d678d2d283a",
-      "plannedType": "BlueprintRace", "status": "active", "milestone": "Elemental Races", "notes": "Save-stable playable Undine race identity, registered unconditionally and published only when the preview module is enabled."
+      "plannedType": "BlueprintRace", "status": "active", "milestone": "Elemental Races", "notes": "Save-stable playable Undine race identity, registered unconditionally and published only when the Elemental Races module is enabled."
     },
     {
       "symbol": "KMG.ElementalRaces.Undine.ColdResistance", "guid": "672808b5db3146dfae98879ebd9edab7",

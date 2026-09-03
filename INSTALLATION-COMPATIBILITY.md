@@ -32,7 +32,7 @@ transient action debt; it does not alter either feat or automation mode.
 
 1. Back up any saves you intend to keep outside the game's active save folder.
 2. Install the standalone
-   `KingmakerGunslinger-0.0.114-elemental-races-preview.zip`
+   `KingmakerGunslinger-0.0.114-elemental-races.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
@@ -71,12 +71,11 @@ The UMM panel contains independent Gunslinger, Acadamae Graduate, Shield Other,
 Expanded Summoning, Elven Branched Spears, Eastern Weapons, `Brown-Fur
 Transmuter -- requires Call of the Wild`, Urban Barbarian, Bodyguard and In
 Harms Way, `Protection from Alignment: control immunity`, and `Elemental Races:
-Ifrit, Oread, Sylph, and Undine (preview)` checkboxes. The first ten default ON;
-Elemental Races defaults OFF. A change is
+Ifrit, Oread, Sylph, and Undine` checkboxes. All eleven default ON. A change is
 saved for the next complete game restart; the panel reports active and saved
 next-restart state separately. Older settings migrate to schema 10 while
-preserving every explicit prior value. An absent `elemental-races` key migrates
-OFF; absent legacy keys retain their established ON defaults.
+preserving every explicit prior value. Any absent module key, including
+`elemental-races`, migrates ON.
 
 Brown-Fur is the only module that requires Call of the Wild. Its adjacent
 status reports Available, Unavailable, or Blocked independently from saved user
@@ -103,10 +102,10 @@ vanilla protection descriptions and allows new control effects under vanilla
 rules; it does not scan for, remove, or otherwise change any control buff that
 was already active.
 
-### Elemental Races preview
+### Elemental Races
 
-Elemental Races defaults OFF. To use it, enable **Elemental Races: Ifrit,
-Oread, Sylph, and Undine (preview)** in UMM and restart the game completely.
+Elemental Races defaults ON. Use **Elemental Races: Ifrit, Oread, Sylph, and
+Undine** in UMM to change its saved state, then restart the game completely.
 The four race blueprints, their facts, abilities, resources, buffs, and visual
 proxies register on every startup whether the selector module is ON or OFF.
 Turning the module OFF and restarting hides the races from new-character and

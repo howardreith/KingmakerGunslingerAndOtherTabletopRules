@@ -2,7 +2,8 @@
 
 ## Current outcome
 
-**AUTOMATED IMPLEMENTATION COMPLETE - HUMAN VISUAL ACCEPTANCE REQUIRED.** All
+**AUTOMATED IMPLEMENTATION COMPLETE; OWNER RELEASE AUTHORIZED; FINAL
+REQUALIFICATION IN PROGRESS.** All
 four production races, their common/race-specific rules, 68 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
@@ -29,8 +30,11 @@ distinct native Respec source/replacement commits before it may save. The exact
 0.0.114 three-process persistence transaction passes, including module-OFF
 reload, cleanup, and fresh-process absence. The exact 24-state boundary and
 five-profile compatibility reruns also pass with exact restoration. The final
-clean Release package and direct strict package revalidation pass. Subjective
-appearance acceptance remains human-required.
+clean Release package and direct strict package revalidation pass. On
+2026-09-03 the owner accepted the candidate and explicitly authorized removal
+of the Preview label, default-ON behavior, finalization, merge, and public
+release. Individual manual-checklist observations were not supplied and are
+not inferred.
 
 ## Authoritative baseline
 
@@ -39,7 +43,7 @@ appearance acceptance remains human-required.
 - Branch: `codex/elemental-races`
 - Starting version: `0.0.113` / `0.0.113-save-load-hotfix`
 - Candidate version: `0.0.114` /
-  `0.0.114-elemental-races-preview`
+  `0.0.114-elemental-races`
 - Baseline domain qualification: 1,373/1,373 PASS
 - Local game: Pathfinder: Kingmaker 2.1.7b accepted assembly fingerprint
 - Local UMM: 0.32.4; Harmony 1.2.0.1
@@ -67,11 +71,10 @@ expanded visuals, and limitations are reported by the current sections below.
 ## Phase C feature-module inventory
 
 - `elemental-races` is the eleventh module, represented by bit 1024 and one UMM
-  checkbox: `Elemental Races: Ifrit, Oread, Sylph, and Undine (preview)`.
+  checkbox: `Elemental Races: Ifrit, Oread, Sylph, and Undine`.
 - Schema 10 preserves every explicit legacy value. Missing or malformed files
-  use the established ten ON defaults plus Elemental Races OFF. An absent
-  Elemental Races key in schemas 0 through 9 migrates OFF; an explicit true or
-  false value survives.
+  default all eleven modules ON. An absent Elemental Races key in schemas 0
+  through 9 migrates ON; an explicit true or false value survives.
 - Active and pending state, equality, hash code, formatting, ordered JSON,
   compatibility profile transactions, guarded request validation, runtime
   observation, and selector-publication planning all include the eleventh key.
@@ -330,7 +333,7 @@ identity, appearance, level-up, and module-disabled reload behavior.
 | Elemental native respec | PASS on exact 0.0.114 - 8/8 distinct source/replacement commits with race, facts, SLA, DollData, and Gunslinger presentation exact |
 | Final human-review package | PASS - clean Release, exact-reference build, strict UMM validation, and two exact-byte guarded PASS runs at `b19bc04f` |
 | Visual Adjustments | NOT-RUN - not installed |
-| Human visual acceptance | HUMAN REVIEW REQUIRED for the exact package below |
+| Owner release acceptance | AUTHORIZED 2026-09-03; individual checklist observations not supplied |
 
 Three preceding probe transactions failed closed and are retained in the
 journal with their exact causes. None touched a save or published a race.
@@ -658,7 +661,11 @@ and
 Visual Adjustments remains NOT-RUN because it is not installed; subjective
 UI and appearance acceptance are not inferred.
 
-## Final human-review artifact
+## Superseded preview human-review artifact
+
+The following artifact was the exact byte-qualified preview candidate accepted
+by the owner before the final label/default promotion. It remains historical
+evidence and is not the public release asset.
 
 The first canonical package from `2ceeb65e` passed the required clean build
 but was superseded so the human-review ZIP could be byte-identical to a
@@ -731,5 +738,6 @@ reconciliations. Transaction
 original settings bytes exactly.
 
 All automatable gates are complete. Visual Adjustments is NOT-RUN because it
-is not installed. Subjective clipping, appearance, and option quality remain
-**HUMAN REVIEW REQUIRED** for the exact package above.
+is not installed. On 2026-09-03 the owner accepted the candidate's visual
+direction and authorized final release. Individual checklist observations
+were not supplied and are not inferred.

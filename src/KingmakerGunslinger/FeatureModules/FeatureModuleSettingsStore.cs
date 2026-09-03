@@ -52,7 +52,7 @@ namespace KingmakerGunslinger.FeatureModules
                 bool protectionFromAlignmentControlImmunity = ReadDefaultOn(root,
                     FeatureModuleConfiguration
                         .ProtectionFromAlignmentControlImmunityId);
-                bool elementalRaces = ReadDefaultOff(root,
+                bool elementalRaces = ReadDefaultOn(root,
                     FeatureModuleConfiguration.ElementalRacesId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
@@ -84,8 +84,8 @@ namespace KingmakerGunslinger.FeatureModules
                         ":" + copyException.Message;
                 }
                 if (warning != null) warning("Malformed feature-module settings at " +
-                    path + "; recovered mixed defaults (existing modules ON, " +
-                    "Elemental Races OFF); " + evidence + "; error=" +
+                    path + "; recovered defaults (all modules ON); " + evidence +
+                    "; error=" +
                     exception.GetType().FullName + ":" + exception.Message);
                 return new FeatureModuleSettingsState(
                     FeatureModuleConfiguration.Defaults, path,
@@ -141,16 +141,6 @@ namespace KingmakerGunslinger.FeatureModules
             if (token == null) return true;
             if (token.Type != JTokenType.Boolean)
                 throw new JsonException("Feature-module key '" + key + "' must be boolean.");
-            return token.Value<bool>();
-        }
-
-        private static bool ReadDefaultOff(JObject root, string key)
-        {
-            JToken token = root[key];
-            if (token == null) return false;
-            if (token.Type != JTokenType.Boolean)
-                throw new JsonException("Feature-module key '" + key +
-                    "' must be boolean.");
             return token.Value<bool>();
         }
 

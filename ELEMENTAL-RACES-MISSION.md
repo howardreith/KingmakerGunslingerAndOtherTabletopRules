@@ -12,5 +12,24 @@ fixtures. Never touch `KMG_AUTOMATION_BASELINE`, create custom body meshes, copy
 third-party or Wrath assets, add runtime dependencies, or fabricate evidence.
 
 Completion requires source, package, runtime, compatibility, and exact
-restoration evidence. Subjective appearance acceptance remains HUMAN REVIEW
-REQUIRED for the exact candidate package.
+restoration evidence. The owner accepted the candidate's visual direction on
+2026-09-03 and authorized final release; unreported individual checklist
+observations must not be inferred.
+
+## Owner-authorized final release promotion
+
+On 2026-09-03 the owner accepted the candidate and explicitly authorized:
+
+- removing the Preview label;
+- making Elemental Races default ON;
+- final qualification and commit;
+- merging pull request 9 to `master`;
+- pushing the merge and tag; and
+- publishing GitHub release `v0.0.114`.
+
+This directive supersedes the earlier preview-label, default-OFF, draft-only,
+and no-release constraints. Schema 10 remains stable: missing keys and
+malformed files use all-ON defaults, while every explicit true or false value
+remains preserved. The individual manual checklist observations were not
+provided, so they must not be fabricated even though release authorization is
+now explicit.

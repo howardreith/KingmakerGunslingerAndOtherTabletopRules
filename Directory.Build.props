@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <KmgVersion>0.0.114</KmgVersion>
-    <KmgInformationalVersion>0.0.114-elemental-races-preview</KmgInformationalVersion>
+    <KmgInformationalVersion>0.0.114-elemental-races</KmgInformationalVersion>
     <LangVersion>7.3</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>

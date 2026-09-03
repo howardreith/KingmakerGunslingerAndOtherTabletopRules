@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release gate for the 0.0.114 Elemental Races preview."""
+"""Release gate for the final 0.0.114 Elemental Races release."""
 from __future__ import annotations
 
 import argparse
@@ -12,21 +12,21 @@ sys.dont_write_bytecode = True
 import validate_save_load_hotfix113 as baseline
 
 VERSION = "0.0.114"
-INFORMATIONAL_VERSION = "0.0.114-elemental-races-preview"
+INFORMATIONAL_VERSION = "0.0.114-elemental-races"
 PACKAGE = "KingmakerGunslinger-0.0.114-local-runtime.zip"
-PACKAGE_SUFFIX = "elemental-races-preview"
+PACKAGE_SUFFIX = "elemental-races"
 DETERMINISTIC_TEST_COUNT = 1390
-STATIC_KEY = "elementalRacesPreview114"
+STATIC_KEY = "elementalRaces114"
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
     if not path.is_file():
-        raise AssertionError(f"0.0.114 preview file missing: {path}")
+        raise AssertionError(f"0.0.114 release file missing: {path}")
     text = path.read_text(encoding="utf-8")
     missing = [token for token in tokens if token not in text]
     if missing:
         raise AssertionError(
-            f"{path.name} lacks 0.0.114 preview token(s): {missing}")
+            f"{path.name} lacks 0.0.114 release token(s): {missing}")
     return text
 
 
@@ -74,11 +74,10 @@ def validate(root: Path) -> None:
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/"
         "FeatureModuleConfiguration.cs", "internal const int ModuleCount = 11",
         'ElementalRacesId = "elemental-races"', "(ElementalRaces ? 1024 : 0)",
-        "true, true, true, true, false")
+        "true, true, true, true, true); } }")
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/"
         "FeatureModuleSettingsStore.cs", "CurrentSchemaVersion = 10",
-        "ReadDefaultOff", "recovered mixed defaults",
-        "Elemental Races OFF")
+        "ReadDefaultOn", "recovered defaults (all modules ON)")
     require_tokens(root / "tests/KingmakerGunslinger.DomainTests/"
         "FeatureModuleSettingsTests.cs", "ExhaustiveCount(11)",
         "BoundaryCount(11)", "24 states for eleven modules")
@@ -172,12 +171,12 @@ def validate(root: Path) -> None:
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.114.md",
         "Kingmaker Gunslinger 0.0.114", PACKAGE_SUFFIX,
-        "Elemental Races defaults OFF", "HUMAN REVIEW REQUIRED")
+        "Elemental Races defaults ON", "explicitly authorized finalization")
     require_tokens(root / "README.md", INFORMATIONAL_VERSION,
         "Elemental Races", "Keen Senses", "Feather Step",
         "Hydraulic Push", "restart")
     require_tokens(root / "INSTALLATION-COMPATIBILITY.md",
-        "KingmakerGunslinger-0.0.114-elemental-races-preview.zip",
+        "KingmakerGunslinger-0.0.114-elemental-races.zip",
         "RaceId.Aasimar", "Visual Adjustments", "uninstall")
 
     static = json.loads((root / "validation/static-validation.json").read_text(
@@ -203,13 +202,15 @@ def validate(root: Path) -> None:
         "reservedDiagnosticIdentityCount": 1,
         "visualBlueprintCount": 16,
         "visualEquipmentProxyCount": 28,
-        "defaultEnabled": False,
+        "defaultEnabled": True,
         "unconditionalRegistration": True,
         "atomicPublication": True,
         "donorRaceId": "Aasimar",
         "saveLoadRepairPreserved": True,
         "compatibilityRuntimeQualificationPending": compatibility_pending,
-        "humanVisualReviewRequired": True,
+        "humanVisualReviewRequired": False,
+        "ownerReleaseAuthorized": True,
+        "individualHumanChecklistEvidenceProvided": False,
     }
     for key, value in expected.items():
         if state.get(key) != value:

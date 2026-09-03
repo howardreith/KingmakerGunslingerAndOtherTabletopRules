@@ -5,13 +5,13 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-j-human-acceptance-handoff",
+  "phase": "owner-authorized-final-release-requalification",
   "version": "0.0.114",
-  "informationalVersion": "0.0.114-elemental-races-preview",
+  "informationalVersion": "0.0.114-elemental-races",
   "featureModuleSchema": 10,
   "featureModuleCount": 11,
   "featureModuleBoundaryCount": 24,
-  "elementalModuleDefault": false,
+  "elementalModuleDefault": true,
   "baselineDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
     "passed": 1373,
@@ -28,17 +28,17 @@
     "oreadRules": "BASE-NATIVE-SLA-MOVEMENT-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
     "sylphRules": "BASE-NATIVE-SLA-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
     "undineRules": "BASE-HYDRAULIC-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
-    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-224-RECORD-EXPANDED-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-280-RECORD-ELEMENTAL-MOTION-AND-TRANSITION-MATRIX-EIGHT-FIXTURE-SAVE-BACKED-RELOAD-PASS-HUMAN-REVIEW-PENDING",
+    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-224-RECORD-EXPANDED-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-280-RECORD-ELEMENTAL-MOTION-AND-TRANSITION-MATRIX-EIGHT-FIXTURE-SAVE-BACKED-RELOAD-PASS-OWNER-RELEASE-AUTHORIZED",
     "runtimeScenarios": "ALL-ELEMENTAL-MECHANICS-PUBLICATION-VISUAL-EQUIPMENT-SLA-PRONE-DEATH-RESURRECTION-POLYMORPH-MOTION-PERSISTENCE-BOUNDARY-COMPATIBILITY-AND-HUMAN-MOTION-REGRESSION-SCENARIOS-PASS;BOUNDARY-AND-PERSISTENCE-EXACT-0.0.114",
     "compatibility": "FIVE-REQUIRED-PROFILES-RUNTIME-QUALIFIED-EXACT-0.0.114-WITH-EXACT-RESTORATION",
-    "packaging": "0.0.114-FINAL-CANONICAL-CLEAN-RELEASE-STRICT-PACKAGE-PASS-HUMAN-REVIEW-REQUIRED",
+    "packaging": "0.0.114-FINAL-NAME-DEFAULT-ON-CANONICAL-CLEAN-RELEASE-PASS-COMMIT-BOUND-REQUALIFICATION-PENDING",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
     "passed": 1390,
     "failed": 0,
-    "status": "PASS-AT-b19bc04f-EXACT-0.0.114",
+    "status": "PASS-1390-OF-1390-FINAL-DEFAULT-ON-WORKTREE",
     "exactVersionRerunPending": false
   },
   "runtime": {
@@ -938,7 +938,7 @@
   },
   "finalCandidate": {
     "version": "0.0.114",
-    "informationalVersion": "0.0.114-elemental-races-preview",
+    "informationalVersion": "0.0.114-elemental-races",
     "sourceValidation": "PASS",
     "domain": "PASS-1390-OF-1390",
     "cleanReleasePackage": "PASS-STRICT-UMM",
@@ -948,5 +948,16 @@
     "boundaryMatrix": "PASS-24-OF-24-EXACT-0.0.114",
     "compatibilityProfiles": "PASS-5-OF-5-EXACT-0.0.114-RESTORED"
   },
-  "humanReview": "HUMAN-REVIEW-REQUIRED-EXACT-PACKAGE-bd2edc600916f636bee9e5a3640e1a82e175fffdfea1ba82367d37458ab5d334"
+  "ownerFinalizationAuthorization": {
+    "date": "2026-09-03",
+    "status": "EXPLICITLY-AUTHORIZED",
+    "removePreviewLabel": true,
+    "defaultEnabled": true,
+    "finalizeCommit": true,
+    "mergeToMaster": true,
+    "pushRemote": true,
+    "publishRelease": true,
+    "individualHumanChecklistEvidenceProvided": false
+  },
+  "humanReview": "OWNER-RELEASE-AUTHORIZED-INDIVIDUAL-CHECKLIST-NOT-PROVIDED"
 }

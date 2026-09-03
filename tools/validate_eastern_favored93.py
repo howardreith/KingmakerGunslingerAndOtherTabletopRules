@@ -142,13 +142,13 @@ def validate(root: Path) -> None:
     contract = static.get(STATIC_KEY, {})
     historical_runtime_pending = RUNTIME_QUALIFICATION_PENDING
     if VERSION == "0.0.114":
-        preview_pending = static.get("elementalRacesPreview114", {}).get(
+        release_pending = static.get("elementalRaces114", {}).get(
             "compatibilityRuntimeQualificationPending")
-        if not isinstance(preview_pending, bool):
+        if not isinstance(release_pending, bool):
             raise AssertionError(
                 "0.0.114 compatibility qualification status is absent")
         # This object records the already-qualified 0.0.93 checkpoint. The
-        # current preview status is tracked separately above.
+        # current 0.0.114 status is tracked separately above.
         historical_runtime_pending = False
     expected_static = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,

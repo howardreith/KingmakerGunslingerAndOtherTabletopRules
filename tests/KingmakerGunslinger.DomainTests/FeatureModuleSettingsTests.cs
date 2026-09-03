@@ -19,8 +19,8 @@ namespace KingmakerGunslinger.DomainTests
                     missing.Active.BrownFurTransmuter && missing.Active.UrbanBarbarian &&
                     missing.Active.BodyguardFeats && missing.Active
                         .ProtectionFromAlignmentControlImmunity &&
-                    !missing.Active.ElementalRaces,
-                    "Missing settings must use existing-ON, Elemental-Races-OFF defaults.");
+                    missing.Active.ElementalRaces,
+                    "Missing settings must default all eleven modules ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName), "{}");
                 FeatureModuleSettingsState legacy = FeatureModuleSettingsStore.Load(path);
                 Assertions.True(legacy.Active.Gunslinger && legacy.Active.AcadamaeGraduate &&
@@ -29,8 +29,8 @@ namespace KingmakerGunslinger.DomainTests
                     legacy.Active.BrownFurTransmuter && legacy.Active.UrbanBarbarian &&
                     legacy.Active.BodyguardFeats && legacy.Active
                         .ProtectionFromAlignmentControlImmunity &&
-                    !legacy.Active.ElementalRaces,
-                    "Schema 0 settings must use existing-ON, Elemental-Races-OFF defaults.");
+                    legacy.Active.ElementalRaces,
+                    "Schema 0 settings must default absent modules ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName),
                     "{\"schemaVersion\":1,\"gunslinger\":false,\"acadamae-graduate\":true}");
                 FeatureModuleSettingsState migrated = FeatureModuleSettingsStore.Load(path);
@@ -43,7 +43,7 @@ namespace KingmakerGunslinger.DomainTests
                     migrated.Active.EasternWeapons && migrated.Active.BrownFurTransmuter &&
                     migrated.Active.UrbanBarbarian && migrated.Active.BodyguardFeats &&
                     migrated.Active.ProtectionFromAlignmentControlImmunity &&
-                    !migrated.Active.ElementalRaces &&
+                    migrated.Active.ElementalRaces &&
                     migratedJson.Contains("\"schemaVersion\": 10") &&
                     migratedJson.Contains("\"shield-other\": true") &&
                     migratedJson.Contains("\"expanded-summoning\": true") &&
@@ -54,8 +54,8 @@ namespace KingmakerGunslinger.DomainTests
                     migratedJson.Contains("\"bodyguard-feats\": true") &&
                     migratedJson.Contains(
                         "\"protection-from-alignment-control-immunity\": true") &&
-                    migratedJson.Contains("\"elemental-races\": false"),
-                    "Schema 1 must migrate atomically to schema 10 with Elemental Races OFF.");
+                    migratedJson.Contains("\"elemental-races\": true"),
+                    "Schema 1 must migrate atomically to schema 10 with Elemental Races ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName),
                     "{\"schemaVersion\":2,\"gunslinger\":true," +
                     "\"acadamae-graduate\":false,\"shield-other\":false}");
@@ -138,7 +138,7 @@ namespace KingmakerGunslinger.DomainTests
                         .ToString(Formatting.None));
                     FeatureModuleSettingsState absent =
                         FeatureModuleSettingsStore.Load(path);
-                    AssertLegacyFixture(absent.Active, false,
+                    AssertLegacyFixture(absent.Active, true,
                         "schema " + schema + " absent elemental-races");
                     JObject migrated = JObject.Parse(
                         File.ReadAllText(settings));
@@ -146,8 +146,8 @@ namespace KingmakerGunslinger.DomainTests
                         "Legacy settings did not migrate to schema 10.");
                     Assertions.True(migrated["elemental-races"].Type ==
                         JTokenType.Boolean &&
-                        !(bool)migrated["elemental-races"],
-                        "Absent Elemental Races did not migrate OFF.");
+                        (bool)migrated["elemental-races"],
+                        "Absent Elemental Races did not migrate ON.");
 
                     bool explicitElemental = schema % 2 == 0;
                     File.WriteAllText(settings, LegacySettings(schema,
@@ -220,13 +220,12 @@ namespace KingmakerGunslinger.DomainTests
                     state.Active.BrownFurTransmuter && state.Active.UrbanBarbarian &&
                     state.Active.BodyguardFeats && state.Active
                         .ProtectionFromAlignmentControlImmunity &&
-                    !state.Active.ElementalRaces,
-                    "Malformed settings did not recover the actual mixed defaults.");
+                    state.Active.ElementalRaces,
+                    "Malformed settings did not recover all modules ON.");
                 Assertions.True(warning != null && Directory.GetFiles(path,
                     "FeatureModules.json.malformed.*").Length == 1 &&
-                    warning.Contains("recovered mixed defaults") &&
-                    warning.Contains("Elemental Races OFF") &&
-                    !warning.Contains("all modules default ON"),
+                    warning.Contains("recovered defaults (all modules ON)") &&
+                    !warning.Contains("Elemental Races OFF"),
                     "Malformed bytes were not quarantined with a diagnostic.");
                 Assertions.Equal("{broken", File.ReadAllText(settings),
                     "Malformed source bytes changed during load.");
@@ -278,7 +277,7 @@ namespace KingmakerGunslinger.DomainTests
             var state = new FeatureModuleSettingsState(
                 FeatureModuleConfiguration.Defaults, "fixture", "fixture", false);
             state.SetPending(false, true, false, false, false, false, false, false,
-                false, false, true);
+                false, false, false);
             Assertions.True(state.Active.Gunslinger && !state.Pending.Gunslinger &&
                 state.RestartRequired, "UI edits must not mutate the active snapshot.");
             Assertions.Equal("gunslinger", FeatureModuleConfiguration.GunslingerId,
@@ -336,8 +335,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("elemental-races",
                 FeatureModuleConfiguration.ElementalRacesId,
                 "Elemental Races module ID changed.");
-            Assertions.True(!state.Active.ElementalRaces &&
-                state.Pending.ElementalRaces && state.RestartRequired,
+            Assertions.True(state.Active.ElementalRaces &&
+                !state.Pending.ElementalRaces && state.RestartRequired,
                 "Elemental Races pending edits mutated the active snapshot or bypassed restart.");
         }
 
@@ -423,7 +422,8 @@ namespace KingmakerGunslinger.DomainTests
                 ui.Contains("Helpful publication:") &&
                 ui.Contains("Protection from Alignment: control immunity") &&
                 ui.Contains(
-                    "Elemental Races: Ifrit, Oread, Sylph, and Undine (preview)") &&
+                    "Elemental Races: Ifrit, Oread, Sylph, and Undine") &&
+                !ui.Contains("Elemental Races: Ifrit, Oread, Sylph, and Undine (preview)") &&
                 !ui.Contains("Urban Barbarian  requires Call of the Wild"),
                 "Brown-Fur UMM state presentation is incomplete.");
         }

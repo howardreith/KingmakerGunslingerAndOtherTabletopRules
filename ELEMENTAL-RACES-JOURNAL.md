@@ -1694,3 +1694,49 @@ All entries are `observe-feature-module-settings` PASS:
     `bd2edc600916f636bee9e5a3640e1a82e175fffdfea1ba82367d37458ab5d334`.
   - `.\scripts\test-domain.ps1 -Configuration Release`: **PASS**, 1,390 of
     1,390 tests with zero failures.
+
+## 2026-09-03 - Owner-authorized final-release promotion
+
+- The owner accepted the candidate and explicitly authorized removing the
+  Preview label, changing Elemental Races to default ON, finalizing and
+  committing, merging pull request 9 to `master`, pushing, tagging, and
+  publishing GitHub release `v0.0.114`. Individual checklist observations
+  were not provided and are not fabricated.
+- Final product identity is `0.0.114-elemental-races`; the release package is
+  `KingmakerGunslinger-0.0.114-elemental-races.zip`; the UMM label is
+  `Elemental Races: Ifrit, Oread, Sylph, and Undine` with no Preview marker.
+- Schema 10 remains unchanged. Missing settings, malformed settings, and an
+  absent `elemental-races` key in schemas 0 through 9 now select the all-ON
+  defaults. Explicit true and false values remain authoritative and
+  restart-bound.
+- `git fetch origin`: **PASS**. `origin/master` remains
+  `06c4d998f160df75ad3be7bfcf3de7e415c631d4`; the next release remains
+  v0.0.114. Draft pull request 9 was **MERGEABLE/CLEAN** at feature head
+  `22810d370654ee4b520681d8a65a29281e0f6553`; the latest published release
+  was v0.0.113.
+- The first `.\scripts\validate-repository.ps1` run failed closed because
+  the inherited Eastern/Favored validator still requested the historical
+  `elementalRacesPreview114` static-validation key. The validator was
+  corrected to the final `elementalRaces114` key; no production behavior was
+  weakened.
+- Corrected `.\scripts\validate-repository.ps1`: **PASS**, including all
+  inherited validators and the final 0.0.114 Elemental Races validator.
+- `.\scripts\test-domain.ps1 -Configuration Release`: **PASS,
+  1,390/1,390**, zero failures. Focused coverage now proves default-ON missing,
+  legacy-absent, malformed, UI-label, active/pending, and exact explicit-value
+  behavior.
+- `powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File
+  .\scripts\build.ps1 -Configuration Release -Clean -Package`: **PASS**.
+  Repository validation, all 1,390 tests, exact production compilation,
+  output/SoundBank validation, deterministic packaging, and strict UMM package
+  validation passed.
+- The dirty-record checkpoint package is provisional and will be superseded by
+  a clean commit-bound Build-Local artifact before guarded runtime:
+  `artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races.zip`,
+  22,977,592 bytes, SHA-256
+  `b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694`.
+  Its DLL was 5,411,328 bytes, SHA-256
+  `09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262`,
+  MVID `dcd73856-39d4-40ce-9b05-77bf249103d7`, informational version
+  `0.0.114-elemental-races`, and 135 package entries. A separate direct
+  `.\scripts\validate-package.ps1` invocation also passed.

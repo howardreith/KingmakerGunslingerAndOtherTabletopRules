@@ -1,13 +1,13 @@
-# Kingmaker Gunslinger 0.0.114 Elemental Races preview
+# Kingmaker Gunslinger 0.0.114 Elemental Races
 
-Candidate asset:
-`KingmakerGunslinger-0.0.114-elemental-races-preview.zip`
+Release asset:
+`KingmakerGunslinger-0.0.114-elemental-races.zip`
 
-This preview adds Ifrit, Oread, Sylph, and Undine as four distinct playable
-races. Elemental Races defaults OFF. Enable **Elemental Races: Ifrit, Oread,
-Sylph, and Undine (preview)** in Unity Mod Manager and restart Kingmaker
-completely. The checkbox is restart-bound and never rebuilds a live blueprint
-graph.
+This release adds Ifrit, Oread, Sylph, and Undine as four distinct playable
+races. Elemental Races defaults ON. Use **Elemental Races: Ifrit, Oread,
+Sylph, and Undine** in Unity Mod Manager to change its saved state, then
+restart Kingmaker completely. The checkbox is restart-bound and never
+rebuilds a live blueprint graph.
 
 ## Rules
 
@@ -57,7 +57,10 @@ Do not uninstall the whole mod from a campaign containing KMG identities.
 Visual Adjustments was absent from the qualification machine and is NOT-RUN.
 Kingmaker exposes no race-level eye-color choice array. Optional proxied parts
 may not appear as separate Visual Adjustments entries. Clipping and overall
-appearance are subjective and remain HUMAN REVIEW REQUIRED.
+appearance are subjective acceptance surfaces. The owner accepted the
+qualified candidate and explicitly authorized finalization, merge, and public
+release on 2026-09-03; individual checklist observations were not supplied and
+are not asserted here.
 
 ## Qualification summary
 
@@ -75,7 +78,7 @@ their combined stack, and the high-risk Call of the Wild + Favored Class +
 Tweak or Treat + Races Unleashed stack. Exact artifact hashes and transaction
 IDs are recorded in `ELEMENTAL-RACES-IMPLEMENTATION-REPORT.md`.
 
-The preview retains the 0.0.113 read-only paper-cartridge save-load repair and
+The release retains the 0.0.113 read-only paper-cartridge save-load repair and
 the accepted Gunslinger Magus-derived class outfit. It also preserves the
 owner-accepted firearm SoundBank byte identity:
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.

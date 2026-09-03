@@ -1,10 +1,9 @@
 # Kingmaker Gunslinger
 
-Version `0.0.114-elemental-races-preview` adds the optional **Elemental
-Races: Ifrit, Oread, Sylph, and Undine (preview)** feature module. It defaults
-OFF. Enable it in the Unity Mod Manager panel, save the setting, and restart
-Kingmaker completely; changing the checkbox never rebuilds the live blueprint
-graph.
+Version `0.0.114-elemental-races` adds the **Elemental Races: Ifrit, Oread,
+Sylph, and Undine** feature module. It defaults ON. Any explicit saved value is
+preserved; changing the checkbox still requires a complete Kingmaker restart
+and never rebuilds the live blueprint graph.
 
 All four races are Medium and have distinct, stable project identities.
 Ifrits receive +2 Dexterity, +2 Charisma, -2 Wisdom, fire resistance 5, Fire
@@ -28,7 +27,7 @@ for safe doll and equipment compatibility, so some base-game dialogue or
 RaceId-only logic can mistake them for Aasimar. Exact race-blueprint
 prerequisites remain distinct.
 
-The preview uses only audited vanilla Kingmaker modular character assets and
+The release uses only audited vanilla Kingmaker modular character assets and
 project-owned stable proxies and color ramps. It adds no original meshes,
 copied third-party assets, persistent elemental VFX, or runtime dependencies.
 The identities remain registered when the module is OFF so an existing
@@ -38,10 +37,11 @@ content remains unsupported. Automated structural and mechanical qualification
 has passed, including all 24 eleven-module boundary states and exact standalone,
 Call of the Wild, Races Unleashed, combined, and Favored Class/Tweak or Treat
 high-risk profiles with full transaction restoration. Visual Adjustments was
-not installed and is **NOT-RUN**. Subjective clipping and appearance acceptance
-remains **HUMAN REVIEW REQUIRED** for the exact candidate package.
+not installed and is **NOT-RUN**. The owner accepted the candidate's visual
+direction and explicitly authorized this release; individual checklist
+observations were not supplied and are not inferred.
 
-The preview retains version `0.0.113`'s save-load hotfix for the
+The release retains version `0.0.113`'s save-load hotfix for the
 paper-cartridge mode repair.
 Paper-mode reads now use only the native activatable ability's current state;
 they never reconcile marker buffs or alter a unit while Kingmaker is loading a
@@ -232,11 +232,9 @@ Open Unity Mod Manager's Kingmaker Gunslinger panel to find eleven checkboxes:
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
 Transmuter -- requires Call of the Wild**, **Urban Barbarian**, **Bodyguard
 and In Harms Way**, **Protection from Alignment: control immunity**, and
-**Elemental Races: Ifrit, Oread, Sylph, and Undine (preview)**. The first ten
-modules default enabled; the Elemental Races preview defaults disabled. Older
-settings migrate to schema 10 while preserving every explicit value. An absent
-Elemental Races key migrates OFF; legacy absent keys for the existing modules
-retain their established ON defaults.
+**Elemental Races: Ifrit, Oread, Sylph, and Undine**. All eleven modules
+default enabled. Older settings migrate to schema 10 while preserving every
+explicit value. Any absent module key, including Elemental Races, migrates ON.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
@@ -250,12 +248,11 @@ Protection from Alignment remain available regardless of CotW compatibility.
 Keep the whole mod installed
 for any campaign that has used project content.
 
-To use the Elemental Races preview, enable its single checkbox in the KMG UMM
-panel and restart Kingmaker completely. Its setting controls only publication
-to new-character and respec selectors. Turning it OFF and restarting hides
-those choices but keeps all elemental identities available to existing saves.
-Removing the entire mod from a campaign that has used an elemental race remains
-unsupported.
+Elemental Races is enabled by default. Its single KMG UMM checkbox controls
+only publication to new-character and respec selectors after a complete
+restart. Turning it OFF and restarting hides those choices but keeps all
+elemental identities available to existing saves. Removing the entire mod from
+a campaign that has used an elemental race remains unsupported.
 
 ## Urban Barbarian
 

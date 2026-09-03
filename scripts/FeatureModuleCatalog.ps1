@@ -75,8 +75,8 @@ function Get-KmgFeatureModuleCatalog {
         [pscustomobject]@{
             InternalProperty = 'ElementalRaces'
             JsonKey = 'elemental-races'
-            DisplayName = 'Elemental Races: Ifrit, Oread, Sylph, and Undine (preview)'
-            DependencyState = 'independent-preview'
+            DisplayName = 'Elemental Races: Ifrit, Oread, Sylph, and Undine'
+            DependencyState = 'independent'
             RuntimeParameter = 'elementalRaces'
         }
     )
