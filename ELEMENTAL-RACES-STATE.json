@@ -715,7 +715,7 @@
     "saveStateTouched": false
   },
   "nativeRespecSourceQualification": {
-    "status": "SOURCE-DOMAIN-COMPILE-AND-CLEAN-PACKAGE-PASS-RUNTIME-PENDING",
+    "status": "PASS",
     "version": "0.0.114",
     "fixtureCount": 8,
     "sourcePattern": "distinct-native-respec-replacement",
@@ -723,7 +723,7 @@
       "source elemental Gunslinger exact",
       "replacement level zero before Respec",
       "CharBuildMode.Respec",
-      "fixed BlueprintRace inheritance and SelectClass",
+      "fixed BlueprintRace and activated racial fact inheritance with SelectClass",
       "preview and committed race/class exact",
       "racial facts and SLA exact",
       "DollData and Gunslinger presentation exact",
@@ -775,11 +775,44 @@
         "saveStarted": false,
         "saveInteractionOccurred": false,
         "settingsRestoredSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e"
+      },
+      {
+        "evidenceDirectories": [
+          "20260903T0306144426995Z-elemental-race-persistence-prepare",
+          "20260903T0308580192907Z-elemental-race-module-disabled-persistence",
+          "20260903T0311577493294Z-elemental-race-persistence-verify-absent"
+        ],
+        "runIds": [
+          "20260903T0306144647588Z-097cd7bdb7f047dbbfbe543d8755cc96",
+          "20260903T0308580202889Z-778e1392b87f40f6888fc62bc8693a76",
+          "20260903T0311577733283Z-92bc4f6035804e8394297cf7222f571a"
+        ],
+        "candidateCommit": "e42461bad81212a6f1cefbd08a2a62e301888d86",
+        "status": "PASS",
+        "nativeRespecRecords": 8,
+        "preparedRecords": 8,
+        "moduleDisabledRecords": 8,
+        "capturesPerMutationProcess": 8,
+        "imagesPerMutationProcess": 16,
+        "renderedViewsPerMutationProcess": 40,
+        "prepareSaveCount": 1,
+        "cleanupSaveCount": 1,
+        "absenceSaveCount": 0,
+        "settingsRestoredSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e"
       }
     ],
     "exceptionSafeCleanup": "RUNTIME-PROVEN-FAILURE-TERMINATES-CLEANLY",
     "fixedRaceRespecCorrection": "RUNTIME-PROVEN-RACE-AND-CLASS-COMMIT",
-    "fixedRaceFactSeedCorrection": "SOURCE-DOMAIN-COMPILE-AND-CLEAN-PACKAGE-PASS-RUNTIME-PENDING"
+    "fixedRaceFactSeedCorrection": "RUNTIME-PASS",
+    "qualifiedArtifact": {
+      "commit": "e42461bad81212a6f1cefbd08a2a62e301888d86",
+      "deployment": "20260903T0305586600979Z",
+      "packageSha256": "95f0e240576690dc97fe880fa525eb99d8bb535da48f45f94bf3a6d5646ee45a",
+      "dllSha256": "96a7a21b514bec0c92db1612e855fdcd7a72b82782d755d65234db22db1fd7a9",
+      "dllMvid": "c079f498-586c-4675-abe4-cde1d2b79e8f",
+      "gameAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "gameAssemblyMvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7"
+    }
   },
   "finalCandidate": {
     "version": "0.0.114",
@@ -787,7 +820,7 @@
     "sourceValidation": "PASS",
     "domain": "PASS-1390-OF-1390",
     "cleanReleasePackage": "PASS-STRICT-UMM",
-    "nativeRespecPersistence": "FIXED-RACE-COMMIT-PASS-RACIAL-FACT-SEED-RETRY-PENDING",
+    "nativeRespecPersistence": "PASS-THREE-FRESH-PROCESSES",
     "boundaryMatrix": "PENDING-EXACT-VERSION",
     "compatibilityProfiles": "PENDING-EXACT-VERSION"
   },

@@ -27,9 +27,10 @@ additional SLA/prone/death/resurrection/polymorph transition records, all 24
 boundary states, and all five required compatibility profiles also pass on
 version-0.0.113 engineering artifacts with exact restoration. The persistence
 prepare path now requires eight distinct native Respec source/replacement
-commits before it may save; source validation, all 1,390 tests, production
-compilation, and strict preview packaging pass. Exact-0.0.114 guarded runtime
-reruns remain; subjective appearance acceptance remains human-required.
+commits before it may save. That exact-0.0.114 three-process persistence
+transaction now passes, including module-OFF reload, cleanup, and fresh-process
+absence. The exact candidate boundary and compatibility-profile reruns remain;
+subjective appearance acceptance remains human-required.
 
 ## Authoritative baseline
 
@@ -322,11 +323,11 @@ identity, appearance, level-up, and module-disabled reload behavior.
 | Guarded ten-class elemental clothing matrix | PASS - `20260902T1451545064731Z-elemental-race-class-clothing` (80/80) |
 | Guarded elemental native-motion and transition matrix | PASS - `20260903T0012214812700Z-elemental-race-motion` (216 motion + 64 transition) |
 | Existing Human native-motion regression | PASS - `20260903T0022352926189Z-gunslinger-outfit-production-motion` (54/54) |
-| Three-process save-backed/module-OFF persistence | PASS - `20260902T1759420290804Z` / `20260902T1802161725612Z` / `20260902T1805097536949Z` |
+| Three-process save-backed/module-OFF persistence | PASS on exact 0.0.114 - `20260903T0306144426995Z` / `20260903T0308580192907Z` / `20260903T0311577493294Z` |
 | Eleven-module 24-state runtime matrix | PASS on 0.0.113 engineering artifact; exact 0.0.114 rerun pending |
 | Guarded expanded equipment/noncovered transitions | PASS - 224 equipment + 64 transition records |
 | Five required compatibility profiles | PASS on 0.0.113 engineering artifact with exact restoration; exact 0.0.114 rerun pending |
-| Elemental native respec | IMPLEMENTED AND SOURCE-QUALIFIED - exact eight-fixture guarded persistence run pending |
+| Elemental native respec | PASS on exact 0.0.114 - 8/8 distinct source/replacement commits with race, facts, SLA, DollData, and Gunslinger presentation exact |
 | Visual Adjustments | NOT-RUN - not installed |
 | Human visual acceptance | HUMAN REVIEW REQUIRED after exact candidate package |
 
@@ -556,3 +557,34 @@ the 5,349,376-byte DLL SHA-256 is
 `ac846bde870dfe7c2bd2355aa0e8bf15fe69cd77b42bcf5a9f6e3eaeea1f2770`;
 DLL MVID is `5b9fc86a-0d95-4a75-b2cd-8a9237b4e516`. This remains a
 version `0.0.113` engineering checkpoint rather than the final preview.
+
+The exact 0.0.114 native-Respec persistence qualification used commit
+`e42461bad81212a6f1cefbd08a2a62e301888d86`, deployment
+`20260903T0305586600979Z`, package/DLL SHA-256
+`95f0e240576690dc97fe880fa525eb99d8bb535da48f45f94bf3a6d5646ee45a` /
+`96a7a21b514bec0c92db1612e855fdcd7a72b82782d755d65234db22db1fd7a9`,
+and DLL MVID `c079f498-586c-4675-abe4-cde1d2b79e8f`.
+
+Prepare run
+`20260903T0306144647588Z-097cd7bdb7f047dbbfbe543d8755cc96`
+passed eight distinct native Respec commits, eight exact rule/SLA records,
+eight spent resources, 16 images, 40 labelled views, exact membership, and one
+authorized working-save write. Module-disabled run
+`20260903T0308580202889Z-778e1392b87f40f6888fc62bc8693a76`
+passed all eight reload/rest/level-up/appearance/outfit records and one exact
+cleanup save. Fresh-process run
+`20260903T0311577733283Z-92bc4f6035804e8394297cf7222f571a`
+proved all fixtures absent with zero writes. Runtime-result/index/runtime-
+evidence SHA-256 triples are
+`f1d0e7cc6827c21d7a9e3d0ce15671ac462df4471935f74c7cd4ef60ddce6683` /
+`1f3c7810db9180073e58e6afcea90f4d7e3ed18bf9a3b02d1b40badd17578ec9` /
+`3609a28c4469c85db3acb3c6af77d6aecfcfb53ee6596842341b1ecf6bee5551`,
+`dbfc60070fd8a05f51e26f6277b2a801bdcd31789eacae73e015c281d142001a` /
+`8e86a2037bee5ebed23c580e5a3ca5fc0bc831f9ed72753928cc2a47618d3c97` /
+`9eaf554735be5e92a7688db0fade55d28871dcf78a80541ab5025d7f6ccefd6f`,
+and
+`b9e61790b825b7d9c8c3ab8f58231a5cd87365684b58438aa3c8249bae36ab55` /
+`e2fdf8e020579bbdcd27728d402809ab9eb6768747de7d2b898833d39107c2a8` /
+`9be3be51483fa7f529494ad056f6ac2b852bf9f1e0dd67cea71599f655cbe5dc`.
+The original settings bytes were restored exactly to SHA-256
+`d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.

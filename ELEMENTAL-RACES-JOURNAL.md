@@ -1357,3 +1357,39 @@ All entries are `observe-feature-module-settings` PASS:
   deterministic ZIP, and strict standalone UMM validation **PASS**.
 - Runtime evidence for the racial-fact correction remains pending a new
   committed and hash-bound package.
+
+## 2026-09-02 - Exact 0.0.114 native-Respec persistence PASS
+
+- Commit `e42461bad81212a6f1cefbd08a2a62e301888d86`, deployment
+  `20260903T0305586600979Z`, package/DLL SHA-256
+  `95f0e240576690dc97fe880fa525eb99d8bb535da48f45f94bf3a6d5646ee45a` /
+  `96a7a21b514bec0c92db1612e855fdcd7a72b82782d755d65234db22db1fd7a9`,
+  and MVID `c079f498-586c-4675-abe4-cde1d2b79e8f` were verified at
+  every process boundary.
+- Prepare directory
+  `20260903T0306144426995Z-elemental-race-persistence-prepare`, run
+  `20260903T0306144647588Z-097cd7bdb7f047dbbfbe543d8755cc96`:
+  **PASS**. All eight distinct source/replacement native Respec records,
+  prepared rule records, and spent-resource records were exact. Evidence
+  contains eight captures, 16 PNGs, 40 labelled views, exact 11-character
+  party membership, and one correlated `KMG_AUTOMATION_WORKING` save with
+  no unexpected save call.
+- Module-disabled directory
+  `20260903T0308580192907Z-elemental-race-module-disabled-persistence`,
+  run `20260903T0308580202889Z-778e1392b87f40f6888fc62bc8693a76`:
+  **PASS**. All eight saved races resolved while unpublished; race/facts,
+  spent SLA state, DollData, accepted Gunslinger outfit, rest restoration,
+  caster level one-to-two, native level-up, appearance reconstruction, and
+  exact fixture cleanup passed. It wrote one correlated cleanup save.
+- Absence directory
+  `20260903T0311577493294Z-elemental-race-persistence-verify-absent`,
+  run `20260903T0311577733283Z-92bc4f6035804e8394297cf7222f571a`:
+  **PASS**. A third fresh process proved all eight marker identities absent,
+  stable identities still registered, selectors absent while the module was
+  OFF, and zero save calls.
+- Every process loaded Kingmaker assembly SHA-256
+  `3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`,
+  MVID `07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`. All hooks were removed,
+  all Kingmaker processes exited, and the original settings bytes were
+  restored exactly to SHA-256
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
