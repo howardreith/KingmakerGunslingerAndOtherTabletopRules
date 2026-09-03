@@ -35,8 +35,11 @@ The identities remain registered when the module is OFF so an existing
 elemental character can load while the races are hidden from new-character and
 respec selectors. Uninstalling the whole mod from a campaign containing its
 content remains unsupported. Automated structural and mechanical qualification
-has passed; subjective clipping and appearance acceptance remains **HUMAN
-REVIEW REQUIRED** for the exact candidate package.
+has passed, including all 24 eleven-module boundary states and exact standalone,
+Call of the Wild, Races Unleashed, combined, and Favored Class/Tweak or Treat
+high-risk profiles with full transaction restoration. Visual Adjustments was
+not installed and is **NOT-RUN**. Subjective clipping and appearance acceptance
+remains **HUMAN REVIEW REQUIRED** for the exact candidate package.
 
 The preview retains version `0.0.113`'s save-load hotfix for the
 paper-cartridge mode repair.

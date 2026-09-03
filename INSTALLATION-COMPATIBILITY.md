@@ -136,6 +136,17 @@ qualification machine, so that optional integration is **NOT-RUN**; dynamically
 proxied parts may also be unavailable as individually editable entries in that
 mod.
 
+Exact 0.0.114 guarded compatibility passed KMG alone, KMG with Call of the
+Wild, KMG with Races Unleashed, KMG with both, and the high-risk Call of the
+Wild + Favored Class + Tweak or Treat + Races Unleashed stack. Across those
+profiles all expected mods loaded, all 47 Call of the Wild classes remained,
+all seven Races Unleashed races retained their order, and the four elemental
+races remained singular and contiguous without replacing another race.
+Eighteen fresh-process scenarios passed with exact restoration of the complete
+pretest mod tree and relevant settings. This structural/mechanical evidence
+does not replace the human appearance checklist or claim a Visual Adjustments
+result.
+
 ## Removal warning
 
 There is no uninstall cleanup or general uninstall-safe-save claim. Saves may

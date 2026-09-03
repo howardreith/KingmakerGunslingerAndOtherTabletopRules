@@ -812,7 +812,7 @@
     "atomicPublication": true,
     "donorRaceId": "Aasimar",
     "saveLoadRepairPreserved": true,
-    "compatibilityRuntimeQualificationPending": true,
+    "compatibilityRuntimeQualificationPending": false,
     "humanVisualReviewRequired": true
   }
 }

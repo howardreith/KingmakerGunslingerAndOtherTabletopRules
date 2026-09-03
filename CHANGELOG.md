@@ -22,6 +22,10 @@
 - Adds guarded rules, publication, visual, class/equipment, motion,
   compatibility, and three-process save-persistence scenarios while preserving
   the accepted Gunslinger outfit and the 0.0.113 paper-mode save-load repair.
+- Qualifies all 24 eleven-module boundary states and five exact compatibility
+  profiles through 18 fresh-process guarded scenarios with zero warnings and
+  exact restoration of the prior mod tree and settings. Visual Adjustments was
+  unavailable and remains explicitly NOT-RUN.
 - Marks subjective visual acceptance as HUMAN REVIEW REQUIRED for the exact
   preview package; no release is published by this change.
 

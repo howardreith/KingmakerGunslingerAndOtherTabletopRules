@@ -1474,3 +1474,97 @@ All entries are `observe-feature-module-settings` PASS:
   remain pending and are not inferred from this boundary PASS.
 - `.\scripts\validate-repository.ps1`: **PASS**, including the
   version-aware Elemental Races 0.0.114 validator.
+
+## 2026-09-03 - Exact 0.0.114 compatibility profiles PASS
+
+- `.\scripts\Build-Local.ps1`: repository validation, complete domain
+  suite **PASS, 1,390/1,390**, exact-reference production compilation,
+  build-output and SoundBank validation, deterministic local-runtime package,
+  and strict standalone UMM validation **PASS**.
+- The five profiles reused one committed artifact:
+  `967f896dc6e7441660e8d7a3c99bf173a4d52c14`; source-state SHA-256
+  `8d47322eeb618ccbde12f5707e272294608ada2a53b30ea3b3bfb72a77f27778`;
+  package SHA-256
+  `bc50a684f76679e164035b46496ee02bbaa3a933145c4f29f2f15a2ac587760d`;
+  DLL SHA-256
+  `302cd4c81977c6aa5f7b2ca8e5dbf132f2e4c15fa3a9b70410e982700d0914bf`;
+  DLL MVID `88951bb3-a82e-4f4c-a2d5-1fb73a4ddcd6`.
+  Deployment `20260903T0422357690930Z`; deployment-manifest SHA-256
+  `d8ebc807786257ea2dd880f2f17f29e76e9e454192a43ed691756749179adf5d`.
+- All profile transactions report `Restored`, `restorationVerified=true`,
+  and `stagedMutationObserved=true`:
+  - `gunslinger-only`:
+    `compat-20260903T042304Z-6ab63512362b` (transaction SHA-256
+    `eacdd10ffec83d23c5e18a6b4d7214cee7d480dada451f5847f810cdaac845c0`)
+  - `gunslinger-call-of-the-wild`:
+    `compat-20260903T042749Z-2987d5aa2784` (transaction SHA-256
+    `33ef4c3153a4372861f30e2104270c29bf0cdf34f57311bfa940cb19d7a2e4bd`)
+  - `gunslinger-races-unleashed`:
+    `compat-20260903T043352Z-52546b4a381d` (transaction SHA-256
+    `9b1c7ffa7938ae49d8e41d0ca8b01900ac8b932d386ad226d62696d443744b83`)
+  - `gunslinger-call-of-the-wild-races-unleashed`:
+    `compat-20260903T043806Z-fc082022c750` (transaction SHA-256
+    `85b31d7a37d707aa50a028860113a1f6b8aa6478bae8b0b59051453cb7bc0f57`)
+  - `gunslinger-high-risk-combined-favored-class`:
+    `compat-20260903T044415Z-0f01ef146905` (transaction SHA-256
+    `34055ccdd70d08ec96b31774556c51a57d23c9cb8454aa1577ddab2b78e0c198`)
+- Exact nested directory / run-ID ledger, runs 1-9:
+  1. `20260903T0423345821199Z-mod-load-smoke` /
+     `20260903T0423346001200Z-44d33a0015584afb992d0439601dca22`
+  2. `20260903T0424438640534Z-observe-optional-mod-compatibility` /
+     `20260903T0424438660543Z-34efa9d4337e4728add253f57285759e`
+  3. `20260903T0425525171646Z-elemental-races-races-unleashed-compatibility` /
+     `20260903T0425525191876Z-7ccaaceaaf934a8f86c83c3253c5ce2a`
+  4. `20260903T0428134241422Z-mod-load-smoke` /
+     `20260903T0428134431432Z-87a066674fce4881b207f5acdb8da66b`
+  5. `20260903T0430007378392Z-observe-optional-mod-compatibility` /
+     `20260903T0430007398438Z-28aa3d515f584b1ea4ae5875fc9c311e`
+  6. `20260903T0431450385179Z-elemental-races-races-unleashed-compatibility` /
+     `20260903T0431450405185Z-a614bf6bfa484a9faab22d9438148746`
+  7. `20260903T0434161873069Z-mod-load-smoke` /
+     `20260903T0434162063081Z-f7b1a41897094ea5ab58723600df9a1e`
+  8. `20260903T0435260266950Z-observe-optional-mod-compatibility` /
+     `20260903T0435260286961Z-b4d02c455e0a40ffbad3eb80c3259b9a`
+  9. `20260903T0436357941429Z-elemental-races-races-unleashed-compatibility` /
+     `20260903T0436357961464Z-4c9d6f66cc6148c19125b462d2226cc3`
+- Exact nested directory / run-ID ledger, runs 10-18:
+  10. `20260903T0438332876733Z-mod-load-smoke` /
+      `20260903T0438333056748Z-90d8a2ea279449b29642d1021064a3e4`
+  11. `20260903T0440193074571Z-observe-optional-mod-compatibility` /
+      `20260903T0440193094575Z-94107dab40cd49fdb5cc81bdc3ce0415`
+  12. `20260903T0442038517461Z-elemental-races-races-unleashed-compatibility` /
+      `20260903T0442038547478Z-5d477f6329714481bed38470921ebfa3`
+  13. `20260903T0444464900310Z-mod-load-smoke` /
+      `20260903T0444465100400Z-8d6b6fa52f7b404da192708cdc69927a`
+  14. `20260903T0446356548582Z-observe-optional-mod-compatibility` /
+      `20260903T0446356568600Z-cf0d2f584ec240ae969582263cdc92cd`
+  15. `20260903T0448228144587Z-elemental-races-races-unleashed-compatibility` /
+      `20260903T0448228164541Z-e082f67cb8b84e2892fba3a5930a085e`
+  16. `20260903T0450100365373Z-observe-aid-another-compatibility-contracts` /
+      `20260903T0450100385417Z-46db25a499d645c98b63e18ba7601013`
+  17. `20260903T0451581107471Z-disposable-helpful-bodyguard` /
+      `20260903T0451581127486Z-a50b937b2fdc438c80ec260d0c1089fa`
+  18. `20260903T0453465586110Z-disposable-archetype-reconciliation` /
+      `20260903T0453465606355Z-3bf3a255ab284a78a3d9604db875d527`
+- All 18 nested results report `PASS`, zero warnings, loaded version
+  0.0.114, and commit `967f896d`. The high-risk observer proved the exact
+  five-mod UMM set, 49 final classes with all 47 Call of the Wild classes
+  retained, and singular KMG class/selector identities. The coexistence
+  observer proved 20 unique races: eight audited native races, Elemental Races
+  contiguous at indexes 9-12, and all seven Races Unleashed races retained at
+  indexes 13-19. Two KMG reconciliation observations were exact no-ops.
+- Every transaction restored the full pretest Mods state. FeatureModules
+  before/after SHA-256 remained
+  `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`;
+  Call of the Wild settings remained
+  `24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8`;
+  the high-risk Favored Class enabled-traits settings remained
+  `bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b`.
+  The managed SoundBank remained
+  `0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`.
+  No Kingmaker process remained.
+- Updated the five Elemental Races-required profile dispositions to
+  `RUNTIME-QUALIFIED-EXACT`, preserved historical non-elemental and
+  human-only caveats in profile notes, and cleared the validator-derived
+  `compatibilityRuntimeQualificationPending` flag. Visual Adjustments remains
+  **NOT-RUN** because it is not installed.

@@ -26,8 +26,9 @@ transaction restoration. The eight-fixture native-respec preparation gate is
 implemented and exact-version 0.0.114 runtime-qualified across prepare,
 module-OFF reload/cleanup, and fresh-process absence. The exact candidate
 24-state boundary rerun also passes with exact settings restoration. The
-exact candidate profile reruns and human visual qualification remain incomplete;
-absence of a hard blocker is not a completion claim.
+exact candidate profile reruns also pass with exact restoration. Final package
+revalidation and human visual qualification remain; absence of a hard blocker
+is not a completion claim.
 
 ## Resolved reconnaissance risks
 
@@ -79,6 +80,13 @@ absence of a hard blocker is not a completion claim.
   every non-Gunslinger module alone, and all OFF. Each runtime result had zero
   warnings and exact expected/active equality; the original settings bytes
   were restored exactly and no Kingmaker process remained.
+- All five required exact 0.0.114 compatibility profiles passed across 18
+  guarded fresh-process scenarios with zero warnings. The high-risk stack
+  retained all 47 Call of the Wild classes, all seven ordered Races Unleashed
+  races, all four singular elemental races, and the accepted Gunslinger class
+  selector while Favored Class, Tweak or Treat, Aid Another, Bodyguard, and
+  archetype reconciliation checks passed. Every profile restored the complete
+  pretest mod state and relevant settings exactly.
 - The guarded donor inventory resolved all 358 declared head, hair, eyebrow,
   beard, horn, tail-palette, body, and preset links across Human, Aasimar,
   Tiefling, Elf, Dwarf, Half-Elf, Half-Orc, and Gnome. It proved at least two
@@ -146,9 +154,9 @@ absence of a hard blocker is not a completion claim.
 These are investigation items, not hard stops. Change strategy and continue
 while a safe, reversible evidence path remains.
 
-The five compatibility profiles must be rerun against the exact 0.0.114
-candidate before the current
-`compatibilityRuntimeQualificationPending` state can be cleared. Visual
+The five exact 0.0.114 compatibility profiles are now
+`RUNTIME-QUALIFIED-EXACT`, and
+`compatibilityRuntimeQualificationPending` is cleared. Visual
 Adjustments is not installed locally and will remain **NOT-RUN** unless that
 machine state changes. Subjective clipping and aesthetics remain **HUMAN
 REVIEW REQUIRED** even after every automatable gate passes.

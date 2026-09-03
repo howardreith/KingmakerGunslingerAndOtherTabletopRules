@@ -29,8 +29,9 @@ version-0.0.113 engineering artifacts with exact restoration. The persistence
 prepare path now requires eight distinct native Respec source/replacement
 commits before it may save. That exact-0.0.114 three-process persistence
 transaction now passes, including module-OFF reload, cleanup, and fresh-process
-absence. The exact candidate boundary and compatibility-profile reruns remain;
-subjective appearance acceptance remains human-required.
+absence. The exact-candidate 24-state boundary and five-profile compatibility
+reruns now also pass with exact restoration. Final package revalidation remains
+before handoff; subjective appearance acceptance remains human-required.
 
 ## Authoritative baseline
 
@@ -326,7 +327,7 @@ identity, appearance, level-up, and module-disabled reload behavior.
 | Three-process save-backed/module-OFF persistence | PASS on exact 0.0.114 - `20260903T0306144426995Z` / `20260903T0308580192907Z` / `20260903T0311577493294Z` |
 | Eleven-module 24-state runtime matrix | PASS on exact 0.0.114 - 24/24, zero warnings, exact settings restoration |
 | Guarded expanded equipment/noncovered transitions | PASS - 224 equipment + 64 transition records |
-| Five required compatibility profiles | PASS on 0.0.113 engineering artifact with exact restoration; exact 0.0.114 rerun pending |
+| Five required compatibility profiles | PASS on exact 0.0.114 - 5/5 profiles, 18/18 nested runs, exact restoration |
 | Elemental native respec | PASS on exact 0.0.114 - 8/8 distinct source/replacement commits with race, facts, SLA, DollData, and Gunslinger presentation exact |
 | Visual Adjustments | NOT-RUN - not installed |
 | Human visual acceptance | HUMAN REVIEW REQUIRED after exact candidate package |
@@ -610,4 +611,49 @@ directory/run-ID ledger is in `ELEMENTAL-RACES-JOURNAL.md`. The matrix
 restored `FeatureModules.json` exactly; an independent post-run hash remained
 `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`,
 and no Kingmaker process remained. This does not qualify the five exact
-0.0.114 compatibility profiles, which remain pending.
+0.0.114 compatibility profiles; those were qualified separately below.
+
+The exact 0.0.114 compatibility qualification reused commit
+`967f896dc6e7441660e8d7a3c99bf173a4d52c14`, package SHA-256
+`bc50a684f76679e164035b46496ee02bbaa3a933145c4f29f2f15a2ac587760d`,
+DLL SHA-256
+`302cd4c81977c6aa5f7b2ca8e5dbf132f2e4c15fa3a9b70410e982700d0914bf`,
+and DLL MVID `88951bb3-a82e-4f4c-a2d5-1fb73a4ddcd6`. Deployment
+`20260903T0422357690930Z` manifest SHA-256:
+`d8ebc807786257ea2dd880f2f17f29e76e9e454192a43ed691756749179adf5d`.
+
+All five required profiles passed:
+
+- `gunslinger-only`:
+  `compat-20260903T042304Z-6ab63512362b`
+- `gunslinger-call-of-the-wild`:
+  `compat-20260903T042749Z-2987d5aa2784`
+- `gunslinger-races-unleashed`:
+  `compat-20260903T043352Z-52546b4a381d`
+- `gunslinger-call-of-the-wild-races-unleashed`:
+  `compat-20260903T043806Z-fc082022c750`
+- `gunslinger-high-risk-combined-favored-class`:
+  `compat-20260903T044415Z-0f01ef146905`
+
+The 18 nested fresh-process results all report PASS with zero warnings. The
+high-risk observer loaded exactly KMG, Call of the Wild, Favored Class, Tweak
+or Treat, and Races Unleashed; retained 47/47 Call of the Wild classes in a
+49-class final catalog; and retained the singular Gunslinger class and
+selector input. Its shared race catalog contained 20 unique entries: all
+eight audited native races, Ifrit/Oread/Sylph/Undine once each and contiguous
+at indexes 9-12, and all seven Races Unleashed races once each at indexes
+13-19. Repeated Elemental Race reconciliation was an exact no-op. Aid Another,
+Helpful/Bodyguard, and archetype reconciliation also passed in the high-risk
+stack. The complete nested directory/run-ID ledger and result hashes are
+recorded in `ELEMENTAL-RACES-JOURNAL.md`.
+
+Every profile restored the complete pretest Mods tree and relevant settings.
+`FeatureModules.json`, Call of the Wild settings, Favored Class enabled-trait
+settings, and managed SoundBank SHA-256 values remained respectively
+`d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`,
+`24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8`,
+`bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b`,
+and
+`0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`.
+Visual Adjustments remains NOT-RUN because it is not installed; subjective
+UI and appearance acceptance are not inferred.

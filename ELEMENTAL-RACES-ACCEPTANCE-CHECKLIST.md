@@ -23,7 +23,7 @@
 - [x] Guarded Steam App ID 640820 base-mechanics, native donor-SLA, Hydraulic
   Push, native identity/movement, and ON/OFF publication scenarios record exact
   build identity and structured evidence without touching protected saves;
-  compatibility remains separately unchecked below.
+  compatibility is qualified separately below.
 - [x] All 16 production visual blueprints and 28 stable equipment proxies
   resolve; 56/56 production race/sex/option cases cover every preset, offered
   option, seven skin indexes, and four or more hair colors with complete baked
@@ -52,8 +52,9 @@
 - [x] All 24 boundary states pass again on one exact version-0.0.114 candidate
   artifact, with expected/active equality, zero warnings, and exact settings
   restoration.
-- [ ] All five compatibility profiles pass again on an exact version-0.0.114
-  candidate artifact with exact mod-state restoration.
+- [x] All five compatibility profiles pass again on one exact version-0.0.114
+  candidate artifact: 18/18 nested guarded runs, zero warnings, and exact
+  mod/settings restoration.
 - [x] Existing Gunslinger outfit, firearm visual/mechanical, feature-module,
   bootstrap, save-hydration, and 0.0.113 repair regressions pass.
 - [x] The implemented eight-fixture native replacement/respec gate preserves
