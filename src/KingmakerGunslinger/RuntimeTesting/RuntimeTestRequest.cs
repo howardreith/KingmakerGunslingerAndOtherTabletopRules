@@ -225,9 +225,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitProductionCompatibility ||
                 request.Scenario == RuntimeTestScenarioCatalog
+                    .ElementalRaceClassEquipment ||
+                request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitProductionMotion ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .ElementalRaceMotion ||
                 RuntimeTestScenarioCatalog
                     .IsGunslingerOutfitProductionPersistenceScenario(
+                        request.Scenario) ||
+                RuntimeTestScenarioCatalog
+                    .IsElementalRacePersistenceScenario(
                         request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                 request.Scenario == RuntimeTestScenarioCatalog.WeaponPresentationMotionEvidence ||
@@ -358,7 +365,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 10 ||
+                if (request.Parameters == null || request.Parameters.Count != 11 ||
                     request.Parameters.Property("gunslinger") == null ||
                     request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("acadamaeGraduate") == null ||
@@ -385,6 +392,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "protectionFromAlignmentControlImmunity") == null ||
                     request.Parameters[
                         "protectionFromAlignmentControlImmunity"].Type !=
+                        JTokenType.Boolean ||
+                    request.Parameters.Property("elementalRaces") == null ||
+                    request.Parameters["elementalRaces"].Type !=
                         JTokenType.Boolean)
                     return "module-states-required";
             }

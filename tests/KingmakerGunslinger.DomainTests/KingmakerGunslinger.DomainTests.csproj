@@ -46,6 +46,8 @@
     <Compile Include="EasternWeaponsInvestigationTests.cs" />
     <Compile Include="CompatibilityAttributionTests.cs" />
     <Compile Include="GunslingerOutfitAuditTests.cs" />
+    <Compile Include="ElementalRaceDevelopmentProbeTests.cs" />
+    <Compile Include="ElementalRaceProductionTests.cs" />
     <Compile Include="GunslingerOutfitRenderTests.cs" />
     <Compile Include="GunslingerClassAppearanceTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Presentation\GunslingerClassAppearanceCatalog.cs"><Link>Presentation\GunslingerClassAppearanceCatalog.cs</Link></Compile>

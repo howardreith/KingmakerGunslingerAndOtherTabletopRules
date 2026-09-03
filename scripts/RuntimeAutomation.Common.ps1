@@ -20,6 +20,54 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-elemental-race-blueprints' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'elemental-race-visual-audit' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'elemental-race-class-clothing' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-race-mechanics' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-race-slas' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-hydraulic-push' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-race-native-identity' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'elemental-races-races-unleashed-compatibility' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-optional-mod-compatibility' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -225,6 +273,36 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'gunslinger-outfit-production-compatibility' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-race-class-equipment' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-race-motion' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-race-persistence-prepare' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-race-module-disabled-persistence' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-race-persistence-verify-absent' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -1159,8 +1237,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         [switch]$ManualInteractionRequired
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.113') {
-        throw 'ExpectedVersion must be exactly the active version 0.0.113.'
+    if ($ExpectedVersion -cne '0.0.114') {
+        throw 'ExpectedVersion must be exactly the active version 0.0.114.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -1187,10 +1265,13 @@ function Assert-KmgRuntimeScenarioPreflight {
     elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
         $allowedProfiles = @(
             'gunslinger-only',
+            'gunslinger-races-unleashed',
             'gunslinger-call-of-the-wild',
+            'gunslinger-call-of-the-wild-races-unleashed',
             'gunslinger-arms-armor',
             'gunslinger-toggle-custom-soundpacks',
             'gunslinger-high-risk-combined',
+            'gunslinger-high-risk-combined-favored-class',
             'gunslinger-all-loadable-local',
             'gunslinger-qualified-combined'
         )
@@ -1202,7 +1283,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 10 -or
+        if ($Parameters.Count -ne 11 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -1223,8 +1304,10 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.bodyguardFeats -isnot [bool] -or
             -not $Parameters.ContainsKey(
                 'protectionFromAlignmentControlImmunity') -or
-            $Parameters.protectionFromAlignmentControlImmunity -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, and protectionFromAlignmentControlImmunity parameters."
+            $Parameters.protectionFromAlignmentControlImmunity -isnot [bool] -or
+            -not $Parameters.ContainsKey('elementalRaces') -or
+            $Parameters.elementalRaces -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, and elementalRaces parameters."
         }
     }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -1346,6 +1429,7 @@ function New-KmgRuntimeRequest {
                 bodyguardFeats = [bool]$Parameters.bodyguardFeats
                 protectionFromAlignmentControlImmunity =
                     [bool]$Parameters.protectionFromAlignmentControlImmunity
+                elementalRaces = [bool]$Parameters.elementalRaces
             }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {

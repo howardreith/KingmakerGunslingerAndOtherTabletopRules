@@ -140,13 +140,23 @@ def validate(root: Path) -> None:
     static = json.loads((root / "validation/static-validation.json")
         .read_text(encoding="utf-8"))
     contract = static.get(STATIC_KEY, {})
+    historical_runtime_pending = RUNTIME_QUALIFICATION_PENDING
+    if VERSION == "0.0.114":
+        release_pending = static.get("elementalRaces114", {}).get(
+            "compatibilityRuntimeQualificationPending")
+        if not isinstance(release_pending, bool):
+            raise AssertionError(
+                "0.0.114 compatibility qualification status is absent")
+        # This object records the already-qualified 0.0.93 checkpoint. The
+        # current 0.0.114 status is tracked separately above.
+        historical_runtime_pending = False
     expected_static = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
         "projectBlueprintCount": PROJECT_BLUEPRINT_COUNT,
         "lateMartialPublicationRequired": True,
         "favoredClassTraitsMustComplete": True,
         "tweakOrTreatHeirloomMustComplete": True,
-        "runtimeQualificationPending": RUNTIME_QUALIFICATION_PENDING,
+        "runtimeQualificationPending": historical_runtime_pending,
     }
     for key, value in expected_static.items():
         if contract.get(key) != value:

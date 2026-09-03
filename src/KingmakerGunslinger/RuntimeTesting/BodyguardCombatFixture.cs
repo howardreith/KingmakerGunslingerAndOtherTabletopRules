@@ -545,6 +545,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             BodyguardRuntime.ClearAll("qualification-fixture-dispose");
             RemoveMemory(Attacker, ProtectorOne);
             RemoveMemory(Attacker, ProtectorTwo);
+            RemoveMemory(ProtectorOne, Attacker);
+            RemoveMemory(ProtectorTwo, Attacker);
             if (Attacker != null && Attacker.Body.PrimaryHand.MaybeItem != null)
                 Attacker.Body.PrimaryHand.RemoveItem(false);
             if (_rangedAttackerWeapon != null) _rangedAttackerWeapon.Dispose();
@@ -702,6 +704,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TimeSpan.FromSeconds(1d);
             protector.PreviousPosition = protector.Position;
             attacker.Memory.Add(protector);
+            protector.Memory.Add(attacker);
         }
 
         private static void RemoveMemory(UnitEntityData owner,

@@ -102,20 +102,29 @@ def validate(root: Path) -> None:
         if entry["status"] == "active"]
     heirloom_reserved = [entry for entry in heirloom_entries
         if entry["status"] == "reserved"]
+    elemental_races_entries = [entry for entry in manifest["entries"]
+        if entry["symbol"].startswith("KMG.ElementalRaces.")]
+    elemental_races_active = [entry for entry in elemental_races_entries
+        if entry["status"] == "active"]
+    elemental_races_reserved = [entry for entry in elemental_races_entries
+        if entry["status"] == "reserved"]
     if (len(manifest["entries"]) != 1439 + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_entries) + len(brown_fur_entries) +
             len(urban_barbarian_entries) + len(bodyguard_entries) +
-            len(helpful_entries) + len(heirloom_entries)
+            len(helpful_entries) + len(heirloom_entries) +
+            len(elemental_races_entries)
             or len(active) != 1438 + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_active) +
             len(brown_fur_active) + len(urban_barbarian_active) +
-            len(bodyguard_active) + len(helpful_active) + len(heirloom_active)
+            len(bodyguard_active) + len(helpful_active) + len(heirloom_active) +
+            len(elemental_races_active)
             or len(reserved) != 1 + len(martial_performance_reserved) +
             len(brown_fur_reserved) +
             len(urban_barbarian_reserved) + len(bodyguard_reserved) +
-            len(helpful_reserved) + len(heirloom_reserved)):
+            len(helpful_reserved) + len(heirloom_reserved) +
+            len(elemental_races_reserved)):
         raise AssertionError("Expanded Summoning blueprint ledger count mismatch")
     expected_spear_entries = {
         "KMG.ElvenBranchedSpear.WeaponType": ("77f72b0febaf212a5650e7193c00361f", "BlueprintWeaponType"),

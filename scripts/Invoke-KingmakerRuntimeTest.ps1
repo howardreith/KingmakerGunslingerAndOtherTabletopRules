@@ -29,10 +29,13 @@ param(
     [string]$SaveName,
     [ValidateSet(
         'gunslinger-only',
+        'gunslinger-races-unleashed',
         'gunslinger-call-of-the-wild',
+        'gunslinger-call-of-the-wild-races-unleashed',
         'gunslinger-arms-armor',
         'gunslinger-toggle-custom-soundpacks',
         'gunslinger-high-risk-combined',
+        'gunslinger-high-risk-combined-favored-class',
         'gunslinger-all-loadable-local',
         'gunslinger-qualified-combined')]
     [string]$CompatibilityProfileId,
@@ -583,9 +586,36 @@ try {
         $deadline = [DateTime]::UtcNow.AddSeconds(
             [Math]::Max($TimeoutSeconds, 1200) + 15)
     }
+    elseif ($Scenario -eq 'elemental-race-class-equipment') {
+        # Eight production elemental race/sex fixtures drive 128 reversible
+        # Gunslinger class/outfit/equipment cases and 256 optional captures.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1800) + 15)
+    }
+    elseif ($Scenario -eq 'elemental-race-class-clothing') {
+        # Ten exact classes across four elemental races and both sexes drive
+        # 80 native DollState/CreateData/CreateUnitView render contracts.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 600) + 15)
+    }
     elseif ($Scenario -eq 'gunslinger-outfit-production-motion') {
         # Two production class-preview fixtures drive 54 native-motion
         # sidecars and image writes through full-round reload update 240.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 1800) + 15)
+    }
+    elseif ($Scenario -eq 'elemental-race-motion') {
+        # Eight production elemental race/sex fixtures each drive the accepted
+        # 27-record native idle/walk/run/turn/attack/reload/melee matrix.
+        $deadline = [DateTime]::UtcNow.AddSeconds(
+            [Math]::Max($TimeoutSeconds, 7200) + 15)
+    }
+    elseif ($Scenario -in @(
+        'elemental-race-persistence-prepare',
+        'elemental-race-module-disabled-persistence',
+        'elemental-race-persistence-verify-absent')) {
+        # Eight exact race/sex fixtures cover prepare, fresh module-OFF load,
+        # reconstruction/rest/level-up/cleanup, and fresh-load absence.
         $deadline = [DateTime]::UtcNow.AddSeconds(
             [Math]::Max($TimeoutSeconds, 1800) + 15)
     }

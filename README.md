@@ -1,6 +1,48 @@
 # Kingmaker Gunslinger
 
-Version `0.0.113` is a save-load hotfix for the paper-cartridge mode repair.
+Version `0.0.114-elemental-races` adds the **Elemental Races: Ifrit, Oread,
+Sylph, and Undine** feature module. It defaults ON. Any explicit saved value is
+preserved; changing the checkbox still requires a complete Kingmaker restart
+and never rebuilds the live blueprint graph.
+
+All four races are Medium and have distinct, stable project identities.
+Ifrits receive +2 Dexterity, +2 Charisma, -2 Wisdom, fire resistance 5, Fire
+Affinity, and Burning Hands once per day. Oreads receive +2 Strength, +2
+Wisdom, -2 Charisma, acid resistance 5, native Slow and Steady at 20 feet,
+Acid Affinity, and Stone Fist once per day. Sylphs receive +2 Dexterity, +2
+Intelligence, -2 Constitution, electricity resistance 5, Air Affinity, and
+Feather Step once per day. Undines receive +2 Dexterity, +2 Wisdom, -2
+Strength, cold resistance 5, Water Affinity, and Hydraulic Push once per day.
+Every race receives Keen Senses for exactly +2 racial Perception. Each
+affinity adds +1 DC only to the matching Fire, Acid, Electricity, or Cold
+spell, and each racial spell-like ability uses total character level as caster
+level.
+
+These are practical Kingmaker adaptations: Keen Senses replaces darkvision;
+Feather Step replaces Feather Fall; Undine swimming clauses are descriptive
+only because the game has no ordinary player swimming system. Hydraulic Push
+uses native Bull Rush resolution with total character level plus the best
+Intelligence, Wisdom, or Charisma modifier. The races use `RaceId.Aasimar`
+for safe doll and equipment compatibility, so some base-game dialogue or
+RaceId-only logic can mistake them for Aasimar. Exact race-blueprint
+prerequisites remain distinct.
+
+The release uses only audited vanilla Kingmaker modular character assets and
+project-owned stable proxies and color ramps. It adds no original meshes,
+copied third-party assets, persistent elemental VFX, or runtime dependencies.
+The identities remain registered when the module is OFF so an existing
+elemental character can load while the races are hidden from new-character and
+respec selectors. Uninstalling the whole mod from a campaign containing its
+content remains unsupported. Automated structural and mechanical qualification
+has passed, including all 24 eleven-module boundary states and exact standalone,
+Call of the Wild, Races Unleashed, combined, and Favored Class/Tweak or Treat
+high-risk profiles with full transaction restoration. Visual Adjustments was
+not installed and is **NOT-RUN**. The owner accepted the candidate's visual
+direction and explicitly authorized this release; individual checklist
+observations were not supplied and are not inferred.
+
+The release retains version `0.0.113`'s save-load hotfix for the
+paper-cartridge mode repair.
 Paper-mode reads now use only the native activatable ability's current state;
 they never reconcile marker buffs or alter a unit while Kingmaker is loading a
 save. The `set_IsOn` hook is cache-only, and a stale marker is ignored
@@ -185,26 +227,32 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find ten checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find eleven checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
 Transmuter -- requires Call of the Wild**, **Urban Barbarian**, **Bodyguard
-and In Harms Way**, and **Protection from Alignment: control immunity**. All
-default enabled. Older settings migrate to schema 9
-while preserving explicit existing values and enabling newly absent default-on
-modules.
+and In Harms Way**, **Protection from Alignment: control immunity**, and
+**Elemental Races: Ifrit, Oread, Sylph, and Undine**. All eleven modules
+default enabled. Older settings migrate to schema 10 while preserving every
+explicit value. Any absent module key, including Elemental Races, migrates ON.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All ten modules
+items, summons, ammunition state, or equipment from a save. All eleven modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other nine modules continue. Urban Barbarian and
+publication while the other ten modules continue. Urban Barbarian and
 Protection from Alignment remain available regardless of CotW compatibility.
 Keep the whole mod installed
 for any campaign that has used project content.
+
+Elemental Races is enabled by default. Its single KMG UMM checkbox controls
+only publication to new-character and respec selectors after a complete
+restart. Turning it OFF and restarting hides those choices but keeps all
+elemental identities available to existing saves. Removing the entire mod from
+a campaign that has used an elemental race remains unsupported.
 
 ## Urban Barbarian
 

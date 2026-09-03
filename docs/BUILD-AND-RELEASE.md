@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.113` targets:
+Kingmaker Gunslinger `0.0.114-elemental-races` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -73,23 +73,26 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.113 save-load hotfix preserves the ammunition, CMI, paper-mode,
-item-copy, and notification repairs. It is published only after complete
-version-aware deterministic, package, repository-validation, and guarded
-save-load qualification gates.
+The 0.0.114 release preserves the 0.0.113 ammunition, CMI, paper-mode,
+item-copy, and notification repairs while adding the default-ON Elemental
+Races module. It may be published only after complete version-aware
+deterministic, package, repository-validation, guarded runtime, exact
+compatibility-restoration, and owner visual-acceptance gates. The mission
+authorizes a draft pull request and candidate package only: do not create a
+tag, GitHub release, or public asset without owner authorization.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default
 branch mismatch unless `-AllowNonDefaultReleaseBranch` is supplied deliberately.
 
-Create a draft release for inspection:
+After explicit owner authorization, create a draft release for inspection:
 
 ```powershell
 powershell -NoLogo -NoProfile -ExecutionPolicy Bypass `
   -File .\scripts\Publish-Release.ps1
 ```
 
-Publish the owner-approved release:
+Publish only the owner-approved release:
 
 ```powershell
 powershell -NoLogo -NoProfile -ExecutionPolicy Bypass `
@@ -122,10 +125,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.113 `
+gh release download v0.0.114 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.113-save-load-hotfix.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.113"
+  --pattern 'KingmakerGunslinger-0.0.114-elemental-races.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.114"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The
