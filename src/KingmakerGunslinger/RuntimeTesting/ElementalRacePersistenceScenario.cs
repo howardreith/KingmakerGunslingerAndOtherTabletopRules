@@ -36,9 +36,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     /// <summary>
     /// Guarded three-launch save qualification for all production elemental
-    /// race identities. Prepare persists eight exact disposable characters
-    /// with spent racial SLAs. The second launch runs with selector publication
-    /// disabled, verifies native reconstruction, rest and level-up behavior,
+    /// race identities. Prepare respecs eight exact disposable source
+    /// characters through distinct native replacements, then persists those
+    /// replacements with spent racial SLAs. The second launch runs with
+    /// selector publication disabled and verifies native reconstruction, rest
+    /// and level-up behavior,
     /// removes only the marker-bound fixtures, and saves cleanup. The final
     /// launch proves their absence. KMG_AUTOMATION_BASELINE is never eligible.
     /// </summary>
@@ -145,6 +147,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<BlueprintUnit> _createdBlueprints =
                 new List<BlueprintUnit>();
             private readonly JArray _records = new JArray();
+            private readonly JArray _respecRecords = new JArray();
             private readonly JArray _partyRecords = new JArray();
             private JObject _loadedFixtureMembership = new JObject();
             private Player _player;
@@ -173,6 +176,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private UnitEntityData[] _loadedUnits = new UnitEntityData[0];
             private UnitEntityData _currentUnit;
             private BlueprintUnit _currentBlueprint;
+            private UnitEntityData _respecSourceUnit;
+            private BlueprintUnit _respecSourceBlueprint;
             private PersistenceDollSnapshot _currentExpectedDoll;
             private bool _currentLoadedDollExact;
             private int _fixtureIndex;
@@ -184,6 +189,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _registeredExact;
             private bool _selectorExact;
             private bool _preparedMembershipExact;
+            private bool _creatingRespecReplacement;
             private bool _normalPathComplete;
             private bool _baselineAbsentExact;
             private bool _cleanupStarted;
@@ -258,8 +264,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_phase == 2)
                     {
                         if (!PollCurrentReady()) return;
-                        if (_prepare) CapturePreparedFixture();
-                        else CaptureVerifiedFixture();
+                        if (_prepare)
+                        {
+                            PerformNativeElementalRespec();
+                            _phase = 3;
+                            _settleUpdates = 0;
+                            return;
+                        }
+                        CaptureVerifiedFixture();
                         _fixtureIndex++;
                         if (_fixtureIndex < _fixtures.Length)
                         {
@@ -267,19 +279,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _settleUpdates = 0;
                             return;
                         }
-                        if (_prepare)
-                        {
-                            _preparedMembershipExact =
-                                PreparedMembershipExact();
-                            if (!_preparedMembershipExact)
-                                throw new InvalidOperationException(
-                                    "The eight exact elemental fixtures did not enter one serializable party and area state.");
-                            _normalPathComplete = true;
-                            StartExactWorkingSave();
-                            return;
-                        }
                         _normalPathComplete = true;
                         BeginCleanup();
+                    }
+                    if (_phase == 3)
+                    {
+                        if (!PollCurrentReady()) return;
+                        CapturePreparedFixture();
+                        _fixtureIndex++;
+                        if (_fixtureIndex < _fixtures.Length)
+                        {
+                            _phase = 1;
+                            _settleUpdates = 0;
+                            return;
+                        }
+                        _preparedMembershipExact =
+                            PreparedMembershipExact();
+                        if (!_preparedMembershipExact)
+                            throw new InvalidOperationException(
+                                "The eight exact elemental native-respec fixtures did not enter one serializable party and area state.");
+                        _normalPathComplete = true;
+                        StartExactWorkingSave();
                     }
                 }
                 catch (Exception exception)
@@ -654,7 +674,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _currentBlueprint.StartingInventory = new BlueprintItem[0];
                 _currentBlueprint.name =
                     "KMG_Runtime_Elemental_Persistence_" +
-                    fixture.Label.Replace('-', '_');
+                    fixture.Label.Replace('-', '_') +
+                    (_creatingRespecReplacement ? "_Replacement" :
+                        "_Respec_Source");
                 _currentBlueprint.IsCheater = false;
                 _createdBlueprints.Add(_currentBlueprint);
 
@@ -667,7 +689,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(fixture.Label +
                             " DollData did not create a native Character view.");
                     dollView.Blueprint = _currentBlueprint;
-                    dollView.UniqueId = fixture.UniqueId;
+                    dollView.UniqueId = _creatingRespecReplacement
+                        ? fixture.UniqueId : Guid.NewGuid().ToString();
                     float column = _fixtureIndex % 4;
                     float row = _fixtureIndex / 4;
                     dollView.transform.position = NearestNavigable(
@@ -694,20 +717,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _currentUnit.Descriptor.CustomGender = fixture.Gender;
                 _currentUnit.Descriptor.Doll = data;
                 _currentUnit.Descriptor.ForcceUseClassEquipment = true;
-                _currentUnit.Descriptor.CustomName = fixture.Name;
+                _currentUnit.Descriptor.CustomName =
+                    _creatingRespecReplacement ? fixture.Name :
+                        fixture.Name + "_RESPEC_SOURCE";
                 _currentUnit.Descriptor.State.Immortality.Retain();
                 _currentUnit.Commands.InterruptAll(true);
                 if (_currentUnit.CombatState.IsInCombat)
                     _currentUnit.CombatState.LeaveCombat();
-                ApplyNativeCharacterCreation(fixture, data);
-                _currentBlueprint.Race = fixture.Blueprints.Race;
-                _currentUnit.IsInGame = true;
-                _currentUnit.IsInFogOfWar = false;
-                _currentUnit.View.UpdateClassEquipment();
-                CurrentAvatar().RebuildOutfit();
-                _currentUnit.View.UpdateViewActive();
-                _currentUnit.View.SetVisible(true, true);
-                WriteProgress("prepared-fixture-created");
+                if (!_creatingRespecReplacement)
+                {
+                    ApplyNativeCharacterCreation(fixture, data);
+                    _currentBlueprint.Race = fixture.Blueprints.Race;
+                    _currentUnit.IsInGame = true;
+                    _currentUnit.IsInFogOfWar = false;
+                    _currentUnit.View.UpdateClassEquipment();
+                    CurrentAvatar().RebuildOutfit();
+                    _currentUnit.View.UpdateViewActive();
+                    _currentUnit.View.SetVisible(true, true);
+                    WriteProgress("native-respec-source-created");
+                }
             }
 
             private void ApplyNativeCharacterCreation(
@@ -767,6 +795,76 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " native character creation did not commit exact race/class progression.");
             }
 
+            private void PerformNativeElementalRespec()
+            {
+                ElementalPersistenceFixture fixture =
+                    _fixtures[_fixtureIndex];
+                _stage = "native-respec-" + fixture.Label;
+                ElementalPersistenceObservation sourceObservation =
+                    ObserveFixture(fixture, _currentUnit,
+                        _currentExpectedDoll, 1, 1);
+                if (!sourceObservation.Exact)
+                    throw new InvalidOperationException(fixture.Label +
+                        " native Respec source was not an exact elemental Gunslinger.");
+
+                _respecSourceUnit = _currentUnit;
+                _respecSourceBlueprint = _currentBlueprint;
+                string sourceActorId = _respecSourceUnit.UniqueId;
+                _currentUnit = null;
+                _currentBlueprint = null;
+                _currentExpectedDoll = null;
+                _creatingRespecReplacement = true;
+                try
+                {
+                    StartPrepareFixture();
+                }
+                finally
+                {
+                    _creatingRespecReplacement = false;
+                }
+
+                int replacementLevelBeforeRespec = _currentUnit.Descriptor
+                    .Progression.CharacterLevel;
+                bool distinctSourceAndReplacement =
+                    !ReferenceEquals(_respecSourceUnit, _currentUnit) &&
+                    !ReferenceEquals(_respecSourceUnit.Descriptor,
+                        _currentUnit.Descriptor);
+                if (replacementLevelBeforeRespec != 0 ||
+                    !distinctSourceAndReplacement)
+                    throw new InvalidOperationException(fixture.Label +
+                        " native Respec requires one distinct level-0 replacement descriptor.");
+
+                JObject record = CommitNativeElementalRespec(fixture,
+                    sourceObservation, sourceActorId,
+                    replacementLevelBeforeRespec,
+                    distinctSourceAndReplacement);
+                _currentUnit.Descriptor.ForcceUseClassEquipment = true;
+                _currentBlueprint.Race = fixture.Blueprints.Race;
+                _currentUnit.IsInGame = true;
+                _currentUnit.IsInFogOfWar = false;
+                _currentUnit.View.UpdateClassEquipment();
+                CurrentAvatar().RebuildOutfit();
+                _currentUnit.View.UpdateViewActive();
+                _currentUnit.View.SetVisible(true, true);
+                RetireElementalRespecSource();
+                bool starterRollbackExact = RollbackStarterGrants();
+                record["starterGrantsRolledBack"] =
+                    starterRollbackExact;
+                record["committedCharacterLevel"] =
+                    _currentUnit.Descriptor.Progression.CharacterLevel;
+                record["committedGunslingerLevel"] =
+                    _currentUnit.Descriptor.Progression.GetClassLevel(
+                        _gunslingerClass);
+                record["committedRaceExact"] = ReferenceEquals(
+                    _currentUnit.Descriptor.Progression.Race,
+                    fixture.Blueprints.Race);
+                _respecRecords.Add(record);
+                if (!starterRollbackExact)
+                    throw new InvalidOperationException(fixture.Label +
+                        " native Respec changed the exact inventory baseline.");
+                WriteProgress("native-respec-committed");
+            }
+
             private static void PrepareBaseStats(UnitDescriptor owner)
             {
                 owner.Stats.Strength.BaseValue = 10;
@@ -776,6 +874,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.Stats.Wisdom.BaseValue = 10;
                 owner.Stats.Charisma.BaseValue = 10;
                 owner.Stats.HitPoints.BaseValue = 100;
+            }
+
+            private JObject CommitNativeElementalRespec(
+                ElementalPersistenceFixture fixture,
+                ElementalPersistenceObservation sourceObservation,
+                string sourceActorId, int replacementLevelBeforeRespec,
+                bool distinctSourceAndReplacement)
+            {
+                LevelUpController controller = null;
+                bool callback = false;
+                try
+                {
+                    controller = LevelUpController
+                        .StartWithoutAssigningStaticInstance(
+                            _currentUnit.Descriptor, false, null,
+                            new Action(() => callback = true),
+                            LevelUpState.CharBuildMode.Respec);
+                    if (controller == null || controller.State == null ||
+                        controller.State.Mode !=
+                            LevelUpState.CharBuildMode.Respec ||
+                        controller.Preview == null || controller.Doll == null)
+                        throw new InvalidOperationException(fixture.Label +
+                            " native Respec controller is incomplete.");
+                    if (!controller.SelectRace(fixture.Blueprints.Race))
+                        throw new InvalidOperationException(fixture.Label +
+                            " native Respec race selection was rejected.");
+                    if (!controller.SelectClass(_gunslingerClass, false))
+                        throw new InvalidOperationException(fixture.Label +
+                            " native Respec Gunslinger selection was rejected.");
+                    controller.Doll.SetGender(fixture.Gender);
+                    controller.Doll.SetRace(fixture.Blueprints.Race);
+                    controller.Doll.SetRacePreset(fixture.Preset);
+                    controller.Doll.SetClass(_gunslingerClass);
+                    controller.ApplyClassMechanics();
+                    int previewLevel = controller.Preview.Progression
+                        .CharacterLevel;
+                    int previewClassLevel = controller.Preview.Progression
+                        .GetClassLevel(_gunslingerClass);
+                    bool previewRaceExact = ReferenceEquals(
+                            controller.Preview.Progression.Race,
+                            fixture.Blueprints.Race) &&
+                        controller.Preview.Progression.Features.GetRank(
+                            fixture.Blueprints.Race) == 1;
+                    controller.Commit();
+                    controller = null;
+                    return new JObject
+                    {
+                        { "fixture", fixture.Label },
+                        { "sourceActorId", sourceActorId },
+                        { "replacementActorId", _currentUnit.UniqueId },
+                        { "sourceObservationExact",
+                            sourceObservation.Exact },
+                        { "replacementLevelBeforeRespec",
+                            replacementLevelBeforeRespec },
+                        { "distinctSourceAndReplacement",
+                            distinctSourceAndReplacement },
+                        { "respecMode", "Respec" },
+                        { "raceSelected", true },
+                        { "classSelected", true },
+                        { "previewRaceExact", previewRaceExact },
+                        { "previewCharacterLevel", previewLevel },
+                        { "previewGunslingerLevel", previewClassLevel },
+                        { "callback", callback }
+                    };
+                }
+                finally
+                {
+                    if (controller != null) controller.Cancel();
+                }
             }
 
             private static BlueprintUnit.UnitBody CreateElementalNeutralBody(
@@ -853,6 +1020,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Blueprints.SlaAbility);
                 int before = _currentUnit.Descriptor.Resources
                     .GetResourceAmount(fixture.Blueprints.SlaResource);
+                JObject respec = _respecRecords.OfType<JObject>().Last();
+                respec["replacementObservationExact"] =
+                    observation.Exact;
+                respec["replacementDollExact"] =
+                    _currentExpectedDoll.Matches(
+                        _currentUnit.Descriptor.Doll);
+                respec["replacementResourceBeforeSpend"] = before;
+                respec["stableIdentityExact"] =
+                    IsFixtureUnit(_currentUnit, fixture);
+                respec["sourceRetiredExact"] =
+                    _respecSourceUnit == null &&
+                    _respecSourceBlueprint == null;
+                respec["serializedClassClothesAbsent"] =
+                    SerializedElementalClassClothesAbsent(
+                        _currentUnit.Descriptor.Doll);
+                bool nativeRespecExact =
+                    NativeElementalRespecRecordExact(respec);
                 InvokeAbilitySpend(ability,
                     fixture.Blueprints.SlaResource);
                 int after = _currentUnit.Descriptor.Resources
@@ -870,16 +1054,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "phase", "prepare" },
                     { "observation", observation.Evidence },
                     { "observationExact", observation.Exact },
+                    { "nativeRespec", respec.DeepClone() },
+                    { "nativeRespecExact", nativeRespecExact },
                     { "resourceBeforeSpend", before },
                     { "resourceAfterSpend", after },
                     { "spendExact", spendExact }
                 };
                 CaptureFixture(record, fixture, _currentUnit);
-                if (!observation.Exact || !spendExact)
+                if (!observation.Exact || !nativeRespecExact ||
+                    !spendExact)
                     throw new InvalidOperationException(fixture.Label +
-                        " did not satisfy the exact pre-save rules, visual, and spent-SLA contract.");
+                        " did not satisfy the exact native-respec, pre-save rules, visual, and spent-SLA contract.");
                 PromoteCurrentFixture(fixture);
                 WriteProgress("prepared-fixture-promoted");
+            }
+
+            private static bool NativeElementalRespecRecordExact(
+                JObject value)
+            {
+                return value != null &&
+                    (bool)value["sourceObservationExact"] &&
+                    (bool)value["distinctSourceAndReplacement"] &&
+                    !string.Equals((string)value["sourceActorId"],
+                        (string)value["replacementActorId"],
+                        StringComparison.Ordinal) &&
+                    (int)value["replacementLevelBeforeRespec"] == 0 &&
+                    string.Equals((string)value["respecMode"], "Respec",
+                        StringComparison.Ordinal) &&
+                    (bool)value["raceSelected"] &&
+                    (bool)value["classSelected"] &&
+                    (bool)value["previewRaceExact"] &&
+                    (int)value["previewCharacterLevel"] == 1 &&
+                    (int)value["previewGunslingerLevel"] == 1 &&
+                    (bool)value["callback"] &&
+                    (bool)value["starterGrantsRolledBack"] &&
+                    (int)value["committedCharacterLevel"] == 1 &&
+                    (int)value["committedGunslingerLevel"] == 1 &&
+                    (bool)value["committedRaceExact"] &&
+                    (bool)value["replacementObservationExact"] &&
+                    (bool)value["replacementDollExact"] &&
+                    (int)value["replacementResourceBeforeSpend"] == 1 &&
+                    (bool)value["stableIdentityExact"] &&
+                    (bool)value["sourceRetiredExact"] &&
+                    (bool)value["serializedClassClothesAbsent"];
             }
 
             private void PromoteCurrentFixture(
@@ -1612,6 +1829,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _startingItemCounts[index]).All(value => value);
             }
 
+            private void RetireElementalRespecSource()
+            {
+                UnitEntityData source = _respecSourceUnit;
+                BlueprintUnit blueprint = _respecSourceBlueprint;
+                _respecSourceUnit = null;
+                _respecSourceBlueprint = null;
+                try
+                {
+                    if (source == null) return;
+                    source.Commands.InterruptAll(true);
+                    if (source.CombatState.IsInCombat)
+                        source.CombatState.LeaveCombat();
+                    if (source.Descriptor != null)
+                        source.Descriptor.State.Immortality.ReleaseAll();
+                    if (source.HoldingState != null &&
+                        source.HoldingState.AllEntityData.Any(value =>
+                            ReferenceEquals(value, source)))
+                        source.HoldingState.RemoveEntityData(source);
+                    else
+                    {
+                        if (ContainsReference(_allUnits, source))
+                            Game.Instance.State.Units.All.Remove(source);
+                        source.Dispose();
+                    }
+                }
+                finally
+                {
+                    _createdUnits.Remove(source);
+                    _createdBlueprints.Remove(blueprint);
+                    if (blueprint != null)
+                        UnityEngine.Object.DestroyImmediate(blueprint);
+                }
+            }
+
             private void RecordException(Exception exception)
             {
                 if (!string.IsNullOrWhiteSpace(_exceptionSummary)) return;
@@ -1634,6 +1885,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _gunslingerClass.StartingGold =
                             _startingGoldBefore;
                     RollbackStarterGrants();
+                    RetireElementalRespecSource();
                     RemoveFixtureState();
                 }
                 catch (Exception exception)
@@ -1660,7 +1912,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData[] candidates = Snapshot(_party)
                     .Concat(Snapshot(_cross)).Concat(Snapshot(_allUnits))
                     .OfType<UnitEntityData>().Concat(_createdUnits)
-                    .Where(value => value != null && IsFixtureUnit(value))
+                    .Where(value => value != null &&
+                        (IsFixtureUnit(value) || _createdUnits.Any(current =>
+                            ReferenceEquals(current, value))))
                     .Distinct().ToArray();
                 foreach (UnitEntityData unit in candidates)
                 {
@@ -1836,6 +2090,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixtureCount", _fixtures.Length },
                     { "settleUpdates", _settleUpdates },
                     { "captured", _captured },
+                    { "nativeRespecRecords", _respecRecords.Count },
                     { "currentUnitPresent", _currentUnit != null },
                     { "saveStarted", _saveStarted },
                     { "cleanupStarted", _cleanupStarted }
@@ -1898,6 +2153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Snapshot(_cross)) }
                         } },
                     { "records", _records },
+                    { "nativeRespecRecords", _respecRecords },
                     { "preparedMembershipExact",
                         _preparedMembershipExact },
                     { "normalPathComplete", _normalPathComplete },
@@ -1982,10 +2238,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void FinishPrepare(bool prepared)
             {
                 JObject[] records = _records.OfType<JObject>().ToArray();
+                JObject[] respecRecords = _respecRecords.OfType<JObject>()
+                    .ToArray();
+                bool respecExact = respecRecords.Length ==
+                        ElementalPersistenceFixtureCount &&
+                    respecRecords.All(
+                        NativeElementalRespecRecordExact);
                 bool recordExact = records.Length ==
                         ElementalPersistenceFixtureCount &&
                     records.All(value => TokenBool(value,
                             "observationExact") &&
+                        TokenBool(value, "nativeRespecExact") &&
                         TokenBool(value, "spendExact") &&
                         value.Value<int>("resourceBeforeSpend") == 1 &&
                         value.Value<int>("resourceAfterSpend") == 0);
@@ -2009,6 +2272,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _context.FeatureModules.Active.ElementalRaces &&
                         _selectorExact && _registeredExact,
                     "live module snapshot, CharacterRaces, and resource cache");
+                Add(_assertions,
+                    "elemental-race-persistence-native-respec",
+                    "eight distinct source-to-replacement native Respec commits preserve exact race, facts, SLA, DollData, and Gunslinger presentation",
+                    "records=" + respecRecords.Length + ";exact=" +
+                        respecExact,
+                    respecExact,
+                    "StartWithoutAssigningStaticInstance with CharBuildMode.Respec, SelectRace, SelectClass, Commit, source retirement, and replacement observation");
                 Add(_assertions,
                     "elemental-race-persistence-prepared-rules",
                     "eight exact race/sex Gunslingers with level-1 facts, stats, resistance, affinity, Keen Senses, and available SLA",

@@ -5,9 +5,9 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-g-save-backed-persistence-qualified",
-  "version": "0.0.113",
-  "informationalVersion": "0.0.113-save-load-hotfix",
+  "phase": "phase-j-final-preview-candidate-source-qualification",
+  "version": "0.0.114",
+  "informationalVersion": "0.0.114-elemental-races-preview",
   "featureModuleSchema": 10,
   "featureModuleCount": 11,
   "featureModuleBoundaryCount": 24,
@@ -28,17 +28,18 @@
     "oreadRules": "BASE-NATIVE-SLA-MOVEMENT-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
     "sylphRules": "BASE-NATIVE-SLA-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
     "undineRules": "BASE-HYDRAULIC-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
-    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-128-CASE-GUNSLINGER-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-216-RECORD-ELEMENTAL-MOTION-MATRIX-AND-EIGHT-FIXTURE-SAVE-BACKED-RELOAD-PASS-REMAINING-EQUIPMENT-AND-HUMAN-REVIEW-PENDING",
-    "runtimeScenarios": "PRODUCTION-IDENTITIES-MODULE-ON-OFF-BASE-MECHANICS-DONOR-SLAS-HYDRAULIC-NATIVE-IDENTITY-MOVEMENT-VISUAL-DONOR-AUDIT-PRODUCTION-VISUAL-MATRIX-ELEMENTAL-GUNSLINGER-CLASS-EQUIPMENT-TEN-CLASS-CLOTHING-ELEMENTAL-MOTION-HUMAN-MOTION-REGRESSION-AND-THREE-PROCESS-PERSISTENCE-PASS",
-    "compatibility": "NOT-STARTED",
-    "packaging": "PERSISTENCE-CLEAN-RELEASE-CHECKPOINT-PASS",
+    "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-224-RECORD-EXPANDED-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-280-RECORD-ELEMENTAL-MOTION-AND-TRANSITION-MATRIX-EIGHT-FIXTURE-SAVE-BACKED-RELOAD-PASS-HUMAN-REVIEW-PENDING",
+    "runtimeScenarios": "ALL-ELEMENTAL-MECHANICS-PUBLICATION-VISUAL-EQUIPMENT-SLA-PRONE-DEATH-RESURRECTION-POLYMORPH-MOTION-PERSISTENCE-COMPATIBILITY-AND-HUMAN-MOTION-REGRESSION-SCENARIOS-PASS-ON-ENGINEERING-ARTIFACTS",
+    "compatibility": "FIVE-REQUIRED-PROFILES-AND-EXACT-RESTORATION-PASS-ON-ENGINEERING-ARTIFACT-FINAL-0.0.114-RERUN-PENDING",
+    "packaging": "0.0.114-SOURCE-DOMAIN-COMPILE-CLEAN-RELEASE-STRICT-PACKAGE-PASS-RUNTIME-PENDING",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
-    "passed": 1389,
+    "passed": 1390,
     "failed": 0,
-    "status": "PASS"
+    "status": "PASS-AT-651c05ae-BEFORE-FINAL-VERSION-STAMP",
+    "exactVersionRerunPending": true
   },
   "runtime": {
     "transactions": [
@@ -647,5 +648,105 @@
     "moduleDisabledRenderedViews": 40,
     "version": "0.0.113"
   },
-  "humanReview": "NOT-READY"
+  "engineeringCompatibilityQualification": {
+    "status": "PASS-EXACT-RESTORATION",
+    "version": "0.0.113",
+    "requiredProfileCount": 5,
+    "transactions": [
+      "compat-20260902T192425Z-9c8fcf9cf74a",
+      "compat-20260902T192829Z-9426b83997b1",
+      "compat-20260902T193430Z-4acfea65674b",
+      "compat-20260902T193842Z-5d94f722d0a9",
+      "compat-20260902T200855Z-82edd58b91b7"
+    ],
+    "allRestoredExactly": true,
+    "visualAdjustments": "NOT-RUN-NOT-INSTALLED"
+  },
+  "engineeringBoundaryQualification": {
+    "status": "PASS",
+    "version": "0.0.113",
+    "configurationCount": 24,
+    "firstEvidenceDirectory": "20260902T2014022268316Z-observe-feature-module-settings",
+    "lastEvidenceDirectory": "20260902T2056561928027Z-observe-feature-module-settings",
+    "allSettingsRestoredExactly": true
+  },
+  "engineeringExpandedEquipmentQualification": {
+    "status": "PASS",
+    "version": "0.0.113",
+    "evidenceDirectory": "20260902T2120481218981Z-elemental-race-class-equipment",
+    "fixtures": 8,
+    "equipmentStatesPerFixture": 28,
+    "records": 224,
+    "renderedViews": 1120,
+    "restorations": 8,
+    "saveStateTouched": false
+  },
+  "engineeringTransitionQualification": {
+    "status": "PASS",
+    "version": "0.0.113",
+    "gitCommit": "651c05ae2c676fee6ad4c085195c818a9a01613a",
+    "evidenceDirectory": "20260903T0012214812700Z-elemental-race-motion",
+    "runId": "20260903T0012215042665Z-b5c60eb2cdb44439a2d540969ec684d8",
+    "fixtures": 8,
+    "motionRecords": 216,
+    "transitionRecords": 64,
+    "totalRecords": 280,
+    "renderedViews": 1120,
+    "slaOutcomes": 8,
+    "proneOutcomes": 8,
+    "deathResurrectionOutcomes": 8,
+    "polymorphReturnOutcomes": 8,
+    "packageSha256": "485da937d4b7eb4188aad01f1dda0553ca667b5d7e938533cff0acaee81d4f80",
+    "dllSha256": "c03d35848e89a9938a88fb66b7fa2cdc51e311391ca212a83db0203fe2a5d34c",
+    "dllMvid": "70f1ac87-fb53-4f13-9d7d-32eacd7df860",
+    "saveStateTouched": false
+  },
+  "engineeringHumanMotionRegression": {
+    "status": "PASS",
+    "version": "0.0.113",
+    "evidenceDirectory": "20260903T0022352926189Z-gunslinger-outfit-production-motion",
+    "runId": "20260903T0022353126156Z-16f4669473d848d1af5acb1aec4fa829",
+    "fixtures": 2,
+    "records": 54,
+    "renderedViews": 216,
+    "packageSha256": "485da937d4b7eb4188aad01f1dda0553ca667b5d7e938533cff0acaee81d4f80",
+    "dllSha256": "c03d35848e89a9938a88fb66b7fa2cdc51e311391ca212a83db0203fe2a5d34c",
+    "dllMvid": "70f1ac87-fb53-4f13-9d7d-32eacd7df860",
+    "saveStateTouched": false
+  },
+  "nativeRespecSourceQualification": {
+    "status": "SOURCE-DOMAIN-COMPILE-AND-CLEAN-PACKAGE-PASS-RUNTIME-PENDING",
+    "version": "0.0.114",
+    "fixtureCount": 8,
+    "sourcePattern": "distinct-native-respec-replacement",
+    "requiredEvidence": [
+      "source elemental Gunslinger exact",
+      "replacement level zero before Respec",
+      "CharBuildMode.Respec",
+      "SelectRace and SelectClass",
+      "preview and committed race/class exact",
+      "racial facts and SLA exact",
+      "DollData and Gunslinger presentation exact",
+      "source retirement and stable replacement identity",
+      "spent resource survives module-OFF reload"
+    ],
+    "domainTests": "1390/1390 PASS",
+    "cleanReleasePackage": "PASS",
+    "optionalPngsPruned": {
+      "count": 782,
+      "bytes": 1552082960,
+      "structuredJsonRetained": true
+    }
+  },
+  "finalCandidate": {
+    "version": "0.0.114",
+    "informationalVersion": "0.0.114-elemental-races-preview",
+    "sourceValidation": "PASS",
+    "domain": "PASS-1390-OF-1390",
+    "cleanReleasePackage": "PASS-STRICT-UMM",
+    "nativeRespecPersistence": "PENDING-GUARDED-RUNTIME",
+    "boundaryMatrix": "PENDING-EXACT-VERSION",
+    "compatibilityProfiles": "PENDING-EXACT-VERSION"
+  },
+  "humanReview": "AUTOMATED-FINAL-CANDIDATE-GATES-IN-PROGRESS"
 }

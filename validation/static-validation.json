@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.113-save-load-hotfix",
-  "version": "0.0.113",
+  "milestone": "0.0.114-elemental-races-preview",
+  "version": "0.0.114",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1637,
-    "activeEntryCount": 1636,
-    "reservedEntryCount": 1,
-    "registrationCount": 1636
+    "entryCount": 1706,
+    "activeEntryCount": 1704,
+    "reservedEntryCount": 2,
+    "registrationCount": 1704
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -786,5 +786,33 @@
     "cmiSyntheticToggleProhibited": true,
     "cmiTargetedBridgeIdempotent": true,
     "saveCompatibilityPreserved": true
+  },
+  "elementalRacesPreview114": {
+    "deterministicTestCount": 1390,
+    "paperToggleAuthoritative": "activatable-is-on",
+    "paperModeReadOnly": true,
+    "paperModePostLoadMutation": false,
+    "paperSetterPersistentFactMutation": false,
+    "staleMarkerIgnoredMechanically": true,
+    "toggleOffLooseReloadPreserved": true,
+    "cmiSyntheticToggleProhibited": true,
+    "cmiTargetedBridgeIdempotent": true,
+    "saveCompatibilityPreserved": true,
+    "featureModuleSchema": 10,
+    "featureModuleCount": 11,
+    "boundaryConfigurationCount": 24,
+    "raceCount": 4,
+    "elementalManifestEntryCount": 69,
+    "activeElementalIdentityCount": 68,
+    "reservedDiagnosticIdentityCount": 1,
+    "visualBlueprintCount": 16,
+    "visualEquipmentProxyCount": 28,
+    "defaultEnabled": false,
+    "unconditionalRegistration": true,
+    "atomicPublication": true,
+    "donorRaceId": "Aasimar",
+    "saveLoadRepairPreserved": true,
+    "compatibilityRuntimeQualificationPending": true,
+    "humanVisualReviewRequired": true
   }
 }

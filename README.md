@@ -1,6 +1,45 @@
 # Kingmaker Gunslinger
 
-Version `0.0.113` is a save-load hotfix for the paper-cartridge mode repair.
+Version `0.0.114-elemental-races-preview` adds the optional **Elemental
+Races: Ifrit, Oread, Sylph, and Undine (preview)** feature module. It defaults
+OFF. Enable it in the Unity Mod Manager panel, save the setting, and restart
+Kingmaker completely; changing the checkbox never rebuilds the live blueprint
+graph.
+
+All four races are Medium and have distinct, stable project identities.
+Ifrits receive +2 Dexterity, +2 Charisma, -2 Wisdom, fire resistance 5, Fire
+Affinity, and Burning Hands once per day. Oreads receive +2 Strength, +2
+Wisdom, -2 Charisma, acid resistance 5, native Slow and Steady at 20 feet,
+Acid Affinity, and Stone Fist once per day. Sylphs receive +2 Dexterity, +2
+Intelligence, -2 Constitution, electricity resistance 5, Air Affinity, and
+Feather Step once per day. Undines receive +2 Dexterity, +2 Wisdom, -2
+Strength, cold resistance 5, Water Affinity, and Hydraulic Push once per day.
+Every race receives Keen Senses for exactly +2 racial Perception. Each
+affinity adds +1 DC only to the matching Fire, Acid, Electricity, or Cold
+spell, and each racial spell-like ability uses total character level as caster
+level.
+
+These are practical Kingmaker adaptations: Keen Senses replaces darkvision;
+Feather Step replaces Feather Fall; Undine swimming clauses are descriptive
+only because the game has no ordinary player swimming system. Hydraulic Push
+uses native Bull Rush resolution with total character level plus the best
+Intelligence, Wisdom, or Charisma modifier. The races use `RaceId.Aasimar`
+for safe doll and equipment compatibility, so some base-game dialogue or
+RaceId-only logic can mistake them for Aasimar. Exact race-blueprint
+prerequisites remain distinct.
+
+The preview uses only audited vanilla Kingmaker modular character assets and
+project-owned stable proxies and color ramps. It adds no original meshes,
+copied third-party assets, persistent elemental VFX, or runtime dependencies.
+The identities remain registered when the module is OFF so an existing
+elemental character can load while the races are hidden from new-character and
+respec selectors. Uninstalling the whole mod from a campaign containing its
+content remains unsupported. Automated structural and mechanical qualification
+has passed; subjective clipping and appearance acceptance remains **HUMAN
+REVIEW REQUIRED** for the exact candidate package.
+
+The preview retains version `0.0.113`'s save-load hotfix for the
+paper-cartridge mode repair.
 Paper-mode reads now use only the native activatable ability's current state;
 they never reconcile marker buffs or alter a unit while Kingmaker is loading a
 save. The `set_IsOn` hook is cache-only, and a stale marker is ignored

@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.0.114-elemental-races-preview
+
+- Adds one restart-bound, default-OFF Elemental Races module containing stable
+  Ifrit, Oread, Sylph, and Undine race blueprints. All identities register
+  unconditionally for save resolution; selector publication is atomic,
+  additive, idempotent, and preserves native and third-party ordering.
+- Implements the approved base rules: exact ability modifiers and speeds,
+  energy resistance 5, Keen Senses, matching-descriptor +1 spell DC affinity,
+  and one total-character-level racial spell-like ability per rest. Oread uses
+  native Slow and Steady and Stone Fist, Sylph uses Feather Step, and Undine's
+  Hydraulic Push resolves a native Bull Rush with the best mental modifier.
+- Adds deterministic vanilla-asset appearances using 16 visual blueprints and
+  28 stable equipment proxies. No original body mesh, extracted Owlcat asset,
+  copied mod asset, persistent elemental VFX, or new runtime dependency is
+  included.
+- Migrates feature-module settings to schema 10 and eleven modules. Earlier
+  explicit values survive, Elemental Races migrates OFF when absent, malformed
+  recovery uses the mixed defaults, and the runtime boundary matrix contains
+  exactly 24 states.
+- Adds guarded rules, publication, visual, class/equipment, motion,
+  compatibility, and three-process save-persistence scenarios while preserving
+  the accepted Gunslinger outfit and the 0.0.113 paper-mode save-load repair.
+- Marks subjective visual acceptance as HUMAN REVIEW REQUIRED for the exact
+  preview package; no release is published by this change.
+
 ## 0.0.113-save-load-hotfix
 
 - Removes paper-cartridge marker reconciliation from mode reads and all

@@ -18,9 +18,14 @@ passes guarded runtime checks. The 216-record elemental native-motion matrix
 and the original 54-record Human motion regression both pass. Three fresh
 launches also prove eight-fixture save-backed identity, spent-resource,
 appearance, class-outfit, rest, level-up, caster-level, module-OFF reload,
-cleanup, and settings restoration behavior. Remaining equipment slots,
-noncovered motion, compatibility, and human visual qualification remain
-incomplete;
+cleanup, and settings restoration behavior. The expanded 224-record equipment
+matrix, 64 additional SLA/prone/death/resurrection/polymorph transition
+records, exact 24-state feature boundary, and all five required compatibility
+profiles also pass on version-0.0.113 engineering artifacts with exact
+transaction restoration. The eight-fixture native-respec preparation gate is
+implemented and source-qualified, and the exact-version 0.0.114 clean package
+passes. Its guarded respec/persistence run, boundary/profile reruns, and human
+visual qualification remain incomplete;
 absence of a hard blocker is not a completion claim.
 
 ## Resolved reconnaissance risks
@@ -105,20 +110,24 @@ absence of a hard blocker is not a completion claim.
 ## Open risks requiring evidence
 
 - The selected donor remains `RaceId.Aasimar`. Exact person-spell and type/race
-  prerequisite behavior, save-backed reload, and native level-up now pass, but
-  donor-dialogue observations and respec remain pending.
+  prerequisite behavior, save-backed reload, and native level-up now pass.
+  Native Respec is implemented with distinct replacement descriptors and is
+  awaiting exact-0.0.114 guarded runtime evidence; donor-dialogue observations
+  remain a documented limitation.
 - Native Dwarf Slow and Steady passes the live armor/encumbrance matrix.
   Save-backed SLA reload and ordinary character persistence now pass.
 - Hydraulic Push combat mechanics, resource commitment, and save-backed
   persistence are qualified. A safe native water projectile has not yet been
-  selected.
+  selected; the ability therefore retains its safe native spell presentation
+  without claiming a water projectile.
 - Native head, hair, skin, eyebrow, beard, horn, body, preset, and color-ramp
   donors are inventoried and production proxies/curated combinations pass the
-  complete option renderer matrix and the elemental Gunslinger equipment
-  matrix. Kingmaker has no race-level eye-color field in
+  complete option renderer matrix and the expanded elemental Gunslinger
+  equipment matrix. Kingmaker has no race-level eye-color field in
   CustomizationOptions; native head/material eyes and that limitation need
-  human review. Medium armor, representative robes, remaining accessory slots,
-  and spellcasting/prone/death/polymorph surfaces remain to be qualified.
+  human review. Light/medium/heavy armor, robes, helmet, cloak, boots, gloves,
+  bracers, belt, backpack, spellcasting SLA transitions, prone,
+  death/resurrection, and polymorph/return now pass structurally.
 - Complete Aasimar fallback arrays render and preserve Human skeleton/body
   compatibility. Production visuals will initially constrain geometry to the
   runtime-proven Human-compatible Human/Aasimar/Tiefling skeleton family;
@@ -127,3 +136,10 @@ absence of a hard blocker is not a completion claim.
 
 These are investigation items, not hard stops. Change strategy and continue
 while a safe, reversible evidence path remains.
+
+The five compatibility profiles and all 24 boundary configurations must be
+rerun against the exact 0.0.114 candidate before their current
+`compatibilityRuntimeQualificationPending` state can be cleared. Visual
+Adjustments is not installed locally and will remain **NOT-RUN** unless that
+machine state changes. Subjective clipping and aesthetics remain **HUMAN
+REVIEW REQUIRED** even after every automatable gate passes.
