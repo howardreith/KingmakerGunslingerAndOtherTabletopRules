@@ -2,8 +2,7 @@
 
 ## Current outcome
 
-**AUTOMATED IMPLEMENTATION COMPLETE; OWNER RELEASE AUTHORIZED; FINAL
-REQUALIFICATION IN PROGRESS.** All
+**FINAL RELEASE QUALIFICATION COMPLETE; OWNER RELEASE AUTHORIZED.** All
 four production races, their common/race-specific rules, 68 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
@@ -741,3 +740,37 @@ All automatable gates are complete. Visual Adjustments is NOT-RUN because it
 is not installed. On 2026-09-03 the owner accepted the candidate's visual
 direction and authorized final release. Individual checklist observations
 were not supplied and are not inferred.
+
+## Owner-authorized final release qualification
+
+The no-Preview/default-ON finalization is commit-bound and fully requalified.
+Commit `8364d195a6dfefeea28e956d2b7d863def6d582f` was pushed to
+`origin/codex/elemental-races` before the exact build. Build-Local source
+state SHA-256 is
+`f731ee92e1bcd3481ceee42dcdccd4b025a0d7f63ad29cf65ca1ef60d84093a0`;
+its manifest SHA-256 is
+`5ea63dbc267ef79f32d799743e3caca55647261998922d35493a56a38bdc267c`.
+
+- Final package:
+  `artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races.zip`
+- Package: 22,971,150 bytes; 135 entries; SHA-256
+  `71e34ac769ed3223b85b83b2992fa289f4039db96abf5d51b2920045b8d4d0a9`
+- DLL: 5,399,040 bytes; SHA-256
+  `51e931e587407f597eff3ba3e9102312db534abcc81badfd5f88d3d02bc24092`;
+  MVID `b986edbc-6bd7-4b23-a3cf-5cdc1ebc3033`
+- Informational version: `0.0.114-elemental-races`
+- Guarded deployment: `20260903T0725424761678Z`; deployment-manifest
+  SHA-256
+  `7b9c65c80f261163fe652daa1ec121aec4b183708235720cffd9893899be611c`
+- Recoverable predeployment backup:
+  `runtime-backups/live-mod/20260903T0725382730178Z`
+
+The exact artifact passed all 24 feature-module boundary launches with zero
+warnings and exact restoration. It then passed all five required compatibility
+profiles across 18/18 fresh-process guarded scenarios with zero warnings.
+Every profile reported `Restored`, `restorationVerified=true`, and
+`stagedMutationObserved=true`. The final live settings SHA-256 is
+`a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`;
+all eleven modules, including Elemental Races, are explicitly enabled. No
+Kingmaker process remained and no protected save was touched. The exact
+runtime/run-ID ledger is retained in `ELEMENTAL-RACES-JOURNAL.md`.

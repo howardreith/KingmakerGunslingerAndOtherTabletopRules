@@ -70,12 +70,21 @@
   DLL SHA-256
   `670d0ef39b2ede7b28741a1e260f5c63a2728655939c1c494e93bd709fe95273`;
   MVID `5ecac105-15ca-4b48-becd-789fee85c144`.
+- [x] The final default-ON/no-Preview build from pushed commit `8364d195`
+  passes Build-Local, strict UMM validation, all 24 boundary launches, and all
+  five compatibility profiles (18/18 nested runs) with zero warnings and exact
+  restoration. Final ZIP SHA-256:
+  `71e34ac769ed3223b85b83b2992fa289f4039db96abf5d51b2920045b8d4d0a9`;
+  DLL SHA-256:
+  `51e931e587407f597eff3ba3e9102312db534abcc81badfd5f88d3d02bc24092`;
+  MVID `b986edbc-6bd7-4b23-a3cf-5cdc1ebc3033`.
 
 ## Owner release acceptance and detailed checklist
 
 Install
 `artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races.zip`
-with the final exact ZIP hash recorded after commit-bound requalification.
+with ZIP SHA-256
+`71e34ac769ed3223b85b83b2992fa289f4039db96abf5d51b2920045b8d4d0a9`.
 
 - [x] On 2026-09-03 the owner accepted the candidate and explicitly authorized
   removal of the Preview label, default-ON behavior, finalization, merge, tag,
