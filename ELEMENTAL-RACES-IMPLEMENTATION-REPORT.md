@@ -2,7 +2,7 @@
 
 ## Current outcome
 
-**IN PROGRESS - ALL RULES, PUBLICATION, VISUAL-STRUCTURE, EQUIPMENT, TRANSITION, PERSISTENCE, BOUNDARY, AND REQUIRED COMPATIBILITY ENGINEERING GATES PASS.** All
+**AUTOMATED IMPLEMENTATION COMPLETE - HUMAN VISUAL ACCEPTANCE REQUIRED.** All
 four production races, their common/race-specific rules, 68 stable identities,
 racial SLAs, and atomic selector publication now exist. Guarded live evidence
 proves module-OFF identity registration, no selector leakage, exact base stats
@@ -23,15 +23,14 @@ matrix, and its original two-Human mode passes again. A three-process,
 eight-fixture working-save transaction proves spent SLA state, exact
 race/facts/appearance/outfit reload with the module OFF, rest, level-up,
 total-level caster scaling, exact cleanup, and settings restoration. Sixty-four
-additional SLA/prone/death/resurrection/polymorph transition records, all 24
-boundary states, and all five required compatibility profiles also pass on
-version-0.0.113 engineering artifacts with exact restoration. The persistence
-prepare path now requires eight distinct native Respec source/replacement
-commits before it may save. That exact-0.0.114 three-process persistence
-transaction now passes, including module-OFF reload, cleanup, and fresh-process
-absence. The exact-candidate 24-state boundary and five-profile compatibility
-reruns now also pass with exact restoration. Final package revalidation remains
-before handoff; subjective appearance acceptance remains human-required.
+additional SLA/prone/death/resurrection/polymorph transition records pass on
+the development artifacts. The persistence prepare path now requires eight
+distinct native Respec source/replacement commits before it may save. The exact
+0.0.114 three-process persistence transaction passes, including module-OFF
+reload, cleanup, and fresh-process absence. The exact 24-state boundary and
+five-profile compatibility reruns also pass with exact restoration. The final
+clean Release package and direct strict package revalidation pass. Subjective
+appearance acceptance remains human-required.
 
 ## Authoritative baseline
 
@@ -329,8 +328,9 @@ identity, appearance, level-up, and module-disabled reload behavior.
 | Guarded expanded equipment/noncovered transitions | PASS - 224 equipment + 64 transition records |
 | Five required compatibility profiles | PASS on exact 0.0.114 - 5/5 profiles, 18/18 nested runs, exact restoration |
 | Elemental native respec | PASS on exact 0.0.114 - 8/8 distinct source/replacement commits with race, facts, SLA, DollData, and Gunslinger presentation exact |
+| Final human-review package | PASS - clean Release build and direct strict UMM validation at `2ceeb65e` |
 | Visual Adjustments | NOT-RUN - not installed |
-| Human visual acceptance | HUMAN REVIEW REQUIRED after exact candidate package |
+| Human visual acceptance | HUMAN REVIEW REQUIRED for the exact package below |
 
 Three preceding probe transactions failed closed and are retained in the
 journal with their exact causes. None touched a save or published a race.
@@ -657,3 +657,54 @@ and
 `0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18`.
 Visual Adjustments remains NOT-RUN because it is not installed; subjective
 UI and appearance acceptance are not inferred.
+
+## Final human-review artifact
+
+The final canonical package was built from clean product/evidence commit
+`2ceeb65e9c2d0d78189f78ead18e538c8e01eb90` on
+`codex/elemental-races`. The identically named upstream branch matched that
+commit, while a final fetch confirmed `origin/master` remained
+`06c4d998f160df75ad3be7bfcf3de7e415c631d4` at version 0.0.113. The
+repository source-state fingerprint was
+`baa36e497a6e372af4234f38dc6630a88037fb1814af3802f0ec5ebc3dd02505`.
+
+`powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File
+.\scripts\build.ps1 -Configuration Release -Clean -Package` passed
+repository validation, 1,390/1,390 domain tests, production compilation,
+build-output and SoundBank validation, deterministic packaging, and strict
+UMM validation. A separate direct `scripts/validate-package.ps1` invocation
+also passed.
+
+- Package:
+  `artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races-preview.zip`
+- Package bytes: 22,977,802
+- Package SHA-256:
+  `ee78b29e4fd4c8b3407d6dcd0d326a0ed1a6352c597ee169a4bd7cd09da8aa41`
+- DLL bytes: 5,411,328
+- DLL SHA-256:
+  `827f10cd09efe8c9a15b718624c277253ca270f5ef9af222aff8c015f5d8745b`
+- DLL MVID: `61ff8880-9f96-4657-bda8-37e9f2454ea9`
+- DLL file version: 0.0.114
+- DLL informational/product version:
+  `0.0.114-elemental-races-preview`
+- Packaged `Info.json`: ID `KingmakerGunslinger`, version `0.0.114`,
+  UMM `0.32.4`
+- Package entries: 135
+- Blueprint manifest: 1,706 entries, 1,704 active, two reserved, no duplicate
+  GUID or symbol; Elemental Races contributes 69 manifest entries, of which 68
+  are active identities and one is the permanently development-gated
+  diagnostic identity.
+
+The complete guarded compatibility matrix ran against exact-reference commit
+`967f896dc6e7441660e8d7a3c99bf173a4d52c14`. A path-scoped Git comparison
+from that commit to `2ceeb65e` reports no change under `src`, `assets`,
+`blueprints`, `Info.json`, or `Directory.Build.props`; only evidence,
+packaged documentation, compatibility-profile disposition, and validation
+status changed. The canonical package above has a distinct SHA-256 and MVID
+and was not itself relaunched after packaging, so no byte-for-byte runtime
+claim is inferred for it. Its runtime inputs are source-identical to the
+fully qualified artifact.
+
+All automatable gates are complete. Visual Adjustments is NOT-RUN because it
+is not installed. Subjective clipping, appearance, and option quality remain
+**HUMAN REVIEW REQUIRED** for the exact package above.

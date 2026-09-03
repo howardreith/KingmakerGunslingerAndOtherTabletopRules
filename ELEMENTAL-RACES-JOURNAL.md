@@ -1568,3 +1568,51 @@ All entries are `observe-feature-module-settings` PASS:
   human-only caveats in profile notes, and cleared the validator-derived
   `compatibilityRuntimeQualificationPending` flag. Visual Adjustments remains
   **NOT-RUN** because it is not installed.
+
+## 2026-09-03 - Final canonical package and human handoff
+
+- Committed and pushed the exact compatibility record as
+  `2ceeb65e9c2d0d78189f78ead18e538c8e01eb90`. The authorized push reported
+  the local and upstream `codex/elemental-races` branch synchronized.
+- `git fetch origin`: **PASS**. `origin/master` remains exactly
+  `06c4d998f160df75ad3be7bfcf3de7e415c631d4` at version 0.0.113, with no
+  intervening commit. Version 0.0.114 therefore remains the next
+  nonconflicting preview version.
+- `.\scripts\validate-repository.ps1`: **PASS**, including the 0.0.114
+  validator and all inherited source invariants.
+- `.\scripts\test-domain.ps1 -Configuration Release`: **PASS,
+  1,390/1,390**, zero failures.
+- `powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File
+  .\scripts\build.ps1 -Configuration Release -Clean -Package`: **PASS**.
+  Repository validation, the complete domain suite, exact production
+  compilation, output validation, SoundBank validation, deterministic package
+  creation, and strict standalone UMM validation all passed.
+- `.\scripts\validate-package.ps1 -PackagePath
+  .\artifacts\packages\KingmakerGunslinger-0.0.114-elemental-races-preview.zip`:
+  **PASS** on a separate direct invocation.
+- Clean source-state fingerprint:
+  `baa36e497a6e372af4234f38dc6630a88037fb1814af3802f0ec5ebc3dd02505`.
+- Final package:
+  `artifacts/packages/KingmakerGunslinger-0.0.114-elemental-races-preview.zip`;
+  22,977,802 bytes; SHA-256
+  `ee78b29e4fd4c8b3407d6dcd0d326a0ed1a6352c597ee169a4bd7cd09da8aa41`;
+  135 entries.
+- Final DLL: 5,411,328 bytes; SHA-256
+  `827f10cd09efe8c9a15b718624c277253ca270f5ef9af222aff8c015f5d8745b`;
+  MVID `61ff8880-9f96-4657-bda8-37e9f2454ea9`; file version 0.0.114;
+  informational version `0.0.114-elemental-races-preview`.
+- Packaged `Info.json` reports `KingmakerGunslinger` 0.0.114 and UMM
+  0.32.4. Blueprint validation reports 1,706 manifest entries, 1,704 active,
+  two reserved, and no duplicate GUID or symbol. Elemental Races owns 69
+  manifest entries: 68 active identities plus one development-gated
+  diagnostic identity.
+- `git diff --quiet 967f896d..2ceeb65e -- src assets blueprints Info.json
+  Directory.Build.props` returned zero. The final canonical package therefore
+  uses the same runtime source/assets/blueprints/version inputs as the
+  18-run exact compatibility artifact. Only evidence, packaged documentation,
+  compatibility-profile disposition, and static-validation status changed.
+  The canonical ZIP has a distinct hash/MVID and was not relaunched; no
+  byte-for-byte runtime claim is fabricated.
+- Result: all automatable engineering gates are complete. Visual Adjustments
+  is **NOT-RUN** because it is absent. Subjective clipping, appearance, and
+  option quality are **HUMAN REVIEW REQUIRED** for the exact package above.
