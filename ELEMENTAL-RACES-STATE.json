@@ -5,7 +5,7 @@
   "startingBranch": "master",
   "startingCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
   "upstreamCommit": "06c4d998f160df75ad3be7bfcf3de7e415c631d4",
-  "phase": "phase-j-final-preview-compatibility-qualification",
+  "phase": "phase-j-final-package-and-human-handoff",
   "version": "0.0.114",
   "informationalVersion": "0.0.114-elemental-races-preview",
   "featureModuleSchema": 10,
@@ -30,15 +30,15 @@
     "undineRules": "BASE-HYDRAULIC-AND-SAVE-BACKED-MODULE-OFF-RUNTIME-PASS",
     "visuals": "PRODUCTION-PROXIES-56-CASE-OPTION-MATRIX-224-RECORD-EXPANDED-EQUIPMENT-MATRIX-80-CASE-TEN-CLASS-CLOTHING-MATRIX-280-RECORD-ELEMENTAL-MOTION-AND-TRANSITION-MATRIX-EIGHT-FIXTURE-SAVE-BACKED-RELOAD-PASS-HUMAN-REVIEW-PENDING",
     "runtimeScenarios": "ALL-ELEMENTAL-MECHANICS-PUBLICATION-VISUAL-EQUIPMENT-SLA-PRONE-DEATH-RESURRECTION-POLYMORPH-MOTION-PERSISTENCE-BOUNDARY-COMPATIBILITY-AND-HUMAN-MOTION-REGRESSION-SCENARIOS-PASS;BOUNDARY-AND-PERSISTENCE-EXACT-0.0.114",
-    "compatibility": "FIVE-REQUIRED-PROFILES-AND-EXACT-RESTORATION-PASS-ON-ENGINEERING-ARTIFACT-FINAL-0.0.114-RERUN-PENDING",
-    "packaging": "0.0.114-SOURCE-DOMAIN-COMPILE-CLEAN-RELEASE-STRICT-PACKAGE-PASS-PERSISTENCE-AND-24-STATE-BOUNDARY-RUNTIME-PASS-COMPATIBILITY-PENDING",
+    "compatibility": "FIVE-REQUIRED-PROFILES-RUNTIME-QUALIFIED-EXACT-0.0.114-WITH-EXACT-RESTORATION",
+    "packaging": "0.0.114-SOURCE-DOMAIN-COMPILE-CLEAN-RELEASE-STRICT-PACKAGE-PERSISTENCE-24-STATE-BOUNDARY-AND-FIVE-PROFILE-RUNTIME-PASS-FINAL-HUMAN-PACKAGE-PENDING",
     "draftPullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/9"
   },
   "currentDomainTests": {
     "command": ".\\scripts\\test-domain.ps1 -Configuration Release",
     "passed": 1390,
     "failed": 0,
-    "status": "PASS-AT-b90cb303-EXACT-0.0.114",
+    "status": "PASS-AT-967f896d-EXACT-0.0.114",
     "exactVersionRerunPending": false
   },
   "runtime": {
@@ -662,6 +662,39 @@
     "allRestoredExactly": true,
     "visualAdjustments": "NOT-RUN-NOT-INSTALLED"
   },
+  "finalCompatibilityQualification": {
+    "status": "PASS-RUNTIME-QUALIFIED-EXACT",
+    "version": "0.0.114",
+    "gitCommit": "967f896dc6e7441660e8d7a3c99bf173a4d52c14",
+    "requiredProfileCount": 5,
+    "passedProfileCount": 5,
+    "nestedRuntimeCount": 18,
+    "nestedRuntimePassCount": 18,
+    "warningCount": 0,
+    "transactions": [
+      "compat-20260903T042304Z-6ab63512362b",
+      "compat-20260903T042749Z-2987d5aa2784",
+      "compat-20260903T043352Z-52546b4a381d",
+      "compat-20260903T043806Z-fc082022c750",
+      "compat-20260903T044415Z-0f01ef146905"
+    ],
+    "allRestoredExactly": true,
+    "deploymentId": "20260903T0422357690930Z",
+    "deploymentManifestSha256": "d8ebc807786257ea2dd880f2f17f29e76e9e454192a43ed691756749179adf5d",
+    "sourceStateSha256": "8d47322eeb618ccbde12f5707e272294608ada2a53b30ea3b3bfb72a77f27778",
+    "packageSha256": "bc50a684f76679e164035b46496ee02bbaa3a933145c4f29f2f15a2ac587760d",
+    "dllSha256": "302cd4c81977c6aa5f7b2ca8e5dbf132f2e4c15fa3a9b70410e982700d0914bf",
+    "dllMvid": "88951bb3-a82e-4f4c-a2d5-1fb73a4ddcd6",
+    "featureSettingsBeforeAndAfterSha256": "d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e",
+    "cotwSettingsBeforeAndAfterSha256": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8",
+    "favoredTraitsEnabledSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+    "sharedRaceCountWithRacesUnleashed": 20,
+    "racesUnleashedRaceCount": 7,
+    "finalClassCountHighRisk": 49,
+    "cotwClassesPreserved": "47/47",
+    "visualAdjustments": "NOT-RUN-NOT-INSTALLED",
+    "kingmakerProcessesAfter": 0
+  },
   "engineeringBoundaryQualification": {
     "status": "PASS",
     "version": "0.0.113",
@@ -844,7 +877,7 @@
     "cleanReleasePackage": "PASS-STRICT-UMM",
     "nativeRespecPersistence": "PASS-THREE-FRESH-PROCESSES",
     "boundaryMatrix": "PASS-24-OF-24-EXACT-0.0.114",
-    "compatibilityProfiles": "PENDING-EXACT-VERSION"
+    "compatibilityProfiles": "PASS-5-OF-5-EXACT-0.0.114-RESTORED"
   },
   "humanReview": "AUTOMATED-FINAL-CANDIDATE-GATES-IN-PROGRESS"
 }

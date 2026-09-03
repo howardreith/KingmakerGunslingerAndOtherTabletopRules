@@ -68,8 +68,12 @@ delivery, Oread movement, Hydraulic Push, selector publication, 56 production
 visual combinations, ten-class clothing, expanded equipment, native motion
 and state transitions, three-process module-OFF save persistence, Races
 Unleashed coexistence, and the existing Human Gunslinger outfit regression.
-Exact final-candidate artifact hashes and transaction IDs are recorded in
-`ELEMENTAL-RACES-IMPLEMENTATION-REPORT.md`.
+The exact 0.0.114 boundary run passed all 24 configurations. Five exact
+compatibility profiles then passed 18 fresh-process scenarios with zero
+warnings and exact restoration: KMG alone, Call of the Wild, Races Unleashed,
+their combined stack, and the high-risk Call of the Wild + Favored Class +
+Tweak or Treat + Races Unleashed stack. Exact artifact hashes and transaction
+IDs are recorded in `ELEMENTAL-RACES-IMPLEMENTATION-REPORT.md`.
 
 The preview retains the 0.0.113 read-only paper-cartridge save-load repair and
 the accepted Gunslinger Magus-derived class outfit. It also preserves the
