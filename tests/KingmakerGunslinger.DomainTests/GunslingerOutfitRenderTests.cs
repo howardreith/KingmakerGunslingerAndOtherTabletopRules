@@ -846,6 +846,7 @@ namespace KingmakerGunslinger.DomainTests
                 "IAbilityAvailabilityProvider",
                 "availabilitySettleUpdates",
                 "racial SLA availability (",
+                "targetDeferred=True",
                 "hostile-2m-forward-navmesh",
                 "if (_motionTarget == null)",
                 "hostilePlacementCount",
@@ -878,6 +879,15 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(transitions.Contains(token),
                     "Elemental transition partial lacks exact native token: " +
                     token);
+            int availabilityGate = transitions.IndexOf("if (!available)",
+                StringComparison.Ordinal);
+            int targetCreation = transitions.IndexOf(
+                "TargetWrapper target = ElementalSpellTarget();",
+                StringComparison.Ordinal);
+            Assertions.True(availabilityGate >= 0 &&
+                targetCreation > availabilityGate,
+                "Elemental transition target construction must remain behind " +
+                "the native ability-availability settle gate.");
             foreach (string token in new[]
             {
                 "UsesElementalRaceFixtures",
