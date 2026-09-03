@@ -118,8 +118,12 @@ absence of a hard blocker is not a completion claim.
   cleanup then exposed the exact cause on a clean retry: native Respec rejects
   race selection. The corrected fixture now follows Kingmaker's fixed-race
   behavior by seeding and verifying the existing elemental race before
-  selecting the new class; guarded retry remains pending. Donor-dialogue
-  observations remain a documented limitation.
+  selecting the new class. That boundary then passed in one exact commit; the
+  next failure proved that a level-zero fixture must also model a real
+  character's already-active racial feature facts. The narrower correction
+  activates and verifies those exact production facts and SLA before Respec;
+  guarded retry remains pending. Donor-dialogue observations remain a
+  documented limitation.
 - Native Dwarf Slow and Steady passes the live armor/encumbrance matrix.
   Save-backed SLA reload and ordinary character persistence now pass.
 - Hydraulic Push combat mechanics, resource commitment, and save-backed
