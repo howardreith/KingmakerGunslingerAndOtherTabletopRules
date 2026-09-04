@@ -6,8 +6,14 @@ $ErrorActionPreference = 'Stop'
 
 $orchestratorPath = Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1'
 $deploymentPath = Join-Path $PSScriptRoot 'Deploy-Local.ps1'
+$legacyDeploymentPath = Join-Path $PSScriptRoot `
+    'Deploy-QualifiedElementalRaces114.ps1'
+$legacySequencePath = Join-Path $PSScriptRoot `
+    'Invoke-ElementalRaceLegacyMigrationQualification.ps1'
 $orchestrator = Get-Content -LiteralPath $orchestratorPath -Raw
 $deployment = Get-Content -LiteralPath $deploymentPath -Raw
+$legacyDeployment = Get-Content -LiteralPath $legacyDeploymentPath -Raw
+$legacySequence = Get-Content -LiteralPath $legacySequencePath -Raw
 
 $failures = [Collections.Generic.List[string]]::new()
 function Assert-True([bool]$Condition, [string]$Name) {
@@ -87,7 +93,7 @@ Assert-True ($deployment.Contains("Join-Path `$live 'FeatureModules.json'") -and
     $deployment.Contains('[IO.File]::WriteAllBytes($featureSettingsTemporary, $featureSettingsBytes)') -and
     $deployment.Contains('featureModuleSettingsPreserved = $featureSettingsExisted')) `
     'deployment-preserves-feature-settings-bytes-outside-package'
-$reuseBranch = $orchestrator.IndexOf('if ($ReuseInstalledArtifact) {',
+$reuseBranch = $orchestrator.IndexOf('elseif ($ReuseInstalledArtifact) {',
     [StringComparison]::Ordinal)
 $reuseVerify = $orchestrator.IndexOf('Assert-KmgReusableDeployment',
     $reuseBranch, [StringComparison]::Ordinal)
@@ -113,7 +119,46 @@ Assert-True ($deployment.Contains('[switch]$AllowEmptyFirstInstall') -and
     $deployment.Contains('backupWasEmpty = [bool]$backup.EmptySource')) `
     'empty-first-install-is-explicit-and-recorded'
 
+$legacyShouldProcess = $legacyDeployment.IndexOf(
+    '$PSCmdlet.ShouldProcess(', [StringComparison]::Ordinal)
+$legacyBackup = $legacyDeployment.IndexOf(
+    "`$backup = & (Join-Path `$PSScriptRoot 'Backup-Live-Mod.ps1')",
+    [StringComparison]::Ordinal)
+Assert-True ($legacyDeployment.Contains(
+        'b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694') -and
+    $legacyDeployment.Contains(
+        '09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262') -and
+    $legacyDeployment.Contains(
+        'dcd73856-39d4-40ce-9b05-77bf249103d7') -and
+    $legacyDeployment.Contains('$expectedEntryCount = 135')) `
+    'legacy-deployment-pins-complete-artifact-identity'
+Assert-True ($legacyShouldProcess -ge 0 -and
+    $legacyBackup -gt $legacyShouldProcess) `
+    'legacy-deployment-backs-up-only-after-authorization'
+Assert-True ($legacyDeployment.Contains(
+        '$deploymentWhatIfRequested = [bool]$WhatIfPreference') -and
+    $legacyDeployment.Contains(
+        'Remove-Item -LiteralPath $temporary -Recurse -Force')) `
+    'legacy-deployment-dry-run-cleans-private-staging'
+Assert-True ($orchestrator.Contains(
+        '[switch]$ReuseQualifiedElementalRaces114Release') -and
+    $orchestrator.Contains(
+        'Current-source and qualified-legacy artifact reuse are mutually exclusive.') -and
+    $orchestrator.Contains(
+        'Qualified 0.0.114 reuse permits only elemental-race-persistence-prepare')) `
+    'legacy-reuse-is-mutually-exclusive-and-scenario-locked'
+Assert-True ($legacySequence.Contains(
+        '$legacyDeploymentManifestPath = & $deployLegacy') -and
+    $legacySequence.Contains(
+        '$migrationDeploymentManifestPath = & $deployCurrent') -and
+    $legacySequence.Contains(
+        '$restoredDeploymentManifestPath = & $deployCurrent') -and
+    $legacySequence.Contains('Restore-OriginalFeatureState')) `
+    'legacy-transaction-restores-settings-and-current-artifact'
+Assert-True (-not $legacySequence.Contains('KMG_AUTOMATION_BASELINE')) `
+    'legacy-transaction-excludes-protected-baseline'
+
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 22'
+Write-Host 'Runtime deployment safety tests passed: 28'

@@ -171,6 +171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly WorkingSaveSmokeScenario _workingSaveSmoke;
             private readonly bool _prepare;
             private readonly bool _moduleRestored;
+            private readonly bool _legacyMigration;
             private readonly bool _verifyAbsent;
             private readonly DateTime _started = DateTime.UtcNow;
             private readonly List<RuntimeTestAssertion> _assertions =
@@ -265,6 +266,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog
                         .ElementalRaceModuleRestoredPersistence,
                     StringComparison.Ordinal);
+                _legacyMigration = string.Equals(request.Scenario,
+                    RuntimeTestScenarioCatalog.ElementalRaceLegacyMigration,
+                    StringComparison.Ordinal);
                 _verifyAbsent = string.Equals(request.Scenario,
                     RuntimeTestScenarioCatalog
                         .ElementalRacePersistenceVerifyAbsent,
@@ -320,7 +324,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _settleUpdates = 0;
                             return;
                         }
-                        CaptureVerifiedFixture();
+                        if (_legacyMigration)
+                            CaptureLegacyMigrationFixture();
+                        else CaptureVerifiedFixture();
                         _fixtureIndex++;
                         if (_fixtureIndex < _fixtures.Length)
                         {
@@ -328,13 +334,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _settleUpdates = 0;
                             return;
                         }
-                        _preservedMembershipExact =
-                            LoadedMembershipExact();
-                        if (!_preservedMembershipExact)
-                            throw new InvalidOperationException(
-                                "The 24 module-OFF heritage fixtures did not remain in one exact serializable party and area state.");
-                        _normalPathComplete = true;
-                        StartExactWorkingSave();
+                        if (_legacyMigration)
+                        {
+                            _normalPathComplete = true;
+                            BeginCleanup();
+                        }
+                        else
+                        {
+                            _preservedMembershipExact =
+                                LoadedMembershipExact();
+                            if (!_preservedMembershipExact)
+                                throw new InvalidOperationException(
+                                    "The 24 module-OFF heritage fixtures did not remain in one exact serializable party and area state.");
+                            _normalPathComplete = true;
+                            StartExactWorkingSave();
+                        }
                     }
                     if (_phase == 3)
                     {
@@ -417,6 +431,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The complete registered elemental blueprint set is unavailable.");
                 _fixtures = BuildFixtures();
+                if (_legacyMigration)
+                    _fixtures = _fixtures.Take(
+                        ElementalHeritagePersistenceMatrixPolicy
+                            .LegacyGeneralFixtureCount(
+                                ElementalRaceCatalog.RaceCount)).ToArray();
                 RequireFixtureStagingOutOfCombat("baseline-before-fixtures");
                 _gunslingerClass = BlueprintLibraryLookup.RequireExact<
                     BlueprintCharacterClass>(BlueprintBootstrap.Library,
@@ -460,22 +479,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
 
-                bool expectedModuleActive = _moduleRestored;
+                bool expectedModuleActive = _moduleRestored ||
+                    _legacyMigration;
                 if (_context.FeatureModules.Active.ElementalRaces !=
                         expectedModuleActive || !_selectorExact ||
                     !_registeredExact)
-                    throw new InvalidOperationException(_moduleRestored
+                    throw new InvalidOperationException(
+                        expectedModuleActive
                         ? "Module-restored verification requires all elemental identities registered and all four selector entries published."
                         : "Module-disabled verification requires all elemental identities registered while all four selector entries are absent.");
                 _loadedUnits = ResolveLoadedFixtures();
                 if (!LoadedMembershipExact())
                     throw new InvalidOperationException(
-                        "Fresh-load persistence verification requires 24 exact marker-bound elemental heritage party fixtures; observed " +
+                        (_legacyMigration
+                            ? "Fresh-load migration verification requires the eight exact markerless 0.0.114 General elemental party fixtures; observed "
+                            : "Fresh-load persistence verification requires 24 exact marker-bound elemental heritage party fixtures; observed ") +
                         _loadedFixtureMembership.ToString(
                             Newtonsoft.Json.Formatting.None) + ".");
-                WriteProgress(_moduleRestored
-                    ? "initialized-module-restored-verify-respec-cleanup"
-                    : "initialized-module-disabled-verify-preserve");
+                WriteProgress(_legacyMigration
+                    ? "initialized-legacy-0.0.114-verify-cleanup"
+                    : _moduleRestored
+                        ? "initialized-module-restored-verify-respec-cleanup"
+                        : "initialized-module-disabled-verify-preserve");
             }
 
             private ElementalPersistenceFixture[] BuildFixtures()
@@ -1479,7 +1504,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             private static bool CommonElementalRaceFactsExact(
-                UnitDescriptor owner, ElementalPersistenceFixture fixture)
+                UnitDescriptor owner, ElementalPersistenceFixture fixture,
+                bool heritageSelectionExpected = true)
             {
                 if (owner == null || fixture == null) return false;
                 BlueprintRace race = fixture.Blueprints.Race;
@@ -1487,11 +1513,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !ReferenceEquals(value,
                             fixture.Blueprints.Affinity) &&
                         !ReferenceEquals(value,
-                            fixture.Blueprints.SlaFeature)).All(value =>
+                            fixture.Blueprints.SlaFeature) &&
+                        !ReferenceEquals(value,
+                            fixture.Blueprints.Heritages.Selection)).All(value =>
                             value != null && owner.HasFact(value) &&
                         (!(value is BlueprintFeature) ||
                             owner.Progression.Features.GetRank(
-                                (BlueprintFeature)value) == 1));
+                                (BlueprintFeature)value) == 1)) &&
+                    owner.Progression.Features.GetRank(
+                        fixture.Blueprints.Heritages.Selection) ==
+                            (heritageSelectionExpected ? 1 : 0);
             }
 
             private static bool HeritageProvidersExact(UnitDescriptor owner,
@@ -1892,6 +1923,79 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteProgress("loaded-fixture-verified");
             }
 
+            private void CaptureLegacyMigrationFixture()
+            {
+                ElementalPersistenceFixture fixture =
+                    _fixtures[_fixtureIndex];
+                _stage = "capture-legacy-0.0.114-" + fixture.Label;
+                if (!fixture.Heritage.Definition.IsGeneral ||
+                    !ReferenceEquals(fixture.Heritage,
+                        fixture.Blueprints.Heritages.General))
+                    throw new InvalidOperationException(fixture.Label +
+                        " is not an exact General heritage migration fixture.");
+
+                ElementalPersistenceObservation loaded = ObserveFixture(
+                    fixture, _currentUnit, _currentExpectedDoll,
+                    fixture.Heritage, 0, 1, 0, false);
+                int resourceBeforeReconcile = _currentUnit.Descriptor.Resources
+                    .GetResourceAmount(fixture.Heritage.SlaResource);
+                bool reconcileAccepted = ElementalHeritageRuntime.Reconcile(
+                    _currentUnit.Descriptor, null, null);
+                ElementalPersistenceObservation reconciled = ObserveFixture(
+                    fixture, _currentUnit, _currentExpectedDoll,
+                    fixture.Heritage, 0, 1, 0, false);
+                int resourceAfterReconcile = _currentUnit.Descriptor.Resources
+                    .GetResourceAmount(fixture.Heritage.SlaResource);
+                bool legacyIdentityExact =
+                    ReferenceEquals(fixture.Heritage.Affinity,
+                        fixture.Blueprints.Affinity) &&
+                    ReferenceEquals(fixture.Heritage.SlaFeature,
+                        fixture.Blueprints.SlaFeature) &&
+                    ReferenceEquals(fixture.Heritage.SlaResource,
+                        fixture.Blueprints.SlaResource) &&
+                    ReferenceEquals(fixture.Heritage.SlaAbility,
+                        fixture.Blueprints.SlaAbility);
+                bool markerlessGeneralExact =
+                    !_currentUnit.Descriptor.HasFact(
+                        fixture.Blueprints.Heritages.Selection) &&
+                    fixture.Blueprints.Heritages.Choices().All(value =>
+                        !_currentUnit.Descriptor.HasFact(value.Marker));
+                var record = new JObject
+                {
+                    { "fixture", fixture.Label },
+                    { "fixtureUniqueId", fixture.UniqueId },
+                    { "fixtureName", fixture.Name },
+                    { "raceGuid", fixture.Blueprints.Race.AssetGuid },
+                    { "gender", fixture.Gender.ToString() },
+                    { "heritage", fixture.Heritage.Definition.Name },
+                    { "phase", "legacy-0.0.114-load-verify-cleanup" },
+                    { "producerVersion", "0.0.114" },
+                    { "receiverVersion", "0.0.115" },
+                    { "loadedDollExactBeforeReconstruction",
+                        _currentLoadedDollExact },
+                    { "loadedObservation", loaded.Evidence },
+                    { "loadedObservationExact", loaded.Exact },
+                    { "legacyIdentityExact", legacyIdentityExact },
+                    { "markerlessGeneralExact", markerlessGeneralExact },
+                    { "resourceBeforeReconcile", resourceBeforeReconcile },
+                    { "reconcileAccepted", reconcileAccepted },
+                    { "resourceAfterReconcile", resourceAfterReconcile },
+                    { "reconciledObservation", reconciled.Evidence },
+                    { "reconciledObservationExact", reconciled.Exact }
+                };
+                CaptureFixture(record, fixture, _currentUnit);
+                if (!_currentLoadedDollExact || !loaded.Exact ||
+                    !legacyIdentityExact || !markerlessGeneralExact ||
+                    resourceBeforeReconcile != 0 || !reconcileAccepted ||
+                    resourceAfterReconcile != 0 || !reconciled.Exact)
+                    throw new InvalidOperationException(fixture.Label +
+                        " did not preserve exact markerless General race, stats, providers, spent SLA, or appearance across the 0.0.114-to-0.0.115 load boundary.");
+                _currentUnit = null;
+                _currentExpectedDoll = null;
+                _currentLoadedDollExact = false;
+                WriteProgress("legacy-0.0.114-fixture-verified");
+            }
+
             private void CaptureRestoredFixture()
             {
                 ElementalPersistenceFixture fixture =
@@ -1995,7 +2099,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceFixture fixture, UnitEntityData unit,
                 PersistenceDollSnapshot expectedDoll,
                 ElementalHeritageBlueprints expectedHeritage,
-                int expectedResource, int expectedLevel)
+                int expectedResource, int expectedLevel,
+                int expectedMarkerCount = 1,
+                bool heritageSelectionExpected = true)
             {
                 if (unit == null || unit.Descriptor == null ||
                     unit.View == null || expectedDoll == null ||
@@ -2016,12 +2122,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalHeritageBlueprints[] heritageChoices = fixture
                     .Blueprints.Heritages.Choices().ToArray();
                 bool commonFactsExact = CommonElementalRaceFactsExact(owner,
-                    fixture);
+                    fixture, heritageSelectionExpected);
                 bool providersExact = HeritageProvidersExact(owner,
-                    fixture, expectedHeritage, 1);
+                    fixture, expectedHeritage, expectedMarkerCount);
                 bool factsExact = commonFactsExact && providersExact &&
                     owner.HasFact(fixture.Blueprints.Resistance) &&
-                    owner.HasFact(expectedHeritage.Marker) &&
+                    owner.Progression.Features.GetRank(
+                        expectedHeritage.Marker) == expectedMarkerCount &&
                     owner.HasFact(expectedHeritage.Affinity) &&
                     owner.HasFact(expectedHeritage.SlaFeature);
                 var statDeltas = new JObject();
@@ -2166,6 +2273,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "heritage", expectedHeritage.Definition.Name },
                         { "heritageMarkerGuid",
                             expectedHeritage.Marker.AssetGuid },
+                        { "heritageSelectionExpected",
+                            heritageSelectionExpected },
+                        { "heritageSelectionRank", owner.Progression.Features
+                            .GetRank(fixture.Blueprints.Heritages.Selection) },
+                        { "expectedMarkerCount", expectedMarkerCount },
                         { "activeMarkerCount", heritageChoices.Count(
                             value => owner.HasFact(value.Marker)) },
                         { "activeAffinityCount", heritageChoices.Count(
@@ -2477,12 +2589,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return new JObject
                 {
                     { "globalUnits", FixtureIdentityCount(_unitsBefore) },
+                    { "allCatalogGlobalUnits",
+                        CatalogFixtureIdentityCount(_unitsBefore) },
                     { "party", FixtureIdentityCount(_partyBefore) },
+                    { "allCatalogParty",
+                        CatalogFixtureIdentityCount(_partyBefore) },
                     { "partyCharacters", FixtureIdentityCount(
                         _partyCharactersBefore) },
+                    { "allCatalogPartyCharacters",
+                        CatalogFixtureIdentityCount(_partyCharactersBefore) },
                     { "remoteCompanions", FixtureIdentityCount(
                         _remoteBefore) },
+                    { "allCatalogRemoteCompanions",
+                        CatalogFixtureIdentityCount(_remoteBefore) },
                     { "crossScene", FixtureIdentityCount(_crossBefore) },
+                    { "allCatalogCrossScene",
+                        CatalogFixtureIdentityCount(_crossBefore) },
                     { "crossSceneUnits", _crossBefore.OfType<UnitEntityData>()
                         .Count(IsFixtureUnit) },
                     { "perFixtureParty", new JArray(_fixtures.Select(value =>
@@ -2502,11 +2624,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         WorkingSaveSmokeScenario.ExpectedPartyCount &&
                     _partyCharactersBefore.Length ==
                         WorkingSaveSmokeScenario.ExpectedPartyCount &&
-                    FixtureIdentityCount(_unitsBefore) == 0 &&
-                    FixtureIdentityCount(_partyBefore) == 0 &&
-                    FixtureIdentityCount(_partyCharactersBefore) == 0 &&
-                    FixtureIdentityCount(_remoteBefore) == 0 &&
-                    FixtureIdentityCount(_crossBefore) == 0;
+                    CatalogFixtureIdentityCount(_unitsBefore) == 0 &&
+                    CatalogFixtureIdentityCount(_partyBefore) == 0 &&
+                    CatalogFixtureIdentityCount(
+                        _partyCharactersBefore) == 0 &&
+                    CatalogFixtureIdentityCount(_remoteBefore) == 0 &&
+                    CatalogFixtureIdentityCount(_crossBefore) == 0;
             }
 
             private UnitEntityData[] ResolveLoadedFixtures()
@@ -2528,27 +2651,39 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private bool LoadedMembershipExact()
             {
-                if (_loadedUnits.Length != ElementalPersistenceFixtureCount ||
+                int expectedFixtureCount = _fixtures.Length;
+                int expectedPartyCount = WorkingSaveSmokeScenario
+                    .ExpectedPartyCount + expectedFixtureCount;
+                if (_loadedUnits.Length != expectedFixtureCount ||
                     _loadedUnits.Distinct().Count() !=
-                        ElementalPersistenceFixtureCount ||
-                    _partyBefore.Length != ElementalPersistencePartyCount ||
+                        expectedFixtureCount ||
+                    _partyBefore.Length != expectedPartyCount ||
                     _partyCharactersBefore.Length !=
-                        ElementalPersistencePartyCount ||
+                        expectedPartyCount ||
                     FixtureIdentityCount(_partyBefore) !=
-                        ElementalPersistenceFixtureCount ||
+                        expectedFixtureCount ||
                     FixtureIdentityCount(_partyCharactersBefore) !=
-                        ElementalPersistenceFixtureCount ||
+                        expectedFixtureCount ||
                     FixtureIdentityCount(_remoteBefore) != 0 ||
                     FixtureIdentityCount(_crossBefore) !=
-                        ElementalPersistenceFixtureCount ||
+                        expectedFixtureCount ||
                     _crossBefore.OfType<UnitEntityData>().Count(
-                        IsFixtureUnit) != ElementalPersistenceFixtureCount)
+                        IsFixtureUnit) != expectedFixtureCount ||
+                    CatalogFixtureIdentityCount(_partyBefore) !=
+                        expectedFixtureCount ||
+                    CatalogFixtureIdentityCount(_partyCharactersBefore) !=
+                        expectedFixtureCount ||
+                    CatalogFixtureIdentityCount(_remoteBefore) != 0 ||
+                    CatalogFixtureIdentityCount(_crossBefore) !=
+                        expectedFixtureCount)
                     return false;
                 UnitEntityData[] global = _unitsBefore
                     .OfType<UnitEntityData>().Where(IsFixtureUnit).ToArray();
-                if (global.Length > ElementalPersistenceFixtureCount ||
+                if (global.Length > expectedFixtureCount ||
                     global.Any(value => !_loadedUnits.Any(current =>
-                        ReferenceEquals(current, value))))
+                        ReferenceEquals(current, value))) ||
+                    CatalogFixtureIdentityCount(_unitsBefore) >
+                        expectedFixtureCount)
                     return false;
                 return _fixtures.All(fixture =>
                     FixtureIdentityCount(_partyBefore,
@@ -2627,6 +2762,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return _fixtures.Any(fixture =>
                     string.Equals(reference.UniqueId, fixture.UniqueId,
                         StringComparison.Ordinal));
+            }
+
+            private static bool HasCatalogFixtureIdentity(object value)
+            {
+                UnitEntityData unit = value as UnitEntityData;
+                string id = unit != null ? unit.UniqueId :
+                    value is UnitReference
+                        ? ((UnitReference)value).UniqueId : null;
+                return !string.IsNullOrEmpty(id) &&
+                    ElementalPersistenceFixtureIds.Contains(id,
+                        StringComparer.Ordinal);
+            }
+
+            private static int CatalogFixtureIdentityCount(
+                IEnumerable<object> values)
+            {
+                return values == null ? 0 : values.Count(
+                    HasCatalogFixtureIdentity);
             }
 
             private int FixtureIdentityCount(IEnumerable<object> values,
@@ -2838,7 +2991,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FixtureIdentityCount(currentParty) == 0 &&
                     FixtureIdentityCount(currentPartyCharacters) == 0 &&
                     FixtureIdentityCount(Snapshot(_remote)) == 0 &&
-                    FixtureIdentityCount(Snapshot(_cross)) == 0;
+                    FixtureIdentityCount(Snapshot(_cross)) == 0 &&
+                    CatalogFixtureIdentityCount(currentUnits) == 0 &&
+                    CatalogFixtureIdentityCount(currentParty) == 0 &&
+                    CatalogFixtureIdentityCount(currentPartyCharacters) == 0 &&
+                    CatalogFixtureIdentityCount(Snapshot(_remote)) == 0 &&
+                    CatalogFixtureIdentityCount(Snapshot(_cross)) == 0;
                 _settleUpdates++;
                 if (!cleaned && _settleUpdates < MaximumSettleUpdates)
                     return;
@@ -2865,6 +3023,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void StartExactWorkingSave()
             {
                 _stage = _prepare ? "save-24-spent-heritage-fixtures" :
+                    _legacyMigration
+                        ? "save-legacy-0.0.114-fixture-cleanup" :
                     _moduleRestored || _cleanupStarted
                         ? "save-24-heritage-fixture-cleanup"
                         : "save-24-module-off-spent-heritage-fixtures";
@@ -3093,6 +3253,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "scenario", _request.Scenario },
                     { "phase", _prepare ? "prepare" : _verifyAbsent ?
                         "verify-absent" :
+                        _legacyMigration
+                            ? "legacy-0.0.114-load-verify-cleanup" :
                         _moduleRestored
                             ? "module-restored-verify-respec-cleanup"
                             : "module-disabled-verify-preserve" },
@@ -3108,9 +3270,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "selectorStateExact", _selectorExact },
                     { "fixtureCount", _fixtures.Length },
                     { "expectedPreparedPartyCount",
-                        ElementalPersistencePartyCount },
+                        WorkingSaveSmokeScenario.ExpectedPartyCount +
+                            _fixtures.Length },
                     { "fixtureUniqueIds", new JArray(
-                        ElementalPersistenceFixtureIds) },
+                        _fixtures.Select(value => value.UniqueId)) },
                     { "fixtures", new JArray(_fixtures.Select(value =>
                         new JObject
                         {
@@ -3231,6 +3394,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_prepare) FinishPrepare(phaseStateExact);
                 else if (_verifyAbsent)
                     FinishVerifyAbsent(phaseStateExact);
+                else if (_legacyMigration)
+                    FinishLegacyMigration(phaseStateExact);
                 else if (_moduleRestored)
                     FinishModuleRestoredVerify(phaseStateExact);
                 else FinishModuleDisabledVerify(phaseStateExact);
@@ -3354,6 +3519,86 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _player.Money == _moneyBefore &&
                     CharacterRacesArrayExact(),
                     "exact pre-run snapshots; production blueprints never mutated");
+            }
+
+            private void FinishLegacyMigration(bool cleaned)
+            {
+                int legacyFixtureCount =
+                    ElementalHeritagePersistenceMatrixPolicy
+                        .LegacyGeneralFixtureCount(
+                            ElementalRaceCatalog.RaceCount);
+                JObject[] records = _records.OfType<JObject>().ToArray();
+                bool recordExact = records.Length == legacyFixtureCount &&
+                    records.All(value =>
+                        string.Equals(value.Value<string>("producerVersion"),
+                            "0.0.114", StringComparison.Ordinal) &&
+                        string.Equals(value.Value<string>("receiverVersion"),
+                            "0.0.115", StringComparison.Ordinal) &&
+                        TokenBool(value,
+                            "loadedDollExactBeforeReconstruction") &&
+                        TokenBool(value, "loadedObservationExact") &&
+                        TokenBool(value, "legacyIdentityExact") &&
+                        TokenBool(value, "markerlessGeneralExact") &&
+                        value.Value<int>("resourceBeforeReconcile") == 0 &&
+                        TokenBool(value, "reconcileAccepted") &&
+                        value.Value<int>("resourceAfterReconcile") == 0 &&
+                        TokenBool(value, "reconciledObservationExact"));
+                bool generalPrefixExact = _fixtures.Length ==
+                        legacyFixtureCount &&
+                    _fixtures.All(value => value.Index >= 0 &&
+                        value.Index < legacyFixtureCount &&
+                        value.Heritage.Definition.IsGeneral &&
+                        ReferenceEquals(value.Heritage,
+                            value.Blueprints.Heritages.General));
+                bool capturesExact = CaptureSetExact(records);
+                Add(_assertions, "elemental-race-legacy-migration-guard",
+                    RuntimeTestScenarioCatalog.ElementalRaceLegacyMigration,
+                    _request.Scenario,
+                    string.Equals(_request.Scenario,
+                        RuntimeTestScenarioCatalog.ElementalRaceLegacyMigration,
+                        StringComparison.Ordinal),
+                    "validated -kmgRuntimeTestRequest allowlist");
+                Add(_assertions,
+                    "elemental-race-legacy-migration-module-on",
+                    "0.0.115 Elemental Races active with four exact selector entries and every Release A blueprint registered",
+                    "active=" + _context.FeatureModules.Active
+                        .ElementalRaces + ";selectorExact=" +
+                        _selectorExact + ";registeredExact=" +
+                        _registeredExact,
+                    _context.FeatureModules.Active.ElementalRaces &&
+                        _selectorExact && _registeredExact,
+                    "fresh 0.0.115 startup resource cache and CharacterRaces publication");
+                Add(_assertions,
+                    "elemental-race-legacy-migration-membership",
+                    "exact eleven-member party containing only the eight stable 0.0.114 General race/sex fixture identities",
+                    _loadedFixtureMembership.ToString(
+                        Newtonsoft.Json.Formatting.None),
+                    generalPrefixExact && LoadedMembershipExact(),
+                    "receiver-correlated Steam-backed working-save load and full 24-ID residue audit");
+                Add(_assertions,
+                    "elemental-race-legacy-migration-state",
+                    "all eight markerless General fixtures retain exact race GUID, facts, stats, spent SLA resource, one active ability/provider, DollData, class equipment, rig, and materials",
+                    "records=" + records.Length + ";exact=" +
+                        recordExact,
+                    recordExact,
+                    "0.0.114 save hydration followed by current owned-provider reconciliation and a second idempotence pass");
+                Add(_assertions,
+                    "elemental-race-legacy-migration-captures",
+                    "8 sidecars, 16 PNGs, and 40 labelled post-migration views",
+                    "captured=" + _captured + ";images=" +
+                        _imageCount + ";views=" + _viewCount +
+                        ";files=" + _evidenceFiles.Count,
+                    capturesExact,
+                    "post-hydration four-view previews and ordinary isometric captures");
+                Add(_assertions,
+                    "elemental-race-legacy-migration-cleanup",
+                    "all eight disposable legacy fixtures removed and the exact three-character baseline cleanup-saved",
+                    "cleaned=" + cleaned + ";normalPath=" +
+                        _normalPathComplete + ";updates=" +
+                        _settleUpdates,
+                    cleaned && _normalPathComplete && _structuralCleaned,
+                    "exact legacy fixture IDs only; native scene removal and guarded cleanup save");
+                AddSaveAndIdentityAssertions(true);
             }
 
             private void FinishModuleDisabledVerify(bool preserved)
@@ -3624,13 +3869,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private bool CaptureSetExact(JObject[] records)
             {
+                int expectedFixtureCount = _fixtures.Length;
                 return _normalPathComplete && records.Length ==
-                        ElementalPersistenceFixtureCount &&
-                    _captured == ElementalPersistenceFixtureCount &&
-                    _imageCount == ElementalPersistenceFixtureCount * 2 &&
-                    _viewCount == ElementalPersistenceFixtureCount * 5 &&
+                        expectedFixtureCount &&
+                    _captured == expectedFixtureCount &&
+                    _imageCount == expectedFixtureCount * 2 &&
+                    _viewCount == expectedFixtureCount * 5 &&
                     _indexWritten && _evidenceFiles.Count ==
-                        ElementalPersistenceFixtureCount * 3 + 1 &&
+                        expectedFixtureCount * 3 + 1 &&
                     _evidenceFiles.All(File.Exists) &&
                     records.All(value =>
                         value["preview"] != null &&

@@ -14,6 +14,10 @@ namespace KingmakerGunslinger.DomainTests
                 ElementalHeritagePersistenceMatrixPolicy.FixtureCount(
                     raceCount),
                 "Persistence must cover four races, two sexes, and three heritages.");
+            Assertions.Equal(8,
+                ElementalHeritagePersistenceMatrixPolicy
+                    .LegacyGeneralFixtureCount(raceCount),
+                "Legacy migration must cover the original four-race/two-sex General fixture prefix.");
             var indices = new List<int>();
             for (int heritage = 0; heritage < 3; heritage++)
                 for (int race = 0; race < raceCount; race++)
@@ -92,6 +96,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 ElementalHeritagePersistenceMatrixPolicy.FixtureCount(0),
                 "Zero races must fail closed.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                ElementalHeritagePersistenceMatrixPolicy
+                    .LegacyGeneralFixtureCount(0),
+                "Legacy fixture counting must fail closed for zero races.");
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 ElementalHeritagePersistenceMatrixPolicy.FixtureIndex(
                     4, 0, 0, 4),

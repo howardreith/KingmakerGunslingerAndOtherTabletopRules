@@ -43,6 +43,7 @@ param(
     [switch]$AllowForceTerminate,
     [switch]$ManualInteractionRequired,
     [switch]$ReuseInstalledArtifact,
+    [switch]$ReuseQualifiedElementalRaces114Release,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
     [string]$SteamPath = 'C:\Program Files (x86)\Steam\steam.exe',
@@ -137,20 +138,32 @@ Assert-KmgSteamAppId -AppId $SteamAppId
 Assert-KmgUnelevated
 $SteamPath = Assert-KmgSteamExecutable -SteamPath $SteamPath
 
+$artifactReuse = $ReuseInstalledArtifact -or
+    $ReuseQualifiedElementalRaces114Release
 if ($ReuseInstalledArtifact -and
+    $ReuseQualifiedElementalRaces114Release) {
+    throw 'Current-source and qualified-legacy artifact reuse are mutually exclusive.'
+}
+if ($artifactReuse -and
     ([string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
      [string]::IsNullOrWhiteSpace($PackagePath))) {
-    throw '-ReuseInstalledArtifact requires exact -DeploymentManifestPath and -PackagePath.'
+    throw 'Artifact reuse requires exact -DeploymentManifestPath and -PackagePath.'
 }
-if (-not $ReuseInstalledArtifact -and
+if (-not $artifactReuse -and
     (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
      -not [string]::IsNullOrWhiteSpace($PackagePath))) {
-    throw 'Deployment/package paths are valid only with -ReuseInstalledArtifact.'
+    throw 'Deployment/package paths are valid only with an explicit artifact-reuse authority.'
+}
+if ($ReuseQualifiedElementalRaces114Release -and
+    ($Scenario -cne 'elemental-race-persistence-prepare' -or
+     $ExpectedVersion -cne '0.0.114' -or
+     $SaveName -cne 'KMG_AUTOMATION_WORKING')) {
+    throw 'Qualified 0.0.114 reuse permits only elemental-race-persistence-prepare on KMG_AUTOMATION_WORKING with ExpectedVersion 0.0.114.'
 }
 
 if (-not $PSCmdlet.ShouldProcess(
     "Steam App ID $SteamAppId",
-    $(if ($ReuseInstalledArtifact) {
+    $(if ($artifactReuse) {
         "verify and reuse immutable installed artifact, then launch guarded scenario '$Scenario'"
       } else {
         "build, validate, deploy, and launch guarded scenario '$Scenario'"
@@ -165,7 +178,15 @@ if (-not $PSCmdlet.ShouldProcess(
 # their own ShouldProcess behavior.
 $ConfirmPreference = 'None'
 $WhatIfPreference = $false
-if ($ReuseInstalledArtifact) {
+if ($ReuseQualifiedElementalRaces114Release) {
+    $reuse = Assert-KmgQualifiedElementalRaces114Deployment `
+        -DeploymentManifestPath $DeploymentManifestPath `
+        -PackagePath $PackagePath -RepositoryRoot $root `
+        -AllowDirtyGit:$AllowDirtyGit
+    $package = $reuse.PackagePath
+    $deploymentManifestPath = $reuse.DeploymentManifestPath
+}
+elseif ($ReuseInstalledArtifact) {
     $reuse = Assert-KmgReusableDeployment `
         -DeploymentManifestPath $DeploymentManifestPath `
         -PackagePath $PackagePath -RepositoryRoot $root `
@@ -614,6 +635,7 @@ try {
         'elemental-race-persistence-prepare',
         'elemental-race-module-disabled-persistence',
         'elemental-race-module-restored-persistence',
+        'elemental-race-legacy-migration',
         'elemental-race-persistence-verify-absent')) {
         # Twenty-four exact race/sex/heritage fixtures cover prepare, fresh
         # module-OFF reconstruction/rest/level-up/preservation, module-ON
@@ -683,8 +705,16 @@ try {
     $orchestration.completedAtUtc = [DateTime]::UtcNow.ToString('o')
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
     $terminalOutcomeRecorded = $true
-    & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
-        -EvidenceDirectory $evidence -PackagePath $package
+    if ($ReuseQualifiedElementalRaces114Release) {
+        & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
+            -EvidenceDirectory $evidence `
+            -QualifiedElementalRaces114DeploymentManifestPath `
+                $deploymentManifestPath
+    }
+    else {
+        & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
+            -EvidenceDirectory $evidence -PackagePath $package
+    }
     Write-Host "Runtime evidence manifest: $(Join-Path $evidence 'evidence-manifest.json')"
     Write-Host "Runtime result: $resultPath"
     Write-Host "Status: $($result.status)"

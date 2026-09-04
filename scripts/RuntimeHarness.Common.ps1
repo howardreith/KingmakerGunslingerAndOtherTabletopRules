@@ -129,6 +129,94 @@ function Assert-KmgReusableDeployment {
     }
 }
 
+function Assert-KmgQualifiedElementalRaces114Deployment {
+    param(
+        [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
+        [Parameter(Mandatory = $true)][string]$PackagePath,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [switch]$AllowDirtyGit
+    )
+    $expectedVersion = '0.0.114'
+    $expectedCommit = '6874dc15a27ded132456dbdd480f47c794543a05'
+    $expectedPackageSha = 'b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694'
+    $expectedDllSha = '09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262'
+    $expectedDllMvid = 'dcd73856-39d4-40ce-9b05-77bf249103d7'
+    $expectedPackage = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot `
+        'artifacts\release\0.0.114\KingmakerGunslinger-0.0.114-elemental-races.zip'))
+    $package = (Resolve-Path -LiteralPath $PackagePath).Path
+    if (-not $package.Equals($expectedPackage,
+            [StringComparison]::OrdinalIgnoreCase) -or
+        (Get-KmgSha256 -Path $package) -cne $expectedPackageSha) {
+        throw 'Qualified legacy reuse requires the exact pinned 0.0.114 release package.'
+    }
+    $deploymentPath = (Resolve-Path -LiteralPath `
+        $DeploymentManifestPath).Path
+    $requiredRoot = [IO.Path]::GetFullPath(
+        'C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments')
+    [void](Assert-KmgPathWithin -Path $deploymentPath -Root $requiredRoot)
+    $deployment = Get-Content -LiteralPath $deploymentPath -Raw |
+        ConvertFrom-Json
+    $git = Get-KmgGitState -RepositoryRoot $RepositoryRoot
+    if ($git.Status.Count -ne 0 -and -not $AllowDirtyGit) {
+        throw 'Qualified legacy runtime execution requires an exactly clean Git state.'
+    }
+    if ($deployment.schemaVersion -ne 1 -or
+        $deployment.authority -cne
+            'qualified-elemental-races-0.0.114-release' -or
+        $deployment.packagePath -cne $package -or
+        $deployment.packageSha256 -cne $expectedPackageSha -or
+        $deployment.commit -cne $expectedCommit -or
+        $deployment.version -cne $expectedVersion -or
+        $deployment.archiveEntryCount -ne 135 -or
+        $deployment.dllSha256 -cne $expectedDllSha -or
+        $deployment.dllMvid -cne $expectedDllMvid -or
+        $deployment.deployedDllSha256 -cne $expectedDllSha) {
+        throw 'Qualified legacy deployment manifest identity is not exact.'
+    }
+    $live = [IO.Path]::GetFullPath($deployment.liveModDirectory)
+    $expectedLive = [IO.Path]::GetFullPath(
+        'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger')
+    if (-not $live.Equals($expectedLive,
+            [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Qualified legacy deployment points outside the exact live mod directory.'
+    }
+    $info = Get-Content -LiteralPath (Join-Path $live 'Info.json') -Raw |
+        ConvertFrom-Json
+    $dll = Join-Path $live 'KingmakerGunslinger.dll'
+    $settings = Join-Path $live 'FeatureModules.json'
+    $files = @(Get-ChildItem -LiteralPath $live -Recurse -File |
+        Where-Object { $_.FullName -ne $settings } |
+        ForEach-Object {
+            $_.FullName.Substring($live.Length).TrimStart('\')
+        } | Sort-Object)
+    if ($info.Version -cne $expectedVersion -or
+        (Get-KmgSha256 -Path $dll) -cne $expectedDllSha -or
+        (Get-KmgDllMvid -Path $dll) -cne $expectedDllMvid -or
+        ($files -join "`n") -cne
+            (@($deployment.files | Sort-Object) -join "`n")) {
+        throw 'Installed 0.0.114 version, DLL identity, or file catalog differs from its qualified deployment.'
+    }
+    $settingsExists = Test-Path -LiteralPath $settings -PathType Leaf
+    $settingsSha = if ($settingsExists) {
+        Get-KmgSha256 -Path $settings
+    } else { '<absent>' }
+    if ($settingsSha -cne $deployment.featureModuleSettingsSha256) {
+        throw 'Live feature settings changed after the qualified legacy deployment.'
+    }
+    Write-Host ('Qualified legacy artifact verified: producerCommit={0};version={1};package={2};dll={3};mvid={4};settings={5}' -f
+        $expectedCommit, $expectedVersion, $expectedPackageSha,
+        $expectedDllSha, $expectedDllMvid, $settingsSha)
+    return [pscustomobject]@{
+        Deployment = $deployment
+        PackagePath = $package
+        DeploymentManifestPath = $deploymentPath
+        Version = $expectedVersion
+        DllSha256 = $expectedDllSha
+        SettingsExists = $settingsExists
+        SettingsSha256 = $settingsSha
+    }
+}
+
 function Read-KmgBuildLocalManifest {
     param(
         [Parameter(Mandatory = $true)][string]$PackagePath,

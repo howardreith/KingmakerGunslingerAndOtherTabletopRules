@@ -135,6 +135,7 @@ $expected = @(
     'elemental-race-persistence-prepare',
     'elemental-race-module-disabled-persistence',
     'elemental-race-module-restored-persistence',
+    'elemental-race-legacy-migration',
     'elemental-race-persistence-verify-absent',
     'gunslinger-outfit-production-motion',
     'gunslinger-outfit-production-persistence-prepare',
@@ -450,6 +451,7 @@ foreach ($elementalPersistenceScenario in @(
     'elemental-race-persistence-prepare',
     'elemental-race-module-disabled-persistence',
     'elemental-race-module-restored-persistence',
+    'elemental-race-legacy-migration',
     'elemental-race-persistence-verify-absent')) {
     $elementalRacePersistence = Get-KmgRuntimeScenarioMetadata `
         $elementalPersistenceScenario
