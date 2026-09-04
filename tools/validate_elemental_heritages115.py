@@ -18,6 +18,12 @@ PACKAGE_SUFFIX = "elemental-heritages"
 DETERMINISTIC_TEST_COUNT = 1408
 STATIC_KEY = "elementalHeritages115"
 HERITAGE_GUID_PREFIX = "e115e1e0a17a4aceb001"
+MANIFEST_TOTAL = 1759
+MANIFEST_ACTIVE = 1757
+MANIFEST_RESERVED = 2
+ELEMENTAL_TOTAL = 122
+ELEMENTAL_ACTIVE = 121
+ELEMENTAL_RACE_COUNT = 4
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
@@ -53,9 +59,11 @@ def validate(root: Path) -> None:
         if entry.get("plannedType") == "BlueprintRace"]
     heritage = [entry for entry in entries
         if entry.get("guid", "").startswith(HERITAGE_GUID_PREFIX)]
-    if (len(entries), len(active), len(reserved)) != (1759, 1757, 2):
+    if (len(entries), len(active), len(reserved)) != (
+            MANIFEST_TOTAL, MANIFEST_ACTIVE, MANIFEST_RESERVED):
         raise AssertionError("Authoritative blueprint manifest arithmetic drifted")
-    if (len(elemental), len(elemental_active), len(races)) != (122, 121, 4):
+    if (len(elemental), len(elemental_active), len(races)) != (
+            ELEMENTAL_TOTAL, ELEMENTAL_ACTIVE, ELEMENTAL_RACE_COUNT):
         raise AssertionError("Elemental identity inventory drifted")
     if len(heritage) != 53 or any(entry.get("status") != "active"
             for entry in heritage):
@@ -218,7 +226,7 @@ def validate(root: Path) -> None:
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
         "legacyMechanicIdentityCount": 24,
         "heritageIdentityCount": 53,
-        "activeElementalIdentityCount": 121,
+        "activeElementalIdentityCount": ELEMENTAL_ACTIVE,
         "reservedDiagnosticIdentityCount": 1,
         "raceCount": 4,
         "heritageCount": 12,
@@ -240,7 +248,7 @@ def validate(root: Path) -> None:
     }
     for key, value in expected.items():
         if state.get(key) != value:
-            raise AssertionError(f"0.0.115 static mismatch: {key}")
+            raise AssertionError(f"{VERSION} static mismatch: {key}")
 
 
 def main() -> int:

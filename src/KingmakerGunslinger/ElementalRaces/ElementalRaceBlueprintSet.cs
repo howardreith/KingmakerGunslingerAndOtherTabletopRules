@@ -66,7 +66,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 _ordered[3].Definition.Kind != ElementalRaceKind.Undine)
                 throw new InvalidOperationException(
                     "Elemental race blueprint order must be Ifrit, Oread, Sylph, Undine.");
-            if (Count != ElementalRaceIdentityCatalog.IdentityCount)
+            if (Count != ElementalRaceIdentityCatalog
+                    .RaceBlueprintIdentityCount)
                 throw new InvalidOperationException(
                     "Elemental race blueprint count does not match the identity catalog.");
         }

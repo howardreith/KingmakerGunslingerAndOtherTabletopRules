@@ -19,6 +19,8 @@ IMMEDIATE_DEBT_IDENTITIES = {
     "KMG.Feats.InHarmsWayImmediateChargedTurn": (
         "326e183f7791e83a38337c6a6d7a8644", "BlueprintFeature"),
 }
+EXPECTED_LEDGER_ENTRIES_BY_VERSION = {"0.0.115": 1759}
+EXPECTED_ACTIVE_BLUEPRINTS_BY_VERSION = {"0.0.115": 1757}
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
@@ -37,8 +39,10 @@ def validate(root: Path) -> None:
     baseline.PACKAGE = PACKAGE
     baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
     baseline.STATIC_KEY = STATIC_KEY
-    baseline.EXPECTED_LEDGER_ENTRIES = 1759 if VERSION == "0.0.115" else 1706
-    baseline.EXPECTED_ACTIVE_BLUEPRINTS = 1757 if VERSION == "0.0.115" else 1704
+    baseline.EXPECTED_LEDGER_ENTRIES = \
+        EXPECTED_LEDGER_ENTRIES_BY_VERSION.get(VERSION, 1706)
+    baseline.EXPECTED_ACTIVE_BLUEPRINTS = \
+        EXPECTED_ACTIVE_BLUEPRINTS_BY_VERSION.get(VERSION, 1704)
     baseline.PROJECT_BLUEPRINT_COUNT = 14
     baseline.ADDITIONAL_IDENTITIES = dict(IMMEDIATE_DEBT_IDENTITIES)
     baseline.validate(root)

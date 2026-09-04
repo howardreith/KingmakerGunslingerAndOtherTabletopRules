@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.115-elemental-heritages` targets:
+Kingmaker Gunslinger `0.0.116-elemental-feats` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -73,8 +73,8 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The 0.0.115 candidate preserves the 0.0.114 Elemental Races identities and
-adds alternate elemental heritages within the existing module. It may be
+The in-progress 0.0.116 candidate preserves the qualified 0.0.115 Elemental
+Races identities and adds elemental feats within the existing module. It may be
 published only after complete version-aware
 deterministic, package, repository-validation, guarded runtime, exact
 compatibility-restoration, and owner visual-acceptance gates. The mission
@@ -125,10 +125,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.115 `
+gh release download v0.0.116 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.115-elemental-heritages.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.115"
+  --pattern 'KingmakerGunslinger-0.0.116-elemental-feats.zip' `
+  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.116"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The

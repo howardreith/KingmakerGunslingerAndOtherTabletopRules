@@ -1,9 +1,20 @@
 # Kingmaker Gunslinger
 
-Version `0.0.115-elemental-heritages` expands the existing **Elemental Races:
-Ifrit, Oread, Sylph, and Undine** feature module with one obligatory heritage
-selection per race. Each selection has exactly three choices: General plus two
-alternate heritages. The parent race blueprints and all 0.0.114 General
+Version `0.0.116-elemental-feats` is the in-progress Release B expansion of the
+existing **Elemental Races: Ifrit, Oread, Sylph, and Undine** feature module.
+It registers eleven stable feat identities plus fourteen supporting ability,
+buff, and weapon-enchantment identities in every module state. When the module
+is enabled, all eleven feats publish to the universal feat selector and the
+four Combat feats publish to the Fighter combat-feat selector through exact-
+GUID-aware reversible transactions. The catalog includes Elemental Strike,
+the Scorching Weapons/Inner Flame/Blazing Aura chain, Firesight, Airy Step,
+Wings of Air, Cloud Gazer, Inner Breath, Hydraulic Maneuver, and Triton Portal.
+Release B mechanics and guarded runtime qualification remain in progress; this
+checkpoint is not a release PASS.
+
+Release A added one obligatory heritage selection per race. Each selection has
+exactly three choices: General plus two alternate heritages. The parent race
+blueprints and all 0.0.114 General
 SLA/resource/affinity identities remain unchanged, and the module still
 defaults ON. A missing marker on a legacy 0.0.114 character resolves as General
 without duplicating its racial modifiers or restoring a spent daily use.
@@ -40,7 +51,7 @@ for safe doll and equipment compatibility, so some base-game dialogue or
 RaceId-only logic can mistake them for Aasimar. Exact race-blueprint
 prerequisites remain distinct.
 
-The release uses only audited vanilla Kingmaker modular character assets and
+Release A uses only audited vanilla Kingmaker modular character assets and
 project-owned stable proxies and color ramps. It adds no original meshes,
 copied third-party assets, persistent elemental VFX, or runtime dependencies.
 The identities remain registered when the module is OFF so an existing
@@ -55,7 +66,7 @@ migration, native visual state transitions, and all six required installed
 compatibility profiles in both module states. Visual Adjustments was not
 installed and remains **NOT-RUN**.
 
-The release retains version `0.0.113`'s save-load hotfix for the
+The current branch retains version `0.0.113`'s save-load hotfix for the
 paper-cartridge mode repair.
 Paper-mode reads now use only the native activatable ability's current state;
 they never reconcile marker buffs or alter a unit while Kingmaker is loading a

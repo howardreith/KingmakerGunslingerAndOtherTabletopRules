@@ -32,12 +32,12 @@ transient action debt; it does not alter either feat or automation mode.
 
 1. Back up any saves you intend to keep outside the game's active save folder.
 2. Install the standalone
-   `KingmakerGunslinger-0.0.115-elemental-heritages.zip`
+   `KingmakerGunslinger-0.0.116-elemental-feats.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.115 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.116 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -146,7 +146,8 @@ pretest mod tree and relevant settings. This structural/mechanical evidence
 does not replace the human appearance checklist or claim a Visual Adjustments
 result.
 
-Release A 0.0.115 has independent guarded evidence. KMG alone, Call of the
+Release A package `KingmakerGunslinger-0.0.115-elemental-heritages.zip` has
+independent guarded evidence. KMG alone, Call of the
 Wild, Races Unleashed, Call of the Wild + Favored Class, the minimum valid
 Call of the Wild + Races Unleashed + Tweak or Treat stack, and the highest-risk
 installed combined stack all passed. Each profile ran with Elemental Races ON

@@ -130,7 +130,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("elemental-heritages"
+    package_suffix = ("elemental-feats"
+        if VERSION == "0.0.116" else "elemental-heritages"
         if VERSION == "0.0.115" else "elemental-races"
         if VERSION == "0.0.114" else "save-load-hotfix"
         if VERSION == "0.0.113" else "ammunition-cmi-copy-notifications"

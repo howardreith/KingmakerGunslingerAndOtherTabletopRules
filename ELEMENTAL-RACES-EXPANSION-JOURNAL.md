@@ -875,3 +875,43 @@ and the first focused mechanical group from the now-qualified native contracts.
   Its 5,667,328-byte DLL hashes to
   `dd0b1c830d2b87bf6e1e46aa05abddd747d68f01654d806f066531a9752f7366`
   with MVID `5a89d25c-4106-40eb-bd80-328485463a9b`. No deployment occurred.
+
+## 2026-09-04 - Release B identity, blueprint, and publication checkpoint
+
+- Transitioned the active assembly/package identity to
+  `0.0.116-elemental-feats` without changing feature-module schema 10 or
+  adding a new toggle. Generic build, guarded-runtime, and compatibility
+  controls now target 0.0.116; the dedicated Release A migration workflows
+  remain pinned to their historical 0.0.114-to-0.0.115 contract.
+- Added 25 fixed manifest identities: eleven feats, nine abilities, four
+  buffs, and one project-owned weapon enchantment. The production manifest is
+  now 1,784 total / 1,782 active / two reserved; Elemental Races owns 147
+  total / 146 active / one reserved. No save-bearing GUID is generated at
+  runtime and every new identity registers even when `elemental-races` is OFF.
+- Added the Release B blueprint graph with exact parent-race prerequisites,
+  published level and feat-chain gates, and exact active Hydraulic Push
+  provider prerequisites for Hydraulic Maneuver and Triton Portal. The four
+  Combat feats are separated from the full eleven-feat catalog.
+- Added module-gated transactional publication to the native universal feat
+  and Fighter combat-feat selectors. It reuses the existing tested publication
+  transaction for additive, deterministic, idempotent, order-preserving,
+  exact-GUID-conflict-refusing writes, rolls the first selector back if the
+  second fails, and rolls back Fighter before universal publication.
+- Version-aware repository validation passed. The complete dependency-free
+  suite passed 1,408/1,408. A clean Release build and strict standalone
+  package validation passed. The untracked 135-entry ZIP is 23,070,990 bytes,
+  SHA-256
+  `e7567183e40a0499b83d7a96a62e9f6c24aa9aec5b900b649c8f5bd7cb541dd9`.
+  Its 5,704,192-byte DLL has SHA-256
+  `c2824d22ca4c351c3edd1959382f3a66f082ed0f40c9365ac7edaa18c50b889b`
+  and MVID `eef6d06b-3b7d-4712-ae09-257932ea9d39`.
+- Focused PowerShell coverage also passed: 202 guarded preflight assertions,
+  compatibility transaction filesystem integration, and optional-mod
+  observer allowlist/source contracts. One deliberately parallel diagnostic
+  invocation observed a shared artifact-tree change; the same preflight suite
+  passed in isolation and no game launch occurred.
+- This is not a Release B PASS. The subsidiary blueprints intentionally remain
+  a buildable registration shell while actual rule-event mechanics, focused
+  guarded scenarios, persistence, compatibility profiles, and final Release B
+  qualification remain pending. No deployment or game launch occurred for
+  this checkpoint.

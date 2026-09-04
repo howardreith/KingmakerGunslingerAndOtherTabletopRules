@@ -951,6 +951,9 @@
     <Compile Include="ElementalRaces\ElementalRaceDefinition.cs" />
     <Compile Include="ElementalRaces\ElementalHeritagePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalFeatPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalFeatBlueprintSet.cs" />
+    <Compile Include="ElementalRaces\ElementalFeatBlueprintFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalFeatPublication.cs" />
     <Compile Include="ElementalRaces\ElementalHeritagePersistenceMatrixPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageBlueprintSet.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageRuntime.cs" />

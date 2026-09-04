@@ -13108,6 +13108,106 @@
     {
       "symbol": "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspDeliveryAbility", "guid": "e115e1e0a17a4aceb001000000000053",
       "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Stormsoul Shocking Grasp held-touch delivery ability; project-owned so parent linkage and racial SLA parameters remain exact."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.ElementalStrike", "guid": "e116e1e0a17a4aceb001000000000001",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Shared Elemental Strike combat feat with exact project-race prerequisites."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.ScorchingWeapons", "guid": "e116e1e0a17a4aceb001000000000002",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Ifrit Scorching Weapons combat feat."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.InnerFlame", "guid": "e116e1e0a17a4aceb001000000000003",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Ifrit Inner Flame combat feat."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.BlazingAura", "guid": "e116e1e0a17a4aceb001000000000004",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Ifrit Blazing Aura combat feat."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.Firesight", "guid": "e116e1e0a17a4aceb001000000000005",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Ifrit Firesight feat with curated concealment ownership."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.AiryStep", "guid": "e116e1e0a17a4aceb001000000000006",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Sylph Airy Step feat."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.WingsOfAir", "guid": "e116e1e0a17a4aceb001000000000007",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Sylph Wings of Air feat and armor-gated flight provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.CloudGazer", "guid": "e116e1e0a17a4aceb001000000000008",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Sylph Cloud Gazer feat with curated fog, mist, and cloud ownership."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.InnerBreath", "guid": "e116e1e0a17a4aceb001000000000009",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Sylph Inner Breath feat with narrow respiration-dependent immunity."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver", "guid": "e116e1e0a17a4aceb001000000000010",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Undine Hydraulic Maneuver feat requiring an active racial Hydraulic Push provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.TritonPortal", "guid": "e116e1e0a17a4aceb001000000000011",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Undine Triton Portal feat requiring an active racial Hydraulic Push provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.ElementalStrike.Ability", "guid": "e116e1e0a17a4aceb001000000000012",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "At-will swift-action Elemental Strike activation."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.ElementalStrike.Buff", "guid": "e116e1e0a17a4aceb001000000000013",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "One-round Elemental Strike weapon-damage state."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.ScorchingWeapons.Ability", "guid": "e116e1e0a17a4aceb001000000000014",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Swift-action Scorching Weapons activation and exact-item snapshot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.ScorchingWeapons.Buff", "guid": "e116e1e0a17a4aceb001000000000015",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "One-round owner marker for the Scorching Weapons activation."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.ScorchingWeapons.Enchantment", "guid": "e116e1e0a17a4aceb001000000000016",
+      "plannedType": "BlueprintWeaponEnchantment", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Exact-item temporary Scorching Weapons damage provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.BlazingAura.Ability", "guid": "e116e1e0a17a4aceb001000000000017",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Free-action Blazing Aura activation."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.BlazingAura.Buff", "guid": "e116e1e0a17a4aceb001000000000018",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "One-round Blazing Aura turn-start damage state."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.WingsOfAir.Buff", "guid": "e116e1e0a17a4aceb001000000000019",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Armor-gated native Kingmaker flight-abstraction provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.Ability", "guid": "e116e1e0a17a4aceb001000000000020",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Hydraulic Maneuver variant parent."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.BullRushAbility", "guid": "e116e1e0a17a4aceb001000000000021",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Hydraulic Maneuver native Bull Rush variant."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.DisarmAbility", "guid": "e116e1e0a17a4aceb001000000000022",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Hydraulic Maneuver native Disarm variant."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.TripAbility", "guid": "e116e1e0a17a4aceb001000000000023",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Hydraulic Maneuver native Trip variant."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.DirtyTrickBlindAbility", "guid": "e116e1e0a17a4aceb001000000000024",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Hydraulic Maneuver native Dirty Trick (blind) variant; no native dazzle maneuver exists."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Feats.TritonPortal.Ability", "guid": "e116e1e0a17a4aceb001000000000025",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Full-round Triton Portal 1d3 Small Water Elemental summon ability sharing the racial Hydraulic Push use."
     }
   ]
 }

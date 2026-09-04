@@ -7,7 +7,7 @@
   "interveningMasterCommits": [],
   "startingTreeClean": true,
   "phase": "release-b-implementation",
-  "currentVersion": "0.0.115",
+  "currentVersion": "0.0.116",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
     "releaseB": "0.0.116-elemental-feats",
@@ -16,7 +16,7 @@
   "status": {
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "NATIVE-CONTRACT-AUDIT-PASS-IMPLEMENTATION-IN-PROGRESS",
+    "releaseB": "IDENTITY-PUBLICATION-CHECKPOINT-PASS-MECHANICS-IN-PROGRESS",
     "releaseC": "NOT-STARTED"
   },
   "foundationProgress": {
@@ -56,7 +56,11 @@
     "waterElementalSummon": "EXACT-NATIVE-DONOR-LOCKED",
     "fireEnchantmentCatalog": "BASE-INVENTORY-LOCKED",
     "deterministicTests": "PASS (1408/1408 cases; Release B policy assertions execute inside the existing elemental-feats case so historical release records remain unchanged)",
-    "implementation": "IN-PROGRESS"
+    "stableIdentities": "IMPLEMENTED-TESTED (25/25 fixed manifest identities: 11 feats, 9 abilities, 4 buffs, 1 weapon enchantment)",
+    "blueprintGraph": "IMPLEMENTED-TESTED (all identities register unconditionally; exact race, feat, level, and active Hydraulic Push prerequisites)",
+    "featPublication": "IMPLEMENTED-TESTED (module-gated universal and Fighter selector transactions; additive, deterministic, idempotent, exact-GUID-conflict refusing, order preserving, reversible)",
+    "versionTransition": "0.0.116-elemental-feats ACTIVE; generic build/runtime/compatibility controls updated; Release A migration workflows remain historically pinned",
+    "implementation": "IDENTITY-PUBLICATION-CHECKPOINT-PASS; GAMEPLAY-MECHANICS-IN-PROGRESS"
   },
   "releaseBNativeAudit": {
     "status": "PASS",
@@ -111,6 +115,30 @@
     "dllSize": 5667328,
     "dllSha256": "dd0b1c830d2b87bf6e1e46aa05abddd747d68f01654d806f066531a9752f7366",
     "dllMvid": "5a89d25c-4106-40eb-bd80-328485463a9b"
+  },
+  "releaseBIdentityPublicationCheckpointArtifact": {
+    "version": "0.0.116-elemental-feats",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1408/1408 cases)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS (strict standalone, 135 entries)",
+    "package": "KingmakerGunslinger-0.0.116-elemental-feats.zip",
+    "packageSize": 23070990,
+    "packageEntries": 135,
+    "packageSha256": "e7567183e40a0499b83d7a96a62e9f6c24aa9aec5b900b649c8f5bd7cb541dd9",
+    "dllSize": 5704192,
+    "dllSha256": "c2824d22ca4c351c3edd1959382f3a66f082ed0f40c9365ac7edaa18c50b889b",
+    "dllMvid": "eef6d06b-3b7d-4712-ae09-257932ea9d39",
+    "manifestTotal": 1784,
+    "manifestActive": 1782,
+    "manifestReserved": 2,
+    "elementalManifestTotal": 147,
+    "elementalManifestActive": 146,
+    "elementalManifestReserved": 1,
+    "runtimeQualification": "NOT-RUN-MECHANICS-PENDING",
+    "persistenceQualification": "NOT-RUN-MECHANICS-PENDING",
+    "compatibilityQualification": "NOT-RUN-MECHANICS-PENDING",
+    "releaseStatus": "NOT-A-RELEASE-B-PASS"
   },
   "baselineGates": {
     "repositoryValidation": "PASS",

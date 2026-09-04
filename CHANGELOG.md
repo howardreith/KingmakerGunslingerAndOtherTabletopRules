@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.116-elemental-feats (in progress)
+
+- Adds 25 fixed manifest identities for eleven elemental racial feats and
+  their nine abilities, four buffs, and one exact-item weapon enchantment.
+- Registers every Release B identity unconditionally so module-OFF loads can
+  resolve feat-bearing saves, while publication remains controlled by the
+  existing `elemental-races` setting with no schema revision.
+- Publishes all eleven feats to the universal selector and only Elemental
+  Strike, Scorching Weapons, Inner Flame, and Blazing Aura to the Fighter
+  combat-feat selector through deterministic, exact-GUID-aware, reversible
+  transactions.
+- Binds prerequisites to exact project race and provider blueprints and records
+  exact level/feat requirements, action economy, honest Kingmaker limitations,
+  and approved native adaptations. Mechanics and runtime qualification are not
+  yet complete, so Release B is not marked PASS.
+
 ## 0.0.115-elemental-heritages
 
 - Adds one obligatory three-choice heritage selection to each existing Ifrit,

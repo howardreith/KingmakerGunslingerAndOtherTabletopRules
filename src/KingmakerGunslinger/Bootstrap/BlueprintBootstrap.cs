@@ -73,6 +73,8 @@ namespace KingmakerGunslinger.Bootstrap
         private static UrbanBarbarianBlueprintSet _urbanBarbarian;
         private static ElementalRaceBlueprintSet _elementalRaces;
         private static ElementalRacePublication _elementalRacePublication;
+        private static ElementalFeatBlueprintSet _elementalFeats;
+        private static ElementalFeatPublication _elementalFeatPublication;
         private static CustomWeaponMartialPerformancePublication
             _martialPerformancePublication;
         private static BootstrapState _state = BootstrapState.WaitingForLibrary;
@@ -179,6 +181,16 @@ namespace KingmakerGunslinger.Bootstrap
         internal static ElementalRacePublication ElementalRacePublication
         {
             get { lock (Gate) { return _elementalRacePublication; } }
+        }
+
+        internal static ElementalFeatBlueprintSet ElementalFeats
+        {
+            get { lock (Gate) { return _elementalFeats; } }
+        }
+
+        internal static ElementalFeatPublication ElementalFeatPublication
+        {
+            get { lock (Gate) { return _elementalFeatPublication; } }
         }
 
         internal static FirearmScopedProficiencyBlueprintSet ScopedFirearmProficiencies
@@ -607,6 +619,9 @@ namespace KingmakerGunslinger.Bootstrap
                     _elementalRaces = result.ElementalRaces;
                     _elementalRacePublication =
                         result.ElementalRacePublication;
+                    _elementalFeats = result.ElementalFeats;
+                    _elementalFeatPublication =
+                        result.ElementalFeatPublication;
                     _martialPerformancePublication =
                         result.MartialPerformancePublication;
                     _registeredBlueprintCount = result.RegisteredBlueprintCount;
@@ -711,6 +726,8 @@ namespace KingmakerGunslinger.Bootstrap
             UrbanBarbarianPublication urbanBarbarianPublication = null;
             ElementalRacePublication elementalRacePublication = null;
             ElementalRaceBlueprintSet elementalRaces = null;
+            ElementalFeatPublication elementalFeatPublication = null;
+            ElementalFeatBlueprintSet elementalFeats = null;
             try
             {
                 BlueprintFeature diagnosticFeature = DiagnosticBlueprints.Register(registry);
@@ -721,6 +738,11 @@ namespace KingmakerGunslinger.Bootstrap
                 elementalRacePublication = ElementalRacePublication.Apply(
                     elementalRaces,
                     publicationPlan.ElementalRaceSelectors);
+                elementalFeats = ElementalFeatBlueprintFactory.Register(
+                    registry, elementalRaces);
+                elementalFeatPublication = ElementalFeatPublication.Apply(
+                    library, elementalFeats,
+                    publicationPlan.ElementalRaceFeats);
 
                 UrbanBarbarianBlueprintSet urbanBarbarian =
                     UrbanBarbarianBlueprints.Register(library, registry);
@@ -1097,6 +1119,8 @@ namespace KingmakerGunslinger.Bootstrap
                     urbanBarbarian,
                     elementalRaces,
                     elementalRacePublication,
+                    elementalFeats,
+                    elementalFeatPublication,
                     martialPerformancePublication,
                     registry.RegisteredCount,
                     expectedRegisteredBlueprintCount);
@@ -1313,6 +1337,17 @@ namespace KingmakerGunslinger.Bootstrap
                             summonRollbackException);
                     }
                 }
+                if (elementalFeatPublication != null)
+                {
+                    try { elementalFeatPublication.Rollback(); }
+                    catch (Exception featRollbackException)
+                    {
+                        context.Logger.Failure("blueprints",
+                            "elemental-races.feats.rollback-failed",
+                            "Blueprint initialization failed and elemental feat publication rollback was refused.",
+                            featRollbackException);
+                    }
+                }
                 if (elementalRacePublication != null)
                 {
                     try { elementalRacePublication.Rollback(); }
@@ -1430,6 +1465,8 @@ namespace KingmakerGunslinger.Bootstrap
                 UrbanBarbarianBlueprintSet urbanBarbarian,
                 ElementalRaceBlueprintSet elementalRaces,
                 ElementalRacePublication elementalRacePublication,
+                ElementalFeatBlueprintSet elementalFeats,
+                ElementalFeatPublication elementalFeatPublication,
                 CustomWeaponMartialPerformancePublication
                     martialPerformancePublication,
                 int registeredBlueprintCount,
@@ -1479,6 +1516,11 @@ namespace KingmakerGunslinger.Bootstrap
                 ElementalRacePublication = elementalRacePublication ??
                     throw new ArgumentNullException(
                         "elementalRacePublication");
+                ElementalFeats = elementalFeats ??
+                    throw new ArgumentNullException("elementalFeats");
+                ElementalFeatPublication = elementalFeatPublication ??
+                    throw new ArgumentNullException(
+                        "elementalFeatPublication");
                 MartialPerformancePublication =
                     martialPerformancePublication ??
                     throw new ArgumentNullException(
@@ -1545,6 +1587,10 @@ namespace KingmakerGunslinger.Bootstrap
             internal ElementalRaceBlueprintSet ElementalRaces
             { get; private set; }
             internal ElementalRacePublication ElementalRacePublication
+            { get; private set; }
+            internal ElementalFeatBlueprintSet ElementalFeats
+            { get; private set; }
+            internal ElementalFeatPublication ElementalFeatPublication
             { get; private set; }
             internal CustomWeaponMartialPerformancePublication
                 MartialPerformancePublication { get; private set; }
