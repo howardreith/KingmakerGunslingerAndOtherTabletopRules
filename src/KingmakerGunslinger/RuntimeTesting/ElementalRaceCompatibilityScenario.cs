@@ -71,6 +71,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             public int SchemaVersion { get; set; }
             public bool SaveStateTouched { get; set; }
+            public bool ElementalModuleActive { get; set; }
             public bool RacesUnleashedLoaded { get; set; }
             public string RacesUnleashedIdentity { get; set; }
             public int CatalogCount { get; set; }
@@ -159,15 +160,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool bootstrap = BlueprintBootstrap.IsInitialized &&
                 BlueprintBootstrap.Library != null && set != null &&
                 set.Count == ElementalRaceIdentityCatalog.IdentityCount;
+            bool moduleActive = context.FeatureModules.Active.ElementalRaces;
+            evidence.ElementalModuleActive = moduleActive;
             Add(assertions, "elemental-races-bootstrap",
                 "all stable elemental identities registered at catalog count",
                 set == null ? "missing" : "count=" + set.Count,
                 bootstrap, "live BlueprintBootstrap.ElementalRaces");
-            Add(assertions, "elemental-races-module-active",
-                "Elemental Races enabled for compatibility publication",
-                context.FeatureModules.Active.ElementalRaces.ToString(),
-                context.FeatureModules.Active.ElementalRaces,
-                "restart-bound live FeatureModuleConfiguration");
             if (!bootstrap)
                 throw new InvalidOperationException(
                     "The production elemental race blueprint set is unavailable.");
@@ -243,24 +241,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 nativeExact,
                 "full CharacterRaces snapshot by stable native identity");
 
-            bool projectExact = evidence.ProjectIndexes.Count == 4 &&
-                evidence.ProjectIndexes.Select((value, index) =>
-                    value == evidence.ProjectIndexes[0] + index).All(
-                        value => value) &&
-                project.Select((race, index) =>
-                    before.Count(value => ReferenceEquals(value, race)) == 1 &&
-                    before.Count(value => value != null && string.Equals(
-                        value.AssetGuid, race.AssetGuid,
-                        StringComparison.Ordinal)) == 1 &&
-                    ReferenceEquals(before[evidence.ProjectIndexes[index]],
-                        race)).All(value => value);
-            Add(assertions, "elemental-races-published-once",
-                "Ifrit, Oread, Sylph, Undine contiguous in that order",
-                "indexes=" + string.Join(",",
+            bool projectExact = moduleActive
+                ? evidence.ProjectIndexes.Count == 4 &&
+                    evidence.ProjectIndexes.Select((value, index) =>
+                        value == evidence.ProjectIndexes[0] + index).All(
+                            value => value) &&
+                    project.Select((race, index) =>
+                        before.Count(value => ReferenceEquals(value, race)) == 1 &&
+                        before.Count(value => value != null && string.Equals(
+                            value.AssetGuid, race.AssetGuid,
+                            StringComparison.Ordinal)) == 1 &&
+                        ReferenceEquals(before[evidence.ProjectIndexes[index]],
+                            race)).All(value => value)
+                : evidence.ProjectIndexes.Count == 0 && project.All(race =>
+                    before.All(value => !ReferenceEquals(value, race) &&
+                        (value == null || !string.Equals(value.AssetGuid,
+                            race.AssetGuid, StringComparison.Ordinal))));
+            Add(assertions, "elemental-races-publication-state-exact",
+                moduleActive
+                    ? "Ifrit, Oread, Sylph, Undine contiguous in that order"
+                    : "all identities registered but no elemental race published",
+                "moduleActive=" + moduleActive + ";indexes=" + string.Join(",",
                     evidence.ProjectIndexes.Select(value =>
                         value.ToString()).ToArray()),
                 projectExact,
-                "exact project references and stable GUIDs in final CharacterRaces");
+                "restart-bound setting plus exact project references and stable GUIDs in final CharacterRaces");
 
             bool ruUmmExact = ruEntries.Length <= 1 &&
                 (ru == null || evidence.RacesUnleashedLoaded &&
@@ -294,10 +299,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "six manifest identities plus the live constructed Duergar identity from the authorized local assembly");
 
             ElementalRacePublication first =
-                ElementalRacePublication.Apply(set, true);
+                ElementalRacePublication.Apply(set, moduleActive);
             BlueprintRace[] afterFirst = root.Progression.CharacterRaces;
             ElementalRacePublication second =
-                ElementalRacePublication.Apply(set, true);
+                ElementalRacePublication.Apply(set, moduleActive);
             BlueprintRace[] afterSecond = root.Progression.CharacterRaces;
             evidence.FirstReconciliationChanged = first.Changed;
             evidence.SecondReconciliationChanged = second.Changed;
