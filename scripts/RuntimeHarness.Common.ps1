@@ -129,6 +129,125 @@ function Assert-KmgReusableDeployment {
     }
 }
 
+function Test-KmgFlatJsonEquivalent {
+    param(
+        [Parameter(Mandatory = $true)][string]$LeftPath,
+        [Parameter(Mandatory = $true)][string]$RightPath
+    )
+    try {
+        $left = Get-Content -LiteralPath $LeftPath -Raw | ConvertFrom-Json
+        $right = Get-Content -LiteralPath $RightPath -Raw | ConvertFrom-Json
+    }
+    catch { return $false }
+    if ($null -eq $left -or $null -eq $right) { return $false }
+    [string[]]$leftNames = @($left.PSObject.Properties | ForEach-Object Name)
+    [string[]]$rightNames = @($right.PSObject.Properties | ForEach-Object Name)
+    [Array]::Sort($leftNames, [StringComparer]::Ordinal)
+    [Array]::Sort($rightNames, [StringComparer]::Ordinal)
+    if (($leftNames -join "`n") -cne ($rightNames -join "`n")) {
+        return $false
+    }
+    foreach ($name in $leftNames) {
+        $leftValue = $left.PSObject.Properties[$name].Value
+        $rightValue = $right.PSObject.Properties[$name].Value
+        if ($leftValue -is [Management.Automation.PSCustomObject] -or
+            $rightValue -is [Management.Automation.PSCustomObject] -or
+            ($leftValue -is [Collections.IEnumerable] -and
+                $leftValue -isnot [string]) -or
+            ($rightValue -is [Collections.IEnumerable] -and
+                $rightValue -isnot [string])) {
+            return $false
+        }
+        $leftJson = ConvertTo-Json -InputObject $leftValue -Compress
+        $rightJson = ConvertTo-Json -InputObject $rightValue -Compress
+        if ($leftJson -cne $rightJson) { return $false }
+    }
+    return $true
+}
+
+function Assert-KmgQualifiedLegacyRuntimeOverlay {
+    param(
+        [Parameter(Mandatory = $true)][string]$LiveDirectory,
+        [Parameter(Mandatory = $true)][string[]]$ExpectedFiles,
+        [Parameter(Mandatory = $true)][string]$ExpectedSettingsSha256,
+        [Parameter(Mandatory = $true)][string]$ExpectedDllSha256,
+        [Parameter(Mandatory = $true)][string]$ExpectedDllMvid
+    )
+    $live = (Resolve-Path -LiteralPath $LiveDirectory).Path.TrimEnd('\')
+    $settings = Join-Path $live 'FeatureModules.json'
+    $settingsPrevious = $settings + '.previous'
+    $ordinaryFiles = [Collections.Generic.List[string]]::new()
+    $runtimeGenerated = [Collections.Generic.List[string]]::new()
+    $cacheFiles = [Collections.Generic.List[string]]::new()
+    foreach ($file in @(Get-ChildItem -LiteralPath $live -Recurse -File)) {
+        $relative = $file.FullName.Substring($live.Length).TrimStart('\')
+        if ($relative -ceq 'FeatureModules.json') { continue }
+        if ($relative -ceq 'FeatureModules.json.previous') {
+            $runtimeGenerated.Add($relative)
+            continue
+        }
+        if ($relative -cmatch
+            '^KingmakerGunslinger\.dll\.[1-9][0-9]*\.cache$') {
+            $runtimeGenerated.Add($relative)
+            $cacheFiles.Add($file.FullName)
+            continue
+        }
+        $ordinaryFiles.Add($relative)
+    }
+    $ordinary = @($ordinaryFiles | Sort-Object)
+    $expected = @($ExpectedFiles | Sort-Object)
+    if (($ordinary -join "`n") -cne ($expected -join "`n")) {
+        throw 'Installed 0.0.114 file catalog contains a missing, changed-name, or unapproved extra file.'
+    }
+    if ($cacheFiles.Count -gt 1) {
+        throw 'Installed 0.0.114 contains more than one runtime-generated DLL cache.'
+    }
+    foreach ($cacheFile in $cacheFiles) {
+        if ((Get-KmgSha256 -Path $cacheFile) -cne $ExpectedDllSha256 -or
+            (Get-KmgDllMvid -Path $cacheFile) -cne $ExpectedDllMvid) {
+            throw 'Installed 0.0.114 runtime-generated DLL cache differs from the exact qualified DLL.'
+        }
+    }
+
+    $settingsExists = Test-Path -LiteralPath $settings -PathType Leaf
+    $previousExists = Test-Path -LiteralPath $settingsPrevious -PathType Leaf
+    if ($ExpectedSettingsSha256 -ceq '<absent>') {
+        if ($settingsExists -or $previousExists) {
+            throw 'Installed 0.0.114 unexpectedly created feature settings.'
+        }
+        $settingsSha = '<absent>'
+        $settingsMode = 'absent'
+    }
+    else {
+        if (-not $settingsExists) {
+            throw 'Installed 0.0.114 feature settings are unexpectedly absent.'
+        }
+        $settingsSha = Get-KmgSha256 -Path $settings
+        if ($previousExists -and
+            (Get-KmgSha256 -Path $settingsPrevious) -cne
+                $ExpectedSettingsSha256) {
+            throw 'Installed 0.0.114 feature-settings backup differs from the exact deployed bytes.'
+        }
+        if ($settingsSha -ceq $ExpectedSettingsSha256) {
+            $settingsMode = 'exact'
+        }
+        elseif (-not $previousExists -or
+            -not (Test-KmgFlatJsonEquivalent -LeftPath $settings `
+                -RightPath $settingsPrevious)) {
+            throw 'Installed 0.0.114 feature settings changed semantically or without an exact backup.'
+        }
+        else {
+            $settingsMode = 'normalized-with-exact-backup'
+        }
+    }
+    return [pscustomobject]@{
+        SettingsExists = $settingsExists
+        SettingsSha256 = $settingsSha
+        SettingsMode = $settingsMode
+        RuntimeGeneratedFiles = @($runtimeGenerated | Sort-Object)
+    }
+}
+
 function Assert-KmgQualifiedElementalRaces114Deployment {
     param(
         [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
@@ -183,37 +302,29 @@ function Assert-KmgQualifiedElementalRaces114Deployment {
     $info = Get-Content -LiteralPath (Join-Path $live 'Info.json') -Raw |
         ConvertFrom-Json
     $dll = Join-Path $live 'KingmakerGunslinger.dll'
-    $settings = Join-Path $live 'FeatureModules.json'
-    $files = @(Get-ChildItem -LiteralPath $live -Recurse -File |
-        Where-Object { $_.FullName -ne $settings } |
-        ForEach-Object {
-            $_.FullName.Substring($live.Length).TrimStart('\')
-        } | Sort-Object)
     if ($info.Version -cne $expectedVersion -or
         (Get-KmgSha256 -Path $dll) -cne $expectedDllSha -or
-        (Get-KmgDllMvid -Path $dll) -cne $expectedDllMvid -or
-        ($files -join "`n") -cne
-            (@($deployment.files | Sort-Object) -join "`n")) {
-        throw 'Installed 0.0.114 version, DLL identity, or file catalog differs from its qualified deployment.'
+        (Get-KmgDllMvid -Path $dll) -cne $expectedDllMvid) {
+        throw 'Installed 0.0.114 version or DLL identity differs from its qualified deployment.'
     }
-    $settingsExists = Test-Path -LiteralPath $settings -PathType Leaf
-    $settingsSha = if ($settingsExists) {
-        Get-KmgSha256 -Path $settings
-    } else { '<absent>' }
-    if ($settingsSha -cne $deployment.featureModuleSettingsSha256) {
-        throw 'Live feature settings changed after the qualified legacy deployment.'
-    }
-    Write-Host ('Qualified legacy artifact verified: producerCommit={0};version={1};package={2};dll={3};mvid={4};settings={5}' -f
+    $overlay = Assert-KmgQualifiedLegacyRuntimeOverlay `
+        -LiveDirectory $live -ExpectedFiles @($deployment.files) `
+        -ExpectedSettingsSha256 $deployment.featureModuleSettingsSha256 `
+        -ExpectedDllSha256 $expectedDllSha -ExpectedDllMvid $expectedDllMvid
+    Write-Host ('Qualified legacy artifact verified: producerCommit={0};version={1};package={2};dll={3};mvid={4};settings={5};settingsMode={6};runtimeOverlay={7}' -f
         $expectedCommit, $expectedVersion, $expectedPackageSha,
-        $expectedDllSha, $expectedDllMvid, $settingsSha)
+        $expectedDllSha, $expectedDllMvid, $overlay.SettingsSha256,
+        $overlay.SettingsMode, ($overlay.RuntimeGeneratedFiles -join ','))
     return [pscustomobject]@{
         Deployment = $deployment
         PackagePath = $package
         DeploymentManifestPath = $deploymentPath
         Version = $expectedVersion
         DllSha256 = $expectedDllSha
-        SettingsExists = $settingsExists
-        SettingsSha256 = $settingsSha
+        SettingsExists = $overlay.SettingsExists
+        SettingsSha256 = $overlay.SettingsSha256
+        SettingsMode = $overlay.SettingsMode
+        RuntimeGeneratedFiles = $overlay.RuntimeGeneratedFiles
     }
 }
 

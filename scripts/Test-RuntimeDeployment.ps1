@@ -3,6 +3,7 @@ param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
 $orchestratorPath = Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1'
 $deploymentPath = Join-Path $PSScriptRoot 'Deploy-Local.ps1'
@@ -18,6 +19,13 @@ $legacySequence = Get-Content -LiteralPath $legacySequencePath -Raw
 $failures = [Collections.Generic.List[string]]::new()
 function Assert-True([bool]$Condition, [string]$Name) {
     if (-not $Condition) { $failures.Add($Name) }
+}
+function Assert-Throws([scriptblock]$Action, [string]$Name) {
+    try {
+        [void](& $Action)
+        $failures.Add($Name)
+    }
+    catch { }
 }
 
 $orchestratorBackupCalls = @(
@@ -158,7 +166,100 @@ Assert-True ($legacySequence.Contains(
 Assert-True (-not $legacySequence.Contains('KMG_AUTOMATION_BASELINE')) `
     'legacy-transaction-excludes-protected-baseline'
 
+$overlayVerifier = Get-Command Assert-KmgQualifiedLegacyRuntimeOverlay `
+    -ErrorAction SilentlyContinue
+Assert-True ($null -ne $overlayVerifier) `
+    'legacy-runtime-overlay-verifier-exists'
+if ($null -ne $overlayVerifier) {
+    $overlayRoot = Join-Path (Join-Path $PSScriptRoot '..\artifacts\test-temp') `
+        ('qualified-legacy-overlay-' + [Guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $overlayRoot -Force | Out-Null
+    try {
+        $dll = Join-Path $overlayRoot 'KingmakerGunslinger.dll'
+        $settings = Join-Path $overlayRoot 'FeatureModules.json'
+        $settingsPrevious = $settings + '.previous'
+        $cache = Join-Path $overlayRoot 'KingmakerGunslinger.dll.12345.cache'
+        $extra = Join-Path $overlayRoot 'unexpected.bin'
+        Copy-Item -LiteralPath ([Management.Automation.PSObject].Assembly.Location) `
+            -Destination $dll
+        $settingsSource = '{"schemaVersion":10,"elemental-races":true}'
+        [IO.File]::WriteAllText($settings, $settingsSource,
+            (New-Object Text.UTF8Encoding($false)))
+        $expectedFiles = @('KingmakerGunslinger.dll')
+        $settingsSha = Get-KmgSha256 -Path $settings
+        $dllSha = Get-KmgSha256 -Path $dll
+        $dllMvid = Get-KmgDllMvid -Path $dll
+
+        $exact = Assert-KmgQualifiedLegacyRuntimeOverlay `
+            -LiveDirectory $overlayRoot -ExpectedFiles $expectedFiles `
+            -ExpectedSettingsSha256 $settingsSha `
+            -ExpectedDllSha256 $dllSha -ExpectedDllMvid $dllMvid
+        Assert-True ($exact.SettingsMode -ceq 'exact' -and
+            $exact.RuntimeGeneratedFiles.Count -eq 0) `
+            'legacy-runtime-overlay-accepts-pristine-deployment'
+
+        Copy-Item -LiteralPath $settings -Destination $settingsPrevious
+        [IO.File]::WriteAllText($settings,
+            '{ "schemaVersion" : 10, "elemental-races" : true }',
+            (New-Object Text.UTF8Encoding($false)))
+        Copy-Item -LiteralPath $dll -Destination $cache
+        $normalized = Assert-KmgQualifiedLegacyRuntimeOverlay `
+            -LiveDirectory $overlayRoot -ExpectedFiles $expectedFiles `
+            -ExpectedSettingsSha256 $settingsSha `
+            -ExpectedDllSha256 $dllSha -ExpectedDllMvid $dllMvid
+        Assert-True ($normalized.SettingsMode -ceq 'normalized-with-exact-backup' -and
+            $normalized.RuntimeGeneratedFiles.Count -eq 2) `
+            'legacy-runtime-overlay-accepts-only-observed-normalization-and-cache'
+
+        Add-Content -LiteralPath $cache -Value 'tamper'
+        Assert-Throws {
+            Assert-KmgQualifiedLegacyRuntimeOverlay `
+                -LiveDirectory $overlayRoot -ExpectedFiles $expectedFiles `
+                -ExpectedSettingsSha256 $settingsSha `
+                -ExpectedDllSha256 $dllSha -ExpectedDllMvid $dllMvid
+        } 'legacy-runtime-overlay-rejects-cache-tamper'
+        Copy-Item -LiteralPath $dll -Destination $cache -Force
+
+        [IO.File]::WriteAllText($settings,
+            '{"schemaVersion":10,"elemental-races":false}',
+            (New-Object Text.UTF8Encoding($false)))
+        Assert-Throws {
+            Assert-KmgQualifiedLegacyRuntimeOverlay `
+                -LiveDirectory $overlayRoot -ExpectedFiles $expectedFiles `
+                -ExpectedSettingsSha256 $settingsSha `
+                -ExpectedDllSha256 $dllSha -ExpectedDllMvid $dllMvid
+        } 'legacy-runtime-overlay-rejects-semantic-settings-drift'
+        [IO.File]::WriteAllText($settings,
+            '{ "schemaVersion" : 10, "elemental-races" : true }',
+            (New-Object Text.UTF8Encoding($false)))
+
+        Copy-Item -LiteralPath $dll -Destination `
+            (Join-Path $overlayRoot 'KingmakerGunslinger.dll.54321.cache')
+        Assert-Throws {
+            Assert-KmgQualifiedLegacyRuntimeOverlay `
+                -LiveDirectory $overlayRoot -ExpectedFiles $expectedFiles `
+                -ExpectedSettingsSha256 $settingsSha `
+                -ExpectedDllSha256 $dllSha -ExpectedDllMvid $dllMvid
+        } 'legacy-runtime-overlay-rejects-multiple-caches'
+        Remove-Item -LiteralPath `
+            (Join-Path $overlayRoot 'KingmakerGunslinger.dll.54321.cache') -Force
+
+        [IO.File]::WriteAllText($extra, 'foreign')
+        Assert-Throws {
+            Assert-KmgQualifiedLegacyRuntimeOverlay `
+                -LiveDirectory $overlayRoot -ExpectedFiles $expectedFiles `
+                -ExpectedSettingsSha256 $settingsSha `
+                -ExpectedDllSha256 $dllSha -ExpectedDllMvid $dllMvid
+        } 'legacy-runtime-overlay-rejects-arbitrary-extra-file'
+    }
+    finally {
+        if (Test-Path -LiteralPath $overlayRoot) {
+            Remove-Item -LiteralPath $overlayRoot -Recurse -Force
+        }
+    }
+}
+
 if ($failures.Count -ne 0) {
     throw "Runtime deployment safety tests failed: $($failures -join ', ')"
 }
-Write-Host 'Runtime deployment safety tests passed: 28'
+Write-Host 'Runtime deployment safety tests passed: 35'
