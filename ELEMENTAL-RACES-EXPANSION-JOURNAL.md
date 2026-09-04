@@ -1005,3 +1005,7 @@ and the first focused mechanical group from the now-qualified native contracts.
   buildable and runtime-qualified, but it is not a Release B PASS: the other
   nine feats, feat persistence, compatibility profiles, and final 0.0.116
   gates remain pending.
+- Commit `bacc7a0da6400fa4538db6092ee29f3ae28bd514` records this mechanics
+  slice. The exact mandated push wrapper was run immediately afterward and
+  again refused `codex/elemental-races-expansion` because the external
+  allowlist omits it; no alternate push path was used.

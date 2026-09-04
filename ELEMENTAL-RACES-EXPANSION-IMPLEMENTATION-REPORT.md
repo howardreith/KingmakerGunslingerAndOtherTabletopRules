@@ -348,3 +348,8 @@ This remains a partial Release B checkpoint. Scorching Weapons, Inner Flame,
 Blazing Aura, Firesight, Airy Step, Cloud Gazer, Inner Breath, Hydraulic
 Maneuver, Triton Portal, feat persistence, compatibility profiles, and final
 Release B qualification remain pending; no Release B PASS is claimed.
+
+Mechanics-slice commit `bacc7a0da6400fa4538db6092ee29f3ae28bd514`
+was followed immediately by the exact mandated push wrapper. The wrapper
+again refused the user-required branch because its external allowlist omits
+`codex/elemental-races-expansion`; no bypass was attempted.

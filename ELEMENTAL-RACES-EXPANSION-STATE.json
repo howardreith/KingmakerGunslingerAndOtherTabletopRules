@@ -169,6 +169,8 @@
     "elementalStrike": "PASS for Ifrit/Fire 1, Oread/Acid 5, Sylph/Electricity 10, Undine/Cold 15, and Ifrit/Fire 20; native command cancellation, one-round duration, one exact packet, replay deduplication, resistance, spell-source exclusion, and unrelated-damage exclusion",
     "wingsOfAir": "PASS for +3 melee Dodge AC, +0 ranged, exact same-light-armor +3 delta, no/light/medium gating, legal out-of-combat removal and restoration, DifficultTerrain and Ground immunity, neutral buff admission, and no prone immunity",
     "nativeAcAttribution": "ACBonusAgainstAttacks handles outer RuleAttackWithWeapon and installs a temporary Dodge stat modifier; it does not emit a direct RuleCalculateAC BonusSource",
+    "checkpointCommit": "bacc7a0da6400fa4538db6092ee29f3ae28bd514",
+    "checkpointPush": "BLOCKED-EXTERNAL-ALLOWLIST",
     "diagnosticRuns": [
       "20260904T1800271307248Z-eee9c918c4b340de99234d38084efa7b scenario allowlist rejection",
       "20260904T1824201132617Z-c8cc46eeb83b4228a7a40b7c36bbe0e5 symbolic identity lookup rejection",
@@ -859,6 +861,12 @@
       "sha": "ecc65faad142960de6f5b1ea523feaa9ed83dac7",
       "subject": "Register Elemental Feat blueprints",
       "checkpoint": "release-b-identity-publication",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "bacc7a0da6400fa4538db6092ee29f3ae28bd514",
+      "subject": "Implement Elemental Strike and Wings of Air",
+      "checkpoint": "release-b-mechanics-slice-1",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],
