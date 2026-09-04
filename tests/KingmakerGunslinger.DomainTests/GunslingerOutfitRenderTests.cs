@@ -1515,13 +1515,23 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(harness.Contains(
                     "function Assert-KmgQualifiedElementalRaces114Deployment") &&
                 harness.Contains(
+                    "function Assert-KmgQualifiedLegacyRuntimeOverlay") &&
+                harness.Contains(
                     "qualified-elemental-races-0.0.114-release") &&
                 harness.Contains(
-                    "Installed 0.0.114 version, DLL identity, or file catalog differs") &&
+                    "^KingmakerGunslinger\\.dll\\.[1-9][0-9]*\\.cache$") &&
+                harness.Contains(
+                    "runtime-generated DLL cache differs from the exact qualified DLL") &&
+                harness.Contains(
+                    "Test-KmgFlatJsonEquivalent") &&
+                harness.Contains(
+                    "feature-settings backup differs from the exact deployed bytes") &&
                 evidenceCollector.Contains(
                     "[string]$QualifiedElementalRaces114DeploymentManifestPath") &&
                 evidenceCollector.Contains(
-                    "Current-source and qualified-legacy evidence package authorities are mutually exclusive."),
+                    "Current-source and qualified-legacy evidence package authorities are mutually exclusive.") &&
+                evidenceCollector.Contains(
+                    "qualifiedLegacyRuntimeOverlay = $qualifiedLegacyRuntimeOverlay"),
                 "Legacy evidence collection must independently revalidate the pinned deployment authority.");
             Assertions.True(automation.Contains(
                     "[switch]$PermitQualifiedElementalRaces114") &&

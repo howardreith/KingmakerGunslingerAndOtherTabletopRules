@@ -81,3 +81,8 @@ the mission's hard-stop contract; independent work continues.
   with its stable-identity assertion. A pure phase-aware identity policy now
   requires different IDs only for disposable preparation sources and the same
   ID for persisted sources; both paths still require distinct native objects.
+- The pinned 0.0.114 runtime creates one PID-scoped byte-identical DLL cache
+  and normalizes `FeatureModules.json` while retaining its byte-exact input as
+  `.previous`. The historical verifier now recognizes only that exact overlay:
+  cache SHA/MVID, backup bytes, and settings semantics are independently
+  checked, while every other extra file or mutation remains a hard failure.

@@ -43,7 +43,7 @@
     "activationOrder": "DEFECT-FIXED-RUNTIME-PASS",
     "visualRuntime": "PARTIAL-PASS (24 fixtures cover both sexes, all three presets, equipment reconstruction, and ON/OFF/ON fresh-process load; death/resurrection and polymorph/return pending)",
     "threeProcessPersistence": "PASS (24 fixtures; prepare, module-OFF load/level/rest/re-spend, module-ON respec/cleanup, and fourth-process absence)",
-    "legacyMigration": "HARNESS-IMPLEMENTED; HISTORICAL-PREFLIGHT-REPAIRED; RUNTIME-PENDING",
+    "legacyMigration": "HISTORICAL-PREPARE-MECHANICS-PASS; POST-RUN-OVERLAY-VERIFIER-REPAIRED; FULL-TRANSACTION-PENDING",
     "compatibility": "PENDING"
   },
   "baselineGates": {
@@ -169,6 +169,27 @@
     "settingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
     "currentArtifactRestored": true,
     "repair": "Exact scenario/version-scoped PermitQualifiedElementalRaces114 preflight authority; positive and negative tests pass"
+  },
+  "releaseALegacyMigrationRuntimeOverlayAttempt": {
+    "transactionId": "20260904T1013438943928Z-elemental-race-legacy-migration-transaction",
+    "status": "FAIL-AFTER-HISTORICAL-MECHANICS-PASS-COLLECTOR-OVERLAY-DIAGNOSED",
+    "phaseCountRecorded": 0,
+    "oldProducerRunId": "20260904T1013490325299Z-0aa31a4a5af44e3d976e00fedef36a65",
+    "oldProducerRuntimeStatus": "PASS (11/11)",
+    "oldProducerRuntimeResultSha256": "c37d1886dafdc2fc40f29b73b5d6268152c386af3701b7dfe8c9529b4c8bade2",
+    "oldProducerPersistenceIndexSha256": "2d6cda5bf53eed1ab056d12d674c0617e8e3347022063541121275b9d54582d8",
+    "orchestrationSha256": "ed3244ccc9d908c653242f6f87019527ac0f66c01c5701ea77a15b588a45b865",
+    "transactionSha256": "ddc6d869cdfad5c3a8fe67f2fa130109da5bc108c2f45aa3eb7b4c370aa921c0",
+    "saveLoadedOrWritten": true,
+    "observedRuntimeOverlay": [
+      "FeatureModules.json.previous (exact deployed settings bytes)",
+      "KingmakerGunslinger.dll.12046.cache (exact qualified DLL SHA-256 and MVID)",
+      "FeatureModules.json formatting-only normalization"
+    ],
+    "settingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "currentArtifactRestored": true,
+    "restoredDeploymentManifestSha256": "4e35aa75e0eb47ddf9ed4343a6024c6f7f5afd376cdf589d68775a9dd0eee87e",
+    "repair": "Behavior-tested overlay verifier accepts at most one PID-named cache only with the exact qualified DLL SHA/MVID, accepts settings normalization only with byte-exact .previous plus flat JSON semantic equality, and rejects every other file or mutation (35/35 deployment safety checks)."
   },
   "foundationRuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.114-local-runtime.zip",

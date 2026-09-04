@@ -636,3 +636,49 @@ remains unresolved.
   Runtime preflight passes 202 checks, the historical and deployment suites
   pass, repository validation passes, all 1,407 domain/reflection tests pass,
   and the subsequent clean Release build and strict package validation pass.
+
+## 2026-09-04 - Historical runtime overlay ownership correction
+
+- The next legacy transaction reached the pinned 0.0.114 game process and its
+  prepare scenario passed all 11 mechanical assertions. Run
+  `20260904T1013490325299Z-0aa31a4a5af44e3d976e00fedef36a65`
+  created and spent the eight legacy General race/sex fixtures and wrote only
+  `KMG_AUTOMATION_WORKING`. Its runtime-result and persistence-index SHA-256
+  values are
+  `c37d1886dafdc2fc40f29b73b5d6268152c386af3701b7dfe8c9529b4c8bade2`
+  and
+  `2d6cda5bf53eed1ab056d12d674c0617e8e3347022063541121275b9d54582d8`.
+- Evidence collection then failed closed before crediting the phase because
+  the historical verifier compared the post-run live tree to its pristine
+  deployment catalog. Direct inspection proved exactly two known runtime
+  products: `FeatureModules.json.previous`, whose SHA-256 equals the exact
+  deployed settings bytes, and `KingmakerGunslinger.dll.12046.cache`, whose
+  SHA-256 and MVID equal the pinned 0.0.114 DLL. The live settings file differed
+  only in JSON formatting and was semantically identical to its byte-exact
+  backup. No arbitrary package file changed.
+- Transaction
+  `20260904T1013438943928Z-elemental-race-legacy-migration-transaction`
+  therefore records FAIL with zero credited phases; transaction and
+  orchestration SHA-256 values are
+  `ddc6d869cdfad5c3a8fe67f2fa130109da5bc108c2f45aa3eb7b4c370aa921c0`
+  and
+  `ed3244ccc9d908c653242f6f87019527ac0f66c01c5701ea77a15b588a45b865`.
+  Its `finally` path restored settings exactly to
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`
+  and restored the current 0.0.115 artifact; restored deployment-manifest
+  SHA-256 is
+  `4e35aa75e0eb47ddf9ed4343a6024c6f7f5afd376cdf589d68775a9dd0eee87e`.
+- Added a narrow post-run overlay verifier. It admits at most one root-level,
+  positive-PID DLL cache and only when both SHA-256 and MVID equal the pinned
+  DLL. It admits the settings backup only when its bytes equal the deployed
+  settings, and admits current-settings normalization only when the flat JSON
+  values are exactly equivalent. Missing package files, arbitrary extras,
+  multiple caches, cache tampering, backup tampering, and semantic settings
+  drift all fail closed. Focused deployment safety now passes 35/35, the
+  historical-artifact suite passes, and the verifier accepts the captured
+  post-run tree in `normalized-with-exact-backup` mode with exactly the two
+  observed runtime files. The complete migration transaction remains pending
+  a clean commit/build; no migration PASS is claimed yet.
+- Repository validation, all 1,407 Release domain/reflection tests, the clean
+  Release build/package, independent strict package validation, PowerShell
+  parsing, and all 35 focused deployment-safety checks pass for this repair.
