@@ -71,13 +71,16 @@ Unchecked items are pending and must not be inferred from builds or historical
   exact universal/combat selectors is additive, deterministic, idempotent,
   conflict refusing, order preserving, and reversible.
 - [ ] Exact race/level/feat/SLA prerequisites and all-heritage eligibility pass.
-- [ ] Elemental Strike implements exact swift-action, one-round, race-energy,
+- [x] Elemental Strike implements exact swift-action, one-round, race-energy,
   level-breakpoint, weapon-only, once-per-attack behavior.
 - [ ] Scorching Weapons, Inner Flame, Blazing Aura, and Firesight pass their
   exact action, item snapshot, damage/replacement, turn-start, resistance,
   cleanup, persistence, and concealment contracts.
 - [ ] Airy Step, Wings of Air, Cloud Gazer, and Inner Breath pass exact save,
   native-flight/armor, curated concealment, and respiration contracts.
+- [x] Wings of Air independently passes its exact base-Owlcat native-flight
+  semantics, melee/ranged AC, no/light/medium armor gating, legal armor-removal
+  restoration, difficult-terrain/Ground behavior, and prone exclusion.
 - [ ] Hydraulic Maneuver and Triton Portal pass exact variant/formula/shared-
   resource/action/summon/module-boundary behavior; unsupported Dirty Trick is
   recorded honestly if no native path exists.

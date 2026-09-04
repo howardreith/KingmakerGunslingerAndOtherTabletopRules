@@ -306,3 +306,45 @@ Identity/publication checkpoint commit
 exact mandated push wrapper. It again refused the user-required branch because
 the external allowlist omits `codex/elemental-races-expansion`; no bypass was
 attempted.
+
+## Release B mechanics slice 1
+
+Elemental Strike now runs from its one-round owned buff through the native
+weapon-damage rule chain. It derives the flat +1 through +5 value from current
+total character level, derives fire/acid/electricity/cold from the exact
+project parent race, and rejects spell-source, nonweapon, mismatched-owner,
+mismatched-target, and replayed damage events. Its Swift command uses the
+native ability process and no daily resource.
+
+Wings of Air now uses a project-owned copy of only the audited base Owlcat
+draconic-flight mechanics: +3 Dodge AC against melee attacks, difficult-terrain
+condition immunity, and Ground-descriptor buff immunity. An owned equipment
+controller applies that buff in no/light armor and removes it in medium/heavy
+armor. This deliberately excludes optional-mod additions, Angel Wings spell
+immunity, prone/trip immunity, custom navigation, teleportation, meshes, and
+persistent VFX. Read-only local IL inspection confirmed that Owlcat applies the
+AC benefit as a temporary target-stat modifier around `RuleAttackWithWeapon`,
+not as a direct `RuleCalculateAC.BonusSource`.
+
+Dedicated save-free exact-source run
+`20260904T2000378983332Z-b0699acd82da4d378c3abdded3983858` passed 16/16
+with zero warnings and exact request-local cleanup. It proves all four energy
+types and five damage breakpoints, canceled/accepted command behavior, one
+packet under replay, native resistance, spell/nonweapon exclusions, +3 melee
+and +0 ranged AC, exact same-light-armor comparison, medium suppression,
+out-of-combat armor-removal restoration, terrain/Ground immunity, neutral
+effect admission, and no prone immunity. Result/mechanics/runtime-evidence
+SHA-256 values are
+`50d215ce18078d93cb404a53198261a48e7b98a1b3347c351de6f9a04df8c9f2`,
+`aef0cf2db12fb5a324f64beb9acabebec9fe09e879ea6dc3c29ae7b7a5482845`,
+and `7184beafce5eda62e3e854ecb9ffe18c6ec4f3e7e984fd49eaabc02c3ca73d3c`.
+The runtime package contains 135 entries and is 23,074,709 bytes, SHA-256
+`003c5f0e5c146f75f3ba601f3628659eaa3c5cb6ec0e4ea68540c7073a13e78f`;
+its 5,729,792-byte DLL has SHA-256
+`3e5def35c361410bdd4583fd9936e54e639ec7e9366ea453ffc592129bd4b7de`
+and MVID `60ebeb1c-fa23-497e-9d2f-c99601f363d3`.
+
+This remains a partial Release B checkpoint. Scorching Weapons, Inner Flame,
+Blazing Aura, Firesight, Airy Step, Cloud Gazer, Inner Breath, Hydraulic
+Maneuver, Triton Portal, feat persistence, compatibility profiles, and final
+Release B qualification remain pending; no Release B PASS is claimed.

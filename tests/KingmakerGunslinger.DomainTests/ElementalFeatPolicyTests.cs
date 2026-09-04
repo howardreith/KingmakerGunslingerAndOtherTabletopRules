@@ -9,6 +9,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void NativeAuditAndReleaseBPoliciesAreExact()
         {
             ElementalFeatNativeAuditTests.GuardedAuditIsReadOnlyAndExact();
+            ElementalFeatNativeAuditTests
+                .MechanicsScenarioIsDedicatedAndGuarded();
             CatalogAndPrerequisitesAreExact();
             HydraulicPrerequisitesAndFormulaAreExact();
             ElementalStrikeScalingAndAttackBoundaryAreExact();

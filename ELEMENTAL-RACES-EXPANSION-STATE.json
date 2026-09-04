@@ -16,7 +16,7 @@
   "status": {
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "IDENTITY-PUBLICATION-CHECKPOINT-PASS-MECHANICS-IN-PROGRESS",
+    "releaseB": "MECHANICS-SLICE-1-PASS-REMAINING-FEATS-IN-PROGRESS",
     "releaseC": "NOT-STARTED"
   },
   "foundationProgress": {
@@ -51,7 +51,7 @@
     "nativeContractAudit": "PASS (isolated KMG-only, 9/9; combined-profile comparison, 8/8)",
     "pureBehaviorPolicy": "IMPLEMENTED-TESTED (catalog, exact prerequisites, level breakpoints, race energies, attack boundaries, event deduplication, weapon snapshot/nonstacking, save-bonus replacement, maneuver/summon formulas, armor gating, vision and respiration boundaries)",
     "dirtyTrick": "NATIVE-BLIND-PATH-AVAILABLE; DAZZLE-OMITTED",
-    "flightAbstraction": "LOCKED-TO-BASE-OWLcat-WINGS-CONTRACT",
+    "flightAbstraction": "IMPLEMENTED-RUNTIME-PASS (exact base Owlcat draconic Wings contract; no/light armor only; no optional-mod components)",
     "concealmentCatalog": "BASE-INVENTORY-LOCKED; SOURCE-SPECIFIC-GUID-REQUIRED",
     "waterElementalSummon": "EXACT-NATIVE-DONOR-LOCKED",
     "fireEnchantmentCatalog": "BASE-INVENTORY-LOCKED",
@@ -60,7 +60,10 @@
     "blueprintGraph": "IMPLEMENTED-TESTED (all identities register unconditionally; exact race, feat, level, and active Hydraulic Push prerequisites)",
     "featPublication": "IMPLEMENTED-TESTED (module-gated universal and Fighter selector transactions; additive, deterministic, idempotent, exact-GUID-conflict refusing, order preserving, reversible)",
     "versionTransition": "0.0.116-elemental-feats ACTIVE; generic build/runtime/compatibility controls updated; Release A migration workflows remain historically pinned",
-    "implementation": "IDENTITY-PUBLICATION-CHECKPOINT-PASS; GAMEPLAY-MECHANICS-IN-PROGRESS"
+    "elementalStrike": "IMPLEMENTED-RUNTIME-PASS (Swift command, one-round buff, all four exact race energies, levels 1/5/10/15/20, exact flat packets, one event application, native resistance, spell and unrelated damage exclusions)",
+    "wingsOfAir": "IMPLEMENTED-RUNTIME-PASS (+3 Dodge AC versus melee and +0 ranged; exact native terrain/Ground contract; no prone immunity; live no/light/medium armor removal and restoration)",
+    "mechanicsRuntime": "PASS-SLICE-1 (16/16 assertions; save-free exact cleanup; remaining Release B mechanics not yet qualified)",
+    "implementation": "MECHANICS-SLICE-1-PASS; REMAINING-GAMEPLAY-MECHANICS-IN-PROGRESS"
   },
   "releaseBNativeAudit": {
     "status": "PASS",
@@ -140,6 +143,43 @@
     "compatibilityQualification": "NOT-RUN-MECHANICS-PENDING",
     "releaseStatus": "NOT-A-RELEASE-B-PASS",
     "sourceCommit": "ecc65faad142960de6f5b1ea523feaa9ed83dac7"
+  },
+  "releaseBMechanicsSliceOne": {
+    "status": "PASS",
+    "releaseStatus": "NOT-A-RELEASE-B-PASS",
+    "scenario": "disposable-elemental-feat-mechanics",
+    "runId": "20260904T2000378983332Z-b0699acd82da4d378c3abdded3983858",
+    "assertions": 16,
+    "warnings": 0,
+    "saveStateTouched": false,
+    "cleanupExact": true,
+    "runtimeResultSha256": "50d215ce18078d93cb404a53198261a48e7b98a1b3347c351de6f9a04df8c9f2",
+    "mechanicsEvidenceSha256": "aef0cf2db12fb5a324f64beb9acabebec9fe09e879ea6dc3c29ae7b7a5482845",
+    "runtimeEvidenceSha256": "7184beafce5eda62e3e854ecb9ffe18c6ec4f3e7e984fd49eaabc02c3ca73d3c",
+    "deploymentManifest": "20260904T2000378293773Z",
+    "deploymentManifestSha256": "db915a20c1340c523c08e7053687a5da32012ca9c0c4f5beaac6abbfb1f2ea4c",
+    "sourceBaselineCommit": "84e36dd13229195fb984d50508b30f28e458c7b1",
+    "package": "KingmakerGunslinger-0.0.116-local-runtime.zip",
+    "packageSize": 23074709,
+    "packageEntries": 135,
+    "packageSha256": "003c5f0e5c146f75f3ba601f3628659eaa3c5cb6ec0e4ea68540c7073a13e78f",
+    "dllSize": 5729792,
+    "dllSha256": "3e5def35c361410bdd4583fd9936e54e639ec7e9366ea453ffc592129bd4b7de",
+    "dllMvid": "60ebeb1c-fa23-497e-9d2f-c99601f363d3",
+    "elementalStrike": "PASS for Ifrit/Fire 1, Oread/Acid 5, Sylph/Electricity 10, Undine/Cold 15, and Ifrit/Fire 20; native command cancellation, one-round duration, one exact packet, replay deduplication, resistance, spell-source exclusion, and unrelated-damage exclusion",
+    "wingsOfAir": "PASS for +3 melee Dodge AC, +0 ranged, exact same-light-armor +3 delta, no/light/medium gating, legal out-of-combat removal and restoration, DifficultTerrain and Ground immunity, neutral buff admission, and no prone immunity",
+    "nativeAcAttribution": "ACBonusAgainstAttacks handles outer RuleAttackWithWeapon and installs a temporary Dodge stat modifier; it does not emit a direct RuleCalculateAC BonusSource",
+    "diagnosticRuns": [
+      "20260904T1800271307248Z-eee9c918c4b340de99234d38084efa7b scenario allowlist rejection",
+      "20260904T1824201132617Z-c8cc46eeb83b4228a7a40b7c36bbe0e5 symbolic identity lookup rejection",
+      "20260904T1833431953967Z-2471804a8a484fd28ae53189abd490f8 partial strike pass then null donor control and disk-full collector error",
+      "20260904T1844375212483Z-dea376ff8db54bfc96070722a1f1f801 Wings null-context buff rejection",
+      "20260904T1851361586730Z-3a1d5aa8c36246b99d79c33569a78f1c synthetic AC probe mismatch",
+      "20260904T1903544849132Z-2b00089720ad494f90ca4f3bde4be10d AutoHit bypassed native ACRule",
+      "20260904T1910055952880Z-c55fdf2b665741c6977fe01cefd6a70a native temporary-modifier attribution established; illegal in-combat armor removal remained",
+      "20260904T1929233125547Z-ff602f6640bd4c48935a73e203a90394 all mechanics passed except the intentionally refused in-combat armor removal",
+      "20260904T1940018479703Z-78dcc0b63a264ff281f62699090dfd4d initial 16/16 PASS superseded by the exact-source teardown-hardened rerun"
+    ]
   },
   "baselineGates": {
     "repositoryValidation": "PASS",

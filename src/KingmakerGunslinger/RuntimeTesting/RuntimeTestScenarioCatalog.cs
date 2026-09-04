@@ -112,6 +112,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-elemental-heritage-donors";
         internal const string ObserveElementalFeatNativeContracts =
             "observe-elemental-feat-native-contracts";
+        internal const string DisposableElementalFeatMechanics =
+            "disposable-elemental-feat-mechanics";
         internal const string ObserveElementalHeritageBlueprints =
             "observe-elemental-heritage-blueprints";
         internal const string DisposableElementalHeritageMechanics =
@@ -469,6 +471,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveElementalRaceBlueprints,
                 ObserveElementalHeritageDonors,
                 ObserveElementalFeatNativeContracts,
+                DisposableElementalFeatMechanics,
                 ObserveElementalHeritageBlueprints,
                 DisposableElementalHeritageMechanics,
                 DisposableElementalHeritageSlas,

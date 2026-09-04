@@ -46,6 +46,7 @@ $expected = @(
     'observe-elemental-race-blueprints',
     'observe-elemental-heritage-donors',
     'observe-elemental-feat-native-contracts',
+    'disposable-elemental-feat-mechanics',
     'observe-elemental-heritage-blueprints',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',
