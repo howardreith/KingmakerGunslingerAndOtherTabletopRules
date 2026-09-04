@@ -167,6 +167,11 @@ namespace KingmakerGunslinger.ElementalRaces
             result.Group2 = FeatureGroup.None;
             result.Features = (BlueprintFeature[])choices.Clone();
             result.AllFeatures = (BlueprintFeature[])choices.Clone();
+            result.ComponentsArray = new BlueprintComponent[]
+            {
+                ScriptableObject.CreateInstance<
+                    ElementalHeritageSelectionController>()
+            };
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create(
                     "KMG.ElementalRaces." + race +
@@ -197,7 +202,9 @@ namespace KingmakerGunslinger.ElementalRaces
                 !ReferenceEquals(general.Affinity, legacyAffinity) ||
                 !ReferenceEquals(general.SlaFeature, legacySlaFeature) ||
                 !ReferenceEquals(general.SlaResource, legacySlaResource) ||
-                !ReferenceEquals(general.SlaAbility, legacySlaAbility))
+                !ReferenceEquals(general.SlaAbility, legacySlaAbility) ||
+                result.Selection.ComponentsArray.OfType<
+                    ElementalHeritageSelectionController>().Count() != 1)
                 throw new InvalidOperationException(
                     result.Race + " heritage selection graph drifted.");
             foreach (ElementalHeritageBlueprints choice in choices)

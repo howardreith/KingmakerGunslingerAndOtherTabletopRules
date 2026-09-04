@@ -132,6 +132,8 @@ namespace KingmakerGunslinger.DomainTests
                 "observe-elemental-heritage-donors";
             const string blueprintScenario =
                 "observe-elemental-heritage-blueprints";
+            const string mechanicsScenario =
+                "disposable-elemental-heritage-mechanics";
             foreach (string token in new[]
             {
                 "Firebelly", "Flare Burst", "Color Spray",
@@ -178,6 +180,43 @@ namespace KingmakerGunslinger.DomainTests
                 heritageBlueprints.Contains("SaveStateTouched = false") &&
                 heritageBlueprints.Contains("CharacterRaces"),
                 "Heritage blueprint observer is not wired through every guarded surface.");
+            string heritageMechanics = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalHeritageMechanicsScenario.cs");
+            Assertions.True(catalog.Contains(mechanicsScenario) &&
+                catalog.Contains("DisposableElementalHeritageMechanics,") &&
+                runner.Contains("ElementalHeritageMechanicsScenario.Run(") &&
+                automation.Contains("'" + mechanicsScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + mechanicsScenario + "'") &&
+                compatibility.Contains("'" + mechanicsScenario + "'") &&
+                project.Contains("ElementalHeritageMechanicsScenario.cs") &&
+                heritageMechanics.Contains(
+                    "ElementalHeritageRuntime.Reconcile") &&
+                heritageMechanics.Contains("FeatureSelectionState") &&
+                heritageMechanics.Contains("PersistantResources") &&
+                heritageMechanics.Contains("AbilityExecutionContext") &&
+                heritageMechanics.Contains("SaveStateTouched = false") &&
+                heritageMechanics.Contains(
+                    "ContractResolver = new DefaultContractResolver()") &&
+                heritageMechanics.Contains(
+                    "PreserveReferencesHandling.None") &&
+                heritageMechanics.Contains(
+                    "ReferenceLoopHandling.Error"),
+                "Heritage mechanics scenario is not wired through every guarded surface.");
+            int mechanicsOffset = automation.IndexOf("'" +
+                mechanicsScenario + "' = [pscustomobject]",
+                StringComparison.Ordinal);
+            Assertions.True(mechanicsOffset >= 0 &&
+                automation.Substring(mechanicsOffset, Math.Min(500,
+                    automation.Length - mechanicsOffset)).Contains(
+                        "RequiresSaveName = $false") &&
+                automation.Substring(mechanicsOffset, Math.Min(500,
+                    automation.Length - mechanicsOffset)).Contains(
+                        "RequiresManualInteraction = $false") &&
+                automation.Substring(mechanicsOffset, Math.Min(500,
+                    automation.Length - mechanicsOffset)).Contains(
+                        "ReadinessBehavior = 'mod-load'"),
+                "Heritage mechanics scenario must remain autonomous and save-free.");
             Assertions.False(donor.Contains("SaveManager") ||
                 donor.Contains("Game.Instance.Player.Party") ||
                 donor.Contains("KMG_AUTOMATION_BASELINE"),
@@ -186,6 +225,10 @@ namespace KingmakerGunslinger.DomainTests
                 heritageBlueprints.Contains("Game.Instance.Player.Party") ||
                 heritageBlueprints.Contains("KMG_AUTOMATION_BASELINE"),
                 "Heritage blueprint observer must remain save-free.");
+            Assertions.False(heritageMechanics.Contains("SaveManager") ||
+                heritageMechanics.Contains("Game.Instance.Player.Party") ||
+                heritageMechanics.Contains("KMG_AUTOMATION_BASELINE"),
+                "Heritage mechanics scenario must remain save-free.");
         }
 
         internal static void ClassClothingMatrixIsExactAndSaveFree()

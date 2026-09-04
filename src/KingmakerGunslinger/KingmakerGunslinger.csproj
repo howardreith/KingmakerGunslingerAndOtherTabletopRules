@@ -937,6 +937,7 @@
     <Compile Include="RuntimeTesting\ElementalRaceDevelopmentProbeScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageDonorAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageBlueprintScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceVisualAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalSpellAffinityScenario.cs" />

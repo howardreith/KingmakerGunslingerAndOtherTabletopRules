@@ -214,7 +214,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalHeritagePolicy.NetDeltas(definition)",
                 "bonus.Descriptor = ModifierDescriptor.Racial",
                 "General heritage must retain every 0.0.114 provider identity",
-                "CreateAffinity(definition, sla.Ability.Icon)"
+                "CreateAffinity(definition, sla.Ability.Icon)",
+                "ElementalHeritageSelectionController"
             })
                 Assertions.True(factory.Contains(token),
                     "Heritage selection architecture lacks: " + token);
@@ -240,7 +241,8 @@ namespace KingmakerGunslinger.DomainTests
                 "if (!owner.HasFact(desired.SlaFeature))",
                 "TryRemove(owner, choice.Affinity)",
                 "TryRemove(owner, choice.SlaFeature)",
-                "ReferenceEquals(value.Race, race)"
+                "ReferenceEquals(value.Race, race)",
+                "class ElementalHeritageSelectionController"
             })
                 Assertions.True(runtime.Contains(token),
                     "Heritage reconciliation architecture lacks: " + token);

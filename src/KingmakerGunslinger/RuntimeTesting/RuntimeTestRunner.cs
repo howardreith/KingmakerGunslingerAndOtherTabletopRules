@@ -787,6 +787,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalHeritageMechanics)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalHeritageMechanicsScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
                         .ElementalRaceVisualAudit ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .ElementalRaceClassClothing)

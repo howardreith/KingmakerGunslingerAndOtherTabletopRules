@@ -53,3 +53,9 @@ the mission's hard-stop contract; independent work continues.
 - The first accepted probe exposed the null-icon bootstrap failure and exact
   owned-registration rollback. The repair is narrow and the subsequent live
   bootstrap passes. Neither finding is an active blocker.
+- The first live heritage-mechanics run exposed a real marker-first hydration
+  defect: inherited General providers could activate after an alternate marker
+  had reconciled, leaving both provider sets active. One owned controller on
+  the existing trailing heritage-selection fact now performs a post-race
+  reconciliation. The corrected guarded run passes this order for all four
+  races while preserving spent-resource bookkeeping.
