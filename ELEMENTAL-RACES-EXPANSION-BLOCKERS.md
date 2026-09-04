@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local foundation checkpoint
-  `9c0b7d7bdfe39dd54947c7a37d601cd91db98027` cannot currently be pushed.
+- Local checkpoints through heritage reconciliation qualification commit
+  `aca9aece0933d4713d5eae5cd98e1097fca52325` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
@@ -59,3 +59,13 @@ the mission's hard-stop contract; independent work continues.
   the existing trailing heritage-selection fact now performs a post-race
   reconciliation. The corrected guarded run passes this order for all four
   races while preserving spent-resource bookkeeping.
+- Call of the Wild installs a broad sticky-touch prefix that removes native
+  `UnitPartTouch` state when its own multi-charge part is absent. Chill Touch's
+  exact project charge state therefore declares `HarmonyBefore("CallOfTheWild")`
+  and returns before that foreign prefix. Guarded evidence proves 20 -> 19
+  charges and exact retained touch state for living and undead targets. The
+  live audit checks Harmony's declared `before` metadata; its raw registration
+  collection is insertion ordered and is not an execution-order report.
+- Native Blur's party-member target checker uses `IsPlayerFaction`. The
+  save-free Mistsoul fixture now uses the existing player faction without
+  entering the party or touching a save, matching that native predicate.

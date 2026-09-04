@@ -3,8 +3,8 @@
 ## Current outcome
 
 **IN PROGRESS - FOUNDATION PASS; RELEASE A IMPLEMENTED WITH LIVE BLUEPRINT,
-SELECTION, PROVIDER, AND PARAMETER PROOF; FULL RELEASE A QUALIFICATION AND
-RELEASES B/C REMAIN PENDING.**
+SELECTION, PROVIDER, PARAMETER, AND ALTERNATE-SLA COMMAND PROOF; FULL RELEASE A
+QUALIFICATION AND RELEASES B/C REMAIN PENDING.**
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
@@ -12,8 +12,9 @@ The mission began from clean authoritative `master` commit
 0.0.114 foundation audit and hardening is complete and independently
 qualified. Release A source, identities, versioning, focused tests, and live
 blueprint graph are implemented; selection/reconciliation, exact SLA
-parameters, and resource lifecycle have live proof, while alternate SLA
-delivery, persistence, visuals, and compatibility remain open gates.
+parameters, resource lifecycle, and alternate SLA command delivery have live
+proof, while persistence, respec/migration, visuals, and compatibility remain
+open gates.
 Historical Elemental Races evidence is
 preserved as historical evidence only and does not qualify new release
 behavior.
@@ -91,8 +92,8 @@ All 12 heritage definitions, exact stat overlays, affinity presentations, and
 SLA graphs are implemented. The installed donor audit selected native
 Firebelly, Flare Burst, Color Spray, Expeditious Retreat, Shocking Grasp, and
 Blur; project-owned bounded implementations cover absent Unerring Weapon and
-Chill Touch. The complete suite passes 1,405/1,405, and clean Release/package
-validation passes.
+Chill Touch. The complete suite passes 1,407/1,407, and the post-runtime clean
+Release build plus independent strict package validation pass.
 
 Guarded Steam run
 `20260904T0106348081056Z-7258c85fa8e14ca498201baac7f51ef4`
@@ -120,15 +121,34 @@ idempotence, and marker-first activation. Runtime-result SHA-256 is
 `6ec91796fddfe146a5330505017212895b76a40096e175f767c973d73951bd16`
 and companion SHA-256 is
 `7a8ab109f8d8d4014f6557e0783ab20d33c47cb9bd93c1432c0976a04f9a2b87`.
-Actual player-command delivery for the eight alternate SLAs remains a separate
-required gate.
+The dedicated save-free alternate-SLA run
+`20260904T0405120089434Z-cb642458ce4041d989b242982630fda0` then passed
+20/20 with zero warnings. It proves native command cancellation, exact
+one-use commitment, zero-use blocking, rest recovery, all six donor-backed
+effects, exact-item Unerring Weapon duration/confirmation behavior, and both
+living and undead Chill Touch delivery with 20 -> 19 persistent charges. It
+also proves the explicit Harmony-before contract required alongside the
+installed Call of the Wild sticky-touch prefix. Runtime-result SHA-256 is
+`80cdc2dd846c5f1de49b3575b522145603f4b243dee3c0314d6dc33d33d5675c`;
+companion SHA-256 is
+`e34d40ed88e27daf02340359e8c55f1aae971c11706aa7fc9b3570becffb4c7c`.
+
+The final post-runtime package contains 135 entries and is 23,038,804 bytes,
+SHA-256
+`23014b77c1e43fa85773eee5d09299a65364d057dfa8355ab70504b6c8a9e20b`.
+Its 5,603,328-byte DLL has SHA-256
+`af9ae270441a898216301e9f612199b85b8d10ac7fc4bd1f2200f684feba5a16`
+and MVID `f2980361-84e5-4034-aca7-1e4a4e7a241d`. This remains an interim
+Release A qualification checkpoint, not a release PASS: real respec, 0.0.114
+migration, three-process persistence, visuals, and compatibility are pending.
 
 ## Publication status
 
 Foundation checkpoint
-`9c0b7d7bdfe39dd54947c7a37d601cd91db98027` and Release A implementation
-checkpoint `543ccdfc91bf2d31916176336985baef6d0720b8` exist locally. The exact
-mandated push wrapper refused both because
+`9c0b7d7bdfe39dd54947c7a37d601cd91db98027`, Release A implementation
+checkpoint `543ccdfc91bf2d31916176336985baef6d0720b8`, and reconciliation
+qualification checkpoint `aca9aece0933d4713d5eae5cd98e1097fca52325` exist
+locally. The exact mandated push wrapper refused each because
 `codex/elemental-races-expansion` is absent from its external branch
 allowlist; no bypass was attempted. No pull request has been created. Nothing
 has been merged, tagged, or publicly released, and no generated release
