@@ -244,6 +244,8 @@
     "scorchingWeapons": "PASS for canceled and accepted native commands, two exact held metallic shortswords, one-round duration, unequip retention, replacement/nonmetal/natural/empty-hand exclusion, one +1 fire packet, replay deduplication, native resistance, and native Flaming nonstacking",
     "innerFlame": "PASS for one 1d6 fire packet replacing rather than adding to the base +1, no pre-roll, and +4 total Racial save bonus rather than +2 plus +4",
     "savingThrows": "PASS at native base stat 3: fire spell, exact light spell, overlapping fire/light spell, and direct fire attack each produce 5; control and project light SLA remain 3; Inner Flame fire spell produces 7",
+    "checkpointCommit": "768d8c94a4ec6658b71085fb0446243dae2d8d66",
+    "checkpointPush": "BLOCKED-EXTERNAL-ALLOWLIST",
     "diagnosticRuns": [
       "20260904T2152250892256Z-a30e171838144a93aa2dc6e2e0ed4182 combined-profile startup timeout before guarded request acceptance; verified exact process then terminated",
       "compat-20260904T220030Z-f34b903063e1 disk-full package expansion before game launch; exact restoration verified",
