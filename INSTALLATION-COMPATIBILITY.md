@@ -146,6 +146,19 @@ pretest mod tree and relevant settings. This structural/mechanical evidence
 does not replace the human appearance checklist or claim a Visual Adjustments
 result.
 
+Release A 0.0.115 has independent guarded evidence. KMG alone, Call of the
+Wild, Races Unleashed, Call of the Wild + Favored Class, the minimum valid
+Call of the Wild + Races Unleashed + Tweak or Treat stack, and the highest-risk
+installed combined stack all passed. Each profile ran with Elemental Races ON
+and OFF. The ON runs proved expected mod identities, foreign catalog
+preservation, singular contiguous Elemental publication, and all 53 heritage
+blueprints. The OFF runs proved complete identity registration with zero
+Elemental entries in the top-level race selector. Twelve transactions restored
+the exact original 968-entry mod tree (SHA-256
+`376F3A6CE9432789D00BB2C8E314D8DFDB4CA2D12D14A9F709AAE16673263999`)
+and relevant settings. No favored-class bonus was added. Visual Adjustments
+was absent, so its Release A row is NOT-RUN rather than PASS.
+
 ## Removal warning
 
 There is no uninstall cleanup or general uninstall-safe-save claim. Saves may

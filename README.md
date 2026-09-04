@@ -47,11 +47,13 @@ The identities remain registered when the module is OFF so an existing
 elemental character can load while the races are hidden from new-character and
 respec selectors. Uninstalling the whole mod from a campaign containing its
 content remains unsupported. The 0.0.114 release passed its documented
-structural, mechanical, persistence, and compatibility gates. Those records
-remain historical evidence and are not treated as proof for 0.0.115. Release A
-runtime, persistence, respec, and exact compatibility qualification is in
-progress. Visual Adjustments was not installed for the prior release and
-remains **NOT-RUN** until separately observed.
+structural, mechanical, persistence, and compatibility gates; those records
+remain historical evidence rather than being relabelled as 0.0.115 proof.
+Release A independently passed its full 1,407-case suite, clean package gates,
+guarded blueprint/mechanics/SLA runs, 24-fixture persistence, exact 0.0.114
+migration, native visual state transitions, and all six required installed
+compatibility profiles in both module states. Visual Adjustments was not
+installed and remains **NOT-RUN**.
 
 The release retains version `0.0.113`'s save-load hotfix for the
 paper-cartridge mode repair.

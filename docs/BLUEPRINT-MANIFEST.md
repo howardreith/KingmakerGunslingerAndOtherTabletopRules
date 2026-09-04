@@ -29,6 +29,13 @@ resolve while selector publication is disabled. The resource proxies reuse
 native Kingmaker geometry and native ramp textures; the package contains no
 extracted game asset.
 
+Release A runtime observed all 53 appended identities at their exact manifest
+GUIDs. The 0.0.114-to-0.0.115 save-backed migration retained every legacy race,
+General affinity, General SLA, and General resource identity and introduced no
+marker requirement for existing characters. Module-OFF compatibility runs
+across all six required installed profiles observed all identities registered
+while publishing no Elemental race to the native selector.
+
 The 25 active `KMG.BrownFur.*` identities are owned by the isolated optional
 extension. They are registered only when the structural Call of the Wild
 contract succeeds and are excluded from the package core's unconditional
