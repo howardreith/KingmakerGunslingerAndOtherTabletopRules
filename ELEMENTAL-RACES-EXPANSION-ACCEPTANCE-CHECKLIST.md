@@ -37,7 +37,7 @@ Unchecked items are pending and must not be inferred from builds or historical
   reconciliation, level-up without refill, and ordinary-rest refill.
 - [x] All twelve choices have exact final statistics, active affinity
   presentation/mechanics, SLA/resource, descriptions, and non-null icons.
-- [ ] Legacy General race/SLA/resource GUIDs and spent state remain exact;
+- [x] Legacy General race/SLA/resource GUIDs and spent state remain exact;
   absence of an alternate marker behaves as General without duplicated stats.
 - [x] Heritage SLA substitutions follow exact native spell, verified Owlcat
   precedent, or narrow faithful project-owned implementation order and are
@@ -48,12 +48,14 @@ Unchecked items are pending and must not be inferred from builds or historical
 - [x] Three-process persistence plus fourth-process absence passes with no stat
   drift, duplicate provider, lost fact, restored spent use, appearance drift,
   fixture leak, or selector corruption.
-- [ ] Death/resurrection, polymorph/return, optional profiles, and exact
+- [x] Death/resurrection, polymorph/return, optional profiles, and exact
   0.0.114 legacy migration pass.
-- [ ] Version/docs/manifest updated; repository validation, full tests, clean
+- [x] Version/docs/manifest updated; repository validation, full tests, clean
   0.0.115 build, strict package validation, guarded runtime, compatibility,
   and persistence gates pass.
-- [ ] Coherent Release A implementation and qualification commits pushed.
+- [ ] Coherent Release A implementation and qualification commits were created;
+  the exact mandated push was attempted after every checkpoint but remains
+  blocked by the external branch allowlist.
 
 ## Release B / 0.0.116 elemental feats
 

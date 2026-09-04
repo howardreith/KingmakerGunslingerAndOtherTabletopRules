@@ -17,8 +17,12 @@
   remembered daily-resource amounts instead of restoring a spent use.
 - Retains the hardened spell-only elemental-affinity predicate and exact
   Charisma-based racial SLA DC/total-character-level caster-level contract.
-- Release A runtime, persistence, respec, and compatibility qualification is
-  in progress; no PASS is claimed by this implementation entry alone.
+- Qualifies Release A through the complete 1,407-case suite, clean build and
+  strict package validation, dedicated blueprint/mechanics/SLA runs,
+  24-fixture ON/OFF/ON persistence, exact 0.0.114 migration, native visual
+  state transitions, and twelve restoration-verified transactions spanning
+  all six required installed compatibility profiles. Visual Adjustments was
+  absent and remains NOT-RUN.
 
 ## 0.0.114-elemental-races
 

@@ -17,7 +17,7 @@ unsafe mechanism, but must not silently change the player-facing rule.
 | Hydraulic Push | Native `ContextActionCombatManeuver` Bull Rush with caster level as base attack and best mental stat; no save or unrelated attack roll. An idempotent action commits the resource immediately before the synchronous native maneuver while ordinary resource logic retains availability gating. No safe native water projectile was selected, so no projectile is claimed. | NATIVE COMMAND, RESOURCE, FORMULA, SUCCESS/FAILURE, IMMUNITY, FORCE-MOVEMENT, NO-SAVE/ATTACK/AOO, TRANSITION, AND SAVE-BACKED MODULE-OFF RELOAD PASS; WATER PROJECTILE OMITTED |
 | Languages | Not implemented | OUT OF SCOPE |
 | Favored-class bonuses | Not implemented | OUT OF SCOPE |
-| Heritage model | One obligatory three-choice selection on each existing parent race; absence of a marker on a 0.0.114 character resolves as General | RELEASE A IMPLEMENTED; RUNTIME QUALIFICATION PENDING |
+| Heritage model | One obligatory three-choice selection on each existing parent race; absence of a marker on a 0.0.114 character resolves as General | RELEASE A RUNTIME, RESPEC, MODULE-OFF, AND EXACT 0.0.114 MIGRATION PASS |
 | Lavasoul Burning Sands | Native Kingmaker Firebelly, following the audited Owlcat heritage substitution; player text names Firebelly | APPROVED OWLCAT SUBSTITUTION |
 | Sunsoul Sun Metal | Native Kingmaker Flare Burst, following the audited Owlcat heritage substitution; player text names Flare Burst | APPROVED OWLCAT SUBSTITUTION |
 | Smokesoul Blurred Movement | Native Kingmaker Expeditious Retreat, following the audited Owlcat heritage substitution; player text names Expeditious Retreat | APPROVED OWLCAT SUBSTITUTION |

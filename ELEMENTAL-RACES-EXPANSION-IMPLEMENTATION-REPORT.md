@@ -2,20 +2,20 @@
 
 ## Current outcome
 
-**IN PROGRESS - FOUNDATION PASS; RELEASE A IMPLEMENTED WITH LIVE BLUEPRINT,
-MECHANICS, ALTERNATE-SLA COMMAND, AND 24-FIXTURE ON/OFF/ON PERSISTENCE PROOF;
-LEGACY/STATE-TRANSITION/COMPATIBILITY GATES AND RELEASES B/C REMAIN PENDING.**
+**IN PROGRESS - FOUNDATION AND RELEASE A MECHANICAL/COMPATIBILITY GATES PASS;
+THE RELEASE A CHECKPOINT EXISTS LOCALLY BUT ITS REQUIRED PUSH IS BLOCKED BY AN
+EXTERNAL BRANCH ALLOWLIST; RELEASES B/C REMAIN PENDING.**
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
 `codex/elemental-races-expansion`. The first work phase is the required
 0.0.114 foundation audit and hardening is complete and independently
-qualified. Release A source, identities, versioning, focused tests, and live
-blueprint graph are implemented; selection/reconciliation, exact SLA
-parameters, resource lifecycle, alternate SLA command delivery, native respec,
-module-OFF hydration, and four-process persistence/cleanup have live proof.
-Exact 0.0.114 migration, death/resurrection, polymorph/return, and compatibility
-remain open Release A gates.
+qualified. Release A source, identities, versioning, focused tests, live
+blueprint graph, selection/reconciliation, exact SLA parameters, resource
+lifecycle, alternate SLA command delivery, native respec, module-OFF hydration,
+four-process persistence/cleanup, exact 0.0.114 migration, native
+death/resurrection and polymorph/return, and all six required installed
+compatibility profiles have live proof.
 Historical Elemental Races evidence is
 preserved as historical evidence only and does not qualify new release
 behavior.
@@ -25,7 +25,7 @@ behavior.
 | Release | Version | Scope | Status |
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
-| A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | IMPLEMENTED; PERSISTENCE PASS; REMAINING QUALIFICATION IN PROGRESS |
+| A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
 | B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | NOT STARTED |
 | C | 0.0.117-elemental-traits | replacement slots and required alternate traits | NOT STARTED |
 
@@ -57,12 +57,12 @@ The 5,411,328-byte DLL has SHA-256
 `09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262`
 and MVID `dcd73856-39d4-40ce-9b05-77bf249103d7`.
 
-Foundation behavior/runtime qualification is complete. The complete 0.0.115,
-0.0.116, and 0.0.117 release gates remain incomplete. Foundation spell affinity, exact
-SLA calculation and command behavior, native movement layering, Hydraulic
-Push, visual ownership, blueprint publication, and the three-process
+Foundation behavior/runtime qualification is complete. Release A is now also
+mechanically qualified; Releases B and C remain incomplete. Foundation spell
+affinity, exact SLA calculation and command behavior, native movement layering,
+Hydraulic Push, visual ownership, blueprint publication, and the three-process
 module-OFF persistence transaction have passing guarded evidence. The
-deterministic suite passed 1,399/1,399.
+foundation deterministic suite passed 1,399/1,399.
 
 The affinity predicate now requires the effective ability or one of its
 parents to be exact `AbilityType.Spell`, plus reference-identical non-null
@@ -105,8 +105,9 @@ race counts, selection shape/order, General reference reuse, alternate
 SpellLike provider separation, complete presentation, and 53/53 exact live
 registrations without touching a save. Runtime-result SHA-256 is
 `1acc4b3a2078a45086118330797ce67f463e281f1d3e3545a48cb2383fe53d6d`.
-This is implementation proof, not a Release A PASS; the required mechanics,
-respec/migration, visual, persistence, and compatibility gates remain pending.
+This was the initial blueprint proof; the later evidence below completes the
+remaining Release A gates rather than retroactively treating this run alone as
+release qualification.
 
 The first dedicated heritage-mechanics run then passed 64/68 and exposed one
 real activation-order defect in all four parent races: marker-first hydration
@@ -162,25 +163,67 @@ the first three phases made exactly one guarded write to
 restored to SHA-256
 `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
 The complete per-run hashes and the two diagnostic failures are recorded in
-the state and journal. This qualifies new 0.0.115 persistence, but not yet the
-separate exact 0.0.114 migration or death/polymorph state transitions.
+the state and journal. This independently qualifies new 0.0.115 persistence.
 
-The current clean package contains 135 entries and is 23,040,636 bytes,
-SHA-256
-`43a77f8a51472867ab913586ad68ba5996a0345fa1041ea5ff0bd74f860a461a`.
-Its 5,623,808-byte DLL has SHA-256
-`b5c0b6ff706b842a5b934ffa1f3b4910983b0321a68b0a033a703459bcae44b3`
-and MVID `0fd178ac-9024-4717-9fdd-c84a4ad09775`. This remains an interim
-Release A qualification checkpoint, not a release PASS: exact 0.0.114 legacy
-migration, death/resurrection, polymorph/return, and compatibility are pending.
+The commit-bound runtime qualification package contains 135 entries and is
+23,043,017 bytes, SHA-256
+`9f445409336829fed6ec31754b206b3f2f8944da5fe40f4eddec36fff6b224f6`.
+Its 5,632,512-byte DLL has SHA-256
+`192626200791f38cf76492a7b2b4c5dc1cba5f4e4da298585527a018b93141cf`
+and MVID `c5997e3e-e0b2-4983-b70f-ea23d42c4c03`. It was built from
+`1613cf8a766f680e28d201341327feb25b52dc5a`; repository validation, all
+1,407 tests, clean compilation/package creation, and strict validation passed.
+
+## Release A final runtime qualification
+
+The exact legacy sequence begins with pinned 0.0.114 producer run
+`20260904T1013490325299Z-0aa31a4a5af44e3d976e00fedef36a65`
+(11/11), continues with current receiver run
+`20260904T1052083826042Z-c9c9164de51c467caa8bab191c5bd68c`
+(10/10), and finishes with fresh absence run
+`20260904T1055286220098Z-7f788486bf0c4a68b4eaf4d4d2bf5d89`
+(7/7). It proves eight markerless General race/sex fixtures retain exact stats,
+race/provider GUIDs, spent resources, DollData, and appearance, then cleanly
+disappear after one current-version cleanup save. The original and restored
+feature settings both hash to
+`a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+The producer's post-run cache/settings products were rejected by the old
+collector but independently accepted by the repaired 35-case exact-overlay
+verifier; no failed wrapper attempt is presented as PASS.
+
+Motion/state-transition run
+`20260904T1109218928176Z-483ad4f0c74b4b5aaed745970fb67985`
+passed 18/18. Its 1,392,043-byte index (SHA-256
+`9941832b6f8b898e9e30037b2bc1a4590e57300244f0286acca7ce8e6c2d2cbc`)
+contains 216 motion records/864 views and 64 transition records/256 views for
+both sexes of all four races. Native SLA execution, prone/restore,
+death/resurrection, Beast Shape II/return, locomotion, turns, firearm reload and
+attack, melee, materials, and cleanup passed. The two emitted warnings require
+subjective review of optional contact sheets and do not assert visual taste.
+
+Compatibility passed 31 guarded processes and 365 assertions with zero
+runtime-result warnings. Each of six required installed profiles ran once with
+the module ON and once OFF: standalone, Call of the Wild, Races Unleashed,
+Call of the Wild + Favored Class, the minimum valid Tweak or Treat stack, and
+the highest-risk combined stack. The ON runs proved exact expected mod and
+foreign-catalog preservation, singular contiguous Elemental publication, and
+all 53 heritage identities. OFF runs proved all identities remained registered
+while no Elemental race remained published. All twelve transactions restored
+the exact original 968-entry mod tree, whose SHA-256 is
+`376f3a6ce9432789d00bb2c8e314d8dfdb4ca2d12d14a9f709aae16673263999`,
+and the relevant settings. The exact 31 run/result/evidence hashes and twelve
+transaction hashes are in `ELEMENTAL-RACES-EXPANSION-STATE.json`. Visual
+Adjustments was absent and is NOT-RUN. Captured optional-renderer warnings in
+the high-risk attribution logs match known non-KMG fingerprints; no new KMG
+warning or error was introduced.
 
 ## Publication status
 
 Foundation checkpoint
-`9c0b7d7bdfe39dd54947c7a37d601cd91db98027`, Release A implementation
-checkpoint `543ccdfc91bf2d31916176336985baef6d0720b8`, and reconciliation
-qualification checkpoint `aca9aece0933d4713d5eae5cd98e1097fca52325` exist
-locally. The exact mandated push wrapper refused each because
+`9c0b7d7bdfe39dd54947c7a37d601cd91db98027` and nine subsequent Release A
+implementation/qualification commits through
+`1613cf8a766f680e28d201341327feb25b52dc5a` exist locally. The exact mandated
+push wrapper refused each because
 `codex/elemental-races-expansion` is absent from its external branch
 allowlist; no bypass was attempted. No pull request has been created. Nothing
 has been merged, tagged, or publicly released, and no generated release

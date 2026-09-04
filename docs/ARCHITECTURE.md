@@ -527,7 +527,10 @@ color ramps. Release A appends 53 stable heritage identities: four selections,
 twelve markers, eight affinity providers, eight feature/resource/ability SLA
 triplets, and five supporting ability or weapon-enchantment identities. All
 121 active elemental identities remain registered while race-selector
-publication is disabled. The two In Harm's Way immediate-action
+publication is disabled. Exact 0.0.114 markerless-General migration and the
+24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation
+preserves inherited stat components and current resource amounts while adding
+or removing only exact project-owned providers. The two In Harm's Way immediate-action
 debt facts remain hidden and mechanically inert; they preserve an off-turn
 spend across save/load and tie it to the owner's next actual turn without
 using a global-round flag.

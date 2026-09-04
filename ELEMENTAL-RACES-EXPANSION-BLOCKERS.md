@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through heritage reconciliation qualification commit
-  `aca9aece0933d4713d5eae5cd98e1097fca52325` cannot currently be pushed.
+- Local checkpoints through module-OFF compatibility commit
+  `1613cf8a766f680e28d201341327feb25b52dc5a` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
@@ -21,8 +21,8 @@ None established.
   catalogs, ray deflection, summon typing, and difficult terrain.
 - Dirty Trick is implemented only if a genuine native player-facing combat
   maneuver path can be identified and qualified.
-- Visual Adjustments remains NOT-RUN unless it is actually installed when the
-  relevant compatibility checkpoint is executed.
+- Visual Adjustments was absent during Release A qualification and is recorded
+  as NOT-RUN. Its absence is not a Release A blocker under repository policy.
 
 These are investigation items, not hard stops. Features fail closed only under
 the mission's hard-stop contract; independent work continues.

@@ -183,7 +183,7 @@ def validate(root: Path) -> None:
     required_profiles = {
         "gunslinger-only", "gunslinger-call-of-the-wild",
         "gunslinger-races-unleashed",
-        "gunslinger-call-of-the-wild-races-unleashed",
+        "gunslinger-tweak-or-treat",
         "gunslinger-call-of-the-wild-favored-class",
         "gunslinger-high-risk-combined-favored-class",
     }
@@ -199,7 +199,7 @@ def validate(root: Path) -> None:
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.115.md",
         "Kingmaker Gunslinger 0.0.115", "elemental-heritages",
-        "Legacy 0.0.114", "qualification is in progress")
+        "Legacy 0.0.114", "Release A qualification PASS")
     require_tokens(root / "README.md", INFORMATIONAL_VERSION,
         "Lavasoul", "Ironsoul", "Stormsoul", "Rimesoul",
         "historical evidence")
@@ -234,9 +234,9 @@ def validate(root: Path) -> None:
         "moduleControlledPublication": True,
         "resourceAmountReconciliation": True,
         "dynamicSaveBearingGuidGeneration": False,
-        "runtimeQualificationPending": True,
+        "runtimeQualificationPending": False,
         "compatibilityRuntimeQualificationPending": compatibility_pending,
-        "persistenceQualificationPending": True,
+        "persistenceQualificationPending": False,
     }
     for key, value in expected.items():
         if state.get(key) != value:

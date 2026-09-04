@@ -28,10 +28,13 @@ race, facts, resources, and appearance. No favored-class bonus, new module
 toggle, native race-enum member, outsider-type rewrite, custom mesh, copied
 asset, or third-party runtime dependency is added.
 
-Release A qualification is in progress. The 0.0.114 runtime and compatibility
-records remain historical evidence and are not claimed as 0.0.115 results.
-Nothing in this candidate note asserts a release PASS, merge, tag, or public
-release.
+Release A qualification PASS is established locally. The complete 1,407-case
+domain/reflection suite, clean Release build, strict package validation,
+dedicated blueprint/mechanics/SLA runs, 24-fixture persistence transaction,
+exact 0.0.114 migration sequence, native death/resurrection and
+polymorph/return transitions, and all six installed compatibility profiles
+passed. Historical 0.0.114 results remain identified separately and are not
+relabelled as 0.0.115 evidence.
 
 Dedicated guarded player-command testing now passes all alternate heritage
 SLAs. It verifies cancellation, exact one-use commitment, zero-use blocking,
@@ -39,8 +42,22 @@ ordinary-rest recovery, donor-native effects, Unerring Weapon's exact-item
 critical-confirmation bonus, and Chill Touch's living/undead branches with
 persistent per-level charges. The Chill Touch integration declares explicit
 ordering before Call of the Wild's broader sticky-touch prefix; no optional
-assembly is linked or required. Save-backed migration, respec, visual, and
-compatibility gates remain pending.
+assembly is linked or required. Save-backed native respec, module-OFF/ON,
+ordinary rest, level-up, exact legacy migration, visual state transitions, and
+fresh-process cleanup all passed.
+
+Compatibility passed KMG alone, KMG + Call of the Wild, KMG + Races
+Unleashed, KMG + Favored Class (without any new favored-class behavior), the
+minimum valid Tweak or Treat stack, and the highest-risk installed combined
+stack. Every profile also passed with Elemental Races OFF: all identities
+remained registered and the four races were absent from the top-level selector.
+All twelve transactions restored the original 968-entry mod tree and relevant
+settings exactly. Visual Adjustments was absent and is therefore NOT-RUN.
+
+This is a qualified local milestone, not a publication claim. The required
+push wrapper currently refuses the user-mandated feature branch because that
+branch is outside its external allowlist. Nothing was merged, tagged, or
+publicly released, and the candidate ZIP is not tracked.
 
 The candidate preserves the previously qualified firearm SoundBank byte
 identity `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.

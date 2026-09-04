@@ -682,3 +682,108 @@ remains unresolved.
 - Repository validation, all 1,407 Release domain/reflection tests, the clean
   Release build/package, independent strict package validation, PowerShell
   parsing, and all 35 focused deployment-safety checks pass for this repair.
+
+## 2026-09-04 - Exact legacy migration and visual state-transition qualification
+
+- The correlated three-process legacy sequence now passes against the pinned
+  0.0.114 release and current 0.0.115 build. Historical producer
+  `20260904T1013490325299Z-0aa31a4a5af44e3d976e00fedef36a65`
+  passed 11/11 (runtime-result SHA-256
+  `c37d1886dafdc2fc40f29b73b5d6268152c386af3701b7dfe8c9529b4c8bade2`,
+  persistence-index SHA-256
+  `2d6cda5bf53eed1ab056d12d674c0617e8e3347022063541121275b9d54582d8`).
+  The current receiver
+  `20260904T1052083826042Z-c9c9164de51c467caa8bab191c5bd68c`
+  passed 10/10; its result/evidence/index hashes are
+  `68ddabffb4ab34e6d821a3ed9091c10e3edd7d60dc2634665187aa1103e5cf88`,
+  `13dab9d38c3f6d8191fb05d3ae8b0501d3c5727f77f50e9ac29f1cf036854d07`,
+  and
+  `964cad4346ecd9791938b0f3419111510a8d9911a0bcb4c24da0715408cf8606`.
+  Fresh absence
+  `20260904T1055286220098Z-7f788486bf0c4a68b4eaf4d4d2bf5d89`
+  passed 7/7 with hashes
+  `5d75aec84ce7ddd91630b5afe8d5a3c0e17870913184579a4e082750e9f6c1e1`,
+  `f4acab2af84eb09f9332650146bf13e43aa569a52dafc13213d4f51a999bca4a`,
+  and
+  `dca4174bd43108169f1bc65e859db7ef1cf4e2d49109c3cd739c3f165ad48eed`.
+- The sequence proves all eight legacy General race/sex fixtures retain exact
+  parent race and legacy affinity/SLA/resource identities, marker absence,
+  final stats, spent daily amount, DollData, and appearance. Current
+  reconciliation is idempotent and does not restore the use; exact cleanup and
+  absence hold in the next fresh process. The protected baseline was excluded.
+  Original settings were restored byte-for-byte to SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+- A wrapper retry after the already-successful producer timed out only on a
+  missing stable fingerprint after its load callback. Run
+  `20260904T1038336403820Z-e052f20dc40b4b888f2adb9e041f84d4`
+  is retained as FAIL diagnostic evidence and is not part of the PASS chain.
+  The earlier producer's runtime products are accepted only by the repaired
+  exact-overlay verifier; no failed wrapper transaction is relabelled PASS.
+- The first comprehensive motion attempt failed on Win32 disk-full error 112
+  while writing an optional PNG. The failed result is retained as diagnostic
+  evidence; only its disposable PNG bulk was removed after structured evidence
+  was preserved. Final fresh-process run
+  `20260904T1109218928176Z-483ad4f0c74b4b5aaed745970fb67985`
+  passed 18/18. Result/evidence/index SHA-256 values are
+  `a457765bce7a788b150513be5ebfb834d1b1743356b2aa01fda9dea8f90311dd`,
+  `a053be62963c9fcdb58f5d8e7d83c8f08a66c353c5fe879b9a741bc06ba1453d`,
+  and
+  `9941832b6f8b898e9e30037b2bc1a4590e57300244f0286acca7ce8e6c2d2cbc`.
+  It covers both sexes of every parent race, 216 motion records/864 views and
+  64 transition records/256 views: native SLA act/restore, prone/restore,
+  death/resurrection, Beast Shape II/return, locomotion, turn, firearm reload
+  and attack, melee, material completeness, and cleanup. Two warnings reserve
+  subjective contact-sheet review and do not weaken the mechanical result.
+
+## 2026-09-04 - Release A compatibility matrix and local qualification PASS
+
+- Commit-bound runtime artifact from
+  `1613cf8a766f680e28d201341327feb25b52dc5a` contains 135 entries and is
+  23,043,017 bytes, SHA-256
+  `9f445409336829fed6ec31754b206b3f2f8944da5fe40f4eddec36fff6b224f6`.
+  Its 5,632,512-byte DLL hashes to
+  `192626200791f38cf76492a7b2b4c5dc1cba5f4e4da298585527a018b93141cf`
+  with MVID `c5997e3e-e0b2-4983-b70f-ea23d42c4c03`. Build-Local passed all
+  1,407 tests, exact-reference compilation, repository validation, clean
+  packaging, and strict validation.
+- Six required installed profiles passed in both module states: standalone,
+  Call of the Wild, Races Unleashed, Call of the Wild + Favored Class, the
+  minimum valid Tweak or Treat stack, and the highest-risk combined stack.
+  Their ON/OFF transaction pairs are respectively
+  `compat-20260904T114414Z-a66a779679d0` / `compat-20260904T114948Z-7f2951acc45e`,
+  `compat-20260904T115156Z-2a6b5b973d1f` / `compat-20260904T115946Z-7ae5bdca8d5b`,
+  `compat-20260904T120220Z-ba652f683300` / `compat-20260904T120742Z-6faadb82cbdc`,
+  `compat-20260904T120939Z-9bcc926da461` / `compat-20260904T121732Z-f8682ba4d712`,
+  `compat-20260904T122005Z-572beaaf1679` / `compat-20260904T122804Z-f34a35be8f31`,
+  and `compat-20260904T123051Z-7acb11877f1d` /
+  `compat-20260904T124044Z-56f3ee53fb73`.
+- All 31 guarded processes and 365 runtime assertions passed with zero
+  runtime-result warnings. ON proved expected mod identity, foreign catalog
+  preservation, singular contiguous Elemental publication, and the complete
+  heritage graph. OFF proved complete identity registration and zero published
+  Elemental top-level races. Every transaction observed staged mutation and
+  exact restoration. The original/restored 968-entry mod tree hashes to
+  `376f3a6ce9432789d00bb2c8e314d8dfdb4ca2d12d14a9f709aae16673263999`;
+  feature settings hash to
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+  The exact 31 result/evidence hashes and twelve transaction hashes are in the
+  durable state JSON.
+- Highest-risk attribution retained known optional-renderer shader, GPU,
+  missing-script, and lightmap fingerprints; no new KMG warning/error was
+  introduced. Favored Class remained compatibility-only with no new FCB
+  behavior. Visual Adjustments was absent and is NOT-RUN, as permitted.
+- Release A's required source, validation, build/package, migration,
+  persistence, state-transition, and installed compatibility gates now PASS
+  locally. The qualification validator now requires the mission's dedicated
+  Tweak or Treat profile instead of the older redundant CotW + Races Unleashed
+  profile. The latter remains explicitly NOT-TESTED rather than being inferred.
+- The mandated push wrapper still refuses the exact user-required branch due
+  its external allowlist. This blocks publication only; independent Release B
+  engineering proceeds under the mission's hard-stop policy.
+
+## Next action
+
+Validate this qualification-record-only change, create the Release A
+qualification checkpoint, retry the exact push wrapper, then begin Release B
+0.0.116 rule and engine-pattern audits without waiting on the external
+publication blocker.

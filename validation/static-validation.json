@@ -846,8 +846,8 @@
     "moduleControlledPublication": true,
     "resourceAmountReconciliation": true,
     "dynamicSaveBearingGuidGeneration": false,
-    "runtimeQualificationPending": true,
-    "compatibilityRuntimeQualificationPending": true,
-    "persistenceQualificationPending": true
+    "runtimeQualificationPending": false,
+    "compatibilityRuntimeQualificationPending": false,
+    "persistenceQualificationPending": false
   }
 }

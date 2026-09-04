@@ -6,7 +6,7 @@
   "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
   "interveningMasterCommits": [],
   "startingTreeClean": true,
-  "phase": "release-a-runtime-qualification",
+  "phase": "release-a-qualified-checkpoint",
   "currentVersion": "0.0.115",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
@@ -15,7 +15,7 @@
   },
   "status": {
     "foundation": "PASS",
-    "releaseA": "IMPLEMENTED-QUALIFICATION-IN-PROGRESS",
+    "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
     "releaseB": "NOT-STARTED",
     "releaseC": "NOT-STARTED"
   },
@@ -41,10 +41,10 @@
     "mechanicsRuntime": "PASS (68/68 selection/provider/hydration assertions and 20/20 alternate-SLA command/delivery assertions)",
     "heritageSlaRuntime": "PASS (20/20 exact player-command, native effect, item, touch-charge, and cleanup assertions)",
     "activationOrder": "DEFECT-FIXED-RUNTIME-PASS",
-    "visualRuntime": "PARTIAL-PASS (24 fixtures cover both sexes, all three presets, equipment reconstruction, and ON/OFF/ON fresh-process load; death/resurrection and polymorph/return pending)",
+    "visualRuntime": "PASS (both sexes, all three presets, equipment reconstruction, native SLA/prone/death/resurrection/polymorph transitions, and ON/OFF/ON fresh-process load)",
     "threeProcessPersistence": "PASS (24 fixtures; prepare, module-OFF load/level/rest/re-spend, module-ON respec/cleanup, and fourth-process absence)",
-    "legacyMigration": "HISTORICAL-PREPARE-MECHANICS-PASS; POST-RUN-OVERLAY-VERIFIER-REPAIRED; FULL-TRANSACTION-PENDING",
-    "compatibility": "PENDING"
+    "legacyMigration": "PASS (exact pinned 0.0.114 producer, 0.0.115 markerless-General receiver, and fresh-process absence; stats/providers/spent resources/appearance exact)",
+    "compatibility": "PASS (six required installed profiles, module ON and OFF, exact restoration); Visual Adjustments NOT-RUN because absent"
   },
   "baselineGates": {
     "repositoryValidation": "PASS",
@@ -86,9 +86,10 @@
     "packageValidation": "PASS",
     "blueprintRuntime": "PASS",
     "mechanicsRuntime": "PASS (68/68 provider/parameter/transition/hydration plus 20/20 alternate-SLA command/delivery assertions)",
-    "visualRuntime": "PARTIAL-PASS (24-fixture both-sex/all-preset ON/OFF/ON reconstruction PASS; death/resurrection and polymorph/return pending)",
+    "visualRuntime": "PASS (24-fixture both-sex/all-preset reconstruction plus 8-fixture native death/resurrection and polymorph/return transitions)",
     "threeProcessPersistence": "PASS (24 fixtures and fresh-process cleanup absence)",
-    "compatibility": "PENDING"
+    "legacyMigration": "PASS",
+    "compatibility": "PASS (6/6 required installed profiles; 12/12 exact restoration transactions)"
   },
   "releaseARuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.115-local-runtime.zip",
@@ -125,15 +126,19 @@
   },
   "releaseACurrentCleanArtifact": {
     "package": "KingmakerGunslinger-0.0.115-elemental-heritages.zip",
-    "packageSize": 23040636,
+    "packageSize": 23043017,
     "packageEntries": 135,
-    "packageSha256": "43a77f8a51472867ab913586ad68ba5996a0345fa1041ea5ff0bd74f860a461a",
-    "dllSize": 5623808,
-    "dllSha256": "b5c0b6ff706b842a5b934ffa1f3b4910983b0321a68b0a033a703459bcae44b3",
-    "dllMvid": "0fd178ac-9024-4717-9fdd-c84a4ad09775",
+    "packageSha256": "9f445409336829fed6ec31754b206b3f2f8944da5fe40f4eddec36fff6b224f6",
+    "dllSize": 5632512,
+    "dllSha256": "192626200791f38cf76492a7b2b4c5dc1cba5f4e4da298585527a018b93141cf",
+    "dllMvid": "c5997e3e-e0b2-4983-b70f-ea23d42c4c03",
     "repositoryValidation": "PASS",
     "domainTests": "PASS (1407/1407)",
-    "packageValidation": "PASS"
+    "packageValidation": "PASS",
+    "sourceCommit": "1613cf8a766f680e28d201341327feb25b52dc5a",
+    "sourceStateSha256": "a6ee62dac561d3a3d3768dae6c45bbe1b70015338d1d7a257a64bb08f7be854f",
+    "deploymentManifest": "20260904T1141517694646Z",
+    "deploymentManifestSha256": "c73bc5027d0ee86b34faa7548a7bcc95be87c6afae7ad9ec3a289064d80b7b60"
   },
   "releaseAPersistenceRuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.115-local-runtime.zip",
@@ -190,6 +195,112 @@
     "currentArtifactRestored": true,
     "restoredDeploymentManifestSha256": "4e35aa75e0eb47ddf9ed4343a6024c6f7f5afd376cdf589d68775a9dd0eee87e",
     "repair": "Behavior-tested overlay verifier accepts at most one PID-named cache only with the exact qualified DLL SHA/MVID, accepts settings normalization only with byte-exact .previous plus flat JSON semantic equality, and rejects every other file or mutation (35/35 deployment safety checks)."
+  },
+  "releaseALegacyMigrationQualification": {
+    "status": "PASS-CORRELATED-THREE-PROCESS-SEQUENCE",
+    "saveName": "KMG_AUTOMATION_WORKING",
+    "protectedBaselineExcluded": true,
+    "legacyProducerCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
+    "legacyPackageSha256": "b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694",
+    "producer": {
+      "scenario": "elemental-race-persistence-prepare",
+      "version": "0.0.114",
+      "runId": "20260904T1013490325299Z-0aa31a4a5af44e3d976e00fedef36a65",
+      "status": "PASS (11/11)",
+      "runtimeResultSha256": "c37d1886dafdc2fc40f29b73b5d6268152c386af3701b7dfe8c9529b4c8bade2",
+      "persistenceIndexSha256": "2d6cda5bf53eed1ab056d12d674c0617e8e3347022063541121275b9d54582d8",
+      "collectorDisposition": "The then-current collector rejected the exact known runtime overlay after mechanics PASS; the repaired 35-case verifier independently accepted the captured cache/settings overlay."
+    },
+    "receiver": {
+      "scenario": "elemental-race-legacy-migration",
+      "version": "0.0.115",
+      "runId": "20260904T1052083826042Z-c9c9164de51c467caa8bab191c5bd68c",
+      "status": "PASS (10/10)",
+      "runtimeResultSha256": "68ddabffb4ab34e6d821a3ed9091c10e3edd7d60dc2634665187aa1103e5cf88",
+      "runtimeEvidenceSha256": "13dab9d38c3f6d8191fb05d3ae8b0501d3c5727f77f50e9ac29f1cf036854d07",
+      "persistenceIndexSha256": "964cad4346ecd9791938b0f3419111510a8d9911a0bcb4c24da0715408cf8606"
+    },
+    "absence": {
+      "scenario": "elemental-race-persistence-verify-absent",
+      "version": "0.0.115",
+      "runId": "20260904T1055286220098Z-7f788486bf0c4a68b4eaf4d4d2bf5d89",
+      "status": "PASS (7/7)",
+      "runtimeResultSha256": "5d75aec84ce7ddd91630b5afe8d5a3c0e17870913184579a4e082750e9f6c1e1",
+      "runtimeEvidenceSha256": "f4acab2af84eb09f9332650146bf13e43aa569a52dafc13213d4f51a999bca4a",
+      "persistenceIndexSha256": "dca4174bd43108169f1bc65e859db7ef1cf4e2d49109c3cd739c3f165ad48eed"
+    },
+    "result": "Eight legacy General race/sex fixtures retained exact parent race and legacy provider GUIDs, marker absence, stats, appearance, and spent SLA amount; current reconciliation was idempotent and cleanup absence passed in the next fresh process.",
+    "originalAndRestoredSettingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+  },
+  "releaseAMotionQualification": {
+    "status": "PASS",
+    "scenario": "elemental-race-motion",
+    "runId": "20260904T1109218928176Z-483ad4f0c74b4b5aaed745970fb67985",
+    "assertions": 18,
+    "runtimeResultSha256": "a457765bce7a788b150513be5ebfb834d1b1743356b2aa01fda9dea8f90311dd",
+    "runtimeEvidenceSha256": "a053be62963c9fcdb58f5d8e7d83c8f08a66c353c5fe879b9a741bc06ba1453d",
+    "motionIndexSha256": "9941832b6f8b898e9e30037b2bc1a4590e57300244f0286acca7ce8e6c2d2cbc",
+    "fixtures": 8,
+    "motionRecords": 216,
+    "motionViews": 864,
+    "transitionRecords": 64,
+    "transitionViews": 256,
+    "coverage": "Both sexes for all four races; SLA act/restore, prone/restore, death/resurrection, Beast Shape II/return, locomotion, turn, firearm reload/attack, melee, material completeness, and exact cleanup."
+  },
+  "releaseACompatibilityQualification": {
+    "status": "PASS",
+    "requiredInstalledProfiles": 6,
+    "transactions": 12,
+    "runtimeProcesses": 31,
+    "runtimeAssertions": 365,
+    "runtimeResultWarnings": 0,
+    "originalAndRestoredModsEntryCount": 968,
+    "originalAndRestoredModsManifestSha256": "376f3a6ce9432789d00bb2c8e314d8dfdb4ca2d12d14a9f709aae16673263999",
+    "originalAndRestoredFeatureSettingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "cotwSettingsSha256": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8",
+    "favoredClassSettingsSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+    "visualAdjustments": "NOT-RUN-ABSENT",
+    "profiles": [
+      { "id": "gunslinger-only", "onTransaction": "compat-20260904T114414Z-a66a779679d0", "onTransactionSha256": "9e2bbe090a53c1cea4d3046663dec16b37f1bb09859621494360cfc114b42286", "offTransaction": "compat-20260904T114948Z-7f2951acc45e", "offTransactionSha256": "db15991c3cea0e6a996eb89f071e395cb72dcb329bfcb710a0c7889941b0b863" },
+      { "id": "gunslinger-call-of-the-wild", "onTransaction": "compat-20260904T115156Z-2a6b5b973d1f", "onTransactionSha256": "9e224d2cc88b4b1e26885f053e31ee1211f7f11a018c52746fc82fc73a45caa3", "offTransaction": "compat-20260904T115946Z-7ae5bdca8d5b", "offTransactionSha256": "c9f7221f517412639863382a027b0d8363baab4e956b5d884c80168ea1f4f305" },
+      { "id": "gunslinger-races-unleashed", "onTransaction": "compat-20260904T120220Z-ba652f683300", "onTransactionSha256": "6550b93dfba33859a4a7a6808f405a2df4255aad271fb15ca5b4cb441e47b310", "offTransaction": "compat-20260904T120742Z-6faadb82cbdc", "offTransactionSha256": "a61df177397c95ac2e3350dda90cfb5f7187971397e026bc728cd38bcecb9b8a" },
+      { "id": "gunslinger-call-of-the-wild-favored-class", "onTransaction": "compat-20260904T120939Z-9bcc926da461", "onTransactionSha256": "33615476339c34882889a4bb0350e52cb4a3ad195bce4437af0c60237b90a593", "offTransaction": "compat-20260904T121732Z-f8682ba4d712", "offTransactionSha256": "d35a54571dbf0ddd041fcaa0b8e7384049fad5c5b1278f606321b0e1ac8ac2ae" },
+      { "id": "gunslinger-tweak-or-treat", "onTransaction": "compat-20260904T122005Z-572beaaf1679", "onTransactionSha256": "9fa5d48e725524420b2d6fbd8e8313e1ca371af60d4202104b9b46554fb40bf3", "offTransaction": "compat-20260904T122804Z-f34a35be8f31", "offTransactionSha256": "0ea5e87c174111eeb19fafe67ff3a74d3b92a38a0e16d69ff284a039412f4f01" },
+      { "id": "gunslinger-high-risk-combined-favored-class", "onTransaction": "compat-20260904T123051Z-7acb11877f1d", "onTransactionSha256": "c269ced23e93fd138d58c1747c976603514db38ed9d2920acc689dfe728f7b3c", "offTransaction": "compat-20260904T124044Z-56f3ee53fb73", "offTransactionSha256": "d8994bf8965ff19862958b4eed278487cbdd360c4cb31dd0b5192b9eb4f16d5a" }
+    ],
+    "runtimeRuns": [
+      { "profile": "gunslinger-only", "scenario": "mod-load-smoke", "runId": "20260904T1144442403466Z-0ca5bf1dbb9a4bb9b2a2fb20513f6ca2", "assertions": 3, "resultSha256": "e7202a57edd77d8dee70b88106f752e3065f0fd5653683bc7d00177e195bb578", "evidenceSha256": "2223d764f44ede0a5ae85d4796447550c4cd33bbdba4995353a8fc2824bcbb07" },
+      { "profile": "gunslinger-only", "scenario": "observe-optional-mod-compatibility", "runId": "20260904T1145558927330Z-dc1eb43ea5c44315991da83fdfb1837a", "assertions": 16, "resultSha256": "b6c3599406168980e22c9a08739c4278175577f727a90b3dba97ad4a46d2ffd5", "evidenceSha256": "2d412a7a4b0cdeb4ec1bc584477bc341482b89952441e05accad1d7a422f7169" },
+      { "profile": "gunslinger-only", "scenario": "elemental-races-races-unleashed-compatibility", "runId": "20260904T1147051874737Z-681bcade58e9441f9294038018420e0e", "assertions": 9, "resultSha256": "327d6e203d58616d7f48c3eba0d1df4106ecfe6669202ce0c12a81338f84461e", "evidenceSha256": "7b150a6de0e0ed178154e85b1869c66359408b1444119ad1938b4b9084eb37de" },
+      { "profile": "gunslinger-only", "scenario": "observe-elemental-heritage-blueprints", "runId": "20260904T1148147060039Z-da6df2f606ae4e9d9ee1fa2dc251aaec", "assertions": 19, "resultSha256": "a68867142426180d6027e70c0de12604a1cbdc84164c118826af04feb90a7946", "evidenceSha256": "0eb03d61e8dbc1da4e2c51611292be5158fc9b1d2b451e9987d9056fc6b7ccc5" },
+      { "profile": "gunslinger-only", "scenario": "elemental-races-races-unleashed-compatibility", "moduleState": "OFF", "runId": "20260904T1150065315211Z-64cad83a30ed4a4bb25150f414c55543", "assertions": 9, "resultSha256": "8b2a25ac475d8c9d7e05fbd02a3ff766c9784daef3acf09e0b1bc40accc232a7", "evidenceSha256": "43741eac50b911848fe40805f99fe7ec382719bb5de36da8e61de6c9b2caa1a9" },
+      { "profile": "gunslinger-call-of-the-wild", "scenario": "mod-load-smoke", "runId": "20260904T1152187350304Z-7dc4af510579496283051d9c04882953", "assertions": 3, "resultSha256": "fe130b0fc7127e40ce42ce0f216f37b862e657418b22c822c44eb687e5dc0106", "evidenceSha256": "44880ab9ae6122f961204ed179e6ea644e86ed774f6d83ff9e177cf13f9f0edc" },
+      { "profile": "gunslinger-call-of-the-wild", "scenario": "observe-optional-mod-compatibility", "runId": "20260904T1154073387056Z-40b26955835147e1807ab5827ca11185", "assertions": 23, "resultSha256": "3a412baedd523bd6d36a5895b274345e3335de39bc2d74bb06d0f5d4250c39c8", "evidenceSha256": "c4e03e273b1c0cb15ef1d535e8e6b0a3f55714c0f1351e6359809d20dacff1d1" },
+      { "profile": "gunslinger-call-of-the-wild", "scenario": "elemental-races-races-unleashed-compatibility", "runId": "20260904T1155524425133Z-be9bf2e641d746f7a57c3dd00ee791fa", "assertions": 9, "resultSha256": "0286c6c92f27ede8e564effecd54e9b595a53006cf0447acf1d614a831640591", "evidenceSha256": "46057e074d6b19bbb04424dafac911e1ecf8957999ff95b3cbcc9072e788b2f5" },
+      { "profile": "gunslinger-call-of-the-wild", "scenario": "observe-elemental-heritage-blueprints", "runId": "20260904T1157363924597Z-006ed4a64248450d8097978d2b67b630", "assertions": 19, "resultSha256": "a6669c023475d1df52d6cd6b363a812ba8c6baac5c1813f2f3f72d37b8a1a886", "evidenceSha256": "b65a1c0f833a6fb42e4adc260c8f87943f94984b5fe9bf96aefa4aaa5b09abdf" },
+      { "profile": "gunslinger-call-of-the-wild", "scenario": "elemental-races-races-unleashed-compatibility", "moduleState": "OFF", "runId": "20260904T1200078848167Z-22ffa36c11914522b45a6af68cdfcc72", "assertions": 9, "resultSha256": "7863bf190bece86e176df2468e4841ec2364be78b1bcfeb1c0543380aaece067", "evidenceSha256": "92e1274534b92783fbce03e2fbc518e5fa02caa092e236b83fae89f1712866d4" },
+      { "profile": "gunslinger-races-unleashed", "scenario": "mod-load-smoke", "runId": "20260904T1202415542498Z-7bd6d54f770243c2906c1b8e63a37147", "assertions": 3, "resultSha256": "3ecbb63e5be8d5d7c3249b8117f062f5bf0f6611827ef877f12d2491f10dfe56", "evidenceSha256": "62a192d1a7a86c0c32400c473fd511658bff1d788d635db0bb86305f90776e8e" },
+      { "profile": "gunslinger-races-unleashed", "scenario": "observe-optional-mod-compatibility", "runId": "20260904T1203511920548Z-07e99e47567d4c008de60d1a943439f7", "assertions": 16, "resultSha256": "531bc4be277c0a40560c4809a7ab6903302b690995323d4285999e609b0f9195", "evidenceSha256": "6dc5129b550c665608a253ae4feb2ff190a8be4cf7254de580b3ad64d1f0b577" },
+      { "profile": "gunslinger-races-unleashed", "scenario": "elemental-races-races-unleashed-compatibility", "runId": "20260904T1205001276954Z-676885f9681a4dedacd402ea041decb2", "assertions": 9, "resultSha256": "dc94caa265e71d630df60d9c597ef9381f961a80247144288bfcf6e6a04d9594", "evidenceSha256": "783da37d467991cdeace635a50c1d52c680ba78ca63397281436761f2493d66f" },
+      { "profile": "gunslinger-races-unleashed", "scenario": "observe-elemental-heritage-blueprints", "runId": "20260904T1206098113316Z-286cfbd9279f4e36817376786429a7d1", "assertions": 19, "resultSha256": "8362f542d3de8f0bc7c9bfe0fa2c9545653e16feec36bb5e84fd19aacd070464", "evidenceSha256": "32de1c2d44fc9d90fef2ed0e3181e3852ffd106a3fc5b9cec41c0d34ec3da9dd" },
+      { "profile": "gunslinger-races-unleashed", "scenario": "elemental-races-races-unleashed-compatibility", "moduleState": "OFF", "runId": "20260904T1208031001932Z-05d536a74e01481d9271fd2c57703fd2", "assertions": 9, "resultSha256": "4e30fb74507cdd9e96dc954c7da1839e85e61c67f33f6b9584c047a900a21d69", "evidenceSha256": "11261de3fff70af8616adfb7a9f55b8b8b089c153be76b4710a15ced905a65d8" },
+      { "profile": "gunslinger-call-of-the-wild-favored-class", "scenario": "mod-load-smoke", "runId": "20260904T1210018812579Z-6b39568196604d1d843248565f3a18db", "assertions": 3, "resultSha256": "57f9e525a55c5b0ca448250419449f0219465e76467999cd5f632317dcafa9ab", "evidenceSha256": "0da9e6819fb048b6bf76ef6fb86c4183384eecaddadba3ea1d8d53f40fba92f9" },
+      { "profile": "gunslinger-call-of-the-wild-favored-class", "scenario": "observe-aid-another-compatibility-contracts", "runId": "20260904T1211497815159Z-6b7b5793fa0840b8b7cb2508249b0da8", "assertions": 12, "resultSha256": "2925fcd7850fb5b8590cece99596954c521e23f9847ec521cb2ab01be181765b", "evidenceSha256": "b9121c37aa06417c33e303704042bec0ba7712185c846f3c894f9033e29b8908" },
+      { "profile": "gunslinger-call-of-the-wild-favored-class", "scenario": "elemental-races-races-unleashed-compatibility", "runId": "20260904T1213359074770Z-6606089c1aa341aeb00bbcc006b205dc", "assertions": 9, "resultSha256": "7d12f69cc18c8b10abf3b56daa3b44ebd4030154fbcb010b09257272d0dc920b", "evidenceSha256": "cc72954b1e1b16d644e1918178798c7e66c70b1c7f9ca24cbdddb81aea65b769" },
+      { "profile": "gunslinger-call-of-the-wild-favored-class", "scenario": "observe-elemental-heritage-blueprints", "runId": "20260904T1215230020835Z-5202ec261c9b4c65bf0c8b439304bc8d", "assertions": 19, "resultSha256": "6f466870cb953a0e50f4fb77dd85ae4f26b5d21b8bc19e326fa76fb6b58d7e30", "evidenceSha256": "bbe8170bbafed31f23c95431da0d8bc9e00c52fc489e9d04a185723d48fefca7" },
+      { "profile": "gunslinger-call-of-the-wild-favored-class", "scenario": "elemental-races-races-unleashed-compatibility", "moduleState": "OFF", "runId": "20260904T1217552634752Z-a3ee2f81f4ea49a9a3288a7e3abe688b", "assertions": 9, "resultSha256": "e6015178b40bfa48c182578e4f958f8bb68d8c6c00eaf00e4eae2ae579f6809b", "evidenceSha256": "36385799fdbd317fef48c6588a79d6282a5280beedde7129e6f72fadf37d0e25" },
+      { "profile": "gunslinger-tweak-or-treat", "scenario": "mod-load-smoke", "runId": "20260904T1220331002072Z-1f2beccc5ae44f60adc0df75a1a47df4", "assertions": 3, "resultSha256": "8313ae7defe13e55f4a1a205d7da950c9731b9181aa9f835f3620c788fae73ef", "evidenceSha256": "550e0bcf3c629c0bd62e51c14554547fe28febf9a60e58f8dab35b446daab714" },
+      { "profile": "gunslinger-tweak-or-treat", "scenario": "observe-optional-mod-compatibility", "runId": "20260904T1222220242856Z-20715771c3c54e649f73722ceb4cf08b", "assertions": 23, "resultSha256": "372dd86f98d912fc882e269232a2281271ba2a98c3beed29be4e4490a21cc87d", "evidenceSha256": "f0e4d1dcd5715306fe3166aeada12e5cb25c5b1adae825f0b09a0f649e286091" },
+      { "profile": "gunslinger-tweak-or-treat", "scenario": "elemental-races-races-unleashed-compatibility", "runId": "20260904T1224078826608Z-5fbceb5ace554ff9b86224bdc01712b4", "assertions": 9, "resultSha256": "da52432786d3a68bb97ad885adbad9a3b6c6499a7f082888151cf8f89b7c2c49", "evidenceSha256": "ee58b064c7898074e070f255237d5d765c44d8edb4356bbbe9d6c518fcb1b876" },
+      { "profile": "gunslinger-tweak-or-treat", "scenario": "observe-elemental-heritage-blueprints", "runId": "20260904T1225544034898Z-d5ad32c29e6a4cb6b86af2f1cd49fd55", "assertions": 19, "resultSha256": "fce2bfaef36c8fbee3ea1fc17e7d97f01c023c709bab30b1c1aeca52a616905f", "evidenceSha256": "f3feec22c35a56ce9636cdabac257c215f0395a39c89621f94dee52b5fb862b0" },
+      { "profile": "gunslinger-tweak-or-treat", "scenario": "elemental-races-races-unleashed-compatibility", "moduleState": "OFF", "runId": "20260904T1228321916901Z-5942b708575f4efeb81f5ae62ee701a6", "assertions": 9, "resultSha256": "bfc36982bedf0d5c621c9c4b9c2006b2e7e980784a1856585f20e2e94c5dd7ed", "evidenceSha256": "122380ae0384f6b4b017a20cca5babce7376cb895a05f7672fbb294118d80c5e" },
+      { "profile": "gunslinger-high-risk-combined-favored-class", "scenario": "mod-load-smoke", "runId": "20260904T1231203918240Z-cfb6e6c32a154e3c99894ce08acf65d2", "assertions": 3, "resultSha256": "ce9bfaedd3bbf78dbc700eb9060bec22e8fe5fbe531245282fbc96e44bc57f48", "evidenceSha256": "cb3af611d59c0b3ad271ab3c9a579e3cdeaa15e5981cff580931f357d2866e6b" },
+      { "profile": "gunslinger-high-risk-combined-favored-class", "scenario": "observe-optional-mod-compatibility", "runId": "20260904T1233095524368Z-ce035a1628644c15b31d927cc8da30f0", "assertions": 23, "resultSha256": "a1947d0e53ad3bc8ada5ca7bf8677a7ed40bd24bc51870fbc5cfea54aa283e71", "evidenceSha256": "fa4c60f6fa1a51bfd0d4c75481bbca2b902ed2fef804c95f7ea20ad180dfa7c6" },
+      { "profile": "gunslinger-high-risk-combined-favored-class", "scenario": "observe-aid-another-compatibility-contracts", "runId": "20260904T1234585226971Z-0fd69121606246989ffc6fc37baa59a0", "assertions": 12, "resultSha256": "758488f0b62aed6c8648a8d8f0047251f212fa3437009aa490435a9a6ba8228d", "evidenceSha256": "af6fa6f7da6267c9632ae1bd963b957763a570a660b0026be9c13a0b5a3ec491" },
+      { "profile": "gunslinger-high-risk-combined-favored-class", "scenario": "elemental-races-races-unleashed-compatibility", "runId": "20260904T1236462046728Z-81286df4b3ce4fee81fdad3d2d796edd", "assertions": 9, "resultSha256": "72efe5a1c645e2398a759a4a90dd16f60c567be313e1aefd7c2394f935ff7b4b", "evidenceSha256": "f76e257cec57297b695359383bb15302728ca5bcec3c8d6d003956333b90757f" },
+      { "profile": "gunslinger-high-risk-combined-favored-class", "scenario": "observe-elemental-heritage-blueprints", "runId": "20260904T1238333331507Z-531faa645b6a4246a4f90573b3e5eab9", "assertions": 19, "resultSha256": "10d8230f685734c663dd0bf8e324e8deeb0951644a455a8f3695a4254a301302", "evidenceSha256": "80bceae76f2fe29117027a7fcee5cd0b2119e560c249efad3458ac2723c31c49" },
+      { "profile": "gunslinger-high-risk-combined-favored-class", "scenario": "elemental-races-races-unleashed-compatibility", "moduleState": "OFF", "runId": "20260904T1241138052898Z-945dc25dbc004185b527c5e9a9284b47", "assertions": 9, "resultSha256": "a253f84e962644876a00d4150fd9d28ee4384f0325d8d91406962c774bdd5019", "evidenceSha256": "66cab4eeb8300e31f82c6aa90eb92cb7f1ccb7f3e4fc023addeecffde2730e4e" }
+    ]
   },
   "foundationRuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.114-local-runtime.zip",
@@ -515,7 +626,14 @@
       "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.HeritageSymbols()"
     }
   ],
-  "compatibility": {},
+  "compatibility": {
+    "releaseA": "RUNTIME-QUALIFIED-EXACT",
+    "requiredProfiles": 6,
+    "onOffTransactions": 12,
+    "runtimeProcesses": 31,
+    "visualAdjustments": "NOT-RUN-ABSENT",
+    "redundantCotwRacesUnleashedProfile": "NOT-TESTED-NOT-REQUIRED-BY-MISSION"
+  },
   "commits": [
     {
       "sha": "9c0b7d7bdfe39dd54947c7a37d601cd91db98027",
@@ -533,6 +651,48 @@
       "sha": "aca9aece0933d4713d5eae5cd98e1097fca52325",
       "subject": "Qualify Elemental Heritage reconciliation",
       "checkpoint": "release-a-reconciliation-qualification",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "17fe55d886ff3f75ebd96f5f231e9884d3a15842",
+      "subject": "Qualify alternate heritage SLA commands",
+      "checkpoint": "release-a-sla-qualification",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "52692129804a484f49ecadcca6c6fbfbe077594d",
+      "subject": "Qualify Elemental Heritage persistence",
+      "checkpoint": "release-a-persistence-qualification",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "e4a33171fd548d07c8b1994de3cad51850906965",
+      "subject": "Add exact Elemental Race legacy migration qualification",
+      "checkpoint": "release-a-legacy-harness",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "72ce278eba040ee5b8bf1cce0e73537cc652e3f7",
+      "subject": "Permit exact legacy migration producer preflight",
+      "checkpoint": "release-a-legacy-preflight-repair",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "68ac68b0c69779dc61b10caff9b6e43acc852ba6",
+      "subject": "Harden legacy runtime evidence verification",
+      "checkpoint": "release-a-legacy-overlay-repair",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "61c4f40ce40fd811ef132826ab2bbd40d07c52c7",
+      "subject": "Add isolated Tweak or Treat compatibility profile",
+      "checkpoint": "release-a-compatibility-profile",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "1613cf8a766f680e28d201341327feb25b52dc5a",
+      "subject": "Qualify elemental race publication with module off",
+      "checkpoint": "release-a-module-off-compatibility",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],
