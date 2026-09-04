@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through module-OFF compatibility commit
-  `1613cf8a766f680e28d201341327feb25b52dc5a` cannot currently be pushed.
+- Local checkpoints through Release B identity/publication commit
+  `ecc65faad142960de6f5b1ea523feaa9ed83dac7` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`

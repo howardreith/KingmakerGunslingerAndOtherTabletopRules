@@ -915,3 +915,7 @@ and the first focused mechanical group from the now-qualified native contracts.
   guarded scenarios, persistence, compatibility profiles, and final Release B
   qualification remain pending. No deployment or game launch occurred for
   this checkpoint.
+- Commit `ecc65faad142960de6f5b1ea523feaa9ed83dac7` records this checkpoint.
+  The exact mandated push wrapper was run immediately afterward and refused
+  the user-required branch because the external allowlist still omits
+  `codex/elemental-races-expansion`; no bypass was attempted.

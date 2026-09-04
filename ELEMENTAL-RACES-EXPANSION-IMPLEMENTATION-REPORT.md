@@ -223,10 +223,10 @@ warning or error was introduced.
 ## Publication status
 
 Foundation checkpoint
-`9c0b7d7bdfe39dd54947c7a37d601cd91db98027` and nine subsequent Release A
+`9c0b7d7bdfe39dd54947c7a37d601cd91db98027` and subsequent Release A and B
 implementation/qualification commits through
-`1613cf8a766f680e28d201341327feb25b52dc5a` exist locally. The exact mandated
-push wrapper refused each because
+`ecc65faad142960de6f5b1ea523feaa9ed83dac7` exist locally. The exact mandated
+push wrapper refused each checkpoint because
 `codex/elemental-races-expansion` is absent from its external branch
 allowlist; no bypass was attempted. No pull request has been created. Nothing
 has been merged, tagged, or publicly released, and no generated release
@@ -300,3 +300,9 @@ components, command delivery, focused guarded runtime evidence, feat-bearing
 save persistence, and Release B compatibility profiles remain pending. The
 registered subsidiary blueprints are therefore a buildable identity shell,
 not evidence that the feats' player-facing mechanics are complete.
+
+Identity/publication checkpoint commit
+`ecc65faad142960de6f5b1ea523feaa9ed83dac7` was followed immediately by the
+exact mandated push wrapper. It again refused the user-required branch because
+the external allowlist omits `codex/elemental-races-expansion`; no bypass was
+attempted.
