@@ -5,6 +5,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
 
@@ -160,12 +161,20 @@ namespace KingmakerGunslinger.ElementalRaces
                         TryRemove(owner, choice.Affinity);
                     if (!ReferenceEquals(choice.SlaFeature,
                             desired.SlaFeature))
+                    {
                         TryRemove(owner, choice.SlaFeature);
+                        RemoveOwnedAbility(owner, choice.SlaAbility);
+                        if (owner.Abilities.GetAbility(
+                                choice.SlaAbility) != null)
+                            throw new InvalidOperationException(
+                                "An inactive heritage SLA ability remained after provider reconciliation.");
+                    }
                 }
                 state.Remember(desired.SlaResource.AssetGuid,
                     owner.Resources.GetResourceAmount(desired.SlaResource));
                 return owner.HasFact(desired.Affinity) &&
-                    owner.HasFact(desired.SlaFeature);
+                    owner.HasFact(desired.SlaFeature) &&
+                    owner.Abilities.GetAbility(desired.SlaAbility) != null;
             }
             catch (Exception exception)
             {
@@ -197,6 +206,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 {
                     TryRemove(owner, choice.Affinity);
                     TryRemove(owner, choice.SlaFeature);
+                    RemoveOwnedAbility(owner, choice.SlaAbility);
                 }
             }
             catch (Exception exception)
@@ -271,6 +281,17 @@ namespace KingmakerGunslinger.ElementalRaces
             if (owner == null || feature == null) return;
             Fact fact = owner.GetFact(feature);
             if (fact != null) TryRemove(owner, fact);
+        }
+
+        private static void RemoveOwnedAbility(UnitDescriptor owner,
+            BlueprintAbility ability)
+        {
+            if (owner == null || ability == null || owner.Abilities == null)
+                return;
+            Fact[] facts = owner.Abilities.Enumerable.Where(value =>
+                    value != null && ReferenceEquals(value.Blueprint,
+                        ability)).Cast<Fact>().ToArray();
+            foreach (Fact fact in facts) TryRemove(owner, fact);
         }
 
         private static void TryRemove(UnitDescriptor owner, Fact fact)

@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "KMG_AUTOMATION_WORKING",
                     "Manual_299_KMG_AUTOMATION_WORKING.zks",
                     "Hedwirg", "dce769e0-229c-4bfd-b8ea-e2d572bf8472",
-                    "JamandisMansion", 11);
+                    "JamandisMansion", 27);
 
         internal static readonly WorkingSaveSmokeIdentity AffectedFocusedAim =
             new WorkingSaveSmokeIdentity(

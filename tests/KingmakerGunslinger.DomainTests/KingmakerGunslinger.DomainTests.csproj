@@ -50,6 +50,8 @@
     <Compile Include="ElementalRaceProductionTests.cs" />
     <Compile Include="ElementalHeritagePolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalHeritagePolicy.cs"><Link>ElementalRaces\ElementalHeritagePolicy.cs</Link></Compile>
+    <Compile Include="ElementalHeritagePersistenceMatrixPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalHeritagePersistenceMatrixPolicy.cs"><Link>ElementalRaces\ElementalHeritagePersistenceMatrixPolicy.cs</Link></Compile>
     <Compile Include="ElementalHeritageSlaPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalHeritageSlaPolicy.cs"><Link>ElementalRaces\ElementalHeritageSlaPolicy.cs</Link></Compile>
     <Compile Include="ElementalSpellAffinityPolicyTests.cs" />

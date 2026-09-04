@@ -3,8 +3,8 @@
 ## Current outcome
 
 **IN PROGRESS - FOUNDATION PASS; RELEASE A IMPLEMENTED WITH LIVE BLUEPRINT,
-SELECTION, PROVIDER, PARAMETER, AND ALTERNATE-SLA COMMAND PROOF; FULL RELEASE A
-QUALIFICATION AND RELEASES B/C REMAIN PENDING.**
+MECHANICS, ALTERNATE-SLA COMMAND, AND 24-FIXTURE ON/OFF/ON PERSISTENCE PROOF;
+LEGACY/STATE-TRANSITION/COMPATIBILITY GATES AND RELEASES B/C REMAIN PENDING.**
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
@@ -12,9 +12,10 @@ The mission began from clean authoritative `master` commit
 0.0.114 foundation audit and hardening is complete and independently
 qualified. Release A source, identities, versioning, focused tests, and live
 blueprint graph are implemented; selection/reconciliation, exact SLA
-parameters, resource lifecycle, and alternate SLA command delivery have live
-proof, while persistence, respec/migration, visuals, and compatibility remain
-open gates.
+parameters, resource lifecycle, alternate SLA command delivery, native respec,
+module-OFF hydration, and four-process persistence/cleanup have live proof.
+Exact 0.0.114 migration, death/resurrection, polymorph/return, and compatibility
+remain open Release A gates.
 Historical Elemental Races evidence is
 preserved as historical evidence only and does not qualify new release
 behavior.
@@ -24,7 +25,7 @@ behavior.
 | Release | Version | Scope | Status |
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
-| A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | IMPLEMENTED; QUALIFICATION IN PROGRESS |
+| A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | IMPLEMENTED; PERSISTENCE PASS; REMAINING QUALIFICATION IN PROGRESS |
 | B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | NOT STARTED |
 | C | 0.0.117-elemental-traits | replacement slots and required alternate traits | NOT STARTED |
 
@@ -133,14 +134,45 @@ installed Call of the Wild sticky-touch prefix. Runtime-result SHA-256 is
 companion SHA-256 is
 `e34d40ed88e27daf02340359e8c55f1aae971c11706aa7fc9b3570becffb4c7c`.
 
-The final post-runtime package contains 135 entries and is 23,038,804 bytes,
+The transactional persistence harness now covers 24 fixtures: all four parent
+races, both sexes, all three heritages, and every production body preset. The
+first full module-OFF load exposed an exact inactive-General SLA ability orphan
+on alternate characters. The owned reconciler now removes only that exact
+project ability through the native fact collection after its inactive provider
+fact, without touching resource amounts or foreign/native abilities. The live
+68-assertion mechanics scenario injects and removes this precise hydration
+state. A later restored-module run exposed a contradictory harness-only actor
+identity assertion; the pure policy now distinguishes disposable preparation
+(different ID) from save-backed native respec (distinct object, preserved
+stable ID).
+
+The final four fresh Steam processes passed 40/40 aggregate assertions:
+prepare `20260904T0844013659099Z-8682937a3298455b9eed12bbdc539a6e`,
+module OFF `20260904T0847415312813Z-0fa36465554a47a5a78d66e3d2c90acb`,
+module restored/respec/cleanup
+`20260904T0850532325846Z-a6e7f664417f4669b4a9ebd08e35f02a`, and
+fresh absence `20260904T0855068314112Z-8cfd708818ca4f53bca9487e977db573`.
+They prove 24 exact native creation/respec records, exact stats/providers and
+spent resources, module-OFF identity registration with selector rollback,
+level-up without refill, ordinary-rest refill and exact re-spend, 72 sidecars,
+144 retained PNGs/360 labelled views, module-ON same-race heritage transitions,
+exact cleanup, and zero leaked fixture identities in a fourth process. Each of
+the first three phases made exactly one guarded write to
+`KMG_AUTOMATION_WORKING`; the absence phase made none. Original settings were
+restored to SHA-256
+`a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+The complete per-run hashes and the two diagnostic failures are recorded in
+the state and journal. This qualifies new 0.0.115 persistence, but not yet the
+separate exact 0.0.114 migration or death/polymorph state transitions.
+
+The current clean package contains 135 entries and is 23,040,636 bytes,
 SHA-256
-`23014b77c1e43fa85773eee5d09299a65364d057dfa8355ab70504b6c8a9e20b`.
-Its 5,603,328-byte DLL has SHA-256
-`af9ae270441a898216301e9f612199b85b8d10ac7fc4bd1f2200f684feba5a16`
-and MVID `f2980361-84e5-4034-aca7-1e4a4e7a241d`. This remains an interim
-Release A qualification checkpoint, not a release PASS: real respec, 0.0.114
-migration, three-process persistence, visuals, and compatibility are pending.
+`43a77f8a51472867ab913586ad68ba5996a0345fa1041ea5ff0bd74f860a461a`.
+Its 5,623,808-byte DLL has SHA-256
+`b5c0b6ff706b842a5b934ffa1f3b4910983b0321a68b0a033a703459bcae44b3`
+and MVID `0fd178ac-9024-4717-9fdd-c84a4ad09775`. This remains an interim
+Release A qualification checkpoint, not a release PASS: exact 0.0.114 legacy
+migration, death/resurrection, polymorph/return, and compatibility are pending.
 
 ## Publication status
 

@@ -69,3 +69,15 @@ the mission's hard-stop contract; independent work continues.
 - Native Blur's party-member target checker uses `IsPlayerFaction`. The
   save-free Mistsoul fixture now uses the existing player faction without
   entering the party or touching a save, matching that native predicate.
+- Fresh module-OFF load exposed an inactive General SLA ability left in the
+  native ability collection after the alternate provider fact hydrated. The
+  owned reconciler now removes only the exact project ability through native
+  fact-collection routing after removing its inactive feature; it does not
+  touch resources or foreign/native abilities. A dedicated in-game orphan
+  injection regression and the 24-fixture module-OFF process both pass.
+- Native save-backed Respec replaces the unit object/descriptor while
+  intentionally retaining the actor's stable `UniqueId`. The persistence
+  harness previously combined the preparation-only different-ID expectation
+  with its stable-identity assertion. A pure phase-aware identity policy now
+  requires different IDs only for disposable preparation sources and the same
+  ID for persisted sources; both paths still require distinct native objects.

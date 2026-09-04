@@ -1,6 +1,7 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-# Two guarded fresh-process phases persist, verify, and clean up the fixtures.
-# Run elemental-race-persistence-verify-absent separately after this restores.
+# Three guarded fresh-process phases persist, verify module-OFF, restore the
+# module, respec, and clean up the fixtures. Run the fresh-load absence phase
+# separately after this restores the caller's original settings bytes.
 param(
     [string]$ExpectedVersion = '0.0.115',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
@@ -30,7 +31,7 @@ foreach ($path in @($DeploymentManifestPath, $PackagePath)) {
     }
 }
 if (-not $PSCmdlet.ShouldProcess($SaveName,
-        'run the authorized two-launch eight-fixture Elemental Races persistence sequence')) {
+        'run the authorized three-launch 24-fixture Elemental Races heritage persistence sequence')) {
     return
 }
 
@@ -111,9 +112,22 @@ try {
         -DeploymentManifestPath $DeploymentManifestPath `
         -PackagePath $PackagePath
     if ($LASTEXITCODE -ne 0) {
-        throw 'Elemental Races persistence verify/cleanup failed.'
+        throw 'Elemental Races module-disabled persistence verification failed.'
     }
-    Wait-ForGuardedKingmakerExit 'module-disabled-verify-cleanup'
+    Wait-ForGuardedKingmakerExit 'module-disabled-verify-preserve'
+
+    Set-ElementalRacesEnabled $true
+    & $invoke -Scenario 'elemental-race-module-restored-persistence' `
+        -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
+        -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
+        -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `
+        -ReuseInstalledArtifact `
+        -DeploymentManifestPath $DeploymentManifestPath `
+        -PackagePath $PackagePath
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Elemental Races module-restored Respec/cleanup failed.'
+    }
+    Wait-ForGuardedKingmakerExit 'module-restored-respec-cleanup'
 }
 catch { $failure = $_ }
 finally {
@@ -131,4 +145,4 @@ finally {
     }
 }
 if ($failure -ne $null) { throw $failure }
-Write-Host "Elemental Races two-launch persistence and cleanup PASS; run elemental-race-persistence-verify-absent next; package=$PackagePath; deployment=$DeploymentManifestPath"
+Write-Host "Elemental Races three-launch heritage persistence and cleanup PASS; run elemental-race-persistence-verify-absent next; package=$PackagePath; deployment=$DeploymentManifestPath"

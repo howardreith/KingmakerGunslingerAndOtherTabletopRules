@@ -242,6 +242,8 @@ namespace KingmakerGunslinger.DomainTests
                 "if (!owner.HasFact(desired.SlaFeature))",
                 "TryRemove(owner, choice.Affinity)",
                 "TryRemove(owner, choice.SlaFeature)",
+                "RemoveOwnedAbility(owner, choice.SlaAbility)",
+                "owner.Abilities.Enumerable.Where",
                 "ReferenceEquals(value.Race, race)",
                 "class ElementalHeritageSelectionController"
             })

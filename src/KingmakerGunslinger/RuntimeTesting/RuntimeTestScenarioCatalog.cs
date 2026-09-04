@@ -128,6 +128,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "elemental-race-persistence-prepare";
         internal const string ElementalRaceModuleDisabledPersistence =
             "elemental-race-module-disabled-persistence";
+        internal const string ElementalRaceModuleRestoredPersistence =
+            "elemental-race-module-restored-persistence";
         internal const string ElementalRacePersistenceVerifyAbsent =
             "elemental-race-persistence-verify-absent";
         internal const string DisposableElementalRaceMechanics =
@@ -471,6 +473,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalRaceMotion,
                 ElementalRacePersistencePrepare,
                 ElementalRaceModuleDisabledPersistence,
+                ElementalRaceModuleRestoredPersistence,
                 ElementalRacePersistenceVerifyAbsent,
                 DisposableElementalRaceMechanics,
                 DisposableElementalSpellAffinity,
@@ -645,6 +648,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal) ||
                 string.Equals(scenario,
                     ElementalRaceModuleDisabledPersistence,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    ElementalRaceModuleRestoredPersistence,
                     StringComparison.Ordinal) ||
                 string.Equals(scenario,
                     ElementalRacePersistenceVerifyAbsent,
