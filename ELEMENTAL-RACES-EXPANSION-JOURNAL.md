@@ -617,3 +617,22 @@ remains unresolved.
 - Runtime migration remains pending a clean checkpoint commit and immutable
   Build-Local deployment. No migration PASS is claimed from the harness or
   build alone.
+- The first transaction attempt, ID
+  `20260904T0959300044235Z-elemental-race-legacy-migration-transaction`,
+  failed before any game launch because the shared request preflight still
+  required the active source version 0.0.115. It created zero runtime phases;
+  no save was loaded or written. Transaction SHA-256 is
+  `5251867e5e80ef84bc0145f6726fe3aabb17a133eee212537137cb4c0b9faa11`.
+  The pinned historical deployment manifest SHA-256 is
+  `54392c8b118bf6715915829c9ca4659bdf9c8e83534246bf7b2764cbb4914e64`.
+  The `finally` path restored settings exactly to SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`
+  and reinstalled the current DLL; restored deployment-manifest SHA-256 is
+  `b91bfe0fb5f83e42625b1b0a99a75202fc197ef93d92b9ded9401c62212185dc`.
+- Repaired only that boundary: both preflight passes now accept 0.0.114 solely
+  when an explicit `PermitQualifiedElementalRaces114` authority accompanies
+  `elemental-race-persistence-prepare`; the same authority rejects every other
+  scenario/version combination, and 0.0.114 without it remains rejected.
+  Runtime preflight passes 202 checks, the historical and deployment suites
+  pass, repository validation passes, all 1,407 domain/reflection tests pass,
+  and the subsequent clean Release build and strict package validation pass.

@@ -43,7 +43,7 @@
     "activationOrder": "DEFECT-FIXED-RUNTIME-PASS",
     "visualRuntime": "PARTIAL-PASS (24 fixtures cover both sexes, all three presets, equipment reconstruction, and ON/OFF/ON fresh-process load; death/resurrection and polymorph/return pending)",
     "threeProcessPersistence": "PASS (24 fixtures; prepare, module-OFF load/level/rest/re-spend, module-ON respec/cleanup, and fourth-process absence)",
-    "legacyMigration": "HARNESS-IMPLEMENTED-STATIC-AND-BUILD-PASS; RUNTIME-PENDING",
+    "legacyMigration": "HARNESS-IMPLEMENTED; HISTORICAL-PREFLIGHT-REPAIRED; RUNTIME-PENDING",
     "compatibility": "PENDING"
   },
   "baselineGates": {
@@ -159,6 +159,16 @@
     "domainTests": "PASS (1407/1407)",
     "packageValidation": "PASS",
     "runtime": "PENDING-CLEAN-COMMIT-BUILD"
+  },
+  "releaseALegacyMigrationPreflight": {
+    "transactionId": "20260904T0959300044235Z-elemental-race-legacy-migration-transaction",
+    "status": "FAIL-BEFORE-GAME-LAUNCH-ACTIVE-VERSION-PREFLIGHT-DIAGNOSED",
+    "phaseCount": 0,
+    "transactionSha256": "5251867e5e80ef84bc0145f6726fe3aabb17a133eee212537137cb4c0b9faa11",
+    "saveLoadedOrWritten": false,
+    "settingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "currentArtifactRestored": true,
+    "repair": "Exact scenario/version-scoped PermitQualifiedElementalRaces114 preflight authority; positive and negative tests pass"
   },
   "foundationRuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.114-local-runtime.zip",

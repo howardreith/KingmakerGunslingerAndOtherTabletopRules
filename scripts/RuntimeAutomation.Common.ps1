@@ -1276,10 +1276,20 @@ function Assert-KmgRuntimeScenarioPreflight {
         [int]$FingerprintTimeoutSeconds = 0,
         [hashtable]$Parameters = @{},
         [switch]$EnforceManualInteraction,
-        [switch]$ManualInteractionRequired
+        [switch]$ManualInteractionRequired,
+        [switch]$PermitQualifiedElementalRaces114
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.115') {
+    $qualifiedElementalRaces114 =
+        $PermitQualifiedElementalRaces114 -and
+        $Scenario -ceq 'elemental-race-persistence-prepare' -and
+        $ExpectedVersion -ceq '0.0.114'
+    if ($PermitQualifiedElementalRaces114 -and
+        -not $qualifiedElementalRaces114) {
+        throw 'The qualified 0.0.114 preflight exception is limited to the Elemental Race legacy persistence producer.'
+    }
+    if ($ExpectedVersion -cne '0.0.115' -and
+        -not $qualifiedElementalRaces114) {
         throw 'ExpectedVersion must be exactly the active version 0.0.115.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
@@ -1417,7 +1427,8 @@ function New-KmgRuntimeRequest {
         [int]$FingerprintTimeoutSeconds = 0,
         [Parameter(Mandatory = $true)][bool]$ExitAfterCompletion,
         [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
-        [hashtable]$Parameters = @{}
+        [hashtable]$Parameters = @{},
+        [switch]$PermitQualifiedElementalRaces114
     )
     $metadata = Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
         -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
@@ -1431,7 +1442,8 @@ function New-KmgRuntimeRequest {
         -DescriptorResolutionTimeoutSeconds $DescriptorResolutionTimeoutSeconds `
         -LoadEntryTimeoutSeconds $LoadEntryTimeoutSeconds `
         -FingerprintTimeoutSeconds $FingerprintTimeoutSeconds `
-        -Parameters $Parameters
+        -Parameters $Parameters `
+        -PermitQualifiedElementalRaces114:$PermitQualifiedElementalRaces114
     $evidence = Assert-KmgRuntimeEvidenceDirectory -Path $EvidenceDirectory
     $runId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +
         [Guid]::NewGuid().ToString('N')

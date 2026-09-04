@@ -1503,6 +1503,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[]
             {
                 "[switch]$ReuseQualifiedElementalRaces114Release",
+                "-PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release",
                 "Current-source and qualified-legacy artifact reuse are mutually exclusive.",
                 "Qualified 0.0.114 reuse permits only elemental-race-persistence-prepare",
                 "Assert-KmgQualifiedElementalRaces114Deployment",
@@ -1522,6 +1523,15 @@ namespace KingmakerGunslinger.DomainTests
                 evidenceCollector.Contains(
                     "Current-source and qualified-legacy evidence package authorities are mutually exclusive."),
                 "Legacy evidence collection must independently revalidate the pinned deployment authority.");
+            Assertions.True(automation.Contains(
+                    "[switch]$PermitQualifiedElementalRaces114") &&
+                automation.Contains(
+                    "$Scenario -ceq 'elemental-race-persistence-prepare'") &&
+                automation.Contains(
+                    "$ExpectedVersion -ceq '0.0.114'") &&
+                automation.Contains(
+                    "The qualified 0.0.114 preflight exception is limited to the Elemental Race legacy persistence producer."),
+                "The old-version preflight exception must be explicit and scenario/version exact.");
         }
 
         internal static void FinalistRaceMatrixIsExactAndReversible()

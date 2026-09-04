@@ -784,6 +784,35 @@ Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
         -ExpectedVersion '30' -TimeoutSeconds 120
 } 'malformed-version-fails-pure-preflight'
+$legacyValid = @{
+    Scenario = 'elemental-race-persistence-prepare'
+    ExpectedVersion = '0.0.114'
+    TimeoutSeconds = 900
+    StartupTimeoutSeconds = 180
+    CatalogTimeoutSeconds = 180
+    SelectionTimeoutSeconds = 300
+    CompletionTimeoutSeconds = 180
+    MainMenuTimeoutSeconds = 180
+    ActionResolutionTimeoutSeconds = 180
+    ActionInvocationTimeoutSeconds = 30
+    DescriptorResolutionTimeoutSeconds = 30
+    LoadEntryTimeoutSeconds = 30
+    FingerprintTimeoutSeconds = 180
+    Parameters = @{ saveName = 'KMG_AUTOMATION_WORKING' }
+    PermitQualifiedElementalRaces114 = $true
+}
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @legacyValid)) `
+    'qualified-elemental-races-114-producer-version-permitted'
+$legacyWrongScenario = $legacyValid.Clone()
+$legacyWrongScenario.Scenario = 'elemental-race-persistence-verify-absent'
+Assert-Throws {
+    Assert-KmgRuntimeScenarioPreflight @legacyWrongScenario
+} 'qualified-elemental-races-114-other-scenario-rejected'
+$legacyWithoutAuthority = $legacyValid.Clone()
+$legacyWithoutAuthority.Remove('PermitQualifiedElementalRaces114')
+Assert-Throws {
+    Assert-KmgRuntimeScenarioPreflight @legacyWithoutAuthority
+} 'elemental-races-114-without-qualified-authority-rejected'
 
 $orchestrator = Get-Content -LiteralPath $orchestratorPath -Raw
 $preflightIndex = $orchestrator.IndexOf('Assert-KmgRuntimeScenarioPreflight')
