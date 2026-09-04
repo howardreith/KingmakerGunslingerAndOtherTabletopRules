@@ -43,7 +43,7 @@
     "activationOrder": "DEFECT-FIXED-RUNTIME-PASS",
     "visualRuntime": "PARTIAL-PASS (24 fixtures cover both sexes, all three presets, equipment reconstruction, and ON/OFF/ON fresh-process load; death/resurrection and polymorph/return pending)",
     "threeProcessPersistence": "PASS (24 fixtures; prepare, module-OFF load/level/rest/re-spend, module-ON respec/cleanup, and fourth-process absence)",
-    "legacyMigration": "PENDING (exact 0.0.114 save-backed migration gate)",
+    "legacyMigration": "HARNESS-IMPLEMENTED-STATIC-AND-BUILD-PASS; RUNTIME-PENDING",
     "compatibility": "PENDING"
   },
   "baselineGates": {
@@ -146,6 +146,19 @@
     "deploymentManifest": "20260904T0840326483079Z",
     "deploymentManifestSha256": "ebc7f6e6fefe2a8b5bc9ce1823585a5a04cb695b7b3c55d368b09a04e6a550f1",
     "sourceStateSha256": "0c2f8d30406ff39ab332ac63f1b886c761ab4b0d061d8ba650075b63d968bc83"
+  },
+  "releaseALegacyMigrationCandidateArtifact": {
+    "package": "KingmakerGunslinger-0.0.115-elemental-heritages.zip",
+    "packageSize": 23049189,
+    "packageEntries": 135,
+    "packageSha256": "98221bc9b8481104688907174ca48036972ec8a2005648d14d1fedf48b06c345",
+    "dllSize": 5644800,
+    "dllSha256": "546fb63bdfe097a9dd16060147274f24b7789005fa59f7739650ee8c80e1e3cb",
+    "dllMvid": "aabd0627-b8a1-4402-b289-a31029e80e72",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1407/1407)",
+    "packageValidation": "PASS",
+    "runtime": "PENDING-CLEAN-COMMIT-BUILD"
   },
   "foundationRuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.114-local-runtime.zip",

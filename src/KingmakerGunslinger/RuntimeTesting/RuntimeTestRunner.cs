@@ -1797,6 +1797,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .ElementalRaceModuleRestoredPersistence
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithElementalFixtures
+                    : _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceLegacyMigration
+                            ? WorkingSaveSmokeIdentity
+                                .AutomationWorkingWithLegacyElementalFixtures
                     : _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                             ? WorkingSaveSmokeIdentity.AffectedFocusedAim

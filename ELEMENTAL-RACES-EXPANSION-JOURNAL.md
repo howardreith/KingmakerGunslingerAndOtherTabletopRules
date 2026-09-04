@@ -569,3 +569,51 @@ remains unresolved.
   The ZIP remains untracked. Legacy 0.0.114 migration,
   death/resurrection/polymorph, and compatibility are still open; Release A is
   not yet declared PASS.
+
+## 2026-09-04 - Exact 0.0.114 migration producer and transaction harness
+
+- Added a dedicated historical deployer that accepts only the repository's
+  exact 0.0.114 release artifact and independently pins authoritative commit
+  `6874dc15a27ded132456dbdd480f47c794543a05`, the 135-entry ZIP SHA-256
+  `b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694`,
+  DLL SHA-256
+  `09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262`,
+  and MVID `dcd73856-39d4-40ce-9b05-77bf249103d7`. It validates archive paths,
+  extracted and installed file catalogs, backs up the exact live directory,
+  preserves feature-setting bytes, and emits a distinct qualified historical
+  deployment authority. Its `-WhatIf` execution validated the package and
+  left zero temporary directories and no deployment.
+- Added an isolated launcher reuse authority that permits this historical
+  deployment only for `elemental-race-persistence-prepare`, expected version
+  0.0.114, and exact save `KMG_AUTOMATION_WORKING`. Current-source reuse and
+  historical reuse are mutually exclusive, and evidence collection rechecks
+  the historical package, deployment, installed DLL, file catalog, MVID, and
+  settings hash rather than presenting the artifact as a current build.
+- Added a guarded transaction that enables Elemental Races, deploys 0.0.114,
+  creates and spends the eight legacy General race/sex fixtures, deploys the
+  current 0.0.115 build, verifies markerless-General hydration and an explicit
+  idempotent reconciliation without resource refill or stat drift, cleans and
+  saves the fixtures, verifies fresh-process absence, and finally restores the
+  original settings bytes and current artifact even after a phase failure.
+  The transaction hashes each runtime result and evidence manifest and never
+  names the protected baseline.
+- The current scenario uses the first eight stable fixture identities retained
+  from the original General-only ordering, requires the exact 11-member loaded
+  party, verifies no heritage marker or selection fact was retroactively
+  inserted, proves the legacy General affinity/SLA/resource/ability references
+  are unchanged, captures both sexes for all four parent races, and performs
+  exactly one cleanup save. A new pure policy test fixes the legacy count at
+  eight and rejects an invalid empty race catalog.
+- The read-only historical-artifact qualification test passes with all pinned
+  identities and four PowerShell scripts parsing cleanly. Runtime deployment
+  safety passes 28/28. Repository validation, the complete Release domain and
+  reflection suite (1,407/1,407), clean Release compilation/package creation,
+  and independent strict package validation pass. The untracked 135-entry,
+  23,049,189-byte candidate ZIP has SHA-256
+  `98221bc9b8481104688907174ca48036972ec8a2005648d14d1fedf48b06c345`;
+  its 5,644,800-byte DLL has SHA-256
+  `546fb63bdfe097a9dd16060147274f24b7789005fa59f7739650ee8c80e1e3cb`
+  and MVID `aabd0627-b8a1-4402-b289-a31029e80e72`.
+- Runtime migration remains pending a clean checkpoint commit and immutable
+  Build-Local deployment. No migration PASS is claimed from the harness or
+  build alone.

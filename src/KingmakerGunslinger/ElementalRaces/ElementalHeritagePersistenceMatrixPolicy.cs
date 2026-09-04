@@ -19,6 +19,13 @@ namespace KingmakerGunslinger.ElementalRaces
                 ElementalHeritagePolicy.ChoicesPerRace);
         }
 
+        internal static int LegacyGeneralFixtureCount(int raceCount)
+        {
+            if (raceCount < 1)
+                throw new ArgumentOutOfRangeException("raceCount");
+            return checked(raceCount * GenderCount);
+        }
+
         internal static int FixtureIndex(int raceIndex, int genderIndex,
             int heritageIndex, int raceCount)
         {

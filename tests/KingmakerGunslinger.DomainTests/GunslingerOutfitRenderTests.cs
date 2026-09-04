@@ -1105,6 +1105,14 @@ namespace KingmakerGunslinger.DomainTests
                 "Test-RuntimeScenarioPreflight.ps1");
             string sequence = Read("scripts",
                 "Invoke-ElementalRacePersistenceQualification.ps1");
+            string legacySequence = Read("scripts",
+                "Invoke-ElementalRaceLegacyMigrationQualification.ps1");
+            string legacyDeployment = Read("scripts",
+                "Deploy-QualifiedElementalRaces114.ps1");
+            string harness = Read("scripts",
+                "RuntimeHarness.Common.ps1");
+            string evidenceCollector = Read("scripts",
+                "Collect-Runtime-Evidence.ps1");
             string project = Read("src", "KingmakerGunslinger",
                 "KingmakerGunslinger.csproj");
             string[] scenarios =
@@ -1112,6 +1120,7 @@ namespace KingmakerGunslinger.DomainTests
                 "elemental-race-persistence-prepare",
                 "elemental-race-module-disabled-persistence",
                 "elemental-race-module-restored-persistence",
+                "elemental-race-legacy-migration",
                 "elemental-race-persistence-verify-absent"
             };
 
@@ -1121,6 +1130,7 @@ namespace KingmakerGunslinger.DomainTests
                     "ElementalRaceModuleDisabledPersistence") &&
                 catalog.Contains(
                     "ElementalRaceModuleRestoredPersistence") &&
+                catalog.Contains("ElementalRaceLegacyMigration") &&
                 catalog.Contains(
                     "ElementalRacePersistenceVerifyAbsent") &&
                 scenarios.All(catalog.Contains) &&
@@ -1142,6 +1152,12 @@ namespace KingmakerGunslinger.DomainTests
                 runner.Contains(
                     ".AutomationWorkingWithElementalFixtures"),
                 "Module-disabled and restored verification must require the exact 27-member marker-bearing heritage working-save identity.");
+            Assertions.True(Regex.IsMatch(workingSave,
+                    @"AutomationWorkingWithLegacyElementalFixtures\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 11\);",
+                    RegexOptions.Singleline) &&
+                runner.Contains(
+                    ".AutomationWorkingWithLegacyElementalFixtures"),
+                "Legacy migration must require the exact eleven-member 0.0.114 fixture working-save identity.");
             foreach (string scenario in scenarios)
             {
                 int metadataStart = automation.IndexOf("'" + scenario +
@@ -1162,7 +1178,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Elemental persistence phase must fail closed to the disposable working save: " +
                     scenario);
             }
-            int collectorStart = launcher.IndexOf(
+            int collectorStart = launcher.LastIndexOf(
                 "elemental-race-persistence-prepare",
                 StringComparison.Ordinal);
             Assertions.True(collectorStart >= 0 &&
@@ -1211,6 +1227,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalRacePersistencePrepare",
                 "ElementalRaceModuleDisabledPersistence",
                 "ElementalRaceModuleRestoredPersistence",
+                "ElementalRaceLegacyMigration",
                 "ElementalRacePersistenceVerifyAbsent",
                 "_context.FeatureModules.Active.ElementalRaces",
                 "BlueprintRoot.Instance",
@@ -1240,6 +1257,13 @@ namespace KingmakerGunslinger.DomainTests
                 "NativeSelectionRecordExact",
                 "stateNativeFromRaceSelection",
                 "HeritageProvidersExact",
+                "CaptureLegacyMigrationFixture",
+                "legacy-0.0.114-load-verify-cleanup",
+                "LegacyGeneralFixtureCount",
+                "markerlessGeneralExact",
+                "resourceBeforeReconcile",
+                "resourceAfterReconcile",
+                "CatalogFixtureIdentityCount",
                 "BlueprintRoot.Instance.CustomCompanion",
                 "SeedFixedElementalRespecRace(",
                 "owner.Progression.SetRace(fixture.Blueprints.Race)",
@@ -1285,7 +1309,7 @@ namespace KingmakerGunslinger.DomainTests
                 "SerializedElementalClassClothesAbsent",
                 "HasExactHumanoidRig(", "materialsExact",
                 "CaptureContactSheet(", "CaptureIsometric(",
-                "ElementalPersistenceFixtureCount * 5",
+                "expectedFixtureCount * 5",
                 "PartyCharacters", "CrossSceneState.AllEntityData",
                 "ArmExactWorkingSaveWrite", "RemoveEntityData",
                 "ObserveNativeSaveGate", "IsSaveAllowed",
@@ -1299,6 +1323,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpectedWorkingSaveRoutineCount",
                 "elemental-race-persistence-module-off",
                 "elemental-race-persistence-module-restored",
+                "elemental-race-legacy-migration-state",
+                "elemental-race-legacy-migration-cleanup",
                 "elemental-race-persistence-respec-transition-matrix",
                 "elemental-race-persistence-rest-and-level-up",
                 "elemental-race-persistence-absence",
@@ -1390,6 +1416,112 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(sequence.Contains(
                     "run elemental-race-persistence-verify-absent next"),
                 "The three-launch transaction must explicitly hand off the restored-settings fresh-load phase.");
+
+            foreach (string token in new[]
+            {
+                "6874dc15a27ded132456dbdd480f47c794543a05",
+                "b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694",
+                "09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262",
+                "dcd73856-39d4-40ce-9b05-77bf249103d7",
+                "$expectedEntryCount = 135",
+                "qualified-elemental-races-0.0.114-release",
+                "release-manifest.json",
+                "Backup-Live-Mod.ps1",
+                "ReadAllBytes($settings)",
+                "WriteAllBytes($settingsTemporary, $settingsBytes)",
+                "$deploymentWhatIfRequested = [bool]$WhatIfPreference",
+                "$WhatIfPreference = $false",
+                "finally {",
+                "Remove-Item -LiteralPath $temporary -Recurse -Force"
+            })
+                Assertions.True(legacyDeployment.Contains(token),
+                    "Pinned 0.0.114 deployment lacks exact provenance or cleanup token: " +
+                    token);
+            int legacyValidation = legacyDeployment.IndexOf(
+                "Assert-KmgNotRunning", StringComparison.Ordinal);
+            int legacyShouldProcess = legacyDeployment.IndexOf(
+                "$PSCmdlet.ShouldProcess", StringComparison.Ordinal);
+            int legacyBackup = legacyDeployment.IndexOf(
+                "Backup-Live-Mod.ps1", StringComparison.Ordinal);
+            Assertions.True(legacyValidation >= 0 &&
+                    legacyShouldProcess > legacyValidation &&
+                    legacyBackup > legacyShouldProcess,
+                "Pinned legacy deployment must validate before authorization and back up only afterward.");
+
+            foreach (string token in new[]
+            {
+                "[ValidateSet('KMG_AUTOMATION_WORKING')]",
+                "Assert-KmgReusableDeployment",
+                "Deploy-QualifiedElementalRaces114.ps1",
+                "ReuseQualifiedElementalRaces114Release = $true",
+                "'elemental-race-legacy-migration'",
+                "'elemental-race-persistence-verify-absent'",
+                "ReadAllBytes($settings)",
+                "Restore-OriginalFeatureState",
+                "protectedBaselineExcluded = $true",
+                "resultSha256 = Get-KmgSha256",
+                "evidenceManifestSha256 = Get-KmgSha256",
+                "restoredDeploymentManifestPath",
+                "Feature-module settings existence or bytes were not restored exactly."
+            })
+                Assertions.True(legacySequence.Contains(token),
+                    "Legacy migration transaction lacks exact guard, evidence, or restoration token: " +
+                    token);
+            Assertions.False(legacySequence.Contains(
+                    "KMG_AUTOMATION_BASELINE"),
+                "The protected baseline must never be named by the legacy migration transaction.");
+            int deployOld = legacySequence.IndexOf(
+                "$legacyDeploymentManifestPath = & $deployLegacy",
+                StringComparison.Ordinal);
+            int prepareOld = legacySequence.IndexOf(
+                "-Scenario 'elemental-race-persistence-prepare'",
+                deployOld, StringComparison.Ordinal);
+            int deployNew = legacySequence.IndexOf(
+                "$migrationDeploymentManifestPath = & $deployCurrent",
+                prepareOld, StringComparison.Ordinal);
+            int migrate = legacySequence.IndexOf(
+                "-Scenario 'elemental-race-legacy-migration'",
+                deployNew, StringComparison.Ordinal);
+            int absent = legacySequence.IndexOf(
+                "-Scenario 'elemental-race-persistence-verify-absent'",
+                migrate, StringComparison.Ordinal);
+            int migrationFinally = legacySequence.IndexOf(
+                "finally {", absent, StringComparison.Ordinal);
+            int restoreSettings = legacySequence.IndexOf(
+                "Restore-OriginalFeatureState", migrationFinally,
+                StringComparison.Ordinal);
+            int restoreCurrent = legacySequence.IndexOf(
+                "$restoredDeploymentManifestPath = & $deployCurrent",
+                restoreSettings, StringComparison.Ordinal);
+            Assertions.True(deployOld >= 0 && prepareOld > deployOld &&
+                    deployNew > prepareOld && migrate > deployNew &&
+                    absent > migrate && migrationFinally > absent &&
+                    restoreSettings > migrationFinally &&
+                    restoreCurrent > restoreSettings,
+                "Legacy qualification must run old producer, current migration, absence, then finally restore settings and current artifact.");
+
+            foreach (string token in new[]
+            {
+                "[switch]$ReuseQualifiedElementalRaces114Release",
+                "Current-source and qualified-legacy artifact reuse are mutually exclusive.",
+                "Qualified 0.0.114 reuse permits only elemental-race-persistence-prepare",
+                "Assert-KmgQualifiedElementalRaces114Deployment",
+                "-QualifiedElementalRaces114DeploymentManifestPath"
+            })
+                Assertions.True(launcher.Contains(token),
+                    "The central guarded launcher lacks pinned legacy reuse isolation: " +
+                    token);
+            Assertions.True(harness.Contains(
+                    "function Assert-KmgQualifiedElementalRaces114Deployment") &&
+                harness.Contains(
+                    "qualified-elemental-races-0.0.114-release") &&
+                harness.Contains(
+                    "Installed 0.0.114 version, DLL identity, or file catalog differs") &&
+                evidenceCollector.Contains(
+                    "[string]$QualifiedElementalRaces114DeploymentManifestPath") &&
+                evidenceCollector.Contains(
+                    "Current-source and qualified-legacy evidence package authorities are mutually exclusive."),
+                "Legacy evidence collection must independently revalidate the pinned deployment authority.");
         }
 
         internal static void FinalistRaceMatrixIsExactAndReversible()
