@@ -838,3 +838,40 @@ and the first focused mechanical group from the now-qualified native contracts.
   caster, not directly controllable, for rounds based on caster level. Triton
   Portal can reuse this native action model with a project-owned 1d3 count and
   no dependency on the expanded-summoning publication toggle.
+
+## 2026-09-04 - Release B authoritative rules and pure policy checkpoint
+
+- Re-read the exact Archives of Nethys entries for Elemental Strike,
+  Scorching Weapons, Inner Flame, Blazing Aura, Firesight, Airy Step, Wings of
+  Air, Cloud Gazer, Inner Breath, Hydraulic Maneuver, and Triton Portal. The
+  catalog records the four Combat feats, exact 7/9/11/13 level gates, feat
+  chains, active-Hydraulic-Push prerequisites, action economy, and durations.
+- Added a dependency-free Release B behavior policy. Focused executable tests
+  cover every Elemental Strike breakpoint and parent-race energy, exact race
+  rejection, spell/nonweapon exclusion, event deduplication, two-item held
+  weapon snapshots, Scorching Weapons nonstacking and Inner Flame replacement,
+  overlapping save predicates exactly once, Wings armor gating, exact vision
+  domains, respiration-only immunity, friendly Blazing Aura turn starts,
+  native Hydraulic Maneuver choices/formula, and Triton Portal 1d3/duration.
+- Kingmaker exposes genuine `DirtyTrickBlind` but no dazzle maneuver. The pure
+  maneuver roster therefore contains Bull Rush, Disarm, Trip, and Dirty Trick
+  (blind); dazzle remains the recorded engine omission. Triton Portal remains
+  exactly 1d3 Small Water Elementals for one round per total character level.
+- Read-only reflection of local 2.1.7b assemblies confirms
+  `BlueprintItemWeapon` and `BlueprintWeaponType` have no weapon-composition
+  field. The upcoming runtime boundary must use an immutable audited category
+  or exact-type catalog and must qualify representative metal/nonmetal items.
+- Repository validation and the complete Release suite passed 1,408/1,408
+  cases. The five new focused policy methods execute from the existing
+  `elemental-feats.native-audit` case, preserving the frozen 0.0.115 test-count
+  record instead of rewriting older release evidence. A direct intermediate
+  run with five temporary runner rows also passed 1,413/1,413 before the rows
+  were consolidated; that intermediate count is diagnostic, not a release
+  gate.
+- The subsequent clean Release build and strict standalone package validation
+  passed. The mechanically inert 0.0.115 checkpoint package contains 135
+  entries and is 23,053,358 bytes, SHA-256
+  `b1f9f3fac02be684242ca190b10991d25eb82b9cee76e98dd71c450dcb6e9fc5`.
+  Its 5,667,328-byte DLL hashes to
+  `dd0b1c830d2b87bf6e1e46aa05abddd747d68f01654d806f066531a9752f7366`
+  with MVID `5a89d25c-4106-40eb-bd80-328485463a9b`. No deployment occurred.

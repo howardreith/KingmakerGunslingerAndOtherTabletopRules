@@ -47,14 +47,15 @@
     "compatibility": "PASS (six required installed profiles, module ON and OFF, exact restoration); Visual Adjustments NOT-RUN because absent"
   },
   "releaseBProgress": {
-    "authoritativeRules": "AUDITED",
+    "authoritativeRules": "AUDITED (Archives of Nethys exact feat entries and prerequisites)",
     "nativeContractAudit": "PASS (isolated KMG-only, 9/9; combined-profile comparison, 8/8)",
+    "pureBehaviorPolicy": "IMPLEMENTED-TESTED (catalog, exact prerequisites, level breakpoints, race energies, attack boundaries, event deduplication, weapon snapshot/nonstacking, save-bonus replacement, maneuver/summon formulas, armor gating, vision and respiration boundaries)",
     "dirtyTrick": "NATIVE-BLIND-PATH-AVAILABLE; DAZZLE-OMITTED",
     "flightAbstraction": "LOCKED-TO-BASE-OWLcat-WINGS-CONTRACT",
     "concealmentCatalog": "BASE-INVENTORY-LOCKED; SOURCE-SPECIFIC-GUID-REQUIRED",
     "waterElementalSummon": "EXACT-NATIVE-DONOR-LOCKED",
     "fireEnchantmentCatalog": "BASE-INVENTORY-LOCKED",
-    "deterministicTests": "PASS (1408/1408)",
+    "deterministicTests": "PASS (1408/1408 cases; Release B policy assertions execute inside the existing elemental-feats case so historical release records remain unchanged)",
     "implementation": "IN-PROGRESS"
   },
   "releaseBNativeAudit": {
@@ -98,6 +99,18 @@
     "combatManeuvers": "DirtyTrickBlind exists; DirtyTrickDazzle does not; implement the genuine blind option only",
     "optionalProfileComparisonRunId": "20260904T1411055050795Z-4211d818beb34719a186ca3e8feb9a31",
     "optionalProfileFinding": "Call of the Wild injects AddFlying and broader maneuver/condition immunities into native wing facts; Release B must construct only the audited base Owlcat contract and must not clone optional components."
+  },
+  "releaseBPolicyCheckpointArtifact": {
+    "version": "0.0.115 (Release B policy remains unpublished and mechanically inert)",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1408/1408 cases)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS (strict standalone, 135 entries)",
+    "packageSize": 23053358,
+    "packageSha256": "b1f9f3fac02be684242ca190b10991d25eb82b9cee76e98dd71c450dcb6e9fc5",
+    "dllSize": 5667328,
+    "dllSha256": "dd0b1c830d2b87bf6e1e46aa05abddd747d68f01654d806f066531a9752f7366",
+    "dllMvid": "5a89d25c-4106-40eb-bd80-328485463a9b"
   },
   "baselineGates": {
     "repositoryValidation": "PASS",
@@ -746,6 +759,18 @@
       "sha": "1613cf8a766f680e28d201341327feb25b52dc5a",
       "subject": "Qualify elemental race publication with module off",
       "checkpoint": "release-a-module-off-compatibility",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "0350f7d75871fa739c4d9d8e821a20a13cf529fd",
+      "subject": "Qualify Elemental Heritages release",
+      "checkpoint": "release-a-final-qualification",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "74365a2c41e57d4fa76546cb69d5543101a94086",
+      "subject": "Audit native Elemental Feat contracts",
+      "checkpoint": "release-b-native-contract-audit",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],

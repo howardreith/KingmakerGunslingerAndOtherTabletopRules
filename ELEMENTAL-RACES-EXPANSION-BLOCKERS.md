@@ -31,6 +31,10 @@ None established.
   Release B must not clone those optional components.
 - Visual Adjustments was absent during Release A qualification and is recorded
   as NOT-RUN. Its absence is not a Release A blocker under repository policy.
+- Local reflection confirms neither `BlueprintItemWeapon` nor
+  `BlueprintWeaponType` exposes weapon-composition metadata. Scorching Weapons
+  therefore requires a documented, immutable category/type classification;
+  that classification and its live representative-weapon tests remain open.
 
 These are investigation items, not hard stops. Features fail closed only under
 the mission's hard-stop contract; independent work continues.
