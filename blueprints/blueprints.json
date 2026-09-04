@@ -12896,6 +12896,218 @@
     {
       "symbol": "KMG.ElementalRaces.Undine.Visual.Head.Female.02", "guid": "e2bd207dbf6b4f15b84ff7d4f6c7efc7",
       "plannedType": "EquipmentEntity", "status": "active", "milestone": "Elemental Races visuals", "notes": "Project-owned Undine female head recolor proxy over compatible native Kingmaker geometry."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.HeritageSelection", "guid": "e115e1e0a17a4aceb001000000000001",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Ifrit heritage selection; exactly General, Lavasoul, or Sunsoul."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.HeritageSelection", "guid": "e115e1e0a17a4aceb001000000000002",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Oread heritage selection; exactly General, Gemsoul, or Ironsoul."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.HeritageSelection", "guid": "e115e1e0a17a4aceb001000000000003",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Sylph heritage selection; exactly General, Smokesoul, or Stormsoul."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.HeritageSelection", "guid": "e115e1e0a17a4aceb001000000000004",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Undine heritage selection; exactly General, Mistsoul, or Rimesoul."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Heritage.General", "guid": "e115e1e0a17a4aceb001000000000005",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Explicit General Ifrit marker; legacy marker absence has identical semantics."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Heritage.Lavasoul", "guid": "e115e1e0a17a4aceb001000000000006",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Lavasoul heritage marker and net racial-stat overlay."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Heritage.Sunsoul", "guid": "e115e1e0a17a4aceb001000000000007",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Sunsoul heritage marker and net racial-stat overlay."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Heritage.General", "guid": "e115e1e0a17a4aceb001000000000008",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Explicit General Oread marker; legacy marker absence has identical semantics."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Heritage.Gemsoul", "guid": "e115e1e0a17a4aceb001000000000009",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Gemsoul heritage marker and net racial-stat overlay."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Heritage.Ironsoul", "guid": "e115e1e0a17a4aceb001000000000010",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Ironsoul heritage marker and net racial-stat overlay."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Heritage.General", "guid": "e115e1e0a17a4aceb001000000000011",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Explicit General Sylph marker; legacy marker absence has identical semantics."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Heritage.Smokesoul", "guid": "e115e1e0a17a4aceb001000000000012",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Smokesoul heritage marker and net racial-stat overlay."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Heritage.Stormsoul", "guid": "e115e1e0a17a4aceb001000000000013",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Stormsoul heritage marker and net racial-stat overlay."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Heritage.General", "guid": "e115e1e0a17a4aceb001000000000014",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Explicit General Undine marker; legacy marker absence has identical semantics."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Heritage.Mistsoul", "guid": "e115e1e0a17a4aceb001000000000015",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Mistsoul heritage marker and net racial-stat overlay."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Heritage.Rimesoul", "guid": "e115e1e0a17a4aceb001000000000016",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Rimesoul heritage marker and net racial-stat overlay."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Lavasoul.MagmaAffinity", "guid": "e115e1e0a17a4aceb001000000000017",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Lavasoul Fire-spell affinity provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Sunsoul.SolarAffinity", "guid": "e115e1e0a17a4aceb001000000000018",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Sunsoul Fire-spell affinity provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Gemsoul.CrystalAffinity", "guid": "e115e1e0a17a4aceb001000000000019",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Gemsoul Acid-spell affinity provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Ironsoul.MetalAffinity", "guid": "e115e1e0a17a4aceb001000000000020",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Ironsoul Acid-spell affinity provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Smokesoul.SmokeAffinity", "guid": "e115e1e0a17a4aceb001000000000021",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Smokesoul Electricity-spell affinity provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Stormsoul.LightningAffinity", "guid": "e115e1e0a17a4aceb001000000000022",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Stormsoul Electricity-spell affinity provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Mistsoul.MistAffinity", "guid": "e115e1e0a17a4aceb001000000000023",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Mistsoul Cold-spell affinity provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Rimesoul.IceAffinity", "guid": "e115e1e0a17a4aceb001000000000024",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Rimesoul Cold-spell affinity provider."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Lavasoul.FirebellyFeature", "guid": "e115e1e0a17a4aceb001000000000025",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Lavasoul racial SLA feature."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Lavasoul.FirebellyResource", "guid": "e115e1e0a17a4aceb001000000000026",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Independent persisted one-per-rest Lavasoul SLA resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Lavasoul.FirebellyAbility", "guid": "e115e1e0a17a4aceb001000000000027",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Lavasoul Firebelly spell-like ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Sunsoul.FlareBurstFeature", "guid": "e115e1e0a17a4aceb001000000000028",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Sunsoul racial SLA feature."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Sunsoul.FlareBurstResource", "guid": "e115e1e0a17a4aceb001000000000029",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Independent persisted one-per-rest Sunsoul SLA resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Ifrit.Sunsoul.FlareBurstAbility", "guid": "e115e1e0a17a4aceb001000000000030",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Sunsoul Flare Burst spell-like ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Gemsoul.ColorSprayFeature", "guid": "e115e1e0a17a4aceb001000000000031",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Gemsoul racial SLA feature."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Gemsoul.ColorSprayResource", "guid": "e115e1e0a17a4aceb001000000000032",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Independent persisted one-per-rest Gemsoul SLA resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Gemsoul.ColorSprayAbility", "guid": "e115e1e0a17a4aceb001000000000033",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Gemsoul Color Spray spell-like ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponFeature", "guid": "e115e1e0a17a4aceb001000000000034",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Ironsoul racial SLA feature."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponResource", "guid": "e115e1e0a17a4aceb001000000000035",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Independent persisted one-per-rest Ironsoul SLA resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponAbility", "guid": "e115e1e0a17a4aceb001000000000036",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Ironsoul Unerring Weapon parent spell-like ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Smokesoul.ExpeditiousRetreatFeature", "guid": "e115e1e0a17a4aceb001000000000037",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Smokesoul racial SLA feature."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Smokesoul.ExpeditiousRetreatResource", "guid": "e115e1e0a17a4aceb001000000000038",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Independent persisted one-per-rest Smokesoul SLA resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Smokesoul.ExpeditiousRetreatAbility", "guid": "e115e1e0a17a4aceb001000000000039",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Smokesoul Expeditious Retreat spell-like ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspFeature", "guid": "e115e1e0a17a4aceb001000000000040",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Stormsoul racial SLA feature."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspResource", "guid": "e115e1e0a17a4aceb001000000000041",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Independent persisted one-per-rest Stormsoul SLA resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspAbility", "guid": "e115e1e0a17a4aceb001000000000042",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Stormsoul Shocking Grasp spell-like ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Mistsoul.BlurFeature", "guid": "e115e1e0a17a4aceb001000000000043",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Mistsoul racial SLA feature."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Mistsoul.BlurResource", "guid": "e115e1e0a17a4aceb001000000000044",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Independent persisted one-per-rest Mistsoul SLA resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Mistsoul.BlurAbility", "guid": "e115e1e0a17a4aceb001000000000045",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Mistsoul Blur spell-like ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Rimesoul.ChillTouchFeature", "guid": "e115e1e0a17a4aceb001000000000046",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Rimesoul racial SLA feature."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Rimesoul.ChillTouchResource", "guid": "e115e1e0a17a4aceb001000000000047",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Independent persisted one-per-rest Rimesoul SLA resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Rimesoul.ChillTouchAbility", "guid": "e115e1e0a17a4aceb001000000000048",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Rimesoul Chill Touch root spell-like ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponPrimaryAbility", "guid": "e115e1e0a17a4aceb001000000000049",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Unerring Weapon primary-hand variant."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponSecondaryAbility", "guid": "e115e1e0a17a4aceb001000000000050",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Unerring Weapon secondary-hand variant."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponEnchantment", "guid": "e115e1e0a17a4aceb001000000000051",
+      "plannedType": "BlueprintWeaponEnchantment", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Persistent item-scoped Unerring Weapon critical-confirmation enchantment."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Undine.Rimesoul.ChillTouchDeliveryAbility", "guid": "e115e1e0a17a4aceb001000000000052",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Rimesoul Chill Touch held-touch delivery ability."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspDeliveryAbility", "guid": "e115e1e0a17a4aceb001000000000053",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Heritages 0.0.115", "notes": "Stormsoul Shocking Grasp held-touch delivery ability; project-owned so parent linkage and racial SLA parameters remain exact."
     }
   ]
 }

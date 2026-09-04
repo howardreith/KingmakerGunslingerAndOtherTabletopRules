@@ -2,21 +2,25 @@
 
 ## Current outcome
 
-**IN PROGRESS - FOUNDATION PASS; RELEASES A, B, AND C REMAIN PENDING.**
+**IN PROGRESS - FOUNDATION PASS; RELEASE A IMPLEMENTED WITH LIVE BLUEPRINT
+PROOF; FULL RELEASE A QUALIFICATION AND RELEASES B/C REMAIN PENDING.**
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
 `codex/elemental-races-expansion`. The first work phase is the required
 0.0.114 foundation audit and hardening is complete and independently
-qualified. Historical Elemental Races evidence is preserved as historical
-evidence only and does not qualify new release behavior.
+qualified. Release A source, identities, versioning, focused tests, and live
+blueprint graph are implemented; mechanics, persistence, visuals, and
+compatibility remain open gates. Historical Elemental Races evidence is
+preserved as historical evidence only and does not qualify new release
+behavior.
 
 ## Planned release inventory
 
 | Release | Version | Scope | Status |
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
-| A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | NOT STARTED |
+| A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | IMPLEMENTED; QUALIFICATION IN PROGRESS |
 | B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | NOT STARTED |
 | C | 0.0.117-elemental-traits | replacement slots and required alternate traits | NOT STARTED |
 
@@ -48,8 +52,8 @@ The 5,411,328-byte DLL has SHA-256
 `09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262`
 and MVID `dcd73856-39d4-40ce-9b05-77bf249103d7`.
 
-Foundation behavior/runtime qualification is complete. Every 0.0.115, 0.0.116,
-and 0.0.117 release gate remains incomplete. Foundation spell affinity, exact
+Foundation behavior/runtime qualification is complete. The complete 0.0.115,
+0.0.116, and 0.0.117 release gates remain incomplete. Foundation spell affinity, exact
 SLA calculation and command behavior, native movement layering, Hydraulic
 Push, visual ownership, blueprint publication, and the three-process
 module-OFF persistence transaction have passing guarded evidence. The
@@ -78,7 +82,32 @@ and MVID is `112ead36-b1ed-4f1d-9b06-73376d3bd541`. Exact guarded run IDs,
 runtime artifact hashes, settings restoration hashes, persistence results, and
 the bounded diagnostic failures are maintained in the state and journal.
 
+Release A adds four obligatory three-choice selections and 53 stable manifest
+identities without changing the four parent race or legacy provider GUIDs.
+All 12 heritage definitions, exact stat overlays, affinity presentations, and
+SLA graphs are implemented. The installed donor audit selected native
+Firebelly, Flare Burst, Color Spray, Expeditious Retreat, Shocking Grasp, and
+Blur; project-owned bounded implementations cover absent Unerring Weapon and
+Chill Touch. The complete suite passes 1,405/1,405, and clean Release/package
+validation passes.
+
+Guarded Steam run
+`20260904T0106348081056Z-7258c85fa8e14ca498201baac7f51ef4`
+passed 19/19 live blueprint assertions against DLL SHA-256
+`d04710ae349308a51fb7ce814420537b31eb524b7d0b1361212a98911584d5b3`
+and MVID `45a12bec-2f12-49af-93cb-a0849d3d48aa`. It proved exact top-level
+race counts, selection shape/order, General reference reuse, alternate
+SpellLike provider separation, complete presentation, and 53/53 exact live
+registrations without touching a save. Runtime-result SHA-256 is
+`1acc4b3a2078a45086118330797ce67f463e281f1d3e3545a48cb2383fe53d6d`.
+This is implementation proof, not a Release A PASS; the required mechanics,
+respec/migration, visual, persistence, and compatibility gates remain pending.
+
 ## Publication status
 
-No pull request has been created. Nothing has been merged, tagged, or publicly
-released, and no generated release package is tracked.
+Foundation checkpoint
+`9c0b7d7bdfe39dd54947c7a37d601cd91db98027` exists locally. The exact mandated
+push wrapper refused it because `codex/elemental-races-expansion` is absent
+from its external branch allowlist; no bypass was attempted. No pull request
+has been created. Nothing has been merged, tagged, or publicly released, and
+no generated release package is tracked.

@@ -2,7 +2,7 @@
 # Two guarded fresh-process phases persist, verify, and clean up the fixtures.
 # Run elemental-race-persistence-verify-absent separately after this restores.
 param(
-    [string]$ExpectedVersion = '0.0.114',
+    [string]$ExpectedVersion = '0.0.115',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
     [string]$SaveName = 'KMG_AUTOMATION_WORKING',
     [ValidateRange(120, 1800)][int]$TimeoutSeconds = 900,

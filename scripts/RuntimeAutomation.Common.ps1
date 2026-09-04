@@ -26,6 +26,18 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-elemental-heritage-donors' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-elemental-heritage-blueprints' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'elemental-race-visual-audit' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1243,8 +1255,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         [switch]$ManualInteractionRequired
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.114') {
-        throw 'ExpectedVersion must be exactly the active version 0.0.114.'
+    if ($ExpectedVersion -cne '0.0.115') {
+        throw 'ExpectedVersion must be exactly the active version 0.0.115.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'

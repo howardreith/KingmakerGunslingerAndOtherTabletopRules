@@ -208,8 +208,97 @@
   and `fd8420daa53de98aeb7b81538ab4eff4ae8a0eaeadc54342ee53581913de0195`.
 - Foundation hardening is PASS. This does not qualify Release A, B, or C.
 
+## 2026-09-03 - Foundation checkpoint and push refusal
+
+- Created local foundation checkpoint
+  `9c0b7d7bdfe39dd54947c7a37d601cd91db98027` (`Harden Elemental Races
+  foundation mechanics`) on `codex/elemental-races-expansion`.
+- Immediately ran the exact mandated
+  `Push-KingmakerGunslinger.ps1` command. The external wrapper refused before
+  contacting the remote because `codex/elemental-races-expansion` is absent
+  from its branch allowlist; it currently allows the historical
+  `codex/elemental-races` branch but not this mission's required branch.
+- The user-required branch was retained. No policy file, branch, remote, or
+  history was changed to bypass the refusal. This is a publication-process
+  blocker, not a mechanic blocker, so independent Release A work continues.
+
+## 2026-09-03 - Release A implementation
+
+- Promoted the candidate to assembly/package version `0.0.115` and
+  informational version `0.0.115-elemental-heritages` without changing the
+  feature-module schema or adding a second module toggle.
+- Added four obligatory heritage selections beneath the exact existing Ifrit,
+  Oread, Sylph, and Undine race blueprints. Each selection has exactly three
+  ordered choices. General markers reuse the 0.0.114 affinity, SLA feature,
+  resource, and ability objects by reference; a legacy character with no
+  marker continues to resolve as General.
+- Added a deterministic overlay reconciler. Alternate markers carry only net
+  racial stat deltas and swap project-owned affinity/SLA providers
+  add-before-remove. Resource amounts are captured and restored when an
+  unchanged resource remains desired, preventing reconciliation from
+  refilling a spent use.
+- Registered 53 new stable save-bearing identities in exact manifest range
+  `e115e1e0a17a4aceb001000000000001` through
+  `e115e1e0a17a4aceb001000000000053`. Current manifest counts are 1,759 total,
+  1,757 active, two reserved; Elemental Races owns 122 total, 121 active, one
+  reserved.
+- Native donor audit run
+  `20260903T2234504536010Z-48c8648287f54fe99369bfdfe3b30132`
+  established exact installed Kingmaker donors for Firebelly, Flare Burst,
+  Color Spray, Expeditious Retreat, Shocking Grasp, and Blur. Unerring Weapon
+  and Chill Touch were absent. The first is a project-owned exact held-weapon
+  confirmation-roll effect; the second is a project-owned multi-touch
+  implementation using narrow touch-controller hooks. No donor blueprint,
+  array, asset, or spell list is mutated.
+- Added six focused policy/architecture cases. Repository validation and the
+  complete Release suite pass 1,405/1,405; clean Release compilation,
+  packaging, and strict package validation pass.
+
+## 2026-09-03 - Release A live blueprint correction and proof
+
+- First probe orchestration
+  `20260904T0040206589395Z-56c3ac31e8344139a197f91a8ff273cb`
+  was rejected as `scenario-not-allowed` before any hook, UI action, or save
+  action. Result SHA-256:
+  `13cf8b5fff9ffc78526df44adb134c7608626edd19bd64b02cb2f395879d4f7c`.
+  The missing central catalog membership was fixed and covered by a focused
+  wiring regression.
+- The accepted retry
+  `20260904T0049431335777Z-ab0db286997b479fb71a978c9aa27538`
+  timed out after blueprint initialization failed closed and rolled back 18
+  owned registrations. Structured log evidence identified a null Aasimar race
+  icon passed as the Hydraulic Push fallback. Result SHA-256:
+  `f4cc43face4b8ee97763994da885758081442c4e0330d176377c7facc239c744`.
+- The narrow repair resolves the exact native Feather Step spell as a
+  non-null presentation donor only when the parent-race icon is null and now
+  validates every cloned racial SLA icon. No native asset is modified.
+- Run `20260904T0101034386491Z-99a7d238acb8426b873fe3969887e4f0`
+  passed all 19 live assertions, but its companion DTO inherited Kingmaker's
+  global reference serializer and collapsed to an empty reference object. The
+  mechanical PASS was retained as diagnostic evidence but superseded.
+- Final run `20260904T0106348081056Z-7258c85fa8e14ca498201baac7f51ef4`
+  passed 19/19 with a complete isolated 7,300-byte companion record. It proved
+  four exact parent races once each at top level, four obligatory selections,
+  12 complete choices, exact legacy provider reuse, independent alternate
+  SpellLike graphs, 53/53 unique exact-reference registrations, and no save
+  access. Runtime-result SHA-256:
+  `1acc4b3a2078a45086118330797ce67f463e281f1d3e3545a48cb2383fe53d6d`;
+  feature-evidence SHA-256:
+  `cfb29951b5194306771158371ad1dec197d18c671515a50d3334d80b728e019b`;
+  evidence-manifest SHA-256:
+  `ae50327bfe9279cdd9c97513ad2544c1fb278e207d59c70af78c226146a29fb4`.
+- The exact runtime artifact contains 135 entries and is 23,007,771 bytes,
+  SHA-256
+  `af60fcaa4d458ef4ebe43aea5717e29eef65d92fcf0a1674d381877e39506709`.
+  Its 5,514,240-byte DLL has SHA-256
+  `d04710ae349308a51fb7ce814420537b31eb524b7d0b1361212a98911584d5b3`
+  and MVID `45a12bec-2f12-49af-93cb-a0849d3d48aa`.
+- Release A remains IN PROGRESS. Mechanics, respec, migration, visuals,
+  three-process persistence, and compatibility profiles have not yet passed.
+
 ## Next action
 
-Create and push the coherent foundation checkpoint, then research and implement
-Release A heritage selection, provider overlay, stable identities, and focused
-tests without changing the four parent race identities.
+Add dedicated Release A mechanics and transition scenarios for every heritage,
+then extend the transactional persistence harness and run the remaining visual
+and compatibility gates. Retry the exact guarded push after each coherent
+checkpoint even while the external branch allowlist remains unresolved.

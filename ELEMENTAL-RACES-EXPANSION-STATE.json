@@ -6,8 +6,8 @@
   "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
   "interveningMasterCommits": [],
   "startingTreeClean": true,
-  "phase": "release-a-research-and-design",
-  "currentVersion": "0.0.114",
+  "phase": "release-a-runtime-qualification",
+  "currentVersion": "0.0.115",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
     "releaseB": "0.0.116-elemental-feats",
@@ -15,7 +15,7 @@
   },
   "status": {
     "foundation": "PASS",
-    "releaseA": "NOT-STARTED",
+    "releaseA": "IMPLEMENTED-QUALIFICATION-IN-PROGRESS",
     "releaseB": "NOT-STARTED",
     "releaseC": "NOT-STARTED"
   },
@@ -28,6 +28,20 @@
     "visualOwnershipAudit": "PARTIAL-ROLLBACK-DEFECT-FIXED",
     "runtimeOrganization": "PASS",
     "deterministicTests": "PASS (1399/1399)"
+  },
+  "releaseAProgress": {
+    "heritagePolicy": "IMPLEMENTED (12 exact choices)",
+    "selectionModel": "IMPLEMENTED-RUNTIME-PASS (4 obligatory selections, 3 choices each)",
+    "legacyGeneralOverlay": "IMPLEMENTED-RUNTIME-REFERENCE-IDENTITY-PASS",
+    "alternateProviders": "IMPLEMENTED-RUNTIME-BLUEPRINT-PASS",
+    "stableIdentities": "PASS (53/53 exact live registrations)",
+    "slaDonors": "AUDITED (6 native substitutions/exact spells; 2 project-owned implementations)",
+    "playerPresentation": "RUNTIME-PASS (12 choices, complete text and non-null icons)",
+    "deterministicTests": "PASS (1405/1405)",
+    "mechanicsRuntime": "PENDING",
+    "visualRuntime": "PENDING",
+    "threeProcessPersistence": "PENDING",
+    "compatibility": "PENDING"
   },
   "baselineGates": {
     "repositoryValidation": "PASS",
@@ -61,6 +75,27 @@
     "dllSize": 5447168,
     "dllSha256": "17c6fd96652888aa8ad5781e216b5dab21606c8221f871f17538a7eedb8b6ca9",
     "dllMvid": "112ead36-b1ed-4f1d-9b06-73376d3bd541"
+  },
+  "releaseAImplementationGates": {
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1405/1405)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS",
+    "blueprintRuntime": "PASS",
+    "mechanicsRuntime": "PENDING",
+    "visualRuntime": "PENDING",
+    "threeProcessPersistence": "PENDING",
+    "compatibility": "PENDING"
+  },
+  "releaseARuntimeArtifact": {
+    "package": "KingmakerGunslinger-0.0.115-local-runtime.zip",
+    "packageSize": 23007771,
+    "packageEntries": 135,
+    "packageSha256": "af60fcaa4d458ef4ebe43aea5717e29eef65d92fcf0a1674d381877e39506709",
+    "dllSize": 5514240,
+    "dllSha256": "d04710ae349308a51fb7ce814420537b31eb524b7d0b1361212a98911584d5b3",
+    "dllMvid": "45a12bec-2f12-49af-93cb-a0849d3d48aa",
+    "deploymentManifest": "20260904T0106347232882Z"
   },
   "foundationRuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.114-local-runtime.zip",
@@ -161,6 +196,36 @@
         "status": "PASS-WITH-PRESENTATION-WARNINGS",
         "assertions": 6,
         "runtimeResultSha256": "35cd4c44ada55a757fd0a313b56c029f804cfefcafad07196f2d9e7dee6f9362"
+      },
+      {
+        "scenario": "observe-elemental-heritage-blueprints",
+        "orchestrationRunId": "20260904T0040206589395Z-56c3ac31e8344139a197f91a8ff273cb",
+        "status": "ERROR-SCENARIO-ALLOWLIST-WIRING",
+        "saveOrUiActionOccurred": false,
+        "runtimeResultSha256": "13cf8b5fff9ffc78526df44adb134c7608626edd19bd64b02cb2f395879d4f7c"
+      },
+      {
+        "scenario": "observe-elemental-heritage-blueprints",
+        "runId": "20260904T0049431335777Z-ab0db286997b479fb71a978c9aa27538",
+        "status": "TIMEOUT-BOOTSTRAP-NULL-ICON-DIAGNOSED",
+        "assertions": 0,
+        "runtimeResultSha256": "f4cc43face4b8ee97763994da885758081442c4e0330d176377c7facc239c744"
+      },
+      {
+        "scenario": "observe-elemental-heritage-blueprints",
+        "runId": "20260904T0101034386491Z-99a7d238acb8426b873fe3969887e4f0",
+        "status": "PASS-SUPERSEDED-EMPTY-COMPANION-EVIDENCE",
+        "assertions": 19,
+        "runtimeResultSha256": "23fb31f9d4ceed86529f22828c78317ae2fdb8c7169c1858e70c1fde8fc252d7"
+      },
+      {
+        "scenario": "observe-elemental-heritage-blueprints",
+        "runId": "20260904T0106348081056Z-7258c85fa8e14ca498201baac7f51ef4",
+        "status": "PASS",
+        "assertions": 19,
+        "runtimeResultSha256": "1acc4b3a2078a45086118330797ce67f463e281f1d3e3545a48cb2383fe53d6d",
+        "evidenceManifestSha256": "ae50327bfe9279cdd9c97513ad2544c1fb278e207d59c70af78c226146a29fb4",
+        "featureEvidenceSha256": "cfb29951b5194306771158371ad1dec197d18c671515a50d3334d80b728e019b"
       }
     ],
     "settingsSha256BeforeAndAfter": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
@@ -176,11 +241,42 @@
     "elementalTotal": 69,
     "elementalActive": 68
   },
-  "newIdentities": [],
+  "currentManifest": {
+    "total": 1759,
+    "active": 1757,
+    "reserved": 2,
+    "elementalTotal": 122,
+    "elementalActive": 121,
+    "elementalReserved": 1
+  },
+  "newIdentities": [
+    {
+      "release": "A",
+      "count": 53,
+      "guidPrefix": "e115e1e0a17a4aceb001",
+      "range": "e115e1e0a17a4aceb001000000000001..e115e1e0a17a4aceb001000000000053",
+      "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.HeritageSymbols()"
+    }
+  ],
   "compatibility": {},
-  "commits": [],
+  "commits": [
+    {
+      "sha": "9c0b7d7bdfe39dd54947c7a37d601cd91db98027",
+      "subject": "Harden Elemental Races foundation mechanics",
+      "checkpoint": "foundation",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    }
+  ],
   "pullRequest": null,
-  "blockers": [],
+  "blockers": [
+    {
+      "id": "checkpoint-push-allowlist",
+      "scope": "branch-publication",
+      "status": "ACTIVE",
+      "blockingIndependentImplementation": false,
+      "detail": "The mandated Push-KingmakerGunslinger.ps1 wrapper refuses codex/elemental-races-expansion because that exact user-required branch is absent from its external allowlist."
+    }
+  ],
   "merged": false,
   "tagged": false,
   "publicReleasePublished": false

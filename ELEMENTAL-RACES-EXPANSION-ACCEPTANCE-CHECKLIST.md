@@ -29,13 +29,13 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 ## Release A / 0.0.115 elemental heritages
 
-- [ ] Four parent-race heritage selections exist with exactly General plus two
+- [x] Four parent-race heritage selections exist with exactly General plus two
   alternate choices and no new top-level race.
 - [ ] All twelve choices have exact final statistics, active affinity
   presentation/mechanics, SLA/resource, descriptions, and non-null icons.
 - [ ] Legacy General race/SLA/resource GUIDs and spent state remain exact;
   absence of an alternate marker behaves as General without duplicated stats.
-- [ ] Heritage SLA substitutions follow exact native spell, verified Owlcat
+- [x] Heritage SLA substitutions follow exact native spell, verified Owlcat
   precedent, or narrow faithful project-owned implementation order and are
   recorded in the deviation matrix.
 - [ ] Fresh character, respec transitions, save/load, module-OFF/ON, rest,

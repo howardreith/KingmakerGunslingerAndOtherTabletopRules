@@ -38,7 +38,7 @@ namespace KingmakerGunslinger.ElementalRaces
         internal static BlueprintAbility RegisterAbility(
             LibraryScriptableObject library, BlueprintRegistry registry,
             ElementalRaceDefinition definition,
-            BlueprintAbilityResource resource)
+            BlueprintAbilityResource resource, Sprite fallbackIcon)
         {
             if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
@@ -46,17 +46,38 @@ namespace KingmakerGunslinger.ElementalRaces
                 throw new ArgumentNullException("definition");
             if (resource == null) throw new ArgumentNullException("resource");
             if (definition.Kind == ElementalRaceKind.Undine)
+            {
+                Sprite icon = ResolveHydraulicPushIcon(library, fallbackIcon);
                 return registry.Register<BlueprintAbility>(
                     definition.SlaAbilitySymbol,
-                    () => CreateHydraulicPush(definition, resource));
+                    () => CreateHydraulicPush(definition, resource,
+                        icon));
+            }
 
             BlueprintAbility donor = BlueprintLibraryLookup.RequireExact<
                 BlueprintAbility>(library, definition.DonorAbilityGuid,
                 "native " + definition.SlaName +
                 " donor for elemental racial SLA");
+            if (donor.Icon == null)
+                throw new InvalidOperationException("The native " +
+                    definition.SlaName + " donor has no presentation icon.");
             return registry.Register<BlueprintAbility>(
                 definition.SlaAbilitySymbol,
                 () => CloneNativeSpell(definition, donor, resource));
+        }
+
+        private static Sprite ResolveHydraulicPushIcon(
+            LibraryScriptableObject library, Sprite fallbackIcon)
+        {
+            if (fallbackIcon != null) return fallbackIcon;
+            BlueprintAbility donor = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library,
+                    ElementalRaceIdentityCatalog.FeatherStepGuid,
+                    "native Feather Step presentation donor for Hydraulic Push");
+            if (donor.Icon == null)
+                throw new InvalidOperationException(
+                    "The native Hydraulic Push presentation donor has no icon.");
+            return donor.Icon;
         }
 
         internal static BlueprintFeature RegisterFeature(
@@ -120,7 +141,7 @@ namespace KingmakerGunslinger.ElementalRaces
             return ability;
         }
 
-        private static bool IsSafeNativeEffect(BlueprintComponent component)
+        internal static bool IsSafeNativeEffect(BlueprintComponent component)
         {
             if (component == null) return false;
             Type type = component.GetType();
@@ -139,7 +160,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
         private static BlueprintAbility CreateHydraulicPush(
             ElementalRaceDefinition definition,
-            BlueprintAbilityResource resource)
+            BlueprintAbilityResource resource, Sprite icon)
         {
             var ability = ScriptableObject.CreateInstance<BlueprintAbility>();
             ability.name = InternalName(definition.SlaAbilitySymbol);
@@ -200,7 +221,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     definition.SlaName),
                 LocalizationService.Create(
                     LocalizationKey(definition, "Ability.Description"),
-                    definition.SlaDescription), null);
+                    definition.SlaDescription), icon);
             return ability;
         }
 
@@ -242,7 +263,7 @@ namespace KingmakerGunslinger.ElementalRaces
             return feature;
         }
 
-        private static AbilityResourceLogic ResourceCost(
+        internal static AbilityResourceLogic ResourceCost(
             BlueprintAbilityResource resource, bool spendOnCommand)
         {
             var result = ScriptableObject.CreateInstance<
@@ -269,6 +290,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 ability.ComponentsArray.OfType<AbilityResourceLogic>().Count() != 1 ||
                 !ReferenceEquals(ability.ComponentsArray.OfType<
                     AbilityResourceLogic>().Single().RequiredResource, resource) ||
+                ability.Icon == null ||
                 !ability.ComponentsArray.OfType<SpellComponent>().Any() ||
                 !ability.ComponentsArray.OfType<AbilityEffectRunAction>().Any())
                 throw new InvalidOperationException(definition.SlaName +
@@ -278,7 +300,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     "The native racial SLA donor has no components.");
         }
 
-        private static void ConfigureBaseAmount(
+        internal static void ConfigureBaseAmount(
             BlueprintAbilityResource resource, int baseValue)
         {
             FieldInfo amountField = typeof(BlueprintAbilityResource).GetField(

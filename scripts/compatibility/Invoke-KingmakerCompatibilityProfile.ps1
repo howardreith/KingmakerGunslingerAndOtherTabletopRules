@@ -45,6 +45,8 @@ param(
         'observe-aid-another-compatibility-contracts',
         'disposable-helpful-bodyguard',
         'elemental-races-races-unleashed-compatibility',
+        'observe-elemental-heritage-donors',
+        'observe-elemental-heritage-blueprints',
         'disposable-bodyguard-feats-disabled',
         'working-save-smoke',
         'disposable-brown-fur-native-cast',
@@ -288,7 +290,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.114'
+            ExpectedVersion = '0.0.115'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
