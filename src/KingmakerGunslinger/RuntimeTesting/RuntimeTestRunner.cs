@@ -1792,7 +1792,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithOutfitFixture
                     : _request.Scenario == RuntimeTestScenarioCatalog
-                        .ElementalRaceModuleDisabledPersistence
+                        .ElementalRaceModuleDisabledPersistence ||
+                      _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceModuleRestoredPersistence
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithElementalFixtures
                     : _request.Scenario ==

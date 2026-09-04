@@ -194,6 +194,10 @@ namespace KingmakerGunslinger.DomainTests
                 project.Contains("ElementalHeritageMechanicsScenario.cs") &&
                 heritageMechanics.Contains(
                     "ElementalHeritageRuntime.Reconcile") &&
+                heritageMechanics.Contains(
+                    "LoadHydrationOrphanRemovedExact") &&
+                heritageMechanics.Contains(
+                    "owner.Abilities.AddFact(general.SlaAbility, null)") &&
                 heritageMechanics.Contains("FeatureSelectionState") &&
                 heritageMechanics.Contains("PersistantResources") &&
                 heritageMechanics.Contains("AbilityExecutionContext") &&

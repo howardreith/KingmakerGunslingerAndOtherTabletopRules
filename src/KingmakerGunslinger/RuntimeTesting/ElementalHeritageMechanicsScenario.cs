@@ -122,6 +122,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public string SecondAlternate { get; set; }
             public bool LegacyGeneralExact { get; set; }
             public bool FirstAlternateExact { get; set; }
+            public bool LoadHydrationOrphanPresent { get; set; }
+            public bool LoadHydrationOrphanRemovedExact { get; set; }
             public bool AddBeforeRemoveExact { get; set; }
             public bool SecondAlternateExact { get; set; }
             public bool IdempotentExact { get; set; }
@@ -138,6 +140,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public bool Pass()
             {
                 return LegacyGeneralExact && FirstAlternateExact &&
+                    LoadHydrationOrphanPresent &&
+                    LoadHydrationOrphanRemovedExact &&
                     AddBeforeRemoveExact && SecondAlternateExact &&
                     IdempotentExact && GeneralRestoredExact &&
                     FirstSpentAmountRestored && ExplicitGeneralExact &&
@@ -151,7 +155,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return Race + ":legacy=" + LegacyGeneralExact +
                     ";first=" + FirstAlternateExact + ";addBeforeRemove=" +
-                    AddBeforeRemoveExact + ";second=" +
+                    AddBeforeRemoveExact + ";loadOrphan=" +
+                    LoadHydrationOrphanPresent + "->" +
+                    LoadHydrationOrphanRemovedExact + ";second=" +
                     SecondAlternateExact + ";idempotent=" +
                     IdempotentExact + ";general=" +
                     GeneralRestoredExact + "/" + GeneralAmountAfterReturn +
@@ -501,6 +507,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             EnsureFact(owner, first.Marker);
             result.FirstAlternateExact = Exact(owner, race, first, 1) &&
                 StatsExact(owner, first.Definition);
+            owner.Abilities.AddFact(general.SlaAbility, null);
+            result.LoadHydrationOrphanPresent = Snapshot(owner, race,
+                first).Abilities == 2;
+            bool loadHydrationReconciled = ElementalHeritageRuntime.Reconcile(
+                owner, null, null);
+            result.LoadHydrationOrphanRemovedExact =
+                loadHydrationReconciled && Exact(owner, race, first, 1) &&
+                owner.Abilities.GetAbility(general.SlaAbility) == null;
             InvokeSpend(RequireCastData(owner, first.SlaAbility));
 
             EnsureFact(owner, second.Marker);

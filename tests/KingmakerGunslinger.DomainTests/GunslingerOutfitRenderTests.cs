@@ -1111,6 +1111,7 @@ namespace KingmakerGunslinger.DomainTests
             {
                 "elemental-race-persistence-prepare",
                 "elemental-race-module-disabled-persistence",
+                "elemental-race-module-restored-persistence",
                 "elemental-race-persistence-verify-absent"
             };
 
@@ -1118,6 +1119,8 @@ namespace KingmakerGunslinger.DomainTests
                     "ElementalRacePersistencePrepare") &&
                 catalog.Contains(
                     "ElementalRaceModuleDisabledPersistence") &&
+                catalog.Contains(
+                    "ElementalRaceModuleRestoredPersistence") &&
                 catalog.Contains(
                     "ElementalRacePersistenceVerifyAbsent") &&
                 scenarios.All(catalog.Contains) &&
@@ -1134,11 +1137,11 @@ namespace KingmakerGunslinger.DomainTests
                     @"RuntimeTesting\ElementalRacePersistenceScenario.cs"),
                 "Elemental persistence is not wired through every guarded working-save surface.");
             Assertions.True(Regex.IsMatch(workingSave,
-                    @"AutomationWorkingWithElementalFixtures\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 11\);",
+                    @"AutomationWorkingWithElementalFixtures\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 27\);",
                     RegexOptions.Singleline) &&
                 runner.Contains(
                     ".AutomationWorkingWithElementalFixtures"),
-                "Module-disabled verification must require the exact eleven-member marker-bearing working-save identity.");
+                "Module-disabled and restored verification must require the exact 27-member marker-bearing heritage working-save identity.");
             foreach (string scenario in scenarios)
             {
                 int metadataStart = automation.IndexOf("'" + scenario +
@@ -1166,7 +1169,7 @@ namespace KingmakerGunslinger.DomainTests
                 launcher.Substring(collectorStart,
                     Math.Min(750, launcher.Length - collectorStart))
                     .Contains(
-                        "[Math]::Max($TimeoutSeconds, 1800) + 15"),
+                        "[Math]::Max($TimeoutSeconds, 5400) + 15"),
                 "Elemental persistence needs its exact bounded collector window.");
 
             foreach (string id in new[]
@@ -1178,7 +1181,23 @@ namespace KingmakerGunslinger.DomainTests
                 "d532ec12-a328-4afb-8cbf-7f3ddf41f072",
                 "08e1cd1d-4512-4c52-a9fa-6dd8d815499a",
                 "043d4fc2-c26c-4e72-9d11-219d0ff74b43",
-                "91472289-c1d7-4558-b7ed-a5e8c06345fb"
+                "91472289-c1d7-4558-b7ed-a5e8c06345fb",
+                "ab99c4b1-6e65-4808-9ba8-7e66b4c02832",
+                "fdff9dcf-6f07-499e-923c-a218d74388fd",
+                "e7ca2590-a307-46cf-a5c8-a182b67845d4",
+                "fb3fd14e-55f3-4b95-8e50-13a2978af655",
+                "246e29b9-c728-4dbc-8a98-45ed4975868e",
+                "68dd174b-fa0f-43b1-a8d9-7ea2e3b6d235",
+                "9395209a-333f-4ee8-9d50-027917e6c384",
+                "cfc07981-140c-47b9-bedd-4866ddb784e0",
+                "a136453c-d8ff-43cc-b2b9-636f8123a5f1",
+                "7c161687-525b-4ab6-ae5f-a28f475d79c6",
+                "a704f6d8-eb34-4bf4-89ab-b8d379942c84",
+                "9f558e70-4995-4a3d-977d-3ba24b6dcd38",
+                "9b9c9397-0c61-431a-8470-276b3709039f",
+                "91aa7243-8c28-4ed4-a274-2a9fa65b5a30",
+                "0c9440bb-f190-471d-958c-ba538c062bee",
+                "c97a0186-02de-4fe5-acfa-13ca8267baa3"
             })
                 Assertions.Equal(1, Regex.Matches(source,
                         Regex.Escape(id)).Count,
@@ -1187,9 +1206,11 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[]
             {
                 "ElementalRaceCatalog.RaceCount * 2",
-                "exactly eight race/sex fixtures",
+                "exactly 24 race/sex/heritage fixtures",
+                "ElementalHeritagePersistenceMatrixPolicy",
                 "ElementalRacePersistencePrepare",
                 "ElementalRaceModuleDisabledPersistence",
+                "ElementalRaceModuleRestoredPersistence",
                 "ElementalRacePersistenceVerifyAbsent",
                 "_context.FeatureModules.Active.ElementalRaces",
                 "BlueprintRoot.Instance",
@@ -1200,28 +1221,48 @@ namespace KingmakerGunslinger.DomainTests
                 "!unit.Blueprint.IsCheater",
                 "Descriptor.CustomGender = fixture.Gender",
                 "owner.CustomGender.HasValue",
-                "owner.Stats.GetStat(value.Stat)",
+                "foreach (ElementalHeritageStat stat in Enum.GetValues(",
+                "PersistenceStatType(stat)",
+                "expectedHeritage.Definition.ModifierFor(",
+                @"""abilityScores"", statDeltas",
                 "StatType.SkillPerception",
                 "owner.Stats.Speed.ModifiedValue",
                 "owner.Resources.GetResourceAmount(",
-                "SlaResource.GetMaxAmount(owner)",
+                "expectedHeritage.SlaResource",
                 "AbilityType.SpellLike", "ability.Spellbook == null",
                 "!ability.IsAffectedByArcaneSpellFailure",
                 "PerformNativeElementalRespec",
                 "LevelUpState.CharBuildMode.Respec",
-                "SeedFixedElementalRespecRace(_currentBlueprint, fixture)",
-                "SeedFixedElementalRespecFacts(",
-                "EnsureElementalRespecFact(owner, feature)",
+                "controller.State.FindSelection(",
+                "controller.State.CanSelectRace",
+                "controller.SelectRace(",
+                "controller.SelectFeature(",
+                "NativeSelectionRecordExact",
+                "stateNativeFromRaceSelection",
+                "HeritageProvidersExact",
+                "BlueprintRoot.Instance.CustomCompanion",
+                "SeedFixedElementalRespecRace(",
+                "owner.Progression.SetRace(fixture.Blueprints.Race)",
+                "FixedElementalRespecShellExact(",
+                "nativeCustomCompanionBlueprint",
                 "fixedRaceBeforeRespec",
-                "fixedRaceFactsBeforeRespec",
-                "seededSlaResourceBeforeRespec",
-                "seededSlaAvailableBeforeRespec",
+                "fixedRaceShellBeforeRespec",
                 "fixedRaceInInitialPreview",
-                "fixedRaceFactsInInitialPreview",
+                "fixedRaceShellInInitialPreview",
+                "raceSelectionAvailable",
+                "fixedRaceSelected",
+                "fixedRaceFactsAfterRaceSelection",
+                "selectedSlaResourceBeforeCommit",
+                "ResolveExecutableAbility",
+                "new AbilityData(root, child)",
+                "executableAbilityExact",
+                "selectedSlaAvailableBeforeCommit",
                 "\"racePreserved\", previewRaceExact",
                 "controller.SelectClass(_gunslingerClass, false)",
                 "ConfigureExpectedDollState(controller.Doll, fixture)",
                 "controller.Commit()",
+                "previewCommonRaceFactsExact",
+                "committedCommonRaceFactsExact",
                 "distinctSourceAndReplacement",
                 "replacementLevelBeforeRespec",
                 "NativeElementalRespecRecordExact",
@@ -1229,7 +1270,9 @@ namespace KingmakerGunslinger.DomainTests
                 "elemental-race-persistence-native-respec",
                 "nativeRespecRecords",
                 "InvokeAbilitySpend(", "AbilityResourceLogic",
-                "costs[0].Spend(ability)",
+                "costs[0].Spend(executable)",
+                "executable.GetAvailableForCastCount() == 0",
+                "executableAfterRest.GetAvailableForCastCount() == 0",
                 "RestController.ApplyRest(",
                 "LevelUpState.CharBuildMode.CharGen",
                 "ApplyLevelup", "Progression.CharacterLevel",
@@ -1245,10 +1288,18 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalPersistenceFixtureCount * 5",
                 "PartyCharacters", "CrossSceneState.AllEntityData",
                 "ArmExactWorkingSaveWrite", "RemoveEntityData",
+                "ObserveNativeSaveGate", "IsSaveAllowed",
+                "fixturePartyCombatCount", "dualCompanionGuardCount",
+                "_fixtureStagingPosition",
+                "RequireFixtureStagingOutOfCombat",
+                "combatGuardChecks", "createdUnitCombatCount",
+                "elemental-race-persistence-combat-staging",
                 "string.IsNullOrWhiteSpace(_exceptionSummary)",
                 "\"exceptionSummary\", _exceptionSummary",
                 "ExpectedWorkingSaveRoutineCount",
                 "elemental-race-persistence-module-off",
+                "elemental-race-persistence-module-restored",
+                "elemental-race-persistence-respec-transition-matrix",
                 "elemental-race-persistence-rest-and-level-up",
                 "elemental-race-persistence-absence",
                 "protected baseline excluded"
@@ -1256,6 +1307,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Elemental persistence lacks exact native guard/evidence token: " +
                     token);
+            Assertions.False(source.Contains(
+                    "controller.State.AddSelection(null,"),
+                "Elemental Respec must use the native replayable SelectRace " +
+                "action rather than inject a transient selection state.");
+            Assertions.False(source.Contains(
+                    "_currentUnit.CombatState.LeaveCombat()"),
+                "Normal fixture preparation must fail closed on combat rather than clear it and continue.");
             foreach (string forbidden in new[]
             {
                 "QuickSave", "ScreenCapture", "Input.", "Mouse.",
@@ -1310,21 +1368,28 @@ namespace KingmakerGunslinger.DomainTests
             int verify = sequence.IndexOf(
                 "& $invoke -Scenario 'elemental-race-module-disabled-persistence'",
                 StringComparison.Ordinal);
+            int reenable = sequence.IndexOf(
+                "Set-ElementalRacesEnabled $true", verify,
+                StringComparison.Ordinal);
+            int restored = sequence.IndexOf(
+                "& $invoke -Scenario 'elemental-race-module-restored-persistence'",
+                StringComparison.Ordinal);
             int finalizer = sequence.IndexOf(
-                "finally {", verify, StringComparison.Ordinal);
+                "finally {", restored, StringComparison.Ordinal);
             int restore = sequence.IndexOf(
                 "    Restore-OriginalFeatureState", finalizer,
                 StringComparison.Ordinal);
             Assertions.True(enable >= 0 && prepare > enable &&
                     disable > prepare && verify > disable &&
-                    finalizer > verify && restore > finalizer,
-                "The exact enabled-prepare, disabled-verify-cleanup, and finally-restored launch order changed.");
+                    reenable > verify && restored > reenable &&
+                    finalizer > restored && restore > finalizer,
+                "The exact enabled-prepare, disabled-verify-preserve, enabled-respec-cleanup, and finally-restored launch order changed.");
             Assertions.False(sequence.Contains(
                     "-Scenario 'elemental-race-persistence-verify-absent'"),
                 "Fresh-load absence must run only after this transaction has returned and restored settings.");
             Assertions.True(sequence.Contains(
                     "run elemental-race-persistence-verify-absent next"),
-                "The two-launch transaction must explicitly hand off the restored-settings fresh-load phase.");
+                "The three-launch transaction must explicitly hand off the restored-settings fresh-load phase.");
         }
 
         internal static void FinalistRaceMatrixIsExactAndReversible()

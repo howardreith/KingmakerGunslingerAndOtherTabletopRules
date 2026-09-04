@@ -42,12 +42,14 @@ Unchecked items are pending and must not be inferred from builds or historical
 - [x] Heritage SLA substitutions follow exact native spell, verified Owlcat
   precedent, or narrow faithful project-owned implementation order and are
   recorded in the deviation matrix.
-- [ ] Fresh character, respec transitions, save/load, module-OFF/ON, rest,
-  level-up, both-sex visual/preset/equipment/state transitions, and optional
-  profiles pass.
-- [ ] Three-process persistence and 0.0.114 migration pass with no stat drift,
-  duplicate modifier, lost fact, restored spent use, appearance change, or
-  selector corruption.
+- [x] Fresh character, native respec transitions, save/load, module-OFF/ON,
+  rest, level-up, both-sex/all-preset visual and equipment reconstruction pass
+  for all 24 race/sex/heritage fixtures.
+- [x] Three-process persistence plus fourth-process absence passes with no stat
+  drift, duplicate provider, lost fact, restored spent use, appearance drift,
+  fixture leak, or selector corruption.
+- [ ] Death/resurrection, polymorph/return, optional profiles, and exact
+  0.0.114 legacy migration pass.
 - [ ] Version/docs/manifest updated; repository validation, full tests, clean
   0.0.115 build, strict package validation, guarded runtime, compatibility,
   and persistence gates pass.

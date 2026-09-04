@@ -38,11 +38,12 @@
     "slaDonors": "AUDITED (6 native substitutions/exact spells; 2 project-owned implementations)",
     "playerPresentation": "RUNTIME-PASS (12 choices, complete text and non-null icons)",
     "deterministicTests": "PASS (1407/1407)",
-    "mechanicsRuntime": "PARTIAL-PASS (68/68 selection/provider and 20/20 alternate-SLA command/delivery assertions; respec, persistence, visual, and compatibility gates pending)",
+    "mechanicsRuntime": "PASS (68/68 selection/provider/hydration assertions and 20/20 alternate-SLA command/delivery assertions)",
     "heritageSlaRuntime": "PASS (20/20 exact player-command, native effect, item, touch-charge, and cleanup assertions)",
     "activationOrder": "DEFECT-FIXED-RUNTIME-PASS",
-    "visualRuntime": "PENDING",
-    "threeProcessPersistence": "PENDING",
+    "visualRuntime": "PARTIAL-PASS (24 fixtures cover both sexes, all three presets, equipment reconstruction, and ON/OFF/ON fresh-process load; death/resurrection and polymorph/return pending)",
+    "threeProcessPersistence": "PASS (24 fixtures; prepare, module-OFF load/level/rest/re-spend, module-ON respec/cleanup, and fourth-process absence)",
+    "legacyMigration": "PENDING (exact 0.0.114 save-backed migration gate)",
     "compatibility": "PENDING"
   },
   "baselineGates": {
@@ -84,9 +85,9 @@
     "cleanReleaseBuild": "PASS",
     "packageValidation": "PASS",
     "blueprintRuntime": "PASS",
-    "mechanicsRuntime": "PARTIAL-PASS (68/68 provider/parameter/transition plus 20/20 alternate-SLA command/delivery assertions; remaining Release A gates pending)",
-    "visualRuntime": "PENDING",
-    "threeProcessPersistence": "PENDING",
+    "mechanicsRuntime": "PASS (68/68 provider/parameter/transition/hydration plus 20/20 alternate-SLA command/delivery assertions)",
+    "visualRuntime": "PARTIAL-PASS (24-fixture both-sex/all-preset ON/OFF/ON reconstruction PASS; death/resurrection and polymorph/return pending)",
+    "threeProcessPersistence": "PASS (24 fixtures and fresh-process cleanup absence)",
     "compatibility": "PENDING"
   },
   "releaseARuntimeArtifact": {
@@ -124,15 +125,27 @@
   },
   "releaseACurrentCleanArtifact": {
     "package": "KingmakerGunslinger-0.0.115-elemental-heritages.zip",
-    "packageSize": 23038804,
+    "packageSize": 23040636,
     "packageEntries": 135,
-    "packageSha256": "23014b77c1e43fa85773eee5d09299a65364d057dfa8355ab70504b6c8a9e20b",
-    "dllSize": 5603328,
-    "dllSha256": "af9ae270441a898216301e9f612199b85b8d10ac7fc4bd1f2200f684feba5a16",
-    "dllMvid": "f2980361-84e5-4034-aca7-1e4a4e7a241d",
+    "packageSha256": "43a77f8a51472867ab913586ad68ba5996a0345fa1041ea5ff0bd74f860a461a",
+    "dllSize": 5623808,
+    "dllSha256": "b5c0b6ff706b842a5b934ffa1f3b4910983b0321a68b0a033a703459bcae44b3",
+    "dllMvid": "0fd178ac-9024-4717-9fdd-c84a4ad09775",
     "repositoryValidation": "PASS",
     "domainTests": "PASS (1407/1407)",
     "packageValidation": "PASS"
+  },
+  "releaseAPersistenceRuntimeArtifact": {
+    "package": "KingmakerGunslinger-0.0.115-local-runtime.zip",
+    "packageSize": 23040636,
+    "packageEntries": 135,
+    "packageSha256": "43a77f8a51472867ab913586ad68ba5996a0345fa1041ea5ff0bd74f860a461a",
+    "dllSize": 5623808,
+    "dllSha256": "b5c0b6ff706b842a5b934ffa1f3b4910983b0321a68b0a033a703459bcae44b3",
+    "dllMvid": "0fd178ac-9024-4717-9fdd-c84a4ad09775",
+    "deploymentManifest": "20260904T0840326483079Z",
+    "deploymentManifestSha256": "ebc7f6e6fefe2a8b5bc9ce1823585a5a04cb695b7b3c55d368b09a04e6a550f1",
+    "sourceStateSha256": "0c2f8d30406ff39ab332ac63f1b886c761ab4b0d061d8ba650075b63d968bc83"
   },
   "foundationRuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.114-local-runtime.zip",
@@ -335,13 +348,104 @@
         "runtimeResultSha256": "80cdc2dd846c5f1de49b3575b522145603f4b243dee3c0314d6dc33d33d5675c",
         "runtimeEvidenceSha256": "c25a31bfec4cec3a435d512b2809065341f06ab3051c2e0faf21b73370974387",
         "featureEvidenceSha256": "e34d40ed88e27daf02340359e8c55f1aae971c11706aa7fc9b3570becffb4c7c"
+      },
+      {
+        "scenario": "elemental-race-persistence-prepare",
+        "runId": "20260904T0758229562675Z-050512dd92504b588d957e2aceecf2ae",
+        "status": "PASS-SUPERSEDED-BY-MODULE-OFF-DEFECT",
+        "assertions": 12,
+        "runtimeResultSha256": "3a0e1fa0c2aa00ec392007c5fe99eceb901ba6171cd463f10f2dd48b7f80cd84",
+        "runtimeEvidenceSha256": "450fb812f3beaf48d42a2bcb0e2d3a77e9971c4c9776735463fd7b4a7194a4fd"
+      },
+      {
+        "scenario": "elemental-race-module-disabled-persistence",
+        "runId": "20260904T0803563958943Z-bb9529ea22c34ffe9797e576fe555af2",
+        "status": "FAIL-INACTIVE-GENERAL-SLA-LOAD-ORPHAN-DIAGNOSED",
+        "assertions": 12,
+        "passedAssertions": 7,
+        "failedAssertions": 5,
+        "runtimeResultSha256": "b384f06cd27ddf2ece4b5730f6e035b5c74c2605157f739fbbb51a5a3b9d67fa",
+        "runtimeEvidenceSha256": "adcca3cb6b0b6c565844d665b4ca796178089607f8469e2a959a9dbaa15cb208"
+      },
+      {
+        "scenario": "elemental-race-persistence-prepare",
+        "runId": "20260904T0821331228407Z-11a6ba55bd6b4b1c99d410e786199e34",
+        "status": "PASS-SUPERSEDED-BY-RESTORED-RESPEC-HARNESS-PREDICATE",
+        "assertions": 12,
+        "runtimeResultSha256": "d6b44f26b9857a6a07ed3eddec1680de288e2e0bf5443e22760efb85dfebce89",
+        "runtimeEvidenceSha256": "a0c671f92a38443c707c731165a3253f793f08968f48061d0121a3554c10be46"
+      },
+      {
+        "scenario": "elemental-race-module-disabled-persistence",
+        "runId": "20260904T0825111504562Z-2b9a6f376f3b4ad390010096a9b56717",
+        "status": "PASS-SUPERSEDED-BY-RESTORED-RESPEC-HARNESS-PREDICATE",
+        "assertions": 11,
+        "runtimeResultSha256": "9f5193e110aa9431f8854ff96ec96fdf4a5304a5b25a1ac2211bedd45fb09022",
+        "runtimeEvidenceSha256": "8f0971c8a88c22cf3e2fb08761ae87258354658d0a4cc58870749ac742dc5506"
+      },
+      {
+        "scenario": "elemental-race-module-restored-persistence",
+        "runId": "20260904T0828235023424Z-f0bdcd0cc2d04665b8f479d708344db0",
+        "status": "FAIL-CONTRADICTORY-HARNESS-IDENTITY-PREDICATE-DIAGNOSED",
+        "assertions": 11,
+        "passedAssertions": 7,
+        "failedAssertions": 4,
+        "runtimeResultSha256": "9e20634dcba57d6a353aa0066441575659a053c8508be20f0b76df4077fe93df",
+        "runtimeEvidenceSha256": "ad3d85c922cdac05afddfc422900e8fc18bdc51c25b35e64612dfecedd8ab41b"
+      },
+      {
+        "scenario": "disposable-elemental-heritage-mechanics",
+        "runId": "20260904T0840514424415Z-d08cc9cda91d4dbca260c3f3049501e5",
+        "status": "PASS",
+        "assertions": 68,
+        "runtimeResultSha256": "660bfb1578ec21ec392b778382cfdb712e117a496e3c2b266552d53688c2d3f9",
+        "runtimeEvidenceSha256": "1c22e223884288c614616890d21bb2e21bb4f829884a16a289b581516c765d04"
+      },
+      {
+        "scenario": "elemental-race-persistence-prepare",
+        "runId": "20260904T0844013659099Z-8682937a3298455b9eed12bbdc539a6e",
+        "status": "PASS",
+        "assertions": 12,
+        "runtimeResultSha256": "430238bf02a4f6529c22f40af8bcd08d11ed05e7a3a3d2e0d24a5682495d73b9",
+        "runtimeEvidenceSha256": "92e529e2a88ff5198197f3fa5e17696f2ec73a5bf230015dfe0325b338029a38",
+        "featureEvidenceSha256": "2b2769e2ff8e9caac5cae11451d561be577f25608d9aa01ca56221cbda33fb82"
+      },
+      {
+        "scenario": "elemental-race-module-disabled-persistence",
+        "runId": "20260904T0847415312813Z-0fa36465554a47a5a78d66e3d2c90acb",
+        "status": "PASS",
+        "assertions": 11,
+        "runtimeResultSha256": "062ec3782e018fc2da95ad3432f232c690c0917c9a6f105b5b83c47eed72f259",
+        "runtimeEvidenceSha256": "ddb2519d48307c84504fc4da14c415c0161fe615fbb598d3f1f482af56c64e41",
+        "featureEvidenceSha256": "073d7372731840a83101c2e955a7be75b5fc0fdff0b7db3e2e84be9159c443cc"
+      },
+      {
+        "scenario": "elemental-race-module-restored-persistence",
+        "runId": "20260904T0850532325846Z-a6e7f664417f4669b4a9ebd08e35f02a",
+        "status": "PASS",
+        "assertions": 10,
+        "runtimeResultSha256": "258933836bbab46449aadf4518e9adf6da850494b1648846cfba38feecde79c8",
+        "runtimeEvidenceSha256": "64f3e275a1447b65f1808e0b3b9cccdc3c30eb9908beddb8c6e623bdeaff31f8",
+        "featureEvidenceSha256": "56171c01efeb13c14bc4374ce408aef07b06fedd836db59fd74f0d49799e12b0"
+      },
+      {
+        "scenario": "elemental-race-persistence-verify-absent",
+        "runId": "20260904T0855068314112Z-8cfd708818ca4f53bca9487e977db573",
+        "status": "PASS",
+        "assertions": 7,
+        "runtimeResultSha256": "cfd3eb102d068764334de9103c8ced33da2a0bb2e7abc223ff71758692a8724b",
+        "runtimeEvidenceSha256": "e663de2492a6e4e0922a4229529a3cb8779e83e18aa599299931a2c0e2523a3c",
+        "featureEvidenceSha256": "b629a42b32e9ebb26e345f1be9e3851659de76f97f569182c4ae3dfdf5d955ee"
       }
     ],
     "settingsSha256BeforeAndAfter": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
     "temporaryModuleOnSettingsSha256": "333e5a3cdb7196ac6c58c9959ad24c81b2b0c98a06804b94e601743685d0fa8e",
     "temporaryModuleOffSettingsSha256": "fd8420daa53de98aeb7b81538ab4eff4ae8a0eaeadc54342ee53581913de0195",
-    "persistenceFixtureCount": 8,
-    "persistenceFinalFixtureCount": 0
+    "persistenceFixtureCount": 24,
+    "persistenceFinalFixtureCount": 0,
+    "persistenceFinalSaveFile": "Manual_299_KMG_AUTOMATION_WORKING.zks",
+    "persistenceFinalSaveSize": 2898422,
+    "persistenceFinalSaveSha256": "846fa8357b6b323da0149d4d66e0b0d480f12eea9cc5891ed9cb131015d444dc"
   },
   "manifestBaseline": {
     "total": 1706,

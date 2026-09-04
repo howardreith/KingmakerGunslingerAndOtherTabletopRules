@@ -949,6 +949,7 @@
     <Compile Include="ElementalRaces\ElementalRaceIdentityCatalog.cs" />
     <Compile Include="ElementalRaces\ElementalRaceDefinition.cs" />
     <Compile Include="ElementalRaces\ElementalHeritagePolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalHeritagePersistenceMatrixPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageBlueprintSet.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageRuntime.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageSlaPolicy.cs" />

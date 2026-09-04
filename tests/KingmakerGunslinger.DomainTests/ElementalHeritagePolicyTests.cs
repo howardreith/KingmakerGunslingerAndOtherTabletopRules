@@ -17,6 +17,10 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void CatalogHasExactChoiceAndProviderInventory()
         {
+            ElementalHeritagePersistenceMatrixPolicyTests
+                .FixtureOrderingAndPresetCoverageAreExact();
+            ElementalHeritagePersistenceMatrixPolicyTests
+                .RespecTransitionsAndInvalidInputsAreExact();
             IReadOnlyList<ElementalHeritageDefinition> all =
                 ElementalHeritagePolicy.Ordered();
             Assertions.Equal(12, all.Count,

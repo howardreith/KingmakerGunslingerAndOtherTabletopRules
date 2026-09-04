@@ -464,7 +464,108 @@
 
 ## Next action
 
-Extend the transactional persistence and respec harness for every heritage,
-then run the remaining legacy migration, module-OFF/ON, visual, and optional-
-mod compatibility gates. Retry the exact guarded push after each coherent
-checkpoint even while the external branch allowlist remains unresolved.
+Run the remaining exact 0.0.114 legacy migration, death/resurrection,
+polymorph/return, and optional-mod compatibility gates. Retry the exact guarded
+push after each coherent checkpoint even while the external branch allowlist
+remains unresolved.
+
+## 2026-09-04 - Full heritage persistence and native-respec qualification
+
+- Expanded the transactional harness from eight General fixtures to 24 exact
+  race/sex/heritage fixtures. The deterministic matrix covers all four parent
+  races, both sexes, all three production body presets, and both required
+  respec transition families. Character creation and respec use native
+  `LevelUpController` paths; each fixture records exact race/facts/stats,
+  provider/ability/resource uniqueness, caster level, DollData, live rig,
+  materials, and Gunslinger equipment reconstruction.
+- Added a constant anchor-local navigable staging point and 3,799 aggregate
+  fail-closed combat-boundary checks across the final four processes. The
+  harness never clears combat to manufacture a pass. Native `SaveManager`
+  readiness is checked before each of the three exact writes to
+  `KMG_AUTOMATION_WORKING`; the fourth process performs zero writes.
+- Initial complete preparation run
+  `20260904T0758229562675Z-050512dd92504b588d957e2aceecf2ae`
+  passed 12/12, but module-OFF run
+  `20260904T0803563958943Z-bb9529ea22c34ffe9797e576fe555af2`
+  failed closed on the first alternate Ifrit. Its race, marker, stats,
+  affinity, selected SLA feature/resource/DC/CL, and DollData were exact, but
+  the native ability collection contained both the selected alternate and an
+  orphaned inactive General SLA ability. Result hashes are respectively
+  `3a0e1fa0c2aa00ec392007c5fe99eceb901ba6171cd463f10f2dd48b7f80cd84`
+  and
+  `b384f06cd27ddf2ece4b5730f6e035b5c74c2605157f739fbbb51a5a3b9d67fa`.
+  The failed phase removed all fixtures and performed one exact cleanup save.
+- Local IL evidence established that `UnitDescriptor.Abilities` is the native
+  `AbilityCollection`/`FactCollection` and that `UnitHelper.RemoveFact`
+  dispatches removal through the blueprint's target collection. The owned
+  heritage reconciler now removes only exact inactive project SLA abilities
+  after their provider facts, verifies their absence, and never edits resource
+  amounts. The dedicated mechanics scenario injects precisely the orphaned
+  General ability and proves exact removal; final run
+  `20260904T0840514424415Z-d08cc9cda91d4dbca260c3f3049501e5`
+  passed 68/68. Runtime-result SHA-256 is
+  `660bfb1578ec21ec392b778382cfdb712e117a496e3c2b266552d53688c2d3f9`;
+  runtime-evidence SHA-256 is
+  `1c22e223884288c614616890d21bb2e21bb4f829884a16a289b581516c765d04`.
+- A second transaction passed preparation and module-OFF hydration, then
+  module-restored run
+  `20260904T0828235023424Z-f0bdcd0cc2d04665b8f479d708344db0`
+  failed on an internally contradictory test predicate: it proved a distinct
+  replacement unit/descriptor and stable saved identity, but also required
+  the replacement ID to differ. Runtime-result SHA-256 is
+  `9e20634dcba57d6a353aa0066441575659a053c8508be20f0b76df4077fe93df`.
+  A pure `RespecActorIdentityExact` policy now requires a new ID for disposable
+  preparation and the preserved ID for save-backed respec; both require
+  distinct native objects. The failed phase again cleaned every fixture and
+  saved the exact baseline once.
+- The final four fresh Steam processes all PASS against Kingmaker 2.1.7b:
+  - prepare `20260904T0844013659099Z-8682937a3298455b9eed12bbdc539a6e`,
+    12/12; result/evidence/index SHA-256
+    `430238bf02a4f6529c22f40af8bcd08d11ed05e7a3a3d2e0d24a5682495d73b9`,
+    `92e529e2a88ff5198197f3fa5e17696f2ec73a5bf230015dfe0325b338029a38`,
+    `2b2769e2ff8e9caac5cae11451d561be577f25608d9aa01ca56221cbda33fb82`;
+  - module OFF `20260904T0847415312813Z-0fa36465554a47a5a78d66e3d2c90acb`,
+    11/11; hashes
+    `062ec3782e018fc2da95ad3432f232c690c0917c9a6f105b5b83c47eed72f259`,
+    `ddb2519d48307c84504fc4da14c415c0161fe615fbb598d3f1f482af56c64e41`,
+    `073d7372731840a83101c2e955a7be75b5fc0fdff0b7db3e2e84be9159c443cc`;
+  - module restored/respec/cleanup
+    `20260904T0850532325846Z-a6e7f664417f4669b4a9ebd08e35f02a`,
+    10/10; hashes
+    `258933836bbab46449aadf4518e9adf6da850494b1648846cfba38feecde79c8`,
+    `64f3e275a1447b65f1808e0b3b9cccdc3c30eb9908beddb8c6e623bdeaff31f8`,
+    `56171c01efeb13c14bc4374ce408aef07b06fedd836db59fd74f0d49799e12b0`;
+  - fresh absence
+    `20260904T0855068314112Z-8cfd708818ca4f53bca9487e977db573`,
+    7/7; hashes
+    `cfd3eb102d068764334de9103c8ced33da2a0bb2e7abc223ff71758692a8724b`,
+    `e663de2492a6e4e0922a4229529a3cb8779e83e18aa599299931a2c0e2523a3c`,
+    `b629a42b32e9ebb26e345f1be9e3851659de76f97f569182c4ae3dfdf5d955ee`.
+- Each of the first three final processes captured 24 sidecars, 48 PNGs, and
+  120 labelled views; the retained final transaction therefore contains 72
+  sidecars, 144 PNGs, and 360 views. It proves exact ON creation/respec/spend,
+  OFF identity hydration/publication rollback/level-up/rest/re-spend, ON
+  same-race native respec/cleanup, and fresh-process absence. The final save is
+  `Manual_299_KMG_AUTOMATION_WORKING.zks`, 2,898,422 bytes, SHA-256
+  `846fa8357b6b323da0149d4d66e0b0d480f12eea9cc5891ed9cb131015d444dc`.
+  The protected baseline was never written.
+- Original settings were restored exactly to SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`;
+  temporary module-ON/OFF hashes were
+  `333e5a3cdb7196ac6c58c9959ad24c81b2b0c98a06804b94e601743685d0fa8e`
+  and
+  `fd8420daa53de98aeb7b81538ab4eff4ae8a0eaeadc54342ee53581913de0195`.
+  Optional PNGs from superseded/failed disposable runs and reproducible build
+  staging were removed only after structured evidence was retained.
+- Final repository validation, all 1,407 domain/reflection tests, exact-
+  reference compilation, clean Release packaging, and strict validation pass.
+  The 135-entry, 23,040,636-byte package has SHA-256
+  `43a77f8a51472867ab913586ad68ba5996a0345fa1041ea5ff0bd74f860a461a`.
+  Its 5,623,808-byte DLL has SHA-256
+  `b5c0b6ff706b842a5b934ffa1f3b4910983b0321a68b0a033a703459bcae44b3`
+  and MVID `0fd178ac-9024-4717-9fdd-c84a4ad09775`. Deployment manifest
+  `20260904T0840326483079Z` has SHA-256
+  `ebc7f6e6fefe2a8b5bc9ce1823585a5a04cb695b7b3c55d368b09a04e6a550f1`.
+  The ZIP remains untracked. Legacy 0.0.114 migration,
+  death/resurrection/polymorph, and compatibility are still open; Release A is
+  not yet declared PASS.

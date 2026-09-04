@@ -613,11 +613,13 @@ try {
     elseif ($Scenario -in @(
         'elemental-race-persistence-prepare',
         'elemental-race-module-disabled-persistence',
+        'elemental-race-module-restored-persistence',
         'elemental-race-persistence-verify-absent')) {
-        # Eight exact race/sex fixtures cover prepare, fresh module-OFF load,
-        # reconstruction/rest/level-up/cleanup, and fresh-load absence.
+        # Twenty-four exact race/sex/heritage fixtures cover prepare, fresh
+        # module-OFF reconstruction/rest/level-up/preservation, module-ON
+        # native heritage Respec/cleanup, and fresh-load absence.
         $deadline = [DateTime]::UtcNow.AddSeconds(
-            [Math]::Max($TimeoutSeconds, 1800) + 15)
+            [Math]::Max($TimeoutSeconds, 5400) + 15)
     }
     elseif ($Scenario -in @(
         'gunslinger-outfit-production-persistence-prepare',
