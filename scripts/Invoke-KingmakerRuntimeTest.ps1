@@ -126,7 +126,8 @@ $requestFingerprintTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
     -LoadEntryTimeoutSeconds $requestLoadEntryTimeout `
     -FingerprintTimeoutSeconds $requestFingerprintTimeout `
     -Parameters $Parameters -EnforceManualInteraction `
-    -ManualInteractionRequired:$ManualInteractionRequired)
+    -ManualInteractionRequired:$ManualInteractionRequired `
+    -PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release)
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -220,7 +221,8 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -ActionInvocationTimeoutSeconds $requestActionInvocationTimeout `
     -DescriptorResolutionTimeoutSeconds $requestDescriptorResolutionTimeout `
     -LoadEntryTimeoutSeconds $requestLoadEntryTimeout `
-    -FingerprintTimeoutSeconds $requestFingerprintTimeout
+    -FingerprintTimeoutSeconds $requestFingerprintTimeout `
+    -PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath
