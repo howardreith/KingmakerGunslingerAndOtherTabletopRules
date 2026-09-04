@@ -519,15 +519,21 @@ plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage providers, and visual identities extend
-the append-only ledger to 1759 stable IDs: 1757 active and 2 reserved. The
+the append-only ledger to 1784 stable IDs: 1782 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
 color ramps. Release A appends 53 stable heritage identities: four selections,
 twelve markers, eight affinity providers, eight feature/resource/ability SLA
-triplets, and five supporting ability or weapon-enchantment identities. All
-121 active elemental identities remain registered while race-selector
-publication is disabled. Exact 0.0.114 markerless-General migration and the
+triplets, and five supporting ability or weapon-enchantment identities.
+Release B appends eleven feat features, nine abilities, four buffs, and one
+weapon enchantment. `ElementalFeatBlueprintFactory` registers all 25 before
+`ElementalFeatPublication` independently reconciles the universal and Fighter
+selectors through the established exact-GUID-aware transaction. The same
+`elemental-races` setting gates race and feat publication; no module identity
+or schema member was added. All 146 active elemental identities remain
+registered while race and feat selector publication is disabled. Exact 0.0.114
+markerless-General migration and the
 24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation
 preserves inherited stat components and current resource amounts while adding
 or removing only exact project-owned providers. The two In Harm's Way immediate-action
@@ -542,7 +548,7 @@ do not change the unconditional core registration count; they register only
 after the structural CotW contract succeeds, while selector publication
 remains independently gated. The Urban and Bodyguard identities are native
 core identities, and the 16 elemental visual blueprints bring unconditional
-core blueprint registration to 1673 in every module state. The 28 elemental
+core blueprint registration to 1698 in every module state. The 28 elemental
 visual resource proxies are registered through a separate exact-shape native
 resource-cache transaction. All 1184
 Expanded Summoning feature identities, all twenty-nine spear identities, and

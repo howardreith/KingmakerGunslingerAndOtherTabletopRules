@@ -3,9 +3,9 @@
 ## Current outcome
 
 **IN PROGRESS - FOUNDATION AND RELEASE A MECHANICAL/COMPATIBILITY GATES PASS;
-RELEASE B NATIVE CONTRACTS ARE QUALIFIED AND IMPLEMENTATION IS IN PROGRESS;
-THE RELEASE A CHECKPOINT EXISTS LOCALLY BUT ITS REQUIRED PUSH IS BLOCKED BY AN
-EXTERNAL BRANCH ALLOWLIST.**
+RELEASE B NATIVE CONTRACTS, FIXED IDENTITIES, BLUEPRINT GRAPH, AND SELECTOR
+PUBLICATION ARE LOCALLY QUALIFIED; GAMEPLAY MECHANICS REMAIN IN PROGRESS. THE
+REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL ALLOWLIST.**
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
@@ -27,7 +27,7 @@ behavior.
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | NATIVE AUDIT PASS; IMPLEMENTATION IN PROGRESS |
+| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | IDENTITY/PUBLICATION CHECKPOINT PASS; MECHANICS IN PROGRESS |
 | C | 0.0.117-elemental-traits | replacement slots and required alternate traits | NOT STARTED |
 
 Favored-class bonuses are out of scope.
@@ -59,7 +59,9 @@ The 5,411,328-byte DLL has SHA-256
 and MVID `dcd73856-39d4-40ce-9b05-77bf249103d7`.
 
 Foundation behavior/runtime qualification is complete. Release A is now also
-mechanically qualified; Releases B and C remain incomplete. Foundation spell
+mechanically qualified. Release B is active at version 0.0.116 with its
+identity/publication checkpoint qualified, but its mechanics and later gates
+remain incomplete; Release C is incomplete. Foundation spell
 affinity, exact SLA calculation and command behavior, native movement layering,
 Hydraulic Push, visual ownership, blueprint publication, and the three-process
 module-OFF persistence transaction have passing guarded evidence. The
@@ -264,3 +266,37 @@ to broad descriptors such as `Fog`; source-GUID catalogs are therefore
 required for Firesight and Cloud Gazer. The native summon action is linked to
 its caster, not directly controllable, and lasts rounds from caster level;
 Triton Portal will reuse that native model with project-owned 1d3 count logic.
+
+## Release B identity and publication checkpoint
+
+The active candidate is now `0.0.116-elemental-feats`. Twenty-five stable
+manifest identities were added: eleven `BlueprintFeature` feats, nine
+`BlueprintAbility` commands/variants, four `BlueprintBuff` states, and one
+project-owned `BlueprintWeaponEnchantment`. The complete manifest is 1,784
+entries (1,782 active and two reserved); Elemental Races accounts for 147
+entries (146 active and one reserved). All 25 identities register
+unconditionally under the existing module and no GUID is generated
+dynamically.
+
+The blueprint graph binds every prerequisite to the exact project Ifrit,
+Oread, Sylph, or Undine `BlueprintRace`, the published level and feat chain,
+and the exact active project Hydraulic Push provider where required. The four
+Combat feats are published to both universal and Fighter combat selectors;
+all eleven are published to the universal selector. Publication is gated by
+the existing `elemental-races` setting and uses the established transactional
+array helper, including exact-GUID conflict refusal, stable ordering,
+idempotence, partial-failure rollback, and reverse-order complete rollback.
+
+Version-aware repository validation and the complete 1,408-case suite pass.
+The clean Release build and strict standalone package validator pass. The
+untracked 135-entry candidate ZIP is 23,070,990 bytes with SHA-256
+`e7567183e40a0499b83d7a96a62e9f6c24aa9aec5b900b649c8f5bd7cb541dd9`.
+Its 5,704,192-byte DLL has SHA-256
+`c2824d22ca4c351c3edd1959382f3a66f082ed0f40c9365ac7edaa18c50b889b`
+and MVID `eef6d06b-3b7d-4712-ae09-257932ea9d39`.
+
+This checkpoint deliberately does not claim Release B PASS. Gameplay
+components, command delivery, focused guarded runtime evidence, feat-bearing
+save persistence, and Release B compatibility profiles remain pending. The
+registered subsidiary blueprints are therefore a buildable identity shell,
+not evidence that the feats' player-facing mechanics are complete.

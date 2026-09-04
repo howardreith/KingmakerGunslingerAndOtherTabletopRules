@@ -85,7 +85,8 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
-    release_suffix = ("elemental-heritages"
+    release_suffix = ("elemental-feats"
+        if VERSION == "0.0.116" else "elemental-heritages"
         if VERSION == "0.0.115" else "elemental-races"
         if VERSION == "0.0.114" else "save-load-hotfix"
         if VERSION == "0.0.113" else "ammunition-cmi-copy-notifications"

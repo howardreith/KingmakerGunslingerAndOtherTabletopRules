@@ -1294,9 +1294,9 @@ function Assert-KmgRuntimeScenarioPreflight {
         -not $qualifiedElementalRaces114) {
         throw 'The qualified 0.0.114 preflight exception is limited to the Elemental Race legacy persistence producer.'
     }
-    if ($ExpectedVersion -cne '0.0.115' -and
+    if ($ExpectedVersion -cne '0.0.116' -and
         -not $qualifiedElementalRaces114) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.115.'
+        throw 'ExpectedVersion must be exactly the active version 0.0.116.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'

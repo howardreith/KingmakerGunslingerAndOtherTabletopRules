@@ -63,6 +63,10 @@ Unchecked items are pending and must not be inferred from builds or historical
   mods and pinned exact maneuver, Wings, concealment, fire-enchantment, and
   Small Water Elemental identities/fields; the original environment was
   restored byte-for-byte.
+- [x] The active version is 0.0.116 and all 25 Release B save-bearing
+  identities have fixed manifest GUIDs, unconditional registration, exact
+  blueprint types, and a passing repository/full-suite/clean-package
+  checkpoint. This does not qualify their pending gameplay mechanics.
 - [ ] Feat identities register unconditionally; module-gated publication to
   exact universal/combat selectors is additive, deterministic, idempotent,
   conflict refusing, order preserving, and reversible.

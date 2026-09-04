@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.115',
+    [string]$ExpectedVersion = '0.0.116',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,

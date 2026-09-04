@@ -82,6 +82,36 @@ namespace KingmakerGunslinger.DomainTests
                 { "KMG.ElementalRaces.Undine.Visual.Head.Female.02", "e2bd207dbf6b4f15b84ff7d4f6c7efc7" }
             };
 
+        private static readonly IDictionary<string, string> ExpectedFeatIds =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { "KMG.ElementalRaces.Feats.ElementalStrike", "e116e1e0a17a4aceb001000000000001" },
+                { "KMG.ElementalRaces.Feats.ScorchingWeapons", "e116e1e0a17a4aceb001000000000002" },
+                { "KMG.ElementalRaces.Feats.InnerFlame", "e116e1e0a17a4aceb001000000000003" },
+                { "KMG.ElementalRaces.Feats.BlazingAura", "e116e1e0a17a4aceb001000000000004" },
+                { "KMG.ElementalRaces.Feats.Firesight", "e116e1e0a17a4aceb001000000000005" },
+                { "KMG.ElementalRaces.Feats.AiryStep", "e116e1e0a17a4aceb001000000000006" },
+                { "KMG.ElementalRaces.Feats.WingsOfAir", "e116e1e0a17a4aceb001000000000007" },
+                { "KMG.ElementalRaces.Feats.CloudGazer", "e116e1e0a17a4aceb001000000000008" },
+                { "KMG.ElementalRaces.Feats.InnerBreath", "e116e1e0a17a4aceb001000000000009" },
+                { "KMG.ElementalRaces.Feats.HydraulicManeuver", "e116e1e0a17a4aceb001000000000010" },
+                { "KMG.ElementalRaces.Feats.TritonPortal", "e116e1e0a17a4aceb001000000000011" },
+                { "KMG.ElementalRaces.Feats.ElementalStrike.Ability", "e116e1e0a17a4aceb001000000000012" },
+                { "KMG.ElementalRaces.Feats.ElementalStrike.Buff", "e116e1e0a17a4aceb001000000000013" },
+                { "KMG.ElementalRaces.Feats.ScorchingWeapons.Ability", "e116e1e0a17a4aceb001000000000014" },
+                { "KMG.ElementalRaces.Feats.ScorchingWeapons.Buff", "e116e1e0a17a4aceb001000000000015" },
+                { "KMG.ElementalRaces.Feats.ScorchingWeapons.Enchantment", "e116e1e0a17a4aceb001000000000016" },
+                { "KMG.ElementalRaces.Feats.BlazingAura.Ability", "e116e1e0a17a4aceb001000000000017" },
+                { "KMG.ElementalRaces.Feats.BlazingAura.Buff", "e116e1e0a17a4aceb001000000000018" },
+                { "KMG.ElementalRaces.Feats.WingsOfAir.Buff", "e116e1e0a17a4aceb001000000000019" },
+                { "KMG.ElementalRaces.Feats.HydraulicManeuver.Ability", "e116e1e0a17a4aceb001000000000020" },
+                { "KMG.ElementalRaces.Feats.HydraulicManeuver.BullRushAbility", "e116e1e0a17a4aceb001000000000021" },
+                { "KMG.ElementalRaces.Feats.HydraulicManeuver.DisarmAbility", "e116e1e0a17a4aceb001000000000022" },
+                { "KMG.ElementalRaces.Feats.HydraulicManeuver.TripAbility", "e116e1e0a17a4aceb001000000000023" },
+                { "KMG.ElementalRaces.Feats.HydraulicManeuver.DirtyTrickBlindAbility", "e116e1e0a17a4aceb001000000000024" },
+                { "KMG.ElementalRaces.Feats.TritonPortal.Ability", "e116e1e0a17a4aceb001000000000025" }
+            };
+
         internal static void StableManifestInventoryIsExact()
         {
             JObject manifest = JObject.Parse(Read("blueprints",
@@ -92,11 +122,11 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG.ElementalRaces.", StringComparison.Ordinal) &&
                 string.Equals((string)value["status"], "active",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(121, elemental.Length,
+            Assertions.Equal(146, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1759, all.Length,
-                "Manifest total must include 121 production elemental identities.");
-            Assertions.Equal(1757, all.Count(value => string.Equals(
+            Assertions.Equal(1784, all.Length,
+                "Manifest total must include 146 production elemental identities.");
+            Assertions.Equal(1782, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>
@@ -123,6 +153,52 @@ namespace KingmakerGunslinger.DomainTests
                 ExpectedIds.Keys.All(inventory.Contains),
                 "Identity catalog and manifest symbols drifted.");
             VisualCatalogAndResourceRegistryAreSaveSafe();
+            FeatManifestInventoryIsExact();
+        }
+
+        internal static void FeatManifestInventoryIsExact()
+        {
+            JObject manifest = JObject.Parse(Read("blueprints",
+                "blueprints.json"));
+            JToken[] release = manifest["entries"].Where(value =>
+                string.Equals((string)value["milestone"],
+                    "Elemental Feats 0.0.116",
+                    StringComparison.Ordinal)).ToArray();
+            Assertions.Equal(25, release.Length,
+                "Release B manifest identity count drifted.");
+            Assertions.Equal(11, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintFeature",
+                StringComparison.Ordinal)),
+                "Release B feat identity count drifted.");
+            Assertions.Equal(9, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintAbility",
+                StringComparison.Ordinal)),
+                "Release B ability identity count drifted.");
+            Assertions.Equal(4, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintBuff",
+                StringComparison.Ordinal)),
+                "Release B buff identity count drifted.");
+            Assertions.Equal(1, release.Count(value => string.Equals(
+                (string)value["plannedType"],
+                "BlueprintWeaponEnchantment", StringComparison.Ordinal)),
+                "Release B enchantment identity count drifted.");
+            foreach (KeyValuePair<string, string> expected in ExpectedFeatIds)
+            {
+                JToken[] matches = release.Where(value => string.Equals(
+                    (string)value["symbol"], expected.Key,
+                    StringComparison.Ordinal)).ToArray();
+                Assertions.Equal(1, matches.Length,
+                    "Missing or duplicate Release B identity " + expected.Key);
+                Assertions.Equal(expected.Value, (string)matches[0]["guid"],
+                    "Release B GUID changed for " + expected.Key);
+                Assertions.Equal("active", (string)matches[0]["status"],
+                    "Release B identity is not active: " + expected.Key);
+            }
+            string catalog = Source("ElementalRaceIdentityCatalog.cs");
+            Assertions.True(catalog.Contains("FeatIdentityCount = 25") &&
+                    catalog.Contains("FeatSymbols()") &&
+                    ExpectedFeatIds.Keys.All(catalog.Contains),
+                "Release B source and manifest symbol order drifted.");
         }
 
         internal static void HeritageManifestInventoryIsExact()
@@ -475,6 +551,55 @@ namespace KingmakerGunslinger.DomainTests
             })
                 Assertions.True(runner.Contains(token),
                     "Live elemental selector-publication proof is absent: " + token);
+            FeatRegistrationAndPublicationAreSaveSafe();
+        }
+
+        internal static void FeatRegistrationAndPublicationAreSaveSafe()
+        {
+            string factory = Source("ElementalFeatBlueprintFactory.cs");
+            string set = Source("ElementalFeatBlueprintSet.cs");
+            string publication = Source("ElementalFeatPublication.cs");
+            string bootstrap = Read("src", "KingmakerGunslinger",
+                "Bootstrap", "BlueprintBootstrap.cs");
+            string modules = Read("src", "KingmakerGunslinger",
+                "FeatureModules", "FeatureModulePublicationPlan.cs");
+            foreach (string token in new[]
+            {
+                "ElementalFeatPolicy.Ordered()", "FeatureGroup.Feat",
+                "FeatureGroup.CombatFeat", "PrerequisiteFeature",
+                "PrerequisiteCharacterLevel", "races.Undine.SlaFeature",
+                "AddFacts", "SetIsFullRoundAction(true)",
+                "registered.Count != ElementalRaceIdentityCatalog",
+                ".FeatIdentityCount"
+            })
+                Assertions.True(factory.Contains(token),
+                    "Elemental feat factory contract is absent: " + token);
+            Assertions.False(factory.Contains("RaceId.Aasimar") ||
+                factory.Contains("Guid.NewGuid"),
+                "Feat prerequisites and save identities must remain exact and static.");
+            foreach (string token in new[]
+            {
+                "BasicFeatSelectionGuid", "FighterCombatFeatSelectionGuid",
+                "set.AllFeats()", "set.CombatFeats()",
+                "role + ", "selection.Features",
+                "selection.AllFeatures",
+                "basicTx.Rollback()", "m_Fighter.Rollback()",
+                "m_Basic.Rollback()", "if (!moduleActive)"
+            })
+                Assertions.True(publication.Contains(token),
+                    "Elemental feat publication contract is absent: " + token);
+            Assertions.True(set.Contains(
+                    "ordered.Length != ElementalRaceIdentityCatalog") &&
+                set.Contains("FeatIdentityCount") &&
+                set.Contains("ElementalFeatPolicy.FeatCount"),
+                "Elemental feat set does not validate the complete identity graph.");
+            Assertions.True(modules.Contains(
+                    "ElementalRaceFeats = active.ElementalRaces") &&
+                bootstrap.Contains(
+                    "ElementalFeatBlueprintFactory.Register(") &&
+                bootstrap.Contains("publicationPlan.ElementalRaceFeats") &&
+                bootstrap.Contains("elementalFeatPublication.Rollback()"),
+                "Bootstrap does not always register and module-gate Release B feats.");
         }
 
         internal static void RuntimeMechanicsScenarioIsGuardedAndNative()
