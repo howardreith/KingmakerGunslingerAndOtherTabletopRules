@@ -54,7 +54,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             "wing", "flight", "flying", "air elemental",
             "fog", "mist", "smoke", "cloud", "incendiary",
-            "inhaled", "breath", "gas", "poison", "ray"
+            "inhaled", "breath", "gas", "poison", "ray",
+            "light", "searinglight", "sunbeam", "sunburst", "daylight",
+            "flare"
         };
 
         private sealed class BlueprintEvidence
@@ -63,6 +65,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             public string BlueprintType { get; set; }
             public string InternalName { get; set; }
             public string DisplayName { get; set; }
+            public string AbilityType { get; set; }
+            public string AbilityDescriptor { get; set; }
+            public string ParentAbilityGuid { get; set; }
             public string[] MatchedTerms { get; set; }
             public string[] ComponentTypes { get; set; }
             public string[] UnitFactIdentities { get; set; }
@@ -125,6 +130,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public bool SaveStateTouched { get; set; }
             public int BlueprintCount { get; set; }
             public string[] CombatManeuvers { get; set; }
+            public string[] SpellDescriptors { get; set; }
+            public bool HasNativeLightDescriptor { get; set; }
             public bool HasNativeDirtyTrickBlind { get; set; }
             public bool HasNativeDirtyTrickDazzle { get; set; }
             public List<BlueprintEvidence> NamedBlueprints { get; set; }
@@ -169,6 +176,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence.BlueprintCount = all.Length;
                 evidence.CombatManeuvers = Enum.GetNames(
                     typeof(CombatManeuver));
+                evidence.SpellDescriptors = Enum.GetNames(
+                    typeof(Kingmaker.Blueprints.Classes.Spells
+                        .SpellDescriptor));
+                evidence.HasNativeLightDescriptor = evidence
+                    .SpellDescriptors.Contains("Light",
+                        StringComparer.Ordinal);
                 evidence.HasNativeDirtyTrickBlind = evidence.CombatManeuvers
                     .Contains("DirtyTrickBlind", StringComparer.Ordinal);
                 evidence.HasNativeDirtyTrickDazzle = evidence.CombatManeuvers
@@ -251,6 +264,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(",", evidence.CombatManeuvers),
                     evidence.HasNativeDirtyTrickBlind,
                     "live CombatManeuver enum");
+                Add(assertions, "elemental-feat-native-light-descriptor",
+                    "Kingmaker exposes no native Light spell descriptor; exact identity catalog required",
+                    string.Join(",", evidence.SpellDescriptors),
+                    !evidence.HasNativeLightDescriptor,
+                    "live SpellDescriptor enum");
                 Add(assertions, "elemental-feat-native-dirty-trick-dazzle",
                     "no native DirtyTrickDazzle; use the printed blind option only",
                     evidence.HasNativeDirtyTrickDazzle.ToString(),
@@ -355,12 +373,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintScriptableObject value, string[] matched)
         {
             BlueprintUnit unit = value as BlueprintUnit;
+            BlueprintAbility ability = value as BlueprintAbility;
             return new BlueprintEvidence
             {
                 Guid = value.AssetGuid ?? string.Empty,
                 BlueprintType = value.GetType().FullName,
                 InternalName = value.name ?? string.Empty,
                 DisplayName = DisplayName(value),
+                AbilityType = ability == null ? string.Empty :
+                    ability.Type.ToString(),
+                AbilityDescriptor = ability == null ? string.Empty :
+                    ability.SpellDescriptor.ToString(),
+                ParentAbilityGuid = ability == null || ability.Parent == null
+                    ? string.Empty : ability.Parent.AssetGuid ?? string.Empty,
                 MatchedTerms = matched,
                 ComponentTypes = Components(value).Where(component =>
                         component != null).Select(component =>

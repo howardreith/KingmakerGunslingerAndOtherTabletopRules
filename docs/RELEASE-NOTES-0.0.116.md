@@ -24,6 +24,23 @@ the benefit, and legal armor removal restores it immediately without rest or
 respec. No optional-mod flight component, custom mesh, or persistent VFX is
 copied.
 
+Scorching Weapons is now mechanically active. Its Swift command snapshots up
+to two distinct currently held manufactured weapons carrying Kingmaker's
+native Metal subcategory and applies a one-round enchantment owned by those
+exact items. Unequipping or swapping does not transfer the benefit. Qualifying
+attacks deal exactly 1 additional fire damage once, ordinary fire resistance
+applies, and an existing fire-damage weapon effect suppresses the project
+packet. The feat grants one +2 racial save modifier against fire attacks and
+native Light-descriptor spells.
+
+Inner Flame now replaces those values with 1d6 fire damage and +4 total rather
+than stacking base and improved benefits. Kingmaker has no ordinary
+player-facing grapple state, so the printed grapple clause remains an honest
+no-op. Kingmaker 2.1.7b also has no `SpellDescriptor.Light`; the implementation
+uses an immutable isolated-runtime-audited catalog of seven exact native Spell
+identities and excludes racial spell-like abilities from that Light-spell
+branch.
+
 The required catalog is Elemental Strike; Scorching Weapons, Inner Flame,
 Blazing Aura, and Firesight for Ifrits; Airy Step, Wings of Air, Cloud Gazer,
 and Inner Breath for Sylphs; and Hydraulic Maneuver and Triton Portal for
@@ -32,11 +49,15 @@ included.
 
 Dedicated guarded run
 `20260904T2000378983332Z-b0699acd82da4d378c3abdded3983858` passed all
-16 Elemental Strike/Wings assertions with no warnings and exact disposable-unit
-cleanup. This checkpoint is independently buildable but is not a Release B
-PASS. The other nine feat mechanics, save-backed persistence, compatibility
-profiles, and final release hashes remain pending. Release A 0.0.115 evidence
-remains historical and is not relabelled as 0.0.116 evidence.
+16 Elemental Strike/Wings assertions. Isolated guarded run
+`20260904T2222242573484Z-6e4985f6214a4ffeba5512e353f884f3` passed all
+12 Scorching Weapons/Inner Flame assertions. Both had zero warnings, touched
+no save, and cleaned up their disposable units exactly. This checkpoint is
+independently buildable but is not a Release B PASS. Blazing Aura, Firesight,
+Airy Step, Cloud Gazer, Inner Breath, Hydraulic Maneuver, Triton Portal,
+save-backed persistence, compatibility profiles, and final release hashes
+remain pending. Release A 0.0.115 evidence remains historical and is not
+relabelled as 0.0.116 evidence.
 
 The candidate preserves the previously qualified firearm SoundBank byte
 identity `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.

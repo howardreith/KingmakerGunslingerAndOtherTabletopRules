@@ -67,15 +67,18 @@ Unchecked items are pending and must not be inferred from builds or historical
   identities have fixed manifest GUIDs, unconditional registration, exact
   blueprint types, and a passing repository/full-suite/clean-package
   checkpoint. This does not qualify their pending gameplay mechanics.
-- [ ] Feat identities register unconditionally; module-gated publication to
+- [x] Feat identities register unconditionally; module-gated publication to
   exact universal/combat selectors is additive, deterministic, idempotent,
   conflict refusing, order preserving, and reversible.
-- [ ] Exact race/level/feat/SLA prerequisites and all-heritage eligibility pass.
+- [x] Exact race/level/feat/SLA prerequisites and all-heritage eligibility pass.
 - [x] Elemental Strike implements exact swift-action, one-round, race-energy,
   level-breakpoint, weapon-only, once-per-attack behavior.
-- [ ] Scorching Weapons, Inner Flame, Blazing Aura, and Firesight pass their
-  exact action, item snapshot, damage/replacement, turn-start, resistance,
-  cleanup, persistence, and concealment contracts.
+- [x] Scorching Weapons and Inner Flame independently pass exact native-command,
+  two-metal-weapon snapshot, swap/unequip, damage/replacement, resistance,
+  nonstacking, save-bonus replacement, and request-local cleanup mechanics.
+- [ ] Blazing Aura and Firesight pass exact turn-start, friendly-creature,
+  resistance, curated-concealment, and exclusion contracts; Scorching item
+  persistence/death cleanup remains part of the release-wide persistence gate.
 - [ ] Airy Step, Wings of Air, Cloud Gazer, and Inner Breath pass exact save,
   native-flight/armor, curated concealment, and respiration contracts.
 - [x] Wings of Air independently passes its exact base-Owlcat native-flight

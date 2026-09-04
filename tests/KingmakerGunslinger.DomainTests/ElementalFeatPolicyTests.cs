@@ -240,6 +240,41 @@ namespace KingmakerGunslinger.DomainTests
                 ElementalFeatPolicy.ScorchingWeaponsSaveBonus(
                     true, true, false, false, false),
                 "Unrelated saves must receive no bonus.");
+
+            string[] lightSpells = ElementalFeatPolicy
+                .ExactNativeLightSpellGuids();
+            string[] expectedLightSpells =
+            {
+                "2b877386976817a429002e8bb10bb3fc",
+                "f0f8e5b9808f44e4eadd22b138131d52",
+                "39a602aa80cc96f4597778b6d4d49c0a",
+                "bf0accce250381a44b857d4af6c8e10d",
+                "1fca0ba2fdfe2994a8c8bc1f0f2fc5b1",
+                "a9e9c0df76399fe4795c0baf2c136a92",
+                "e96424f70ff884947b06f41a765b7658"
+            };
+            Assertions.True(lightSpells.SequenceEqual(expectedLightSpells),
+                "The immutable native Light spell catalog drifted from guarded KMG-only evidence.");
+            foreach (string guid in lightSpells)
+                Assertions.True(ElementalFeatPolicy
+                        .IsExactNativeLightSpellGuid(guid),
+                    "Every returned native Light spell identity must match exactly.");
+            lightSpells[0] = "mutated";
+            Assertions.Equal(expectedLightSpells[0], ElementalFeatPolicy
+                .ExactNativeLightSpellGuids()[0],
+                "The native Light spell catalog must be immutable to callers.");
+            Assertions.False(ElementalFeatPolicy
+                    .IsExactNativeLightSpellGuid(
+                        "253673e368edc8949831c589f840964b"),
+                "The native Aasimar Searing Light SLA must not enter the spell-only catalog.");
+            Assertions.False(ElementalFeatPolicy
+                    .IsExactNativeLightSpellGuid(
+                        "e115e1e0a17a4aceb001000000000030"),
+                "The project Sunsoul Flare Burst SLA must not enter the spell-only catalog.");
+            Assertions.False(ElementalFeatPolicy
+                    .IsExactNativeLightSpellGuid(
+                        expectedLightSpells[0].ToUpperInvariant()),
+                "Light spell identity matching must remain exact and ordinal.");
         }
 
         internal static void SylphVisionBreathingAndAuraBoundariesAreExact()

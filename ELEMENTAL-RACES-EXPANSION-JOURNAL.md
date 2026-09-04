@@ -1009,3 +1009,122 @@ and the first focused mechanical group from the now-qualified native contracts.
   slice. The exact mandated push wrapper was run immediately afterward and
   again refused `codex/elemental-races-expansion` because the external
   allowlist omits it; no alternate push path was used.
+
+## 2026-09-04 - Release B Ifrit rules and native Light audit
+
+- Rechecked the published Scorching Weapons, Inner Flame, Blazing Aura, and
+  Firesight entries at Archives of Nethys. Scorching Weapons grants its save
+  bonus against fire attacks and Light-descriptor spells, snapshots up to two
+  held manufactured metallic weapons for one round, and does not stack its
+  fire damage with an existing fire-damage weapon effect. Inner Flame has the
+  published character-level 7 prerequisite, replaces both Scorching values,
+  and retains the explicit Kingmaker grapple no-op. Source URLs:
+  `https://www.aonprd.com/FeatDisplay.aspx?ItemName=Scorching+Weapons`,
+  `https://www.aonprd.com/FeatDisplay.aspx?ItemName=Inner+Flame`,
+  `https://www.aonprd.com/FeatDisplay.aspx?ItemName=Blazing+Aura+%28ARG%29`,
+  and `https://www.aonprd.com/FeatDisplay.aspx?ItemName=Firesight`.
+- Expanded the dedicated read-only native-contract scenario instead of
+  guessing that Kingmaker's `SpellDescriptor` matches later Owlcat games.
+  Isolated KMG-only run
+  `20260904T2056551938471Z-3294e74f2e5a4a78a9baed9cb5f1cac3`
+  passed 10/10 with zero warnings and proved that Kingmaker 2.1.7b has no
+  native `Light` enum member. It recorded native ability type, descriptor,
+  and parent identities for the exact candidate family.
+- The resulting immutable spell-only catalog contains Daylight
+  `2b877386976817a429002e8bb10bb3fc`, Flare
+  `f0f8e5b9808f44e4eadd22b138131d52`, Flare Burst
+  `39a602aa80cc96f4597778b6d4d49c0a`, Searing Light
+  `bf0accce250381a44b857d4af6c8e10d`, Sunbeam root
+  `1fca0ba2fdfe2994a8c8bc1f0f2fc5b1`, Sunbeam delivery
+  `a9e9c0df76399fe4795c0baf2c136a92`, and Sunburst
+  `e96424f70ff884947b06f41a765b7658`. Exact ordinal identity and parent-chain
+  recognition are required. Non-Spell abilities, including the project
+  Sunsoul SLA and native Aasimar Searing Light SLA, fail the Light-spell
+  branch closed.
+- Runtime-result, native-audit, and runtime-evidence SHA-256 values are
+  `633c00f21f4311858df73c14f43363b4a29c9dfcb53b95f6b321456e1b27c339`,
+  `34adf61f8bf6194b7504e7cf5a9dba04631236c40ac19d4f8f2563dc61091aef`,
+  and `2ab4ce76a9e33dbe228b999184f788c1ad5eb6e6e0815a167ba0ba40995d7cf`.
+  Compatibility transaction `compat-20260904T205636Z-4ad2be66aaa5`
+  restored the exact original profile; its transaction SHA-256 is
+  `ced49b256acb4bbcbe989deff595efc4212b6700374ff347d4e8e5e00d982b12`.
+
+## 2026-09-04 - Release B mechanics slice 2 runtime PASS
+
+- Implemented Scorching Weapons as a native Swift custom-delivery command.
+  It requires the exact project Ifrit race, snapshots at most the two distinct
+  weapons occupying the native primary/secondary hand slots, and accepts only
+  native `WeaponSubCategory.Metal` manufactured weapons. Natural, unarmed,
+  nonmetallic, newly equipped, and replacement weapons remain unaffected.
+  Each selected item receives the stable project enchantment for one round;
+  `RemoveOnUnequipItem` is disabled so the exact item owns cleanup even if it
+  leaves the hand. Partial application rolls back the exact item facts and
+  owner marker in reverse order.
+- The item-enchantment rule component handles live
+  `RuleAttackWithWeapon -> RulePrepareDamage -> RuleDealDamage` traffic,
+  verifies exact weapon/caster/target ownership, and claims each damage rule
+  once with a weak identity marker. Base Scorching Weapons contributes one
+  pre-rolled fire point. Inner Flame replaces that packet with 1d6 fire; the
+  base and improved values are never both added. Existing fire damage in the
+  weapon bundle or a live native `WeaponEnergyDamageDice(Fire)` enchantment
+  suppresses the project packet. Native resistance and immunity remain in the
+  ordinary damage pipeline.
+- The feature's saving-throw rule component applies one `Racial` modifier:
+  +2 normally or +4 total with Inner Flame. It recognizes fire descriptors
+  across the effective ability/parent chain, direct fire-damage attack
+  reasons, and only the exact audited native Light spells. A per-rule weak
+  claim prevents overlap from adding twice.
+- Added dedicated save-free scenario `disposable-elemental-ifrit-feats` and
+  only constant dispatch/allowlist registration to central runtime plumbing.
+  It uses actual native commands, two held item slots, item enchantments,
+  attack/damage/save rules, fire resistance, the exact native Flaming
+  enchantment, and request-local units with exact teardown.
+- Diagnostic evidence remains diagnostic. Combined-profile run
+  `20260904T2152250892256Z-a30e171838144a93aa2dc6e2e0ed4182`
+  timed out during the large optional-mod startup before guarded request
+  acceptance; the exact process was verified and stopped. Transaction
+  `compat-20260904T220030Z-f34b903063e1` failed package expansion when the
+  disk was full and restored exactly. Isolated mechanics run
+  `20260904T2203354720562Z-7cb0710d200147afb4e0b498244fadce`
+  passed 10/12 but correctly failed the two save checks because the fixture
+  made the target dummy, rather than the feat-owning Ifrit, initiate the save;
+  the wrapper subsequently reported that a reproducible validator executable
+  had been removed during disk cleanup. The complete suite recreated it.
+  Transaction `compat-20260904T221412Z-3e21f69efe75` then correctly rejected
+  the stale pre-fix artifact before launch. Every compatibility attempt
+  restored its staged profile; none is promoted to PASS evidence.
+- After correcting only the saving-throw fixture ownership, the complete
+  dependency-free suite passed 1,408/1,408. The exact-reference clean Release
+  build and strict 135-entry package validator passed. The resulting
+  23,088,220-byte package hashes to
+  `5fff026ebaee0cde153a7f9f5205b57d6e1d93c907214e7e4a7c920f4615db7b`;
+  its 5,775,872-byte DLL hashes to
+  `bd9c283ab4600e9bf7b53391a0f3f4a0f2aa5db533890d919328e5c747634884`
+  with MVID `387f41cc-054d-4982-8563-affb8fdbc5c6`. Source-state SHA-256 is
+  `7e518ca0f0dc79c874106b2d4bf40c3addb9e540a1c59090f8933a4d2a481a0c`;
+  deployment-manifest SHA-256 is
+  `0983a9aac9ab9a0453bacfe880037ee109d194b360cc571d1a43fab0a1f900c3`.
+- Final isolated exact-artifact run
+  `20260904T2222242573484Z-6e4985f6214a4ffeba5512e353f884f3`
+  passed 12/12 in 63,043 ms with zero warnings, no save access, and exact
+  request-local cleanup. Cancellation began no command and applied zero
+  effects. An accepted command applied one six-second marker and one
+  six-second enchantment to each shortsword; both survived unequip, no
+  replacement weapon inherited either effect, and Sling/Touch/empty-hand
+  controls received no item enchantment. Base damage remained one packet and
+  one point under replay, resistance reduced it to zero, Inner Flame emitted
+  exactly one un-pre-rolled d6, and native Flaming emitted only its own d6.
+  Saving-throw stat 3 became 5 for fire, exact Light, overlapping fire/Light,
+  and direct-fire sources; control and project light SLA remained 3; Inner
+  Flame produced 7 rather than an additive 9.
+- Runtime-result, feature-evidence, and runtime-evidence SHA-256 values are
+  `4c98ea5a6d09c82576ee5e89166aaf98428ac5935da63d32d545d2e364a93b21`,
+  `0b6bffed286270909cfe296f1b504936f4a0e27c2ae151729fa5397cb8a3fca8`,
+  and `e57cc1f5f430b19b8ab111a64c9601f8b70edb3a34c0466a2e2f5e605e227b7b`.
+  Compatibility transaction `compat-20260904T222205Z-322a3ccf16c8`
+  restored the exact staged mod/settings state; transaction SHA-256 is
+  `6d1e3072cf88fb384555c1c9c1d4e9f6f60c9efb1c4252a1940113d6248a43ad`.
+- This independently qualifies Scorching Weapons and Inner Flame mechanics,
+  but is not a Release B PASS. Blazing Aura, Firesight, Airy Step, Cloud
+  Gazer, Inner Breath, Hydraulic Maneuver, Triton Portal, persistence,
+  compatibility profiles, and final Release B gates remain pending.
