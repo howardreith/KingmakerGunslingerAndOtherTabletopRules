@@ -138,7 +138,8 @@
     "runtimeQualification": "NOT-RUN-MECHANICS-PENDING",
     "persistenceQualification": "NOT-RUN-MECHANICS-PENDING",
     "compatibilityQualification": "NOT-RUN-MECHANICS-PENDING",
-    "releaseStatus": "NOT-A-RELEASE-B-PASS"
+    "releaseStatus": "NOT-A-RELEASE-B-PASS",
+    "sourceCommit": "ecc65faad142960de6f5b1ea523feaa9ed83dac7"
   },
   "baselineGates": {
     "repositoryValidation": "PASS",
@@ -704,11 +705,11 @@
     "elementalActive": 68
   },
   "currentManifest": {
-    "total": 1759,
-    "active": 1757,
+    "total": 1784,
+    "active": 1782,
     "reserved": 2,
-    "elementalTotal": 122,
-    "elementalActive": 121,
+    "elementalTotal": 147,
+    "elementalActive": 146,
     "elementalReserved": 1
   },
   "newIdentities": [
@@ -718,6 +719,13 @@
       "guidPrefix": "e115e1e0a17a4aceb001",
       "range": "e115e1e0a17a4aceb001000000000001..e115e1e0a17a4aceb001000000000053",
       "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.HeritageSymbols()"
+    },
+    {
+      "release": "B",
+      "count": 25,
+      "guidPrefix": "e116e1e0a17a4aceb001",
+      "range": "e116e1e0a17a4aceb001000000000001..e116e1e0a17a4aceb001000000000025",
+      "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.FeatSymbols()"
     }
   ],
   "compatibility": {
@@ -799,6 +807,18 @@
       "sha": "74365a2c41e57d4fa76546cb69d5543101a94086",
       "subject": "Audit native Elemental Feat contracts",
       "checkpoint": "release-b-native-contract-audit",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "99339e894420a33b335eec7883aeb95b33f4f646",
+      "subject": "Define Elemental Feat behavior policies",
+      "checkpoint": "release-b-pure-policy",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "ecc65faad142960de6f5b1ea523feaa9ed83dac7",
+      "subject": "Register Elemental Feat blueprints",
+      "checkpoint": "release-b-identity-publication",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],
