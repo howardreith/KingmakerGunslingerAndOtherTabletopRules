@@ -353,3 +353,70 @@ Mechanics-slice commit `bacc7a0da6400fa4538db6092ee29f3ae28bd514`
 was followed immediately by the exact mandated push wrapper. The wrapper
 again refused the user-required branch because its external allowlist omits
 `codex/elemental-races-expansion`; no bypass was attempted.
+
+## Release B mechanics slice 2
+
+Scorching Weapons is now an exact-race Swift command using native custom
+ability delivery. On acceptance it snapshots at most the two distinct weapons
+currently occupying the Ifrit's hand slots and admits only manufactured
+weapons carrying native `WeaponSubCategory.Metal`. Each qualifying item owns
+the stable project enchantment for one round with removal-on-unequip disabled;
+the benefit therefore neither transfers to a replacement item nor disappears
+from the selected item merely because it is unequipped. Partial application
+rolls back exact item facts and the round marker.
+
+The enchantment contributes exactly one fire packet on a successful native
+weapon attack. Base Scorching Weapons contributes +1; Inner Flame replaces it
+with 1d6 rather than adding another packet. The handler binds the exact
+initiator, weapon, target, damage bundle, and item-owned context, and uses weak
+damage-rule identity to suppress replay. It declines an attack that already
+contains fire weapon damage or whose item has another live native
+`WeaponEnergyDamageDice(Fire)` effect, leaving resistance and immunity to the
+ordinary damage pipeline.
+
+The passive save component applies one `ModifierDescriptor.Racial` modifier:
++2 for Scorching Weapons or +4 total with Inner Flame. Fire descriptors are
+resolved across effective ability parents and direct fire-damage reasons are
+recognized. Kingmaker 2.1.7b exposes no `SpellDescriptor.Light`, so an enriched
+isolated KMG-only native audit produced an exact immutable seven-spell catalog:
+Daylight, Flare, Flare Burst, Searing Light, Sunbeam root and delivery, and
+Sunburst. Only native `AbilityType.Spell` entries enter that branch; exact
+parent identity handles variants without admitting racial SLAs.
+
+The enriched audit run
+`20260904T2056551938471Z-3294e74f2e5a4a78a9baed9cb5f1cac3`
+passed 10/10 with zero warnings. Result/audit/runtime-evidence hashes are
+`633c00f21f4311858df73c14f43363b4a29c9dfcb53b95f6b321456e1b27c339`,
+`34adf61f8bf6194b7504e7cf5a9dba04631236c40ac19d4f8f2563dc61091aef`,
+and `2ab4ce76a9e33dbe228b999184f788c1ad5eb6e6e0815a167ba0ba40995d7cf`.
+The exact isolated-profile transaction restored successfully.
+
+Dedicated save-free scenario `disposable-elemental-ifrit-feats` exercises the
+native command, item slots/enchantments, attack/damage/save rule pipelines,
+fire resistance, native Flaming nonstacking control, and exact teardown.
+Exact-artifact run
+`20260904T2222242573484Z-6e4985f6214a4ffeba5512e353f884f3`
+passed 12/12 with zero warnings. It proves canceled versus accepted commands,
+two-weapon snapshots, one-round timing, unequip and swap behavior,
+metal/nonmetal/natural/empty-hand classification, +1 and replacement 1d6
+damage, one application under replay, resistance, nonstacking, +2 and
+replacement +4 saves, fire/Light overlap deduplication, and exact cleanup.
+Runtime-result, feature-evidence, and runtime-evidence SHA-256 values are
+`4c98ea5a6d09c82576ee5e89166aaf98428ac5935da63d32d545d2e364a93b21`,
+`0b6bffed286270909cfe296f1b504936f4a0e27c2ae151729fa5397cb8a3fca8`,
+and `e57cc1f5f430b19b8ab111a64c9601f8b70edb3a34c0466a2e2f5e605e227b7b`.
+Compatibility transaction `compat-20260904T222205Z-322a3ccf16c8` restored
+the original staged mod/settings state exactly.
+
+Repository validation, the complete 1,408/1,408 suite, exact-reference clean
+Release build, and strict 135-entry package validation passed. The exact
+23,088,220-byte package hashes to
+`5fff026ebaee0cde153a7f9f5205b57d6e1d93c907214e7e4a7c920f4615db7b`;
+its 5,775,872-byte DLL hashes to
+`bd9c283ab4600e9bf7b53391a0f3f4a0f2aa5db533890d919328e5c747634884`
+with MVID `387f41cc-054d-4982-8563-affb8fdbc5c6`.
+
+This remains a partial Release B checkpoint. Blazing Aura, Firesight, Airy
+Step, Cloud Gazer, Inner Breath, Hydraulic Maneuver, Triton Portal,
+feat-bearing persistence, compatibility profiles, and final Release B gates
+remain pending; no Release B PASS is claimed.

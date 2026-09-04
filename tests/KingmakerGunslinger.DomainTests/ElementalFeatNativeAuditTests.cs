@@ -24,6 +24,10 @@ namespace KingmakerGunslinger.DomainTests
                 "SaveStateTouched = false",
                 "library.GetAllBlueprints()",
                 "Enum.GetNames(",
+                "SpellDescriptors",
+                "HasNativeLightDescriptor",
+                "AbilityDescriptor",
+                "ParentAbilityGuid",
                 "DirtyTrickBlind",
                 "ContextActionSpawnMonster",
                 "WeaponEnergyDamageDice",
@@ -90,6 +94,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalRaces", "ElementalFeatBlueprintFactory.cs");
             string scenario = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalFeatMechanicsScenario.cs");
+            string ifritScenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalIfritFeatScenario.cs");
             string catalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -111,7 +117,12 @@ namespace KingmakerGunslinger.DomainTests
                 "IsSpellDamage(damage)",
                 "PreRolledValue = bonus",
                 "ElementalWingsOfAirController",
-                "ArmorProficiencyGroup.Light"
+                "ArmorProficiencyGroup.Light",
+                "ElementalScorchingWeaponsAbilityLogic",
+                "ElementalScorchingWeaponsDamage",
+                "ElementalScorchingWeaponsSaveBonus",
+                "RemoveOnUnequipItem = false",
+                "ModifierDescriptor.Racial"
             })
                 Assertions.True(mechanics.Contains(token),
                     "Elemental Feat runtime mechanics are missing boundary " +
@@ -125,7 +136,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ACBonusAgainstAttacks",
                 "AddConditionImmunity",
                 "BuffDescriptorImmunity",
-                "ConfigureWingsFeature"
+                "ConfigureWingsFeature",
+                "ConfigureScorchingWeapons"
             })
                 Assertions.True(factory.Contains(token),
                     "Elemental Feat factory wiring is missing " + token + ".");
@@ -151,6 +163,23 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(scenario.Contains(token),
                     "Dedicated Elemental Feat scenario is missing live boundary " +
                     token + ".");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility",
+                "PrimaryHand.InsertItem",
+                "SecondaryHand.InsertItem",
+                "RemoveOnUnequipItem",
+                "RuleAttackWithWeapon",
+                "RulePrepareDamage",
+                "RuleSavingThrow",
+                "FlamingEnchantmentGuid",
+                "WeaponSubCategory.Metal",
+                "SaveStateTouched = false",
+                "Game.Instance.State.Units.All.Remove(unit)"
+            })
+                Assertions.True(ifritScenario.Contains(token),
+                    "Dedicated Ifrit feat scenario is missing live boundary " +
+                    token + ".");
             foreach (string source in new[]
             {
                 catalog, automation, preflight, compatibility
@@ -158,18 +187,35 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(
                         "disposable-elemental-feat-mechanics"),
                     "Elemental Feat mechanics are outside a guarded allowlist.");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-ifrit-feats"),
+                    "Ifrit feat mechanics are outside a guarded allowlist.");
             Assertions.True(runner.Contains(
                     ".DisposableElementalFeatMechanics") &&
                 runner.Contains("ElementalFeatMechanicsScenario.Run("),
                 "Elemental Feat mechanics are outside constant-based dispatch.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalIfritFeats") &&
+                runner.Contains("ElementalIfritFeatScenario.Run("),
+                "Ifrit feat mechanics are outside constant-based dispatch.");
             Assertions.Equal(2,
                 catalog.Split(new[] { "DisposableElementalFeatMechanics" },
                     StringSplitOptions.None).Length - 1,
                 "Elemental Feat mechanics must have one constant declaration and " +
                 "one executable catalog entry.");
+            Assertions.Equal(2,
+                catalog.Split(new[] { "DisposableElementalIfritFeats" },
+                    StringSplitOptions.None).Length - 1,
+                "Ifrit feat mechanics must have one constant declaration and " +
+                "one executable catalog entry.");
             Assertions.True(project.Contains(
                     "ElementalFeatRuleComponents.cs") &&
-                project.Contains("ElementalFeatMechanicsScenario.cs"),
+                project.Contains("ElementalFeatMechanicsScenario.cs") &&
+                project.Contains("ElementalIfritFeatScenario.cs"),
                 "Elemental Feat mechanics or scenario is outside the build.");
         }
     }

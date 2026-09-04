@@ -795,6 +795,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalIfritFeats)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalIfritFeatScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
                     .ObserveElementalHeritageBlueprints)
                 {
                     if (ResourcesLibrary.Preloading) return;

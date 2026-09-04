@@ -938,6 +938,7 @@
     <Compile Include="RuntimeTesting\ElementalHeritageDonorAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalFeatNativeAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalFeatMechanicsScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalIfritFeatScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageBlueprintScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageSlaScenario.cs" />

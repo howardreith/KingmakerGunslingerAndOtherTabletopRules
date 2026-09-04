@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through Release B identity/publication commit
-  `ecc65faad142960de6f5b1ea523feaa9ed83dac7` cannot currently be pushed.
+- Local checkpoints through Release B mechanics-record commit
+  `4adb34cc72e4a8ac7ccb0b5313f329a9a2f0f8fa` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
@@ -36,12 +36,31 @@ None established.
 - Visual Adjustments was absent during Release A qualification and is recorded
   as NOT-RUN. Its absence is not a Release A blocker under repository policy.
 - Local reflection confirms neither `BlueprintItemWeapon` nor
-  `BlueprintWeaponType` exposes weapon-composition metadata. Scorching Weapons
-  therefore requires a documented, immutable category/type classification;
-  that classification and its live representative-weapon tests remain open.
+  `BlueprintWeaponType` exposes a separate material field. The native
+  `WeaponSubCategory.Metal` contract is the exact available classification;
+  Scorching Weapons now uses it and guarded representative metal, nonmetal,
+  natural, replacement, and empty-hand tests pass.
 
 These are investigation items, not hard stops. Features fail closed only under
 the mission's hard-stop contract; independent work continues.
+
+## Resolved Release B mechanics findings
+
+- Kingmaker 2.1.7b has no `SpellDescriptor.Light`. An isolated KMG-only audit
+  established an immutable seven-GUID native Spell catalog and exact parent
+  traversal for Scorching Weapons. Spell-like abilities do not enter the
+  Light-spell branch; fire attacks remain covered through their fire
+  descriptor or direct fire-damage rule reason.
+- The first isolated Ifrit-feat run attached the feat to the Ifrit but made a
+  target dummy initiate `RuleSavingThrow`, so the native initiator component
+  correctly did not fire. Only the request-local scenario was corrected. The
+  rerun proves +2 and replacement +4 modifiers on the feat owner through the
+  actual save rule.
+- Disk exhaustion and a removed reproducible validator executable caused two
+  orchestration failures. Exact staged-profile restoration passed after each;
+  no save was accessed. Narrow cleanup removed only current-version generated
+  build outputs, the full suite recreated the validator, and the final exact
+  artifact/runtime transaction passed.
 
 ## Resolved foundation limitations
 

@@ -154,6 +154,10 @@ namespace KingmakerGunslinger.ElementalRaces
             }
             ConfigureWingsFeature(features[ElementalFeatId.WingsOfAir],
                 wingsBuff);
+            ConfigureScorchingWeapons(
+                features[ElementalFeatId.ScorchingWeapons],
+                features[ElementalFeatId.InnerFlame], scorchingAbility,
+                scorchingBuff, scorchingEnchantment, races.Ifrit.Race);
 
             if (scorchingEnchantment.ComponentsArray == null ||
                 registered.Count != ElementalRaceIdentityCatalog
@@ -418,6 +422,37 @@ namespace KingmakerGunslinger.ElementalRaces
                 Array.Empty<BlueprintComponent>()).Where(value =>
                     !(value is ElementalWingsOfAirController)).Concat(
                         new BlueprintComponent[] { controller }).ToArray();
+        }
+
+        private static void ConfigureScorchingWeapons(
+            BlueprintFeature scorchingFeature, BlueprintFeature innerFlame,
+            BlueprintAbility ability, BlueprintBuff marker,
+            BlueprintWeaponEnchantment enchantment, BlueprintRace ifrit)
+        {
+            if (scorchingFeature == null || innerFlame == null ||
+                ability == null || marker == null || enchantment == null ||
+                ifrit == null) throw new ArgumentNullException();
+
+            var saveBonus = ScriptableObject.CreateInstance<
+                ElementalScorchingWeaponsSaveBonus>();
+            saveBonus.InnerFlame = innerFlame;
+            scorchingFeature.ComponentsArray = (scorchingFeature
+                .ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .Where(value => !(value is
+                    ElementalScorchingWeaponsSaveBonus))
+                .Concat(new BlueprintComponent[] { saveBonus }).ToArray();
+
+            var delivery = ScriptableObject.CreateInstance<
+                ElementalScorchingWeaponsAbilityLogic>();
+            delivery.Ifrit = ifrit;
+            delivery.Marker = marker;
+            delivery.WeaponEnchantment = enchantment;
+            ability.ComponentsArray = new BlueprintComponent[] { delivery };
+
+            var damage = ScriptableObject.CreateInstance<
+                ElementalScorchingWeaponsDamage>();
+            damage.InnerFlame = innerFlame;
+            enchantment.ComponentsArray = new BlueprintComponent[] { damage };
         }
 
         private static BlueprintWeaponEnchantment CreateEnchantment()

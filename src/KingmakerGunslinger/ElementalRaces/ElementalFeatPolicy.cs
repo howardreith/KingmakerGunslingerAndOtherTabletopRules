@@ -190,6 +190,26 @@ namespace KingmakerGunslinger.ElementalRaces
 
     internal static class ElementalFeatPolicy
     {
+        // Kingmaker 2.1.7b has no SpellDescriptor.Light member. These exact
+        // native Spell blueprints are the locally audited PF1 light-descriptor
+        // family. Evidence: guarded KMG-only run
+        // 20260904T2056551837877Z, native-audit SHA-256
+        // 34adf61f8bf6194b7504e7cf5a9dba04631236c40ac19d4f8f2563dc61091aef.
+        private static readonly string[] s_ExactNativeLightSpellGuids =
+        {
+            "2b877386976817a429002e8bb10bb3fc", // Daylight
+            "f0f8e5b9808f44e4eadd22b138131d52", // Flare
+            "39a602aa80cc96f4597778b6d4d49c0a", // Flare Burst
+            "bf0accce250381a44b857d4af6c8e10d", // Searing Light
+            "1fca0ba2fdfe2994a8c8bc1f0f2fc5b1", // Sunbeam
+            "a9e9c0df76399fe4795c0baf2c136a92", // Sunbeam delivery
+            "e96424f70ff884947b06f41a765b7658"  // Sunburst
+        };
+
+        private static readonly HashSet<string> s_ExactNativeLightSpellSet =
+            new HashSet<string>(s_ExactNativeLightSpellGuids,
+                StringComparer.Ordinal);
+
         internal const int FeatCount = 11;
 
         private static readonly ElementalHydraulicManeuver[]
@@ -312,6 +332,17 @@ namespace KingmakerGunslinger.ElementalRaces
                 !(isFireAttack || hasFireDescriptor || hasLightDescriptor))
                 return 0;
             return hasInnerFlame ? 4 : 2;
+        }
+
+        internal static string[] ExactNativeLightSpellGuids()
+        {
+            return (string[])s_ExactNativeLightSpellGuids.Clone();
+        }
+
+        internal static bool IsExactNativeLightSpellGuid(string guid)
+        {
+            return !string.IsNullOrEmpty(guid) &&
+                s_ExactNativeLightSpellSet.Contains(guid);
         }
 
         internal static string[] SnapshotScorchingWeapons(
