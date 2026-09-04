@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using KingmakerGunslinger.ElementalRaces;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
@@ -91,11 +92,11 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG.ElementalRaces.", StringComparison.Ordinal) &&
                 string.Equals((string)value["status"], "active",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(68, elemental.Length,
+            Assertions.Equal(121, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1706, all.Length,
-                "Manifest total must include 68 production elemental identities.");
-            Assertions.Equal(1704, all.Count(value => string.Equals(
+            Assertions.Equal(1759, all.Length,
+                "Manifest total must include 121 production elemental identities.");
+            Assertions.Equal(1757, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>
@@ -115,11 +116,155 @@ namespace KingmakerGunslinger.DomainTests
             string visualCatalog = SourceVisual(
                 "ElementalRaceVisualCatalog.cs");
             string inventory = catalog + visualCatalog;
-            Assertions.True(catalog.Contains("MechanicIdentityCount = 24") &&
+            Assertions.True(catalog.Contains(
+                    "LegacyMechanicIdentityCount = 24") &&
+                catalog.Contains("HeritageIdentityCount = 53") &&
                 catalog.Contains("ManifestIdentityCount = IdentityCount +") &&
                 ExpectedIds.Keys.All(inventory.Contains),
                 "Identity catalog and manifest symbols drifted.");
             VisualCatalogAndResourceRegistryAreSaveSafe();
+        }
+
+        internal static void HeritageManifestInventoryIsExact()
+        {
+            JObject manifest = JObject.Parse(Read("blueprints",
+                "blueprints.json"));
+            JToken[] release = manifest["entries"].Where(value =>
+                string.Equals((string)value["milestone"],
+                    "Elemental Heritages 0.0.115",
+                    StringComparison.Ordinal)).ToArray();
+            ElementalHeritageDefinition[] all = ElementalHeritagePolicy
+                .Ordered().ToArray();
+            ElementalHeritageDefinition[] alternate = all.Where(value =>
+                !value.IsGeneral).ToArray();
+            string[] expected = all.Select(value => value.SelectionSymbol)
+                .Distinct(StringComparer.Ordinal)
+                .Concat(all.Select(value => value.MarkerSymbol))
+                .Concat(alternate.Select(value =>
+                    value.AffinityFeatureSymbol))
+                .Concat(alternate.SelectMany(value => new[]
+                {
+                    value.SlaFeatureSymbol,
+                    value.SlaResourceSymbol,
+                    value.SlaAbilitySymbol
+                }))
+                .Concat(new[]
+                {
+                    "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponPrimaryAbility",
+                    "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponSecondaryAbility",
+                    "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponEnchantment",
+                    "KMG.ElementalRaces.Undine.Rimesoul.ChillTouchDeliveryAbility",
+                    "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspDeliveryAbility"
+                }).ToArray();
+            Assertions.Equal(53, expected.Length,
+                "Release A expected identity inventory drifted.");
+            Assertions.Equal(expected.Length, release.Length,
+                "Release A manifest identity count drifted.");
+            Assertions.Equal(4, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintFeatureSelection",
+                StringComparison.Ordinal)),
+                "Release A must contain four heritage selections.");
+            Assertions.Equal(28, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintFeature",
+                StringComparison.Ordinal)),
+                "Release A marker, affinity, and SLA feature count drifted.");
+            Assertions.Equal(8, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintAbilityResource",
+                StringComparison.Ordinal)),
+                "Release A alternate SLA resource count drifted.");
+            Assertions.Equal(12, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintAbility",
+                StringComparison.Ordinal)),
+                "Release A ability and delivery identity count drifted.");
+            Assertions.Equal(1, release.Count(value => string.Equals(
+                (string)value["plannedType"],
+                "BlueprintWeaponEnchantment", StringComparison.Ordinal)),
+                "Release A Unerring Weapon enchantment identity drifted.");
+            for (int index = 0; index < expected.Length; index++)
+            {
+                JToken[] matches = release.Where(value => string.Equals(
+                    (string)value["symbol"], expected[index],
+                    StringComparison.Ordinal)).ToArray();
+                Assertions.Equal(1, matches.Length,
+                    "Missing or duplicate Release A identity " +
+                    expected[index]);
+                Assertions.Equal("active", (string)matches[0]["status"],
+                    "Release A identity is not active: " + expected[index]);
+                Assertions.Equal("e115e1e0a17a4aceb001" +
+                    (index + 1).ToString("D12"),
+                    (string)matches[0]["guid"],
+                    "Release A stable GUID mapping drifted for " +
+                    expected[index]);
+            }
+        }
+
+        internal static void HeritageBlueprintArchitectureIsNarrow()
+        {
+            string factory = Source("ElementalHeritageBlueprintFactory.cs");
+            string ability = Source("ElementalHeritageAbilityFactory.cs");
+            string runtime = Source("ElementalHeritageRuntime.cs");
+            string rules = Source("ElementalHeritageRuleComponents.cs");
+            string raceFactory = Source("ElementalRaceBlueprintFactory.cs");
+            foreach (string token in new[]
+            {
+                "ElementalHeritagePolicy.ForRace(race)",
+                "result.Obligatory = true",
+                "result.Features = (BlueprintFeature[])choices.Clone()",
+                "result.AllFeatures = (BlueprintFeature[])choices.Clone()",
+                "ElementalHeritagePolicy.NetDeltas(definition)",
+                "bonus.Descriptor = ModifierDescriptor.Racial",
+                "General heritage must retain every 0.0.114 provider identity",
+                "CreateAffinity(definition, sla.Ability.Icon)"
+            })
+                Assertions.True(factory.Contains(token),
+                    "Heritage selection architecture lacks: " + token);
+            foreach (string token in new[]
+            {
+                "CreateUnerringEnchantment",
+                "action.RemoveOnUnequip",
+                "ContextRankBaseValueType.CasterLevel",
+                "ElementalChillTouchStickyTouch",
+                "ShockingGraspDeliveryAbility",
+                "delivery.Parent = ability",
+                "RestoreOnLevelUp = false",
+                "parameters.Stat = StatType.Charisma"
+            })
+                Assertions.True(ability.Contains(token),
+                    "Heritage SLA architecture lacks: " + token);
+            foreach (string token in new[]
+            {
+                "Dictionary<string, int> _resourceAmounts",
+                "RememberCurrent(owner, race.Heritages, state)",
+                "state.TryRecall",
+                "if (!owner.HasFact(desired.Affinity))",
+                "if (!owner.HasFact(desired.SlaFeature))",
+                "TryRemove(owner, choice.Affinity)",
+                "TryRemove(owner, choice.SlaFeature)",
+                "ReferenceEquals(value.Race, race)"
+            })
+                Assertions.True(runtime.Contains(token),
+                    "Heritage reconciliation architecture lacks: " + token);
+            foreach (string token in new[]
+            {
+                "ReferenceEquals(evt.Weapon, Owner)",
+                "CriticalConfirmationBonus += 2 + Math.Min(5",
+                "DamageEnergyType.NegativeEnergy",
+                "SavingThrowType.Fortitude",
+                "SavingThrowType.Will",
+                "TouchSpellsController",
+                "UnitPartElementalChillTouch"
+            })
+                Assertions.True(rules.Contains(token),
+                    "Project-owned heritage rule path lacks: " + token);
+            Assertions.True(raceFactory.Contains(
+                    "heritages.Selection") && raceFactory.Contains(
+                    "ElementalHeritageRuntime.Configure(set)"),
+                "Parent races do not own and configure their heritage graph.");
+            Assertions.False((factory + ability + runtime + rules).Contains(
+                    "Guid.NewGuid") || factory.Contains("BlueprintRace") ||
+                (factory + ability + runtime + rules).Contains(
+                    "CharacterRaces"),
+                "Heritage content must not generate identities or publish new top-level races.");
         }
 
         internal static void VisualCatalogAndResourceRegistryAreSaveSafe()
@@ -263,6 +408,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void RegistrationAndPublicationAreSaveSafe()
         {
             string factory = Source("ElementalRaceBlueprintFactory.cs");
+            string ability = Source("ElementalRaceAbilityFactory.cs");
             string publication = Source("ElementalRacePublication.cs");
             string bootstrap = Read("src", "KingmakerGunslinger",
                 "Bootstrap", "BlueprintBootstrap.cs");
@@ -277,6 +423,11 @@ namespace KingmakerGunslinger.DomainTests
             })
                 Assertions.True(factory.Contains(token),
                     "Race factory safety contract is absent: " + token);
+            Assertions.True(ability.Contains("ResolveHydraulicPushIcon") &&
+                ability.Contains(
+                    "native Feather Step presentation donor for Hydraulic Push") &&
+                ability.Contains("ability.Icon == null"),
+                "Racial SLA icon fallback and non-null validation are absent.");
             foreach (string token in new[]
             {
                 "previous.Concat(missing).ToArray()",

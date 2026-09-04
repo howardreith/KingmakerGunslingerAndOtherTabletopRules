@@ -1,9 +1,22 @@
 # Kingmaker Gunslinger
 
-Version `0.0.114-elemental-races` adds the **Elemental Races: Ifrit, Oread,
-Sylph, and Undine** feature module. It defaults ON. Any explicit saved value is
-preserved; changing the checkbox still requires a complete Kingmaker restart
-and never rebuilds the live blueprint graph.
+Version `0.0.115-elemental-heritages` expands the existing **Elemental Races:
+Ifrit, Oread, Sylph, and Undine** feature module with one obligatory heritage
+selection per race. Each selection has exactly three choices: General plus two
+alternate heritages. The parent race blueprints and all 0.0.114 General
+SLA/resource/affinity identities remain unchanged, and the module still
+defaults ON. A missing marker on a legacy 0.0.114 character resolves as General
+without duplicating its racial modifiers or restoring a spent daily use.
+
+The choices are General Ifrit, Lavasoul, Sunsoul; General Oread, Gemsoul,
+Ironsoul; General Sylph, Smokesoul, Stormsoul; and General Undine, Mistsoul,
+Rimesoul. Alternate heritages apply exact net racial-stat changes, retain the
+parent race's common traits and visuals, and reconcile exactly one active
+affinity and racial spell-like ability. Audited native Kingmaker substitutions
+are Firebelly for Burning Sands, Flare Burst for Sun Metal, Expeditious Retreat
+for Blurred Movement, and Blur for Obscuring Mist. Player-facing names describe
+the abilities actually granted. Unerring Weapon and Chill Touch use narrow
+project-owned implementations where no complete safe Kingmaker donor exists.
 
 All four races are Medium and have distinct, stable project identities.
 Ifrits receive +2 Dexterity, +2 Charisma, -2 Wisdom, fire resistance 5, Fire
@@ -33,13 +46,12 @@ copied third-party assets, persistent elemental VFX, or runtime dependencies.
 The identities remain registered when the module is OFF so an existing
 elemental character can load while the races are hidden from new-character and
 respec selectors. Uninstalling the whole mod from a campaign containing its
-content remains unsupported. Automated structural and mechanical qualification
-has passed, including all 24 eleven-module boundary states and exact standalone,
-Call of the Wild, Races Unleashed, combined, and Favored Class/Tweak or Treat
-high-risk profiles with full transaction restoration. Visual Adjustments was
-not installed and is **NOT-RUN**. The owner accepted the candidate's visual
-direction and explicitly authorized this release; individual checklist
-observations were not supplied and are not inferred.
+content remains unsupported. The 0.0.114 release passed its documented
+structural, mechanical, persistence, and compatibility gates. Those records
+remain historical evidence and are not treated as proof for 0.0.115. Release A
+runtime, persistence, respec, and exact compatibility qualification is in
+progress. Visual Adjustments was not installed for the prior release and
+remains **NOT-RUN** until separately observed.
 
 The release retains version `0.0.113`'s save-load hotfix for the
 paper-cartridge mode repair.

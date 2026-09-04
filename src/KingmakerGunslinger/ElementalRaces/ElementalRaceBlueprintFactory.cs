@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UnitLogic.FactLogic;
@@ -65,7 +66,7 @@ namespace KingmakerGunslinger.ElementalRaces
                             definition);
                     Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility ability =
                         ElementalRaceAbilityFactory.RegisterAbility(library,
-                            registry, definition, resource);
+                            registry, definition, resource, aasimar.Icon);
                     BlueprintFeature resistance = registry.Register<
                         BlueprintFeature>(definition.ResistanceSymbol,
                             () => CreateResistance(definition));
@@ -75,17 +76,24 @@ namespace KingmakerGunslinger.ElementalRaces
                     BlueprintFeature sla =
                         ElementalRaceAbilityFactory.RegisterFeature(registry,
                             definition, resource, ability);
+                    ElementalHeritageRaceBlueprints heritages =
+                        ElementalHeritageBlueprintFactory.Register(library,
+                            registry, definition, affinity, sla, resource,
+                            ability);
                     BlueprintRace race = registry.Register<BlueprintRace>(
                         definition.RaceSymbol,
                         () => CreateRace(definition, aasimar, keen, slow,
-                            resistance, affinity, sla, raceVisuals));
+                            resistance, affinity, sla,
+                            heritages.Selection, raceVisuals));
                     var blueprints = new ElementalRaceBlueprints(definition, race,
                         resistance, affinity, sla, resource, ability,
-                        raceVisuals);
+                        raceVisuals, heritages);
                     ValidateRace(blueprints, aasimar, keen, slow, outsider);
                     result.Add(blueprints);
                 }
-                return new ElementalRaceBlueprintSet(result, visuals);
+                var set = new ElementalRaceBlueprintSet(result, visuals);
+                ElementalHeritageRuntime.Configure(set);
+                return set;
             }
             catch
             {
@@ -144,21 +152,27 @@ namespace KingmakerGunslinger.ElementalRaces
             BlueprintFeature keen, BlueprintFeature slow,
             BlueprintFeature resistance,
             BlueprintFeature affinity, BlueprintFeature sla,
+            BlueprintFeatureSelection heritageSelection,
             ElementalRaceVisualBlueprints visuals)
         {
             BlueprintRace race = BlueprintCloneService.Clone(aasimar,
                 InternalName(definition.RaceSymbol));
-            race.ComponentsArray = definition.Stats.Select(value =>
+            var components = definition.Stats.Select(value =>
             {
                 var bonus = ScriptableObject.CreateInstance<AddStatBonus>();
                 bonus.Stat = value.Stat;
                 bonus.Value = value.Value;
                 bonus.Descriptor = Kingmaker.Enums.ModifierDescriptor.Racial;
                 return (BlueprintComponent)bonus;
-            }).ToArray();
+            }).ToList();
+            var heritageController = ScriptableObject.CreateInstance<
+                ElementalHeritageRaceController>();
+            heritageController.Race = (int)definition.Kind;
+            components.Add(heritageController);
+            race.ComponentsArray = components.ToArray();
             var features = new List<BlueprintFeature>
             {
-                keen, resistance, affinity, sla
+                keen, resistance, affinity, sla, heritageSelection
             };
             if (definition.SlowAndSteady) features.Insert(1, slow);
             race.Features = features.ToArray();
@@ -218,6 +232,9 @@ namespace KingmakerGunslinger.ElementalRaces
             AddStatBonus[] stats = (race.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).OfType<AddStatBonus>()
                 .ToArray();
+            ElementalHeritageRaceController heritageController =
+                (race.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<ElementalHeritageRaceController>().SingleOrDefault();
             AddDamageResistanceEnergy resistance = value.Resistance
                 .ComponentsArray.OfType<AddDamageResistanceEnergy>().Single();
             if (ReferenceEquals(race, aasimar) || race.Size != aasimar.Size ||
@@ -227,7 +244,10 @@ namespace KingmakerGunslinger.ElementalRaces
                 !race.Features.Contains(value.Resistance) ||
                 !race.Features.Contains(value.Affinity) ||
                 !race.Features.Contains(value.SlaFeature) ||
+                !race.Features.Contains(value.Heritages.Selection) ||
                 race.Features.Contains(slow) != value.Definition.SlowAndSteady ||
+                heritageController == null ||
+                heritageController.Race != (int)value.Definition.Kind ||
                 resistance.Type != value.Definition.Resistance ||
                 value.Affinity.ComponentsArray.OfType<
                     ElementalSpellAffinity>().Single().DescriptorMask !=

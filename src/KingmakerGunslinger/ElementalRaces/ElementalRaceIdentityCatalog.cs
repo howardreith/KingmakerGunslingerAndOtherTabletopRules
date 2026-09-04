@@ -7,7 +7,10 @@ namespace KingmakerGunslinger.ElementalRaces
 {
     internal static class ElementalRaceIdentityCatalog
     {
-        internal const int MechanicIdentityCount = 24;
+        internal const int LegacyMechanicIdentityCount = 24;
+        internal const int HeritageIdentityCount = 53;
+        internal const int MechanicIdentityCount = LegacyMechanicIdentityCount +
+            HeritageIdentityCount;
         internal const int IdentityCount = MechanicIdentityCount +
             ElementalRaceVisualCatalog.BlueprintIdentityCount;
         internal const int ManifestIdentityCount = IdentityCount +
@@ -41,6 +44,17 @@ namespace KingmakerGunslinger.ElementalRaces
         internal const string UndineSlaResource = "KMG.ElementalRaces.Undine.HydraulicPushResource";
         internal const string UndineSlaAbility = "KMG.ElementalRaces.Undine.HydraulicPushAbility";
 
+        internal const string UnerringWeaponPrimaryAbility =
+            "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponPrimaryAbility";
+        internal const string UnerringWeaponSecondaryAbility =
+            "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponSecondaryAbility";
+        internal const string UnerringWeaponEnchantment =
+            "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponEnchantment";
+        internal const string ChillTouchDeliveryAbility =
+            "KMG.ElementalRaces.Undine.Rimesoul.ChillTouchDeliveryAbility";
+        internal const string ShockingGraspDeliveryAbility =
+            "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspDeliveryAbility";
+
         internal const string AasimarRaceGuid = "b7f02ba92b363064fb873963bec275ee";
         internal const string TieflingRaceGuid = "5c4e42124dc2b4647af6e36cf2590500";
         internal const string KeenSensesGuid = "9c747d24f6321f744aa1bb4bd343880d";
@@ -52,7 +66,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
         internal static IReadOnlyList<string> Symbols()
         {
-            string[] mechanics = new[]
+            string[] legacyMechanics = new[]
             {
                 IfritRace, IfritResistance, IfritAffinity, IfritSlaFeature,
                 IfritSlaResource, IfritSlaAbility,
@@ -63,8 +77,42 @@ namespace KingmakerGunslinger.ElementalRaces
                 UndineRace, UndineResistance, UndineAffinity, UndineSlaFeature,
                 UndineSlaResource, UndineSlaAbility
             };
+            string[] mechanics = legacyMechanics.Concat(HeritageSymbols())
+                .ToArray();
             return mechanics.Concat(ElementalRaceVisualCatalog
                 .BlueprintSymbols()).ToArray();
+        }
+
+        internal static IReadOnlyList<string> HeritageSymbols()
+        {
+            ElementalHeritageDefinition[] alternate = ElementalHeritagePolicy
+                .Ordered().Where(entry => !entry.IsGeneral).ToArray();
+            string[] symbols = ElementalHeritagePolicy.Ordered()
+                .Select(entry => entry.SelectionSymbol)
+                .Distinct(StringComparer.Ordinal)
+                .Concat(ElementalHeritagePolicy.Ordered().Select(entry =>
+                    entry.MarkerSymbol))
+                .Concat(alternate.Select(entry => entry.AffinityFeatureSymbol))
+                .Concat(alternate.SelectMany(entry => new[]
+                {
+                    entry.SlaFeatureSymbol,
+                    entry.SlaResourceSymbol,
+                    entry.SlaAbilitySymbol
+                }))
+                .Concat(new[]
+                {
+                    UnerringWeaponPrimaryAbility,
+                    UnerringWeaponSecondaryAbility,
+                    UnerringWeaponEnchantment,
+                    ChillTouchDeliveryAbility,
+                    ShockingGraspDeliveryAbility
+                }).ToArray();
+            if (symbols.Length != HeritageIdentityCount ||
+                symbols.Distinct(StringComparer.Ordinal).Count() !=
+                    symbols.Length)
+                throw new InvalidOperationException(
+                    "Elemental heritage identity inventory drifted.");
+            return symbols;
         }
 
         internal static void Validate()

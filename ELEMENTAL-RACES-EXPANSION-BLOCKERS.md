@@ -4,11 +4,21 @@
 
 None established.
 
+## Active publication-process blocker
+
+- Local foundation checkpoint
+  `9c0b7d7bdfe39dd54947c7a37d601cd91db98027` cannot currently be pushed.
+  The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
+  exact required `codex/elemental-races-expansion` branch because it is absent
+  from the wrapper's branch allowlist. The historical `codex/elemental-races`
+  branch is allowlisted, but changing this mission's branch would violate the
+  assignment. No bypass is attempted. Independent implementation continues.
+
 ## Open engineering questions requiring evidence
 
-- The installed native/Wrath precedents and safe Kingmaker donors for each new
-  heritage SLA, flight abstraction, concealment catalog, breathing catalog,
-  ray deflection, summon typing, and difficult terrain remain to be audited.
+- The installed native/Wrath heritage SLA donors are resolved. Release B/C
+  audits remain open for the flight abstraction, concealment and breathing
+  catalogs, ray deflection, summon typing, and difficult terrain.
 - Dirty Trick is implemented only if a genuine native player-facing combat
   maneuver path can be identified and qualified.
 - Visual Adjustments remains NOT-RUN unless it is actually installed when the
@@ -30,3 +40,16 @@ the mission's hard-stop contract; independent work continues.
   Movement qualification uses real native buffs/conditions plus the installed
   `CalculateSpeedModifier` contract; final in-area heritage qualification
   remains required in Release A.
+
+## Resolved Release A implementation findings
+
+- Native Aasimar has no runtime race icon. Hydraulic Push now uses the exact
+  native Feather Step icon only as a presentation fallback; all other racial
+  SLAs retain their exact donor icon. Live blueprint evidence proves every
+  selection, marker, and SLA icon is non-null.
+- The first heritage probe was missing central runtime-catalog membership; the
+  request was rejected before hooks or state access. A focused regression now
+  covers the allowlist entry.
+- The first accepted probe exposed the null-icon bootstrap failure and exact
+  owned-registration rollback. The repair is narrow and the subsequent live
+  bootstrap passes. Neither finding is an active blocker.

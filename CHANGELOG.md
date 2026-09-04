@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.115-elemental-heritages
+
+- Adds one obligatory three-choice heritage selection to each existing Ifrit,
+  Oread, Sylph, and Undine race without adding top-level races or changing any
+  0.0.114 race, General affinity, General SLA, or General resource GUID.
+- Implements General plus Lavasoul/Sunsoul, Gemsoul/Ironsoul,
+  Smokesoul/Stormsoul, and Mistsoul/Rimesoul with exact net racial-stat
+  overlays, one active affinity provider, and one active racial SLA provider.
+- Uses audited native Firebelly, Flare Burst, Color Spray, Expeditious Retreat,
+  Shocking Grasp, and Blur behavior. Unerring Weapon and Chill Touch use narrow
+  project-owned native-rule implementations with stable child and item
+  enchantment identities.
+- Treats a missing heritage marker on an existing 0.0.114 character as General.
+  Provider reconciliation is exact-identity scoped, idempotent, and preserves
+  remembered daily-resource amounts instead of restoring a spent use.
+- Retains the hardened spell-only elemental-affinity predicate and exact
+  Charisma-based racial SLA DC/total-character-level caster-level contract.
+- Release A runtime, persistence, respec, and compatibility qualification is
+  in progress; no PASS is claimed by this implementation entry alone.
+
 ## 0.0.114-elemental-races
 
 - Adds one restart-bound, default-ON Elemental Races module containing stable

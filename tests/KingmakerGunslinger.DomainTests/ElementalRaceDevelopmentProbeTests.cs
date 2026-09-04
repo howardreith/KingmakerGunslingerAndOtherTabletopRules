@@ -125,6 +125,67 @@ namespace KingmakerGunslinger.DomainTests
                     scenario +
                     " must remain autonomous, save-free, and selector-free.");
             }
+
+            string donor = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalHeritageDonorAuditScenario.cs");
+            const string donorScenario =
+                "observe-elemental-heritage-donors";
+            const string blueprintScenario =
+                "observe-elemental-heritage-blueprints";
+            foreach (string token in new[]
+            {
+                "Firebelly", "Flare Burst", "Color Spray",
+                "Unerring Weapon", "Expeditious Retreat",
+                "Shocking Grasp", "Blur", "Chill Touch",
+                "OfType<BlueprintAbility>()",
+                "OfType<BlueprintSpellList>()", "value.Contains(ability)",
+                "ability.ComponentsArray", "ability.Parent",
+                "ability.Variants", "SaveStateTouched = false",
+                "ContractResolver = new DefaultContractResolver()",
+                "PreserveReferencesHandling.None",
+                "ReferenceLoopHandling.Error"
+            })
+                Assertions.True(donor.Contains(token),
+                    "Heritage donor audit lacks inventory token: " + token);
+            string compatibility = Read("scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1");
+            Assertions.True(catalog.Contains(donorScenario) &&
+                runner.Contains(
+                    "ElementalHeritageDonorAuditScenario.Run(") &&
+                automation.Contains("'" + donorScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + donorScenario + "'") &&
+                compatibility.Contains("'" + donorScenario + "'") &&
+                project.Contains(
+                    "ElementalHeritageDonorAuditScenario.cs"),
+                "Heritage donor audit is not wired through every guarded surface.");
+            string heritageBlueprints = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalHeritageBlueprintScenario.cs");
+            Assertions.True(catalog.Contains(blueprintScenario) &&
+                catalog.Contains("ObserveElementalHeritageBlueprints,") &&
+                runner.Contains("ElementalHeritageBlueprintScenario.Run(") &&
+                automation.Contains("'" + blueprintScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + blueprintScenario + "'") &&
+                compatibility.Contains("'" + blueprintScenario + "'") &&
+                project.Contains("ElementalHeritageBlueprintScenario.cs") &&
+                heritageBlueprints.Contains("HeritageIdentityCount") &&
+                heritageBlueprints.Contains("BlueprintsByAssetId") &&
+                heritageBlueprints.Contains(
+                    "ContractResolver = new DefaultContractResolver()") &&
+                heritageBlueprints.Contains("PreserveReferencesHandling.None") &&
+                heritageBlueprints.Contains("ReferenceLoopHandling.Error") &&
+                heritageBlueprints.Contains("SaveStateTouched = false") &&
+                heritageBlueprints.Contains("CharacterRaces"),
+                "Heritage blueprint observer is not wired through every guarded surface.");
+            Assertions.False(donor.Contains("SaveManager") ||
+                donor.Contains("Game.Instance.Player.Party") ||
+                donor.Contains("KMG_AUTOMATION_BASELINE"),
+                "Heritage donor audit must remain save-free.");
+            Assertions.False(heritageBlueprints.Contains("SaveManager") ||
+                heritageBlueprints.Contains("Game.Instance.Player.Party") ||
+                heritageBlueprints.Contains("KMG_AUTOMATION_BASELINE"),
+                "Heritage blueprint observer must remain save-free.");
         }
 
         internal static void ClassClothingMatrixIsExactAndSaveFree()
