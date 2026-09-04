@@ -6,6 +6,7 @@ param(
         'gunslinger-races-unleashed',
         'gunslinger-call-of-the-wild',
         'gunslinger-call-of-the-wild-races-unleashed',
+        'gunslinger-tweak-or-treat',
         'gunslinger-call-of-the-wild-favored-class',
         'gunslinger-call-of-the-wild-favored-class-traits-disabled',
         'gunslinger-arms-armor',
@@ -130,6 +131,7 @@ $favoredTraitsMode = if ($ProfileId -ceq
 
 $cotwProfileIds = @('gunslinger-call-of-the-wild',
     'gunslinger-call-of-the-wild-races-unleashed',
+    'gunslinger-tweak-or-treat',
     'gunslinger-call-of-the-wild-favored-class',
     'gunslinger-call-of-the-wild-favored-class-traits-disabled',
     'gunslinger-high-risk-combined-favored-class',

@@ -760,6 +760,19 @@ namespace KingmakerGunslinger.DomainTests
                 exact.Count(value => value["modKeys"].Any(item =>
                     (string)item == "races-unleashed")) == 2,
                 "Exact Races Unleashed profiles must include the focused observer.");
+            JToken tweak = profiles["profiles"].Single(value =>
+                (string)value["id"] == "gunslinger-tweak-or-treat");
+            string[] tweakKeys = tweak["modKeys"].Values<string>().ToArray();
+            Assertions.True(tweakKeys.SequenceEqual(new[] {
+                    "call-of-the-wild", "races-unleashed",
+                    "tweak-or-treat" }),
+                "Tweak or Treat must use its exact minimum dependency graph.");
+            Assertions.False(tweakKeys.Contains("favored-class"),
+                "The isolated Tweak or Treat profile must not add optional Favored Class.");
+            Assertions.True(tweak["scenarios"].Any(item =>
+                    (string)item == name) && tweak["scenarios"].Any(item =>
+                    (string)item == "observe-elemental-heritage-blueprints"),
+                "Tweak or Treat must run both race-catalog and heritage observers.");
             Assertions.False(scenario.Contains("SaveManager") ||
                 scenario.Contains("Game.Instance.Player.Party") ||
                 scenario.Contains("KMG_AUTOMATION_BASELINE"),
