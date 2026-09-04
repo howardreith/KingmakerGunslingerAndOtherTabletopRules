@@ -48,6 +48,7 @@ param(
         'observe-elemental-heritage-donors',
         'observe-elemental-heritage-blueprints',
         'disposable-elemental-heritage-mechanics',
+        'disposable-elemental-heritage-slas',
         'disposable-bodyguard-feats-disabled',
         'working-save-smoke',
         'disposable-brown-fur-native-cast',

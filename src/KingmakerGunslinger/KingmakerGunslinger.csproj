@@ -938,6 +938,7 @@
     <Compile Include="RuntimeTesting\ElementalHeritageDonorAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageBlueprintScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalHeritageSlaScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceVisualAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalSpellAffinityScenario.cs" />
@@ -950,6 +951,7 @@
     <Compile Include="ElementalRaces\ElementalHeritagePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageBlueprintSet.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageRuntime.cs" />
+    <Compile Include="ElementalRaces\ElementalHeritageSlaPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageRuleComponents.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageAbilityFactory.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageBlueprintFactory.cs" />

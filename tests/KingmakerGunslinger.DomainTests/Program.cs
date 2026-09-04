@@ -68,6 +68,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-heritages.stats", ElementalHeritagePolicyTests.AbilityModifiersAndOverlayDeltasAreExact),
             Case("elemental-heritages.legacy-resolution", ElementalHeritagePolicyTests.LegacyAbsenceResolvesToGeneralAndInvalidStatesFailClosed),
             Case("elemental-heritages.sla-adaptations", ElementalHeritagePolicyTests.NativeDonorsAndProjectOwnedImplementationsAreExact),
+            Case("elemental-heritages.unerring-formula", ElementalHeritageSlaPolicyTests.UnerringWeaponUsesExactBreakpointAndCap),
+            Case("elemental-heritages.chill-touch-formula", ElementalHeritageSlaPolicyTests.ChillTouchUsesAndUndeadDurationAreExact),
             Case("elemental-heritages.identities", ElementalRaceProductionTests.HeritageManifestInventoryIsExact),
             Case("elemental-heritages.architecture", ElementalRaceProductionTests.HeritageBlueprintArchitectureIsNarrow),
             Case("elemental-races.sla-affinity-hydraulic", ElementalRaceProductionTests.SlaAffinityAndHydraulicContractsAreNarrow),

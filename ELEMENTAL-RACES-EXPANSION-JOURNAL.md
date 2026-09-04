@@ -355,10 +355,116 @@
   delivery, a real respec transaction, legacy save migration, visuals,
   three-process persistence, or compatibility.
 
+## 2026-09-04 - Alternate heritage SLA player-command qualification
+
+- Reconciliation qualification was committed locally as
+  `aca9aece0933d4713d5eae5cd98e1097fca52325` (`Qualify Elemental Heritage
+  reconciliation`). The exact mandated push wrapper was invoked and again
+  refused `codex/elemental-races-expansion` because the branch is absent from
+  its external allowlist. No alternate push path was used.
+- Authoritative Pathfinder rules were rechecked before changing the two
+  project-owned SLA implementations. Archives of Nethys confirms that Chill
+  Touch grants one touch per caster level, deals 1d6 negative energy plus one
+  Strength damage on a failed Fortitude save to living targets, and instead
+  panics undead for `1d4 + 1 round/caster level` on a failed Will save, without
+  a caster-level cap. The Pathfinder legacy SRD confirms Unerring Weapon's
+  one-round-per-level duration and `+2 + floor(CL/4)`, maximum +7,
+  critical-confirmation bonus. Sources:
+  `https://www.aonprd.com/SpellDisplay.aspx?ItemName=Chill+Touch` and
+  `https://pathfinder.d20srd.org/ultimateCombat/spells/unerringWeapon.html`.
+- Added a pure `ElementalHeritageSlaPolicy` for Unerring Weapon scaling, Chill
+  Touch charge/duration calculations, and exact effective-ability matching.
+  Removed the incorrect Chill Touch CL 10 cap and changed Unerring Weapon from
+  minutes to rounds. Focused tests cover every breakpoint, living/undead
+  duration, and exact GUID matching without expanding the registered test
+  count beyond 1,407.
+- Added the dedicated, save-free
+  `disposable-elemental-heritage-slas` scenario and only catalog/dispatch/
+  script registration in central orchestration. It uses native
+  `UnitUseAbility`, `AbilityExecutionProcess`, resource availability/rest,
+  action graphs, item enchantments, attack rolls, touch delivery, saving
+  throws, damage, ability damage, conditions, and exact cleanup. It covers the
+  six donor-backed alternates plus Unerring Weapon and both living/undead
+  Chill Touch branches.
+- The first guarded run
+  `20260904T0309099510875Z-a7bd7c561f3844778bac89dd0f224ae4`
+  passed 9/19. It exposed two fixture/identity issues: request-local units had
+  inherited `BlueprintUnit.IsCheater=true`, causing native resource spend to
+  be skipped, and transient `AbilityData` reference comparison could not
+  retain multi-touch state. Runtime-result SHA-256:
+  `d9e7258eade8214897ea6f5821e230fd544899683175fdb31c334fb7a5e89542`;
+  companion SHA-256:
+  `9a259349329408385b9f398c53151c134e3640fb30176607401daa6b9fd7c9e4`.
+- The second guarded run
+  `20260904T0324085340809Z-54707a8a8b174333941185d3e4c8b7d8`
+  passed 9/19 after exact spending was restored. It proved that raw
+  `UnitUseAbility.CanStart` does not itself enforce resource availability and
+  that player admission is the combined `AbilityData.IsAvailable &&
+  CanStart` boundary used by the existing racial SLA scenario. It also left
+  Chill Touch removal to diagnose. Runtime-result SHA-256:
+  `416cb68b381ca8c230ab63085f00662f50912b7d1dd941cf1551b5a893090b87`;
+  companion SHA-256:
+  `07746aa59da47d93870fb4e72d1b5c312a14fa616fb36ebba70e97ac26d0b385`.
+- Local IL inspection established the remaining native boundaries. Blur's
+  `AbilityTargetIsPartyMember` checks `IsPlayerFaction`, so only the detached
+  Mistsoul caster uses the existing player faction; it never enters the party
+  or a save. The installed Call of the Wild sticky-touch prefix removes
+  `UnitPartTouch` when its own multi-charge part is absent and returns false,
+  suppressing later prefixes. The project prefix now declares
+  `HarmonyBefore("CallOfTheWild")`, matches the exact held/executing blueprint
+  GUID, retains the project charge part, and returns before that broader
+  foreign prefix. This adds no compile-time optional-mod dependency.
+- Diagnostic run
+  `20260904T0345307589818Z-9014d08085a84b22ab1719270d1876fd`
+  passed 17/20 and isolated exactly Mistsoul's faction predicate plus the two
+  Call of the Wild touch branches. Runtime-result SHA-256:
+  `7c8e17059fd0983600d074e8752ae833e4ceb46564dab6029285653a75b13e0a`.
+  The next run
+  `20260904T0357431568127Z-f71325f8ba924b6bb3cb1c6ae8141b9d`
+  passed all 19 mechanical assertions; its sole failure was a diagnostic that
+  incorrectly treated Harmony's raw registration collection as execution
+  order. Runtime-result SHA-256:
+  `7a8107c16d73868f150bb49de0d2f09a206e8759ef6257355433dc20f6b03660`.
+  The audit now reads each live patch's `before` metadata instead.
+- Final guarded Steam run
+  `20260904T0405120089434Z-cb642458ce4041d989b242982630fda0`
+  passed 20/20 with zero warnings and exact global-unit cleanup. All commands
+  preserve one use on cancellation, spend exactly one on acceptance, block
+  the zero-use player path, and restore exactly one on ordinary rest. Mistsoul
+  is natively targetable; Unerring Weapon applies +7 at CL 20 to only the
+  selected weapon for 20 rounds and survives unequip; both Chill Touch paths
+  retain 19 charges. Living delivery dealt negative-energy damage plus one
+  Strength damage; undead delivery dealt no damage and applied 24 rounds of
+  frightened in this seeded run. Runtime-result SHA-256:
+  `80cdc2dd846c5f1de49b3575b522145603f4b243dee3c0314d6dc33d33d5675c`;
+  companion SHA-256:
+  `e34d40ed88e27daf02340359e8c55f1aae971c11706aa7fc9b3570becffb4c7c`;
+  runtime-evidence SHA-256:
+  `c25a31bfec4cec3a435d512b2809065341f06ab3051c2e0faf21b73370974387`.
+- That run used deployment `20260904T0405119242095Z`, manifest SHA-256
+  `e5a21a649116e9af439c9099bed67c044d7b55132e00cadbe53bad38ebd595fe`,
+  preserved settings SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`,
+  and loaded the exact 5,590,528-byte DLL with SHA-256
+  `e7e89a7a3b57679a933b27c49db06e7182443453974feaa76bceda6683abe1c8`
+  and MVID `d05fb702-af1f-43b2-83ed-bdadece4c69b`.
+- Before the first game launch, package preflight failed because C: was full.
+  Exactly 162 reproducible generated package artifacts older than 0.0.114
+  were removed, freeing 1,044,481,431 bytes; 0.0.114 and 0.0.115 artifacts,
+  evidence, saves, source, and user data were preserved. These generated files
+  are recoverable only by rebuilding.
+- Post-runtime repository validation passed, the complete Release suite passed
+  1,407/1,407, and a clean Release build plus independent strict package
+  validation passed. The final 135-entry, 23,038,804-byte
+  `KingmakerGunslinger-0.0.115-elemental-heritages.zip` has SHA-256
+  `23014b77c1e43fa85773eee5d09299a65364d057dfa8355ab70504b6c8a9e20b`.
+  Its 5,603,328-byte DLL has SHA-256
+  `af9ae270441a898216301e9f612199b85b8d10ac7fc4bd1f2200f684feba5a16`
+  and MVID `f2980361-84e5-4034-aca7-1e4a4e7a241d`. The ZIP remains untracked.
+
 ## Next action
 
-Add dedicated player-command/delivery coverage for every alternate heritage
-SLA, then extend the transactional persistence harness and run the remaining
-respec, migration, visual, and compatibility gates. Retry the exact guarded
-push after each coherent checkpoint even while the external branch allowlist
-remains unresolved.
+Extend the transactional persistence and respec harness for every heritage,
+then run the remaining legacy migration, module-OFF/ON, visual, and optional-
+mod compatibility gates. Retry the exact guarded push after each coherent
+checkpoint even while the external branch allowlist remains unresolved.

@@ -204,6 +204,7 @@ namespace KingmakerGunslinger.DomainTests
             string ability = Source("ElementalHeritageAbilityFactory.cs");
             string runtime = Source("ElementalHeritageRuntime.cs");
             string rules = Source("ElementalHeritageRuleComponents.cs");
+            string slaPolicy = Source("ElementalHeritageSlaPolicy.cs");
             string raceFactory = Source("ElementalRaceBlueprintFactory.cs");
             foreach (string token in new[]
             {
@@ -249,7 +250,10 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[]
             {
                 "ReferenceEquals(evt.Weapon, Owner)",
-                "CriticalConfirmationBonus += 2 + Math.Min(5",
+                "ElementalHeritageSlaPolicy",
+                ".UnerringConfirmationBonus(casterLevel)",
+                ".ChillTouchCount(",
+                ".ChillTouchUndeadPanicRounds(",
                 "DamageEnergyType.NegativeEnergy",
                 "SavingThrowType.Fortitude",
                 "SavingThrowType.Will",
@@ -258,11 +262,19 @@ namespace KingmakerGunslinger.DomainTests
             })
                 Assertions.True(rules.Contains(token),
                     "Project-owned heritage rule path lacks: " + token);
+            foreach (string token in new[]
+            {
+                "2 + Math.Min(5, casterLevel / 4)",
+                "Math.Max(1, casterLevel)",
+                "d4Result + Math.Max(1, casterLevel)"
+            })
+                Assertions.True(slaPolicy.Contains(token),
+                    "Heritage SLA policy lacks: " + token);
             Assertions.True(raceFactory.Contains(
                     "heritages.Selection") && raceFactory.Contains(
                     "ElementalHeritageRuntime.Configure(set)"),
                 "Parent races do not own and configure their heritage graph.");
-            Assertions.False((factory + ability + runtime + rules).Contains(
+            Assertions.False((factory + ability + runtime + rules + slaPolicy).Contains(
                     "Guid.NewGuid") || factory.Contains("BlueprintRace") ||
                 (factory + ability + runtime + rules).Contains(
                     "CharacterRaces"),

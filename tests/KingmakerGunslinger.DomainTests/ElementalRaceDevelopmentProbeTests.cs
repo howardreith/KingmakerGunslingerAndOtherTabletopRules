@@ -134,6 +134,8 @@ namespace KingmakerGunslinger.DomainTests
                 "observe-elemental-heritage-blueprints";
             const string mechanicsScenario =
                 "disposable-elemental-heritage-mechanics";
+            const string slaScenario =
+                "disposable-elemental-heritage-slas";
             foreach (string token in new[]
             {
                 "Firebelly", "Flare Burst", "Color Spray",
@@ -217,6 +219,53 @@ namespace KingmakerGunslinger.DomainTests
                     automation.Length - mechanicsOffset)).Contains(
                         "ReadinessBehavior = 'mod-load'"),
                 "Heritage mechanics scenario must remain autonomous and save-free.");
+            string heritageSlas = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalHeritageSlaScenario.cs");
+            string heritageRuleComponents = Read("src",
+                "KingmakerGunslinger", "ElementalRaces",
+                "ElementalHeritageRuleComponents.cs");
+            Assertions.True(catalog.Contains(slaScenario) &&
+                catalog.Contains("DisposableElementalHeritageSlas,") &&
+                runner.Contains("ElementalHeritageSlaScenario.Run(") &&
+                automation.Contains("'" + slaScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + slaScenario + "'") &&
+                compatibility.Contains("'" + slaScenario + "'") &&
+                project.Contains("ElementalHeritageSlaScenario.cs") &&
+                heritageSlas.Contains("UnitUseAbility") &&
+                heritageSlas.Contains("AbilityExecutionProcess") &&
+                heritageSlas.Contains("ItemEnchantment") &&
+                heritageSlas.Contains("RuleAttackRoll") &&
+                heritageSlas.Contains("TouchSpellsController") &&
+                heritageSlas.Contains("UnitPartElementalChillTouch") &&
+                heritageSlas.Contains("SaveStateTouched = false") &&
+                heritageSlas.Contains(
+                    "ContractResolver = new DefaultContractResolver()") &&
+                heritageSlas.Contains(
+                    "PreserveReferencesHandling.None") &&
+                heritageSlas.Contains("ReferenceLoopHandling.Error"),
+                "Heritage SLA scenario is not wired through every guarded surface.");
+            Assertions.True(heritageRuleComponents.Contains(
+                    "HarmonyBefore") &&
+                heritageRuleComponents.Contains("CallOfTheWild") &&
+                heritageSlas.Contains("appliedProject.before") &&
+                heritageSlas.Contains(
+                    "!callOfTheWildInstalled || beforeCallOfTheWild"),
+                "Chill Touch must retain its exact project charges before " +
+                "Call of the Wild's broader sticky-touch prefix.");
+            int slaOffset = automation.IndexOf("'" + slaScenario +
+                "' = [pscustomobject]", StringComparison.Ordinal);
+            Assertions.True(slaOffset >= 0 &&
+                automation.Substring(slaOffset, Math.Min(500,
+                    automation.Length - slaOffset)).Contains(
+                        "RequiresSaveName = $false") &&
+                automation.Substring(slaOffset, Math.Min(500,
+                    automation.Length - slaOffset)).Contains(
+                        "RequiresManualInteraction = $false") &&
+                automation.Substring(slaOffset, Math.Min(500,
+                    automation.Length - slaOffset)).Contains(
+                        "ReadinessBehavior = 'mod-load'"),
+                "Heritage SLA scenario must remain autonomous and save-free.");
             Assertions.False(donor.Contains("SaveManager") ||
                 donor.Contains("Game.Instance.Player.Party") ||
                 donor.Contains("KMG_AUTOMATION_BASELINE"),
@@ -229,6 +278,10 @@ namespace KingmakerGunslinger.DomainTests
                 heritageMechanics.Contains("Game.Instance.Player.Party") ||
                 heritageMechanics.Contains("KMG_AUTOMATION_BASELINE"),
                 "Heritage mechanics scenario must remain save-free.");
+            Assertions.False(heritageSlas.Contains("SaveManager") ||
+                heritageSlas.Contains("Game.Instance.Player.Party") ||
+                heritageSlas.Contains("KMG_AUTOMATION_BASELINE"),
+                "Heritage SLA scenario must remain save-free.");
         }
 
         internal static void ClassClothingMatrixIsExactAndSaveFree()

@@ -57,8 +57,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 enchantment.ParentContext == null ? 0 :
                 enchantment.ParentContext.Params.CasterLevel;
             if (casterLevel < 1) return;
-            evt.CriticalConfirmationBonus += 2 + Math.Min(5,
-                casterLevel / 4);
+            evt.CriticalConfirmationBonus += ElementalHeritageSlaPolicy
+                .UnerringConfirmationBonus(casterLevel);
         }
 
         public void OnEventDidTrigger(RuleAttackRoll evt) { }
@@ -78,14 +78,23 @@ namespace KingmakerGunslinger.ElementalRaces
                 throw new ArgumentException(
                     "Chill Touch requires its exact delivery ability.");
             _deliveryGuid = delivery.AssetGuid;
-            _remainingTouches = Math.Max(1, casterLevel);
+            _remainingTouches = ElementalHeritageSlaPolicy.ChillTouchCount(
+                casterLevel);
         }
 
         internal bool Matches(BlueprintAbility delivery)
         {
-            return delivery != null && !string.IsNullOrWhiteSpace(
-                _deliveryGuid) && string.Equals(_deliveryGuid,
-                    delivery.AssetGuid, StringComparison.Ordinal);
+            return delivery != null && ElementalHeritageSlaPolicy
+                .ExactDeliveryMatch(_deliveryGuid, delivery.AssetGuid,
+                    delivery.AssetGuid);
+        }
+
+        internal bool Matches(BlueprintAbility heldDelivery,
+            BlueprintAbility executingDelivery)
+        {
+            return heldDelivery != null && executingDelivery != null &&
+                ElementalHeritageSlaPolicy.ExactDeliveryMatch(_deliveryGuid,
+                    heldDelivery.AssetGuid, executingDelivery.AssetGuid);
         }
 
         internal bool ConsumeAndRetain()
@@ -140,8 +149,9 @@ namespace KingmakerGunslinger.ElementalRaces
                 if (will.IsPassed) return;
                 int roll = Rulebook.Trigger(new RuleRollDice(caster,
                     new DiceFormula(1, DiceType.D4))).Result;
-                int rounds = roll + Math.Min(10,
-                    Math.Max(1, Context.Params.CasterLevel));
+                int rounds = ElementalHeritageSlaPolicy
+                    .ChillTouchUndeadPanicRounds(roll,
+                        Context.Params.CasterLevel);
                 target.Descriptor.Buffs.AddBuff(
                     Kingmaker.Blueprints.Root.BlueprintRoot.Instance
                         .SystemMechanics.FrightenedBuff,
@@ -183,9 +193,10 @@ namespace KingmakerGunslinger.ElementalRaces
             UnitPartElementalChillTouch state = caster == null ? null :
                 caster.Get<UnitPartElementalChillTouch>();
             if (touch == null || touch.Ability == null ||
+                touch.Ability.Data == null ||
                 context.Ability == null ||
-                !ReferenceEquals(touch.Ability.Data, context.Ability) ||
-                state == null || !state.Matches(delivery)) return false;
+                state == null || !state.Matches(
+                    touch.Ability.Data.Blueprint, delivery)) return false;
             bool retain = state.ConsumeAndRetain();
             if (!retain)
             {
@@ -210,6 +221,7 @@ namespace KingmakerGunslinger.ElementalRaces
     }
 
     [HarmonyPatch(typeof(TouchSpellsController), "OnAbilityEffectApplied")]
+    [HarmonyBefore("CallOfTheWild")]
     internal static class ElementalChillTouchAppliedPatch
     {
         private static bool Prefix(AbilityExecutionContext context)

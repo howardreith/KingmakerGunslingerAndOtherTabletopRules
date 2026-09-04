@@ -15,7 +15,7 @@ VERSION = "0.0.115"
 INFORMATIONAL_VERSION = "0.0.115-elemental-heritages"
 PACKAGE = "KingmakerGunslinger-0.0.115-local-runtime.zip"
 PACKAGE_SUFFIX = "elemental-heritages"
-DETERMINISTIC_TEST_COUNT = 1405
+DETERMINISTIC_TEST_COUNT = 1407
 STATIC_KEY = "elementalHeritages115"
 HERITAGE_GUID_PREFIX = "e115e1e0a17a4aceb001"
 
@@ -121,7 +121,11 @@ def validate(root: Path) -> None:
     require_tokens(root / "src/KingmakerGunslinger/ElementalRaces/"
         "ElementalHeritageRuleComponents.cs", "RuleAttackRoll",
         "WeaponEnchantmentLogic", "RuleDealDamage", "RuleSavingThrow",
-        "UnerringWeaponEnchantment", "ChillTouch")
+        "UnerringWeaponEnchantment", "ChillTouch",
+        "ChillTouchUndeadPanicRounds")
+    require_tokens(root / "src/KingmakerGunslinger/ElementalRaces/"
+        "ElementalHeritageSlaPolicy.cs", "UnerringConfirmationBonus",
+        "ChillTouchCount", "ChillTouchUndeadPanicRounds")
     require_tokens(root / "src/KingmakerGunslinger/ElementalRaces/"
         "ElementalRaceBlueprintFactory.cs", "ElementalHeritageBlueprintFactory.Register",
         "keen, resistance, affinity, sla, heritageSelection",
@@ -137,10 +141,22 @@ def validate(root: Path) -> None:
         "ContractResolver = new DefaultContractResolver()",
         "PreserveReferencesHandling.None", "ReferenceLoopHandling.Error")
     require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/"
+        "ElementalHeritageSlaScenario.cs",
+        "UnitUseAbility", "AbilityExecutionProcess", "ItemEnchantment",
+        "RuleAttackRoll", "TouchSpellsController",
+        "UnitPartElementalChillTouch", "SaveStateTouched = false",
+        "ContractResolver = new DefaultContractResolver()",
+        "PreserveReferencesHandling.None", "ReferenceLoopHandling.Error")
+    require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/"
         "RuntimeTestScenarioCatalog.cs",
         "disposable-elemental-heritage-mechanics")
+    require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/"
+        "RuntimeTestScenarioCatalog.cs",
+        "disposable-elemental-heritage-slas")
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "'disposable-elemental-heritage-mechanics' = [pscustomobject]")
+    require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
+        "'disposable-elemental-heritage-slas' = [pscustomobject]")
 
     program = require_tokens(root / "tests/KingmakerGunslinger.DomainTests/"
         "Program.cs", 'Case("elemental-heritages.catalog"',

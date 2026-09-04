@@ -35,7 +35,7 @@ Unchecked items are pending and must not be inferred from builds or historical
   arrays and provider/resource uniqueness, including marker-first hydration,
   add-before-remove transitions, idempotence, spent-use preservation through
   reconciliation, level-up without refill, and ordinary-rest refill.
-- [ ] All twelve choices have exact final statistics, active affinity
+- [x] All twelve choices have exact final statistics, active affinity
   presentation/mechanics, SLA/resource, descriptions, and non-null icons.
 - [ ] Legacy General race/SLA/resource GUIDs and spent state remain exact;
   absence of an alternate marker behaves as General without duplicated stats.
