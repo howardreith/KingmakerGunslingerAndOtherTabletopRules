@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through Release B mechanics-record commit
-  `4adb34cc72e4a8ac7ccb0b5313f329a9a2f0f8fa` cannot currently be pushed.
+- Local checkpoints through Release B Ifrit-mechanics commit
+  `768d8c94a4ec6658b71085fb0446243dae2d8d66` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`

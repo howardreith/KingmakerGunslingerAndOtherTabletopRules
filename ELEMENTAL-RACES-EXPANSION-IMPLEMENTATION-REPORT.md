@@ -420,3 +420,8 @@ This remains a partial Release B checkpoint. Blazing Aura, Firesight, Airy
 Step, Cloud Gazer, Inner Breath, Hydraulic Maneuver, Triton Portal,
 feat-bearing persistence, compatibility profiles, and final Release B gates
 remain pending; no Release B PASS is claimed.
+
+Mechanics-slice commit `768d8c94a4ec6658b71085fb0446243dae2d8d66`
+was followed immediately by the exact mandated push wrapper. The wrapper
+again refused the required branch because its external allowlist omits
+`codex/elemental-races-expansion`; no bypass was attempted.

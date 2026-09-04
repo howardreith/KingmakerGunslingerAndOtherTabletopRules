@@ -1128,3 +1128,7 @@ and the first focused mechanical group from the now-qualified native contracts.
   but is not a Release B PASS. Blazing Aura, Firesight, Airy Step, Cloud
   Gazer, Inner Breath, Hydraulic Maneuver, Triton Portal, persistence,
   compatibility profiles, and final Release B gates remain pending.
+- Commit `768d8c94a4ec6658b71085fb0446243dae2d8d66` records this slice. The
+  exact mandated push wrapper was run immediately and again refused the
+  required branch because the external allowlist omits
+  `codex/elemental-races-expansion`; no bypass was attempted.
