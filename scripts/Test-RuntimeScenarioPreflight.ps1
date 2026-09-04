@@ -45,6 +45,7 @@ $expected = @(
     'gunslinger-outfit-audit',
     'observe-elemental-race-blueprints',
     'observe-elemental-heritage-donors',
+    'observe-elemental-feat-native-contracts',
     'observe-elemental-heritage-blueprints',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',

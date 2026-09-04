@@ -3,8 +3,9 @@
 ## Current outcome
 
 **IN PROGRESS - FOUNDATION AND RELEASE A MECHANICAL/COMPATIBILITY GATES PASS;
+RELEASE B NATIVE CONTRACTS ARE QUALIFIED AND IMPLEMENTATION IS IN PROGRESS;
 THE RELEASE A CHECKPOINT EXISTS LOCALLY BUT ITS REQUIRED PUSH IS BLOCKED BY AN
-EXTERNAL BRANCH ALLOWLIST; RELEASES B/C REMAIN PENDING.**
+EXTERNAL BRANCH ALLOWLIST.**
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
@@ -26,7 +27,7 @@ behavior.
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | NOT STARTED |
+| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | NATIVE AUDIT PASS; IMPLEMENTATION IN PROGRESS |
 | C | 0.0.117-elemental-traits | replacement slots and required alternate traits | NOT STARTED |
 
 Favored-class bonuses are out of scope.
@@ -228,3 +229,38 @@ push wrapper refused each because
 allowlist; no bypass was attempted. No pull request has been created. Nothing
 has been merged, tagged, or publicly released, and no generated release
 package is tracked.
+
+## Release B native-contract audit
+
+Dedicated save-free scenario `observe-elemental-feat-native-contracts` runs
+outside the central runner's feature logic and inventories the live enum and
+blueprint contracts needed by Release B. Isolated `gunslinger-only` run
+`20260904T1428561048826Z-652f2d0914124e21a23e666ceb0f846b` passed 9/9
+with no warnings. Runtime-result, audit, and companion evidence SHA-256 values
+are respectively
+`ecbb01fcbf63c4f0501afcad50d4ddae0bbea0e5b8eee86ab2490a14d3126e71`,
+`45744802127f3b227b3aec36fcad85e5ead5fa60d959910e900847cfef023344`,
+and `0c92ae86cab445b3de0ab586cce286af992ceb0651f61b3a1760510054e20204`.
+Compatibility transaction `compat-20260904T142724Z-1dafdf0d5614` restored the
+original mod and settings state exactly.
+
+The installed Kingmaker contract exposes `DirtyTrickBlind` but no Dazzle
+variant, so Hydraulic Maneuver can use the genuine native Blind maneuver and
+will omit Dazzle. Base Owlcat draconic Wings buff
+`08ae1c01155a2184db869e9ebedc758d` grants exactly +3 Dodge AC against melee,
+immunity to the `DifficultTerrain` condition, and immunity to
+`Ground`-descriptor buffs. The native Airborne feature is a different
+conditional attack/damage rule and is not an appropriate player flight fact.
+Call of the Wild injects a broader `AddFlying` and maneuver-immunity package
+into native wing facts; Release B will construct only the audited base-game
+contract so optional-mod presence cannot change Wings of Air mechanics.
+
+The audit also pins native Obscuring Mist buff
+`61b312b8f91cc48418768b77cd6dcc02`, Flaming enchantment
+`30f90becaaac51f41bf56641966c4121`, summon ability
+`107788f47c4481f4db6da06498b28270`, and Small Water Elemental unit
+`56372b0a2749c224392a5ee74105c534`. Kingmaker reduces concealment mechanics
+to broad descriptors such as `Fog`; source-GUID catalogs are therefore
+required for Firesight and Cloud Gazer. The native summon action is linked to
+its caster, not directly controllable, and lasts rounds from caster level;
+Triton Portal will reuse that native model with project-owned 1d3 count logic.

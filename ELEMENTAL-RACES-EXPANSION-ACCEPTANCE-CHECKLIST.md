@@ -59,6 +59,10 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 ## Release B / 0.0.116 elemental feats
 
+- [x] A save-free guarded native-contract audit isolated KMG from optional
+  mods and pinned exact maneuver, Wings, concealment, fire-enchantment, and
+  Small Water Elemental identities/fields; the original environment was
+  restored byte-for-byte.
 - [ ] Feat identities register unconditionally; module-gated publication to
   exact universal/combat selectors is additive, deterministic, idempotent,
   conflict refusing, order preserving, and reversible.

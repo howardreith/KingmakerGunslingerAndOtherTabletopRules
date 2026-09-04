@@ -16,11 +16,19 @@ None established.
 
 ## Open engineering questions requiring evidence
 
-- The installed native/Wrath heritage SLA donors are resolved. Release B/C
-  audits remain open for the flight abstraction, concealment and breathing
-  catalogs, ray deflection, summon typing, and difficult terrain.
-- Dirty Trick is implemented only if a genuine native player-facing combat
-  maneuver path can be identified and qualified.
+- Release B's native maneuver, flight, concealment, fire-enchantment, and
+  Small Water Elemental summon surfaces are resolved by isolated guarded run
+  `20260904T1428561048826Z-652f2d0914124e21a23e666ceb0f846b`.
+  Respiration-source classification still requires a narrow implemented
+  catalog and behavioral qualification. Release C audits remain open for ray
+  deflection and difficult terrain.
+- Native `DirtyTrickBlind` is present and player-facing; no
+  `DirtyTrickDazzle` enum member exists. Hydraulic Maneuver will implement the
+  printed blind option and explicitly omit dazzle rather than simulate it.
+- Base Owlcat Wings is exactly +3 Dodge AC against melee attacks,
+  `DifficultTerrain` condition immunity, and `Ground`-descriptor buff
+  immunity. Call of the Wild injects a broader `AddFlying`/maneuver package;
+  Release B must not clone those optional components.
 - Visual Adjustments was absent during Release A qualification and is recorded
   as NOT-RUN. Its absence is not a Release A blocker under repository policy.
 
