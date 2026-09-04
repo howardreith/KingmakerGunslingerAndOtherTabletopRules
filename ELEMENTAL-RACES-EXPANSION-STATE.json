@@ -38,7 +38,8 @@
     "slaDonors": "AUDITED (6 native substitutions/exact spells; 2 project-owned implementations)",
     "playerPresentation": "RUNTIME-PASS (12 choices, complete text and non-null icons)",
     "deterministicTests": "PASS (1405/1405)",
-    "mechanicsRuntime": "PENDING",
+    "mechanicsRuntime": "PARTIAL-PASS (68/68 live selection, stat, provider, exact parameter, resource, and activation-order assertions; player-command delivery pending)",
+    "activationOrder": "DEFECT-FIXED-RUNTIME-PASS",
     "visualRuntime": "PENDING",
     "threeProcessPersistence": "PENDING",
     "compatibility": "PENDING"
@@ -82,7 +83,7 @@
     "cleanReleaseBuild": "PASS",
     "packageValidation": "PASS",
     "blueprintRuntime": "PASS",
-    "mechanicsRuntime": "PENDING",
+    "mechanicsRuntime": "PARTIAL-PASS (68/68 provider/parameter/transition assertions; player-command delivery pending)",
     "visualRuntime": "PENDING",
     "threeProcessPersistence": "PENDING",
     "compatibility": "PENDING"
@@ -96,6 +97,29 @@
     "dllSha256": "d04710ae349308a51fb7ce814420537b31eb524b7d0b1361212a98911584d5b3",
     "dllMvid": "45a12bec-2f12-49af-93cb-a0849d3d48aa",
     "deploymentManifest": "20260904T0106347232882Z"
+  },
+  "releaseAMechanicsRuntimeArtifact": {
+    "package": "KingmakerGunslinger-0.0.115-local-runtime.zip",
+    "packageSize": 23015151,
+    "packageEntries": 135,
+    "packageSha256": "151fb255bbd12f066f078ffa5c177599b14e5dfb92c63257939aa13d0fc6e002",
+    "dllSize": 5543936,
+    "dllSha256": "ed766bc5a9bca7ecabd74b85968574f8557846ce53f7318d9663789ed54831db",
+    "dllMvid": "36359990-4f40-4865-a697-d05ea387e07c",
+    "deploymentManifest": "20260904T0152229074522Z",
+    "deploymentManifestSha256": "912937e664924eadd0659b349d0846fa63b803a505bd3a2340cef9cbb49f616a"
+  },
+  "releaseACurrentCleanArtifact": {
+    "package": "KingmakerGunslinger-0.0.115-elemental-heritages.zip",
+    "packageSize": 23021050,
+    "packageEntries": 135,
+    "packageSha256": "7b0bff0a54d0853fdfccc1ee845dc8c692e9800d6a4f3e8abbff9906536dce6a",
+    "dllSize": 5556736,
+    "dllSha256": "f9ff6d245a4ce5866b90c1360868dd1a0f172b9e1aa39680bbed4551cc93985c",
+    "dllMvid": "feef5713-2a78-4c6b-871f-220c50b9f936",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1405/1405)",
+    "packageValidation": "PASS"
   },
   "foundationRuntimeArtifact": {
     "package": "KingmakerGunslinger-0.0.114-local-runtime.zip",
@@ -226,6 +250,25 @@
         "runtimeResultSha256": "1acc4b3a2078a45086118330797ce67f463e281f1d3e3545a48cb2383fe53d6d",
         "evidenceManifestSha256": "ae50327bfe9279cdd9c97513ad2544c1fb278e207d59c70af78c226146a29fb4",
         "featureEvidenceSha256": "cfb29951b5194306771158371ad1dec197d18c671515a50d3334d80b728e019b"
+      },
+      {
+        "scenario": "disposable-elemental-heritage-mechanics",
+        "runId": "20260904T0146321972357Z-063ed42c6a2c418db694f49a9812cb3d",
+        "status": "FAIL-ACTIVATION-ORDER-DEFECT-DIAGNOSED",
+        "assertions": 68,
+        "passedAssertions": 64,
+        "failedAssertions": 4,
+        "runtimeResultSha256": "736fd2ee6f3ea4f0fe650e881bd0bc01da326f921a326955c0f5089323a4fba6",
+        "featureEvidenceSha256": "8a9012830f3f20cbb8407ada6e95036efd470c1b08644012af768a0f4fbdf70c"
+      },
+      {
+        "scenario": "disposable-elemental-heritage-mechanics",
+        "runId": "20260904T0152229922454Z-3991ff2bbbb44a2096ce6085328a6b39",
+        "status": "PASS",
+        "assertions": 68,
+        "runtimeResultSha256": "6ec91796fddfe146a5330505017212895b76a40096e175f767c973d73951bd16",
+        "runtimeEvidenceSha256": "ecf7739ef8a63eec5be189a0eafa26fb6c1f93b37c8a5893f35770e75ee02b3a",
+        "featureEvidenceSha256": "7a8ab109f8d8d4014f6557e0783ab20d33c47cb9bd93c1432c0976a04f9a2b87"
       }
     ],
     "settingsSha256BeforeAndAfter": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
@@ -264,6 +307,12 @@
       "sha": "9c0b7d7bdfe39dd54947c7a37d601cd91db98027",
       "subject": "Harden Elemental Races foundation mechanics",
       "checkpoint": "foundation",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "543ccdfc91bf2d31916176336985baef6d0720b8",
+      "subject": "Implement Elemental Races heritages",
+      "checkpoint": "release-a-implementation",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],

@@ -31,6 +31,10 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 - [x] Four parent-race heritage selections exist with exactly General plus two
   alternate choices and no new top-level race.
+- [x] Native selection and live reconciliation prove all twelve exact stat
+  arrays and provider/resource uniqueness, including marker-first hydration,
+  add-before-remove transitions, idempotence, spent-use preservation through
+  reconciliation, level-up without refill, and ordinary-rest refill.
 - [ ] All twelve choices have exact final statistics, active affinity
   presentation/mechanics, SLA/resource, descriptions, and non-null icons.
 - [ ] Legacy General race/SLA/resource GUIDs and spent state remain exact;

@@ -2,16 +2,19 @@
 
 ## Current outcome
 
-**IN PROGRESS - FOUNDATION PASS; RELEASE A IMPLEMENTED WITH LIVE BLUEPRINT
-PROOF; FULL RELEASE A QUALIFICATION AND RELEASES B/C REMAIN PENDING.**
+**IN PROGRESS - FOUNDATION PASS; RELEASE A IMPLEMENTED WITH LIVE BLUEPRINT,
+SELECTION, PROVIDER, AND PARAMETER PROOF; FULL RELEASE A QUALIFICATION AND
+RELEASES B/C REMAIN PENDING.**
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
 `codex/elemental-races-expansion`. The first work phase is the required
 0.0.114 foundation audit and hardening is complete and independently
 qualified. Release A source, identities, versioning, focused tests, and live
-blueprint graph are implemented; mechanics, persistence, visuals, and
-compatibility remain open gates. Historical Elemental Races evidence is
+blueprint graph are implemented; selection/reconciliation, exact SLA
+parameters, and resource lifecycle have live proof, while alternate SLA
+delivery, persistence, visuals, and compatibility remain open gates.
+Historical Elemental Races evidence is
 preserved as historical evidence only and does not qualify new release
 behavior.
 
@@ -103,11 +106,30 @@ registrations without touching a save. Runtime-result SHA-256 is
 This is implementation proof, not a Release A PASS; the required mechanics,
 respec/migration, visual, persistence, and compatibility gates remain pending.
 
+The first dedicated heritage-mechanics run then passed 64/68 and exposed one
+real activation-order defect in all four parent races: marker-first hydration
+could leave both alternate and inherited General providers active. A narrow
+owned controller on the existing trailing heritage-selection fact now performs
+post-race reconciliation. Corrected guarded Steam run
+`20260904T0152229922454Z-3991ff2bbbb44a2096ce6085328a6b39` passed
+68/68 live assertions across all twelve choices and all four transition
+matrices. It proves exact live stats, provider/resource uniqueness, exact
+multiclass CL and current-Charisma DC calculation, affinity exclusion,
+spend/no-level-refill/rest, add-before-remove, explicit and legacy General,
+idempotence, and marker-first activation. Runtime-result SHA-256 is
+`6ec91796fddfe146a5330505017212895b76a40096e175f767c973d73951bd16`
+and companion SHA-256 is
+`7a8ab109f8d8d4014f6557e0783ab20d33c47cb9bd93c1432c0976a04f9a2b87`.
+Actual player-command delivery for the eight alternate SLAs remains a separate
+required gate.
+
 ## Publication status
 
 Foundation checkpoint
-`9c0b7d7bdfe39dd54947c7a37d601cd91db98027` exists locally. The exact mandated
-push wrapper refused it because `codex/elemental-races-expansion` is absent
-from its external branch allowlist; no bypass was attempted. No pull request
-has been created. Nothing has been merged, tagged, or publicly released, and
-no generated release package is tracked.
+`9c0b7d7bdfe39dd54947c7a37d601cd91db98027` and Release A implementation
+checkpoint `543ccdfc91bf2d31916176336985baef6d0720b8` exist locally. The exact
+mandated push wrapper refused both because
+`codex/elemental-races-expansion` is absent from its external branch
+allowlist; no bypass was attempted. No pull request has been created. Nothing
+has been merged, tagged, or publicly released, and no generated release
+package is tracked.

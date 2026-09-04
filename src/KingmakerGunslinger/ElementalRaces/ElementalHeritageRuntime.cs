@@ -79,6 +79,17 @@ namespace KingmakerGunslinger.ElementalRaces
         }
     }
 
+    public sealed class ElementalHeritageSelectionController :
+        OwnedGameLogicComponent<UnitDescriptor>
+    {
+        public override void OnTurnOn()
+        {
+            ElementalHeritageRuntime.Reconcile(Owner, null, null);
+        }
+
+        public override void OnTurnOff() { }
+    }
+
     internal static class ElementalHeritageRuntime
     {
         private static ElementalRaceBlueprintSet _blueprints;

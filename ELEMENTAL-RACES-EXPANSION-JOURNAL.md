@@ -296,9 +296,69 @@
 - Release A remains IN PROGRESS. Mechanics, respec, migration, visuals,
   three-process persistence, and compatibility profiles have not yet passed.
 
+## 2026-09-03 - Release A live mechanics and activation-order repair
+
+- Added the dedicated save-free
+  `disposable-elemental-heritage-mechanics` scenario. It uses request-local
+  native units and the production selection/reconciliation graph rather than
+  adding feature logic to the central runner.
+- For all 12 heritage choices it exercises the native selection API, exact six
+  ability-score deltas, exact active marker/affinity/SLA/ability/resource,
+  2 Fighter + 3 Wizard caster-level scaling, exact
+  `10 + spell level + current Charisma modifier` DCs, temporary Charisma
+  bonuses and penalties, affinity exclusion from SLAs, spend, level-up without
+  refill, and ordinary-rest refill. Four race transition exercises cover
+  legacy no-marker General, add-before-remove, alternate-to-alternate,
+  alternate-to-General, explicit General, idempotence, and remembered spent
+  amounts.
+- Run `20260904T0146321972357Z-063ed42c6a2c418db694f49a9812cb3d`
+  failed exactly four of 68 assertions. Every heritage choice and ordinary
+  transition passed, while all four marker-first hydration exercises found
+  two affinities, two SLA features, two abilities, and two resource records.
+  Runtime-result SHA-256:
+  `736fd2ee6f3ea4f0fe650e881bd0bc01da326f921a326955c0f5089323a4fba6`;
+  feature-evidence SHA-256:
+  `8a9012830f3f20cbb8407ada6e95036efd470c1b08644012af768a0f4fbdf70c`.
+- The defect was activation order: a hydrated alternate marker could reconcile
+  before the parent race subsequently activated its inherited General
+  providers. The narrow repair gives each existing heritage selection one
+  owned activation component. Because the selection is the final parent-race
+  feature, it performs one post-race reconciliation after those inherited
+  providers activate. No identity, resource, donor, or publication surface
+  changed.
+- Corrected guarded Steam run
+  `20260904T0152229922454Z-3991ff2bbbb44a2096ce6085328a6b39`
+  passed 68/68. Runtime-result SHA-256:
+  `6ec91796fddfe146a5330505017212895b76a40096e175f767c973d73951bd16`;
+  feature-evidence SHA-256:
+  `7a8ab109f8d8d4014f6557e0783ab20d33c47cb9bd93c1432c0976a04f9a2b87`;
+  runtime-evidence SHA-256:
+  `ecf7739ef8a63eec5be189a0eafa26fb6c1f93b37c8a5893f35770e75ee02b3a`.
+  No save was opened or mutated.
+- The corrected runtime package has 135 entries and is 23,015,151 bytes,
+  SHA-256
+  `151fb255bbd12f066f078ffa5c177599b14e5dfb92c63257939aa13d0fc6e002`.
+  Its 5,543,936-byte DLL has SHA-256
+  `ed766bc5a9bca7ecabd74b85968574f8557846ce53f7318d9663789ed54831db`
+  and MVID `36359990-4f40-4865-a697-d05ea387e07c`.
+- The post-evidence repository gate passed again, including all inherited
+  invariants and the version-aware 0.0.115 validator. The complete Release
+  suite passed 1,405/1,405. A clean Release build and independent strict
+  validation passed for the 135-entry, 23,021,050-byte
+  `KingmakerGunslinger-0.0.115-elemental-heritages.zip`, SHA-256
+  `7b0bff0a54d0853fdfccc1ee845dc8c692e9800d6a4f3e8abbff9906536dce6a`.
+  Its 5,556,736-byte DLL has SHA-256
+  `f9ff6d245a4ce5866b90c1360868dd1a0f172b9e1aa39680bbed4551cc93985c`
+  and MVID `feef5713-2a78-4c6b-871f-220c50b9f936`.
+- This proves the selection, provider, calculation, resource, and hydration
+  contracts. It does not yet prove each alternate SLA's player-command
+  delivery, a real respec transaction, legacy save migration, visuals,
+  three-process persistence, or compatibility.
+
 ## Next action
 
-Add dedicated Release A mechanics and transition scenarios for every heritage,
-then extend the transactional persistence harness and run the remaining visual
-and compatibility gates. Retry the exact guarded push after each coherent
-checkpoint even while the external branch allowlist remains unresolved.
+Add dedicated player-command/delivery coverage for every alternate heritage
+SLA, then extend the transactional persistence harness and run the remaining
+respec, migration, visual, and compatibility gates. Retry the exact guarded
+push after each coherent checkpoint even while the external branch allowlist
+remains unresolved.

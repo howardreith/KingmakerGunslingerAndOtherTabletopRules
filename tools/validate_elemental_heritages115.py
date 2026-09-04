@@ -116,7 +116,8 @@ def validate(root: Path) -> None:
         "ElementalHeritageRuntime.cs", "Resolve(",
         "Reconcile", "RememberCurrent", "SetAmount",
         "owner.Resources.Restore",
-        "AddFact", "RemoveFact", "ReferenceEquals")
+        "AddFact", "RemoveFact", "ReferenceEquals",
+        "ElementalHeritageSelectionController")
     require_tokens(root / "src/KingmakerGunslinger/ElementalRaces/"
         "ElementalHeritageRuleComponents.cs", "RuleAttackRoll",
         "WeaponEnchantmentLogic", "RuleDealDamage", "RuleSavingThrow",
@@ -128,6 +129,18 @@ def validate(root: Path) -> None:
     require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/"
         "ElementalHeritageBlueprintScenario.cs", "HeritageIdentityCount",
         "BlueprintsByAssetId", "CharacterRaces", "SaveStateTouched = false")
+    require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/"
+        "ElementalHeritageMechanicsScenario.cs",
+        "ElementalHeritageRuntime.Reconcile", "FeatureSelectionState",
+        "PersistantResources", "AbilityExecutionContext",
+        "SaveStateTouched = false",
+        "ContractResolver = new DefaultContractResolver()",
+        "PreserveReferencesHandling.None", "ReferenceLoopHandling.Error")
+    require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/"
+        "RuntimeTestScenarioCatalog.cs",
+        "disposable-elemental-heritage-mechanics")
+    require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
+        "'disposable-elemental-heritage-mechanics' = [pscustomobject]")
 
     program = require_tokens(root / "tests/KingmakerGunslinger.DomainTests/"
         "Program.cs", 'Case("elemental-heritages.catalog"',
