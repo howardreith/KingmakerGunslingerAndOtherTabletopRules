@@ -81,5 +81,96 @@ namespace KingmakerGunslinger.DomainTests
                     "Could not locate the repository root.");
             return current.FullName;
         }
+
+        internal static void MechanicsScenarioIsDedicatedAndGuarded()
+        {
+            string mechanics = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalFeatRuleComponents.cs");
+            string factory = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalFeatBlueprintFactory.cs");
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalFeatMechanicsScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string compatibility = Read("scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1");
+
+            foreach (string token in new[]
+            {
+                "RuleInitiatorLogicComponent<RulePrepareDamage>",
+                "ConditionalWeakTable<RuleDealDamage, object>",
+                "ReferenceEquals(evt.DamageBundle.Weapon, attack.Weapon)",
+                "IsSpellDamage(damage)",
+                "PreRolledValue = bonus",
+                "ElementalWingsOfAirController",
+                "ArmorProficiencyGroup.Light"
+            })
+                Assertions.True(mechanics.Contains(token),
+                    "Elemental Feat runtime mechanics are missing boundary " +
+                    token + ".");
+            Assertions.False(mechanics.Contains("HarmonyPatch"),
+                "The first Elemental Feat mechanics slice must not introduce a global patch.");
+            foreach (string token in new[]
+            {
+                "ConfigureElementalStrike(strikeBuff, races)",
+                "CreateWingsBuff(icon)",
+                "ACBonusAgainstAttacks",
+                "AddConditionImmunity",
+                "BuffDescriptorImmunity",
+                "ConfigureWingsFeature"
+            })
+                Assertions.True(factory.Contains(token),
+                    "Elemental Feat factory wiring is missing " + token + ".");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility",
+                "RuleAttackWithWeapon",
+                "RulePrepareDamage",
+                "AttackRoll.ACRule.BonusSources",
+                "AttackRoll.TargetAC",
+                "IsTargetFlatFooted",
+                "PrimaryHand.InsertItem",
+                "MeleeAcLightWithoutWings",
+                "CombatState.LeaveCombat",
+                "Armor.RemoveItem(false)",
+                "StandardHeavyCrossbowGuid",
+                "UnitCondition.DifficultTerrain",
+                "SpellDescriptor.Ground",
+                "ArmorProficiencyGroup.Light",
+                "ArmorProficiencyGroup.Medium",
+                "SaveStateTouched = false"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Dedicated Elemental Feat scenario is missing live boundary " +
+                    token + ".");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-feat-mechanics"),
+                    "Elemental Feat mechanics are outside a guarded allowlist.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalFeatMechanics") &&
+                runner.Contains("ElementalFeatMechanicsScenario.Run("),
+                "Elemental Feat mechanics are outside constant-based dispatch.");
+            Assertions.Equal(2,
+                catalog.Split(new[] { "DisposableElementalFeatMechanics" },
+                    StringSplitOptions.None).Length - 1,
+                "Elemental Feat mechanics must have one constant declaration and " +
+                "one executable catalog entry.");
+            Assertions.True(project.Contains(
+                    "ElementalFeatRuleComponents.cs") &&
+                project.Contains("ElementalFeatMechanicsScenario.cs"),
+                "Elemental Feat mechanics or scenario is outside the build.");
+        }
     }
 }

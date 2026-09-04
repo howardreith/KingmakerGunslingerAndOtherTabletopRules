@@ -5,15 +5,21 @@ using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.Blueprints.Items.Ecnchantments;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.ElementsSystem;
+using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums;
 using Kingmaker.ResourceLinks;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
@@ -43,6 +49,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     () => CreateBuff(ElementalRaceIdentityCatalog
                         .ElementalStrikeBuff, "Elemental Strike",
                         "Your qualifying weapon attacks deal the energy damage associated with your exact elemental race.", icon)));
+            ConfigureElementalStrike(strikeBuff, races);
             BlueprintAbility strikeAbility = Add(registered, registry.Register<
                 BlueprintAbility>(ElementalRaceIdentityCatalog
                     .ElementalStrikeAbility, () => CreateBuffAbility(
@@ -82,9 +89,7 @@ namespace KingmakerGunslinger.ElementalRaces
                         UnitCommand.CommandType.Free, auraBuff, icon)));
             BlueprintBuff wingsBuff = Add(registered, registry.Register<
                 BlueprintBuff>(ElementalRaceIdentityCatalog.WingsOfAirBuff,
-                    () => CreateBuff(ElementalRaceIdentityCatalog.WingsOfAirBuff,
-                        "Wings of Air",
-                        "Native Kingmaker flight benefits are active while you wear no armor or light armor.", icon)));
+                    () => CreateWingsBuff(icon)));
 
             BlueprintAbility hydraulicBullRush = Add(registered,
                 registry.Register<BlueprintAbility>(ElementalRaceIdentityCatalog
@@ -132,7 +137,6 @@ namespace KingmakerGunslinger.ElementalRaces
                 { ElementalFeatId.ElementalStrike, strikeAbility },
                 { ElementalFeatId.ScorchingWeapons, scorchingAbility },
                 { ElementalFeatId.BlazingAura, auraAbility },
-                { ElementalFeatId.WingsOfAir, wingsBuff },
                 { ElementalFeatId.HydraulicManeuver, hydraulicParent },
                 { ElementalFeatId.TritonPortal, tritonPortal }
             };
@@ -148,6 +152,8 @@ namespace KingmakerGunslinger.ElementalRaces
                             FeatureIcon(definition, races, icon))));
                 features.Add(definition.Id, feature);
             }
+            ConfigureWingsFeature(features[ElementalFeatId.WingsOfAir],
+                wingsBuff);
 
             if (scorchingEnchantment.ComponentsArray == null ||
                 registered.Count != ElementalRaceIdentityCatalog
@@ -348,6 +354,70 @@ namespace KingmakerGunslinger.ElementalRaces
                 LocalizationService.Create(symbol + ".Description",
                     description), icon);
             return result;
+        }
+
+        private static void ConfigureElementalStrike(BlueprintBuff buff,
+            ElementalRaceBlueprintSet races)
+        {
+            if (buff == null || races == null)
+                throw new ArgumentNullException();
+            var damage = ScriptableObject.CreateInstance<
+                ElementalStrikeDamage>();
+            damage.Ifrit = races.Ifrit.Race;
+            damage.Oread = races.Oread.Race;
+            damage.Sylph = races.Sylph.Race;
+            damage.Undine = races.Undine.Race;
+            buff.ComponentsArray = new BlueprintComponent[] { damage };
+        }
+
+        private static BlueprintBuff CreateWingsBuff(Sprite icon)
+        {
+            BlueprintBuff result = CreateBuff(ElementalRaceIdentityCatalog
+                .WingsOfAirBuff, "Wings of Air",
+                "Native Kingmaker flight benefits are active while you wear no armor or light armor.", icon);
+            var armorClass = ScriptableObject.CreateInstance<
+                ACBonusAgainstAttacks>();
+            armorClass.AgainstMeleeOnly = true;
+            armorClass.AgainstRangedOnly = false;
+            armorClass.ArmorClassBonus = 3;
+            armorClass.CheckArmorCategory = false;
+            armorClass.Descriptor = ModifierDescriptor.Dodge;
+            armorClass.NoShield = false;
+            armorClass.NotArmorCategory = Array.Empty<
+                ArmorProficiencyGroup>();
+            armorClass.NotTouch = false;
+            armorClass.OnlyAttacksOfOpportunity = false;
+
+            var terrain = ScriptableObject.CreateInstance<
+                AddConditionImmunity>();
+            terrain.Condition = UnitCondition.DifficultTerrain;
+            var ground = ScriptableObject.CreateInstance<
+                BuffDescriptorImmunity>();
+            ground.CheckFact = false;
+            ground.Descriptor = SpellDescriptor.Ground;
+            ground.FactToCheck = null;
+            ground.IgnoreFeature = null;
+            result.ComponentsArray = new BlueprintComponent[]
+            {
+                armorClass,
+                terrain,
+                ground
+            };
+            return result;
+        }
+
+        private static void ConfigureWingsFeature(BlueprintFeature feature,
+            BlueprintBuff buff)
+        {
+            if (feature == null || buff == null)
+                throw new ArgumentNullException();
+            var controller = ScriptableObject.CreateInstance<
+                ElementalWingsOfAirController>();
+            controller.FlightBuff = buff;
+            feature.ComponentsArray = (feature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is ElementalWingsOfAirController)).Concat(
+                        new BlueprintComponent[] { controller }).ToArray();
         }
 
         private static BlueprintWeaponEnchantment CreateEnchantment()

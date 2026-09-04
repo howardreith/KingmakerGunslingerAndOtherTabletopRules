@@ -919,3 +919,89 @@ and the first focused mechanical group from the now-qualified native contracts.
   The exact mandated push wrapper was run immediately afterward and refused
   the user-required branch because the external allowlist still omits
   `codex/elemental-races-expansion`; no bypass was attempted.
+
+## 2026-09-04 - Release B mechanics slice 1 runtime PASS
+
+- Implemented Elemental Strike on its one-round project buff. The owned
+  `RulePrepareDamage` component requires the exact initiating owner, native
+  `RuleAttackWithWeapon`, exact weapon damage bundle and target, and one of the
+  four exact project race blueprints. It adds one pre-rolled flat energy packet
+  at the total-character-level breakpoint and uses an exact damage-event weak
+  marker to reject replay. Spell and parent-spell sources, arbitrary energy
+  damage, and unrelated rule events fail closed.
+- Implemented Wings of Air with one owned armor controller and a project buff
+  containing exactly the isolated base-game draconic Wings contract: +3 Dodge
+  AC against melee, `DifficultTerrain` condition immunity, and
+  `Ground`-descriptor buff immunity. The controller applies only in no armor or
+  light armor, removes in medium/heavy armor, and restores on legal removal.
+  No optional-mod `AddFlying`, Angel Wings spell immunity, trip/prone immunity,
+  teleportation, custom mesh, or persistent VFX was copied.
+- Added dedicated save-free scenario
+  `disposable-elemental-feat-mechanics`; central runner changes are constant
+  dispatch only. It executes actual `UnitUseAbility`,
+  `RuleAttackWithWeapon -> RulePrepareDamage -> RuleDealDamage`, armor-slot,
+  condition-immunity, and buff-immunity paths against request-local units and
+  verifies exact cleanup.
+- Guarded diagnostic runs were retained as failures rather than promoted to
+  evidence: allowlist omission
+  `20260904T1800271307248Z-eee9c918c4b340de99234d38084efa7b`;
+  symbolic identity lookup
+  `20260904T1824201132617Z-c8cc46eeb83b4228a7a40b7c36bbe0e5`;
+  null donor/disk-full collector
+  `20260904T1833431953967Z-2471804a8a484fd28ae53189abd490f8`;
+  rejected null-context Wings buff
+  `20260904T1844375212483Z-dea376ff8db54bfc96070722a1f1f801`;
+  synthetic AC mismatch
+  `20260904T1851361586730Z-3a1d5aa8c36246b99d79c33569a78f1c`;
+  `AutoHit` AC bypass
+  `20260904T1903544849132Z-2b00089720ad494f90ca4f3bde4be10d`;
+  native-attribution/armor-state diagnostics
+  `20260904T1910055952880Z-c55fdf2b665741c6977fe01cefd6a70a`
+  and
+  `20260904T1929233125547Z-ff602f6640bd4c48935a73e203a90394`.
+- Local installed-assembly IL inspection established that Owlcat's
+  `ACBonusAgainstAttacks` handles the outer `RuleAttackWithWeapon`, adds a
+  temporary Dodge modifier to the target AC stat, and does not add a direct
+  `RuleCalculateAC.BonusSource`. The apparent final restoration defect was a
+  test error: Kingmaker correctly refused to remove armor in combat. The final
+  scenario exits combat, demands successful native removal and an empty slot,
+  then re-enters combat for the AC comparison. Production code was not changed
+  to work around the invalid transition.
+- The one disk-full orchestration attempt preserved its structured runtime
+  result. Only two exact git-ignored, reproducible package-staging directories
+  (`artifacts/release` and `artifacts/release-work`) were removed, freeing
+  727,499,012 bytes. Runtime evidence, live-mod backups, saves, source, and
+  installed state were retained.
+- Final exact-source guarded run
+  `20260904T2000378983332Z-b0699acd82da4d378c3abdded3983858`
+  passed 16/16 with zero warnings and exact global-unit cleanup. Elemental
+  Strike passed Ifrit/Fire 1, Oread/Acid 5, Sylph/Electricity 10,
+  Undine/Cold 15, and Ifrit/Fire 20: canceled Swift command applied nothing,
+  the accepted command produced one six-second buff, each attack gained one
+  exact +1/+2/+3/+4/+5 packet, replay remained singular, matching native
+  resistance reduced the packet to zero, and spell/unrelated controls gained
+  nothing. Wings produced melee AC 7 -> 10 unarmored and 15 -> 18 in the same
+  light armor, left ranged AC 15 unchanged, suppressed its buff in medium
+  armor, restored unarmored AC 10 after legal removal, blocked difficult
+  terrain/Ground effects, admitted a neutral buff, and did not block prone.
+- Runtime-result, mechanics, and runtime-evidence SHA-256 values are
+  `50d215ce18078d93cb404a53198261a48e7b98a1b3347c351de6f9a04df8c9f2`,
+  `aef0cf2db12fb5a324f64beb9acabebec9fe09e879ea6dc3c29ae7b7a5482845`,
+  and `7184beafce5eda62e3e854ecb9ffe18c6ec4f3e7e984fd49eaabc02c3ca73d3c`.
+  The exact 135-entry runtime package is 23,074,709 bytes, SHA-256
+  `003c5f0e5c146f75f3ba601f3628659eaa3c5cb6ec0e4ea68540c7073a13e78f`;
+  its 5,729,792-byte DLL hashes to
+  `3e5def35c361410bdd4583fd9936e54e639ec7e9366ea453ffc592129bd4b7de`
+  with MVID `60ebeb1c-fa23-497e-9d2f-c99601f363d3`. The deployment-manifest
+  SHA-256 is
+  `db915a20c1340c523c08e7053687a5da32012ca9c0c4f5beaac6abbfb1f2ea4c`.
+- The earlier 16/16 PASS
+  `20260904T1940018479703Z-78dcc0b63a264ff281f62699090dfd4d`
+  remains valid evidence, but the exact-source run above supersedes it after
+  code review made exceptional teardown exit combat before attempting item
+  removal. Production mechanics were unchanged.
+- Every guarded attempt reran repository validation and the complete
+  1,408/1,408 dependency-free suite before launch. This slice is independently
+  buildable and runtime-qualified, but it is not a Release B PASS: the other
+  nine feats, feat persistence, compatibility profiles, and final 0.0.116
+  gates remain pending.
