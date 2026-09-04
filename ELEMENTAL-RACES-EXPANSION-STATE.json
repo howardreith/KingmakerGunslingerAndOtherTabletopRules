@@ -6,7 +6,7 @@
   "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
   "interveningMasterCommits": [],
   "startingTreeClean": true,
-  "phase": "release-a-qualified-checkpoint",
+  "phase": "release-b-implementation",
   "currentVersion": "0.0.115",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
@@ -16,7 +16,7 @@
   "status": {
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "NOT-STARTED",
+    "releaseB": "NATIVE-CONTRACT-AUDIT-PASS-IMPLEMENTATION-IN-PROGRESS",
     "releaseC": "NOT-STARTED"
   },
   "foundationProgress": {
@@ -45,6 +45,59 @@
     "threeProcessPersistence": "PASS (24 fixtures; prepare, module-OFF load/level/rest/re-spend, module-ON respec/cleanup, and fourth-process absence)",
     "legacyMigration": "PASS (exact pinned 0.0.114 producer, 0.0.115 markerless-General receiver, and fresh-process absence; stats/providers/spent resources/appearance exact)",
     "compatibility": "PASS (six required installed profiles, module ON and OFF, exact restoration); Visual Adjustments NOT-RUN because absent"
+  },
+  "releaseBProgress": {
+    "authoritativeRules": "AUDITED",
+    "nativeContractAudit": "PASS (isolated KMG-only, 9/9; combined-profile comparison, 8/8)",
+    "dirtyTrick": "NATIVE-BLIND-PATH-AVAILABLE; DAZZLE-OMITTED",
+    "flightAbstraction": "LOCKED-TO-BASE-OWLcat-WINGS-CONTRACT",
+    "concealmentCatalog": "BASE-INVENTORY-LOCKED; SOURCE-SPECIFIC-GUID-REQUIRED",
+    "waterElementalSummon": "EXACT-NATIVE-DONOR-LOCKED",
+    "fireEnchantmentCatalog": "BASE-INVENTORY-LOCKED",
+    "deterministicTests": "PASS (1408/1408)",
+    "implementation": "IN-PROGRESS"
+  },
+  "releaseBNativeAudit": {
+    "status": "PASS",
+    "scenario": "observe-elemental-feat-native-contracts",
+    "isolatedProfile": "gunslinger-only",
+    "transactionId": "compat-20260904T142724Z-1dafdf0d5614",
+    "transactionStatus": "Restored",
+    "restorationVerified": true,
+    "transactionSha256": "bc684a5848a9573ae04aa0e382225c16746d161cd82937ae2812659b1cdabe95",
+    "runId": "20260904T1428561048826Z-652f2d0914124e21a23e666ceb0f846b",
+    "assertions": 9,
+    "warnings": 0,
+    "runtimeResultSha256": "ecbb01fcbf63c4f0501afcad50d4ddae0bbea0e5b8eee86ab2490a14d3126e71",
+    "auditEvidenceSha256": "45744802127f3b227b3aec36fcad85e5ead5fa60d959910e900847cfef023344",
+    "runtimeEvidenceSha256": "0c92ae86cab445b3de0ab586cce286af992ceb0651f61b3a1760510054e20204",
+    "deploymentManifest": "20260904T1428560194609Z",
+    "deploymentManifestSha256": "e5cbdf6712a2839e124191771959d25a7ed63bef40d9ca4e83187ecb7a5ba44c",
+    "sourceCommit": "0350f7d75871fa739c4d9d8e821a20a13cf529fd",
+    "sourceStateSha256": "6461838bef05d1684333f23f4acd7df6f37f30f8b448ff03e8f2820d2c8dc834",
+    "packageSize": 23049920,
+    "packageEntries": 135,
+    "packageSha256": "7771e740bd7011359a3348ba74822dafa09d6751102c56845331dcbb95332541",
+    "dllSha256": "ae62fd0500a99b6e163f2e85c25b7b714197111cb866bceebf088e2b3df4b286",
+    "dllMvid": "04c61b77-1a0b-4bfb-a1fd-e7bfbb844344",
+    "blueprintCount": 82998,
+    "namedCandidateCount": 669,
+    "concealmentComponentCount": 8,
+    "fireWeaponEnchantmentCount": 11,
+    "smallWaterElementalSpawnCount": 1,
+    "exactContracts": {
+      "airborneFeature": "70cffb448c132fa409e49156d013b175 (conditional attack/damage penalties; not selected as player flight)",
+      "draconicWingsBuff": "08ae1c01155a2184db869e9ebedc758d (+3 Dodge AC versus melee; DifficultTerrain condition immunity; Ground buff-descriptor immunity)",
+      "angelWingsBuff": "25699a90ed329e438d6fd5548930809 (same AC/Ground pattern plus Ground spell immunity)",
+      "obscuringMistBuff": "61b312b8f91cc48418768b77cd6dcc02 (Partial Fog AddConcealment)",
+      "flamingEnchantment": "30f90becaaac51f41bf56641966c4121 (1d6 fire WeaponEnergyDamageDice)",
+      "smallWaterElementalAbility": "107788f47c4481f4db6da06498b28270 (exact unit 56372b0a2749c224392a5ee74105c534; linked, not directly controllable, rounds per caster level)",
+      "smallAirElementalUnit": "04944455200bc224d955a8e9bbd64f3f",
+      "smallWaterElementalUnit": "56372b0a2749c224392a5ee74105c534"
+    },
+    "combatManeuvers": "DirtyTrickBlind exists; DirtyTrickDazzle does not; implement the genuine blind option only",
+    "optionalProfileComparisonRunId": "20260904T1411055050795Z-4211d818beb34719a186ca3e8feb9a31",
+    "optionalProfileFinding": "Call of the Wild injects AddFlying and broader maneuver/condition immunities into native wing facts; Release B must construct only the audited base Owlcat contract and must not clone optional components."
   },
   "baselineGates": {
     "repositoryValidation": "PASS",

@@ -783,7 +783,58 @@ remains unresolved.
 
 ## Next action
 
-Validate this qualification-record-only change, create the Release A
-qualification checkpoint, retry the exact push wrapper, then begin Release B
-0.0.116 rule and engine-pattern audits without waiting on the external
-publication blocker.
+Implement Release B policy services, stable identities, blueprint publication,
+and the first focused mechanical group from the now-qualified native contracts.
+
+## 2026-09-04 - Release B native-contract audit PASS
+
+- Added dedicated save-free scenario
+  `observe-elemental-feat-native-contracts`, its central dispatch/PowerShell
+  allowlists, compatibility-profile support, and focused domain test. The
+  scenario inventories live combat-maneuver values, exact concealment sources,
+  Fire weapon enchantments, Small Water Elemental spawn actions, elemental
+  unit fact graphs, and six field-level blueprint contracts. Feature logic was
+  not added to `RuntimeTestRunner`.
+- Complete local validation passed 1,408/1,408 tests, exact-reference Release
+  compilation, clean package creation, and strict 135-entry package
+  validation. The audited pre-commit package is 23,049,920 bytes, SHA-256
+  `7771e740bd7011359a3348ba74822dafa09d6751102c56845331dcbb95332541`;
+  its DLL SHA-256 is
+  `ae62fd0500a99b6e163f2e85c25b7b714197111cb866bceebf088e2b3df4b286`
+  and MVID is `04c61b77-1a0b-4bfb-a1fd-e7bfbb844344`.
+- Initial combined-profile run
+  `20260904T1411055050795Z-4211d818beb34719a186ca3e8feb9a31`
+  passed 8/8 and revealed optional modification of native wing facts. The
+  audit was therefore rerun transactionally with only KMG enabled rather than
+  treating the combined graph as Owlcat authority.
+- Final isolated run
+  `20260904T1428561048826Z-652f2d0914124e21a23e666ceb0f846b`
+  passed 9/9 with zero warnings. Result/audit/companion SHA-256 values are
+  `ecbb01fcbf63c4f0501afcad50d4ddae0bbea0e5b8eee86ab2490a14d3126e71`,
+  `45744802127f3b227b3aec36fcad85e5ead5fa60d959910e900847cfef023344`,
+  and `0c92ae86cab445b3de0ab586cce286af992ceb0651f61b3a1760510054e20204`.
+  Transaction `compat-20260904T142724Z-1dafdf0d5614` restored exact original
+  state; its SHA-256 is
+  `bc684a5848a9573ae04aa0e382225c16746d161cd82937ae2812659b1cdabe95`.
+- Native `CombatManeuver` provides `DirtyTrickBlind` but no Dazzle variant.
+  The printed blind choice is implementable through the actual maneuver path;
+  Dazzle is an explicit engine omission.
+- Native draconic Wings buff `08ae1c01155a2184db869e9ebedc758d`
+  provides +3 Dodge AC against melee, `DifficultTerrain` condition immunity,
+  and `Ground` buff-descriptor immunity. Angel Wings adds Ground spell
+  immunity. Native Airborne is instead two conditional -1 attack/damage rules.
+  Wings of Air will use the narrower draconic contract and armor gating. It
+  will neither clone CotW's injected `AddFlying` nor grant trip/prone immunity.
+- Base Kingmaker exposes eight `AddConcealment` components; the only native
+  `Fog` entry in the isolated graph is Obscuring Mist buff
+  `61b312b8f91cc48418768b77cd6dcc02`. Exact source identities—not blanket Fog
+  descriptor suppression—will drive vision feats.
+- Eleven native fire `WeaponEnergyDamageDice` enchantments were inventoried.
+  Exact Flaming identity `30f90becaaac51f41bf56641966c4121` is 1d6 fire.
+  Scorching Weapons will use project-owned item enchantments and exact
+  fire-enchantment nonstacking checks rather than mutating a donor.
+- Native summon ability `107788f47c4481f4db6da06498b28270` spawns exact
+  Small Water Elemental `56372b0a2749c224392a5ee74105c534`, linked to the
+  caster, not directly controllable, for rounds based on caster level. Triton
+  Portal can reuse this native action model with a project-owned 1d3 count and
+  no dependency on the expanded-summoning publication toggle.

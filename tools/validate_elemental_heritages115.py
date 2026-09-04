@@ -15,7 +15,7 @@ VERSION = "0.0.115"
 INFORMATIONAL_VERSION = "0.0.115-elemental-heritages"
 PACKAGE = "KingmakerGunslinger-0.0.115-local-runtime.zip"
 PACKAGE_SUFFIX = "elemental-heritages"
-DETERMINISTIC_TEST_COUNT = 1407
+DETERMINISTIC_TEST_COUNT = 1408
 STATIC_KEY = "elementalHeritages115"
 HERITAGE_GUID_PREFIX = "e115e1e0a17a4aceb001"
 
