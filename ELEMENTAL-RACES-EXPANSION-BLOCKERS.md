@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through Release B advanced-Ifrit mechanics commit
-  `7aee2740f7c08f0f9eec1b3efee4eff8e526ce51` cannot currently be pushed.
+- Local checkpoints through Release B Sylph mechanics commit
+  `f514c3dbb31c8f2f705a5e3dea1237e8d9eeebc5` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
@@ -22,9 +22,10 @@ None established.
   Wings of Air is now implemented and passes exact attack/armor/immunity runtime
   qualification in run
   `20260904T1940018479703Z-78dcc0b63a264ff281f62699090dfd4d`.
-  Respiration-source classification still requires a narrow implemented catalog
-  and behavioral qualification. Release C audits remain open for ray deflection
-  and difficult terrain.
+  Airy Step, Cloud Gazer, and Inner Breath now use narrow exact catalogs and
+  passed behavioral qualification in isolated run
+  `20260905T0258431754839Z-f395da4f5be54cbdad4e980f477f2791`.
+  Release C audits remain open for ray deflection and difficult terrain.
 - Native `DirtyTrickBlind` is present and player-facing; no
   `DirtyTrickDazzle` enum member exists. Hydraulic Maneuver will implement the
   printed blind option and explicitly omit dazzle rather than simulate it.
@@ -45,6 +46,24 @@ These are investigation items, not hard stops. Features fail closed only under
 the mission's hard-stop contract; independent work continues.
 
 ## Resolved Release B mechanics findings
+
+- Kingmaker 2.1.7b exposes no `SpellDescriptor.Air`. A second isolated
+  KMG-only inventory established eleven exact native Sirocco, elemental
+  Whirlwind, and air-derived Cyclone ability identities. Airy Step uses that
+  immutable catalog alongside native Electricity descriptor and direct
+  electricity-damage predicates. Actual saving throws prove +2 exactly once
+  for every catalog entry, a parent variant, and an Air/Electricity overlap;
+  Wings of Air replaces that value with +4 total.
+- Obscuring Mist is the only native fog/mist/cloud `AddConcealment` provider
+  in the isolated inventory. Cloud Gazer bypasses only that exact identity or
+  an explicit project Fog/Mist/Cloud marker. Actual attacks prove that Smoke,
+  Blur, displacement, invisibility, blindness, darkness, concurrent unrelated
+  concealment, and Mirror Image remain effective.
+- Kingmaker exposes no general respiration or inhaled-poison rule. The exact
+  native poisonous-swamp-gas pair is the only safely distinguishable
+  respiration-required catalog. Inner Breath also accepts an explicit project
+  semantic marker; actual `RuleApplyBuff` tests prove ordinary poison,
+  Stinking Cloud, Cloudkill, and unrelated `SwampGasDOT` remain effective.
 
 - The isolated Kingmaker 2.1.7b inventory exposes eight native
   `AddConcealment` sources but none that is semantically fire or smoke.

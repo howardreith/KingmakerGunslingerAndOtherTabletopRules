@@ -540,6 +540,26 @@ or removing only exact project-owned providers. The two In Harm's Way immediate-
 debt facts remain hidden and mechanically inert; they preserve an off-turn
 spend across save/load and tie it to the owner's next actual turn without
 using a global-round flag.
+
+Release B gameplay remains outside bootstrap orchestration. Feature-specific
+components own Elemental Strike, Wings, Ifrit, and Sylph behavior, while
+dedicated guarded scenarios own their live rule-event fixtures. Airy Step adds
+one temporary `ModifierDescriptor.Racial` modifier to the current native
+`RuleSavingThrow` and claims the exact event through a weak identity table.
+Because Kingmaker has no Air descriptor, a fixed eleven-ability native catalog
+supplements Electricity descriptor and direct electricity-damage checks;
+effective parent traversal cannot multiply the bonus. The existing Wings fact
+changes the computed total from +2 to +4 rather than adding another modifier.
+
+Cloud Gazer uses a narrow postfix on the existing
+`RuleConcealmentCheck.Success` getter. It verifies the active parent
+`RuleAttackRoll`, exact feat owner, ordinary sight state, target invisibility,
+and every active target concealment provider. It succeeds only when all
+providers are exact native Obscuring Mist or explicit project Fog/Mist/Cloud
+markers, so unrelated and concurrent defenses fail closed. Inner Breath is a
+local `RuleApplyBuff` component: two exact audited native respiration-required
+buff identities and explicit project semantic markers are blocked, while no
+name, Poison descriptor, cloud shape, or visual inference broadens immunity.
 The additional reservation is the request-gated Elemental Races diagnostic
 race. It is never part of ordinary bootstrap or character creation and is
 removed by the guarded probe that owns it.

@@ -41,6 +41,23 @@ uses an immutable isolated-runtime-audited catalog of seven exact native Spell
 identities and excludes racial spell-like abilities from that Light-spell
 branch.
 
+Blazing Aura is a Free action on the Ifrit's turn while Scorching Weapons is
+active. Its one-round aura deals one native 1d6 fire packet when any adjacent
+other creature, including an ally, begins its turn. Firesight uses native
+Dazzled immunity and sees through only explicitly classified fire or smoke
+concealment; it does not suppress fog, Blur, displacement, invisibility,
+blindness, darkness, or Mirror Image.
+
+Airy Step adds one +2 racial saving-throw modifier against native Electricity
+effects, direct electricity-damage reasons, and an immutable isolated-runtime
+catalog of eleven exact native Air effects. Overlapping predicates and parent
+variants apply once. Wings of Air replaces this with +4 total. Cloud Gazer
+ignores concealment only from exact native Obscuring Mist and explicit
+project-owned fog/mist/cloud effects; all unrelated concealment remains
+effective. Inner Breath blocks the exact native respiration-required
+poisonous-swamp-gas pair and explicit project-owned respiration effects. It
+does not grant blanket poison, gas, or cloud immunity.
+
 The required catalog is Elemental Strike; Scorching Weapons, Inner Flame,
 Blazing Aura, and Firesight for Ifrits; Airy Step, Wings of Air, Cloud Gazer,
 and Inner Breath for Sylphs; and Hydraulic Maneuver and Triton Portal for
@@ -51,13 +68,16 @@ Dedicated guarded run
 `20260904T2000378983332Z-b0699acd82da4d378c3abdded3983858` passed all
 16 Elemental Strike/Wings assertions. Isolated guarded run
 `20260904T2222242573484Z-6e4985f6214a4ffeba5512e353f884f3` passed all
-12 Scorching Weapons/Inner Flame assertions. Both had zero warnings, touched
-no save, and cleaned up their disposable units exactly. This checkpoint is
-independently buildable but is not a Release B PASS. Blazing Aura, Firesight,
-Airy Step, Cloud Gazer, Inner Breath, Hydraulic Maneuver, Triton Portal,
-save-backed persistence, compatibility profiles, and final release hashes
-remain pending. Release A 0.0.115 evidence remains historical and is not
-relabelled as 0.0.116 evidence.
+12 Scorching Weapons/Inner Flame assertions. Run
+`20260905T0137340360592Z-e5da1d69116a4fd1837b7ae385ed7bd9`
+passed all 14 Blazing Aura/Firesight assertions, and isolated KMG-only run
+`20260905T0258431754839Z-f395da4f5be54cbdad4e980f477f2791`
+passed all 18 Airy Step/Cloud Gazer/Inner Breath assertions. Every run had zero
+warnings, touched no save, and cleaned up its disposable units exactly. This
+checkpoint is independently buildable but is not a Release B PASS. Hydraulic
+Maneuver, Triton Portal, save-backed persistence, compatibility profiles, and
+final release hashes remain pending. Release A 0.0.115 evidence remains
+historical and is not relabelled as 0.0.116 evidence.
 
 The candidate preserves the previously qualified firearm SoundBank byte
 identity `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
