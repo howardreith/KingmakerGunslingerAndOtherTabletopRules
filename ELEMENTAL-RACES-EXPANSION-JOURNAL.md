@@ -1228,3 +1228,78 @@ and the first focused mechanical group from the now-qualified native contracts.
 - This is not a Release B PASS. Airy Step, Cloud Gazer, Inner Breath,
   Hydraulic Maneuver, Triton Portal, feat-bearing persistence, the complete
   compatibility matrix, and final 0.0.116 gates remain pending.
+
+## 2026-09-05 - Release B mechanics slice 4 runtime PASS
+
+- Confirmed 14,589,767,680 bytes free on `C:` after the user made additional
+  space available. No broad or unrelated cleanup was performed.
+- Expanded the read-only feat native-contract observer and reran it inside an
+  exact `gunslinger-only` transaction. Run
+  `20260905T0221048360892Z-e1fec44f33434a60a12d7b2e9168dbcb`
+  passed 10/10 with zero warnings over the base 83,023-blueprint library.
+  Kingmaker exposes no Air descriptor. The audit established eleven exact
+  native Sirocco, elemental Whirlwind, and air-derived Cyclone abilities; one
+  fog/mist/cloud concealment provider (Obscuring Mist); and two exact native
+  poisonous-swamp-gas buffs whose effect genuinely requires respiration.
+  Blade Whirlwind, ordinary Poison, Stinking Cloud, Cloudkill, and generic
+  `SwampGasDOT` controls remain excluded. Audit/runtime-result/runtime-evidence
+  SHA-256 values are
+  `5d8a0addb2c0bb7aa34ae7c2586c7e4237511d6b94553c0fe0507e78650f1122`,
+  `a4d16af72911a5cebd4413679ffa255a4ed83f663f7de91af5a9a423a3c5eaaa`,
+  and `551508b1d349d9c900678ab6cc92d79473032b7dbe5a2baedf4fc60b6c001cb0`.
+  Transaction `compat-20260905T022043Z-ebd161c78729` restored exactly;
+  its transaction SHA-256 is
+  `8b25ee4699767424db2492161d78a2fd632fd1592195656744da0edf44dc7611`.
+- Implemented Airy Step as a local save-rule component. It recognizes native
+  Electricity descriptors, direct electricity-damage reasons, and the eleven
+  exact audited Air identities across the effective parent chain. One weak
+  rule-event claim prevents an Air/Electricity overlap or parent variant from
+  applying twice. The temporary modifier is `Racial`; Wings of Air replaces
+  +2 with +4 total and leaves no persistent save-stat modifier.
+- Implemented Cloud Gazer as a narrow fail-closed concealment postfix on the
+  exact current parent attack. Only exact Obscuring Mist and explicit project
+  Fog/Mist/Cloud sources qualify. Smoke, Blur, displacement, target
+  invisibility, attacker blindness/darkness, concurrent unrelated
+  concealment, and Mirror Image remain effective.
+- Implemented Inner Breath through a local `RuleApplyBuff` handler. It blocks
+  only the two exact native respiration-required buffs or an explicit project
+  semantic marker. It does not infer respiration from Poison, cloud/gas shape,
+  names, or visuals and therefore leaves the audited excluded controls intact.
+- Added guarded save-free scenario `disposable-elemental-sylph-feats` outside
+  the central runner. It exercises actual saving throws, electricity damage,
+  attack/concealment resolution, buff application, exact Harmony target
+  registration, and exact request-local teardown. KMG-only run
+  `20260905T0258431754839Z-f395da4f5be54cbdad4e980f477f2791`
+  passed 18/18 in 63,157 ms with zero warnings, no save access, automatic exit,
+  and exact unit cleanup. Every expected concealment failure has an otherwise
+  identical forced-success control that rolls 19 plus 120 against AC 6.
+- Runtime-result, Sylph-mechanics, runtime-evidence, and compatibility-log
+  SHA-256 values are respectively
+  `ba407df98928b3b475b52e34c36f44b776603c17b8fd5da71c8a833e3afaadfd`,
+  `9780e37b9da8104912f98bdf9521c4168c575892ef94a3e1d46a778dbe1ac475`,
+  `acd7c924ad126a9254c16696a61739cd3598336e29abff7e6c2db028f37d3517`,
+  and `7f0c0767b408d4f77ca79412c949685317c5983fd08e79eff75121f6510e55f6`.
+  The collector announced `evidence-manifest.json`, but it was absent after
+  collection; no hash or PASS claim is attributed to that missing file.
+- Repository validation and all 1,408/1,408 domain/reflection cases passed.
+  The exact-reference Release build and strict 135-entry package validation
+  passed. The exact 23,113,344-byte runtime package hashes to
+  `9db45f57693133b0cc80fbba89e32794236c97278a39d57115b37ca311343e5b`;
+  its 5,855,744-byte DLL hashes to
+  `995d059605df2b500507e28bce565c4a90571a837012ae6d107cd106ba819cdd`
+  with MVID `0a5b2f43-acb4-4903-a921-cacfd1222cbc`. Source-state SHA-256 is
+  `1005c731a0f639be9e1dd9b81f42e6be965408aed57fddbf5608f61a9183ab57`;
+  deployment-manifest SHA-256 is
+  `581583c0947f8cc00da4b1116aa6c981490bcd826948630e7081353fa8d5bf0d`.
+- Compatibility transaction `compat-20260905T025703Z-fff4ca9f0bb5`
+  completed `Restored` with verification true. Its SHA-256 is
+  `bf3f80e148c303f3efc7446739489f424e92deecea9425a7d6b47c1a91f92444`;
+  `FeatureModules.json` returned byte-for-byte to SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+- Commit `f514c3dbb31c8f2f705a5e3dea1237e8d9eeebc5` records the
+  implementation. The exact mandated push wrapper immediately refused the
+  required branch because its external allowlist still omits
+  `codex/elemental-races-expansion`; no bypass was attempted.
+- This is not a Release B PASS. Hydraulic Maneuver, Triton Portal,
+  feat-bearing persistence, the complete compatibility matrix, and final
+  0.0.116 gates remain pending.

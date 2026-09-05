@@ -81,7 +81,7 @@ Unchecked items are pending and must not be inferred from builds or historical
   fire/smoke concealment, native exclusion, Mirror Image, and Dazzled-immunity
   contracts. A live campaign `TurnController` dispatch recheck and Scorching
   item persistence/death cleanup remain part of the release-wide gates.
-- [ ] Airy Step, Wings of Air, Cloud Gazer, and Inner Breath pass exact save,
+- [x] Airy Step, Wings of Air, Cloud Gazer, and Inner Breath pass exact save,
   native-flight/armor, curated concealment, and respiration contracts.
 - [x] Wings of Air independently passes its exact base-Owlcat native-flight
   semantics, melee/ranged AC, no/light/medium armor gating, legal armor-removal

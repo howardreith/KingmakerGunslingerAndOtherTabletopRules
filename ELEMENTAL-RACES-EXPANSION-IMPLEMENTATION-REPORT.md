@@ -491,3 +491,77 @@ again refused the required branch because its external allowlist omits
 Release B remains incomplete. Airy Step, Cloud Gazer, Inner Breath, Hydraulic
 Maneuver, Triton Portal, feat-bearing persistence, compatibility profiles, and
 the complete 0.0.116 gate remain pending.
+
+## Release B mechanics slice 4
+
+Airy Step, Cloud Gazer, and Inner Breath are now mechanically active and
+independently qualified. Airy Step owns a local `RuleSavingThrow` component.
+It computes one +2 racial bonus for native Electricity descriptors, direct
+electricity-damage reasons, or one of eleven exact isolated-runtime-audited Air
+ability identities. It traverses effective parents and claims the exact save
+event through a weak identity table, so parent/variant and Air/Electricity
+overlap remain +2 total. An active Wings of Air fact changes the computation
+to +4 total instead of contributing a second modifier.
+
+Kingmaker 2.1.7b has no `SpellDescriptor.Air`. The exact supplement contains
+the native Sirocco and Shadow Sirocco abilities, five Air Elemental Whirlwind
+abilities, and four air-derived Cyclone forms. These identities came from the
+83,023-blueprint KMG-only inventory, not an optional-mod profile. No name or
+visual matching enters the predicate.
+
+Cloud Gazer shares only the exact `RuleConcealmentCheck.Success` target with
+Firesight and Seeking. Its feature-specific postfix inspects the active parent
+attack and every active target concealment provider. It bypasses only exact
+native Obscuring Mist or an explicit project Fog/Mist/Cloud marker, and fails
+closed if the attacker cannot see, the target is invisible, or any unrelated
+concealment source is concurrent. Actual attacks prove Smoke, Blur,
+displacement, invisibility, blindness, darkness, concurrent Blur, and Mirror
+Image remain effective.
+
+Inner Breath uses a local `RuleApplyBuff` component rather than a global
+poison rewrite. Kingmaker exposes no general breathing or inhaled-poison
+classification, so the exact native catalog contains only the two audited
+poisonous-swamp-gas processing buffs. Project content can opt in with an
+explicit respiration-required component. Ordinary poison, Stinking Cloud,
+Cloudkill, and unrelated `SwampGasDOT` remain applicable; underwater breathing
+has no extra player-facing mechanic.
+
+The enriched native audit run
+`20260905T0221048360892Z-e1fec44f33434a60a12d7b2e9168dbcb`
+passed 10/10 with no warning in an exactly restored KMG-only transaction.
+Audit SHA-256 is
+`5d8a0addb2c0bb7aa34ae7c2586c7e4237511d6b94553c0fe0507e78650f1122`.
+
+Dedicated save-free exact-artifact run
+`20260905T0258431754839Z-f395da4f5be54cbdad4e980f477f2791`
+passed 18/18 in 63,157 ms with no warning, no save access, automatic exit, and
+exact unit cleanup. Runtime-result, mechanic-evidence, runtime-evidence, and
+compatibility-attribution SHA-256 values are
+`ba407df98928b3b475b52e34c36f44b776603c17b8fd5da71c8a833e3afaadfd`,
+`9780e37b9da8104912f98bdf9521c4168c575892ef94a3e1d46a778dbe1ac475`,
+`acd7c924ad126a9254c16696a61739cd3598336e29abff7e6c2db028f37d3517`,
+and `7f0c0767b408d4f77ca79412c949685317c5983fd08e79eff75121f6510e55f6`.
+The announced `evidence-manifest.json` was absent after collection and carries
+no claim.
+
+Repository validation, all 1,408 domain/reflection tests, the exact-reference
+clean Release build, and strict package validation passed. The exact
+135-entry, 23,113,344-byte runtime package hashes to
+`9db45f57693133b0cc80fbba89e32794236c97278a39d57115b37ca311343e5b`.
+Its 5,855,744-byte DLL hashes to
+`995d059605df2b500507e28bce565c4a90571a837012ae6d107cd106ba819cdd`
+with MVID `0a5b2f43-acb4-4903-a921-cacfd1222cbc`. Deployment manifest
+`20260905T0258430802149Z` hashes to
+`581583c0947f8cc00da4b1116aa6c981490bcd826948630e7081353fa8d5bf0d`.
+Compatibility transaction `compat-20260905T025703Z-fff4ca9f0bb5` restored
+the original mod/settings state exactly and hashes to
+`bf3f80e148c303f3efc7446739489f424e92deecea9425a7d6b47c1a91f92444`.
+
+Implementation commit `f514c3dbb31c8f2f705a5e3dea1237e8d9eeebc5`
+was followed immediately by the exact mandated push wrapper. The wrapper
+again refused the required branch because its external allowlist omits
+`codex/elemental-races-expansion`; no bypass was attempted.
+
+Release B remains incomplete. Hydraulic Maneuver, Triton Portal,
+feat-bearing persistence, the complete compatibility matrix, and final
+0.0.116 gates remain pending.

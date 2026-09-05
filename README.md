@@ -10,7 +10,10 @@ GUID-aware reversible transactions. The catalog includes Elemental Strike,
 the Scorching Weapons/Inner Flame/Blazing Aura chain, Firesight, Airy Step,
 Wings of Air, Cloud Gazer, Inner Breath, Hydraulic Maneuver, and Triton Portal.
 Release B mechanics and guarded runtime qualification remain in progress; this
-checkpoint is not a release PASS.
+checkpoint is not a release PASS. Elemental Strike, Wings of Air, all four
+Ifrit feats, and the three non-flight Sylph feats now pass dedicated guarded
+mechanics scenarios. Hydraulic Maneuver, Triton Portal, save persistence, and
+the release-wide compatibility matrix remain pending.
 
 Release A added one obligatory heritage selection per race. Each selection has
 exactly three choices: General plus two alternate heritages. The parent race

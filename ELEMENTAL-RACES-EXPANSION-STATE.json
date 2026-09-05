@@ -16,7 +16,7 @@
   "status": {
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "MECHANICS-SLICES-1-THROUGH-3-PASS-REMAINING-FEATS-IN-PROGRESS",
+    "releaseB": "MECHANICS-SLICES-1-THROUGH-4-PASS-UNDINE-FEATS-IN-PROGRESS",
     "releaseC": "NOT-STARTED"
   },
   "foundationProgress": {
@@ -67,8 +67,11 @@
     "blazingAura": "IMPLEMENTED-RUNTIME-PASS (native free-action command while Scorching Weapons is active; one-round aura; friendly adjacent creature turn-start; one 1d6 Fire rule; exact turn-controller identity deduplication; native resistance)",
     "firesight": "IMPLEMENTED-RUNTIME-PASS (native Dazzled immunity; exact project Fire/Smoke concealment markers; no native catalog entries because the isolated base library exposes none; native Blur, displacement, Obscuring Mist, invisibility, darkness, blindness, and Mirror Image remain effective)",
     "wingsOfAir": "IMPLEMENTED-RUNTIME-PASS (+3 Dodge AC versus melee and +0 ranged; exact native terrain/Ground contract; no prone immunity; live no/light/medium armor removal and restoration)",
-    "mechanicsRuntime": "PASS-SLICES-1-THROUGH-3 (16/16 plus 12/12 plus 14/14 assertions; save-free exact cleanup; remaining Release B mechanics not yet qualified)",
-    "implementation": "MECHANICS-SLICES-1-THROUGH-3-PASS; REMAINING-GAMEPLAY-MECHANICS-IN-PROGRESS"
+    "airyStep": "IMPLEMENTED-RUNTIME-PASS (+2 Racial saves for Electricity descriptors, direct electricity-damage reasons, and all 11 exact audited native Air effects; parent variants and overlap apply once; Wings replaces with +4 total)",
+    "cloudGazer": "IMPLEMENTED-RUNTIME-PASS (exact native Obscuring Mist and explicit project Fog/Mist/Cloud concealment only; Smoke, Blur, displacement, invisibility, darkness, blindness, concurrent unrelated concealment, and Mirror Image remain effective)",
+    "innerBreath": "IMPLEMENTED-RUNTIME-PASS (two exact audited native respiration-required swamp-gas buffs plus explicit project semantic markers; ordinary poison, Stinking Cloud, Cloudkill, and unrelated SwampGasDOT remain effective)",
+    "mechanicsRuntime": "PASS-SLICES-1-THROUGH-4 (16/16 plus 12/12 plus 14/14 plus 18/18 assertions; save-free exact cleanup; Undine Release B mechanics not yet qualified)",
+    "implementation": "MECHANICS-SLICES-1-THROUGH-4-PASS; HYDRAULIC-MANEUVER-AND-TRITON-PORTAL-IN-PROGRESS"
   },
   "releaseBNativeAudit": {
     "status": "PASS",
@@ -301,6 +304,50 @@
       "20260905T0105520064317Z-365cb597a83e47259c4f2f1d75efc37f diagnostic instrumentation proved the production Firesight predicate returned true; fixture used an attack penalty with the wrong sign and reread Success outside the active parent context",
       "20260905T0121503875951Z-1e3ab268238f490bb95566b1f6d0bcd6 proved project Fire/Smoke hits and all exclusions but exposed native concealment short-circuit defaults in the AC-isolation assertion"
     ]
+  },
+  "releaseBSylphMechanicsSlice": {
+    "status": "PASS",
+    "releaseStatus": "NOT-A-RELEASE-B-PASS",
+    "scenario": "disposable-elemental-sylph-feats",
+    "isolatedProfile": "gunslinger-only",
+    "runId": "20260905T0258431754839Z-f395da4f5be54cbdad4e980f477f2791",
+    "assertions": 18,
+    "warnings": 0,
+    "durationMilliseconds": 63157,
+    "saveStateTouched": false,
+    "cleanupExact": true,
+    "runtimeResultSha256": "ba407df98928b3b475b52e34c36f44b776603c17b8fd5da71c8a833e3afaadfd",
+    "mechanicsEvidenceSha256": "9780e37b9da8104912f98bdf9521c4168c575892ef94a3e1d46a778dbe1ac475",
+    "runtimeEvidenceSha256": "acd7c924ad126a9254c16696a61739cd3598336e29abff7e6c2db028f37d3517",
+    "compatibilityAttributionSha256": "7f0c0767b408d4f77ca79412c949685317c5983fd08e79eff75121f6510e55f6",
+    "compatibilityTransactionId": "compat-20260905T025703Z-fff4ca9f0bb5",
+    "compatibilityTransactionStatus": "Restored",
+    "compatibilityRestorationVerified": true,
+    "compatibilityTransactionSha256": "bf3f80e148c303f3efc7446739489f424e92deecea9425a7d6b47c1a91f92444",
+    "featureSettingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "deploymentManifest": "20260905T0258430802149Z",
+    "deploymentManifestSha256": "581583c0947f8cc00da4b1116aa6c981490bcd826948630e7081353fa8d5bf0d",
+    "sourceBaselineCommit": "01c0c25a23da013a571695adda2ab5df8f6969bb",
+    "sourceStateSha256": "1005c731a0f639be9e1dd9b81f42e6be965408aed57fddbf5608f61a9183ab57",
+    "package": "KingmakerGunslinger-0.0.116-local-runtime.zip",
+    "packageSize": 23113344,
+    "packageEntries": 135,
+    "packageSha256": "9db45f57693133b0cc80fbba89e32794236c97278a39d57115b37ca311343e5b",
+    "dllSize": 5855744,
+    "dllSha256": "995d059605df2b500507e28bce565c4a90571a837012ae6d107cd106ba819cdd",
+    "dllMvid": "0a5b2f43-acb4-4903-a921-cacfd1222cbc",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1408/1408)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS (strict standalone, 135 entries)",
+    "nativeContractAudit": "KMG-only run 20260905T0221048360892Z-e1fec44f33434a60a12d7b2e9168dbcb passed 10/10 over 83,023 blueprints; audit SHA-256 5d8a0addb2c0bb7aa34ae7c2586c7e4237511d6b94553c0fe0507e78650f1122; transaction compat-20260905T022043Z-ebd161c78729 restored exactly with SHA-256 8b25ee4699767424db2492161d78a2fd632fd1592195656744da0edf44dc7611",
+    "airyStep": "PASS for nonmatching +0, Electricity +2, direct electricity damage +2, all 11 exact native Air effects +2, parent variants +2, Air/Electricity overlap +2 exactly once, Wings replacement +4 total, and no persistent save-stat modifier",
+    "cloudGazer": "PASS for exact native and project fog concealment bypass with no feat control; Smoke, Blur, displacement, concurrent Blur, invisibility, blindness, darkness, and independent Mirror Image remain effective; every case has a forced-success native AC control",
+    "innerBreath": "PASS for both exact native respiration-required buffs and explicit project markers; ordinary poison, Stinking Cloud, Cloudkill, and unrelated SwampGasDOT remain applicable",
+    "evidenceManifest": "ANNOUNCED-BUT-ABSENT; no PASS or hash attributed",
+    "checkpointCommit": "f514c3dbb31c8f2f705a5e3dea1237e8d9eeebc5",
+    "checkpointPush": "BLOCKED-EXTERNAL-ALLOWLIST",
+    "diagnosticRuns": []
   },
   "baselineGates": {
     "repositoryValidation": "PASS",
@@ -1016,6 +1063,12 @@
       "sha": "7aee2740f7c08f0f9eec1b3efee4eff8e526ce51",
       "subject": "Implement Blazing Aura and Firesight",
       "checkpoint": "release-b-mechanics-slice-3",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "f514c3dbb31c8f2f705a5e3dea1237e8d9eeebc5",
+      "subject": "Implement Sylph elemental feats",
+      "checkpoint": "release-b-mechanics-slice-4",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],

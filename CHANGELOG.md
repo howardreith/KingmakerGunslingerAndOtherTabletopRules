@@ -13,8 +13,12 @@
   transactions.
 - Binds prerequisites to exact project race and provider blueprints and records
   exact level/feat requirements, action economy, honest Kingmaker limitations,
-  and approved native adaptations. Mechanics and runtime qualification are not
-  yet complete, so Release B is not marked PASS.
+  and approved native adaptations.
+- Implements and independently qualifies Elemental Strike, Wings of Air, the
+  complete four-feat Ifrit catalog, and Airy Step, Cloud Gazer, and Inner
+  Breath through native command, attack, damage, save, concealment, buff, and
+  equipment-rule paths. Hydraulic Maneuver, Triton Portal, persistence, and
+  release-wide compatibility remain pending, so Release B is not marked PASS.
 
 ## 0.0.115-elemental-heritages
 
