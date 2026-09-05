@@ -288,6 +288,36 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(0, ElementalFeatPolicy.AiryStepSaveBonus(
                     true, true, false, false, false),
                 "Unrelated saves must receive no Sylph bonus.");
+            string[] airEffects = ElementalFeatPolicy
+                .ExactNativeAirEffectGuids();
+            string[] expectedAirEffects =
+            {
+                "093ed1d67a539ad4c939d9d05cfe192c",
+                "18e26a84bb46a1f40aef48b07f3c7311",
+                "b40515d1e14b3734c94640860e4103e4",
+                "1e6e67c961c493243a2077a0dc9a73df",
+                "48fc699da9aecb5418bb71d6e0bb0be0",
+                "48d2aec9f6820b543ba33052639c1a91",
+                "70c9e5dc39dc3934097767d927ac1c04",
+                "9fbc4fe045472984aa4a2d15d88bdaf9",
+                "cca552f27c6ea4f458858fb857212df7",
+                "2d1f3ad47ce421745b80495b9ed8ddc9",
+                "3e5996148b4ff634ea7033e112710402"
+            };
+            Assertions.True(airEffects.SequenceEqual(expectedAirEffects),
+                "The immutable native air-effect catalog drifted from guarded KMG-only evidence.");
+            foreach (string guid in airEffects)
+                Assertions.True(ElementalFeatPolicy
+                        .IsExactNativeAirEffectGuid(guid),
+                    "Every returned native air-effect identity must match exactly.");
+            airEffects[0] = "mutated";
+            Assertions.Equal(expectedAirEffects[0], ElementalFeatPolicy
+                .ExactNativeAirEffectGuids()[0],
+                "The native air-effect catalog must be immutable to callers.");
+            Assertions.False(ElementalFeatPolicy
+                    .IsExactNativeAirEffectGuid(
+                        "80f10dc9181a0f64f97a9f7ac9f47d65"),
+                "Blade Whirlwind is a name collision, not an air effect.");
             Assertions.True(ElementalFeatPolicy.WingsOfAirIsActive(true, true),
                 "No armor or light armor must permit the native flight abstraction.");
             Assertions.False(ElementalFeatPolicy.WingsOfAirIsActive(true, false),
@@ -342,10 +372,63 @@ namespace KingmakerGunslinger.DomainTests
                 ElementalFeatPolicy.CloudGazerIgnores(
                     ElementalConcealmentFamily.Displacement),
                 "Cloud Gazer must not consume Firesight or unrelated concealment domains.");
+            string[] cloudGazer = ElementalFeatPolicy
+                .ExactNativeCloudGazerConcealmentGuids();
+            Assertions.True(cloudGazer.SequenceEqual(new[]
+                { "61b312b8f91cc48418768b77cd6dcc02" }),
+                "Cloud Gazer's exact native catalog must contain only Obscuring Mist.");
+            cloudGazer[0] = "mutated";
+            Assertions.Equal("61b312b8f91cc48418768b77cd6dcc02",
+                ElementalFeatPolicy
+                    .ExactNativeCloudGazerConcealmentGuids()[0],
+                "The Cloud Gazer native catalog must be immutable.");
+            Assertions.False(ElementalFeatPolicy
+                    .IsExactNativeCloudGazerConcealmentGuid(
+                        "dd3ad347240624d46a11a092b4dd4674") ||
+                ElementalFeatPolicy
+                    .IsExactNativeCloudGazerConcealmentGuid(
+                        "00402bae4442a854081264e498e7a833"),
+                "Blur and displacement must remain outside Cloud Gazer's catalog.");
+            Assertions.True(ElementalFeatPolicy.CloudGazerCanBypass(
+                    true, true, true, true, false, 1, 0),
+                "One exact fog/mist/cloud source may bypass its concealment check.");
+            Assertions.False(ElementalFeatPolicy.CloudGazerCanBypass(
+                    true, true, true, true, false, 1, 1) ||
+                ElementalFeatPolicy.CloudGazerCanBypass(
+                    true, true, true, false, false, 1, 0) ||
+                ElementalFeatPolicy.CloudGazerCanBypass(
+                    true, true, true, true, true, 1, 0),
+                "Cloud Gazer must fail closed for unrelated concealment, no sight, and invisibility.");
             Assertions.True(ElementalFeatPolicy.InnerBreathGrantsImmunity(true),
                 "An explicitly respiration-dependent effect must be blocked.");
             Assertions.False(ElementalFeatPolicy.InnerBreathGrantsImmunity(false),
                 "Cloudkill-style effects that do not require breathing must remain effective.");
+            string[] respiration = ElementalFeatPolicy
+                .ExactNativeRespirationRequiredBuffGuids();
+            Assertions.True(respiration.SequenceEqual(new[]
+                {
+                    "d8c41a3d0e99d4344a6dfbc6afb48879",
+                    "2c72abedb51e8f647b0661d39f423a05"
+                }), "Inner Breath's exact native catalog must contain only the poisonous-swamp-gas pair.");
+            foreach (string guid in respiration)
+                Assertions.True(ElementalFeatPolicy
+                        .IsExactNativeRespirationRequiredBuffGuid(guid),
+                    "Every returned respiration-required identity must match exactly.");
+            respiration[0] = "mutated";
+            Assertions.Equal("d8c41a3d0e99d4344a6dfbc6afb48879",
+                ElementalFeatPolicy
+                    .ExactNativeRespirationRequiredBuffGuids()[0],
+                "The Inner Breath native catalog must be immutable.");
+            Assertions.False(ElementalFeatPolicy
+                    .IsExactNativeRespirationRequiredBuffGuid(
+                        "ef126ea92b72946439a4d0faa2369579") ||
+                ElementalFeatPolicy
+                    .IsExactNativeRespirationRequiredBuffGuid(
+                        "f85351ee696d98246ae5dc182b410447") ||
+                ElementalFeatPolicy
+                    .IsExactNativeRespirationRequiredBuffGuid(
+                        "ba1ae42c58e228c4da28328ea6b4ae34"),
+                "Cloudkill, Stinking Cloud, and ordinary poison must remain effective.");
 
             Assertions.True(ElementalFeatPolicy.BlazingAuraAffectsTurnStart(
                     true, true, true),

@@ -224,6 +224,66 @@ namespace KingmakerGunslinger.ElementalRaces
                 s_ExactNativeFiresightConcealmentGuids,
                 StringComparer.Ordinal);
 
+        // Kingmaker 2.1.7b exposes no SpellDescriptor.Air member. These are
+        // the exact installed save-bearing implementations whose published
+        // effect carries the air descriptor but whose native blueprint cannot
+        // express it: Sirocco (including its shadow variant), Air Elemental
+        // Whirlwind, and the air-derived Cyclone kinetic forms. Electricity
+        // descriptor/damage remains the primary native predicate. Evidence:
+        // guarded KMG-only run
+        // 20260905T0221048360892Z-e1fec44f33434a60a12d7b2e9168dbcb,
+        // native-audit SHA-256
+        // 5d8a0addb2c0bb7aa34ae7c2586c7e4237511d6b94553c0fe0507e78650f1122.
+        private static readonly string[] s_ExactNativeAirEffectGuids =
+        {
+            "093ed1d67a539ad4c939d9d05cfe192c", // Sirocco
+            "18e26a84bb46a1f40aef48b07f3c7311", // Shadow Sirocco
+            "b40515d1e14b3734c94640860e4103e4", // Small Whirlwind
+            "1e6e67c961c493243a2077a0dc9a73df", // Medium Whirlwind
+            "48fc699da9aecb5418bb71d6e0bb0be0", // Large Whirlwind
+            "48d2aec9f6820b543ba33052639c1a91", // Huge Whirlwind
+            "70c9e5dc39dc3934097767d927ac1c04", // Greater Whirlwind
+            "9fbc4fe045472984aa4a2d15d88bdaf9", // Cyclone: Air
+            "cca552f27c6ea4f458858fb857212df7", // Cyclone: Blizzard
+            "2d1f3ad47ce421745b80495b9ed8ddc9", // Cyclone: Sandstorm
+            "3e5996148b4ff634ea7033e112710402"  // Cyclone: Thunderstorm
+        };
+
+        private static readonly HashSet<string> s_ExactNativeAirEffectSet =
+            new HashSet<string>(s_ExactNativeAirEffectGuids,
+                StringComparer.Ordinal);
+
+        // Obscuring Mist is the sole native Kingmaker AddConcealment provider
+        // in the fog/mist/cloud family. Acid Fog, Cloudkill, and Stinking
+        // Cloud do not independently publish concealment components.
+        private static readonly string[]
+            s_ExactNativeCloudGazerConcealmentGuids =
+            {
+                "61b312b8f91cc48418768b77cd6dcc02" // Obscuring Mist buff
+            };
+
+        private static readonly HashSet<string>
+            s_ExactNativeCloudGazerConcealmentSet = new HashSet<string>(
+                s_ExactNativeCloudGazerConcealmentGuids,
+                StringComparer.Ordinal);
+
+        // The installed game exposes no inhaled-poison enum or breathing
+        // rule. These two exact poison-processing buffs are the complete
+        // native poisonous-swamp-gas pair. Ordinary poison, Stinking Cloud,
+        // Cloudkill, poison breath, and arbitrary gas/cloud effects remain
+        // outside the catalog.
+        private static readonly string[]
+            s_ExactNativeRespirationRequiredBuffGuids =
+            {
+                "d8c41a3d0e99d4344a6dfbc6afb48879", // Poisonous gas
+                "2c72abedb51e8f647b0661d39f423a05"  // Poisonous gas variant
+            };
+
+        private static readonly HashSet<string>
+            s_ExactNativeRespirationRequiredBuffSet = new HashSet<string>(
+                s_ExactNativeRespirationRequiredBuffGuids,
+                StringComparer.Ordinal);
+
         internal const int FeatCount = 11;
 
         private static readonly ElementalHydraulicManeuver[]
@@ -416,6 +476,17 @@ namespace KingmakerGunslinger.ElementalRaces
             return hasWingsOfAir ? 4 : 2;
         }
 
+        internal static string[] ExactNativeAirEffectGuids()
+        {
+            return (string[])s_ExactNativeAirEffectGuids.Clone();
+        }
+
+        internal static bool IsExactNativeAirEffectGuid(string guid)
+        {
+            return !string.IsNullOrEmpty(guid) &&
+                s_ExactNativeAirEffectSet.Contains(guid);
+        }
+
         internal static bool WingsOfAirIsActive(bool hasWingsOfAir,
             bool wearsNoArmorOrLightArmor)
         {
@@ -460,10 +531,47 @@ namespace KingmakerGunslinger.ElementalRaces
             return source == ElementalConcealmentFamily.FogMistOrCloud;
         }
 
+        internal static string[] ExactNativeCloudGazerConcealmentGuids()
+        {
+            return (string[])s_ExactNativeCloudGazerConcealmentGuids.Clone();
+        }
+
+        internal static bool IsExactNativeCloudGazerConcealmentGuid(
+            string guid)
+        {
+            return !string.IsNullOrEmpty(guid) &&
+                s_ExactNativeCloudGazerConcealmentSet.Contains(guid);
+        }
+
+        internal static bool CloudGazerCanBypass(bool nativeCheckFailed,
+            bool exactParentAttackCheck, bool attackerHasCloudGazer,
+            bool attackerCanSee, bool targetHasInvisibility,
+            int qualifyingConcealmentSources,
+            int unrelatedConcealmentSources)
+        {
+            return nativeCheckFailed && exactParentAttackCheck &&
+                attackerHasCloudGazer && attackerCanSee &&
+                !targetHasInvisibility &&
+                qualifyingConcealmentSources > 0 &&
+                unrelatedConcealmentSources == 0;
+        }
+
         internal static bool InnerBreathGrantsImmunity(
             bool effectExplicitlyRequiresBreathing)
         {
             return effectExplicitlyRequiresBreathing;
+        }
+
+        internal static string[] ExactNativeRespirationRequiredBuffGuids()
+        {
+            return (string[])s_ExactNativeRespirationRequiredBuffGuids.Clone();
+        }
+
+        internal static bool IsExactNativeRespirationRequiredBuffGuid(
+            string guid)
+        {
+            return !string.IsNullOrEmpty(guid) &&
+                s_ExactNativeRespirationRequiredBuffSet.Contains(guid);
         }
 
         internal static ElementalHydraulicManeuver[] HydraulicManeuvers()

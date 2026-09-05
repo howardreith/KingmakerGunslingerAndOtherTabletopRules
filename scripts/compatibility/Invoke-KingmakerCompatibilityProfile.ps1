@@ -51,6 +51,7 @@ param(
         'disposable-elemental-feat-mechanics',
         'disposable-elemental-ifrit-feats',
         'disposable-elemental-ifrit-advanced-feats',
+        'disposable-elemental-sylph-feats',
         'observe-elemental-heritage-blueprints',
         'disposable-elemental-heritage-mechanics',
         'disposable-elemental-heritage-slas',

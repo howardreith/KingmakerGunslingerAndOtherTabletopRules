@@ -118,6 +118,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-elemental-ifrit-feats";
         internal const string DisposableElementalIfritAdvancedFeats =
             "disposable-elemental-ifrit-advanced-feats";
+        internal const string DisposableElementalSylphFeats =
+            "disposable-elemental-sylph-feats";
         internal const string ObserveElementalHeritageBlueprints =
             "observe-elemental-heritage-blueprints";
         internal const string DisposableElementalHeritageMechanics =
@@ -478,6 +480,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableElementalFeatMechanics,
                 DisposableElementalIfritFeats,
                 DisposableElementalIfritAdvancedFeats,
+                DisposableElementalSylphFeats,
                 ObserveElementalHeritageBlueprints,
                 DisposableElementalHeritageMechanics,
                 DisposableElementalHeritageSlas,

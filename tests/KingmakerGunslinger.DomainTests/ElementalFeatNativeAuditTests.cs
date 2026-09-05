@@ -28,6 +28,10 @@ namespace KingmakerGunslinger.DomainTests
                 "HasNativeLightDescriptor",
                 "AbilityDescriptor",
                 "ParentAbilityGuid",
+                "ReferencedBlueprintIdentities",
+                "CollectReferencedBlueprints",
+                "\"wind\"",
+                "\"gust\"",
                 "DirtyTrickBlind",
                 "ContextActionSpawnMonster",
                 "WeaponEnergyDamageDice",
@@ -95,6 +99,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalRaces", "ElementalFeatRuleComponents.cs");
             string advanced = Read("src", "KingmakerGunslinger",
                 "ElementalRaces", "ElementalIfritAdvancedFeatMechanics.cs");
+            string sylph = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalSylphFeatMechanics.cs");
             string factory = Read("src", "KingmakerGunslinger",
                 "ElementalRaces", "ElementalFeatBlueprintFactory.cs");
             string blueprintSet = Read("src", "KingmakerGunslinger",
@@ -105,6 +111,8 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTesting", "ElementalIfritFeatScenario.cs");
             string advancedScenario = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalIfritAdvancedFeatScenario.cs");
+            string sylphScenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalSylphFeatScenario.cs");
             string catalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -162,6 +170,35 @@ namespace KingmakerGunslinger.DomainTests
                 advanced.Contains("BlueprintsCache.Init") ||
                 advanced.Contains("HarmonyPatch(typeof(UnitDescriptor)"),
                 "Advanced Ifrit mechanics must not introduce a global race, cache, or unit patch.");
+            foreach (string token in new[]
+            {
+                "RuleInitiatorLogicComponent<RuleSavingThrow>",
+                "ElementalAiryStepSaveBonus",
+                "ConditionalWeakTable<RuleSavingThrow, object>",
+                "SpellDescriptor.Electricity",
+                "IsExactNativeAirEffectGuid",
+                "RuleDealDamage",
+                "DamageEnergyType.Electricity",
+                "ModifierDescriptor.Racial",
+                "ElementalCloudGazerRuntime",
+                "Rulebook.CurrentContext",
+                "ReferenceEquals(attack.ConcealmentCheck, check)",
+                "IsExactNativeCloudGazerConcealmentGuid",
+                "ElementalFiresightConcealmentKind.FogMistOrCloud",
+                "[HarmonyPatch(typeof(RuleConcealmentCheck), \"get_Success\")]",
+                "RuleInitiatorLogicComponent<RuleApplyBuff>",
+                "ElementalRespirationRequired",
+                "IsExactNativeRespirationRequiredBuffGuid",
+                "evt.CanApply = false",
+                "Fail closed"
+            })
+                Assertions.True(sylph.Contains(token),
+                    "Sylph feat mechanics are missing narrow runtime boundary " +
+                    token + ".");
+            Assertions.False(sylph.Contains("RaceId.Aasimar") ||
+                sylph.Contains("SpellDescriptor.Poison") ||
+                sylph.Contains("HarmonyPatch(typeof(UnitDescriptor)"),
+                "Sylph mechanics must not use the shared native race ID, blanket poison immunity, or a global unit patch.");
             Assertions.True(advanced.Contains(
                     "blueprints.RequireSymbol<BlueprintBuff>(") &&
                 blueprintSet.Contains("m_BlueprintsBySymbol") &&
@@ -179,6 +216,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ConfigureScorchingWeapons",
                 "ConfigureBlazingAura",
                 "ConfigureFiresight",
+                "ConfigureAiryStep",
+                "ConfigureInnerBreath",
                 "UnitCondition.Dazzled"
             })
                 Assertions.True(factory.Contains(token),
@@ -255,6 +294,39 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(advancedScenario.Contains(token),
                     "Dedicated advanced Ifrit scenario is missing live boundary " +
                     token + ".");
+            foreach (string token in new[]
+            {
+                "RuleSavingThrow",
+                "new MechanicsContext(source, source.Descriptor,",
+                "new RuleDealDamage(source, saver,",
+                "DamageEnergyType.Electricity",
+                "ExactNativeAirEffectGuids()",
+                "ParentAir",
+                "Overlap",
+                "WingsDelta == 4",
+                "RuleAttackRoll",
+                "RuleConcealmentCheck",
+                "SeekingConcealmentRuntime.QueueForcedRoll",
+                "context.Harmony.GetPatchInfo(getter)",
+                "typeof(ElementalCloudGazerConcealmentPatch)",
+                "typeof(SeekingConcealmentSuccessPatch)",
+                "new RuleAttackRoll(attacker, target, weapon, -100)",
+                "AcProbeConcealmentRoll == 100",
+                "ReachedIndependentDefense(\"MirrorImage\")",
+                "ElementalFiresightConcealmentKind.FogMistOrCloud",
+                "ElementalFiresightConcealmentKind.Smoke",
+                "TryApplyBuff(breather, blueprint)",
+                "ElementalRespirationRequired",
+                "OrdinaryPoisonGuid",
+                "StinkingCloudGuid",
+                "CloudkillGuid",
+                "SwampGasDotGuid",
+                "SaveStateTouched = false",
+                "Game.Instance.State.Units.All.Remove(unit)"
+            })
+                Assertions.True(sylphScenario.Contains(token),
+                    "Dedicated Sylph feat scenario is missing live boundary " +
+                    token + ".");
             foreach (string source in new[]
             {
                 catalog, automation, preflight, compatibility
@@ -276,6 +348,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(
                         "disposable-elemental-ifrit-advanced-feats"),
                     "Advanced Ifrit feat mechanics are outside a guarded allowlist.");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-sylph-feats"),
+                    "Sylph feat mechanics are outside a guarded allowlist.");
             Assertions.True(runner.Contains(
                     ".DisposableElementalFeatMechanics") &&
                 runner.Contains("ElementalFeatMechanicsScenario.Run("),
@@ -288,6 +367,10 @@ namespace KingmakerGunslinger.DomainTests
                     ".DisposableElementalIfritAdvancedFeats") &&
                 runner.Contains("ElementalIfritAdvancedFeatScenario.Run("),
                 "Advanced Ifrit mechanics are outside constant-based dispatch.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalSylphFeats") &&
+                runner.Contains("ElementalSylphFeatScenario.Run("),
+                "Sylph feat mechanics are outside constant-based dispatch.");
             Assertions.Equal(2,
                 catalog.Split(new[] { "DisposableElementalFeatMechanics" },
                     StringSplitOptions.None).Length - 1,
@@ -304,13 +387,20 @@ namespace KingmakerGunslinger.DomainTests
                     StringSplitOptions.None).Length - 1,
                 "Advanced Ifrit mechanics must have one constant declaration " +
                 "and one executable catalog entry.");
+            Assertions.Equal(2,
+                catalog.Split(new[] { "DisposableElementalSylphFeats" },
+                    StringSplitOptions.None).Length - 1,
+                "Sylph feat mechanics must have one constant declaration " +
+                "and one executable catalog entry.");
             Assertions.True(project.Contains(
                     "ElementalFeatRuleComponents.cs") &&
                 project.Contains(
                     "ElementalIfritAdvancedFeatMechanics.cs") &&
+                project.Contains("ElementalSylphFeatMechanics.cs") &&
                 project.Contains("ElementalFeatMechanicsScenario.cs") &&
                 project.Contains("ElementalIfritFeatScenario.cs") &&
-                project.Contains("ElementalIfritAdvancedFeatScenario.cs"),
+                project.Contains("ElementalIfritAdvancedFeatScenario.cs") &&
+                project.Contains("ElementalSylphFeatScenario.cs"),
                 "Elemental Feat mechanics or scenario is outside the build.");
         }
     }

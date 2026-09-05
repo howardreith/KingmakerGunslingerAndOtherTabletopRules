@@ -53,6 +53,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly string[] SearchTerms =
         {
             "wing", "flight", "flying", "air elemental",
+            "wind", "gust", "sirocco", "whirlwind", "cyclone",
+            "electric", "lightning", "storm",
             "fog", "mist", "smoke", "cloud", "incendiary",
             "blur", "displacement", "invisibility", "mirror image",
             "darkness", "blindness", "dazzle",
@@ -72,6 +74,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             public string ParentAbilityGuid { get; set; }
             public string[] MatchedTerms { get; set; }
             public string[] ComponentTypes { get; set; }
+            public string[] ReferencedBlueprintIdentities { get; set; }
             public string[] UnitFactIdentities { get; set; }
         }
 
@@ -393,6 +396,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         component != null).Select(component =>
                         component.GetType().FullName)
                     .OrderBy(type => type, StringComparer.Ordinal).ToArray(),
+                ReferencedBlueprintIdentities = ReferencedBlueprints(value),
                 UnitFactIdentities = unit == null ? new string[0] :
                     (unit.AddFacts ?? new BlueprintUnitFact[0]).Where(fact =>
                             fact != null)
@@ -406,6 +410,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .OrderBy(identity => identity,
                             StringComparer.Ordinal).ToArray()
             };
+        }
+
+        private static string[] ReferencedBlueprints(
+            BlueprintScriptableObject value)
+        {
+            var identities = new HashSet<string>(StringComparer.Ordinal);
+            var seen = new HashSet<object>(ReferenceComparer.Instance);
+            foreach (BlueprintComponent component in Components(value))
+                CollectReferencedBlueprints(component, seen, identities);
+            return identities.OrderBy(identity => identity,
+                StringComparer.Ordinal).ToArray();
+        }
+
+        private static void CollectReferencedBlueprints(object value,
+            ISet<object> seen, ISet<string> identities)
+        {
+            if (value == null || value is string || value.GetType().IsValueType)
+                return;
+            BlueprintScriptableObject blueprint = value as
+                BlueprintScriptableObject;
+            if (blueprint != null)
+            {
+                identities.Add(blueprint.GetType().FullName + ":" +
+                    (blueprint.name ?? string.Empty) + "[" +
+                    (blueprint.AssetGuid ?? string.Empty) + "]");
+                return;
+            }
+            if (!seen.Add(value)) return;
+            UnityEngine.Object unity = value as UnityEngine.Object;
+            if (unity != null && !(value is BlueprintComponent) &&
+                !(value is GameAction)) return;
+            IEnumerable sequence = value as IEnumerable;
+            if (sequence != null)
+            {
+                foreach (object item in sequence)
+                    CollectReferencedBlueprints(item, seen, identities);
+                return;
+            }
+            foreach (FieldInfo field in Fields(value.GetType()))
+            {
+                object child;
+                try { child = field.GetValue(value); }
+                catch { continue; }
+                CollectReferencedBlueprints(child, seen, identities);
+            }
         }
 
         private static ExactBlueprintContractEvidence DescribeExactContract(
