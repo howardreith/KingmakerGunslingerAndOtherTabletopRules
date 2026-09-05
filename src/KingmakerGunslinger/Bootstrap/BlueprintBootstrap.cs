@@ -739,7 +739,7 @@ namespace KingmakerGunslinger.Bootstrap
                     elementalRaces,
                     publicationPlan.ElementalRaceSelectors);
                 elementalFeats = ElementalFeatBlueprintFactory.Register(
-                    registry, elementalRaces);
+                    library, registry, elementalRaces);
                 elementalFeatPublication = ElementalFeatPublication.Apply(
                     library, elementalFeats,
                     publicationPlan.ElementalRaceFeats);
