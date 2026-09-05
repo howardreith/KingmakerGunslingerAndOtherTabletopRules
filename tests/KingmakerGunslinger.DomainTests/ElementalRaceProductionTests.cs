@@ -843,7 +843,16 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals(catalogReference, afterFirst)",
                 "SameReferences(before, afterSecond)",
                 "ContractResolver = new DefaultContractResolver()",
-                "third-party-race-order-preserved"
+                "third-party-race-order-preserved",
+                "RaceBlueprintIdentityCount",
+                "BlueprintBootstrap.ElementalFeats",
+                "ElementalFeatPublication.BasicFeatSelectionGuid",
+                "ElementalFeatPublication.FighterCombatFeatSelectionGuid",
+                "elemental-feat-identities-registered",
+                "elemental-feat-publication-state-exact",
+                "ElementalFeatPublication.Apply(",
+                "elemental-feat-reconciliation-idempotent",
+                "third-party-feat-order-preserved"
             })
                 Assertions.True(scenario.Contains(token),
                     "Races Unleashed compatibility token is absent: " +

@@ -142,18 +142,40 @@ namespace KingmakerGunslinger.DomainTests
                     "Feat insertion order is not deterministic.");
                 AssertSingular(values, bodyguard, inHarmsWay);
             }
+            Fixture[][] publishedReferences = arrays.Select(value => value)
+                .ToArray();
 
             BodyguardFeatPublicationTransaction<Fixture> repeated =
                 BodyguardFeatPublicationTransaction<Fixture>.Publish(surfaces,
                     new[] { bodyguard, inHarmsWay }, value => value.Id,
                     value => value.Name);
-            foreach (Fixture[] values in arrays) AssertSingular(values,
-                bodyguard, inHarmsWay);
+            for (int index = 0; index < arrays.Length; index++)
+            {
+                AssertSingular(arrays[index], bodyguard, inHarmsWay);
+                Assertions.True(ReferenceEquals(arrays[index],
+                        publishedReferences[index]),
+                    "Repeated publication replaced an already exact array.");
+            }
             repeated.Rollback();
             first.Rollback();
             for (int index = 0; index < arrays.Length; index++)
                 Assertions.True(ReferenceEquals(arrays[index], originals[index]),
                     "Rollback did not restore an exact original array reference.");
+
+            var prepublished = new[]
+            {
+                new[] { bodyguard, alpha, inHarmsWay, omega }
+            };
+            Fixture[] prepublishedReference = prepublished[0];
+            BodyguardFeatPublicationTransaction<Fixture> observed =
+                BodyguardFeatPublicationTransaction<Fixture>.Publish(
+                    Surfaces(prepublished),
+                    new[] { inHarmsWay, bodyguard }, value => value.Id,
+                    value => value.Name);
+            Assertions.True(ReferenceEquals(prepublished[0],
+                    prepublishedReference),
+                "Publication moved exact existing entries around later publishers.");
+            observed.Rollback();
         }
 
         internal static void PartialFailureRestoresEverySurface()
