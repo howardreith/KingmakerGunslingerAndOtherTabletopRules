@@ -3,8 +3,9 @@
 ## Current outcome
 
 **IN PROGRESS - FOUNDATION AND RELEASE A MECHANICAL/COMPATIBILITY GATES PASS;
-RELEASE B NATIVE CONTRACTS, FIXED IDENTITIES, BLUEPRINT GRAPH, AND SELECTOR
-PUBLICATION ARE LOCALLY QUALIFIED; GAMEPLAY MECHANICS REMAIN IN PROGRESS. THE
+RELEASE B NATIVE CONTRACTS, FIXED IDENTITIES, BLUEPRINT GRAPH, SELECTOR
+PUBLICATION, AND ALL REQUIRED FEAT MECHANICS ARE LOCALLY QUALIFIED;
+PERSISTENCE AND RELEASE-WIDE COMPATIBILITY REMAIN IN PROGRESS. THE
 REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL ALLOWLIST.**
 
 The mission began from clean authoritative `master` commit
@@ -27,7 +28,7 @@ behavior.
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | IDENTITY/PUBLICATION CHECKPOINT PASS; MECHANICS IN PROGRESS |
+| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | ALL REQUIRED MECHANICS PASS; PERSISTENCE/COMPATIBILITY PENDING |
 | C | 0.0.117-elemental-traits | replacement slots and required alternate traits | NOT STARTED |
 
 Favored-class bonuses are out of scope.
@@ -60,8 +61,9 @@ and MVID `dcd73856-39d4-40ce-9b05-77bf249103d7`.
 
 Foundation behavior/runtime qualification is complete. Release A is now also
 mechanically qualified. Release B is active at version 0.0.116 with its
-identity/publication checkpoint qualified, but its mechanics and later gates
-remain incomplete; Release C is incomplete. Foundation spell
+identity/publication checkpoint and all required feat mechanics qualified,
+but persistence and release-wide compatibility gates remain incomplete;
+Release C is incomplete. Foundation spell
 affinity, exact SLA calculation and command behavior, native movement layering,
 Hydraulic Push, visual ownership, blueprint publication, and the three-process
 module-OFF persistence transaction have passing guarded evidence. The
@@ -562,6 +564,90 @@ was followed immediately by the exact mandated push wrapper. The wrapper
 again refused the required branch because its external allowlist omits
 `codex/elemental-races-expansion`; no bypass was attempted.
 
-Release B remains incomplete. Hydraulic Maneuver, Triton Portal,
-feat-bearing persistence, the complete compatibility matrix, and final
-0.0.116 gates remain pending.
+Release B remains incomplete. Feat-bearing persistence, the complete
+compatibility matrix, and final 0.0.116 gates remain pending.
+
+## Release B mechanics slice 5
+
+Hydraulic Maneuver and Triton Portal are mechanically active and independently
+qualified. Hydraulic Maneuver is an ability-variant parent whose four
+manifest-backed children invoke native `ContextActionCombatManeuver` for Bull
+Rush, Disarm, Trip, or Dirty Trick (blind). Each variant substitutes current
+total character level for base attack bonus and adds the current best
+Intelligence, Wisdom, or Charisma modifier. The feat-local availability
+component requires the exact project Undine race, active racial Hydraulic Push
+provider and ability, and a positive amount of the existing resource. The
+existing commit action spends that shared use exactly once after acceptance.
+
+The isolated runtime inventory exposes a genuine `DirtyTrickBlind` maneuver
+but no `DirtyTrickDazzle`. Blind is therefore implemented through the native
+path and dazzle remains an explicit engine omission. No spell or unrelated
+condition simulates it. The guarded scenario gives Disarm a held manufactured
+weapon and proves each variant creates one native `RuleCombatManeuver`. A
+temporary Wisdom increase changes Trip from level 7 + modifier 4 to level 7 +
+modifier 7. Cancellation retains the resource at 1, acceptance changes 1 to
+0, zero uses block both feat paths, and ordinary rest restores exactly one.
+
+Native Trip checks `target.View.IsGetUp` before constructing its rule. A newly
+spawned live-scene fixture reports `IsGetUp` while its spawn animation runs,
+so the request-local test patch suppresses only that false-positive state for
+its named disposable target; production behavior is not patched. Native
+combat-maneuver immunity then early-returns with CMB and d20 both zero and no
+prone effect. Kingmaker's result object retains its default `Success` value on
+that early return, so qualification keys on the actual zero-valued native
+event and unchanged target state rather than inventing another result.
+
+Triton Portal clones only the exact native Small Water Elemental summon
+component/action graph. Mutable components and actions are copied into the
+project-owned ability while native blueprint references remain references.
+The owned spawn count is 1d3. The full-round SpellLike point command uses the
+same Hydraulic Push resource and retains ordinary native summon duration,
+allied non-hostile faction, source linkage, lifecycle, death, and cleanup.
+An owned checker rejects nonfinite or non-ground points through
+`AbilityData.CanTarget`, Kingmaker's player-facing point-selection gate. A raw
+synthetic `UnitUseAbility.CanStart` assumes that upstream validation has
+already occurred and is retained as a separate diagnostic observation.
+Expanded Summoning is neither queried nor referenced.
+
+Final KMG-only run
+`20260905T0550526363250Z-a4c7158ae8e74168b36082c6c6e6e3a0`
+passed 13/13 in 61,003 ms with zero runtime-result warnings, no save access,
+automatic exit, and exact request-local unit, object, area, item, faction, and
+player-cache cleanup. Runtime-result, mechanic-evidence, runtime-evidence,
+runtime-summary, and compatibility-attribution SHA-256 values are respectively
+`0bcc4e6bf43472c1653f9fe98c24f825ec9f860b4bcd0af0df94b7d3e442045a`,
+`6797701ef2d806136807661c70130075bb5eb06270dcaa29eb98815d861114c4`,
+`af88dbb52734d7ba00f96b57b3cc03449708fb08a23e7fb5bbc66ea719229c27`,
+`ba67b9af0022a2fb069f97c18ae28981d600fad834d1094d8598cb0ba6d5ac76`,
+and `b8eea82306456e2cc41b23726df9a22d88fc309ff37650da239735fed1660a1a`.
+The collector announced `evidence-manifest.json`, but it was absent after
+collection and carries no claim.
+
+Repository validation, all 1,408 domain/reflection tests, the exact-reference
+clean Release build, and strict package validation passed. The 135-entry,
+23,129,428-byte runtime package hashes to
+`1de04caba357580b7f5dbffb422b65b8fde399fed8f90ddd568da83ba40e8804`.
+Its 5,912,064-byte DLL hashes to
+`89cd4fe6f96a339a54102441b0958ff970b7ce258e90884ed46eda3e8c02bf90`
+with MVID `4eb29429-0ece-42e2-bf6a-cd9a8e9c967c`. Source-state SHA-256 is
+`000f158a2e1235e7ad37d80974639ab9abfe4eb0b791ceee19fbe9c4816a3382`;
+deployment manifest `20260905T0550525413468Z` hashes to
+`8370bc4d68592829ca00bed9f6ad4404483d55fb86bfb1daac74198a7a280671`.
+
+Compatibility transaction `compat-20260905T054922Z-c2398e3ecad3`
+completed `Restored` with verification true and hashes to
+`07702b939756bb5d0bc5c3fae4e07f8f89a1cb9df21f57b352293bb02270e6af`.
+`FeatureModules.json` returned byte-for-byte to SHA-256
+`a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+The six preceding diagnostic results and their exactly restored transactions
+remain enumerated in the mission state; none is rewritten as a pass.
+
+Implementation commit `b70ad97d25ff2c25a41dd544f2e6a7870c6bd12d`
+was followed immediately by the exact mandated push wrapper. The wrapper
+again refused the required branch because its external allowlist omits
+`codex/elemental-races-expansion`; no bypass was attempted.
+
+All required Release B feat mechanics now have isolated guarded proof, but
+Release B remains incomplete. Feat-bearing save persistence, module-OFF
+hydration, the full installed compatibility matrix, integrated runtime
+regression, and final 0.0.116 gates remain pending.

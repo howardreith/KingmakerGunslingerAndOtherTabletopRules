@@ -560,6 +560,30 @@ markers, so unrelated and concurrent defenses fail closed. Inner Breath is a
 local `RuleApplyBuff` component: two exact audited native respiration-required
 buff identities and explicit project semantic markers are blocked, while no
 name, Poison descriptor, cloud shape, or visual inference broadens immunity.
+
+Hydraulic Maneuver is a project-owned ability-variant parent with four
+manifest-backed children. Each child carries Kingmaker's native
+`ContextActionCombatManeuver`, replaces base attack bonus with current total
+character level, and selects the current best Intelligence, Wisdom, or
+Charisma modifier. A feature-local availability component requires the exact
+Undine race, active project Hydraulic Push provider and ability, and a positive
+amount in that existing resource. The existing resource-commit action spends
+exactly once immediately before the synchronous native maneuver. Bull Rush,
+Disarm, Trip, and `DirtyTrickBlind` therefore retain native success, failure,
+immunity, weapon-state, and movement behavior without changing unrelated
+maneuvers. `DirtyTrickDazzle` has no native Kingmaker path and is absent.
+
+Triton Portal clones only the native Small Water Elemental summon component
+and action graph into its project-owned manifest identity; blueprint
+references remain references, while mutable component/action objects are
+deep-cloned. The owned count changes to 1d3 and ordinary native duration,
+faction, source linkage, death, dismissal, and cleanup remain authoritative.
+An owned point-target checker requires a finite point that projects to nearby
+walkable ground. `AbilityData.CanTarget` is the actual player-facing
+point-selection boundary; `UnitUseAbility` assumes that validation already
+occurred. The full-round SpellLike command shares Hydraulic Push's exact
+resource and has no dependency on Expanded Summoning publication or code.
+
 The additional reservation is the request-gated Elemental Races diagnostic
 race. It is never part of ordinary bootstrap or character creation and is
 removed by the guarded probe that owns it.
