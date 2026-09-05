@@ -161,6 +161,9 @@ namespace KingmakerGunslinger.ElementalRaces
             ConfigureBlazingAura(auraAbility, auraBuff, scorchingBuff,
                 races.Ifrit.Race);
             ConfigureFiresight(features[ElementalFeatId.Firesight]);
+            ConfigureAiryStep(features[ElementalFeatId.AiryStep],
+                features[ElementalFeatId.WingsOfAir]);
+            ConfigureInnerBreath(features[ElementalFeatId.InnerBreath]);
 
             if (scorchingEnchantment.ComponentsArray == null ||
                 registered.Count != ElementalRaceIdentityCatalog
@@ -484,6 +487,31 @@ namespace KingmakerGunslinger.ElementalRaces
                       ((AddConditionImmunity)value).Condition ==
                         UnitCondition.Dazzled)).Concat(
                             new BlueprintComponent[] { dazzled }).ToArray();
+        }
+
+        private static void ConfigureAiryStep(BlueprintFeature feature,
+            BlueprintFeature wingsOfAir)
+        {
+            if (feature == null || wingsOfAir == null)
+                throw new ArgumentNullException();
+            var saveBonus = ScriptableObject.CreateInstance<
+                ElementalAiryStepSaveBonus>();
+            saveBonus.WingsOfAir = wingsOfAir;
+            feature.ComponentsArray = (feature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is ElementalAiryStepSaveBonus)).Concat(
+                        new BlueprintComponent[] { saveBonus }).ToArray();
+        }
+
+        private static void ConfigureInnerBreath(BlueprintFeature feature)
+        {
+            if (feature == null) throw new ArgumentNullException("feature");
+            var immunity = ScriptableObject.CreateInstance<
+                ElementalInnerBreathImmunity>();
+            feature.ComponentsArray = (feature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is ElementalInnerBreathImmunity)).Concat(
+                        new BlueprintComponent[] { immunity }).ToArray();
         }
 
         private static BlueprintWeaponEnchantment CreateEnchantment()
