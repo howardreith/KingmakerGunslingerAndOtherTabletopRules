@@ -14,6 +14,7 @@ using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.ResourceLinks;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -22,6 +23,7 @@ using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Blueprints;
 using UnityEngine;
@@ -30,12 +32,18 @@ namespace KingmakerGunslinger.ElementalRaces
 {
     internal static class ElementalFeatBlueprintFactory
     {
+        private const string SmallWaterElementalSummonAbilityGuid =
+            "107788f47c4481f4db6da06498b28270";
+        private const string SmallWaterElementalUnitGuid =
+            "56372b0a2749c224392a5ee74105c534";
         private const BindingFlags PrivateInstance = BindingFlags.Instance |
             BindingFlags.NonPublic;
 
         internal static ElementalFeatBlueprintSet Register(
-            BlueprintRegistry registry, ElementalRaceBlueprintSet races)
+            LibraryScriptableObject library, BlueprintRegistry registry,
+            ElementalRaceBlueprintSet races)
         {
+            if (library == null) throw new ArgumentNullException("library");
             if (registry == null) throw new ArgumentNullException("registry");
             if (races == null) throw new ArgumentNullException("races");
             Sprite icon = races.Ifrit.SlaAbility.Icon;
@@ -164,6 +172,12 @@ namespace KingmakerGunslinger.ElementalRaces
             ConfigureAiryStep(features[ElementalFeatId.AiryStep],
                 features[ElementalFeatId.WingsOfAir]);
             ConfigureInnerBreath(features[ElementalFeatId.InnerBreath]);
+            ConfigureHydraulicManeuver(
+                features[ElementalFeatId.HydraulicManeuver], variants,
+                races.Undine);
+            ConfigureTritonPortal(library,
+                features[ElementalFeatId.TritonPortal], tritonPortal,
+                races.Undine);
 
             if (scorchingEnchantment.ComponentsArray == null ||
                 registered.Count != ElementalRaceIdentityCatalog
@@ -511,7 +525,204 @@ namespace KingmakerGunslinger.ElementalRaces
             feature.ComponentsArray = (feature.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Where(value =>
                     !(value is ElementalInnerBreathImmunity)).Concat(
-                        new BlueprintComponent[] { immunity }).ToArray();
+                            new BlueprintComponent[] { immunity }).ToArray();
+        }
+
+        private static void ConfigureHydraulicManeuver(
+            BlueprintFeature feature, BlueprintAbility[] variants,
+            ElementalRaceBlueprints undine)
+        {
+            if (feature == null || variants == null || variants.Length != 4 ||
+                variants.Any(value => value == null) || undine == null)
+                throw new ArgumentNullException();
+            CombatManeuver[] maneuvers =
+            {
+                CombatManeuver.BullRush,
+                CombatManeuver.Disarm,
+                CombatManeuver.Trip,
+                CombatManeuver.DirtyTrickBlind
+            };
+            for (int index = 0; index < variants.Length; index++)
+            {
+                BlueprintAbility ability = variants[index];
+                var spell = ScriptableObject.CreateInstance<SpellComponent>();
+                spell.School = SpellSchool.Evocation;
+                var maneuver = ScriptableObject.CreateInstance<
+                    ContextActionCombatManeuver>();
+                maneuver.Type = maneuvers[index];
+                maneuver.ReplaceStat = true;
+                maneuver.UseCasterLevelAsBaseAttack = true;
+                maneuver.UseBestMentalStat = true;
+                maneuver.OnSuccess = new ActionList
+                {
+                    Actions = Array.Empty<GameAction>()
+                };
+                var commit = ScriptableObject.CreateInstance<
+                    ElementalHydraulicResourceCommit>();
+                commit.Resource = undine.SlaResource;
+                var effect = ScriptableObject.CreateInstance<
+                    AbilityEffectRunAction>();
+                effect.SavingThrowType = SavingThrowType.Unknown;
+                effect.Actions = new ActionList
+                {
+                    Actions = new GameAction[] { commit, maneuver }
+                };
+                ElementalHydraulicSharedResourceAvailability availability =
+                    SharedHydraulicAvailability(undine);
+                ability.ComponentsArray = new BlueprintComponent[]
+                {
+                    spell,
+                    ElementalRaceAbilityFactory.ResourceCost(
+                        undine.SlaResource, true),
+                    availability,
+                    effect
+                };
+                ability.LocalizedDuration = LocalizationService.Create(
+                    "KMG.ElementalRaces.Feats.HydraulicManeuver.Duration",
+                    "Instantaneous");
+                ability.LocalizedSavingThrow = LocalizationService.Create(
+                    "KMG.ElementalRaces.Feats.HydraulicManeuver.SavingThrow",
+                    "None");
+            }
+            var parameters = ScriptableObject.CreateInstance<
+                ElementalRacialSpellLikeParameters>();
+            parameters.Ability = variants[0].Parent;
+            parameters.Stat = StatType.Charisma;
+            parameters.SpellLevel = 1;
+            feature.ComponentsArray = (feature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is ElementalRacialSpellLikeParameters)).Concat(
+                        new BlueprintComponent[] { parameters }).ToArray();
+
+            bool exact = variants.Select((ability, index) => new
+            {
+                Ability = ability,
+                Index = index
+            }).All(entry =>
+                entry.Ability.ComponentsArray.OfType<SpellComponent>()
+                    .Single().School == SpellSchool.Evocation &&
+                entry.Ability.ComponentsArray.OfType<AbilityResourceLogic>()
+                    .Single().IsSpendResource &&
+                ReferenceEquals(entry.Ability.ComponentsArray.OfType<
+                    AbilityResourceLogic>().Single().RequiredResource,
+                    undine.SlaResource) &&
+                entry.Ability.ComponentsArray.OfType<
+                    ElementalHydraulicSharedResourceAvailability>().Count() ==
+                    1 &&
+                entry.Ability.ComponentsArray.OfType<
+                    AbilityEffectRunAction>().Single().Actions.Actions
+                    .OfType<ContextActionCombatManeuver>().Single().Type ==
+                    maneuvers[entry.Index]);
+            if (!exact || !ReferenceEquals(parameters.Ability,
+                    variants[0].Parent))
+                throw new InvalidOperationException(
+                    "Hydraulic Maneuver graph failed deterministic validation.");
+        }
+
+        private static void ConfigureTritonPortal(
+            LibraryScriptableObject library, BlueprintFeature feature,
+            BlueprintAbility ability, ElementalRaceBlueprints undine)
+        {
+            if (library == null || feature == null || ability == null ||
+                undine == null) throw new ArgumentNullException();
+            BlueprintAbility donor = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library,
+                    SmallWaterElementalSummonAbilityGuid,
+                    "native Small Water Elemental donor for Triton Portal");
+            BlueprintComponent[] donorComponents = donor.ComponentsArray ??
+                Array.Empty<BlueprintComponent>();
+            SpellComponent donorSpell = donorComponents.OfType<
+                SpellComponent>().Single();
+            SpellDescriptorComponent donorDescriptor = donorComponents.OfType<
+                SpellDescriptorComponent>().Single();
+            AbilityEffectRunAction donorEffect = donorComponents.OfType<
+                AbilityEffectRunAction>().Single();
+            ContextRankConfig donorRank = donorComponents.OfType<
+                ContextRankConfig>().Single();
+            SpellComponent spell = (SpellComponent)
+                ElementalUndineNativeComponentClone.Clone(donorSpell);
+            SpellDescriptorComponent descriptor = (SpellDescriptorComponent)
+                ElementalUndineNativeComponentClone.Clone(donorDescriptor);
+            AbilityEffectRunAction effect = (AbilityEffectRunAction)
+                ElementalUndineNativeComponentClone.Clone(donorEffect);
+            ContextRankConfig rank = (ContextRankConfig)
+                ElementalUndineNativeComponentClone.Clone(donorRank);
+            ContextActionSpawnMonster spawn = effect.Actions.Actions.OfType<
+                ContextActionSpawnMonster>().Single();
+            spawn.CountValue = new ContextDiceValue
+            {
+                DiceType = Kingmaker.RuleSystem.DiceType.D3,
+                DiceCountValue = 1,
+                BonusValue = 0
+            };
+            var commit = ScriptableObject.CreateInstance<
+                ElementalHydraulicResourceCommit>();
+            commit.Resource = undine.SlaResource;
+            effect.Actions = new ActionList
+            {
+                Actions = new GameAction[] { commit, spawn }
+            };
+            ElementalHydraulicSharedResourceAvailability availability =
+                SharedHydraulicAvailability(undine);
+            var targetChecker = ScriptableObject.CreateInstance<
+                ElementalTritonPortalGroundTargetChecker>();
+            ability.ComponentsArray = new BlueprintComponent[]
+            {
+                spell,
+                descriptor,
+                rank,
+                ElementalRaceAbilityFactory.ResourceCost(
+                    undine.SlaResource, true),
+                availability,
+                targetChecker,
+                effect
+            };
+            ability.LocalizedDuration = LocalizationService.Create(
+                "KMG.ElementalRaces.Feats.TritonPortal.Duration",
+                "1 round per character level");
+            ability.LocalizedSavingThrow = LocalizationService.Create(
+                "KMG.ElementalRaces.Feats.TritonPortal.SavingThrow", "None");
+
+            var parameters = ScriptableObject.CreateInstance<
+                ElementalRacialSpellLikeParameters>();
+            parameters.Ability = ability;
+            parameters.Stat = StatType.Charisma;
+            parameters.SpellLevel = 3;
+            feature.ComponentsArray = (feature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is ElementalRacialSpellLikeParameters)).Concat(
+                        new BlueprintComponent[] { parameters }).ToArray();
+
+            if (ReferenceEquals(spell, donorSpell) ||
+                ReferenceEquals(descriptor, donorDescriptor) ||
+                ReferenceEquals(effect, donorEffect) ||
+                ReferenceEquals(rank, donorRank) ||
+                ReferenceEquals(spawn, donorEffect.Actions.Actions.OfType<
+                    ContextActionSpawnMonster>().Single()) ||
+                spawn.Blueprint == null || !string.Equals(
+                    spawn.Blueprint.AssetGuid, SmallWaterElementalUnitGuid,
+                    StringComparison.Ordinal) ||
+                spawn.CountValue.DiceType !=
+                    Kingmaker.RuleSystem.DiceType.D3 ||
+                spawn.DurationValue.Rate != DurationRate.Rounds ||
+                spawn.DoNotLinkToCaster || spawn.IsDirectlyControllable ||
+                ability.ComponentsArray.OfType<
+                    ElementalTritonPortalGroundTargetChecker>().Count() != 1 ||
+                !ReferenceEquals(parameters.Ability, ability))
+                throw new InvalidOperationException(
+                    "Triton Portal native summon graph failed deterministic validation.");
+        }
+
+        private static ElementalHydraulicSharedResourceAvailability
+            SharedHydraulicAvailability(ElementalRaceBlueprints undine)
+        {
+            var result = ScriptableObject.CreateInstance<
+                ElementalHydraulicSharedResourceAvailability>();
+            result.Undine = undine.Race;
+            result.HydraulicPushFeature = undine.SlaFeature;
+            result.HydraulicPushAbility = undine.SlaAbility;
+            result.Resource = undine.SlaResource;
+            return result;
         }
 
         private static BlueprintWeaponEnchantment CreateEnchantment()

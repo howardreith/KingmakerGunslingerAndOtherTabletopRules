@@ -101,6 +101,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ElementalRaces", "ElementalIfritAdvancedFeatMechanics.cs");
             string sylph = Read("src", "KingmakerGunslinger",
                 "ElementalRaces", "ElementalSylphFeatMechanics.cs");
+            string undine = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalUndineFeatMechanics.cs");
             string factory = Read("src", "KingmakerGunslinger",
                 "ElementalRaces", "ElementalFeatBlueprintFactory.cs");
             string blueprintSet = Read("src", "KingmakerGunslinger",
@@ -113,6 +115,8 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTesting", "ElementalIfritAdvancedFeatScenario.cs");
             string sylphScenario = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalSylphFeatScenario.cs");
+            string undineScenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalUndineFeatScenario.cs");
             string catalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -199,6 +203,25 @@ namespace KingmakerGunslinger.DomainTests
                 sylph.Contains("SpellDescriptor.Poison") ||
                 sylph.Contains("HarmonyPatch(typeof(UnitDescriptor)"),
                 "Sylph mechanics must not use the shared native race ID, blanket poison immunity, or a global unit patch.");
+            foreach (string token in new[]
+            {
+                "ElementalHydraulicSharedResourceAvailability",
+                "IAbilityAvailabilityProvider",
+                "HydraulicPushFeature",
+                "HydraulicPushAbility",
+                "GetResourceAmount(Resource) > 0",
+                "ElementalUndineNativeComponentClone",
+                "source is BlueprintScriptableObject",
+                "ScriptableObject.CreateInstance(type)",
+                "ReferenceComparer"
+            })
+                Assertions.True(undine.Contains(token),
+                    "Undine feat mechanics are missing exact ownership boundary " +
+                    token + ".");
+            Assertions.False(undine.Contains("RaceId.Aasimar") ||
+                undine.Contains("ExpandedSummoning") ||
+                undine.Contains("BlueprintsCache.Init"),
+                "Undine mechanics must not use the shared race ID, depend on Expanded Summoning, or patch global cache initialization.");
             Assertions.True(advanced.Contains(
                     "blueprints.RequireSymbol<BlueprintBuff>(") &&
                 blueprintSet.Contains("m_BlueprintsBySymbol") &&
@@ -218,6 +241,13 @@ namespace KingmakerGunslinger.DomainTests
                 "ConfigureFiresight",
                 "ConfigureAiryStep",
                 "ConfigureInnerBreath",
+                "ConfigureHydraulicManeuver",
+                "ConfigureTritonPortal",
+                "ElementalTritonPortalGroundTargetChecker",
+                "CombatManeuver.DirtyTrickBlind",
+                "ContextActionSpawnMonster",
+                "DiceType.D3",
+                "SmallWaterElementalUnitGuid",
                 "UnitCondition.Dazzled"
             })
                 Assertions.True(factory.Contains(token),
@@ -327,6 +357,31 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(sylphScenario.Contains(token),
                     "Dedicated Sylph feat scenario is missing live boundary " +
                     token + ".");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility",
+                "RuleCombatManeuver",
+                "CombatManeuver.BullRush",
+                "CombatManeuver.Disarm",
+                "CombatManeuver.Trip",
+                "CombatManeuver.DirtyTrickBlind",
+                "UnitCondition.ImmuneToCombatManeuvers",
+                "TemporaryWisdomAfter",
+                "ContextActionSpawnMonster",
+                "RuleSummonUnit",
+                "SummonedUnitBuff",
+                "RequireFullRoundAction",
+                "ResourceAfterInvalidTarget",
+                "HydraulicAvailableAtZero",
+                "RestController.ApplyRest",
+                "TritonPortalNearestNodePatch",
+                "TritonPortalSpawnPlacesPatch",
+                "SaveStateTouched = false",
+                "Game.Instance.State.Units.All.Remove(unit)"
+            })
+                Assertions.True(undineScenario.Contains(token),
+                    "Dedicated Undine feat scenario is missing live boundary " +
+                    token + ".");
             foreach (string source in new[]
             {
                 catalog, automation, preflight, compatibility
@@ -355,6 +410,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(
                         "disposable-elemental-sylph-feats"),
                     "Sylph feat mechanics are outside a guarded allowlist.");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-undine-feats"),
+                    "Undine feat mechanics are outside a guarded allowlist.");
             Assertions.True(runner.Contains(
                     ".DisposableElementalFeatMechanics") &&
                 runner.Contains("ElementalFeatMechanicsScenario.Run("),
@@ -371,6 +433,10 @@ namespace KingmakerGunslinger.DomainTests
                     ".DisposableElementalSylphFeats") &&
                 runner.Contains("ElementalSylphFeatScenario.Run("),
                 "Sylph feat mechanics are outside constant-based dispatch.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalUndineFeats") &&
+                runner.Contains("ElementalUndineFeatScenario.Run("),
+                "Undine feat mechanics are outside constant-based dispatch.");
             Assertions.Equal(2,
                 catalog.Split(new[] { "DisposableElementalFeatMechanics" },
                     StringSplitOptions.None).Length - 1,
@@ -392,15 +458,22 @@ namespace KingmakerGunslinger.DomainTests
                     StringSplitOptions.None).Length - 1,
                 "Sylph feat mechanics must have one constant declaration " +
                 "and one executable catalog entry.");
+            Assertions.Equal(2,
+                catalog.Split(new[] { "DisposableElementalUndineFeats" },
+                    StringSplitOptions.None).Length - 1,
+                "Undine feat mechanics must have one constant declaration " +
+                "and one executable catalog entry.");
             Assertions.True(project.Contains(
                     "ElementalFeatRuleComponents.cs") &&
                 project.Contains(
                     "ElementalIfritAdvancedFeatMechanics.cs") &&
                 project.Contains("ElementalSylphFeatMechanics.cs") &&
+                project.Contains("ElementalUndineFeatMechanics.cs") &&
                 project.Contains("ElementalFeatMechanicsScenario.cs") &&
                 project.Contains("ElementalIfritFeatScenario.cs") &&
                 project.Contains("ElementalIfritAdvancedFeatScenario.cs") &&
-                project.Contains("ElementalSylphFeatScenario.cs"),
+                project.Contains("ElementalSylphFeatScenario.cs") &&
+                project.Contains("ElementalUndineFeatScenario.cs"),
                 "Elemental Feat mechanics or scenario is outside the build.");
         }
     }

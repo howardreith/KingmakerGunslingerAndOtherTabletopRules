@@ -819,6 +819,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalUndineFeats)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalUndineFeatScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
                     .ObserveElementalHeritageBlueprints)
                 {
                     if (ResourcesLibrary.Preloading) return;

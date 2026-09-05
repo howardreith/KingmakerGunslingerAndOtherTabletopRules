@@ -50,6 +50,7 @@ $expected = @(
     'disposable-elemental-ifrit-feats',
     'disposable-elemental-ifrit-advanced-feats',
     'disposable-elemental-sylph-feats',
+    'disposable-elemental-undine-feats',
     'observe-elemental-heritage-blueprints',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',
