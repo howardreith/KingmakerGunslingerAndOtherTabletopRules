@@ -127,11 +127,11 @@ any feat whose primary function is swimming, burrowing, underground or planar
 travel, free-form fire extinguishing, or environmental skill adjudication. No
 compensatory bonus is substituted.
 
-The locally qualified package is 23,145,172 bytes with 135 entries and SHA-256
-`e5b8f77e77fe9d6bf56c43a2371304b631b8fd65e410c7a931abe27adf8ba032`.
+The locally qualified package is 23,145,631 bytes with 135 entries and SHA-256
+`3efab34b80cfcd1d2e9fabb4cf1a33375dbff6e6c53406b6298d3590aa5c22f4`.
 Its 5,958,144-byte DLL hashes to
-`3c9af3692f2f4dd58ceeb0a54cd607f410c32e43f186824d17c6bc3d80f528d4`
-and has MVID `8c8af472-93b4-4d83-a944-0f466be5457a`. Repository
+`063ac40ea33e4e01b197e05ea9a44ca724448e4ce21e6e727778fa2448423da3`
+and has MVID `adf3a0e2-c09b-4290-9137-cc5b49226eba`. Repository
 validation, all 1,408/1,408 domain/reflection cases, the clean exact-reference
 Release build, and strict package validation passed. Exact run and transaction
 hashes are in `docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
