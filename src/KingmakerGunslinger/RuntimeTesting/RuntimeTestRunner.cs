@@ -835,6 +835,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalAlternateTraitFramework)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalAlternateTraitFrameworkScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableElementalHeritageMechanics)
                 {
                     if (ResourcesLibrary.Preloading) return;
@@ -13095,12 +13103,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeElementalRaces == expectedElementalRaces,
                     "immutable restart-bound selector-publication intent"),
                 Assertion("feature-module-elemental-races-publication",
-                    expectedElementalRaces
-                        ? "24 stable identities and one contiguous Ifrit/Oread/Sylph/Undine selector entry each"
-                        : "24 stable identities and no elemental selector entries",
+                    ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount +
+                        (expectedElementalRaces
+                            ? " stable race-owned identities and one contiguous Ifrit/Oread/Sylph/Undine selector entry each"
+                            : " stable race-owned identities and no elemental selector entries"),
                     observed,
                     elementalSet.Count ==
-                        ElementalRaceIdentityCatalog.IdentityCount &&
+                        ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount &&
                     elementalOrdered.Length == ElementalRaceCatalog.RaceCount &&
                     characterRacesUnique && elementalPublicationExact,
                     "live BlueprintRoot CharacterRaces reference/GUID inventory"),

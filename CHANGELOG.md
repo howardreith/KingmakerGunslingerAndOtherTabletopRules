@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.117-elemental-traits
+
+- Adds 62 fixed manifest identities for ten explicit replacement-slot
+  selections, ten retain-base markers, 21 visible alternate-trait markers,
+  and 21 separate hidden mechanic providers.
+- Adds an exhaustive pure replacement policy for Energy Resistance,
+  Elemental Affinity, and Racial Spell-Like Ability slots across every parent
+  race, heritage, legal combination, invalid overlap, and fact-order
+  transition.
+- Extends the owned heritage reconciler to compute one desired provider state,
+  preserve spent racial-SLA amounts, and remove only exact project-owned
+  resistance, affinity, SLA, ability, and alternate-trait provider facts.
+- Adds each relevant slot selector to the existing parent race without adding
+  top-level races, a module toggle, a schema revision, or dynamic identities.
+- Release C remains in progress: alternate-trait mechanics and all guarded
+  runtime, persistence, compatibility, and final release gates are pending.
+
 ## 0.0.116-elemental-feats
 
 - Adds 25 fixed manifest identities for eleven elemental racial feats and

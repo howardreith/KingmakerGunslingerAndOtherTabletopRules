@@ -17,6 +17,11 @@ None established.
 Release B itself has no remaining engineering or qualification blocker. Its
 local PASS is separate from this branch-publication blocker.
 
+Release C has no established hard blocker. Its replacement framework is in
+progress; ray-deflection, typed summon-duration, reactive-healing, and native
+difficult-terrain contracts still require focused engine evidence before the
+corresponding mechanics can be finalized.
+
 ## Open engineering questions requiring evidence
 
 - Release B's native maneuver, flight, concealment, fire-enchantment, and

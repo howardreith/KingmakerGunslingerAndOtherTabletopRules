@@ -210,7 +210,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalRaceBlueprintSet set = BlueprintBootstrap
                     .ElementalRaces;
                 if (library == null || set == null || set.Count !=
-                    ElementalRaceIdentityCatalog.IdentityCount)
+                    ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount)
                     throw new InvalidOperationException(
                         "The live production elemental race set is unavailable.");
 

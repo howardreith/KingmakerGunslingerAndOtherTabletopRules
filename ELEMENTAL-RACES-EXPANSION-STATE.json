@@ -6,8 +6,8 @@
   "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
   "interveningMasterCommits": [],
   "startingTreeClean": true,
-  "phase": "release-b-final-checkpoint",
-  "currentVersion": "0.0.116",
+  "phase": "release-c-replacement-framework",
+  "currentVersion": "0.0.117",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
     "releaseB": "0.0.116-elemental-feats",
@@ -17,7 +17,7 @@
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
     "releaseB": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseC": "NOT-STARTED"
+    "releaseC": "IN-PROGRESS-REPLACEMENT-FRAMEWORK"
   },
   "foundationProgress": {
     "spellOnlyAffinity": "IMPLEMENTED-RUNTIME-PASS",
@@ -77,6 +77,48 @@
     "compatibility": "PASS (six required installed profiles; module ON/OFF; 31/31 guarded processes; 359/359 assertions; 12/12 exact restoration transactions; zero runtime-result warnings; Visual Adjustments NOT-RUN because absent)",
     "finalGates": "PASS (repository validation; 1408/1408 tests; clean exact-reference Release build; strict 135-entry package; integrated runtime; persistence; compatibility)",
     "implementation": "RELEASE B LOCAL PASS; CHECKPOINT PUSH BLOCKED ONLY BY EXTERNAL BRANCH ALLOWLIST"
+  },
+  "releaseCProgress": {
+    "authoritativeRules": "AUDITED (Archives of Nethys race pages and alternate-racial-trait replacement rule)",
+    "replacementPolicy": "IMPLEMENTED-TESTED (3 semantic slots; 21 traits; all legal powersets, invalid overlaps, heritage matrices, activation orders, remove/re-add, and marker reconstruction)",
+    "stableIdentities": "IMPLEMENTED-TESTED (62 fixed manifest identities: 10 selections, 10 retain markers, 21 trait markers, 21 providers)",
+    "selectionGraph": "IMPLEMENTED-RUNTIME-PASS (race-owned obligatory primary-slot selections; exact overlap exclusions; 180 native retain selections through creation/respec)",
+    "reconciler": "IMPLEMENTED-FRAMEWORK-RUNTIME-PASS (69 legal sets, 207 heritage rows, 414 order rows, 21 marker-first cases; exact owned providers; spent-resource orphan regression; trait-specific persistence still pending)",
+    "versionTransition": "0.0.117-elemental-traits ACTIVE; active build/runtime/compatibility controls updated; historical release gates preserved",
+    "traitMechanics": "PENDING",
+    "deterministicTests": "PASS (1413/1413); complete reruns accompany each focused runtime correction",
+    "runtime": "FRAMEWORK-PASS (10/10 save-free guarded processes, 17483/17483 assertions; actual trait mechanics pending)",
+    "persistence": "FRAMEWORK-PASS (four fresh processes, 43/43 assertions, 24 retain-base fixtures, 180 native selections, 144 exact retain-state observations, module-OFF/ON level/rest/respec and absence; actual trait-bearing persistence pending)",
+    "compatibility": "FRAMEWORK-PASS (KMG-only and highest-risk combined ON/OFF; four exact restorations); final six-profile and generic module-boundary reruns pending",
+    "implementation": "RELEASE C IN PROGRESS; NOT A RELEASE PASS"
+  },
+  "releaseCFrameworkQualification": {
+    "report": "docs/ELEMENTAL-RACES-0.0.117-FRAMEWORK-QUALIFICATION.md",
+    "status": "PASS-INCREMENTAL-FRAMEWORK-ONLY",
+    "precedingCommit": "e2986654246bf0081ba6965ae5fc90318635d059",
+    "version": "0.0.117-elemental-traits",
+    "finalFixtureArtifact": {
+      "sourceStateSha256": "bc75a7eb42945390728168a2234f00d9d334e2c2ebaed6ba5f339a3672663b23",
+      "packageBytes": 23169506,
+      "packageEntries": 135,
+      "packageSha256": "f99ac332e0396ea7d537a2cad943060b5ece62365fa3acee55187e83de66d480",
+      "dllBytes": 6024192,
+      "dllSha256": "97568a921aaa9bbcb0a88256eaa6e1caf4c6f507ad9ac87548ef8a7b0d7e48aa",
+      "dllMvid": "aa93be71-da6e-4ff9-adf4-e137c0290625",
+      "deploymentId": "20260905T2246116296072Z"
+    },
+    "domainTests": 1413,
+    "preflightChecks": 202,
+    "guardedProcesses": 14,
+    "focusedRuntimeAssertions": 17483,
+    "persistenceAssertions": 43,
+    "compatibilityRestorationTransactions": 4,
+    "saveName": "KMG_AUTOMATION_WORKING",
+    "finalWorkingSaveBytes": 3566381,
+    "finalWorkingSaveSha256": "262f8eb83008b81908c7625a997f7788a884188317f7b7c135b3261f2a8ebe02",
+    "settingsSha256BeforeAndAfter": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "warnings": "Focused runs: zero. Persistence: 14/15/15/2 optional framing and subjective image/class-clothes guidance; no screenshot-derived mechanical PASS.",
+    "remainingGates": "All 21 actual trait mechanics; trait-bearing persistence; direct 0.0.114 receiver migration; final six profiles and 24 module boundary; final qualification and documentation."
   },
   "releaseBNativeAudit": {
     "status": "PASS",
@@ -1125,11 +1167,11 @@
     "elementalActive": 68
   },
   "currentManifest": {
-    "total": 1784,
-    "active": 1782,
+    "total": 1846,
+    "active": 1844,
     "reserved": 2,
-    "elementalTotal": 147,
-    "elementalActive": 146,
+    "elementalTotal": 209,
+    "elementalActive": 208,
     "elementalReserved": 1
   },
   "newIdentities": [
@@ -1146,6 +1188,13 @@
       "guidPrefix": "e116e1e0a17a4aceb001",
       "range": "e116e1e0a17a4aceb001000000000001..e116e1e0a17a4aceb001000000000025",
       "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.FeatSymbols()"
+    },
+    {
+      "release": "C-framework",
+      "count": 62,
+      "guidPrefix": "e117e1e0a17a4acec001",
+      "range": "e117e1e0a17a4acec001000000000001..e117e1e0a17a4acec001000000000062",
+      "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.TraitSymbols()"
     }
   ],
   "compatibility": {
@@ -1155,6 +1204,7 @@
     "onOffTransactions": 12,
     "runtimeProcesses": 31,
     "visualAdjustments": "NOT-RUN-ABSENT",
+    "releaseCFramework": "KMG-ONLY-AND-HIGHEST-RISK-COMBINED-ON-OFF-PASS; FINAL-RELEASE-MATRIX-PENDING",
     "redundantCotwRacesUnleashedProfile": "NOT-TESTED-NOT-REQUIRED-BY-MISSION"
   },
   "commits": [

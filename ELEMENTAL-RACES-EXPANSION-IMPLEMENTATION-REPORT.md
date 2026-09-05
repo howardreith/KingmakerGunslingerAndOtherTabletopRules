@@ -3,7 +3,9 @@
 ## Current outcome
 
 **IN PROGRESS - FOUNDATION, RELEASE A, AND RELEASE B PASS ALL LOCAL GATES;
-RELEASE C IS NEXT. THE REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL
+RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; ALL 21 TRAIT
+MECHANICS AND FINAL RELEASE-WIDE QUALIFICATION REMAIN PENDING. THE
+REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL
 ALLOWLIST.**
 
 The mission began from clean authoritative `master` commit
@@ -27,9 +29,43 @@ behavior.
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
 | B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | NOT STARTED |
+| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - FRAMEWORK IMPLEMENTED; MECHANICS PENDING |
 
 Favored-class bonuses are out of scope.
+
+## Release C replacement-framework checkpoint
+
+- Authoritative Archives of Nethys rules establish the exact three semantic
+  replacement slots and confirm that one base racial trait cannot be exchanged
+  twice.
+- The pure catalog contains all 21 required traits and exhaustively evaluates
+  legal combinations for every parent race and heritage, illegal overlaps,
+  activation permutations, remove/re-add transitions, and serialized marker
+  reconstruction.
+- The append-only manifest adds 62 fixed identities: ten selections, ten
+  retain-base markers, 21 visible choice markers, and 21 distinct hidden
+  providers. No GUID is generated dynamically.
+- Each existing parent race owns only its relevant obligatory slot selectors;
+  no race or module setting was added. Exact `PrerequisiteNoFeature`
+  constraints reject overlapping multi-slot choices.
+- The local owned reconciler derives one desired provider state from exact
+  race, heritage, and trait markers; it preserves spent heritage-SLA amounts
+  and removes only exact project-owned resistance, affinity, SLA, ability, and
+  trait-provider facts.
+- The 0.0.117 version and validator boundary is active. Complete domain tests
+  pass 1,413/1,413; clean Release build and the strict 135-entry package pass.
+  Ten focused guarded processes pass 17,483 assertions, including the full
+  4,333-assertion matrix in KMG-only and highest-risk combined ON/OFF profiles.
+  All four compatibility transactions restore exactly.
+- Four fresh persistence processes pass 43 assertions with 24 retain-base
+  fixtures, 180 native retain selections, and 144 exact retain-state
+  observations through load/level/rest/respec. Cleanup and independent
+  fresh-process absence pass; original settings restore exactly.
+- Exact artifacts, run IDs, hashes, warnings, failed evidence, and limits are
+  recorded in [the framework qualification ledger](docs/ELEMENTAL-RACES-0.0.117-FRAMEWORK-QUALIFICATION.md).
+  All 21 actual trait mechanics, trait-bearing persistence, direct current
+  legacy migration, final profile/module matrices, and final qualification
+  remain pending. This is not a Release C PASS.
 
 ## Authoritative baseline
 

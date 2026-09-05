@@ -1037,6 +1037,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " failed its native heritage selection contract during " +
                         phase + ": " + record.ToString(
                             Newtonsoft.Json.Formatting.None) + ".");
+                record["alternateTraitSelectionsExpected"] = fixture
+                    .Blueprints.AlternateTraits.Selections().Count;
+                record["alternateTraitSelections"] =
+                    SelectRetainedAlternateTraits(controller, fixture, phase);
                 return record;
             }
 
@@ -1588,7 +1592,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TokenBool(value, "stateNativeFromRaceSelection") &&
                     TokenBool(value, "selectable") &&
                     TokenBool(value, "selected") &&
-                    TokenBool(value, "previewExact");
+                    TokenBool(value, "previewExact") &&
+                    NativeRetainedSelectionsExact(value);
             }
 
             private bool ResourcesReady()
@@ -2206,7 +2211,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture, heritageSelectionExpected);
                 bool providersExact = HeritageProvidersExact(owner,
                     fixture, expectedHeritage, expectedMarkerCount);
+                bool retainedTraitsExact = _legacyMigration ||
+                    RetainedAlternateTraitsExact(owner, fixture);
                 bool factsExact = commonFactsExact && providersExact &&
+                    retainedTraitsExact &&
                     owner.HasFact(fixture.Blueprints.Resistance) &&
                     owner.Progression.Features.GetRank(
                         expectedHeritage.Marker) == expectedMarkerCount &&
@@ -2351,6 +2359,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "factsExact", factsExact },
                         { "commonFactsExact", commonFactsExact },
                         { "providersExact", providersExact },
+                        { "retainedAlternateTraitsExact", retainedTraitsExact },
+                        { "retainedAlternateTraitsExpected", !_legacyMigration },
                         { "heritage", expectedHeritage.Definition.Name },
                         { "heritageMarkerGuid",
                             expectedHeritage.Marker.AssetGuid },
@@ -2591,6 +2601,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     owned.Add(race.Visuals.Body);
                     owned.AddRange(race.Visuals.Presets);
+                    AddAlternateTraitIdentities(race, owned);
                 }
                 BlueprintScriptableObject[] exact = owned.Distinct()
                     .ToArray();

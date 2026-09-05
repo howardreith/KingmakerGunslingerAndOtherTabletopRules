@@ -46,6 +46,8 @@ param(
         'observe-aid-another-compatibility-contracts',
         'disposable-helpful-bodyguard',
         'elemental-races-races-unleashed-compatibility',
+        'disposable-elemental-race-mechanics',
+        'disposable-elemental-race-native-identity',
         'observe-elemental-heritage-donors',
         'observe-elemental-feat-native-contracts',
         'disposable-elemental-feat-mechanics',
@@ -54,6 +56,7 @@ param(
         'disposable-elemental-sylph-feats',
         'disposable-elemental-undine-feats',
         'observe-elemental-heritage-blueprints',
+        'observe-elemental-alternate-trait-framework',
         'disposable-elemental-heritage-mechanics',
         'disposable-elemental-heritage-slas',
         'disposable-bodyguard-feats-disabled',
@@ -300,7 +303,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.116'
+            ExpectedVersion = '0.0.117'
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds

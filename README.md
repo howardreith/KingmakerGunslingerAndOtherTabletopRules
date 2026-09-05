@@ -1,8 +1,17 @@
 # Kingmaker Gunslinger
 
-Version `0.0.116-elemental-feats` is the locally qualified Release B expansion of the
+Version `0.0.117-elemental-traits` is the in-progress Release C expansion of the
 existing **Elemental Races: Ifrit, Oread, Sylph, and Undine** feature module.
-It registers eleven stable feat identities plus fourteen supporting ability,
+It now registers the fixed replacement-slot framework for 21 required
+alternate racial traits: ten explicit slot selections, ten retain-base
+markers, 21 visible choice markers, and 21 separate hidden providers. The
+pure policy covers all legal combinations and overlap exclusions independent
+of fact order, while the owned reconciler preserves existing SLA amounts and
+removes only exact project providers. Release C remains in progress; the trait
+mechanics and guarded runtime, persistence, and compatibility gates are not
+yet complete.
+
+Release B remains locally qualified. It registers eleven stable feat identities plus fourteen supporting ability,
 buff, and weapon-enchantment identities in every module state. When the module
 is enabled, all eleven feats publish to the universal feat selector and the
 four Combat feats publish to the Fighter combat-feat selector through exact-

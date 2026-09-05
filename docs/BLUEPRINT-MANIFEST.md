@@ -8,7 +8,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1784 stable identifiers: 1782 active and 2 reserved.
+Validator contract: 1846 stable identifiers: 1844 active and 2 reserved.
 
 The second reservation, `KMG.ElementalRaces.Diagnostics.ProbeRace`
 (`57005fca40ab4775ae2fea5613214054`), is development-only. Ordinary bootstrap
@@ -16,7 +16,7 @@ does not register it. The guarded Elemental Races probe temporarily registers
 the exact identity without publishing it to `CharacterRaces`, then removes the
 owned dictionary/list entries before completion.
 
-Elemental Races owns 146 active manifest identities. The 0.0.114 foundation
+Elemental Races owns 208 active manifest identities. The 0.0.114 foundation
 contains 24 mechanical race, feature, resource, and SLA blueprints; 16
 Human-compatible body-wrapper and visual-preset blueprints; and 28
 `EquipmentEntity` body, head, and optional horn recolor proxies. Release A
@@ -24,9 +24,11 @@ adds 53 stable heritage identities: four selections, twelve choice markers,
 eight affinity providers, eight feature/resource/ability SLA triplets, and
 five supporting ability or weapon-enchantment identities. Release B appends 25
 stable identities: eleven feat features, nine abilities, four buffs, and one
-exact-item weapon enchantment. All 118 elemental blueprint identities and all
+exact-item weapon enchantment. Release C appends 62 stable replacement-
+framework identities: ten slot selections, ten retain-base markers, 21
+visible trait markers, and 21 hidden providers. All 180 elemental blueprint identities and all
 28 resource proxies register on every startup so saved race, heritage,
-provider, resource, feat, active-effect, and doll references continue to
+provider, resource, feat, trait, active-effect, and doll references continue to
 resolve while selector publication is disabled. The resource proxies reuse
 native Kingmaker geometry and native ramp textures; the package contains no
 extracted game asset.
@@ -59,7 +61,7 @@ unconditional native-core identities. They remain registered when
 `bodyguard-feats` is disabled so existing feat owners and persistent mode
 markers remain loadable; publication and runtime mutation are gated
 independently. The unconditional package-core blueprint registration count is
-1673; the 28 elemental visual resource proxies are registered separately in
+1784; the 28 elemental visual resource proxies are registered separately in
 the validated native resource cache.
 The historical non-Brown-Fur reservation remains reserved independently.
 The 1,155 Expanded Summoning identities freeze the feature foundation: 67 unit

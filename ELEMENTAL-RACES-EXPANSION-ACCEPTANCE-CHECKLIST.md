@@ -104,9 +104,13 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 ## Release C / 0.0.117 alternate racial traits
 
-- [ ] Deterministic replacement-slot policy covers Energy Resistance,
+- [x] Deterministic replacement-slot policy covers Energy Resistance,
   Elemental Affinity, and Racial SLA with legal combinations and overlap
   exclusion independent of fact application order.
+- [x] Incremental framework gates pass: 1,413 domain tests, clean build and
+  strict package, full 4,333-assertion live matrix, KMG-only/combined ON/OFF,
+  exact restoration, retain-base persistence/respec and fourth-process absence.
+  This does not qualify actual trait mechanics or trait-bearing persistence.
 - [ ] Reconciler is idempotent, project-owned-only, resource-preserving,
   duplicate-free, respec-reversible, and correct across save/load, module-OFF,
   level-up, death/resurrection, and polymorph/return.

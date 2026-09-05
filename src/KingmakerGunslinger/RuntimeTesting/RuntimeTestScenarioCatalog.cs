@@ -124,6 +124,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-elemental-undine-feats";
         internal const string ObserveElementalHeritageBlueprints =
             "observe-elemental-heritage-blueprints";
+        internal const string ObserveElementalAlternateTraitFramework =
+            "observe-elemental-alternate-trait-framework";
         internal const string DisposableElementalHeritageMechanics =
             "disposable-elemental-heritage-mechanics";
         internal const string DisposableElementalHeritageSlas =
@@ -485,6 +487,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableElementalSylphFeats,
                 DisposableElementalUndineFeats,
                 ObserveElementalHeritageBlueprints,
+                ObserveElementalAlternateTraitFramework,
                 DisposableElementalHeritageMechanics,
                 DisposableElementalHeritageSlas,
                 ElementalRaceVisualAudit,

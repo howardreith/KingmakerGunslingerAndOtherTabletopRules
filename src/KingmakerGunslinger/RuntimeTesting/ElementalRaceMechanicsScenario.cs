@@ -153,6 +153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Races = new List<RaceEvidence>()
             };
             var created = new List<UnitEntityData>();
+            var createdBlueprints = new List<BlueprintUnit>();
             UnitEntityData[] unitsBefore = Game.Instance.State.Units.All
                 .ToArray();
             UnitEntityData attacker = null;
@@ -162,7 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalRaceBlueprintSet set = BlueprintBootstrap
                     .ElementalRaces;
                 if (set == null || set.Count !=
-                    ElementalRaceIdentityCatalog.IdentityCount)
+                    ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount)
                     throw new InvalidOperationException(
                         "The production elemental race set is unavailable.");
                 BlueprintCharacterClass fighter = BlueprintLibraryLookup
@@ -186,7 +187,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     stage = "exercise-" + race.Definition.Kind;
                     evidence.Races.Add(Exercise(race, fighter, wizard,
                         matchingSpells[race.Definition.Affinity], nonmatching,
-                        attacker, created));
+                        attacker, created, createdBlueprints));
                 }
             }
             catch (Exception exception)
@@ -208,6 +209,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Game.Instance.State.Units.All.ToArray()) &&
                     created.All(value => value == null ||
                         !Game.Instance.State.Units.All.Contains(value));
+                foreach (BlueprintUnit blueprint in createdBlueprints
+                    .AsEnumerable().Reverse())
+                    UnityEngine.Object.DestroyImmediate(blueprint);
             }
 
             AddAssertions(assertions, evidence);
@@ -259,10 +263,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility matchingSpell,
             BlueprintAbility nonmatchingSpell,
             UnitEntityData attacker,
-            ICollection<UnitEntityData> created)
+            ICollection<UnitEntityData> created,
+            ICollection<BlueprintUnit> createdBlueprints)
         {
+            BlueprintUnit racialBlueprint = UnityEngine.Object.Instantiate(
+                BlueprintRoot.Instance.DefaultPlayerCharacter);
+            racialBlueprint.name = "KMG_Runtime_RaceMechanics_" +
+                blueprints.Definition.Kind;
+            racialBlueprint.Race = blueprints.Race;
+            createdBlueprints.Add(racialBlueprint);
             UnitEntityData unit = CreateUnit(created,
-                new Vector3(1f, 0f, 0f));
+                new Vector3(1f, 0f, 0f), racialBlueprint);
             UnitEntityData replacement = CreateUnit(created,
                 new Vector3(2f, 0f, 0f));
             UnitDescriptor owner = unit.Descriptor;
@@ -272,9 +283,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             owner.Stats.Intelligence.BaseValue = 10;
             owner.Stats.Wisdom.BaseValue = 10;
             owner.Stats.Charisma.BaseValue = 18;
-            var beforeStats = blueprints.Definition.Stats.ToDictionary(
+            // ChargenUnit applies the actual race's stat modifiers during
+            // native construction. Measure against unmodified base values,
+            // not a second AddFact call that is intentionally idempotent.
+            var baseStats = blueprints.Definition.Stats.ToDictionary(
                 value => value.Stat,
-                value => owner.Stats.GetStat(value.Stat).ModifiedValue);
+                value => owner.Stats.GetStat(value.Stat).BaseValue);
             int perceptionBefore = owner.Stats.GetStat(
                 StatType.SkillPerception).ModifiedValue;
             int speedBefore = owner.Stats.Speed.ModifiedValue;
@@ -285,7 +299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             int[] deltas = blueprints.Definition.Stats.Select(value =>
                 owner.Stats.GetStat(value.Stat).ModifiedValue -
-                    beforeStats[value.Stat]).ToArray();
+                    baseStats[value.Stat]).ToArray();
             BlueprintFeatureBase keen = blueprints.Race.Features.Single(value =>
                 string.Equals(value.AssetGuid,
                     ElementalRaceIdentityCatalog.KeenSensesGuid,
@@ -535,10 +549,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static UnitEntityData CreateUnit(
-            ICollection<UnitEntityData> created, Vector3 position)
+            ICollection<UnitEntityData> created, Vector3 position,
+            BlueprintUnit blueprint = null)
         {
             UnitEntityData result = new Kingmaker.UI.LevelUp.ChargenUnit(
-                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                blueprint ?? BlueprintRoot.Instance.DefaultPlayerCharacter)
+                .Unit;
             if (result == null || result.Descriptor == null ||
                 result.Descriptor.Resources == null)
                 throw new InvalidOperationException(

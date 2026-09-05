@@ -135,7 +135,12 @@ namespace KingmakerGunslinger.ElementalRaces
                 ElementalSpellAffinity>();
             affinity.DescriptorMask = checked((int)ToDescriptor(
                 definition.Affinity));
-            result.ComponentsArray = new BlueprintComponent[] { affinity };
+            result.ComponentsArray = new BlueprintComponent[]
+            {
+                affinity,
+                ScriptableObject.CreateInstance<
+                    ElementalOwnedProviderController>()
+            };
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create(LocalizationKey(definition,
                     "Affinity.Name"), definition.AffinityName),

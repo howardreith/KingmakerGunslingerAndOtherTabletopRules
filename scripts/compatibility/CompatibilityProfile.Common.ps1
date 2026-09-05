@@ -142,7 +142,7 @@ function Resolve-KmgCompatibilityProfile {
         profileId = $ProfileId
         description = $profile.description
         runtimeCapable = [bool]$profile.runtimeLoadableRequired -and $unavailable.Count -eq 0 -and $staticOnly.Count -eq 0
-        gunslinger = [ordered]@{ packagePath = $package; version = '0.0.116'; packageSha256 = $packageHash; ummId = 'KingmakerGunslinger' }
+        gunslinger = [ordered]@{ packagePath = $package; version = '0.0.117'; packageSha256 = $packageHash; ummId = 'KingmakerGunslinger' }
         runtimeMods = $runtimeMods
         staticOnlyReferences = $staticOnly
         unavailableReferences = $unavailable

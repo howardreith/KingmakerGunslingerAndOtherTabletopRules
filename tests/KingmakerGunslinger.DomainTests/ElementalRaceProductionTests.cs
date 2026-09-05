@@ -122,11 +122,11 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG.ElementalRaces.", StringComparison.Ordinal) &&
                 string.Equals((string)value["status"], "active",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(146, elemental.Length,
+            Assertions.Equal(208, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1784, all.Length,
-                "Manifest total must include 146 production elemental identities.");
-            Assertions.Equal(1782, all.Count(value => string.Equals(
+            Assertions.Equal(1846, all.Length,
+                "Manifest total must include 208 production elemental identities.");
+            Assertions.Equal(1844, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>
@@ -154,6 +154,179 @@ namespace KingmakerGunslinger.DomainTests
                 "Identity catalog and manifest symbols drifted.");
             VisualCatalogAndResourceRegistryAreSaveSafe();
             FeatManifestInventoryIsExact();
+            TraitFrameworkManifestInventoryIsExact();
+        }
+
+        internal static void TraitFrameworkManifestInventoryIsExact()
+        {
+            JObject manifest = JObject.Parse(Read("blueprints",
+                "blueprints.json"));
+            JToken[] release = manifest["entries"].Where(value =>
+                string.Equals((string)value["milestone"],
+                    "Elemental Traits 0.0.117",
+                    StringComparison.Ordinal)).ToArray();
+            ElementalAlternateTraitSelectionDefinition[] selections =
+                ElementalAlternateTraitPolicy.OrderedSelections().ToArray();
+            ElementalAlternateTraitDefinition[] traits =
+                ElementalAlternateTraitPolicy.Ordered().ToArray();
+            string[] expected = selections.Select(value =>
+                    value.SelectionSymbol)
+                .Concat(selections.Select(value => value.RetainMarkerSymbol))
+                .Concat(traits.Select(value => value.MarkerSymbol))
+                .Concat(traits.Select(value => value.ProviderSymbol)).ToArray();
+            Assertions.Equal(62, expected.Length,
+                "Release C replacement framework identity count drifted.");
+            Assertions.Equal(expected.Length, release.Length,
+                "Release C replacement framework manifest count drifted.");
+            Assertions.Equal(10, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintFeatureSelection",
+                StringComparison.Ordinal)),
+                "Release C needs ten explicit slot selections.");
+            Assertions.Equal(52, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintFeature",
+                StringComparison.Ordinal)),
+                "Release C framework feature identity count drifted.");
+            for (int index = 0; index < expected.Length; index++)
+            {
+                JToken[] matches = release.Where(value => string.Equals(
+                    (string)value["symbol"], expected[index],
+                    StringComparison.Ordinal)).ToArray();
+                Assertions.Equal(1, matches.Length,
+                    "Missing or duplicate Release C framework identity " +
+                    expected[index]);
+                Assertions.Equal("e117e1e0a17a4acec001" +
+                    (index + 1).ToString("D12"),
+                    (string)matches[0]["guid"],
+                    "Release C stable GUID mapping drifted for " +
+                    expected[index]);
+                Assertions.Equal("active", (string)matches[0]["status"],
+                    "Release C identity is not active: " + expected[index]);
+            }
+            string catalog = Source("ElementalRaceIdentityCatalog.cs");
+            string policy = Source("ElementalAlternateTraitPolicy.cs");
+            Assertions.True(catalog.Contains(
+                    "TraitFrameworkIdentityCount = 62") &&
+                catalog.Contains("TraitSymbols()") &&
+                policy.Contains("OrderedSelections()") &&
+                policy.Contains("ProviderSymbol = MarkerSymbol +") &&
+                policy.Contains("RetainMarkerSymbol = stem +"),
+                "Release C identity catalog and manifest symbols drifted.");
+        }
+
+        internal static void TraitBlueprintArchitectureIsSlotAware()
+        {
+            string factory = Source(
+                "ElementalAlternateTraitBlueprintFactory.cs");
+            string set = Source("ElementalAlternateTraitBlueprintSet.cs");
+            string runtime = Source("ElementalHeritageRuntime.cs");
+            string raceFactory = Source("ElementalRaceBlueprintFactory.cs");
+            foreach (string token in new[]
+            {
+                "CreateProvider(definition, icon)",
+                "CreateMarker(definition, icon)",
+                "CreateRetainMarker(definition, icon)",
+                "result.Obligatory = true",
+                "result.IgnorePrerequisites = false",
+                "PrerequisiteNoFeature",
+                "target.Definition.ReplacedSlots",
+                "ElementalAlternateTraitProviderController",
+                "ElementalAlternateTraitMarkerController",
+                "ElementalAlternateTraitRetainController"
+            })
+                Assertions.True(factory.Contains(token),
+                    "Alternate-trait blueprint architecture lacks: " + token);
+            foreach (string token in new[]
+            {
+                "ReferenceEquals(Marker, Provider)",
+                "Selection.Features.SequenceEqual(expected)",
+                "Selection.AllFeatures.SequenceEqual(expected)",
+                "OwnedProviders()",
+                "RegisteredCount"
+            })
+                Assertions.True(set.Contains(token),
+                    "Alternate-trait blueprint graph lacks: " + token);
+            foreach (string token in new[]
+            {
+                "ElementalAlternateTraitPolicy.TransitionMarkers",
+                "ElementalAlternateTraitPolicy.Resolve",
+                "desired.EnergyResistanceProviderSymbol",
+                "desired.ElementalAffinityProviderSymbol",
+                "desired.RacialSlaFeatureSymbol",
+                "RememberCurrent(owner, race.Heritages, state)",
+                "state.TryRecall",
+                "TryRemove(owner, race.Resistance)",
+                "AlternateTraits.OwnedProviders()",
+                "DesiredFactsArePresent",
+                "ProviderFactsAreExact",
+                "InactiveAbilitiesAreAbsent"
+            })
+                Assertions.True(runtime.Contains(token),
+                    "Slot-aware reconciliation lacks: " + token);
+            Assertions.True(raceFactory.Contains(
+                    "ElementalAlternateTraitBlueprintFactory.Register(") &&
+                raceFactory.Contains(
+                    "features.AddRange(alternateTraits.Selections()") &&
+                raceFactory.Contains(
+                    "ElementalHeritageRuntime.Configure(set)"),
+                "Parent races do not own and configure every trait selector.");
+            Assertions.False((factory + set + runtime + raceFactory).Contains(
+                    "RemoveFeatureOnApply") ||
+                factory.Contains("Guid.NewGuid") ||
+                factory.Contains("BlueprintRace") ||
+                factory.Contains("CharacterRaces"),
+                "Alternate traits must not use ordering-only replacement, dynamic identities, or top-level race publication.");
+
+            const string scenario =
+                "observe-elemental-alternate-trait-framework";
+            string observer = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "ElementalAlternateTraitFrameworkScenario.cs");
+            string scenarioCatalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string compatibility = Read("scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            Assertions.True(scenarioCatalog.Contains(scenario) &&
+                scenarioCatalog.Contains(
+                    "ObserveElementalAlternateTraitFramework,") &&
+                runner.Contains(
+                    "ElementalAlternateTraitFrameworkScenario.Run(") &&
+                automation.Contains("'" + scenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + scenario + "'") &&
+                compatibility.Contains("'" + scenario + "'") &&
+                project.Contains(
+                    "ElementalAlternateTraitFrameworkScenario.cs"),
+                "Alternate-trait observer is not wired through every guarded runtime surface.");
+            foreach (string token in new[]
+            {
+                "TraitFrameworkIdentityCount",
+                "BlueprintsByAssetId.TryGetValue",
+                "PrerequisiteNoFeature",
+                "ElementalAlternateTraitMarkerController",
+                "ElementalAlternateTraitProviderController",
+                "ElementalAlternateTraitRetainController",
+                "SaveStateTouched = false",
+                "ContractResolver = new DefaultContractResolver()",
+                "PreserveReferencesHandling.None",
+                "ReferenceLoopHandling.Error"
+            })
+                Assertions.True(observer.Contains(token),
+                    "Guarded alternate-trait observer lacks: " + token);
+            int metadataOffset = automation.IndexOf("'" + scenario +
+                "' = [pscustomobject]", StringComparison.Ordinal);
+            Assertions.True(metadataOffset >= 0 && automation.Substring(
+                    metadataOffset, Math.Min(500,
+                        automation.Length - metadataOffset)).Contains(
+                    "RequiresSaveName = $false"),
+                "Alternate-trait observer must remain autonomous and save-free.");
         }
 
         internal static void FeatManifestInventoryIsExact()
@@ -314,8 +487,9 @@ namespace KingmakerGunslinger.DomainTests
                 "Dictionary<string, int> _resourceAmounts",
                 "RememberCurrent(owner, race.Heritages, state)",
                 "state.TryRecall",
-                "if (!owner.HasFact(desired.Affinity))",
-                "if (!owner.HasFact(desired.SlaFeature))",
+                "AddDesired(owner, desiredHeritage.Affinity",
+                "AddDesired(owner,",
+                "desiredHeritage.SlaFeature, added)",
                 "TryRemove(owner, choice.Affinity)",
                 "TryRemove(owner, choice.SlaFeature)",
                 "RemoveOwnedAbility(owner, choice.SlaAbility)",
