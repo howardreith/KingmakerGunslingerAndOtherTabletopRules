@@ -886,9 +886,9 @@
     "elementalFeatCount": 11,
     "combatFeatCount": 4,
     "exactRacePrerequisites": true,
-    "mechanicsImplementationPending": true,
-    "featRuntimeQualificationPending": true,
-    "featPersistenceQualificationPending": true,
-    "featCompatibilityQualificationPending": true
+    "mechanicsImplementationPending": false,
+    "featRuntimeQualificationPending": false,
+    "featPersistenceQualificationPending": false,
+    "featCompatibilityQualificationPending": false
   }
 }

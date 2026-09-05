@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.116-elemental-feats (in progress)
+## 0.0.116-elemental-feats
 
 - Adds 25 fixed manifest identities for eleven elemental racial feats and
   their nine abilities, four buffs, and one exact-item weapon enchantment.
@@ -24,8 +24,13 @@
   Weapons state through direct stable item references plus absolute game-time
   expiry, including module-OFF hydration, without retargeting swapped gear or
   restoring expired/ineligible effects. A 24-fixture three-process transaction
-  and fourth-process absence pass. Release-wide compatibility remains pending,
-  so Release B is not marked PASS.
+  and fourth-process absence pass.
+- Qualifies the final candidate with 1,408/1,408 deterministic cases, a clean
+  exact-reference Release build, strict 135-entry package validation, a
+  five-process 73/73 integrated mechanics regression, and 31/31 guarded
+  compatibility processes spanning all six required installed profiles in
+  both module states. All 12 profile transactions restored the original mod
+  tree and settings exactly. Visual Adjustments was absent and is NOT-RUN.
 
 ## 0.0.115-elemental-heritages
 

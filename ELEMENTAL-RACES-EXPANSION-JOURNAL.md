@@ -1495,3 +1495,38 @@ and the first focused mechanical group from the now-qualified native contracts.
   wrapper immediately refused `codex/elemental-races-expansion` because that
   user-required branch remains absent from its external allowlist; no bypass
   was attempted.
+
+## 2026-09-05 — Release B compatibility and final qualification PASS
+
+- Extended the live compatibility observer from race/heritage publication to
+  all 25 Release B identities, eleven universal feat references, four Fighter
+  Combat references, exact GUID/reference counts, module-OFF registration with
+  zero publication, replay, rollback, and complete native/foreign order.
+- The first replay found a real shared-catalog issue: when a later publisher
+  had inserted foreign entries around existing KMG entries, reconciliation
+  rebuilt the arrays. Added a failing executable regression, then changed the
+  transaction to retain singular exact project entries in place, remove only
+  duplicates, reject foreign same-GUID entries, and insert only missing
+  additions. Repository validation and 1,408/1,408 cases passed.
+- The clean exact-reference build produced a 23,145,172-byte, 135-entry
+  package with SHA-256
+  `e5b8f77e77fe9d6bf56c43a2371304b631b8fd65e410c7a931abe27adf8ba032`.
+  Its 5,958,144-byte DLL has SHA-256
+  `3c9af3692f2f4dd58ceeb0a54cd607f410c32e43f186824d17c6bc3d80f528d4`
+  and MVID `8c8af472-93b4-4d83-a944-0f466be5457a`. Strict package,
+  production firearm manifest, and SoundBank validation passed.
+- All six required installed profiles passed with Elemental Races ON and OFF:
+  31/31 guarded Steam processes, 359/359 assertions, zero runtime-result
+  warnings, and 12/12 exactly restored transactions. Every transaction began
+  from and restored the same 968-entry mod manifest. Favored Class remained
+  observation-only; Visual Adjustments was absent and is NOT-RUN.
+- Final integrated transaction
+  `compat-20260905T160603Z-4d73fae7b1d2` reran the five Release B mechanics
+  scenarios against the same artifact. All five processes and 73/73 assertions
+  passed with exact cleanup and zero warnings. The transaction restored
+  exactly.
+- Release B is now a local PASS. Exact run IDs, result/evidence hashes,
+  transaction hashes, settings hashes, package identity, and limitations are
+  recorded in `docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md` and the mission
+  state. The branch-publication wrapper remains the only active blocker;
+  Release C work proceeds independently.

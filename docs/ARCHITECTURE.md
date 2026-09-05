@@ -584,6 +584,14 @@ point-selection boundary; `UnitUseAbility` assumes that validation already
 occurred. The full-round SpellLike command shares Hydraulic Push's exact
 resource and has no dependency on Expanded Summoning publication or code.
 
+The final Release B gate reran all five mechanics slices against one immutable
+clean-build artifact, then exercised exact feat registration/publication in 31
+fresh compatibility processes. The 24-fixture persistence transaction proves
+that registered feat facts, abilities, resources, command-created buffs, and
+two exact item-enchantment references hydrate with the module disabled. Exact
+artifact, runtime, and transaction hashes are recorded in
+`docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
+
 The additional reservation is the request-gated Elemental Races diagnostic
 race. It is never part of ordinary bootstrap or character creation and is
 removed by the guarded probe that owns it.

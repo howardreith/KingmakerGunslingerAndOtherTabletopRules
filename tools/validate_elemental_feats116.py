@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release gate for the in-progress 0.0.116 Elemental Feats candidate."""
+"""Release gate for the locally qualified 0.0.116 Elemental Feats candidate."""
 from __future__ import annotations
 
 import argparse
@@ -115,13 +115,20 @@ def validate(root: Path) -> None:
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.116.md",
         "Kingmaker Gunslinger 0.0.116", "elemental-feats",
-        "Release B remains in progress")
+        "Release B is a local PASS")
+    require_tokens(root / "docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md",
+        "Status: **LOCAL PASS**", "1,408/1,408", "73/73", "31/31",
+        "359/359", "12 ON/OFF transactions",
+        "e5b8f77e77fe9d6bf56c43a2371304b631b8fd65e410c7a931abe27adf8ba032")
     require_tokens(root / "README.md", INFORMATIONAL_VERSION,
-        "Elemental Strike", "Hydraulic Maneuver", "Triton Portal")
+        "Elemental Strike", "Hydraulic Maneuver", "Triton Portal",
+        "Release B passes locally")
     require_tokens(root / "INSTALLATION-COMPATIBILITY.md",
-        "KingmakerGunslinger-0.0.116-elemental-feats.zip")
+        "KingmakerGunslinger-0.0.116-elemental-feats.zip",
+        "The Release B matrix passed 31 guarded Steam processes")
     require_tokens(root / "ELEMENTAL-RACES-DEVIATION-MATRIX.md",
-        "Dirty Trick (dazzle)", "Triton Portal", "Wings of Air")
+        "Dirty Trick (dazzle)", "Triton Portal", "Wings of Air",
+        "RELEASE B LOCAL PASS")
 
     static = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))
@@ -137,10 +144,10 @@ def validate(root: Path) -> None:
         "moduleControlledPublication": True,
         "exactRacePrerequisites": True,
         "dynamicSaveBearingGuidGeneration": False,
-        "mechanicsImplementationPending": True,
-        "featRuntimeQualificationPending": True,
-        "featPersistenceQualificationPending": True,
-        "featCompatibilityQualificationPending": True,
+        "mechanicsImplementationPending": False,
+        "featRuntimeQualificationPending": False,
+        "featPersistenceQualificationPending": False,
+        "featCompatibilityQualificationPending": False,
     }
     for key, value in expected.items():
         if state.get(key) != value:

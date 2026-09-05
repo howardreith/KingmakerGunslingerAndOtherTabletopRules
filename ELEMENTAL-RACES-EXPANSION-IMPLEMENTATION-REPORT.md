@@ -719,3 +719,52 @@ Commit `a4a377cc73585776ed24d40d77d3cebbe20ba72b` records this
 checkpoint. The exact mandated push wrapper was run immediately and refused
 the required branch because its external allowlist still omits
 `codex/elemental-races-expansion`; no alternate push path was used.
+
+## Release B final qualification
+
+Release B is a local PASS. The live compatibility observer now covers the
+complete 25-identity registration boundary, eleven universal feat references,
+four Fighter Combat feat references, module-OFF identity retention with zero
+publication, replay, rollback, exact-reference preservation, GUID uniqueness,
+and complete foreign order. Its first replay exposed a concrete shared
+transaction defect: later foreign insertions caused an otherwise equivalent
+catalog to be rebuilt. A failing executable regression preceded the narrow
+repair. Singular exact project entries now stay in place; only duplicates are
+removed and only missing entries are inserted.
+
+The same immutable clean-build artifact passed all six required installed
+profiles with the module ON and OFF. Thirty-one guarded Steam processes passed
+359/359 assertions with zero runtime-result warnings. Twelve transactions
+restored the same 968-entry original mod tree and
+`FeatureModules.json` exactly; Call of the Wild and Favored Class settings
+also returned byte-for-byte. Favored Class remained observation-only and no
+favored-class behavior was added. Visual Adjustments was absent and is
+NOT-RUN.
+
+The final KMG-only integrated transaction reran all five feat mechanics
+scenarios against that artifact. Elemental Strike/Wings passed 16/16,
+Scorching Weapons/Inner Flame 12/12, Blazing Aura/Firesight 14/14, Sylph feats
+18/18, and Undine feats 13/13: five processes and 73/73 assertions with zero
+warnings and exact save-free cleanup. Transaction
+`compat-20260905T160603Z-4d73fae7b1d2` restored exactly and hashes to
+`4842490cf6339fded043e09515a0da8cef0742059396de16989dae2b5ffb1f32`.
+
+Repository validation, 1,408/1,408 domain/reflection cases, the clean exact-
+reference Release build, production firearm manifest/SoundBank validation, and
+strict standalone package validation passed. The 135-entry, 23,145,172-byte
+package hashes to
+`e5b8f77e77fe9d6bf56c43a2371304b631b8fd65e410c7a931abe27adf8ba032`.
+Its 5,958,144-byte DLL hashes to
+`3c9af3692f2f4dd58ceeb0a54cd607f410c32e43f186824d17c6bc3d80f528d4`
+with MVID `8c8af472-93b4-4d83-a944-0f466be5457a`. Deployment manifest
+`20260905T1447593309541Z` hashes to
+`83aaa400ae89aa4ccd7fa2730142b936a7b948cdeb6f6bb05250120bde829ba2`.
+The complete per-run and per-transaction hash ledger is
+`docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
+
+All Release B mechanics, persistence, module-OFF hydration, compatibility, and
+artifact gates therefore pass locally. Commit
+`c4b9f8fbc40a21ecc9775deab66a40b2ec9b24f3` is the exact source candidate
+used by the final artifact. The remaining external branch allowlist refusal
+affects checkpoint publication only; it is not relabelled as a gameplay PASS.
+Nothing was merged, tagged, or publicly released.

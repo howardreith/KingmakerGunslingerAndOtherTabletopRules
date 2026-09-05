@@ -6,7 +6,7 @@
   "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
   "interveningMasterCommits": [],
   "startingTreeClean": true,
-  "phase": "release-b-qualification",
+  "phase": "release-b-final-checkpoint",
   "currentVersion": "0.0.116",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
@@ -16,7 +16,7 @@
   "status": {
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "MECHANICS-AND-PERSISTENCE-PASS-COMPATIBILITY-AND-FINAL-GATES-PENDING",
+    "releaseB": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
     "releaseC": "NOT-STARTED"
   },
   "foundationProgress": {
@@ -59,7 +59,7 @@
     "deterministicTests": "PASS (1408/1408 cases; Release B policy assertions execute inside the existing elemental-feats case so historical release records remain unchanged)",
     "stableIdentities": "IMPLEMENTED-TESTED (25/25 fixed manifest identities: 11 feats, 9 abilities, 4 buffs, 1 weapon enchantment)",
     "blueprintGraph": "IMPLEMENTED-TESTED (all identities register unconditionally; exact race, feat, level, and active Hydraulic Push prerequisites)",
-    "featPublication": "IMPLEMENTED-TESTED (module-gated universal and Fighter selector transactions; additive, deterministic, idempotent, exact-GUID-conflict refusing, order preserving, reversible)",
+    "featPublication": "IMPLEMENTED-RUNTIME-PASS (module-gated universal and Fighter selector transactions; additive, deterministic, idempotent, exact-GUID-conflict refusing, order preserving, reversible; live replay and rollback preserve all foreign entries)",
     "versionTransition": "0.0.116-elemental-feats ACTIVE; generic build/runtime/compatibility controls updated; Release A migration workflows remain historically pinned",
     "elementalStrike": "IMPLEMENTED-RUNTIME-PASS (Swift command, one-round buff, all four exact race energies, levels 1/5/10/15/20, exact flat packets, one event application, native resistance, spell and unrelated damage exclusions)",
     "scorchingWeapons": "IMPLEMENTED-RUNTIME-PASS (Swift command; exact two-held manufactured-metal snapshot; one round; unequip/swap safe; +1 fire once; native resistance; existing fire weapon effect nonstacking; exact +2 Racial save bonus)",
@@ -72,9 +72,11 @@
     "innerBreath": "IMPLEMENTED-RUNTIME-PASS (two exact audited native respiration-required swamp-gas buffs plus explicit project semantic markers; ordinary poison, Stinking Cloud, Cloudkill, and unrelated SwampGasDOT remain effective)",
     "hydraulicManeuver": "IMPLEMENTED-RUNTIME-PASS (Bull Rush, Disarm, Trip, and native Dirty Trick Blind; total level plus current best mental modifier; shared racial use; cancel/zero/rest; native immunity and failure paths)",
     "tritonPortal": "IMPLEMENTED-RUNTIME-PASS (full-round point target; exact native 1d3 Small Water Elementals for five rounds at level 5; native allied/non-hostile summon lifecycle; shared racial use; invalid/cancel/zero/rest; Expanded Summoning independent)",
-    "mechanicsRuntime": "PASS-SLICES-1-THROUGH-5 (16/16 plus 12/12 plus 14/14 plus 18/18 plus 13/13 assertions; save-free exact cleanup)",
+    "mechanicsRuntime": "PASS-SLICES-1-THROUGH-5-AND-FINAL-INTEGRATED-RERUN (16/16 plus 12/12 plus 14/14 plus 18/18 plus 13/13 = 73/73 assertions; save-free exact cleanup)",
     "persistence": "PASS (24 race/sex/heritage fixtures; feat facts, abilities, resources, Wings buff, Elemental Strike buff, and two exact Scorching Weapons item enchantments across module-OFF/ON fresh processes; fourth-process absence)",
-    "implementation": "ALL REQUIRED RELEASE-B FEAT MECHANICS AND SAVE-BACKED PERSISTENCE PASS; COMPLETE COMPATIBILITY MATRIX, INTEGRATED REGRESSION, DOCUMENTATION, AND FINAL RELEASE GATES PENDING"
+    "compatibility": "PASS (six required installed profiles; module ON/OFF; 31/31 guarded processes; 359/359 assertions; 12/12 exact restoration transactions; zero runtime-result warnings; Visual Adjustments NOT-RUN because absent)",
+    "finalGates": "PASS (repository validation; 1408/1408 tests; clean exact-reference Release build; strict 135-entry package; integrated runtime; persistence; compatibility)",
+    "implementation": "RELEASE B LOCAL PASS; CHECKPOINT PUSH BLOCKED ONLY BY EXTERNAL BRANCH ALLOWLIST"
   },
   "releaseBNativeAudit": {
     "status": "PASS",
@@ -473,6 +475,91 @@
     "cleanReleaseBuild": "PASS",
     "packageValidation": "PASS (strict standalone, 135 entries)",
     "evidenceManifest": "ANNOUNCED-BUT-ABSENT; no PASS or hash attributed"
+  },
+  "releaseBFinalQualification": {
+    "status": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
+    "qualifiedEvidence": "docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md",
+    "sourceCommit": "c4b9f8fbc40a21ecc9775deab66a40b2ec9b24f3",
+    "sourceStateSha256": "f64ecc1f280ce7ef4a8dd74228d27e0e669c85e5a5fa05be579fce564e042dde",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1408/1408)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS (strict standalone, 135 entries)",
+    "package": "artifacts/local-runtime/0.0.116/KingmakerGunslinger-0.0.116-local-runtime.zip",
+    "packageSize": 23145172,
+    "packageEntries": 135,
+    "packageSha256": "e5b8f77e77fe9d6bf56c43a2371304b631b8fd65e410c7a931abe27adf8ba032",
+    "dllSize": 5958144,
+    "dllSha256": "3c9af3692f2f4dd58ceeb0a54cd607f410c32e43f186824d17c6bc3d80f528d4",
+    "dllMvid": "8c8af472-93b4-4d83-a944-0f466be5457a",
+    "deploymentManifest": "20260905T1447593309541Z",
+    "deploymentManifestSha256": "83aaa400ae89aa4ccd7fa2730142b936a7b948cdeb6f6bb05250120bde829ba2",
+    "integratedRuntime": {
+      "status": "PASS",
+      "profile": "gunslinger-only",
+      "processes": 5,
+      "assertions": 73,
+      "warnings": 0,
+      "transactionId": "compat-20260905T160603Z-4d73fae7b1d2",
+      "transactionSha256": "4842490cf6339fded043e09515a0da8cef0742059396de16989dae2b5ffb1f32",
+      "restorationVerified": true,
+      "runs": [
+        { "scenario": "disposable-elemental-feat-mechanics", "runId": "20260905T1606404056913Z-9169bea234b0448c945f52b36c7c2e10", "assertions": 16, "resultSha256": "125653dc2789691e4522c78f15ecd9be7280ff63156ef44e9f9c2dde3738fbe5", "evidenceSha256": "aef0cf2db12fb5a324f64beb9acabebec9fe09e879ea6dc3c29ae7b7a5482845" },
+        { "scenario": "disposable-elemental-ifrit-feats", "runId": "20260905T1608008549767Z-ac6c72358ae249328eccaac726f07489", "assertions": 12, "resultSha256": "ba333fb23f9f714a9127be62fe6f50186df557e0f75fca8d85f0c2901858382d", "evidenceSha256": "be70c9b853d1fc2975ee9cd5e9f940da892ee42599d0312430400bf8ee7bb451" },
+        { "scenario": "disposable-elemental-ifrit-advanced-feats", "runId": "20260905T1609096841169Z-61e56c4eec694a8b94d92a975f95e6a6", "assertions": 14, "resultSha256": "a588223519207b17bcfc186d2f3cfd0e68afbacfdaf3a3c4b5717b135f233bd8", "evidenceSha256": "4e679ae26a5eb48cf783b65206a5090db7cb18c8745d7e7308b50bb409f4a8f3" },
+        { "scenario": "disposable-elemental-sylph-feats", "runId": "20260905T1610179428979Z-1a744355bc1c4078921b5c87d2af455a", "assertions": 18, "resultSha256": "d77803a64aa1e8d0a5be83ffc14688ba2ecf9711106ca4c37edd1fe83709eccc", "evidenceSha256": "9780e37b9da8104912f98bdf9521c4168c575892ef94a3e1d46a778dbe1ac475" },
+        { "scenario": "disposable-elemental-undine-feats", "runId": "20260905T1611267732821Z-41486d361bc2409ab076ade14a43fbe9", "assertions": 13, "resultSha256": "d8ccc7d167aadd77fd4b6b7370c4026b1c9df74ecb39a4dd6024d2579d170372", "evidenceSha256": "6797701ef2d806136807661c70130075bb5eb06270dcaa29eb98815d861114c4" }
+      ]
+    },
+    "compatibility": {
+      "status": "PASS",
+      "profiles": 6,
+      "moduleStatesPerProfile": 2,
+      "processes": 31,
+      "assertions": 359,
+      "warnings": 0,
+      "transactions": 12,
+      "restoredTransactions": 12,
+      "originalManifestEntries": 968,
+      "canonicalOriginalManifestSha256": "cc8d634150133b0eed87bcb5933cbe432ad2f1c5153c182e9ce44c8e3099893e",
+      "featureSettingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "cotwSettingsRestoredSha256": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8",
+      "favoredSettingsObservedSha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b",
+      "favoredClassBehavior": "NONE-ADDED-OUT-OF-SCOPE",
+      "visualAdjustments": "NOT-RUN-ABSENT",
+      "transactionIds": [
+        "compat-20260905T144848Z-e598a1e854e7",
+        "compat-20260905T145424Z-6e1e5014bbe1",
+        "compat-20260905T145637Z-9d3e45623d6a",
+        "compat-20260905T150441Z-e6f0519d2fda",
+        "compat-20260905T150735Z-84abe9964897",
+        "compat-20260905T151319Z-5decdb5e77bd",
+        "compat-20260905T151535Z-60172c160e04",
+        "compat-20260905T152334Z-1c7094d6cd1b",
+        "compat-20260905T152637Z-87825d77afe6",
+        "compat-20260905T153443Z-c274856d98ef",
+        "compat-20260905T153738Z-f79791a23ce0",
+        "compat-20260905T154743Z-ab8bc903c8be"
+      ],
+      "transactionSha256": [
+        "81e98e2e36f74e43179a9ca9478385ddf69373ac5d135678d788ee148b2924fd",
+        "923a0ceb6d5bc1fcf2b5c8559edf2028ab4f0beb010bebc7091918ec036571a5",
+        "47b1d5a5341d4481c7dcd3a46a511d1cd9f8540fba0dd44a7ed2eb50bd5ebb16",
+        "22c9f3be81a2d772a24c54b746122dc5eaa21401bfb92c6b81f5a3efe7620619",
+        "8876b039f9017818518ebbc263f447def181db772c4d159ff63b5e3c94fa8bd5",
+        "0fcb4f96468f47e62323c8c2a2ab9627520263ab1a377bf90044465a387c03b7",
+        "f8991341310921002b80ebf092f48e4f55be874cea7b0bf2b89114e94fb031da",
+        "2d92a30c148315ca39d762f3835223edd36d1eaffd64064bc00aafa89d928a90",
+        "9c83de411d2e930895dd0f1b99b46a8ec5ada7e289e96aa390eb3e9523e05bb2",
+        "2f121301c9cc539314d336328da04777f0e35d04300371d967c35443aab1e3f8",
+        "4ad3274b8345b5f00e944ad7d5bcb2d48b323831a3f81583aa05f376d413e350",
+        "31785535e05707246edeaa7471049bbb35e0b396ffc5d3c40ba3abeb4d8db4d6"
+      ]
+    },
+    "evidenceManifest": "ANNOUNCED-BUT-ABSENT; no PASS or hash attributed",
+    "merged": false,
+    "tagged": false,
+    "publicReleasePublished": false
   },
   "baselineGates": {
     "repositoryValidation": "PASS",
@@ -1063,6 +1150,7 @@
   ],
   "compatibility": {
     "releaseA": "RUNTIME-QUALIFIED-EXACT",
+    "releaseB": "RUNTIME-QUALIFIED-EXACT",
     "requiredProfiles": 6,
     "onOffTransactions": 12,
     "runtimeProcesses": 31,
@@ -1218,6 +1306,18 @@
       "sha": "a4a377cc73585776ed24d40d77d3cebbe20ba72b",
       "subject": "Qualify elemental feat persistence",
       "checkpoint": "release-b-persistence-qualification",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "ce4818b2992ffaaa4621d55515775d492f0f044e",
+      "subject": "Record elemental feat persistence checkpoint",
+      "checkpoint": "release-b-persistence-record",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "c4b9f8fbc40a21ecc9775deab66a40b2ec9b24f3",
+      "subject": "Harden elemental feat selector reconciliation",
+      "checkpoint": "release-b-compatibility-repair",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],
