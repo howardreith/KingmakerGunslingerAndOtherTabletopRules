@@ -1858,7 +1858,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .DisposableInHarmsWayOffTurnEconomy
                                 ? WorkingSaveSmokeIdentity
                                     .InHarmsWayHumanRepro
-                            : null);
+                            : null,
+                    pauseOnLoadCompletion: _request.Scenario ==
+                        RuntimeTestScenarioCatalog
+                            .ElementalRaceModuleDisabledPersistence);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();

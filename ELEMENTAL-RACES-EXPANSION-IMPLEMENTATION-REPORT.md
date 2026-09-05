@@ -651,3 +651,66 @@ All required Release B feat mechanics now have isolated guarded proof, but
 Release B remains incomplete. Feat-bearing save persistence, module-OFF
 hydration, the full installed compatibility matrix, integrated runtime
 regression, and final 0.0.116 gates remain pending.
+
+## Release B feat persistence qualification
+
+Release B's high-risk temporary state is now save-backed without introducing a
+new blueprint identity. A schema-versioned project `UnitPart` stores absolute
+game-time end ticks for Elemental Strike and Scorching Weapons plus at most two
+direct exact `ItemEntityWeapon` references. Its pure decision policy clears
+expired, corrupt, dead, foreign, or prerequisite-less state; waits for native
+owned-item hydration; and restores only the original qualifying items. It does
+not restore a spent daily use, extend a duration, or transfer an enchantment to
+replacement equipment. An exact `UnitEntityData.PostLoad` patch only schedules
+reconciliation when that project part exists.
+
+The existing elemental-race persistence harness now overlays Release B state
+onto all 24 race/sex/heritage fixtures. Ifrit female Sunsoul receives two native
+shortswords and activates Scorching Weapons through the real command. Undine
+female Rimesoul activates Elemental Strike through the real command. Sylph
+fixtures retain Wings of Air. Module-OFF load preserves registered feat facts,
+abilities, resource amounts, absolute timestamps, the original item references,
+and the exact two enchantments. Level-up does not refill resources or extend
+the transient effects. Explicit cleanup removes only the short effects; normal
+rest/resource handling, module-ON restoration, heritage respec cleanup, fixture
+deletion, and final fresh-process absence all pass.
+
+The first module-OFF attempt failed rather than yielding an ambiguous pass. The
+prepare evidence stored exactly six seconds of remaining game time, but
+Kingmaker rejected `Game.Instance.IsPaused = true` during its after-load
+callback. The older loader treated the attempted assignment as success and
+continued through earlier fixtures until native time expired the command-
+created effects. A focused regression failed first. The loader now retries at
+its guarded update boundary and blocks all fingerprint and feature inspection
+until the engine observably accepts the pause. The final run recorded pending
+attempts followed by actual pause at 13:07:22.461Z and release only after
+verification at 13:08:08.844Z.
+
+Repository validation and 1,408/1,408 domain/reflection cases pass. The clean
+Release build and strict 135-entry package validation pass. The
+23,142,818-byte package hashes to
+`5d9a6112a8f3c57d0b97c1bb414705a19ddf6dadbe02acdc279617223cf6ece9`;
+the 5,948,928-byte DLL hashes to
+`16b1af2f8db5bc3eafd92c96adfbb19b91004cb4cc6236fc31d64a2178d835cb`
+with MVID `880bc467-c3a8-4504-9df1-33cd63b06703`. Deployment manifest
+`20260905T1257423901840Z` hashes to
+`4ff9b605172ed4871af8b3911a9357811ebc2d3789ece1871294d7924c747ac5`.
+
+Prepare, module-OFF, module-restored, and final-absence runs are respectively
+`20260905T1301245986745Z-elemental-race-persistence-prepare`,
+`20260905T1305075446941Z-elemental-race-module-disabled-persistence`,
+`20260905T1308241102853Z-elemental-race-module-restored-persistence`, and
+`20260905T1313027193036Z-elemental-race-persistence-verify-absent`. Their
+runtime-evidence SHA-256 values are respectively
+`08dc53d0de0b4dc30ec6bdf2e35b2fb79e32e386702c30984d9fcfe11509c668`,
+`eb408a67b66c1b780192a2b3ead8fccde73a7ef46fa7c44393681af83a5dfb53`,
+`e0e0422a04fab508f5dfa37d1b81c6dba364d7bec1fbf63c3592875e94bba849`,
+and `e4596d8d11f7a748e3be12ee5a2e3b8456ae010a7eba16515a9a0eb08ffc7511`.
+The same artifact then re-passed Elemental Strike/Wings 16/16 and
+Scorching/Inner 12/12. `FeatureModules.json` restored byte-for-byte to SHA-256
+`a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+The named disposable save is absent after cleanup.
+
+This is a persistence gate PASS, not a Release B PASS. The complete installed
+compatibility matrix, integrated regression, final documentation, and final
+0.0.116 artifact qualification remain pending.

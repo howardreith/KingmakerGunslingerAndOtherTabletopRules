@@ -15,7 +15,49 @@ namespace KingmakerGunslinger.DomainTests
             HydraulicPrerequisitesAndFormulaAreExact();
             ElementalStrikeScalingAndAttackBoundaryAreExact();
             ScorchingWeaponsSnapshotAndReplacementAreExact();
+            TransientRestorePolicyPreservesExpiryAndOwnedItems();
             SylphVisionBreathingAndAuraBoundariesAreExact();
+        }
+
+        internal static void
+            TransientRestorePolicyPreservesExpiryAndOwnedItems()
+        {
+            const long now = 1000L;
+            const long future = 7000L;
+            Assertions.Equal(ElementalFeatTransientRestoreDecision.Restore,
+                ElementalFeatTransientPolicy.Decide(true, future, now, 0, 0),
+                "A live feat buff with its prerequisite must restore.");
+            Assertions.Equal(
+                ElementalFeatTransientRestoreDecision.WaitForOwnedItems,
+                ElementalFeatTransientPolicy.Decide(true, future, now, 2, 1),
+                "A partially resolved weapon snapshot must wait without transferring the effect.");
+            Assertions.Equal(ElementalFeatTransientRestoreDecision.Restore,
+                ElementalFeatTransientPolicy.Decide(true, future, now, 2, 2),
+                "Both exact persisted weapon references permit restoration.");
+            Assertions.Equal(ElementalFeatTransientRestoreDecision.Clear,
+                ElementalFeatTransientPolicy.Decide(false, future, now, 2, 2),
+                "Removing the prerequisite must clear the transient effect.");
+            Assertions.Equal(ElementalFeatTransientRestoreDecision.Clear,
+                ElementalFeatTransientPolicy.Decide(true, now, now, 2, 2),
+                "Loading at exact expiry must not grant a fresh round.");
+            Assertions.Equal(ElementalFeatTransientRestoreDecision.Clear,
+                ElementalFeatTransientPolicy.Decide(true, future, now, 3, 3),
+                "A corrupt snapshot wider than the printed two-weapon limit must fail closed.");
+            Assertions.Equal(TimeSpan.FromTicks(future - now),
+                ElementalFeatTransientPolicy.Remaining(future, now),
+                "Restoration must retain only the absolute remaining game time.");
+            Assertions.Equal(TimeSpan.Zero,
+                ElementalFeatTransientPolicy.Remaining(now, now),
+                "An expired effect must have no remaining duration.");
+            Assertions.True(ElementalFeatTransientPolicy
+                    .PreserveDuringBuffTeardown(false, future, now),
+                "Native serialization teardown must preserve a future exact state even after feature facts deactivate and the transient buff supplies no usable end time.");
+            Assertions.False(ElementalFeatTransientPolicy
+                    .PreserveDuringBuffTeardown(true, future, now),
+                "Death must clear a future transient state.");
+            Assertions.False(ElementalFeatTransientPolicy
+                    .PreserveDuringBuffTeardown(false, now, now),
+                "Expiry must clear a transient state.");
         }
 
         internal static void CatalogAndPrerequisitesAreExact()

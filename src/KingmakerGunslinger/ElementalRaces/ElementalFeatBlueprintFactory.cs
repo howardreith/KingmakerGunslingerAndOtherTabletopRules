@@ -162,6 +162,8 @@ namespace KingmakerGunslinger.ElementalRaces
             }
             ConfigureWingsFeature(features[ElementalFeatId.WingsOfAir],
                 wingsBuff);
+            ConfigureTransientFeature(
+                features[ElementalFeatId.ElementalStrike], false);
             ConfigureScorchingWeapons(
                 features[ElementalFeatId.ScorchingWeapons],
                 features[ElementalFeatId.InnerFlame], scorchingAbility,
@@ -178,6 +180,11 @@ namespace KingmakerGunslinger.ElementalRaces
             ConfigureTritonPortal(library,
                 features[ElementalFeatId.TritonPortal], tritonPortal,
                 races.Undine);
+            ElementalFeatTransientRuntime.Configure(
+                features[ElementalFeatId.ElementalStrike],
+                features[ElementalFeatId.ScorchingWeapons], strikeAbility,
+                scorchingAbility, strikeBuff, scorchingBuff,
+                scorchingEnchantment, races);
 
             if (scorchingEnchantment.ComponentsArray == null ||
                 registered.Count != ElementalRaceIdentityCatalog
@@ -391,7 +398,23 @@ namespace KingmakerGunslinger.ElementalRaces
             damage.Oread = races.Oread.Race;
             damage.Sylph = races.Sylph.Race;
             damage.Undine = races.Undine.Race;
-            buff.ComponentsArray = new BlueprintComponent[] { damage };
+            var persistence = ScriptableObject.CreateInstance<
+                ElementalStrikeTransientBuffController>();
+            buff.ComponentsArray = new BlueprintComponent[]
+                { damage, persistence };
+        }
+
+        private static void ConfigureTransientFeature(BlueprintFeature feature,
+            bool scorchingWeapons)
+        {
+            if (feature == null) throw new ArgumentNullException("feature");
+            var controller = ScriptableObject.CreateInstance<
+                ElementalFeatTransientFeatureController>();
+            controller.ScorchingWeapons = scorchingWeapons;
+            feature.ComponentsArray = (feature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is ElementalFeatTransientFeatureController))
+                .Concat(new BlueprintComponent[] { controller }).ToArray();
         }
 
         private static BlueprintBuff CreateWingsBuff(Sprite icon)
@@ -461,6 +484,13 @@ namespace KingmakerGunslinger.ElementalRaces
                 .Where(value => !(value is
                     ElementalScorchingWeaponsSaveBonus))
                 .Concat(new BlueprintComponent[] { saveBonus }).ToArray();
+            ConfigureTransientFeature(scorchingFeature, true);
+            var persistence = ScriptableObject.CreateInstance<
+                ElementalScorchingTransientBuffController>();
+            marker.ComponentsArray = (marker.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is ElementalScorchingTransientBuffController))
+                .Concat(new BlueprintComponent[] { persistence }).ToArray();
 
             var delivery = ScriptableObject.CreateInstance<
                 ElementalScorchingWeaponsAbilityLogic>();

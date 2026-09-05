@@ -53,6 +53,7 @@
     <Compile Include="ElementalHeritagePolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalHeritagePolicy.cs"><Link>ElementalRaces\ElementalHeritagePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalFeatPolicy.cs"><Link>ElementalRaces\ElementalFeatPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalFeatTransientPolicy.cs"><Link>ElementalRaces\ElementalFeatTransientPolicy.cs</Link></Compile>
     <Compile Include="ElementalHeritagePersistenceMatrixPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalHeritagePersistenceMatrixPolicy.cs"><Link>ElementalRaces\ElementalHeritagePersistenceMatrixPolicy.cs</Link></Compile>
     <Compile Include="ElementalHeritageSlaPolicyTests.cs" />

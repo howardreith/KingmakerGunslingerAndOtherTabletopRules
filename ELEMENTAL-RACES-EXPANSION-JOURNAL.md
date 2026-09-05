@@ -1416,3 +1416,77 @@ and the first focused mechanical group from the now-qualified native contracts.
   is still not a Release B PASS: feat-bearing persistence, module-OFF
   hydration, integrated runtime regression, the complete compatibility matrix,
   and final 0.0.116 gates remain pending.
+
+## 2026-09-05 — Release B feat persistence qualification
+
+- Added a dedicated `ElementalFeatPersistenceScenario` overlay to the existing
+  24-fixture elemental-race transaction. Every race, sex, and heritage retains
+  applicable feat facts and granted abilities. Sylph fixtures retain Wings of
+  Air; Ifrit female Sunsoul uses the real Scorching Weapons command on two
+  native shortswords; Undine female Rimesoul uses the real Elemental Strike
+  command.
+- Added a pure transient-state policy and schema-1 owned `UnitPart`. The state
+  stores absolute game-time expiry and no more than two direct exact weapon
+  references. Reconciliation clears expired, corrupt, foreign, dead, or
+  prerequisite-less state; waits while exact owned items hydrate; restores
+  only the original item enchantments; and never restores uses or retargets
+  swapped equipment. Production damage handlers require that authoritative
+  carrier state. The exact `UnitEntityData.PostLoad` patch is dormant for units
+  without the part.
+- The first module-OFF attempt,
+  `20260905T1239549558184Z-elemental-race-module-disabled-persistence`,
+  failed at fixture 17. The prepare process paused at 12:37:44.397Z and stored
+  an end time exactly six seconds later, but the verifier remained unpaused
+  while processing earlier fixtures, so native time correctly expired the
+  effects. Evidence established that the after-load callback's pause assignment
+  was rejected (`before=False;after=False`) while the harness incorrectly
+  reported success.
+- Added a failing harness regression, then changed the guarded loader to retry
+  from its update boundary and block fingerprint/feature inspection until
+  `Game.Instance.IsPaused` is observably true. In the final module-OFF run,
+  attempts remained pending until 13:07:22.461Z, then the engine accepted the
+  pause; verification completed before release at 13:08:08.844Z.
+- Repository validation and all 1,408/1,408 domain/reflection cases passed.
+  The clean Release build and strict 135-entry package validation passed. The
+  23,142,818-byte package hashes to
+  `5d9a6112a8f3c57d0b97c1bb414705a19ddf6dadbe02acdc279617223cf6ece9`;
+  its 5,948,928-byte DLL hashes to
+  `16b1af2f8db5bc3eafd92c96adfbb19b91004cb4cc6236fc31d64a2178d835cb`
+  with MVID `880bc467-c3a8-4504-9df1-33cd63b06703`. Source-state SHA-256 is
+  `b2ed6728351958014d5d4a1a27b7ea70e8ad0c5c1b0a189d2d14360b81d0e471`;
+  deployment-manifest SHA-256 is
+  `4ff9b605172ed4871af8b3911a9357811ebc2d3789ece1871294d7924c747ac5`.
+- The final three-process transaction passed:
+  `20260905T1301245986745Z-elemental-race-persistence-prepare`,
+  `20260905T1305075446941Z-elemental-race-module-disabled-persistence`, and
+  `20260905T1308241102853Z-elemental-race-module-restored-persistence`.
+  Their runtime-result SHA-256 values are respectively
+  `f0a2561e8fc7d90f9fcf7fce8b9bde91219906cf0fae296b8ed2116c64c0aae7`,
+  `c15943ed9d2bb561ac5f35f94a59d68c947a89cff9c2c8651b0ed2be4dffe99a`,
+  and `d7c0c26c279bef8bd71c9d86ee5748c8e9a691b16be4bb329c26d8782bb69670`.
+  Their runtime-evidence hashes are respectively
+  `08dc53d0de0b4dc30ec6bdf2e35b2fb79e32e386702c30984d9fcfe11509c668`,
+  `eb408a67b66c1b780192a2b3ead8fccde73a7ef46fa7c44393681af83a5dfb53`,
+  and `e0e0422a04fab508f5dfa37d1b81c6dba364d7bec1fbf63c3592875e94bba849`.
+- Fresh-process absence run
+  `20260905T1313027193036Z-elemental-race-persistence-verify-absent` passed;
+  runtime result and evidence hash to
+  `2f2b1cdafcc0fbd758e945bfc50376e70ca1602926c01d75531e40c5b1e7b4bb`
+  and `e4596d8d11f7a748e3be12ee5a2e3b8456ae010a7eba16515a9a0eb08ffc7511`.
+  `KMG_AUTOMATION_WORKING` is clean. `FeatureModules.json` returned exactly to
+  SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+- Carrier-dependent isolated reruns
+  `20260905T1317417754798Z-disposable-elemental-feat-mechanics` and
+  `20260905T1320197470475Z-disposable-elemental-ifrit-feats` passed 16/16 and
+  12/12 on the same artifact with zero warnings and exact cleanup. Their
+  runtime-evidence hashes are
+  `bf04841a56b1fc1a4c8a19e1b9f12a042c33b0b64a85e6911a14f1a345443374`
+  and `60c2838d351228a7bf9fc9476ad97c971e40dfb4f1f597e31aa4ffe582f93355`.
+- Persistence-run warnings are inherited low-foreground framing and subjective
+  visual-inspection notices plus the existing DollData/class-clothes note; no
+  new mechanical warning or KMG error occurred. The collector announced
+  `evidence-manifest.json`, but it was absent and carries no claim.
+- Release B is still not PASS. The complete installed compatibility matrix,
+  integrated runtime regression, final documentation, and final 0.0.116 gates
+  remain pending.

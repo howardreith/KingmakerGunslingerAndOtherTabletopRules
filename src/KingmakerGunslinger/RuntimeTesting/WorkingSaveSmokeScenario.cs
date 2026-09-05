@@ -182,6 +182,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly bool _observeSelectionLoadAction;
         private readonly bool _observeReceiverBoundAction;
         private readonly bool _autonomousReceiverBoundAction;
+        private readonly bool _pauseOnLoadCompletion;
+        private bool _pauseBeforeLoadCompletion;
+        private bool _loadCompletionPauseApplied;
+        private bool _loadCompletionPauseReleased;
+        private int _loadCompletionPauseAttempts;
         private Button _entryAction;
         private UnityEvent _entryUnityEvent;
         private Component _entryOwner;
@@ -234,7 +239,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool observeEntryAction = false,
             bool observeSelectionLoadAction = false,
             bool observeReceiverBoundAction = false,
-            WorkingSaveSmokeIdentity identity = null)
+            WorkingSaveSmokeIdentity identity = null,
+            bool pauseOnLoadCompletion = false)
         {
             _context = context;
             _elapsed = elapsed;
@@ -245,6 +251,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _observeEntryAction = observeEntryAction;
             _observeSelectionLoadAction = observeSelectionLoadAction;
             _observeReceiverBoundAction = observeReceiverBoundAction;
+            _pauseOnLoadCompletion = pauseOnLoadCompletion;
             _autonomousReceiverBoundAction = !observeEntryAction &&
                 !observeSelectionLoadAction && !observeReceiverBoundAction;
             _stageStarted = elapsed.ElapsedMilliseconds;
@@ -599,6 +606,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_stage == "load-completion" && _completionCallback)
             {
+                // Kingmaker rejects IsPaused writes made inside its
+                // SaveManager after-load callback. Retry from the next guarded
+                // update and do not begin fingerprinting (or a feature
+                // verifier) until the requested pause is observable.
+                if (!TryApplyLoadCompletionPause(
+                        "post-callback-update"))
+                    return;
                 Transition("post-load-fingerprint", "after-load callback observed");
                 Add("fingerprint-start", null, null,
                     "post-load evidence reads persistent game state only");
@@ -609,6 +623,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal WorkingSaveSmokeEvidence Stop()
         {
+            ReleaseLoadCompletionPause();
             _sealed = true;
             bool hooksInstalled = _patched.Count != 0;
             RemoveHooks();
@@ -1709,6 +1724,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             _completionSequence = _events.Count + 1;
             Add("after-load-callback", null, null,
                 "SaveManager after-load callback invoked");
+            if (_pauseOnLoadCompletion)
+            {
+                _pauseBeforeLoadCompletion = Kingmaker.Game.Instance.IsPaused;
+                TryApplyLoadCompletionPause("after-load-callback");
+            }
+        }
+
+        private bool TryApplyLoadCompletionPause(string boundary)
+        {
+            if (!_pauseOnLoadCompletion || _loadCompletionPauseApplied)
+                return true;
+            RequireGameThread();
+            _loadCompletionPauseAttempts++;
+            Kingmaker.Game.Instance.IsPaused = true;
+            bool applied = Kingmaker.Game.Instance.IsPaused;
+            _loadCompletionPauseApplied = applied;
+            Add(applied ? "post-load-time-pause-applied" :
+                    "post-load-time-pause-pending", null, null,
+                "requested=true;boundary=" + boundary + ";attempt=" +
+                _loadCompletionPauseAttempts + ";before=" +
+                _pauseBeforeLoadCompletion + ";after=" +
+                Kingmaker.Game.Instance.IsPaused);
+            return applied;
+        }
+
+        internal bool ReleaseLoadCompletionPause()
+        {
+            if (!_pauseOnLoadCompletion || !_completionCallback)
+                return true;
+            if (!_loadCompletionPauseApplied) return false;
+            if (_loadCompletionPauseReleased)
+                return Kingmaker.Game.Instance.IsPaused ==
+                    _pauseBeforeLoadCompletion;
+            RequireGameThread();
+            Kingmaker.Game.Instance.IsPaused = _pauseBeforeLoadCompletion;
+            _loadCompletionPauseReleased = true;
+            bool exact = Kingmaker.Game.Instance.IsPaused ==
+                _pauseBeforeLoadCompletion;
+            Add("post-load-time-pause-released", null, null,
+                "restored=" + exact + ";value=" +
+                Kingmaker.Game.Instance.IsPaused);
+            return exact;
         }
 
         private void Transition(string stage, string detail)

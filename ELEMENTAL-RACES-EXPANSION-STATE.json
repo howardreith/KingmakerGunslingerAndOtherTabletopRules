@@ -6,7 +6,7 @@
   "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
   "interveningMasterCommits": [],
   "startingTreeClean": true,
-  "phase": "release-b-implementation",
+  "phase": "release-b-qualification",
   "currentVersion": "0.0.116",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
@@ -16,7 +16,7 @@
   "status": {
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "MECHANICS-SLICES-1-THROUGH-5-PASS-PERSISTENCE-AND-COMPATIBILITY-PENDING",
+    "releaseB": "MECHANICS-AND-PERSISTENCE-PASS-COMPATIBILITY-AND-FINAL-GATES-PENDING",
     "releaseC": "NOT-STARTED"
   },
   "foundationProgress": {
@@ -73,7 +73,8 @@
     "hydraulicManeuver": "IMPLEMENTED-RUNTIME-PASS (Bull Rush, Disarm, Trip, and native Dirty Trick Blind; total level plus current best mental modifier; shared racial use; cancel/zero/rest; native immunity and failure paths)",
     "tritonPortal": "IMPLEMENTED-RUNTIME-PASS (full-round point target; exact native 1d3 Small Water Elementals for five rounds at level 5; native allied/non-hostile summon lifecycle; shared racial use; invalid/cancel/zero/rest; Expanded Summoning independent)",
     "mechanicsRuntime": "PASS-SLICES-1-THROUGH-5 (16/16 plus 12/12 plus 14/14 plus 18/18 plus 13/13 assertions; save-free exact cleanup)",
-    "implementation": "ALL REQUIRED RELEASE-B FEAT MECHANICS PASS IN ISOLATED SCENARIOS; PERSISTENCE, COMPLETE COMPATIBILITY MATRIX, AND FINAL RELEASE GATES PENDING"
+    "persistence": "PASS (24 race/sex/heritage fixtures; feat facts, abilities, resources, Wings buff, Elemental Strike buff, and two exact Scorching Weapons item enchantments across module-OFF/ON fresh processes; fourth-process absence)",
+    "implementation": "ALL REQUIRED RELEASE-B FEAT MECHANICS AND SAVE-BACKED PERSISTENCE PASS; COMPLETE COMPATIBILITY MATRIX, INTEGRATED REGRESSION, DOCUMENTATION, AND FINAL RELEASE GATES PENDING"
   },
   "releaseBNativeAudit": {
     "status": "PASS",
@@ -406,6 +407,72 @@
       "20260905T0537206020125Z-dab9a398eb1e4cfda55c09f17e4bc420 FAIL 12/13: AbilityData rejected invalid point but raw UnitUseAbility.CanStart did not repeat validation; result 538efbc5060d04e9bc893afed3166d5358ce435186844cf0dcb7621e1d6d8954"
     ],
     "restorationTransactions": "All seven KMG-only transactions restored exactly; final transaction recorded above, diagnostic transaction SHA-256 values 40df720877a92d413d45bd654562df78d124fbfa571b847942861af55a5eb52e, 565f60ac9100e6db315e6667bd461912413440b449e7d0e936b6732d6aa2716a, 0e16fcb082510448d1e0c66dc959802631521ef990fbadbd8d07037ec47b6d96, 20d312b98585ca91f955c34addd28abce60a61ef509b7e6df1c57f21521063ff, 827aaba3957f5f77bc52a7a428602adbfb3c49803c373717659f4aed14bdd70b, and 6d3c157115792ac068521eebc731fb6f18405317f4b6707ede140ae6a70b45e8"
+  },
+  "releaseBFeatPersistenceQualification": {
+    "status": "PASS",
+    "releaseStatus": "NOT-A-RELEASE-B-PASS",
+    "saveName": "KMG_AUTOMATION_WORKING",
+    "fixtureCount": 24,
+    "fixtureCoverage": "all four parent races, both sexes, all three heritages per race; every fixture retains its applicable feat facts and granted abilities",
+    "transientCoverage": "Ifrit female Sunsoul retains the command-created Scorching Weapons buff, absolute end time, and two exact native shortsword references/enchantments; Undine female Rimesoul retains the command-created Elemental Strike buff and absolute end time; Sylph fixtures retain Wings of Air",
+    "carrierContract": "Schema-1 UnitPart stores absolute GameTime end ticks and at most two direct exact ItemEntityWeapon references. Reconciliation restores only unexpired state with exact prerequisites, waits for owned-item hydration, clears corrupt or foreign state, and never retargets replacement equipment.",
+    "postLoadBoundary": "Exact UnitEntityData.PostLoad patch is a no-op unless the project UnitPart exists; normal expiry/death/prerequisite loss remains authoritative cleanup",
+    "prepare": {
+      "runId": "20260905T1301245986745Z-elemental-race-persistence-prepare",
+      "assertions": 13,
+      "durationMilliseconds": 207879,
+      "runtimeResultSha256": "f0a2561e8fc7d90f9fcf7fce8b9bde91219906cf0fae296b8ed2116c64c0aae7",
+      "persistenceIndexSha256": "3b39aff623d57b7138ba326c3b7e477a15869f572d2bcac836806c8d8ef7b19a",
+      "runtimeEvidenceSha256": "08dc53d0de0b4dc30ec6bdf2e35b2fb79e32e386702c30984d9fcfe11509c668"
+    },
+    "moduleOff": {
+      "runId": "20260905T1305075446941Z-elemental-race-module-disabled-persistence",
+      "assertions": 12,
+      "durationMilliseconds": 180983,
+      "runtimeResultSha256": "c15943ed9d2bb561ac5f35f94a59d68c947a89cff9c2c8651b0ed2be4dffe99a",
+      "persistenceIndexSha256": "202aa79334b32b433158fa9408ed21936ece8db143040e87c884b7bf0b690847",
+      "runtimeEvidenceSha256": "eb408a67b66c1b780192a2b3ead8fccde73a7ef46fa7c44393681af83a5dfb53"
+    },
+    "moduleRestored": {
+      "runId": "20260905T1308241102853Z-elemental-race-module-restored-persistence",
+      "assertions": 11,
+      "durationMilliseconds": 221899,
+      "runtimeResultSha256": "d7c0c26c279bef8bd71c9d86ee5748c8e9a691b16be4bb329c26d8782bb69670",
+      "persistenceIndexSha256": "0f81646e9489500c99fd378930391de745ef2323569cf00d97a8d3d66567b9ab",
+      "runtimeEvidenceSha256": "e0e0422a04fab508f5dfa37d1b81c6dba364d7bec1fbf63c3592875e94bba849"
+    },
+    "finalAbsence": {
+      "runId": "20260905T1313027193036Z-elemental-race-persistence-verify-absent",
+      "assertions": 7,
+      "durationMilliseconds": 128930,
+      "runtimeResultSha256": "2f2b1cdafcc0fbd758e945bfc50376e70ca1602926c01d75531e40c5b1e7b4bb",
+      "persistenceIndexSha256": "e07e4de9ee3e09e8c7f2fe8ed06dc4d4bdfc6e73d1207cb19fd3176c75b5ef22",
+      "runtimeEvidenceSha256": "e4596d8d11f7a748e3be12ee5a2e3b8456ae010a7eba16515a9a0eb08ffc7511"
+    },
+    "isolatedRegressionReruns": [
+      "20260905T1317417754798Z-disposable-elemental-feat-mechanics PASS 16/16; runtime-result 386664e884fdecc647f8d431e51359baf856a1797f8182ee028d4f10fdee2709; mechanic evidence aef0cf2db12fb5a324f64beb9acabebec9fe09e879ea6dc3c29ae7b7a5482845; runtime evidence bf04841a56b1fc1a4c8a19e1b9f12a042c33b0b64a85e6911a14f1a345443374",
+      "20260905T1320197470475Z-disposable-elemental-ifrit-feats PASS 12/12; runtime-result e362bbc18069956ff44f70808b25bbe3a576aca72e636683922a5258b4ca3ea1; mechanic evidence 0b6bffed286270909cfe296f1b504936f4a0e27c2ae151729fa5397cb8a3fca8; runtime evidence 60c2838d351228a7bf9fc9476ad97c971e40dfb4f1f597e31aa4ffe582f93355"
+    ],
+    "diagnosticFinding": "The first module-OFF attempt reached fixture 17 after the one-round effects naturally expired because Game.Instance.IsPaused=true was rejected during Kingmaker's after-load callback. The guarded loader now retries and blocks all fingerprint/feature inspection until the engine observably accepts the pause; regression coverage failed first and then passed.",
+    "diagnosticRun": "20260905T1239549558184Z-elemental-race-module-disabled-persistence FAIL preserved",
+    "warnings": "Only inherited visual framing/subjective-inspection diagnostics; no new mechanical warning or KMG error",
+    "featureSettingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "sourceBaselineCommit": "a41d535d0f255fe3a4efc6300dd0999a6cc4305f",
+    "sourceStateSha256": "b2ed6728351958014d5d4a1a27b7ea70e8ad0c5c1b0a189d2d14360b81d0e471",
+    "package": "KingmakerGunslinger-0.0.116-elemental-feats.zip",
+    "packageSize": 23142818,
+    "packageEntries": 135,
+    "packageSha256": "5d9a6112a8f3c57d0b97c1bb414705a19ddf6dadbe02acdc279617223cf6ece9",
+    "dllSize": 5948928,
+    "dllSha256": "16b1af2f8db5bc3eafd92c96adfbb19b91004cb4cc6236fc31d64a2178d835cb",
+    "dllMvid": "880bc467-c3a8-4504-9df1-33cd63b06703",
+    "deploymentManifest": "20260905T1257423901840Z",
+    "deploymentManifestSha256": "4ff9b605172ed4871af8b3911a9357811ebc2d3789ece1871294d7924c747ac5",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1408/1408)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS (strict standalone, 135 entries)",
+    "evidenceManifest": "ANNOUNCED-BUT-ABSENT; no PASS or hash attributed"
   },
   "baselineGates": {
     "repositoryValidation": "PASS",

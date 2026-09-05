@@ -89,9 +89,12 @@ Unchecked items are pending and must not be inferred from builds or historical
 - [x] Hydraulic Maneuver and Triton Portal pass exact variant/formula/shared-
   resource/action/summon/module-boundary behavior; unsupported Dirty Trick is
   recorded honestly if no native path exists.
-- [ ] Intentionally deferred feats remain unimplemented and documented.
-- [ ] Persistence covers feat facts, active buffs, temporary item
-  enchantments, resources, and module-OFF loading.
+- [x] Intentionally deferred feats remain unimplemented and are documented as
+  exact engine/value omissions without compensatory bonuses.
+- [x] Three-process persistence covers all 24 race/sex/heritage fixtures,
+  feat facts, granted abilities, resources, Wings buffs, a command-created
+  Elemental Strike buff, two exact command-enchanted weapon references,
+  module-OFF/ON loading, rest/respec cleanup, and fourth-process absence.
 - [ ] Version/docs/manifest updated; repository validation, full tests, clean
   0.0.116 build, strict package validation, guarded runtime, compatibility,
   and persistence gates pass.
