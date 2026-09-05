@@ -1490,3 +1490,8 @@ and the first focused mechanical group from the now-qualified native contracts.
 - Release B is still not PASS. The complete installed compatibility matrix,
   integrated runtime regression, final documentation, and final 0.0.116 gates
   remain pending.
+- Commit `a4a377cc73585776ed24d40d77d3cebbe20ba72b` records the
+  persistence implementation and qualification. The exact mandated push
+  wrapper immediately refused `codex/elemental-races-expansion` because that
+  user-required branch remains absent from its external allowlist; no bypass
+  was attempted.

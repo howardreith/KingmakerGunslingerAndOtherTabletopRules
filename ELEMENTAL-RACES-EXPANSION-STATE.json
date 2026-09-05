@@ -1213,6 +1213,12 @@
       "subject": "Implement Undine elemental feats",
       "checkpoint": "release-b-mechanics-slice-5",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "a4a377cc73585776ed24d40d77d3cebbe20ba72b",
+      "subject": "Qualify elemental feat persistence",
+      "checkpoint": "release-b-persistence-qualification",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],
   "pullRequest": null,
