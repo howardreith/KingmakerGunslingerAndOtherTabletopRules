@@ -2,11 +2,9 @@
 
 ## Current outcome
 
-**IN PROGRESS - FOUNDATION AND RELEASE A MECHANICAL/COMPATIBILITY GATES PASS;
-RELEASE B NATIVE CONTRACTS, FIXED IDENTITIES, BLUEPRINT GRAPH, SELECTOR
-PUBLICATION, AND ALL REQUIRED FEAT MECHANICS ARE LOCALLY QUALIFIED;
-PERSISTENCE AND RELEASE-WIDE COMPATIBILITY REMAIN IN PROGRESS. THE
-REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL ALLOWLIST.**
+**IN PROGRESS - FOUNDATION, RELEASE A, AND RELEASE B PASS ALL LOCAL GATES;
+RELEASE C IS NEXT. THE REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL
+ALLOWLIST.**
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
@@ -28,7 +26,7 @@ behavior.
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | ALL REQUIRED MECHANICS PASS; PERSISTENCE/COMPATIBILITY PENDING |
+| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
 | C | 0.0.117-elemental-traits | replacement slots and required alternate traits | NOT STARTED |
 
 Favored-class bonuses are out of scope.
@@ -59,11 +57,9 @@ The 5,411,328-byte DLL has SHA-256
 `09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262`
 and MVID `dcd73856-39d4-40ce-9b05-77bf249103d7`.
 
-Foundation behavior/runtime qualification is complete. Release A is now also
-mechanically qualified. Release B is active at version 0.0.116 with its
-identity/publication checkpoint and all required feat mechanics qualified,
-but persistence and release-wide compatibility gates remain incomplete;
-Release C is incomplete. Foundation spell
+Foundation behavior/runtime qualification is complete. Release A and Release B
+are mechanically, persistently, and compatibly qualified locally. Release C is
+the next incomplete gate. Foundation spell
 affinity, exact SLA calculation and command behavior, native movement layering,
 Hydraulic Push, visual ownership, blueprint publication, and the three-process
 module-OFF persistence transaction have passing guarded evidence. The
@@ -741,30 +737,30 @@ also returned byte-for-byte. Favored Class remained observation-only and no
 favored-class behavior was added. Visual Adjustments was absent and is
 NOT-RUN.
 
-The final KMG-only integrated transaction reran all five feat mechanics
+The exact clean-commit KMG-only integrated transaction reran all five feat mechanics
 scenarios against that artifact. Elemental Strike/Wings passed 16/16,
 Scorching Weapons/Inner Flame 12/12, Blazing Aura/Firesight 14/14, Sylph feats
 18/18, and Undine feats 13/13: five processes and 73/73 assertions with zero
 warnings and exact save-free cleanup. Transaction
-`compat-20260905T160603Z-4d73fae7b1d2` restored exactly and hashes to
-`4842490cf6339fded043e09515a0da8cef0742059396de16989dae2b5ffb1f32`.
+`compat-20260905T170705Z-db94dda1ab19` restored exactly and hashes to
+`6c2fb7c962d93cdd2e4c2e8f230199538d5913b8eece9d5889dad1f83d8a08f9`.
 
 Repository validation, 1,408/1,408 domain/reflection cases, the clean exact-
 reference Release build, production firearm manifest/SoundBank validation, and
-strict standalone package validation passed. The 135-entry, 23,145,172-byte
+strict standalone package validation passed. The 135-entry, 23,145,631-byte
 package hashes to
-`e5b8f77e77fe9d6bf56c43a2371304b631b8fd65e410c7a931abe27adf8ba032`.
+`3efab34b80cfcd1d2e9fabb4cf1a33375dbff6e6c53406b6298d3590aa5c22f4`.
 Its 5,958,144-byte DLL hashes to
-`3c9af3692f2f4dd58ceeb0a54cd607f410c32e43f186824d17c6bc3d80f528d4`
-with MVID `8c8af472-93b4-4d83-a944-0f466be5457a`. Deployment manifest
-`20260905T1447593309541Z` hashes to
-`83aaa400ae89aa4ccd7fa2730142b936a7b948cdeb6f6bb05250120bde829ba2`.
+`063ac40ea33e4e01b197e05ea9a44ca724448e4ce21e6e727778fa2448423da3`
+with MVID `adf3a0e2-c09b-4290-9137-cc5b49226eba`. Deployment manifest
+`20260905T1705407969279Z` hashes to
+`ba96a746511927bc17cb0bdedae5a7fce0da28cbae4d53d2b80cfe10d4393b5e`.
 The complete per-run and per-transaction hash ledger is
 `docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
 
 All Release B mechanics, persistence, module-OFF hydration, compatibility, and
 artifact gates therefore pass locally. Commit
-`c4b9f8fbc40a21ecc9775deab66a40b2ec9b24f3` is the exact source candidate
+`d8ad16f7c10670ed5b200214738322195213c392` is the exact source candidate
 used by the final artifact. The remaining external branch allowlist refusal
 affects checkpoint publication only; it is not relabelled as a gameplay PASS.
 Nothing was merged, tagged, or publicly released.

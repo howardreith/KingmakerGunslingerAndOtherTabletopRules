@@ -1530,3 +1530,38 @@ and the first focused mechanical group from the now-qualified native contracts.
   recorded in `docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md` and the mission
   state. The branch-publication wrapper remains the only active blocker;
   Release C work proceeds independently.
+
+## 2026-09-05 — Release B exact clean-commit requalification PASS
+
+- Commit `d8ad16f7c10670ed5b200214738322195213c392` was verified clean before
+  the exact-reference build. Its source-state SHA-256 is
+  `13fa83a7c0b2bd1314f78fa68739f1c4c7fdb908252b79bad085c7569687c682`.
+- The validated 135-entry artifact is 23,145,631 bytes with SHA-256
+  `3efab34b80cfcd1d2e9fabb4cf1a33375dbff6e6c53406b6298d3590aa5c22f4`.
+  Its 5,958,144-byte DLL has SHA-256
+  `063ac40ea33e4e01b197e05ea9a44ca724448e4ce21e6e727778fa2448423da3`
+  and MVID `adf3a0e2-c09b-4290-9137-cc5b49226eba`.
+- Deployment manifest `20260905T1705407969279Z` hashes to
+  `ba96a746511927bc17cb0bdedae5a7fce0da28cbae4d53d2b80cfe10d4393b5e`.
+  The first mechanics wrapper invocation was rejected before Steam launch
+  because mechanics-only scenarios do not accept feature-module parameters;
+  the corrected invocation changed no artifact or profile authority.
+- Corrected KMG-only transaction
+  `compat-20260905T170705Z-db94dda1ab19` reran all five mechanics scenarios.
+  All five processes and 73/73 assertions passed with zero warnings and exact
+  restoration. Its transaction SHA-256 is
+  `6c2fb7c962d93cdd2e4c2e8f230199538d5913b8eece9d5889dad1f83d8a08f9`.
+- The complete compatibility matrix was then repeated against that same exact
+  artifact: 31/31 guarded Steam processes, 359/359 assertions, zero
+  runtime-result warnings, and 12/12 exactly restored module-ON/OFF
+  transactions across all six required installed profiles. The 968-entry
+  original mod-tree hash, FeatureModules hash, Call of the Wild settings hash,
+  and Favored Class settings hash remained unchanged. Visual Adjustments
+  remains NOT-RUN because it is absent.
+- The exact run/result/evidence and transaction hash ledger is updated in
+  `docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`. The earlier
+  `c4b9f8fbc40a21ecc9775deab66a40b2ec9b24f3` qualification remains a
+  historical preliminary PASS; it is not presented as the final candidate.
+- The mandated push wrapper was run after commit `d8ad16f7...` and again
+  refused the user-required branch because the external allowlist is stale.
+  No bypass, merge, tag, release publication, or ZIP commit occurred.

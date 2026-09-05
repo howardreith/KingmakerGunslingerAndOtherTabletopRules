@@ -119,7 +119,7 @@ def validate(root: Path) -> None:
     require_tokens(root / "docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md",
         "Status: **LOCAL PASS**", "1,408/1,408", "73/73", "31/31",
         "359/359", "12 ON/OFF transactions",
-        "e5b8f77e77fe9d6bf56c43a2371304b631b8fd65e410c7a931abe27adf8ba032")
+        "3efab34b80cfcd1d2e9fabb4cf1a33375dbff6e6c53406b6298d3590aa5c22f4")
     require_tokens(root / "README.md", INFORMATIONAL_VERSION,
         "Elemental Strike", "Hydraulic Maneuver", "Triton Portal",
         "Release B passes locally")
