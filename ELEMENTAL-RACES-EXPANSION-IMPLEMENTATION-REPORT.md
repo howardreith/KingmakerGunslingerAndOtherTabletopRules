@@ -714,3 +714,8 @@ The named disposable save is absent after cleanup.
 This is a persistence gate PASS, not a Release B PASS. The complete installed
 compatibility matrix, integrated regression, final documentation, and final
 0.0.116 artifact qualification remain pending.
+
+Commit `a4a377cc73585776ed24d40d77d3cebbe20ba72b` records this
+checkpoint. The exact mandated push wrapper was run immediately and refused
+the required branch because its external allowlist still omits
+`codex/elemental-races-expansion`; no alternate push path was used.
