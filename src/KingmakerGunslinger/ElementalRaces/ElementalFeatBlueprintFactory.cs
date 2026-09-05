@@ -158,6 +158,9 @@ namespace KingmakerGunslinger.ElementalRaces
                 features[ElementalFeatId.ScorchingWeapons],
                 features[ElementalFeatId.InnerFlame], scorchingAbility,
                 scorchingBuff, scorchingEnchantment, races.Ifrit.Race);
+            ConfigureBlazingAura(auraAbility, auraBuff, scorchingBuff,
+                races.Ifrit.Race);
+            ConfigureFiresight(features[ElementalFeatId.Firesight]);
 
             if (scorchingEnchantment.ComponentsArray == null ||
                 registered.Count != ElementalRaceIdentityCatalog
@@ -453,6 +456,34 @@ namespace KingmakerGunslinger.ElementalRaces
                 ElementalScorchingWeaponsDamage>();
             damage.InnerFlame = innerFlame;
             enchantment.ComponentsArray = new BlueprintComponent[] { damage };
+        }
+
+        private static void ConfigureBlazingAura(BlueprintAbility ability,
+            BlueprintBuff aura, BlueprintBuff scorchingMarker,
+            BlueprintRace ifrit)
+        {
+            if (ability == null || aura == null || scorchingMarker == null ||
+                ifrit == null) throw new ArgumentNullException();
+            var delivery = ScriptableObject.CreateInstance<
+                ElementalBlazingAuraAbilityLogic>();
+            delivery.Ifrit = ifrit;
+            delivery.ScorchingWeaponsMarker = scorchingMarker;
+            delivery.Aura = aura;
+            ability.ComponentsArray = new BlueprintComponent[] { delivery };
+        }
+
+        private static void ConfigureFiresight(BlueprintFeature feature)
+        {
+            if (feature == null) throw new ArgumentNullException("feature");
+            var dazzled = ScriptableObject.CreateInstance<
+                AddConditionImmunity>();
+            dazzled.Condition = UnitCondition.Dazzled;
+            feature.ComponentsArray = (feature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value =>
+                    !(value is AddConditionImmunity &&
+                      ((AddConditionImmunity)value).Condition ==
+                        UnitCondition.Dazzled)).Concat(
+                            new BlueprintComponent[] { dazzled }).ToArray();
         }
 
         private static BlueprintWeaponEnchantment CreateEnchantment()

@@ -12,6 +12,8 @@ namespace KingmakerGunslinger.ElementalRaces
             m_Features;
         private readonly Dictionary<string, BlueprintScriptableObject>
             m_Blueprints;
+        private readonly Dictionary<string, BlueprintScriptableObject>
+            m_BlueprintsBySymbol;
 
         internal ElementalFeatBlueprintSet(
             IDictionary<ElementalFeatId, BlueprintFeature> features,
@@ -31,12 +33,31 @@ namespace KingmakerGunslinger.ElementalRaces
                 ordered.Distinct().Count() != ordered.Length ||
                 ordered.Any(value => string.IsNullOrWhiteSpace(
                     value.AssetGuid)) ||
+                ordered.Any(value => string.IsNullOrWhiteSpace(value.name)) ||
                 ordered.Select(value => value.AssetGuid).Distinct(
+                    StringComparer.Ordinal).Count() != ordered.Length ||
+                ordered.Select(value => value.name).Distinct(
                     StringComparer.Ordinal).Count() != ordered.Length)
                 throw new InvalidOperationException(
                     "Elemental feat blueprint graph is incomplete.");
             m_Blueprints = ordered.ToDictionary(value => value.AssetGuid,
                 StringComparer.Ordinal);
+            Dictionary<string, BlueprintScriptableObject> byInternalName =
+                ordered.ToDictionary(value => value.name,
+                    StringComparer.Ordinal);
+            m_BlueprintsBySymbol = new Dictionary<string,
+                BlueprintScriptableObject>(StringComparer.Ordinal);
+            foreach (string symbol in ElementalRaceIdentityCatalog
+                .FeatSymbols())
+            {
+                BlueprintScriptableObject blueprint;
+                if (!byInternalName.TryGetValue(symbol.Replace('.', '_'),
+                    out blueprint))
+                    throw new InvalidOperationException(
+                        "Elemental feat symbol was not included in its " +
+                        "registration set: " + symbol + ".");
+                m_BlueprintsBySymbol.Add(symbol, blueprint);
+            }
             if (m_Features.Values.Any(value =>
                     !m_Blueprints.ContainsKey(value.AssetGuid)))
                 throw new InvalidOperationException(
@@ -80,6 +101,19 @@ namespace KingmakerGunslinger.ElementalRaces
                 throw new KeyNotFoundException(
                     "Missing elemental feat subsidiary blueprint: " +
                     assetGuid + ".");
+            return (T)result;
+        }
+
+        internal T RequireSymbol<T>(string symbol)
+            where T : BlueprintScriptableObject
+        {
+            BlueprintScriptableObject result;
+            if (string.IsNullOrWhiteSpace(symbol) ||
+                !m_BlueprintsBySymbol.TryGetValue(symbol, out result) ||
+                !(result is T))
+                throw new KeyNotFoundException(
+                    "Missing elemental feat blueprint symbol: " + symbol +
+                    ".");
             return (T)result;
         }
     }
