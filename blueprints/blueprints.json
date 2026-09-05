@@ -13208,6 +13208,254 @@
     {
       "symbol": "KMG.ElementalRaces.Feats.TritonPortal.Ability", "guid": "e116e1e0a17a4aceb001000000000025",
       "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Feats 0.0.116", "notes": "Full-round Triton Portal 1d3 Small Water Elemental summon ability sharing the racial Hydraulic Push use."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.EnergyResistanceSelection", "guid": "e117e1e0a17a4acec001000000000001",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.ElementalAffinitySelection", "guid": "e117e1e0a17a4acec001000000000002",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.RacialSpellLikeAbilitySelection", "guid": "e117e1e0a17a4acec001000000000003",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.EnergyResistanceSelection", "guid": "e117e1e0a17a4acec001000000000004",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.ElementalAffinitySelection", "guid": "e117e1e0a17a4acec001000000000005",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.RacialSpellLikeAbilitySelection", "guid": "e117e1e0a17a4acec001000000000006",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.EnergyResistanceSelection", "guid": "e117e1e0a17a4acec001000000000007",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.ElementalAffinitySelection", "guid": "e117e1e0a17a4acec001000000000008",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.RacialSpellLikeAbilitySelection", "guid": "e117e1e0a17a4acec001000000000009",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.RacialSpellLikeAbilitySelection", "guid": "e117e1e0a17a4acec001000000000010",
+      "plannedType": "BlueprintFeatureSelection", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Obligatory parent-race replacement-slot selection with an explicit retain-base option."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.EnergyResistance.Retain", "guid": "e117e1e0a17a4acec001000000000011",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.ElementalAffinity.Retain", "guid": "e117e1e0a17a4acec001000000000012",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.RacialSpellLikeAbility.Retain", "guid": "e117e1e0a17a4acec001000000000013",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.EnergyResistance.Retain", "guid": "e117e1e0a17a4acec001000000000014",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.ElementalAffinity.Retain", "guid": "e117e1e0a17a4acec001000000000015",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.RacialSpellLikeAbility.Retain", "guid": "e117e1e0a17a4acec001000000000016",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.EnergyResistance.Retain", "guid": "e117e1e0a17a4acec001000000000017",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.ElementalAffinity.Retain", "guid": "e117e1e0a17a4acec001000000000018",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.RacialSpellLikeAbility.Retain", "guid": "e117e1e0a17a4acec001000000000019",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.RacialSpellLikeAbility.Retain", "guid": "e117e1e0a17a4acec001000000000020",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing explicit retain-base choice for one alternate racial trait slot."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.WildfireHeart", "guid": "e117e1e0a17a4acec001000000000021",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.BrazenFlame", "guid": "e117e1e0a17a4acec001000000000022",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.FireInTheBlood", "guid": "e117e1e0a17a4acec001000000000023",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic", "guid": "e117e1e0a17a4acec001000000000024",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.ForgeHardened", "guid": "e117e1e0a17a4acec001000000000025",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.FireInsight", "guid": "e117e1e0a17a4acec001000000000026",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.CrystallineForm", "guid": "e117e1e0a17a4acec001000000000027",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.EarthInsight", "guid": "e117e1e0a17a4acec001000000000028",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.GraniteSkin", "guid": "e117e1e0a17a4acec001000000000029",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.StoneInTheBlood", "guid": "e117e1e0a17a4acec001000000000030",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth", "guid": "e117e1e0a17a4acec001000000000031",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.AirInsight", "guid": "e117e1e0a17a4acec001000000000032",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed", "guid": "e117e1e0a17a4acec001000000000033",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.LikeTheWind", "guid": "e117e1e0a17a4acec001000000000034",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.Secretive", "guid": "e117e1e0a17a4acec001000000000035",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.StormInTheBlood", "guid": "e117e1e0a17a4acec001000000000036",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.ThunderousResilience", "guid": "e117e1e0a17a4acec001000000000037",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.WhisperingWind", "guid": "e117e1e0a17a4acec001000000000038",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.AcidBreath", "guid": "e117e1e0a17a4acec001000000000039",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination", "guid": "e117e1e0a17a4acec001000000000040",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath", "guid": "e117e1e0a17a4acec001000000000041",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.WildfireHeart.Provider", "guid": "e117e1e0a17a4acec001000000000042",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.BrazenFlame.Provider", "guid": "e117e1e0a17a4acec001000000000043",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.FireInTheBlood.Provider", "guid": "e117e1e0a17a4acec001000000000044",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Provider", "guid": "e117e1e0a17a4acec001000000000045",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.ForgeHardened.Provider", "guid": "e117e1e0a17a4acec001000000000046",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.FireInsight.Provider", "guid": "e117e1e0a17a4acec001000000000047",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Provider", "guid": "e117e1e0a17a4acec001000000000048",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.EarthInsight.Provider", "guid": "e117e1e0a17a4acec001000000000049",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.GraniteSkin.Provider", "guid": "e117e1e0a17a4acec001000000000050",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.StoneInTheBlood.Provider", "guid": "e117e1e0a17a4acec001000000000051",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.Provider", "guid": "e117e1e0a17a4acec001000000000052",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.AirInsight.Provider", "guid": "e117e1e0a17a4acec001000000000053",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Provider", "guid": "e117e1e0a17a4acec001000000000054",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.LikeTheWind.Provider", "guid": "e117e1e0a17a4acec001000000000055",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.Secretive.Provider", "guid": "e117e1e0a17a4acec001000000000056",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.StormInTheBlood.Provider", "guid": "e117e1e0a17a4acec001000000000057",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.ThunderousResilience.Provider", "guid": "e117e1e0a17a4acec001000000000058",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.WhisperingWind.Provider", "guid": "e117e1e0a17a4acec001000000000059",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.AcidBreath.Provider", "guid": "e117e1e0a17a4acec001000000000060",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.Provider", "guid": "e117e1e0a17a4acec001000000000061",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Provider", "guid": "e117e1e0a17a4acec001000000000062",
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
     }
   ]
 }

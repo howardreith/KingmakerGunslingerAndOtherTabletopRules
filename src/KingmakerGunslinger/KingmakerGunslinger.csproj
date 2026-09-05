@@ -943,6 +943,8 @@
     <Compile Include="RuntimeTesting\ElementalSylphFeatScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalUndineFeatScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageBlueprintScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalAlternateTraitFrameworkScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalAlternateTraitReconciliationScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageSlaScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceVisualAuditScenario.cs" />
@@ -955,6 +957,9 @@
     <Compile Include="ElementalRaces\ElementalRaceIdentityCatalog.cs" />
     <Compile Include="ElementalRaces\ElementalRaceDefinition.cs" />
     <Compile Include="ElementalRaces\ElementalHeritagePolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalAlternateTraitPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalAlternateTraitBlueprintSet.cs" />
+    <Compile Include="ElementalRaces\ElementalAlternateTraitBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalFeatPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalFeatTransientPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalFeatBlueprintSet.cs" />
@@ -993,6 +998,7 @@
     <Compile Include="RuntimeTesting\ElementalRaceTransitionScenario.cs" />
     <Compile Include="RuntimeTesting\GunslingerOutfitProductionPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRacePersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalAlternateTraitPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalFeatPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianRageInventoryObserver.cs" />

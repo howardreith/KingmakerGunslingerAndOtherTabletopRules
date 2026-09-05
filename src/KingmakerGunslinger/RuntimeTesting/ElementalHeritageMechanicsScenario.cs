@@ -223,7 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalRaceBlueprintSet set = BlueprintBootstrap
                     .ElementalRaces;
                 if (set == null || set.Count !=
-                        ElementalRaceIdentityCatalog.IdentityCount)
+                        ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount)
                     throw new InvalidOperationException(
                         "The complete Elemental Races graph is unavailable.");
                 BlueprintCharacterClass fighter = BlueprintLibraryLookup
@@ -612,7 +612,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             EnsureFact(owner, race.Race);
             foreach (BlueprintFeature feature in race.Race.Features)
-                EnsureFact(owner, feature);
+            {
+                bool replaceable = ReferenceEquals(feature,
+                        race.Resistance) ||
+                    ReferenceEquals(feature, race.Affinity) ||
+                    ReferenceEquals(feature, race.SlaFeature);
+                // During marker-first hydration an inherited provider may
+                // retire itself synchronously. Final exact-state assertions
+                // below, not an intermediate presence assertion, qualify it.
+                if (replaceable)
+                {
+                    if (!owner.HasFact(feature)) owner.AddFact(feature);
+                }
+                else EnsureFact(owner, feature);
+            }
         }
 
         private static UnitEntityData CreateUnit(BlueprintRace race,

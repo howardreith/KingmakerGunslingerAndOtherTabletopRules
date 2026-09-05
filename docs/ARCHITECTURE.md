@@ -1,5 +1,23 @@
 # Current architecture
 
+## Elemental alternate racial traits 0.0.117 layer
+
+Release C adds a pure three-slot replacement policy over the existing exact
+Ifrit, Oread, Sylph, and Undine blueprints. Energy Resistance, Elemental
+Affinity, and Racial Spell-Like Ability providers are resolved from the exact
+race, active heritage marker, and legal alternate-trait marker set. Ten
+obligatory race-owned selectors expose an explicit retain-base choice wherever
+the catalog has an alternative; multi-slot choices carry exact mutual
+exclusions.
+
+Selectable markers and hidden mechanic providers have separate stable
+identities. The owned runtime reconciler derives one desired state, adds
+missing desired providers before removing obsolete ones, remembers exact
+heritage-SLA resource amounts, and removes only project-owned facts and
+abilities. Missing heritage markers still resolve to General, and module state
+continues to gate publication rather than identity registration. Trait
+mechanics and their guarded qualification remain in progress.
+
 ## Expanded Summoning 0.0.78 layer
 
 Player-visible summon children use a project-owned icon manifest with 77
@@ -518,8 +536,8 @@ catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
 plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
-Elemental Races mechanics, heritage providers, and visual identities extend
-the append-only ledger to 1784 stable IDs: 1782 active and 2 reserved. The
+Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
+identities extend the append-only ledger to 1846 stable IDs: 1844 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
@@ -529,10 +547,14 @@ triplets, and five supporting ability or weapon-enchantment identities.
 Release B appends eleven feat features, nine abilities, four buffs, and one
 weapon enchantment. `ElementalFeatBlueprintFactory` registers all 25 before
 `ElementalFeatPublication` independently reconciles the universal and Fighter
-selectors through the established exact-GUID-aware transaction. The same
-`elemental-races` setting gates race and feat publication; no module identity
-or schema member was added. All 146 active elemental identities remain
-registered while race and feat selector publication is disabled. Exact 0.0.114
+selectors through the established exact-GUID-aware transaction.
+Release C appends ten replacement-slot selections, ten retain-base markers,
+21 visible trait markers, and 21 hidden mechanic providers. The framework
+registers all 62 unconditionally and keeps publication within the existing
+parent race and `elemental-races` module boundary.
+`elemental-races` setting gates race, feat, and trait-selector publication; no
+module identity or schema member was added. All 208 active elemental identities
+remain registered while selector publication is disabled. Exact 0.0.114
 markerless-General migration and the
 24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation
 preserves inherited stat components and current resource amounts while adding

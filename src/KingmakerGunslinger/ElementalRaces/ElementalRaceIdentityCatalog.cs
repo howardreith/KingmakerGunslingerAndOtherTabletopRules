@@ -10,10 +10,13 @@ namespace KingmakerGunslinger.ElementalRaces
         internal const int LegacyMechanicIdentityCount = 24;
         internal const int HeritageIdentityCount = 53;
         internal const int FeatIdentityCount = 25;
+        internal const int TraitFrameworkIdentityCount = 62;
         internal const int MechanicIdentityCount = LegacyMechanicIdentityCount +
-            HeritageIdentityCount + FeatIdentityCount;
+            HeritageIdentityCount + FeatIdentityCount +
+            TraitFrameworkIdentityCount;
         internal const int RaceBlueprintIdentityCount =
             LegacyMechanicIdentityCount + HeritageIdentityCount +
+            TraitFrameworkIdentityCount +
             ElementalRaceVisualCatalog.BlueprintIdentityCount;
         internal const int IdentityCount = RaceBlueprintIdentityCount +
             FeatIdentityCount;
@@ -133,7 +136,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 UndineSlaResource, UndineSlaAbility
             };
             string[] raceBlueprints = legacyMechanics.Concat(
-                    HeritageSymbols()).Concat(ElementalRaceVisualCatalog
+                    HeritageSymbols()).Concat(TraitSymbols()).Concat(
+                    ElementalRaceVisualCatalog
                     .BlueprintSymbols()).ToArray();
             return raceBlueprints.Concat(FeatSymbols()).ToArray();
         }
@@ -190,6 +194,25 @@ namespace KingmakerGunslinger.ElementalRaces
                     symbols.Length)
                 throw new InvalidOperationException(
                     "Elemental feat identity inventory drifted.");
+            return symbols;
+        }
+
+        internal static IReadOnlyList<string> TraitSymbols()
+        {
+            ElementalAlternateTraitSelectionDefinition[] selections =
+                ElementalAlternateTraitPolicy.OrderedSelections().ToArray();
+            ElementalAlternateTraitDefinition[] traits =
+                ElementalAlternateTraitPolicy.Ordered().ToArray();
+            string[] symbols = selections.Select(value =>
+                    value.SelectionSymbol)
+                .Concat(selections.Select(value => value.RetainMarkerSymbol))
+                .Concat(traits.Select(value => value.MarkerSymbol))
+                .Concat(traits.Select(value => value.ProviderSymbol)).ToArray();
+            if (symbols.Length != TraitFrameworkIdentityCount ||
+                symbols.Distinct(StringComparer.Ordinal).Count() !=
+                    symbols.Length)
+                throw new InvalidOperationException(
+                    "Elemental alternate-trait framework identity inventory drifted.");
             return symbols;
         }
 

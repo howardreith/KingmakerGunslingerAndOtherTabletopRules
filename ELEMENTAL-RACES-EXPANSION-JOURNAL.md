@@ -1,5 +1,172 @@
 # Elemental Races expansion journal
 
+## 2026-09-05 - Release C replacement framework
+
+- Final framework persistence candidate
+  `f99ac332e0396ea7d537a2cad943060b5ece62365fa3acee55187e83de66d480`
+  passes all four guarded fresh processes (43/43 assertions). All 24 fixtures
+  use native retain selections: 180 exact choices and 144 exact persisted
+  observations. Module-OFF level/rest/re-spend, module-ON respec, cleanup, and
+  independent absence pass. Original settings restored byte-for-byte.
+  Optional framing/image-guidance warnings remain recorded. The exact ledger
+  is `docs/ELEMENTAL-RACES-0.0.117-FRAMEWORK-QUALIFICATION.md`.
+  This is the framework checkpoint only; every actual trait mechanic remains
+  required before Release C PASS.
+- Candidate `a43038698d95dfbbeaa5293c4d2548ee3ded0fa4b6916710bdbd765a555b7917`
+  passed ten guarded save-free processes and 17,483 assertions: base race
+  mechanics, native identity/movement, heritage mechanics, and the complete
+  replacement matrix in KMG-only and highest-risk combined profiles, including
+  module-OFF. All four profile transactions restored exactly with zero
+  runtime-result warnings. This is framework evidence, not Release C PASS.
+- The first inherited save-backed prepare run stopped before fixture creation
+  and before any save write because its explicit inventory omitted the 62 new
+  framework identities. Failure result SHA-256:
+  `6910e8565b870eb501c5cb14e2dc48187ec96555c6be1fde35486e93a81b8bfc`.
+  Original settings were restored to
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+  The fixture now enumerates those exact identities and explicitly selects
+  retain-base choices through native LevelUpController commands during
+  character creation and respec. Its new feature-specific partial scenario
+  keeps this logic outside the central runner. Qualification is pending.
+- Preflight reported one unexplained artifact-snapshot mismatch with no build
+  or game process running. A diagnostic rerun passed all 202 checks and proved
+  identical 421,536-character before/after snapshots; a separate ordinary
+  invocation then passed all 202 checks. No assertion was changed or relaxed.
+- The corrected base-race fixture initially measured zero stat deltas because
+  native construction already applies the selected BlueprintRace modifiers.
+  It now compares final values against the unmodified base values. The exact
+  requested racial deltas, SLA DC/CL, spent-level-up, and rest checks remain
+  intact and all 27 assertions pass. The prior failure result SHA-256 is
+  `31308bb327c7d103ed6fdbe2abdb073cdd613bb51853fe8e58cf7987b6b1e9ce`.
+- KMG-only module-OFF runs on package
+  `365e447dbe0ffcf760cc3fe14ab56d9c4f2258505e144067d6ab659f6d339604`
+  passed the elemental-specific publication observer (13 assertions) and full
+  trait matrix (4,333 assertions). The generic module observer separately
+  requires the Brown-Fur/CotW contract even with that setting OFF, so it is
+  not an applicable KMG-only profile observer; its failed prerequisite run is
+  retained rather than treated as an elemental failure or a PASS.
+- The follow-on old race-mechanics fixture failed after leveling because it
+  attached elemental facts to a default-race unit without setting the actual
+  parent race. Corrected only its request-local BlueprintUnit construction to
+  use the exact project parent race, matching the qualified heritage fixture.
+  Existing rule, affinity, damage, exact DC/CL, level/rest, and resource
+  assertions are retained. Failure result SHA-256:
+  `1c6943107efc93abb0b83a620fb4b508448233e1744aab9074bc481f7efe2f36`.
+  All disposable units and the compatibility profile restored exactly.
+- Exact later artifact `b3c0fdead750470e324799af36e8fee9801a802d43ea52f58ac1c9733bfbb1a2`
+  passed both the unchanged 68-assertion heritage regression and the complete
+  4,333-assertion framework matrix in transaction
+  `compat-20260905T213849Z-69e699a89374`, with exact restoration and zero
+  warnings. This artifact remains preliminary pending module-OFF and combined
+  profile qualification.
+- General module-observer run
+  `20260905T2142267376098Z-9429f706bfdd495ea9b1933e06986a15` failed two
+  expectations: another stale race-only versus race-plus-feat identity count,
+  and an incorrect test request expecting Brown-Fur publication in a KMG-only
+  profile without Call of the Wild. Actual Elemental Races OFF registration
+  was 155 race-owned identities with zero race-selector occurrences. Failure
+  result SHA-256:
+  `92d24bbea9c8031a7c3bd3216d41f41ea6170301a1c9527789d23597737ac526`.
+  The compatibility transaction restored exactly. Corrected all remaining
+  race-only observer count comparisons; future isolated module requests set
+  Brown-Fur OFF when its dependency is absent. No publication predicate or
+  gameplay behavior was relaxed.
+- Corrected full live matrix run
+  `20260905T2132430745603Z-3304098596174db5a1827d210c539bfe` passed 4,333/4,333
+  assertions with zero warnings: 69 legal sets, 207 heritage rows, 414 order
+  rows, all 21 marker-first cases, and exact cleanup of 33 units. The explicit
+  native orphan injection also proves that returning to a previously spent
+  heritage retains zero uses. Matrix SHA-256:
+  `a96504beb3e1ae9c638b762c4560d78e0a5b0314b8cc9f7c42dfddc37425be82`;
+  runtime result SHA-256:
+  `b8fe2183785d0940fd70fcf28071cd61bb7c85fc499f369249119eb7a62fa2a0`;
+  runtime evidence SHA-256:
+  `e381e4b5a5dfc21d98d601a2957c7f2480aae3a106148555889e833bee9a752f`.
+- The paired heritage regression
+  `20260905T2133549306708Z-f2cebad6cfe14c95a2b5501cccfc89fd` passed all three
+  Ifrit choice exercises, then its marker-first fixture rejected the intended
+  synchronous retirement of General Fire Affinity. Its setup now permits
+  retirement only for replaceable inherited providers; the final exact
+  provider/stat/SLA/resource assertions are unchanged. Failure result SHA-256:
+  `82c3e40d912cefe874d80b781d91b45744b4c4393cc0c88be6a4d6a3b51828e9`.
+  Transaction `compat-20260905T213222Z-62f74f4169a7` restored exactly,
+  SHA-256 `7fd864bc334a22ac58950720c7bb30862b0cd5bf99b12cf38e5f22e90ce466a2`.
+- The first real-unit matrix run
+  `20260905T2127082177860Z-2a0a8052374e4816b194727bea5c8a3d` reached 1,321
+  assertions and exposed a concrete native late-activation orphan: all 63
+  Ifrit heritage/trait rows and 126 forward/reverse rows completed, then a
+  trait-first Sunsoul retained the inactive General Burning Hands resource
+  after the General feature/ability were already removed. All four disposable
+  units were cleaned up exactly. Failure result SHA-256:
+  `ddcf9e88017abfc81307efcf931bd542925edc16e20262b40fa0bdd13a12ab13`;
+  matrix SHA-256:
+  `339d84a8f58cad14874b2fd0a1b1601e7c5d1256accb55d158e9383ffe9e181c`.
+- The narrow correction uses native resource removal only for the exact
+  inactive project SLA resource, retains any previously remembered spent
+  amount, and validates resource counts as part of reconciliation. It never
+  removes a current resource or a foreign resource. Guarded rerun is pending.
+- Preliminary framework build: repository validation and 1,413/1,413 domain
+  tests passed; clean exact-reference package has 135 entries, 23,164,848
+  bytes, SHA-256
+  `4186193f32a13feae357166f92bd277fe4569f6d260be8e44d0fdc2556e85d25`.
+  DLL SHA-256 is
+  `d59f499c3b0a7574d0a9e6cb1d6905b711317f92dd85ca3520d32bb4e73ff0ce`,
+  MVID `5b5308bb-0d9e-49eb-bfc6-3c4be6a6d356`. This is preliminary graph
+  evidence, not final Release C qualification.
+- Guarded KMG-only graph run
+  `20260905T2117101438961Z-59cf772a9717472caf94be0f0318089f` passed 38/38
+  assertions with zero warnings. Graph evidence SHA-256:
+  `115e1318137a84099dae058798051f61f884ab63571ced3a04a647dccf65f018`;
+  runtime result SHA-256:
+  `7d0993c5e5b85a414427f520855693f4af3095363456f21f4f193ecac1617ca0`;
+  runtime evidence SHA-256:
+  `fc26c7e2c374b62f1c8481aaf1314fbb20cc85cff23d64f17f946e7620f73b77`.
+- The paired legacy-heritage regression
+  `20260905T2118286234278Z-e5ec920441e54a8cb0f5a27f86bf60f6` failed before
+  fixture creation: its race-only graph count incorrectly included the
+  separate feat inventory. Corrected the assertion to the exact
+  `RaceBlueprintIdentityCount`; all gameplay assertions remain unchanged.
+  Failure result SHA-256:
+  `562e86c5b03c956222e3d5d687a14fd0423dd383da3b261de44706b57373de67`.
+  Transaction `compat-20260905T211630Z-937e54cd1aaf` restored exactly,
+  transaction SHA-256
+  `85c3d5f2ea7d0757cf51c0c16f99fc394a933d542deed8f52c494733cabb4a6e`.
+- Extended the framework observer with a dedicated request-local native-unit
+  matrix: all 69 legal trait sets across all twelve heritages (207 rows),
+  forward/reverse marker application (414 rows), removal, repeat
+  reconciliation, native overlap prerequisites, heritage changes while the
+  SLA slot is consumed, spent-resource preservation, native rest, and every
+  trait applied before inherited race facts. Runtime qualification is pending.
+- The preflight artifact-snapshot check failed on two preliminary invocations;
+  an isolated diagnostic rerun passed all 202 checks without changing its
+  criteria. The expanded observer's first compile identified one missing
+  namespace import for native FeatureSelectionState, now corrected.
+- Audited the authoritative Archives of Nethys Ifrit, Oread, Sylph, and Undine
+  alternate-racial-trait catalogs plus the general replacement rule. The
+  mission's Energy Resistance, Elemental Affinity, and Racial Spell-Like
+  Ability slot mappings match the published replacements; one base trait may
+  not be exchanged twice.
+- Added fail-first policy and identity coverage for all 21 required traits,
+  every race and heritage, all legal powersets, illegal overlaps, activation
+  permutations, remove/re-add transitions, marker reconstruction, provider
+  symbols, final racial stats, and Hydraulic Push prerequisite outcomes.
+- Appended 62 fixed 0.0.117 manifest identities: ten selections, ten explicit
+  retain-base markers, 21 visible markers, and 21 separate hidden providers.
+- Integrated only the relevant obligatory slot selections into each existing
+  parent race. Exact overlap prerequisites fail closed; no top-level race,
+  module toggle, settings-schema revision, or dynamic identity was added.
+- Extended the existing owned heritage reconciler to resolve semantic slots,
+  add desired providers before removing obsolete ones, retain exact spent
+  heritage-SLA amounts, remove inactive project abilities, and avoid touching
+  native or foreign facts. Added lifecycle hooks to project-owned providers so
+  late activation ordering is reconciled.
+- Advanced active assembly/package/tooling identity to
+  `0.0.117-elemental-traits` and added a layered release validator that keeps
+  all qualified Release B gates authoritative. The real-reference project
+  compile passes; complete post-transition qualification is the next step.
+- The required push wrapper remains externally blocked by its stale branch
+  allowlist. No bypass, merge, tag, public release, or package commit occurred.
+
 ## 2026-09-03 - Mission start and authoritative baseline
 
 - Repository checkout:

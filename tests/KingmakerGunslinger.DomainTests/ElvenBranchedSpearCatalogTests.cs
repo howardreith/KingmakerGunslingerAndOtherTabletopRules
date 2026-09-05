@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.116\"") &&
-                props.Contains("<KmgVersion>0.0.116</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.116-elemental-feats</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.116\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.116\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.116-elemental-feats\")"),
-                "Release and assembly identity are not transactionally pinned to Elemental Feats.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.117\"") &&
+                props.Contains("<KmgVersion>0.0.117</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.117-elemental-traits</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.117\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.117\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.117-elemental-traits\")"),
+                "Release and assembly identity are not transactionally pinned to Elemental Traits.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-elemental-feats.zip") &&
+                "$($info.Id)-$($info.Version)-elemental-traits.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Elemental Feats archive.");
-            Assertions.True(runtime.Contains("active version 0.0.116") &&
-                localBuild.Contains("active version 0.0.116") &&
-                localBuild.Contains("local-runtime\\0.0.116"),
+                "Package identity is not pinned to the Elemental Traits archive.");
+            Assertions.True(runtime.Contains("active version 0.0.117") &&
+                localBuild.Contains("active version 0.0.117") &&
+                localBuild.Contains("local-runtime\\0.0.117"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

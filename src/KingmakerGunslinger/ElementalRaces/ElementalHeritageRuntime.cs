@@ -91,6 +91,65 @@ namespace KingmakerGunslinger.ElementalRaces
         public override void OnTurnOff() { }
     }
 
+    public sealed class ElementalAlternateTraitMarkerController :
+        OwnedGameLogicComponent<UnitDescriptor>
+    {
+        public int Trait;
+
+        public override void OnTurnOn()
+        {
+            ElementalHeritageRuntime.Reconcile(Owner, null, null,
+                (ElementalAlternateTraitId)Trait, null);
+        }
+
+        public override void OnTurnOff()
+        {
+            ElementalHeritageRuntime.Reconcile(Owner, null, null, null,
+                (ElementalAlternateTraitId)Trait);
+        }
+    }
+
+    public sealed class ElementalAlternateTraitRetainController :
+        OwnedGameLogicComponent<UnitDescriptor>
+    {
+        public int Race;
+        public int Slot;
+
+        public override void OnTurnOn()
+        {
+            ElementalHeritageRuntime.Reconcile(Owner, null, null);
+        }
+
+        public override void OnTurnOff()
+        {
+            ElementalHeritageRuntime.Reconcile(Owner, null, null);
+        }
+    }
+
+    public sealed class ElementalAlternateTraitProviderController :
+        OwnedGameLogicComponent<UnitDescriptor>
+    {
+        public int Trait;
+
+        public override void OnTurnOn()
+        {
+            ElementalHeritageRuntime.Reconcile(Owner, null, null);
+        }
+
+        public override void OnTurnOff() { }
+    }
+
+    public sealed class ElementalOwnedProviderController :
+        OwnedGameLogicComponent<UnitDescriptor>
+    {
+        public override void OnTurnOn()
+        {
+            ElementalHeritageRuntime.Reconcile(Owner, null, null);
+        }
+
+        public override void OnTurnOff() { }
+    }
+
     internal static class ElementalHeritageRuntime
     {
         private static ElementalRaceBlueprintSet _blueprints;
@@ -105,10 +164,13 @@ namespace KingmakerGunslinger.ElementalRaces
                 .ToArray();
             if (races.Length != ElementalRaceCatalog.RaceCount ||
                 races.Any(value => value.Heritages == null) ||
+                races.Any(value => value.AlternateTraits == null) ||
                 races.Sum(value => value.Heritages.RegisteredCount) !=
-                    ElementalRaceIdentityCatalog.HeritageIdentityCount)
+                    ElementalRaceIdentityCatalog.HeritageIdentityCount ||
+                races.Sum(value => value.AlternateTraits.RegisteredCount) !=
+                    ElementalRaceIdentityCatalog.TraitFrameworkIdentityCount)
                 throw new InvalidOperationException(
-                    "The complete heritage blueprint graph is required.");
+                    "The complete heritage and alternate-trait blueprint graph is required.");
             _blueprints = blueprints;
         }
 
@@ -116,65 +178,119 @@ namespace KingmakerGunslinger.ElementalRaces
             ElementalHeritageId? activating,
             ElementalHeritageId? deactivating)
         {
+            return Reconcile(owner, activating, deactivating, null, null);
+        }
+
+        internal static bool Reconcile(UnitDescriptor owner,
+            ElementalHeritageId? heritageActivating,
+            ElementalHeritageId? heritageDeactivating,
+            ElementalAlternateTraitId? traitActivating,
+            ElementalAlternateTraitId? traitDeactivating)
+        {
             if (owner == null || _blueprints == null ||
                 !Reconciling.Add(owner)) return false;
             try
             {
                 ElementalRaceBlueprints race;
                 if (!TryRace(owner, out race)) return false;
-                ElementalHeritageBlueprints desired = Resolve(race.Heritages,
-                    owner, activating, deactivating);
-                if (desired == null) return false;
+                ElementalHeritageBlueprints desiredHeritage = Resolve(
+                    race.Heritages, owner, heritageActivating,
+                    heritageDeactivating);
+                if (desiredHeritage == null) return false;
+                ElementalHeritageRace parentRace = ToHeritageRace(
+                    race.Definition.Kind);
+                ElementalAlternateTraitId[] observedTraits = race
+                    .AlternateTraits.Traits().Where(value => owner.HasFact(
+                        value.Marker)).Select(value => value.Definition.Id)
+                    .ToArray();
+                ElementalAlternateTraitId[] effectiveTraits =
+                    ElementalAlternateTraitPolicy.TransitionMarkers(
+                        parentRace, observedTraits, traitActivating,
+                        traitDeactivating);
+                ElementalAlternateTraitState desired =
+                    ElementalAlternateTraitPolicy.Resolve(parentRace,
+                        desiredHeritage.Definition.Id, effectiveTraits);
+                ElementalAlternateTraitBlueprints[] desiredTraits =
+                    effectiveTraits.Select(race.AlternateTraits.Require)
+                        .ToArray();
                 UnitPartElementalHeritageState state = owner.Ensure<
                     UnitPartElementalHeritageState>();
                 RememberCurrent(owner, race.Heritages, state);
 
-                Fact addedAffinity = null;
+                var added = new List<Fact>();
                 Fact addedSla = null;
                 try
                 {
-                    if (!owner.HasFact(desired.Affinity))
-                        addedAffinity = owner.AddFact(desired.Affinity);
-                    if (!owner.HasFact(desired.SlaFeature))
-                        addedSla = owner.AddFact(desired.SlaFeature);
-                    if (!owner.HasFact(desired.Affinity) ||
-                        !owner.HasFact(desired.SlaFeature))
+                    if (desired.EnergyResistanceProviderSymbol != null)
+                        AddDesired(owner, race.Resistance, added);
+                    if (desired.ElementalAffinityProviderSymbol != null)
+                        AddDesired(owner, desiredHeritage.Affinity, added);
+                    if (desired.RacialSlaFeatureSymbol != null)
+                        addedSla = AddDesired(owner,
+                            desiredHeritage.SlaFeature, added);
+                    foreach (ElementalAlternateTraitBlueprints trait in
+                        desiredTraits)
+                        AddDesired(owner, trait.Provider, added);
+
+                    if (!DesiredFactsArePresent(owner, race,
+                            desiredHeritage, desiredTraits, desired))
                         throw new InvalidOperationException(
-                            "A desired heritage provider could not be added.");
+                            "A desired elemental racial provider could not be added.");
 
                     int recalled;
                     if (addedSla != null && state.TryRecall(
-                            desired.SlaResource.AssetGuid, out recalled))
-                        SetAmount(owner, desired, recalled);
+                            desiredHeritage.SlaResource.AssetGuid,
+                            out recalled))
+                        SetAmount(owner, desiredHeritage, recalled);
                 }
                 catch
                 {
-                    if (addedSla != null) TryRemove(owner, addedSla);
-                    if (addedAffinity != null) TryRemove(owner, addedAffinity);
+                    foreach (Fact fact in added.AsEnumerable().Reverse())
+                        TryRemove(owner, fact);
                     throw;
                 }
 
+                if (desired.EnergyResistanceProviderSymbol == null)
+                    TryRemove(owner, race.Resistance);
                 foreach (ElementalHeritageBlueprints choice in
                     race.Heritages.Choices())
                 {
-                    if (!ReferenceEquals(choice.Affinity, desired.Affinity))
+                    if (desired.ElementalAffinityProviderSymbol == null ||
+                        !ReferenceEquals(choice.Affinity,
+                            desiredHeritage.Affinity))
                         TryRemove(owner, choice.Affinity);
-                    if (!ReferenceEquals(choice.SlaFeature,
-                            desired.SlaFeature))
+                    if (desired.RacialSlaFeatureSymbol == null ||
+                        !ReferenceEquals(choice.SlaFeature,
+                            desiredHeritage.SlaFeature))
                     {
                         TryRemove(owner, choice.SlaFeature);
                         RemoveOwnedAbility(owner, choice.SlaAbility);
+                        RemoveOwnedResource(owner, choice, state);
                         if (owner.Abilities.GetAbility(
                                 choice.SlaAbility) != null)
                             throw new InvalidOperationException(
                                 "An inactive heritage SLA ability remained after provider reconciliation.");
                     }
                 }
-                state.Remember(desired.SlaResource.AssetGuid,
-                    owner.Resources.GetResourceAmount(desired.SlaResource));
-                return owner.HasFact(desired.Affinity) &&
-                    owner.HasFact(desired.SlaFeature) &&
-                    owner.Abilities.GetAbility(desired.SlaAbility) != null;
+                BlueprintFeature[] desiredTraitProviders = desiredTraits
+                    .Select(value => value.Provider).ToArray();
+                foreach (ElementalAlternateTraitBlueprints trait in
+                    race.AlternateTraits.Traits())
+                    if (!desiredTraitProviders.Contains(trait.Provider))
+                        TryRemove(owner, trait.Provider);
+
+                if (desired.RacialSlaFeatureSymbol != null)
+                    state.Remember(desiredHeritage.SlaResource.AssetGuid,
+                        owner.Resources.GetResourceAmount(
+                            desiredHeritage.SlaResource));
+                return DesiredFactsArePresent(owner, race, desiredHeritage,
+                    desiredTraits, desired) &&
+                    ProviderFactsAreExact(owner, race, desiredHeritage,
+                        desiredTraits, desired) &&
+                    ProviderResourcesAreExact(owner, race,
+                        desiredHeritage, desired) &&
+                    InactiveAbilitiesAreAbsent(owner, race,
+                        desiredHeritage, desired);
             }
             catch (Exception exception)
             {
@@ -201,13 +317,18 @@ namespace KingmakerGunslinger.ElementalRaces
                 UnitPartElementalHeritageState state = owner.Ensure<
                     UnitPartElementalHeritageState>();
                 RememberCurrent(owner, blueprint.Heritages, state);
+                TryRemove(owner, blueprint.Resistance);
                 foreach (ElementalHeritageBlueprints choice in
                     blueprint.Heritages.Choices())
                 {
                     TryRemove(owner, choice.Affinity);
                     TryRemove(owner, choice.SlaFeature);
                     RemoveOwnedAbility(owner, choice.SlaAbility);
+                    RemoveOwnedResource(owner, choice, state);
                 }
+                foreach (BlueprintFeature provider in blueprint
+                    .AlternateTraits.OwnedProviders())
+                    TryRemove(owner, provider);
             }
             catch (Exception exception)
             {
@@ -251,6 +372,115 @@ namespace KingmakerGunslinger.ElementalRaces
             result = _blueprints.OrderedBlueprints().SingleOrDefault(value =>
                 ReferenceEquals(value.Race, race));
             return result != null;
+        }
+
+        private static Fact AddDesired(UnitDescriptor owner,
+            BlueprintFeature feature, ICollection<Fact> added)
+        {
+            if (owner.HasFact(feature)) return null;
+            Fact fact = owner.AddFact(feature);
+            if (fact != null) added.Add(fact);
+            return fact;
+        }
+
+        private static bool DesiredFactsArePresent(UnitDescriptor owner,
+            ElementalRaceBlueprints race,
+            ElementalHeritageBlueprints heritage,
+            IEnumerable<ElementalAlternateTraitBlueprints> traits,
+            ElementalAlternateTraitState desired)
+        {
+            bool resistance = desired.EnergyResistanceProviderSymbol == null ||
+                owner.HasFact(race.Resistance);
+            bool affinity = desired.ElementalAffinityProviderSymbol == null ||
+                owner.HasFact(heritage.Affinity);
+            bool sla = desired.RacialSlaFeatureSymbol == null ||
+                owner.HasFact(heritage.SlaFeature);
+            return resistance && affinity && sla && traits.All(value =>
+                owner.HasFact(value.Provider));
+        }
+
+        private static bool InactiveAbilitiesAreAbsent(UnitDescriptor owner,
+            ElementalRaceBlueprints race,
+            ElementalHeritageBlueprints heritage,
+            ElementalAlternateTraitState desired)
+        {
+            if (owner.Abilities == null) return false;
+            foreach (ElementalHeritageBlueprints choice in
+                race.Heritages.Choices())
+            {
+                bool present = owner.Abilities.GetAbility(
+                    choice.SlaAbility) != null;
+                bool expected = desired.RacialSlaFeatureSymbol != null &&
+                    ReferenceEquals(choice, heritage);
+                if (present != expected) return false;
+            }
+            return true;
+        }
+
+        private static bool ProviderFactsAreExact(UnitDescriptor owner,
+            ElementalRaceBlueprints race,
+            ElementalHeritageBlueprints heritage,
+            IEnumerable<ElementalAlternateTraitBlueprints> traits,
+            ElementalAlternateTraitState desired)
+        {
+            bool keepResistance =
+                desired.EnergyResistanceProviderSymbol != null;
+            if (owner.HasFact(race.Resistance) != keepResistance)
+                return false;
+            foreach (ElementalHeritageBlueprints choice in
+                race.Heritages.Choices())
+            {
+                bool keepAffinity =
+                    desired.ElementalAffinityProviderSymbol != null &&
+                    ReferenceEquals(choice, heritage);
+                bool keepSla = desired.RacialSlaFeatureSymbol != null &&
+                    ReferenceEquals(choice, heritage);
+                if (owner.HasFact(choice.Affinity) != keepAffinity ||
+                    owner.HasFact(choice.SlaFeature) != keepSla)
+                    return false;
+            }
+            BlueprintFeature[] desiredProviders = traits.Select(value =>
+                value.Provider).ToArray();
+            return race.AlternateTraits.Traits().All(value =>
+                owner.HasFact(value.Provider) ==
+                desiredProviders.Contains(value.Provider));
+        }
+
+        private static bool ProviderResourcesAreExact(UnitDescriptor owner,
+            ElementalRaceBlueprints race,
+            ElementalHeritageBlueprints heritage,
+            ElementalAlternateTraitState desired)
+        {
+            if (owner.Resources == null) return false;
+            foreach (ElementalHeritageBlueprints choice in
+                race.Heritages.Choices())
+            {
+                int expected = desired.RacialSlaFeatureSymbol != null &&
+                    ReferenceEquals(choice, heritage) ? 1 : 0;
+                if (owner.Resources.PersistantResources.Count(value =>
+                    value != null && ReferenceEquals(value.Blueprint,
+                        choice.SlaResource)) != expected) return false;
+            }
+            return true;
+        }
+
+        private static void RemoveOwnedResource(UnitDescriptor owner,
+            ElementalHeritageBlueprints choice,
+            UnitPartElementalHeritageState state)
+        {
+            if (owner.Resources == null || !owner.Resources
+                .PersistantResources.Any(value => value != null &&
+                    ReferenceEquals(value.Blueprint, choice.SlaResource)))
+                return;
+            // Native late activation can leave a resource after its owning
+            // fact has already been removed. Keep any previous spent amount;
+            // an orphan's freshly restored amount must not overwrite it.
+            int remembered;
+            if (!state.TryRecall(choice.SlaResource.AssetGuid,
+                    out remembered))
+                state.Remember(choice.SlaResource.AssetGuid,
+                    owner.Resources.GetResourceAmount(choice.SlaResource));
+            owner.Resources.Remove(choice.SlaResource);
         }
 
         private static void RememberCurrent(UnitDescriptor owner,

@@ -543,7 +543,9 @@ namespace KingmakerGunslinger.ElementalRaces
             parameters.SpellLevel = definition.SpellLevel;
             result.ComponentsArray = new BlueprintComponent[]
             {
-                facts, add, parameters
+                facts, add, parameters,
+                ScriptableObject.CreateInstance<
+                    ElementalOwnedProviderController>()
             };
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create(LocalizationKey(definition,

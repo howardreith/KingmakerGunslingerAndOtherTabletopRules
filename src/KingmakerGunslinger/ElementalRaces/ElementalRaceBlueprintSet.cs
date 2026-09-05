@@ -15,7 +15,8 @@ namespace KingmakerGunslinger.ElementalRaces
             BlueprintFeature affinity, BlueprintFeature slaFeature,
             BlueprintAbilityResource slaResource, BlueprintAbility slaAbility,
             ElementalRaceVisualBlueprints visuals,
-            ElementalHeritageRaceBlueprints heritages)
+            ElementalHeritageRaceBlueprints heritages,
+            ElementalAlternateTraitRaceBlueprints alternateTraits)
         {
             Definition = definition ?? throw new ArgumentNullException("definition");
             Race = race ?? throw new ArgumentNullException("race");
@@ -27,6 +28,8 @@ namespace KingmakerGunslinger.ElementalRaces
             Visuals = visuals ?? throw new ArgumentNullException("visuals");
             Heritages = heritages ?? throw new ArgumentNullException(
                 "heritages");
+            AlternateTraits = alternateTraits ?? throw new ArgumentNullException(
+                "alternateTraits");
         }
 
         internal ElementalRaceDefinition Definition { get; private set; }
@@ -39,9 +42,15 @@ namespace KingmakerGunslinger.ElementalRaces
         internal ElementalRaceVisualBlueprints Visuals { get; private set; }
         internal ElementalHeritageRaceBlueprints Heritages
         { get; private set; }
+        internal ElementalAlternateTraitRaceBlueprints AlternateTraits
+        { get; private set; }
         internal int Count
         {
-            get { return 6 + Visuals.BlueprintCount + Heritages.RegisteredCount; }
+            get
+            {
+                return 6 + Visuals.BlueprintCount +
+                    Heritages.RegisteredCount + AlternateTraits.RegisteredCount;
+            }
         }
     }
 

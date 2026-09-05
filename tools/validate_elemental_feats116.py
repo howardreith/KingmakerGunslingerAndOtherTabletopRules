@@ -136,7 +136,7 @@ def validate(root: Path) -> None:
     expected = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
         "featIdentityCount": 25,
-        "activeElementalIdentityCount": 146,
+        "activeElementalIdentityCount": ELEMENTAL_ACTIVE,
         "elementalFeatCount": 11,
         "combatFeatCount": 4,
         "moduleSchemaChanged": False,
