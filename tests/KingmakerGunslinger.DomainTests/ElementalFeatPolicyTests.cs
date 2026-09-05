@@ -305,6 +305,33 @@ namespace KingmakerGunslinger.DomainTests
                 ElementalFeatPolicy.FiresightIgnores(
                     ElementalConcealmentFamily.Invisibility),
                 "Firesight must not become blanket concealment immunity.");
+            string[] firesightNative = ElementalFeatPolicy
+                .ExactNativeFiresightConcealmentGuids();
+            Assertions.Equal(0, firesightNative.Length,
+                "The guarded Kingmaker 2.1.7b library has no native fire/smoke AddConcealment provider.");
+            Assertions.False(ElementalFeatPolicy
+                    .IsExactNativeFiresightConcealmentGuid(
+                        "61b312b8f91cc48418768b77cd6dcc02") ||
+                ElementalFeatPolicy
+                    .IsExactNativeFiresightConcealmentGuid(
+                        "dd3ad347240624d46a11a092b4dd4674") ||
+                ElementalFeatPolicy
+                    .IsExactNativeFiresightConcealmentGuid(
+                        "00402bae4442a854081264e498e7a833"),
+                "Fog, Blur, and displacement must remain outside Firesight's exact native catalog.");
+            Assertions.True(ElementalFeatPolicy.FiresightCanBypass(
+                    true, true, true, true, false, 1, 0),
+                "One exact fire/smoke source may bypass its failed concealment check.");
+            Assertions.False(ElementalFeatPolicy.FiresightCanBypass(
+                    true, true, true, true, false, 1, 1),
+                "Any concurrent unrelated concealment must fail closed.");
+            Assertions.False(ElementalFeatPolicy.FiresightCanBypass(
+                    true, true, true, false, false, 1, 0) ||
+                ElementalFeatPolicy.FiresightCanBypass(
+                    true, true, true, true, true, 1, 0) ||
+                ElementalFeatPolicy.FiresightCanBypass(
+                    false, true, true, true, false, 1, 0),
+                "Firesight must preserve blindness/darkness, invisibility, and native successful checks.");
             Assertions.True(ElementalFeatPolicy.CloudGazerIgnores(
                     ElementalConcealmentFamily.FogMistOrCloud),
                 "Cloud Gazer must ignore its exact environmental family.");
@@ -326,6 +353,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ElementalFeatPolicy.BlazingAuraAffectsTurnStart(
                     true, false, true),
                 "Aura damage must not trigger outside creature-turn start.");
+            Assertions.True(ElementalFeatPolicy.BlazingAuraIsAdjacent(
+                    2.52431d, 0.5d, 0.5d),
+                "Exactly five edge-feet plus native tolerance must be adjacent.");
+            Assertions.False(ElementalFeatPolicy.BlazingAuraIsAdjacent(
+                    2.52432d, 0.5d, 0.5d) ||
+                ElementalFeatPolicy.BlazingAuraIsAdjacent(
+                    double.NaN, 0.5d, 0.5d),
+                "Beyond the exact edge threshold and invalid geometry must fail closed.");
             ElementalFeatEventLedger ledger = new ElementalFeatEventLedger();
             Assertions.True(ledger.TryClaim("aura", "friendly-turn-12"),
                 "The first friendly creature turn-start must qualify.");

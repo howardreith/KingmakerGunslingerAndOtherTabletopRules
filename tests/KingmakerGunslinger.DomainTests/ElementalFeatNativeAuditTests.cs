@@ -32,6 +32,9 @@ namespace KingmakerGunslinger.DomainTests
                 "ContextActionSpawnMonster",
                 "WeaponEnergyDamageDice",
                 "AddConcealment",
+                "\"invisibility\"",
+                "\"mirror image\"",
+                "\"darkness\"",
                 "ExactBlueprintContracts",
                 "FormatContract(",
                 "70cffb448c132fa409e49156d013b175",
@@ -90,12 +93,18 @@ namespace KingmakerGunslinger.DomainTests
         {
             string mechanics = Read("src", "KingmakerGunslinger",
                 "ElementalRaces", "ElementalFeatRuleComponents.cs");
+            string advanced = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalIfritAdvancedFeatMechanics.cs");
             string factory = Read("src", "KingmakerGunslinger",
                 "ElementalRaces", "ElementalFeatBlueprintFactory.cs");
+            string blueprintSet = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalFeatBlueprintSet.cs");
             string scenario = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalFeatMechanicsScenario.cs");
             string ifritScenario = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalIfritFeatScenario.cs");
+            string advancedScenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalIfritAdvancedFeatScenario.cs");
             string catalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -127,8 +136,38 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(mechanics.Contains(token),
                     "Elemental Feat runtime mechanics are missing boundary " +
                     token + ".");
-            Assertions.False(mechanics.Contains("HarmonyPatch"),
-                "The first Elemental Feat mechanics slice must not introduce a global patch.");
+            foreach (string token in new[]
+            {
+                "ElementalBlazingAuraAbilityLogic",
+                "IAbilityAvailabilityProvider",
+                "ScorchingWeaponsMarker",
+                "IsOwnersTurn(caster)",
+                "ConditionalWeakTable<object, object>",
+                "RuleDealDamage(owner, creature",
+                "DamageEnergyType.Fire",
+                "[HarmonyPatch(typeof(TurnController), \"Prepare\"",
+                "ElementalFiresightConcealmentSource",
+                "ElementalFiresightConcealmentKind.Smoke",
+                "Rulebook.CurrentContext",
+                "ReferenceEquals(attack.ConcealmentCheck, check)",
+                "NativeInvisibilityComponent",
+                "UnitCondition.Blindness",
+                "[HarmonyPatch(typeof(RuleConcealmentCheck), \"get_Success\")]",
+                "Fail closed"
+            })
+                Assertions.True(advanced.Contains(token),
+                    "Advanced Ifrit mechanics are missing narrow runtime boundary " +
+                    token + ".");
+            Assertions.False(advanced.Contains("RaceId.Aasimar") ||
+                advanced.Contains("BlueprintsCache.Init") ||
+                advanced.Contains("HarmonyPatch(typeof(UnitDescriptor)"),
+                "Advanced Ifrit mechanics must not introduce a global race, cache, or unit patch.");
+            Assertions.True(advanced.Contains(
+                    "blueprints.RequireSymbol<BlueprintBuff>(") &&
+                blueprintSet.Contains("m_BlueprintsBySymbol") &&
+                blueprintSet.Contains("RequireSymbol<T>(string symbol)") &&
+                blueprintSet.Contains("symbol.Replace('.', '_')"),
+                "Runtime feat mechanics must resolve stable manifest symbols through the validated symbol index, not pass them to the GUID index.");
             foreach (string token in new[]
             {
                 "ConfigureElementalStrike(strikeBuff, races)",
@@ -137,7 +176,10 @@ namespace KingmakerGunslinger.DomainTests
                 "AddConditionImmunity",
                 "BuffDescriptorImmunity",
                 "ConfigureWingsFeature",
-                "ConfigureScorchingWeapons"
+                "ConfigureScorchingWeapons",
+                "ConfigureBlazingAura",
+                "ConfigureFiresight",
+                "UnitCondition.Dazzled"
             })
                 Assertions.True(factory.Contains(token),
                     "Elemental Feat factory wiring is missing " + token + ".");
@@ -180,6 +222,39 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(ifritScenario.Contains(token),
                     "Dedicated Ifrit feat scenario is missing live boundary " +
                     token + ".");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility",
+                "ElementalBlazingAuraRuntime",
+                "HandleCreatureTurnStarted",
+                "RuleDealDamage[]",
+                "DamageEnergyType.Fire",
+                "RuleAttackRoll",
+                "RuleConcealmentCheck",
+                "SeekingConcealmentRuntime.QueueForcedRoll",
+                "context.Harmony.GetPatchInfo(getter)",
+                "typeof(ElementalFiresightConcealmentPatch)",
+                "typeof(SeekingConcealmentSuccessPatch)",
+                "new RuleAttackRoll(attacker, target, weapon, -100)",
+                "AcProbeConcealmentRoll == 100",
+                "AcProbeAttackRoll +",
+                "AcProbeAttackBonus >= AcProbeTargetAc",
+                "SeekingConcealmentRuntime.QueueForcedRoll(weapon, 100)",
+                "ReachedIndependentDefense(\"MirrorImage\")",
+                "roll.TargetAC",
+                "firesight-attack-roll-isolation",
+                "ElementalFiresightConcealmentSource",
+                "InvisibilityGuid",
+                "MirrorImageGuid",
+                "BlindnessGuid",
+                "DarknessGuid",
+                "DazzledGuid",
+                "SaveStateTouched = false",
+                "Game.Instance.State.Units.All.Remove(unit)"
+            })
+                Assertions.True(advancedScenario.Contains(token),
+                    "Dedicated advanced Ifrit scenario is missing live boundary " +
+                    token + ".");
             foreach (string source in new[]
             {
                 catalog, automation, preflight, compatibility
@@ -194,6 +269,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(
                         "disposable-elemental-ifrit-feats"),
                     "Ifrit feat mechanics are outside a guarded allowlist.");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-ifrit-advanced-feats"),
+                    "Advanced Ifrit feat mechanics are outside a guarded allowlist.");
             Assertions.True(runner.Contains(
                     ".DisposableElementalFeatMechanics") &&
                 runner.Contains("ElementalFeatMechanicsScenario.Run("),
@@ -202,6 +284,10 @@ namespace KingmakerGunslinger.DomainTests
                     ".DisposableElementalIfritFeats") &&
                 runner.Contains("ElementalIfritFeatScenario.Run("),
                 "Ifrit feat mechanics are outside constant-based dispatch.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalIfritAdvancedFeats") &&
+                runner.Contains("ElementalIfritAdvancedFeatScenario.Run("),
+                "Advanced Ifrit mechanics are outside constant-based dispatch.");
             Assertions.Equal(2,
                 catalog.Split(new[] { "DisposableElementalFeatMechanics" },
                     StringSplitOptions.None).Length - 1,
@@ -212,10 +298,19 @@ namespace KingmakerGunslinger.DomainTests
                     StringSplitOptions.None).Length - 1,
                 "Ifrit feat mechanics must have one constant declaration and " +
                 "one executable catalog entry.");
+            Assertions.Equal(2,
+                catalog.Split(new[] {
+                    "DisposableElementalIfritAdvancedFeats" },
+                    StringSplitOptions.None).Length - 1,
+                "Advanced Ifrit mechanics must have one constant declaration " +
+                "and one executable catalog entry.");
             Assertions.True(project.Contains(
                     "ElementalFeatRuleComponents.cs") &&
+                project.Contains(
+                    "ElementalIfritAdvancedFeatMechanics.cs") &&
                 project.Contains("ElementalFeatMechanicsScenario.cs") &&
-                project.Contains("ElementalIfritFeatScenario.cs"),
+                project.Contains("ElementalIfritFeatScenario.cs") &&
+                project.Contains("ElementalIfritAdvancedFeatScenario.cs"),
                 "Elemental Feat mechanics or scenario is outside the build.");
         }
     }

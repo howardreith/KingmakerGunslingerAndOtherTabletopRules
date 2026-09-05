@@ -210,6 +210,20 @@ namespace KingmakerGunslinger.ElementalRaces
             new HashSet<string>(s_ExactNativeLightSpellGuids,
                 StringComparer.Ordinal);
 
+        // The guarded KMG-only 2.1.7b inventory contains eight native
+        // AddConcealment providers, all belonging to Blur, displacement,
+        // fog, or invisibility-like families. None is semantically fire or
+        // smoke, so Firesight's exact native catalog is deliberately empty.
+        // Evidence: run 20260904T2317154768917Z, native-audit SHA-256
+        // 87a873194fdf449f401ebefdf7426212df81d5ef6669cb6197a0bec6e6acb139.
+        private static readonly string[] s_ExactNativeFiresightConcealmentGuids =
+            new string[0];
+
+        private static readonly HashSet<string>
+            s_ExactNativeFiresightConcealmentSet = new HashSet<string>(
+                s_ExactNativeFiresightConcealmentGuids,
+                StringComparer.Ordinal);
+
         internal const int FeatCount = 11;
 
         private static readonly ElementalHydraulicManeuver[]
@@ -377,6 +391,21 @@ namespace KingmakerGunslinger.ElementalRaces
                 creatureIsAdjacent;
         }
 
+        internal static bool BlazingAuraIsAdjacent(double centerDistance,
+            double ownerCorpulence, double creatureCorpulence)
+        {
+            if (double.IsNaN(centerDistance) ||
+                double.IsInfinity(centerDistance) || centerDistance < 0d ||
+                double.IsNaN(ownerCorpulence) || ownerCorpulence < 0d ||
+                double.IsNaN(creatureCorpulence) || creatureCorpulence < 0d)
+                return false;
+            const double fiveFeetMeters = 1.524d;
+            const double toleranceMeters = 0.00031d;
+            double edgeDistance = Math.Max(0d, centerDistance -
+                ownerCorpulence - creatureCorpulence);
+            return edgeDistance <= fiveFeetMeters + toleranceMeters;
+        }
+
         internal static int AiryStepSaveBonus(bool hasAiryStep,
             bool hasWingsOfAir, bool hasAirDescriptor,
             bool hasElectricityDescriptor, bool dealsElectricityDamage)
@@ -398,6 +427,31 @@ namespace KingmakerGunslinger.ElementalRaces
         {
             return source == ElementalConcealmentFamily.Fire ||
                 source == ElementalConcealmentFamily.Smoke;
+        }
+
+        internal static string[] ExactNativeFiresightConcealmentGuids()
+        {
+            return (string[])s_ExactNativeFiresightConcealmentGuids.Clone();
+        }
+
+        internal static bool IsExactNativeFiresightConcealmentGuid(
+            string guid)
+        {
+            return !string.IsNullOrEmpty(guid) &&
+                s_ExactNativeFiresightConcealmentSet.Contains(guid);
+        }
+
+        internal static bool FiresightCanBypass(bool nativeCheckFailed,
+            bool exactParentAttackCheck, bool attackerHasFiresight,
+            bool attackerCanSee, bool targetHasInvisibility,
+            int qualifyingConcealmentSources,
+            int unrelatedConcealmentSources)
+        {
+            return nativeCheckFailed && exactParentAttackCheck &&
+                attackerHasFiresight && attackerCanSee &&
+                !targetHasInvisibility &&
+                qualifyingConcealmentSources > 0 &&
+                unrelatedConcealmentSources == 0;
         }
 
         internal static bool CloudGazerIgnores(

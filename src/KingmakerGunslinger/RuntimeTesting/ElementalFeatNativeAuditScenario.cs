@@ -54,6 +54,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             "wing", "flight", "flying", "air elemental",
             "fog", "mist", "smoke", "cloud", "incendiary",
+            "blur", "displacement", "invisibility", "mirror image",
+            "darkness", "blindness", "dazzle",
             "inhaled", "breath", "gas", "poison", "ray",
             "light", "searinglight", "sunbeam", "sunburst", "daylight",
             "flare"

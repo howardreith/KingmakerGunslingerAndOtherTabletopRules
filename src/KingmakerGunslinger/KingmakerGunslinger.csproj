@@ -939,6 +939,7 @@
     <Compile Include="RuntimeTesting\ElementalFeatNativeAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalFeatMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalIfritFeatScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalIfritAdvancedFeatScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageBlueprintScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageSlaScenario.cs" />
@@ -955,6 +956,7 @@
     <Compile Include="ElementalRaces\ElementalFeatPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalFeatBlueprintSet.cs" />
     <Compile Include="ElementalRaces\ElementalFeatRuleComponents.cs" />
+    <Compile Include="ElementalRaces\ElementalIfritAdvancedFeatMechanics.cs" />
     <Compile Include="ElementalRaces\ElementalFeatBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalFeatPublication.cs" />
     <Compile Include="ElementalRaces\ElementalHeritagePersistenceMatrixPolicy.cs" />

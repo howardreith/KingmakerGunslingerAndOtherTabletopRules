@@ -48,6 +48,7 @@ $expected = @(
     'observe-elemental-feat-native-contracts',
     'disposable-elemental-feat-mechanics',
     'disposable-elemental-ifrit-feats',
+    'disposable-elemental-ifrit-advanced-feats',
     'observe-elemental-heritage-blueprints',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',
