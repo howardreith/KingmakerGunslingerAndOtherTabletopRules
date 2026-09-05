@@ -16,7 +16,7 @@
   "status": {
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "MECHANICS-SLICE-1-PASS-REMAINING-FEATS-IN-PROGRESS",
+    "releaseB": "MECHANICS-SLICES-1-THROUGH-3-PASS-REMAINING-FEATS-IN-PROGRESS",
     "releaseC": "NOT-STARTED"
   },
   "foundationProgress": {
@@ -52,7 +52,7 @@
     "pureBehaviorPolicy": "IMPLEMENTED-TESTED (catalog, exact prerequisites, level breakpoints, race energies, attack boundaries, event deduplication, weapon snapshot/nonstacking, save-bonus replacement, maneuver/summon formulas, armor gating, vision and respiration boundaries)",
     "dirtyTrick": "NATIVE-BLIND-PATH-AVAILABLE; DAZZLE-OMITTED",
     "flightAbstraction": "IMPLEMENTED-RUNTIME-PASS (exact base Owlcat draconic Wings contract; no/light armor only; no optional-mod components)",
-    "concealmentCatalog": "BASE-INVENTORY-LOCKED; SOURCE-SPECIFIC-GUID-REQUIRED",
+    "concealmentCatalog": "IMPLEMENTED-RUNTIME-PASS (isolated KMG-only inventory has zero native fire/smoke AddConcealment providers; exact project semantic markers only; native Blur, displacement, fog, invisibility, darkness, blindness, and Mirror Image excluded)",
     "lightSpellCatalog": "IMPLEMENTED-TESTED (Kingmaker exposes no Light SpellDescriptor; seven exact native Spell GUIDs from isolated KMG-only audit; spell-only and immutable)",
     "waterElementalSummon": "EXACT-NATIVE-DONOR-LOCKED",
     "fireEnchantmentCatalog": "IMPLEMENTED-RUNTIME-PASS (exact native Flaming identity and component contract)",
@@ -64,9 +64,11 @@
     "elementalStrike": "IMPLEMENTED-RUNTIME-PASS (Swift command, one-round buff, all four exact race energies, levels 1/5/10/15/20, exact flat packets, one event application, native resistance, spell and unrelated damage exclusions)",
     "scorchingWeapons": "IMPLEMENTED-RUNTIME-PASS (Swift command; exact two-held manufactured-metal snapshot; one round; unequip/swap safe; +1 fire once; native resistance; existing fire weapon effect nonstacking; exact +2 Racial save bonus)",
     "innerFlame": "IMPLEMENTED-RUNTIME-PASS (level-7 prerequisite already tested; Scorching damage replaced by 1d6 and save bonus replaced by +4 total; grapple clause remains explicit no-op)",
+    "blazingAura": "IMPLEMENTED-RUNTIME-PASS (native free-action command while Scorching Weapons is active; one-round aura; friendly adjacent creature turn-start; one 1d6 Fire rule; exact turn-controller identity deduplication; native resistance)",
+    "firesight": "IMPLEMENTED-RUNTIME-PASS (native Dazzled immunity; exact project Fire/Smoke concealment markers; no native catalog entries because the isolated base library exposes none; native Blur, displacement, Obscuring Mist, invisibility, darkness, blindness, and Mirror Image remain effective)",
     "wingsOfAir": "IMPLEMENTED-RUNTIME-PASS (+3 Dodge AC versus melee and +0 ranged; exact native terrain/Ground contract; no prone immunity; live no/light/medium armor removal and restoration)",
-    "mechanicsRuntime": "PASS-SLICES-1-AND-2 (16/16 plus 12/12 assertions; save-free exact cleanup; remaining Release B mechanics not yet qualified)",
-    "implementation": "MECHANICS-SLICES-1-AND-2-PASS; REMAINING-GAMEPLAY-MECHANICS-IN-PROGRESS"
+    "mechanicsRuntime": "PASS-SLICES-1-THROUGH-3 (16/16 plus 12/12 plus 14/14 assertions; save-free exact cleanup; remaining Release B mechanics not yet qualified)",
+    "implementation": "MECHANICS-SLICES-1-THROUGH-3-PASS; REMAINING-GAMEPLAY-MECHANICS-IN-PROGRESS"
   },
   "releaseBNativeAudit": {
     "status": "PASS",
@@ -251,6 +253,53 @@
       "compat-20260904T220030Z-f34b903063e1 disk-full package expansion before game launch; exact restoration verified",
       "20260904T2203354720562Z-7cb0710d200147afb4e0b498244fadce 10/12 mechanics assertions; save fixture incorrectly made the non-owner target initiate RuleSavingThrow; post-run wrapper also found the deleted reproducible validator executable; exact restoration verified",
       "compat-20260904T221412Z-3e21f69efe75 stale artifact correctly rejected before launch after the fixture source changed; exact restoration verified"
+    ]
+  },
+  "releaseBAdvancedIfritMechanicsSlice": {
+    "status": "PASS",
+    "releaseStatus": "NOT-A-RELEASE-B-PASS",
+    "scenario": "disposable-elemental-ifrit-advanced-feats",
+    "isolatedProfile": "gunslinger-only",
+    "runId": "20260905T0137340360592Z-e5da1d69116a4fd1837b7ae385ed7bd9",
+    "assertions": 14,
+    "warnings": 0,
+    "durationMilliseconds": 59227,
+    "saveStateTouched": false,
+    "cleanupExact": true,
+    "runtimeResultSha256": "18c16298da519e1558115eaf782090776ee0722256b0314a6baa659ed0cda6c7",
+    "mechanicsEvidenceSha256": "9f3c3c1cf60c7a0611747025a9627f4875cda02f42b6f706f262671c4c662abf",
+    "runtimeEvidenceSha256": "03624f0345142a31e84e419f9edf080d4d445e320b6497b171c7e110bc792a69",
+    "compatibilityAttributionSha256": "2c3de4bc0c8ffdb1dd398e1d6f73a87553e677c2ad625e70a42ebeb906b24cad",
+    "compatibilityTransactionId": "compat-20260905T013712Z-0ff1234a1add",
+    "compatibilityTransactionStatus": "Restored",
+    "compatibilityRestorationVerified": true,
+    "compatibilityTransactionSha256": "605fe28bfa01b0ec13d866c0bd95fd7848e9c02f9fccfac925efa4934e4e4b8c",
+    "deploymentManifest": "20260905T0136373727562Z",
+    "deploymentManifestSha256": "6ae31813e063f45806f625309b7faea0b6376b8495a538cff837874ed4c45c78",
+    "sourceBaselineCommit": "0fddd8a6793be7f38c3fbcd33f49c1a493e6488c",
+    "sourceStateSha256": "c5e05a4a0fc3ee4c0ae57fd313e0e076ae4e00ecb8b8e0949fd3805d7cfd2738",
+    "package": "KingmakerGunslinger-0.0.116-local-runtime.zip",
+    "packageSize": 23101096,
+    "packageEntries": 135,
+    "packageSha256": "d9f994b53d32118c344f08d75bcc363a7cd1f65afbc5ecbb7be30d21ccadd4a5",
+    "dllSize": 5817344,
+    "dllSha256": "ab72a132295ed802e5e8581e073b243af3610d996c43fceb70f6e4e0dc78c92b",
+    "dllMvid": "44463f82-dd81-4db6-93e9-c089972efd49",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1408/1408)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS (strict standalone, 135 entries)",
+    "blazingAura": "PASS for canceled versus accepted native free-action command, exact Ifrit/Scorching prerequisites, one six-second marker, friendly adjacency, one 1d6 Fire rule, exact-turn replay deduplication, self/far exclusion, and native fire resistance",
+    "firesight": "PASS for native Dazzled immunity and exact project Smoke/Fire concealment bypass; project fog, native Blur/displacement/Obscuring Mist, concurrent Blur, invisibility, blindness, darkness, and Mirror Image remain effective; every case has a forced-success native AC control",
+    "nativeConcealmentAudit": "KMG-only run directory 20260904T2317154768917Z-observe-elemental-feat-native-contracts; 83,023 blueprints; eight AddConcealment sources and zero semantic fire/smoke sources; audit SHA-256 87a873194fdf449f401ebefdf7426212df81d5ef6669cb6197a0bec6e6acb139",
+    "checkpointCommit": "7aee2740f7c08f0f9eec1b3efee4eff8e526ce51",
+    "checkpointPush": "BLOCKED-EXTERNAL-ALLOWLIST",
+    "diagnosticRuns": [
+      "20260905T0004352121409Z-55c242827ff94be19dbcb42d0d691231 initial mixed aura/Firesight fixture failures",
+      "20260905T0021311975683Z-51d37c21507d48eb8638ca0e2b6601de and 20260905T0024485341188Z-65e83ff303e340e684d03fd6cc37eba5 narrowed Firesight context failures",
+      "20260905T0032020386004Z-820e62f3a4c94907a39da8e2cc99577d showed project bypass fixture failure with aura and exclusions passing",
+      "20260905T0105520064317Z-365cb597a83e47259c4f2f1d75efc37f diagnostic instrumentation proved the production Firesight predicate returned true; fixture used an attack penalty with the wrong sign and reread Success outside the active parent context",
+      "20260905T0121503875951Z-1e3ab268238f490bb95566b1f6d0bcd6 proved project Fire/Smoke hits and all exclusions but exposed native concealment short-circuit defaults in the AC-isolation assertion"
     ]
   },
   "baselineGates": {
@@ -934,9 +983,39 @@
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     },
     {
+      "sha": "84e36dd13229195fb984d50508b30f28e458c7b1",
+      "subject": "Record Elemental Feat blueprint checkpoint",
+      "checkpoint": "release-b-identity-publication-record",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
       "sha": "bacc7a0da6400fa4538db6092ee29f3ae28bd514",
       "subject": "Implement Elemental Strike and Wings of Air",
       "checkpoint": "release-b-mechanics-slice-1",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "4adb34cc72e4a8ac7ccb0b5313f329a9a2f0f8fa",
+      "subject": "Record Elemental Feat mechanics checkpoint",
+      "checkpoint": "release-b-mechanics-slice-1-record",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "768d8c94a4ec6658b71085fb0446243dae2d8d66",
+      "subject": "Implement Scorching Weapons and Inner Flame",
+      "checkpoint": "release-b-mechanics-slice-2",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "0fddd8a6793be7f38c3fbcd33f49c1a493e6488c",
+      "subject": "Record Ifrit feat checkpoint publication status",
+      "checkpoint": "release-b-mechanics-slice-2-record",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "7aee2740f7c08f0f9eec1b3efee4eff8e526ce51",
+      "subject": "Implement Blazing Aura and Firesight",
+      "checkpoint": "release-b-mechanics-slice-3",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],

@@ -1132,3 +1132,99 @@ and the first focused mechanical group from the now-qualified native contracts.
   exact mandated push wrapper was run immediately and again refused the
   required branch because the external allowlist omits
   `codex/elemental-races-expansion`; no bypass was attempted.
+
+## 2026-09-04 - Release B mechanics slice 3 runtime PASS
+
+- Expanded the isolated KMG-only native audit with Blur, displacement,
+  invisibility, Mirror Image, darkness, blindness, and dazzled candidates.
+  Run directory
+  `20260904T2317154768917Z-observe-elemental-feat-native-contracts` passed and
+  inventoried 83,023 blueprints. Its eight `AddConcealment` providers belong
+  to Blur, displacement, fog, or invisibility-like families; none is
+  semantically fire or smoke. Firesight's immutable native GUID catalog is
+  therefore deliberately empty. The native-audit evidence SHA-256 is
+  `87a873194fdf449f401ebefdf7426212df81d5ef6669cb6197a0bec6e6acb139`.
+- Implemented Blazing Aura as a native Free custom-delivery command gated by
+  exact Ifrit identity, the live Scorching Weapons marker, absence of an
+  existing aura, and the owner's turn when turn-based combat is active. The
+  accepted command adds one six-second owned marker. A narrow
+  `TurnController.Prepare` postfix delegates to a feature-specific handler;
+  exact controller-object identity is claimed through a weak table so one
+  creature turn cannot trigger twice. The handler uses edge-to-edge five-foot
+  adjacency, intentionally includes friendly creatures, excludes the owner,
+  and emits one ordinary `RuleDealDamage` containing 1d6 Fire. Native fire
+  resistance and immunity remain authoritative.
+- Implemented Firesight with native `Dazzled` condition immunity and a narrow
+  postfix on `RuleConcealmentCheck.Success`. It requires the exact active
+  parent `RuleAttackRoll`, exact Firesight fact, ordinary sight, no target
+  invisibility, one or more exact qualifying sources, and zero unrelated
+  concealment sources. Project-owned fire/smoke effects opt in through an
+  explicit semantic component; names, visuals, descriptors, foreign facts,
+  and approximate GUIDs are never inferred. Blur, displacement, Obscuring
+  Mist, project fog, invisibility, blindness, darkness, concurrent unrelated
+  concealment, and Mirror Image remain effective.
+- Added save-free scenario
+  `disposable-elemental-ifrit-advanced-feats`. It uses the actual native
+  `UnitUseAbility`, `RuleAttackRoll`, `RuleConcealmentCheck`,
+  `RuleDealDamage`, native condition-immunity, and exact request-local teardown
+  paths. Aura damage is exercised through the production turn-start handler
+  with a unique controller-equivalent identity; the final Release B integrated
+  gate will retain a separate check of the Harmony target because this slice
+  does not construct a live campaign `TurnController`.
+- Diagnostic failures remain preserved. Runs
+  `20260905T0004352121409Z-55c242827ff94be19dbcb42d0d691231`,
+  `20260905T0021311975683Z-51d37c21507d48eb8638ca0e2b6601de`,
+  `20260905T0024485341188Z-65e83ff303e340e684d03fd6cc37eba5`, and
+  `20260905T0032020386004Z-820e62f3a4c94907a39da8e2cc99577d`
+  progressively narrowed request-fixture defects. Diagnostic run
+  `20260905T0105520064317Z-365cb597a83e47259c4f2f1d75efc37f`
+  proved the production predicate returned true for exact project Smoke and
+  Fire: the fixture had passed the attack-penalty constructor argument with
+  the wrong sign and then reread `Success` after its parent rule context had
+  ended. Run
+  `20260905T0121503875951Z-1e3ab268238f490bb95566b1f6d0bcd6`
+  proved both project hits and all intended misses but exposed another fixture
+  assumption: native concealment failures short-circuit before attack fields
+  are populated. A second otherwise identical forced-success control now
+  proves a roll of 19 plus 120 against AC 6 for every case; Mirror Image is
+  proven by the independent native `MirrorImage` attack result.
+- Final isolated exact-artifact run
+  `20260905T0137340360592Z-e5da1d69116a4fd1837b7ae385ed7bd9`
+  passed 14/14 in 59,227 ms with zero warnings, no save access, automatic exit,
+  and exact request-local cleanup. It proves canceled versus accepted aura
+  commands, one-round duration, friendly adjacency, turn-identity dedupe,
+  self/far exclusion, ordinary resistance, exact project Fire/Smoke bypass,
+  every required native exclusion, independent Mirror Image, and Dazzled
+  immunity. Runtime-result, feature-evidence, runtime-evidence, and
+  compatibility-attribution SHA-256 values are respectively
+  `18c16298da519e1558115eaf782090776ee0722256b0314a6baa659ed0cda6c7`,
+  `9f3c3c1cf60c7a0611747025a9627f4875cda02f42b6f706f262671c4c662abf`,
+  `03624f0345142a31e84e419f9edf080d4d445e320b6497b171c7e110bc792a69`,
+  and `2c3de4bc0c8ffdb1dd398e1d6f73a87553e677c2ad625e70a42ebeb906b24cad`.
+  The collector announced an `evidence-manifest.json` path but no such file
+  remained on disk; no hash or PASS claim is attributed to that absent file.
+- Repository validation and all 1,408/1,408 domain/reflection cases passed.
+  The exact-reference Release build and strict 135-entry package validation
+  passed. The 23,101,096-byte package hashes to
+  `d9f994b53d32118c344f08d75bcc363a7cd1f65afbc5ecbb7be30d21ccadd4a5`;
+  its 5,817,344-byte DLL hashes to
+  `ab72a132295ed802e5e8581e073b243af3610d996c43fceb70f6e4e0dc78c92b`
+  with MVID `44463f82-dd81-4db6-93e9-c089972efd49`. Source-state SHA-256 is
+  `c5e05a4a0fc3ee4c0ae57fd313e0e076ae4e00ecb8b8e0949fd3805d7cfd2738`;
+  deployment-manifest SHA-256 is
+  `6ae31813e063f45806f625309b7faea0b6376b8495a538cff837874ed4c45c78`.
+- Compatibility transaction `compat-20260905T013712Z-0ff1234a1add` finished
+  `Restored` with verification true. Its transaction SHA-256 is
+  `605fe28bfa01b0ec13d866c0bd95fd7848e9c02f9fccfac925efa4934e4e4b8c`;
+  `FeatureModules.json` returned to exact SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+  Only the verified-restored expanded-package scratch copy was removed afterward
+  (30,351,736 bytes); all transactions, evidence, backups, saves, and
+  deployment manifests were retained.
+- Commit `7aee2740f7c08f0f9eec1b3efee4eff8e526ce51` records this slice. The exact
+  mandated push wrapper immediately refused the required branch because its
+  external allowlist still omits `codex/elemental-races-expansion`; no bypass
+  was attempted.
+- This is not a Release B PASS. Airy Step, Cloud Gazer, Inner Breath,
+  Hydraulic Maneuver, Triton Portal, feat-bearing persistence, the complete
+  compatibility matrix, and final 0.0.116 gates remain pending.

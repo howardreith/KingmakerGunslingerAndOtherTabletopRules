@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through Release B Ifrit-mechanics commit
-  `768d8c94a4ec6658b71085fb0446243dae2d8d66` cannot currently be pushed.
+- Local checkpoints through Release B advanced-Ifrit mechanics commit
+  `7aee2740f7c08f0f9eec1b3efee4eff8e526ce51` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
@@ -46,6 +46,13 @@ the mission's hard-stop contract; independent work continues.
 
 ## Resolved Release B mechanics findings
 
+- The isolated Kingmaker 2.1.7b inventory exposes eight native
+  `AddConcealment` sources but none that is semantically fire or smoke.
+  Firesight therefore has no native GUID catalog entries and accepts only
+  explicit project-owned Fire/Smoke semantic markers. Guarded native attacks
+  prove that Blur, displacement, Obscuring Mist, invisibility, blindness,
+  darkness, concurrent unrelated concealment, and Mirror Image remain
+  effective. This is a resolved fail-closed design result, not missing content.
 - Kingmaker 2.1.7b has no `SpellDescriptor.Light`. An isolated KMG-only audit
   established an immutable seven-GUID native Spell catalog and exact parent
   traversal for Scorching Weapons. Spell-like abilities do not enter the

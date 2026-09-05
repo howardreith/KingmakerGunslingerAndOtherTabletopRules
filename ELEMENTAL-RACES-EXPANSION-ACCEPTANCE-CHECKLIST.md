@@ -76,9 +76,11 @@ Unchecked items are pending and must not be inferred from builds or historical
 - [x] Scorching Weapons and Inner Flame independently pass exact native-command,
   two-metal-weapon snapshot, swap/unequip, damage/replacement, resistance,
   nonstacking, save-bonus replacement, and request-local cleanup mechanics.
-- [ ] Blazing Aura and Firesight pass exact turn-start, friendly-creature,
-  resistance, curated-concealment, and exclusion contracts; Scorching item
-  persistence/death cleanup remains part of the release-wide persistence gate.
+- [x] Blazing Aura and Firesight independently pass exact command,
+  production turn-handler, friendly-creature, resistance, project-owned
+  fire/smoke concealment, native exclusion, Mirror Image, and Dazzled-immunity
+  contracts. A live campaign `TurnController` dispatch recheck and Scorching
+  item persistence/death cleanup remain part of the release-wide gates.
 - [ ] Airy Step, Wings of Air, Cloud Gazer, and Inner Breath pass exact save,
   native-flight/armor, curated concealment, and respiration contracts.
 - [x] Wings of Air independently passes its exact base-Owlcat native-flight

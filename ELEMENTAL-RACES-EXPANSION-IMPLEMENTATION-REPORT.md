@@ -425,3 +425,69 @@ Mechanics-slice commit `768d8c94a4ec6658b71085fb0446243dae2d8d66`
 was followed immediately by the exact mandated push wrapper. The wrapper
 again refused the required branch because its external allowlist omits
 `codex/elemental-races-expansion`; no bypass was attempted.
+
+## Release B mechanics slice 3
+
+Blazing Aura is implemented as an exact-Ifrit Free command available only
+while the current Scorching Weapons marker is active and, in turn-based mode,
+only on the owner's turn. It creates one six-second owned aura marker. A
+narrow postfix on `TurnController.Prepare` delegates to a feature-specific
+handler whose weak exact-controller identity claim prevents duplicate damage
+within a creature turn. Edge-to-edge adjacency is five feet; the owner is
+excluded but friendly creatures are intentionally included. Each qualifying
+turn start emits one ordinary 1d6 Fire `RuleDealDamage`, retaining native fire
+resistance and immunity.
+
+Firesight adds native Dazzled condition immunity and narrowly adjusts only the
+active parent attack's `RuleConcealmentCheck.Success`. Bypass requires the
+exact Firesight fact, an ordinary sight-capable attacker, no target
+invisibility, at least one exact qualifying fire/smoke source, and no unrelated
+concealment source. Project effects use an explicit public semantic marker.
+The isolated Kingmaker 2.1.7b inventory found eight native `AddConcealment`
+providers and no semantic fire/smoke provider, so the immutable native
+Firesight GUID catalog is empty. Blur, displacement, Obscuring Mist, project
+fog, invisibility, blindness, darkness, concurrent Blur, and Mirror Image are
+not suppressed.
+
+Dedicated save-free exact-artifact run
+`20260905T0137340360592Z-e5da1d69116a4fd1837b7ae385ed7bd9`
+passed 14/14 in 59,227 ms with no warning, no save access, automatic exit, and
+exact unit cleanup. It uses the native ability, attack, concealment, damage,
+resistance, and condition-immunity pipelines. Expected concealment failures
+are paired with an otherwise identical forced-success control that rolls 19
+plus 120 against AC 6; the Mirror Image case reaches the native
+`MirrorImage` result after smoke is bypassed. Aura timing is exercised through
+the production handler using a unique controller-equivalent token; final
+Release B qualification retains a live campaign `TurnController` dispatch
+recheck rather than overstating this slice's scope.
+
+Runtime-result, mechanics, runtime-evidence, and compatibility-attribution
+SHA-256 values are
+`18c16298da519e1558115eaf782090776ee0722256b0314a6baa659ed0cda6c7`,
+`9f3c3c1cf60c7a0611747025a9627f4875cda02f42b6f706f262671c4c662abf`,
+`03624f0345142a31e84e419f9edf080d4d445e320b6497b171c7e110bc792a69`,
+and `2c3de4bc0c8ffdb1dd398e1d6f73a87553e677c2ad625e70a42ebeb906b24cad`.
+The evidence collector announced an `evidence-manifest.json` destination, but
+that file was absent after collection; no result is attributed to it.
+
+Repository validation, all 1,408 domain/reflection tests, the exact-reference
+Release build, and strict package validation passed. The exact 135-entry,
+23,101,096-byte runtime package hashes to
+`d9f994b53d32118c344f08d75bcc363a7cd1f65afbc5ecbb7be30d21ccadd4a5`.
+Its 5,817,344-byte DLL hashes to
+`ab72a132295ed802e5e8581e073b243af3610d996c43fceb70f6e4e0dc78c92b`
+with MVID `44463f82-dd81-4db6-93e9-c089972efd49`. Deployment manifest
+`20260905T0136373727562Z` hashes to
+`6ae31813e063f45806f625309b7faea0b6376b8495a538cff837874ed4c45c78`.
+Compatibility transaction `compat-20260905T013712Z-0ff1234a1add` restored
+the original profile and exact feature settings; its transaction hashes to
+`605fe28bfa01b0ec13d866c0bd95fd7848e9c02f9fccfac925efa4934e4e4b8c`.
+
+Implementation commit `7aee2740f7c08f0f9eec1b3efee4eff8e526ce51`
+was followed immediately by the exact mandated push wrapper. The wrapper
+again refused the required branch because its external allowlist omits
+`codex/elemental-races-expansion`; no bypass was attempted.
+
+Release B remains incomplete. Airy Step, Cloud Gazer, Inner Breath, Hydraulic
+Maneuver, Triton Portal, feat-bearing persistence, compatibility profiles, and
+the complete 0.0.116 gate remain pending.
