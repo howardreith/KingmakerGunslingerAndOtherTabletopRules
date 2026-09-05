@@ -160,6 +160,25 @@ the exact original 968-entry mod tree (SHA-256
 and relevant settings. No favored-class bonus was added. Visual Adjustments
 was absent, so its Release A row is NOT-RUN rather than PASS.
 
+Release B package `KingmakerGunslinger-0.0.116-elemental-feats.zip` also has
+independent guarded evidence. KMG alone, Call of the Wild, Races Unleashed,
+Call of the Wild + Favored Class, Tweak or Treat, and the highest-risk
+installed combined stack passed with Elemental Races ON and OFF. The ON runs
+proved all 25 Release B identities were registered, all eleven exact feat
+references appeared once in the universal selector, the four Combat feats
+appeared once in the Fighter selector, and every pre-existing native or
+third-party entry retained its reference and order. Reconciliation replay was
+a true no-op. OFF runs retained all identities and published zero Elemental
+race or feat entries.
+
+The Release B matrix passed 31 guarded Steam processes and 359 assertions with
+zero runtime-result warnings. All 12 transactions restored the exact original
+968-entry mod tree and `FeatureModules.json`; optional settings were also
+restored byte-for-byte. Favored Class was observed only for compatibility and
+received no favored-class bonuses or publication behavior. Visual Adjustments
+was absent and remains **NOT-RUN**. Exact run IDs and hashes are recorded in
+`docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
+
 ## Removal warning
 
 There is no uninstall cleanup or general uninstall-safe-save claim. Saves may

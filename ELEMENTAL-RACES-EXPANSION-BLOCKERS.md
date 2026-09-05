@@ -6,13 +6,16 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through Release B Undine mechanics commit
-  `b70ad97d25ff2c25a41dd544f2e6a7870c6bd12d` cannot currently be pushed.
+- Local checkpoints through Release B compatibility repair commit
+  `c4b9f8fbc40a21ecc9775deab66a40b2ec9b24f3` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
   branch is allowlisted, but changing this mission's branch would violate the
   assignment. No bypass is attempted. Independent implementation continues.
+
+Release B itself has no remaining engineering or qualification blocker. Its
+local PASS is separate from this branch-publication blocker.
 
 ## Open engineering questions requiring evidence
 
@@ -168,3 +171,15 @@ the mission's hard-stop contract; independent work continues.
   failed first. The guarded loader now retries from its update boundary and
   refuses all fingerprint or feature inspection until the engine observably
   accepts the pause. The complete three-process rerun and final absence pass.
+
+## Resolved Release B compatibility finding
+
+- A live compatibility replay initially rebuilt the universal and Fighter feat
+  arrays after a later publisher inserted foreign entries around KMG entries.
+  No foreign entry was lost, but rebuilding violated the required true no-op
+  replay and order-preservation contract. A failing executable regression was
+  added first. The shared transaction now retains each singular exact project
+  reference in its current position, removes only duplicate exact references,
+  rejects foreign same-GUID entries, and inserts only missing additions. The
+  31-process matrix proves forward replay, reverse rollback, and all
+  native/foreign references and order across six installed profiles.

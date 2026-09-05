@@ -38,6 +38,14 @@ marker requirement for existing characters. Module-OFF compatibility runs
 across all six required installed profiles observed all identities registered
 while publishing no Elemental race to the native selector.
 
+Release B runtime observed all 25 appended feat identities at their exact
+manifest GUIDs in every module state. With Elemental Races enabled, all eleven
+exact feat references publish once to the universal selector and the four
+Combat feats publish once to the Fighter selector. With the module disabled,
+all identities remain registered and both selectors receive zero project
+entries. Replay, foreign-order preservation, exact-GUID conflict refusal, and
+reverse rollback passed in all six required installed compatibility profiles.
+
 The 25 active `KMG.BrownFur.*` identities are owned by the isolated optional
 extension. They are registered only when the structural Call of the Wild
 contract succeeds and are excluded from the package core's unconditional

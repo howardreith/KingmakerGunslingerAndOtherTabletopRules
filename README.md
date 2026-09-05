@@ -1,6 +1,6 @@
 # Kingmaker Gunslinger
 
-Version `0.0.116-elemental-feats` is the in-progress Release B expansion of the
+Version `0.0.116-elemental-feats` is the locally qualified Release B expansion of the
 existing **Elemental Races: Ifrit, Oread, Sylph, and Undine** feature module.
 It registers eleven stable feat identities plus fourteen supporting ability,
 buff, and weapon-enchantment identities in every module state. When the module
@@ -9,12 +9,12 @@ four Combat feats publish to the Fighter combat-feat selector through exact-
 GUID-aware reversible transactions. The catalog includes Elemental Strike,
 the Scorching Weapons/Inner Flame/Blazing Aura chain, Firesight, Airy Step,
 Wings of Air, Cloud Gazer, Inner Breath, Hydraulic Maneuver, and Triton Portal.
-Release B mechanics and guarded runtime qualification remain in progress; this
-checkpoint is not a release PASS. Elemental Strike, Wings of Air, all four
-Ifrit feats, and the three non-flight Sylph feats now pass dedicated guarded
-mechanics scenarios. Hydraulic Maneuver and Triton Portal also pass their
-dedicated native maneuver/summon scenario. Save persistence and the
-release-wide compatibility matrix remain pending.
+Release B passes locally. All eleven feat mechanics pass dedicated and final
+integrated guarded scenarios; 24 race/sex/heritage fixtures pass module-OFF/ON
+save persistence and exact cleanup; and all six required installed
+compatibility profiles pass in both module states with byte-exact restoration.
+The required checkpoint push remains blocked only by the external branch
+allowlist. Visual Adjustments was not installed and remains **NOT-RUN**.
 
 Release A added one obligatory heritage selection per race. Each selection has
 exactly three choices: General plus two alternate heritages. The parent race

@@ -95,10 +95,12 @@ Unchecked items are pending and must not be inferred from builds or historical
   feat facts, granted abilities, resources, Wings buffs, a command-created
   Elemental Strike buff, two exact command-enchanted weapon references,
   module-OFF/ON loading, rest/respec cleanup, and fourth-process absence.
-- [ ] Version/docs/manifest updated; repository validation, full tests, clean
+- [x] Version/docs/manifest updated; repository validation, full tests, clean
   0.0.116 build, strict package validation, guarded runtime, compatibility,
   and persistence gates pass.
-- [ ] Coherent Release B implementation and qualification commits pushed.
+- [ ] Coherent Release B implementation and qualification commits were
+  created; the exact mandated push was attempted after every checkpoint but
+  remains blocked by the external branch allowlist.
 
 ## Release C / 0.0.117 alternate racial traits
 

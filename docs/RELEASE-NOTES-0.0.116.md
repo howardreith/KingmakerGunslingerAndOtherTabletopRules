@@ -2,10 +2,10 @@
 
 Proposed package: `KingmakerGunslinger-0.0.116-elemental-feats.zip`.
 
-Release B remains in progress. The current checkpoint fixes and registers the
-complete 25-identity save-bearing blueprint inventory, binds the eleven feat
-prerequisites to exact project races and providers, and adds additive,
-deterministic, idempotent, exact-GUID-aware publication to the universal and
+Release B passes every required local gate. It registers the complete
+25-identity save-bearing blueprint inventory, binds the eleven feat
+prerequisites to exact project races and providers, and uses additive,
+deterministic, idempotent, exact-GUID-aware publication for the universal and
 Fighter combat-feat selectors under the existing `elemental-races` setting.
 
 Elemental Strike is now mechanically active: its Swift command applies a
@@ -110,6 +110,16 @@ fresh-process cleanup. The carrier-dependent Elemental Strike/Wings and
 Scorching/Inner scenarios then independently re-passed 16/16 and 12/12 on the
 same artifact.
 
+The final clean candidate reran all five mechanics scenarios in one isolated
+KMG-only transaction: 73/73 assertions passed with zero runtime-result
+warnings. The installed compatibility matrix then passed 31/31 guarded
+processes and 359/359 assertions across KMG alone, Call of the Wild, Races
+Unleashed, Favored Class, Tweak or Treat, and the highest-risk combined
+profile, each with Elemental Races ON and OFF. All 12 transactions restored
+the original 968-entry mod tree and settings exactly. Favored Class remained
+observation-only and received no new favored-class behavior. Visual
+Adjustments was absent and is NOT-RUN.
+
 The intentionally deferred catalog remains unimplemented: Elemental Jaunt;
 Oread Burrower; Oread Earth Glider; Stony Step; Echoes of Stone; Murmurs of
 Earth; Aquatic Ancestry; Steam Caster; Water Skinned; Blistering Feint; and
@@ -117,10 +127,18 @@ any feat whose primary function is swimming, burrowing, underground or planar
 travel, free-form fire extinguishing, or environmental skill adjudication. No
 compensatory bonus is substituted.
 
-This checkpoint is independently buildable but is not a Release B PASS. The
-complete compatibility matrix, integrated runtime regression, and final
-release hashes remain pending. Release A 0.0.115 evidence remains historical
-and is not relabelled as 0.0.116 evidence.
+The locally qualified package is 23,145,172 bytes with 135 entries and SHA-256
+`e5b8f77e77fe9d6bf56c43a2371304b631b8fd65e410c7a931abe27adf8ba032`.
+Its 5,958,144-byte DLL hashes to
+`3c9af3692f2f4dd58ceeb0a54cd607f410c32e43f186824d17c6bc3d80f528d4`
+and has MVID `8c8af472-93b4-4d83-a944-0f466be5457a`. Repository
+validation, all 1,408/1,408 domain/reflection cases, the clean exact-reference
+Release build, and strict package validation passed. Exact run and transaction
+hashes are in `docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
+
+Release B is a local PASS. Its checkpoint push remains blocked by the external
+branch allowlist; nothing is merged, tagged, or publicly released. Release A
+0.0.115 evidence remains historical and is not relabelled as 0.0.116 evidence.
 
 The candidate preserves the previously qualified firearm SoundBank byte
 identity `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
