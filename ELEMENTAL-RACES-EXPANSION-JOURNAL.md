@@ -1303,3 +1303,116 @@ and the first focused mechanical group from the now-qualified native contracts.
 - This is not a Release B PASS. Hydraulic Maneuver, Triton Portal,
   feat-bearing persistence, the complete compatibility matrix, and final
   0.0.116 gates remain pending.
+
+## 2026-09-05 - Release B mechanics slice 5 runtime PASS
+
+- Implemented Hydraulic Maneuver as one project-owned variant parent with
+  four fixed-identity children using genuine native `RuleCombatManeuver`
+  paths: Bull Rush, Disarm, Trip, and Dirty Trick (blind). Every child uses
+  current total character level plus the current best Intelligence, Wisdom,
+  or Charisma modifier and shares the exact racial Hydraulic Push resource.
+  Exact Undine race, live Hydraulic Push provider/ability, and positive
+  resource availability are required; an already-owned feat becomes inert
+  when that provider is absent.
+- Kingmaker exposes no `DirtyTrickDazzle` maneuver. The printed blind option
+  is implemented and dazzle remains an explicit engine omission. No unrelated
+  spell, debuff, or simulated maneuver was added.
+- Implemented Triton Portal as a full-round SpellLike point command. It
+  deep-clones only the exact native Small Water Elemental donor's mutable
+  component/action graph, preserves native blueprint references, changes the
+  count to 1d3, and spends the same racial Hydraulic Push use. Native summon
+  duration, allied non-hostile faction, source linkage, lifecycle, death, and
+  cleanup remain authoritative. The feature contains no Expanded Summoning
+  dependency and works independently of that module's publication state.
+- Added an owned finite/walkable-ground target checker. Guarded evidence
+  established that `AbilityData.CanTarget` is Kingmaker's actual player-facing
+  point gate: it rejected the non-ground point while retaining the resource.
+  A raw synthetic `UnitUseAbility.CanStart` assumes upstream target validation
+  already occurred and therefore remained true; both values remain visible in
+  evidence rather than conflated.
+- Added dedicated scenario `disposable-elemental-undine-feats`; central
+  runtime code contains registration/dispatch only. The scenario uses
+  request-local live-scene units because native Trip refuses a target whose
+  spawned view still reports `IsGetUp`. A request-local Harmony patch affects
+  only the named disposable target and only suppresses that false-positive
+  animation state. Production Trip remains untouched. Native combat-maneuver
+  immunity early-returns with CMB/d20 `0/0` and no prone state while its result
+  object retains the default `Success` value; the assertion follows those
+  observable native semantics.
+- Six preserved diagnostic runs progressively separated fixture assumptions
+  from production behavior:
+  - `20260905T0415579212992Z-3833de24461549d2a83fa0c98535745c`
+    failed 7/13 because the first fixture was not an exact project Undine;
+    runtime-result SHA-256
+    `14a0f741ffd71f6711053d68232c3b8714387ebd630b4a7fac5f9119c01dec83`.
+  - `20260905T0437564885034Z-9283090bfbcb4e268e36b0efbbe378ac`
+    passed 8/13 and isolated native Trip spawn state plus portal target/faction
+    assumptions; runtime-result SHA-256
+    `63a3863ec1698fbd69e78689d18c4111f8a6f71871751fe8ab397bfa358c1ad5`.
+  - `20260905T0509145314133Z-b7b0e23f4cd2466c9a51016c569afa52`
+    passed 10/13 and proved the checker component plus native allied summon
+    faction; runtime-result SHA-256
+    `9161d14241239f68a4d64f0ba65add0f762879c45727e7b4139ab9e4c2208255`.
+  - `20260905T0515393103511Z-1b62df731b074b3089bce58bb7533cb8`
+    passed 10/13 with live-scene units and isolated `IsGetUp`; runtime-result
+    SHA-256
+    `d99e0c03f167f7f73cacf84bc4940e478d21245daa98160aac6c6fb6f7cdef6b`.
+  - `20260905T0525196424765Z-ede9e3bb2fff4af8aa3c267a77d9988d`
+    passed 11/13 and established native Trip/immunity semantics;
+    runtime-result SHA-256
+    `a2038c642d8497a4d80677ba0df6a9878eae8fda781610368f874f44e5b758b3`.
+  - `20260905T0537206020125Z-dab9a398eb1e4cfda55c09f17e4bc420`
+    passed 12/13 and proved the valid distinction between rejected
+    `AbilityData.CanTarget` and raw command `CanStart`; runtime-result SHA-256
+    `538efbc5060d04e9bc893afed3166d5358ce435186844cf0dcb7621e1d6d8954`.
+- Every diagnostic transaction restored exactly. Their transaction SHA-256
+  values, in the same order, are
+  `40df720877a92d413d45bd654562df78d124fbfa571b847942861af55a5eb52e`,
+  `565f60ac9100e6db315e6667bd461912413440b449e7d0e936b6732d6aa2716a`,
+  `0e16fcb082510448d1e0c66dc959802631521ef990fbadbd8d07037ec47b6d96`,
+  `20d312b98585ca91f955c34addd28abce60a61ef509b7e6df1c57f21521063ff`,
+  `827aaba3957f5f77bc52a7a428602adbfb3c49803c373717659f4aed14bdd70b`,
+  and `6d3c157115792ac068521eebc731fb6f18405317f4b6707ede140ae6a70b45e8`.
+- Final KMG-only run
+  `20260905T0550526363250Z-a4c7158ae8e74168b36082c6c6e6e3a0`
+  passed 13/13 in 61,003 ms with zero runtime-result warnings, no save access,
+  automatic exit, and exact request-local cleanup. It proves all four native
+  maneuver events, total-level/current-stat formula, temporary Wisdom,
+  immunity, cancellation/use/zero/rest, full-round point targeting, exact 1d3
+  Small Water Elementals, five-round level-5 duration, faction/lifecycle, and
+  module independence.
+- Runtime-result, Undine-mechanics, runtime-evidence, runtime-summary,
+  compatibility-log, and raw-output-log SHA-256 values are respectively
+  `0bcc4e6bf43472c1653f9fe98c24f825ec9f860b4bcd0af0df94b7d3e442045a`,
+  `6797701ef2d806136807661c70130075bb5eb06270dcaa29eb98815d861114c4`,
+  `af88dbb52734d7ba00f96b57b3cc03449708fb08a23e7fb5bbc66ea719229c27`,
+  `ba67b9af0022a2fb069f97c18ae28981d600fad834d1094d8598cb0ba6d5ac76`,
+  `b8eea82306456e2cc41b23726df9a22d88fc309ff37650da239735fed1660a1a`,
+  and `67f2f8af7e8d4b83eb474bff092ecaa20a4cededd01f3a03cb45c20e78ebeaf3`.
+  The collector again announced `evidence-manifest.json`, but it was absent;
+  no hash or PASS claim is attributed to it.
+- Repository validation and all 1,408/1,408 domain/reflection cases passed.
+  The exact-reference clean Release build and strict 135-entry package
+  validation passed. The 23,129,428-byte runtime package hashes to
+  `1de04caba357580b7f5dbffb422b65b8fde399fed8f90ddd568da83ba40e8804`;
+  its 5,912,064-byte DLL hashes to
+  `89cd4fe6f96a339a54102441b0958ff970b7ce258e90884ed46eda3e8c02bf90`
+  with MVID `4eb29429-0ece-42e2-bf6a-cd9a8e9c967c`. Source-state SHA-256 is
+  `000f158a2e1235e7ad37d80974639ab9abfe4eb0b791ceee19fbe9c4816a3382`;
+  deployment-manifest SHA-256 is
+  `8370bc4d68592829ca00bed9f6ad4404483d55fb86bfb1daac74198a7a280671`.
+- Compatibility transaction `compat-20260905T054922Z-c2398e3ecad3`
+  completed `Restored` with verification true. Its transaction SHA-256 is
+  `07702b939756bb5d0bc5c3fae4e07f8f89a1cb9df21f57b352293bb02270e6af`;
+  `FeatureModules.json` returned byte-for-byte to SHA-256
+  `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+  The compatibility collector recorded only inherited base-game shader,
+  missing-script, and lightmap fingerprints; it recorded no KMG error.
+- Commit `b70ad97d25ff2c25a41dd544f2e6a7870c6bd12d` records the
+  implementation. The exact mandated push wrapper immediately refused the
+  required branch because its external allowlist omits
+  `codex/elemental-races-expansion`; no bypass was attempted.
+- All required Release B feat mechanics now have isolated guarded proof. This
+  is still not a Release B PASS: feat-bearing persistence, module-OFF
+  hydration, integrated runtime regression, the complete compatibility matrix,
+  and final 0.0.116 gates remain pending.

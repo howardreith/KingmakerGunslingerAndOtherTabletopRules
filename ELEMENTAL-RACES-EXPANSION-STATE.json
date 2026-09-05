@@ -16,7 +16,7 @@
   "status": {
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "MECHANICS-SLICES-1-THROUGH-4-PASS-UNDINE-FEATS-IN-PROGRESS",
+    "releaseB": "MECHANICS-SLICES-1-THROUGH-5-PASS-PERSISTENCE-AND-COMPATIBILITY-PENDING",
     "releaseC": "NOT-STARTED"
   },
   "foundationProgress": {
@@ -70,8 +70,10 @@
     "airyStep": "IMPLEMENTED-RUNTIME-PASS (+2 Racial saves for Electricity descriptors, direct electricity-damage reasons, and all 11 exact audited native Air effects; parent variants and overlap apply once; Wings replaces with +4 total)",
     "cloudGazer": "IMPLEMENTED-RUNTIME-PASS (exact native Obscuring Mist and explicit project Fog/Mist/Cloud concealment only; Smoke, Blur, displacement, invisibility, darkness, blindness, concurrent unrelated concealment, and Mirror Image remain effective)",
     "innerBreath": "IMPLEMENTED-RUNTIME-PASS (two exact audited native respiration-required swamp-gas buffs plus explicit project semantic markers; ordinary poison, Stinking Cloud, Cloudkill, and unrelated SwampGasDOT remain effective)",
-    "mechanicsRuntime": "PASS-SLICES-1-THROUGH-4 (16/16 plus 12/12 plus 14/14 plus 18/18 assertions; save-free exact cleanup; Undine Release B mechanics not yet qualified)",
-    "implementation": "MECHANICS-SLICES-1-THROUGH-4-PASS; HYDRAULIC-MANEUVER-AND-TRITON-PORTAL-IN-PROGRESS"
+    "hydraulicManeuver": "IMPLEMENTED-RUNTIME-PASS (Bull Rush, Disarm, Trip, and native Dirty Trick Blind; total level plus current best mental modifier; shared racial use; cancel/zero/rest; native immunity and failure paths)",
+    "tritonPortal": "IMPLEMENTED-RUNTIME-PASS (full-round point target; exact native 1d3 Small Water Elementals for five rounds at level 5; native allied/non-hostile summon lifecycle; shared racial use; invalid/cancel/zero/rest; Expanded Summoning independent)",
+    "mechanicsRuntime": "PASS-SLICES-1-THROUGH-5 (16/16 plus 12/12 plus 14/14 plus 18/18 plus 13/13 assertions; save-free exact cleanup)",
+    "implementation": "ALL REQUIRED RELEASE-B FEAT MECHANICS PASS IN ISOLATED SCENARIOS; PERSISTENCE, COMPLETE COMPATIBILITY MATRIX, AND FINAL RELEASE GATES PENDING"
   },
   "releaseBNativeAudit": {
     "status": "PASS",
@@ -348,6 +350,62 @@
     "checkpointCommit": "f514c3dbb31c8f2f705a5e3dea1237e8d9eeebc5",
     "checkpointPush": "BLOCKED-EXTERNAL-ALLOWLIST",
     "diagnosticRuns": []
+  },
+  "releaseBUndineMechanicsSlice": {
+    "status": "PASS",
+    "releaseStatus": "NOT-A-RELEASE-B-PASS",
+    "scenario": "disposable-elemental-undine-feats",
+    "isolatedProfile": "gunslinger-only",
+    "runId": "20260905T0550526363250Z-a4c7158ae8e74168b36082c6c6e6e3a0",
+    "assertions": 13,
+    "warnings": 0,
+    "durationMilliseconds": 61003,
+    "saveStateTouched": false,
+    "cleanupExact": true,
+    "runtimeResultSha256": "0bcc4e6bf43472c1653f9fe98c24f825ec9f860b4bcd0af0df94b7d3e442045a",
+    "mechanicsEvidenceSha256": "6797701ef2d806136807661c70130075bb5eb06270dcaa29eb98815d861114c4",
+    "runtimeEvidenceSha256": "af88dbb52734d7ba00f96b57b3cc03449708fb08a23e7fb5bbc66ea719229c27",
+    "runtimeSummarySha256": "ba67b9af0022a2fb069f97c18ae28981d600fad834d1094d8598cb0ba6d5ac76",
+    "compatibilityAttributionSha256": "b8eea82306456e2cc41b23726df9a22d88fc309ff37650da239735fed1660a1a",
+    "outputLogSha256": "67f2f8af7e8d4b83eb474bff092ecaa20a4cededd01f3a03cb45c20e78ebeaf3",
+    "compatibilityTransactionId": "compat-20260905T054922Z-c2398e3ecad3",
+    "compatibilityTransactionStatus": "Restored",
+    "compatibilityRestorationVerified": true,
+    "compatibilityTransactionSha256": "07702b939756bb5d0bc5c3fae4e07f8f89a1cb9df21f57b352293bb02270e6af",
+    "featureSettingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "featureSettingsRestorationEvidenceSha256": "5cd5debcba049dbe3bd46ebec9061b64c486d05bb5f2fc16fd5ada8e6fdf8a05",
+    "deploymentManifest": "20260905T0550525413468Z",
+    "deploymentManifestSha256": "8370bc4d68592829ca00bed9f6ad4404483d55fb86bfb1daac74198a7a280671",
+    "sourceBaselineCommit": "ec6dc368075ae7462bc5ca2e741341367a323f34",
+    "sourceStateSha256": "000f158a2e1235e7ad37d80974639ab9abfe4eb0b791ceee19fbe9c4816a3382",
+    "package": "KingmakerGunslinger-0.0.116-local-runtime.zip",
+    "packageSize": 23129428,
+    "packageEntries": 135,
+    "packageSha256": "1de04caba357580b7f5dbffb422b65b8fde399fed8f90ddd568da83ba40e8804",
+    "dllSize": 5912064,
+    "dllSha256": "89cd4fe6f96a339a54102441b0958ff970b7ce258e90884ed46eda3e8c02bf90",
+    "dllMvid": "4eb29429-0ece-42e2-bf6a-cd9a8e9c967c",
+    "repositoryValidation": "PASS",
+    "domainTests": "PASS (1408/1408)",
+    "cleanReleaseBuild": "PASS",
+    "packageValidation": "PASS (strict standalone, 135 entries)",
+    "hydraulicManeuver": "PASS for four genuine native RuleCombatManeuver variants, total level plus current best mental modifier including temporary Wisdom, cancellation 1->1, accepted use 1->0, zero-use blocking, ordinary-rest restoration, held manufactured weapon Disarm, and native immunity early return",
+    "tritonPortal": "PASS for full-round SpellLike point targeting, invalid and canceled use retention, exact native 1d3 Small Water Elementals, thirty-second duration at level 5, native allied/non-hostile faction and linked lifecycle, shared Hydraulic Push resource, zero-use blocking, rest restoration, and no Expanded Summoning dependency",
+    "dirtyTrick": "Native DirtyTrickBlind is implemented and qualified; DirtyTrickDazzle is absent from Kingmaker and remains an explicit omission",
+    "nativeQuirks": "Trip rejects a genuinely prone or IsGetUp target before constructing RuleCombatManeuver; the request-local live-scene fixture bypasses only its spawn animation's false-positive IsGetUp. Combat-maneuver immunity early-returns with zero CMB/d20 while the native result object retains its default Success value; no prone effect occurs. AbilityData.CanTarget is the player-facing point gate; a raw synthetic UnitUseAbility assumes that gate already ran.",
+    "compatibilityLog": "No runtime-result warnings or KMG errors; four inherited unsupported-shader/fallback, four missing-script, and one lightmap fingerprint are recorded by the compatibility collector",
+    "evidenceManifest": "ANNOUNCED-BUT-ABSENT; no PASS or hash attributed",
+    "checkpointCommit": "b70ad97d25ff2c25a41dd544f2e6a7870c6bd12d",
+    "checkpointPush": "BLOCKED-EXTERNAL-ALLOWLIST",
+    "diagnosticRuns": [
+      "20260905T0415579212992Z-3833de24461549d2a83fa0c98535745c FAIL 6/13: exact Undine race fixture absent; result 14a0f741ffd71f6711053d68232c3b8714387ebd630b4a7fac5f9119c01dec83",
+      "20260905T0437564885034Z-9283090bfbcb4e268e36b0efbbe378ac FAIL 8/13: Trip spawn/get-up state and portal target/faction assumptions isolated; result 63a3863ec1698fbd69e78689d18c4111f8a6f71871751fe8ab397bfa358c1ad5",
+      "20260905T0509145314133Z-b7b0e23f4cd2466c9a51016c569afa52 FAIL 10/13: exact ground checker present; live-scene Trip and player-facing point-gate boundaries remained; result 9161d14241239f68a4d64f0ba65add0f762879c45727e7b4139ab9e4c2208255",
+      "20260905T0515393103511Z-1b62df731b074b3089bce58bb7533cb8 FAIL 10/13: request-local live scene retained native IsGetUp spawn-animation rejection; result d99e0c03f167f7f73cacf84bc4940e478d21245daa98160aac6c6fb6f7cdef6b",
+      "20260905T0525196424765Z-ede9e3bb2fff4af8aa3c267a77d9988d FAIL 11/13: native Trip and immunity semantics established; raw command target assumption remained; result a2038c642d8497a4d80677ba0df6a9878eae8fda781610368f874f44e5b758b3",
+      "20260905T0537206020125Z-dab9a398eb1e4cfda55c09f17e4bc420 FAIL 12/13: AbilityData rejected invalid point but raw UnitUseAbility.CanStart did not repeat validation; result 538efbc5060d04e9bc893afed3166d5358ce435186844cf0dcb7621e1d6d8954"
+    ],
+    "restorationTransactions": "All seven KMG-only transactions restored exactly; final transaction recorded above, diagnostic transaction SHA-256 values 40df720877a92d413d45bd654562df78d124fbfa571b847942861af55a5eb52e, 565f60ac9100e6db315e6667bd461912413440b449e7d0e936b6732d6aa2716a, 0e16fcb082510448d1e0c66dc959802631521ef990fbadbd8d07037ec47b6d96, 20d312b98585ca91f955c34addd28abce60a61ef509b7e6df1c57f21521063ff, 827aaba3957f5f77bc52a7a428602adbfb3c49803c373717659f4aed14bdd70b, and 6d3c157115792ac068521eebc731fb6f18405317f4b6707ede140ae6a70b45e8"
   },
   "baselineGates": {
     "repositoryValidation": "PASS",
@@ -1066,9 +1124,27 @@
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     },
     {
+      "sha": "01c0c25a23da013a571695adda2ab5df8f6969bb",
+      "subject": "Record advanced Ifrit feat qualification",
+      "checkpoint": "release-b-mechanics-slice-3-record",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
       "sha": "f514c3dbb31c8f2f705a5e3dea1237e8d9eeebc5",
       "subject": "Implement Sylph elemental feats",
       "checkpoint": "release-b-mechanics-slice-4",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "ec6dc368075ae7462bc5ca2e741341367a323f34",
+      "subject": "Record Sylph feat qualification",
+      "checkpoint": "release-b-mechanics-slice-4-record",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "b70ad97d25ff2c25a41dd544f2e6a7870c6bd12d",
+      "subject": "Implement Undine elemental feats",
+      "checkpoint": "release-b-mechanics-slice-5",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],

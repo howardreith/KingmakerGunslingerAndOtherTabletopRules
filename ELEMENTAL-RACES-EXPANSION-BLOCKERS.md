@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through Release B Sylph mechanics commit
-  `f514c3dbb31c8f2f705a5e3dea1237e8d9eeebc5` cannot currently be pushed.
+- Local checkpoints through Release B Undine mechanics commit
+  `b70ad97d25ff2c25a41dd544f2e6a7870c6bd12d` cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
@@ -25,10 +25,13 @@ None established.
   Airy Step, Cloud Gazer, and Inner Breath now use narrow exact catalogs and
   passed behavioral qualification in isolated run
   `20260905T0258431754839Z-f395da4f5be54cbdad4e980f477f2791`.
+  Hydraulic Maneuver and Triton Portal passed their exact native
+  maneuver/summon qualification in isolated run
+  `20260905T0550526363250Z-a4c7158ae8e74168b36082c6c6e6e3a0`.
   Release C audits remain open for ray deflection and difficult terrain.
 - Native `DirtyTrickBlind` is present and player-facing; no
-  `DirtyTrickDazzle` enum member exists. Hydraulic Maneuver will implement the
-  printed blind option and explicitly omit dazzle rather than simulate it.
+  `DirtyTrickDazzle` enum member exists. Hydraulic Maneuver implements the
+  printed blind option and explicitly omits dazzle rather than simulating it.
 - Base Owlcat Wings is exactly +3 Dodge AC against melee attacks,
   `DifficultTerrain` condition immunity, and `Ground`-descriptor buff
   immunity. Call of the Wild injects a broader `AddFlying`/maneuver package;

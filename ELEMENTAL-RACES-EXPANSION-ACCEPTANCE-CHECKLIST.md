@@ -86,7 +86,7 @@ Unchecked items are pending and must not be inferred from builds or historical
 - [x] Wings of Air independently passes its exact base-Owlcat native-flight
   semantics, melee/ranged AC, no/light/medium armor gating, legal armor-removal
   restoration, difficult-terrain/Ground behavior, and prone exclusion.
-- [ ] Hydraulic Maneuver and Triton Portal pass exact variant/formula/shared-
+- [x] Hydraulic Maneuver and Triton Portal pass exact variant/formula/shared-
   resource/action/summon/module-boundary behavior; unsupported Dirty Trick is
   recorded honestly if no native path exists.
 - [ ] Intentionally deferred feats remain unimplemented and documented.

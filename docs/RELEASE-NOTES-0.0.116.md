@@ -58,6 +58,21 @@ effective. Inner Breath blocks the exact native respiration-required
 poisonous-swamp-gas pair and explicit project-owned respiration effects. It
 does not grant blanket poison, gas, or cloud immunity.
 
+Hydraulic Maneuver extends an active racial Hydraulic Push with four
+per-use choices: Bull Rush, Disarm, Trip, and Kingmaker's genuine native Dirty
+Trick (blind). Each path uses total character level plus the current best of
+Intelligence, Wisdom, and Charisma through native `RuleCombatManeuver`, and
+spends the same racial use only after the command is accepted. Kingmaker has
+no native player-facing Dirty Trick (dazzle), so that printed option is
+explicitly omitted rather than simulated.
+
+Triton Portal is a full-round SpellLike point-target command that shares the
+racial Hydraulic Push use. It invokes the exact native summon graph for 1d3
+Small Water Elementals, with ordinary summon duration, allied non-hostile
+faction, source linkage, death, and cleanup behavior. It is independent of
+the `expanded-summoning` selector module. Dolphins, sharks, and electric eels
+remain omitted under the approved native-water-elemental adaptation.
+
 The required catalog is Elemental Strike; Scorching Weapons, Inner Flame,
 Blazing Aura, and Firesight for Ifrits; Airy Step, Wings of Air, Cloud Gazer,
 and Inner Breath for Sylphs; and Hydraulic Maneuver and Triton Portal for
@@ -72,12 +87,14 @@ Dedicated guarded run
 `20260905T0137340360592Z-e5da1d69116a4fd1837b7ae385ed7bd9`
 passed all 14 Blazing Aura/Firesight assertions, and isolated KMG-only run
 `20260905T0258431754839Z-f395da4f5be54cbdad4e980f477f2791`
-passed all 18 Airy Step/Cloud Gazer/Inner Breath assertions. Every run had zero
-warnings, touched no save, and cleaned up its disposable units exactly. This
-checkpoint is independently buildable but is not a Release B PASS. Hydraulic
-Maneuver, Triton Portal, save-backed persistence, compatibility profiles, and
-final release hashes remain pending. Release A 0.0.115 evidence remains
-historical and is not relabelled as 0.0.116 evidence.
+passed all 18 Airy Step/Cloud Gazer/Inner Breath assertions. KMG-only run
+`20260905T0550526363250Z-a4c7158ae8e74168b36082c6c6e6e3a0`
+passed all 13 Hydraulic Maneuver/Triton Portal assertions. Every final run had
+zero runtime-result warnings, touched no save, and cleaned up its disposable
+state exactly. This checkpoint is independently buildable but is not a
+Release B PASS. Save-backed persistence, compatibility profiles, and final
+release hashes remain pending. Release A 0.0.115 evidence remains historical
+and is not relabelled as 0.0.116 evidence.
 
 The candidate preserves the previously qualified firearm SoundBank byte
 identity `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
