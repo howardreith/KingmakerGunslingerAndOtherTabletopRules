@@ -1089,6 +1089,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             string source = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalRacePersistenceScenario.cs");
+            string featSource = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalFeatPersistenceScenario.cs");
+            string transientRuntime = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalFeatTransientRuntime.cs");
             string catalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -1144,7 +1148,9 @@ namespace KingmakerGunslinger.DomainTests
                     "' = [pscustomobject]")) &&
                 scenarios.All(preflight.Contains) &&
                 project.Contains(
-                    @"RuntimeTesting\ElementalRacePersistenceScenario.cs"),
+                    @"RuntimeTesting\ElementalRacePersistenceScenario.cs") &&
+                project.Contains(
+                    @"RuntimeTesting\ElementalFeatPersistenceScenario.cs"),
                 "Elemental persistence is not wired through every guarded working-save surface.");
             Assertions.True(Regex.IsMatch(workingSave,
                     @"AutomationWorkingWithElementalFixtures\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 27\);",
@@ -1333,6 +1339,121 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Elemental persistence lacks exact native guard/evidence token: " +
                     token);
+            foreach (string token in new[]
+            {
+                "partial class ElementalRacePersistenceSession",
+                "FeatIdentitiesRegisteredExact",
+                "FeatSelectorStateExact",
+                "ElementalFeatPublication.BasicFeatSelectionGuid",
+                "FighterCombatFeatSelectionGuid",
+                "ExpectedFeatFacts(",
+                "ElementalFeatId.ElementalStrike",
+                "ElementalFeatId.ScorchingWeapons",
+                "ElementalFeatId.InnerFlame",
+                "ElementalFeatId.BlazingAura",
+                "ElementalFeatId.Firesight",
+                "ElementalFeatId.AiryStep",
+                "ElementalFeatId.WingsOfAir",
+                "ElementalFeatId.CloudGazer",
+                "ElementalFeatId.InnerBreath",
+                "ElementalFeatId.HydraulicManeuver",
+                "ElementalFeatId.TritonPortal",
+                "EnsureFeatPersistenceFact",
+                "ExecuteFeatPersistenceAbility",
+                "PrepareFeatPersistenceTransientState",
+                "prepare-immediately-before-save",
+                "new ItemEntityWeapon(",
+                "KingmakerFirearmItemIdentityProvider",
+                "primaryEffect.IsTemporary",
+                "secondaryEffect.IsTemporary",
+                "!primaryEffect.RemoveOnUnequipItem",
+                "!secondaryEffect.RemoveOnUnequipItem",
+                "module-restored-source-before-respec",
+                "RemoveFeatPersistenceShortEffects",
+                "CleanupFeatPersistenceEquipment",
+                "PreparedFeatPersistenceInventoryExact",
+                "FeatPersistenceCleanupInventoryExact",
+                "RetainedFeatPersistenceInventoryCount",
+                "OptionalFeatPersistenceItemId",
+                "nativeItemIdentityAvailable",
+                "pauseApplied",
+                "RestorePrepareFeatPersistencePause",
+                "ReleaseLoadedFeatPersistencePause",
+                "_player.Inventory.Remove(weapon)",
+                "weapon.RemoveEnchantment(effect)",
+                "weapon.Dispose()"
+            })
+                Assertions.True(featSource.Contains(token),
+                    "Elemental feat persistence lacks exact native state/evidence token: " +
+                    token);
+            foreach (string token in new[]
+            {
+                "PrepareFeatPersistenceFixture(",
+                "_preparedFeatTransientState =",
+                "ObserveFeatPersistence(",
+                "CaptureRestoredSourceFeatPersistence(",
+                "bounded save-completion window",
+                "featPersistenceExact",
+                "loadedFeatPersistenceExact",
+                "replacementFeatPersistenceExact",
+                "module-off-loaded-before-level-up",
+                "module-off-after-level-up",
+                "module-off-after-rest",
+                "module-restored-native-respec-replacement",
+                "CleanupFeatPersistenceEquipment(unit)",
+                "ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount"
+            })
+                Assertions.True(source.Contains(token),
+                    "The guarded persistence lifecycle does not enforce its Release B feat extension: " +
+                    token);
+            foreach (string token in new[]
+            {
+                "pauseOnLoadCompletion",
+                "TryApplyLoadCompletionPause(",
+                "post-load-time-pause-pending",
+                "post-load-time-pause-applied",
+                "ReleaseLoadCompletionPause",
+                "post-load-time-pause-released"
+            })
+                Assertions.True(workingSave.Contains(token),
+                    "The guarded loader lacks exact transient-state time ownership: " +
+                    token);
+            int scorchingEndStart = transientRuntime.IndexOf(
+                "internal static void EndScorchingWeapons(",
+                StringComparison.Ordinal);
+            int scorchingEndLimit = transientRuntime.IndexOf(
+                "internal static bool IsElementalStrikeActive(",
+                scorchingEndStart, StringComparison.Ordinal);
+            Assertions.True(scorchingEndStart >= 0 &&
+                    scorchingEndLimit > scorchingEndStart,
+                "The Scorching Weapons transient teardown boundary must remain explicit.");
+            string scorchingEnd = transientRuntime.Substring(
+                scorchingEndStart, scorchingEndLimit - scorchingEndStart);
+            Assertions.False(scorchingEnd.Contains(
+                    "RemoveScorchingWeapons(owner)"),
+                "A buff OnTurnOff callback must not recursively remove its own Scorching Weapons buff.");
+            Assertions.True(scorchingEnd.Contains(
+                    "state.EndScorchingWeapons(expected)") &&
+                scorchingEnd.Contains("RemoveEnchantments(weapon)"),
+                "Scorching Weapons buff teardown must clear the exact persisted snapshot and its item enchantments.");
+            foreach (string token in new[]
+            {
+                "ReconcileAfterUnitLoad(UnitDescriptor owner)",
+                "ReconcileFeatureActivation(Owner",
+                "preserveFutureStateUntilFactsActivate",
+                "activatingFeatureIsExact",
+                "HasElementalStrikeRace(owner)",
+                "HasScorchingRace(owner)",
+                "ReconcileAfterUnitLoad(\n                __instance.Descriptor)"
+            })
+                Assertions.True(transientRuntime.Contains(token),
+                    "Transient feat hydration lacks its ordering-safe reconciliation boundary: " +
+                    token);
+            Assertions.True(runner.Contains(
+                    "pauseOnLoadCompletion: _request.Scenario ==") &&
+                runner.Contains(
+                    ".ElementalRaceModuleDisabledPersistence"),
+                "Only the module-OFF persistence load should request the early guarded time pause.");
             Assertions.False(source.Contains(
                     "controller.State.AddSelection(null,"),
                 "Elemental Respec must use the native replayable SelectRace " +
@@ -1345,7 +1466,8 @@ namespace KingmakerGunslinger.DomainTests
                 "QuickSave", "ScreenCapture", "Input.", "Mouse.",
                 "PlayerPrefs", "gameObject.SetActive"
             })
-                Assertions.False(source.Contains(forbidden),
+                Assertions.False(source.Contains(forbidden) ||
+                    featSource.Contains(forbidden),
                     "Elemental persistence contains a forbidden save/UI token: " +
                     forbidden);
             Assertions.Equal(1, Regex.Matches(source,

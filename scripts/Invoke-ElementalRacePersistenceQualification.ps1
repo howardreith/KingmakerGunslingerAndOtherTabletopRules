@@ -1,9 +1,10 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-# Three guarded fresh-process phases persist, verify module-OFF, restore the
-# module, respec, and clean up the fixtures. Run the fresh-load absence phase
-# separately after this restores the caller's original settings bytes.
+# Three guarded fresh-process phases persist race, heritage, and Release B feat
+# state, verify module-OFF, restore the module, respec, and clean up the
+# fixtures. Run the fresh-load absence phase separately after this restores the
+# caller's original settings bytes.
 param(
-    [string]$ExpectedVersion = '0.0.115',
+    [string]$ExpectedVersion = '0.0.116',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
     [string]$SaveName = 'KMG_AUTOMATION_WORKING',
     [ValidateRange(120, 1800)][int]$TimeoutSeconds = 900,
@@ -31,7 +32,7 @@ foreach ($path in @($DeploymentManifestPath, $PackagePath)) {
     }
 }
 if (-not $PSCmdlet.ShouldProcess($SaveName,
-        'run the authorized three-launch 24-fixture Elemental Races heritage persistence sequence')) {
+        'run the authorized three-launch 24-fixture Elemental Races heritage and feat persistence sequence')) {
     return
 }
 
@@ -145,4 +146,4 @@ finally {
     }
 }
 if ($failure -ne $null) { throw $failure }
-Write-Host "Elemental Races three-launch heritage persistence and cleanup PASS; run elemental-race-persistence-verify-absent next; package=$PackagePath; deployment=$DeploymentManifestPath"
+Write-Host "Elemental Races three-launch heritage and feat persistence and cleanup PASS; run elemental-race-persistence-verify-absent next; package=$PackagePath; deployment=$DeploymentManifestPath"

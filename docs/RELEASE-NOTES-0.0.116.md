@@ -91,8 +91,34 @@ passed all 18 Airy Step/Cloud Gazer/Inner Breath assertions. KMG-only run
 `20260905T0550526363250Z-a4c7158ae8e74168b36082c6c6e6e3a0`
 passed all 13 Hydraulic Maneuver/Triton Portal assertions. Every final run had
 zero runtime-result warnings, touched no save, and cleaned up its disposable
-state exactly. This checkpoint is independently buildable but is not a
-Release B PASS. Save-backed persistence, compatibility profiles, and final
+state exactly.
+
+Save-backed feat persistence also passes. Twenty-four fixtures cover every
+parent race, both sexes, and all three heritages. Their feat facts, abilities,
+resources, and Wings state survive fresh-process module-OFF and module-ON
+loads. Two commands create the high-risk transient cases before saving: an
+Undine's one-round Elemental Strike and an Ifrit's Scorching Weapons on two
+exact native shortsword instances. A schema-versioned owned unit part stores
+absolute game-time expiry and direct item references; it waits for native item
+hydration, never transfers enchantments to replacement gear, and clears
+expired, corrupt, or prerequisite-less state. Runs
+`20260905T1301245986745Z-elemental-race-persistence-prepare`,
+`20260905T1305075446941Z-elemental-race-module-disabled-persistence`, and
+`20260905T1308241102853Z-elemental-race-module-restored-persistence` passed;
+`20260905T1313027193036Z-elemental-race-persistence-verify-absent` proved final
+fresh-process cleanup. The carrier-dependent Elemental Strike/Wings and
+Scorching/Inner scenarios then independently re-passed 16/16 and 12/12 on the
+same artifact.
+
+The intentionally deferred catalog remains unimplemented: Elemental Jaunt;
+Oread Burrower; Oread Earth Glider; Stony Step; Echoes of Stone; Murmurs of
+Earth; Aquatic Ancestry; Steam Caster; Water Skinned; Blistering Feint; and
+any feat whose primary function is swimming, burrowing, underground or planar
+travel, free-form fire extinguishing, or environmental skill adjudication. No
+compensatory bonus is substituted.
+
+This checkpoint is independently buildable but is not a Release B PASS. The
+complete compatibility matrix, integrated runtime regression, and final
 release hashes remain pending. Release A 0.0.115 evidence remains historical
 and is not relabelled as 0.0.116 evidence.
 

@@ -19,8 +19,13 @@
   equipment, combat-maneuver, summon, targeting, and rest paths. Hydraulic
   Maneuver exposes native Bull Rush, Disarm, Trip, and Dirty Trick (blind),
   while Triton Portal summons 1d3 exact native Small Water Elementals using
-  the shared racial Hydraulic Push use. Persistence and release-wide
-  compatibility remain pending, so Release B is not marked PASS.
+  the shared racial Hydraulic Push use.
+- Persists command-created one-round Elemental Strike and exact-item Scorching
+  Weapons state through direct stable item references plus absolute game-time
+  expiry, including module-OFF hydration, without retargeting swapped gear or
+  restoring expired/ineligible effects. A 24-fixture three-process transaction
+  and fourth-process absence pass. Release-wide compatibility remains pending,
+  so Release B is not marked PASS.
 
 ## 0.0.115-elemental-heritages
 

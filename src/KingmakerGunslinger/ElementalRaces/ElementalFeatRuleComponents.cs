@@ -56,7 +56,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 !ReferenceEquals(damage.Initiator, Owner.Unit) ||
                 !ReferenceEquals(damage.Target, attack.Target) ||
                 !ReferenceEquals(evt.DamageBundle.Weapon, attack.Weapon) ||
-                IsSpellDamage(damage)) return;
+                IsSpellDamage(damage) || !ElementalFeatTransientRuntime
+                    .IsElementalStrikeActive(Owner)) return;
 
             DamageEnergyType energy;
             if (!TryEnergy(Owner.Progression.Race, out energy)) return;
@@ -178,6 +179,8 @@ namespace KingmakerGunslinger.ElementalRaces
                     enchantment.RemoveOnUnequipItem = false;
                     added.Add(enchantment);
                 }
+                ElementalFeatTransientRuntime.BeginScorchingWeapons(
+                    caster.Descriptor, marker, weapons);
             }
             catch
             {
@@ -190,6 +193,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 if (marker != null && caster.Descriptor.Buffs.GetBuff(Marker) !=
                         null)
                     caster.Descriptor.Buffs.RemoveFact(marker);
+                ElementalFeatTransientRuntime.RemoveScorchingWeapons(
+                    caster.Descriptor);
                 throw;
             }
 
@@ -259,6 +264,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 !ReferenceEquals(attack.Initiator, caster) ||
                 !ReferenceEquals(damage.Initiator, caster) ||
                 !ReferenceEquals(damage.Target, attack.Target) ||
+                !ElementalFeatTransientRuntime.IsScorchingWeaponsActive(
+                    caster.Descriptor, Owner as ItemEntityWeapon) ||
                 HasOtherFireDamage(evt.DamageBundle, enchantment)) return;
 
             bool inner = InnerFlame != null &&

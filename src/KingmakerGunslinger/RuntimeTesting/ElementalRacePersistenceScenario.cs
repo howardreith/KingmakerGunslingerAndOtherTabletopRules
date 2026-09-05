@@ -37,7 +37,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     /// <summary>
     /// Guarded four-launch save qualification for every production elemental
-    /// race, sex, visual preset, and heritage. Prepare creates each fixture
+    /// race, sex, visual preset, heritage, and applicable Release B feat set.
+    /// Prepare creates each fixture
     /// through native character creation and a distinct native Respec
     /// replacement, then persists spent racial SLAs. The second launch runs
     /// with selector publication disabled, verifies reconstruction, level-up,
@@ -162,7 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        internal sealed class ElementalRacePersistenceSession
+        internal sealed partial class ElementalRacePersistenceSession
         {
             private const int MinimumSettleUpdates = 30;
             private const int MaximumSettleUpdates = 480;
@@ -346,6 +347,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!_preservedMembershipExact)
                                 throw new InvalidOperationException(
                                     "The 24 module-OFF heritage fixtures did not remain in one exact serializable party and area state.");
+                            if (!ReleaseLoadedFeatPersistencePause())
+                                throw new InvalidOperationException(
+                                    "The guarded module-OFF load-time pause was not restored before saving the cleaned fixture state.");
                             _normalPathComplete = true;
                             StartExactWorkingSave();
                         }
@@ -364,6 +368,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         if (_prepare)
                         {
+                            _stage = "activate-feat-state-before-save";
+                            _preparedFeatTransientState =
+                                PrepareFeatPersistenceTransientState();
+                            if (!_preparedFeatTransientState.Value<bool>(
+                                    "exact"))
+                                throw new InvalidOperationException(
+                                    "The command-created Release B transient state was not exact immediately before save.");
                             _preparedMembershipExact =
                                 PreparedMembershipExact();
                             if (!_preparedMembershipExact)
@@ -427,9 +438,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 _blueprintSet = BlueprintBootstrap.ElementalRaces;
                 if (_blueprintSet == null || _blueprintSet.Count !=
-                        ElementalRaceIdentityCatalog.IdentityCount)
+                        ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount)
                     throw new InvalidOperationException(
-                        "The complete registered elemental blueprint set is unavailable.");
+                        "The complete registered elemental race blueprint set is unavailable.");
+                InitializeFeatPersistence();
                 _fixtures = BuildFixtures();
                 if (_legacyMigration)
                     _fixtures = _fixtures.Take(
@@ -448,8 +460,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _startingGoldBefore = _gunslingerClass.StartingGold;
                 _gunslingerClass.StartingGold = 0;
 
-                _registeredExact = RegisteredIdentitiesExact();
-                _selectorExact = SelectorStateExact();
+                _registeredExact = RegisteredIdentitiesExact() &&
+                    _featRegisteredExact;
+                _selectorExact = SelectorStateExact() &&
+                    _featSelectorExact;
                 Assembly assembly = typeof(BlueprintCharacterClass).Assembly;
                 _gameAssemblySha256 = HashFile(assembly.Location)
                     .ToLowerInvariant();
@@ -1046,6 +1060,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " native Respec source was not an exact elemental Gunslinger: " +
                         sourceObservation.Evidence.ToString(
                             Newtonsoft.Json.Formatting.None) + ".");
+                if (restoredPhase)
+                    CaptureRestoredSourceFeatPersistence(fixture,
+                        _currentUnit);
 
                 UnitEntityData sourceUnit = _currentUnit;
                 UnitDescriptor sourceDescriptor = sourceUnit.Descriptor;
@@ -1631,6 +1648,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceFixture fixture =
                     _fixtures[_fixtureIndex];
                 _stage = "capture-prepared-" + fixture.Label;
+                JObject featPersistence = PrepareFeatPersistenceFixture(
+                    fixture, _currentUnit);
                 ElementalPersistenceObservation observation = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.Heritage, 1, 1);
@@ -1695,11 +1714,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         executable.IsAvailable },
                     { "spendExact", spendExact }
                 };
+                record["featPersistence"] = featPersistence.DeepClone();
+                record["featPersistenceExact"] =
+                    featPersistence.Value<bool>("exact");
                 CaptureFixture(record, fixture, _currentUnit);
                 if (!observation.Exact || !nativeRespecExact ||
-                    !spendExact)
+                    !spendExact ||
+                    !featPersistence.Value<bool>("exact"))
                     throw new InvalidOperationException(fixture.Label +
-                        " did not satisfy the exact native-respec, pre-save rules, visual, and spent-SLA contract.");
+                        " did not satisfy the exact native-respec, pre-save rules, Release B feat, visual, and spent-SLA contract.");
                 PromoteCurrentFixture(fixture);
                 WriteProgress("prepared-fixture-promoted");
             }
@@ -1817,6 +1840,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceObservation loaded = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.Heritage, 0, 1);
+                JObject loadedFeatPersistence = ObserveFeatPersistence(
+                    fixture, _currentUnit, true, true,
+                    "module-off-loaded-before-level-up");
                 AbilityData abilityBeforeRest = RequireAbility(_currentUnit,
                     fixture.Heritage.SlaAbility);
                 AbilityData executableBeforeRest =
@@ -1830,6 +1856,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceObservation advanced = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.Heritage, 0, 2);
+                JObject advancedFeatPersistence = ObserveFeatPersistence(
+                    fixture, _currentUnit, true, true,
+                    "module-off-after-level-up");
                 AbilityData abilityAfterLevel = RequireAbility(_currentUnit,
                     fixture.Heritage.SlaAbility);
                 AbilityData executableAfterLevel =
@@ -1854,6 +1883,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _currentExpectedDoll.Matches(
                         _currentUnit.Descriptor.Doll);
 
+                JObject cleanedFeatPersistence =
+                    RemoveFeatPersistenceShortEffects(fixture,
+                        _currentUnit);
                 Kingmaker.Controllers.Rest.RestController.ApplyRest(
                     _currentUnit.Descriptor);
                 int resourceAfterRest = _currentUnit.Descriptor.Resources
@@ -1865,6 +1897,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceObservation restored = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.Heritage, 1, 2);
+                JObject restoredFeatPersistence = ObserveFeatPersistence(
+                    fixture, _currentUnit, true, false,
+                    "module-off-after-rest");
                 bool restExact = resourceAfterRest == 1 &&
                     executableAfterRest.IsAvailable &&
                     executableAfterRest.GetAvailableForCastCount() == 1 &&
@@ -1876,6 +1911,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceObservation preserved = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.Heritage, 0, 2);
+                JObject preservedFeatPersistence = ObserveFeatPersistence(
+                    fixture, _currentUnit, true, false,
+                    "module-off-after-resource-respend");
                 bool respendExact = resourceAfterRespend == 0 &&
                     !executableAfterRest.IsAvailable &&
                     executableAfterRest.GetAvailableForCastCount() == 0 &&
@@ -1911,12 +1949,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "preservedObservationExact", preserved.Exact },
                     { "respendExact", respendExact }
                 };
+                record["loadedFeatPersistence"] =
+                    loadedFeatPersistence.DeepClone();
+                record["loadedFeatPersistenceExact"] =
+                    loadedFeatPersistence.Value<bool>("exact");
+                record["advancedFeatPersistence"] =
+                    advancedFeatPersistence.DeepClone();
+                record["advancedFeatPersistenceExact"] =
+                    advancedFeatPersistence.Value<bool>("exact");
+                record["cleanedFeatPersistence"] =
+                    cleanedFeatPersistence.DeepClone();
+                record["cleanedFeatPersistenceExact"] =
+                    cleanedFeatPersistence.Value<bool>("exact");
+                record["restoredFeatPersistence"] =
+                    restoredFeatPersistence.DeepClone();
+                record["restoredFeatPersistenceExact"] =
+                    restoredFeatPersistence.Value<bool>("exact");
+                record["preservedFeatPersistence"] =
+                    preservedFeatPersistence.DeepClone();
+                record["preservedFeatPersistenceExact"] =
+                    preservedFeatPersistence.Value<bool>("exact");
                 CaptureFixture(record, fixture, _currentUnit);
                 if (!_currentLoadedDollExact || !loaded.Exact ||
                     !restExact || !advanced.Exact || !levelExact ||
-                    !respendExact)
+                    !respendExact ||
+                    !loadedFeatPersistence.Value<bool>("exact") ||
+                    !advancedFeatPersistence.Value<bool>("exact") ||
+                    !cleanedFeatPersistence.Value<bool>("exact") ||
+                    !restoredFeatPersistence.Value<bool>("exact") ||
+                    !preservedFeatPersistence.Value<bool>("exact"))
                     throw new InvalidOperationException(fixture.Label +
-                        " did not satisfy exact module-OFF load, spent level-up, rest, re-spend, persistence, and visual reconstruction contracts.");
+                        " did not satisfy exact module-OFF load, Release B feat persistence, spent level-up, rest, re-spend, and visual reconstruction contracts.");
                 _currentUnit = null;
                 _currentExpectedDoll = null;
                 _currentLoadedDollExact = false;
@@ -2004,6 +2067,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceObservation observation = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.RestoredHeritage, 1, 2);
+                JObject replacementFeatPersistence = ObserveFeatPersistence(
+                    fixture, _currentUnit, false, false,
+                    "module-restored-native-respec-replacement");
                 int resource = _currentUnit.Descriptor.Resources
                     .GetResourceAmount(
                         fixture.RestoredHeritage.SlaResource);
@@ -2049,11 +2115,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "nativeRespecExact", nativeRespecExact },
                     { "resourceAfterRespec", resource }
                 };
+                record["sourceFeatPersistence"] =
+                    _restoredSourceFeatObservation == null
+                        ? JValue.CreateNull() :
+                        _restoredSourceFeatObservation.DeepClone();
+                record["sourceFeatPersistenceExact"] =
+                    _restoredSourceFeatObservation != null &&
+                    _restoredSourceFeatObservation.Value<bool>("exact");
+                record["replacementFeatPersistence"] =
+                    replacementFeatPersistence.DeepClone();
+                record["replacementFeatPersistenceExact"] =
+                    replacementFeatPersistence.Value<bool>("exact");
                 CaptureFixture(record, fixture, _currentUnit);
                 if (!_currentLoadedDollExact || !observation.Exact ||
-                    !nativeRespecExact || resource != 1)
+                    !nativeRespecExact || resource != 1 ||
+                    _restoredSourceFeatObservation == null ||
+                    !_restoredSourceFeatObservation.Value<bool>("exact") ||
+                    !replacementFeatPersistence.Value<bool>("exact"))
                     throw new InvalidOperationException(fixture.Label +
-                        " did not satisfy exact module-ON restoration and native heritage Respec contracts.");
+                        " did not satisfy exact module-ON restoration, Release B feat source persistence, and native heritage Respec cleanup contracts.");
+                _restoredSourceFeatObservation = null;
                 PromoteCurrentFixture(fixture);
                 WriteProgress("restored-respec-fixture-promoted");
             }
@@ -2481,7 +2562,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool RegisteredIdentitiesExact()
             {
                 if (_blueprintSet == null || _blueprintSet.Count !=
-                        ElementalRaceIdentityCatalog.IdentityCount ||
+                        ElementalRaceIdentityCatalog
+                            .RaceBlueprintIdentityCount ||
                     BlueprintBootstrap.Library == null)
                     return false;
                 ElementalRaceBlueprints[] races = _blueprintSet
@@ -2514,7 +2596,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ToArray();
                 return races.Length == ElementalRaceCatalog.RaceCount &&
                     owned.Count == exact.Length && exact.Length ==
-                        ElementalRaceIdentityCatalog.IdentityCount &&
+                        ElementalRaceIdentityCatalog
+                            .RaceBlueprintIdentityCount &&
                     exact.Select(value => value.AssetGuid).Distinct(
                         StringComparer.Ordinal).Count() == exact.Length &&
                     exact.All(value =>
@@ -2731,7 +2814,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _createdUnits.Any(current => ReferenceEquals(
                             current, value)));
                 return countsExact && eachExact && globalExact &&
-                    SameReferences(_inventoryBefore, Snapshot(_inventory)) &&
+                    PreparedFeatPersistenceInventoryExact() &&
                     _player.Money == _moneyBefore &&
                     _gunslingerClass.StartingGold == 0 &&
                     RollbackStarterGrants();
@@ -2888,6 +2971,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _stage = "elemental-persistence-cleanup";
                 try
                 {
+                    if (!RestorePrepareFeatPersistencePause())
+                        throw new InvalidOperationException(
+                            "The transient persistence save pause was not restored during cleanup.");
+                    if (!ReleaseLoadedFeatPersistencePause())
+                        throw new InvalidOperationException(
+                            "The guarded post-load pause was not restored during cleanup.");
                     if (_gunslingerClass != null)
                         _gunslingerClass.StartingGold =
                             _startingGoldBefore;
@@ -2907,6 +2996,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void RemoveFixtureState()
             {
                 if (_player == null || _fixtures.Length == 0) return;
+                UnitEntityData[] candidates = Snapshot(_party)
+                    .Concat(Snapshot(_cross)).Concat(Snapshot(_allUnits))
+                    .OfType<UnitEntityData>().Concat(_createdUnits)
+                    .Where(value => value != null &&
+                        (IsFixtureUnit(value) || _createdUnits.Any(current =>
+                            ReferenceEquals(current, value))))
+                    .Distinct().ToArray();
+                foreach (UnitEntityData unit in candidates)
+                    CleanupFeatPersistenceEquipment(unit);
+
                 for (int index = _player.PartyCharacters.Count - 1;
                     index >= 0; index--)
                     if (_fixtures.Any(fixture => string.Equals(
@@ -2915,14 +3014,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _player.PartyCharacters.RemoveAt(index);
                 _player.InvalidateCharacterLists();
                 _player.UpdateCharacterLists();
-
-                UnitEntityData[] candidates = Snapshot(_party)
-                    .Concat(Snapshot(_cross)).Concat(Snapshot(_allUnits))
-                    .OfType<UnitEntityData>().Concat(_createdUnits)
-                    .Where(value => value != null &&
-                        (IsFixtureUnit(value) || _createdUnits.Any(current =>
-                            ReferenceEquals(current, value))))
-                    .Distinct().ToArray();
                 foreach (UnitEntityData unit in candidates)
                 {
                     unit.Commands.InterruptAll(true);
@@ -2976,7 +3067,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         currentPartyCharacters) &&
                     SameValues(expectedRemote, Snapshot(_remote)) &&
                     SameReferences(expectedCross, Snapshot(_cross)) &&
-                    SameReferences(_inventoryBefore, Snapshot(_inventory)) &&
+                    FeatPersistenceCleanupInventoryExact() &&
                     _player.Money == _moneyBefore &&
                     (_gunslingerClass == null ||
                         _gunslingerClass.StartingGold ==
@@ -3201,6 +3292,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_saveCompleted)
                 {
+                    if (!RestorePrepareFeatPersistencePause())
+                    {
+                        if (_saveElapsed != null &&
+                            _saveElapsed.Elapsed.TotalSeconds <
+                                _request.CompletionTimeoutSeconds)
+                            return;
+                        RecordException(new TimeoutException(
+                            "The transient persistence save pause was not restored after the bounded save-completion window."));
+                    }
                     _workingSaveEvidence = _workingSaveSmoke.Stop();
                     Finish(_prepare ? _preparedMembershipExact :
                         _moduleRestored || _cleanupStarted
@@ -3268,6 +3368,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _context.FeatureModules.Active.ElementalRaces },
                     { "registeredIdentitiesExact", _registeredExact },
                     { "selectorStateExact", _selectorExact },
+                    { "featRegisteredIdentitiesExact",
+                        _featRegisteredExact },
+                    { "featSelectorStateExact", _featSelectorExact },
+                    { "preparedFeatTransientState",
+                        _preparedFeatTransientState.DeepClone() },
+                    { "featIdentityCount",
+                        ElementalRaceIdentityCatalog.FeatIdentityCount },
+                    { "featCount", ElementalFeatPolicy.FeatCount },
+                    { "scorchingPersistenceFixtureIndex",
+                        ScorchingPersistenceFixtureIndex },
+                    { "strikePersistenceFixtureIndex",
+                        StrikePersistenceFixtureIndex },
                     { "fixtureCount", _fixtures.Length },
                     { "expectedPreparedPartyCount",
                         WorkingSaveSmokeScenario.ExpectedPartyCount +
@@ -3312,11 +3424,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "nativeSelectionRecords", _selectionRecords },
                     { "preparedMembershipExact",
                         _preparedMembershipExact },
+                    { "preparedFeatInventoryExact", _prepare &&
+                        PreparedFeatPersistenceInventoryExact() },
                     { "preservedMembershipExact",
                         _preservedMembershipExact },
                     { "normalPathComplete", _normalPathComplete },
                     { "baselineAbsentExact", _baselineAbsentExact },
                     { "structuralCleaned", _structuralCleaned },
+                    { "featCleanupInventoryExact",
+                        FeatPersistenceCleanupInventoryExact() },
+                    { "retainedFeatPersistenceInventoryCount",
+                        RetainedFeatPersistenceInventoryCount() },
                     { "captureCount", _captured },
                     { "imageCount", _imageCount },
                     { "renderedViewCount", _viewCount },
@@ -3440,9 +3558,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "observationExact") &&
                         TokenBool(value, "nativeRespecExact") &&
                         TokenBool(value, "spendExact") &&
+                        TokenBool(value, "featPersistenceExact") &&
                         value.Value<int>("resourceBeforeSpend") == 1 &&
                         value.Value<int>("resourceAfterSpend") == 0);
                 bool capturesExact = CaptureSetExact(records);
+                bool transientExact = _preparedFeatTransientState != null &&
+                    _preparedFeatTransientState.Value<bool>("exact");
                 Add(_assertions, "elemental-race-persistence-guard",
                     RuntimeTestScenarioCatalog
                         .ElementalRacePersistencePrepare,
@@ -3454,7 +3575,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "validated -kmgRuntimeTestRequest allowlist");
                 Add(_assertions,
                     "elemental-race-persistence-module-on",
-                    "Elemental Races active with four exact selector entries and every Release A blueprint registered",
+                    "Elemental Races active with four exact race selector entries, exact feat publication, and every Release B identity registered",
                     "active=" + _context.FeatureModules.Active
                         .ElementalRaces + ";selectorExact=" +
                         _selectorExact + ";registeredExact=" +
@@ -3489,6 +3610,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     recordExact,
                     "AbilityResourceLogic.Spend and owner persistent resources");
                 Add(_assertions,
+                    "elemental-feat-persistence-prepared-state",
+                    "all 24 fixtures own the exact race-applicable Release B feat facts; representative native commands persist one Elemental Strike buff and one two-item Scorching Weapons snapshot; Sylph fixtures own native flight buffs",
+                    "records=" + records.Length + ";factsExact=" +
+                        recordExact + ";preSaveTransientExact=" +
+                        transientExact,
+                    recordExact && transientExact,
+                    "live feature facts and native Wings buffs throughout fixture construction, followed by immediate pre-save native commands, two distinct native equipped item references, and project weapon enchantments");
+                Add(_assertions,
                     "elemental-race-persistence-prepared-membership",
                     "24 unique marker-bound heritage fixtures appended to the exact three-character working-save party and scene",
                     "prepared=" + prepared + ";membership=" +
@@ -3509,13 +3638,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "elemental-race-persistence-live-state-preserved",
                     "class blueprint, selector array, inventory, and money unchanged outside the 24 disposable party additions",
                     "startingGold=" + _gunslingerClass.StartingGold +
-                        ";inventoryExact=" + SameReferences(
-                            _inventoryBefore, Snapshot(_inventory)) +
+                        ";inventoryExact=" +
+                            FeatPersistenceCleanupInventoryExact() +
+                        ";retainedSavedFixtureItems=" +
+                            RetainedFeatPersistenceInventoryCount() +
                         ";selectorArrayExact=" +
                         CharacterRacesArrayExact(),
                     _gunslingerClass.StartingGold ==
                         _startingGoldBefore &&
-                    SameReferences(_inventoryBefore, Snapshot(_inventory)) &&
+                    FeatPersistenceCleanupInventoryExact() &&
                     _player.Money == _moneyBefore &&
                     CharacterRacesArrayExact(),
                     "exact pre-run snapshots; production blueprints never mutated");
@@ -3616,6 +3747,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TokenBool(value, "restExact") &&
                         TokenBool(value, "preservedObservationExact") &&
                         TokenBool(value, "respendExact") &&
+                        TokenBool(value,
+                            "loadedFeatPersistenceExact") &&
+                        TokenBool(value,
+                            "advancedFeatPersistenceExact") &&
+                        TokenBool(value,
+                            "cleanedFeatPersistenceExact") &&
+                        TokenBool(value,
+                            "restoredFeatPersistenceExact") &&
+                        TokenBool(value,
+                            "preservedFeatPersistenceExact") &&
                         value.Value<int>("casterLevelBeforeRest") == 1 &&
                         value.Value<int>("resourceAfterSpentLevelUp") == 0 &&
                         value.Value<int>("resourceAfterRest") == 1 &&
@@ -3633,7 +3774,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "validated -kmgRuntimeTestRequest allowlist");
                 Add(_assertions,
                     "elemental-race-persistence-module-off",
-                    "Elemental Races inactive and absent from selectors while every Release A blueprint remains registered",
+                    "Elemental Races inactive and absent from race/feat selectors while every Release B identity remains registered",
                     "active=" + _context.FeatureModules.Active
                         .ElementalRaces + ";selectorExact=" +
                         _selectorExact + ";registeredExact=" +
@@ -3662,6 +3803,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         recordExact,
                     recordExact,
                     "LevelUpController.ApplyLevelup, pre-rest resource observation, and RestController.ApplyRest");
+                Add(_assertions,
+                    "elemental-feat-persistence-module-off-state",
+                    "all feat facts, granted abilities, Sylph flight buffs, the active Elemental Strike buff, and both exact Scorching Weapons item enchantments hydrate with publication OFF; level-up preserves them; exact transient cleanup removes only the short effects before rest and re-save",
+                    "records=" + records.Length + ";exact=" +
+                        recordExact,
+                    recordExact,
+                    "fresh-process loaded descriptors, buffs, engine-issued item identities, equipment slots, enchantments, level-up, rest, and exact project-owned cleanup");
                 Add(_assertions,
                     "elemental-race-persistence-captures",
                     "24 sidecars, 48 PNGs, and 120 labelled module-OFF post-load views",
@@ -3696,6 +3844,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "loadedDollExactBeforeReconstruction") &&
                         TokenBool(value, "observationExact") &&
                         TokenBool(value, "nativeRespecExact") &&
+                        TokenBool(value,
+                            "sourceFeatPersistenceExact") &&
+                        TokenBool(value,
+                            "replacementFeatPersistenceExact") &&
                         value.Value<int>("resourceAfterRespec") == 1);
                 bool respecExact = respecRecords.Length ==
                         ElementalPersistenceFixtureCount &&
@@ -3737,7 +3889,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "validated -kmgRuntimeTestRequest allowlist");
                 Add(_assertions,
                     "elemental-race-persistence-module-restored",
-                    "Elemental Races active again with four exact selector entries and every Release A blueprint registered",
+                    "Elemental Races active again with four exact race selector entries, exact feat publication, and every Release B identity registered",
                     "active=" + _context.FeatureModules.Active
                         .ElementalRaces + ";selectorExact=" +
                         _selectorExact + ";registeredExact=" +
@@ -3762,6 +3914,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         transitionMatrixExact,
                     transitionMatrixExact,
                     "stable fixture source/persisted/restored heritage mapping and native Respec records");
+                Add(_assertions,
+                    "elemental-feat-persistence-restored-respec-cleanup",
+                    "every module-restored source retains its exact Release B feat state before native Respec and every replacement is free of stale feat facts, abilities, buffs, weapons, and enchantments",
+                    "records=" + records.Length + ";exact=" +
+                        recordExact,
+                    recordExact,
+                    "fresh-process source observation followed by distinct native Respec replacement observation");
                 Add(_assertions,
                     "elemental-race-persistence-restored-captures",
                     "24 sidecars, 48 PNGs, and 120 labelled module-restored post-respec views",
@@ -3789,6 +3948,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _captured == 0 && _imageCount == 0 &&
                     _viewCount == 0 && _indexWritten &&
                     _evidenceFiles.Count == 1 &&
+                    _featRegisteredExact && _featSelectorExact &&
                     _evidenceFiles.All(File.Exists);
                 Add(_assertions, "elemental-race-persistence-guard",
                     RuntimeTestScenarioCatalog
@@ -3808,7 +3968,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "fresh-load post-cleanup serialization boundary");
                 Add(_assertions,
                     "elemental-race-persistence-identities-after-cleanup",
-                    "all identities registered and selector state consistent with the exactly restored original module setting",
+                    "all race, heritage, and Release B feat identities registered and race/feat selector states consistent with the exactly restored original module setting",
                     "registeredExact=" + _registeredExact +
                         ";selectorExact=" + _selectorExact +
                         ";active=" + _context.FeatureModules.Active

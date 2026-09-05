@@ -150,3 +150,21 @@ the mission's hard-stop contract; independent work continues.
   `.previous`. The historical verifier now recognizes only that exact overlay:
   cache SHA/MVID, backup bytes, and settings semantics are independently
   checked, while every other extra file or mutation remains a hard failure.
+
+## Resolved Release B persistence findings
+
+- One-round Elemental Strike and exact-item Scorching Weapons effects need
+  state that outlives native buff/item teardown during serialization. A small
+  schema-versioned project `UnitPart` now owns only absolute game-time end
+  ticks and at most two direct `ItemEntityWeapon` references. It restores only
+  exact unexpired eligible state, waits for native owned-item hydration, never
+  retargets replacement gear, and clears corruption, expiry, death, or missing
+  prerequisites. The post-load patch is exact and no-ops for every unit without
+  that part.
+- The first module-OFF verification reached the command-bearing fixture after
+  its one-round state expired. Evidence showed that Kingmaker rejected
+  `Game.Instance.IsPaused = true` inside the after-load callback even though
+  the previous harness treated the assignment as successful. A focused test
+  failed first. The guarded loader now retries from its update boundary and
+  refuses all fingerprint or feature inspection until the engine observably
+  accepts the pause. The complete three-process rerun and final absence pass.
