@@ -103,7 +103,8 @@ namespace KingmakerGunslinger.BodyguardFeats
             foreach (T addition in orderedAdditions)
             {
                 string additionIdentity = RequireIdentity(addition, identity);
-                for (int index = result.Count - 1; index >= 0; index--)
+                int firstExactIndex = -1;
+                for (int index = 0; index < result.Count; index++)
                 {
                     T existing = result[index];
                     if (!string.Equals(RequireIdentity(existing, identity),
@@ -111,14 +112,31 @@ namespace KingmakerGunslinger.BodyguardFeats
                     if (!ReferenceEquals(existing, addition))
                         throw new InvalidOperationException("Feat GUID conflict for '" +
                             additionIdentity + "'.");
+                    if (firstExactIndex < 0)
+                    {
+                        firstExactIndex = index;
+                        continue;
+                    }
                     result.RemoveAt(index);
+                    index--;
                 }
+                if (firstExactIndex >= 0) continue;
                 int insertion = FindInsertion(result, addition, identity, displayName);
                 result.Insert(insertion, addition);
             }
             T[] merged = result.ToArray();
             Validate(merged, additions, identity, "planned");
-            return merged;
+            return SameReferences(current, merged) ? current : merged;
+        }
+
+        private static bool SameReferences(T[] expected, T[] actual)
+        {
+            if (expected == null || actual == null ||
+                expected.Length != actual.Length) return false;
+            for (int index = 0; index < expected.Length; index++)
+                if (!ReferenceEquals(expected[index], actual[index]))
+                    return false;
+            return true;
         }
 
         private static int FindInsertion(List<T> current, T candidate,
