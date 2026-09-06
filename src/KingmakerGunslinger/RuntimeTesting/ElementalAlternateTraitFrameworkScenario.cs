@@ -301,6 +301,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         expectedPersistence.All(value => persistenceOwned.Count(
                             observed => ReferenceEquals(value, observed)) == 1),
                     "actual persistence collector over the live owned blueprint graph");
+                // Ray transport qualification requires a pristine controller.
+                // Run it before other scenarios create native projectiles.
+                ElementalCrystallineFormNativeAuditScenario.Exercise(request, assertions, evidenceFiles);
+                ElementalCrystallineFormScenario.Exercise(request, assertions, evidenceFiles);
                 ElementalAlternateTraitReconciliationScenario.Exercise(
                     request, assertions, evidenceFiles);
                 ElementalAlternateTraitPassiveScenario.Exercise(
@@ -311,7 +315,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request, assertions, evidenceFiles);
                 ElementalBloodScenario.Exercise(request, assertions, evidenceFiles);
                 ElementalEfreetiMagicScenario.Exercise(request, assertions, evidenceFiles);
-                ElementalCrystallineFormNativeAuditScenario.Exercise(request, assertions, evidenceFiles);
             }
             catch (Exception exception)
             {

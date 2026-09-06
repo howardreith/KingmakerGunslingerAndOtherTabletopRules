@@ -19,8 +19,12 @@ Efreeti Magic also passes native KMG-only/combined checks and actual
 native-selected multi-trait OFF/ON saves, spent shared uses, active size buffs,
 rest, level-up, respec, cleanup and renewed 0.0.114 migration. See its
 [incremental checkpoint](docs/ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md).
-Six other required mechanics, the complete trait persistence/lifecycle matrix
-and final qualification remain. This is not a finished Release C package.
+Crystalline Form now has focused native core proof: ray-only racial AC, chosen
+daily deflection, native action/resource handling, equipment and awareness
+boundaries. See its [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+Its remaining ray/catalog and save gates, five other required mechanics, the
+complete trait persistence/lifecycle matrix and final qualification remain.
+This is not a finished Release C package.
 
 Release B remains locally qualified. It registers eleven stable feat identities plus fourteen supporting ability,
 buff, and weapon-enchantment identities in every module state. When the module
@@ -33,8 +37,8 @@ Release B passes locally. All eleven feat mechanics pass dedicated and final
 integrated guarded scenarios; 24 race/sex/heritage fixtures pass module-OFF/ON
 save persistence and exact cleanup; and all six required installed
 compatibility profiles pass in both module states with byte-exact restoration.
-The required checkpoint push remains blocked only by the external branch
-allowlist. Visual Adjustments was not installed and remains **NOT-RUN**.
+The Release A/B checkpoints are pushed on the dedicated feature branch after
+the user updated the allowlist. Visual Adjustments remains **NOT-RUN** (absent).
 
 Release A added one obligatory heritage selection per race. Each selection has
 exactly three choices: General plus two alternate heritages. The parent race

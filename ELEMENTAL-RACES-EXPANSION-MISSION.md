@@ -69,9 +69,15 @@ blocked, failed, ambiguous, or not run.
 
 ## Current engineering focus
 
-Release C remains at fifteen native-proven mechanics and six implementations
-pending. The [Crystalline native audit](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-NATIVE-AUDIT.md)
-disproves broad ray-category/visual eligibility and identifies native resolution
-boundaries to qualify. Continue exact ray eligibility and actual chosen daily
-deflection, then every independent remaining trait and full release gate.
-The audit is not permission to replace the printed mechanic with a weaker bonus.
+Release C has fifteen prior native-proven mechanics and incremental
+[Crystalline core proof](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+Complete Crystalline catalog/multi-ray/persistence/lifecycle boundaries and
+implement Treacherous Earth, Breeze-Kissed, Acid Breath, Nereid Fascination and
+Ooze Breath, then every final release gate. Continue independent work; no
+hard stop is established. The earlier native audit is retained historically.
+
+2026-09-06 continuation: the final Crystalline core candidate passes 1,423 tests,
+clean Release/package and two native profiles with 10,168 assertions. Three
+new resource/consent identities are fixed. Earlier failed fixtures remain FAIL
+in STATE; no build, core run or earlier seven-trait save cycle implies full
+Crystalline or Release C acceptance.

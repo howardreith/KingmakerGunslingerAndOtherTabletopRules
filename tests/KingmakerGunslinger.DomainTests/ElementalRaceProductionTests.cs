@@ -122,11 +122,11 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG.ElementalRaces.", StringComparison.Ordinal) &&
                 string.Equals((string)value["status"], "active",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(215, elemental.Length,
+            Assertions.Equal(218, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1853, all.Length,
-                "Manifest total must include 215 production elemental identities.");
-            Assertions.Equal(1851, all.Count(value => string.Equals(
+            Assertions.Equal(1856, all.Length,
+                "Manifest total must include 218 production elemental identities.");
+            Assertions.Equal(1854, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>
@@ -183,16 +183,22 @@ namespace KingmakerGunslinger.DomainTests
                 "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Resource",
                 "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Ability",
                 "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.EnlargePerson",
-                "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson"
+                "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Resource",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.ArmedBuff",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Mode"
             }).ToArray();
             Assertions.Equal(expected.Length, release.Length,
                 "Release C framework and mechanic manifest count drifted.");
-            Assertions.Equal(3, release.Count(value => string.Equals(
+            Assertions.Equal(4, release.Count(value => string.Equals(
                 (string)value["plannedType"], "BlueprintBuff", StringComparison.Ordinal)),
-                "The three blood effects require independently persisted stable buff identities.");
-            Assertions.Equal(1, release.Count(value => string.Equals(
+                "The three blood effects and opt-in ray marker require stable buff identities.");
+            Assertions.Equal(2, release.Count(value => string.Equals(
                 (string)value["plannedType"], "BlueprintAbilityResource", StringComparison.Ordinal)),
-                "Efreeti Magic variants must share one fixed resource identity.");
+                "Efreeti Magic and Crystalline Form have independent fixed resources.");
+            Assertions.Equal(1, release.Count(value => string.Equals(
+                (string)value["plannedType"], "BlueprintActivatableAbility", StringComparison.Ordinal)),
+                "Crystalline Form has one save-stable consent toggle.");
             Assertions.Equal(3, release.Count(value => string.Equals(
                 (string)value["plannedType"], "BlueprintAbility", StringComparison.Ordinal)),
                 "Efreeti Magic needs one stable parent and two stable variant identities.");

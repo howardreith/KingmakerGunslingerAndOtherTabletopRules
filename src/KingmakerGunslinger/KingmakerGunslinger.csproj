@@ -949,6 +949,7 @@
     <Compile Include="RuntimeTesting\ElementalBloodScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalEfreetiMagicScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalCrystallineFormNativeAuditScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalCrystallineFormScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalBloodPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalEfreetiPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalComponentIdentityScenario.cs" />
@@ -974,6 +975,9 @@
     <Compile Include="ElementalRaces\ElementalTraitDailyResourcePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalTraitDailyResourceRuntime.cs" />
     <Compile Include="ElementalRaces\ElementalEfreetiMagicFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalCrystallineFormPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalCrystallineFormMechanics.cs" />
+    <Compile Include="ElementalRaces\ElementalCrystallineFormFactory.cs" />
     <Compile Include="ElementalRaces\ElementalBloodInsightPersistencePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalBloodRuntime.cs" />
     <Compile Include="ElementalRaces\ElementalBloodBlueprintFactory.cs" />

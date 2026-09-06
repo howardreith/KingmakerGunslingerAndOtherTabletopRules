@@ -1,5 +1,11 @@
 # Installation, updates, removal, and compatibility
 
+The current 0.0.117 package is a development candidate, not a qualified Release C
+for production campaigns. Crystalline Form's focused KMG-only/combined native
+core checks pass, but its persistence and the remaining release gates do not yet
+have complete proof. See the [exact checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+No new optional dependency, module toggle or settings schema is introduced.
+
 ## Supported baseline
 
 This build is qualified against Pathfinder: Kingmaker Enhanced Plus Edition

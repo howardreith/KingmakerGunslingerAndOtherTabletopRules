@@ -6,7 +6,8 @@
 RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; EIGHT TRAITS
 HAVE CHECKPOINT PROOF AND THREE SUMMON INSIGHTS PLUS THREE BLOOD TRAITS HAVE
 NATIVE AND INCREMENTAL SAVE-BACKED EVIDENCE. EFREETI MAGIC ALSO PASSES NATIVE,
-MULTI-TRAIT SAVE AND RENEWED LEGACY MIGRATION GATES. SIX MECHANICS, THE OTHER FOURTEEN
+MULTI-TRAIT SAVE AND RENEWED LEGACY MIGRATION GATES. CRYSTALLINE CORE NOW HAS
+NATIVE PROOF; ITS REMAINING GATES, FIVE UNIMPLEMENTED MECHANICS, THE OTHER FOURTEEN
 TRAITS' PERSISTENCE, FULL LIFECYCLE, AND FINAL RELEASE-WIDE
 QUALIFICATION REMAIN PENDING. THE FACT-COMPONENT NAME REPAIR NOW PASSES
 PINNED 0.0.114 MIGRATION MECHANICS; SUBJECTIVE VISUAL REVIEW REMAINS.
@@ -33,12 +34,20 @@ behavior.
 
 ## Planned release inventory
 
-The subsequent [Crystalline native audit](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-NATIVE-AUDIT.md)
+The current [Crystalline core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md)
+passes 1,423 tests, clean build/package and two fresh guarded native profiles
+(10,168 assertions). It appends exactly three resource/consent identities;
+the manifest is now 1,856 total / 1,854 active, with 218 active Elemental
+identities. Ray-only native AC, opted-in deflection, action/resource/rest,
+equipment and awareness boundaries pass. Complete ray/catalog, save and
+lifecycle gates remain open. Exact hashes and failed attempts are in STATE.
+
+The historical [Crystalline native audit](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-NATIVE-AUDIT.md)
 passes 1,421 tests and two guarded processes (9,816 assertions), without changing
 gameplay or identities. Actual native non-ray controls invalidate eligibility
 based only on WeaponCategory.Ray or shared projectile visuals. A public native
-result-replacement boundary exists, but actual deflection, conditions and
-persistence are still pending. See releaseCCrystallineAudit in STATE for exact
+result-replacement boundary existed, but deflection, conditions and persistence
+were not qualified by that audit. See releaseCCrystallineAudit in STATE for exact
 evidence and restoration hashes; this does not raise the completed-trait count.
 
 The latest Efreeti Magic slice passes 1,421 tests, clean build/package and
@@ -895,3 +904,19 @@ artifact gates therefore pass locally. Commit
 used by the final artifact. The remaining external branch allowlist refusal
 affects checkpoint publication only; it is not relabelled as a gameplay PASS.
 Nothing was merged, tagged, or publicly released.
+
+## Crystalline Form development continuation (2026-09-06, unqualified)
+
+The current source adds exact-ray racial AC, chosen native impact deflection,
+an off-by-default no-action consent mode, and one separately persisted daily
+resource. Three fixed manifest IDs append at 070-072: total 1,856 / active 1,854,
+218 active elemental identities, 72 Release C identities. The first candidate
+passed 1,423 domain tests, clean Release and strict package validation.
+
+Its actual guarded run failed before Crystalline mechanics: a safety check
+refused projectiles left by earlier feature scenarios. The game exited, no save
+was opened, and profile restoration was verified. The safe retry moves this
+scenario first; it does not destroy unrelated projectiles or relax the guard.
+STATE contains exact source/package/DLL/run/evidence identities. The existing
+fifteen-mechanic qualification count is unchanged. Catalog completion, full
+native boundaries and Crystalline persistence remain pending.
