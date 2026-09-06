@@ -7,6 +7,48 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ElementalBloodInsightPersistencePolicyTests
     {
+        internal static void CrystallineFixtureCoverageIsExact()
+        {
+            var covered = new List<Tuple<ElementalHeritageRace, int, int, ElementalAlternateTraitId[]>>();
+            foreach (ElementalHeritageRace race in Enum.GetValues(typeof(ElementalHeritageRace)))
+                for (int gender = 0; gender < 2; gender++)
+                    for (int index = 0; index < 3; index++)
+                    {
+                        ElementalAlternateTraitId[] traits = ElementalBloodInsightPersistencePolicy.CrystallineTraits(race, gender, index);
+                        covered.Add(Tuple.Create(race, gender, index, traits));
+                        ElementalHeritageDefinition heritage = ElementalHeritagePolicy.Ordered().Where(value => value.ParentRace == race).ElementAt(index);
+                        ElementalAlternateTraitState state = ElementalAlternateTraitPolicy.Resolve(race, heritage.Id, traits);
+                        Assertions.Equal(state.Fingerprint,
+                            ElementalAlternateTraitPolicy.Resolve(race, heritage.Id, traits.Reverse()).Fingerprint,
+                            "Every eight-trait fixture resolves independently of fact order.");
+                        Assertions.Equal(state.Fingerprint,
+                            ElementalAlternateTraitPolicy.ResolveMarkers(race, heritage.Id, state.MarkerSymbols()).Fingerprint,
+                            "Serialized markers reconstruct the same exact providers.");
+                        foreach (ElementalHeritageStat stat in Enum.GetValues(typeof(ElementalHeritageStat)))
+                            Assertions.Equal(heritage.ModifierFor(stat), state.ModifierFor(stat), "Racial stats are unchanged.");
+                        if (traits.Contains(ElementalAlternateTraitId.CrystallineForm))
+                        {
+                            Assertions.Equal(ElementalHeritageRace.Oread, race, "Only Oreads receive the trait.");
+                            Assertions.Equal(ElementalHeritageId.Ironsoul, heritage.Id, "Incremental fixtures explicitly use Ironsoul.");
+                            Assertions.True(state.ElementalAffinityProviderSymbol == null &&
+                                state.EnergyResistanceProviderSymbol != null && state.RacialSlaResourceSymbol != null,
+                                "Crystalline consumes affinity only; its resource never replaces the heritage SLA resource.");
+                        }
+                    }
+            Assertions.Equal(24, covered.Count, "All race, sex and heritage fixtures remain.");
+            Assertions.Equal(18, covered.Count(value => value.Item4.Length != 0), "Eighteen native-selected trait fixtures.");
+            Assertions.Equal(6, covered.Count(value => value.Item4.Length == 2), "Six legal combined Ifrit fixtures remain.");
+            Assertions.Equal(8, covered.SelectMany(value => value.Item4).Distinct().Count(), "All seven prior traits plus Crystalline remain represented.");
+            var crystalline = covered.Where(value => value.Item4.Contains(ElementalAlternateTraitId.CrystallineForm)).ToArray();
+            Assertions.Equal(2, crystalline.Length, "One spent and one armed native fixture.");
+            Assertions.Equal(2, crystalline.Select(value => value.Item2).Distinct().Count(), "Both sexes covered.");
+            ElementalAlternateTraitId[] blood = { ElementalAlternateTraitId.FireInTheBlood,
+                ElementalAlternateTraitId.StoneInTheBlood, ElementalAlternateTraitId.StormInTheBlood };
+            Assertions.Equal(8, covered.Count(value => value.Item4.Any(blood.Contains)), "Eight partially spent blood fixtures remain.");
+            EfreetiCombinedFixtureCoverageIsExact();
+            NativeFixtureCoverageIsExact();
+        }
+
         internal static void EfreetiCombinedFixtureCoverageIsExact()
         {
             var covered = new List<Tuple<ElementalHeritageRace, int, int, ElementalAlternateTraitId[]>>();

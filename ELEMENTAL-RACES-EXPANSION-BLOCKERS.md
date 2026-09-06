@@ -13,6 +13,22 @@ configuration successfully loads the exact same working descriptor.
 
 None established.
 
+## Latest incremental save result
+
+The [Crystalline persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)
+supersedes the earlier pending save scope below. Exact armed consent, spent
+uses, native rest/level/respec, OFF/ON loading and fresh absence now pass on
+two Ironsoul fixtures in the eight-trait matrix. Renewed 0.0.114 migration
+passes for all eight legacy fixtures. Whole-unit save suspension no longer
+recreates owned providers. Final profile restoration is independently exact.
+
+The OFF log retains four pre-existing feat-transient reconciliation ERROR
+entries during native level-up preview/hydration of the existing Scorching
+Weapons and Elemental Strike fixtures. Final state assertions pass, but that
+boundary needs its own narrow investigation before full Release C acceptance.
+It is not yet an established hard stop. Five trait mechanics and the other
+thirteen traits' save coverage, complete lifecycle and final gates remain.
+
 ## Publication-process blocker: resolved 2026-09-06 UTC
 
 The user allowlisted the exact required branch. The mandatory external wrapper

@@ -1,5 +1,36 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Crystalline persistence and native suspension correction
+
+- Initial OFF loading exposed lost armed consent. Read-only inspection of the
+  exact disposable save showed the mode was already OFF before serialization
+  completed. Native IL established whole-unit suspension, not permanent removal.
+- Four local OnTurnOff guards now retain providers while Owner.IsTurnedOn is
+  false. Actual marker loss still reconciles. No identity or saved ledger changed.
+- Immutable candidate 02 passes 1,424 tests, clean Release/package, two native
+  profiles (10,180 assertions), four eight-trait save processes (282) and three
+  renewed pinned 0.0.114 migration processes (28). All 168 trait and 42
+  Crystalline observations are exact. All final 968-entry folder restorations
+  and an independent final comparison pass.
+- Retained initial save FAIL and full-folder metadata restoration FAIL,
+  wrapper-parser diagnostic and expected level-one recovery FAIL; each recovery
+  saved exact cleanup and/or proved fresh absence as recorded in STATE.
+- Retain 60 final result warnings and four pre-existing OFF level-up
+  feat-transient ERROR lines. No blanket zero-log-error claim. Complete
+  Crystalline, five missing traits and final Release C gates remain.
+  [Exact checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md).
+
+## 2026-09-06 UTC - Crystalline persistence continuation (not yet qualified)
+
+- Core checkpoint 6af2a44776570affb0b4bc2251f6c15749d99175 was committed and
+  pushed with the exact required wrapper; local and remote SHAs matched and the
+  tree was clean. No merge, tag, PR or release occurred.
+- Extended the native-selected save matrix to eight traits, retaining every
+  earlier trait and the unchanged historical six/seven-trait policy tests.
+  Male Ironsoul seeds a spent native use; female Ironsoul seeds armed consent.
+  No save-ledger values are assigned and no campaign has yet been accessed for
+  this extension. Full source and guarded persistence gates are next.
+
 ## 2026-09-06 UTC - Crystalline core native checkpoint
 
 - Added exact semantic ray policy, native racial AC and locally owned native

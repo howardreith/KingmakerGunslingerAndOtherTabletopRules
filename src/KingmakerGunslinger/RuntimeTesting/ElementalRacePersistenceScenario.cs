@@ -3401,7 +3401,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixtureIndex", _fixtureIndex },
                     { "fixtureCount", _fixtures.Length },
                     { "alternateTraitMatrix", _legacyMigration ? "legacy-markerless-general" :
-                        ElementalBloodInsightPersistencePolicy.EfreetiMatrixId },
+                        ElementalBloodInsightPersistencePolicy.CrystallineMatrixId },
                     { "settleUpdates", _settleUpdates },
                     { "captured", _captured },
                     { "nativeRespecRecords", _respecRecords.Count },

@@ -2,6 +2,12 @@
 
 ## 0.0.117-elemental-traits
 
+- Preserves exact owned providers during native whole-unit save suspension,
+  preventing Crystalline consent from being silently reset before serialization.
+  The eight-trait save matrix and renewed 0.0.114 migration pass alongside
+  1,424 tests and native KMG-only/combined regressions. Exact failures, warnings
+  and remaining gates are retained in the
+  [persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md).
 - Adds Crystalline Form's exact-ray racial AC and opt-in daily native impact
   deflection with three stable resource/buff/mode identities. Full 1,423 tests,
   clean build/package and two guarded KMG-only/combined processes pass 10,168

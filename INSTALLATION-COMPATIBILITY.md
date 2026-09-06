@@ -2,8 +2,12 @@
 
 The current 0.0.117 package is a development candidate, not a qualified Release C
 for production campaigns. Crystalline Form's focused KMG-only/combined native
-core checks pass, but its persistence and the remaining release gates do not yet
-have complete proof. See the [exact checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+core and incremental consent/spent-use persistence checks pass, but complete
+trait lifecycle and remaining release gates do not yet have complete proof.
+See the [exact persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md).
+Its final transactions restore the entire original installed mod tree and
+settings exactly. The initial failed diagnostic's metadata-restoration failure
+is retained separately; no later PASS retroactively qualifies it.
 No new optional dependency, module toggle or settings schema is introduced.
 
 ## Supported baseline

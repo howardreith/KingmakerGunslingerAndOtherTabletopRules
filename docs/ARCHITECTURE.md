@@ -604,7 +604,15 @@ The native opt-in mode costs no action; its independent daily resource is
 committed only after an eligible hit. Dedicated native commands prove AC,
 deflection, resource/rest, equipment and awareness in two profiles. Remaining
 catalog/multi-ray and persistence gates are not covered by that core proof or
-the earlier seven-trait transaction.
+the earlier seven-trait transaction. The later eight-trait save cycle adds
+two Ironsoul consent/resource fixtures and retains the historical matrices.
+Native whole-unit TurnOff sets Owner.IsTurnedOn=false before fact callbacks.
+The four owned race/heritage/trait/retain removal callbacks skip reconciliation
+only at that suspension boundary, retaining exact AddFacts-owned modes and
+buffs during serialization. Active-unit marker removal still reconciles.
+Dedicated native TurnOff/TurnOn and real OFF/ON save/rest/level/respec tests,
+plus renewed pinned 0.0.114 migration, qualify this narrow correction without
+adding saved state or changing any identity.
 `elemental-races` setting gates race, feat, and trait-selector publication; no
 module identity or schema member was added. All 218 active elemental identities
 remain registered while selector publication is disabled. Exact 0.0.114

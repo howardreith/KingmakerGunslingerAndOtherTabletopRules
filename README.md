@@ -22,8 +22,11 @@ rest, level-up, respec, cleanup and renewed 0.0.114 migration. See its
 Crystalline Form now has focused native core proof: ray-only racial AC, chosen
 daily deflection, native action/resource handling, equipment and awareness
 boundaries. See its [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
-Its remaining ray/catalog and save gates, five other required mechanics, the
-complete trait persistence/lifecycle matrix and final qualification remain.
+Its subsequent [persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)
+preserves armed consent and spent uses across native save suspension, OFF/ON
+loading, level-up, rest and base-trait respec, with renewed 0.0.114 migration.
+Remaining ray/catalog controls, five other required mechanics, the complete
+trait persistence/lifecycle matrix and final qualification remain.
 This is not a finished Release C package.
 
 Release B remains locally qualified. It registers eleven stable feat identities plus fourteen supporting ability,

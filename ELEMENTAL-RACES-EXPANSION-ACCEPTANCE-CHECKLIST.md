@@ -191,5 +191,11 @@ Unchecked items are pending and must not be inferred from builds or historical
 - [x] Native core: final two profiles pass 10,168 assertions, including exact ray
   AC, chosen deflection, no-action/resource handling, rest, two held weapons,
   free-hand return, blindness/paralysis and recovery. Earlier failures retained.
-- [ ] Complete native catalog, equipment/awareness/multi-ray controls, and
-  save-backed spent-resource/consent persistence.
+- [x] Incremental eight-trait persistence: all 24 fixtures, 168 exact trait
+  observations, 42 Crystalline observations, spent male/armed female Ironsoul,
+  native save/OFF/ON/rest/level/base-respec/cleanup/fresh absence. Four processes
+  pass 282 assertions; two native reruns pass 10,180; renewed pinned legacy
+  migration passes 28. Retain 60 result warnings and four pre-existing
+  feat-transient native ERROR lines; final exact folder restoration passes.
+- [ ] Complete native catalog, equipment/awareness/multi-ray controls, full
+  trait lifecycle and resolution of the pre-existing transient diagnostic.

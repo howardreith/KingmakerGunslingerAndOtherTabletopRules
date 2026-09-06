@@ -28,6 +28,13 @@ deflection, no-action spending, rest, equipment and awareness boundaries pass;
 complete ray/catalog, save and lifecycle gates remain open. See the
 [core checkpoint](ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
 
+The subsequent [persistence checkpoint](ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)
+fixes provider recreation during native whole-unit save suspension. It passes
+1,424 tests, clean build/package, two native profiles, the eight-trait OFF/ON
+save cycle and renewed pinned 0.0.114 migration. All nine final processes pass
+10,490 assertions; 60 result warnings and four pre-existing OFF level-up
+transient diagnostic errors remain explicit. This is not full Release C PASS.
+
 ## Implemented in this checkpoint
 
 - 62 fixed manifest identities: ten slot selections, ten retain-base markers,
@@ -75,7 +82,7 @@ Native selections, nine partially spent active blood buffs, OFF/ON load,
 level-up, rest, respec and fresh absence pass. Native provider deactivation no
 longer incorrectly removes a saved buff; exact marker loss still cleans it up.
 Five unimplemented mechanics, complete Crystalline qualification, the other
-fourteen traits' persistence, full lifecycle, final
+thirteen traits' persistence, full lifecycle, final
 compatibility/module matrices, full release qualification, and final
 documentation remain pending.
 Release A and Release B evidence is
