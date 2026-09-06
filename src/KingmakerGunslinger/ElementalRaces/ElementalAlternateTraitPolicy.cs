@@ -276,7 +276,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     ElementalRacialTraitSlot.ElementalAffinity),
                 T(ElementalAlternateTraitId.EfreetiMagic,
                     ElementalHeritageRace.Ifrit, "Efreeti Magic",
-                    "Once per day, choose Enlarge Person or Reduce Person as a spell-like ability.",
+                    "Once per ordinary rest, choose Enlarge Person or Reduce Person as a spell-like ability. Both choices share one use, use total character level as caster level and Charisma for saving throw DCs, and retain native person targeting including this project's Ifrit heritages.",
                     ElementalRacialTraitSlot.RacialSpellLikeAbility),
                 T(ElementalAlternateTraitId.ForgeHardened,
                     ElementalHeritageRace.Ifrit, "Forge-Hardened",

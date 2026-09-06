@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1849,
-    "activeEntryCount": 1847,
+    "entryCount": 1853,
+    "activeEntryCount": 1851,
     "reservedEntryCount": 2,
-    "registrationCount": 1847
+    "registrationCount": 1851
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -646,7 +646,7 @@
     "humanAcceptancePending": true
   },
   "playerPresentation105": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -662,7 +662,7 @@
     "humanOrganicPacingAcceptancePending": true
   },
   "fatigueAuthority106": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "focusedFatigueCaseCount": 21,
     "nativeDefaultIntent": "NativePassthrough",
     "acadamaeEscalationRequestLocal": true,
@@ -677,7 +677,7 @@
     "supervisedWorldMapAcceptancePending": true
   },
   "iconOverhaul107": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "officialFirearmKindCount": 3,
     "recognizedFirearmKindCount": 5,
     "selectorIconCount": 3,
@@ -689,7 +689,7 @@
     "workingSaveSmokePass": true
   },
   "iconPolishRoundTwo108": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "protectedFileCount": 30,
     "selectorIconCount": 3,
     "suppliedOriginalCount": 5,
@@ -702,7 +702,7 @@
     "workingSaveSmokePass": true
   },
   "martialPerformanceRepairNotifications109": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "martialPerformanceFocusedCaseCount": 11,
     "repairFocusedCaseCount": 22,
     "conditionNotificationFocusedCaseCount": 9,
@@ -729,7 +729,7 @@
     "supervisedLoadedMultiRoundInteractionPending": true
   },
   "gunslingerOutfitKitbash111": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "nativeOnly": true,
     "customAssetsAdded": false,
     "maleLinkCount": 2,
@@ -745,7 +745,7 @@
     "runtimeQualificationPassed": true
   },
   "protectionFromAlignment110": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "protectionBuffCount": 5,
     "playerDescriptionTargetCount": 15,
     "playerAbilityDescriptionCount": 10,
@@ -761,7 +761,7 @@
     "manualEncounterValidationOngoing": true
   },
   "ammunitionCmiCopyNotifications112": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "discountPercent": 10,
     "minimumCost": 1,
     "basicBatchCost": 22,
@@ -776,7 +776,7 @@
     "guardedRuntimeRequestCallbackObserved": false
   },
   "saveLoadReconciliation113": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -788,7 +788,7 @@
     "saveCompatibilityPreserved": true
   },
   "elementalRaces114": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -818,7 +818,7 @@
     "individualHumanChecklistEvidenceProvided": false
   },
   "elementalHeritages115": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -851,7 +851,7 @@
     "persistenceQualificationPending": false
   },
   "elementalFeats116": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -892,7 +892,7 @@
     "featCompatibilityQualificationPending": false
   },
   "elementalTraits117": {
-    "deterministicTestCount": 1419,
+    "deterministicTestCount": 1421,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -906,8 +906,8 @@
     "heritageIdentityCount": 53,
     "featIdentityCount": 25,
     "traitFrameworkIdentityCount": 62,
-    "traitMechanicIdentityCount": 3,
-    "activeElementalIdentityCount": 211,
+    "traitMechanicIdentityCount": 7,
+    "activeElementalIdentityCount": 215,
     "reservedDiagnosticIdentityCount": 1,
     "raceCount": 4,
     "heritageCount": 12,

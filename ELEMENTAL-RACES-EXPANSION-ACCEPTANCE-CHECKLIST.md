@@ -104,6 +104,17 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 ## Release C / 0.0.117 alternate racial traits
 
+- [x] Efreeti Magic native slice passes all three Ifrit heritages, both exact
+  commands, total-level/Charisma parameters, temporary stats, shared use,
+  cancellation, zero/rest/level/removal/reactivation, KMG-only/combined and
+  exact cleanup/restoration (current 1,421 tests; 9,796 native assertions).
+- [x] Efreeti Magic actual native-selected fresh-process persistence:
+  six legal two-trait Ifrit fixtures, twelve accepted native casts, spent
+  shared uses, exact active size-buff identity/context/expiration across both
+  OFF/ON boundaries, native rest/level/respec/cleanup and fresh absence.
+  Four processes pass 242 assertions; all 168 trait and 84 Efreeti observations
+  are exact. Retain 47 visual/DollData warnings. Renewed pinned 0.0.114 migration
+  adds three processes and 28 assertions with exact restoration.
 - [x] Fire/Earth/Air Insight actual native spell commands and per-creature
   duration/count/pool boundaries pass incrementally (not full trait qualification).
 - [x] A failing native component identity regression precedes the narrow

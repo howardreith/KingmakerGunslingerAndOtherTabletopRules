@@ -1042,7 +1042,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Blueprints.AlternateTraits.Selections().Count;
                 record["alternateTraitSelections"] =
                     SelectAlternateTraits(controller, fixture, phase,
-                        ExpectedPersistenceTrait(fixture, heritage));
+                        ExpectedPersistenceTraits(fixture, heritage));
                 return record;
             }
 
@@ -1060,7 +1060,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceObservation sourceObservation =
                     ObserveFixture(fixture, _currentUnit,
                         _currentExpectedDoll, sourceHeritage,
-                        sourceResource, sourceLevel);
+                        sourceResource, sourceLevel,
+                        expectedSizeCasterLevel: restoredPhase ? 2 : 0);
                 if (!sourceObservation.Exact)
                     throw new InvalidOperationException(fixture.Label +
                         " native Respec source was not an exact elemental Gunslinger: " +
@@ -1265,10 +1266,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "native-respec-target");
                     _selectionRecords.Add(heritageSelection);
                     Ability selectedSla = controller.Preview.Abilities
-                        .GetAbility(targetHeritage.SlaAbility);
+                        .GetAbility(PersistenceSlaAbility(fixture, targetHeritage));
                     int selectedSlaResourceBeforeCommit = controller.Preview
                         .Resources.GetResourceAmount(
-                            targetHeritage.SlaResource);
+                            PersistenceSlaResource(fixture, targetHeritage));
                     AbilityData selectedSlaData = selectedSla == null
                         ? null : new AbilityData(selectedSla);
                     AbilityData selectedExecutable = selectedSlaData == null
@@ -1566,14 +1567,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalHeritageBlueprints desired, int markerCount,
                 bool includeTraits = true)
             {
+                ElementalAlternateTraitBlueprints[] traits = ExpectedPersistenceTraits(fixture, desired, includeTraits);
                 return HeritageProvidersExactCore(owner, fixture, desired, markerCount,
-                    ExpectedPersistenceTrait(fixture, desired, includeTraits) == null);
+                    !traits.Any(value => value.Definition.Replaces(ElementalRacialTraitSlot.ElementalAffinity)),
+                    !traits.Any(value => value.Definition.Replaces(ElementalRacialTraitSlot.RacialSpellLikeAbility)));
             }
 
             private static bool HeritageProvidersExactCore(UnitDescriptor owner,
                 ElementalPersistenceFixture fixture,
                 ElementalHeritageBlueprints desired, int markerCount,
-                bool affinityExpected)
+                bool affinityExpected, bool slaExpected = true)
             {
                 if (owner == null || fixture == null || desired == null)
                     return false;
@@ -1593,13 +1596,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (ReferenceEquals(value, desired) && affinityExpected ? 1 : 0)) &&
                     choices.All(value => owner.Progression.Features.GetRank(
                         value.SlaFeature) ==
-                            (ReferenceEquals(value, desired) ? 1 : 0)) &&
+                            (ReferenceEquals(value, desired) && slaExpected ? 1 : 0)) &&
                     choices.Count(value => owner.Abilities.GetAbility(
-                        value.SlaAbility) != null) == 1 &&
-                    owner.Abilities.GetAbility(desired.SlaAbility) != null &&
-                    activeResources.Length == 1 && ReferenceEquals(
+                        value.SlaAbility) != null) == (slaExpected ? 1 : 0) &&
+                    (owner.Abilities.GetAbility(desired.SlaAbility) != null) == slaExpected &&
+                    activeResources.Length == (slaExpected ? 1 : 0) && (!slaExpected || ReferenceEquals(
                         activeResources[0].Blueprint,
-                        desired.SlaResource);
+                        desired.SlaResource));
             }
 
             private static bool NativeSelectionRecordExact(JObject value)
@@ -1678,16 +1681,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceFixture fixture =
                     _fixtures[_fixtureIndex];
                 _stage = "capture-prepared-" + fixture.Label;
+                EnsurePreparePersistencePause();
                 JObject featPersistence = PrepareFeatPersistenceFixture(
                     fixture, _currentUnit);
                 ElementalPersistenceObservation observation = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.Heritage, 1, 1);
                 AbilityData ability = RequireAbility(_currentUnit,
-                    fixture.Heritage.SlaAbility);
+                    PersistenceSlaAbility(fixture, fixture.Heritage));
                 AbilityData executable = ResolveExecutableAbility(ability);
                 int before = _currentUnit.Descriptor.Resources
-                    .GetResourceAmount(fixture.Heritage.SlaResource);
+                    .GetResourceAmount(PersistenceSlaResource(fixture, fixture.Heritage));
                 JObject respec = _respecRecords.OfType<JObject>().Last();
                 respec["replacementObservationExact"] =
                     observation.Exact;
@@ -1712,10 +1716,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (bool)respec["distinctSourceAndReplacement"]);
                 bool nativeRespecExact =
                     NativeElementalRespecRecordExact(respec, false);
-                InvokeAbilitySpend(ability,
-                    fixture.Heritage.SlaResource);
+                SpendPersistenceSla(fixture, _currentUnit, ability, "prepare-native-cast");
                 int after = _currentUnit.Descriptor.Resources
-                    .GetResourceAmount(fixture.Heritage.SlaResource);
+                    .GetResourceAmount(PersistenceSlaResource(fixture, fixture.Heritage));
                 bool spendExact = before == 1 && after == 0 &&
                     executable.GetAvailableForCastCount() == 0 &&
                     !executable.IsAvailable;
@@ -1871,12 +1874,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "module-off-loaded-before-level-up");
                 ElementalPersistenceObservation loaded = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
-                    fixture.Heritage, 0, 1);
+                    fixture.Heritage, 0, 1, expectedSizeCasterLevel: 1);
                 JObject loadedFeatPersistence = ObserveFeatPersistence(
                     fixture, _currentUnit, true, true,
                     "module-off-loaded-before-level-up");
                 AbilityData abilityBeforeRest = RequireAbility(_currentUnit,
-                    fixture.Heritage.SlaAbility);
+                    PersistenceSlaAbility(fixture, fixture.Heritage));
                 AbilityData executableBeforeRest =
                     ResolveExecutableAbility(abilityBeforeRest);
                 int casterLevelBeforeRest = executableBeforeRest
@@ -1889,12 +1892,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "module-off-after-level-up");
                 ElementalPersistenceObservation advanced = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
-                    fixture.Heritage, 0, 2);
+                    fixture.Heritage, 0, 2, expectedSizeCasterLevel: 1);
                 JObject advancedFeatPersistence = ObserveFeatPersistence(
                     fixture, _currentUnit, true, true,
                     "module-off-after-level-up");
                 AbilityData abilityAfterLevel = RequireAbility(_currentUnit,
-                    fixture.Heritage.SlaAbility);
+                    PersistenceSlaAbility(fixture, fixture.Heritage));
                 AbilityData executableAfterLevel =
                     ResolveExecutableAbility(abilityAfterLevel);
                 int casterLevelAfterLevel = executableAfterLevel
@@ -1902,7 +1905,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Params.CasterLevel;
                 int resourceAfterSpentLevelUp = _currentUnit.Descriptor
                     .Resources.GetResourceAmount(
-                        fixture.Heritage.SlaResource);
+                        PersistenceSlaResource(fixture, fixture.Heritage));
                 bool levelExact =
                     _currentUnit.Descriptor.Progression.CharacterLevel == 2 &&
                     _currentUnit.Descriptor.Progression.GetClassLevel(
@@ -1921,13 +1924,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RemoveFeatPersistenceShortEffects(fixture,
                         _currentUnit);
                 RemoveBloodPersistenceBuff(fixture, _currentUnit);
+                RemoveEfreetiPersistenceBuff(fixture, _currentUnit);
                 Kingmaker.Controllers.Rest.RestController.ApplyRest(
                     _currentUnit.Descriptor);
                 RestoredBloodPersistenceState(fixture, _currentUnit);
                 int resourceAfterRest = _currentUnit.Descriptor.Resources
-                    .GetResourceAmount(fixture.Heritage.SlaResource);
+                    .GetResourceAmount(PersistenceSlaResource(fixture, fixture.Heritage));
                 AbilityData abilityAfterRest = RequireAbility(_currentUnit,
-                    fixture.Heritage.SlaAbility);
+                    PersistenceSlaAbility(fixture, fixture.Heritage));
                 AbilityData executableAfterRest =
                     ResolveExecutableAbility(abilityAfterRest);
                 ElementalPersistenceObservation restored = ObserveFixture(
@@ -1940,13 +1944,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     executableAfterRest.IsAvailable &&
                     executableAfterRest.GetAvailableForCastCount() == 1 &&
                     restored.Exact;
-                InvokeAbilitySpend(abilityAfterRest,
-                    fixture.Heritage.SlaResource);
+                SpendPersistenceSla(fixture, _currentUnit, abilityAfterRest, "module-off-native-recast");
                 int resourceAfterRespend = _currentUnit.Descriptor.Resources
-                    .GetResourceAmount(fixture.Heritage.SlaResource);
+                    .GetResourceAmount(PersistenceSlaResource(fixture, fixture.Heritage));
                 ElementalPersistenceObservation preserved = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
-                    fixture.Heritage, 0, 2);
+                    fixture.Heritage, 0, 2, expectedSizeCasterLevel: 2);
                 JObject preservedFeatPersistence = ObserveFeatPersistence(
                     fixture, _currentUnit, true, false,
                     "module-off-after-resource-respend");
@@ -2221,7 +2224,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalHeritageBlueprints expectedHeritage,
                 int expectedResource, int expectedLevel,
                 int expectedMarkerCount = 1,
-                bool heritageSelectionExpected = true)
+                bool heritageSelectionExpected = true,
+                int expectedSizeCasterLevel = 0)
             {
                 if (unit == null || unit.Descriptor == null ||
                     unit.View == null || expectedDoll == null ||
@@ -2245,19 +2249,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture, heritageSelectionExpected);
                 bool providersExact = HeritageProvidersExact(owner,
                     fixture, expectedHeritage, expectedMarkerCount);
-                ElementalAlternateTraitBlueprints expectedTrait = ExpectedPersistenceTrait(fixture, expectedHeritage);
+                ElementalAlternateTraitBlueprints[] expectedTraits = ExpectedPersistenceTraits(fixture, expectedHeritage);
+                bool affinityExpected = !expectedTraits.Any(value =>
+                    value.Definition.Replaces(ElementalRacialTraitSlot.ElementalAffinity));
+                bool heritageSlaExpected = !expectedTraits.Any(value =>
+                    value.Definition.Replaces(ElementalRacialTraitSlot.RacialSpellLikeAbility));
+                bool sizeBuffExpected = expectedSizeCasterLevel > 0 && expectedTraits.Any(value =>
+                    value.Definition.Id == ElementalAlternateTraitId.EfreetiMagic);
+                bool sizeBuffExact = EfreetiPersistenceBuffExact(fixture, unit,
+                    sizeBuffExpected ? expectedSizeCasterLevel : 0);
                 bool alternateTraitsExact = _legacyMigration
                     ? LegacyAlternateTraitsAbsent(owner, fixture)
-                    : AlternateTraitsExact(owner, fixture, expectedTrait);
+                    : AlternateTraitsExact(owner, fixture, expectedTraits);
                 bool factsExact = commonFactsExact && providersExact &&
                     alternateTraitsExact &&
                     owner.HasFact(fixture.Blueprints.Resistance) &&
                     owner.Progression.Features.GetRank(
                         expectedHeritage.Marker) == expectedMarkerCount &&
-                    owner.HasFact(expectedHeritage.Affinity) == (expectedTrait == null) &&
-                    owner.HasFact(expectedHeritage.SlaFeature);
+                    owner.HasFact(expectedHeritage.Affinity) == affinityExpected &&
+                    owner.HasFact(expectedHeritage.SlaFeature) == heritageSlaExpected;
                 var statDeltas = new JObject();
-                bool statExact = true;
+                bool statExact = sizeBuffExact;
                 foreach (ElementalHeritageStat stat in Enum.GetValues(
                     typeof(ElementalHeritageStat)))
                 {
@@ -2265,17 +2277,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         PersistenceStatType(stat));
                     int expected = expectedHeritage.Definition.ModifierFor(
                         stat);
+                    int sizeDelta = sizeBuffExpected ? EfreetiPersistenceStatDelta(fixture, stat) : 0;
+                    int racialDelta = value.Modifiers.Where(modifier =>
+                        modifier.ModDescriptor == ModifierDescriptor.Racial).Sum(modifier => modifier.ModValue);
                     int actual = value.ModifiedValue - value.BaseValue;
                     statDeltas[stat.ToString()] = new JObject
                     {
                         { "base", value.BaseValue },
                         { "expectedRacialDelta", expected },
+                        { "actualRacialDelta", racialDelta },
+                        { "expectedSizeDelta", sizeDelta },
                         { "actualDelta", actual },
                         { "final", value.ModifiedValue }
                     };
                     statExact &= value.BaseValue == 10 &&
-                        actual == expected &&
-                        value.ModifiedValue == 10 + expected;
+                        racialDelta == expected && actual == expected + sizeDelta &&
+                        value.ModifiedValue == 10 + expected + sizeDelta;
                 }
                 BlueprintFeatureBase keen = race.Features.Single(value =>
                     string.Equals(value.AssetGuid,
@@ -2293,13 +2310,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 statExact &= racialPerception == 2 &&
                     owner.Stats.Speed.ModifiedValue == expectedSpeed;
 
-                int resource = owner.Resources.GetResourceAmount(
-                    expectedHeritage.SlaResource);
+                BlueprintAbilityResource expectedSlaResource = PersistenceSlaResource(fixture, expectedHeritage);
+                BlueprintAbility expectedSlaAbility = PersistenceSlaAbility(fixture, expectedHeritage);
+                int resource = owner.Resources.GetResourceAmount(expectedSlaResource);
                 bool resourceExact =
-                    expectedHeritage.SlaResource.GetMaxAmount(owner) == 1 &&
+                    expectedSlaResource.GetMaxAmount(owner) == 1 &&
                     resource == expectedResource;
                 AbilityData ability = RequireAbility(unit,
-                    expectedHeritage.SlaAbility);
+                    expectedSlaAbility);
                 AbilityData executableAbility =
                     ResolveExecutableAbility(ability);
                 int casterLevel = executableAbility.CreateExecutionContext(
@@ -2396,8 +2414,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "commonFactsExact", commonFactsExact },
                         { "providersExact", providersExact },
                         { "alternateTraitsExact", alternateTraitsExact },
-                        { "alternateTraitExpected", expectedTrait == null ? "<none>" : expectedTrait.Definition.Id.ToString() },
-                        { "retainedAlternateTraitsExpected", !_legacyMigration && expectedTrait == null },
+                        { "alternateTraitsExpected", new JArray(expectedTraits.Select(value => value.Definition.Id.ToString())) },
+                        { "retainedAlternateTraitsExpected", !_legacyMigration && expectedTraits.Length == 0 },
+                        { "sizeBuffExpected", sizeBuffExpected },
+                        { "sizeBuffExact", sizeBuffExact },
+                        { "sizeBuffCasterLevelExpected", sizeBuffExpected ? expectedSizeCasterLevel : 0 },
                         { "heritage", expectedHeritage.Definition.Name },
                         { "heritageMarkerGuid",
                             expectedHeritage.Marker.AssetGuid },
@@ -2420,10 +2441,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "racialPerception", racialPerception },
                         { "speed", owner.Stats.Speed.ModifiedValue },
                         { "resource", resource },
-                        { "resourceMaximum", expectedHeritage.SlaResource
+                        { "resourceMaximum", expectedSlaResource
                             .GetMaxAmount(owner) },
                         { "abilityGuid",
-                            expectedHeritage.SlaAbility.AssetGuid },
+                            expectedSlaAbility.AssetGuid },
                         { "executableAbilityGuid",
                             executableAbility.Blueprint.AssetGuid },
                         { "executableAbilityExact",
@@ -3380,7 +3401,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixtureIndex", _fixtureIndex },
                     { "fixtureCount", _fixtures.Length },
                     { "alternateTraitMatrix", _legacyMigration ? "legacy-markerless-general" :
-                        ElementalBloodInsightPersistencePolicy.MatrixId },
+                        ElementalBloodInsightPersistencePolicy.EfreetiMatrixId },
                     { "settleUpdates", _settleUpdates },
                     { "captured", _captured },
                     { "nativeRespecRecords", _respecRecords.Count },
@@ -3424,6 +3445,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "preparedFeatTransientState",
                         _preparedFeatTransientState.DeepClone() },
                     { "traitPersistenceRecords", _traitPersistenceRecords.DeepClone() },
+                    { "efreetiPersistenceRecords", _efreetiPersistenceRecords.DeepClone() },
                     { "featIdentityCount",
                         ElementalRaceIdentityCatalog.FeatIdentityCount },
                     { "featCount", ElementalFeatPolicy.FeatCount },

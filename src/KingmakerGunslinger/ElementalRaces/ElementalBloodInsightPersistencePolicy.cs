@@ -7,6 +7,25 @@ namespace KingmakerGunslinger.ElementalRaces
     internal static class ElementalBloodInsightPersistencePolicy
     {
         internal const string MatrixId = "release-c-blood-insight-six-traits-v1";
+        internal const string EfreetiMatrixId = "release-c-efreeti-blood-insight-seven-traits-v2";
+
+        // Retain the original six-trait policy as a separately testable
+        // historical matrix. The next matrix adds a legal, disjoint SLA
+        // replacement to every Ifrit fixture without losing blood/Insight rows.
+        internal static ElementalAlternateTraitId[] Traits(ElementalHeritageRace race,
+            int genderIndex, int heritageIndex)
+        {
+            ElementalAlternateTraitId? affinity = Trait(race, genderIndex, heritageIndex);
+            if (race == ElementalHeritageRace.Ifrit)
+                return new[] { affinity.Value, ElementalAlternateTraitId.EfreetiMagic };
+            return affinity.HasValue ? new[] { affinity.Value } : new ElementalAlternateTraitId[0];
+        }
+
+        internal static int EfreetiVariantIndex(int genderIndex, int heritageIndex)
+        {
+            Trait(ElementalHeritageRace.Ifrit, genderIndex, heritageIndex);
+            return (genderIndex + heritageIndex) % 2;
+        }
 
         internal static ElementalAlternateTraitId? Trait(ElementalHeritageRace race,
             int genderIndex, int heritageIndex)

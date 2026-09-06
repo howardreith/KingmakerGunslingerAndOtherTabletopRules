@@ -1,5 +1,142 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Efreeti native, combined-slot saves and legacy regression PASS
+
+- The corrected immutable candidate passes repository validation, all 1,421
+  domain/reflection tests, clean Release and strict 135-entry package gates.
+  Source `bffa2d0d...`, ZIP `263a4ee2...` (23,210,953 bytes), DLL `7d5e8b2b...`
+  (6,130,176 bytes), MVID `82ccea3b-39c9-45e5-9fb2-2f164324d7b6`.
+  Exact full identities are in `releaseCEfreetiQualification` and the new
+  `docs/ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md` ledger.
+- Four fresh Steam processes pass 242 assertions: 24 fixtures, 18 actual
+  trait-bearing characters, all six Ifrits with native-selected legal two-trait
+  combinations. Twelve native Efreeti casts/cancellations produce spent shared
+  uses and active size effects. Both size options cover both sexes and all
+  three Ifrit heritages. Exact buff/source identities, caster IDs, DCs and end
+  times match across both fresh-load boundaries. OFF level-up retains zero,
+  ordinary rest restores one, native recast spends it, ON full respec cleans
+  the owned graphs, and fresh absence leaves the original three-party state.
+- All 168 trait-state and 84 Efreeti-state observations pass. Nine blood buffs
+  and partial actual-HP expenditure remain covered. Exactly three authorized
+  working-save writes precede the zero-write absence run. All 47 visual/DollData
+  warnings are retained; no protected baseline or unrelated save was changed.
+- Renewed pinned 0.0.114 migration passes three further processes and 28
+  assertions, preserving all eight markerless General race/sex fixtures,
+  original racial stats/providers, spent uses and appearance data. Transaction
+  `20260906T0802099975194Z-elemental-race-legacy-migration-transaction` hashes
+  to `4178fdbf...`; all settings and the current candidate are restored.
+- The final candidate then passes KMG-only and highest-risk combined native
+  mechanics: 9,796 assertions, zero runtime-result warnings, 68 exact Efreeti
+  observations per profile and exact cleanup. Both 968-entry profile snapshots
+  independently match the restored full mod-tree manifest hash `5f8f14bc...`.
+  Across these nine processes: 10,066 assertions and 60 retained visual/DollData
+  warnings. Known optional startup signatures remain disclosed separately.
+- The direct image viewer failed sandbox initialization. A read-only in-memory
+  thumbnail fallback allowed inspection of all six Ifrit module-OFF four-angle
+  previews. No obvious absent body/outfit geometry was seen; small/dark framing
+  is retained as a limitation. Original images were unchanged. Images are not
+  mechanical proof, and the full visual matrix is still NOT-RUN.
+- The initial source-actor-ID fixture failure remains a failed historical
+  candidate, not rewritten as PASS. Its zero-write evidence and the exact
+  correction are retained above the earlier native-only candidate in STATE.
+- Read-only next-trait audit: native UnitCombatState.TryDeflectArrow requires
+  IsFromWeapon, a hit, a non-natural weapon and a non-flat-footed defender.
+  It cannot simply be enabled for spell rays. RuleAttackRoll.Result has a
+  private setter and a stored result; late AutoMiss alone is insufficient.
+  Projectile.OnHit raises IProjectileHitHandler before its deflection,
+  callback and OnHitTrigger paths. Eligibility and a faithful local native
+  resolution still need qualification; no global patch, invented benefit,
+  Crystalline Form implementation or hard-stop finding is claimed.
+- Release C remains incomplete: six mechanics and the other fourteen traits'
+  actual persistence, complete lifecycle/visual/policy/resource/prerequisite
+  and final compatibility/module/release gates remain. The qualified Efreeti
+  source can now be committed, followed by the exact mandatory push attempt
+  and continued independent work.
+
+## 2026-09-06 UTC - Efreeti combined-slot persistence harness in qualification
+
+- The preceding status-only goal turn made no implementation progress. Current
+  worktree and native-process state were rechecked; no game was running. Local
+  engineering remains available despite the external push allowlist refusal.
+- Extended the historical six-trait policy with a separately named seven-trait
+  matrix: all 24 race/sex/heritage fixtures remain, 18 have actual traits, and
+  all six Ifrits combine their blood/Insight trait with Efreeti Magic. The old
+  six-trait matrix and evidence remain unchanged. A new executable policy test
+  checks exact slot providers, both application orders, marker reconstruction,
+  unchanged racial modifiers and both size options across both sexes and all
+  Ifrit heritages.
+- Native character/respec selections now select exact disjoint-slot traits.
+  Save expectations resolve the active daily ability/resource from consumed
+  slots and reject inactive heritage grants. Efreeti fixtures use real native
+  commands, including queued cancellation, to spend the shared use and create
+  their size effects; no direct resource/effect fallback is used for Efreeti.
+- The existing reversible pre-save pause starts during fixture preparation so
+  native duration effects cannot expire while the remaining fixtures are built.
+  Its original pause value is retained and restored through the existing exit
+  and failure paths. Exact persisted spell context, cast level, end time, daily
+  amount and racial-versus-size modifiers are recorded separately.
+- First full preflight: repository validation passed and the new matrix test
+  passed. One old source-token assertion still demanded a heritage-only
+  resource expression. Removed that obsolete implementation-detail assertion;
+  active resource correctness is now checked by pure slot policy and actual
+  native save observations. The corrected source then passed all 1,421 tests,
+  clean Release and strict 135-entry package validation.
+- First guarded prepare run `20260906T0738460536177Z-bdedab56cb724ed6b1da05063f07f82a`
+  failed before any save write: a new read-only size-buff witness required the
+  eventual persisted fixture ID even on the native pre-respec source actor.
+  That actor intentionally has a different ID; its exact race, facts, stats,
+  resource and appearance checks all passed. Removed that mutation-only ID
+  restriction from the read-only witness. Cast and cleanup mutation guards
+  still require the exact disposable fixture. The native result and log are
+  retained; settings restored to `a06601c5...` and the game exited normally.
+  This is a failed fixture candidate, not a production save PASS.
+
+## 2026-09-06 UTC - Efreeti Magic native slice PASS; save gate remains
+
+- Committed the independently checked six-Insight/blood implementation and
+  save repair as `c7249576dd79d565039b635dab46fcae1e5a1d8a`. The exact
+  mandatory push remains refused by the external branch allowlist.
+- Continued immediately to Efreeti Magic. Archives of Nethys confirms the
+  choose-each-use Enlarge/Reduce Person SLA, one shared daily use, total-level
+  CL and other-Ifrit targeting. Existing native person targeting already
+  includes the exact project Ifrit; no global targeting change is introduced.
+- Appended fixed identities 066-069: one resource, one menu parent, two native
+  spell wrappers. Native AddFacts/AddAbilityResources retain targeting, effect,
+  action, resource and rest handling. A small owned activation component
+  preserves the lower of the native and remembered amount; activation cannot
+  restore either a remembered spent use or a native serialized zero. Native
+  rest clears previous-day owned snapshots even while a provider is suppressed.
+- Added an executable policy test and a dedicated native scenario across all
+  three Ifrit heritages. Both choices are actually cast on another Ifrit,
+  without an effect fallback. Exact size modifiers, duration, multiclass CL,
+  current/temporary Charisma DC, cancellation, shared zero-use blocking,
+  provider deactivation/reactivation, level-up, removal/re-add and rest pass.
+  The existing full replacement matrix now also checks owned daily graphs.
+- The first source checks exposed one stale architecture count and three
+  stale domain/source-shape contracts. After correction, all 1,420 tests,
+  repository validation, clean Release and strict 135-entry packaging pass.
+  An unsupported profile argument was refused before game launch; its exact
+  968-entry profile restored. Corrected invocation uses the existing external
+  profile transaction and this scenario's supported guarded arguments.
+- The unchanged candidate then passes KMG-only and highest-risk combined:
+  9,796 assertions, zero runtime-result warnings, 68 exact Efreeti observations
+  per profile, zero native observer errors and exact cleanup/restoration.
+  Source `073325a9...`, ZIP `7a11e538...`, DLL `2f434f9a...`, MVID
+  `ff307a92-44d6-40d0-9871-c0f0fb77601c`; complete hashes and run IDs are
+  retained under `releaseCEfreetiMagicWork` in STATE.
+- This source slice remains uncommitted because actual Efreeti save selection,
+  spent resource/active size buff OFF/ON persistence and affected inherited
+  resource/legacy qualification remain. The passing six-trait save matrix
+  currently assumes affinity-only traits; extend its active SLA/resource
+  expectations explicitly, not by weakening counts or directly adding a
+  marker as the only UI proof. Complete all independent remaining traits.
+- Read-only next-trait audit: native DeflectArrows exposes equipment
+  restrictions and a countable DeflectArrows flag, not a distinct ray flag.
+  RuleAttackRoll.Result is stored, not recomputed from AutoMiss on each read.
+  Do not assume a late AutoMiss assignment is valid ray deflection; audit the
+  native resolution boundary further. No Crystalline Form implementation or
+  hard-stop finding is claimed from this preliminary evidence.
+
 ## 2026-09-06 UTC - Six-trait native and persistence checkpoint PASS
 
 - The repaired immutable candidate passes repository validation, all 1,419

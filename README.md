@@ -15,7 +15,11 @@ Secretive, Thunderous Resilience, and Whispering Wind. Fire, Earth and Air
 Insight, Fire in the Blood, Stone in the Blood and Storm in the Blood now pass
 focused native checks plus incremental module-OFF/ON save, level-up, rest,
 respec and cleanup checks, including spent healing capacity and active buffs.
-Seven other required mechanics, the complete trait persistence/lifecycle matrix
+Efreeti Magic also passes native KMG-only/combined checks and actual
+native-selected multi-trait OFF/ON saves, spent shared uses, active size buffs,
+rest, level-up, respec, cleanup and renewed 0.0.114 migration. See its
+[incremental checkpoint](docs/ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md).
+Six other required mechanics, the complete trait persistence/lifecycle matrix
 and final qualification remain. This is not a finished Release C package.
 
 Release B remains locally qualified. It registers eleven stable feat identities plus fourteen supporting ability,

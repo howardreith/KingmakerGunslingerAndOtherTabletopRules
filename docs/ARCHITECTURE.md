@@ -572,7 +572,7 @@ plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
-identities extend the append-only ledger to 1849 stable IDs: 1847 active and 2 reserved. The
+identities extend the append-only ledger to 1853 stable IDs: 1851 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
@@ -585,10 +585,19 @@ weapon enchantment. `ElementalFeatBlueprintFactory` registers all 25 before
 selectors through the established exact-GUID-aware transaction.
 Release C appends ten replacement-slot selections, ten retain-base markers,
 21 visible trait markers, and 21 hidden mechanic providers. The framework
-registers all 62 plus three blood-trait buffs unconditionally and keeps publication within the existing
+registers all 62 plus three blood-trait buffs and four Efreeti Magic identities
+unconditionally and keeps publication within the existing
 parent race and `elemental-races` module boundary.
+Native AddFacts/AddAbilityResources own the Efreeti daily graph; its owned
+activation memory retains the lower of native current and remembered amounts.
+The existing heritage UnitPart clears only owned prior-day snapshots on native
+rest, including suppressed resources. Exact daily-graph reconciliation removes
+inactive root/variant/resource instances without touching foreign facts or
+already-cast native size buffs. The dedicated seven-trait persistence scenario
+selects legal affinity-plus-SLA replacements through native creation/respec and
+checks racial modifiers separately from native size modifiers.
 `elemental-races` setting gates race, feat, and trait-selector publication; no
-module identity or schema member was added. All 211 active elemental identities
+module identity or schema member was added. All 215 active elemental identities
 remain registered while selector publication is disabled. Exact 0.0.114
 markerless-General migration and the
 24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation

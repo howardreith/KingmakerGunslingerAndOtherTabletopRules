@@ -1251,7 +1251,6 @@ namespace KingmakerGunslinger.DomainTests
                 "StatType.SkillPerception",
                 "owner.Stats.Speed.ModifiedValue",
                 "owner.Resources.GetResourceAmount(",
-                "expectedHeritage.SlaResource",
                 "AbilityType.SpellLike", "ability.Spellbook == null",
                 "!ability.IsAffectedByArcaneSpellFailure",
                 "PerformNativeElementalRespec",

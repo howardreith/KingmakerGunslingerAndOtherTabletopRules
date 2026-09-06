@@ -15,14 +15,14 @@ VERSION = "0.0.117"
 INFORMATIONAL_VERSION = "0.0.117-elemental-traits"
 PACKAGE = "KingmakerGunslinger-0.0.117-local-runtime.zip"
 PACKAGE_SUFFIX = "elemental-traits"
-DETERMINISTIC_TEST_COUNT = 1419
+DETERMINISTIC_TEST_COUNT = 1421
 STATIC_KEY = "elementalTraits117"
 TRAIT_GUID_PREFIX = "e117e1e0a17a4acec001"
-MANIFEST_TOTAL = 1849
-MANIFEST_ACTIVE = 1847
+MANIFEST_TOTAL = 1853
+MANIFEST_ACTIVE = 1851
 MANIFEST_RESERVED = 2
-ELEMENTAL_TOTAL = 212
-ELEMENTAL_ACTIVE = 211
+ELEMENTAL_TOTAL = 216
+ELEMENTAL_ACTIVE = 215
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
@@ -55,7 +55,7 @@ def validate(root: Path) -> None:
         encoding="utf-8"))
     traits = [entry for entry in manifest.get("entries", [])
         if entry.get("guid", "").startswith(TRAIT_GUID_PREFIX)]
-    if len(traits) != 65 or any(entry.get("status") != "active"
+    if len(traits) != 69 or any(entry.get("status") != "active"
             for entry in traits):
         raise AssertionError("Elemental alternate-trait identity inventory drifted")
     type_counts = {}
@@ -64,11 +64,12 @@ def validate(root: Path) -> None:
         type_counts[key] = type_counts.get(key, 0) + 1
     if type_counts != {
             "BlueprintFeatureSelection": 10,
-            "BlueprintFeature": 52, "BlueprintBuff": 3}:
+            "BlueprintFeature": 52, "BlueprintBuff": 3,
+            "BlueprintAbilityResource": 1, "BlueprintAbility": 3}:
         raise AssertionError(
             f"Elemental alternate-trait identity types drifted: {type_counts}")
     expected_guids = {
-        TRAIT_GUID_PREFIX + f"{index:012d}" for index in range(1, 66)
+        TRAIT_GUID_PREFIX + f"{index:012d}" for index in range(1, 70)
     }
     if {entry.get("guid") for entry in traits} != expected_guids:
         raise AssertionError("Stable alternate-trait GUID namespace drifted")

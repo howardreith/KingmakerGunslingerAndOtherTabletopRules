@@ -13468,6 +13468,22 @@
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.StormInTheBlood.FastHealingBuff", "guid": "e117e1e0a17a4acec001000000000065",
       "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One-round native-ticking Storm in the Blood healing effect; actual received HP uses the persisted owner ledger."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Resource", "guid": "e117e1e0a17a4acec001000000000066",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One persisted daily use shared by both native Efreeti Magic size-change variants."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Ability", "guid": "e117e1e0a17a4acec001000000000067",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Project-owned Efreeti Magic choice parent; native spell-like variants share one resource."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.EnlargePerson", "guid": "e117e1e0a17a4acec001000000000068",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native Enlarge Person effect under a project-owned Charisma-based total-level spell-like wrapper."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson", "guid": "e117e1e0a17a4acec001000000000069",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native Reduce Person effect under a project-owned Charisma-based total-level spell-like wrapper."
     }
   ]
 }
