@@ -53,9 +53,9 @@ Unchecked items are pending and must not be inferred from builds or historical
 - [x] Version/docs/manifest updated; repository validation, full tests, clean
   0.0.115 build, strict package validation, guarded runtime, compatibility,
   and persistence gates pass.
-- [ ] Coherent Release A implementation and qualification commits were created;
-  the exact mandated push was attempted after every checkpoint but remains
-  blocked by the external branch allowlist.
+- [x] Coherent Release A implementation and qualification commits were created;
+  after historical wrapper refusals, the user allowlisted the branch and the
+  exact required push succeeded on 2026-09-06 through e8879007.
 
 ## Release B / 0.0.116 elemental feats
 
@@ -98,9 +98,9 @@ Unchecked items are pending and must not be inferred from builds or historical
 - [x] Version/docs/manifest updated; repository validation, full tests, clean
   0.0.116 build, strict package validation, guarded runtime, compatibility,
   and persistence gates pass.
-- [ ] Coherent Release B implementation and qualification commits were
-  created; the exact mandated push was attempted after every checkpoint but
-  remains blocked by the external branch allowlist.
+- [x] Coherent Release B implementation and qualification commits were created;
+  after historical wrapper refusals, the user allowlisted the branch and the
+  exact required push succeeded on 2026-09-06 through e8879007.
 
 ## Release C / 0.0.117 alternate racial traits
 

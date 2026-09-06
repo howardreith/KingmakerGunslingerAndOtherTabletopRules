@@ -9,9 +9,13 @@ NATIVE AND INCREMENTAL SAVE-BACKED EVIDENCE. EFREETI MAGIC ALSO PASSES NATIVE,
 MULTI-TRAIT SAVE AND RENEWED LEGACY MIGRATION GATES. SIX MECHANICS, THE OTHER FOURTEEN
 TRAITS' PERSISTENCE, FULL LIFECYCLE, AND FINAL RELEASE-WIDE
 QUALIFICATION REMAIN PENDING. THE FACT-COMPONENT NAME REPAIR NOW PASSES
-PINNED 0.0.114 MIGRATION MECHANICS; SUBJECTIVE VISUAL REVIEW REMAINS. THE
-REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL
-ALLOWLIST.**
+PINNED 0.0.114 MIGRATION MECHANICS; SUBJECTIVE VISUAL REVIEW REMAINS.
+THE REQUIRED BRANCH PUSH SUCCEEDED AFTER THE USER UPDATED THE ALLOWLIST.**
+
+On 2026-09-06 UTC the unchanged required wrapper published all 36 mission
+commits through `e8879007f0c788b0bb494f7747c35bab730d59dc` to the identically
+named origin branch. Local/remote-tracking SHAs match. Historical push-refusal
+fields are superseded by publicationRecovery in STATE, not rewritten.
 
 The mission began from clean authoritative `master` commit
 `6874dc15a27ded132456dbdd480f47c794543a05` on dedicated branch
@@ -50,8 +54,8 @@ The earlier native-only candidate remains historical in `releaseCEfreetiMagicWor
 | Release | Version | Scope | Status |
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
-| A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
+| A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; CHECKPOINTS PUSHED |
+| B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | PASS LOCALLY; CHECKPOINTS PUSHED |
 | C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - FIFTEEN NATIVE-PROVEN; SIX IMPLEMENTATIONS AND FULL RELEASE GATES PENDING |
 
 ## Current summon Insight and component-identity investigation

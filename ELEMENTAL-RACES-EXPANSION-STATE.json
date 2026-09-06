@@ -15,9 +15,26 @@
   },
   "status": {
     "foundation": "PASS",
-    "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseB": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
+    "releaseA": "PASS-LOCAL-CHECKPOINT-PUSHED",
+    "releaseB": "PASS-LOCAL-CHECKPOINT-PUSHED",
     "releaseC": "IN-PROGRESS-FIFTEEN-MECHANICS-NATIVE-PROOF-SIX-REMAIN; SEVEN-TRAIT-PERSISTENCE-AND-RENEWED-LEGACY-PASS"
+  },
+  "publicationRecovery": {
+    "status": "PASS",
+    "verifiedAtUtc": "2026-09-06T13:14:07.4267663Z",
+    "userAction": "User allowlisted the required codex/elemental-races-expansion branch.",
+    "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "remote": "origin/codex/elemental-races-expansion",
+    "publishedThroughCommit": "e8879007f0c788b0bb494f7747c35bab730d59dc",
+    "localAndRemoteTrackingShaEqual": true,
+    "missionCommitsPublished": 36,
+    "treeCleanAtPublication": true,
+    "forcePush": false,
+    "merged": false,
+    "tagged": false,
+    "githubReleaseCreated": false,
+    "pullRequestCreated": false,
+    "historicalAttemptPolicy": "Earlier push-blocked fields preserve attempt-time evidence. This recovery supersedes them as current publication status; no earlier gameplay qualification is broadened."
   },
   "releaseCCrystallineAudit": {
     "postDocumentationValidation": {

@@ -1,5 +1,19 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Required branch publication recovered
+
+- The user allowlisted codex/elemental-races-expansion. Rechecked the clean
+  e8879007 checkpoint and ran the exact mandatory push wrapper unchanged.
+  Its ordinary non-force push succeeded and established origin tracking.
+- Independently observed both local and remote-tracking SHA
+  e8879007f0c788b0bb494f7747c35bab730d59dc, covering all 36 mission commits
+  after authoritative starting master 6874dc15. Earlier failed attempts stay
+  historical; the publicationRecovery record now supplies current status.
+- Release A/B local qualification checkpoints are now pushed. Release C
+  remains incomplete at fifteen native-proven mechanics and six required
+  implementations plus the complete final gates. No merge, tag, PR, public
+  release, history rewrite or generated-package commit occurred.
+
 ## 2026-09-06 UTC - Crystalline Form native delivery audit PASS only
 
 - Revalidated the clean c93aafb4 checkpoint after the preceding status turn;
