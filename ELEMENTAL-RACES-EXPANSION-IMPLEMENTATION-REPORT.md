@@ -34,6 +34,13 @@ behavior.
 
 ## Planned release inventory
 
+The [Crystalline controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
+adds no production mechanic or identity. All 1,424 tests, clean build/package
+and two native profiles pass 10,242 assertions, including three-ray/one-use,
+duplicate impact, non-damage effect, greatsword and disabled-hand controls for
+all Oread heritages. Exact fixture/clock and independent full-folder restoration
+pass. Remaining-trait donor inspection is read-only evidence, not trait PASS.
+
 The [Crystalline persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)
 passes 1,424 tests, clean build/package and nine final guarded processes
 (10,490 assertions). A narrow native whole-unit suspension guard prevents

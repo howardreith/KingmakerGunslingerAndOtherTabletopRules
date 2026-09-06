@@ -25,7 +25,10 @@ boundaries. See its [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-C
 Its subsequent [persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)
 preserves armed consent and spent uses across native save suspension, OFF/ON
 loading, level-up, rest and base-trait respec, with renewed 0.0.114 migration.
-Remaining ray/catalog controls, five other required mechanics, the complete
+Its [additional native controls](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
+also prove multi-ray/one-use, duplicate impact, non-damage ray suppression and
+two-handed/disabled-hand recovery in both profiles.
+Remaining semantic catalog work, five other required mechanics, the complete
 trait persistence/lifecycle matrix and final qualification remain.
 This is not a finished Release C package.
 

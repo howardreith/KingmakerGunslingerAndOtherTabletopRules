@@ -2,6 +2,11 @@
 
 ## 0.0.117-elemental-traits
 
+- Strengthens Crystalline native-command coverage for delayed multi-ray casts,
+  duplicate impact notifications, non-damage effects and native hand states.
+  All 1,424 tests, clean build/package and 10,242 guarded assertions pass.
+  No production rule or identity changes; the remaining-trait donor audit is
+  read-only. See the [controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md).
 - Preserves exact owned providers during native whole-unit save suspension,
   preventing Crystalline consent from being silently reset before serialization.
   The eight-trait save matrix and renewed 0.0.114 migration pass alongside

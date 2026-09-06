@@ -197,5 +197,10 @@ Unchecked items are pending and must not be inferred from builds or historical
   pass 282 assertions; two native reruns pass 10,180; renewed pinned legacy
   migration passes 28. Retain 60 result warnings and four pre-existing
   feat-transient native ERROR lines; final exact folder restoration passes.
-- [ ] Complete native catalog, equipment/awareness/multi-ray controls, full
-  trait lifecycle and resolution of the pre-existing transient diagnostic.
+- [x] Additional controls: three actual prepared rays and one deflection,
+  duplicate impact notifications, non-damage ray suppression, greatsword,
+  disabled hands and recovery; all three Oread heritages in both profiles.
+  10,242 assertions, 404 Crystalline observations, exact clock/fixture and
+  independent 968-entry folder restorations. All failed candidates retained.
+- [ ] Complete native catalog, full trait lifecycle and resolution of the
+  pre-existing transient diagnostic.

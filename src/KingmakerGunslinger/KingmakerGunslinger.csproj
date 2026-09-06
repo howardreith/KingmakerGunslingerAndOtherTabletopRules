@@ -952,6 +952,7 @@
     <Compile Include="RuntimeTesting\ElementalCrystallineFormScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalBloodPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalCrystallinePersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalRemainingTraitNativeAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalEfreetiPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalComponentIdentityScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitWeaponInteractionScenario.cs" />

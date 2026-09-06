@@ -57,6 +57,8 @@ save-backed qualification pass (complete release lifecycle remains pending):
 Crystalline Form appends three identities. Its later incremental eight-trait
 save cycle qualifies consent and resource persistence on two Ironsoul fixtures,
 without adding any identity; full trait lifecycle remains pending:
+The subsequent multi-ray/non-damage/hand-control and remaining-trait audit
+checkpoint also adds zero save-bearing identities.
 
 | Suffix under `KMG.ElementalRaces.Traits.Oread.CrystallineForm` | Stable GUID |
 | --- | --- |

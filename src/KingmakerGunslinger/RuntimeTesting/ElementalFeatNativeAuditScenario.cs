@@ -457,8 +457,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        internal static object SnapshotContract(BlueprintScriptableObject value)
+        {
+            return DescribeExactContract(value, 9);
+        }
+
+        internal static string SnapshotFields(object value, int depth)
+        {
+            return FormatContract(value, depth,
+                new HashSet<object>(ReferenceComparer.Instance));
+        }
+
         private static ExactBlueprintContractEvidence DescribeExactContract(
-            BlueprintScriptableObject value)
+            BlueprintScriptableObject value, int depth = 5)
         {
             return new ExactBlueprintContractEvidence
             {
@@ -471,7 +482,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Select(component => new ComponentContractEvidence
                     {
                         ComponentType = component.GetType().FullName,
-                        Contract = FormatContract(component, 5,
+                        Contract = FormatContract(component, depth,
                             new HashSet<object>(ReferenceComparer.Instance))
                     }).OrderBy(component => component.ComponentType,
                         StringComparer.Ordinal).ToList()
