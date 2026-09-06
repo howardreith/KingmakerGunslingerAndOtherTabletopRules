@@ -52,6 +52,8 @@
     <Compile Include="ElementalFeatPolicyTests.cs" />
     <Compile Include="ElementalHeritagePolicyTests.cs" />
     <Compile Include="ElementalAlternateTraitPolicyTests.cs" />
+    <Compile Include="ElementalAlternateTraitPassivePolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalAlternateTraitPassivePolicy.cs"><Link>ElementalRaces\ElementalAlternateTraitPassivePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalHeritagePolicy.cs"><Link>ElementalRaces\ElementalHeritagePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalAlternateTraitPolicy.cs"><Link>ElementalRaces\ElementalAlternateTraitPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalFeatPolicy.cs"><Link>ElementalRaces\ElementalFeatPolicy.cs</Link></Compile>

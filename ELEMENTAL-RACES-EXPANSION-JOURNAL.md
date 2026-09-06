@@ -1,5 +1,103 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - First eight trait mechanics checkpoint
+
+- The exact final candidate passes all 1,415 tests, clean Release build,
+  strict package validation, and eight guarded Steam processes:
+  13,397/13,397 assertions, zero runtime-result warnings. KMG-only ON and
+  highest-risk combined ON run the full trait matrix plus inherited Ifrit
+  and Acadamae command regressions; combined OFF runs publication and the
+  same complete trait matrix. All three transactions restored exactly.
+- Exact artifact, run IDs, hashes, profile restoration, source limitations,
+  and failed-before-fixed evidence are recorded in
+  `docs/ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md`.
+  No save was opened or written. The first eight traits now have focused
+  mechanics proof, not trait-bearing persistence or final Release C PASS.
+- Standard preflight initially reported an unexplained artifact-tree mismatch
+  with no active build/game or recently modified artifact file. The unchanged
+  diagnostic rerun passed 202 checks and exact 421,536-character snapshots;
+  a separate standard invocation then passed all 202 checks. No assertion
+  was changed or relaxed.
+- Next independent work: the shared reactive-healing and typed summon-duration
+  helpers, remaining trait mechanics, and trait-bearing persistence. Native
+  installed IL provides `RuleSummonUnit.BonusDuration` and actual-received
+  `RuleHealDamage.Value`; their presence alone is not runtime qualification.
+- Publication is still blocked by the external branch allowlist. The exact
+  required push was attempted after resuming and will be attempted after the
+  coherent implementation commit. No bypass, merge, tag, or public release.
+
+## 2026-09-05 - Release C passive-trait implementation
+
+- Corrected candidate `87e3a98b924575ab717d50a3f66c6ed30d898762ee8fcf144cc2c64928de3582`
+  passes full source/build/package qualification. Its focused rerun reports
+  exactly one +1 fire packet for all four order/improvement combinations,
+  but the second activation still fails an unreported command/enchantment
+  conjunct. Result SHA-256:
+  `aebfbcb16d912fcd5625fdadf2176d74930c9ba3c13b6429703c89b2c7b08738`.
+  Transaction `compat-20260905T234951Z-2db9bfc7439d` restored exactly.
+  The scenario now reports every conjunct. Between request-local activations,
+  it explicitly ends the owned transient snapshot: removing only the marker
+  intentionally preserves unexpired enchantments for save hydration. No
+  production lifecycle behavior is changed to accommodate that fixture.
+  The rerun remains required; the full Acadamae command scenario has not run.
+- Expanded native run `20260905T2336328415619Z-58146a4bb0df4741901760e107e072be`
+  failed four of 4,440 assertions with zero warnings. All nine disposable
+  units cleaned up and transaction `compat-20260905T233612Z-7ef2c3f96607`
+  restored exactly. Result SHA-256:
+  `917495177151897e655b1cca9b1cf7e0abbb618877708bf634f3f0af964e1cbb`;
+  passive evidence SHA-256:
+  `644a828cc91294b64e93a5853a9fb44d08d5e73f8df562d2150c7ab7fc8ee939`;
+  runtime evidence SHA-256:
+  `8ac346306236d5ecca3ca93cd07acd7a9defe5853d7de24e4892ce313dd43a68`.
+  Two failures exposed a real Scorching Weapons ordering defect when Brazen
+  Flame activated after the enchantment. The owned enchantment now rechecks
+  after preparation and removes only its own exact packet if another fire
+  packet exists. Installed IL confirms preparation finishes before native
+  damage calculation; no global damage patch or foreign packet mutation.
+  The other two failures were incorrect test expectations: native
+  `ModifiableValue.DefaultStackingDescriptors` explicitly includes `Racial`.
+  The scenario now verifies preservation of the independent native +4 and
+  exactly one trait +2 for overlapping source predicates, not an invented
+  descriptor-wide stacking override. This engine behavior is retained and
+  documented rather than silently represented as tabletop nonstacking.
+  Actual Acadamae fatigue context, native class/armor/encumbrance movement,
+  unarmed, and natural-attack checks passed. Corrected rerun is pending.
+- Initial passive slice candidate passes the full 1,415-test suite, clean
+  exact-reference build, strict package, and KMG-only native runtime:
+  4,424/4,424 assertions (91 new passive checks), zero warnings, exact
+  nine-unit cleanup, and exact profile restoration. Run ID:
+  `20260905T2323418144192Z-33b2fe21b6cf494990e9c886d425f79b`.
+  Result SHA-256:
+  `1db8f72ffcd686d6023321046d130be98061f44550a742684e468d2eb7d4518e`;
+  passive evidence:
+  `c915625ad1b323284eff8c44fb9d6418a5ca078c8f903c19e705868d41cd6ffa`;
+  runtime evidence:
+  `36d96c0a5d556b7ca3441b9b7a8284deb09f9b67df3475970c0d1b937ffbf060`.
+  Package: 23,174,038 bytes / 135 entries, SHA-256
+  `eba4ca241abc05d33dd06df82c75a999e3d1ab40b619b2a4aeaed4b27392bc94`;
+  DLL: 6,036,992 bytes, SHA-256
+  `3992a08800582ac8c78bc7515580044e81ba2bb9988439d31151cf7643dc74c1`,
+  MVID `dda43c43-99d2-47e1-b34c-9f5d0f75d8b7`.
+  Transaction `compat-20260905T232315Z-1f3bad83bc59` restored exactly,
+  transaction SHA-256
+  `527e28903fae6ea3914b6dc4c6449b12283fe8c7a7e68657207b3ec27bd17a15`.
+  Further interaction/persistence checks remain required.
+- Framework checkpoint `fa7900289286bc326014057c275de97a30b7d1ae`
+  was committed after its incremental gates passed. The mandated push wrapper
+  again refused the exact mission branch; no bypass was attempted.
+- First eight passive providers are implemented using native stat modifiers,
+  sonic resistance, and narrow save/melee rule events. Two exhaustive pure
+  boundary cases and a dedicated feature-specific live scenario are added.
+  These mechanics are not yet qualified.
+- The Acadamae self-fatigue save previously had no reason context. Its local
+  save now points to the existing native fatigue effect so descriptor-scoped
+  defenses can recognize the actual save. This requires focused regression
+  and actual Acadamae command qualification; no global save patch was added.
+- Remaining first-slice checks include manufactured/natural/unarmed melee,
+  Scorching Weapons nonstacking in both application orders, native armor and
+  encumbrance layering, save modifier stacking, and save-backed trait facts.
+  Thirteen further trait mechanics and all final Release C gates remain open.
+
 ## 2026-09-05 - Release C replacement framework
 
 - Final framework persistence candidate

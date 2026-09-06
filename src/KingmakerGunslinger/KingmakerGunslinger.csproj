@@ -944,6 +944,8 @@
     <Compile Include="RuntimeTesting\ElementalUndineFeatScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageBlueprintScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitFrameworkScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalAlternateTraitPassiveScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalAlternateTraitWeaponInteractionScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitReconciliationScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageSlaScenario.cs" />
@@ -958,6 +960,8 @@
     <Compile Include="ElementalRaces\ElementalRaceDefinition.cs" />
     <Compile Include="ElementalRaces\ElementalHeritagePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalAlternateTraitPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalAlternateTraitPassivePolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalAlternateTraitPassiveMechanics.cs" />
     <Compile Include="ElementalRaces\ElementalAlternateTraitBlueprintSet.cs" />
     <Compile Include="ElementalRaces\ElementalAlternateTraitBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalFeatPolicy.cs" />

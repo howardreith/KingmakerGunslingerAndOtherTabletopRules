@@ -14,8 +14,18 @@
   resistance, affinity, SLA, ability, and alternate-trait provider facts.
 - Adds each relevant slot selector to the existing parent race without adding
   top-level races, a module toggle, a schema revision, or dynamic identities.
-- Release C remains in progress: alternate-trait mechanics and all guarded
-  runtime, persistence, compatibility, and final release gates are pending.
+- Implements Wildfire Heart, Brazen Flame, Forge-Hardened, Granite Skin,
+  Like the Wind, Secretive, Thunderous Resilience, and Whispering Wind with
+  native stat/resistance components and narrow save/damage rules.
+- Makes Scorching Weapons' existing fire nonstacking policy independent of
+  later-acquired Brazen Flame by removing only its exact owned damage packet.
+- Gives Acadamae's self-fatigue save the existing native fatigue reason, with
+  unchanged DC, command, resource, and fatigue-resolution behavior.
+- Qualifies this first passive slice with 1,415 tests, clean build/package,
+  eight guarded processes, 13,397 assertions, zero runtime warnings, and
+  exact KMG-only/combined profile restoration, including module-OFF.
+- Release C remains in progress: thirteen mechanics, trait-bearing
+  persistence, and final release-wide gates are pending.
 
 ## 0.0.116-elemental-feats
 

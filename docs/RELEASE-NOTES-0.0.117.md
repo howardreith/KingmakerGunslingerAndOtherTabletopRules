@@ -7,9 +7,9 @@ Proposed local package:
 
 ## Status
 
-Release C remains in progress. This checkpoint establishes the deterministic
-replacement-slot and identity framework; it is not a Release C PASS and must
-not be published.
+Release C remains in progress. This checkpoint includes the deterministic
+replacement framework and the first eight passive mechanics. It is not a
+Release C PASS and must not be published.
 
 ## Implemented in this checkpoint
 
@@ -24,6 +24,13 @@ not be published.
   toggle, settings-schema revision, or dynamically generated GUID.
 - Project-owned reconciliation that preserves remembered heritage-SLA amounts
   and never removes native or foreign facts.
+- Wildfire Heart, Brazen Flame, Forge-Hardened, Granite Skin, Like the Wind,
+  Secretive, Thunderous Resilience, and Whispering Wind, using native
+  stat/resistance components and narrow saving-throw/melee rules.
+- Scorching Weapons' nonstacking check now also handles later-acquired
+  Brazen Flame. Only its own exact damage packet is removed.
+- Acadamae's self-fatigue save carries the existing native fatigue context;
+  actual command regressions preserve its DC, action, resource, and cleanup.
 
 ## Still required
 
@@ -32,9 +39,13 @@ package, 17,483 focused runtime assertions, KMG-only/combined ON/OFF profiles,
 and four-process retain-base persistence (43 assertions). See the
 [exact framework ledger](ELEMENTAL-RACES-0.0.117-FRAMEWORK-QUALIFICATION.md).
 
-All 21 alternate-trait mechanics, their focused guarded scenarios,
-trait-bearing module-OFF/ON persistence, final compatibility/module matrices,
-full release qualification, and final documentation remain pending.
+The first eight mechanics pass 1,415 tests, clean build/package, and eight
+guarded processes (13,397 assertions, zero warnings, three exact profile
+restorations). See the
+[passive-mechanics ledger](ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md).
+Thirteen mechanics, trait-bearing module-OFF/ON persistence, final
+compatibility/module matrices, full release qualification, and final
+documentation remain pending.
 Release A and Release B evidence is
 retained as historical checkpoint evidence and is not relabelled as Release C
 proof.
@@ -49,5 +60,5 @@ The candidate preserves the qualified firearm SoundBank byte identity
 Optional Craft Magic Items support remains reflection-only;
 `CraftMagicItems.dll` is neither linked nor packaged. The inherited 1,288-test
 overhaul and 1,325-test fatigue-authority baselines remain historical, while
-this candidate's current dependency-free suite contains 1,413 registered
+this candidate's current dependency-free suite contains 1,415 registered
 cases.

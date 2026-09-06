@@ -179,6 +179,15 @@ received no favored-class bonuses or publication behavior. Visual Adjustments
 was absent and remains **NOT-RUN**. Exact run IDs and hashes are recorded in
 `docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
 
+Release C's first eight passive traits have focused KMG-only and highest-risk
+combined-profile runtime proof, including a combined module-OFF pass. Eight
+guarded processes and 13,397 assertions pass with zero runtime-result warnings;
+all three profile transactions restore exact settings and mod folders.
+This is an implementation checkpoint, not final 0.0.117 qualification:
+trait-bearing persistence, thirteen more mechanics, and the full final
+compatibility/module matrices remain pending. See
+`docs/ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md`.
+
 ## Removal warning
 
 There is no uninstall cleanup or general uninstall-safe-save claim. Saves may

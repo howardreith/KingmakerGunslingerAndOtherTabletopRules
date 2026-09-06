@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// Save-free live-rule qualification for Scorching Weapons and Inner
     /// Flame through native commands, item facts, attacks, and saving throws.
     /// </summary>
-    internal static class ElementalIfritFeatScenario
+    internal static partial class ElementalIfritFeatScenario
     {
         internal const string EvidenceFileName =
             "elemental-ifrit-feats.json";

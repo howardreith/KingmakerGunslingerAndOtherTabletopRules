@@ -18,6 +18,19 @@ abilities. Missing heritage markers still resolve to General, and module state
 continues to gate publication rather than identity registration. Trait
 mechanics and their guarded qualification remain in progress.
 
+The first eight passive providers use native AddStatBonus and energy
+resistance components plus feature-local RuleSavingThrow/RulePrepareDamage
+handlers. Dependency-free policy decides one conditional save bonus and one
+correlated native melee-hit contribution. Parent ability/context traversal is
+cycle-safe; native Racial/NaturalArmor descriptor behavior is preserved.
+Scorching Weapons retains the exact packet it contributed to a damage event
+and rechecks nonstacking after preparation, before native damage calculation;
+only that exact owned packet may be removed. No donor or global modifier
+table is changed. Acadamae's local self-fatigue save carries the existing
+native fatigue context so descriptor-based defenses can recognize it.
+Dedicated passive and weapon-interaction scenarios contain all new live
+mechanic assertions; the central runner is unchanged.
+
 ## Expanded Summoning 0.0.78 layer
 
 Player-visible summon children use a project-owned icon manifest with 77
