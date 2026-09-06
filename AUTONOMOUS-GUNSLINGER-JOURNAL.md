@@ -1,5 +1,60 @@
 # Autonomous Gunslinger journal
 
+## 2026-09-06 paired release authorization
+
+The owner explicitly authorized all task commits, the master merge, remote
+push, and public 0.0.115 release paired with Buff Planner 0.0.19. This resolves
+the prior release-plumbing scope blocker. Current branch/HEAD:
+`codex/share-transmutation-instant` /
+`e985aad7671992885210df448deca18d05081096`; core API commit:
+`a788d2269fcc4aaa24f8c49f820257ceb9cf7403`.
+The complete worktree and artifacts were preserved at
+`C:/Dev/KingmakerGunslingerLab/worktrees/share-transmutation-instant`.
+
+`scripts/Build-Local.ps1 -ReferenceBundleDir <qualified-private-references>`
+passes focused source validation, 1393/1393 domain tests, clean exact-reference
+Release compilation, supply icons, strict output, SoundBank, and 135-file
+package validation. Log: `artifacts/share-release-precommit-build.log`.
+The publisher now accepts this existing provenance-checked build route for
+both deterministic builds without changing installed UMM/Harmony. The
+legacy absent Unity output falls back only to the identical tracked bundle
+after the original manifest hash check; no asset content changed.
+The historical `tools/test_validation_dispatch.py` remains FAIL because it
+expects active 0.0.58; it is not the current dispatcher/source gate and was
+not weakened or relabeled. Current 0.0.115 source dispatch passes.
+
+The required local push guard was restored with clean-tree, exact-origin,
+branch, protected-file/credential, fast-forward, and remote-hash guards.
+Exact next action: commit, test guard WhatIf, run the mandated guarded push,
+merge to master under owner authority, repeat deterministic release gates,
+publish via the guarded publisher, and verify downloaded asset hashes.
+Save-backed Share gameplay: NOT RUN; the protected Buff Planner save pair is
+absent. No ordinary campaign save, live Mods, or installed dependency changed.
+
+## 2026-09-06 Share Transmutation direct-cast checkpoint
+
+- Clean master baseline:
+  `6874dc15a27ded132456dbdd480f47c794543a05`; feature branch
+  `codex/share-transmutation-instant`; API commit
+  `a788d2269fcc4aaa24f8c49f820257ceb9cf7403`.
+- Added one versioned direct handle that reuses the provider's intent, cast
+  policy, reservation ledger, lifecycle tracker, Share/Supremacy scopes,
+  Powerful Change modifier, exact debit, and cleanup. No Buff Planner compile
+  dependency, spell/caster/GUID exception, or synthetic command exists.
+- Version-aware source validation PASS; complete domain/reflection suite
+  1393/1393; exact .NET 4.7 Release compile PASS; consumer binary contract
+  87/87; strict build output/package PASS; two deterministic packages agree.
+- Candidate package/DLL/MVID:
+  `2490193efc17e6a27b07beaddba71fd149bfe62ef29c4ca167698e52032316f6` /
+  `090e6478844bcac7825ef04f43099ff41139e26aaf3b490ef327c991cd281dc6` /
+  `98c59878-ac0b-4b3b-9716-132a7e409450`.
+- The all-in-one builder's external Unity bundle path was absent. The exact
+  manifest-matching tracked bundle was copied only to generated workspace
+  output; unchanged strict validators passed. No live Mods/save/game mutation.
+- Runtime is NOT RUN. Exact next action is authorization or removal of the
+  uncommitted 0.0.115 release/default roll-forward, then final clean build and
+  guarded checkpoint push; the documented helper path is currently absent.
+
 ## 2026-08-20 Acadamae ordinary-player-path correction
 
 Fresh human evidence superseded the previous 15/15 runtime conclusion. The preserved exact run proves the three-argument constructor executed but rejected the detached prepared summon chain as `not-prepared`. Added canonical memorized-slot resolution, read-only UI evaluation, command-only slot binding, bounded presentation diagnostics, startup Harmony owner/order audit, and a runtime fixture with detached slotless outer/root nodes. Source gates pass: repository validation, `1,162/1,162`, clean Release/output, SoundBank, deterministic package, and strict package. Runtime and human gates remain open.

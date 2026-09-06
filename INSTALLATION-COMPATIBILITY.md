@@ -11,6 +11,19 @@ its supported Unity Mod Manager installation, and the Harmony compatibility
 assembly supplied by that environment. Do not copy game, Unity, UMM, Harmony,
 or compiler assemblies into this mod folder.
 
+## Share Transmutation automation compatibility
+
+Version 0.0.115 exposes Brown-Fur direct-cast contract version 1 for optional
+consumers such as Kingmaker Buff Planner. A compatible consumer may use it only
+after validating the exact public signature. The provider retains authority
+over Share eligibility, target legality, Powerful Change, Transmutation
+Supremacy, Arcane Reservoir reservation/debit, and transaction cleanup.
+
+Older provider versions remain safe: a consumer must use ordinary native
+animated casting rather than silently sharing a spell, omitting an enhancement,
+or granting a free reservoir use. The 0.0.114 compatibility profiles below are
+published historical evidence and are not relabeled as 0.0.115 qualification.
+
 ## In Harm's Way immediate-action adaptation
 
 Kingmaker 2.1.7b has a native shared swift-action cooldown but no complete
@@ -32,12 +45,12 @@ transient action debt; it does not alter either feat or automation mode.
 
 1. Back up any saves you intend to keep outside the game's active save folder.
 2. Install the standalone
-   `KingmakerGunslinger-0.0.114-elemental-races.zip`
+   `KingmakerGunslinger-0.0.115-share-transmutation-instant.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.114 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.115 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 

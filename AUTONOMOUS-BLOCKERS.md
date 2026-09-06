@@ -1,5 +1,52 @@
 # Autonomous Gunslinger blockers
 
+## 2026-09-06 paired release authorization
+
+The owner explicitly authorized all task commits, the master merge, remote
+push, and public 0.0.115 release paired with Buff Planner 0.0.19. This resolves
+the prior release-plumbing scope blocker. Current branch/HEAD:
+`codex/share-transmutation-instant` /
+`e985aad7671992885210df448deca18d05081096`; core API commit:
+`a788d2269fcc4aaa24f8c49f820257ceb9cf7403`.
+The complete worktree and artifacts were preserved at
+`C:/Dev/KingmakerGunslingerLab/worktrees/share-transmutation-instant`.
+
+`scripts/Build-Local.ps1 -ReferenceBundleDir <qualified-private-references>`
+passes focused source validation, 1393/1393 domain tests, clean exact-reference
+Release compilation, supply icons, strict output, SoundBank, and 135-file
+package validation. Log: `artifacts/share-release-precommit-build.log`.
+The publisher now accepts this existing provenance-checked build route for
+both deterministic builds without changing installed UMM/Harmony. The
+legacy absent Unity output falls back only to the identical tracked bundle
+after the original manifest hash check; no asset content changed.
+The historical `tools/test_validation_dispatch.py` remains FAIL because it
+expects active 0.0.58; it is not the current dispatcher/source gate and was
+not weakened or relabeled. Current 0.0.115 source dispatch passes.
+
+The required local push guard was restored with clean-tree, exact-origin,
+branch, protected-file/credential, fast-forward, and remote-hash guards.
+Exact next action: commit, test guard WhatIf, run the mandated guarded push,
+merge to master under owner authority, repeat deterministic release gates,
+publish via the guarded publisher, and verify downloaded asset hashes.
+Save-backed Share gameplay: NOT RUN; the protected Buff Planner save pair is
+absent. No ordinary campaign save, live Mods, or installed dependency changed.
+
+## 2026-09-06 Share Transmutation direct-cast checkpoint
+
+Core implementation is not blocked and is committed at
+`a788d2269fcc4aaa24f8c49f820257ceb9cf7403`; focused/full tests, exact compile,
+compiled contract, and strict deterministic package gates pass. The remaining
+repository workflow decision is whether the casting fix may include the
+task-created 0.0.115 release identity and active runtime-script default
+roll-forward. Safety review requires explicit authorization before committing
+that broader release plumbing; otherwise it must be removed and the API commit
+retained at the existing 0.0.114 identity.
+
+The mandated push helper
+`C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1` is
+absent, so no manual push substitutes for it. Save-backed gameplay remains NOT
+RUN and public release remains unauthorized.
+
 ## 2026-08-20 human-review continuation
 
 Acadamae is not blocked: the real prepared-player path is repaired and passed two independent fresh-process 15/15 runs. P0 release qualification remains blocked at the Tenebrous after-load boundary: the affected copy and a same-area no-Focused-Aim-marker control both cross the repaired serialization exception and stall after scene setup before the native completion callback. Independent acquisition, merchant, icon, and visual corrections continue; this blocker must not be reported as a qualified release.

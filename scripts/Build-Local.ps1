@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.114') { throw "Build-Local supports only active version 0.0.114, observed $($info.Version)." }
+if ($info.Version -ne '0.0.115') { throw "Build-Local supports only active version 0.0.115, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -51,7 +51,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean -MSBuildPath $msbuild
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.114'
+$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.115'
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -77,6 +77,11 @@ Copy-Item -Path (Join-Path $root 'assets\game\icons\*.png') -Destination (Join-P
 Copy-Item -Path (Join-Path $root 'assets\game\icons\expanded-summoning\*') -Destination (Join-Path $buildOutput 'assets\icons\expanded-summoning') -Force
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
+if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
+    # Use the unchanged checked-in artifact only when the same qualified hash
+    # below proves it is identical; no Unity asset rebuild or installation.
+    $bundleSource = Join-Path $root 'assets\bundles\kingmakergunslinger.firearms'
+}
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) { throw "Qualified firearm AssetBundle is missing: $bundleSource" }
 if ((Get-KmgSha256 -Path $bundleSource) -ne $bundleManifest.sha256) { throw 'Firearm AssetBundle hash does not match the qualified manifest.' }
 Copy-Item -LiteralPath $bundleSource -Destination (Join-Path $buildOutput 'assets\bundles\kingmakergunslinger.firearms') -Force

@@ -213,6 +213,8 @@ namespace KingmakerGunslinger.DomainTests
                 brownFur, "BrownFurCastExecutionRuntime.cs"));
             string castIntentRuntime = File.ReadAllText(Path.Combine(
                 brownFur, "BrownFurCastIntentRuntime.cs"));
+            string directCastApi = File.ReadAllText(Path.Combine(
+                brownFur, "BrownFurDirectCastApi.cs"));
             string relationshipRuntime = File.ReadAllText(Path.Combine(
                 brownFur, "BrownFurShareRelationshipRuntime.cs"));
             string castExecutionPatches = File.ReadAllText(Path.Combine(
@@ -827,6 +829,9 @@ namespace KingmakerGunslinger.DomainTests
                     token);
             foreach (string token in new[] {
                 "BrownFurCastCommitCoordinator<UnitDescriptor",
+                "BeginDirect", "CompleteDirectRule", "InspectDirect",
+                "CleanupDirect", "rule.SpellTarget.Unit",
+                "DirectProcessAttached", "RetryReleasedCleanup",
                 "BrownFurReservoirDebit.TryDebitExact",
                 "BrownFurShareTargetingRuntime.Begin",
                 "BrownFurSupremacyRuntime.Begin",
@@ -839,6 +844,17 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(castExecutionRuntime.Contains(token),
                     "Cast execution boundary lacks exact guard: " + token);
             foreach (string token in new[] {
+                "public static class BrownFurDirectCastApi",
+                "public const int ContractVersion = 1",
+                "BrownFurDirectCastStatus Validate",
+                "BrownFurDirectCastHandle Begin",
+                "CompleteRule(RuleCastSpell rule)", "Inspect()",
+                "Cleanup()", "IDisposable", "Committed",
+                "ResidualState", "TransactionIdentity", "ReservoirCost" })
+                Assertions.True(directCastApi.Contains(token),
+                    "Direct cast API lacks versioned lifecycle guard: " +
+                    token);
+            foreach (string token in new[] {
                 "BrownFurPlayerIntentRuntime.Observe",
                 "BrownFurTransmutationInventory.Observe",
                 "record.AbilityScoreBonuses", "record.AppliedBuffs",
@@ -849,7 +865,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Metamagic.Extend", "BrownFurShareRelationshipRuntime.Classify",
                 "targetUnit.Descriptor.State.IsDead", "DistanceFeet",
                 "BrownFurCastPolicy.Decide", "BrownFurCastTransaction",
-                "BrownFurCastExecutionRuntime.Begin",
+                "BrownFurCastExecutionRuntime.Begin", "ValidateDirect",
+                "BeginDirect", "prepared.Decision.ReservoirCost",
                 "spell-inventory-unqualified", "cast-reservation-rejected",
                 "Interlocked.Increment", "RuntimeHelpers.GetHashCode" })
                 Assertions.True(castIntentRuntime.Contains(token),

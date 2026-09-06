@@ -1,6 +1,16 @@
 # Kingmaker Gunslinger
 
-Version `0.0.114-elemental-races` adds the **Elemental Races: Ifrit, Oread,
+Version `0.0.115-share-transmutation-instant` adds the versioned
+`BrownFurDirectCastApi` contract used by compatible automation clients to run
+Share Transmutation through Brown-Fur's native transaction without queuing an
+animated casting command. The provider still validates the real ability,
+spellbook, selected enhancements, recipient, and reservoir, owns the reservoir
+debit, and retains delayed execution state through terminal cleanup. Consumers
+that cannot validate contract version 1 must use the safe animated fallback.
+This remains an optional public API: Kingmaker Gunslinger has no compile-time
+or package dependency on Kingmaker Buff Planner.
+
+The retained `0.0.114-elemental-races` release adds the **Elemental Races: Ifrit, Oread,
 Sylph, and Undine** feature module. It defaults ON. Any explicit saved value is
 preserved; changing the checkbox still requires a complete Kingmaker restart
 and never rebuilds the live blueprint graph.
