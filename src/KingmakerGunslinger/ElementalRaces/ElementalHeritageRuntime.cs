@@ -67,6 +67,10 @@ namespace KingmakerGunslinger.ElementalRaces
 
         public override void OnTurnOff()
         {
+            // Native UnitDescriptor.TurnOff clears IsTurnedOn before it turns
+            // facts off. That is unload/suspension, not removal of this race.
+            // Keep saved provider facts, modes and buffs for native TurnOn.
+            if (Owner == null || !Owner.IsTurnedOn) return;
             ElementalHeritageRuntime.RemoveOwnedProviders(Owner,
                 (ElementalHeritageRace)Race);
         }
@@ -85,6 +89,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
         public override void OnTurnOff()
         {
+            if (Owner == null || !Owner.IsTurnedOn) return;
             ElementalHeritageRuntime.Reconcile(Owner, null,
                 (ElementalHeritageId)Heritage);
         }
@@ -114,6 +119,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
         public override void OnTurnOff()
         {
+            if (Owner == null || !Owner.IsTurnedOn) return;
             ElementalHeritageRuntime.Reconcile(Owner, null, null, null,
                 (ElementalAlternateTraitId)Trait);
         }
@@ -132,6 +138,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
         public override void OnTurnOff()
         {
+            if (Owner == null || !Owner.IsTurnedOn) return;
             ElementalHeritageRuntime.Reconcile(Owner, null, null);
         }
     }

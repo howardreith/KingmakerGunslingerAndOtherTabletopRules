@@ -54,8 +54,9 @@ save-backed qualification pass (complete release lifecycle remains pending):
 | `.EnlargePerson` | `e117e1e0a17a4acec001000000000068` |
 | `.ReducePerson` | `e117e1e0a17a4acec001000000000069` |
 
-Crystalline Form appends three identities; native core proof does not imply
-completed save-backed qualification:
+Crystalline Form appends three identities. Its later incremental eight-trait
+save cycle qualifies consent and resource persistence on two Ironsoul fixtures,
+without adding any identity; full trait lifecycle remains pending:
 
 | Suffix under `KMG.ElementalRaces.Traits.Oread.CrystallineForm` | Stable GUID |
 | --- | --- |

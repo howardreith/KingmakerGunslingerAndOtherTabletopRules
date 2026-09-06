@@ -7,7 +7,7 @@ RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; EIGHT TRAITS
 HAVE CHECKPOINT PROOF AND THREE SUMMON INSIGHTS PLUS THREE BLOOD TRAITS HAVE
 NATIVE AND INCREMENTAL SAVE-BACKED EVIDENCE. EFREETI MAGIC ALSO PASSES NATIVE,
 MULTI-TRAIT SAVE AND RENEWED LEGACY MIGRATION GATES. CRYSTALLINE CORE NOW HAS
-NATIVE PROOF; ITS REMAINING GATES, FIVE UNIMPLEMENTED MECHANICS, THE OTHER FOURTEEN
+NATIVE AND INCREMENTAL SAVE PROOF; ITS REMAINING GATES, FIVE UNIMPLEMENTED MECHANICS, THE OTHER THIRTEEN
 TRAITS' PERSISTENCE, FULL LIFECYCLE, AND FINAL RELEASE-WIDE
 QUALIFICATION REMAIN PENDING. THE FACT-COMPONENT NAME REPAIR NOW PASSES
 PINNED 0.0.114 MIGRATION MECHANICS; SUBJECTIVE VISUAL REVIEW REMAINS.
@@ -33,6 +33,15 @@ preserved as historical evidence only and does not qualify new release
 behavior.
 
 ## Planned release inventory
+
+The [Crystalline persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)
+passes 1,424 tests, clean build/package and nine final guarded processes
+(10,490 assertions). A narrow native whole-unit suspension guard prevents
+lost armed consent without changing identities or assigning saved state.
+The eight-trait matrix, native rest/level/respec, OFF/ON load and renewed pinned
+0.0.114 migration pass. All final folder restorations are exact. All failures,
+60 result warnings and four pre-existing transient reconciliation ERROR lines
+remain explicit; this is not full Release C PASS.
 
 The current [Crystalline core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md)
 passes 1,423 tests, clean build/package and two fresh guarded native profiles
@@ -65,7 +74,7 @@ The earlier native-only candidate remains historical in `releaseCEfreetiMagicWor
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; CHECKPOINTS PUSHED |
 | B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | PASS LOCALLY; CHECKPOINTS PUSHED |
-| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - FIFTEEN NATIVE-PROVEN; SIX IMPLEMENTATIONS AND FULL RELEASE GATES PENDING |
+| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - FIFTEEN PRIOR MECHANICS PLUS CRYSTALLINE CORE/SAVE PROOF; FIVE IMPLEMENTATIONS AND FULL RELEASE GATES PENDING |
 
 ## Current summon Insight and component-identity investigation
 

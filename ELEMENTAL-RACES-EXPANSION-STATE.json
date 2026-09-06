@@ -375,6 +375,752 @@
     },
     "pending": "Complete semantic catalog (four unresolved native story effects), remaining two-handed/disabled-hand and multi-ray/duplicate-event boundaries, actual non-damage ray effect suppression, save-backed spent-resource/consent state, complete lifecycle, five unimplemented independent traits and final Release C gates. Optional-mod replacement Shadow Elemental Assessor has no native ray delivery; its unrelated area action is not changed or qualified as a ray."
   },
+  "releaseCCrystallinePersistenceWork": {
+    "status": "SUPERSEDED-BY-INCREMENTAL-PASS; see releaseCCrystallinePersistenceQualification",
+    "basedOnCommit": "6af2a44776570affb0b4bc2251f6c15749d99175",
+    "coreCheckpointPushed": true,
+    "matrix": "release-c-crystalline-efreeti-blood-insight-eight-traits-v3",
+    "scope": "24 existing race/sex/heritage fixtures; all seven prior traits remain represented; two Ironsoul Crystalline fixtures, male with spent native resource and female with armed native activatable/buff. Native trait selection, actual save/load, OFF/ON, level/rest/respec and exact absence required.",
+    "setupBoundary": "Native resource expenditure and native opt-in seeding only; no saved-ledger assignment. Actual ray-hit spending remains independently proved by the committed core command scenario.",
+    "historicalMatrices": "Original six-trait and seven-trait policies and tests retained unchanged",
+    "newSaveIdentities": 0,
+    "expectedDomainTests": 1424,
+    "releasePass": false
+  },
+  "releaseCCrystallinePersistenceQualification": {
+    "status": "INCREMENTAL-MECHANICAL-PASS; RELEASE-C-NOT-COMPLETE",
+    "postDocumentationValidation": {
+      "status": "PASS",
+      "sourceStateSha256BeforeThisLedgerEntry": "f9e54b225078fe7094fcc454b4c38ff5b32205c74bf99eb8e0fa97967d18a581",
+      "repositoryValidation": "PASS",
+      "domainReflectionTests": 1424,
+      "failures": 0,
+      "strictArchivedPackageValidation": "PASS",
+      "runtimeQualifiedPackageUnchanged": true,
+      "diffWhitespaceCheck": "PASS",
+      "scope": "Only curated documentation changed after the immutable native candidate; no source mechanic changed and no new unqualified DLL replaced it."
+    },
+    "basedOnCommit": "6af2a44776570affb0b4bc2251f6c15749d99175",
+    "report": "docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md",
+    "correction": "Native SaveManager suspends the whole UnitDescriptor before serialization. Four owned race/heritage/trait/retain OnTurnOff callbacks now preserve providers when Owner.IsTurnedOn is false. Actual active-unit marker removal still reconciles. No global patch, saved ledger assignment, donor mutation or identity change.",
+    "regression": "Candidate 01 serialized female Ironsoul consent OFF despite the pre-save ON witness. Candidate 02 preserves exact mode and buff references during native TurnOff/TurnOn and through fresh save/OFF/ON loading.",
+    "matrix": {
+      "id": "release-c-crystalline-efreeti-blood-insight-eight-traits-v3",
+      "fixtures": 24,
+      "parentRaces": 4,
+      "sexes": 2,
+      "heritages": 12,
+      "nativeSelectedTraitFixtures": 18,
+      "distinctTraits": 8,
+      "combinedIfritFixtures": 6,
+      "partiallySpentBloodFixtures": 8,
+      "crystallineFixtures": 2,
+      "crystallineHeritage": "Ironsoul; male spent/off, female unspent/armed",
+      "traitObservations": 168,
+      "crystallineObservations": 42,
+      "divergences": 0,
+      "scope": "All eight existing trait types remain represented. Crystalline persistence on two Ironsoul fixtures is not every Oread heritage or all-trait lifecycle proof. Native resource expenditure seeds the male use; actual ray-hit commitment is separately command-qualified."
+    },
+    "candidate": {
+      "version": "0.0.117-elemental-traits",
+      "archive": "artifacts/qualification/0.0.117/crystalline-persistence-02",
+      "sourceStateSha256": "5b67a9e58a085363a3314d00626d83783c9cf17b4f1cdee128fa2379f864b9ab",
+      "packageName": "KingmakerGunslinger-0.0.117-local-runtime.zip",
+      "packageBytes": 23223953,
+      "packageEntries": 135,
+      "packageSha256": "cb33bf0ed2c3b121ee205fbc874b5c9ea9500b5299913c523202dd2ce8e9c1b7",
+      "dllBytes": 6163968,
+      "dllSha256": "352b9df553c197831eb9e929d113872cb5278a634978b8ae941907ee141f0d97",
+      "dllMvid": "7d63807e-6da5-4130-b853-e6b57f7d58ff",
+      "deploymentId": "20260906T1615573322512Z"
+    },
+    "sourceGates": {
+      "repositoryValidation": "PASS",
+      "domainReflectionTests": 1424,
+      "domainFailures": 0,
+      "cleanRelease": "PASS",
+      "strictStandalonePackage": "PASS",
+      "newSaveBearingIdentities": 0,
+      "manifest": {
+        "total": 1856,
+        "active": 1854,
+        "reserved": 2,
+        "elementalActive": 218,
+        "elementalBlueprints": 190,
+        "elementalVisualProxies": 28,
+        "releaseC": 72
+      }
+    },
+    "nativeRuns": [
+      {
+        "directory": "20260906T1616209464273Z-observe-elemental-alternate-trait-framework",
+        "runId": "20260906T1616209644253Z-c09a0c87e38449afa718f1a2df1cf72c",
+        "status": "PASS",
+        "assertions": 5090,
+        "failed": 0,
+        "warnings": 0,
+        "resultSha256": "2a73257b21a9b27f59a22316d5d161393908e7108f11216dbbe406d8c24f1322",
+        "evidenceSha256": "0146075178379b8161ed19eccf288d55f6ada39d66dd69a0b887c580c4854eb8",
+        "nativeLogSha256": "049ddf7f764a61b52aa11cb828360b49eb2d25c3f809eb492aff8a9537da9121",
+        "nativeSummarySha256": "878de72b45605ef2558ffa0c86681ad18a172f43a0c0048ffa734cc2d771838a",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 4,
+          "unsupportedShaderFallback": 4,
+          "unsupportedShaderGpuError": 4,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 4,
+          "lightmapModeMismatch": 1,
+          "zeroSurfaceArea": 0,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 0,
+        "factPostLoadErrors": 0,
+        "traitObservations": 0,
+        "traitDivergences": 0,
+        "crystallineObservations": 0,
+        "crystallineDivergences": 0
+      },
+      {
+        "directory": "20260906T1618265484275Z-observe-elemental-alternate-trait-framework",
+        "runId": "20260906T1618265504293Z-25e2eb6dc5324fb6a7b512e9488b5544",
+        "status": "PASS",
+        "assertions": 5090,
+        "failed": 0,
+        "warnings": 0,
+        "resultSha256": "cc34062b156bef1296dd938e1dc1c06dcce24f39322e194af9f58b739594eb08",
+        "evidenceSha256": "2ea4d6a75d9419f894c94d803863f54cf6a584d4a5d47924a82cb305bd7721f2",
+        "nativeLogSha256": "04468ac8f2261390bd98ede3456b3c57c5202b3fd07b49d9cce493c507189f65",
+        "nativeSummarySha256": "857619976743ceee674c88ae711a85f5f2d058a79801dbe3b1762062e1fa8dfe",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 4,
+          "unsupportedShaderFallback": 4,
+          "unsupportedShaderGpuError": 4,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 4,
+          "lightmapModeMismatch": 1,
+          "zeroSurfaceArea": 0,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 0,
+        "factPostLoadErrors": 0,
+        "traitObservations": 0,
+        "traitDivergences": 0,
+        "crystallineObservations": 0,
+        "crystallineDivergences": 0
+      }
+    ],
+    "persistenceRuns": [
+      {
+        "directory": "20260906T1628055571903Z-elemental-race-persistence-prepare",
+        "runId": "20260906T1628055592247Z-43c348f4a0514354acc287374cad466a",
+        "status": "PASS",
+        "assertions": 58,
+        "failed": 0,
+        "warnings": 14,
+        "resultSha256": "956f030f65ea9cb27b463274fe2eb8b6bccf650ac9f5984ff9311dbab9362e25",
+        "evidenceSha256": "d379e9a1c26f34744bdb977b3af952656f70143880f39fbd96b87cb8bf989bfa",
+        "indexSha256": "0c215765b003096421773e1999bc7888690659230f076678f0c942d4ff5a3794",
+        "nativeLogSha256": "f3b5f68d84b9cfc5e9b37fa9d1d78a7bb527e5f3e8812a0a8cb27e54289f9036",
+        "nativeSummarySha256": "a54d0a02d4a1a4ff6c86ffd0f3f7523fa14184ca67124a1d467c4895173b6213",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 7,
+          "unsupportedShaderFallback": 7,
+          "unsupportedShaderGpuError": 7,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 7,
+          "lightmapModeMismatch": 2,
+          "zeroSurfaceArea": 2,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 0,
+        "factPostLoadErrors": 0,
+        "traitObservations": 24,
+        "traitDivergences": 0,
+        "crystallineObservations": 6,
+        "crystallineDivergences": 0,
+        "fixtureCount": 24
+      },
+      {
+        "directory": "20260906T1631561851896Z-elemental-race-module-disabled-persistence",
+        "runId": "20260906T1631561861916Z-f2dff3549ef042938d2947fc82ac4a55",
+        "status": "PASS",
+        "assertions": 146,
+        "failed": 0,
+        "warnings": 16,
+        "resultSha256": "f635f722e4d021755e20a765116d90737932477442b1a39b14c04072ad719f61",
+        "evidenceSha256": "4a51aa79c6fcaff05b45ec6065d8c416ef7842ae4da1f1b7503f7e1351c79e81",
+        "indexSha256": "7d26c9ec31e5c57c9c80b1f865f7df83b90f5eefef7ca0d67177c5503848d3ce",
+        "nativeLogSha256": "62cb11b5fbc94b0c406a19131db6b694e607df950f0361bc52495e283f4c3545",
+        "nativeSummarySha256": "a473d321a6210886638cc4fec6b571caaadbded3cf17c0d5248284cad29c9df5",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 7,
+          "unsupportedShaderFallback": 7,
+          "unsupportedShaderGpuError": 7,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 7,
+          "lightmapModeMismatch": 2,
+          "zeroSurfaceArea": 2,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 4,
+        "factPostLoadErrors": 0,
+        "traitObservations": 96,
+        "traitDivergences": 0,
+        "crystallineObservations": 24,
+        "crystallineDivergences": 0,
+        "fixtureCount": 24
+      },
+      {
+        "directory": "20260906T1635180472096Z-elemental-race-module-restored-persistence",
+        "runId": "20260906T1635180492146Z-b2a782634af048709def8926ea616439",
+        "status": "PASS",
+        "assertions": 71,
+        "failed": 0,
+        "warnings": 15,
+        "resultSha256": "8dfd089e3f5449450be9b1d5aacca2eba797fa938ed5f21db040e32ff8ab1b4e",
+        "evidenceSha256": "5e10ed35506c62d0f84a4c6ee52594d7667220832e21c5d8f8fc07c4af092cbf",
+        "indexSha256": "4cef3aeb4452003dbe25c34b5011c30b3d27753116c6bdf04ab11330a1f5f3b3",
+        "nativeLogSha256": "f41ba2bbc0ef5d471f888f03f42ab36c0eb94aac00e871793e6e67322d72e72b",
+        "nativeSummarySha256": "c45baebf3911f7cf2d5ad023bd9b8df46b91a911c2d7ecde164e87c9708ddc7b",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 7,
+          "unsupportedShaderFallback": 7,
+          "unsupportedShaderGpuError": 7,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 7,
+          "lightmapModeMismatch": 2,
+          "zeroSurfaceArea": 2,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 0,
+        "factPostLoadErrors": 0,
+        "traitObservations": 48,
+        "traitDivergences": 0,
+        "crystallineObservations": 12,
+        "crystallineDivergences": 0,
+        "fixtureCount": 24
+      },
+      {
+        "directory": "20260906T1639236522539Z-elemental-race-persistence-verify-absent",
+        "runId": "20260906T1639236542905Z-e89c39f7f91049d7b7f76c4d6493c143",
+        "status": "PASS",
+        "assertions": 7,
+        "failed": 0,
+        "warnings": 2,
+        "resultSha256": "8e111c6c35b1e521819e4cb96580675a16619bf7c2318362bd76782f9ddaa616",
+        "evidenceSha256": "8bc2ac2bdffd7134fcd5294fc85423d3feaaac6e4022f2f6a8c2e4558094877a",
+        "indexSha256": "6f635d182751f60e89cde6d4ab6972f7a41a531a6bafcff0d6991997371d01ed",
+        "nativeLogSha256": "fa84f03cc34854ebc5421d4e8abe0d544c3bc59ad92c79e4579838ba4797e2a1",
+        "nativeSummarySha256": "4f329981a51b5dc5de44bdd76edaba40c72ab311932b31f1f81388a661590df8",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 5,
+          "unsupportedShaderFallback": 5,
+          "unsupportedShaderGpuError": 5,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 7,
+          "lightmapModeMismatch": 1,
+          "zeroSurfaceArea": 0,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 0,
+        "factPostLoadErrors": 0,
+        "traitObservations": 0,
+        "traitDivergences": 0,
+        "crystallineObservations": 0,
+        "crystallineDivergences": 0,
+        "fixtureCount": 24
+      }
+    ],
+    "legacyRuns": [
+      {
+        "directory": "20260906T1651069984677Z-elemental-race-persistence-prepare",
+        "runId": "20260906T1651070224708Z-c0a8a742e34843a2986760171db1beef",
+        "status": "PASS",
+        "assertions": 11,
+        "failed": 0,
+        "warnings": 5,
+        "resultSha256": "2727e6814be9f201bb3c29c8c0bfe13adc8a62b6c0b40d49e32b7eb5cee6c1bf",
+        "evidenceSha256": "d6cb46fa1a44d0397ee30a7aa9efed633c87c415bc54b18db5eaf68741d7ea48",
+        "indexSha256": "b825563c9cbeab5a0d60cd928515f2370d2527eaa8c2e3133f339eb7edd1491f",
+        "nativeLogSha256": "f854d110a51ac5c1e9ef4cda8f01265bdfe209fa0df8aeed7007e8643090e177",
+        "nativeSummarySha256": "923891df4c5b7a0a4d839395af3f8f183e293775796920d7964b09970d9a7f6d",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 7,
+          "unsupportedShaderFallback": 7,
+          "unsupportedShaderGpuError": 7,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 7,
+          "lightmapModeMismatch": 2,
+          "zeroSurfaceArea": 2,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 0,
+        "factPostLoadErrors": 0,
+        "traitObservations": 0,
+        "traitDivergences": 0,
+        "crystallineObservations": 0,
+        "crystallineDivergences": 0,
+        "fixtureCount": 8
+      },
+      {
+        "directory": "20260906T1654552541151Z-elemental-race-legacy-migration",
+        "runId": "20260906T1654552561150Z-f7ad1bc87bb24cd4b2b3c18f993cac14",
+        "status": "PASS",
+        "assertions": 10,
+        "failed": 0,
+        "warnings": 6,
+        "resultSha256": "b884a74e6ba3b79ef3fecfdbc2d3a0ea54c5a491db23aeb26daeed980918369d",
+        "evidenceSha256": "8150aa1dad6babebbfd07a7e8fbfe6c4dfe96a1e29af0ddc805a5d1143de021f",
+        "indexSha256": "27d64576d4e1ce1037cbdefdc471de06694f06b4548746a88cc7f5959a862947",
+        "nativeLogSha256": "d058ba7e2abb7dc194157ab789ec7da61c905f841de2e66d4ef521510eb23dab",
+        "nativeSummarySha256": "aa8f9c3a59c240a0a0f56b3db3adca6b380cea7ae63d84d8ea5a0f5208cb02f2",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 7,
+          "unsupportedShaderFallback": 7,
+          "unsupportedShaderGpuError": 7,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 7,
+          "lightmapModeMismatch": 2,
+          "zeroSurfaceArea": 2,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 0,
+        "factPostLoadErrors": 0,
+        "traitObservations": 0,
+        "traitDivergences": 0,
+        "crystallineObservations": 0,
+        "crystallineDivergences": 0,
+        "fixtureCount": 8
+      },
+      {
+        "directory": "20260906T1658246638665Z-elemental-race-persistence-verify-absent",
+        "runId": "20260906T1658246678702Z-c7cb030bdcc84fe3a8e956a7a0de5545",
+        "status": "PASS",
+        "assertions": 7,
+        "failed": 0,
+        "warnings": 2,
+        "resultSha256": "93dca5ab8b1dd606ddca88f20643c34c9c3dc6b11ce833bd78780967819cd1ea",
+        "evidenceSha256": "3704f13a31a1a8e87fc2cbd6140d9734896aebe4889e4e7836b07fb63c80f1df",
+        "indexSha256": "6f635d182751f60e89cde6d4ab6972f7a41a531a6bafcff0d6991997371d01ed",
+        "nativeLogSha256": "df2d2de85eccac016845ba0a66f088b616275606818e7340db0dc02d146014c0",
+        "nativeSummarySha256": "6e8f3a1e67f0cf3ef889a8aaa703cfd9b29db1ab7cbab4ea10058ba8aac401a9",
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 5,
+          "unsupportedShaderFallback": 5,
+          "unsupportedShaderGpuError": 5,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 7,
+          "lightmapModeMismatch": 1,
+          "zeroSurfaceArea": 0,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "kmgTransientReconcileErrors": 0,
+        "factPostLoadErrors": 0,
+        "traitObservations": 0,
+        "traitDivergences": 0,
+        "crystallineObservations": 0,
+        "crystallineDivergences": 0,
+        "fixtureCount": 24
+      }
+    ],
+    "mechanicEvidenceSha256": [
+      "5fb296e534e409298eace79270a138b501ab7d1c6efe0cd4efdb7e7e6aa1b811",
+      "eb0bd358751a09c105bb1461cbfca341529e6fddf9713f744d7356b50722e9d8"
+    ],
+    "totals": {
+      "qualifiedProcesses": 9,
+      "assertions": 10490,
+      "runtimeResultWarnings": 60,
+      "nativeAssertions": 10180,
+      "persistenceAssertions": 282,
+      "persistenceWarnings": 47,
+      "legacyAssertions": 28,
+      "legacyWarnings": 13,
+      "releasePass": false
+    },
+    "restoration": {
+      "allFinalTransactionsVerified": true,
+      "independentFinalModsComparisonExact": true,
+      "manifestEntries": 968,
+      "manifestSha256": "ccf49739800e26f33a9c78bce559b97cf0cdf1e73dd1801f2431cda1fac413f7",
+      "manifestDigestEncoding": "SHA256 of UTF8(originalManifest | ConvertTo-Json -Depth 6 -Compress)",
+      "originalAndRestoredSettingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "persistenceOnSettingsSha256": "0ca3c98bb0d791169a262f2b53649eff72e58acd1a37f0954172e66b4c2960d2",
+      "persistenceOffSettingsSha256": "b9a0f19d70085ef4fbda6ee4aeff87de89ee0e8efc0760edb7ca6989d5835fa8",
+      "managedSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "profiles": [
+        {
+          "id": "crystalline-persistence-02-lifecycle-only",
+          "profile": "gunslinger-only",
+          "sha256": "a5061394c073bce1db6d0513c0a2456f4f8244036ff5167880cd8d33cce7296f"
+        },
+        {
+          "id": "crystalline-persistence-02-lifecycle-combined",
+          "profile": "gunslinger-high-risk-combined-favored-class",
+          "sha256": "26a6cdc157790ff2b92f6b26a6869411bc551389fa8b67cb591967a1abc95318"
+        },
+        {
+          "id": "crystalline-persistence-02-full",
+          "profile": "gunslinger-exact-installed-copy",
+          "sha256": "05eda97b3c68285f85d3847a2c4520c88c6b28692f66167f62ded021e549b1b8"
+        },
+        {
+          "id": "crystalline-persistence-02-legacy",
+          "profile": "gunslinger-exact-installed-copy",
+          "sha256": "567355a4fdea2a94cd1ff7c3751811b1699d6bf8024e896e4715646d271474b4"
+        }
+      ],
+      "legacyTransactionId": "20260906T1650596475787Z-elemental-race-legacy-migration-transaction",
+      "legacyTransactionSha256": "5aacfab708c29397e16f7e6a77d439222f44ef3e992f42293e45e1150ab09a65",
+      "legacyPackageSha256": "b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694"
+    },
+    "diagnostics": "Zero Fact.PostLoad signatures in all final runs. Native shader/missing-script/lightmap diagnostics and 60 visual/DollData result warnings remain. Four pre-existing feat-transient.reconcile.failed ERROR lines occur during OFF level-up on the Scorching/Strike fixtures; same units/message already occur in the historical seven-trait Efreeti OFF run 20260906T0749469268976Z. No blanket zero-log-error or final Release C PASS is claimed; this separate native preview/hydration boundary remains to investigate.",
+    "safety": {
+      "saveName": "KMG_AUTOMATION_WORKING",
+      "protectedBaselineAccessed": false,
+      "allLaunches": "Guarded request; Steam 640820; Windows 10; fresh processes; expected version and frozen artifact verified",
+      "saveWrites": "Current prepare/OFF/ON each exactly once; final absence zero. Legacy prepare/migration each exactly once; final absence zero.",
+      "finalFixtureMembership": "Zero in global units, party, party characters, remote companions and cross-scene collections",
+      "mechanicalVisualProof": false,
+      "rawArtifactsCommitted": false
+    },
+    "remaining": "Five unimplemented traits; complete Crystalline semantic catalog/multi-ray/non-damage/equipment/lifecycle boundaries; thirteen other traits' actual persistence; complete all-trait/multi-trait lifecycle and final compatibility/module/release gates. Visual Adjustments absent/NOT-RUN. Existing optional Shadow Elemental Assessor area rewrite preserved and not qualified as a ray."
+  },
+  "releaseCCrystallinePersistenceDiagnosticHistory": {
+    "status": "FAILED-AND-DIAGNOSTIC-ATTEMPTS-RETAINED; NOT-QUALIFICATION",
+    "firstCandidate": {
+      "sourceStateSha256": "b4032861bcaef57140bb4764ec78305cefe25ddedb6a6d444525d56b09a483b5",
+      "packageSha256": "aa6d8976bd0adbe16a55ff7a6581e97cbb5408fdba6fb864057d25aa22387b9b",
+      "packageBytes": 23223769,
+      "packageEntries": 135,
+      "dllSha256": "d5e4b1d4f47866d3ac6c15274ffb2da6316974d721e0c3fc5c269dc33aa1abec",
+      "dllMvid": "fc23d494-7a9e-4480-9367-06780a163956",
+      "archive": "artifacts/qualification/0.0.117/crystalline-persistence-01",
+      "sourceGates": "1424 tests, repository validation, clean Release and strict package PASS; no gameplay PASS implied"
+    },
+    "runs": [
+      {
+        "directory": "20260906T1536348155515Z-elemental-race-persistence-prepare",
+        "runId": "20260906T1536348375538Z-2f00c8c4cc1d4eb885a2f79633ab2aeb",
+        "status": "PASS",
+        "assertions": 58,
+        "failed": 0,
+        "warnings": 14,
+        "hashes": [
+          {
+            "file": "compatibility-attribution-log-elemental-traits-elemental-race-persistence-prepare.json",
+            "sha256": "450e81c65f14fb8267ec177c2c85f03d2bda79abef68e5ebcf708dd71b3c2c52"
+          },
+          {
+            "file": "elemental-race-persistence-index.json",
+            "sha256": "32cc8ad65135459ff8e6bdfecb699ebc00cb815fe121bb60c256299994ce17ee"
+          },
+          {
+            "file": "output_log-elemental-traits-elemental-race-persistence-prepare.txt",
+            "sha256": "44e8d8262fd0d3692226fa682fa3b0aea8a07579357c7d57224fa5501b256d4a"
+          },
+          {
+            "file": "runtime-evidence.json",
+            "sha256": "c91ce18eb2de92dba0a34c5b6df1e1482fc2bed12e8857dd06dbe872bd845a36"
+          },
+          {
+            "file": "runtime-result.json",
+            "sha256": "d426063c8f8bb8c0d4c5d528c12756ba86d65e16553388ea5f7ba8d0555871ce"
+          }
+        ]
+      },
+      {
+        "directory": "20260906T1540209645156Z-elemental-race-module-disabled-persistence",
+        "runId": "20260906T1540209665186Z-23b8070b67ec4b3abaf286499b3b0e18",
+        "status": "FAIL",
+        "assertions": 123,
+        "failed": 7,
+        "warnings": 13,
+        "hashes": [
+          {
+            "file": "compatibility-attribution-log-crystalline-persistence-01-off-fail.json",
+            "sha256": "0431d8f4152139b45d433d9145bb635b226f7ab58f6b6e5eb430595ca3b16aac"
+          },
+          {
+            "file": "elemental-race-persistence-index.json",
+            "sha256": "0b9e14ff5bbe95a1ff1b529e31862266286e248aa143946c6bbdc9d08aedf9e0"
+          },
+          {
+            "file": "output_log-crystalline-persistence-01-off-fail.txt",
+            "sha256": "cf20c38bb2b6124f1c0fd97d309101bf3d9867c1a325520312238325beb05083"
+          },
+          {
+            "file": "runtime-evidence.json",
+            "sha256": "a24a4deb9de100ed506c06596fb6d48c9d5cbdfe3abea2260a64fcfc501e08ba"
+          },
+          {
+            "file": "runtime-result.json",
+            "sha256": "da45f0a7b7db9457664dd532645ed645dfcd5782cf59ca249687e84cf3d63332"
+          }
+        ]
+      },
+      {
+        "directory": "20260906T1602216670422Z-elemental-race-persistence-verify-absent",
+        "runId": "20260906T1602216820481Z-233253577084420eb1768efdc876595d",
+        "status": "PASS",
+        "assertions": 7,
+        "failed": 0,
+        "warnings": 2,
+        "hashes": [
+          {
+            "file": "compatibility-attribution-log-crystalline-persistence-01-save-inspect.json",
+            "sha256": "6eb7c695a231b6fcf19aa05f4dac29d19d658a987b7feeed59501702a41228d4"
+          },
+          {
+            "file": "elemental-race-persistence-index.json",
+            "sha256": "6f635d182751f60e89cde6d4ab6972f7a41a531a6bafcff0d6991997371d01ed"
+          },
+          {
+            "file": "output_log-crystalline-persistence-01-save-inspect.txt",
+            "sha256": "40c23230ae49e3d90cd9f72f2dc22faafd1324b5ff67c13a0711eb504741a25b"
+          },
+          {
+            "file": "runtime-evidence.json",
+            "sha256": "67230e454e464792780478c6f91f509f45077a59c1d5cf0e1f281233dd799598"
+          },
+          {
+            "file": "runtime-result.json",
+            "sha256": "b0bd7acfa0265140d9656cce8275fd04e1ed381c736c3a38b49a813817b84cf8"
+          }
+        ]
+      },
+      {
+        "directory": "20260906T1607424508727Z-elemental-race-persistence-prepare",
+        "runId": "20260906T1607424688769Z-8395f3af769d4533a218159afd55ce0d",
+        "status": "PASS",
+        "assertions": 58,
+        "failed": 0,
+        "warnings": 13,
+        "hashes": [
+          {
+            "file": "compatibility-attribution-log-crystalline-persistence-01-prepare-inspect.json",
+            "sha256": "9068839cb77bb98bd96b48ed33437bab0abae0ae3c114afdb9cf73e9af851ffc"
+          },
+          {
+            "file": "elemental-race-persistence-index.json",
+            "sha256": "3a9d446e39cbb2fda53cc1e80022550a14dfe3e95a70efe4e6a9506fc8fdbbfa"
+          },
+          {
+            "file": "output_log-crystalline-persistence-01-prepare-inspect.txt",
+            "sha256": "11367857352e998891379f6ea96d2a57bbb098a99c6d27be671208f6ba3d6127"
+          },
+          {
+            "file": "runtime-evidence.json",
+            "sha256": "6e81643e0a6b2166c4236c96fa828bfa1eda012723afae7ba36237d56d2d4aec"
+          },
+          {
+            "file": "runtime-result.json",
+            "sha256": "ece895a99b89e9ceb889eb8134cb0f4b58ddaa85c9837e257b72d36cc325d5b5"
+          }
+        ]
+      }
+    ],
+    "firstFailure": "Female Ironsoul armed consent was OFF and its buff absent in fresh module-OFF load. Male spent amount remained zero. 123 assertions / 7 failures; exact cleanup saved once.",
+    "firstAttemptRestoration": {
+      "settingsBytesRestored": true,
+      "settingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "fullModsManifestExact": false,
+      "beforeSha256": "c4fcda86d95d851df15c364b1c214f78aa18ed29e9221f17c2489f3448807ea2",
+      "afterSha256": "47681e0593a2a1054d4e415eaafde2a6b3a0cefc4c6217b7e5343640668223d6",
+      "cause": "Initial canonical save transaction protected settings bytes, not the entire Mods tree. Native exit changed optional settings/blueprint-list timestamps and generated KMG previous/cache files. Optional existing file bytes remained unchanged. No retrospective timestamp rewrite or user-file deletion; later attempts used an exact full-folder compatibility transaction.",
+      "status": "FAIL-FOR-EXACT-FOLDER-RESTORATION"
+    },
+    "diagnosticWrapperFailure": "After PASS fresh absence, malformed PowerShell shorthand in the ignored collector threw before the next phase. No next process launched; full folder transaction restored exactly. Parser corrected locally.",
+    "readonlySaveWitness": {
+      "name": "Manual_299_KMG_AUTOMATION_WORKING.zks",
+      "bytes": 4267235,
+      "sha256": "f990288463f434902b44a925f14518393460b8ab9b14777028298d74a1159cca",
+      "observation": "After repeat candidate-01 prepare, both Crystalline modes were already false in serialized party data and no armed buff existed in any saved JSON. Exact named working archive inspected read-only with no game process, extraction or writes; later exact fixture cleanup superseded this save state."
+    },
+    "recoveryTransactions": [
+      {
+        "id": "crystalline-persistence-01-save-inspect",
+        "restorationVerified": true,
+        "sha256": "bf9a9eb68d69c3f7f0b2f64323d64bdc7fa551465c225e98c80e7021f7c74ed3"
+      },
+      {
+        "id": "crystalline-persistence-01-prepare-inspect",
+        "restorationVerified": true,
+        "sha256": "61d51f5dbf4a52d98be06cd9b84667975e0191971d6dc86ee2d15483b2dfd33e"
+      }
+    ],
+    "levelOneCleanup": {
+      "directory": "20260906T1623041215873Z-elemental-race-module-restored-persistence",
+      "runId": "20260906T1623041371009Z-5055341435b341278d07aa6d659f7c07",
+      "status": "FAIL",
+      "assertions": 12,
+      "failed": 5,
+      "warnings": 2,
+      "exceptionSummary": "System.InvalidOperationException: ifrit-male native Respec source was not an exact elemental Gunslinger: {\"raceGuid\":\"556a2d9ae0c6401eaed87614a2caf539\",\"raceReferenceExact\":false,\"raceId\":\"Aasimar\",\"effectiveGender\":\"Male\",\"customGender\":\"Male\",\"characterLevel\":1,\"gunslingerLevel [full exception retained in raw result]",
+      "resultSha256": "863458d952a5508d9ba97316f6e950431a23207b0081f406fd220b351e41a3d7",
+      "evidenceSha256": "07309e8f0c63d8658766588bd623905c66be1b223954f1a178dbb94f90165b8a",
+      "indexSha256": "ea431e9ed57f831fc624181649b8afb9c620ca3203d857360f27ef61b43cf5aa",
+      "nativeLogSha256": "698d867acf9980958558b87f56079fd22a2df442df760f9474e78c0aed64b546",
+      "nativeSummarySha256": "a78cb1ff8098278a7c315913d28512157b9d378b524fe7acbcec5d304236c756",
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 7,
+        "unsupportedShaderFallback": 7,
+        "unsupportedShaderGpuError": 7,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 7,
+        "lightmapModeMismatch": 2,
+        "zeroSurfaceArea": 2,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "kmgTransientReconcileErrors": 0,
+      "factPostLoadErrors": 0,
+      "traitObservations": 0,
+      "traitDivergences": 0,
+      "crystallineObservations": 0,
+      "crystallineDivergences": 0,
+      "fixtureCount": 24,
+      "structuralCleaned": true,
+      "membership": {
+        "globalUnits": 0,
+        "party": 0,
+        "partyCharacters": 0,
+        "remoteCompanions": 0,
+        "crossScene": 0
+      },
+      "saveApiCalled": true,
+      "expectedWorkingSaveRoutineCount": 1,
+      "interpretation": "Expected diagnostic FAIL, not mechanical qualification: level-one candidate-01 fixtures fail level-two restored-respec preconditions. Native exact cleanup saved once with zero remaining membership, followed by mandatory fresh absence before preparing candidate 02."
+    },
+    "recoveryAbsence": {
+      "directory": "20260906T1625413563523Z-elemental-race-persistence-verify-absent",
+      "runId": "20260906T1625413593512Z-419cd17afe524434bf782cfe38604fb3",
+      "status": "PASS",
+      "assertions": 7,
+      "failed": 0,
+      "warnings": 2,
+      "exceptionSummary": "",
+      "resultSha256": "c56a7ec228988ff680d17dce907ad0a35aa65da0a87852bd25b2096e17806488",
+      "evidenceSha256": "9fc889efce7d5beb645f368fa6025768fbee680e63630aff849fdaab84a32d62",
+      "indexSha256": "6f635d182751f60e89cde6d4ab6972f7a41a531a6bafcff0d6991997371d01ed",
+      "nativeLogSha256": "992b170d1263eea1c3f19b5db817c812a361b77262e48e05934fcc6b03e7275a",
+      "nativeSummarySha256": "f543e87aa6b30de45385cffd6bdf9ad5654e22a8413306b469bdf8c0b16ae0f4",
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 5,
+        "unsupportedShaderFallback": 5,
+        "unsupportedShaderGpuError": 5,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 7,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "kmgTransientReconcileErrors": 0,
+      "factPostLoadErrors": 0,
+      "traitObservations": 0,
+      "traitDivergences": 0,
+      "crystallineObservations": 0,
+      "crystallineDivergences": 0,
+      "fixtureCount": 24,
+      "structuralCleaned": true,
+      "membership": {
+        "globalUnits": 0,
+        "party": 0,
+        "partyCharacters": 0,
+        "remoteCompanions": 0,
+        "crossScene": 0
+      },
+      "saveApiCalled": false,
+      "expectedWorkingSaveRoutineCount": 0
+    }
+  },
   "releaseCCrystallineAudit": {
     "postDocumentationValidation": {
       "status": "PASS",

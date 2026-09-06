@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     UnitEntityData unit = _createdUnits.Single(value => IsFixtureUnit(value, fixture));
                     ArmBloodPersistence(fixture, unit);
+                    PrepareCrystallinePersistence(fixture, unit);
                     RecordTraitPersistence(fixture, unit, 1, 1, true, "prepare-immediately-before-save");
                     if (!EfreetiPersistenceBuffExact(fixture, unit,
                         PersistenceSlaTrait(fixture, fixture.Heritage) == null ? 0 : 1))
@@ -41,13 +42,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int traitFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length != 0);
                 int combinedFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length == 2);
                 int bloodFixtures = _fixtures.Count(value => PersistenceBloodTrigger(value) != null);
-                Add(_assertions, "elemental-traits-seven-trait-save-inventory",
-                    "18 native-selected trait fixtures, six legal two-trait Ifrits, nine partially spent blood buffs, seven distinct traits",
+                Add(_assertions, "elemental-traits-eight-trait-save-inventory",
+                    "18 native-selected trait fixtures, six legal two-trait Ifrits, eight partially spent blood buffs, eight distinct traits",
                     "traitFixtures=" + traitFixtures + ";combinedFixtures=" + combinedFixtures + ";bloodFixtures=" + bloodFixtures,
-                    traitFixtures == 18 && combinedFixtures == 6 && bloodFixtures == 9 && _fixtures
+                    traitFixtures == 18 && combinedFixtures == 6 && bloodFixtures == 8 && _fixtures
                         .SelectMany(value => ExpectedPersistenceTraits(value, value.Heritage))
-                        .Select(value => value.Definition.Id).Distinct().Count() == 7,
-                    "pure seven-trait matrix, native selected facts and commands, real damage and BuffCollection.Tick");
+                        .Select(value => value.Definition.Id).Distinct().Count() == 8,
+                    "pure eight-trait matrix, native selections/commands, real blood damage/ticks; native deflection-resource expenditure and consent setup");
             }
 
             private ElementalBloodDamageTrigger PersistenceBloodTrigger(ElementalPersistenceFixture fixture)
@@ -114,6 +115,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void RestoredBloodPersistenceState(ElementalPersistenceFixture fixture, UnitEntityData unit)
             {
                 RecordTraitPersistence(fixture, unit, 2, 0, false, "module-off-after-rest");
+                PrepareCrystallinePersistence(fixture, unit);
                 ArmBloodPersistence(fixture, unit);
                 RemoveBloodPersistenceBuff(fixture, unit);
                 RecordTraitPersistence(fixture, unit, 2, 1, false, "module-off-respent-before-save");
@@ -127,8 +129,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalBloodDamageTrigger trigger = traits.SelectMany(trait => trait.Provider.ComponentsArray)
                     .OfType<ElementalBloodDamageTrigger>().SingleOrDefault();
                 UnitPartElementalBloodCapacity capacity = unit.Descriptor.Get<UnitPartElementalBloodCapacity>();
-                var buffs = fixture.Blueprints.AlternateTraits.Traits().SelectMany(value => value.Mechanics())
-                    .OfType<BlueprintBuff>().ToArray();
+                var buffs = fixture.Blueprints.AlternateTraits.Traits().SelectMany(value => value.Provider.ComponentsArray)
+                    .OfType<ElementalBloodDamageTrigger>().Select(value => value.HealingBuff).ToArray();
                 Buff[] active = unit.Buffs.Enumerable.Where(value => buffs.Any(blueprint =>
                     ReferenceEquals(value.Blueprint, blueprint))).ToArray();
                 bool blood = trigger != null;
@@ -155,6 +157,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (!blood || after.Spent((ElementalAlternateTraitId)trigger.Trait) == spent);
                 var record = new JObject
                 {
+                    { "crystalline", RecordCrystallinePersistence(fixture, unit, traits, phase) },
                     { "fixture", fixture.Label }, { "phase", phase },
                     { "traits", new JArray(traits.Select(trait => trait.Definition.Id.ToString())) },
                     { "level", level }, { "bloodLedgerPresent", capacity != null },

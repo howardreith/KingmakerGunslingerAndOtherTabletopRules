@@ -646,7 +646,7 @@
     "humanAcceptancePending": true
   },
   "playerPresentation105": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -662,7 +662,7 @@
     "humanOrganicPacingAcceptancePending": true
   },
   "fatigueAuthority106": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "focusedFatigueCaseCount": 21,
     "nativeDefaultIntent": "NativePassthrough",
     "acadamaeEscalationRequestLocal": true,
@@ -677,7 +677,7 @@
     "supervisedWorldMapAcceptancePending": true
   },
   "iconOverhaul107": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "officialFirearmKindCount": 3,
     "recognizedFirearmKindCount": 5,
     "selectorIconCount": 3,
@@ -689,7 +689,7 @@
     "workingSaveSmokePass": true
   },
   "iconPolishRoundTwo108": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "protectedFileCount": 30,
     "selectorIconCount": 3,
     "suppliedOriginalCount": 5,
@@ -702,7 +702,7 @@
     "workingSaveSmokePass": true
   },
   "martialPerformanceRepairNotifications109": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "martialPerformanceFocusedCaseCount": 11,
     "repairFocusedCaseCount": 22,
     "conditionNotificationFocusedCaseCount": 9,
@@ -729,7 +729,7 @@
     "supervisedLoadedMultiRoundInteractionPending": true
   },
   "gunslingerOutfitKitbash111": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "nativeOnly": true,
     "customAssetsAdded": false,
     "maleLinkCount": 2,
@@ -745,7 +745,7 @@
     "runtimeQualificationPassed": true
   },
   "protectionFromAlignment110": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "protectionBuffCount": 5,
     "playerDescriptionTargetCount": 15,
     "playerAbilityDescriptionCount": 10,
@@ -761,7 +761,7 @@
     "manualEncounterValidationOngoing": true
   },
   "ammunitionCmiCopyNotifications112": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "discountPercent": 10,
     "minimumCost": 1,
     "basicBatchCost": 22,
@@ -776,7 +776,7 @@
     "guardedRuntimeRequestCallbackObserved": false
   },
   "saveLoadReconciliation113": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -788,7 +788,7 @@
     "saveCompatibilityPreserved": true
   },
   "elementalRaces114": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -818,7 +818,7 @@
     "individualHumanChecklistEvidenceProvided": false
   },
   "elementalHeritages115": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -851,7 +851,7 @@
     "persistenceQualificationPending": false
   },
   "elementalFeats116": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,
@@ -892,7 +892,7 @@
     "featCompatibilityQualificationPending": false
   },
   "elementalTraits117": {
-    "deterministicTestCount": 1423,
+    "deterministicTestCount": 1424,
     "paperToggleAuthoritative": "activatable-is-on",
     "paperModeReadOnly": true,
     "paperModePostLoadMutation": false,

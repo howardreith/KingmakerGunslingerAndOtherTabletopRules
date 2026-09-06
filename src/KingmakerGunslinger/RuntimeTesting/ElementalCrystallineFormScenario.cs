@@ -166,6 +166,23 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             float[] actionBudget = Cooldowns(defender);
             mode.IsOn = true;
+            var consent = owner.Buffs.Enumerable.Single(value => ReferenceEquals(value.Blueprint, modeBlueprint.Buff));
+            try
+            {
+                owner.TurnOff(false);
+                Check(assertions, rows, prefix + "unit-unload-retains-consent",
+                    !owner.IsTurnedOn && ReferenceEquals(Mode(owner, modeBlueprint), mode) && mode.IsOn &&
+                    owner.Buffs.Enumerable.Any(value => ReferenceEquals(value, consent)) &&
+                    owner.Resources.GetResourceAmount(resource) == 1,
+                    "native whole-unit TurnOff is not permanent race or trait removal");
+            }
+            finally { owner.TurnOn(); }
+            Check(assertions, rows, prefix + "unit-reload-retains-consent",
+                owner.IsTurnedOn && ElementalHeritageRuntime.Reconcile(owner, null, null) &&
+                ReferenceEquals(Mode(owner, modeBlueprint), mode) && mode.IsOn &&
+                owner.Buffs.Enumerable.Single(value => ReferenceEquals(value.Blueprint, modeBlueprint.Buff)) == consent &&
+                consent.Active && owner.Resources.GetResourceAmount(resource) == 1,
+                "same native mode and buff, exact resource and idempotent provider reconciliation after TurnOn");
             mode.IsOn = false;
             Check(assertions, rows, prefix + "toggle-cancel",
                 owner.Resources.GetResourceAmount(resource) == 1 && !owner.HasFact(modeBlueprint.Buff) &&

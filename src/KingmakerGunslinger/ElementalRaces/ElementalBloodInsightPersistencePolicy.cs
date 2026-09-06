@@ -8,6 +8,17 @@ namespace KingmakerGunslinger.ElementalRaces
     {
         internal const string MatrixId = "release-c-blood-insight-six-traits-v1";
         internal const string EfreetiMatrixId = "release-c-efreeti-blood-insight-seven-traits-v2";
+        internal const string CrystallineMatrixId = "release-c-crystalline-efreeti-blood-insight-eight-traits-v3";
+
+        // Keep the earlier matrices executable and unchanged. This incremental
+        // matrix adds both sexes of Ironsoul without losing any earlier trait.
+        internal static ElementalAlternateTraitId[] CrystallineTraits(ElementalHeritageRace race,
+            int genderIndex, int heritageIndex)
+        {
+            ElementalAlternateTraitId[] previous = Traits(race, genderIndex, heritageIndex);
+            return race == ElementalHeritageRace.Oread && heritageIndex == 2
+                ? new[] { ElementalAlternateTraitId.CrystallineForm } : previous;
+        }
 
         // Retain the original six-trait policy as a separately testable
         // historical matrix. The next matrix adds a legal, disjoint SLA

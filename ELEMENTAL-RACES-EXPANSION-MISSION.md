@@ -71,7 +71,7 @@ blocked, failed, ambiguous, or not run.
 
 Release C has fifteen prior native-proven mechanics and incremental
 [Crystalline core proof](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
-Complete Crystalline catalog/multi-ray/persistence/lifecycle boundaries and
+Complete Crystalline catalog/multi-ray/full-lifecycle boundaries and
 implement Treacherous Earth, Breeze-Kissed, Acid Breath, Nereid Fascination and
 Ooze Breath, then every final release gate. Continue independent work; no
 hard stop is established. The earlier native audit is retained historically.
@@ -81,3 +81,10 @@ clean Release/package and two native profiles with 10,168 assertions. Three
 new resource/consent identities are fixed. Earlier failed fixtures remain FAIL
 in STATE; no build, core run or earlier seven-trait save cycle implies full
 Crystalline or Release C acceptance.
+
+The subsequent eight-trait checkpoint passes native consent/spent-use
+save/OFF/ON/rest/level/respec and renewed pinned 0.0.114 migration. Nine
+processes pass 10,490 assertions; exact evidence and retained failures are in
+[the persistence report](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md).
+The separate pre-existing feat-transient preview/hydration diagnostic and
+every remaining release gate still require investigation/qualification.
