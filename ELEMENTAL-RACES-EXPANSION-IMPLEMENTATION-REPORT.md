@@ -29,6 +29,14 @@ behavior.
 
 ## Planned release inventory
 
+The subsequent [Crystalline native audit](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-NATIVE-AUDIT.md)
+passes 1,421 tests and two guarded processes (9,816 assertions), without changing
+gameplay or identities. Actual native non-ray controls invalidate eligibility
+based only on WeaponCategory.Ray or shared projectile visuals. A public native
+result-replacement boundary exists, but actual deflection, conditions and
+persistence are still pending. See releaseCCrystallineAudit in STATE for exact
+evidence and restoration hashes; this does not raise the completed-trait count.
+
 The latest Efreeti Magic slice passes 1,421 tests, clean build/package and
 nine guarded processes (10,066 assertions): two native KMG-only/combined,
 four actual native-selected multi-trait persistence/cleanup, and three

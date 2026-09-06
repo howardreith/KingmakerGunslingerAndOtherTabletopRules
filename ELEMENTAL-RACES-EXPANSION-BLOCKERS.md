@@ -35,8 +35,12 @@ Magic additionally passes native KMG-only/combined, actual native-selected
 multi-trait OFF/ON saves, spent shared uses and active size effects, native
 rest/level/respec/cleanup, fresh absence and renewed pinned 0.0.114 migration.
 Six mechanics, the other fourteen traits' persistence, full lifecycle and final
-qualification remain. Ray-deflection and
-native difficult-terrain contracts still require focused engine evidence.
+qualification remain. The dedicated Crystalline native audit now proves that
+WeaponCategory.Ray and shared projectile visuals are both overbroad eligibility
+predicates. A public native result setter and projectile-hit callback are
+available, but a rules-audited exact semantic predicate and actual deflection
+still need implementation and qualification. This is not a hard-stop finding.
+Native difficult-terrain contracts also still require focused engine evidence.
 
 ## Open engineering questions requiring evidence
 
