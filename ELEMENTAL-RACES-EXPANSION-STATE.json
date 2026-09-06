@@ -96,6 +96,8 @@
     "report": "docs/ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md",
     "status": "PASS-INCREMENTAL-MECHANICS-ONLY",
     "precedingCommit": "fa7900289286bc326014057c275de97a30b7d1ae",
+    "checkpointCommit": "530eff1ebe6814fc17a5fc39c1ac50bb215bfbbf",
+    "checkpointPush": "BLOCKED-EXTERNAL-ALLOWLIST",
     "version": "0.0.117-elemental-traits",
     "implementedTraits": 8,
     "remainingTraitMechanics": 13,
@@ -1415,6 +1417,12 @@
       "sha": "fa7900289286bc326014057c275de97a30b7d1ae",
       "subject": "Implement and qualify elemental trait replacement framework",
       "checkpoint": "release-c-replacement-framework",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "530eff1ebe6814fc17a5fc39c1ac50bb215bfbbf",
+      "subject": "Implement and qualify initial elemental trait mechanics",
+      "checkpoint": "release-c-mechanics-slice-1",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],

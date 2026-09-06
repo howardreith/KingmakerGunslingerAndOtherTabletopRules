@@ -13,9 +13,11 @@ This checkpoint follows
 `fa7900289286bc326014057c275de97a30b7d1ae` on
 `codex/elemental-races-expansion`. The mission starting master remains
 `6874dc15a27ded132456dbdd480f47c794543a05`.
-Its eventual commit identity is in Git history; the tested artifact truthfully
+The implementation checkpoint is
+`530eff1ebe6814fc17a5fc39c1ac50bb215bfbbf`; the tested artifact truthfully
 embeds the preceding framework commit and exact dirty-source fingerprint,
-not a later documentation/commit identity.
+not this later documentation/commit identity. The mandatory post-commit push
+refused the branch because the external allowlist still lacks it.
 
 ## Implemented inventory
 

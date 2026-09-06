@@ -22,9 +22,15 @@
   helpers, remaining trait mechanics, and trait-bearing persistence. Native
   installed IL provides `RuleSummonUnit.BonusDuration` and actual-received
   `RuleHealDamage.Value`; their presence alone is not runtime qualification.
+- The coherent implementation commit is
+  `530eff1ebe6814fc17a5fc39c1ac50bb215bfbbf`. After evidence curation,
+  repository validation and all 1,415 tests passed again; the tested package
+  hash remained exact and no Kingmaker process remained. C: had
+  114,221,699,072 free bytes at the checkpoint. No cleanup was needed.
 - Publication is still blocked by the external branch allowlist. The exact
-  required push was attempted after resuming and will be attempted after the
-  coherent implementation commit. No bypass, merge, tag, or public release.
+  required push was attempted after resuming and immediately after this
+  commit; both refused the required branch. No bypass, merge, tag, or public
+  release. The remaining thirteen mechanics continue independently.
 
 ## 2026-09-05 - Release C passive-trait implementation
 

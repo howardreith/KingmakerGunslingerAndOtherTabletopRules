@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints, including the qualified Release C framework commit
-  `fa7900289286bc326014057c275de97a30b7d1ae`, cannot currently be pushed.
+- Local checkpoints, including the first-eight-trait implementation commit
+  `530eff1ebe6814fc17a5fc39c1ac50bb215bfbbf`, cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
