@@ -234,6 +234,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         [ThreadStatic] private static UnitEntityData _activeTarget;
         [ThreadStatic] private static ManeuverObservation _activeObservation;
         [ThreadStatic] private static PortalHarness _activePortal;
+        [ThreadStatic] private static PortalHarness _nativeDiagnosticPortal;
 
         internal static RuntimeTestResult Run(ModContext context,
             RuntimeTestRequest request)
@@ -368,6 +369,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             AddAssertions(assertions, evidence);
+            if (portal != null)
+                assertions.Add(new RuntimeTestAssertion {
+                    Name = "triton-portal-native-diagnostic-lifetime",
+                    Expected = "zero native reports from initialization through teardown; observer released",
+                    Observed = "exceptions=" + portal.NativeExceptions + ";errors=" + portal.NativeErrors +
+                        ";initialization=" + portal.NativeInitializationObserved +
+                        ";teardown=" + portal.NativeTeardownObserved +
+                        ";released=" + portal.NativeObservationReleased,
+                    Status = portal.NativeExceptions == 0 && portal.NativeErrors == 0 &&
+                        portal.NativeInitializationObserved && portal.NativeTeardownObserved &&
+                        portal.NativeObservationReleased ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                    Evidence = "request-local native error observer, independent of placement overrides"
+                });
             string path = Path.Combine(request.EvidenceDirectory,
                 EvidenceFileName);
             File.WriteAllText(path, JsonConvert.SerializeObject(evidence,
@@ -780,7 +794,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private static void CompleteProcess(AbilityExecutionProcess process,
+        internal static void CompleteProcess(AbilityExecutionProcess process,
             out bool detached)
         {
             detached = false;
@@ -1002,7 +1016,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static UnitUseAbility CreateCommand(AbilityData data,
+        internal static UnitUseAbility CreateCommand(AbilityData data,
             TargetWrapper target, UnitEntityData caster)
         {
             UnitUseAbility result;
@@ -1022,7 +1036,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private static object InvokeCommandAction(UnitUseAbility command)
+        internal static object InvokeCommandAction(UnitUseAbility command)
         {
             MethodInfo method = typeof(UnitUseAbility).GetMethod("OnAction",
                 BindingFlags.Instance | BindingFlags.Public |
@@ -1033,7 +1047,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return method.Invoke(command, null);
         }
 
-        private static void InvokeCommandEnded(UnitUseAbility command,
+        internal static void InvokeCommandEnded(UnitUseAbility command,
             bool interrupted)
         {
             MethodInfo method = typeof(UnitUseAbility).GetMethod("OnEnded",
@@ -1111,11 +1125,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _activeObservation.SaveEvents++;
         }
 
-        private sealed class PortalHarness : IDisposable
+        // Shared request-local native summon boundary. The trait scenario
+        // reuses only placement, observation, command driving and cleanup;
+        // ContextActionSpawnMonster and RuleSummonUnit are never replaced.
+        internal static PortalHarness OpenSummonFixture(BlueprintRace race,
+            ICollection<string> diagnostics)
+        {
+            if (_activePortal != null)
+                throw new InvalidOperationException("A summon fixture is already active.");
+            var harness = new PortalHarness(diagnostics);
+            try
+            {
+                harness.Initialize(race);
+                _activePortal = harness;
+                return harness;
+            }
+            catch
+            {
+                harness.Dispose();
+                throw;
+            }
+        }
+
+        internal sealed class PortalHarness : IDisposable
         {
             private readonly ICollection<string> _diagnostics;
             private readonly List<RuleSummonUnit> _rules =
                 new List<RuleSummonUnit>();
+            private readonly HashSet<BlueprintSummonPool> _observedPools =
+                new HashSet<BlueprintSummonPool>();
             private readonly List<UnitEntityData> _summons =
                 new List<UnitEntityData>();
             private readonly List<UnitEntityData> _fixtures =
@@ -1130,12 +1168,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             private object _sceneLoader;
             private PropertyInfo _areaProperty;
             private BlueprintArea _areaBefore;
+            private AreaPersistentState _loadedAreaBefore;
+            private AreaPersistentState _loadedAreaFixture;
+            private AreaPersistentState[] _savedAreasBefore;
             private Vector3[] _positions;
             private bool _disposed;
 
             internal PortalHarness(ICollection<string> diagnostics)
             {
+                if (_nativeDiagnosticPortal != null)
+                    throw new InvalidOperationException("A native summon diagnostic scope is already active.");
                 _diagnostics = diagnostics;
+                _nativeDiagnosticPortal = this;
             }
 
             internal IReadOnlyList<RuleSummonUnit> Rules
@@ -1164,11 +1208,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             internal bool PlacementObserved { get; private set; }
+            internal int LastPlacementCount { get; private set; }
+            internal int PlacementCalls { get; private set; }
+            internal int PositionRequests { get; private set; }
+            internal int RuleCallbacks { get; private set; }
+            internal int EmptyRuleCallbacks { get; private set; }
+            internal int NativeExceptions { get; private set; }
+            internal int NativeErrors { get; private set; }
+            internal bool NativeInitializationObserved { get; private set; }
+            internal bool NativeTeardownObserved { get; private set; }
+            internal bool NativeObservationReleased
+            { get { return !ReferenceEquals(_nativeDiagnosticPortal, this); } }
             internal bool AreaContextRestored { get; private set; }
             internal bool PlayerContextRestored { get; private set; }
 
             internal UnitEntityData Initialize(BlueprintRace race)
             {
+                NativeInitializationObserved = ReferenceEquals(_nativeDiagnosticPortal, this);
                 if (_caster != null)
                     throw new InvalidOperationException(
                         "The Triton Portal harness was initialized twice.");
@@ -1252,10 +1308,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (action == null) return;
                 SpawnActionCount++;
+                if (action.SummonPool != null) _observedPools.Add(action.SummonPool);
+                _diagnostics.Add("summon-spawn-action=afterSpawn=" +
+                    (action.AfterSpawn == null ? "null" : action.AfterSpawn.Actions == null
+                        ? "null-actions" : action.AfterSpawn.Actions.Length.ToString()));
+            }
+
+            internal void ObserveSpawnFailure(Exception exception)
+            {
+                if (exception == null) return;
+                NativeExceptions++;
+                _diagnostics.Add("summon-native-exception=" + exception);
+            }
+
+            internal void ObserveNativeError(UnityEngine.Object source, object message)
+            {
+                NativeErrors++;
+                BlueprintScriptableObject blueprint = source as BlueprintScriptableObject;
+                _diagnostics.Add("summon-native-error=source=" +
+                    (source == null ? "null" : source.name) + ";guid=" +
+                    (blueprint == null ? "none" : blueprint.AssetGuid) + ";message=" + message);
+            }
+
+            internal bool HasPoolMembership(UnitEntityData unit)
+            {
+                return _loadedAreaFixture != null &&
+                    _observedPools.Any(pool => _loadedAreaFixture.SummonPoolsManager.HasPool(pool) &&
+                        _loadedAreaFixture.SummonPoolsManager.GetPool(pool).Units.Contains(unit));
             }
 
             internal void ObserveRule(RuleSummonUnit rule)
             {
+                RuleCallbacks++;
+                _diagnostics.Add("summon-rule-observer=owner=" +
+                    (rule != null && ReferenceEquals(rule.Initiator, _caster)) +
+                    ";unit=" + (rule == null || rule.SummonedUnit == null
+                        ? "null" : rule.SummonedUnit.UniqueId));
+                if (rule != null && ReferenceEquals(rule.Initiator, _caster) &&
+                    rule.SummonedUnit == null) EmptyRuleCallbacks++;
                 if (rule == null || _caster == null ||
                     !ReferenceEquals(rule.Initiator, _caster) ||
                     rule.SummonedUnit == null) return;
@@ -1298,6 +1388,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 }
                 PlacementObserved = true;
+                LastPlacementCount = count;
+                PlacementCalls++;
                 _diagnostics.Add("triton-portal-placement=count=" + count +
                     ";native-actions-preserved=true");
                 return true;
@@ -1305,6 +1397,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             internal bool TryPosition(int index, out Vector3 result)
             {
+                PositionRequests++;
                 if (_positions == null || index < 0 ||
                     index >= _positions.Length)
                     throw new InvalidOperationException(
@@ -1356,12 +1449,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!ReferenceEquals(Game.Instance.CurrentlyLoadedArea, area))
                     throw new InvalidOperationException(
                         "Triton Portal area metadata was not installed.");
+                _loadedAreaBefore = Game.Instance.State.LoadedAreaState;
+                _savedAreasBefore = Game.Instance.State.SavedAreaStates.ToArray();
+                if (_loadedAreaBefore != null)
+                    throw new InvalidOperationException(
+                        "The save-free summon fixture cannot replace a loaded area state.");
+                _loadedAreaFixture = new AreaPersistentState(area);
+                Game.Instance.State.LoadedAreaState = _loadedAreaFixture;
+                if (!ReferenceEquals(Game.Instance.SummonPools,
+                        _loadedAreaFixture.SummonPoolsManager))
+                    throw new InvalidOperationException(
+                        "The native request-local summon-pool service is missing.");
+                _diagnostics.Add("summon-native-pool-service=installed;prior-loaded-area=null");
             }
 
             public void Dispose()
             {
                 if (_disposed) return;
                 _disposed = true;
+                try
+                {
+                    NativeTeardownObserved = ReferenceEquals(_nativeDiagnosticPortal, this);
+                    DisposeOwnedState();
+                }
+                finally
+                {
+                    if (ReferenceEquals(_nativeDiagnosticPortal, this))
+                        _nativeDiagnosticPortal = null;
+                }
+            }
+
+            private void DisposeOwnedState()
+            {
+                if (ReferenceEquals(_activePortal, this)) _activePortal = null;
                 foreach (UnitEntityData unit in _summons.AsEnumerable()
                     .Reverse().Where(value => value != null).Distinct()
                     .ToArray()) DisposeUnit(unit);
@@ -1395,12 +1515,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _scene.Dispose();
                     _scene = null;
                 }
+                if (_loadedAreaFixture != null)
+                {
+                    try
+                    {
+                        _loadedAreaFixture.Dispose();
+                    }
+                    finally
+                    {
+                        Game.Instance.State.LoadedAreaState = _loadedAreaBefore;
+                    }
+                }
                 if (_areaProperty != null && _sceneLoader != null)
                 {
                     MethodInfo setter = _areaProperty.GetSetMethod(true);
                     setter.Invoke(_sceneLoader, new object[] { _areaBefore });
                     AreaContextRestored = ReferenceEquals(
-                        Game.Instance.CurrentlyLoadedArea, _areaBefore);
+                        Game.Instance.CurrentlyLoadedArea, _areaBefore) &&
+                        ReferenceEquals(Game.Instance.State.LoadedAreaState, _loadedAreaBefore) &&
+                        (_savedAreasBefore == null || Game.Instance.State.SavedAreaStates
+                            .SequenceEqual(_savedAreasBefore));
                 }
             }
 
@@ -1487,6 +1621,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 PortalHarness active = _activePortal;
                 if (active != null) active.ObserveSpawn(__instance);
+            }
+
+        }
+
+        // The installed Harmony12 bridge supports prefixes/postfixes, not
+        // finalizers. Observe the two exact native reporting boundaries;
+        // never suppress, replace, or rethrow the original report.
+        [HarmonyPatch(typeof(UberDebug), "LogException",
+            new[] { typeof(Exception), typeof(UnityEngine.Object) })]
+        private static class SummonFixtureActionExceptionObserverPatch
+        {
+            private static void Prefix(Exception __0)
+            {
+                PortalHarness active = _nativeDiagnosticPortal;
+                if (active != null) active.ObserveSpawnFailure(__0);
+            }
+        }
+
+        [HarmonyPatch(typeof(UberDebug), "LogException", new[] { typeof(Exception) })]
+        private static class SummonFixtureRuleExceptionObserverPatch
+        {
+            private static void Prefix(Exception __0)
+            {
+                PortalHarness active = _nativeDiagnosticPortal;
+                if (active != null) active.ObserveSpawnFailure(__0);
+            }
+        }
+
+        [HarmonyPatch(typeof(UberDebug), "LogError",
+            new[] { typeof(UnityEngine.Object), typeof(object), typeof(object[]) })]
+        private static class SummonFixtureNativeErrorAttributionPatch
+        {
+            private static void Prefix(UnityEngine.Object __0, object __1)
+            {
+                PortalHarness active = _nativeDiagnosticPortal;
+                if (active != null) active.ObserveNativeError(__0, __1);
             }
         }
 

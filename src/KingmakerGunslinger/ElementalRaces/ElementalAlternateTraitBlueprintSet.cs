@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 
@@ -8,15 +9,22 @@ namespace KingmakerGunslinger.ElementalRaces
 {
     internal sealed class ElementalAlternateTraitBlueprints
     {
+        private readonly BlueprintScriptableObject[] _mechanics;
+
         internal ElementalAlternateTraitBlueprints(
             ElementalAlternateTraitDefinition definition,
-            BlueprintFeature marker, BlueprintFeature provider)
+            BlueprintFeature marker, BlueprintFeature provider,
+            IEnumerable<BlueprintScriptableObject> mechanics = null)
         {
             Definition = definition ?? throw new ArgumentNullException(
                 "definition");
             Marker = marker ?? throw new ArgumentNullException("marker");
             Provider = provider ?? throw new ArgumentNullException(
                 "provider");
+            _mechanics = (mechanics ?? Enumerable.Empty<BlueprintScriptableObject>()).ToArray();
+            if (_mechanics.Any(value => value == null) ||
+                _mechanics.Distinct().Count() != _mechanics.Length)
+                throw new ArgumentException("Trait mechanics must be non-null unique owned identities.");
             if (ReferenceEquals(Marker, Provider))
                 throw new InvalidOperationException(
                     "A selectable trait marker cannot also be its hidden provider.");
@@ -26,6 +34,11 @@ namespace KingmakerGunslinger.ElementalRaces
         { get; private set; }
         internal BlueprintFeature Marker { get; private set; }
         internal BlueprintFeature Provider { get; private set; }
+
+        internal IReadOnlyList<BlueprintScriptableObject> Mechanics()
+        {
+            return (BlueprintScriptableObject[])_mechanics.Clone();
+        }
     }
 
     internal sealed class ElementalAlternateTraitSelectionBlueprints
@@ -99,7 +112,8 @@ namespace KingmakerGunslinger.ElementalRaces
         internal ElementalHeritageRace Race { get; private set; }
         internal int RegisteredCount
         {
-            get { return m_Traits.Length * 2 + m_Selections.Length * 2; }
+            get { return m_Traits.Length * 2 + m_Selections.Length * 2 +
+                m_Traits.Sum(value => value.Mechanics().Count); }
         }
 
         internal IReadOnlyList<ElementalAlternateTraitBlueprints> Traits()

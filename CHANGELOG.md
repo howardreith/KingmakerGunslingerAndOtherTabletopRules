@@ -24,8 +24,18 @@
 - Qualifies this first passive slice with 1,415 tests, clean build/package,
   eight guarded processes, 13,397 assertions, zero runtime warnings, and
   exact KMG-only/combined profile restoration, including module-OFF.
-- Release C remains in progress: thirteen mechanics, trait-bearing
-  persistence, and final release-wide gates are pending.
+- Implements Fire, Earth and Air Insight through exact native spell-family
+  and creature-subtype checks; focused native command and rule tests pass.
+- Adds three fixed blood-trait buff identities and a shared native reactive-
+  healing implementation that counts only HP actually received against the
+  persisted daily cap. Focused native checks pass in KMG-only and highest-risk
+  combined profiles; trait-bearing persistence remains pending.
+- The current component-name repair passes pinned 0.0.114 migration mechanics
+  in three fresh processes (28 assertions), preserving spent uses and appearance
+  data; subjective visual review is separate.
+- Release C remains in progress: seven mechanics remain to implement;
+  trait-bearing persistence, full lifecycle checks,
+  and final release-wide gates are pending.
 
 ## 0.0.116-elemental-feats
 

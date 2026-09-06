@@ -394,7 +394,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private static void Advance(UnitDescriptor owner,
+        internal static void Advance(UnitDescriptor owner,
             BlueprintCharacterClass characterClass, int levels)
         {
             Type type = typeof(LevelUpController);

@@ -13456,6 +13456,18 @@
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Provider", "guid": "e117e1e0a17a4acec001000000000062",
       "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Ifrit.FireInTheBlood.FastHealingBuff", "guid": "e117e1e0a17a4acec001000000000063",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One-round native-ticking Fire in the Blood healing effect; actual received HP uses the persisted owner ledger."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.StoneInTheBlood.FastHealingBuff", "guid": "e117e1e0a17a4acec001000000000064",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One-round native-ticking Stone in the Blood healing effect; actual received HP uses the persisted owner ledger."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.StormInTheBlood.FastHealingBuff", "guid": "e117e1e0a17a4acec001000000000065",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One-round native-ticking Storm in the Blood healing effect; actual received HP uses the persisted owner ledger."
     }
   ]
 }

@@ -945,6 +945,10 @@
     <Compile Include="RuntimeTesting\ElementalHeritageBlueprintScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitFrameworkScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitPassiveScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalSummonInsightScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalBloodScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalBloodPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalComponentIdentityScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitWeaponInteractionScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitReconciliationScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
@@ -962,6 +966,14 @@
     <Compile Include="ElementalRaces\ElementalAlternateTraitPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalAlternateTraitPassivePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalAlternateTraitPassiveMechanics.cs" />
+    <Compile Include="ElementalRaces\ElementalSummonInsightPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalBloodPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalBloodInsightPersistencePolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalBloodRuntime.cs" />
+    <Compile Include="ElementalRaces\ElementalBloodBlueprintFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalComponentIdentityPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalComponentIdentity.cs" />
+    <Compile Include="ElementalRaces\ElementalSummonInsight.cs" />
     <Compile Include="ElementalRaces\ElementalAlternateTraitBlueprintSet.cs" />
     <Compile Include="ElementalRaces\ElementalAlternateTraitBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalFeatPolicy.cs" />

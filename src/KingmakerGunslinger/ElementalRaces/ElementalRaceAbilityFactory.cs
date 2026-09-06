@@ -262,7 +262,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 LocalizationService.Create(
                     LocalizationKey(definition, "Feature.Description"),
                     definition.SlaDescription), ability.Icon);
-            return feature;
+            return ElementalComponentIdentity.Prepare(feature);
         }
 
         internal static AbilityResourceLogic ResourceCost(

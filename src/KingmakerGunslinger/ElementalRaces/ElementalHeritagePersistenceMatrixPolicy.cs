@@ -11,6 +11,13 @@ namespace KingmakerGunslinger.ElementalRaces
     {
         internal const int GenderCount = 2;
 
+        internal static bool CreationSelectionRankExact(
+            bool createdWithSelections, int observedRank)
+        {
+            // Loading 0.0.114 must not retroactively grant new selection facts.
+            return observedRank == (createdWithSelections ? 1 : 0);
+        }
+
         internal static int FixtureCount(int raceCount)
         {
             if (raceCount < 1)

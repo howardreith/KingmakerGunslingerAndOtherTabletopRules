@@ -11,12 +11,13 @@ namespace KingmakerGunslinger.ElementalRaces
         internal const int HeritageIdentityCount = 53;
         internal const int FeatIdentityCount = 25;
         internal const int TraitFrameworkIdentityCount = 62;
+        internal const int TraitMechanicIdentityCount = 3;
         internal const int MechanicIdentityCount = LegacyMechanicIdentityCount +
             HeritageIdentityCount + FeatIdentityCount +
-            TraitFrameworkIdentityCount;
+            TraitFrameworkIdentityCount + TraitMechanicIdentityCount;
         internal const int RaceBlueprintIdentityCount =
             LegacyMechanicIdentityCount + HeritageIdentityCount +
-            TraitFrameworkIdentityCount +
+            TraitFrameworkIdentityCount + TraitMechanicIdentityCount +
             ElementalRaceVisualCatalog.BlueprintIdentityCount;
         internal const int IdentityCount = RaceBlueprintIdentityCount +
             FeatIdentityCount;
@@ -137,6 +138,7 @@ namespace KingmakerGunslinger.ElementalRaces
             };
             string[] raceBlueprints = legacyMechanics.Concat(
                     HeritageSymbols()).Concat(TraitSymbols()).Concat(
+                    TraitMechanicSymbols()).Concat(
                     ElementalRaceVisualCatalog
                     .BlueprintSymbols()).ToArray();
             return raceBlueprints.Concat(FeatSymbols()).ToArray();
@@ -214,6 +216,16 @@ namespace KingmakerGunslinger.ElementalRaces
                 throw new InvalidOperationException(
                     "Elemental alternate-trait framework identity inventory drifted.");
             return symbols;
+        }
+
+        internal static IReadOnlyList<string> TraitMechanicSymbols()
+        {
+            return new[]
+            {
+                "KMG.ElementalRaces.Traits.Ifrit.FireInTheBlood.FastHealingBuff",
+                "KMG.ElementalRaces.Traits.Oread.StoneInTheBlood.FastHealingBuff",
+                "KMG.ElementalRaces.Traits.Sylph.StormInTheBlood.FastHealingBuff"
+            };
         }
 
         internal static void Validate()

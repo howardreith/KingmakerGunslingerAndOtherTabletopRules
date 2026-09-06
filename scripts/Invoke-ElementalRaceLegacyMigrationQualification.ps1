@@ -56,7 +56,7 @@ if (-not [IO.Path]::GetFullPath($live).Equals(
     throw 'Current deployment does not target the exact live KingmakerGunslinger directory.'
 }
 if (-not $PSCmdlet.ShouldProcess($SaveName,
-        'run the guarded 0.0.114-to-0.0.115 Elemental Race migration and cleanup transaction')) {
+        ('run the guarded 0.0.114-to-{0} Elemental Race migration and cleanup transaction' -f $ExpectedVersion))) {
     Write-Host 'Source-only/WhatIf validation passed. No deployment, settings, save, or process change occurred.'
     return
 }
@@ -184,6 +184,12 @@ function Invoke-QualifiedPhase {
         $failedAssertions.Count -ne 0) {
         throw "Guarded phase result is not an exact PASS: $Scenario"
     }
+    # Retain this process's native hydration diagnostics before the next
+    # guarded launch rotates output_log.txt. The collector requires game exit.
+    $nativeLog = & (Join-Path $root `
+        'scripts\compatibility\Collect-KmgCompatibilityAttributionLog.ps1') `
+        -EvidenceDirectory $created[0].FullName `
+        -ConfigurationId ('elemental-legacy-' + $Scenario)
     $record = [ordered]@{
         scenario = $Scenario
         version = $Version
@@ -194,6 +200,10 @@ function Invoke-QualifiedPhase {
         resultSha256 = Get-KmgSha256 -Path $resultPath
         evidenceManifestPath = $evidencePath
         evidenceManifestSha256 = Get-KmgSha256 -Path $evidencePath
+        nativeLogPath = $nativeLog.rawLogPath
+        nativeLogSha256 = $nativeLog.rawLogSha256
+        nativeLogSummaryPath = $nativeLog.summaryPath
+        nativeLogSummarySha256 = $nativeLog.summarySha256
     }
     $phases.Add([pscustomobject]$record)
 }

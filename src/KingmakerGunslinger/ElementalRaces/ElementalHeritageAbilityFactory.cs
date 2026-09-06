@@ -553,7 +553,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 LocalizationService.Create(LocalizationKey(definition,
                     "Feature.Description"), definition.SlaDescription),
                 ability.Icon);
-            return result;
+            return ElementalComponentIdentity.Prepare(result);
         }
 
         private static ContextRankConfig CasterLevelRank(string name)

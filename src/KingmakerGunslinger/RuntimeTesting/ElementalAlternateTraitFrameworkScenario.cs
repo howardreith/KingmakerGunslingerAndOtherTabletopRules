@@ -281,10 +281,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                             value.TopLevelOccurrences ==
                                 (evidence.ModuleActive ? 1 : 0)),
                     "live BlueprintRoot.Progression.CharacterRaces");
+                var persistenceOwned = new List<BlueprintScriptableObject>();
+                foreach (ElementalRaceBlueprints race in set.OrderedBlueprints())
+                    GunslingerOutfitRenderScenario.ElementalRacePersistenceSession
+                        .AddAlternateTraitIdentities(race, persistenceOwned);
+                BlueprintScriptableObject[] expectedPersistence = owned.Concat(
+                    set.OrderedBlueprints().SelectMany(race => race
+                        .AlternateTraits.Traits()).SelectMany(trait =>
+                            trait.Mechanics())).ToArray();
+                Add(assertions, "elemental-trait-persistence-identity-coverage",
+                    "every framework and mechanic identity exactly once",
+                    "collected=" + persistenceOwned.Count + ";expected=" +
+                        expectedPersistence.Length,
+                    expectedPersistence.Length == ElementalRaceIdentityCatalog
+                        .TraitFrameworkIdentityCount + ElementalRaceIdentityCatalog
+                            .TraitMechanicIdentityCount &&
+                        persistenceOwned.Count == expectedPersistence.Length &&
+                        persistenceOwned.Distinct().Count() == persistenceOwned.Count &&
+                        expectedPersistence.All(value => persistenceOwned.Count(
+                            observed => ReferenceEquals(value, observed)) == 1),
+                    "actual persistence collector over the live owned blueprint graph");
                 ElementalAlternateTraitReconciliationScenario.Exercise(
                     request, assertions, evidenceFiles);
                 ElementalAlternateTraitPassiveScenario.Exercise(
                     request, assertions, evidenceFiles);
+                ElementalComponentIdentityScenario.Exercise(context, request,
+                    assertions, evidenceFiles);
+                ElementalSummonInsightScenario.Exercise(
+                    request, assertions, evidenceFiles);
+                ElementalBloodScenario.Exercise(request, assertions, evidenceFiles);
             }
             catch (Exception exception)
             {

@@ -3,9 +3,12 @@
 ## Current outcome
 
 **IN PROGRESS - FOUNDATION, RELEASE A, AND RELEASE B PASS ALL LOCAL GATES;
-RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; EIGHT TRAIT
-MECHANICS HAVE FOCUSED RUNTIME PROOF. THIRTEEN MECHANICS, TRAIT-BEARING
-PERSISTENCE, AND FINAL RELEASE-WIDE QUALIFICATION REMAIN PENDING. THE
+RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; EIGHT TRAITS
+HAVE CHECKPOINT PROOF AND THREE SUMMON INSIGHTS PLUS THREE BLOOD TRAITS HAVE
+NATIVE AND INCREMENTAL SAVE-BACKED EVIDENCE. SEVEN MECHANICS, THE OTHER FIFTEEN
+TRAITS' PERSISTENCE, FULL LIFECYCLE, AND FINAL RELEASE-WIDE
+QUALIFICATION REMAIN PENDING. THE FACT-COMPONENT NAME REPAIR NOW PASSES
+PINNED 0.0.114 MIGRATION MECHANICS; SUBJECTIVE VISUAL REVIEW REMAINS. THE
 REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL
 ALLOWLIST.**
 
@@ -30,7 +33,63 @@ behavior.
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
 | B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - FRAMEWORK QUALIFIED; EIGHT MECHANICS RUNTIME PASS; THIRTEEN PENDING |
+| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - EIGHT CHECKPOINTED; THREE INSIGHTS AND THREE BLOOD TRAITS HAVE NATIVE PROOF; SEVEN MECHANICS PENDING |
+
+## Current summon Insight and component-identity investigation
+
+Fire, Earth and Air Insight add exactly two rounds to matching subtype
+creatures summoned by actual spellbook Summon Monster/Summon Nature's Ally
+spells. Native single/group commands, exact rolled counts, pool membership,
+canonical buff durations and all exclusion boundaries pass. No blueprint
+identity was added by this slice.
+
+Native level-up exposed 57 owned facts with duplicate blank component save
+names. The factory-only repair retains the sole state-bearing legacy alias,
+preserves existing unique names, and assigns semantic names only to the
+conflicting stateless components. The 114-fact runtime audit and native
+multiclass/stat/spent-use checks pass. Four current-version persistence
+processes pass 43 mechanical assertions across all 24 heritage/sex fixtures,
+module-OFF loading, level/rest, respec and exact absence. Their 46 warnings
+are retained framing/subjective-image/DollData diagnostics, not a claim of
+zero warnings or completed visual review. These fixtures retain base traits;
+those historical runs do not qualify actual trait-bearing saves. The subsequent
+six-trait cycle below supplies that incremental proof. Exact evidence is in STATE.
+
+Both legacy inputs are now recovered byte-for-byte from retained project
+backup files and the existing deterministic package/manifest formats. Each
+hash matches the independently recorded historical deployment; no download,
+publication or weakened verifier was used. The corrected three-process migration
+now passes 28 assertions across all eight race/sex fixtures, preserving exact
+stats, facts, spent resources and appearance data, with independent fresh
+absence and exact settings/current-build restoration. Its 13 warnings and
+targeted native-log attribution are retained in STATE. Subjective visual review
+and complete trait-bearing persistence remain separate unfinished gates.
+
+Fire, Stone and Storm in the Blood now use one shared native damage/ticking/
+healing framework with actual-HP expenditure retained in an owner UnitPart.
+Their three fixed buff identities append at suffixes 063-065; total manifest
+counts are 1,849 entries / 1,847 active, including 211 active Elemental
+identities (183 blueprints and 28 visual-resource proxies). The latest candidate
+passes all 1,419 tests, clean Release/package checks, two native processes
+(9,660 assertions, zero warnings) and four save-backed processes (230 assertions,
+46 visual/DollData warnings). Both native profiles restore their exact 968-entry
+mod trees. All 24 fixtures remain; 18 select actual Insights/blood traits through
+native creation/respec. Nine partially spent active healing buffs survive OFF
+load and level-up. Ordinary rest resets capacity, native healing re-spends it,
+ON loading preserves it, base-trait respec cleans it, and the final fresh process
+finds no fixtures or save writes. All 168 trait-state observations are exact.
+
+The first save-backed run exposed active-buff loss because native reconstruction
+temporarily calls provider OnTurnOff. The correction makes that callback
+non-destructive and lets the owned buff observe exact same-owner native trait
+marker removal. Real Deactivate/Activate, actual marker removal and strict saved
+active-buff regressions now pass for all three traits. Failure evidence remains
+historical. Saved fixtures use the restored installed configuration; the isolated
+combined profile's earlier working-fixture load timeout remains unqualified.
+The other fifteen traits' persistence, full lifecycle, subjective visual review,
+seven missing mechanics and final release gates remain. Exact candidate hashes,
+run IDs, warnings and restoration evidence are in
+`releaseCBloodInsightPersistenceQualification` in STATE.
 
 Favored-class bonuses are out of scope.
 

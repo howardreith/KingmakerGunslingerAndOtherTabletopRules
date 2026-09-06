@@ -8,13 +8,17 @@ Proposed local package:
 ## Status
 
 Release C remains in progress. This checkpoint includes the deterministic
-replacement framework and the first eight passive mechanics. It is not a
+replacement framework, the first eight passive mechanics, three typed summon
+Insights and three blood-healing traits with incremental native and save-backed
+proof. It is not a
 Release C PASS and must not be published.
 
 ## Implemented in this checkpoint
 
 - 62 fixed manifest identities: ten slot selections, ten retain-base markers,
   21 visible alternate-trait markers, and 21 separate hidden providers.
+- Three additional fixed native-ticking blood-buff identities, with daily
+  actual-healing expenditure retained on the character when a provider changes.
 - Three semantic replacement slots: Energy Resistance, Elemental Affinity,
   and Racial Spell-Like Ability.
 - Exact legal-combination and overlap rejection policy for all four races and
@@ -43,7 +47,19 @@ The first eight mechanics pass 1,415 tests, clean build/package, and eight
 guarded processes (13,397 assertions, zero warnings, three exact profile
 restorations). See the
 [passive-mechanics ledger](ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md).
-Thirteen mechanics, trait-bearing module-OFF/ON persistence, final
+The three Insights additionally pass the focused native spell-command matrix;
+the exact evidence is in the expansion mission state. The shared three-trait
+blood-healing implementation passes focused native checks in KMG-only and
+highest-risk combined profiles (four processes, 9,680 assertions, zero warnings,
+exact restoration). The component-name repair also passes pinned 0.0.114
+migration mechanics in three fresh processes (28 assertions); subjective visual
+review remains separate. The subsequent repaired six-trait cycle passes all
+1,419 tests, two native processes (9,660 assertions, zero warnings) and four
+save-backed processes (230 assertions, 46 retained visual/DollData warnings).
+Native selections, nine partially spent active blood buffs, OFF/ON load,
+level-up, rest, respec and fresh absence pass. Native provider deactivation no
+longer incorrectly removes a saved buff; exact marker loss still cleans it up.
+Seven other mechanics, the other fifteen traits' persistence, full lifecycle, final
 compatibility/module matrices, full release qualification, and final
 documentation remain pending.
 Release A and Release B evidence is
@@ -60,5 +76,5 @@ The candidate preserves the qualified firearm SoundBank byte identity
 Optional Craft Magic Items support remains reflection-only;
 `CraftMagicItems.dll` is neither linked nor packaged. The inherited 1,288-test
 overhaul and 1,325-test fatigue-authority baselines remain historical, while
-this candidate's current dependency-free suite contains 1,415 registered
+this candidate's current dependency-free suite contains 1,418 registered
 cases.

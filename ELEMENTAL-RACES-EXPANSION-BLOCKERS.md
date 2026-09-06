@@ -1,5 +1,14 @@
 # Elemental Races expansion blockers
 
+The six-trait active-buff save regression is resolved by exact native
+trait-marker-loss cleanup. Two native processes (9,660 assertions) and four
+save-backed processes (230 assertions, 46 retained visual/DollData warnings)
+pass on one immutable candidate. The failed result remains historical in STATE;
+this incremental correction is not a Release C PASS. The isolated
+highest-risk profile still cannot currently load this working fixture; its
+save-free compatibility evidence remains separate. The restored installed
+configuration successfully loads the exact same working descriptor.
+
 ## Active hard blockers
 
 None established.
@@ -18,13 +27,64 @@ Release B itself has no remaining engineering or qualification blocker. Its
 local PASS is separate from this branch-publication blocker.
 
 Release C has no established hard blocker. Its replacement framework and
-first eight passive mechanics have incremental proof; ray-deflection,
-typed summon-duration, reactive-healing, and native
-difficult-terrain contracts still require focused engine evidence before the
-corresponding mechanics can be finalized.
+first eight passive mechanics have incremental proof. Three typed summon
+Insights and three reactive-healing traits now also pass focused native tests
+in KMG-only and highest-risk combined profiles, and those six traits now pass
+module-OFF/ON persistence in the restored installed configuration. Seven
+mechanics, the other fifteen traits' persistence, full lifecycle and final
+qualification remain. Ray-deflection and
+native difficult-terrain contracts still require focused engine evidence.
 
 ## Open engineering questions requiring evidence
 
+- The missing legacy-input preflight blocker is resolved by byte-identical
+  recovery of both files under `artifacts/release/0.0.114`. The historical
+  deployment backup and existing deterministic packer reproduce the pinned
+  ZIP `b5c881...`; the release generator's ordered JSON/encoding reproduces
+  manifest `485054...`. Both exact hashes were independently recorded before
+  recovery. No publisher, download or verifier bypass was used. The corrected
+  three-process legacy transaction now also passes mechanically (28 assertions,
+  all eight fixtures, exact spent uses and fresh absence). Its 13 warnings and
+  subjective visual-review gate remain explicit in STATE; restored inputs alone
+  were never treated as qualification.
+  For history, the other retained `artifacts/packages` ZIP hashes to
+  `0964f1832d1886f5c587a87c5895c67fe8cc8cb8233f000512625cfc6fa18f3a`,
+  not the pinned `b5c881...` producer. A bounded search of lab package,
+  archive, private, safety, worktree and runtime-evidence locations found no
+  exact package/manifest pair. That earlier failed preflight opened or wrote
+  no save. Recovery now restores the full original 135-entry package, not a
+  substitute DLL-only artifact.
+- The factory-only naming repair passes all 114 fact identity checks. Final
+  run `20260906T0318087797451Z-d27ad3fc0773431abbd8ae274572b02c`
+  additionally proves complete initialization/level-up/command/teardown error
+  observation: 4,741 assertions, zero native errors/exceptions, exact cleanup.
+  The older `20260906T0239499321459Z-b45648b2f8314fd5a091f2e478b3a558`
+  observed only level-up and commands; its scope is not broadened retroactively.
+  Current heritage/feat fresh-process persistence also passes mechanically,
+  and subsequent pinned legacy migration now passes mechanically. Actual
+  complete trait-bearing persistence and subjective visual review remain gates;
+  the six Insights/blood traits now have incremental persistence proof.
+  The following older observations are retained as investigation history.
+- The native summon-pool fixture defect is repaired in run
+  `20260906T0207040739900Z-7c5f9b57fa5844efb04541a1d3bf2f4f`: exact
+  rolled counts, native pool membership and all 59-unit cleanup pass.
+  Its runner PASS is not an overall qualification PASS. Exact project race
+  and provider components have duplicate blank native save names, producing
+  30 level-up hydration exceptions. The regression now audits every owned
+  Elemental blueprint and counts errors across the entire fixture lifetime.
+  Repair requires preserving AddFacts saved ownership and requalifying
+  actual 0.0.114 migration; blueprint identities must not change.
+- Current Insight qualification is FAIL, not a hard stop. Guarded run
+  `20260906T0147257495923Z-70d3b26204674a60a96e1f8e2b3282f7` identifies a
+  missing request-local native summon-pool service, which aborts group
+  spawning after its first creature. The fixture must install and restore
+  the real service rather than alter spell mechanics. Independent duration
+  and boundary checks run for all three Insights, and all 51 units clean up.
+- The same run newly observes native Fact.PostLoad errors during level-up
+  fixture cloning due to ambiguous component names. Exact affected facts
+  and save implications are not yet established. This must be attributed
+  and resolved before current release qualification; no speculative rename
+  of save-bearing component identities is authorized by this observation.
 - Release B's native maneuver, flight, concealment, fire-enchantment, and
   Small Water Elemental summon surfaces were resolved by isolated guarded run
   `20260904T1428561048826Z-652f2d0914124e21a23e666ceb0f846b`.

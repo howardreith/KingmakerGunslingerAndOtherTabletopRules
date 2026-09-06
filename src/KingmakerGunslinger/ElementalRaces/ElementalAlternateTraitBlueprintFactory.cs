@@ -6,6 +6,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Enums;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using UnityEngine;
 
@@ -14,7 +15,8 @@ namespace KingmakerGunslinger.ElementalRaces
     internal static class ElementalAlternateTraitBlueprintFactory
     {
         internal static ElementalAlternateTraitRaceBlueprints Register(
-            BlueprintRegistry registry, ElementalHeritageRace race,
+            LibraryScriptableObject library, BlueprintRegistry registry,
+            ElementalHeritageRace race,
             Sprite icon)
         {
             if (registry == null) throw new ArgumentNullException("registry");
@@ -25,14 +27,18 @@ namespace KingmakerGunslinger.ElementalRaces
             foreach (ElementalAlternateTraitDefinition definition in
                 definitions)
             {
+                BlueprintBuff bloodBuff = ElementalBloodBlueprintFactory.Register(
+                    registry, definition, icon);
                 BlueprintFeature provider = registry.Register<BlueprintFeature>(
                     definition.ProviderSymbol,
-                    () => CreateProvider(definition, icon));
+                    () => CreateProvider(library, definition, icon, bloodBuff));
                 BlueprintFeature marker = registry.Register<BlueprintFeature>(
                     definition.MarkerSymbol,
                     () => CreateMarker(definition, icon));
+                ElementalBloodBlueprintFactory.Bind(bloodBuff, provider, marker);
                 traits.Add(new ElementalAlternateTraitBlueprints(definition,
-                    marker, provider));
+                    marker, provider, bloodBuff == null ? null :
+                        new BlueprintScriptableObject[] { bloodBuff }));
             }
 
             foreach (ElementalAlternateTraitBlueprints trait in traits)
@@ -65,7 +71,9 @@ namespace KingmakerGunslinger.ElementalRaces
         }
 
         private static BlueprintFeature CreateProvider(
-            ElementalAlternateTraitDefinition definition, Sprite icon)
+            LibraryScriptableObject library,
+            ElementalAlternateTraitDefinition definition, Sprite icon,
+            BlueprintBuff bloodBuff)
         {
             BlueprintFeature result = BaseFeature(definition.ProviderSymbol,
                 true);
@@ -74,13 +82,17 @@ namespace KingmakerGunslinger.ElementalRaces
             controller.Trait = (int)definition.Id;
             result.ComponentsArray = new BlueprintComponent[] { controller }
                 .Concat(ElementalAlternateTraitPassiveFactory.ComponentsFor(
-                    definition.Id)).ToArray();
+                    definition.Id))
+                .Concat(ElementalSummonInsightFactory.ComponentsFor(library,
+                    definition.Id))
+                .Concat(ElementalBloodBlueprintFactory.ComponentsFor(definition,
+                    bloodBuff)).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create(Key(definition, "Provider.Name"),
                     definition.Name + " Provider"),
                 LocalizationService.Create(Key(definition,
                     "Provider.Description"), definition.Description), icon);
-            return result;
+            return ElementalComponentIdentity.Prepare(result);
         }
 
         private static BlueprintFeature CreateMarker(
@@ -193,7 +205,8 @@ namespace KingmakerGunslinger.ElementalRaces
             ElementalAlternateTraitRaceBlueprints result)
         {
             if (result.RegisteredCount != result.Traits().Count * 2 +
-                    result.Selections().Count * 2 ||
+                    result.Selections().Count * 2 +
+                    result.Traits().Sum(value => value.Mechanics().Count) ||
                 result.Traits().Any(value => value.Marker.Icon == null ||
                     value.Provider.Icon == null ||
                     value.Marker.HideInUI || !value.Provider.HideInUI ||
