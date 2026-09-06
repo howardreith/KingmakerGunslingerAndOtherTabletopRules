@@ -2,6 +2,12 @@
 
 ## 0.0.117-elemental-traits
 
+- Avoids attempted feat-transient restoration inside native disabled level-up
+  previews, preserving exact original buffs, item effects and absolute expiry.
+  All 1,424 tests, clean build/package and nine guarded processes pass 10,594
+  assertions, including renewed eight-trait saves and pinned 0.0.114 migration.
+  No identity/schema changes. This repairs the inherited service in 117, not
+  the retained 116 ZIP. See the [preview checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md).
 - Strengthens Crystalline native-command coverage for delayed multi-ray casts,
   duplicate impact notifications, non-damage effects and native hand states.
   All 1,424 tests, clean build/package and 10,242 guarded assertions pass.

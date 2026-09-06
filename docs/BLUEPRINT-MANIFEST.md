@@ -59,6 +59,8 @@ save cycle qualifies consent and resource persistence on two Ironsoul fixtures,
 without adding any identity; full trait lifecycle remains pending:
 The subsequent multi-ray/non-damage/hand-control and remaining-trait audit
 checkpoint also adds zero save-bearing identities.
+The later native feat-preview correction likewise adds zero identities and
+does not change the transient UnitPart schema or any existing GUID.
 
 | Suffix under `KMG.ElementalRaces.Traits.Oread.CrystallineForm` | Stable GUID |
 | --- | --- |

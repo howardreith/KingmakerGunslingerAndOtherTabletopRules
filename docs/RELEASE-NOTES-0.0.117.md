@@ -37,6 +37,14 @@ transient diagnostic errors remain explicit. This is not full Release C PASS.
 
 ## Implemented in this checkpoint
 
+The [feat-preview correction](ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+now preserves transient ledgers without attempting forbidden buff additions
+inside native level-up previews. Actual preview/cancel/commit and renewed
+eight-trait save/migration regressions pass: 1,424 tests and nine processes,
+10,594 assertions, exact restoration. The prior transient errors are zero;
+all 60 visual/DollData warnings remain. No identities change. The repair is
+in 117 and does not alter or retroactively qualify the retained 116 artifact.
+
 The later [native controls checkpoint](ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
 passes 10,242 assertions in two profiles for delayed multi-ray/one-use,
 duplicate impacts, non-damage rays and native hand states. No production
@@ -104,5 +112,5 @@ The candidate preserves the qualified firearm SoundBank byte identity
 Optional Craft Magic Items support remains reflection-only;
 `CraftMagicItems.dll` is neither linked nor packaged. The inherited 1,288-test
 overhaul and 1,325-test fatigue-authority baselines remain historical, while
-this candidate's current dependency-free suite contains 1,423 registered
+this candidate's current dependency-free suite contains 1,424 registered
 cases.

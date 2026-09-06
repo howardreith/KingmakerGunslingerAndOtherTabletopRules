@@ -28,6 +28,9 @@ loading, level-up, rest and base-trait respec, with renewed 0.0.114 migration.
 Its [additional native controls](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
 also prove multi-ray/one-use, duplicate impact, non-damage ray suppression and
 two-handed/disabled-hand recovery in both profiles.
+The [native preview correction](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+also preserves existing Elemental Strike/Scorching Weapons state during native
+level-up previews, with renewed OFF/ON save and 0.0.114 migration checks.
 Remaining semantic catalog work, five other required mechanics, the complete
 trait persistence/lifecycle matrix and final qualification remain.
 This is not a finished Release C package.
