@@ -1,5 +1,27 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-09-06 Share Transmutation direct-cast checkpoint
+
+- Branch/base/core HEAD: `codex/share-transmutation-instant` /
+  `6874dc15a27ded132456dbdd480f47c794543a05` /
+  `a788d2269fcc4aaa24f8c49f820257ceb9cf7403`.
+- Core provider API and regressions are committed. Version-aware validation and
+  1393/1393 full domain tests pass; exact Release compile, 87/87 compiled
+  consumer contract, strict output/package validation, and two deterministic
+  packages pass.
+- Package/DLL/MVID:
+  `2490193efc17e6a27b07beaddba71fd149bfe62ef29c4ca167698e52032316f6` /
+  `090e6478844bcac7825ef04f43099ff41139e26aaf3b490ef327c991cd281dc6` /
+  `98c59878-ac0b-4b3b-9716-132a7e409450`.
+- Uncommitted state is the proposed 0.0.115 identity, one-line active runtime
+  defaults, focused validator/static record, and compatibility/release docs.
+  Commit it only after explicit scope authorization; otherwise reverse those
+  known task-created changes without touching the core commit.
+- The documented guarded push helper is absent. Runtime/manual Share evidence
+  is NOT RUN. Exact next action is resolve release-plumbing scope, finalize the
+  provider worktree, then let the primary Planner run its clean deterministic
+  release build.
+
 ## 2026-08-20 Acadamae priority continuation checkpoint
 
 - Branch/intake: `codex/gunslinger-overnight-bugfixes` at published `270d02630d32d32d80d128ab7bb9312a37c736a1`; local/ref/remote equality and clean state proved before work.
