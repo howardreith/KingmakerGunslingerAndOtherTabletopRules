@@ -88,3 +88,8 @@ processes pass 10,490 assertions; exact evidence and retained failures are in
 [the persistence report](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md).
 The separate pre-existing feat-transient preview/hydration diagnostic and
 every remaining release gate still require investigation/qualification.
+
+The next test-only checkpoint qualifies native multi-ray/duplicate-impact,
+non-damage-ray and two-handed/disabled-hand controls in both profiles (10,242
+assertions). See the [controls report](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md).
+No new production identity or behavior is implied by its remaining-trait audit.

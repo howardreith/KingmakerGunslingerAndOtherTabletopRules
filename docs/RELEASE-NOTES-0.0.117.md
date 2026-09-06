@@ -37,6 +37,11 @@ transient diagnostic errors remain explicit. This is not full Release C PASS.
 
 ## Implemented in this checkpoint
 
+The later [native controls checkpoint](ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
+passes 10,242 assertions in two profiles for delayed multi-ray/one-use,
+duplicate impacts, non-damage rays and native hand states. No production
+identity or mechanic changes. Complete Release C gates remain pending.
+
 - 62 fixed manifest identities: ten slot selections, ten retain-base markers,
   21 visible alternate-trait markers, and 21 separate hidden providers.
 - Three additional fixed native-ticking blood-buff identities, with daily

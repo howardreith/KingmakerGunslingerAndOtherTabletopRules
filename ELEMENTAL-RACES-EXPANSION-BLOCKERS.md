@@ -13,6 +13,12 @@ configuration successfully loads the exact same working descriptor.
 
 None established.
 
+The test-only [Crystalline controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
+now resolves the pending multi-ray/duplicate-event, non-damage-ray and
+two-handed/disabled-hand controls. Both native profiles and exact restorations
+pass. The separate preview errors and remaining mechanics/lifecycle are still
+open; the donor audit does not establish a feature-specific hard stop.
+
 ## Latest incremental save result
 
 The [Crystalline persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)

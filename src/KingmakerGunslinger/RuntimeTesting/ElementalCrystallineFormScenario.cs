@@ -31,7 +31,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     /// <summary>Native commands and attack/effect resolution on named disposable
     /// units. Only asynchronous projectile travel is completed at its impact
-    /// boundary: no direct invocation of the trait or damage effect.</summary>
+    /// boundary, with a restored request-local clock for delayed rays: no
+    /// direct invocation of the trait or damage effect.</summary>
     internal static class ElementalCrystallineFormScenario
     {
         private const string Frost = "9af2ab69df6538f4793b2f9c3cc85603";
@@ -106,7 +107,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string path = Path.Combine(request.EvidenceDirectory, "elemental-crystalline-form.json");
                 File.WriteAllText(path, new JObject {
                     { "schemaVersion", 1 }, { "saveStateTouched", false }, { "cleanupExact", clean },
-                    { "isolatedBoundary", "request-local asynchronous projectile arrival only; native command, projectile creation, attack roll, OnHit event and damage effects retained" },
+                    { "isolatedBoundary", "request-local asynchronous projectile arrival and restored clock scheduling only; native command, projectile creation/delay, attack roll, OnHit event and damage effects retained" },
                     { "diagnostics", new JArray(diagnostics) }, { "observations", rows }
                 }.ToString(Formatting.Indented));
                 files.Add(path);
@@ -237,6 +238,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // The preceding real marker removal/re-add replaces AddFacts-owned
             // activatables. Never drive the detached pre-respec instance.
             EquipmentAndAwareness(attacker, defender, resource, Mode(owner, modeBlueprint), frost, prefix, rows, assertions);
+            MultipleAndNonDamageRays(attacker, defender, resource, Mode(owner, modeBlueprint),
+                prefix, rows, assertions);
         }
 
         private static void EquipmentAndAwareness(UnitEntityData attacker, UnitEntityData defender,
@@ -279,6 +282,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                 secondary.Dispose();
             }
             Kingmaker.Controllers.Rest.RestController.ApplyRest(owner);
+            BlueprintItemWeapon greatsword = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                BlueprintBootstrap.Library, "2fff2921851568a4d80ed52f76cccdb6", "audited native StandardGreatsword");
+            if (greatsword.Type.AssetGuid != EasternWeaponBlueprints.NodachiVisualDonorGuid || greatsword.Enchantments.Any())
+                throw new InvalidOperationException("The audited unenchanted greatsword contract changed.");
+            var twoHanded = new ItemEntityWeapon(greatsword);
+            try
+            {
+                owner.Body.PrimaryHand.InsertItem(twoHanded);
+                mode.IsOn = true;
+                CastEvidence blocked = Cast(attacker, defender, frost, true);
+                Check(assertions, rows, prefix + "native-two-handed-weapon",
+                    twoHanded.HoldInTwoHands && !ElementalCrystallineFormRuntime.HasFreeHand(owner) &&
+                    blocked.Completed && blocked.Hits == 1 && blocked.Parried == 0 && blocked.Damage > 0 &&
+                    owner.Resources.GetResourceAmount(resource) == 1, blocked + ";empty off-hand is not a free hand;item=" +
+                    greatsword.AssetGuid + "/" + greatsword.name);
+            }
+            finally
+            {
+                if (ReferenceEquals(owner.Body.PrimaryHand.MaybeItem, twoHanded)) owner.Body.PrimaryHand.RemoveItem(false);
+                twoHanded.Dispose();
+            }
+            owner.Body.PrimaryHand.RetainDeactivateFlag();
+            owner.Body.SecondaryHand.RetainDeactivateFlag();
+            try
+            {
+                mode.IsOn = true;
+                CastEvidence blocked = Cast(attacker, defender, frost, true);
+                Check(assertions, rows, prefix + "native-disabled-hands",
+                    owner.Body.PrimaryHand.Disabled && owner.Body.SecondaryHand.Disabled &&
+                    !ElementalCrystallineFormRuntime.HasFreeHand(owner) && blocked.Completed &&
+                    blocked.Hits == 1 && blocked.Parried == 0 && blocked.Damage > 0 &&
+                    owner.Resources.GetResourceAmount(resource) == 1, blocked.ToString());
+            }
+            finally
+            {
+                owner.Body.SecondaryHand.ReleaseDeactivateFlag();
+                owner.Body.PrimaryHand.ReleaseDeactivateFlag();
+            }
+            mode.IsOn = true;
+            CastEvidence handsRecovered = Cast(attacker, defender, frost, true);
+            Check(assertions, rows, prefix + "native-hands-reenabled",
+                ElementalCrystallineFormRuntime.HasFreeHand(owner) && handsRecovered.Completed &&
+                handsRecovered.Parried == 1 && handsRecovered.Damage == 0 &&
+                owner.Resources.GetResourceAmount(resource) == 0, handsRecovered.ToString());
+            Kingmaker.Controllers.Rest.RestController.ApplyRest(owner);
             foreach (UnitCondition condition in new[] { UnitCondition.Blindness, UnitCondition.Paralyzed })
             {
                 mode.IsOn = true;
@@ -300,6 +348,91 @@ namespace KingmakerGunslinger.RuntimeTesting
             Check(assertions, rows, prefix + "awareness-restored",
                 recovered.Completed && recovered.Parried == 1 && recovered.Damage == 0 &&
                 owner.Resources.GetResourceAmount(resource) == 0, recovered.ToString());
+        }
+
+        private static void MultipleAndNonDamageRays(UnitEntityData attacker, UnitEntityData defender,
+            BlueprintAbilityResource resource, ActivatableAbility mode, string prefix, JArray rows,
+            ICollection<RuntimeTestAssertion> assertions)
+        {
+            UnitDescriptor owner = defender.Descriptor;
+            BlueprintCharacterClass wizard = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
+                BlueprintBootstrap.Library, "ba34257984f4c41408ce1dc2004e342e", "native ray spellbook");
+            attacker.Stats.Intelligence.BaseValue = 20;
+            ElementalSpellAffinityScenario.Advance(attacker.Descriptor, wizard,
+                11 - attacker.Descriptor.Progression.GetClassLevel(wizard));
+            Spellbook book = attacker.Descriptor.GetSpellbook(wizard);
+            if (book == null) throw new InvalidOperationException("Native ray class spellbook is absent.");
+            int originalBookLevel = book.CasterLevel;
+            // The existing native fixture level-up helper applies class
+            // mechanics, not spell-learning steps. As in the summon fixture,
+            // initialize the real book via its native level API, never a
+            // per-cast CL override or a replacement parameter component.
+            for (int level = 0; book.CasterLevel < 11 && level < 11; level++) book.AddCasterLevel();
+            Check(assertions, rows, prefix + "native-spellbook-fixture",
+                attacker.Descriptor.Progression.GetClassLevel(wizard) == 11 && book.CasterLevel == 11,
+                "WizardClass=" + attacker.Descriptor.Progression.GetClassLevel(wizard) +
+                ";bookBefore=" + originalBookLevel + ";nativeBookAfter=" + book.CasterLevel);
+            if (book.CasterLevel != 11)
+                throw new InvalidOperationException("Native multi-ray witness requires CL11; observed " + book.CasterLevel);
+            book.UpdateAllSlotsSize(false);
+            owner.Stats.HitPoints.BaseValue = 5000;
+            defender.Damage = 0;
+            Kingmaker.Controllers.Rest.RestController.ApplyRest(owner);
+            mode.IsOn = true;
+            BlueprintAbility scorching = Require("cdb106d53c65bbc4086183d54c3b97c7");
+            AbilityData prepared = Prepare(book, scorching);
+            CastEvidence multi = Cast(attacker, defender, scorching, true, true, prepared);
+            Check(assertions, rows, prefix + "three-native-rays-one-deflection",
+                prepared.CalculateParams().CasterLevel == 11 && multi.Completed && multi.Projectiles == 3 &&
+                multi.UniqueAttackRolls == 3 && multi.Parried == 1 && multi.Hits == 2 && multi.Damage > 0 &&
+                multi.ImpactNotifications == 6 && owner.Resources.GetResourceAmount(resource) == 0 &&
+                !mode.IsOn && !prepared.ParamSpellSlot.Available && multi.ClockAdvancedSeconds > 0 &&
+                multi.ClockRestored,
+                multi + ";real prepared Wizard spell; duplicate native impact notifications cannot spend twice");
+
+            Kingmaker.Controllers.Rest.RestController.ApplyRest(owner);
+            mode.IsOn = false;
+            BlueprintAbility enfeeblement = Require("450af0402422b0b4980d9c2175869612");
+            var before = owner.Buffs.Enumerable.ToArray();
+            int strength = owner.Stats.Strength.ModifiedValue;
+            CastEvidence ordinary = Cast(attacker, defender, enfeeblement, true, false, Prepare(book, enfeeblement));
+            var applied = owner.Buffs.Enumerable.Except(before).ToArray();
+            Check(assertions, rows, prefix + "non-damage-ray-positive-control",
+                ordinary.Completed && ordinary.Hits == 1 && ordinary.Parried == 0 && applied.Length > 0 &&
+                owner.Stats.Strength.ModifiedValue < strength && owner.Resources.GetResourceAmount(resource) == 1,
+                ordinary + ";newBuffs=" + applied.Length + ";strength=" + owner.Stats.Strength.ModifiedValue);
+            foreach (var buff in applied) owner.Buffs.RemoveFact(buff);
+            before = owner.Buffs.Enumerable.ToArray();
+            strength = owner.Stats.Strength.ModifiedValue;
+            mode.IsOn = true;
+            CastEvidence deflected = Cast(attacker, defender, enfeeblement, true, true, Prepare(book, enfeeblement));
+            Check(assertions, rows, prefix + "non-damage-ray-effect-suppressed",
+                deflected.Completed && deflected.Parried == 1 && deflected.Hits == 0 &&
+                owner.Buffs.Enumerable.Except(before).Count() == 0 && owner.Stats.Strength.ModifiedValue == strength &&
+                owner.Resources.GetResourceAmount(resource) == 0 && !mode.IsOn,
+                deflected + ";native effect is skipped, not applied and later removed");
+        }
+
+        private static AbilityData Prepare(Spellbook book, BlueprintAbility ability)
+        {
+            if (!book.Blueprint.SpellList.Contains(ability))
+                throw new InvalidOperationException("Exact ray is not on the native Wizard list.");
+            int level = book.Blueprint.SpellList.GetLevel(ability);
+            book.AddKnown(level, ability, true);
+            SpellSlot slot = book.GetMemorizedSpellSlots(level).FirstOrDefault(value =>
+                value.Spell != null && ReferenceEquals(value.Spell.Blueprint, ability));
+            if (slot == null)
+            {
+                if (!book.Memorize(new AbilityData(ability, book), null))
+                    throw new InvalidOperationException("Native ray memorization failed.");
+                slot = book.GetMemorizedSpellSlots(level).Single(value =>
+                    value.Spell != null && ReferenceEquals(value.Spell.Blueprint, ability));
+            }
+            book.Rest();
+            slot.Spell.ParamSpellSlot = slot;
+            if (!slot.Available || !slot.Spell.IsAvailable)
+                throw new InvalidOperationException("Native prepared ray slot is unavailable after rest.");
+            return slot.Spell;
         }
 
         private static int ArmorClass(UnitEntityData attacker, UnitEntityData target, BlueprintAbility ability)
@@ -324,20 +457,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class CastEvidence
         {
             internal bool Completed;
-            internal int Projectiles, Hits, Parried, Damage;
+            internal int Projectiles, Hits, Parried, Damage, UniqueAttackRolls, ImpactNotifications;
+            internal double ClockAdvancedSeconds;
+            internal bool ClockRestored;
             internal string Sources;
             public override string ToString() { return "completed=" + Completed + ";projectiles=" + Projectiles +
-                ";hits=" + Hits + ";parried=" + Parried + ";damage=" + Damage + ";sources=" + Sources; }
+                ";hits=" + Hits + ";parried=" + Parried + ";damage=" + Damage +
+                ";uniqueRolls=" + UniqueAttackRolls + ";impactNotifications=" + ImpactNotifications +
+                ";clockAdvancedSeconds=" + ClockAdvancedSeconds + ";clockRestored=" + ClockRestored + ";sources=" + Sources; }
         }
 
-        private static CastEvidence Cast(UnitEntityData caster, UnitEntityData target, BlueprintAbility ability, bool hit)
+        private static CastEvidence Cast(UnitEntityData caster, UnitEntityData target, BlueprintAbility ability, bool hit,
+            bool duplicateImpact = false, AbilityData prepared = null)
         {
             var observed = new List<Projectile>();
             var previous = new HashSet<Projectile>(Game.Instance.ProjectileController.Projectiles);
             int damage = target.Damage;
             int bonus = caster.Stats.AdditionalAttackBonus.BaseValue;
+            int notifications = 0;
+            TimeSpan clock = Game.Instance.TimeController.GameTime;
+            bool delayed = ability.ComponentsArray.OfType<AbilityDeliverProjectile>()
+                .Any(value => value.DelayBetweenProjectiles > 0);
+            var evidence = new CastEvidence();
             caster.Stats.AdditionalAttackBonus.BaseValue = hit ? 100 : -100;
-            var command = ElementalUndineFeatScenario.CreateCommand(Data(caster.Descriptor, ability), new TargetWrapper(target), caster);
+            var command = ElementalUndineFeatScenario.CreateCommand(prepared ?? Data(caster.Descriptor, ability), new TargetWrapper(target), caster);
             command.ForceAlwaysHit = hit;
             UnityEngine.Random.InitState(7419);
             try
@@ -345,6 +488,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalUndineFeatScenario.InvokeCommandAction(command);
                 for (int tick = 0; command.ExecutionProcess != null && !command.ExecutionProcess.IsEnded && tick < 100; tick++)
                 {
+                    // The native delivery iterator compares GameTime with its
+                    // unmodified DelayBetweenProjectiles. Drive only that
+                    // scheduling boundary, as in the disposable blood fixture;
+                    // restore the exact clock even when the command fails.
+                    if (delayed) Game.Instance.Player.GameTime += TimeSpan.FromSeconds(0.1);
                     command.ExecutionProcess.Tick();
                     foreach (Projectile projectile in Game.Instance.ProjectileController.Projectiles.Where(value =>
                         !previous.Contains(value) && !value.Cleared && ReferenceEquals(value.Launcher, caster) &&
@@ -355,20 +503,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // Native OnHit and subsequent delivery/effects are untouched.
                         typeof(Projectile).GetProperty("IsHit").GetSetMethod(true).Invoke(projectile, new object[] { true });
                         projectile.OnHit();
+                        notifications++;
+                        if (duplicateImpact) { projectile.OnHit(); notifications++; }
                     }
                 }
                 bool complete = command.ExecutionProcess != null && command.ExecutionProcess.IsEnded;
                 if (!complete && command.ExecutionProcess != null) command.ExecutionProcess.Detach();
                 ElementalUndineFeatScenario.InvokeCommandEnded(command, !complete);
-                return new CastEvidence { Completed = complete, Projectiles = observed.Count,
+                evidence = new CastEvidence { Completed = complete, Projectiles = observed.Count,
+                    ClockAdvancedSeconds = (Game.Instance.TimeController.GameTime - clock).TotalSeconds,
+                    UniqueAttackRolls = observed.Where(value => value.AttackRoll != null).Select(value => value.AttackRoll).Distinct().Count(),
+                    ImpactNotifications = notifications,
                     Hits = observed.Count(value => value.AttackRoll != null && value.AttackRoll.IsHit),
                     Parried = observed.Count(value => value.AttackRoll != null && value.AttackRoll.Result == AttackResult.Parried),
                     Damage = target.Damage - damage,
                     Sources = string.Join(",", observed.Select(value => value.AttackRoll == null ? "no-roll" :
                         "eligible=" + ElementalCrystallineFormRuntime.IsRay(value.AttackRoll) + "/reason=" + value.AttackRoll.Reason.Name)) };
+                return evidence;
             }
             finally
             {
+                Game.Instance.Player.GameTime = clock;
+                evidence.ClockRestored = Game.Instance.TimeController.GameTime == clock;
                 caster.Stats.AdditionalAttackBonus.BaseValue = bonus;
                 foreach (Projectile projectile in observed) projectile.Cleared = true;
                 Game.Instance.ProjectileController.Tick();

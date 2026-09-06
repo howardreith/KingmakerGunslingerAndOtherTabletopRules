@@ -9,6 +9,10 @@ Its final transactions restore the entire original installed mod tree and
 settings exactly. The initial failed diagnostic's metadata-restoration failure
 is retained separately; no later PASS retroactively qualifies it.
 No new optional dependency, module toggle or settings schema is introduced.
+The later [native controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
+passes KMG-only and highest-risk combined with independently verified exact
+968-entry folder restoration. It is not the final release-wide profile matrix;
+existing combined diagnostics and absent Visual Adjustments remain explicit.
 
 ## Supported baseline
 

@@ -1,5 +1,46 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Crystalline remaining native controls qualified
+
+- Candidate 04 passes all 1,424 tests, clean Release/package and two guarded
+  native profiles: 10,242 assertions, 404 Crystalline observations, zero result
+  warnings, exact fixture/clock cleanup and independent 968-entry restorations.
+- All three Oread heritages prove three actual prepared rays/one deflection,
+  duplicate impact idempotence, non-damage effect suppression, greatsword and
+  disabled-hand recovery. No production behavior or identity was changed.
+- The remaining-trait audit records 171/257 contracts with unchanged catalogs,
+  not gameplay qualification. Existing engine diagnostics and all failed
+  candidates remain explicit. The read-only collector StrictMode mismatch
+  was corrected without launching another process.
+- Exact artifact, run, mechanic/audit, native-log and restoration hashes:
+  [controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md).
+  Next: narrow native feat-transient preview regression, five unfinished traits
+  and complete lifecycle/release gates. No established hard stop.
+
+## 2026-09-06 UTC - Remaining native controls in progress
+
+- Committed/pushed the qualified persistence checkpoint as
+  d178ec275e4ecc7694cc1cf6ac26b2ef0abf7c55; local/origin matched and tree was clean.
+- Added dedicated native-command controls for Wizard three-ray Scorching Ray,
+  duplicate OnHit notifications, Ray of Enfeeblement effect suppression,
+  native greatsword use, disabled hands and restoration. These additions are
+  not yet fully runtime-qualified; complete build/domain/package checks pass
+  for candidates 01-03, but their guarded results remain FAIL.
+- Added a read-only feature-specific remaining-trait donor audit, reusing the
+  existing bounded serializer. It inspects native mephit cones, Bard Fascinate,
+  sickened/difficult-terrain facts and native surface data. No trait mechanic
+  is inferred merely from a successful audit; no identity/donor changed.
+- Retained controls-01 FAIL (wrong equipment-asset identity, before 116 passing
+  assertions), controls-02 FAIL (native class helper had not advanced the
+  spellbook, before 123 passing assertions), and controls-03 FAIL (three
+  delayed-ray assertions; 5,118 others pass). All three KMG-only profiles
+  restored exactly; combined profiles were not attempted after failure.
+- Native IL shows Scorching Ray waits on GameTime between projectiles. The
+  corrected fixture advances only that scheduling boundary, restores the exact
+  clock in finally and retains native projectile delays. Actual Ray of
+  Enfeeblement positive/deflection and equipment controls passed in 03 for all
+  three Oread heritages. Candidate 04 qualification is pending.
+
 ## 2026-09-06 UTC - Crystalline persistence and native suspension correction
 
 - Initial OFF loading exposed lost armed consent. Read-only inspection of the

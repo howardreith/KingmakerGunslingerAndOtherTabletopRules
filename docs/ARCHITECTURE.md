@@ -613,6 +613,11 @@ buffs during serialization. Active-unit marker removal still reconciles.
 Dedicated native TurnOff/TurnOn and real OFF/ON save/rest/level/respec tests,
 plus renewed pinned 0.0.114 migration, qualify this narrow correction without
 adding saved state or changing any identity.
+The separate native control extension drives prepared Wizard multi-ray and
+non-damage spells through real commands. Only projectile arrival and native
+between-ray clock scheduling are isolated; finally restores the exact clock.
+Its remaining-trait read-only audit uses complete explicit DTO serialization
+and proves unchanged catalog/component references, not mechanic correctness.
 `elemental-races` setting gates race, feat, and trait-selector publication; no
 module identity or schema member was added. All 218 active elemental identities
 remain registered while selector publication is disabled. Exact 0.0.114
