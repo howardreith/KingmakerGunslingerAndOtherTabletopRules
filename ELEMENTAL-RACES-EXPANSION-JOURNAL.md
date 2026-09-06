@@ -1,5 +1,505 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Six-trait native and persistence checkpoint PASS
+
+- The repaired immutable candidate passes repository validation, all 1,419
+  tests, a clean Release build and strict 135-entry package validation. Source
+  state `9c988829...`, package `dbf8f9f7...`, DLL `3ba7a132...`, MVID
+  `839e953e-0690-40ba-b605-0efc8ad9f682`; exact complete hashes are in STATE.
+- Two fresh guarded Steam processes pass 9,660 native assertions with zero
+  runtime-result warnings. Both KMG-only and highest-risk combined profiles
+  prove all three real provider Deactivate/Activate regressions and actual
+  marker-removal cleanup. Both 968-entry profiles restore exactly.
+- Four further fresh processes pass 230 save-backed assertions and 168 exact
+  trait-state observations. Native creation/respec selects six actual traits
+  on 18 of 24 fixtures; all corresponding heritages and both sexes are covered.
+  Nine active blood buffs and spent=1/rem=1 capacity survive module-OFF load.
+  Level-up retains spent=1/rem=3; ordinary rest resets capacity, actual native
+  healing re-spends one, and module-ON load retains spent=1/rem=3. Native full
+  respec returns to base traits with exact cleanup. Three authorized working
+  save writes are followed by independent fresh absence with zero writes and
+  the original three party members. No protected-baseline write occurred.
+- The original installed configuration is used for saved fixtures; the
+  isolated combined profile remains save-free only after its earlier native
+  main-character load timeout. That failure is not relabelled as PASS.
+- All 46 save-backed warnings remain explicit visual/framing/DollData limits,
+  not mechanical proof or completed subjective review. The six native logs
+  contain zero Fact.PostLoad, duplicate-name or resource-readdition regression
+  signatures; known optional startup exceptions remain separately attributed.
+  Original settings `a06601c5...` and installed DLL are verified unchanged.
+- The source correction removes destructive provider OnTurnOff handling,
+  which is ambiguous during native save reconstruction, and instead observes
+  exact same-owner native trait-marker loss in the owned buff. The strict
+  failed-save regression now passes without changing its expectation.
+- This is an incremental six-trait checkpoint, not Release C qualification.
+  The other fifteen traits' persistence, complete lifecycle/multi-trait cases,
+  seven missing mechanics, final compatibility/module profiles and subjective
+  visual review remain. The exact push wrapper again refuses the required
+  branch's missing external allowlist entry; no bypass was attempted.
+
+## 2026-09-06 UTC - Six-trait save test finds active-buff loss
+
+- Candidate `7e118570...` passes all 1,419 tests, clean Release compilation and
+  strict 135-entry package validation. Exact hashes are retained in STATE.
+- The isolated highest-risk profile times out before fixture creation while
+  native Player.PostLoad resolves the main-character identity. No save write
+  is observed. This profile is not working-save-smoke qualified; future saved
+  fixtures must use the established installed configuration until that
+  prerequisite is resolved. The exact 968-entry profile restores after guarded
+  process exit; no save repair, force termination or protected-baseline access.
+- Under the restored installed configuration, native preparation passes 47
+  assertions: 24 fixtures, 18 actual native-selected traits, all six Insights/
+  blood traits, nine active buffs with one actual HP healed and one HP of daily
+  capacity remaining, and all inherited spent SLAs. Fourteen visual/DollData
+  warnings are not relabelled as zero warnings or visual review.
+- Module-OFF load fails strictly on the first missing active blood buff. Its
+  marker/provider, spent=1/remaining=1 capacity and spent SLA survive; no later
+  level/rest fixtures are credited. Guarded cleanup saves exactly once, original
+  settings restore, and independent fresh absence passes 7 assertions.
+- The existing Release B transient controller documents that native save/load
+  reconstruction invokes OnTurnOff without permanent fact removal. Blood's
+  unconditional OnTurnOff cleanup matches that hazard. The correction makes
+  that ambiguous callback non-destructive and lets the active owned buff handle
+  the native exact same-owner trait-marker-loss event instead. Native expiry/
+  death still own ordinary cleanup; a providerless tick removes an inert buff.
+- Added a real Fact.Deactivate/Activate regression while retaining the existing
+  actual marker-removal regression. The persistence test still requires the
+  active saved buff; it was not weakened. Added precise game-time observation
+  and a guarded-exit wait before settings restoration on failed phases.
+  This correction is not yet qualified and nothing is committed as PASS.
+
+## 2026-09-06 UTC - Actual six-trait persistence implementation
+
+- Continued from the mechanically passing pinned legacy transaction. The
+  mandatory guarded push still refuses this exact branch's missing external
+  allowlist entry; no bypass or unrelated branch mutation was attempted.
+- Added the pure `release-c-blood-insight-six-traits-v1` fixture policy and
+  executable coverage: all 24 race/sex/heritage fixtures remain, 18 carry one
+  actual implemented trait, and each of the six Insights/blood traits appears
+  across all three parent heritages and both sexes. Undines retain base traits.
+  This is deliberately not evidence for the other 15 traits.
+- Extended the feature-specific native selection helper to choose actual
+  markers through LevelUpController.SelectFeature. Preparation starts from
+  retain-base source characters; restored respec returns to base traits.
+  Legacy markerless-General checks remain separate and exact.
+- Added dedicated blood persistence observations for actual native healing,
+  partially spent capacity, active buffs, module-OFF load, unchanged spent
+  capacity at level-up, native rest, re-spending, module-ON load, idempotent
+  reconciliation and base-trait respec cleanup. Only an exact disposable
+  buff's native tick schedule is isolated; global game time is not advanced,
+  and production effect internals/ledger setters are not called.
+- The first full source pass found the new exact test-count contracts needed
+  synchronization. All 1,419 tests then passed, but exact-reference compilation
+  caught four harness API/static-context mistakes; these were corrected.
+  Renewed clean build/package and actual runtime qualification are pending.
+- The existing persistence wrapper now preserves each successful process's
+  native hydration log before rotation, using the established collector.
+
+## 2026-09-06 UTC - Pinned legacy migration mechanics PASS
+
+- The previous goal turn made progress: both exact historical inputs were
+  recovered, blood/Insight combined-profile evidence was obtained, and two
+  persistence-harness omissions were corrected with focused regressions.
+  The already-running corrected transaction was polled, not restarted.
+- Source `7d694af8d75fa344afe3b5bd51afb82721e97c0c44ffab95a8b594ab28699d29`
+  passes repository validation, 1,418/1,418 tests, clean Release compilation
+  and strict 135-entry packaging. ZIP: 23,198,755 bytes,
+  `5e7da2c5370f08ec9b0ba04977f60d269c4999cc342955b299619f2b6e415c75`.
+  DLL: 6,093,312 bytes, `7a175debfb063194fc15cc30655f4ee08f11033b06cf58a30d471f7c523f7086`;
+  MVID `121ab5c4-f6a6-461f-894c-5f5351c9f6ad`.
+- Exact pinned 0.0.114 producer, 0.0.117 receiver and fresh absence all pass:
+  11 + 10 + 7 = 28 assertions in three independent guarded Steam processes.
+  All eight race/sex fixtures preserve markerless General, exact common facts,
+  stats, one active affinity/SLA/resource, zero spent uses before and after
+  reconciliation, and exact appearance data. No new heritage/trait selection,
+  retain marker, trait marker or provider is added to those legacy characters.
+- The receiver cleanup-saves only the disposable fixtures. The final process
+  independently proves no fixture residue and performs zero save writes.
+  `KMG_AUTOMATION_WORKING` is clean; the protected baseline remains excluded.
+  Current DLL and settings `a06601c5...` restore exactly. Transaction
+  `20260906T0450221997373Z-elemental-race-legacy-migration-transaction`
+  hashes to `d739f10fdc830325e6b4cd33377e52f0b6c0040825423c28bf96bc2231e2fa88`.
+- All three native logs are retained before rotation. Each has zero observed
+  Fact.PostLoad, duplicate-name or resource-readdition diagnostics. Four
+  Favored Class startup KeyNotFound exceptions and one BugReportCanvas exception
+  match the earlier same-profile control; no blanket zero-engine-error claim
+  is made. All 13 framing/subjective-review/DollData warnings are retained.
+- Exact run IDs and result, runtime, native-log, sidecar-index, deployment and
+  restoration hashes are in STATE `releaseCLegacyRequalification`. The prior
+  failed expectation run remains `releaseCLegacyRequalificationInitialAttempt`.
+  This clears the component-name repair's legacy mechanics gate, not subjective
+  visual review, actual trait-bearing persistence or final Release C acceptance.
+
+## 2026-09-06 UTC - Legacy test expectation correction
+
+- The 65-identity collector regression passes on source `1b1935df4f02ba91b8522b0a7ff13070acdbccafeb743d27886f145deaa160bb`:
+  all 1,418 tests, clean build/package and guarded run
+  `20260906T0434253931023Z-d7c0250ed975420e901392e461a85d80`
+  (4,827 assertions, zero warnings). Its result/evidence SHA-256 values are
+  `92932f385b4816341ea63a91a10b1346e4f5987dac9319b4400741c4e1dae686`
+  and `5c9ed01e2e22e8498b0dc17b9ef0d3e00afeb1a4afdb0c0406f4d42fae7b9d7e`.
+  The exact current artifact is a 23,198,581-byte ZIP `431a34d553dccd3ab1f20f4456420c4d6342d41eec3832b06a053e92d3917c44`,
+  DLL `f8da1488fa1a0f13895bab24bc71fc51fcb57ed5080a75dbc7577fc43546b4f3`,
+  MVID `a05759f4-139b-4ec7-9251-92fcb56d383f`.
+- The recovered pinned 0.0.114 producer passes run
+  `20260906T0435503989523Z-5be51b9cc30045069a017238ad83edbc`
+  (11 assertions, five inherited framing/DollData warnings). The current
+  receiver `20260906T0438434695618Z-988350aabb104bb79b8a29d508d0f192`
+  is FAIL, stopping at the first Ifrit fixture. Its stats, exact providers,
+  markerless General state, DollData/material/rig/appearance data and spent
+  resource remain exact; both pre/post reconciliation amounts are zero.
+  `commonFactsExact` fails because the old helper excludes the new heritage
+  selection but incorrectly requires the newly appended trait selections.
+- The corrected helper excludes only those exact owned selection references
+  from common facts, then asserts their version-appropriate rank: zero for
+  old saves and one for current creation/respec. Executable policy cases reject
+  missing/duplicate/negative ranks. Legacy trait markers, providers and retain
+  markers are now explicitly required absent rather than skipped. No production
+  migration, fact grant or resource behavior is changed.
+- Failing result/evidence hashes: `dd86d2f033e3d5d9a0406e6e5d2c7be8d66761594916b6f4cd57d753dde81e70`
+  / `ba6c83a1050f7a78de044eb0ccf4f1b8a34a1aab86d897733f72d09cb88575e3`.
+  Run-ID-correlated native log SHA-256: `c45c4bec8d620b15c57ed7ecc5fa37ffc6e8df748bc7d87623365ec023dc256e`.
+  It contains no Fact.PostLoad/duplicate-name/resource-readdition diagnostic;
+  optional-mod startup and BugReportCanvas exceptions are retained,
+  not reported as zero engine errors. Further attribution remains required.
+- The guarded failure path cleanup-saves only its exact disposable fixtures;
+  fresh-process absence was not run by the failed transaction and remains due.
+  Transaction `20260906T0435455128831Z-elemental-race-legacy-migration-transaction`
+  is FAIL with no restoration failure; current DLL and original settings
+  `a06601c5...` restore exactly. Transaction SHA-256:
+  `28f09fc4b872fdea45e1bd7fe45815e437a507551587f807753bce7a4215d678`.
+  New complete build/runtime/migration gates follow; this is not a migration PASS.
+- The legacy transaction now invokes the existing exit-guarded native-log
+  collector after each successful phase and before the next game launch, so
+  hydration diagnostics and their hashes survive log rotation. Failed phases
+  remain failures and their log is preserved before any new launch.
+
+## 2026-09-06 UTC - Blood native checks and exact legacy-input recovery
+
+- The corrected immutable blood candidate passes complete source validation,
+  all 1,418 domain/reflection tests, clean Release compilation and strict
+  135-entry packaging. Four guarded Steam processes pass 9,680 assertions with
+  zero warnings: framework/Insights/blood and inherited Undine mechanics in
+  KMG-only and highest-risk combined-with-Favored-Class profiles. All 82 blood
+  observations pass per profile, including full-lifetime native diagnostics,
+  partial-cap healing amplification, unrelated-healing preservation and exact
+  cleanup. No save is touched. Both profile transactions restore exactly.
+- Artifact: 23,198,121-byte ZIP `a6d20499efb9408afdb4fdc8d5acb3d8f2bc9cbb6b56f7851ca402d970abca8d`;
+  6,090,752-byte DLL `88be7eda6b0e3933d725a5064140a43aa073a298703b1abba44b3adf6d656684`;
+  MVID `9d81f658-9c3a-4fee-87f9-8998e18c7d08`. Exact source, four run IDs,
+  result/feature/runtime evidence hashes, restoration transactions and settings
+  hashes are in STATE under `releaseCBloodNativeQualification`. These are
+  incremental native checks, not trait-bearing persistence or a Release C PASS.
+- Recovered both missing 0.0.114 inputs without download or publication. The
+  retained project backup `runtime-backups/live-mod/20260904T1016371446573Z`
+  contains all 135 exact historical package files. Copying only the recorded
+  deployment catalog into a new ignored staging directory and running the
+  existing deterministic packer reproduces the independently pinned original
+  ZIP SHA-256 `b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694`
+  (22,977,592 bytes). The release generator's ordered JSON and original Windows
+  encoding reproduce the independently recorded manifest SHA-256
+  `485054f754abe052b46ba53fc03fbc3088f11d1f72f25671c1e15220f9f9a7a8`
+  (569 bytes). Both byte-identical files are restored only to the previously
+  absent ignored release-input paths. No publisher was invoked, no existing
+  input was overwritten, and no provenance check was weakened. Historical
+  `publicationRequested` data is recovered data, not a new release action.
+- The save-identity collector omitted the three newly added mechanic buffs.
+  It now enumerates each trait's owned mechanics, with a save-free native
+  regression invoking that actual collector and requiring all 65 trait
+  identities exactly once. Production mechanics are unchanged by this harness
+  fix; renewed build/runtime and legacy migration gates follow.
+- The exact mandatory push wrapper still refuses the non-allowlisted required
+  branch. Fourteen traits now have implementation/native proof; seven mechanics,
+  actual trait-bearing persistence, full lifecycle/compatibility and final gates
+  remain. The recovered inputs remove the former missing-file preflight blocker,
+  but they do not by themselves qualify the new component-name repair.
+
+## 2026-09-06 UTC - Shared blood-trait native investigation
+
+- Added Fire/Stone/Storm in the Blood using native damage results, one-round
+  buff scheduling and a capped native healing rule. Actual healing expenditure
+  persists in an owner UnitPart; native rest resets it even while the provider
+  is absent. Three fixed buffs append at manifest suffixes 063-065. No existing
+  GUID changes; totals are 1,849 entries / 1,847 active, with 211 active
+  Elemental identities (183 blueprints and 28 visual-resource proxies).
+- Repository validation, all 1,418 tests, clean Release compilation and strict
+  package validation pass for source `ac754951ac40a4935470601f2543574837be68f004b92ac90ff872e01e159ab3`.
+  ZIP SHA-256: `d9136f495fe8fd2a9e11876490ce6ae1a4f64848c3ab5cb16e27614c5a2ce1fb`;
+  DLL: `9a400bc7d3bfb2fe0e163482b650c1d3ad290cb0c31f1ddc36d256c7b76fe42b`;
+  MVID: `f9d3ca08-ab6e-44c0-ad7b-6397992d2ebe`.
+- First guarded run `20260906T0402282880563Z-a8f273ba1aac4c2fb3e91a251afee0a9`
+  is FAIL: 4,817 assertions, three failed grouped exclusions, zero warnings or
+  observed native errors/exceptions, exact fixture cleanup. Resisted and immune
+  hits, native ticks/expiry, actual overhealing, last capacity point, native
+  healing modifiers, multiclass expenditure and rest/removal tests pass.
+- Native `RuleCalculateDamage.CountDamageValue` enforces a minimum one-point
+  pre-resistance packet even for a nominal zero roll. The failed exclusion
+  fixture was therefore not zero damage. The revised scenario splits Cold,
+  empty-event and fake exclusions and explicitly proves native minimum damage;
+  no production trigger predicate is weakened. The enhanced-healing case now
+  also starts with one HP already spent, proving its final tick is capped at
+  three rather than four without changing unrelated native healing.
+- Failing result SHA-256:
+  `c8d89c99f1dd2e3972d3b3634e4657938fd731cbac5b1ff3005fdbc2e0b8adbf`;
+  runtime evidence: `46fc259064b35a49b6f9e6e706ca1d35fcd0c9738347808452471f725b359d8e`;
+  blood evidence: `97924f5c7031defe7a2bed69e4c12d07b17881bff53894aa5449ad13fb2cd683`.
+  Transaction `compat-20260906T040207Z-9f7a129c1733` restored exactly;
+  SHA-256 `140d62d7299c53b34506661e54c94c4837d53791d50dee5c1e488b1901bbb94a`.
+  The wrapper stopped before the inherited Undine rerun; it is NOT-RUN for
+  this candidate. No save was touched. Blood runtime and persistence remain
+  unqualified; seven other required mechanics remain to implement.
+
+## 2026-09-06 UTC - Complete native observer lifetime qualified
+
+- The final observer-lifetime candidate passes repository validation, all
+  1,417 tests, the clean Release build and strict package validation. Its exact
+  source, ZIP, DLL and MVID are recorded in
+  `releaseCObserverLifetimeQualification` in the mission state.
+- Guarded framework run
+  `20260906T0318087797451Z-d27ad3fc0773431abbd8ae274572b02c` passes
+  4,741 assertions. All three Insights independently prove zero native errors
+  and exceptions from initialization through teardown, with explicit observer
+  installation/release witnesses. All 65 summoned units clean up exactly.
+- Inherited Undine run
+  `20260906T0319261353815Z-5add58f6e4fb47388b79000f5cfb9bfd` passes
+  14 assertions, including the new diagnostic-lifetime regression. Neither
+  process touches a save; both report zero runtime-result warnings.
+- Transaction `compat-20260906T031747Z-26eb6e247e13` is terminal Restored
+  with `restorationVerified=true`. Exact result, evidence, feature and
+  transaction SHA-256 values are retained in the mission state. Earlier runs
+  retain their original, narrower observation scope.
+- The mandatory push wrapper was retried during the progress update and still
+  refuses the required branch because its external allowlist is unchanged.
+  Missing pinned 0.0.114 release inputs still prevent renewed legacy migration.
+  Three Insight traits are not fully qualified until trait-bearing persistence
+  and the remaining release gates pass. Independent blood-trait work continues.
+
+## 2026-09-06 UTC - Typed summon Insight implementation
+
+- Current-version persistence completes four guarded processes with 43/43
+  mechanical assertions: 24 race/sex/heritage fixtures, feat facts and active
+  states, spent SLA amounts, module-OFF load/level/rest, module-ON respec and
+  exact cleanup, then fresh-process absence. Working save only; protected
+  baseline excluded. Settings restore to `a06601c5...`; exact run/artifact
+  hashes are in `releaseCComponentIdentityCurrentPersistence` in STATE.
+  The 46 warnings are image framing/subjective review/DollData diagnostics;
+  they are not suppressed or reported as zero. Visual review and actual
+  trait-bearing persistence remain pending.
+- A review of the new observer found its placement-gated lifetime excluded
+  initialization and teardown, despite the earlier assertion's broader label.
+  The earlier zero-error proof applies to native level-up and command work,
+  not those omitted boundaries. Error observation now has a separate
+  request-local lifetime from constructor through finally-protected disposal,
+  with explicit entry/exit witnesses and inherited Portal assertions. This
+  test-only correction requires a new guarded rerun; production mechanics
+  are unchanged.
+- Further local native audit: RuleHealDamage.Value is actual HP restored
+  after modifiers and missing-HP clamping. Its OnTrigger can be overridden,
+  but AddEffectFastHealing.OnNewRound is virtual-final and cannot. An owned
+  native BuffLogic/ITickEachRound component plus a capped native heal rule is
+  the next candidate for the Blood traits. Buff.EndTime changes only expiry,
+  preserving NextTickTime; DamageValue retains RolledValue separately from
+  reductions. Native WeaponCategory distinguishes Ray from Touch, while
+  RuleCalculateAC does not carry a weapon; ray-specific AC may need an
+  exact weapon-filtered temporary modifier on RuleAttackRoll. These are audit
+  findings, not implemented or qualified trait mechanics.
+- Legacy provenance preflight stopped before any build, deployment or save
+  access because both pinned files under `artifacts/release/0.0.114` are
+  missing. The alternate local package has SHA-256 `0964f183...`, not the
+  required `b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694`.
+  Bounded lab searches found no replacement package/manifest pair. Backup
+  `runtime-backups/live-mod/20260904T1016371446573Z` does retain the exact
+  producer DLL `09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262`.
+  No provenance is fabricated or verification weakened. The user has been
+  asked to restore the missing directory while current-version work proceeds.
+- The repaired naming candidate passes guarded run
+  `20260906T0239499321459Z-b45648b2f8314fd5a091f2e478b3a558`: 4,741
+  assertions, zero result warnings, zero observed native errors/exceptions
+  throughout each complete Insight fixture. All 114 facts now have unique
+  native save names and exclusively owned components. Actual multiclass
+  level-up preserves exact stats and each spent SLA at zero. Both summon
+  spell families and all three Insights pass, with 66 summons exactly cleaned.
+  Result SHA-256:
+  `d99a4339bf34addcd1cf8e29ae7dcb5826498a067c8e6c75bd4e10678aa202fe`.
+  The inherited Undine scenario also passes; transaction
+  `compat-20260906T023929Z-0903a65145d8` restores exactly.
+  This is incremental runtime proof, not a substitute for old-save migration.
+- Before reusing the legacy transaction with 0.0.117, its receiver evidence
+  now records the actual loaded mod version and compares it with the guarded
+  request instead of printing a hardcoded historical 0.0.115. Existing
+  historical evidence files remain unchanged. The producer is still the exact
+  pinned 0.0.114 artifact; the protected baseline remains excluded.
+- Independent installed-engine audit locates native projectile deflection at
+  Projectile.TryDeflectArrow and UnitCombatState.TryDeflectArrow. The latter
+  requires a hitting weapon projectile and excludes non-weapon spell delivery;
+  merely granting DeflectArrows does not establish Crystalline Form's ray
+  clause. Exact ray identification and a safe native resolution remain to be
+  qualified; no ray mechanic or invented substitute has been implemented.
+- Regression-only guarded run
+  `20260906T0229450267682Z-154fb67ecc954e9c8dc34d29c91baaea` fails as
+  intended before production repair: 57 of 114 owned facts have ambiguous
+  names across the full 180-blueprint inventory, with zero shared/foreign
+  component ownership. The new entire-fixture checks catch all three native
+  level-up error groups. Result SHA-256:
+  `c4a7abddfd9a85546a5e74ec25f0bdef790c23aa091f12f14e56fa115ec5a290`.
+  Profile transaction `compat-20260906T022924Z-769b499fa53b` restored exactly;
+  the save-free process exited. The factory-only repair retains each unique
+  existing name and the sole state-bearing empty alias (AddFacts or native
+  resistance pool), assigns semantic names only to conflicting stateless
+  components, and refuses ambiguous multiple payloads. Blueprint GUIDs and
+  component mechanics are unchanged. Qualification and actual legacy
+  save migration are pending; no source checkpoint is claimed yet.
+- The status-only goal turn was NO-PROGRESS; current Git/evidence were
+  revalidated and work resumed with a regression-only identity audit.
+  Run `20260906T0207040739900Z-7c5f9b57fa5844efb04541a1d3bf2f4f`
+  reports 4,621 passing assertions and exact cleanup of 59 summons. Native
+  pool membership and exact rolled group counts now pass. Result SHA-256:
+  `f56d65abc4dd3d501e0544dc0416c90605f44f62ed8ba02359f440d98e41f769`.
+  This is NOT qualification PASS: 30 native Fact.PostLoad exceptions during
+  level-up remained outside the former command-only assertion window.
+- Native error attribution identifies the exact project Ifrit, Oread and
+  Sylph race facts plus their resistance/affinity/SLA providers and new
+  Insight providers. Multiple GameLogicComponents have the same blank name.
+  Native Fact.PreSave stores component names and JsonProperty fields;
+  PostLoad uses SingleOrDefault on that name alone. Native AddFacts persists
+  m_AppliedFacts, whereas AddStatBonus and AddAbilityResources have no saved
+  fields. Resource activation respects IsReapplying. A new exact manifest
+  audit records names, saved fields and exclusive component ownership;
+  whole-fixture native error/exception checks must fail before repair.
+  Any correction must retain legacy fact ownership and prove spent-resource
+  safety against the actual pinned 0.0.114 producer. No global patch is planned.
+- Previous goal turn classified PROGRESS: it established the native pool
+  dependency, repaired all 51-unit teardown, and exposed a separate level-up
+  hydration error. No live game or build remained on continuation. The
+  guarded fixture now creates a genuine native AreaPersistentState only when
+  no area is loaded, uses its subscribed SummonPoolsManager, disposes it, and
+  restores the exact loaded/saved-area identities. Native pool membership is
+  asserted per summoned creature. Native error attribution records exact
+  blueprint GUID/name before any migration-sensitive correction is attempted.
+- Exact build rejected access to the native private SEPools property. The
+  fixture instead tracks observed exact pool blueprints and uses the public
+  HasPool/GetPool/Units contract. The complete 1,416-case suite had passed;
+  no failed-build artifact was deployed or launched.
+- Latest candidate passes repository validation, all 1,416 domain/reflection
+  tests, clean Release build and strict 135-entry package. Guarded run
+  `20260906T0147257495923Z-70d3b26204674a60a96e1f8e2b3282f7` remains FAIL:
+  4,591 assertions, 42 failures, zero result warnings but 60 explicitly
+  observed native exception reports. Exact artifact sizes, hashes, MVID and
+  evidence hashes are in `releaseCSummonInsightInvestigation` in STATE.
+  All three Insight duration, spell-only exclusion, subtype identity and
+  provider-removal checks execute; this partial evidence is not a gate PASS.
+- The 30 interrupted summon actions are now attributed to native
+  GameHelper.RegisterUnitInSummonPool. Installed IL reads Game.SummonPools,
+  which requires State.LoadedAreaState.SummonPoolsManager. The save-free
+  harness currently supplies area metadata but no corresponding pool service.
+  The next correction must install and restore the genuine native service,
+  not remove the ability's pool or replace native spawning.
+- A separate 30 Fact.PostLoad exceptions occur during the three ten-level
+  native fixture preparations, before casting: ambiguous component names.
+  Exact fact attribution is still needed. Do not rename legacy component
+  identities or infer a safe migration without fresh-process save evidence.
+  Existing historical PASS records are preserved; this new observation is
+  an open current qualification issue, not evidence it was tested earlier.
+- Draining queued native creation repaired teardown: all 51 disposable
+  summons, player and area context now clean up exactly. Transaction
+  `compat-20260906T014705Z-45c194fde878` restores exactly and the game exits.
+  No save was opened or written. No source checkpoint is committed while
+  these runtime failures remain. The exact push wrapper still rejects the
+  required branch; independent work continues.
+- Read-only authoritative research reconfirmed Breeze-Kissed has no special
+  maneuver-formula override; ordinary native CMB remains the baseline for
+  its later implementation. Crystalline Form and the three Undine traits
+  are likewise checked against the Archives of Nethys race entries. None
+  of those remaining mechanics is claimed implemented in this slice.
+- Diagnostic run `20260906T0136094059990Z-5ed9fda210c84ddc91e4d375f6a6ebdb`
+  remains FAIL. Fire Insight's seven native rule boundaries and both actual
+  family lifetime deltas passed, but two group casts mismatched the native
+  count. The rule-only fixtures had not drained queued native creation before
+  disposal; cleanup then threw in EntityCreationController.Tick and reported
+  one remaining disposable unit. The guarded process exited, no save was
+  used, and `compat-20260906T013548Z-5258c652c04b` restored the profile exactly.
+  This is not clean fixture evidence. Result SHA-256:
+  `036860bc4ee68821c1e5366ef3c741d4931da043aa4f1b75ab099f46f8756a59`.
+  Each rule fixture now drains native creation before disposal.
+- Inspection of the actual Harmony12 Patches type exposes only prefixes,
+  postfixes and transpilers. The attempted Finalizer was not a functioning
+  observer and has been removed. Guarded prefixes now observe both exact
+  UberDebug.LogException overloads, without suppressing reports or altering
+  exception behavior, and each command explicitly rejects new native reports.
+  The group-count cause is still under investigation. Independent native
+  healing audit confirms RuleHealDamage.OnTrigger is overridable and the
+  event subscriber manager walks base types; no healing code is implemented.
+- Strict-count candidate passed 1,416 tests and clean build/package, then
+  guarded run `20260906T0130121832961Z-751f8dc0c46443e8b26ca66e68164029`
+  correctly failed the trait-absent SM group control: native roll/placement
+  count three, exactly one position request, one non-null rule callback, and
+  one summon. This rules out the new Insight duration component as the cause.
+  All two created summons and context were removed; transaction
+  `compat-20260906T012951Z-1d9ca05dd06b` restored exactly. Result SHA-256:
+  `9769cf81b959c7a9345b5a7a96955094224df7b7657e997b76db059778f72f60`.
+  A request-local finalizer now observes (and returns unchanged) any spawn
+  exception, because native ActionList catches exceptions before the command
+  result. Count mismatches remain FAIL but no longer prevent independent
+  trait/boundary observations when an actual unit exists. No save is used.
+- Second candidate also passed 1,416 tests, clean build and strict package.
+  Guarded run `20260906T0105099898234Z-a4a72dbc9dba48228ee58731b7b77ca2`
+  remains FAIL: the supplemental negative fixture constructed an execution
+  context from a variational selector, which native Kingmaker refuses. The
+  fixture now uses its real castable leaf and spellbook. Fire Insight's
+  actual prepared SM/SNA commands observed exactly 12 extra seconds on the
+  canonical summon lifetime, with unchanged 30-second base duration; no
+  complete three-trait PASS is claimed. The prior count-range assertion was
+  insufficient: native placement requested three/two creatures but only one
+  rule was observed. New instrumentation requires exact native count, all
+  position requests, and rule callbacks, with a trait-absent group control.
+  Result SHA-256:
+  `f68a56de59d5ca2f994203b01cb2c86887de9f078efed35838eb8f023974b6ec`.
+  Eight observed summons and all fixture/player/area state cleaned up;
+  `compat-20260906T010449Z-4323b04b51b2` restored exactly. No save was used.
+- The preserved second-run native output includes shader initialization
+  errors on the actual Intel D3D11 graphics device, not a headless launch.
+  Their relationship to the group-count discrepancy is not established;
+  no shader callback is suppressed. Raw-log SHA-256:
+  `73ec30440b45b4ec930ab1260633ee236b43c59e1b41348cd8d32eeb4c6977bb`;
+  attribution-summary SHA-256:
+  `ef4ab5451d089e7a1720ce7cb7e08b2b61d9e7249ce2ee88418440e27e9bf74d`.
+  Native Rulebook IL has no per-type event deduplication; each spawn loop
+  iteration constructs a fresh rule. The guarded counting investigation
+  continues without a production summon rewrite.
+- First Insight candidate passed all 1,416 tests, clean build and strict
+  package, then guarded run
+  `20260906T0058430401494Z-f2b023d0721442cda150ab4b40fd8231` failed before
+  its first cast. Native Memorize creates an unavailable slot until rest;
+  the fixture had rested before adding it. It now rests after preparation
+  and records cancellation's exact before/after availability. No production
+  availability or spell-spending rule is changed. Result SHA-256:
+  `dbb620b19ad5abcda9424a91812be52cebf62fa28005f37a4d56fa9d390f7d5c`.
+  Zero summons were created; unit/player/area cleanup and transaction
+  `compat-20260906T005822Z-439f9716e53d` restoration passed. No save was used.
+- The prior turn made concrete progress: mechanics checkpoint
+  `530eff1ebe6814fc17a5fc39c1ac50bb215bfbbf` and exact-record checkpoint
+  `6e5744490b783bed941b70763d03f76c1f3dd557` are committed locally. The
+  required push wrapper refused the exact mission branch after both commits.
+- Authoritative Ifrit/Oread/Sylph race entries require exactly two extra
+  rounds for matching Summon Monster/Nature's Ally creatures. Installed IL
+  confirms `RuleSummonUnit.BonusDuration` is added to the canonical lifecycle,
+  and the native class-duration component reads `RuleReason.Ability.Spellbook`.
+- Existing isolated audit evidence supplies exact native subtype facts:
+  Fire `23dc7b90d148b9d439f48e015a520a9c`, Earth
+  `e147258e5b7c40643893d80c9f2816e8`, and Air
+  `dd3d0c7f4f57f304cbdbb68170b1b775`. Actual project variant parent GUIDs
+  resolve to the native family roots; a converted slot is not rules authority
+  for an unrelated spell. No immunity/name-based subtype inference is used.
+- The shared component and 336-combination policy test are implemented with
+  no new identities or module dependency. Repository validation passes and
+  the complete domain suite passes at 1,416 cases. One brittle historical
+  private-call spelling assertion was removed; actual provider structure is
+  still checked by the unchanged full live replacement graph matrix.
+- Initial exact build found only a missing native command-process namespace
+  in the new fixture; it is corrected. Complete build/package and guarded
+  native-command/rule/lifetime qualification remain pending. Request-local
+  ability blueprints are retained until all referencing units are disposed.
+
 ## 2026-09-06 UTC - First eight trait mechanics checkpoint
 
 - The exact final candidate passes all 1,415 tests, clean Release build,

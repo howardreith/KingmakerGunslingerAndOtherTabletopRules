@@ -31,6 +31,28 @@ native fatigue context so descriptor-based defenses can recognize it.
 Dedicated passive and weapon-interaction scenarios contain all new live
 mechanic assertions; the central runner is unchanged.
 
+Fire, Earth and Air Insight use a shared typed native RuleSummonUnit helper:
+only actual spellbook casts from exact Summon Monster/Nature's Ally families
+and matching native subtype facts add two rounds to the per-creature duration.
+No donor, spell list or summon template is mutated. A factory-only component
+identity finalizer preserves the sole legacy state-bearing blank-name alias;
+ambiguous state-bearing names fail closed. Current native hydration passes,
+and renewed exact 0.0.114 migration mechanics now pass independently.
+
+The three blood traits add separate stable one-round healing buffs. Matching
+native damage results are inspected before resistance/immunity reduction;
+repeated hits extend only the existing buff's end time without resetting its
+native tick. A native RuleHealDamage subclass caps that trait's healing after
+native pre-healing handlers and records only RuleHealDamage.Value. A serialized
+owner UnitPart retains actual expenditure through provider removal and native
+level-up; exact native unit-rest events reset it. No global damage/healing patch
+or shared resource mutation is introduced. Native save reconstruction also
+deactivates providers temporarily, so OnTurnOff must not destroy active buffs.
+The owned buff observes exact same-owner native trait-marker loss for actual
+removal, while ordinary native expiry/death handle duration cleanup. Dedicated
+runtime and six-trait fresh-process persistence scenarios prove this boundary;
+full Release C lifecycle qualification remains pending.
+
 ## Expanded Summoning 0.0.78 layer
 
 Player-visible summon children use a project-owned icon manifest with 77
@@ -550,7 +572,7 @@ plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
-identities extend the append-only ledger to 1846 stable IDs: 1844 active and 2 reserved. The
+identities extend the append-only ledger to 1849 stable IDs: 1847 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
@@ -563,10 +585,10 @@ weapon enchantment. `ElementalFeatBlueprintFactory` registers all 25 before
 selectors through the established exact-GUID-aware transaction.
 Release C appends ten replacement-slot selections, ten retain-base markers,
 21 visible trait markers, and 21 hidden mechanic providers. The framework
-registers all 62 unconditionally and keeps publication within the existing
+registers all 62 plus three blood-trait buffs unconditionally and keeps publication within the existing
 parent race and `elemental-races` module boundary.
 `elemental-races` setting gates race, feat, and trait-selector publication; no
-module identity or schema member was added. All 208 active elemental identities
+module identity or schema member was added. All 211 active elemental identities
 remain registered while selector publication is disabled. Exact 0.0.114
 markerless-General migration and the
 24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation

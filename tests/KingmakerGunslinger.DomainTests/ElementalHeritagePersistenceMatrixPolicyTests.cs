@@ -52,6 +52,12 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void RespecTransitionsAndInvalidInputsAreExact()
         {
+            foreach (bool currentCreation in new[] { false, true })
+                foreach (int rank in new[] { -1, 0, 1, 2, 20 })
+                    Assertions.Equal(rank == (currentCreation ? 1 : 0),
+                        ElementalHeritagePersistenceMatrixPolicy
+                            .CreationSelectionRankExact(currentCreation, rank),
+                        "Every new heritage/trait selection is absent on a markerless legacy load and singular on current creation/respec; duplicates fail.");
             int[] sources = Enumerable.Range(0, 3).Select(
                 ElementalHeritagePersistenceMatrixPolicy
                     .SourceHeritageIndex).ToArray();

@@ -191,6 +191,8 @@ namespace KingmakerGunslinger.ElementalRaces
                     .FeatIdentityCount)
                 throw new InvalidOperationException(
                     "Elemental feat subsidiary registration drifted.");
+            foreach (BlueprintScriptableObject blueprint in registered)
+                ElementalComponentIdentity.Prepare(blueprint);
             return new ElementalFeatBlueprintSet(features, registered);
         }
 

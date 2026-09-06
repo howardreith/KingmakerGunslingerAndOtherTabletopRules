@@ -11,8 +11,12 @@ removes only exact project providers. Release C remains in progress; the trait
 mechanics and guarded runtime, persistence, and compatibility gates are not
 yet complete. The first eight traits now have focused native-mechanics proof:
 Wildfire Heart, Brazen Flame, Forge-Hardened, Granite Skin, Like the Wind,
-Secretive, Thunderous Resilience, and Whispering Wind. Thirteen mechanics
-and trait-bearing save qualification remain pending.
+Secretive, Thunderous Resilience, and Whispering Wind. Fire, Earth and Air
+Insight, Fire in the Blood, Stone in the Blood and Storm in the Blood now pass
+focused native checks plus incremental module-OFF/ON save, level-up, rest,
+respec and cleanup checks, including spent healing capacity and active buffs.
+Seven other required mechanics, the complete trait persistence/lifecycle matrix
+and final qualification remain. This is not a finished Release C package.
 
 Release B remains locally qualified. It registers eleven stable feat identities plus fourteen supporting ability,
 buff, and weapon-enchantment identities in every module state. When the module

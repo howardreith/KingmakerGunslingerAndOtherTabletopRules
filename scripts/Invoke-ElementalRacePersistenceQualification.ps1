@@ -1,6 +1,7 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-# Three guarded fresh-process phases persist race, heritage, and Release B feat
-# state, verify module-OFF, restore the module, respec, and clean up the
+# Three guarded fresh-process phases persist race, heritage, Release B feat,
+# and the explicitly bounded six-trait blood/Insight state; verify module-OFF,
+# restore the module, respec, and clean up the
 # fixtures. Run the fresh-load absence phase separately after this restores the
 # caller's original settings bytes.
 param(
@@ -44,6 +45,9 @@ $originalBytes = if ($originalExists) {
     $null
 }
 $failure = $null
+$evidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
+$evidenceDirectoriesBefore = @(Get-ChildItem -LiteralPath $evidenceRoot -Directory |
+    ForEach-Object FullName)
 
 function Set-ElementalRacesEnabled([bool]$enabled) {
     $configuration = [ordered]@{
@@ -90,6 +94,27 @@ function Wait-ForGuardedKingmakerExit([string]$phase) {
     }
 }
 
+function Preserve-PhaseNativeLog([string]$scenario) {
+    $created = @(Get-ChildItem -LiteralPath $evidenceRoot -Directory |
+        Where-Object { $_.Name.EndsWith('-' + $scenario,
+            [StringComparison]::Ordinal) -and
+            $evidenceDirectoriesBefore -notcontains $_.FullName })
+    if ($created.Count -ne 1) {
+        throw "Expected exactly one new persistence evidence directory for $scenario."
+    }
+    $resultPath = Join-Path $created[0].FullName 'runtime-result.json'
+    $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+    if ($result.scenario -cne $scenario -or $result.status -cne 'PASS' -or
+        $result.loadedModVersion -cne $ExpectedVersion -or
+        @($result.assertions | Where-Object { $_.status -cne 'PASS' }).Count -ne 0) {
+        throw "Persistence phase is not an exact structured PASS: $scenario"
+    }
+    # Native hydration errors must survive the next launch's log rotation.
+    & (Join-Path $PSScriptRoot 'compatibility\Collect-KmgCompatibilityAttributionLog.ps1') `
+        -EvidenceDirectory $created[0].FullName `
+        -ConfigurationId ('elemental-traits-' + $scenario) | Out-Null
+}
+
 try {
     Set-ElementalRacesEnabled $true
     & $invoke -Scenario 'elemental-race-persistence-prepare' `
@@ -103,6 +128,7 @@ try {
         throw 'Elemental Races persistence prepare failed.'
     }
     Wait-ForGuardedKingmakerExit 'prepare'
+    Preserve-PhaseNativeLog 'elemental-race-persistence-prepare'
 
     Set-ElementalRacesEnabled $false
     & $invoke -Scenario 'elemental-race-module-disabled-persistence' `
@@ -116,6 +142,7 @@ try {
         throw 'Elemental Races module-disabled persistence verification failed.'
     }
     Wait-ForGuardedKingmakerExit 'module-disabled-verify-preserve'
+    Preserve-PhaseNativeLog 'elemental-race-module-disabled-persistence'
 
     Set-ElementalRacesEnabled $true
     & $invoke -Scenario 'elemental-race-module-restored-persistence' `
@@ -129,9 +156,13 @@ try {
         throw 'Elemental Races module-restored Respec/cleanup failed.'
     }
     Wait-ForGuardedKingmakerExit 'module-restored-respec-cleanup'
+    Preserve-PhaseNativeLog 'elemental-race-module-restored-persistence'
 }
 catch { $failure = $_ }
 finally {
+    # A terminal FAIL result can precede Application.Quit completing. Never
+    # restore settings while that guarded process is still running.
+    Wait-ForGuardedKingmakerExit 'settings restoration'
     Restore-OriginalFeatureState
     $restoredExists = Test-Path -LiteralPath $settings -PathType Leaf
     if ($restoredExists -ne $originalExists) {

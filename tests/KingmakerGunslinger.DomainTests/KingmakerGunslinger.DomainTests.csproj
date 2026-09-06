@@ -53,6 +53,14 @@
     <Compile Include="ElementalHeritagePolicyTests.cs" />
     <Compile Include="ElementalAlternateTraitPolicyTests.cs" />
     <Compile Include="ElementalAlternateTraitPassivePolicyTests.cs" />
+    <Compile Include="ElementalSummonInsightPolicyTests.cs" />
+    <Compile Include="ElementalBloodPolicyTests.cs" />
+    <Compile Include="ElementalBloodInsightPersistencePolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBloodInsightPersistencePolicy.cs"><Link>ElementalRaces\ElementalBloodInsightPersistencePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBloodPolicy.cs"><Link>ElementalRaces\ElementalBloodPolicy.cs</Link></Compile>
+    <Compile Include="ElementalComponentIdentityPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalComponentIdentityPolicy.cs"><Link>ElementalRaces\ElementalComponentIdentityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalSummonInsightPolicy.cs"><Link>ElementalRaces\ElementalSummonInsightPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalAlternateTraitPassivePolicy.cs"><Link>ElementalRaces\ElementalAlternateTraitPassivePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalHeritagePolicy.cs"><Link>ElementalRaces\ElementalHeritagePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalAlternateTraitPolicy.cs"><Link>ElementalRaces\ElementalAlternateTraitPolicy.cs</Link></Compile>

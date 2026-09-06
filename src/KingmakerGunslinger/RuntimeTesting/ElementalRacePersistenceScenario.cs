@@ -380,6 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!_preparedMembershipExact)
                                 throw new InvalidOperationException(
                                     "The 24 exact elemental heritage native-respec fixtures did not enter one serializable party and area state.");
+                            PrepareTraitPersistenceTransientState();
                             _normalPathComplete = true;
                             StartExactWorkingSave();
                         }
@@ -1007,7 +1008,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     state, item);
                 bool previewExact = selected &&
                     HeritageProvidersExact(controller.Preview, fixture,
-                        heritage, 1);
+                        heritage, 1, false);
                 var record = new JObject
                 {
                     { "fixture", fixture.Label },
@@ -1040,7 +1041,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 record["alternateTraitSelectionsExpected"] = fixture
                     .Blueprints.AlternateTraits.Selections().Count;
                 record["alternateTraitSelections"] =
-                    SelectRetainedAlternateTraits(controller, fixture, phase);
+                    SelectAlternateTraits(controller, fixture, phase,
+                        ExpectedPersistenceTrait(fixture, heritage));
                 return record;
             }
 
@@ -1064,6 +1066,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " native Respec source was not an exact elemental Gunslinger: " +
                         sourceObservation.Evidence.ToString(
                             Newtonsoft.Json.Formatting.None) + ".");
+                if (restoredPhase)
+                    RecordTraitPersistence(fixture, _currentUnit, 2, 1, false,
+                        "module-restored-source-before-respec");
                 if (restoredPhase)
                     CaptureRestoredSourceFeatPersistence(fixture,
                         _currentUnit);
@@ -1462,8 +1467,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 });
                 bool markersAbsent = choices.All(value =>
                     owner.Progression.Features.GetRank(value.Marker) == 0);
-                bool generalProvidersExact = HeritageProvidersExact(owner,
-                    fixture, general, 0);
+                bool generalProvidersExact = HeritageProvidersExactCore(owner,
+                    fixture, general, 0, true);
                 int generalResourceAmount = owner.Resources.GetResourceAmount(
                     general.SlaResource);
                 var providers = new JArray(choices.Select(value =>
@@ -1530,25 +1535,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (owner == null || fixture == null) return false;
                 BlueprintRace race = fixture.Blueprints.Race;
+                BlueprintFeatureSelection[] traitSelections = fixture.Blueprints
+                    .AlternateTraits.Selections().Select(value => value.Selection)
+                    .ToArray();
                 return race.Features != null && race.Features.Where(value =>
                         !ReferenceEquals(value,
                             fixture.Blueprints.Affinity) &&
                         !ReferenceEquals(value,
                             fixture.Blueprints.SlaFeature) &&
                         !ReferenceEquals(value,
-                            fixture.Blueprints.Heritages.Selection)).All(value =>
+                            fixture.Blueprints.Heritages.Selection) &&
+                        !traitSelections.Any(selection => ReferenceEquals(
+                            selection, value))).All(value =>
                             value != null && owner.HasFact(value) &&
                         (!(value is BlueprintFeature) ||
                             owner.Progression.Features.GetRank(
                                 (BlueprintFeature)value) == 1)) &&
-                    owner.Progression.Features.GetRank(
-                        fixture.Blueprints.Heritages.Selection) ==
-                            (heritageSelectionExpected ? 1 : 0);
+                    ElementalHeritagePersistenceMatrixPolicy
+                        .CreationSelectionRankExact(heritageSelectionExpected,
+                            owner.Progression.Features.GetRank(
+                                fixture.Blueprints.Heritages.Selection)) &&
+                    traitSelections.All(selection =>
+                        ElementalHeritagePersistenceMatrixPolicy
+                            .CreationSelectionRankExact(heritageSelectionExpected,
+                                owner.Progression.Features.GetRank(selection)));
             }
 
-            private static bool HeritageProvidersExact(UnitDescriptor owner,
+            private bool HeritageProvidersExact(UnitDescriptor owner,
                 ElementalPersistenceFixture fixture,
-                ElementalHeritageBlueprints desired, int markerCount)
+                ElementalHeritageBlueprints desired, int markerCount,
+                bool includeTraits = true)
+            {
+                return HeritageProvidersExactCore(owner, fixture, desired, markerCount,
+                    ExpectedPersistenceTrait(fixture, desired, includeTraits) == null);
+            }
+
+            private static bool HeritageProvidersExactCore(UnitDescriptor owner,
+                ElementalPersistenceFixture fixture,
+                ElementalHeritageBlueprints desired, int markerCount,
+                bool affinityExpected)
             {
                 if (owner == null || fixture == null || desired == null)
                     return false;
@@ -1565,7 +1590,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ? markerCount : 0)) &&
                     choices.All(value => owner.Progression.Features.GetRank(
                         value.Affinity) ==
-                            (ReferenceEquals(value, desired) ? 1 : 0)) &&
+                            (ReferenceEquals(value, desired) && affinityExpected ? 1 : 0)) &&
                     choices.All(value => owner.Progression.Features.GetRank(
                         value.SlaFeature) ==
                             (ReferenceEquals(value, desired) ? 1 : 0)) &&
@@ -1593,7 +1618,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TokenBool(value, "selectable") &&
                     TokenBool(value, "selected") &&
                     TokenBool(value, "previewExact") &&
-                    NativeRetainedSelectionsExact(value);
+                    NativeAlternateSelectionsExact(value);
             }
 
             private bool ResourcesReady()
@@ -1842,6 +1867,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceFixture fixture =
                     _fixtures[_fixtureIndex];
                 _stage = "capture-loaded-" + fixture.Label;
+                RecordTraitPersistence(fixture, _currentUnit, 1, 1, true,
+                    "module-off-loaded-before-level-up");
                 ElementalPersistenceObservation loaded = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.Heritage, 0, 1);
@@ -1858,6 +1885,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AdvanceOneGunslingerLevel(fixture);
                 _currentUnit.View.UpdateClassEquipment();
                 CurrentAvatar().RebuildOutfit();
+                RecordTraitPersistence(fixture, _currentUnit, 2, 1, true,
+                    "module-off-after-level-up");
                 ElementalPersistenceObservation advanced = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.Heritage, 0, 2);
@@ -1891,8 +1920,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject cleanedFeatPersistence =
                     RemoveFeatPersistenceShortEffects(fixture,
                         _currentUnit);
+                RemoveBloodPersistenceBuff(fixture, _currentUnit);
                 Kingmaker.Controllers.Rest.RestController.ApplyRest(
                     _currentUnit.Descriptor);
+                RestoredBloodPersistenceState(fixture, _currentUnit);
                 int resourceAfterRest = _currentUnit.Descriptor.Resources
                     .GetResourceAmount(fixture.Heritage.SlaResource);
                 AbilityData abilityAfterRest = RequireAbility(_currentUnit,
@@ -2038,7 +2069,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "heritage", fixture.Heritage.Definition.Name },
                     { "phase", "legacy-0.0.114-load-verify-cleanup" },
                     { "producerVersion", "0.0.114" },
-                    { "receiverVersion", "0.0.115" },
+                    { "receiverVersion", _context.ModEntry.Info.Version },
                     { "loadedDollExactBeforeReconstruction",
                         _currentLoadedDollExact },
                     { "loadedObservation", loaded.Evidence },
@@ -2057,7 +2088,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     resourceBeforeReconcile != 0 || !reconcileAccepted ||
                     resourceAfterReconcile != 0 || !reconciled.Exact)
                     throw new InvalidOperationException(fixture.Label +
-                        " did not preserve exact markerless General race, stats, providers, spent SLA, or appearance across the 0.0.114-to-0.0.115 load boundary.");
+                        " did not preserve exact markerless General race, stats, providers, spent SLA, or appearance across the 0.0.114-to-" +
+                        _context.ModEntry.Info.Version + " load boundary.");
                 _currentUnit = null;
                 _currentExpectedDoll = null;
                 _currentLoadedDollExact = false;
@@ -2069,6 +2101,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalPersistenceFixture fixture =
                     _fixtures[_fixtureIndex];
                 _stage = "capture-restored-respec-" + fixture.Label;
+                RecordTraitPersistence(fixture, _currentUnit, 2, 0, false,
+                    "module-restored-base-respec-cleanup", false);
                 ElementalPersistenceObservation observation = ObserveFixture(
                     fixture, _currentUnit, _currentExpectedDoll,
                     fixture.RestoredHeritage, 1, 2);
@@ -2211,14 +2245,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture, heritageSelectionExpected);
                 bool providersExact = HeritageProvidersExact(owner,
                     fixture, expectedHeritage, expectedMarkerCount);
-                bool retainedTraitsExact = _legacyMigration ||
-                    RetainedAlternateTraitsExact(owner, fixture);
+                ElementalAlternateTraitBlueprints expectedTrait = ExpectedPersistenceTrait(fixture, expectedHeritage);
+                bool alternateTraitsExact = _legacyMigration
+                    ? LegacyAlternateTraitsAbsent(owner, fixture)
+                    : AlternateTraitsExact(owner, fixture, expectedTrait);
                 bool factsExact = commonFactsExact && providersExact &&
-                    retainedTraitsExact &&
+                    alternateTraitsExact &&
                     owner.HasFact(fixture.Blueprints.Resistance) &&
                     owner.Progression.Features.GetRank(
                         expectedHeritage.Marker) == expectedMarkerCount &&
-                    owner.HasFact(expectedHeritage.Affinity) &&
+                    owner.HasFact(expectedHeritage.Affinity) == (expectedTrait == null) &&
                     owner.HasFact(expectedHeritage.SlaFeature);
                 var statDeltas = new JObject();
                 bool statExact = true;
@@ -2359,8 +2395,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { "factsExact", factsExact },
                         { "commonFactsExact", commonFactsExact },
                         { "providersExact", providersExact },
-                        { "retainedAlternateTraitsExact", retainedTraitsExact },
-                        { "retainedAlternateTraitsExpected", !_legacyMigration },
+                        { "alternateTraitsExact", alternateTraitsExact },
+                        { "alternateTraitExpected", expectedTrait == null ? "<none>" : expectedTrait.Definition.Id.ToString() },
+                        { "retainedAlternateTraitsExpected", !_legacyMigration && expectedTrait == null },
                         { "heritage", expectedHeritage.Definition.Name },
                         { "heritageMarkerGuid",
                             expectedHeritage.Marker.AssetGuid },
@@ -3342,6 +3379,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "phase", _phase },
                     { "fixtureIndex", _fixtureIndex },
                     { "fixtureCount", _fixtures.Length },
+                    { "alternateTraitMatrix", _legacyMigration ? "legacy-markerless-general" :
+                        ElementalBloodInsightPersistencePolicy.MatrixId },
                     { "settleUpdates", _settleUpdates },
                     { "captured", _captured },
                     { "nativeRespecRecords", _respecRecords.Count },
@@ -3384,6 +3423,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "featSelectorStateExact", _featSelectorExact },
                     { "preparedFeatTransientState",
                         _preparedFeatTransientState.DeepClone() },
+                    { "traitPersistenceRecords", _traitPersistenceRecords.DeepClone() },
                     { "featIdentityCount",
                         ElementalRaceIdentityCatalog.FeatIdentityCount },
                     { "featCount", ElementalFeatPolicy.FeatCount },
@@ -3608,7 +3648,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "fixed BlueprintRace shell, replayable native same-race SelectRace, LevelUpState.FindSelection, LevelUpController.SelectFeature, CharBuildMode.Respec, SelectClass, Commit, source retirement, and replacement observation");
                 Add(_assertions,
                     "elemental-race-persistence-prepared-rules",
-                    "24 exact race/sex/heritage Gunslingers cover all three presets with level-1 facts, exact final stats, resistance, affinity, Keen Senses, and active SLA only",
+                    "24 exact race/sex/heritage Gunslingers cover all three presets with level-1 facts, exact final stats, resistance, selected affinity/trait replacement, Keen Senses, and active SLA only",
                     "records=" + records.Length + ";exact=" +
                         recordExact,
                     recordExact,
@@ -3675,7 +3715,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string.Equals(value.Value<string>("producerVersion"),
                             "0.0.114", StringComparison.Ordinal) &&
                         string.Equals(value.Value<string>("receiverVersion"),
-                            "0.0.115", StringComparison.Ordinal) &&
+                            _request.ExpectedModVersion, StringComparison.Ordinal) &&
                         TokenBool(value,
                             "loadedDollExactBeforeReconstruction") &&
                         TokenBool(value, "loadedObservationExact") &&
@@ -3702,14 +3742,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "validated -kmgRuntimeTestRequest allowlist");
                 Add(_assertions,
                     "elemental-race-legacy-migration-module-on",
-                    "0.0.115 Elemental Races active with four exact selector entries and every Release A blueprint registered",
+                    _context.ModEntry.Info.Version + " Elemental Races active with four exact selector entries and all current owned blueprints registered",
                     "active=" + _context.FeatureModules.Active
                         .ElementalRaces + ";selectorExact=" +
                         _selectorExact + ";registeredExact=" +
                         _registeredExact,
                     _context.FeatureModules.Active.ElementalRaces &&
                         _selectorExact && _registeredExact,
-                    "fresh 0.0.115 startup resource cache and CharacterRaces publication");
+                    "fresh current-receiver startup resource cache and CharacterRaces publication");
                 Add(_assertions,
                     "elemental-race-legacy-migration-membership",
                     "exact eleven-member party containing only the eight stable 0.0.114 General race/sex fixture identities",

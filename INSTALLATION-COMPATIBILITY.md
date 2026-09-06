@@ -184,9 +184,22 @@ combined-profile runtime proof, including a combined module-OFF pass. Eight
 guarded processes and 13,397 assertions pass with zero runtime-result warnings;
 all three profile transactions restore exact settings and mod folders.
 This is an implementation checkpoint, not final 0.0.117 qualification:
-trait-bearing persistence, thirteen more mechanics, and the full final
+trait-bearing persistence, the remaining mechanics, and the full final
 compatibility/module matrices remain pending. See
 `docs/ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md`.
+
+Subsequent Insight and component-identity runs pass KMG-only native mechanics
+and current heritage/feat persistence. Three blood-trait buffs register
+unconditionally and pass focused native tests in KMG-only and highest-risk
+combined profiles, with zero warnings and exact restoration. Six Insights/blood
+traits subsequently pass actual native-selected OFF/ON saves, spent capacity,
+active buffs, level-up, rest, respec and fresh absence (230 assertions, 46
+retained visual/DollData warnings). Saved fixtures use the original installed
+configuration. The isolated combined profile's working-save load timeout is
+not a PASS; only its save-free checks are qualified here. The other fifteen
+traits' persistence, full lifecycle and final optional-mod profiles remain.
+The exact 0.0.114 release inputs are recovered byte-for-byte and renewed legacy
+migration mechanics pass independently. Earlier evidence remains historical.
 
 ## Removal warning
 

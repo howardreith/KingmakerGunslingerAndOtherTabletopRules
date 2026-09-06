@@ -118,7 +118,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     "Marker.Name"), definition.Name),
                 LocalizationService.Create(LocalizationKey(definition,
                     "Marker.Description"), definition.Description), icon);
-            return result;
+            return ElementalComponentIdentity.Prepare(result);
         }
 
         private static BlueprintFeature CreateAffinity(
@@ -147,7 +147,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 LocalizationService.Create(LocalizationKey(definition,
                     "Affinity.Description"),
                     definition.AffinityDescription), icon);
-            return result;
+            return ElementalComponentIdentity.Prepare(result);
         }
 
         private static BlueprintFeatureSelection CreateSelection(

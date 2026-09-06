@@ -104,6 +104,32 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 ## Release C / 0.0.117 alternate racial traits
 
+- [x] Fire/Earth/Air Insight actual native spell commands and per-creature
+  duration/count/pool boundaries pass incrementally (not full trait qualification).
+- [x] A failing native component identity regression precedes the narrow
+  factory-only repair; current 114-fact names, stats and spent-use tests pass.
+- [x] Current repaired heritage/feat save cycle passes four processes and
+  43 mechanical assertions; retain-base fixtures only, with rendering
+  diagnostics explicitly retained.
+- [x] Requalify component-name repair mechanics against the exact pinned
+  0.0.114 producer: all eight race/sex fixtures, exact stats/facts/spent uses/
+  appearance data, three processes, 28 assertions and fresh absence pass.
+  All 13 warnings are retained; subjective visual review remains separate.
+- [x] Complete current observer-lifetime rerun, including initialization,
+  level-up, commands and teardown, with explicit installation/release witnesses.
+- [x] Fire/Stone/Storm in the Blood pass focused native damage/healing/rest/
+  multiclass/cap/exclusion checks in KMG-only and highest-risk combined profiles;
+  82 observations per profile, no native errors, exact fixture cleanup.
+- [ ] Qualify actual trait-bearing saves and complete lifecycle transitions.
+- [x] Six-trait incremental save cycle passes: 24 fixtures, 18 native-selected
+  traits, nine active partially spent blood buffs, four fresh processes,
+  230 assertions and 168 exact state observations across OFF load, level-up,
+  ordinary rest, re-spending, ON load, native base-trait respec and fresh absence.
+  Retain all 46 visual/DollData warnings; this is not the other fifteen traits
+  or full death/polymorph/multi-trait lifecycle qualification.
+- [x] Correct active-buff loss from ambiguous native provider deactivation;
+  real Deactivate/Activate and exact marker-removal regressions pass for all
+  three blood traits in KMG-only and combined profiles (9,660 assertions total).
 - [x] Deterministic replacement-slot policy covers Energy Resistance,
   Elemental Affinity, and Racial SLA with legal combinations and overlap
   exclusion independent of fact application order.

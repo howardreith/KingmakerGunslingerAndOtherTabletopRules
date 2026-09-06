@@ -168,7 +168,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 races.Sum(value => value.Heritages.RegisteredCount) !=
                     ElementalRaceIdentityCatalog.HeritageIdentityCount ||
                 races.Sum(value => value.AlternateTraits.RegisteredCount) !=
-                    ElementalRaceIdentityCatalog.TraitFrameworkIdentityCount)
+                    ElementalRaceIdentityCatalog.TraitFrameworkIdentityCount +
+                    ElementalRaceIdentityCatalog.TraitMechanicIdentityCount)
                 throw new InvalidOperationException(
                     "The complete heritage and alternate-trait blueprint graph is required.");
             _blueprints = blueprints;

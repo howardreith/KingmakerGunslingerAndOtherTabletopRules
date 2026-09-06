@@ -82,7 +82,7 @@ namespace KingmakerGunslinger.ElementalRaces
                             ability);
                     ElementalAlternateTraitRaceBlueprints alternateTraits =
                         ElementalAlternateTraitBlueprintFactory.Register(
-                            registry, ToHeritageRace(definition.Kind),
+                            library, registry, ToHeritageRace(definition.Kind),
                             ability.Icon);
                     BlueprintRace race = registry.Register<BlueprintRace>(
                         definition.RaceSymbol,
@@ -132,7 +132,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     "Resistance.Description"), "You have " +
                     definition.Resistance.ToString().ToLowerInvariant() +
                     " resistance " + ResistanceValue + "."), null);
-            return feature;
+            return ElementalComponentIdentity.Prepare(feature);
         }
 
         private static BlueprintFeature CreateAffinity(
@@ -158,7 +158,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     "Affinity.Description"), "+1 racial bonus to spell DC " +
                     "for spells with the " + definition.Affinity +
                     " descriptor. This does not increase caster level."), null);
-            return feature;
+            return ElementalComponentIdentity.Prepare(feature);
         }
 
         private static BlueprintRace CreateRace(
@@ -202,7 +202,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 LocalizationService.Create(LocalizationKey(definition,
                     "Race.Description"), definition.Description),
                 aasimar.Icon);
-            return race;
+            return ElementalComponentIdentity.Prepare(race);
         }
 
         private static BlueprintFeature BaseFeature(string symbol)
