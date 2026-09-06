@@ -13484,6 +13484,18 @@
     {
       "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson", "guid": "e117e1e0a17a4acec001000000000069",
       "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native Reduce Person effect under a project-owned Charisma-based total-level spell-like wrapper."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Resource", "guid": "e117e1e0a17a4acec001000000000070",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One persisted Crystalline Form ray deflection per ordinary rest."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.CrystallineForm.ArmedBuff", "guid": "e117e1e0a17a4acec001000000000071",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native opt-in marker, no VFX or independent resource commitment."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Mode", "guid": "e117e1e0a17a4acec001000000000072",
+      "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Off-by-default no-action consent to deflect the next eligible ray that would hit."
     }
   ]
 }

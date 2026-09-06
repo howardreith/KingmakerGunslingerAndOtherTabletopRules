@@ -8,7 +8,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1853 stable identifiers: 1851 active and 2 reserved.
+Validator contract: 1856 stable identifiers: 1854 active and 2 reserved.
 
 The second reservation, `KMG.ElementalRaces.Diagnostics.ProbeRace`
 (`57005fca40ab4775ae2fea5613214054`), is development-only. Ordinary bootstrap
@@ -16,7 +16,7 @@ does not register it. The guarded Elemental Races probe temporarily registers
 the exact identity without publishing it to `CharacterRaces`, then removes the
 owned dictionary/list entries before completion.
 
-Elemental Races owns 215 active manifest identities. The 0.0.114 foundation
+Elemental Races owns 218 active manifest identities. The 0.0.114 foundation
 contains 24 mechanical race, feature, resource, and SLA blueprints; 16
 Human-compatible body-wrapper and visual-preset blueprints; and 28
 `EquipmentEntity` body, head, and optional horn recolor proxies. Release A
@@ -28,7 +28,8 @@ exact-item weapon enchantment. Release C appends 62 stable replacement-
 framework identities: ten slot selections, ten retain-base markers, 21
 visible trait markers, and 21 hidden providers. Three blood-trait buffs append
 their own fixed identities. Efreeti Magic adds three ability identities and
-one shared resource identity. All 187 elemental blueprint identities and all
+one shared resource identity. Crystalline Form adds its resource, consent buff
+and activatable mode. All 190 elemental blueprint identities and all
 28 resource proxies register on every startup so saved race, heritage,
 provider, resource, feat, trait, active-effect, and doll references continue to
 resolve while selector publication is disabled. The resource proxies reuse
@@ -43,8 +44,8 @@ The blood buffs append to, and do not replace, the 62 framework identities:
 | Stone in the Blood | `e117e1e0a17a4acec001000000000064` |
 | Storm in the Blood | `e117e1e0a17a4acec001000000000065` |
 
-Efreeti Magic appends four identities; native mechanics pass incrementally,
-while save-backed qualification remains pending:
+Efreeti Magic appends four identities; its incremental native and seven-trait
+save-backed qualification pass (complete release lifecycle remains pending):
 
 | Symbol suffix under `KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic` | Stable GUID |
 | --- | --- |
@@ -52,6 +53,15 @@ while save-backed qualification remains pending:
 | `.Ability` | `e117e1e0a17a4acec001000000000067` |
 | `.EnlargePerson` | `e117e1e0a17a4acec001000000000068` |
 | `.ReducePerson` | `e117e1e0a17a4acec001000000000069` |
+
+Crystalline Form appends three identities; native core proof does not imply
+completed save-backed qualification:
+
+| Suffix under `KMG.ElementalRaces.Traits.Oread.CrystallineForm` | Stable GUID |
+| --- | --- |
+| `.Resource` | `e117e1e0a17a4acec001000000000070` |
+| `.ArmedBuff` | `e117e1e0a17a4acec001000000000071` |
+| `.Mode` | `e117e1e0a17a4acec001000000000072` |
 
 Each blood-buff symbol is its visible trait marker symbol plus `.FastHealingBuff`.
 Daily actual-healing expenditure is saved in `UnitPartElementalBloodCapacity`;

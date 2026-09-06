@@ -31,9 +31,11 @@ namespace KingmakerGunslinger.ElementalRaces
                     registry, definition, icon);
                 ElementalTraitDailyAbilityBlueprints daily = ElementalEfreetiMagicFactory.Register(
                     library, registry, definition.Id);
+                ElementalCrystallineFormBlueprints crystalline = ElementalCrystallineFormFactory.Register(
+                    registry, definition.Id, icon);
                 BlueprintFeature provider = registry.Register<BlueprintFeature>(
                     definition.ProviderSymbol,
-                    () => CreateProvider(library, definition, icon, bloodBuff, daily));
+                    () => CreateProvider(library, definition, icon, bloodBuff, daily, crystalline));
                 BlueprintFeature marker = registry.Register<BlueprintFeature>(
                     definition.MarkerSymbol,
                     () => CreateMarker(definition, icon));
@@ -42,7 +44,8 @@ namespace KingmakerGunslinger.ElementalRaces
                     marker, provider, (bloodBuff == null ?
                         Array.Empty<BlueprintScriptableObject>() :
                         new BlueprintScriptableObject[] { bloodBuff }).Concat(daily == null ?
-                            Array.Empty<BlueprintScriptableObject>() : daily.Mechanics)));
+                            Array.Empty<BlueprintScriptableObject>() : daily.Mechanics).Concat(crystalline == null ?
+                                Array.Empty<BlueprintScriptableObject>() : crystalline.Mechanics)));
             }
 
             foreach (ElementalAlternateTraitBlueprints trait in traits)
@@ -77,7 +80,8 @@ namespace KingmakerGunslinger.ElementalRaces
         private static BlueprintFeature CreateProvider(
             LibraryScriptableObject library,
             ElementalAlternateTraitDefinition definition, Sprite icon,
-            BlueprintBuff bloodBuff, ElementalTraitDailyAbilityBlueprints daily)
+            BlueprintBuff bloodBuff, ElementalTraitDailyAbilityBlueprints daily,
+            ElementalCrystallineFormBlueprints crystalline)
         {
             BlueprintFeature result = BaseFeature(definition.ProviderSymbol,
                 true);
@@ -91,11 +95,13 @@ namespace KingmakerGunslinger.ElementalRaces
                     definition.Id))
                 .Concat(ElementalBloodBlueprintFactory.ComponentsFor(definition,
                     bloodBuff)).ToArray();
-            if (daily != null)
+            if (daily != null || crystalline != null)
                 // Native resources activate before TurnOn. Restore remembered
                 // expenditure before the final reconciliation callback sees it.
                 result.ComponentsArray = result.ComponentsArray.Where(value =>
-                    !ReferenceEquals(value, controller)).Concat(daily.ProviderComponents())
+                    !ReferenceEquals(value, controller)).Concat(daily == null ?
+                        Array.Empty<BlueprintComponent>() : daily.ProviderComponents())
+                    .Concat(crystalline == null ? Array.Empty<BlueprintComponent>() : crystalline.ProviderComponents())
                     .Concat(new BlueprintComponent[] { controller }).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create(Key(definition, "Provider.Name"),

@@ -4,6 +4,8 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UnitLogic.Buffs;
 
 namespace KingmakerGunslinger.ElementalRaces
 {
@@ -47,6 +49,19 @@ namespace KingmakerGunslinger.ElementalRaces
         internal static void RemoveInactive(UnitDescriptor owner,
             ElementalAlternateTraitBlueprints trait, UnitPartElementalHeritageState state)
         {
+            foreach (BlueprintActivatableAbility mode in trait.Mechanics().OfType<BlueprintActivatableAbility>())
+            {
+                foreach (ActivatableAbility fact in owner.ActivatableAbilities.Enumerable.Where(value =>
+                    value != null && ReferenceEquals(value.Blueprint, mode)).ToArray())
+                {
+                    fact.IsOn = false;
+                    owner.RemoveFact(fact);
+                }
+                // This runs only for a truly inactive provider after local
+                // reconciliation, never for transient fact hydration/TurnOff.
+                foreach (Buff buff in owner.Buffs.Enumerable.Where(value =>
+                    value != null && ReferenceEquals(value.Blueprint, mode.Buff)).ToArray()) owner.RemoveFact(buff);
+            }
             foreach (BlueprintAbility ability in trait.Mechanics().OfType<BlueprintAbility>())
             {
                 Fact[] facts = owner.Abilities.Enumerable.Where(value => value != null &&
@@ -70,6 +85,10 @@ namespace KingmakerGunslinger.ElementalRaces
             foreach (ElementalAlternateTraitBlueprints trait in race.Traits())
             {
                 bool active = owner.HasFact(trait.Provider);
+                foreach (BlueprintActivatableAbility mode in trait.Mechanics().OfType<BlueprintActivatableAbility>())
+                    if (owner.ActivatableAbilities.Enumerable.Count(value => value != null &&
+                            ReferenceEquals(value.Blueprint, mode)) != (active ? 1 : 0) ||
+                        (!active && owner.HasFact(mode.Buff))) return false;
                 foreach (BlueprintAbilityResource resource in trait.Mechanics().OfType<BlueprintAbilityResource>())
                     if (owner.Resources.PersistantResources.Count(value => value != null &&
                             ReferenceEquals(value.Blueprint, resource)) != (active ? 1 : 0))

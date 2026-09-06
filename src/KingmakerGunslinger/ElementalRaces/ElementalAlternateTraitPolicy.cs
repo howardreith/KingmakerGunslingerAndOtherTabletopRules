@@ -289,7 +289,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
                 T(ElementalAlternateTraitId.CrystallineForm,
                     ElementalHeritageRace.Oread, "Crystalline Form",
-                    "+2 racial AC against rays and one exact ray deflection per day.",
+                    ElementalCrystallineFormPolicy.Description,
                     ElementalRacialTraitSlot.ElementalAffinity),
                 T(ElementalAlternateTraitId.EarthInsight,
                     ElementalHeritageRace.Oread, "Earth Insight",

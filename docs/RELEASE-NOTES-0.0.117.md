@@ -21,6 +21,13 @@ renewed pinned 0.0.114 migration. See the
 [exact Efreeti checkpoint](ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md).
 Full Release C lifecycle and release-wide qualification remain pending.
 
+Crystalline Form subsequently adds three stable resource/consent identities.
+Its native core passes 1,423 tests, clean build/package and two guarded
+KMG-only/combined processes (10,168 assertions). Actual ray AC, opted-in
+deflection, no-action spending, rest, equipment and awareness boundaries pass;
+complete ray/catalog, save and lifecycle gates remain open. See the
+[core checkpoint](ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+
 ## Implemented in this checkpoint
 
 - 62 fixed manifest identities: ten slot selections, ten retain-base markers,
@@ -67,7 +74,8 @@ save-backed processes (230 assertions, 46 retained visual/DollData warnings).
 Native selections, nine partially spent active blood buffs, OFF/ON load,
 level-up, rest, respec and fresh absence pass. Native provider deactivation no
 longer incorrectly removes a saved buff; exact marker loss still cleans it up.
-Six other mechanics, the other fourteen traits' persistence, full lifecycle, final
+Five unimplemented mechanics, complete Crystalline qualification, the other
+fourteen traits' persistence, full lifecycle, final
 compatibility/module matrices, full release qualification, and final
 documentation remain pending.
 Release A and Release B evidence is
@@ -84,5 +92,5 @@ The candidate preserves the qualified firearm SoundBank byte identity
 Optional Craft Magic Items support remains reflection-only;
 `CraftMagicItems.dll` is neither linked nor packaged. The inherited 1,288-test
 overhaul and 1,325-test fatigue-authority baselines remain historical, while
-this candidate's current dependency-free suite contains 1,418 registered
+this candidate's current dependency-free suite contains 1,423 registered
 cases.

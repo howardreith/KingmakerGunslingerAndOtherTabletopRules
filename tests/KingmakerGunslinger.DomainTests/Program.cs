@@ -77,6 +77,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-traits.blood-insight-save-matrix", ElementalBloodInsightPersistencePolicyTests.NativeFixtureCoverageIsExact),
             Case("elemental-traits.efreeti-combined-save-matrix", ElementalBloodInsightPersistencePolicyTests.EfreetiCombinedFixtureCoverageIsExact),
             Case("elemental-traits.daily-resource-reconstruction", ElementalTraitDailyResourcePolicyTests.ActivationNeverRefillsSpentUses),
+            Case("elemental-traits.exact-ray-eligibility", ElementalCrystallineFormPolicyTests.ExactSemanticRayBoundaries),
+            Case("elemental-traits.deflection-eligibility", ElementalCrystallineFormPolicyTests.DeflectionRequiresEveryNativeBoundary),
             Case("elemental-races.component-save-identities", ElementalComponentIdentityPolicyTests.PreservesLegacyStateAndRejectsAmbiguity),
             Case("elemental-traits.provider-matrix", ElementalAlternateTraitPolicyTests.ExhaustiveProviderAndLegalityMatrixIsExact),
             Case("elemental-traits.ordering-reconstruction", ElementalAlternateTraitPolicyTests.OrderingRemovalAndReconstructionAreDeterministic),

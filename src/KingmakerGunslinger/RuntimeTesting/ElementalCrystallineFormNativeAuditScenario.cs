@@ -40,6 +40,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rows.Add(new JObject {
                         { "abilityGuid", ability.AssetGuid },
                         { "internalName", ability.name },
+                        { "displayName", ability.Name },
+                        { "description", ability.Description },
                         { "abilityType", ability.Type.ToString() },
                         { "parentGuid", ability.Parent == null ? null : ability.Parent.AssetGuid },
                         { "projectileType", delivery.Type.ToString() },

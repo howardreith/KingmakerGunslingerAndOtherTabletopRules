@@ -2,6 +2,11 @@
 
 ## 0.0.117-elemental-traits
 
+- Adds Crystalline Form's exact-ray racial AC and opt-in daily native impact
+  deflection with three stable resource/buff/mode identities. Full 1,423 tests,
+  clean build/package and two guarded KMG-only/combined processes pass 10,168
+  assertions. Complete ray/catalog and save-backed gates remain separate; see
+  the [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
 - Adds incrementally qualified Efreeti Magic: Enlarge Person
   and Reduce Person wrappers share one persisted daily resource and retain
   native person targeting. All 1,421 tests and clean build/package pass.
@@ -40,9 +45,9 @@
 - The current component-name repair passes pinned 0.0.114 migration mechanics
   in three fresh processes (28 assertions), preserving spent uses and appearance
   data; subjective visual review is separate.
-- Release C remains in progress: seven mechanics remain to implement;
-  trait-bearing persistence, full lifecycle checks,
-  and final release-wide gates are pending.
+- Release C remains in progress: five mechanics remain to implement;
+  complete Crystalline, all-trait persistence/lifecycle and final release-wide
+  gates are pending. Earlier incremental results retain their historical scope.
 
 ## 0.0.116-elemental-feats
 

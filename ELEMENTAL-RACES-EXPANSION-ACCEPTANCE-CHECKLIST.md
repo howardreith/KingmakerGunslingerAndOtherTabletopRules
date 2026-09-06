@@ -182,3 +182,14 @@ Unchecked items are pending and must not be inferred from builds or historical
   blockers/NOT-RUN limitations, commits, and PR URL if created.
 - [ ] No generated release ZIP is committed.
 - [ ] Nothing is merged, tagged, or publicly released.
+
+### Crystalline Form development checkpoint (not release acceptance)
+
+- [x] Explicit ray identity policy and exhaustive pure eligibility boundaries.
+- [x] Stable resource/buff/mode identities and owned reconciliation implemented.
+- [x] First candidate: 1,423 domain tests, clean Release and package PASS.
+- [x] Native core: final two profiles pass 10,168 assertions, including exact ray
+  AC, chosen deflection, no-action/resource handling, rest, two held weapons,
+  free-hand return, blindness/paralysis and recovery. Earlier failures retained.
+- [ ] Complete native catalog, equipment/awareness/multi-ray controls, and
+  save-backed spent-resource/consent persistence.

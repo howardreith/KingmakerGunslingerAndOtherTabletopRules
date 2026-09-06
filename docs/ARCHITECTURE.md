@@ -572,7 +572,7 @@ plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
-identities extend the append-only ledger to 1853 stable IDs: 1851 active and 2 reserved. The
+identities extend the append-only ledger to 1856 stable IDs: 1854 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
@@ -585,7 +585,8 @@ weapon enchantment. `ElementalFeatBlueprintFactory` registers all 25 before
 selectors through the established exact-GUID-aware transaction.
 Release C appends ten replacement-slot selections, ten retain-base markers,
 21 visible trait markers, and 21 hidden mechanic providers. The framework
-registers all 62 plus three blood-trait buffs and four Efreeti Magic identities
+registers all 62 plus three blood-trait buffs, four Efreeti Magic identities,
+and three Crystalline Form resource/consent identities
 unconditionally and keeps publication within the existing
 parent race and `elemental-races` module boundary.
 Native AddFacts/AddAbilityResources own the Efreeti daily graph; its owned
@@ -596,8 +597,16 @@ inactive root/variant/resource instances without touching foreign facts or
 already-cast native size buffs. The dedicated seven-trait persistence scenario
 selects legal affinity-plus-SLA replacements through native creation/respec and
 checks racial modifiers separately from native size modifiers.
+Crystalline Form has incremental native core proof: its owned provider
+uses native racial AC modifiers and a local projectile-hit subscriber, with
+an exact semantic ray catalog instead of the overbroad Ray weapon category.
+The native opt-in mode costs no action; its independent daily resource is
+committed only after an eligible hit. Dedicated native commands prove AC,
+deflection, resource/rest, equipment and awareness in two profiles. Remaining
+catalog/multi-ray and persistence gates are not covered by that core proof or
+the earlier seven-trait transaction.
 `elemental-races` setting gates race, feat, and trait-selector publication; no
-module identity or schema member was added. All 215 active elemental identities
+module identity or schema member was added. All 218 active elemental identities
 remain registered while selector publication is disabled. Exact 0.0.114
 markerless-General migration and the
 24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation

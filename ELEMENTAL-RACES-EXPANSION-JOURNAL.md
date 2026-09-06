@@ -1,5 +1,26 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Crystalline core native checkpoint
+
+- Added exact semantic ray policy, native racial AC and locally owned native
+  impact deflection; three fixed identities own the daily resource and consent.
+  No global patch, donor mutation, new module/dependency or legacy GUID change.
+- Final candidate passes complete validation, all 1,423 tests, clean Release
+  and strict 135-entry package. Exact source/ZIP/DLL/MVID are in STATE and the
+  [core report](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+- Final KMG-only and high-risk combined runs pass 5,084 assertions each.
+  Core deflection, AC, action/resource/rest, equipment, blindness/paralysis and
+  recovery pass on all Oread heritages. Both exact profile restorations and an
+  independent final Mods manifest comparison pass; no campaign save accessed.
+- Retained all failed attempts: unsafe preexisting projectiles, native allied
+  auto-hit fixture, stale prior projectiles, wrong independent-racial stacking
+  expectation, absent native delivery after an optional area-effect rewrite,
+  and driving the pre-respec detached consent ability. Narrow fixture fixes
+  resolved these without changing production rules to match the tests.
+- Full ray/catalog/lifecycle and save-backed consent/resource gates remain
+  open. Five independent traits remain unimplemented. This is neither full
+  Crystalline acceptance nor Release C PASS; work continues.
+
 ## 2026-09-06 UTC - Required branch publication recovered
 
 - The user allowlisted codex/elemental-races-expansion. Rechecked the clean
@@ -2516,3 +2537,39 @@ and the first focused mechanical group from the now-qualified native contracts.
 - The mandated push wrapper was run after commit `d8ad16f7...` and again
   refused the user-required branch because the external allowlist is stale.
   No bypass, merge, tag, release publication, or ZIP commit occurred.
+
+## 2026-09-06: Crystalline Form implementation and first guarded retry
+
+- Added a pure exact-ray/deflection policy, native racial AC component, owned
+  projectile-impact subscriber, no-action opt-in native mode, one daily resource,
+  and exact inactive mode/buff/resource cleanup. Appended only IDs 070-072.
+- Full 1,423 domain/reflection cases, repository validation, clean Release and
+  strict package validation pass for candidate source state `1cb073f2...`.
+  The initial compile mismatch was corrected: IsFromWeapon belongs to native
+  Projectile, not RuleAttackRoll. No native/shared blueprint is edited.
+- Guarded Steam run `20260906T1353524294487Z-d32baebb901443d38f87dfa0a377cff4`
+  is FAIL: the ray fixture refused preexisting projectiles left by preceding
+  scenarios. Its mechanic never ran. Earlier 4,909 assertions and zero result
+  warnings do not override the exception. No save accessed; game exited and the
+  original profile was restored. Exact candidate and hashes are retained in STATE.
+- Narrow retry: execute the ray scenario before projectile-producing scenarios.
+  Native command/roll/OnHit/damage remain real; only request-local asynchronous
+  projectile arrival is isolated. Added the authoritatively verified Jabberwock
+  eye-ray ID to the catalog. Runtime/persistence remain pending, not PASS.
+- The reordered fresh run `20260906T1404322451270Z-909df243bd0a447ab9e10b76cbf24cc4`
+  passed the pristine-controller and owned-graph/cleanup checks, then failed the
+  first AC probe. Native IL confirms willing allied touch attacks auto-hit before
+  AC (RuleAttackRoll.OnTrigger IL0031-007D). The next fixture uses an owned hostile
+  faction clone without changing the production mechanic or any shared array.
+  All 52 recorded assertions passed before the exception; this remains FAIL.
+  Original profile restored; no save accessed; exact artifacts and hashes retained.
+- Hostile-fixture run `20260906T1418065878081Z-a0910bb413b64aafb98dbcddd45e0794`
+  completed 5,066 assertions with nine failures and no exception. All 117 native
+  ray/non-ray AC cases passed across General/Gemsoul/Ironsoul. Native graph,
+  resource reconciliation/rest and cleanup also passed. Deflection remained
+  unqualified: the transport fixture re-impacted stale prior-cast projectiles.
+- Fixed that specific boundary by snapshotting old projectiles per command.
+  Corrected the independent racial-bonus test: [PRD bonus types](https://legacy.aonprd.com/coreRulebook/magic.html)
+  and actual native results require racial sources to stack. No production rule
+  was changed to fit a mistaken test. Added actual second-ray-at-zero and native
+  standard/move/swift cooldown checks. The failed run remains FAIL in STATE.

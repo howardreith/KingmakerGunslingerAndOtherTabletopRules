@@ -44,6 +44,15 @@ Native difficult-terrain contracts also still require focused engine evidence.
 
 ## Open engineering questions requiring evidence
 
+Current Crystalline update: its native core now passes two guarded profiles
+and 10,168 assertions, with exact restoration and no fixture errors. The
+[core report](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md) and
+STATE supersede earlier implementation-pending observations below. Complete
+catalog/multi-ray/lifecycle/persistence boundaries remain open, not hard stops.
+The optional Shadow Elemental Assessor area-effect rewrite is preserved;
+absence of native ray delivery produces a fail-closed negative control, not
+reconstructed foreign mechanics. Five other traits remain unimplemented.
+
 - The missing legacy-input preflight blocker is resolved by byte-identical
   recovery of both files under `artifacts/release/0.0.114`. The historical
   deployment backup and existing deterministic packer reproduce the pinned
@@ -256,3 +265,13 @@ the mission's hard-stop contract; independent work continues.
   rejects foreign same-GUID entries, and inserts only missing additions. The
   31-process matrix proves forward replay, reverse rollback, and all
   native/foreign references and order across six installed profiles.
+
+## Crystalline Form development (not a hard stop)
+
+The 2026-09-06 first mechanic candidate builds and passes 1,423 domain tests,
+but its guarded scenario refused a nonempty projectile controller before
+exercising the trait. The prior scenarios' projectiles are not safe to delete
+speculatively. Move the isolated ray scenario first, retain its safety check,
+and rerun. Native mechanics, remaining semantic-catalog rows, full equipment
+and awareness boundaries, and persistence are still unqualified. Exact failed
+run and restoration hashes are in STATE; no feature or release PASS is implied.

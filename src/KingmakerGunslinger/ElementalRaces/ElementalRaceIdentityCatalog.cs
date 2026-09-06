@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.ElementalRaces
         internal const int HeritageIdentityCount = 53;
         internal const int FeatIdentityCount = 25;
         internal const int TraitFrameworkIdentityCount = 62;
-        internal const int TraitMechanicIdentityCount = 7;
+        internal const int TraitMechanicIdentityCount = 10;
         internal const int MechanicIdentityCount = LegacyMechanicIdentityCount +
             HeritageIdentityCount + FeatIdentityCount +
             TraitFrameworkIdentityCount + TraitMechanicIdentityCount;
@@ -228,7 +228,10 @@ namespace KingmakerGunslinger.ElementalRaces
                 "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Resource",
                 "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Ability",
                 "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.EnlargePerson",
-                "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson"
+                "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Resource",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.ArmedBuff",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Mode"
             };
         }
 
