@@ -613,8 +613,15 @@ A pure half-level/current-CON policy supplies the DC and capped damage dice.
 Fresh native cone, conditional, save, energy damage and condition components
 perform delivery; a native rank-zero condition avoids the engine's minimum
 one-damage packet without changing damage rules globally. Dedicated actual
-commands prove native effects in both profiles. Full action-cooldown and
-breath-bearing save/lifecycle tests remain separate pending gates.
+commands prove native effects in both profiles. The later dedicated RTWP
+controller driver proves ordinary command/cooldown commitment without
+Cutscene or IgnoreCooldown. An append-only ten-trait persistence policy
+drives native breath casts against one isolated disposable fixture. Exact
+source/caster/DC/end-time comparisons precede any fresh-load mutation.
+Native UnitState owns the audited Sickened system companion; the harness
+checks it without directly creating/removing it. Older matrices and all
+production identities remain unchanged. Breath-specific turn-based actions,
+eleven other traits' persistence and full lifecycle remain separate gates.
 Crystalline Form has incremental native core proof: its owned provider
 uses native racial AC modifiers and a local projectile-hit subscriber, with
 an exact semantic ray catalog instead of the overbroad Ray weapon category.

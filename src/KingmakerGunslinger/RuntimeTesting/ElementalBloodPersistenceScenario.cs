@@ -36,19 +36,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PrepareCrystallinePersistence(fixture, unit);
                     RecordTraitPersistence(fixture, unit, 1, 1, true, "prepare-immediately-before-save");
                     if (!EfreetiPersistenceBuffExact(fixture, unit,
-                        PersistenceSlaTrait(fixture, fixture.Heritage) == null ? 0 : 1))
+                        ExpectedPersistenceTraits(fixture, fixture.Heritage).Any(value =>
+                            value.Definition.Id == ElementalAlternateTraitId.EfreetiMagic) ? 1 : 0))
                         throw new InvalidOperationException(fixture.Label + " lost its native Efreeti effect before save.");
                 }
                 int traitFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length != 0);
                 int combinedFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length == 2);
                 int bloodFixtures = _fixtures.Count(value => PersistenceBloodTrigger(value) != null);
-                Add(_assertions, "elemental-traits-eight-trait-save-inventory",
-                    "18 native-selected trait fixtures, six legal two-trait Ifrits, eight partially spent blood buffs, eight distinct traits",
+                Add(_assertions, "elemental-traits-ten-trait-save-inventory",
+                    "24 native-selected trait fixtures, six legal two-trait Ifrits, eight partially spent blood buffs, ten distinct traits",
                     "traitFixtures=" + traitFixtures + ";combinedFixtures=" + combinedFixtures + ";bloodFixtures=" + bloodFixtures,
-                    traitFixtures == 18 && combinedFixtures == 6 && bloodFixtures == 8 && _fixtures
+                    traitFixtures == 24 && combinedFixtures == 6 && bloodFixtures == 8 && _fixtures
                         .SelectMany(value => ExpectedPersistenceTraits(value, value.Heritage))
-                        .Select(value => value.Definition.Id).Distinct().Count() == 8,
-                    "pure eight-trait matrix, native selections/commands, real blood damage/ticks; native deflection-resource expenditure and consent setup");
+                        .Select(value => value.Definition.Id).Distinct().Count() == 10,
+                    "pure ten-trait matrix, native selections/commands and blood ticks; native consent and command-created breath conditions");
             }
 
             private ElementalBloodDamageTrigger PersistenceBloodTrigger(ElementalPersistenceFixture fixture)

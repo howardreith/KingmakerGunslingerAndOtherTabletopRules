@@ -30,8 +30,9 @@ visible trait markers, and 21 hidden providers. Three blood-trait buffs append
 their own fixed identities. Efreeti Magic adds three ability identities and
 one shared resource identity. Crystalline Form adds its resource, consent buff
 and activatable mode. Acid Breath and Ooze Breath each add an ability and
-independent daily resource (focused native checkpoint PASS; full cooldown,
-save/lifecycle and release gates pending).
+independent daily resource. The later RTWP and ten-trait save checkpoint adds
+no identities; native action commitment, saved effects and spent amounts pass.
+Turn-based actions, full lifecycle and release-wide gates remain pending.
 All 194 elemental blueprint identities and all
 28 resource proxies register on every startup so saved race, heritage,
 provider, resource, feat, trait, active-effect, and doll references continue to

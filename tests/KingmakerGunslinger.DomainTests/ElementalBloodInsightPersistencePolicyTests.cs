@@ -7,6 +7,58 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ElementalBloodInsightPersistencePolicyTests
     {
+        internal static void BreathFixtureCoverageIsExact()
+        {
+            var covered = new List<Tuple<ElementalHeritageRace, int, int, ElementalAlternateTraitId[]>>();
+            foreach (ElementalHeritageRace race in Enum.GetValues(typeof(ElementalHeritageRace)))
+                for (int gender = 0; gender < 2; gender++)
+                    for (int index = 0; index < 3; index++)
+                    {
+                        var traits = ElementalBloodInsightPersistencePolicy.BreathTraits(race, gender, index);
+                        covered.Add(Tuple.Create(race, gender, index, traits));
+                        var heritage = ElementalHeritagePolicy.Ordered().Where(value => value.ParentRace == race).ElementAt(index);
+                        var state = ElementalAlternateTraitPolicy.Resolve(race, heritage.Id, traits);
+                        Assertions.Equal(state.Fingerprint,
+                            ElementalAlternateTraitPolicy.Resolve(race, heritage.Id, traits.Reverse()).Fingerprint,
+                            "Every ten-trait fixture is independent of fact order.");
+                        Assertions.Equal(state.Fingerprint,
+                            ElementalAlternateTraitPolicy.ResolveMarkers(race, heritage.Id, state.MarkerSymbols()).Fingerprint,
+                            "Native marker identities reconstruct the same desired providers.");
+                        foreach (ElementalHeritageStat stat in Enum.GetValues(typeof(ElementalHeritageStat)))
+                            Assertions.Equal(heritage.ModifierFor(stat), state.ModifierFor(stat), "No racial stat drift.");
+                        Assertions.True(state.EnergyResistanceProviderSymbol != null, "Every fixture retains resistance.");
+                        if (race == ElementalHeritageRace.Undine)
+                            Assertions.True(state.ElementalAffinityProviderSymbol != null &&
+                                state.RacialSlaFeatureSymbol == null && state.RacialSlaAbilitySymbol == null &&
+                                state.RacialSlaResourceSymbol == null,
+                                "Only the heritage SLA slot is consumed; no inactive Hydraulic Push/Blur/Chill Touch provider remains.");
+                        else
+                            Assertions.True(traits.SequenceEqual(ElementalBloodInsightPersistencePolicy.CrystallineTraits(race, gender, index)),
+                                "All previous non-Undine fixture choices remain exact.");
+                    }
+            Assertions.Equal(24, covered.Count, "All existing fixture identities remain.");
+            Assertions.Equal(24, covered.Count(value => value.Item4.Length != 0), "Every fixture is now trait-bearing.");
+            Assertions.Equal(6, covered.Count(value => value.Item4.Length == 2), "All legal combined Ifrit fixtures remain.");
+            Assertions.Equal(10, covered.SelectMany(value => value.Item4).Distinct().Count(), "Exactly ten implemented traits.");
+            foreach (var id in new[] { ElementalAlternateTraitId.AcidBreath, ElementalAlternateTraitId.OozeBreath })
+            {
+                var rows = covered.Where(value => value.Item4.Contains(id)).ToArray();
+                Assertions.Equal(3, rows.Length, "Each breath persists three times.");
+                Assertions.Equal(2, rows.Select(value => value.Item2).Distinct().Count(), "Each breath covers both sexes.");
+                Assertions.Equal(3, rows.Select(value => value.Item3).Distinct().Count(), "Each breath covers every Undine heritage.");
+            }
+            var mutable = ElementalBloodInsightPersistencePolicy.BreathTraits(ElementalHeritageRace.Undine, 0, 0);
+            mutable[0] = ElementalAlternateTraitId.NereidFascination;
+            Assertions.Equal(ElementalAlternateTraitId.AcidBreath,
+                ElementalBloodInsightPersistencePolicy.BreathTraits(ElementalHeritageRace.Undine, 0, 0)[0],
+                "Callers cannot mutate subsequent choices.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() => ElementalBloodInsightPersistencePolicy.BreathTraits(
+                ElementalHeritageRace.Undine, -1, 0), "Unknown gender fails closed.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() => ElementalBloodInsightPersistencePolicy.BreathTraits(
+                ElementalHeritageRace.Undine, 0, 3), "Unknown heritage fails closed.");
+            CrystallineFixtureCoverageIsExact();
+        }
+
         internal static void CrystallineFixtureCoverageIsExact()
         {
             var covered = new List<Tuple<ElementalHeritageRace, int, int, ElementalAlternateTraitId[]>>();

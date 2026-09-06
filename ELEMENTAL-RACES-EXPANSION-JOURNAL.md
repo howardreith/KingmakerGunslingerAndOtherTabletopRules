@@ -1,5 +1,142 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Breath RTWP and ten-trait save checkpoint qualified
+
+- Candidate undine-breath-persistence-05 passes repository validation, all
+  1,428 tests, clean exact-reference Release and strict 135-entry package.
+  Nine guarded Steam processes pass 11,325 assertions: 10,996 native RTWP,
+  300 ten-trait save-cycle and 29 renewed pinned legacy migration assertions.
+- Both cross-process saved Sickened comparisons match all eight fields,
+  including source/caster/DC and absolute/remaining duration. Every Undine
+  preserves spent zero through level-up, restores one on rest, then spends
+  exactly one through a native command. Respec and fresh absence pass.
+- All three 968-entry mod/settings restorations independently match; no game
+  remains. Full evidence/hashes and failed candidates 01-04 are in STATE and
+  docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md.
+- Preserve 60 visual/framing/DollData warnings and inherited native diagnostics;
+  exact elemental/transient/Fact.PostLoad error signatures remain zero.
+  Read-only collection encountered field-name/PowerShell array-output errors;
+  corrected collectors changed no evidence or saves and required no game rerun.
+- No production rule or identity changes. Release C still needs three
+  mechanics, breath-specific turn-based actions, eleven other traits' saves,
+  full Crystalline catalog/lifecycle and final release-wide gates.
+
+## 2026-09-06 UTC - Native Sickened status companion identified
+
+- Instrumented candidate undine-breath-persistence-04 passed 1,428 tests and
+  clean build/package. Run 20260906T2142079631066Z-2a51f975ec4744d789c273e2e4a1b252
+  remains diagnostic FAIL. Exact buff evidence shows Enlarge Person retained
+  its reference, source, activity and end time. The only added non-source buff
+  is native SickenedSystemCondition; the command-created Sickened is Prolong.
+  No save was written; full mod restoration independently matches.
+- Native UnitState.UpdateStatusEffect calls StatusEffectFactory's exact root
+  SickenedBuff mapping. UnitStatusBuff adds its own permanent self-context fact
+  and removes that same fact when the condition ends. The fixture now asserts
+  this companion's exact presence/absence instead of classifying it as foreign.
+  Only this root-referenced native companion is excluded from the unchanged
+  other-buff assertion. The test never creates/removes the companion itself;
+  reset and fresh-load checks also require correct native condition state.
+
+## 2026-09-06 UTC - Breath target inventory instrumentation
+
+- Candidate undine-breath-persistence-03 passed all 1,428 tests and clean build/
+  package. Save-first run 20260906T2129255082017Z-b5c7229ace1a4b00b94a3b231b30777d
+  remains FAIL (9/18 assertions, four retained visual warnings). The first
+  Ooze cast's native save/use/new condition and all earlier cleanup checks pass;
+  the newly added other-target-buff reference assertion fails. No save was
+  written; fixture removal and folder restoration completed. Remaining phases
+  and this candidate's two native profiles were not run.
+- Native FactCollection enumerates its actual List and native addition appends.
+  Do not assume this is harmless ordering or weaken the check. The next build
+  records exact before/after buff identity, source context, stacking, activity
+  and end times to distinguish a fixture assumption from a genuine state change.
+
+## 2026-09-06 UTC - Breath save target reuse diagnostic retained as FAIL
+
+- Candidate undine-breath-persistence-02 passed 1,428 tests, clean Release/package
+  and both native profiles (5,498 assertions each). Prepare run
+  is identified by its exact evidence directory
+  20260906T2118473541277Z-elemental-race-persistence-prepare; its runtime-result
+  run ID remains authoritative. The first two breath casts and every detailed
+  cleanup predicate passed. A second Ooze cast against the shared target failed
+  the condition-context assumption. Native BuffCollection reapplication is not
+  guaranteed to replace an existing buff's caster context.
+- No save API was called; all fixture memberships were removed. The full mod
+  tree was independently checked against the restored transaction and matched.
+  Later save and legacy phases were not run.
+- Each subsequent independent cast now removes only earlier command-created
+  breath conditions on the exact disposable target, records their context and
+  native stacking mode, and verifies all other target buffs are untouched.
+  Fresh-load condition evidence still runs before any cleanup or cast. New
+  effects must still come from the actual native command, not reconstruction.
+
+## 2026-09-06 UTC - Breath persistence first diagnostic retained as FAIL
+
+- Candidate undine-breath-persistence-01 passed 1,428 tests, clean Release/package
+  and both native profiles (5,498 assertions each). Save prepare run
+  20260906T2053197947787Z-64f13e2f9a624cae86f03693d5b0881b failed the first
+  breath fixture cleanup despite exact native cast/save/use and unchanged
+  unrelated units. No save API was called. All fixture memberships were removed;
+  mod/settings transaction reports Restored with restorationVerified true.
+  Later save and migration phases were not run.
+- Native ProjectileController.Tick removes cleared entries only on the following
+  tick; Cleared's setter only stores a flag. The save helper checked membership
+  after the first tick. It now requires an initially idle controller, completes
+  both native cleanup ticks, and records each cleanup predicate separately.
+  The failed result remains historical evidence, not a persistence PASS.
+
+## 2026-09-06 UTC - Ten-trait breath save continuation in progress
+
+- Candidate action-02 passes all 1,427 tests, clean Release/package and two
+  native RTWP profiles (10,996 assertions, 712 breath observations, 60 controller
+  observations). Both full 968-entry restorations independently match; no game
+  remains. Exact hashes and failed candidate-01 are in STATE.
+- Controller predicates read actual native process completion/resource/cooldown.
+  Their old auxiliary summary included unused default Observation fields. The
+  next candidate reports native fields directly; raw action-02 evidence is
+  unchanged. Turn-based-specific action proof is still a separate pending gate.
+- Add an append-only ten-trait save policy covering both breaths across all
+  Undine heritages and both sexes, retaining all earlier matrices unchanged.
+  The paired condition target will be an existing exact disposable Ifrit
+  fixture, never an original party member or unrelated campaign unit. Casting
+  placement must exclude all other units and restore exact positions/wounds.
+- All new save behavior remains unqualified until its guarded transaction passes.
+- The first save-extension build passed all 1,428 tests, then found a missing
+  UnitLogic import for the native HasFact extension. Added that import and
+  tightened conditional observer cleanup and exact position comparisons before
+  any game attempt. No failed compilation is treated as runtime proof.
+
+## 2026-09-06 UTC - Breath action-controller continuation in progress
+
+- Focused native breath checkpoint committed/pushed as
+  cf2426ac092b6bed33ff721fca722be9486f5e89; clean tree observed.
+- Exact local native IL identifies UnitActionController.TickCommand as the
+  not-acted-to-acted cooldown authority. The next dedicated fixture will use
+  native queue/start/tick rather than calling OnAction or UpdateCooldowns itself.
+  Only request-local animation/projectile arrival may be completed.
+- This is a new unqualified extension. No earlier PASS proves the controller
+  boundary or the planned breath-bearing persistence matrix.
+- The first clean extension build passed all 1,427 tests but found that native
+  Cooldowns.Clear is not public. Disposable pre-test state now uses the three
+  existing public native cooldown setters; accepted-cast spending is untouched.
+  No Steam process was launched for that failed compilation.
+- Candidate undine-breath-actions-01 clean build/package and 1,427 tests pass,
+  but guarded run 20260906T2012018916663Z-ff468e1e8e1144449bb580a1b76049d0
+  is FAIL (312/313 assertions; native start-gate exception). Main-menu
+  HandsEquipmentController is absent. The queued command also escaped early
+  exceptional cleanup; the overall fixture-membership assertion failed.
+  Original profile restored exactly; combined NOT-RUN; no save accessed.
+  Result SHA df53d1526e09ab6a75b0b5fffe458b01b84b52f5080f1ee5b0f817ecab003d1a;
+  runtime-evidence 5cddfe213ec3a55110c3d5be2c233f6d5e078b4dee7569ecd006c9b61899b868;
+  breath 98507ac3b27dadb4a42357fe69c10fff7646f7b612850572d3f4a866155d7140.
+- Next fixture supplies only that absent native controller through its audited
+  setter and restores the exact original in finally. Every queued command is
+  canceled before actor retirement even on early failure. Native start,
+  targeting, action transition and cooldown calculation remain unreplaced.
+- Retry preflight passed all 1,427 tests, then compilation rejected the new
+  diagnostic's Count property on an enumerable. It now uses Count(); this
+  compile failure launched no game and changes no native test predicate.
+
 ## 2026-09-06 UTC - Undine breath focused native checkpoint qualified
 
 - Repository validation, all 1,427 tests, clean exact-reference Release and

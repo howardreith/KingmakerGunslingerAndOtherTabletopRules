@@ -2,11 +2,18 @@
 
 ## 0.0.117-elemental-traits
 
+- Qualifies native RTWP breath action commitment and the append-only ten-trait
+  save matrix: all 1,428 tests, clean build/package and nine guarded processes
+  pass 11,325 assertions, including renewed pinned 0.0.114 migration.
+  Exact saved Sickened context/duration, spent uses, OFF/ON/rest/level/respec
+  and fresh absence pass. No new identities or production rules. Retained
+  warnings and turn-based/full-release limits are in the
+  [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md).
 - Adds Acid Breath and Ooze Breath with four fixed ability/resource identities,
   native five-foot acid cones, exact current-CON parameters and Reflex halving.
   Ooze applies three-round non-poison Sickened only on a failed save. All 1,427
   tests, clean build/package and 10,936 assertions in two native profiles pass.
-  Full cooldown and breath-bearing saves remain separate pending gates. See
+  The later action/save checkpoint above supplies new RTWP and save proof. See
   the [focused breath checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md).
 - Avoids attempted feat-transient restoration inside native disabled level-up
   previews, preserving exact original buffs, item effects and absolute expiry.

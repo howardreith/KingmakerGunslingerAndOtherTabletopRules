@@ -94,6 +94,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     InvokeAbilitySpend(root, resource);
                     return;
                 }
+                if (IsBreathTrait(trait))
+                {
+                    SpendBreathForPersistence(fixture, unit, root, phase);
+                    return;
+                }
                 if (trait.Definition.Id != ElementalAlternateTraitId.EfreetiMagic ||
                     !IsFixtureUnit(unit, fixture) || !Game.Instance.IsPaused)
                     throw new InvalidOperationException("Daily-trait persistence requires the exact paused Efreeti fixture.");
