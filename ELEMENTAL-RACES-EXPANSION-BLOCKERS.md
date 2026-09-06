@@ -30,8 +30,11 @@ Release C has no established hard blocker. Its replacement framework and
 first eight passive mechanics have incremental proof. Three typed summon
 Insights and three reactive-healing traits now also pass focused native tests
 in KMG-only and highest-risk combined profiles, and those six traits now pass
-module-OFF/ON persistence in the restored installed configuration. Seven
-mechanics, the other fifteen traits' persistence, full lifecycle and final
+module-OFF/ON persistence in the restored installed configuration. Efreeti
+Magic additionally passes native KMG-only/combined, actual native-selected
+multi-trait OFF/ON saves, spent shared uses and active size effects, native
+rest/level/respec/cleanup, fresh absence and renewed pinned 0.0.114 migration.
+Six mechanics, the other fourteen traits' persistence, full lifecycle and final
 qualification remain. Ray-deflection and
 native difficult-terrain contracts still require focused engine evidence.
 

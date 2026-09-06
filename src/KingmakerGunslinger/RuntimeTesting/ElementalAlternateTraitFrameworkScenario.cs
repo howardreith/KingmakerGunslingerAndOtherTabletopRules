@@ -310,6 +310,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalSummonInsightScenario.Exercise(
                     request, assertions, evidenceFiles);
                 ElementalBloodScenario.Exercise(request, assertions, evidenceFiles);
+                ElementalEfreetiMagicScenario.Exercise(request, assertions, evidenceFiles);
             }
             catch (Exception exception)
             {

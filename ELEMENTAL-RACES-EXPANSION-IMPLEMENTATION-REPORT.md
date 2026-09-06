@@ -5,7 +5,8 @@
 **IN PROGRESS - FOUNDATION, RELEASE A, AND RELEASE B PASS ALL LOCAL GATES;
 RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; EIGHT TRAITS
 HAVE CHECKPOINT PROOF AND THREE SUMMON INSIGHTS PLUS THREE BLOOD TRAITS HAVE
-NATIVE AND INCREMENTAL SAVE-BACKED EVIDENCE. SEVEN MECHANICS, THE OTHER FIFTEEN
+NATIVE AND INCREMENTAL SAVE-BACKED EVIDENCE. EFREETI MAGIC ALSO PASSES NATIVE,
+MULTI-TRAIT SAVE AND RENEWED LEGACY MIGRATION GATES. SIX MECHANICS, THE OTHER FOURTEEN
 TRAITS' PERSISTENCE, FULL LIFECYCLE, AND FINAL RELEASE-WIDE
 QUALIFICATION REMAIN PENDING. THE FACT-COMPONENT NAME REPAIR NOW PASSES
 PINNED 0.0.114 MIGRATION MECHANICS; SUBJECTIVE VISUAL REVIEW REMAINS. THE
@@ -28,12 +29,22 @@ behavior.
 
 ## Planned release inventory
 
+The latest Efreeti Magic slice passes 1,421 tests, clean build/package and
+nine guarded processes (10,066 assertions): two native KMG-only/combined,
+four actual native-selected multi-trait persistence/cleanup, and three
+renewed pinned 0.0.114 migration processes. Its four
+new identities bring the current manifest to 1,853 total / 1,851 active;
+215 active Elemental identities include 187 blueprints and 28 visual proxies.
+Exact artifact/run/restoration hashes are in `releaseCEfreetiQualification`
+in STATE and the [Efreeti checkpoint](docs/ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md).
+The earlier native-only candidate remains historical in `releaseCEfreetiMagicWork`.
+
 | Release | Version | Scope | Status |
 | --- | --- | --- | --- |
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
 | B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - EIGHT CHECKPOINTED; THREE INSIGHTS AND THREE BLOOD TRAITS HAVE NATIVE PROOF; SEVEN MECHANICS PENDING |
+| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - FIFTEEN NATIVE-PROVEN; SIX IMPLEMENTATIONS AND FULL RELEASE GATES PENDING |
 
 ## Current summon Insight and component-identity investigation
 
@@ -87,7 +98,7 @@ active-buff regressions now pass for all three traits. Failure evidence remains
 historical. Saved fixtures use the restored installed configuration; the isolated
 combined profile's earlier working-fixture load timeout remains unqualified.
 The other fifteen traits' persistence, full lifecycle, subjective visual review,
-seven missing mechanics and final release gates remain. Exact candidate hashes,
+six missing mechanics and final release gates remain. Exact candidate hashes,
 run IDs, warnings and restoration evidence are in
 `releaseCBloodInsightPersistenceQualification` in STATE.
 

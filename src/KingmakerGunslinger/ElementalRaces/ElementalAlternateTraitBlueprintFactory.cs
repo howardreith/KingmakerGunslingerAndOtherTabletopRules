@@ -29,16 +29,20 @@ namespace KingmakerGunslinger.ElementalRaces
             {
                 BlueprintBuff bloodBuff = ElementalBloodBlueprintFactory.Register(
                     registry, definition, icon);
+                ElementalTraitDailyAbilityBlueprints daily = ElementalEfreetiMagicFactory.Register(
+                    library, registry, definition.Id);
                 BlueprintFeature provider = registry.Register<BlueprintFeature>(
                     definition.ProviderSymbol,
-                    () => CreateProvider(library, definition, icon, bloodBuff));
+                    () => CreateProvider(library, definition, icon, bloodBuff, daily));
                 BlueprintFeature marker = registry.Register<BlueprintFeature>(
                     definition.MarkerSymbol,
                     () => CreateMarker(definition, icon));
                 ElementalBloodBlueprintFactory.Bind(bloodBuff, provider, marker);
                 traits.Add(new ElementalAlternateTraitBlueprints(definition,
-                    marker, provider, bloodBuff == null ? null :
-                        new BlueprintScriptableObject[] { bloodBuff }));
+                    marker, provider, (bloodBuff == null ?
+                        Array.Empty<BlueprintScriptableObject>() :
+                        new BlueprintScriptableObject[] { bloodBuff }).Concat(daily == null ?
+                            Array.Empty<BlueprintScriptableObject>() : daily.Mechanics)));
             }
 
             foreach (ElementalAlternateTraitBlueprints trait in traits)
@@ -73,7 +77,7 @@ namespace KingmakerGunslinger.ElementalRaces
         private static BlueprintFeature CreateProvider(
             LibraryScriptableObject library,
             ElementalAlternateTraitDefinition definition, Sprite icon,
-            BlueprintBuff bloodBuff)
+            BlueprintBuff bloodBuff, ElementalTraitDailyAbilityBlueprints daily)
         {
             BlueprintFeature result = BaseFeature(definition.ProviderSymbol,
                 true);
@@ -87,6 +91,12 @@ namespace KingmakerGunslinger.ElementalRaces
                     definition.Id))
                 .Concat(ElementalBloodBlueprintFactory.ComponentsFor(definition,
                     bloodBuff)).ToArray();
+            if (daily != null)
+                // Native resources activate before TurnOn. Restore remembered
+                // expenditure before the final reconciliation callback sees it.
+                result.ComponentsArray = result.ComponentsArray.Where(value =>
+                    !ReferenceEquals(value, controller)).Concat(daily.ProviderComponents())
+                    .Concat(new BlueprintComponent[] { controller }).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create(Key(definition, "Provider.Name"),
                     definition.Name + " Provider"),

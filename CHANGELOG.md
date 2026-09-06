@@ -2,6 +2,13 @@
 
 ## 0.0.117-elemental-traits
 
+- Adds incrementally qualified Efreeti Magic: Enlarge Person
+  and Reduce Person wrappers share one persisted daily resource and retain
+  native person targeting. All 1,421 tests and clean build/package pass.
+  Nine guarded processes pass 10,066 assertions: native KMG-only/combined,
+  actual multi-trait OFF/ON saves, shared spent uses and active size buffs,
+  rest/level/respec/cleanup, and renewed pinned 0.0.114 migration. Visual
+  diagnostics and full Release C lifecycle/compatibility gates remain explicit.
 - Adds 62 fixed manifest identities for ten explicit replacement-slot
   selections, ten retain-base markers, 21 visible alternate-trait markers,
   and 21 separate hidden mechanic providers.

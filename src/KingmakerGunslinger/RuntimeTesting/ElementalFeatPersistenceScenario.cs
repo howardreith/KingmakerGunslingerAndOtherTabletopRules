@@ -220,13 +220,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ElementalRaceIdentityCatalog
                                 .ElementalStrikeAbility))
                 };
-                _prepareFeatPauseBefore =
-                    Kingmaker.Game.Instance.IsPaused;
+                EnsurePreparePersistencePause();
                 TimeSpan gameTimeAtPause = Kingmaker.Game.Instance
                     .TimeController.GameTime;
-                Kingmaker.Game.Instance.IsPaused = true;
-                _prepareFeatPauseApplied =
-                    Kingmaker.Game.Instance.IsPaused;
                 JObject scorching = ObserveFeatPersistence(
                     scorchingFixture, scorchingOwner, true, true,
                     "prepare-immediately-before-save");
@@ -250,6 +246,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         scorching.Value<bool>("exact") &&
                         strike.Value<bool>("exact") }
                 };
+            }
+
+            private void EnsurePreparePersistencePause()
+            {
+                if (_prepareFeatPauseApplied) return;
+                _prepareFeatPauseBefore = Kingmaker.Game.Instance.IsPaused;
+                Kingmaker.Game.Instance.IsPaused = true;
+                _prepareFeatPauseApplied = Kingmaker.Game.Instance.IsPaused;
+                if (!_prepareFeatPauseApplied)
+                    throw new InvalidOperationException("Guarded transient-state preparation did not pause the campaign clock.");
             }
 
             private bool RestorePrepareFeatPersistencePause()

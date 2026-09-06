@@ -17,7 +17,350 @@
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
     "releaseB": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseC": "IN-PROGRESS-FOURTEEN-MECHANICS-NATIVE-PROOF-SEVEN-REMAIN"
+    "releaseC": "IN-PROGRESS-FIFTEEN-MECHANICS-NATIVE-PROOF-SIX-REMAIN; SEVEN-TRAIT-PERSISTENCE-AND-RENEWED-LEGACY-PASS"
+  },
+  "releaseCEfreetiQualification": {
+    "postDocumentationBuild": {
+      "status": "PASS",
+      "sourceStateSha256": "efc2ad487886c6756d6d4b566e8fe55f284d1309cdde5371960e3f098780aa20",
+      "packageSha256": "581aa7bf2c2860d2106e4f1ba0c191ae978f9472fa284460ab31121f565575a8",
+      "packageBytes": 23211246,
+      "packageEntries": 135,
+      "dllSha256": "7d5e8b2b1a62163d3520a8904b4e774b021223db43641ec0dcfb0499056bd620",
+      "dllMvid": "82ccea3b-39c9-45e5-9fb2-2f164324d7b6",
+      "domainTests": 1421,
+      "runtimeBinaryUnchanged": true,
+      "scope": "Documentation-only packaging refresh after runtime qualification; not a new game run."
+    },
+    "status": "PASS-INCREMENTAL-NATIVE-PERSISTENCE-LEGACY; NOT-FULL-RELEASE-C",
+    "report": "docs/ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md",
+    "basedOnCommit": "c7249576dd79d565039b635dab46fcae1e5a1d8a",
+    "sourceStateSha256": "bffa2d0d0490a1bf200ef1fd036fbf27e9c65a0b3b772dffbb75cc0931215b37",
+    "packageVersion": "0.0.117-elemental-traits",
+    "packageBytes": 23210953,
+    "packageEntries": 135,
+    "packageSha256": "263a4ee270619d4216792097adbc2204a224ca682d805f3be7cd68be04d3b484",
+    "dllSha256": "7d5e8b2b1a62163d3520a8904b4e774b021223db43641ec0dcfb0499056bd620",
+    "dllBytes": 6130176,
+    "dllMvid": "82ccea3b-39c9-45e5-9fb2-2f164324d7b6",
+    "repositoryValidation": "PASS",
+    "domainTests": 1421,
+    "cleanReleaseBuild": "PASS",
+    "strictPackageValidation": "PASS",
+    "guardedProcesses": 9,
+    "assertions": 10066,
+    "warnings": 60,
+    "nativeRuns": [
+      {
+        "directory": "20260906T0812272739660Z-observe-elemental-alternate-trait-framework",
+        "runId": "20260906T0812272889411Z-90c75d4be6d848f989ef4fe2b26265f0",
+        "status": "PASS",
+        "assertions": 4898,
+        "warnings": 0,
+        "efreetiObservations": 68,
+        "efreetiFailures": 0,
+        "cleanupExact": true,
+        "factPostLoad": 0,
+        "optionalKeyNotFound": 0,
+        "hashes": {
+          "compatibility-attribution-log-efreeti-final-20260906T081205Z-only.json": "6249ae74869b917ee58ecbf4fc3d9fe917bd2c97b94004837cdb39343f550a67",
+          "elemental-efreeti-magic.json": "c5d09b99bb98e3b9567b88bfdd94f5ecb8f27dbe1d1b46e359a549c3e543511a",
+          "output_log-efreeti-final-20260906T081205Z-only.txt": "bc35e2891800bd6176a96315f0cc5cceb54fda1c531f1f0177dc38a9db77164a",
+          "runtime-evidence.json": "629f21bb71b4feb520751343e8e9dd65a8df147dedf6f056482908f0f4afead0",
+          "runtime-result.json": "8bfe2381a022e905bb9e8fb4c2f4357c566af74131f598a95ce05c2777f91fa7"
+        }
+      },
+      {
+        "directory": "20260906T0814184564976Z-observe-elemental-alternate-trait-framework",
+        "runId": "20260906T0814184584977Z-2c06ab9a14d34c80a7132dadb178b2ac",
+        "status": "PASS",
+        "assertions": 4898,
+        "warnings": 0,
+        "efreetiObservations": 68,
+        "efreetiFailures": 0,
+        "cleanupExact": true,
+        "factPostLoad": 0,
+        "optionalKeyNotFound": 4,
+        "hashes": {
+          "compatibility-attribution-log-efreeti-final-20260906T081347Z-combined.json": "122c1fdb659edd925e0856a81e677895cf18d50509d37458a7b4d76c525b4d88",
+          "elemental-efreeti-magic.json": "cf786be9b92b38b033c10b2143befe652f51854fded7553735fa467a8566e2b9",
+          "output_log-efreeti-final-20260906T081347Z-combined.txt": "f9d7eccc8222976d74fb6265b0606d1b421a7b8c68b51e2ae6cdb53995978918",
+          "runtime-evidence.json": "4f6e232d441aa73b847f069a6e0760ad1d3b48ccd2a7f48eb1fa9749db89a457",
+          "runtime-result.json": "be0391624f6c73b03a3b733d7a91407cb530f0155a840871ff60319be9413b21"
+        }
+      }
+    ],
+    "persistenceRuns": [
+      {
+        "directory": "20260906T0745079755173Z-elemental-race-persistence-prepare",
+        "runId": "20260906T0745079985161Z-1a014f37a859443fba386e33870768ea",
+        "status": "PASS",
+        "assertions": 53,
+        "warnings": 14,
+        "traitRows": 24,
+        "traitFailures": 0,
+        "efreetiRows": 30,
+        "efreetiFailures": 0,
+        "hashes": {
+          "compatibility-attribution-log-elemental-traits-elemental-race-persistence-prepare.json": "74ddd9a450c34e093b5c4c428e42c3488a5819f565c699a621f7fe310fcb9a50",
+          "elemental-race-persistence-index.json": "7d3ccb5587901e9a45e424acc236740bec1d5310e4d7ff3438d08e35d8eb7b99",
+          "output_log-elemental-traits-elemental-race-persistence-prepare.txt": "3402675e140134f710582340493ef75c8d7eb380d3e8b61d90ff3dd5d185934a",
+          "runtime-evidence.json": "e300559cb868a5eedd25819d2723cf9f4904c8e5a705af470ce237109da2ca37",
+          "runtime-result.json": "d6c1b771c5996fabbcba34878f62df563b1d3b5a890bf5839f3e0000a8dcac6e"
+        }
+      },
+      {
+        "directory": "20260906T0749469268976Z-elemental-race-module-disabled-persistence",
+        "runId": "20260906T0749469289194Z-02494de2a80d456c83b4541ae96edfa4",
+        "status": "PASS",
+        "assertions": 123,
+        "warnings": 16,
+        "traitRows": 96,
+        "traitFailures": 0,
+        "efreetiRows": 42,
+        "efreetiFailures": 0,
+        "hashes": {
+          "compatibility-attribution-log-elemental-traits-elemental-race-module-disabled-persistence.json": "bd757a94e0d3b6cd916c7c87e3625bd7be453e3cd28c16ae26988fddc72d3807",
+          "elemental-race-persistence-index.json": "301d70df639d611393e9b68759b8fde9e23dfcb17c6e9befe618e16b8ea794df",
+          "output_log-elemental-traits-elemental-race-module-disabled-persistence.txt": "8bb0d7d3236f3c6bfb98bd3315129a228cf79eb974e051de7b1440a4bcb13623",
+          "runtime-evidence.json": "e3ada57367a73a0152a1e50dc566b04ef2b13db72cc2d12a119c5ab2401352f7",
+          "runtime-result.json": "35f44244ace60c5495ec09eb0dedc8a750886ee7e9e1d336c93493ba0abc3fbe"
+        }
+      },
+      {
+        "directory": "20260906T0753348393354Z-elemental-race-module-restored-persistence",
+        "runId": "20260906T0753348423706Z-25ef14a5efe54e7283bd8063c2862761",
+        "status": "PASS",
+        "assertions": 59,
+        "warnings": 15,
+        "traitRows": 48,
+        "traitFailures": 0,
+        "efreetiRows": 12,
+        "efreetiFailures": 0,
+        "hashes": {
+          "compatibility-attribution-log-elemental-traits-elemental-race-module-restored-persistence.json": "c95a131f75cdfeccad5264350be987adc80608ea52339903be06d5c03b1b0deb",
+          "elemental-race-persistence-index.json": "c7eccb06ffb84d9ac40cf1cd4a3be48056dce5f46a938315a020278c7d9e3b25",
+          "output_log-elemental-traits-elemental-race-module-restored-persistence.txt": "bfb64cf84f0fe795ab10105565bd28f37b4a947e8d6152a7c578e4ca213007b4",
+          "runtime-evidence.json": "5d5fbef7a195396c852066e4c7e789957782c8dcda469e197b4992590ec36aae",
+          "runtime-result.json": "0fefa981a0c59a0c9ea7d1faa93ea4743e0f226cefa3732a9780478e365990b0"
+        }
+      },
+      {
+        "directory": "20260906T0758341231802Z-elemental-race-persistence-verify-absent",
+        "runId": "20260906T0758341492036Z-78f454ed4649444083f6872b2fc677e5",
+        "status": "PASS",
+        "assertions": 7,
+        "warnings": 2,
+        "traitRows": 0,
+        "traitFailures": 0,
+        "efreetiRows": 0,
+        "efreetiFailures": 0,
+        "hashes": {
+          "compatibility-attribution-log-efreeti-fresh-absence.json": "7b33f995312113c6e7bc6ca9ead75a1931d150dfbee9ba4cd5fa8bb12fd2c547",
+          "elemental-race-persistence-index.json": "eb711ac644761e9179370991c4c3cec27389b517335a84316aed7d88fa2f00c8",
+          "output_log-efreeti-fresh-absence.txt": "45067e0fcace02152d8950afe9237946cb337a001e11ffe632d7c115a16594b7",
+          "runtime-evidence.json": "d8c527bf586792b570248a57e4a45ad033be75383b47cd596c2abe9ba2e0cbf9",
+          "runtime-result.json": "2ba32960fd463a1f8554a013baceafd4e51ffb62df0bc434ae86ec047cdb91a5"
+        }
+      }
+    ],
+    "profileTransactions": [
+      {
+        "id": "efreeti-final-20260906T081205Z-only",
+        "profile": "gunslinger-only",
+        "status": "Restored",
+        "restorationVerified": true,
+        "originalEntries": 968,
+        "actualEntries": 968,
+        "manifestEqual": true,
+        "originalModTreeManifestSha256": "5f8f14bc132c4996062832da058a1058d696d150d65b9d1922f46993ece1ee52",
+        "restoredModTreeManifestSha256": "5f8f14bc132c4996062832da058a1058d696d150d65b9d1922f46993ece1ee52",
+        "transactionSha256": "46cb123317ee622b0c845885467d49e8c90bccbe553036df5a56e50889672bc5"
+      },
+      {
+        "id": "efreeti-final-20260906T081347Z-combined",
+        "profile": "gunslinger-high-risk-combined-favored-class",
+        "status": "Restored",
+        "restorationVerified": true,
+        "originalEntries": 968,
+        "actualEntries": 968,
+        "manifestEqual": true,
+        "originalModTreeManifestSha256": "5f8f14bc132c4996062832da058a1058d696d150d65b9d1922f46993ece1ee52",
+        "restoredModTreeManifestSha256": "5f8f14bc132c4996062832da058a1058d696d150d65b9d1922f46993ece1ee52",
+        "transactionSha256": "53248d5865fae2957fe1636faffac88bf1e7a94237a52f4a0c9a1aa2be1af02b"
+      }
+    ],
+    "legacyMigration": {
+      "transactionId": "20260906T0802099975194Z-elemental-race-legacy-migration-transaction",
+      "status": "PASS",
+      "transactionSha256": "4178fdbf7926ed0d58a14a2a96e5bd54c75d90c41cf8b39c404e6292d5f3994c",
+      "legacyProducerCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
+      "legacyPackageSha256": "b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694",
+      "protectedBaselineExcluded": true,
+      "saveName": "KMG_AUTOMATION_WORKING",
+      "assertions": 28,
+      "warnings": 13,
+      "settingsBeforeSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "settingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "phases": [
+        {
+          "scenario": "elemental-race-persistence-prepare",
+          "version": "0.0.114",
+          "runId": "20260906T0802149958125Z-82d711bc08624927926a721642a3aec0",
+          "status": "PASS",
+          "assertions": 11,
+          "warnings": 5,
+          "resultSha256": "d1c9dca023ae5abe5a10eed05fc18afa84f3df2f511a85faa3d9e7c46c206b9c",
+          "evidenceSha256": "04fa0394613c4cdbfd5a499865703cbecd0d6088499978ed6c0ccf3325cf4287",
+          "nativeLogSha256": "7320c5ab6df85f746baabd76c9e29ff50db466f960aef517316266fb17a73843",
+          "nativeLogSummarySha256": "f5d113cb6b50a5d0b978488c8715de4c4e593449b6d096ad3d1e86acef86ebad"
+        },
+        {
+          "scenario": "elemental-race-legacy-migration",
+          "version": "0.0.117",
+          "runId": "20260906T0805043338627Z-f068e8295a3847e8820f9f439f79d2ad",
+          "status": "PASS",
+          "assertions": 10,
+          "warnings": 6,
+          "resultSha256": "b293f364be0dc32bfcf661ce64fa6507f07c759fb8c83df3fbb51db433a72ea1",
+          "evidenceSha256": "0c841c6f4775aae7279a39f705a9b4182b68f6c410014c5e70335c7e00073dd4",
+          "nativeLogSha256": "4f82ae4e159613c8bb6f24386d7e3e9db38c9f5a2d86f1f656f3d785ee6277b0",
+          "nativeLogSummarySha256": "b4bee951b6973a12c10169ac9c366a8bd6c1da73ab1ab8f091160dc8eca0842b"
+        },
+        {
+          "scenario": "elemental-race-persistence-verify-absent",
+          "version": "0.0.117",
+          "runId": "20260906T0807433266973Z-cdc3243da55a4b2f95c7845cbe400a50",
+          "status": "PASS",
+          "assertions": 7,
+          "warnings": 2,
+          "resultSha256": "caaca0f23b210b44c23e7f620fe610eee5967e870d43ae7aff85547771e7faed",
+          "evidenceSha256": "3ed4c35cab5e0f396040d7b9219eeb8d5e8371b0ebe2873b87a1e924176ee0ee",
+          "nativeLogSha256": "470f3365ea68803dd6b6df95778c96789e8d03706a440882f9d4188b968aacc5",
+          "nativeLogSummarySha256": "9f32e05444af101b76d3ee6ae9d98859cbced81429caaa2f278a750d2e04cceb"
+        }
+      ]
+    },
+    "persistence": "Seven-trait v2 matrix: 24 fixtures, 18 trait-bearing, all six Ifrits with two actual native-selected disjoint-slot traits. Twelve native Efreeti accepted casts and cancellations across prepare and OFF re-cast; all shared resources spent to zero. Six size buffs retain exact native/source identities, caster IDs, DCs and expiration ticks across both fresh-load boundaries. Nine blood buffs and partial actual-HP expenditure survive OFF load; level-up retains spent amount, ordinary rest resets and native healing re-spends. ON native respec restores base traits and removes owned daily graphs and transient effects. Three authorized working-save writes followed by a fresh zero-write absence PASS with the original three-party state. 168 trait and 84 Efreeti observations, all exact.",
+    "settingsHashes": {
+      "featureModules": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "callOfTheWild": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8",
+      "favoredClass": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
+    },
+    "nativeErrorScope": "Final KMG-only log has zero Fact.PostLoad and zero KeyNotFoundException signatures; combined retains four known optional startup KeyNotFoundException signatures and zero Fact.PostLoad. New-trait save logs have zero Fact.PostLoad and checked duplicate-resource signatures, with four known optional startup signatures each. Not a blanket zero native-log-errors claim.",
+    "visualReview": "Six Ifrit module-OFF four-angle previews inspected, covering both sexes/all three heritages and body presets. No obvious absent body/outfit geometry; small/dark presentation retained as framing limitations. Direct image viewer failed Windows sandbox setup; a read-only in-memory thumbnail fallback succeeded without changing originals. No image was used as mechanical proof. Remaining previews/isometric images and full Release C visual/lifecycle matrix are NOT-RUN.",
+    "remaining": "Six required mechanics: Crystalline Form, Treacherous Earth, Breeze-Kissed, Acid Breath, Nereid Fascination, Ooze Breath. The other fourteen traits' actual persistence, complete all-trait/legal-combination policy/resource/prerequisite matrix, death/resurrection, polymorph/return, full visual review and final compatibility/module/release gates remain. Visual Adjustments absent/NOT-RUN. External push branch allowlist still blocks checkpoint publication."
+  },
+  "releaseCEfreetiMagicWork": {
+    "status": "HISTORICAL-FIRST-NATIVE-CANDIDATE; FINAL-QUALIFICATION-IN-releaseCEfreetiQualification",
+    "persistenceFirstAttempt": {
+      "runId": "20260906T0738460536177Z-bdedab56cb724ed6b1da05063f07f82a",
+      "directory": "20260906T0738460336022Z-elemental-race-persistence-prepare",
+      "status": "FAIL-FIXTURE-BEFORE-SAVE; CORRECTION-QUALIFIED-BY-LATER-RUNS",
+      "cause": "Read-only Efreeti size witness incorrectly required the final persisted fixture ID on its validated native pre-respec source actor. Source stats/providers/resource/appearance were exact and there were no buffs. The predicate now observes without applying mutation-only ID constraints; all native cast and cleanup writes still require the exact disposable fixture.",
+      "saveWrites": 0,
+      "resultSha256": "b3946868a8104ea9b1b741d4eea25c9d42c0a3728566e76b8024b1ffbbc3d0d6",
+      "evidenceSha256": "2907a9a688eaedf46e8fc6bddf019768297e8e1231ada52d18f090b220c0e666",
+      "sourceStateSha256": "38ac8ef47b0ba2d107e0ba156d2523cf9d8c46d14c732792874589876c3fc1f2",
+      "packageSha256": "85d9bbd459c549537fc27350caf21e7065f9da9516429536bad614ce39e2f0d8",
+      "packageBytes": 23210954,
+      "packageEntries": 135,
+      "dllSha256": "b8ec368b0990bcf887b8b5100a0d87469e7ebf473513797d09c557d07c448ae3",
+      "dllBytes": 6130176,
+      "dllMvid": "40f324f5-a2c1-498a-8bcd-12ca195c6968",
+      "settingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+    },
+    "persistenceHarnessWork": "Seven-trait v2 matrix now passes all 1421 tests, clean Release/package, two native profiles, four actual persistence processes and renewed three-process legacy migration. Exact final artifact and evidence are separately recorded in releaseCEfreetiQualification; earlier native-only evidence remains historical.",
+    "precedingCheckpoint": "c7249576dd79d565039b635dab46fcae1e5a1d8a",
+    "rulesSource": "https://aonprd.com/RacesDisplay.aspx?ItemName=Ifrit",
+    "sourceStateSha256": "073325a93c6f8f465226db01c12b04cf3e1f6f75505041f45707c4888018e126",
+    "packageVersion": "0.0.117-elemental-traits",
+    "packageBytes": 23207664,
+    "packageEntries": 135,
+    "packageSha256": "7a11e5380c0cf63ba2ea69fa6179c8ab2dc3844491e29562c6cb5f9948c58075",
+    "dllSha256": "2f434f9a4e62bc89dd989afed4edb35261a1a84891935de6ba847ad0c984d1bc",
+    "dllMvid": "ff307a92-44d6-40d0-9871-c0f0fb77601c",
+    "dllBytes": 6120960,
+    "repositoryValidation": "PASS",
+    "domainTests": 1420,
+    "cleanReleaseBuild": "PASS",
+    "strictPackageValidation": "PASS",
+    "identities": "Four fixed entries 066-069: shared resource, choice parent, native Enlarge Person and Reduce Person wrappers. Manifest 1853 total / 1851 active; Elemental 215 active / 187 blueprints / 28 proxies.",
+    "implementation": "Exact native person targeting remains unchanged. Native AddFacts/AddAbilityResources provide abilities and resource. Local activation memory keeps the lower of current and remembered amount, never refilling a spent use. Native rest clears previous-day owned snapshots, including suppressed resources. Reconciliation removes and validates only exact owned daily graphs. No global race/targeting patch or optional dependency.",
+    "nativeProof": "Two fresh guarded Steam processes, 9796 assertions, zero runtime-result warnings, 68 exact Efreeti observations per profile. All three Ifrit heritages: real Enlarge/Reduce commands on another Ifrit, one native buff, exact size stat changes and total-level duration; CL=total multiclass level, SL=1, DC=11+current Charisma including temporary bonuses/penalties; cancellation, shared zero-use blocking, actual provider deactivation/reactivation, level-up, exact removal/re-add and ordinary rest while suppressed. No direct effect fallback. Original 968-entry profiles restored exactly.",
+    "preflightHistory": "One unsupported CompatibilityProfileId argument was refused before game launch; profile restored exactly. Corrected invocation uses external profile transaction without that scenario-inapplicable argument. Initial source preflight also corrected one stale architecture count and three stale domain/source-shape contracts; final full suite passes.",
+    "deployment": "20260906T0656255443146Z",
+    "deploymentSha256": "5a226432a15b754ce08f2b8b9c35416279bbc0f4de60e8d597ab1fd5dc56fc03",
+    "settingsRestoredSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "runs": [
+      {
+        "directory": "20260906T0658387949306Z-observe-elemental-alternate-trait-framework",
+        "runId": "20260906T0658388614557Z-db63cc75d896447aa998483fc81218a6",
+        "status": "PASS",
+        "assertions": 4898,
+        "warnings": 0,
+        "efreetiObservations": 68,
+        "efreetiFailures": 0,
+        "cleanupExact": true,
+        "factPostLoadErrors": 0,
+        "resourceReAddErrors": 0,
+        "optionalKeyNotFound": 0,
+        "hashes": {
+          "compatibility-attribution-log-efreeti-first-native.json": "6c8822ca76098d400cf842aab55d54f6dd281c4ae52b00c05af293987b4660ac",
+          "elemental-efreeti-magic.json": "7e0d00eb942ec8dc9deb14ce0d65daf8714905474bb832667ec4e4cac4aba233",
+          "output_log-efreeti-first-native.txt": "3bffb2f5ffabf4452277aa2a6b888e43613374fc4b4029378101c5b92d74a6c1",
+          "runtime-evidence.json": "d8aae35bb408914ab086a6be8b88fecee0afe90f5d9bab3ae0ad8d0681f3041d",
+          "runtime-result.json": "88989feacd3581a2e875eb35d1808e87da7a39df3ddc0a6bcfa9120374543aef"
+        }
+      },
+      {
+        "directory": "20260906T0703261766666Z-observe-elemental-alternate-trait-framework",
+        "runId": "20260906T0703262036667Z-9c03753c629e406b927c597383105fe4",
+        "status": "PASS",
+        "assertions": 4898,
+        "warnings": 0,
+        "efreetiObservations": 68,
+        "efreetiFailures": 0,
+        "cleanupExact": true,
+        "factPostLoadErrors": 0,
+        "resourceReAddErrors": 0,
+        "optionalKeyNotFound": 4,
+        "hashes": {
+          "compatibility-attribution-log-efreeti-combined-native.json": "262c492a1a4d43d04332da58af96bca3b84b92525897638b0705cd06abe34700",
+          "elemental-efreeti-magic.json": "0d501abb02e6560e6aee73f7cc52dedbec887755d5c8c034e6d65be082de1292",
+          "output_log-efreeti-combined-native.txt": "d1a05df89af0c532590e5ba1d1079256cb790c5bd968759001c79ab3e8a7cdbc",
+          "runtime-evidence.json": "1ed4de55e8ca7941b544288e38ef2d817073d015f0470259030b730b0a34bb1b",
+          "runtime-result.json": "b6136529cd7935b1dd4947c167f0955fddcded380b6fb6e5192cba0d58561d7b"
+        }
+      }
+    ],
+    "profileTransactions": [
+      {
+        "id": "efreeti-20260906T065625Z",
+        "status": "Restored",
+        "restorationVerified": true,
+        "originalEntries": 968,
+        "sha256": "09a61be93a5c888824b0435eefadd29495ab0b6ffd38118dcb8a855883ab69df"
+      },
+      {
+        "id": "efreeti-native-20260906T065814Z",
+        "status": "Restored",
+        "restorationVerified": true,
+        "originalEntries": 968,
+        "sha256": "5e6a7126b88a4e4d4e5a95c40f0a665857dce45cd186480dc06f35a1acf1d07c"
+      },
+      {
+        "id": "efreeti-combined-20260906T070253Z",
+        "status": "Restored",
+        "restorationVerified": true,
+        "originalEntries": 968,
+        "sha256": "26caf7b0850ad8c2964abbd3b5602cede95a1bca5346e13c7321ccaabae18c13"
+      }
+    ],
+    "nativeErrorScope": "Both logs have zero Fact.PostLoad and native duplicate-resource-add signatures; KMG-only has zero optional KeyNotFoundException, combined retains four known optional startup signatures. Not a blanket zero native-log-errors claim.",
+    "next": "Commit the now-qualified Efreeti source and curated evidence, attempt the exact mandated push, and continue the six remaining mechanics. Do not count incremental qualification as full Release C or all-trait persistence/lifecycle coverage.",
+    "remaining": "Six required mechanics unimplemented: Crystalline Form, Treacherous Earth, Breeze-Kissed, Acid Breath, Nereid Fascination, Ooze Breath. Complete all-trait/multi-trait persistence, death/resurrection, polymorph/return, subjective visual review and final compatibility/module/release gates remain. Visual Adjustments absent/NOT-RUN.",
+    "push": "Exact mandated command after c7249576 still refused the external allowlist; no bypass, merge, tag, release or package commit."
   },
   "foundationProgress": {
     "spellOnlyAffinity": "IMPLEMENTED-RUNTIME-PASS",
@@ -81,14 +424,14 @@
   "releaseCProgress": {
     "authoritativeRules": "AUDITED (Archives of Nethys race pages and alternate-racial-trait replacement rule)",
     "replacementPolicy": "IMPLEMENTED-TESTED (3 semantic slots; 21 traits; all legal powersets, invalid overlaps, heritage matrices, activation orders, remove/re-add, and marker reconstruction)",
-    "stableIdentities": "IMPLEMENTED-TESTED (65 fixed manifest identities: 10 selections, 10 retain markers, 21 trait markers, 21 providers, 3 blood-healing buffs)",
+    "stableIdentities": "IMPLEMENTED-TESTED (69 fixed manifest identities: 10 selections, 10 retain markers, 21 trait markers, 21 providers, 3 blood-healing buffs, 3 Efreeti abilities, 1 shared resource)",
     "selectionGraph": "IMPLEMENTED-RUNTIME-PASS (race-owned obligatory primary-slot selections; exact overlap exclusions; 180 native retain selections through creation/respec)",
     "reconciler": "IMPLEMENTED-FRAMEWORK-RUNTIME-PASS (69 legal sets, 207 heritage rows, 414 order rows, 21 marker-first cases; exact owned providers; spent-resource orphan regression; trait-specific persistence still pending)",
     "versionTransition": "0.0.117-elemental-traits ACTIVE; active build/runtime/compatibility controls updated; historical release gates preserved",
-    "traitMechanics": "EIGHT-CHECKPOINTED plus THREE-INSIGHTS and THREE-BLOOD-TRAITS-INCREMENTAL-NATIVE-AND-PERSISTENCE-PASS; seven required mechanics remain unimplemented; full Release C gates incomplete",
+    "traitMechanics": "EIGHT-CHECKPOINTED plus THREE-INSIGHTS and THREE-BLOOD-TRAITS-INCREMENTAL-NATIVE-AND-PERSISTENCE-PASS plus EFREETI-MAGIC-INCREMENTAL-NATIVE-PASS (save gates pending); six required mechanics remain unimplemented; full Release C gates incomplete",
     "summonInsights": "IMPLEMENTED-INCREMENTAL-NATIVE-AND-PERSISTENCE-PASS (both spell families, typed duration/exclusions/count/pool/cleanup; native observer lifetime, pinned legacy migration mechanics and six-trait OFF/ON native-selection save cycle pass; full lifecycle remains)",
     "bloodTraits": "IMPLEMENTED-INCREMENTAL-NATIVE-AND-PERSISTENCE-PASS (native damage/healing/cap/rest/exclusions; save-deactivation cleanup defect fixed; nine active buffs and spent capacity survive OFF load and level-up; rest/re-spend/ON/respec/absence pass; complete lifecycle remains)",
-    "deterministicTests": "PASS (1419/1419 corrected six-trait persistence candidate; complete repository validation, clean Release build and strict 135-entry package). First-eight checkpoint preflight PASS (202/202), with one unexplained snapshot failure followed by two unchanged PASS invocations",
+    "deterministicTests": "PASS (1420/1420 Efreeti Magic native candidate; complete repository validation, clean Release build and strict 135-entry package). Historical six-trait candidate 1419/1419 and first-eight checkpoint results retain their original scope.",
     "runtime": "FIRST-PASSIVE-SLICE-PASS (8/8 guarded processes, 13397/13397 assertions, zero warnings; includes full framework and inherited Ifrit/Acadamae regressions)",
     "persistence": "FRAMEWORK-PASS plus SIX-TRAIT-INCREMENTAL-PASS (four fresh processes, 230 assertions, 46 retained visual/DollData warnings; 24 fixtures, 18 actual native-selected traits, nine active partially spent blood buffs, 168 exact state observations; OFF/ON level/rest/respec/absence). Other fifteen traits and full lifecycle remain",
     "compatibility": "FRAMEWORK-PASS plus FIRST-PASSIVE-SLICE-PASS (including combined OFF); subsequent Insights/blood candidate passes KMG-only and highest-risk combined ON (four processes, 9680 assertions, zero warnings, two exact restorations); final six-profile and generic module-boundary reruns pending",

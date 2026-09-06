@@ -327,6 +327,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 race.AlternateTraits.Traits())
                 exact &= Rank(owner, trait.Provider) ==
                     (traits.Contains(trait) ? 1 : 0);
+            bool dailyGraphExact = ElementalTraitDailyResourceRuntime.IsExact(owner, race.AlternateTraits);
+            exact &= dailyGraphExact;
+            detail.Add("dailyAbilityGraph=" + dailyGraphExact);
             foreach (ElementalHeritageStat stat in Enum.GetValues(
                 typeof(ElementalHeritageStat)))
             {

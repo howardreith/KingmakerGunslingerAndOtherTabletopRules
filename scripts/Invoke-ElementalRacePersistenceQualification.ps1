@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 # Three guarded fresh-process phases persist race, heritage, Release B feat,
-# and the explicitly bounded six-trait blood/Insight state; verify module-OFF,
+# and the seven-trait blood/Insight plus Efreeti Magic matrix; verify module-OFF,
 # restore the module, respec, and clean up the
 # fixtures. Run the fresh-load absence phase separately after this restores the
 # caller's original settings bytes.

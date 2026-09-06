@@ -4,6 +4,8 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -11,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.ElementalRaces
 {
-    public sealed class UnitPartElementalHeritageState : UnitPart
+    public sealed class UnitPartElementalHeritageState : UnitPart, IUnitRestHandler
     {
         [JsonProperty]
         private Dictionary<string, int> _resourceAmounts =
@@ -34,6 +36,14 @@ namespace KingmakerGunslinger.ElementalRaces
         {
             base.PostLoad();
             EnsureStorage();
+        }
+
+        public void HandleUnitRest(UnitEntityData unit)
+        {
+            // Native rest restores present resources. Forget only yesterday's
+            // owned snapshots so a currently suppressed provider can recover too.
+            if (Owner != null && ReferenceEquals(Owner.Unit, unit))
+                EnsureStorage().Clear();
         }
 
         private Dictionary<string, int> EnsureStorage()
@@ -278,7 +288,10 @@ namespace KingmakerGunslinger.ElementalRaces
                 foreach (ElementalAlternateTraitBlueprints trait in
                     race.AlternateTraits.Traits())
                     if (!desiredTraitProviders.Contains(trait.Provider))
+                    {
                         TryRemove(owner, trait.Provider);
+                        ElementalTraitDailyResourceRuntime.RemoveInactive(owner, trait, state);
+                    }
 
                 if (desired.RacialSlaFeatureSymbol != null)
                     state.Remember(desiredHeritage.SlaResource.AssetGuid,
@@ -291,7 +304,8 @@ namespace KingmakerGunslinger.ElementalRaces
                     ProviderResourcesAreExact(owner, race,
                         desiredHeritage, desired) &&
                     InactiveAbilitiesAreAbsent(owner, race,
-                        desiredHeritage, desired);
+                        desiredHeritage, desired) &&
+                    ElementalTraitDailyResourceRuntime.IsExact(owner, race.AlternateTraits);
             }
             catch (Exception exception)
             {
@@ -327,9 +341,11 @@ namespace KingmakerGunslinger.ElementalRaces
                     RemoveOwnedAbility(owner, choice.SlaAbility);
                     RemoveOwnedResource(owner, choice, state);
                 }
-                foreach (BlueprintFeature provider in blueprint
-                    .AlternateTraits.OwnedProviders())
-                    TryRemove(owner, provider);
+                foreach (ElementalAlternateTraitBlueprints trait in blueprint.AlternateTraits.Traits())
+                {
+                    TryRemove(owner, trait.Provider);
+                    ElementalTraitDailyResourceRuntime.RemoveInactive(owner, trait, state);
+                }
             }
             catch (Exception exception)
             {

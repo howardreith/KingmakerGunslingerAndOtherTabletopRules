@@ -5,6 +5,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using KingmakerGunslinger.ElementalRaces;
 using Newtonsoft.Json.Linq;
@@ -15,29 +16,53 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal sealed partial class ElementalRacePersistenceSession
         {
-            private ElementalAlternateTraitBlueprints ExpectedPersistenceTrait(
+            private ElementalAlternateTraitBlueprints[] ExpectedPersistenceTraits(
                 ElementalPersistenceFixture fixture,
                 ElementalHeritageBlueprints heritage, bool includeTraits = true)
             {
                 if (_legacyMigration || !includeTraits ||
-                    !ReferenceEquals(heritage, fixture.Heritage)) return null;
+                    !ReferenceEquals(heritage, fixture.Heritage)) return new ElementalAlternateTraitBlueprints[0];
                 int heritageIndex = Array.IndexOf(fixture.Blueprints.Heritages
                     .Choices().ToArray(), heritage);
-                ElementalAlternateTraitId? id = ElementalBloodInsightPersistencePolicy.Trait(
+                ElementalAlternateTraitId[] ids = ElementalBloodInsightPersistencePolicy.Traits(
                     fixture.Blueprints.AlternateTraits.Race,
                     fixture.Gender == Gender.Male ? 0 : 1, heritageIndex);
-                return id.HasValue ? fixture.Blueprints.AlternateTraits.Require(id.Value) : null;
+                return ids.Select(fixture.Blueprints.AlternateTraits.Require).ToArray();
+            }
+
+            private ElementalAlternateTraitBlueprints PersistenceSlaTrait(
+                ElementalPersistenceFixture fixture, ElementalHeritageBlueprints heritage)
+            {
+                return ExpectedPersistenceTraits(fixture, heritage).SingleOrDefault(value =>
+                    value.Definition.Replaces(ElementalRacialTraitSlot.RacialSpellLikeAbility));
+            }
+
+            private BlueprintAbility PersistenceSlaAbility(ElementalPersistenceFixture fixture,
+                ElementalHeritageBlueprints heritage)
+            {
+                ElementalAlternateTraitBlueprints trait = PersistenceSlaTrait(fixture, heritage);
+                return trait == null ? heritage.SlaAbility : trait.Mechanics()
+                    .OfType<BlueprintAbility>().Single(value => value.Parent == null);
+            }
+
+            private BlueprintAbilityResource PersistenceSlaResource(ElementalPersistenceFixture fixture,
+                ElementalHeritageBlueprints heritage)
+            {
+                ElementalAlternateTraitBlueprints trait = PersistenceSlaTrait(fixture, heritage);
+                return trait == null ? heritage.SlaResource : trait.Mechanics()
+                    .OfType<BlueprintAbilityResource>().Single();
             }
 
             private static bool TraitProvidersExact(UnitDescriptor owner,
                 ElementalPersistenceFixture fixture,
-                ElementalAlternateTraitBlueprints desired)
+                ICollection<ElementalAlternateTraitBlueprints> desired)
             {
                 return owner != null && fixture.Blueprints.AlternateTraits.Traits()
                     .All(value => owner.Progression.Features.GetRank(value.Marker) ==
-                            (ReferenceEquals(value, desired) ? 1 : 0) &&
+                            (desired.Contains(value) ? 1 : 0) &&
                         owner.Progression.Features.GetRank(value.Provider) ==
-                            (ReferenceEquals(value, desired) ? 1 : 0));
+                            (desired.Contains(value) ? 1 : 0)) &&
+                    ElementalTraitDailyResourceRuntime.IsExact(owner, fixture.Blueprints.AlternateTraits);
             }
 
             private static bool LegacyAlternateTraitsAbsent(
@@ -52,12 +77,12 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private static bool AlternateTraitsExact(
                 UnitDescriptor owner, ElementalPersistenceFixture fixture,
-                ElementalAlternateTraitBlueprints desired)
+                ICollection<ElementalAlternateTraitBlueprints> desired)
             {
                 return owner != null && fixture.Blueprints.AlternateTraits
                     .Selections().All(value => owner.Progression.Features
-                        .GetRank(value.RetainMarker) == (desired != null &&
-                            desired.Definition.PrimarySlot == value.Definition.Slot ? 0 : 1)) &&
+                        .GetRank(value.RetainMarker) == (desired.Any(trait =>
+                            trait.Definition.PrimarySlot == value.Definition.Slot) ? 0 : 1)) &&
                     TraitProvidersExact(owner, fixture, desired);
             }
 
@@ -106,14 +131,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // Use the real level-up controller for all slot choices. Source
             // creation and restored respec retain base traits; the persisted
-            // target uses the explicitly bounded six-trait matrix.
+            // target uses the explicit seven-trait, disjoint-slot matrix.
             private static JArray SelectAlternateTraits(
                 LevelUpController controller,
                 ElementalPersistenceFixture fixture, string phase,
-                ElementalAlternateTraitBlueprints desired)
+                ICollection<ElementalAlternateTraitBlueprints> desired)
             {
                 var records = new JArray();
-                ElementalAlternateTraitBlueprints selectedTrait = null;
+                var selectedTraits = new List<ElementalAlternateTraitBlueprints>();
                 foreach (ElementalAlternateTraitSelectionBlueprints choice in
                     fixture.Blueprints.AlternateTraits.Selections())
                 {
@@ -133,9 +158,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .ToArray();
                     bool menuExact = items.Select(value => value == null
                         ? null : value.Feature).SequenceEqual(expected);
-                    BlueprintFeature expectedMarker = desired != null &&
-                        desired.Definition.PrimarySlot == choice.Definition.Slot
-                            ? desired.Marker : choice.RetainMarker;
+                    ElementalAlternateTraitBlueprints selectedChoice = desired.SingleOrDefault(value =>
+                        value.Definition.PrimarySlot == choice.Definition.Slot);
+                    BlueprintFeature expectedMarker = selectedChoice == null
+                        ? choice.RetainMarker : selectedChoice.Marker;
                     IFeatureSelectionItem item = items.SingleOrDefault(value =>
                         value != null && ReferenceEquals(value.Feature, expectedMarker));
                     bool selectable = nativeStateExact && item != null &&
@@ -145,11 +171,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         state, item);
                     int retainedRank = controller.Preview.Progression.Features
                         .GetRank(choice.RetainMarker);
-                    if (selected && desired != null && ReferenceEquals(expectedMarker, desired.Marker))
-                        selectedTrait = desired;
+                    if (selected && selectedChoice != null)
+                        selectedTraits.Add(selectedChoice);
                     int selectedRank = controller.Preview.Progression.Features.GetRank(expectedMarker);
                     int expectedRetainedRank = ReferenceEquals(expectedMarker, choice.RetainMarker) ? 1 : 0;
-                    bool traitProvidersExact = TraitProvidersExact(controller.Preview, fixture, selectedTrait);
+                    bool traitProvidersExact = TraitProvidersExact(controller.Preview, fixture, selectedTraits);
                     var record = new JObject
                     {
                         { "phase", phase },

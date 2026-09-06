@@ -13,6 +13,14 @@ Insights and three blood-healing traits with incremental native and save-backed
 proof. It is not a
 Release C PASS and must not be published.
 
+Subsequent source work adds Efreeti Magic with four fixed identities and one
+shared native daily resource. It passes all 1,421 tests, clean build/package,
+and nine guarded processes (10,066 assertions): native KMG-only/combined,
+actual native-selected multi-trait OFF/ON save/rest/level/respec/cleanup and
+renewed pinned 0.0.114 migration. See the
+[exact Efreeti checkpoint](ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md).
+Full Release C lifecycle and release-wide qualification remain pending.
+
 ## Implemented in this checkpoint
 
 - 62 fixed manifest identities: ten slot selections, ten retain-base markers,
@@ -59,7 +67,7 @@ save-backed processes (230 assertions, 46 retained visual/DollData warnings).
 Native selections, nine partially spent active blood buffs, OFF/ON load,
 level-up, rest, respec and fresh absence pass. Native provider deactivation no
 longer incorrectly removes a saved buff; exact marker loss still cleans it up.
-Seven other mechanics, the other fifteen traits' persistence, full lifecycle, final
+Six other mechanics, the other fourteen traits' persistence, full lifecycle, final
 compatibility/module matrices, full release qualification, and final
 documentation remain pending.
 Release A and Release B evidence is

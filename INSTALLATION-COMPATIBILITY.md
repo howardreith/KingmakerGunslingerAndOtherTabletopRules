@@ -196,10 +196,20 @@ traits subsequently pass actual native-selected OFF/ON saves, spent capacity,
 active buffs, level-up, rest, respec and fresh absence (230 assertions, 46
 retained visual/DollData warnings). Saved fixtures use the original installed
 configuration. The isolated combined profile's working-save load timeout is
-not a PASS; only its save-free checks are qualified here. The other fifteen
-traits' persistence, full lifecycle and final optional-mod profiles remain.
+not a PASS; only its save-free checks are qualified here. That historical
+six-trait cycle did not qualify the remaining traits' persistence or lifecycle.
 The exact 0.0.114 release inputs are recovered byte-for-byte and renewed legacy
 migration mechanics pass independently. Earlier evidence remains historical.
+
+The subsequent Efreeti Magic slice also passes KMG-only and highest-risk
+combined native checks: 9,796 assertions, zero runtime-result warnings,
+two exact 968-entry profile restorations. Its actual native-selected seven-trait
+save matrix passes four processes and 242 assertions, including six legal
+two-trait Ifrits, shared spent uses, active native size effects, OFF/ON load,
+level-up, rest, respec and fresh absence. Renewed pinned 0.0.114 migration passes
+another three processes and 28 assertions. The other fourteen traits' save
+coverage, full lifecycle and final release-wide compatibility gates remain.
+See the [exact Efreeti ledger](docs/ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md).
 
 ## Removal warning
 
