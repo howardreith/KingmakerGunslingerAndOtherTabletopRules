@@ -1,5 +1,29 @@
 # Autonomous Gunslinger journal
 
+## 2026-09-06 Share Transmutation direct-cast checkpoint
+
+- Clean master baseline:
+  `6874dc15a27ded132456dbdd480f47c794543a05`; feature branch
+  `codex/share-transmutation-instant`; API commit
+  `a788d2269fcc4aaa24f8c49f820257ceb9cf7403`.
+- Added one versioned direct handle that reuses the provider's intent, cast
+  policy, reservation ledger, lifecycle tracker, Share/Supremacy scopes,
+  Powerful Change modifier, exact debit, and cleanup. No Buff Planner compile
+  dependency, spell/caster/GUID exception, or synthetic command exists.
+- Version-aware source validation PASS; complete domain/reflection suite
+  1393/1393; exact .NET 4.7 Release compile PASS; consumer binary contract
+  87/87; strict build output/package PASS; two deterministic packages agree.
+- Candidate package/DLL/MVID:
+  `2490193efc17e6a27b07beaddba71fd149bfe62ef29c4ca167698e52032316f6` /
+  `090e6478844bcac7825ef04f43099ff41139e26aaf3b490ef327c991cd281dc6` /
+  `98c59878-ac0b-4b3b-9716-132a7e409450`.
+- The all-in-one builder's external Unity bundle path was absent. The exact
+  manifest-matching tracked bundle was copied only to generated workspace
+  output; unchanged strict validators passed. No live Mods/save/game mutation.
+- Runtime is NOT RUN. Exact next action is authorization or removal of the
+  uncommitted 0.0.115 release/default roll-forward, then final clean build and
+  guarded checkpoint push; the documented helper path is currently absent.
+
 ## 2026-08-20 Acadamae ordinary-player-path correction
 
 Fresh human evidence superseded the previous 15/15 runtime conclusion. The preserved exact run proves the three-argument constructor executed but rejected the detached prepared summon chain as `not-prepared`. Added canonical memorized-slot resolution, read-only UI evaluation, command-only slot binding, bounded presentation diagnostics, startup Harmony owner/order audit, and a runtime fixture with detached slotless outer/root nodes. Source gates pass: repository validation, `1,162/1,162`, clean Release/output, SoundBank, deterministic package, and strict package. Runtime and human gates remain open.

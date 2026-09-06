@@ -1,5 +1,21 @@
 # Autonomous Gunslinger blockers
 
+## 2026-09-06 Share Transmutation direct-cast checkpoint
+
+Core implementation is not blocked and is committed at
+`a788d2269fcc4aaa24f8c49f820257ceb9cf7403`; focused/full tests, exact compile,
+compiled contract, and strict deterministic package gates pass. The remaining
+repository workflow decision is whether the casting fix may include the
+task-created 0.0.115 release identity and active runtime-script default
+roll-forward. Safety review requires explicit authorization before committing
+that broader release plumbing; otherwise it must be removed and the API commit
+retained at the existing 0.0.114 identity.
+
+The mandated push helper
+`C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1` is
+absent, so no manual push substitutes for it. Save-backed gameplay remains NOT
+RUN and public release remains unauthorized.
+
 ## 2026-08-20 human-review continuation
 
 Acadamae is not blocked: the real prepared-player path is repaired and passed two independent fresh-process 15/15 runs. P0 release qualification remains blocked at the Tenebrous after-load boundary: the affected copy and a same-area no-Focused-Aim-marker control both cross the repaired serialization exception and stall after scene setup before the native completion callback. Independent acquisition, merchant, icon, and visual corrections continue; this blocker must not be reported as a qualified release.
