@@ -93,3 +93,9 @@ The next test-only checkpoint qualifies native multi-ray/duplicate-impact,
 non-damage-ray and two-handed/disabled-hand controls in both profiles (10,242
 assertions). See the [controls report](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md).
 No new production identity or behavior is implied by its remaining-trait audit.
+
+The [feat-preview correction checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+now resolves that diagnostic in 117: 1,424 tests, clean build/package and nine
+guarded processes (10,594 assertions) pass with exact restoration. Native
+preview/cancel/commit and renewed eight-trait save/legacy migration preserve
+original state. This does not modify the retained 116 artifact or finish C.

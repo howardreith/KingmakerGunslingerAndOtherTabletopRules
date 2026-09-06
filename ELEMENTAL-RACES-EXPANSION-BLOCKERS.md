@@ -13,13 +13,21 @@ configuration successfully loads the exact same working descriptor.
 
 None established.
 
+The [feat-preview correction checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+resolves the separately recorded transient errors in 117. Native preview,
+cancel/commit and renewed OFF/ON/save/legacy tests pass; all nine processes
+have zero exact transient-restoration or Fact.PostLoad signatures. Three
+968-entry folder restorations independently pass. All 60 visual/DollData
+warnings and earlier failed attempts remain recorded. The inherited 116
+artifact is unchanged; no historical preview qualification is implied.
+
 The test-only [Crystalline controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
 now resolves the pending multi-ray/duplicate-event, non-damage-ray and
 two-handed/disabled-hand controls. Both native profiles and exact restorations
-pass. The separate preview errors and remaining mechanics/lifecycle are still
-open; the donor audit does not establish a feature-specific hard stop.
+pass. Remaining mechanics/lifecycle are still open; the donor audit does not
+establish a feature-specific hard stop. The later preview correction is above.
 
-## Latest incremental save result
+## Earlier incremental save result
 
 The [Crystalline persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)
 supersedes the earlier pending save scope below. Exact armed consent, spent

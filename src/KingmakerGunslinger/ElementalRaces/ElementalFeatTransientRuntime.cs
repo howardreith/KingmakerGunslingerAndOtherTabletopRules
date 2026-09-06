@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -208,6 +209,12 @@ namespace KingmakerGunslinger.ElementalRaces
 
     internal static class ElementalFeatTransientRuntime
     {
+        // Exact installed native contract: SetupPreview sets this flag and
+        // AddBuffInternal refuses additions while it is true. No public
+        // equivalent distinguishes companion previews from active owners.
+        // Read only; never enable a preview collection or clear its ledger.
+        private static readonly FieldInfo NativePreviewDisabled = typeof(BuffCollection)
+            .GetField("m_Disabled", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly HashSet<UnitDescriptor> Reconciling =
             new HashSet<UnitDescriptor>();
         private static BlueprintFeature _elementalStrikeFeat;
@@ -357,6 +364,9 @@ namespace KingmakerGunslinger.ElementalRaces
                 UnitPartElementalFeatTransientState state = owner.Get<
                     UnitPartElementalFeatTransientState>();
                 if (state == null) return false;
+                if (NativePreviewDisabled == null || NativePreviewDisabled.FieldType != typeof(bool))
+                    throw new MissingFieldException(typeof(BuffCollection).FullName, "m_Disabled");
+                if ((bool)NativePreviewDisabled.GetValue(owner.Buffs)) return true;
                 long now = NowTicks();
                 if (!scorchingWeaponsOnly.HasValue ||
                     !scorchingWeaponsOnly.Value)

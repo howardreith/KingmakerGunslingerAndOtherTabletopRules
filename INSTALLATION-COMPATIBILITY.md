@@ -14,6 +14,13 @@ passes KMG-only and highest-risk combined with independently verified exact
 968-entry folder restoration. It is not the final release-wide profile matrix;
 existing combined diagnostics and absent Visual Adjustments remain explicit.
 
+The [preview correction](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+additionally passes native KMG-only/combined and renewed installed-copy
+OFF/ON/save/legacy checks, with three independently exact 968-entry folder
+restorations. It fixes the prior preview diagnostics in 117; the 116 package
+is unchanged. It neither completes the final profile matrix nor clears the
+retained visual warnings.
+
 ## Supported baseline
 
 This build is qualified against Pathfinder: Kingmaker Enhanced Plus Edition

@@ -202,5 +202,10 @@ Unchecked items are pending and must not be inferred from builds or historical
   disabled hands and recovery; all three Oread heritages in both profiles.
   10,242 assertions, 404 Crystalline observations, exact clock/fixture and
   independent 968-entry folder restorations. All failed candidates retained.
-- [ ] Complete native catalog, full trait lifecycle and resolution of the
-  pre-existing transient diagnostic.
+- [x] Resolve the native disabled-preview transient diagnostic in 117. Actual
+  commands and native preview/cancel/commit preserve same original ledgers,
+  buffs and exact item effects; both profiles and renewed eight-trait saves,
+  pinned legacy migration and exact restorations pass (10,594 assertions).
+  Zero exact transient errors; all 60 visual/DollData warnings retained.
+  The retained 116 artifact is unchanged, not retroactively preview-qualified.
+- [ ] Complete native catalog and full trait lifecycle.

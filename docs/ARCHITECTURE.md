@@ -53,6 +53,15 @@ removal, while ordinary native expiry/death handle duration cleanup. Dedicated
 runtime and six-trait fresh-process persistence scenarios prove this boundary;
 full Release C lifecycle qualification remains pending.
 
+The elemental feat-transient service reads the exact installed
+BuffCollection.m_Disabled preview contract after finding its existing owned
+UnitPart. A native preview is a mutation-free no-op; ordinary owners retain the
+existing hydration/expiry path. The native flag is never written, and a missing
+or changed field fails closed. Dedicated command/LevelUpController preview,
+cancel/commit and native per-item expiry tests prove original references and
+absolute times remain exact. The scoped logger spy is read-only and active
+only in that scenario. No native mechanic patch or saved schema is added.
+
 ## Expanded Summoning 0.0.78 layer
 
 Player-visible summon children use a project-owned icon manifest with 77

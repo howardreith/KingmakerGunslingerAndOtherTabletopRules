@@ -1,5 +1,56 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Native feat preview correction qualified
+
+- Candidate 02 passes repository validation, all 1,424 domain/reflection tests,
+  clean exact-reference Release and strict package validation. Nine guarded
+  Steam processes pass 10,594 assertions; 60 visual/DollData warnings remain.
+- Native KMG-only/combined preview/cancel/commit preserves original buff,
+  ledger and exact item-enchantment references/end times. A positively witnessed
+  project-log observer records zero restoration errors and is released.
+- The renewed eight-trait OFF/ON/rest/level/respec save cycle has 168 exact
+  trait and 42 exact Crystalline observations; its former four module-OFF
+  transient errors are now zero. Pinned 0.0.114 migration and both fresh-absence
+  checks pass. No protected baseline was accessed.
+- All three outer transactions independently restore the exact 968-entry Mods
+  tree and settings. Candidate 01 remains FAIL, including its invalid original
+  Unity-log zero-error assertion. A read-only collector array-enumeration error
+  was corrected without modifying evidence or rerunning the game.
+- No identity or schema changes. The inherited Release B service is corrected
+  in 117; retained 116 artifacts and historical test scopes are unchanged.
+  Exact hashes: [preview checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+  and releaseCFeatPreviewQualification in STATE.
+- Continue the five remaining traits, full lifecycle/persistence and final
+  release-wide gates. This is not a Release C PASS.
+
+## 2026-09-06 UTC - Native feat-transient preview regression in progress
+
+- Qualified controls checkpoint 686cd42efeb10d3c979e6ca4d951449d157998ca is
+  committed/pushed; local and origin match, clean tree observed.
+- Exact native IL shows BuffCollection.SetupPreview sets private m_Disabled
+  and native AddBuff refuses that preview. No public equivalent was found.
+- Added a feature-specific regression around command-created Scorching Weapons
+  and Elemental Strike: native preview/cancel/commit, exact original buff/item
+  references, unchanged persisted end time and native expiry. A scoped Unity
+  log observer retains actual project restoration errors and unsubscribes.
+- Production restoration is still unchanged. First reproduce the failed
+  preview boundary, then narrowly skip restoration only in the native disabled
+  preview. This work and all remaining Release C gates are not qualified yet.
+- Candidate 01 now reproduces the fault: run
+  20260906T1816147439334Z-b617e2cb57154c78858cd954935f146b fails five of 5,141
+  assertions. Four actual preview reconciliation checks fail; 16 exact project
+  restoration ERROR lines occur. Both live original buffs/items/end times
+  survive native cancel/commit. KMG-only profile restored exactly.
+- Corrected two fixture boundaries: UMM output did not reach the Unity callback,
+  so its zero-error assertion was not valid evidence; the request-local observer
+  now spies only the project logger's output with a positive INFO witness.
+  Native item expiry has its own ItemsEnchantmentController.TickItem scheduler,
+  separate from BuffCollection.Tick. Tick only the disposable affected items.
+- Production now reads the exact native disabled-preview flag and returns
+  without restoring or clearing any ledger/buff/item in that preview. Real
+  owner and save-hydration behavior are unchanged. Candidate 02 native and
+  renewed save-backed qualification remain pending.
+
 ## 2026-09-06 UTC - Crystalline remaining native controls qualified
 
 - Candidate 04 passes all 1,424 tests, clean Release/package and two guarded

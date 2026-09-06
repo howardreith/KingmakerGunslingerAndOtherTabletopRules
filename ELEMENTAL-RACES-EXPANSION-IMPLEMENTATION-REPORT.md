@@ -34,6 +34,15 @@ behavior.
 
 ## Planned release inventory
 
+The [feat-preview correction checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+fixes attempted transient-buff restoration inside native disabled previews.
+All 1,424 tests, clean build/package and nine guarded processes pass 10,594
+assertions: actual preview/cancel/commit, eight-trait OFF/ON/rest/level/respec
+and pinned legacy migration. Original ledgers, buffs and item end times remain
+exact; the former OFF transient errors are zero. All folder restorations
+independently pass. No identities are added. The inherited service is repaired
+in 117; retained 116 artifacts are unchanged. Full Release C remains pending.
+
 The [Crystalline controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
 adds no production mechanic or identity. All 1,424 tests, clean build/package
 and two native profiles pass 10,242 assertions, including three-ray/one-use,
