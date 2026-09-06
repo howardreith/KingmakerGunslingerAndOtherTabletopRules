@@ -581,7 +581,7 @@ plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
-identities extend the append-only ledger to 1856 stable IDs: 1854 active and 2 reserved. The
+identities extend the append-only ledger to 1860 stable IDs: 1858 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
@@ -595,7 +595,8 @@ selectors through the established exact-GUID-aware transaction.
 Release C appends ten replacement-slot selections, ten retain-base markers,
 21 visible trait markers, and 21 hidden mechanic providers. The framework
 registers all 62 plus three blood-trait buffs, four Efreeti Magic identities,
-and three Crystalline Form resource/consent identities
+three Crystalline Form resource/consent identities, and four Undine breath
+ability/resource identities
 unconditionally and keeps publication within the existing
 parent race and `elemental-races` module boundary.
 Native AddFacts/AddAbilityResources own the Efreeti daily graph; its owned
@@ -606,6 +607,14 @@ inactive root/variant/resource instances without touching foreign facts or
 already-cast native size buffs. The dedicated seven-trait persistence scenario
 selects legal affinity-plus-SLA replacements through native creation/respec and
 checks racial modifiers separately from native size modifiers.
+Acid/Ooze Breath use the same exact owned daily-graph/resource-memory boundary,
+with an optional dedicated parameter component instead of SLA parameters.
+A pure half-level/current-CON policy supplies the DC and capped damage dice.
+Fresh native cone, conditional, save, energy damage and condition components
+perform delivery; a native rank-zero condition avoids the engine's minimum
+one-damage packet without changing damage rules globally. Dedicated actual
+commands prove native effects in both profiles. Full action-cooldown and
+breath-bearing save/lifecycle tests remain separate pending gates.
 Crystalline Form has incremental native core proof: its owned provider
 uses native racial AC modifiers and a local projectile-hit subscriber, with
 an exact semantic ray catalog instead of the overbroad Ray weapon category.
@@ -628,7 +637,7 @@ between-ray clock scheduling are isolated; finally restores the exact clock.
 Its remaining-trait read-only audit uses complete explicit DTO serialization
 and proves unchanged catalog/component references, not mechanic correctness.
 `elemental-races` setting gates race, feat, and trait-selector publication; no
-module identity or schema member was added. All 218 active elemental identities
+module identity or schema member was added. All 222 active elemental identities
 remain registered while selector publication is disabled. Exact 0.0.114
 markerless-General migration and the
 24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation

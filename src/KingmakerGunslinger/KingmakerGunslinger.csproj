@@ -954,6 +954,7 @@
     <Compile Include="RuntimeTesting\ElementalCrystallinePersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRemainingTraitNativeAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalFeatTransientPreviewScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalBreathScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalEfreetiPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalComponentIdentityScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitWeaponInteractionScenario.cs" />
@@ -978,6 +979,8 @@
     <Compile Include="ElementalRaces\ElementalTraitDailyResourcePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalTraitDailyResourceRuntime.cs" />
     <Compile Include="ElementalRaces\ElementalEfreetiMagicFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalBreathFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalBreathPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalCrystallineFormPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalCrystallineFormMechanics.cs" />
     <Compile Include="ElementalRaces\ElementalCrystallineFormFactory.cs" />

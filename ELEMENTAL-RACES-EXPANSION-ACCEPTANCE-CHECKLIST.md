@@ -176,6 +176,20 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 ## Final handoff
 
+### Undine breath incremental checkpoint
+
+- [x] Four fixed project identities; pure damage/DC boundaries and exact ledger.
+- [x] Repository validation, 1,427 tests, clean Release and strict 135-entry ZIP.
+- [x] Both native profiles: 10,936 assertions including 652 breath observations,
+  actual casts, saves, damage, cone exclusions, Sickened duration, cancellation,
+  one-use/rest/level/provider controls and unchanged native donors.
+- [x] Two independently exact 968-entry folder/settings restorations.
+- [ ] Full native Standard-action cooldown commitment controller boundary.
+- [ ] Breath-bearing OFF/ON save/rest/level/respec and fresh-absence transaction.
+- [ ] Full lifecycle and final release-wide compatibility/module gates.
+
+### Final report
+
 - [ ] Final report records starting/final SHA, branch cleanliness, corrections,
   inventories/adaptations/omissions, manifest identities/counts, migration,
   every test/build/package/runtime/compatibility/persistence result and hash,

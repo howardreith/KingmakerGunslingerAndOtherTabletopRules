@@ -340,7 +340,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
                 T(ElementalAlternateTraitId.AcidBreath,
                     ElementalHeritageRace.Undine, "Acid Breath",
-                    "Once per day, breathe a 5-foot cone dealing 1d8 acid damage per 2 character levels, maximum 5d8; Reflex half.",
+                    ElementalBreathPolicy.Description(false),
                     ElementalRacialTraitSlot.RacialSpellLikeAbility),
                 T(ElementalAlternateTraitId.NereidFascination,
                     ElementalHeritageRace.Undine, "Nereid Fascination",
@@ -348,7 +348,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     ElementalRacialTraitSlot.RacialSpellLikeAbility),
                 T(ElementalAlternateTraitId.OozeBreath,
                     ElementalHeritageRace.Undine, "Ooze Breath",
-                    "Once per day, breathe a 5-foot cone dealing 1d4 acid damage per 2 character levels, maximum 5d4, and sickening for 3 rounds; Reflex half and negates sickened.",
+                    ElementalBreathPolicy.Description(true),
                     ElementalRacialTraitSlot.RacialSpellLikeAbility)
             };
             Validate(result);

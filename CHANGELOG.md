@@ -2,6 +2,12 @@
 
 ## 0.0.117-elemental-traits
 
+- Adds Acid Breath and Ooze Breath with four fixed ability/resource identities,
+  native five-foot acid cones, exact current-CON parameters and Reflex halving.
+  Ooze applies three-round non-poison Sickened only on a failed save. All 1,427
+  tests, clean build/package and 10,936 assertions in two native profiles pass.
+  Full cooldown and breath-bearing saves remain separate pending gates. See
+  the [focused breath checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md).
 - Avoids attempted feat-transient restoration inside native disabled level-up
   previews, preserving exact original buffs, item effects and absolute expiry.
   All 1,424 tests, clean build/package and nine guarded processes pass 10,594
@@ -62,7 +68,7 @@
 - The current component-name repair passes pinned 0.0.114 migration mechanics
   in three fresh processes (28 assertions), preserving spent uses and appearance
   data; subjective visual review is separate.
-- Release C remains in progress: five mechanics remain to implement;
+- Release C remains in progress: three mechanics remain to implement;
   complete Crystalline, all-trait persistence/lifecycle and final release-wide
   gates are pending. Earlier incremental results retain their historical scope.
 

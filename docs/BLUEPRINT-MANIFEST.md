@@ -8,7 +8,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1856 stable identifiers: 1854 active and 2 reserved.
+Validator contract: 1860 stable identifiers: 1858 active and 2 reserved.
 
 The second reservation, `KMG.ElementalRaces.Diagnostics.ProbeRace`
 (`57005fca40ab4775ae2fea5613214054`), is development-only. Ordinary bootstrap
@@ -16,7 +16,7 @@ does not register it. The guarded Elemental Races probe temporarily registers
 the exact identity without publishing it to `CharacterRaces`, then removes the
 owned dictionary/list entries before completion.
 
-Elemental Races owns 218 active manifest identities. The 0.0.114 foundation
+Elemental Races owns 222 active manifest identities. The 0.0.114 foundation
 contains 24 mechanical race, feature, resource, and SLA blueprints; 16
 Human-compatible body-wrapper and visual-preset blueprints; and 28
 `EquipmentEntity` body, head, and optional horn recolor proxies. Release A
@@ -29,7 +29,10 @@ framework identities: ten slot selections, ten retain-base markers, 21
 visible trait markers, and 21 hidden providers. Three blood-trait buffs append
 their own fixed identities. Efreeti Magic adds three ability identities and
 one shared resource identity. Crystalline Form adds its resource, consent buff
-and activatable mode. All 190 elemental blueprint identities and all
+and activatable mode. Acid Breath and Ooze Breath each add an ability and
+independent daily resource (focused native checkpoint PASS; full cooldown,
+save/lifecycle and release gates pending).
+All 194 elemental blueprint identities and all
 28 resource proxies register on every startup so saved race, heritage,
 provider, resource, feat, trait, active-effect, and doll references continue to
 resolve while selector publication is disabled. The resource proxies reuse
@@ -67,6 +70,15 @@ does not change the transient UnitPart schema or any existing GUID.
 | `.Resource` | `e117e1e0a17a4acec001000000000070` |
 | `.ArmedBuff` | `e117e1e0a17a4acec001000000000071` |
 | `.Mode` | `e117e1e0a17a4acec001000000000072` |
+
+Undine breath additions under `KMG.ElementalRaces.Traits.Undine`:
+
+| Symbol suffix | Stable GUID |
+| --- | --- |
+| `AcidBreath.Resource` | `e117e1e0a17a4acec001000000000073` |
+| `AcidBreath.Ability` | `e117e1e0a17a4acec001000000000074` |
+| `OozeBreath.Resource` | `e117e1e0a17a4acec001000000000075` |
+| `OozeBreath.Ability` | `e117e1e0a17a4acec001000000000076` |
 
 Each blood-buff symbol is its visible trait marker symbol plus `.FastHealingBuff`.
 Daily actual-healing expenditure is saved in `UnitPartElementalBloodCapacity`;

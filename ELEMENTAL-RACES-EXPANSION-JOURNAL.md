@@ -1,5 +1,53 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Undine breath focused native checkpoint qualified
+
+- Repository validation, all 1,427 tests, clean exact-reference Release and
+  strict 135-entry package pass. The first actual native candidate passes both
+  guarded Steam profiles: 10,936 assertions, 652 breath observations, zero
+  result warnings, exact cleanup and independently exact 968-entry restoration.
+- Actual commands prove native cone/save/damage/condition mechanics without an
+  effect-application or resource-spend fallback. Standard blueprint shape and
+  real effects do not yet qualify the full action-cooldown controller.
+- ZIP/DLL/MVID and all run/evidence/settings/transaction hashes are retained in
+  releaseCUndineBreathNativeQualification and the focused breath report.
+  Native shader/script/lightmap diagnostics and four combined KeyNotFound
+  occurrences remain explicit; there are no new elemental ERROR signatures.
+- The report-writing safety review rejected donor GUIDs in the new report.
+  Those identifiers were omitted; exact project-owned identities and evidence
+  hashes remain. The read-only collector quoting error changed no evidence.
+- Eighteen traits now have incremental native proof. Continue native cooldown
+  controls, the ten-trait save matrix, three remaining mechanics and every final
+  release gate. No breath persistence or full Release C PASS is claimed.
+
+## 2026-09-06 UTC - Undine breath implementation in progress
+
+- Preview correction committed/pushed as 0007d7c97f11cca70dd682bb2e006059cfd6e0c1;
+  clean tree and matching remote observed before this work.
+- Authoritative Undine rules and native acid-mephit cone contracts inspected.
+  Owned Acid/Ooze graphs use standard actions, five-foot native cones, Reflex
+  half, current Constitution and half total level, capped damage dice only.
+  Ooze uses native non-poison Sickened for three rounds after a failed save.
+- The printed rule has no minimum die. Native damage clamps even zero dice to
+  one damage, so an owned native condition skips only a zero-dice damage packet;
+  it does not skip Ooze's failed-save condition. No global damage patch.
+- Four fixed ability/resource identities append 073-076. Existing slot and
+  resource-memory services are retained; no shared donor is changed.
+  Pure tests and dedicated native-command coverage are being added. Build,
+  runtime, compatibility and persistence remain pending, not PASS.
+- First build preflight stopped on the architecture's stale manifest-count
+  text before compilation or Steam launch. The exact current-count references
+  were updated; no historical evidence or native rule was changed.
+- The next domain pass found the same current-ledger counters in the
+  Bodyguard identity regression (expected 1856, actual 1860); only those two
+  aggregate expectations were updated. Its nine fixed identities are unchanged.
+- All 1,427 domain/reflection tests then passed. Exact-reference compilation
+  identified two missing namespace imports (native Metamagic and Fact); those
+  imports were added. The failed compilation is not a build or runtime PASS.
+- The next clean compilation confirmed this native Metamagic enum has no
+  named None member; its explicit zero mask is used. The full 1,427 tests
+  passed again before that compile failure; runtime remains unattempted.
+
 ## 2026-09-06 UTC - Native feat preview correction qualified
 
 - Candidate 02 passes repository validation, all 1,424 domain/reflection tests,

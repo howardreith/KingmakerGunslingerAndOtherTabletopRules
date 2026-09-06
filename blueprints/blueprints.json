@@ -13496,6 +13496,22 @@
     {
       "symbol": "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Mode", "guid": "e117e1e0a17a4acec001000000000072",
       "plannedType": "BlueprintActivatableAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Off-by-default no-action consent to deflect the next eligible ray that would hit."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.AcidBreath.Resource", "guid": "e117e1e0a17a4acec001000000000073",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One persisted Acid Breath use per ordinary rest; independent from the replaced heritage SLA."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.AcidBreath.Ability", "guid": "e117e1e0a17a4acec001000000000074",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Owned five-foot native acid cone; Constitution and half total level; Reflex half."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Resource", "guid": "e117e1e0a17a4acec001000000000075",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One persisted Ooze Breath use per ordinary rest; independent from the replaced heritage SLA."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Ability", "guid": "e117e1e0a17a4acec001000000000076",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Owned five-foot native acid cone with non-poison Sickened for three rounds on a failed Reflex save."
     }
   ]
 }

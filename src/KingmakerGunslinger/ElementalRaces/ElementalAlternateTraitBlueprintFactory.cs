@@ -30,7 +30,8 @@ namespace KingmakerGunslinger.ElementalRaces
                 BlueprintBuff bloodBuff = ElementalBloodBlueprintFactory.Register(
                     registry, definition, icon);
                 ElementalTraitDailyAbilityBlueprints daily = ElementalEfreetiMagicFactory.Register(
-                    library, registry, definition.Id);
+                    library, registry, definition.Id) ?? ElementalBreathFactory.Register(
+                        library, registry, definition.Id);
                 ElementalCrystallineFormBlueprints crystalline = ElementalCrystallineFormFactory.Register(
                     registry, definition.Id, icon);
                 BlueprintFeature provider = registry.Register<BlueprintFeature>(

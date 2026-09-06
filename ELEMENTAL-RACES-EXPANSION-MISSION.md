@@ -69,11 +69,11 @@ blocked, failed, ambiguous, or not run.
 
 ## Current engineering focus
 
-Release C has fifteen prior native-proven mechanics and incremental
-[Crystalline core proof](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
-Complete Crystalline catalog/multi-ray/full-lifecycle boundaries and
-implement Treacherous Earth, Breeze-Kissed, Acid Breath, Nereid Fascination and
-Ooze Breath, then every final release gate. Continue independent work; no
+Release C now has eighteen traits with incremental native proof, including
+[Acid Breath and Ooze Breath](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md).
+Complete native breath cooldown and save controls, the Crystalline semantic
+catalog, and every remaining lifecycle boundary. Implement Treacherous Earth,
+Breeze-Kissed and Nereid Fascination, then every final release gate. Continue independent work; no
 hard stop is established. The earlier native audit is retained historically.
 
 2026-09-06 continuation: the final Crystalline core candidate passes 1,423 tests,
