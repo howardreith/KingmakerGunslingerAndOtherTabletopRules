@@ -1,5 +1,36 @@
 # Autonomous Gunslinger journal
 
+## 2026-09-06 paired release authorization
+
+The owner explicitly authorized all task commits, the master merge, remote
+push, and public 0.0.115 release paired with Buff Planner 0.0.19. This resolves
+the prior release-plumbing scope blocker. Current branch/HEAD:
+`codex/share-transmutation-instant` /
+`e985aad7671992885210df448deca18d05081096`; core API commit:
+`a788d2269fcc4aaa24f8c49f820257ceb9cf7403`.
+The complete worktree and artifacts were preserved at
+`C:/Dev/KingmakerGunslingerLab/worktrees/share-transmutation-instant`.
+
+`scripts/Build-Local.ps1 -ReferenceBundleDir <qualified-private-references>`
+passes focused source validation, 1393/1393 domain tests, clean exact-reference
+Release compilation, supply icons, strict output, SoundBank, and 135-file
+package validation. Log: `artifacts/share-release-precommit-build.log`.
+The publisher now accepts this existing provenance-checked build route for
+both deterministic builds without changing installed UMM/Harmony. The
+legacy absent Unity output falls back only to the identical tracked bundle
+after the original manifest hash check; no asset content changed.
+The historical `tools/test_validation_dispatch.py` remains FAIL because it
+expects active 0.0.58; it is not the current dispatcher/source gate and was
+not weakened or relabeled. Current 0.0.115 source dispatch passes.
+
+The required local push guard was restored with clean-tree, exact-origin,
+branch, protected-file/credential, fast-forward, and remote-hash guards.
+Exact next action: commit, test guard WhatIf, run the mandated guarded push,
+merge to master under owner authority, repeat deterministic release gates,
+publish via the guarded publisher, and verify downloaded asset hashes.
+Save-backed Share gameplay: NOT RUN; the protected Buff Planner save pair is
+absent. No ordinary campaign save, live Mods, or installed dependency changed.
+
 ## 2026-09-06 Share Transmutation direct-cast checkpoint
 
 - Clean master baseline:
