@@ -18,6 +18,7 @@ namespace KingmakerGunslinger.ElementalRaces
         internal BlueprintAbilityResource Resource;
         internal BlueprintAbility Ability;
         internal BlueprintScriptableObject[] Mechanics;
+        internal BlueprintComponent ParameterComponent;
 
         internal BlueprintComponent[] ProviderComponents()
         {
@@ -32,10 +33,15 @@ namespace KingmakerGunslinger.ElementalRaces
             add.RestoreOnLevelUp = false;
             var memory = ScriptableObject.CreateInstance<ElementalTraitDailyResourceState>();
             memory.Resource = Resource;
-            var parameters = ScriptableObject.CreateInstance<ElementalRacialSpellLikeParameters>();
-            parameters.Ability = Ability;
-            parameters.Stat = StatType.Charisma;
-            parameters.SpellLevel = 1;
+            BlueprintComponent parameters = ParameterComponent;
+            if (parameters == null)
+            {
+                var racial = ScriptableObject.CreateInstance<ElementalRacialSpellLikeParameters>();
+                racial.Ability = Ability;
+                racial.Stat = StatType.Charisma;
+                racial.SpellLevel = 1;
+                parameters = racial;
+            }
             return new BlueprintComponent[] { facts, add, memory, parameters };
         }
     }

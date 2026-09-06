@@ -37,6 +37,15 @@ transient diagnostic errors remain explicit. This is not full Release C PASS.
 
 ## Implemented in this checkpoint
 
+The [Undine breath checkpoint](ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md)
+adds Acid Breath and Ooze Breath with independent daily resources and native
+five-foot acid-cone resolution. Current Constitution and half total level set
+DC; damage dice cap at five, with no invented level-one minimum. Ooze sickens
+for three rounds only on a failed save, independent of acid resistance.
+All 1,427 tests, clean build/package and two native profiles pass 10,936
+assertions. Four identities append (76 Release C, 222 active elemental).
+Full cooldown-controller and breath-bearing persistence controls remain next.
+
 The [feat-preview correction](ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
 now preserves transient ledgers without attempting forbidden buff additions
 inside native level-up previews. Actual preview/cancel/commit and renewed
@@ -94,7 +103,7 @@ save-backed processes (230 assertions, 46 retained visual/DollData warnings).
 Native selections, nine partially spent active blood buffs, OFF/ON load,
 level-up, rest, respec and fresh absence pass. Native provider deactivation no
 longer incorrectly removes a saved buff; exact marker loss still cleans it up.
-Five unimplemented mechanics, complete Crystalline qualification, the other
+Three unimplemented mechanics, breath cooldown/save controls, complete Crystalline qualification, the other
 thirteen traits' persistence, full lifecycle, final
 compatibility/module matrices, full release qualification, and final
 documentation remain pending.
@@ -112,5 +121,5 @@ The candidate preserves the qualified firearm SoundBank byte identity
 Optional Craft Magic Items support remains reflection-only;
 `CraftMagicItems.dll` is neither linked nor packaged. The inherited 1,288-test
 overhaul and 1,325-test fatigue-authority baselines remain historical, while
-this candidate's current dependency-free suite contains 1,424 registered
+this candidate's current dependency-free suite contains 1,427 registered
 cases.

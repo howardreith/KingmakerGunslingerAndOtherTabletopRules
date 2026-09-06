@@ -23,6 +23,13 @@ retained visual warnings.
 
 ## Supported baseline
 
+The subsequent [breath checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md)
+passes both native profiles with 10,936 assertions and independently exact
+968-entry restorations. No optional dependency is introduced. These save-free
+processes do not qualify breath-bearing persistence or the final release-wide
+matrix. Visual Adjustments remains absent/NOT-RUN; inherited native diagnostics
+remain recorded instead of being declared clean.
+
 This build is qualified against Pathfinder: Kingmaker Enhanced Plus Edition
 2.1.7b on Windows through Steam, with Unity Mod Manager 0.32.4 or later in the
 0.32.x line. Every real qualification launch used Steam App ID 640820.

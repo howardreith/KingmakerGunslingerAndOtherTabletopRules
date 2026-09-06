@@ -17,7 +17,7 @@
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSHED",
     "releaseB": "PASS-LOCAL-CHECKPOINT-PUSHED",
-    "releaseC": "IN-PROGRESS; FIFTEEN-PRIOR-MECHANICS PLUS CRYSTALLINE-CORE-NATIVE-PROOF; FIVE-UNIMPLEMENTED; COMPLETE-TRAIT-PERSISTENCE-AND-FINAL-GATES-PENDING"
+    "releaseC": "IN-PROGRESS; EIGHTEEN-TRAITS-WITH-INCREMENTAL-NATIVE-PROOF; THREE-UNIMPLEMENTED; BREATH-ACTION-COST-AND-PERSISTENCE-CONTROLS-PLUS-FULL-RELEASE-GATES-PENDING"
   },
   "publicationRecovery": {
     "status": "PASS",
@@ -35,6 +35,134 @@
     "githubReleaseCreated": false,
     "pullRequestCreated": false,
     "historicalAttemptPolicy": "Earlier push-blocked fields preserve attempt-time evidence. This recovery supersedes them as current publication status; no earlier gameplay qualification is broadened."
+  },
+  "releaseCUndineBreathNativeQualification": {
+    "status": "PASS-FOCUSED-NATIVE-BREATH-CHECKPOINT; NOT-FULL-RELEASE-C",
+    "basedOnCommit": "0007d7c97f11cca70dd682bb2e006059cfd6e0c1",
+    "archive": "artifacts/qualification/0.0.117/undine-breaths-01",
+    "sourceStateSha256": "38e071a8092fce13ae3bd1fddca4e73dcf2b8c447eae9cf73b9d690996068228",
+    "version": "0.0.117-elemental-traits",
+    "packageSha256": "2338fa0775887259f8fb2d7f9216ec10947c04ccb507afde13de51c74d83c7c4",
+    "packageBytes": 23239729,
+    "packageEntries": 135,
+    "dllSha256": "b379a40cf41beeec79f84260d36fb2eac6411ac727fb48b829d8b175a6f6c41a",
+    "dllBytes": 6202880,
+    "dllMvid": "8f780d13-64ec-4fa0-b9d9-bbbc44721377",
+    "deployment": "20260906T1939194648237Z",
+    "deploymentSha256": "759f3d795b342d5c98b6ad24808501d449f2f97b248d54cf852f632d2160ee22",
+    "repositoryValidation": "PASS",
+    "domainReflectionTests": 1427,
+    "cleanRelease": "PASS; exact native references",
+    "strictPackage": "PASS",
+    "manifest": {
+      "total": 1860,
+      "active": 1858,
+      "reserved": 2,
+      "elementalActive": 222,
+      "elementalBlueprints": 194,
+      "elementalVisualProxies": 28,
+      "releaseC": 76
+    },
+    "newIdentities": [
+      {
+        "symbol": "KMG.ElementalRaces.Traits.Undine.AcidBreath.Resource",
+        "guid": "e117e1e0a17a4acec001000000000073",
+        "type": "BlueprintAbilityResource"
+      },
+      {
+        "symbol": "KMG.ElementalRaces.Traits.Undine.AcidBreath.Ability",
+        "guid": "e117e1e0a17a4acec001000000000074",
+        "type": "BlueprintAbility"
+      },
+      {
+        "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Resource",
+        "guid": "e117e1e0a17a4acec001000000000075",
+        "type": "BlueprintAbilityResource"
+      },
+      {
+        "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Ability",
+        "guid": "e117e1e0a17a4acec001000000000076",
+        "type": "BlueprintAbility"
+      }
+    ],
+    "native": {
+      "processes": 2,
+      "assertions": 10936,
+      "breathObservations": 652,
+      "failedAssertions": 0,
+      "resultWarnings": 0,
+      "scope": "Actual native command/effect and geometry matrix across General/Mistsoul/Rimesoul, Fighter/Wizard total levels 1/2/5/10/11/20, current temporary Constitution, uncapped DC/capped dice, matching affinity exclusion, Reflex half, acid resistance/immunity, poison-immunity negative control, native Sickened expiry, cancellation, zero uses, ordinary rest, native level-up and provider remove/re-add.",
+      "boundary": "Only request-local projectile arrival is completed; native cone target enumeration, saves, damage and condition actions run unchanged. No effect.Apply or manual resource-spend fallback.",
+      "runs": [
+        {
+          "profile": "gunslinger-only",
+          "directory": "20260906T1939501265634Z-observe-elemental-alternate-trait-framework",
+          "runId": "20260906T1939501436030Z-24217250a716424a94083602917f0171",
+          "assertions": 5468,
+          "warnings": 0,
+          "resultSha256": "fa8376ead1821fe6b750e17a44572bbcc81deb87d69eb8a92e0733fddac8153d",
+          "evidenceSha256": "3c22e2b4d0031426e407c519740f919ae3231dc397792aa459642f549a797e1b",
+          "breathSha256": "344f5bbf8bb47fdc966ee9209f953c9ab12f0f643a63b029240d149232ef21f3",
+          "breathObservations": 326,
+          "breathFailed": 0,
+          "cleanupExact": true,
+          "nativeLogSha256": "7754fcb155338f588ae3b9c460909b071f0630b4181db60f76a6c3bb6330a969",
+          "nativeSummarySha256": "065f31f34b8df19cdb6e96d42be5bde8f6f8b3f2deef6d4b2875612d4668d826",
+          "transientErrors": 0,
+          "factPostLoadErrors": 0,
+          "transactionSha256": "917963787e881765beb6922bad99bda25354ea4c714559debe2e1b67f3efd2b4",
+          "restorationVerified": true,
+          "independentManifestEqual": true,
+          "manifestEntries": 968,
+          "restoredManifestSha256": "8498aca7ab2755dd41fa813112cb2abecde7dc09bb79f21133a4dbae7f085c96"
+        },
+        {
+          "profile": "gunslinger-high-risk-combined-favored-class",
+          "directory": "20260906T1942096401449Z-observe-elemental-alternate-trait-framework",
+          "runId": "20260906T1942096421654Z-f8b892e87c754aefa5786559d9102e70",
+          "assertions": 5468,
+          "warnings": 0,
+          "resultSha256": "34f50fd21928758f7b77c596556ae35145147c23ae88c39cae9729026c1ad94f",
+          "evidenceSha256": "d10f4ec5f4e70e6571a183a9d6216bbad63368b5268899b0ecebb65f7b187ebe",
+          "breathSha256": "666b89a84ba759d7b6cf3361be80b74953abf758894ffe63f83bd3cfc8febef6",
+          "breathObservations": 326,
+          "breathFailed": 0,
+          "cleanupExact": true,
+          "nativeLogSha256": "99f19c73cb05a2a585fc81d3aa582c515b8bf420e4786092822c4b1660fc7f92",
+          "nativeSummarySha256": "8fcb402ac2930ac984a9b65c1b6e4cc04ef54db84ac9c43410d2e2884b39ca0f",
+          "transientErrors": 0,
+          "factPostLoadErrors": 0,
+          "transactionSha256": "24f0ff64813c1374df551e66ee77505031d900f2a195c1bba54382df052f60f7",
+          "restorationVerified": true,
+          "independentManifestEqual": true,
+          "manifestEntries": 968,
+          "restoredManifestSha256": "8498aca7ab2755dd41fa813112cb2abecde7dc09bb79f21133a4dbae7f085c96"
+        }
+      ],
+      "restoredSettingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "kingmakerProcessesAfterRestoration": 0,
+      "diagnostics": "No result warnings or elemental ERROR entries; zero transient and Fact.PostLoad signatures. Existing native shader/script/lightmap diagnostics remain; combined retains four KeyNotFoundException occurrences. No blanket error-free-log claim."
+    },
+    "attempts": "Preflight stale aggregate manifest counts and two missing imports/unnamed zero Metamagic enum value were corrected before the first native attempt. Both actual native attempts PASS. A read-only collector quoting error changed no evidence and required no game rerun.",
+    "remaining": [
+      "Breath-bearing fresh-process save/OFF/ON/rest/respec and active-condition persistence",
+      "Full native action-cooldown commit controls, beyond blueprint Standard action and actual cast effects",
+      "Full lifecycle and final release matrix",
+      "Treacherous Earth, Breeze-Kissed, Nereid Fascination implementations",
+      "Complete semantic ray/story-effect classification",
+      "Visual Adjustments absent: NOT-RUN"
+    ]
+  },
+  "releaseCUndineBreathDevelopment": {
+    "status": "IMPLEMENTED-PENDING-COMPLETE-QUALIFICATION",
+    "basedOnCommit": "0007d7c97f11cca70dd682bb2e006059cfd6e0c1",
+    "traits": ["AcidBreath", "OozeBreath"],
+    "rules": "https://aonprd.com/RacesDisplay.aspx?ItemName=Undine",
+    "nativeEvidence": "Earth mephit acid cone fa5ee5f4cd5c6394f8b497c773f8e14a and native non-poison Sickened 4e42460798665fd4cb9173ffa7ada323; native RuleCalculateDamage clamps even zero-dice packets to one.",
+    "implementation": "Owned five-foot supernatural standard-action native cones; capped half-level damage dice; uncapped half-level/current Constitution DC; native Reflex half and failed-save three-round Sickened. Native conditional skips only zero-dice damage. Existing daily-resource memory and replacement-slot services retained.",
+    "newManifestIdentitySuffixes": [73, 74, 75, 76],
+    "manifest": {"total": 1860, "active": 1858, "reserved": 2, "elementalActive": 222, "elementalBlueprints": 194, "elementalVisualProxies": 28, "releaseC": 76},
+    "qualification": "Focused native checkpoint PASS: releaseCUndineBreathNativeQualification. Full native cooldown commit, breath-bearing persistence and complete lifecycle/final gates remain pending."
   },
   "releaseCFeatPreviewQualification": {
     "status": "PASS-INCREMENTAL-NATIVE-PREVIEW-CORRECTION; NOT-FULL-RELEASE-C",

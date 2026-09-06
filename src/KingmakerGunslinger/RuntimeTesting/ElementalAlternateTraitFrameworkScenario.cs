@@ -306,6 +306,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalCrystallineFormNativeAuditScenario.Exercise(request, assertions, evidenceFiles);
                 ElementalRemainingTraitNativeAuditScenario.Exercise(request, assertions, evidenceFiles);
                 ElementalCrystallineFormScenario.Exercise(request, assertions, evidenceFiles);
+                ElementalBreathScenario.Exercise(request, assertions, evidenceFiles);
                 ElementalFeatTransientPreviewScenario.Exercise(request, assertions, evidenceFiles);
                 ElementalAlternateTraitReconciliationScenario.Exercise(
                     request, assertions, evidenceFiles);

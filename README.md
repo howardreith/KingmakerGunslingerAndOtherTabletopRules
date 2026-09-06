@@ -31,7 +31,11 @@ two-handed/disabled-hand recovery in both profiles.
 The [native preview correction](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
 also preserves existing Elemental Strike/Scorching Weapons state during native
 level-up previews, with renewed OFF/ON save and 0.0.114 migration checks.
-Remaining semantic catalog work, five other required mechanics, the complete
+Acid Breath and Ooze Breath also pass a [focused native checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md):
+actual five-foot cones, half-level/current-Constitution parameters, Reflex
+halving and non-poison Sickened, with four fixed ability/resource identities.
+Full native cooldown and breath-bearing save controls are still pending.
+Remaining semantic catalog work, three other required mechanics, the complete
 trait persistence/lifecycle matrix and final qualification remain.
 This is not a finished Release C package.
 

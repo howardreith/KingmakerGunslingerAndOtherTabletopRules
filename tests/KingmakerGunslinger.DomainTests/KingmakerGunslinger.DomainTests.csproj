@@ -56,6 +56,8 @@
     <Compile Include="ElementalSummonInsightPolicyTests.cs" />
     <Compile Include="ElementalBloodPolicyTests.cs" />
     <Compile Include="ElementalTraitDailyResourcePolicyTests.cs" />
+    <Compile Include="ElementalBreathPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBreathPolicy.cs"><Link>ElementalRaces\ElementalBreathPolicy.cs</Link></Compile>
     <Compile Include="ElementalCrystallineFormPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalCrystallineFormPolicy.cs"><Link>ElementalRaces\ElementalCrystallineFormPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalTraitDailyResourcePolicy.cs"><Link>ElementalRaces\ElementalTraitDailyResourcePolicy.cs</Link></Compile>
