@@ -9,6 +9,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Controllers.Projectiles;
+using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -24,6 +25,7 @@ using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Components;
@@ -110,7 +112,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool clean = before.Length == Game.Instance.State.Units.All.Count &&
                     before.All(value => Game.Instance.State.Units.All.Contains(value)) &&
                     Game.Instance.ProjectileController.Projectiles.SequenceEqual(oldProjectiles);
-                Check(assertions, rows, "fixture-cleanup", clean, "exact original unit and projectile membership");
+                Check(assertions, rows, "fixture-cleanup", clean, "units=" + Game.Instance.State.Units.All.Count +
+                    "/" + before.Length + ";projectiles=" + Game.Instance.ProjectileController.Projectiles.Count() +
+                    "/" + oldProjectiles.Length + ";exact original unit and projectile membership");
                 string path = Path.Combine(request.EvidenceDirectory, "elemental-undine-breaths.json");
                 File.WriteAllText(path, new JObject { { "schemaVersion", 1 }, { "saveStateTouched", false },
                     { "cleanupExact", clean }, { "isolatedBoundary", "request-local projectile transport arrival only; native cone targeting, command, save, damage and condition actions retained" },
@@ -306,6 +310,152 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.Controllers.Rest.RestController.ApplyRest(owner);
             Check(assertions, rows, prefix + "ordinary-rest-one", owner.Resources.GetResourceAmount(resource) == 1,
                 "native ordinary rest restores exactly one use");
+            ExerciseActionController(caster, target, ability, resource, sickened, rows, assertions, prefix);
+        }
+
+        private static void ExerciseActionController(UnitEntityData caster, UnitEntityData target,
+            BlueprintAbility ability, BlueprintAbilityResource resource, BlueprintBuff sickened,
+            JArray rows, ICollection<RuntimeTestAssertion> assertions, string prefix)
+        {
+            UnitHandEquipmentController previous = Game.Instance.HandsEquipmentController;
+            UnitHandEquipmentController owned = previous == null ? new UnitHandEquipmentController() : null;
+            MethodInfo setter = typeof(Game).GetProperty("HandsEquipmentController").GetSetMethod(true);
+            if (setter == null) throw new MissingMethodException(typeof(Game).FullName, "set_HandsEquipmentController");
+            if (owned != null) setter.Invoke(Game.Instance, new object[] { owned });
+            try { RunActionController(caster, target, ability, resource, sickened, rows, assertions, prefix); }
+            finally
+            {
+                // Early native start-gate failures must also release queued
+                // commands before the request-local actor/scene is retired.
+                caster.Commands.InterruptAll(true);
+                caster.Commands.RemoveFinishedAndUpdateQueue();
+                if (owned != null)
+                {
+                    if (!ReferenceEquals(Game.Instance.HandsEquipmentController, owned))
+                        throw new InvalidOperationException("Request-local native hand-controller ownership changed.");
+                    setter.Invoke(Game.Instance, new object[] { previous });
+                }
+                Check(assertions, rows, prefix + "controller-scope-restored",
+                    ReferenceEquals(Game.Instance.HandsEquipmentController, previous),
+                    "only the absent main-menu native hand-controller boundary was supplied; exact original restored");
+            }
+        }
+
+        private static void RunActionController(UnitEntityData caster, UnitEntityData target,
+            BlueprintAbility ability, BlueprintAbilityResource resource, BlueprintBuff sickened,
+            JArray rows, ICollection<RuntimeTestAssertion> assertions, string prefix)
+        {
+            if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                throw new InvalidOperationException("The breath RTWP action fixture cannot change an active turn-based combat.");
+            Reset(caster.Descriptor, target, sickened);
+            target.Position = new Vector3(0, 0, 0.8f);
+            caster.CombatState.JoinCombat();
+            caster.CombatState.OnNewRound();
+            ClearFixtureCooldowns(caster);
+            var point = new TargetWrapper(new Vector3(0, 0, 1.4f));
+            var controller = new UnitActionController();
+            // Ordinary constructor and authoritative queue set the executor.
+            // No cutscene context and no IgnoreCooldown bypass.
+            var canceled = new UnitUseAbility(Data(caster.Descriptor, ability), point);
+            caster.Commands.Run(canceled);
+            bool queued = caster.Commands.Contains(canceled);
+            caster.Commands.InterruptAll(true);
+            caster.Commands.RemoveFinishedAndUpdateQueue();
+            Check(assertions, rows, prefix + "controller-cancel", queued && !canceled.Cutscene &&
+                !canceled.IsStarted && !canceled.IsActed && caster.Descriptor.Resources.GetResourceAmount(resource) == 1 &&
+                Cooldowns(caster).SequenceEqual(new[] { 0f, 0f, 0f }),
+                "ordinary queued cancellation leaves native standard/move/swift and daily use unchanged");
+
+            caster.CombatState.Cooldown.StandardAction = 3;
+            var blocked = new UnitUseAbility(Data(caster.Descriptor, ability), point);
+            caster.Commands.Run(blocked);
+            TickCommand(controller, blocked);
+            Check(assertions, rows, prefix + "controller-cooldown-block", caster.IsInCombat &&
+                !blocked.IsIgnoreCooldown && !blocked.IsStarted && !blocked.IsActed &&
+                blocked.ExecutionProcess == null && caster.Descriptor.Resources.GetResourceAmount(resource) == 1 &&
+                Cooldowns(caster).SequenceEqual(new[] { 3f, 0f, 0f }),
+                "native start gate refuses a standard command during existing standard cooldown");
+            caster.Commands.InterruptAll(true);
+            caster.Commands.RemoveFinishedAndUpdateQueue();
+            ClearFixtureCooldowns(caster);
+
+            var observed = new Observation { Caster = caster, Target = target };
+            var prior = new HashSet<Projectile>(Game.Instance.ProjectileController.Projectiles);
+            var created = new List<Projectile>();
+            var command = new UnitUseAbility(Data(caster.Descriptor, ability), point);
+            caster.Commands.Run(command);
+            EventBus.Subscribe(observed);
+            try
+            {
+                for (int tick = 0; !command.IsActed && !command.IsFinished && tick < 10; tick++)
+                {
+                    if (command.Animation != null) command.Animation.IsActed = true;
+                    TickCommand(controller, command);
+                }
+                float expected = Math.Max(0, 6 - command.TimeSinceStart);
+                float committed = caster.CombatState.Cooldown.StandardAction;
+                Check(assertions, rows, prefix + "controller-standard-commit", command.IsStarted &&
+                    command.IsActed && !command.Cutscene && !command.IsIgnoreCooldown && expected > 0 &&
+                    Math.Abs(committed - expected) < 0.001 &&
+                    caster.CombatState.Cooldown.MoveAction == 0 && caster.CombatState.Cooldown.SwiftAction == 0 &&
+                    caster.Descriptor.Resources.GetResourceAmount(resource) == 0,
+                    "native command started=" + command.IsStarted + ";acted=" + command.IsActed +
+                    ";result=" + command.Result + ";elapsed=" + command.TimeSinceStart +
+                    ";cooldowns=" + string.Join(",", Cooldowns(caster)) + ";expectedStandard=" + expected);
+                for (int tick = 0; command.ExecutionProcess != null && !command.ExecutionProcess.IsEnded && tick < 100; tick++)
+                {
+                    command.ExecutionProcess.Tick();
+                    foreach (Projectile projectile in Game.Instance.ProjectileController.Projectiles.Where(value =>
+                        !prior.Contains(value) && !created.Contains(value) && ReferenceEquals(value.Launcher, caster)).ToArray())
+                    {
+                        created.Add(projectile);
+                        typeof(Projectile).GetProperty("IsHit").GetSetMethod(true).Invoke(projectile, new object[] { true });
+                        projectile.OnHit();
+                    }
+                }
+                // A later real controller tick must not charge again. Native
+                // TimeSinceStart can advance; the committed cooldown stays exact.
+                if (!command.IsFinished) TickCommand(controller, command);
+                Check(assertions, rows, prefix + "controller-exactly-once", command.ExecutionProcess != null &&
+                    command.ExecutionProcess.IsEnded && created.Count == 1 && observed.Saves.Count == 1 &&
+                    observed.Damage.Count == 1 && observed.Attacks == 0 &&
+                    caster.CombatState.Cooldown.StandardAction == committed &&
+                    caster.Descriptor.Resources.GetResourceAmount(resource) == 0,
+                    "nativeProcessEnded=" + (command.ExecutionProcess != null && command.ExecutionProcess.IsEnded) +
+                    ";nativeSaves=" + observed.Saves.Count + ";nativeDamage=" + observed.Damage.Sum(value => value.Damage) +
+                    ";nativeAttacks=" + observed.Attacks + ";projectiles=" + created.Count + ";committedStandard=" + committed +
+                    ";afterSecondTick=" + caster.CombatState.Cooldown.StandardAction);
+            }
+            finally
+            {
+                EventBus.Unsubscribe(observed);
+                if (command.ExecutionProcess != null && !command.ExecutionProcess.IsEnded) command.ExecutionProcess.Detach();
+                caster.Commands.InterruptAll(true);
+                caster.Commands.RemoveFinishedAndUpdateQueue();
+                foreach (Projectile projectile in created) projectile.Cleared = true;
+                Game.Instance.ProjectileController.Tick();
+            }
+        }
+
+        internal static void TickCommand(UnitActionController controller, UnitCommand command)
+        {
+            MethodInfo tick = typeof(UnitActionController).GetMethod("TickCommand",
+                BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(UnitCommand), typeof(bool) }, null);
+            if (tick == null) throw new MissingMethodException(typeof(UnitActionController).FullName, "TickCommand");
+            tick.Invoke(controller, new object[] { command, false });
+        }
+
+        private static float[] Cooldowns(UnitEntityData unit)
+        { return new[] { unit.CombatState.Cooldown.StandardAction, unit.CombatState.Cooldown.MoveAction,
+            unit.CombatState.Cooldown.SwiftAction }; }
+
+        private static void ClearFixtureCooldowns(UnitEntityData unit)
+        {
+            // Seed only this disposable actor before a test, never after the
+            // accepted command's commitment. Native controller owns the charge.
+            unit.CombatState.Cooldown.StandardAction = 0;
+            unit.CombatState.Cooldown.MoveAction = 0;
+            unit.CombatState.Cooldown.SwiftAction = 0;
         }
 
         private static void CheckParameters(UnitDescriptor owner, BlueprintAbility ability,

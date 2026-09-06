@@ -71,8 +71,10 @@ blocked, failed, ambiguous, or not run.
 
 Release C now has eighteen traits with incremental native proof, including
 [Acid Breath and Ooze Breath](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md).
-Complete native breath cooldown and save controls, the Crystalline semantic
-catalog, and every remaining lifecycle boundary. Implement Treacherous Earth,
+The [action/save continuation](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
+passes RTWP commitment, ten-trait persistence and renewed legacy migration.
+Complete breath-specific turn-based action proof, the Crystalline semantic
+catalog, eleven other traits' save coverage and every lifecycle boundary. Implement Treacherous Earth,
 Breeze-Kissed and Nereid Fascination, then every final release gate. Continue independent work; no
 hard stop is established. The earlier native audit is retained historically.
 

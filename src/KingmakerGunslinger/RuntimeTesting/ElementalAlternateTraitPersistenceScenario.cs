@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ReferenceEquals(heritage, fixture.Heritage)) return new ElementalAlternateTraitBlueprints[0];
                 int heritageIndex = Array.IndexOf(fixture.Blueprints.Heritages
                     .Choices().ToArray(), heritage);
-                ElementalAlternateTraitId[] ids = ElementalBloodInsightPersistencePolicy.CrystallineTraits(
+                ElementalAlternateTraitId[] ids = ElementalBloodInsightPersistencePolicy.BreathTraits(
                     fixture.Blueprints.AlternateTraits.Race,
                     fixture.Gender == Gender.Male ? 0 : 1, heritageIndex);
                 return ids.Select(fixture.Blueprints.AlternateTraits.Require).ToArray();
@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // Use the real level-up controller for all slot choices. Source
             // creation and restored respec retain base traits; the persisted
-            // target uses the explicit eight-trait, disjoint-slot matrix.
+            // target uses the explicit ten-trait, disjoint-slot matrix.
             private static JArray SelectAlternateTraits(
                 LevelUpController controller,
                 ElementalPersistenceFixture fixture, string phase,

@@ -44,7 +44,12 @@ DC; damage dice cap at five, with no invented level-one minimum. Ooze sickens
 for three rounds only on a failed save, independent of acid resistance.
 All 1,427 tests, clean build/package and two native profiles pass 10,936
 assertions. Four identities append (76 Release C, 222 active elemental).
-Full cooldown-controller and breath-bearing persistence controls remain next.
+The later [action/save checkpoint](ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
+passes 1,428 tests, clean build/package and nine guarded processes with 11,325
+assertions. Native RTWP cooldown commitment, ten-trait OFF/ON persistence,
+exact saved Sickened context/duration, spent uses, rest/level/respec/cleanup
+and renewed pinned 0.0.114 migration pass. No new identities or production
+rules; turn-based-specific action proof and complete release gates remain.
 
 The [feat-preview correction](ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
 now preserves transient ledgers without attempting forbidden buff additions
@@ -103,8 +108,8 @@ save-backed processes (230 assertions, 46 retained visual/DollData warnings).
 Native selections, nine partially spent active blood buffs, OFF/ON load,
 level-up, rest, respec and fresh absence pass. Native provider deactivation no
 longer incorrectly removes a saved buff; exact marker loss still cleans it up.
-Three unimplemented mechanics, breath cooldown/save controls, complete Crystalline qualification, the other
-thirteen traits' persistence, full lifecycle, final
+Three unimplemented mechanics, breath turn-based action controls, complete Crystalline qualification, the other
+eleven traits' persistence, full lifecycle, final
 compatibility/module matrices, full release qualification, and final
 documentation remain pending.
 Release A and Release B evidence is
@@ -121,5 +126,5 @@ The candidate preserves the qualified firearm SoundBank byte identity
 Optional Craft Magic Items support remains reflection-only;
 `CraftMagicItems.dll` is neither linked nor packaged. The inherited 1,288-test
 overhaul and 1,325-test fatigue-authority baselines remain historical, while
-this candidate's current dependency-free suite contains 1,427 registered
+this candidate's current dependency-free suite contains 1,428 registered
 cases.

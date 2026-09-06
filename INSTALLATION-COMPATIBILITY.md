@@ -23,6 +23,14 @@ retained visual warnings.
 
 ## Supported baseline
 
+The later [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
+adds actual ten-trait installed-copy OFF/ON persistence and renewed pinned
+0.0.114 migration alongside both native profiles. Nine processes pass 11,325
+assertions; all three 968-entry mod/settings restorations independently match.
+The isolated combined profile remains save-free evidence, not a claim that it
+loads this working fixture. Full Release C profiles and subjective visuals
+remain pending; all 60 result warnings are retained.
+
 The subsequent [breath checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md)
 passes both native profiles with 10,936 assertions and independently exact
 968-entry restorations. No optional dependency is introduced. These save-free

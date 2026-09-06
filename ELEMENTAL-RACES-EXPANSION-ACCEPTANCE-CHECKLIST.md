@@ -184,8 +184,13 @@ Unchecked items are pending and must not be inferred from builds or historical
   actual casts, saves, damage, cone exclusions, Sickened duration, cancellation,
   one-use/rest/level/provider controls and unchanged native donors.
 - [x] Two independently exact 968-entry folder/settings restorations.
-- [ ] Full native Standard-action cooldown commitment controller boundary.
-- [ ] Breath-bearing OFF/ON save/rest/level/respec and fresh-absence transaction.
+- [x] Native RTWP Standard-action controller: cancellation, blocked start,
+  exact accepted-cast cooldown and no duplicate charge in both profiles.
+- [x] Breath-bearing ten-trait OFF/ON save/rest/level/respec and fresh absence;
+  exact active Sickened context/end time across both fresh-load boundaries.
+  All 1,428 tests, clean build/package and nine guarded processes pass 11,325
+  assertions, including renewed pinned 0.0.114 migration and exact restoration.
+- [ ] Breath-specific turn-based action-controller boundary.
 - [ ] Full lifecycle and final release-wide compatibility/module gates.
 
 ### Final report

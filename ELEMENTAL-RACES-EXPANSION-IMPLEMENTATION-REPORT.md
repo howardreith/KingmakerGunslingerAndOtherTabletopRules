@@ -7,8 +7,8 @@ RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; EIGHT TRAITS
 HAVE CHECKPOINT PROOF AND THREE SUMMON INSIGHTS PLUS THREE BLOOD TRAITS HAVE
 NATIVE AND INCREMENTAL SAVE-BACKED EVIDENCE. EFREETI MAGIC ALSO PASSES NATIVE,
 MULTI-TRAIT SAVE AND RENEWED LEGACY MIGRATION GATES. CRYSTALLINE CORE NOW HAS
-NATIVE AND INCREMENTAL SAVE PROOF. ACID/OOZE BREATH NOW HAVE FOCUSED NATIVE PROOF;
-BREATH COOLDOWN/SAVE CONTROLS, THREE UNIMPLEMENTED MECHANICS, THE OTHER THIRTEEN
+NATIVE AND INCREMENTAL SAVE PROOF. ACID/OOZE BREATH NOW HAVE NATIVE RTWP AND
+TEN-TRAIT SAVE PROOF; BREATH TURN-BASED ACTIONS, THREE UNIMPLEMENTED MECHANICS, THE OTHER ELEVEN
 TRAITS' PERSISTENCE, FULL LIFECYCLE, AND FINAL RELEASE-WIDE
 QUALIFICATION REMAIN PENDING. THE FACT-COMPONENT NAME REPAIR NOW PASSES
 PINNED 0.0.114 MIGRATION MECHANICS; SUBJECTIVE VISUAL REVIEW REMAINS.
@@ -42,8 +42,13 @@ All 1,427 tests, clean build/package and two native profiles pass 10,936
 assertions, including 652 breath observations. Four fixed identities append;
 the current ledger is 1,860 total / 1,858 active, with 222 active elemental
 identities (76 Release C). Both 968-entry restorations independently pass.
-Full cooldown-controller and breath-bearing persistence controls are next;
-this does not broaden the earlier eight-trait save or 0.0.114 migration proof.
+The subsequent [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
+passes all 1,428 tests, clean build/package and nine guarded processes with
+11,325 assertions. Native RTWP cooldown commitment, ten-trait OFF/ON saves,
+exact saved Sickened context/duration, spent uses, rest/level/respec/cleanup
+and renewed pinned 0.0.114 migration pass with three exact restorations.
+No production identities/rules change. Turn-based actions and full release
+gates remain; the earlier artifact records retain their original scope.
 
 The [feat-preview correction checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
 fixes attempted transient-buff restoration inside native disabled previews.

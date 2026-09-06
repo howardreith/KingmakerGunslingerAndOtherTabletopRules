@@ -490,6 +490,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!_baselineAbsentExact)
                         throw new InvalidOperationException(
                             "Fresh-load absence verification found fixture residue, identity drift, selector drift, or a changed working-save baseline.");
+                    RecordBreathSavedCondition(0, "fresh-absence");
                     WriteProgress("initialized-verify-absent");
                     return;
                 }
@@ -511,6 +512,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             : "Fresh-load persistence verification requires 24 exact marker-bound elemental heritage party fixtures; observed ") +
                         _loadedFixtureMembership.ToString(
                             Newtonsoft.Json.Formatting.None) + ".");
+                RecordBreathSavedCondition(_moduleRestored ? 2 : 1, "fresh-load-before-mutation");
                 WriteProgress(_legacyMigration
                     ? "initialized-legacy-0.0.114-verify-cleanup"
                     : _moduleRestored
@@ -2328,12 +2330,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ability.Blueprint);
                 bool blueprintSupportsSpend = unit.Blueprint != null &&
                     !unit.Blueprint.IsCheater;
+                AbilityType expectedAbilityType = IsBreathTrait(PersistenceSlaTrait(fixture, expectedHeritage))
+                    ? AbilityType.Supernatural : AbilityType.SpellLike;
                 bool abilityExact = blueprintSupportsSpend &&
                     executableAbilityExact &&
                     ability.Blueprint.Type ==
-                        AbilityType.SpellLike && ability.Spellbook == null &&
+                        expectedAbilityType && ability.Spellbook == null &&
                     executableAbility.Blueprint.Type ==
-                        AbilityType.SpellLike &&
+                        expectedAbilityType &&
                     executableAbility.Spellbook == null &&
                     !ability.RequireMaterialComponent &&
                     !ability.IsAffectedByArcaneSpellFailure &&
@@ -2343,7 +2347,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         expectedResource &&
                     executableAbility.IsAvailable ==
                         (expectedResource > 0) &&
-                    casterLevel == expectedLevel;
+                    casterLevel == expectedLevel &&
+                    BreathParametersExact(fixture, expectedHeritage, executableAbility, expectedLevel);
 
                 DollData data = owner.Doll;
                 bool dollExact = expectedDoll.Matches(data) &&
@@ -3197,6 +3202,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Elemental persistence refused to save after starting inventory drift.");
                 RequireFixtureStagingOutOfCombat("before-exact-working-save");
+                if (_normalPathComplete)
+                    RecordBreathSavedCondition(_prepare ? 1 : _moduleRestored || _cleanupStarted ? 0 : 2,
+                        "immediately-before-save");
                 _preSaveGate = ObserveNativeSaveGate();
                 if (!_preSaveGate.Value<bool>("isSaveAllowed"))
                     throw new InvalidOperationException(
@@ -3401,7 +3409,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "fixtureIndex", _fixtureIndex },
                     { "fixtureCount", _fixtures.Length },
                     { "alternateTraitMatrix", _legacyMigration ? "legacy-markerless-general" :
-                        ElementalBloodInsightPersistencePolicy.CrystallineMatrixId },
+                        ElementalBloodInsightPersistencePolicy.BreathMatrixId },
                     { "settleUpdates", _settleUpdates },
                     { "captured", _captured },
                     { "nativeRespecRecords", _respecRecords.Count },
@@ -3446,6 +3454,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _preparedFeatTransientState.DeepClone() },
                     { "traitPersistenceRecords", _traitPersistenceRecords.DeepClone() },
                     { "efreetiPersistenceRecords", _efreetiPersistenceRecords.DeepClone() },
+                    { "breathPersistenceRecords", _breathPersistenceRecords.DeepClone() },
                     { "featIdentityCount",
                         ElementalRaceIdentityCatalog.FeatIdentityCount },
                     { "featCount", ElementalFeatPolicy.FeatCount },

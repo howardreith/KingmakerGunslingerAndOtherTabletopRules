@@ -13,12 +13,14 @@ configuration successfully loads the exact same working descriptor.
 
 None established.
 
-Acid Breath and Ooze Breath pass their focused native checkpoint (1,427 tests,
-10,936 native assertions, exact two-profile restoration). Full native
-cooldown commitment and breath-bearing save persistence remain open, as do
-Treacherous Earth, Breeze-Kissed, Nereid Fascination and final release gates.
+Acid Breath and Ooze Breath now also pass native RTWP cooldown commitment
+and ten-trait save/OFF/ON/rest/level/respec/fresh-absence qualification.
+All 1,428 tests and nine processes pass 11,325 assertions, with three exact
+968-entry restorations. Breath-specific turn-based actions, eleven other
+traits' saves, Treacherous Earth, Breeze-Kissed, Nereid Fascination and final
+release gates remain open.
 This is incomplete qualification, not a feature-specific hard stop. See the
-[breath report](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md).
+[action/save report](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md).
 
 The [feat-preview correction checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
 resolves the separately recorded transient errors in 117. Native preview,
