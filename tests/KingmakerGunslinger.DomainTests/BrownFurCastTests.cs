@@ -866,6 +866,118 @@ namespace KingmakerGunslinger.DomainTests
                 "A committed no-process cast must release every retained surface.");
         }
 
+        internal static void DirectCastCoordinatorRetainsDelayedProcess()
+        {
+            var released = new List<BrownFurCastTransaction>();
+            var coordinator = new BrownFurCastCommitCoordinator<object, object,
+                object, object, object, object>(released.Add);
+            object owner = new object();
+            object ability = new object();
+            object rule = new object();
+            object process = new object();
+            BrownFurCastTransaction transaction = Transaction(2);
+            int reservoir = 2;
+            Assertions.True(coordinator.BeginDirect(owner, ability,
+                    transaction, reservoir) &&
+                coordinator.AttachRule(ability, rule, new object()) &&
+                coordinator.Commit(owner, ability, cost => {
+                    reservoir -= cost;
+                    return cost == 2;
+                }) &&
+                coordinator.AttachProcess(rule, process) &&
+                coordinator.DirectProcessAttached(ability) &&
+                !coordinator.CompleteDirect(ability) &&
+                coordinator.ActiveTransactionCount == 1 &&
+                coordinator.ReservationCount == 0 &&
+                transaction.State ==
+                    BrownFurCastTransactionState.Committed,
+                "Direct combined Share/Powerful commitment must retain its exact process.");
+            Assertions.True(coordinator.ProcessTerminal(process, false) &&
+                reservoir == 0 &&
+                transaction.State ==
+                    BrownFurCastTransactionState.Completed &&
+                transaction.Intent.TransmutationSupremacyApplicable &&
+                coordinator.ActiveTransactionCount == 0 &&
+                released.Count == 1,
+                "Direct completion must retain passive Supremacy and release only at process terminal.");
+        }
+
+        internal static void DirectCastCoordinatorSupportsFourSequentialCasts()
+        {
+            var released = new List<BrownFurCastTransaction>();
+            var coordinator = new BrownFurCastCommitCoordinator<object, object,
+                object, object, object, object>(released.Add);
+            object owner = new object();
+            object reusedAbility = new object();
+            int reservoir = 4;
+            int sourceSpends = 0;
+            var completed = new List<int>();
+            for (int attempt = 1; attempt <= 4; attempt++)
+            {
+                BrownFurCastTransaction transaction = Transaction(1);
+                object rule = new object();
+                object process = new object();
+                Assertions.True(coordinator.BeginDirect(owner, reusedAbility,
+                        transaction, reservoir) &&
+                    coordinator.AttachRule(reusedAbility, rule,
+                        new object()) &&
+                    coordinator.Commit(owner, reusedAbility, cost => {
+                        if (reservoir < cost) return false;
+                        reservoir -= cost;
+                        return true;
+                    }) &&
+                    coordinator.AttachProcess(rule, process),
+                    "Direct sequential cast " + attempt +
+                    " did not reserve and commit exactly once.");
+                sourceSpends++;
+                Assertions.True(coordinator.ProcessTerminal(process, false) &&
+                    coordinator.ActiveTransactionCount == 0 &&
+                    coordinator.ReservationCount == 0,
+                    "Direct sequential cast " + attempt +
+                    " leaked transaction state.");
+                completed.Add(attempt);
+            }
+            BrownFurCastTransaction none;
+            sourceSpends++;
+            Assertions.True(completed.SequenceEqual(new[] { 1, 2, 3, 4 }) &&
+                completed[2] == 3 && completed[3] == 4 &&
+                reservoir == 0 && sourceSpends == 5 &&
+                released.Count == 4 &&
+                !coordinator.TryGetByAbility(reusedAbility, out none),
+                "Third/fourth direct casts or the later ordinary source spend were contaminated.");
+        }
+
+        internal static void DirectCastRevalidatesAndReusesAbilitySafely()
+        {
+            var released = new List<BrownFurCastTransaction>();
+            var coordinator = new BrownFurCastCommitCoordinator<object, object,
+                object, object, object, object>(released.Add);
+            object owner = new object();
+            object ability = new object();
+            BrownFurCastTransaction exhausted = Transaction(1);
+            object failedRule = new object();
+            Assertions.True(coordinator.BeginDirect(owner, ability,
+                    exhausted, 1) &&
+                coordinator.AttachRule(ability, failedRule, new object()) &&
+                !coordinator.Commit(owner, ability, cost => false) &&
+                exhausted.State ==
+                    BrownFurCastTransactionState.Rejected &&
+                coordinator.ActiveTransactionCount == 0 &&
+                coordinator.ReservationCount == 0,
+                "Execution-time reservoir change did not reject and release the direct cast.");
+
+            BrownFurCastTransaction cancelled = Transaction(1);
+            Assertions.True(coordinator.BeginDirect(owner, ability,
+                    cancelled, 1) &&
+                coordinator.CancelDirect(ability) &&
+                cancelled.State ==
+                    BrownFurCastTransactionState.Cancelled &&
+                coordinator.ActiveTransactionCount == 0 &&
+                coordinator.ReservationCount == 0 &&
+                released.Count == 2,
+                "Rejected/cancelled direct reuse retained a reservation or ability binding.");
+        }
+
         internal static void ShareTargetingScopesAreIsolated()
         {
             var tracker = new BrownFurShareTargetingScopeTracker<object, object,

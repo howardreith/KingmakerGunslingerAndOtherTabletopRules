@@ -23,8 +23,12 @@ namespace KingmakerGunslinger.BrownFur
             internal UnitDescriptor Owner;
             internal UnitUseAbility Command;
             internal AbilityData Ability;
+            internal TargetWrapper Target;
             internal CotwArcanistContract Contract;
             internal BrownFurBonusAdapterPlan BonusPlan;
+            internal BrownFurDirectCastHandle DirectHandle;
+            internal RuleCastSpell Rule;
+            internal AbilityExecutionProcess Process;
             internal bool IntentConsumed;
         }
 
@@ -82,19 +86,11 @@ namespace KingmakerGunslinger.BrownFur
             string identity = transaction.Intent.TransactionIdentity;
             try
             {
-                lock (Gate) Bindings.Add(identity, new Binding { Owner = owner,
-                    Command = command, Ability = ability, Contract = contract,
-                    BonusPlan = bonusPlan });
-                BrownFurCastDecision decision = transaction.Decision;
-                if (decision.ShareTransmutation &&
-                    !BrownFurShareTargetingRuntime.Begin(identity, ability,
-                        target.Unit, decision.ShareDelivery))
-                    throw new InvalidOperationException(
-                        "Share Transmutation scope could not be retained.");
-                if (decision.TransmutationSupremacy &&
-                    !BrownFurSupremacyRuntime.Begin(identity, ability))
-                    throw new InvalidOperationException(
-                        "Transmutation Supremacy scope could not be retained.");
+                var binding = new Binding { Owner = owner,
+                    Command = command, Ability = ability, Target = target,
+                    Contract = contract, BonusPlan = bonusPlan };
+                lock (Gate) Bindings.Add(identity, binding);
+                OpenPreCommitScopes(binding, transaction);
                 return true;
             }
             catch (Exception exception)
@@ -105,13 +101,78 @@ namespace KingmakerGunslinger.BrownFur
             }
         }
 
+        internal static bool BeginDirect(CotwArcanistContract contract,
+            AbilityData ability, TargetWrapper target,
+            BrownFurCastTransaction transaction,
+            BrownFurBonusAdapterPlan bonusPlan,
+            BrownFurDirectCastHandle handle)
+        {
+            if (contract == null || contract.Reservoir == null ||
+                ability == null || ability.Caster == null || target == null ||
+                target.Unit == null || transaction == null || handle == null ||
+                transaction.State != BrownFurCastTransactionState.Validated ||
+                !ReferenceEquals(handle.Ability, ability) ||
+                !ReferenceEquals(handle.Target, target) ||
+                !string.Equals(handle.TransactionIdentity,
+                    transaction.Intent.TransactionIdentity,
+                    StringComparison.Ordinal)) return false;
+            lock (Gate)
+                if (SuppressedSpends.Contains(ability)) return false;
+            UnitDescriptor owner = ability.Caster;
+            int available = owner.Resources.ContainsResource(contract.Reservoir) ?
+                owner.Resources.GetResourceAmount(contract.Reservoir) : 0;
+            if (!Coordinator.BeginDirect(owner, ability, transaction,
+                    available)) return false;
+            string identity = transaction.Intent.TransactionIdentity;
+            try
+            {
+                var binding = new Binding { Owner = owner, Ability = ability,
+                    Target = target, Contract = contract,
+                    BonusPlan = bonusPlan, DirectHandle = handle };
+                lock (Gate) Bindings.Add(identity, binding);
+                OpenPreCommitScopes(binding, transaction);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                RecordFailure("begin-direct", exception);
+                Coordinator.CancelDirect(ability);
+                return false;
+            }
+        }
+
         internal static bool AttachRule(RuleCastSpell rule)
         {
             try
             {
-                return rule != null && rule.Spell != null &&
-                    rule.Context != null && Coordinator.AttachRule(
-                        rule.Spell, rule, rule.Context);
+                if (rule == null || rule.Spell == null ||
+                    rule.Context == null) return false;
+                BrownFurCastTransaction transaction;
+                if (!Coordinator.TryGetByAbility(rule.Spell,
+                        out transaction)) return false;
+                Binding binding = Get(
+                    transaction.Intent.TransactionIdentity);
+                if (binding == null) return false;
+                if (binding.DirectHandle != null &&
+                    (rule.SpellTarget == null ||
+                     rule.SpellTarget.Unit == null ||
+                     binding.Target == null ||
+                     !ReferenceEquals(rule.SpellTarget.Unit,
+                        binding.Target.Unit)))
+                {
+                    binding.DirectHandle.MarkFailure(
+                        "direct-rule-target-mismatch");
+                    return false;
+                }
+                bool attached = Coordinator.AttachRule(
+                    rule.Spell, rule, rule.Context);
+                if (attached)
+                {
+                    binding.Rule = rule;
+                    if (binding.DirectHandle != null)
+                        binding.DirectHandle.MarkRuleAttached(rule);
+                }
+                return attached;
             }
             catch (Exception exception)
             {
@@ -126,8 +187,22 @@ namespace KingmakerGunslinger.BrownFur
             BrownFurCastTransaction transaction = null;
             try
             {
-                if (rule == null || !Coordinator.TryGetByRule(rule,
-                        out transaction)) return false;
+                if (rule == null || rule.Spell == null) return false;
+                if (!Coordinator.TryGetByRule(rule, out transaction))
+                {
+                    BrownFurCastTransaction pending;
+                    if (!Coordinator.TryGetByAbility(rule.Spell,
+                            out pending)) return false;
+                    Binding unmatched = Get(
+                        pending.Intent.TransactionIdentity);
+                    if (unmatched == null ||
+                        unmatched.DirectHandle == null) return false;
+                    proceed = false;
+                    unmatched.DirectHandle.MarkFailure(
+                        "direct-rule-binding-rejected");
+                    Coordinator.CancelDirect(rule.Spell);
+                    return true;
+                }
                 Binding binding = Get(transaction.Intent.TransactionIdentity);
                 if (binding == null)
                 {
@@ -139,7 +214,12 @@ namespace KingmakerGunslinger.BrownFur
                     binding.Ability, cost => DebitAndOpenModifier(binding,
                         rule.Context, transaction, cost));
                 proceed = committed;
-                if (!committed)
+                if (committed && binding.DirectHandle != null)
+                    binding.DirectHandle.MarkCommitted();
+                if (!committed && binding.DirectHandle != null)
+                    binding.DirectHandle.MarkFailure(
+                        "provider-direct-commit-rejected");
+                else if (!committed)
                     lock (Gate)
                     {
                         SuppressedSpends.Add(binding.Ability);
@@ -161,8 +241,16 @@ namespace KingmakerGunslinger.BrownFur
         {
             try
             {
-                if (rule != null && rule.ExecutionProcess != null)
-                    Coordinator.AttachProcess(rule, rule.ExecutionProcess);
+                if (rule == null || rule.ExecutionProcess == null) return;
+                BrownFurCastTransaction transaction;
+                if (!Coordinator.TryGetByRule(rule,
+                        out transaction)) return;
+                if (!Coordinator.AttachProcess(rule,
+                        rule.ExecutionProcess)) return;
+                Binding binding = Get(
+                    transaction.Intent.TransactionIdentity);
+                if (binding != null)
+                    binding.Process = rule.ExecutionProcess;
             }
             catch (Exception exception)
             { RecordFailure("attach-process", exception); }
@@ -297,6 +385,166 @@ namespace KingmakerGunslinger.BrownFur
             { RecordFailure("process-terminal", exception); }
         }
 
+        internal static BrownFurDirectCastStatus CompleteDirectRule(
+            BrownFurDirectCastHandle handle, RuleCastSpell rule)
+        {
+            if (handle == null)
+                return BrownFurDirectCastStatus.Rejected(
+                    "direct-handle-missing");
+            handle.MarkRuleReturned();
+            if (!handle.Matches(rule))
+            {
+                handle.MarkFailure("direct-rule-identity-mismatch");
+                CleanupDirect(handle);
+                return handle.Snapshot();
+            }
+            BrownFurDirectCastStatus status = handle.Snapshot();
+            if (!status.Accepted || status.Complete) return status;
+            if (!status.Committed)
+            {
+                handle.MarkFailure("direct-rule-not-committed");
+                CleanupDirect(handle);
+                return handle.Snapshot();
+            }
+            if (rule.ExecutionProcess == null)
+            {
+                if (!Coordinator.CompleteDirect(handle.Ability) &&
+                    !handle.Snapshot().Complete)
+                    handle.MarkFailure(
+                        "direct-rule-without-process-not-completed");
+                return handle.Snapshot();
+            }
+            Binding directBinding = GetDirectBinding(handle);
+            if (directBinding == null)
+            {
+                handle.MarkResidualFailure(
+                    "direct-transaction-binding-missing");
+                return handle.Snapshot();
+            }
+            // Retain the process even when the lifecycle hook cannot attach it.
+            // A failed attachment must never make Cleanup treat a still-running
+            // native effect process as a process-free synchronous cast.
+            directBinding.Process = rule.ExecutionProcess;
+            if (!Coordinator.DirectProcessAttached(handle.Ability))
+            {
+                BrownFurCastTransaction transaction;
+                if (!Coordinator.TryGetByAbility(handle.Ability,
+                        out transaction) ||
+                    !Coordinator.AttachProcess(rule,
+                        rule.ExecutionProcess))
+                {
+                    handle.MarkResidualFailure(
+                        "direct-execution-process-not-attached");
+                    return handle.Snapshot();
+                }
+            }
+            if (rule.ExecutionProcess.IsEnded)
+                Coordinator.ProcessTerminal(rule.ExecutionProcess, false);
+            return handle.Snapshot();
+        }
+
+        internal static BrownFurDirectCastStatus InspectDirect(
+            BrownFurDirectCastHandle handle)
+        {
+            if (handle == null)
+                return BrownFurDirectCastStatus.Rejected(
+                    "direct-handle-missing");
+            BrownFurDirectCastStatus status = handle.Snapshot();
+            if (!status.Accepted || status.Complete) return status;
+            Binding binding = GetDirectBinding(handle);
+            if (binding == null)
+            {
+                handle.MarkResidualFailure(
+                    "direct-transaction-binding-missing");
+                return handle.Snapshot();
+            }
+            if (binding.Process != null && binding.Process.IsEnded)
+            {
+                if (!Coordinator.ProcessTerminal(binding.Process, false) &&
+                    !handle.Snapshot().Complete &&
+                    !Coordinator.CompleteDirect(handle.Ability))
+                    handle.MarkResidualFailure(
+                        "direct-ended-process-not-completed");
+            }
+            else if (binding.Process == null && handle.RuleReturned &&
+                status.Committed)
+                Coordinator.CompleteDirect(handle.Ability);
+            return handle.Snapshot();
+        }
+
+        internal static BrownFurDirectCastStatus CleanupDirect(
+            BrownFurDirectCastHandle handle)
+        {
+            if (handle == null)
+                return BrownFurDirectCastStatus.Rejected(
+                    "direct-handle-missing");
+            BrownFurDirectCastStatus status = handle.Snapshot();
+            if (!status.Accepted || status.Complete) return status;
+            Binding binding = GetDirectBinding(handle);
+            if (binding == null)
+            {
+                if (RetryReleasedCleanup(handle.TransactionIdentity))
+                    handle.MarkCleanupRecovered();
+                else
+                    handle.MarkResidualFailure(
+                        "provider-terminal-cleanup-retry-failed");
+                return handle.Snapshot();
+            }
+            BrownFurCastTransaction transaction;
+            if (!Coordinator.TryGetByAbility(handle.Ability,
+                    out transaction))
+            {
+                handle.MarkResidualFailure(
+                    "direct-transaction-lifecycle-missing");
+                return handle.Snapshot();
+            }
+            if (transaction.State ==
+                BrownFurCastTransactionState.Validated)
+            {
+                Coordinator.CancelDirect(handle.Ability);
+                return handle.Snapshot();
+            }
+            if (transaction.State ==
+                BrownFurCastTransactionState.Committed)
+            {
+                if (binding.Process != null)
+                {
+                    if (binding.Process.IsEnded)
+                    {
+                        if (!Coordinator.ProcessTerminal(
+                                binding.Process, false) &&
+                            !handle.Snapshot().Complete &&
+                            !Coordinator.CompleteDirect(handle.Ability))
+                            handle.MarkResidualFailure(
+                                "direct-ended-process-not-completed");
+                    }
+                    return handle.Snapshot();
+                }
+                if (handle.RuleReturned)
+                {
+                    Coordinator.CompleteDirect(handle.Ability);
+                    return handle.Snapshot();
+                }
+                try
+                {
+                    if (transaction.DebitedReservoirPoints > 0)
+                        RestoreExact(binding,
+                            transaction.DebitedReservoirPoints);
+                }
+                catch (Exception exception)
+                {
+                    RecordFailure("direct-reservoir-rollback", exception);
+                    handle.MarkResidualFailure(
+                        "direct-reservoir-rollback-failed");
+                    return handle.Snapshot();
+                }
+                handle.MarkFailure(
+                    "direct-cast-aborted-before-rule-return");
+                Coordinator.FailDirect(handle.Ability);
+            }
+            return handle.Snapshot();
+        }
+
         internal static void Clear()
         {
             lock (Gate)
@@ -350,6 +598,23 @@ namespace KingmakerGunslinger.BrownFur
             return false;
         }
 
+        private static void OpenPreCommitScopes(Binding binding,
+            BrownFurCastTransaction transaction)
+        {
+            string identity = transaction.Intent.TransactionIdentity;
+            BrownFurCastDecision decision = transaction.Decision;
+            if (decision.ShareTransmutation &&
+                !BrownFurShareTargetingRuntime.Begin(identity,
+                    binding.Ability, binding.Target.Unit,
+                    decision.ShareDelivery))
+                throw new InvalidOperationException(
+                    "Share Transmutation scope could not be retained.");
+            if (decision.TransmutationSupremacy &&
+                !BrownFurSupremacyRuntime.Begin(identity, binding.Ability))
+                throw new InvalidOperationException(
+                    "Transmutation Supremacy scope could not be retained.");
+        }
+
         private static void RestoreExact(Binding binding, int cost)
         {
             int before = binding.Owner.Resources.GetResourceAmount(
@@ -371,6 +636,21 @@ namespace KingmakerGunslinger.BrownFur
             }
         }
 
+        private static Binding GetDirectBinding(
+            BrownFurDirectCastHandle handle)
+        {
+            if (handle == null) return null;
+            BrownFurCastTransaction transaction;
+            if (!Coordinator.TryGetByAbility(handle.Ability,
+                    out transaction)) return null;
+            Binding binding = Get(transaction.Intent.TransactionIdentity);
+            return binding != null &&
+                ReferenceEquals(binding.DirectHandle, handle) &&
+                string.Equals(transaction.Intent.TransactionIdentity,
+                    handle.TransactionIdentity, StringComparison.Ordinal)
+                ? binding : null;
+        }
+
         internal static void RecordPatchFailure(string operation,
             Exception exception)
         { RecordFailure("patch-" + operation, exception); }
@@ -387,24 +667,53 @@ namespace KingmakerGunslinger.BrownFur
         {
             if (transaction == null) return;
             string identity = transaction.Intent.TransactionIdentity;
-            SafeCleanup("release-share", () =>
+            Binding binding = Get(identity);
+            bool cleanup = SafeCleanup("release-share", () =>
                 BrownFurShareTargetingRuntime.Release(identity));
-            SafeCleanup("release-supremacy", () =>
-                BrownFurSupremacyRuntime.Release(identity));
-            SafeCleanup("release-modifier", () =>
-                BrownFurModifierAdjustmentRuntime.Release(identity));
+            cleanup = SafeCleanup("release-supremacy", () =>
+                BrownFurSupremacyRuntime.Release(identity)) && cleanup;
+            cleanup = SafeCleanup("release-modifier", () =>
+                BrownFurModifierAdjustmentRuntime.Release(identity)) &&
+                cleanup;
             lock (Gate)
             {
                 _lastTerminalState = identity + ":" + transaction.State;
                 Bindings.Remove(identity);
             }
+            if (binding != null && binding.DirectHandle != null)
+            {
+                binding.DirectHandle.MarkTerminal(transaction);
+                if (!cleanup)
+                    binding.DirectHandle.MarkResidualFailure(
+                        "provider-terminal-cleanup-failed:" +
+                        LastFailure);
+            }
         }
 
-        private static void SafeCleanup(string operation, Action cleanup)
+        private static bool RetryReleasedCleanup(string identity)
         {
-            try { cleanup(); }
+            bool cleanup = SafeCleanup("retry-release-share", () =>
+                BrownFurShareTargetingRuntime.Release(identity));
+            cleanup = SafeCleanup("retry-release-supremacy", () =>
+                BrownFurSupremacyRuntime.Release(identity)) && cleanup;
+            cleanup = SafeCleanup("retry-release-modifier", () =>
+                BrownFurModifierAdjustmentRuntime.Release(identity)) &&
+                cleanup;
+            return cleanup;
+        }
+
+        private static bool SafeCleanup(string operation, Action cleanup)
+        {
+            try
+            {
+                cleanup();
+                return true;
+            }
             catch (Exception exception)
-            { RecordFailure(operation, exception); }
+            {
+                RecordFailure(operation, exception);
+                return false;
+            }
         }
 
         private sealed class ReferenceComparer : IEqualityComparer<AbilityData>
