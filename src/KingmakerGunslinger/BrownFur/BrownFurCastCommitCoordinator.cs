@@ -49,6 +49,21 @@ namespace KingmakerGunslinger.BrownFur
             return false;
         }
 
+        internal bool BeginDirect(TOwner owner, TAbility ability,
+            BrownFurCastTransaction transaction, int availablePoints)
+        {
+            if (owner == null || ability == null || transaction == null ||
+                transaction.State != BrownFurCastTransactionState.Validated)
+                return false;
+            string identity = transaction.Intent.TransactionIdentity;
+            int cost = transaction.Decision.ReservoirCost;
+            if (!_reservations.TryReserve(owner, identity, cost,
+                    availablePoints)) return false;
+            if (_lifecycle.BeginDirect(ability, transaction)) return true;
+            _reservations.Release(owner, identity);
+            return false;
+        }
+
         internal bool AttachRule(TAbility ability, TRule rule,
             TContext context)
         { return _lifecycle.AttachRule(ability, rule, context); }
@@ -72,6 +87,18 @@ namespace KingmakerGunslinger.BrownFur
 
         internal bool EndCommand(TCommand command, bool interrupted)
         { return _lifecycle.EndCommand(command, interrupted); }
+
+        internal bool CompleteDirect(TAbility ability)
+        { return _lifecycle.CompleteDirect(ability); }
+
+        internal bool CancelDirect(TAbility ability)
+        { return _lifecycle.CancelDirect(ability); }
+
+        internal bool FailDirect(TAbility ability)
+        { return _lifecycle.FailDirect(ability); }
+
+        internal bool DirectProcessAttached(TAbility ability)
+        { return _lifecycle.DirectProcessAttached(ability); }
 
         internal bool ProcessTerminal(TProcess process, bool failed)
         { return _lifecycle.ProcessTerminal(process, failed); }

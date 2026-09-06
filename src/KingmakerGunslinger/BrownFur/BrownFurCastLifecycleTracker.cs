@@ -39,7 +39,7 @@ namespace KingmakerGunslinger.BrownFur
         { _onRelease = onRelease; }
 
         internal int ActiveTransactionCount
-        { get { lock (_gate) return _commands.Count; } }
+        { get { lock (_gate) return _abilities.Count; } }
 
         internal bool Begin(TCommand command, TAbility ability,
             BrownFurCastTransaction transaction)
@@ -55,6 +55,21 @@ namespace KingmakerGunslinger.BrownFur
                     Transaction = transaction };
                 _commands.Add(command, entry);
                 _abilities.Add(ability, entry);
+                return true;
+            }
+        }
+
+        internal bool BeginDirect(TAbility ability,
+            BrownFurCastTransaction transaction)
+        {
+            if (ability == null || transaction == null ||
+                transaction.State != BrownFurCastTransactionState.Validated)
+                return false;
+            lock (_gate)
+            {
+                if (_abilities.ContainsKey(ability)) return false;
+                _abilities.Add(ability, new Entry { Ability = ability,
+                    Transaction = transaction });
                 return true;
             }
         }
@@ -145,6 +160,65 @@ namespace KingmakerGunslinger.BrownFur
             }
         }
 
+        internal bool CompleteDirect(TAbility ability)
+        {
+            if (ability == null) return false;
+            lock (_gate)
+            {
+                Entry entry;
+                if (!_abilities.TryGetValue(ability, out entry) ||
+                    entry.Command != null || entry.Process != null ||
+                    entry.Transaction.State !=
+                        BrownFurCastTransactionState.Committed) return false;
+                entry.Transaction.Complete();
+                Release(entry);
+                return true;
+            }
+        }
+
+        internal bool CancelDirect(TAbility ability)
+        {
+            if (ability == null) return false;
+            lock (_gate)
+            {
+                Entry entry;
+                if (!_abilities.TryGetValue(ability, out entry) ||
+                    entry.Command != null) return false;
+                BrownFurCastTransactionState state = entry.Transaction.State;
+                if (state != BrownFurCastTransactionState.Created &&
+                    state != BrownFurCastTransactionState.Validated)
+                    return false;
+                entry.Transaction.Cancel();
+                Release(entry);
+                return true;
+            }
+        }
+
+        internal bool FailDirect(TAbility ability)
+        {
+            if (ability == null) return false;
+            lock (_gate)
+            {
+                Entry entry;
+                if (!_abilities.TryGetValue(ability, out entry) ||
+                    entry.Command != null) return false;
+                entry.Transaction.Fail();
+                Release(entry);
+                return true;
+            }
+        }
+
+        internal bool DirectProcessAttached(TAbility ability)
+        {
+            if (ability == null) return false;
+            lock (_gate)
+            {
+                Entry entry;
+                return _abilities.TryGetValue(ability, out entry) &&
+                    entry.Command == null && entry.Process != null;
+            }
+        }
+
         internal bool ProcessTerminal(TProcess process, bool failed)
         {
             if (process == null) return false;
@@ -223,7 +297,7 @@ namespace KingmakerGunslinger.BrownFur
             lock (_gate)
             {
                 var failures = new List<Exception>();
-                foreach (Entry entry in new List<Entry>(_commands.Values))
+                foreach (Entry entry in new List<Entry>(_abilities.Values))
                 {
                     if (entry.Transaction.State ==
                         BrownFurCastTransactionState.Committed)
@@ -244,7 +318,7 @@ namespace KingmakerGunslinger.BrownFur
 
         private void Release(Entry entry)
         {
-            _commands.Remove(entry.Command);
+            if (entry.Command != null) _commands.Remove(entry.Command);
             _abilities.Remove(entry.Ability);
             if (entry.Rule != null) _rules.Remove(entry.Rule);
             if (entry.Context != null) _contexts.Remove(entry.Context);
