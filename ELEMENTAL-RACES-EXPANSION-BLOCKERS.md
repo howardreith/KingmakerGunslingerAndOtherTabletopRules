@@ -13,18 +13,18 @@ configuration successfully loads the exact same working descriptor.
 
 None established.
 
-## Active publication-process blocker
+## Publication-process blocker: resolved 2026-09-06 UTC
 
-- Local checkpoints, including the first-eight-trait implementation commit
-  `530eff1ebe6814fc17a5fc39c1ac50bb215bfbbf`, cannot currently be pushed.
-  The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
-  exact required `codex/elemental-races-expansion` branch because it is absent
-  from the wrapper's branch allowlist. The historical `codex/elemental-races`
-  branch is allowlisted, but changing this mission's branch would violate the
-  assignment. No bypass is attempted. Independent implementation continues.
+The user allowlisted the exact required branch. The mandatory external wrapper
+then successfully performed an ordinary non-force push through
+`e8879007f0c788b0bb494f7747c35bab730d59dc`, covering all 36 mission commits.
+The local and origin tracking SHAs match and the tree was clean. No branch
+rename, policy bypass, merge, tag, PR or GitHub release was used. Historical
+push-refusal records retain their original attempt-time meaning; the current
+publication recovery is recorded separately in STATE.
 
-Release B itself has no remaining engineering or qualification blocker. Its
-local PASS is separate from this branch-publication blocker.
+Release B has no remaining engineering, qualification or checkpoint-push
+blocker. Release C implementation and full release qualification remain pending.
 
 Release C has no established hard blocker. Its replacement framework and
 first eight passive mechanics have incremental proof. Three typed summon
