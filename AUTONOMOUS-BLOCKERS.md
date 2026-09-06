@@ -1,5 +1,42 @@
 # Autonomous Gunslinger blockers
 
+## 2026-09-06 0.0.115 public release verification
+
+Owner-authorized master merge/tag commit:
+`473f83bd901602ebe610cfdf291f11ce4a3faa57`; annotated `v0.0.115` object:
+`f3e9a5a216417ef1280a18b698ba48c988e7d325`. Feature branch
+`codex/share-transmutation-instant` at
+`636d70bfd64db922a7d42070144302723002553c` was guarded-pushed first.
+Public release (draft=false, prerelease=false), `2026-09-06T16:19:32Z):
+https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.115
+
+`scripts/Publish-Release.ps1 -ReferenceBundleDir C:/Dev/KingmakerGunslingerLab/private/extracted-references/KingmakerGunslinger-private-build-references -Publish -ConfirmReleaseReady`
+PASSed the complete pipeline twice: source/dispatch validation, domain
+1393/1393 each time, clean exact-reference Release compilation, supply icons,
+strict output, SoundBank, 135-file package, byte-identical ZIP/DLL, and public
+tag/upload. Log: `artifacts/share-release-publish.log`.
+Planner's exact release-DLL contract inspector PASS=87 FAIL=0.
+Independent `gh release download`, API digest, checksum, and strict package
+validation agree. Published asset:
+`artifacts/release/0.0.115/KingmakerGunslinger-0.0.115-share-transmutation-instant.zip`,
+23,048,955 bytes; ZIP
+`b79aea789fadcf849b69700d3c63462b5f1041354ff36b26c10ba4f56f034555`;
+DLL `f93ddb0375fa37f266855579eee948fc35d1987d0ddf63247f0bbe31cf0dfa65`;
+MVID `88a6a42a-8648-4a7a-a0fa-4dd567701986`.
+Independent download: `artifacts/release-verification/0.0.115`.
+
+Paired Planner 0.0.19 release commit:
+`583b1e984f8e02720b09362f41082bfbd077a186`.
+No live gameplay, installation, dependency replacement, or save mutation
+occurred. Save-backed gameplay is NOT RUN: the final protected resolver reports
+`The exact Kingmaker save root is unavailable.` Historical generic installed
+net48-reference build and stale 0.0.58 dispatch-test failures remain disclosed;
+neither was weakened. The actual provenance-checked release gates PASS.
+
+Exact next action: commit/guarded-push this documentation-only record, then
+fast-forward/push master under owner authority. Published tags/assets must not
+move. Only approved protected-save manual Share acceptance remains.
+
 ## 2026-09-06 paired release authorization
 
 The owner explicitly authorized all task commits, the master merge, remote
